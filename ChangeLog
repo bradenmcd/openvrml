@@ -1,3 +1,11 @@
+2003-09-12  Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node.cpp (node::node):  Reordered
+	member initializer list to match declaration order.
+	* src/libopenvrml/openvrml/rendering_context.cpp
+	(rendering_context::rendering_context):  Reordered member
+	initializer list to match declaration order.
+
 2003-09-09  Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp (script_node::update):

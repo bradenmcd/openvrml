@@ -944,9 +944,9 @@ node::polled_eventout_value::polled_eventout_value(
 node::node(const node_type & type, const scope_ptr & scope) throw ():
     scope_(scope),
     scene_(0),
-    type(type),
     modified_(false),
-    bounding_volume_dirty_(false)
+    bounding_volume_dirty_(false),
+    type(type)
 {}
 
 /**

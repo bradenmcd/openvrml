@@ -111,8 +111,8 @@ namespace openvrml {
  * This constructor is useful only for debugging and experimentation.
  */
 rendering_context::rendering_context():
-    cull_flag(bounding_volume::partial),
     modelview(0),
+    cull_flag(bounding_volume::partial),
     draw_bounding_spheres(false)
 {}
 
@@ -130,8 +130,8 @@ rendering_context::rendering_context():
 rendering_context::rendering_context(
     const bounding_volume::intersection cull_flag,
     mat4f & modelview):
-    cull_flag(cull_flag),
     modelview(&modelview),
+    cull_flag(cull_flag),
     draw_bounding_spheres(false)
 {}
 
