@@ -6,6 +6,9 @@
           Moved NodePath typedef from Node class to OpenVRML namespace;
           use a std::deque instead of a std::list.
 
+        * src/openvrml/OpenVRML/node.h:  Removed relocate stuff
+          (prematurely checked in by accident).
+
 2002-12-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp:  Use newer

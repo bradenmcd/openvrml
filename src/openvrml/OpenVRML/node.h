@@ -266,8 +266,6 @@ namespace OpenVRML {
         bool accept(NodeVisitor & visitor);
         void resetVisitedFlag() throw ();
 
-        void relocate() throw ();
-
         void addEventOutIS(const std::string & eventOut,
                            PolledEventOutValue & eventOutValue)
             throw (UnsupportedInterface, std::bad_alloc);
@@ -379,7 +377,6 @@ namespace OpenVRML {
 
         bool d_modified;
         bool d_bvol_dirty;
-        bool relocated;
 
     private:
         // Not copyable.
