@@ -1929,6 +1929,183 @@ void node::do_shutdown(const double timestamp) throw ()
 
 
 /**
+ * @fn template <> script_node * node_cast<script_node *>(node * n) throw ()
+ *
+ * @brief Cast to a script_node.
+ *
+ * @param n node.
+ *
+ * @return a script_node pointer to the node pointed to by @p n, or 0 if the
+ *         node is not a script_node.
+ */
+
+/**
+ * @fn template <> appearance_node * node_cast<appearance_node *>(node * n) throw ()
+ *
+ * @brief Cast to an appearance_node.
+ *
+ * @param n node.
+ *
+ * @return an appearance_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not an appearance_node.
+ */
+
+/**
+ * @fn template <> child_node * node_cast<child_node *>(node * n) throw ()
+ *
+ * @brief Cast to a child_node.
+ *
+ * @param n node.
+ *
+ * @return a child_node pointer to the node pointed to by @p n, or 0 if the
+ *         node is not a child_node.
+ */
+
+/**
+ * @fn template <> color_node * node_cast<color_node *>(node * n) throw ()
+ *
+ * @brief Cast to a color_node.
+ *
+ * @param n node.
+ *
+ * @return a color_node pointer to the node pointed to by @p n, or 0 if the
+ *         node is not a color_node.
+ */
+
+/**
+ * @fn template <> coordinate_node * node_cast<coordinate_node *>(node * n) throw ()
+ *
+ * @brief Cast to a coordinate_node.
+ *
+ * @param n node.
+ *
+ * @return a coordinate_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not a coordinate_node.
+ */
+
+/**
+ * @fn template <> font_style_node * node_cast<font_style_node *>(node * n) throw ()
+ *
+ * @brief Cast to a font_style_node.
+ *
+ * @param n node.
+ *
+ * @return a font_style_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not a font_style_node.
+ */
+
+/**
+ * @fn template <> geometry_node * node_cast<geometry_node *>(node * n) throw ()
+ *
+ * @brief Cast to a geometry_node.
+ *
+ * @param n node.
+ *
+ * @return a geometry_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not a geometry_node.
+ */
+
+/**
+ * @fn template <> grouping_node * node_cast<grouping_node *>(node * n) throw ()
+ *
+ * @brief Cast to a grouping_node.
+ *
+ * @param n node.
+ *
+ * @return a grouping_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not a grouping_node.
+ */
+
+/**
+ * @fn template <> material_node * node_cast<material_node *>(node * n) throw ()
+ *
+ * @brief Cast to a material_node.
+ *
+ * @param n node.
+ *
+ * @return a material_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not a material_node.
+ */
+
+/**
+ * @fn template <> normal_node * node_cast<normal_node *>(node * n) throw ()
+ *
+ * @brief Cast to a normal_node.
+ *
+ * @param n node.
+ *
+ * @return a normal_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not a normal_node.
+ */
+
+/**
+ * @fn template <> sound_source_node * node_cast<sound_source_node *>(node * n) throw ()
+ *
+ * @brief Cast to a sound_source_node.
+ *
+ * @param n node.
+ *
+ * @return a sound_source_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not a sound_source_node.
+ */
+
+/**
+ * @fn template <> texture_node * node_cast<texture_node *>(node * n) throw ()
+ *
+ * @brief Cast to a texture_node.
+ *
+ * @param n node.
+ *
+ * @return a texture_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not a texture_node.
+ */
+
+/**
+ * @fn template <> texture_coordinate_node * node_cast<texture_coordinate_node *>(node * n) throw ()
+ *
+ * @brief Cast to a texture_coordinate_node.
+ *
+ * @param n node.
+ *
+ * @return a texture_coordinate_node pointer to the node pointed to by @p n, or
+ *         0 if the node is not a texture_coordinate_node.
+ */
+
+/**
+ * @fn template <> texture_transform_node * node_cast<texture_transform_node *>(node * n) throw ()
+ *
+ * @brief Cast to a texture_transform_node.
+ *
+ * @param n node.
+ *
+ * @return a texture_transform_node pointer to the node pointed to by @p n, or
+ *         0 if the node is not a texture_transform_node.
+ */
+
+/**
+ * @fn template <> transform_node * node_cast<transform_node *>(node * n) throw ()
+ *
+ * @brief Cast to a transform_node.
+ *
+ * @param n node.
+ *
+ * @return a transform_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not a transform_node.
+ */
+
+/**
+ * @fn template <> viewpoint_node * node_cast<viewpoint_node *>(node * n) throw ()
+ *
+ * @brief Cast to a viewpoint_node.
+ *
+ * @param n node.
+ *
+ * @return a viewpoint_node pointer to the node pointed to by @p n, or 0 if
+ *         the node is not a viewpoint_node.
+ */
+
+
+/**
  * @class appearance_node
  *
  * @brief Abstract base class for appearance nodes.
@@ -1955,8 +2132,8 @@ appearance_node::~appearance_node() throw ()
 /**
  * @brief Insert appearance when rendering.
  *
- * @param v                 viewer.
- * @param rendering_context context.
+ * @param v         viewer.
+ * @param context   rendering_context.
  */
 void appearance_node::render_appearance(viewer & v, rendering_context context)
 {
@@ -1967,8 +2144,8 @@ void appearance_node::render_appearance(viewer & v, rendering_context context)
 /**
  * @brief render_appearance implementation.
  *
- * @param v                 viewer.
- * @param rendering_context context.
+ * @param v         viewer.
+ * @param context   rendering_context.
  */
 void appearance_node::do_render_appearance(viewer & v,
                                            rendering_context context)
@@ -2332,6 +2509,12 @@ font_style_node * font_style_node::to_font_style() throw ()
  */
 
 /**
+ * @var viewer::object_t geometry_node::geometry_reference
+ *
+ * @brief Identifier for a geometry object in the renderer.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node.
@@ -2636,9 +2819,12 @@ sound_source_node * sound_source_node::to_sound_source() throw ()
  * @class texture_node
  *
  * @brief Abstract base class for texture nodes.
+ */
+
+/**
+ * @var viewer::texture_object_t texture_node::texture_reference
  *
- * @todo Clean this up. It would be better just to have an accessor for an
- *      SFImage along with the repeatS and repeatT accessors.
+ * @brief Identifier for a texture object in the renderer.
  */
 
 /**

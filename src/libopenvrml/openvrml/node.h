@@ -230,8 +230,7 @@ namespace openvrml {
     To node_cast(node * n) throw ();
 
     class node {
-        friend std::ostream & operator<<(std::ostream & out,
-                                         const node & n);
+        friend std::ostream & operator<<(std::ostream & out, const node & n);
         friend script_node * node_cast<script_node *>(node * n) throw ();
         friend appearance_node * node_cast<appearance_node *>(node * n)
             throw ();
