@@ -1,3 +1,7 @@
+2001-01-23  Braden McDaniel  <braden@endoframe.com>
+
+        * Include <stddef.h> from `Viewer.h'.
+
 2001-01-20  Braden McDaniel  <braden@endoframe.com>
 
         * Added getRoutes() method to VrmlNode, per patch from Joe
