@@ -6,6 +6,14 @@
         * configure.ac:  Fixed error in conditionally adding mozilla-js
           to Requires in openvrml.pc.
 
+        * src/openvrml/OpenVRML/Image.cpp,
+          src/openvrml/OpenVRML/MathUtils.cpp,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/private.h,
+          src/openvrml/OpenVRML/script.cpp:  Quelled some warnings from
+          icc 7.0.
+
 2002-12-08  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/vrml97node.cpp: Fix bug in FontStyle

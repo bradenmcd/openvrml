@@ -66,6 +66,15 @@ UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
     std::runtime_error(nodeType.id + " has no interface \"" + interfaceId + '"')
 {}
 
+namespace {
+    const std::string toString(const NodeInterface::Type interfaceType)
+    {
+        std::ostringstream out;
+        out << interfaceType;
+        return out.str();
+    }
+}
+
 /**
  * @brief Constructor.
  *
@@ -76,9 +85,7 @@ UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
 UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
                                            const NodeInterface::Type interfaceType,
                                            const std::string & interfaceId):
-    std::runtime_error(nodeType.id + " has no "
-                       + static_cast<std::ostringstream &>
-                         (std::ostringstream() << interfaceType).str()
+    std::runtime_error(nodeType.id + " has no " + toString(interfaceType)
                        + " \"" + interfaceId + '"')
 {}
 

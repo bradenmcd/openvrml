@@ -1627,10 +1627,9 @@ void Script::activate(const double timeStamp, const std::string & fname,
                     static_cast<FieldData *>
                         (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
                 if (fieldData->changed) {
-                    std::auto_ptr<FieldValue>
-                        fieldValue(createFieldValueFromJsval(
-                                            this->cx, val,
-                                            itr->second.value->type()));
+                    std::auto_ptr<FieldValue> fieldValue =
+                        createFieldValueFromJsval(this->cx, val,
+                                                  itr->second.value->type());
                     itr->second.value->assign(*fieldValue);
                     this->scriptNode.setEventOut(itr->first,
                                                  *itr->second.value);
@@ -1906,8 +1905,8 @@ JSBool eventOut_setProperty(JSContext * const cx, JSObject * const obj,
     // Convert to an OpenVRML::FieldValue and set the eventOut value.
     //
     try {
-        std::auto_ptr<FieldValue>
-                fieldValue(createFieldValueFromJsval(cx, *val, fieldType));
+        std::auto_ptr<FieldValue> fieldValue =
+                createFieldValueFromJsval(cx, *val, fieldType);
         scriptNode.setEventOut(eventId, *fieldValue);
     } catch (BadConversion & ex) {
         std::cout << ex.what() << std::endl;
@@ -1949,8 +1948,8 @@ JSBool field_setProperty(JSContext * const cx, JSObject * const obj,
     // Convert to an OpenVRML::FieldValue and set the eventOut value.
     //
     try {
-        std::auto_ptr<FieldValue>
-                fieldValue(createFieldValueFromJsval(cx, *val, fieldType));
+        std::auto_ptr<FieldValue> fieldValue =
+                createFieldValueFromJsval(cx, *val, fieldType);
         scriptNode.setField(fieldId, *fieldValue);
     } catch (BadConversion & ex) {
         std::cout << ex.what() << std::endl;
@@ -2425,9 +2424,8 @@ JSBool loadURL(JSContext * const cx, JSObject *,
         return JS_FALSE;
     }
 
-    std::auto_ptr<OpenVRML::MFString>
-            url(MFString::createFromJSObject(cx,
-                                        JSVAL_TO_OBJECT(argv[0])));
+    std::auto_ptr<OpenVRML::MFString> url =
+            MFString::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[0]));
     assert(url.get());
 
     //
@@ -2439,9 +2437,8 @@ JSBool loadURL(JSContext * const cx, JSObject *,
         return JS_FALSE;
     }
 
-    std::auto_ptr<OpenVRML::MFString>
-            parameters(MFString::createFromJSObject(cx,
-                                        JSVAL_TO_OBJECT(argv[1])));
+    std::auto_ptr<OpenVRML::MFString> parameters =
+            MFString::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[1]));
     assert(parameters.get());
 
     script->getScriptNode().getScene()
@@ -2472,8 +2469,8 @@ JSBool replaceWorld(JSContext * const cx, JSObject *,
         return JS_FALSE;
     }
 
-    std::auto_ptr<OpenVRML::MFNode>
-            nodes(MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[0])));
+    std::auto_ptr<OpenVRML::MFNode> nodes =
+            MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[0]));
     assert(nodes.get());
 
     script->getScriptNode().getScene()
@@ -2612,9 +2609,8 @@ JSBool addRoute(JSContext * const cx, JSObject *,
                               &SFNode::jsclass, 0)) {
         return JS_FALSE;
     }
-    std::auto_ptr<OpenVRML::SFNode>
-            fromNode(SFNode::createFromJSObject(cx,
-                                        JSVAL_TO_OBJECT(argv[0])));
+    std::auto_ptr<OpenVRML::SFNode> fromNode =
+            SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[0]));
 
     //
     // Makes sure our second argument (fromEventOut) is a string.
@@ -2633,8 +2629,8 @@ JSBool addRoute(JSContext * const cx, JSObject *,
                               &SFNode::jsclass, 0)) {
         return JS_FALSE;
     }
-    std::auto_ptr<OpenVRML::SFNode>
-            toNode(SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[2])));
+    std::auto_ptr<OpenVRML::SFNode> toNode =
+            SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[2]));
     //
     // Make sure the node is not null.
     //
@@ -2681,9 +2677,8 @@ JSBool deleteRoute(JSContext * const cx, JSObject *,
                               &SFNode::jsclass, 0)) {
         return JS_FALSE;
     }
-    std::auto_ptr<OpenVRML::SFNode>
-            fromNode(SFNode::createFromJSObject(cx,
-                                        JSVAL_TO_OBJECT(argv[0])));
+    std::auto_ptr<OpenVRML::SFNode> fromNode =
+            SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[0]));
 
     //
     // Makes sure our second argument (fromEventOut) is a string.
@@ -2702,9 +2697,8 @@ JSBool deleteRoute(JSContext * const cx, JSObject *,
                               &SFNode::jsclass, 0)) {
         return JS_FALSE;
     }
-    std::auto_ptr<OpenVRML::SFNode>
-            toNode(SFNode::createFromJSObject(cx,
-                                        JSVAL_TO_OBJECT(argv[0])));
+    std::auto_ptr<OpenVRML::SFNode> toNode =
+            SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[0]));
 
     //
     // Makes sure our fourth argument (toEventIn) is a string.

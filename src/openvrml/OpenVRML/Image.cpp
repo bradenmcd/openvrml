@@ -6556,10 +6556,10 @@ namespace {
     {
       unsigned int data;
 
-    #if DEBUG
+#if DEBUG
       extern long ftell();
       fprintf(stderr,"MPEGAdvanceFrame: offset %6ld: found ", ftell (m->fp));
-    #endif
+#endif
 
       /* Process according to start code. */
       for (;;) {
@@ -6570,12 +6570,11 @@ namespace {
         case 0:
           // Then there are no frames left, return
           return 0;
-          break;
 
         case SEQ_END_CODE:		/* Return last frame if available. */
-    #if DEBUG
+#if DEBUG
           fprintf(stderr,"SEQ_END_CODE\n");
-    #endif
+#endif
           if (m->future != NULL)
 	    {
 	      m->current = m->future;
@@ -6583,28 +6582,27 @@ namespace {
 	      return 1;
 	    }
           return 0;
-          break;
 
         case SEQ_START_CODE:	/* Parse sequence header. */
-    #if DEBUG
+#if DEBUG
           fprintf(stderr,"SEQ_START_CODE\n");
-    #endif
+#endif
           if (! parse_seq_header(m))
 	    goto error;
           break;
 
         case GOP_START_CODE:	/* Parse Group of Pictures header. */
-    #if DEBUG
+#if DEBUG
           fprintf(stderr,"GOP_START_CODE\n");
-    #endif
+#endif
           if (! parse_GOP(m))
 	    goto error;
           /*FALLTHROUGH*/
 
         case PICTURE_START_CODE:	/* Parse picture header and first slice header. */
-    #if DEBUG
+#if DEBUG
           fprintf(stderr,"PICTURE_START_CODE\n");
-    #endif
+#endif
           if (! parse_picture(m))
 	    goto error;
           if (! parse_slice(m))
@@ -6612,9 +6610,9 @@ namespace {
           break;
 
         default:			/* Check for slice start code. */
-    #if DEBUG
+#if DEBUG
           fprintf(stderr,"something else (%08x)\n", data);
-    #endif
+#endif
           if ((data >= SLICE_MIN_START_CODE) && (data <= SLICE_MAX_START_CODE))
 	    {			/* Slice start code. Parse slice header. */
 	      if (! parse_slice(m))

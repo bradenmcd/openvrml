@@ -2034,12 +2034,18 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
 }
 
 
+namespace {
+    const std::string toString(const NodeInterface::Type interfaceType)
+    {
+        std::ostringstream out;
+        out << interfaceType;
+        return out.str();
+    }
+}
+
 NodeInterfaceTypeMismatch::NodeInterfaceTypeMismatch(
         const NodeInterface::Type lhs, const NodeInterface::Type rhs):
-    std::runtime_error(
-        static_cast<std::ostringstream &>(std::ostringstream() << lhs).str()
-        + " cannot be mapped to "
-        + static_cast<std::ostringstream &>(std::ostringstream() << rhs).str())
+    std::runtime_error(toString(lhs) + " cannot be mapped to " + toString(rhs))
 {}
 
 NodeInterfaceTypeMismatch::~NodeInterfaceTypeMismatch() throw ()

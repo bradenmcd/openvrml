@@ -74,7 +74,7 @@ namespace {
         }
 
         inline void normalize(float vec[3]) {
-            const float len = static_cast<float>(length(vec));
+            const float len = float(length(vec));
             if (!fpzero(len)) {
                 vec[0] /= len;
                 vec[1] /= len;
@@ -179,7 +179,7 @@ namespace {
         
         template <typename T, typename U>
             inline bool operator==(const SharedPtr<T> & a,
-                                   const SharedPtr<T> & b) {
+                                   const SharedPtr<U> & b) {
                 return a.get() == b.get();
             }
     }
