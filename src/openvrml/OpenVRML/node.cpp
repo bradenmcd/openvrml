@@ -37,8 +37,6 @@
 #   define VRML_NODE_DEBUG
 # endif
 
-using namespace OpenVRML;
-
 /**
  * @class OpenVRML::NodeType
  *
@@ -55,29 +53,25 @@ using namespace OpenVRML;
  * @param name the name of the node.
  * @param creator a factory function for creating nodes of this type.
  */
-NodeType::NodeType(const std::string & id,
-                   const NodePtr (*creator)(VrmlScene *const)):
+OpenVRML::NodeType::NodeType(const std::string & id,
+                             const NodePtr (*creator)(VrmlScene * const)):
         id(id), d_namespace(0), d_url(0), d_relative(0), d_creator(creator),
         d_fieldsInitialized(false) {}
 
 namespace {
-    void destructFieldList( NodeType::FieldList &f )
-    {
-      NodeType::FieldList::iterator i;
-      for (i = f.begin(); i != f.end(); ++i) {
-        NodeType::ProtoField *r = *i;
-        if (r->defaultValue) delete r->defaultValue;
-
-        // free NodeFieldRec* s in r->thisIS;
-        NodeType::ISMap::const_iterator j;
-        for (j = r->thisIS.begin(); j != r->thisIS.end(); ++j)
-          {
-	    NodeType::NodeFieldRec *nf = *j;
-	    delete nf;
-          }
-
-        delete r;
-      }
+    void destructFieldList(OpenVRML::NodeType::FieldList & f) {
+        using OpenVRML::NodeType;
+        for (NodeType::FieldList::iterator i = f.begin(); i != f.end(); ++i) {
+        
+            if ((*i)->defaultValue) { delete (*i)->defaultValue; }
+            
+            // free NodeFieldRec* s in r->thisIS;
+            for (NodeType::ISMap::const_iterator j = (*i)->thisIS.begin();
+                    j != (*i)->thisIS.end(); ++j) {
+                delete *j;
+            }
+            delete *i;
+        }
     }
 }
 
@@ -86,16 +80,15 @@ namespace {
  *
  * Deallocate storage for name and PROTO implementations.
  */
-NodeType::~NodeType()
-{
-  delete d_namespace;
-  delete d_url;
-  delete d_relative;
+OpenVRML::NodeType::~NodeType() {
+    delete d_namespace;
+    delete d_url;
+    delete d_relative;
 
-  // Free strings & defaults duplicated when fields/eventIns/eventOuts added:
-  destructFieldList( d_eventIns );
-  destructFieldList( d_eventOuts );
-  destructFieldList( d_fields );
+    // Free strings & defaults duplicated when fields/eventIns/eventOuts added:
+    destructFieldList( d_eventIns );
+    destructFieldList( d_eventOuts );
+    destructFieldList( d_fields );
 }
 
 /**
@@ -108,18 +101,17 @@ NodeType::~NodeType()
  *
  * @return a new Node
  */
-const NodePtr NodeType::newNode(VrmlScene * scene) const
-{
-  if (d_creator)
-    return (*d_creator)( scene );
-
-  return NodePtr(new ProtoNode(*this, scene));
+const OpenVRML::NodePtr OpenVRML::NodeType::newNode(VrmlScene * scene) const {
+    if (this->d_creator) {
+        return (*this->d_creator)(scene);
+    }
+    return NodePtr(new ProtoNode(*this, scene));
 }
 
 /**
  * @brief Get the node name defined by this type.
  */
-const std::string & NodeType::getId() const {
+const std::string & OpenVRML::NodeType::getId() const {
     return this->id;
 }
 
@@ -129,7 +121,7 @@ const std::string & NodeType::getId() const {
  * @return a pointer to the VrmlNamespace corresponding to this node type's
  *      scope, or 0 for built-in node types.
  */
-VrmlNamespace * NodeType::getScope() const {
+OpenVRML::VrmlNamespace * OpenVRML::NodeType::getScope() const {
     return this->d_namespace;
 }
 
@@ -138,9 +130,8 @@ VrmlNamespace * NodeType::getScope() const {
  *
  * @param scope
  */
-void NodeType::setScope(VrmlNamespace & scope)
-{
-  d_namespace = new VrmlNamespace(&scope);
+void OpenVRML::NodeType::setScope(VrmlNamespace & scope) {
+    this->d_namespace = new VrmlNamespace(&scope);
 }
 
 /**
@@ -149,14 +140,14 @@ void NodeType::setScope(VrmlNamespace & scope)
  *
  * @param url
  */
-void NodeType::setActualUrl(const std::string & url) {
+void OpenVRML::NodeType::setActualUrl(const std::string & url) {
     this->actualUrl = url;
 }
 
 /**
  * @brief Retrieve the actual URL the PROTO was retrieved from.
  */
-const std::string & NodeType::getActualUrl() const {
+const std::string & OpenVRML::NodeType::getActualUrl() const {
     return this->actualUrl;
 }
 
@@ -164,8 +155,9 @@ namespace {
     //
     // Helper method to add a field or event.
     //
-    void add(NodeType::FieldList & recs, const std::string & id,
-             FieldValue::FieldType type) {
+    void add(OpenVRML::NodeType::FieldList & recs, const std::string & id,
+             OpenVRML::FieldValue::FieldType type) {
+        using OpenVRML::NodeType;
         NodeType::ProtoField * const protoField =
                 new NodeType::ProtoField;
         protoField->name = id;
@@ -181,8 +173,8 @@ namespace {
  * @param id
  * @param type
  */
-void NodeType::addEventIn(const std::string & id,
-                          FieldValue::FieldType type) {
+void OpenVRML::NodeType::addEventIn(const std::string & id,
+                                    FieldValue::FieldType type) {
     add(d_eventIns, id, type);
 }
 
@@ -192,8 +184,8 @@ void NodeType::addEventIn(const std::string & id,
  * @param id
  * @param type
  */
-void NodeType::addEventOut(const std::string & id,
-                           FieldValue::FieldType type) {
+void OpenVRML::NodeType::addEventOut(const std::string & id,
+                                     FieldValue::FieldType type) {
     add(d_eventOuts, id, type);
 }
 
@@ -204,9 +196,9 @@ void NodeType::addEventOut(const std::string & id,
  * @param type
  * @param defaultValue
  */
-void NodeType::addField(const std::string & id,
-                        const FieldValue::FieldType type,
-                        const FieldValue * defaultValue) {
+void OpenVRML::NodeType::addField(const std::string & id,
+                                  const FieldValue::FieldType type,
+                                  const FieldValue * defaultValue) {
     add(d_fields, id, type);
     if (defaultValue) {
         this->setFieldDefault(id, defaultValue);
@@ -220,9 +212,9 @@ void NodeType::addField(const std::string & id,
  * @param type
  * @param defaultValue
  */
-void NodeType::addExposedField(const std::string & id,
-                               const FieldValue::FieldType type,
-                               const FieldValue * const defaultValue) {
+void OpenVRML::NodeType::addExposedField(const std::string & id,
+                                         const FieldValue::FieldType type,
+                                         const FieldValue * const defaultValue) {
     add(d_fields, id, type);
     if (defaultValue) {
         this->setFieldDefault(id, defaultValue);
@@ -238,8 +230,8 @@ void NodeType::addExposedField(const std::string & id,
  * @param fname field name
  * @param defaultValue default value
  */
-void NodeType::setFieldDefault(const std::string & fname,
-                               const FieldValue * defaultValue) {
+void OpenVRML::NodeType::setFieldDefault(const std::string & fname,
+                                         const FieldValue * defaultValue) {
     for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
             ++i) {
         if (fname == (*i)->name) {
@@ -260,7 +252,7 @@ void NodeType::setFieldDefault(const std::string & fname,
 /**
  * @brief Download the EXTERNPROTO definition.
  */
-void NodeType::fetchImplementation() const {
+void OpenVRML::NodeType::fetchImplementation() const {
   // Get the PROTO def from the url (relative to original scene url).
   const NodeTypePtr proto =
         VrmlScene::readPROTO(*this->d_url, this->d_relative);
@@ -302,7 +294,7 @@ void NodeType::fetchImplementation() const {
  *
  * @return the implementation nodes
  */
-const MFNode & NodeType::getImplementationNodes() const {
+const OpenVRML::MFNode & OpenVRML::NodeType::getImplementationNodes() const {
   if ((this->implNodes.getLength() == 0) && d_url)
     fetchImplementation();
 
@@ -383,7 +375,7 @@ const MFNode & NodeType::getImplementationNodes() const {
  * of EXTERNPROTOs is deferred until the implementation is
  * actually downloaded. (not actually done yet...)
  */
-const NodePtr NodeType::firstNode() const {
+const OpenVRML::NodePtr OpenVRML::NodeType::firstNode() const {
     return (this->implNodes.getLength() > 0)
             ? this->implNodes.getElement(0)
             : NodePtr(0);
@@ -397,8 +389,8 @@ const NodePtr NodeType::firstNode() const {
  * @return the FieldType of the eventIn if it exists, or
  *      FieldValue::NO_FIELD otherwise.
  */
-FieldValue::FieldType NodeType::hasEventIn(const std::string & id)
-        const {
+OpenVRML::FieldValue::FieldType
+        OpenVRML::NodeType::hasEventIn(const std::string & id) const {
     return has(this->d_eventIns, id);
 }
 
@@ -410,8 +402,8 @@ FieldValue::FieldType NodeType::hasEventIn(const std::string & id)
  * @return the FieldType of the eventOut if it exists, or
  *      FieldValue::NO_FIELD otherwise
  */
-FieldValue::FieldType NodeType::hasEventOut(const std::string & id)
-        const {
+OpenVRML::FieldValue::FieldType
+        OpenVRML::NodeType::hasEventOut(const std::string & id) const {
     return has(this->d_eventOuts, id);
 }
 
@@ -423,7 +415,8 @@ FieldValue::FieldType NodeType::hasEventOut(const std::string & id)
  * @return the FieldType of the field if it exists, or
  *      FieldValue::NO_FIELD otherwise.
  */
-FieldValue::FieldType NodeType::hasField(const std::string & id) const {
+OpenVRML::FieldValue::FieldType
+        OpenVRML::NodeType::hasField(const std::string & id) const {
     return has(this->d_fields, id);
 }
 
@@ -435,8 +428,8 @@ FieldValue::FieldType NodeType::hasField(const std::string & id) const {
  * @return the FieldType of the exposedField if it exists, or
  *      FieldValue::NO_FIELD otherwise.
  */
-FieldValue::FieldType NodeType::hasExposedField(const std::string & id)
-        const {
+OpenVRML::FieldValue::FieldType
+        OpenVRML::NodeType::hasExposedField(const std::string & id) const {
     // Must have field "name", eventIn "set_name", and eventOut
     // "name_changed", all with same type:
     FieldValue::FieldType type;
@@ -467,8 +460,8 @@ FieldValue::FieldType NodeType::hasExposedField(const std::string & id)
  * @return the FieldType of the interface if it exists, or
  *      FieldValue::NO_FIELD otherwise.
  */
-FieldValue::FieldType NodeType::hasInterface(const std::string & id)
-        const {
+OpenVRML::FieldValue::FieldType
+        OpenVRML::NodeType::hasInterface(const std::string & id) const {
     FieldValue::FieldType fieldType = FieldValue::NO_FIELD;
     
     if ((fieldType = this->hasField(id)) != FieldValue::NO_FIELD) {
@@ -486,8 +479,9 @@ FieldValue::FieldType NodeType::hasInterface(const std::string & id)
     return fieldType;
 }
 
-FieldValue::FieldType NodeType::has(const FieldList & recs,
-                                           const std::string & id) const {
+OpenVRML::FieldValue::FieldType
+        OpenVRML::NodeType::has(const FieldList & recs,
+                                const std::string & id) const {
     for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
         if ((*i)->name == id) {
             return (*i)->type;
@@ -496,7 +490,8 @@ FieldValue::FieldType NodeType::has(const FieldList & recs,
     return FieldValue::NO_FIELD;
 }
 
-const FieldValue * NodeType::fieldDefault(const std::string & fname) const {
+const OpenVRML::FieldValue *
+        OpenVRML::NodeType::fieldDefault(const std::string & fname) const {
     for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
             ++i) {
         if ((*i)->name == fname) {
@@ -514,7 +509,7 @@ const FieldValue * NodeType::fieldDefault(const std::string & fname) const {
  * @param relative the resource to which the URIs in the first parameter
  *      are relative.
  */
-void NodeType::setUrl(const MFString & url, const Doc2 * relative) {
+void OpenVRML::NodeType::setUrl(const MFString & url, const Doc2 * relative) {
     assert(this->implNodes.getLength() == 0);
     
     delete this->d_url;
@@ -524,13 +519,13 @@ void NodeType::setUrl(const MFString & url, const Doc2 * relative) {
     this->d_relative = relative ? new Doc2(relative) : 0;
 }
 
-void NodeType::addNode(Node & node) {
+void OpenVRML::NodeType::addNode(Node & node) {
     // add node to list of implementation nodes
     this->implNodes.addNode(node);
 }
 
-void NodeType::addIS(const std::string & isFieldName, Node & implNode,
-                     const std::string & implFieldName) {
+void OpenVRML::NodeType::addIS(const std::string & isFieldName, Node & implNode,
+                               const std::string & implFieldName) {
   FieldList::iterator i;
 
   // Fields
@@ -574,9 +569,8 @@ void NodeType::addIS(const std::string & isFieldName, Node & implNode,
 }
 
 
-const NodeType::ISMap * NodeType::getFieldISMap(
-                                                const std::string & fieldName)
-        const {
+const OpenVRML::NodeType::ISMap *
+        OpenVRML::NodeType::getFieldISMap(const std::string & fieldName) const {
     for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
             ++i) {
         if ((*i)->name == fieldName) {
@@ -596,7 +590,7 @@ const NodeType::ISMap * NodeType::getFieldISMap(
  */
 
 /**
- * @typedef NodeType::ISMap
+ * @typedef OpenVRML::NodeType::ISMap
  *
  * @brief An <code>IS</code> mapping.
  *
@@ -611,7 +605,7 @@ const NodeType::ISMap * NodeType::getFieldISMap(
  */
 
 /**
- * @typedef NodeType::FieldList
+ * @typedef OpenVRML::NodeType::FieldList
  *
  * @brief A list of fields in a <code>PROTO</code>.
  */
@@ -825,7 +819,7 @@ OpenVRML::NodePixelTexture * OpenVRML::Node::toPixelTexture() const { return 0; 
 
 OpenVRML::NodePointLight * OpenVRML::Node::toPointLight() const { return 0; }
 
-OpenVRML::NodePointSet * Node::toPointSet() const { return 0; }
+OpenVRML::NodePointSet * OpenVRML::Node::toPointSet() const { return 0; }
 
 OpenVRML::NodeScalarInt * OpenVRML::Node::toScalarInt() const { return 0; }
 
@@ -1153,10 +1147,6 @@ void OpenVRML::Node::inverseTransform(VrmlMatrix & M)
 }
 
 /**
- * @fn void OpenVRML::Node::eventIn(double timestamp,
- *                                  const std::string & eventInId,
- *                                  const FieldValue & fieldValue)
- *
  * @brief Pass a named event to this node.
  *
  * This method needs to be overridden to support any node-specific eventIns
@@ -1639,7 +1629,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeProto & node)
+ * @fn void OpenVRML::NodeVisitor::visit(ProtoNode & node)
  *
  * @brief Visit a PROTO instantiation node.
  *
