@@ -1,12 +1,12 @@
 dnl @synopsis AX_CHECK_GL
 dnl
-dnl Check for OpenGL/Mesa. Succeeds if both GL and GLU are found.  If it
-dnl succeeds, the required linker flags are included in the output variable
-dnl "GL_LIBS".  If the headers "GL/gl.h" and "GL/glu.h" are found, the symbols
-dnl HAVE_GL_GL_H and HAVE_GL_GLU_H are defined, respectively.  Otherwise, if
-dnl "OpenGL/gl.h" and "OpenGL/glu.h" are found, HAVE_OPENGL_GL_H and
-dnl HAVE_OPENGL_GLU_H are defined.  If neither OpenGL nor Mesa is found,
-dnl "no_gl" is set to "yes".
+dnl Check for an OpenGL implementation.  Succeeds if both GL and GLU are found.
+dnl If it succeeds, the required linker flags are included in the output
+dnl variable "GL_LIBS".  This macro adds the configure option
+dnl "--with-apple-opengl-framework", which users can use to indicate that
+dnl Apple's OpenGL framework should be used on Mac OS X.  If Apple's OpenGL
+dnl framework is used, the symbol HAVE_APPLE_OPENGL_FRAMEWORK is defined.  If
+dnl no OpenGL implementation is found, "no_gl" is set to "yes".
 dnl
 dnl @copyright (C) 2003 Braden McDaniel
 dnl @license GNU GPL

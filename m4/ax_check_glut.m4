@@ -2,11 +2,7 @@ dnl @synopsis AX_CHECK_GLUT
 dnl
 dnl Check for GLUT.  If GLUT is found, the required compiler and linker flags
 dnl are included in the output variables "GLUT_CFLAGS" and "GLUT_LIBS",
-dnl respectively, and the shell variable "no_glut" is set to the empty
-dnl string.  Also, if the header "GL/glut.h" is found, the symbol
-dnl "HAVE_GL_GLUT_H" is defined; otherwise, if the header "GLUT/glut.h" is
-dnl found, "HAVE_GLUT_GLUT_H" is defined. If GLUT is not found, "no_glut" is
-dnl set to "yes".
+dnl respectively.  If GLUT is not found, "no_glut" is set to "yes".
 dnl
 dnl @copyright (C) 2003 Braden McDaniel
 dnl @license GNU GPL

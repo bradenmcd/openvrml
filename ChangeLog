@@ -1,3 +1,8 @@
+2003-07-26  Braden McDaniel  <braden@endoframe.com>
+
+	* m4/ax_check_gl.m4:  Updated macro description.
+	* m4/ax_check_glut.m4:  Updated macro description.
+
 2003-07-25  Braden McDaniel  <braden@endoframe.com>
 
 	Modified OpenGL and GLUT detection macros to work with cl.
