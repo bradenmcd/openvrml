@@ -26,10 +26,19 @@ package vrml;
 public abstract class Field implements Cloneable
 {
   /**
-   * Indicates whether the field is stored as an eventOut or as a
-   * simple field. 
+   * Indicates whether the field is an eventOut or not. 
    */
   private boolean isEventOut = false;
+
+  /**
+   * Indicates whether the field is an eventIn or not.
+   */
+  private boolean isEventIn = false;
+
+  /**
+   * Indicates whether the field is an exposedField or not.
+   */
+  private boolean isExposedField = false;
 
   /**
    * Stores a pointer to a VrmlField object on the C++ side.
