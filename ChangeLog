@@ -7,6 +7,11 @@
 	* Added isOver eventout to defineType in VrmlNodeTouchSensor.cpp
 	* Removed debug message from VrmlNodeSwitch.cpp
 
+2000-05-20 Christopher St. John <cstjohn@acm.org>
+
+	* Added view frustum culling code, touched all VrmlNode*.{cpp/h} files
+	* Fixed (badly, temporarily) navigation code in VrmlScene/ViewOpenGL
+
 2000-04-19  Chris Morley  <cmorley@vermontel.net>
 
 	* Added -title arg to lookat for multiple viewers under xswallow.
