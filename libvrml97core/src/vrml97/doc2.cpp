@@ -89,7 +89,7 @@ namespace {
                 virtual int overflow(int = EOF);
                 
             private:
-                static int const buffer_size(10);
+                static int const buffer_size =10;
                 char buffer[buffer_size];
                 gzFile file;
         };
@@ -137,7 +137,7 @@ Doc2::~Doc2()
     if (tmpfile_) {
         theSystem->removeFile(
 # ifdef macintosh
-                              convertCommonToMacPath(d_tmpfile, sizeof(d_tmpfile))
+                              convertCommonToMacPath(tmpfile_, sizeof(tmpfile_))
 # else
                               tmpfile_
 # endif
@@ -312,7 +312,7 @@ char const * Doc2::localPath()
         } else {
             this->istm_ = new z::ifstream(
 # ifdef macintosh
-                                          convertCommonToMacPath(fn, sizeof(fn)));
+                                          convertCommonToMacPath(fn, sizeof(fn))
 # else
                                           fn
 # endif
