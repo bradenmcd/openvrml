@@ -51,11 +51,11 @@ libopenvrml_la_LIBADD = Vrml97Parser.lo $(top_builddir)/lib/antlr/libantlr.la
 OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = common.h Audio.h Doc.h Image.h MathUtils.h Route.h \
 ScriptObject.h System.h Viewer.h VrmlAABox.h VrmlBVolume.h VrmlBSphere.h \
-VrmlEvent.h VrmlFrustum.h field.h VrmlNamespace.h VrmlNodePtr.h VrmlNode.h \
-VrmlNodeScript.h VrmlNodeType.h vrml97node.h VrmlRenderContext.h VrmlScene.h \
-doc2.hpp
+VrmlEvent.h VrmlFrustum.h field.h VrmlNamespace.h VrmlNodeProto.h \
+VrmlNodePtr.h VrmlNode.h VrmlNodeScript.h VrmlNodeType.h VrmlNodeVisitor.h \
+vrml97node.h VrmlRenderContext.h VrmlScene.h doc2.hpp
 
 noinst_HEADERS = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp private.h sound.h
 
 EXTRA_DIST = Vrml97TokenTypes.txt Vrml97Parser.cpp Vrml97Parser.hpp \
-Vrml97ParserTokenTypes.txt Vrml97Parser.g ScriptJS.cpp
+Vrml97ParserTokenTypes.txt Vrml97Parser.g

@@ -37,12 +37,7 @@ IDE_PROJECT_FILES = \
         ide-projects/Windows/VisualC6/openvrml-gl/Makefile.vc6 \
         ide-projects/Windows/VisualC6/tplib/antlr/libantlr.dsp \
         ide-projects/Windows/VisualC6/tplib/antlr/libantlr.dsw \
-        ide-projects/Windows/VisualC6/tplib/antlr/Makefile.vc6 \
-        ide-projects/Windows/VisualC6/tplib/js/fdlibm.dsp \
-        ide-projects/Windows/VisualC6/tplib/js/jsinitarrayapi.c \
-        ide-projects/Windows/VisualC6/tplib/js/libjs.dsp \
-        ide-projects/Windows/VisualC6/tplib/js/libjs.dsw \
-        ide-projects/Windows/VisualC6/tplib/js/Makefile.vc6
+        ide-projects/Windows/VisualC6/tplib/antlr/Makefile.vc6
 
 EXTRA_DIST = vrml.m4 vrml-gl.m4 Doxyfile.in openvrml.spec.in \
 lookat.xpm $(IDE_PROJECT_FILES)
