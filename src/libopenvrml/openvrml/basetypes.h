@@ -648,7 +648,7 @@ namespace openvrml {
         throw ()
     {
         assert((x * y) < this->array_.size());
-        return this->pixel(y * this->x_ + x, value);
+        this->pixel(y * this->x_ + x, value);
     }
 
     std::ostream & operator<<(std::ostream & out, const image & img);

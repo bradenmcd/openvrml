@@ -1,3 +1,8 @@
+2004-09-21 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.h:  Removed spurious
+	"return" in function returning "void".
+
 2004-09-17 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Doxyfile.in:  Don't generate documentation for "internal"
