@@ -916,13 +916,14 @@ MFNode * VrmlScene::readWrl(Doc2 * const tryUrl) {
     MFNode * result = 0;
 
     // Should verify MIME type...
+    assert(tryUrl);
     std::istream & istm = tryUrl->inputStream();
     if (istm) {
         Vrml97Scanner scanner(istm);
         Vrml97Parser parser(scanner);
         
         result = new MFNode();
-        parser.vrmlScene(*this, *result, tryUrl);
+        parser.vrmlScene(*this, *result);
     }
 
     return result;
@@ -940,7 +941,7 @@ const MFNode VrmlScene::readString(char const * vrmlString) {
         std::istrstream istrstm(vrmlString);
         Vrml97Scanner scanner(istrstm);
         Vrml97Parser parser(scanner);
-        parser.vrmlScene(*this, result, 0);
+        parser.vrmlScene(*this, result);
     }
 
     return result;

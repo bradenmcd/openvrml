@@ -1,3 +1,12 @@
+2002-07-12  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.cpp,
+          src/openvrml/OpenVRML/Vrml97Parser.hpp,
+          src/openvrml/OpenVRML/VrmlScene.cpp:  Removed Doc2 parameter
+          from parser methods.  This parameter is unused now that we
+          no longer use VrmlNamespace.
+
 2002-07-11  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp:  Fixed several places
