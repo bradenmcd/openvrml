@@ -445,16 +445,12 @@ const char *System::httpFetch( const char *url )
 //#include <OTDebug.h>
 #include <Threads.h>
 
+#ifdef __MWERKS__
+#include <sioux.h>
+#endif
 
-char* strdup(const char *string)
-{
-	char *newstr = (char*)malloc(strlen(string) + 1);
-	if (newstr == NULL)
-	  return NULL;
-	strcpy(newstr, string);
-	return newstr;
-}
-
+static UInt32 gLastUpdated = 0;
+static bool   gAbortFetch  = false;
 
 extern pascal void OTDebugStr(const char* str);
 
@@ -468,6 +464,19 @@ enum {
 };
 
 #define kWatchCursor 1007
+#define kAnimatedBusyCursor 30000
+#define kNumberOfAnimatedBusyCursors 7
+
+
+char* strdup(const char *string)
+{
+	char *newstr = (char*)malloc(strlen(string) + 1);
+	if (newstr == NULL)
+	  return NULL;
+	strcpy(newstr, string);
+	return newstr;
+}
+
 
 static pascal void YieldingNotifier(void* contextPtr, OTEventCode code, 
 									   OTResult result, void* cookie)
@@ -475,57 +484,78 @@ static pascal void YieldingNotifier(void* contextPtr, OTEventCode code,
 	#pragma unused(contextPtr)
 	#pragma unused(result)
 	#pragma unused(cookie)
-	//OSStatus junk;
+	OSStatus junk;
 	switch (code) {
 		case kOTSyncIdleEvent:
-			/*junk = */ (void)YieldToAnyThread();
-			//OTAssert("YieldingNotifier: YieldToAnyThread failed", junk == noErr);
+			/*junk = */(void)YieldToAnyThread();
+//      if (junk != noErr)
+//			  theSystem->error("YieldToAnyThread failed\n");
 			break;
 		default: // do nothing
 			break;
 	}
 }
 
-#ifdef __MWERKS__
-#include <sioux.h>
-#endif
 
-//static UInt32 gLastPrinted = 0;
+/*
+void handleWindowDrag(EventRecord *event)
+{	
+	short	    part;
+	WindowPtr	whichWindow;
+		
+	part = FindWindow(event->where, &whichWindow);
+
+	if (part == inDrag) {
+	    Rect dragBounds;
+	    dragBounds = (**GetGrayRgn()).rgnBBox;
+	    DragWindow(whichWindow, event->where, &dragBounds);
+	}
+}
+*/
+
+
 
 static pascal OSStatus ProgressThread(void *junkParam)
 {
 	#pragma unused(junkParam)
+
+   // This function assumes that either a cursor resource with id kWatchCursor
+   // or a set of kNumberOfAnimatedBusyCursors cursor ids from kAnimatedBusyCursor
+   // exist:
+
+	Boolean gotEvent;
 	//OSStatus junk;
+#ifdef MAC_ANIMATED_BUSY_CURSOR	
+    int i = 0;
+#endif
+	while (true) {
+		if (TickCount() > (gLastUpdated + 15)) {
+#ifdef MAC_ANIMATED_BUSY_CURSOR	
+			SetCursor(*(GetCursor(kAnimatedBusyCursor + i)));
+			i++; if (i == kNumberOfAnimatedBusyCursors) i = 0;
+#else
+      SetCursor(*GetCursor(kWatchCursor));
+#endif
+			gLastUpdated = TickCount();
+		}
+		// Handle events:
+		EventRecord event;
+		gotEvent = WaitNextEvent(everyEvent & ~highLevelEventMask, &event, 0, nil);
 
+		// To do: if event is command-period key press then set gAbortFetch to true
 
-// This function should really set some sort of progress variable that can update
-// a progress bar somewhere. Instead, it just sets the cursor to 'busy' and gives
-// CPU time to other processses.
+#ifdef __MWERKS__
+		if (gotEvent)
+		  SIOUXHandleOneEvent(&event);
+		//if(gotEvent && !SIOUXHandleOneEvent(&event))
+		//    if (event.what==mouseDown)
+		//	    handleWindowDrag(&event);
+#endif
 
-	  while (true) {
-	//	if ( TickCount() > (gLastPrinted + 60) ) {
-	//	    printf("#");    // should really update a queriable % completed value
-	//		                // that can be used to update a progress bar...
-	//		fflush(stdout);
-	//		gLastPrinted = TickCount();
-	//	}
-		//This ensures that as long as this application is active, the cursor is
-		//a watch
-        SetCursor(*(GetCursor(kWatchCursor)));  // could have had a cool rotating
-			                                    // cursor here... This assumes that
-			                                    // cursor is i kWatchCursor, but
-			                                    // should do nothing if that cursor
-			                                    // is not defined. Mac GLUT uses
-			                                    // 1007 for the cursor
-		// Give other applications CPU time:
-		static EventRecord event;
-		WaitNextEvent (everyEvent & ~highLevelEventMask, &event, 0, nil);
-		#ifdef __MWERKS__
-		SIOUXHandleOneEvent(&event); // Let SIOUX update the console if it needs to
-		#endif
 		// Give other threads CPU time:
-		/*junk = */ (void)YieldToAnyThread();
-		//OTAssert("ProgressThread: YieldToAnyThread failed", junk == noErr);
+		/* junk = */ (void)YieldToAnyThread();
+    // if (junk != noErr)
+    //   theSystem->error("YieldToAnyThread failed\n");
 	}
 
 	return (noErr);
@@ -534,21 +564,21 @@ static pascal OSStatus ProgressThread(void *junkParam)
 
 const char *System::httpFetch( const char *url )
 {
-	OSStatus 	junk, err             = noErr;
-	Ptr			transferBuffer 	= nil;
+	OSStatus 	  junk, err       = noErr;
+	Ptr			    transferBuffer 	= nil;
 	EndpointRef ep 				= kOTInvalidEndpointRef;
-	TCall 		sndCall;
+	TCall 		  sndCall;
 	DNSAddress 	hostDNSAddress;
-	OTFlags 	junkFlags;
-	OTResult 	bytesSent, bytesReceived, lookResult;
-	Boolean		bound			= false;
-    char*       fetchedFilename = NULL;
+	OTFlags 	  junkFlags;
+	OTResult   	bytesSent, bytesReceived, lookResult;
+	Boolean 		bound			= false;
+  char*       fetchedFilename = NULL;
 	char        hostname[256];
 
 	FSSpec      destFSSpec;
 	short       destFileRefNum;
-    Str255      destFileName;
-    static      counter = 0;
+  Str255      destFileName;
+  static      counter = 0;
     
 	url += strlen("http://");
 		
@@ -561,49 +591,49 @@ const char *System::httpFetch( const char *url )
 	hostname[hostCharCount] = 0;
 	url += hostCharCount;
 	
-    theSystem->inform("Fetching data from %s... ", hostname);
+  theSystem->inform("Connecting to %s...", hostname);
     
 	// Add a ":80" to the host name if necessary.
 	if ( strchr( hostname, ':' ) == nil ) {
 		strcat( hostname, ":80" );
 	}
 
-    // Create a temporary file in the current folder
+  // Create a temporary file in the current folder
 
 	if (err == noErr) {
 	    char tmpName[16];
 	    sprintf(tmpName, "vr_%i", counter);
-        fetchedFilename = strdup(tmpName);
-        if (!fetchedFilename) {
-           theSystem->error("Connect failed: Memory allocation error\n");
-           return NULL;
-        }
-        Str255 counterPString;
-        NumToString(counter, counterPString);
+      fetchedFilename = strdup(tmpName);
+      if (!fetchedFilename) {
+         theSystem->error("Connect failed: Memory allocation error\n");
+         return NULL;
+      }
+      Str255 counterPString;
+      NumToString(counter, counterPString);
 	    PStrCopy(destFileName, "\pvr_");
-		PStrCat(destFileName, counterPString);        
-		(void) FSMakeFSSpec(0, 0, destFileName, &destFSSpec);
-		(void) FSpCreate(&destFSSpec, 'ttxt', 'TEXT', 0);
-		err = FSpOpenDF(&destFSSpec, fsRdWrPerm, &destFileRefNum);
-		if (err != noErr) {
+		  PStrCat(destFileName, counterPString);        
+		  (void) FSMakeFSSpec(0, 0, destFileName, &destFSSpec);
+		  (void) FSpCreate(&destFSSpec, 'ttxt', 'TEXT', 0);
+		  err = FSpOpenDF(&destFSSpec, fsRdWrPerm, &destFileRefNum);
+		  if (err != noErr) {
 	        theSystem->warn("Connect failed: Failed to create temporary file\n");
-			return NULL;
-		}
-		counter++;
+		    	return NULL;
+	    }
+		  counter++;
 	}
 
-    // construct httpCommand
+  // construct httpCommand
 
-    if ( *url == 0 )
-		url = "/";
+  if ( *url == 0 )
+	  url = "/";
 
 	char httpCommand[256];
 	sprintf( httpCommand, "GET %s HTTP/1.0\nAccept: */*\n\r\n", url);
 
-    if ( !hostname || !httpCommand ) {
+  if ( !hostname || !httpCommand ) {
 	    theSystem->warn("Connect failed: Failed to construct HTTP request\n");
         return NULL;
-    }
+  }
 
 	ThreadID progressThread;
 	err = NewThread(kCooperativeThread,
@@ -615,39 +645,43 @@ const char *System::httpFetch( const char *url )
 	if (err != noErr) {
 	    theSystem->error("Connect failed: Failed to create cooperative thread\n");
 	    return NULL;
-	 }
+	}
 
     // Initialise Open Transport and get on with it...
     
 	err = InitOpenTransport();
 	if (err != noErr) {
 	    theSystem->error("Connect failed: Unable to initialise Open Transport\n");
+	    junk = DisposeThread(progressThread, nil, true);
 	    return NULL;
-	 }
+	}
 	
 	err = noErr;
 	transferBuffer = (char*)OTAllocMem(kTransferBufferSize);
-	if ( transferBuffer == nil ) {
+	if ( transferBuffer == nil )
 		err = kENOMEMErr;
-	}
-		
-	if (err == noErr) {
+
+
+	if (err == noErr)
 		ep = OTOpenEndpoint(OTCreateConfiguration(kTCPName), 0, nil, &err);
-	}
 		
-	if (err == noErr) {
-		junk = OTSetSynchronous(ep);
+	if (err == noErr)
+		err = OTSetSynchronous(ep);
 		//OTAssert("DownloadHTTPSimple: OTSetSynchronous failed", junk == noErr);
 		
-		junk = OTSetBlocking(ep);
+	if (err == noErr)
+		err  = OTSetBlocking(ep);
 		//OTAssert("DownloadHTTPSimple: OTSetBlocking failed", junk == noErr);
 		
-		junk = OTInstallNotifier(ep, YieldingNotifier, nil);
+	if (err == noErr)
+		err = OTInstallNotifier(ep, YieldingNotifier, nil);
 		//OTAssert("DownloadHTTPSimple: OTInstallNotifier failed", junk == noErr);
 		
-		junk = OTUseSyncIdleEvents(ep, true);
+	if (err == noErr)
+		err = OTUseSyncIdleEvents(ep, true);
 		//OTAssert("DownloadHTTPSimple: OTUseSyncIdleEvents failed", junk == noErr);
-				
+
+	if (err == noErr) {	
 		err = OTBind(ep, nil, nil);
 		bound = (err == noErr);
 	}
@@ -676,8 +710,8 @@ const char *System::httpFetch( const char *url )
 	}
 	
 	if (err == noErr) {
-	    int gothdr = 0, nread = 0;
-	    char *start;		
+	  int gothdr = 0, nread = 0;
+	  char *start;		
 		do {
 			bytesReceived = OTRcv(ep, (void *) transferBuffer, kTransferBufferSize, &junkFlags);
 			if (bytesReceived > 0) {
@@ -695,21 +729,27 @@ const char *System::httpFetch( const char *url )
 			    start = strstr(transferBuffer, "\n\n");
 			    if (start)
 			      start += 2;
-			  }
+			    }
 		      if (! start)
 		        continue;
 		      gothdr = 1;
 		    }
 
-		      bytesReceived -= (start - transferBuffer);
-		  			
+		    bytesReceived -= (start - transferBuffer);
+
 			  err = FSWrite( destFileRefNum, &bytesReceived, start );
-				
+
 		    } else {
 				err = bytesReceived;
 			}
- 		} while (err == noErr);
+			theSystem->inform("Read %dk", (nread+1023)/1024);
+ 		} while (err == noErr && !gAbortFetch);
 	}
+
+  if (gAbortFetch == true) {
+    gAbortFetch = false;
+    theSystem->debug("Aborted file download\n");
+  }
 
 	if (err == kOTLookErr) {
 		lookResult = OTLook(ep);
@@ -737,15 +777,15 @@ const char *System::httpFetch( const char *url )
 		junk = OTCloseProvider(ep);
 		//OTAssert("DownloadHTTPSimple: OTCloseProvider failed.", junk == noErr);
 	}
-	if (transferBuffer != nil) {
-		OTFreeMem(transferBuffer);
-	}
-    
-    long fileSize;
 
-    err = GetFPos(destFileRefNum, &fileSize);
+	if (transferBuffer != nil)
+		OTFreeMem(transferBuffer);
     
-    //OTAssert( "DEBUG: GetFPos failed", err == noErr);
+  long fileSize;
+
+  err = GetFPos(destFileRefNum, &fileSize);
+    
+  //OTAssert( "DEBUG: GetFPos failed", err == noErr);
 
 	junk = DisposeThread(progressThread, nil, true);
 	//OTAssert("main: DisposeThread failed", junk == noErr);
@@ -754,18 +794,20 @@ const char *System::httpFetch( const char *url )
 
 	FSClose(destFileRefNum);
 	
-    if ( err == noErr ) {
-	    theSystem->inform("[done]");
-	    theSystem->debug("Completed reading file from %s", hostname);
-		theSystem->debug("Bytes downloaded: %d.\n", fileSize);
-	    theSystem->debug("Wrote %s from %\n", fetchedFilename, hostname);
+  if ( err == noErr ) {
+     if (fileSize>0)
+	      theSystem->inform("Retrieved file (size %dk).", (fileSize+1023)/1024);
+	   else
+	      theSystem->inform("Failed to retrieve file.");
+//		 theSystem->debug("Bytes downloaded: %d.\n", fileSize);
+//	   theSystem->debug("Wrote %s from %s\n", fetchedFilename, hostname);
 	}
-    else {
-	    theSystem->warn("Connect failed: Failed to retrieve file from %s\n", hostname);
-	    free (fetchedFilename);
-        return NULL;
-    }
-    
+  else {
+    theSystem->inform("Failed to retrieve file from %s.", hostname);
+    free (fetchedFilename);
+    return NULL;
+  }
+
 	return fetchedFilename;
 }
 
