@@ -1,4 +1,3 @@
-SUBDIRS = src
+SUBDIRS = src m4
 
-m4datadir = $(datadir)/aclocal
-m4data_DATA = vrml97gl.m4
+# ACLOCAL_AMFLAGS = -I m4
