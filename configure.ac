@@ -25,6 +25,7 @@ AC_CONFIG_FILES([Makefile]
                 [java/vrml/Makefile]
                 [java/vrml/node/Makefile]
                 [java/vrml/field/Makefile]
+                [test/Makefile]
                 [openvrml.pc]
                 [openvrml-gl.pc]
                 [openvrml.spec])
@@ -145,9 +146,11 @@ else
   OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_MOZILLA_JS}"
   AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
             [Defined if Script node JavaScript support is enabled.])
+  GRE_PATH=`$PKG_CONFIG --libs-only-L mozilla-js | sed -e 's/^-L//' -e 's/ *$//'`
 fi
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
+AC_SUBST([GRE_PATH])
 
 #
 # Script node Java support

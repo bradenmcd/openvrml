@@ -1,4 +1,4 @@
-SUBDIRS = doc ide-projects m4 models lib java src
+SUBDIRS = doc ide-projects m4 models lib java src test
 
 ACLOCAL_AMFLAGS = -I m4
 

@@ -1,3 +1,14 @@
+2003-10-26  Braden McDaniel  <braden@endoframe.com>
+
+	Added the beginning of a test suite.
+
+	* Makefile.am:  Added "test" subdirectory.
+	* configure.ac:  Substitute GRE_PATH variable.
+	* m4/jdk.m4:  Modified OV_WITH_JDK to substitute JDK_LIBRARY_PATH
+	variable.
+	* test/Makefile.am:  Added file.
+	* test/browser_basic.cpp:  Added file.
+
 2003-10-21  Braden McDaniel  <braden@endoframe.com>
 
 	Replace usage of node::to_<node> with node_cast.

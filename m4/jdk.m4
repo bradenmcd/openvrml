@@ -50,7 +50,8 @@ else
       # The Sun JDK for Windows puts the shared libs under bin. Adding that
       # to the search path everywhere should be benign.
       #
-      ov_jni_libs="-L${ov_jdkhome}/jre/bin/${ov_arch_ldir}/client -L${ov_jdkhome}/jre/lib/${ov_arch_ldir}/client"
+      JDK_LIBRARY_PATH="${ov_jdkhome}/jre/lib/${ov_arch_ldir}/client"
+      ov_jni_libs="-L${ov_jdkhome}/jre/bin/${ov_arch_ldir}/client -L${JDK_LIBRARY_PATH}"
     fi
   fi
   AC_LANG_PUSH(C)
@@ -85,6 +86,7 @@ else
 fi
 AC_SUBST([JNI_CFLAGS])
 AC_SUBST([JNI_LIBS])
+AC_SUBST([JDK_LIBRARY_PATH])
 ])
 
 
