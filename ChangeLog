@@ -1,3 +1,7 @@
+2001-04-26  Braden McDaniel <braden@endoframe.com>
+
+        * Added Doxygen comments for VrmlNodeChild.
+
 2001-04-25  Braden McDaniel <braden@endoframe.com>
 
         * Applied patch from Joerg Scheurich

@@ -32,6 +32,49 @@
 # include "sound.h"
 # include "MathUtils.h"
 
+/**
+ * @class VrmlNodeChild
+ *
+ * @brief Base class for all nodes that may be children of a group node.
+ */
+
+/**
+ * @brief Define the fields of all built in child nodes.
+ * 
+ * @param nodeType
+ *
+ * @return the type object
+ */
+VrmlNodeType * VrmlNodeChild::defineType(VrmlNodeType * nodeType) {
+    return VrmlNode::defineType(nodeType);
+}
+
+/**
+ * @brief Constructor.
+ *
+ * @param scene the VrmlScene to which this node belongs.
+ */
+VrmlNodeChild::VrmlNodeChild(VrmlScene * scene): VrmlNode(scene) {}
+
+/**
+ * @brief Copy constructor.
+ */
+VrmlNodeChild::VrmlNodeChild(const VrmlNodeChild & node): VrmlNode(node) {}
+
+/**
+ * @brief Downcast method (const version).
+ */
+const VrmlNodeChild * VrmlNodeChild::toChild() const {
+    return this;
+}
+
+/**
+ * @brief Downcast method (non-const version).
+ */
+VrmlNodeChild * VrmlNodeChild::toChild() {
+    return this;
+}
+
 static VrmlNode * createAnchor(VrmlScene * scene) {
     return new VrmlNodeAnchor(scene);
 }
@@ -1282,28 +1325,6 @@ VrmlNodeBox::getBVolume() const
   //cout << "VrmlNodeBox::getBVolume():";
   //box_sphere->dump(cout) << endl;
   return &d_bsphere;
-}
-
-/**
- * @class VrmlNodeChild
- *
- * @brief Base class for all nodes that may be children of a group node.
- */
-// Define the fields of all built in child nodes
-VrmlNodeType * VrmlNodeChild::defineType(VrmlNodeType * t) {
-    return VrmlNode::defineType(t);
-}
-
-VrmlNodeChild::VrmlNodeChild(VrmlScene * scene): VrmlNode(scene) {}
-
-VrmlNodeChild::VrmlNodeChild(const VrmlNodeChild & node): VrmlNode(node) {}
-
-const VrmlNodeChild * VrmlNodeChild::toChild() const {
-    return this;
-}
-
-VrmlNodeChild * VrmlNodeChild::toChild() {
-    return this;
 }
 
 static VrmlNode * createCollision(VrmlScene * scene) {
