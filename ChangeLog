@@ -1,3 +1,10 @@
+2002-09-30  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Viewer.h,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Improved
+          const-correctness of Viewer::setViewpoint.
+
 2002-09-29  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Viewer.cpp,

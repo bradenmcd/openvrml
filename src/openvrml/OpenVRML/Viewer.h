@@ -198,11 +198,11 @@ namespace OpenVRML {
 
         virtual void unsetBillboardTransform(const float axisOfRotation[3]) = 0;
 
-        virtual void setViewpoint(const float * /*position*/,
-			          float * /*orientation*/,
-			          float /*fieldOfView*/,
-			          float /*avatarSize*/,
-			          float /*visLimit*/) = 0;
+        virtual void setViewpoint(const float position[3],
+			          const float orientation[4],
+			          float fieldOfView,
+			          float avatarSize,
+			          float visLimit) = 0;
 
         // The viewer knows the current viewpoint
         virtual void transformPoints(int nPoints, float *points) = 0;

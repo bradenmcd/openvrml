@@ -212,8 +212,8 @@ namespace OpenVRML {
             virtual void unsetBillboardTransform(const float axisOfRotation[3]);
 
 
-            virtual void setViewpoint(const float *position,
-			              float *orientation,
+            virtual void setViewpoint(const float position[3],
+			              const float orientation[4],
 			              float fieldOfView,
 			              float avatarSize,
 			              float visLimit);

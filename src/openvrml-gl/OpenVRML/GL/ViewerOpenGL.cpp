@@ -2899,11 +2899,11 @@ namespace {
     }
 }
 
-void ViewerOpenGL::setViewpoint(const float *position,
-				float *orientation,
-				float fieldOfView,
-				float avatarSize,
-				float visibilityLimit)
+void ViewerOpenGL::setViewpoint(const float position[3],
+				const float orientation[4],
+				const float fieldOfView,
+				const float avatarSize,
+				const float visibilityLimit)
 {
   glMatrixMode( GL_PROJECTION );
   if (! d_selectMode) glLoadIdentity();
