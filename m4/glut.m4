@@ -18,10 +18,11 @@
 #
 # OV_CHECK_GLUT
 # -------------
-# Check for GLUT. If GLUT is found, the required linker flags are included in
-# the output variable `GL_LIBS' and the shell variable `no_glut' is set to the
-# empty string. Also, the proper GLUT library header inclusion is defined in
-# `OPENVRML_GLUT_H'. If GLUT is not found, `no_glut' is set to `yes'.
+# Check for GLUT. If GLUT is found, the required compiler and linker flags are
+# included in the output variables `GL_CFLAGS' and `GL_LIBS', respectively, and
+# the shell variable `no_glut' is set to the empty string. Also, the proper GLUT
+# library header inclusion is defined in `OPENVRML_GLUT_H'.
+# If GLUT is not found, `no_glut' is set to `yes'.
 #
 AC_DEFUN(OV_CHECK_GLUT,
 [AC_REQUIRE([OV_CHECK_GL])dnl

@@ -11,6 +11,9 @@
 
         * m4/gl.m4: Nvidia's OpenGL links with pthreads.
 
+        * m4/glut.m4: Fix macro documentation to reflect
+          AC_SUBST([GLUT_CFLAGS]).
+
 2002-06-19  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.2.
