@@ -1,0 +1,197 @@
+.SILENT:
+# Makefile for openvrml
+# Microsoft Visual C++6.0 or later
+
+BINOUTDIR = .\bin
+LIBDIR = .\lib
+CORELIBDIR = .\openvrml-core
+GLLIBDIR = .\openvrml-gl
+JAVALIBDIR = .\tplib\js
+ANTLRLIBDIR = .\tplib\antlr
+LOOKATDIR = .\lookat
+
+help:
+	more < <<
+usage: nmake[.exe] /f nmake.mak [options] [target]
+
+where: [target] may be any one of the following ...
+    (default)... shows this text
+    all ........ builds all targets libraries and lookat executable
+    libraries... builds all libraries 
+    core........ builds core library 
+    gl ........  builds gl library 
+    js ........  builds javascript library
+    ant .......  builds antlr library
+    clean....... deletes all intermediate files
+
+    ---- build options -----------------
+
+
+   PNGLIB_DIR  .................... - required to be defined as 
+			the path where your PNGLIB is installed. 
+		   Default path is C:\User\lpng105, however you may provide 
+		   it as an environment variable by doing something like 
+		   this prior to execute nmake:
+
+			 set PNGLIB_DIR=C:\lpng105
+
+   ZLIB_DIR  .................... - required to be defined as the path
+		   where your ZLIB is installed. Default path is C:\User\zlib,
+		   however you may provide it as an environment variable by
+		   doing something like this prior to execute nmake:
+
+			 set ZLIB_DIR=C:\zlib
+
+   JPEGLIB_DIR  .................... - required to be defined as the path
+		   where your JPEGLIB is installed. 
+		   Default path is C:\User\jpeg-6b, however you may provide
+		   it as an environment variable by doing something like 
+		   this prior to execute nmake:
+
+			 set JPEGLIB_DIR=C:\jpeg-6b
+
+   GLUTLIB_DIR  .................... - required to be defined as the path
+		   where your GLUT is installed. 
+		   Default path is C:\User\glut, however you may provide
+		   it as an environment variable by doing something like 
+		   this prior to execute nmake:
+
+			 set GLUTLIB_DIR=C:\glut
+
+   HAVE_JAVA  .................... - If it is YES, 
+               then you must have java in your system and system will
+               generate C++ code from antlr grammar(Vrml97Parser.g). 
+               Otherwise it will take generated code(Vrml97Parser.cpp)
+               and create the library. Default is NO.
+
+
+   ANTLRLIB_DIR  .................... - required to be defined as the path
+               where your antlr is installed. If you define HAVE_JAVA=YES 
+               then you must give this path. Otherwise it is not needed. 
+               Default path is C:\User\antlr, however you may provide it 
+               as an environment variable by doing something like this 
+               prior to execute nmake:
+
+			 set ANTLRLIB_DIR=C:\antlr-2.7.0
+
+
+
+    ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
+         OpenVRML was originally written by Chris Morley
+	 (http://www.vermontel.net/~cmorley/. He has donated it 
+	 as a foundation for OVAL development and is currently 
+	 maintained at http://openvrml.sourceforge.net
+
+    This makefile suite built against MS Visual C++ 6.0 and tested on
+    WindowsNT 4.0, Windows95, and Windows98.
+
+    ---- output directories as configured -------
+
+Linking Libs  
+	
+ openvrml.lib :    $(MAKEDIR)\lib
+ libjs.dll    :    $(MAKEDIR)\tplib\js\lib
+
+Object Files 
+	
+ openvrmlcore :    $(MAKEDIR)\openvrm-core\bin
+ openvrmlgl   :    $(MAKEDIR)\openvrml-gl\bin
+ libjs        :    $(MAKEDIR)\tplib\js\bin
+ libantlr     :    $(MAKEDIR)\tplib\antlr\bin
+	 
+lookat executable
+	 	 
+lookat.exe     :    $(MAKEDIR)\lookat\bin
+<<
+
+!IF "$(PNGLIB_DIR)" == ""
+PNGLIB_DIR = c:\User\lpng105
+!ENDIF
+
+!IF "$(ZLIB_DIR)" == ""
+ZLIB_DIR = c:\User\zlib
+!ENDIF
+
+!IF "$(JPEGLIB_DIR)" == ""
+JPEGLIB_DIR = c:\User\jpeg-6b
+!ENDIF
+
+!IF "$(HAVE_JAVA)" == ""
+HAVE_JAVA = NO
+!ENDIF
+
+
+!IF "$(ANTLRLIB_DIR)" == ""
+ANTLRLIB_DIR = c:\User\antlr-2.7.0
+!ENDIF
+
+
+
+!IF "$(GLUTLIB_DIR)" == ""
+GLUTLIB_DIR = c:\User\glut
+!ENDIF
+
+LIB32 = link.exe -lib
+
+PROMPT :
+      -@echo Making openvrml library
+
+$(BINOUTDIR) : 
+	   if not exist $(BINOUTDIR) mkdir $(BINOUTDIR)
+
+$(LIBDIR) : 
+	   if not exist $(LIBDIR) mkdir $(LIBDIR)
+
+clean :
+  if exist $(LIBDIR)\openvrml.lib del $(LIBDIR)\openvrml.lib
+  cd .\openvrml-core
+  nmake /F Makefile.vc6 HAVE_JAVA=$(HAVE_JAVA) clean
+  cd ..\openvrml-gl
+  nmake /F Makefile.vc6 clean
+  cd ..\tplib\js
+  nmake /F Makefile.vc6 clean
+  cd ..\antlr
+  nmake /F Makefile.vc6 clean
+  cd ..\..\lookat
+  nmake /F Makefile.vc6 clean
+
+all: libraries lookatexe  
+
+libraries: $(LIBDIR) $(LIBDIR)\openvrml.lib
+
+$(LIBDIR)\openvrml.lib  : ant js core gl prompt
+		       if exist $(LIBDIR)\openvrml.lib del $(LIBDIR)\openvrml.lib
+                   $(LIB32) /nologo /out:$(LIBDIR)\openvrml.lib \
+                   $(ANTLRLIBDIR)\lib\libantlr.lib \
+                   $(JAVALIBDIR)\lib\libjs.lib \
+                   $(GLLIBDIR)\lib\openvrmlgl.lib \
+                   $(CORELIBDIR)\lib\openvrmlcore.lib
+ 
+core:
+  cd $(CORELIBDIR)
+  nmake /F Makefile.vc6 PNGLIB_DIR=$(PNGLIB_DIR)\
+  ZLIB_DIR=$(ZLIB_DIR) JPEGLIB_DIR=$(JPEGLIB_DIR) \
+  ANTLRLIB_DIR=$(ANTLRLIB_DIR) HAVE_JAVA=$(HAVE_JAVA) core
+  cd $(MAKEDIR)
+
+gl:
+  cd $(GLLIBDIR)
+  nmake /F Makefile.vc6 GLUTLIB_DIR=$(GLUTLIB_DIR) gl
+  cd $(MAKEDIR)
+
+js:
+  cd $(JAVALIBDIR)
+  nmake /F Makefile.vc6 js
+  cd $(MAKEDIR)
+
+ant:
+  cd $(ANTLRLIBDIR)
+  nmake /F Makefile.vc6 antlr
+  cd $(MAKEDIR)
+
+lookatexe:
+  cd $(LOOKATDIR)
+  nmake /F Makefile.vc6 PNGLIB_DIR=$(PNGLIB_DIR)\
+  ZLIB_DIR=$(ZLIB_DIR) JPEGLIB_DIR=$(JPEGLIB_DIR) \
+  GLUTLIB_DIR=$(GLUTLIB_DIR) lookat
+  cd $(MAKEDIR)

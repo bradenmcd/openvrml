@@ -1,0 +1,119 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "fdlibm"="..\tplib\js\fdlibm.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libantlr"="..\tplib\antlr\libantlr.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libjs"="..\tplib\js\libjs.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name fdlibm
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "lookat"=".\lookat.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name openvrml
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "openvrml"="..\openvrml.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name openvrmlcore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name openvrmlgl
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libantlr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libjs
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "openvrmlcore"="..\openvrml-core\openvrmlcore.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "openvrmlgl"="..\openvrml-gl\openvrmlgl.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+
