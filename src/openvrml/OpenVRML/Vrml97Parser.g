@@ -87,7 +87,8 @@ namespace ANTLR_LBRACE
 
         Vrml97Scanner(istream &);
 
-        antlr::RefToken nextToken();
+        virtual antlr::RefToken nextToken();
+        
         size_t line() const;
         size_t col() const;
 
@@ -620,7 +621,9 @@ options {
         {
             n.reset(vrmlNamespace.findNode(id1->getText()));
             if (!n) {
-                throw antlr::SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.");
+                throw antlr::SemanticException("Node \"" + id1->getText()
+                                    + "\" has not been defined in this scope.",
+                                    std::string(), LT(0)->getLine());
             }
         }
     |   n=node[vrmlNamespace, doc, std::string()]
@@ -951,7 +954,8 @@ options {
             nodeType = vrmlNamespace.findType(nodeTypeId->getText());
             if (!nodeType) {
                 throw antlr::SemanticException("Unknown node type \""
-                        + nodeTypeId->getText() + "\".");
+                                               + nodeTypeId->getText() + "\".",
+                                               std::string(), LT(0)->getLine());
             }
             
             n = NodePtr(nodeType->newNode());
@@ -976,8 +980,9 @@ nodeBodyElement[OpenVRML::VrmlNamespace & vrmlNamespace,
                 && ((ft = node.type.hasExposedField(id->getText())) == FieldValue::invalidType)) {
                 
                 throw antlr::SemanticException(node.type.getId()
-                        + " node has no field or exposedField \""
-                        + id->getText() + "\"");
+                                    + " node has no field or exposedField \""
+                                    + id->getText() + "\"",
+                                    std::string(), LT(0)->getLine());
             }
             
             FieldValue * fv = 0;
@@ -1006,7 +1011,9 @@ scriptInterfaceDeclaration[OpenVRML::VrmlNamespace & vrmlNamespace,
             if (   (node.hasInterface(id->getText()) != FieldValue::invalidType)
                 || (node.type.hasInterface(id->getText()) != FieldValue::invalidType)) {
                 
-                throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
+                throw antlr::SemanticException("Interface \"" + id->getText()
+                                    + "\" already declared for Script node.",
+                                    std::string(), LT(0)->getLine());
             }
             
             switch (it) {
@@ -1041,7 +1048,9 @@ scriptFieldInterfaceDeclaration[OpenVRML::VrmlNamespace & vrmlNamespace,
             if (   (node.hasInterface(id->getText()) != FieldValue::invalidType)
                 || (node.type.hasInterface(id->getText()) != FieldValue::invalidType)) {
                 
-                throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
+                throw antlr::SemanticException("Interface \"" + id->getText()
+                                    + "\" already declared for Script node.",
+                                    std::string(), LT(0)->getLine());
             }
             
             node.addField(id->getText(), ft, autofv.get());
@@ -1089,7 +1098,8 @@ options {
                         ->findType(nodeTypeId->getText());
             if (!nodeType) {
                 throw antlr::SemanticException("Unknown node type \""
-                                            + nodeTypeId->getText() + "\".");
+                                               + nodeTypeId->getText() + "\".",
+                                               std::string(), LT(0)->getLine());
             }
             
             n = NodePtr(nodeType->newNode());
@@ -1120,8 +1130,9 @@ protoNodeBodyElement[const OpenVRML::Doc2 * doc,
                 && ((ft = node.type.hasExposedField(id->getText())) == FieldValue::invalidType)) {
                 
                 throw antlr::SemanticException(node.type.getId()
-                        + " node has no field or exposedField \""
-                        + id->getText() + "\".");
+                                    + " node has no field or exposedField \""
+                                    + id->getText() + "\".",
+                                    std::string(), LT(0)->getLine());
             }
             
             FieldValue * fv = 0;
@@ -1181,7 +1192,9 @@ protoScriptInterfaceDeclaration[const OpenVRML::Doc2 * doc,
             if ((node.hasInterface(id->getText()) != FieldValue::invalidType)
                 || (node.type.hasInterface(id->getText()) != FieldValue::invalidType)) {
                 
-                throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
+                throw antlr::SemanticException("Interface \"" + id->getText()
+                                    + "\" already declared for Script node.",
+                                    std::string(), LT(0)->getLine());
             }
             
             switch (it) {
@@ -1213,7 +1226,9 @@ protoScriptFieldInterfaceDeclaration[const OpenVRML::Doc2 * doc,
             if ((node.hasInterface(id->getText()) != FieldValue::invalidType)
                 || (node.type.hasInterface(id->getText()) != FieldValue::invalidType)) {
                 
-                throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
+                throw antlr::SemanticException("Interface \"" + id->getText()
+                                    + "\" already declared for Script node.",
+                                    std::string(), LT(0)->getLine());
             }
             
         }
@@ -1483,7 +1498,8 @@ sfImageValue returns [OpenVRML::SFImage * siv = new OpenVRML::SFImage()]
             // bigger bugs to fry, so I guess it's ok for now.
             //
             if (pixelVector.size() != (w * h * com)) {
-                throw antlr::SemanticException("Wrong number of pixel values for SFImage.");
+                throw antlr::SemanticException("Wrong number of pixel values for SFImage.",
+                                               std::string(), LT(0)->getLine());
             }
             *siv = OpenVRML::SFImage(w, h, com, &pixelVector[0]); // hmmmm...
         }

@@ -78,7 +78,8 @@ namespace ANTLR_LBRACE
 
         Vrml97Scanner(istream &);
 
-        antlr::RefToken nextToken();
+        virtual antlr::RefToken nextToken();
+        
         size_t line() const;
         size_t col() const;
 
@@ -98,16 +99,16 @@ namespace ANTLR_LBRACE
         bool        _expectingFieldType;
     };
 
-#line 102 "Vrml97Parser.hpp"
+#line 103 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
-#line 586 "Vrml97Parser.g"
+#line 587 "Vrml97Parser.g"
 
     public:
         enum NodeInterfaceType {
             INVALID_NODE_INTERFACE_TYPE, EVENTIN, EVENTOUT, FIELD, EXPOSEDFIELD
         };
-#line 106 "Vrml97Parser.hpp"
+#line 107 "Vrml97Parser.hpp"
 protected:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);
 public:
