@@ -364,6 +364,16 @@ namespace OpenVRML {
                 throw (UnsupportedInterface) = 0;
     };
 
+    inline bool operator==(const Node::Route & lhs, const Node::Route & rhs) {
+        return lhs.fromEventOut == rhs.fromEventOut
+            && lhs.toNode == rhs.toNode
+            && lhs.toEventIn == rhs.toEventIn;
+    }
+    
+    inline bool operator!=(const Node::Route & lhs, const Node::Route & rhs) {
+        return !(lhs == rhs);
+    }
+    
     
     class OPENVRML_SCOPE AppearanceNode : public virtual Node {
     public:

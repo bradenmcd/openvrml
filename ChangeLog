@@ -6,6 +6,9 @@
 
         * Moved Node::printFields logic to Node::print.
 
+        * Added operator== and operator!= for Node::Route; gave
+          Node::addRoute and ::deleteRoute a little STL love.
+
 2002-05-26  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.cpp: Allocate the default BSphere

@@ -507,6 +507,34 @@ Node::Route::Route(const Route & route): fromEventOut(route.fromEventOut),
 	toNode(route.toNode), toEventIn(route.toEventIn) {}
 
 /**
+ * @fn bool operator==(const Node::Route & lhs, const Node::Route & rhs)
+ *
+ * @relates Node::Route
+ *
+ * @brief Compare two @link Route Routes@endlink for equality.
+ *
+ * @param lhs   a Route.
+ * @param rhs   a Route.
+ *
+ * @return @c true if the @link Route Routes@link are identical, @c false
+ *      otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const Node::Route & lhs, const Node::Route & rhs)
+ *
+ * @relates Node::Route
+ *
+ * @brief Compare two @link Route Routes@endlink for inequality.
+ *
+ * @param lhs   a Route.
+ * @param rhs   a Route.
+ *
+ * @return @c true if the @link Route Routes@link are not identical, @c false
+ *      otherwise.
+ */
+
+/**
  * @struct Node::PolledEventOutValue
  *
  * @brief Simple struct for use in implementing nodes that are polled for
@@ -1000,23 +1028,24 @@ Vrml97Node::Viewpoint * Node::toViewpoint() const { return 0; }
 /**
  * @brief Add a route from an eventOut of this node to an eventIn of another
  *      node.
+ *
+ * @todo Check to make sure fromEventOut and toEventIn are valid names.
  */
 void Node::addRoute(const std::string & fromEventOut,
                     const NodePtr & toNode,
                     const std::string & toEventIn) {
-    // Check to make sure fromEventOut and toEventIn are valid names...
-
+    const Route route(fromEventOut, toNode, toEventIn);
+    
+    //
     // Is this route already here?
-    for (RouteList::iterator i = this->routes.begin();
-            i != this->routes.end(); ++i) {
-        if (toNode == i->toNode
-	        && fromEventOut == i->fromEventOut
-	        && toEventIn == i->toEventIn) {
-            return; // Ignore duplicate routes
-        }
-    }
-
-    this->routes.push_back(Route(fromEventOut, toNode, toEventIn));
+    //
+    const RouteList::iterator pos =
+            std::find(this->routes.begin(), this->routes.end(), route);
+    
+    //
+    // If not, add it.
+    //
+    if (pos == this->routes.end()) { this->routes.push_back(route); }
 }
 
 
@@ -1027,14 +1056,10 @@ void Node::addRoute(const std::string & fromEventOut,
 void Node::deleteRoute(const std::string & fromEventOut,
                        const NodePtr & toNode,
                        const std::string & toEventIn) {
-    for (RouteList::iterator i = this->routes.begin();
-            i != this->routes.end(); ++i) {
-        if (toNode == i->toNode
-                && fromEventOut == i->fromEventOut
-                && toEventIn == i->toEventIn) {
-            i = this->routes.erase(i);
-        }
-    }
+    const RouteList::iterator pos =
+            std::find(this->routes.begin(), this->routes.end(),
+                      Route(fromEventOut, toNode, toEventIn));
+    if (pos != this->routes.end()) { this->routes.erase(pos); }
 }
 
 /**
