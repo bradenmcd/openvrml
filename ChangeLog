@@ -5,6 +5,12 @@
           src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Improved
           const-correctness of Viewer::setViewpoint.
 
+        * src/openvrml/OpenVRML/VrmlFrustum.cpp,
+          src/openvrml/OpenVRML/VrmlFrustum.h,
+          src/openvrml/OpenVRML/bvolume.cpp,
+          src/openvrml/OpenVRML/bvolume.h: Removed BVolume::dump and
+          VrmlFrustum::dump.
+
 2002-09-29  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Viewer.cpp,

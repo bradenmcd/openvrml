@@ -190,18 +190,4 @@ void VrmlFrustum::update() {
     bot_plane[3] = 0;
 }
 
-
-/**
- * @brief Dumps the frustum to the given stream.
- */
-std::ostream & VrmlFrustum::dump(std::ostream & ostr) const {
-    ostr << "VrmlFrustum {" << endl;
-    ostr << z_near << endl;
-    ostr << z_far << endl;
-    ostr << fovx * (360.0 / (pi * 2.0)) << endl;
-    ostr << fovy * (360.0 / (pi * 2.0)) << endl;
-    ostr << "}";
-    return ostr;
-}
-
 } // namespace OpenVRML

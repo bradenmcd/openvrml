@@ -211,19 +211,6 @@ BVolume::~BVolume() {}
  * @see MathUtils
  */
 
-/**
- * @fn ostream & BVolume::dump(ostream & ostr) const = 0
- *
- * @brief Print a text representation to a stream.
- *
- * Suitable for debugging.
- *
- * @param ostr an open ostream
- *
- * @return the ostream, save a line writing the output operator
- */
-
-
 
 /**
  * @class BSphere
@@ -398,7 +385,6 @@ BSphere::extend(const float p[3])
   float yn = y1-y0;
   float zn = z1-z0;
   float dn = sqrt(xn*xn+yn*yn+zn*zn);
-  //cout << "BSphere::extend(" << xn << "," << yn << "," << zn << ")" << dn << endl;
 
   if (fpzero(dn))
     return;
@@ -418,18 +404,15 @@ BSphere::extend(const float p[3])
   this->c[2] = cz;
 }
 
-
+/**
+ * @todo Implement me!
+ */
 void BSphere::extend(const AABox & b) {
-    std::cout << "BSphere::extend(VrmlAABox&):WARNING:not implemented"
-              << std::endl;
 }
 
 void
 BSphere::extend(const BSphere& b)
 {
-  //cout << "BSphere::extend(BSphere&)" << endl;
-  //b.dump(cout);
-
   if (this->isMAX())
     return;
 
@@ -461,21 +444,15 @@ BSphere::extend(const BSphere& b)
   float y0 = this->c[1];
   float z0 = this->c[2];
   float r0 = this->r;
-  //cout << "BSphere[" << this << "]::extend():0:";
-  //cout << x0 << "," << y0 << ","<< z0 << ":"<< r0 << endl;
 
   float x1 = b.c[0];
   float y1 = b.c[1];
   float z1 = b.c[2];
   float r1 = b.r;
-  //cout << "BSphere[" << this << "]::extend():1:";
-  //cout << x1 << "," << y1 << ","<< z1 << ":"<< r1 << endl;
 
   float xn = x1-x0;
   float yn = y1-y0;
   float zn = z1-z0;
-  //cout << "BSphere[" << this << "]::extend():n:";
-  //cout << xn << "," << yn << ","<< zn << endl;
   float dn = sqrt(xn*xn+yn*yn+zn*zn);
 
   if (fpzero(dn))
@@ -492,17 +469,11 @@ BSphere::extend(const BSphere& b)
     return;
   }
 
-
-  //cout << "BSphere[" << this << "]::extend():dn:" << dn << endl;
   float cr = (dn+r0+r1)/2.0;
-  //cout << "BSphere[" << this << "]::extend():cr:" << cr << endl;
   float tmp = (cr-r0)/dn;
-  //cout << "BSphere[" << this << "]::extend():tmp:" << tmp << endl;
   float cx = x0 + xn*tmp;
   float cy = y0 + yn*tmp;
   float cz = z0 + zn*tmp;
-  //cout << "BSphere[" << this << "]::extend():f:";
-  //cout << cx << "," << cy << ","<< cz << ":"<< cr << endl;
 
   this->r = cr;
   this->setCenter(cx, cy, cz);
@@ -692,21 +663,13 @@ BSphere::transform(const VrmlMatrix & M)
   float scale_y = Vlength(y_scale_v);
   float scale_z = Vlength(z_scale_v);
 
-  //cout << "BSphere::transform():";
-  //cout << scale_x << "," << scale_y << "," << scale_z << endl;
-
   float max_scale = scale_x;
   if (scale_y > max_scale)
     max_scale = scale_y;
   if (scale_z > max_scale)
     max_scale = scale_z;
 
-  //cout << "BSphere::transform():r=(" << r << "," << max_scale*r << ")" << endl;
   r = max_scale*r;
-}
-
-std::ostream & BSphere::dump(std::ostream & out) const {
-    return out << "(" << c[0] << "," << c[1] << "," << c[2] << "):" << r;
 }
 
 
@@ -715,7 +678,7 @@ std::ostream & BSphere::dump(std::ostream & out) const {
  *
  * @brief An axis-aligned bounding box.
  *
- * This class is currently just a placeholder.
+ * @todo This class is currently just a placeholder.
  */
 
 AABox::~AABox() {}
@@ -784,10 +747,6 @@ AABox::orthoTransform(const VrmlMatrix & M)
 void
 AABox::transform(const VrmlMatrix & M)
 {
-}
-
-std::ostream & AABox::dump(std::ostream & out) const {
-    return out << "<AABox:not implemented>" << std::endl;
 }
 
 } // namespace OpenVRML
