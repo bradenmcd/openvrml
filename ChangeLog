@@ -1,6 +1,7 @@
 2001-06-06  Braden McDaniel <braden@endoframe.com>
 
         * Made PNG support (libpng) optional.
+
         * Made JPEG support (libjpeg) optional.
 
 2001-05-27  Braden McDaniel <braden@endoframe.com>
