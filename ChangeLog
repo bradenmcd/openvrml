@@ -1,3 +1,8 @@
+2002-12-21  Braden McDaniel  <braden@endoframe.com>
+
+        * m4/gl.m4:  Only use $x_includes and $x_libraries if those
+          variables have been set.
+
 2002-12-20  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * ide-projects/Makefile.am: add config.h 
