@@ -28,6 +28,7 @@
 #
 AC_DEFUN(OV_WITH_GLUT,
 [AC_REQUIRE([OV_WITH_GL])dnl
+AC_REQUIRE([AC_PATH_XTRA])dnl
 AC_ARG_WITH(glut, [  --with-glut             use GLUT])
 if test "X$with_glut" = "Xno" -o "X$no_gl" = "Xyes"; then
   no_glut=yes

@@ -27,7 +27,7 @@
 # is set to "yes".
 #
 AC_DEFUN([OV_WITH_GL],
-[AC_REQUIRE([AC_PATH_XTRA])
+[AC_REQUIRE([AC_PATH_X])dnl
 AC_ARG_WITH([gl], [  --with-gl               use OpenGL/Mesa])
 if test "X$with_gl" = "Xno"; then
   no_gl=yes
@@ -35,11 +35,11 @@ else
   GL_LIBS="-lpthread -lm"
 
   #
-  # If X is present, use X_CFLAGS and X_LIBS.
+  # If X is present, use x_includes and x_libraries.
   #
   if test "X${no_x}" != "Xyes"; then
-    GL_CFLAGS="${X_CFLAGS}"
-    GL_LIBS="${X_LIBS} ${GL_LIBS}"
+    GL_CFLAGS="-I${x_includes}"
+    GL_LIBS="-L${x_libraries} ${GL_LIBS}"
   fi
 
   AC_LANG_PUSH(C)
