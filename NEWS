@@ -1,5 +1,5 @@
-Changes new in version 0.12.0, 15 June, 2002
-===========================================
+Changes new in version 0.12.0, 16 June, 2002
+============================================
 
 - Nodes have been completely rearchitected so as to abstract their
   implementations from the core library. Many bugs fixed in the
