@@ -69,7 +69,7 @@ public:
 
   virtual ostream& print(ostream& os) const;
 
-  size_t size() const		{ return d_data->d_n/3; } // # of vec3fs
+  size_t getLength() const		{ return d_data->d_n/3; } // # of vec3fs
   float * get();
   const float * get() const;
   const float * operator[](size_t index) const;

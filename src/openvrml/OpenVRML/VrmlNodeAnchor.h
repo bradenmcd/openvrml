@@ -59,7 +59,7 @@ public:
 			const VrmlField &fieldValue);
 
   const char *description() { return d_description.get(); }
-  const char *url() { return d_url.size() > 0 ? d_url[0] : 0; }
+  const char *url() { return d_url.getLength() > 0 ? d_url[0] : 0; }
 
   const VrmlBVolume* getBVolume() const;
 

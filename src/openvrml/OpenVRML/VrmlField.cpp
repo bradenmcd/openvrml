@@ -1733,7 +1733,7 @@ VrmlField * VrmlMFInt32::clone() const { return new VrmlMFInt32(*this); }
 
 VrmlField::VrmlFieldType VrmlMFInt32::fieldType() const { return MFINT32; }
 
-size_t VrmlMFInt32::size() const {
+size_t VrmlMFInt32::getLength() const {
     return this->d_data->d_n;
 }
 
@@ -1747,7 +1747,7 @@ const long & VrmlMFInt32::operator[](size_t index) const {
 
 ostream& VrmlMFInt32::print(ostream& os) const
 {
-  size_t n = this->size();
+  size_t n = this->getLength();
   const long * c = get();
 
   if (n == 1)
@@ -2030,7 +2030,7 @@ VrmlField *VrmlMFString::clone() const
 
 VrmlField::VrmlFieldType VrmlMFString::fieldType() const { return MFSTRING; }
 
-size_t VrmlMFString::size() const
+size_t VrmlMFString::getLength() const
 {
     return d_size;
 }
@@ -2161,7 +2161,7 @@ double const & VrmlMFTime::operator[](size_t index) const
     return d_data->data[index];
 }
 
-size_t VrmlMFTime::size() const
+size_t VrmlMFTime::getLength() const
 {
     return d_data->size;
 }
@@ -2178,7 +2178,7 @@ VrmlField::VrmlFieldType VrmlMFTime::fieldType() const
 
 ostream & VrmlMFTime::print(ostream & os) const
 {
-    return mfdprint(os, get(), size(), 1);
+    return mfdprint(os, get(), getLength(), 1);
 }
 
 
@@ -2339,20 +2339,20 @@ ostream& VrmlMFColor::print(ostream& os) const
 { return mffprint(os, get(), getLength(), 3); }
 
 ostream& VrmlMFFloat::print(ostream& os) const
-{ return mffprint(os, get(), size(), 1); }
+{ return mffprint(os, get(), getLength(), 1); }
 
 ostream& VrmlMFRotation::print(ostream& os) const
-{ return mffprint(os, get(), size(), 4); }
+{ return mffprint(os, get(), getLength(), 4); }
 
 ostream& VrmlMFVec2f::print(ostream& os) const
-{ return mffprint(os, get(), size(), 2); }
+{ return mffprint(os, get(), getLength(), 2); }
 
 ostream& VrmlMFVec3f::print(ostream& os) const
-{ return mffprint(os, get(), size(), 3); }
+{ return mffprint(os, get(), getLength(), 3); }
 
 ostream& VrmlMFNode::print(ostream& os) const
 {
-  int n = size();
+  int n = getLength();
 
   if (n != 1) os << '[';
   for (int i=0; i<n; ++i)
@@ -2365,7 +2365,7 @@ ostream& VrmlMFNode::print(ostream& os) const
 
 ostream& VrmlMFString::print(ostream& os) const
 {
-  int n = size();
+  int n = getLength();
 
   if (n != 1) os << '[';
   for (int i=0; i<n; ++i)

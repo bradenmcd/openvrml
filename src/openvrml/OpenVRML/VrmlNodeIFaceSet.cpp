@@ -157,9 +157,9 @@ ostream& VrmlNodeIFaceSet::printFields(ostream& os, int indent)
 
   if (d_creaseAngle.get() != 0.0) PRINT_FIELD(creaseAngle);
   if (d_normal.get()) PRINT_FIELD(normal);
-  if (d_normalIndex.size() > 0) PRINT_FIELD(normalIndex);
+  if (d_normalIndex.getLength() > 0) PRINT_FIELD(normalIndex);
   if (d_texCoord.get()) PRINT_FIELD(texCoord);
-  if (d_texCoordIndex.size() > 0) PRINT_FIELD(texCoordIndex);
+  if (d_texCoordIndex.getLength() > 0) PRINT_FIELD(texCoordIndex);
 
   VrmlNodeIndexedSet::printFields(os, indent);
 
@@ -178,10 +178,10 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
     viewer->drawBSphere(*bs, 4);
   }
 
-  if (d_coord.get() && d_coordIndex.size() > 0)
+  if (d_coord.get() && d_coordIndex.getLength() > 0)
     {
       VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
-      int nvert = coord.size();
+      int nvert = coord.getLength();
       const float *tc = 0, *color = 0, *normal = 0;
       int ntc = 0;
       size_t ntci = 0; const long * tci = 0;	// texture coordinate indices
@@ -194,16 +194,16 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 	  VrmlMFVec2f &texcoord =
 	    d_texCoord.get()->toTextureCoordinate()->coordinate();
 	  tc = &texcoord[0][0];
-	  ntc = texcoord.size();
-	  ntci = d_texCoordIndex.size();
+	  ntc = texcoord.getLength();
+	  ntci = d_texCoordIndex.getLength();
 	  if (ntci) tci = d_texCoordIndex.get();
 	}
 
       // check #tc is consistent with #coords/max texCoordIndex...
-      if (tci && ntci < d_coordIndex.size())
+      if (tci && ntci < d_coordIndex.getLength())
 	{
 	  theSystem->error("IndexedFaceSet: not enough texCoordIndex values (there should be at least as many as coordIndex values).\n");
-	  theSystem->error("IndexedFaceSet: #coord %d, #coordIndex %d, #texCoord %d, #texCoordIndex %d\n", nvert, d_coordIndex.size(), ntc, ntci);
+	  theSystem->error("IndexedFaceSet: #coord %d, #coordIndex %d, #texCoord %d, #texCoordIndex %d\n", nvert, d_coordIndex.getLength(), ntc, ntci);
 	  tci = 0;
 	  ntci = 0;
 	}
@@ -213,7 +213,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 	{
 	  VrmlMFColor &c = d_color.get()->toColor()->color();
 	  color = &c[0][0];
-	  nci = d_colorIndex.size();
+	  nci = d_colorIndex.getLength();
 	  if (nci) ci = d_colorIndex.get();
 	}
 
@@ -222,7 +222,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 	{
 	  VrmlMFVec3f &n = d_normal.get()->toNormal()->normal();
 	  normal = &n[0][0];
-	  nni = d_normalIndex.size();
+	  nni = d_normalIndex.getLength();
 	  if (nni) ni = d_normalIndex.get();
 	}
 
@@ -235,7 +235,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 
       obj = viewer->insertShell(optMask,
 				nvert, &coord[0][0],
-				d_coordIndex.size(), &d_coordIndex[0],
+				d_coordIndex.getLength(), &d_coordIndex[0],
 				tc, ntci, tci,
 				normal, nni, ni,
 				color, nci, ci);
@@ -318,7 +318,7 @@ void VrmlNodeIFaceSet::recalcBSphere()
   //
   VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
   float* p = coord.get();
-  int n = coord.size();
+  int n = coord.getLength();
   d_bsphere.reset();
   d_bsphere.enclose(p, n);
   //int nvert = coord.size();

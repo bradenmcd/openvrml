@@ -69,7 +69,7 @@ public:
   virtual const VrmlMFRotation* toMFRotation() const;
   virtual VrmlMFRotation* toMFRotation();
 
-  size_t size() const		{ return d_data->d_n/4; } // # of rotations
+  size_t getLength() const		{ return d_data->d_n/4; } // # of rotations
   const float * get() const		{ return d_data->d_v; }
   const float * operator[](size_t index)	{ return &d_data->d_v[4*index]; }
 

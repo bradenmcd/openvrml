@@ -167,7 +167,7 @@ void VrmlNodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
   if (d_xformObject)
     viewer->insertReference(d_xformObject);
 
-  else if (d_children.size() > 0)
+  else if (d_children.getLength() > 0)
     {
       d_xformObject = viewer->beginObject(name());
 
@@ -237,7 +237,7 @@ void VrmlNodeTransform::accumulateTransform( VrmlNode *parent )
 {
   d_parentTransform = parent;
 
-  int i, n = d_children.size();
+  int i, n = d_children.getLength();
 
   for (i = 0; i<n; ++i)
     {
@@ -326,7 +326,7 @@ VrmlNodeTransform::recalcBSphere()
 {
   //cout << "VrmlNodeTransform[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
-  for (size_t i=0; i<d_children.size(); ++i) {
+  for (size_t i=0; i<d_children.getLength(); ++i) {
     const VrmlBVolume* ci_bv = d_children[i]->getBVolume();
     if (ci_bv)
       d_bsphere.extend(*ci_bv);

@@ -116,23 +116,23 @@ void VrmlNodeAnchor::render(Viewer *viewer, VrmlRenderContext rc)
 
 void VrmlNodeAnchor::activate()
 {
-  if (d_scene && d_url.size() > 0) {
+  if (d_scene && d_url.getLength() > 0) {
       Doc2*  tmp_url = new Doc2();
-      char** tmp_url_array = new char *[d_url.size()];
+      char** tmp_url_array = new char *[d_url.getLength()];
       
-      for (size_t i = 0; i < d_url.size(); i++) {
+      for (size_t i = 0; i < d_url.getLength(); i++) {
         Doc2 relDoc(d_relative.get());
         tmp_url->seturl( d_url.get(i), &relDoc);
         tmp_url_array[i] = new char[ strlen(tmp_url->url()) + 1 ];
         strcpy(tmp_url_array[i], tmp_url->url());
       }
       
-      VrmlMFString urls(d_url.size(), tmp_url_array);
+      VrmlMFString urls(d_url.getLength(), tmp_url_array);
       if (!d_scene->loadUrl(&urls, &d_parameter)) {
         theSystem->warn("Couldn't load URL %s\n", d_url[0]);
       }
 
-      for (size_t j = 0; j < d_url.size(); j++)
+      for (size_t j = 0; j < d_url.getLength(); j++)
         delete [] tmp_url_array[j];
       delete [] tmp_url_array;
       delete tmp_url;

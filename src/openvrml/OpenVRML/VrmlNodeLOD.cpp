@@ -73,7 +73,7 @@ VrmlNode *VrmlNodeLOD::cloneMe() const
 
 void VrmlNodeLOD::cloneChildren(VrmlNamespace *ns)
 {
-  int n = d_level.size();
+  int n = d_level.getLength();
   VrmlNode **kids = d_level.get();
   for (int i = 0; i<n; ++i)
     {
@@ -88,7 +88,7 @@ bool VrmlNodeLOD::isModified() const
 {
   if (d_modified) return true;
   
-  int n = d_level.size();
+  int n = d_level.getLength();
 
   // This should really check which range is being rendered...
   for (int i = 0; i<n; ++i)
@@ -106,7 +106,7 @@ void VrmlNodeLOD::updateModified(VrmlNodePath& path)
 {
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
- int n = d_level.size();
+ int n = d_level.getLength();
   for (int i = 0; i<n; ++i)
     d_level[i]->updateModified(path);
   path.pop_front();
@@ -115,7 +115,7 @@ void VrmlNodeLOD::updateModified(VrmlNodePath& path)
 void VrmlNodeLOD::clearFlags()
 {
   VrmlNode::clearFlags();
-  int n = d_level.size();
+  int n = d_level.getLength();
   for (int i = 0; i<n; ++i)
     d_level[i]->clearFlags();
 }
@@ -124,7 +124,7 @@ void VrmlNodeLOD::addToScene( VrmlScene *s, const char *rel )
 {
   d_scene = s;
   
-  int n = d_level.size();
+  int n = d_level.getLength();
 
   for (int i = 0; i<n; ++i)
     d_level[i]->addToScene(s, rel);
@@ -134,7 +134,7 @@ void VrmlNodeLOD::copyRoutes( VrmlNamespace *ns ) const
 {
   VrmlNode::copyRoutes(ns);
   
-  int n = d_level.size();
+  int n = d_level.getLength();
   for (int i = 0; i<n; ++i)
     d_level[i]->copyRoutes(ns);
 }
@@ -142,13 +142,13 @@ void VrmlNodeLOD::copyRoutes( VrmlNamespace *ns ) const
 
 ostream& VrmlNodeLOD::printFields(ostream& os, int indent)
 {
-  if (d_level.size() > 0) PRINT_FIELD(level);
+  if (d_level.getLength() > 0) PRINT_FIELD(level);
   if (! FPZERO(d_center.getX()) ||
       ! FPZERO(d_center.getY()) ||
       ! FPZERO(d_center.getZ()) )
     PRINT_FIELD(center);
       
-  if (d_range.size() > 0) PRINT_FIELD(range);
+  if (d_range.getLength() > 0) PRINT_FIELD(range);
 
   return os;
 }
@@ -159,7 +159,7 @@ ostream& VrmlNodeLOD::printFields(ostream& os, int indent)
 void VrmlNodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
 {
   clearModified();
-  if (d_level.size() <= 0) return;
+  if (d_level.getLength() <= 0) return;
 
   float x, y, z;
   viewer->getPosition( &x, &y, &z );
@@ -169,23 +169,23 @@ void VrmlNodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
   float dz = z - d_center.getZ();
   float d2 = dx*dx + dy*dy + dz*dz;
 
-  int i, n = d_range.size();
+  int i, n = d_range.getLength();
   for (i=0; i<n; ++i)
     if (d2 < d_range[i] * d_range[i])
       break;
 
   // Should choose an "optimal" level...
-  if (d_range.size() == 0) i = d_level.size() - 1;
+  if (d_range.getLength() == 0) i = d_level.getLength() - 1;
 
   // Not enough levels...
-  if (i >= (int) d_level.size()) i = d_level.size() - 1;
+  if (i >= (int) d_level.getLength()) i = d_level.getLength() - 1;
 
   //printf("LOD d2 %g level %d\n", d2, i);
 
   d_level[i]->render(viewer, rc);
 
   // Don't re-render on their accounts
-  n = d_level.size();
+  n = d_level.getLength();
   for (i = 0; i<n; ++i)
     d_level[i]->clearModified();
 }
@@ -248,7 +248,7 @@ VrmlNodeLOD::recalcBSphere()
   // switch in delayed-load inlines. this would necessarily switch
   // them in all at once. live with it for now.
   //
-  for(int i=0; i<(int) d_level.size(); i++) {
+  for(int i=0; i<(int) d_level.getLength(); i++) {
     const VrmlBVolume* ci_bv = d_level[i]->getBVolume();
     d_bsphere.extend(*ci_bv);
 

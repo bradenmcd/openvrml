@@ -59,7 +59,7 @@ ScriptObject *ScriptObject::create( VrmlNodeScript *node,
 				    VrmlMFString &url )
 {
     // Try each url until we find one we like
-    int i, n = url.size();
+    int i, n = url.getLength();
     for (i = 0; i < n; ++i) {
         if (! url[i]) continue;
 

@@ -128,7 +128,7 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
 	{
 	  const char *imageUrl = d_image->url();
 	  int imageLen = strlen(imageUrl);
-	  int i, nUrls = d_url.size();
+	  int i, nUrls = d_url.getLength();
 	  for (i=0; i<nUrls; ++i)
 	    {
 	      int len = strlen(d_url[i]);
@@ -149,12 +149,12 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
     }
 
   // Load the movie if needed (should check startTime...)
-  if (! d_image && d_url.size() > 0)
+  if (! d_image && d_url.getLength() > 0)
     {
       Doc2 relDoc(d_relativeUrl.get());
       Doc2 * rel = d_relativeUrl.get() ? &relDoc : d_scene->urlDoc();
       d_image = new Image;
-      if ( ! d_image->tryURLs( d_url.size(), d_url.get(), rel ) )
+      if ( ! d_image->tryURLs( d_url.getLength(), d_url.get(), rel ) )
 	cerr << "Error: couldn't read MovieTexture from URL " << d_url << endl;
 
 

@@ -74,7 +74,7 @@ VrmlNode *VrmlNodeWorldInfo::cloneMe() const
 ostream& VrmlNodeWorldInfo::printFields(ostream& os, int indent)
 {
   if (d_title.get()) PRINT_FIELD(title);
-  if (d_info.size() > 0) PRINT_FIELD(info);
+  if (d_info.getLength() > 0) PRINT_FIELD(info);
 
   return os;
 }

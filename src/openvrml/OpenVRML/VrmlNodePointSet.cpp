@@ -147,7 +147,7 @@ Viewer::Object VrmlNodePointSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 
       VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
 
-      obj = viewer->insertPointSet(coord.size(), &coord[0][0], color);
+      obj = viewer->insertPointSet(coord.getLength(), &coord[0][0], color);
     }
 
   if (d_color.get()) d_color.get()->clearModified();
@@ -186,7 +186,7 @@ void VrmlNodePointSet::recalcBSphere()
   //cout << "VrmlNodePointSet::recalcBSphere()" << endl;
   d_bsphere.reset();
   VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
-  int nvert = coord.size();
+  int nvert = coord.getLength();
   for(int i=0; i<nvert; i++) {
     float* vi = coord[i]; // vi[3]
     //cout << vi[0] << "," << vi[1] << "," << vi[2] << ")" << endl;

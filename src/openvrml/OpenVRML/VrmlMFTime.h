@@ -38,7 +38,7 @@ class VrmlMFTime : public VrmlField {
         void set(size_t, double const *);
         double const * get() const;
         double const & operator[](size_t) const;
-        size_t size() const;
+        size_t getLength() const;
         
         //
         // Override from VrmlField

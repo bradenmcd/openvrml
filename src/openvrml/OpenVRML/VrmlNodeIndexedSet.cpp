@@ -90,10 +90,10 @@ void VrmlNodeIndexedSet::copyRoutes( VrmlNamespace *ns ) const
 ostream& VrmlNodeIndexedSet::printFields(ostream& os, int indent)
 {
   if (d_color.get()) PRINT_FIELD(color);
-  if (d_colorIndex.size() > 0) PRINT_FIELD(colorIndex);
+  if (d_colorIndex.getLength() > 0) PRINT_FIELD(colorIndex);
   if (! d_colorPerVertex.get()) PRINT_FIELD(colorPerVertex);
   if (d_coord.get()) PRINT_FIELD(coord);
-  if (d_coordIndex.size() > 0) PRINT_FIELD(coordIndex);
+  if (d_coordIndex.getLength() > 0) PRINT_FIELD(coordIndex);
   return os;
 }
 

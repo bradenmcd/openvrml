@@ -89,12 +89,12 @@ VrmlNodeFontStyle* VrmlNodeFontStyle::toFontStyle() const
 
 ostream& VrmlNodeFontStyle::printFields(ostream& os, int indent)
 {
-  if (d_family.size() > 1 ||
-      (d_family.size() == 1 && strcmp(d_family[0],"SERIF")) )
+  if (d_family.getLength() > 1 ||
+      (d_family.getLength() == 1 && strcmp(d_family[0],"SERIF")) )
     PRINT_FIELD(family);
   if (! d_horizontal.get()) PRINT_FIELD(horizontal);
-  if (d_justify.size() > 1 ||
-      (d_justify.size() == 1 && strcmp(d_justify[0],"BEGIN")) )
+  if (d_justify.getLength() > 1 ||
+      (d_justify.getLength() == 1 && strcmp(d_justify[0],"BEGIN")) )
     PRINT_FIELD(justify);
   if (d_language.get() && strcmp(d_language.get(), ""))
     PRINT_FIELD(language);

@@ -159,7 +159,7 @@ ostream& VrmlNodeElevationGrid::printFields(ostream& os, int indent)
   if (! d_solid.get()) PRINT_FIELD(solid);
   
   if (d_creaseAngle.get() != 0.0) PRINT_FIELD(creaseAngle);
-  if (d_height.size() > 0) PRINT_FIELD(height);
+  if (d_height.getLength() > 0) PRINT_FIELD(height);
 
   if (d_xDimension.get() != 0) PRINT_FIELD(xDimension);
   if (d_xSpacing.get() != 0) PRINT_FIELD(xSpacing);
@@ -179,7 +179,7 @@ Viewer::Object VrmlNodeElevationGrid::insertGeometry(Viewer *viewer, VrmlRenderC
 {
   Viewer::Object obj = 0;
 
-  if ( d_height.size() > 0 )
+  if ( d_height.getLength() > 0 )
     {
       const float *tc = 0, *normals = 0, *colors = 0;
 

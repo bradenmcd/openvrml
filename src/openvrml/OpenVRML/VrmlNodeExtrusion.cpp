@@ -115,8 +115,8 @@ ostream& VrmlNodeExtrusion::printFields(ostream& os, int indent)
 Viewer::Object VrmlNodeExtrusion::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
-  if ( d_crossSection.size() > 0 &&
-       d_spine.size() > 1 )
+  if ( d_crossSection.getLength() > 0 &&
+       d_spine.getLength() > 1 )
     {
       unsigned int optMask = 0;
       if (d_ccw.get()) optMask |= Viewer::MASK_CCW;
@@ -126,13 +126,13 @@ Viewer::Object VrmlNodeExtrusion::insertGeometry(Viewer *viewer, VrmlRenderConte
       if (d_endCap.get()) optMask |= Viewer::MASK_TOP;
 
       obj = viewer->insertExtrusion(optMask,
-				    d_orientation.size(),
+				    d_orientation.getLength(),
 				    d_orientation.get(),
-				    d_scale.size(),
+				    d_scale.getLength(),
 				    d_scale.get(),
-				    d_crossSection.size(),
+				    d_crossSection.getLength(),
 				    d_crossSection.get(),
-				    d_spine.size(),
+				    d_spine.getLength(),
 				    d_spine.get());
     }
 

@@ -66,11 +66,11 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  size_t nGroundAngles()	{ return d_groundAngle.size(); }
+  size_t nGroundAngles()	{ return d_groundAngle.getLength(); }
   const float * groundAngle()	{ return d_groundAngle.get(); }
   const float * groundColor()	{ return d_groundColor.get(); }
 
-  size_t nSkyAngles()		{ return d_skyAngle.size(); }
+  size_t nSkyAngles()		{ return d_skyAngle.getLength(); }
   const float * skyAngle()	{ return d_skyAngle.get(); }
   const float * skyColor()	{ return d_skyColor.get(); }
 

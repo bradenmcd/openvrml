@@ -536,12 +536,12 @@ SFNodeCons(JSContext *cx, JSObject *obj,
       // namespace...
       VrmlNamespace ns;
       VrmlMFNode *nodes = VrmlScene::readString( JS_GetStringBytes(str), &ns );
-      if (! nodes || nodes->size() == 0)
+      if (! nodes || nodes->getLength() == 0)
 	return JS_FALSE;
 
       // If there are multiple top-level nodes, wrap them in a Group. SPEC?
       VrmlNode *n;
-      if (nodes->size() == 1)
+      if (nodes->getLength() == 1)
 	n = nodes->get()[0];
       else
 	{
@@ -1824,8 +1824,7 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
     // MF*
     case VrmlField::MFCOLOR:
       {
-	const VrmlMFColor * const mf =
-                f ? static_cast<const VrmlMFColor *>(f->toMFColor()) : 0;
+	const VrmlMFColor * const mf = dynamic_cast<const VrmlMFColor *>(f);
 	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1847,9 +1846,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFFLOAT:
       {
-	const VrmlMFFloat * const mf =
-                f ? static_cast<const VrmlMFFloat *>(f->toMFFloat()) : 0;
-	int i, n = mf ? mf->size() : 0;
+	const VrmlMFFloat * const mf = dynamic_cast<const VrmlMFFloat *>(f);
+	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
 	JS_AddRoot( d_cx, obj );
@@ -1868,9 +1866,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFINT32:
       {
-	const VrmlMFInt32 * const mf =
-                f ? static_cast<const VrmlMFInt32 *>(f->toMFInt32()) : 0;
-	int i, n = mf ? mf->size() : 0;
+	const VrmlMFInt32 * const mf = dynamic_cast<const VrmlMFInt32 *>(f);
+	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
 	if (protect) JS_AddRoot( d_cx, obj );
@@ -1886,9 +1883,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFNODE:
       {
-	const VrmlMFNode * const mf =
-                f ? static_cast<const VrmlMFNode *>(f->toMFNode()) : 0;
-	int i, n = mf ? mf->size() : 0;
+	const VrmlMFNode * const mf = dynamic_cast<const VrmlMFNode *>(f);
+	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
 	JS_AddRoot( d_cx, obj );
@@ -1908,8 +1904,9 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFROTATION:
       {
-	VrmlMFRotation *mf = f ? ((VrmlMFRotation*) (f->toMFRotation())) : 0;
-	int i, n = mf ? mf->size() : 0;
+	const VrmlMFRotation * const mf =
+                dynamic_cast<const VrmlMFRotation *>(f);
+	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
 	JS_AddRoot( d_cx, obj );
@@ -1935,8 +1932,9 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 	int i, n = 0;
 	if (f)
 	  {
-	    VrmlMFString *mf = (VrmlMFString*) (f->toMFString());
-	    n = mf ? mf->size() : 0;
+	    const VrmlMFString * const mf =
+                    dynamic_cast<const VrmlMFString *>(f);
+	    n = mf ? mf->getLength() : 0;
 	    if (n > 0) jsvec = new jsval[n];
 	    for (i=0; i<n; ++i)
 	      {
@@ -1953,8 +1951,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
       
     case VrmlField::MFVEC2F:
       {
-	VrmlMFVec2f *mf = f ? ((VrmlMFVec2f*) (f->toMFVec2f())) : 0;
-	int i, n = mf ? mf->size() : 0;
+	const VrmlMFVec2f * const mf = dynamic_cast<const VrmlMFVec2f *>(f);
+	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
 	JS_AddRoot( d_cx, obj );
@@ -1975,12 +1973,12 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFVEC3F:
       {
-	VrmlMFVec3f *mf = f ? ((VrmlMFVec3f*) (f->toMFVec3f())) : 0;
-	int i, n = mf ? mf->size() : 0;
+	const VrmlMFVec3f * const mf = dynamic_cast<const VrmlMFVec3f *>(f);
+	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
 	JS_AddRoot( d_cx, obj );
-	float *fn = mf ? mf->get() : 0;
+	const float *fn = mf ? mf->get() : 0;
 	for (i=0; i<n; ++i, fn+=3)
 	  {
 	    JSObject *elt = JS_NewObject( d_cx, &SFVec3fClass,
@@ -2544,7 +2542,7 @@ static JSBool createVrmlFromString(JSContext *cx, JSObject* bobj,
       
       // Put the children from g into an MFNode and return in rval.
       // should store the namespace as well...
-      int i, n = kids->size();
+      int i, n = kids->getLength();
       jsval *jsvec = new jsval[n];
       VrmlNode * const * k = kids->get();
 

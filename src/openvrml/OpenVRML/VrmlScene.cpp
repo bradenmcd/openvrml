@@ -165,14 +165,14 @@ bool VrmlScene::loadUrl(VrmlMFString const * url, VrmlMFString const * parameter
         return false;
     }
     
-    size_t np = parameters ? parameters->size() : 0;
+    size_t np = parameters ? parameters->getLength() : 0;
     char const * const * params = parameters ? parameters->get() : 0;
     
     // try each url until we find one we can handle
 //    int i, n = url->size();
     size_t i(0);
     char const * const * urls = url->get();
-    for (; i < url->size(); ++i) {
+    for (; i < url->getLength(); ++i) {
         if (! urls[i]) {
             continue;
         }
@@ -213,7 +213,7 @@ bool VrmlScene::loadUrl(VrmlMFString const * url, VrmlMFString const * parameter
         }
     }
     
-    return (i != url->size());  // true if we found a url that loaded
+    return (i != url->getLength());  // true if we found a url that loaded
 }
 
 // Called by viewer when a destroy request is received. The request
@@ -361,7 +361,7 @@ VrmlMFNode * VrmlScene::readWrl(VrmlMFString * urls, Doc2 * relative,
                                 VrmlNamespace * ns)
 {
     Doc2 url;
-    int n = urls->size();
+    int n = urls->getLength();
     for (int i = 0; i < n; ++i) {
         //theSystem->debug("Trying to read url '%s'\n", urls->get(i));
         url.seturl( urls->get(i), relative );
@@ -527,7 +527,7 @@ VrmlNodeType * VrmlScene::readPROTO(VrmlMFString * urls, Doc2 const * relative)
     VrmlNodeType * def = 0;
 //    int i, n = urls->size();
     
-    for (size_t i(0); i < urls->size(); ++i) {
+    for (size_t i(0); i < urls->getLength(); ++i) {
         theSystem->inform("Trying to read EXTERNPROTO from url '%s'\n",
                           urls->get(i));
         urlDoc.seturl( urls->get(i), relative );
@@ -545,7 +545,7 @@ VrmlNodeType * VrmlScene::readPROTO(VrmlMFString * urls, Doc2 const * relative)
         if (def) {
             def->setActualUrl( urlDoc.url() );
             break;
-	} else if ((i < (urls->size() - 1)) && strncmp(urls->get(i),"urn:",4)) {
+	} else if ((i < (urls->getLength() - 1)) && strncmp(urls->get(i),"urn:",4)) {
             theSystem->warn("Couldn't read EXTERNPROTO url '%s': %s\n",
                             urls->get(i), strerror( errno));
         }

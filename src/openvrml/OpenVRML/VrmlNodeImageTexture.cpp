@@ -112,13 +112,13 @@ void VrmlNodeImageTexture::render(Viewer *viewer, VrmlRenderContext rc)
   // should cache on url so multiple references to the same file are
   // loaded just once... of course world authors should just DEF/USE
   // them...
-  if (! d_image && d_url.size() > 0)
+  if (! d_image && d_url.getLength() > 0)
     {
       const char *relUrl = d_relativeUrl.get() ? d_relativeUrl.get() :
 	d_scene->urlDoc()->url();
       Doc relDoc(relUrl, static_cast<Doc const *>(0));
       d_image = new Image;
-      if ( ! d_image->tryURLs( d_url.size(), d_url.get(), &relDoc ) )
+      if ( ! d_image->tryURLs( d_url.getLength(), d_url.get(), &relDoc ) )
 	      theSystem->error("Couldn't read ImageTexture from URL %s\n", (char*)d_url.get(0));
     }
 

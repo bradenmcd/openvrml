@@ -168,7 +168,7 @@ void VrmlNodeScript::cloneChildren( VrmlNamespace* ns )
 	else if ( (*i)->type == VrmlField::MFNODE &&
 		  (*i)->value->toMFNode() )
 	  {
-	    int nk = (*i)->value->toMFNode()->size();
+	    int nk = (*i)->value->toMFNode()->getLength();
 	    VrmlNode **kids = (*i)->value->toMFNode()->get();
 	    for (int k=0; k<nk; ++k)
 	      if (kids[k])
@@ -201,7 +201,7 @@ void VrmlNodeScript::addToScene(VrmlScene *s, const char *relUrl)
 
 ostream& VrmlNodeScript::printFields(ostream& os, int indent)
 {
-  if (d_url.size() > 0) PRINT_FIELD(url);
+  if (d_url.getLength() > 0) PRINT_FIELD(url);
   if (d_directOutput.get()) PRINT_FIELD(directOutput);
   if (d_mustEvaluate.get()) PRINT_FIELD(mustEvaluate);
 
@@ -215,7 +215,7 @@ void VrmlNodeScript::initialize( double ts )
 
   if (d_script) return;	       // How did I get here? Letting the days go by...
   d_eventsReceived = 0;
-  if (d_url.size() > 0)
+  if (d_url.getLength() > 0)
     {
       d_script = ScriptObject::create( this, d_url );
       if (d_script)

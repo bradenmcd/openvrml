@@ -144,12 +144,12 @@ void VrmlNodeInline::load(const char *relativeUrl)
   d_hasLoaded = true;		// although perhaps not successfully
   this->setBVolumeDirty(true);
 
-  if (d_url.size() > 0)
+  if (d_url.getLength() > 0)
     {
       VrmlNamespace *ns = new VrmlNamespace();
       VrmlMFNode *kids = 0;
       Doc2 url;
-      int i, n = d_url.size();
+      int i, n = d_url.getLength();
       for (i=0; i<n; ++i)
 	{
 	  Doc2 relDoc(relativeUrl);

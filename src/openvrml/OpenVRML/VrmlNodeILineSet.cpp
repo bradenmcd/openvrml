@@ -80,10 +80,10 @@ void VrmlNodeILineSet::cloneChildren(VrmlNamespace* ns)
 Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
-  if (d_coord.get() && d_coordIndex.size() > 0)
+  if (d_coord.get() && d_coordIndex.getLength() > 0)
     {
       VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
-      int nvert = coord.size();
+      int nvert = coord.getLength();
       const float * color = 0;
       int nci = 0; const long * ci = 0;
 
@@ -92,13 +92,13 @@ Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 	{
 	  VrmlMFColor &c = d_color.get()->toColor()->color();
 	  color = &c[0][0];
-	  nci = d_colorIndex.size();
+	  nci = d_colorIndex.getLength();
 	  if (nci) ci = d_colorIndex.get();
 	}
 
       obj =  viewer->insertLineSet(nvert,
 				   &coord[0][0],
-				   d_coordIndex.size(),
+				   d_coordIndex.getLength(),
 				   &d_coordIndex[0],
 				   d_colorPerVertex.get(),
 				   color,

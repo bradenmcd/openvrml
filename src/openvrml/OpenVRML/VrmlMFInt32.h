@@ -68,7 +68,7 @@ public:
   virtual const VrmlMFInt32 * toMFInt32() const;
   virtual VrmlMFInt32 * toMFInt32();
 
-  size_t size() const;
+  size_t getLength() const;
   const long * get() const;
   const long & operator[](size_t) const;
 

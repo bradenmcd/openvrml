@@ -86,7 +86,7 @@ VrmlNode *VrmlNodeGroup::cloneMe() const
 
 void VrmlNodeGroup::cloneChildren(VrmlNamespace *ns)
 {
-  int n = d_children.size();
+  int n = d_children.getLength();
   VrmlNode **kids = d_children.get();
   for (int i = 0; i<n; ++i)
     {
@@ -107,7 +107,7 @@ bool VrmlNodeGroup::isModified() const
 {
   if (d_modified) return true;
   
-  int n = d_children.size();
+  int n = d_children.getLength();
 
   for (int i = 0; i<n; ++i)
     if (d_children[i]->isModified())
@@ -125,7 +125,7 @@ VrmlNodeGroup::updateModified(VrmlNodePath& path, int flags)
   //cout << "VrmlNodeGroup[" << this << "]::updateModified()" << endl;
   if (this->isModified()) markPathModified(path, true, flags);
   path.push_front(this);
-  int n = d_children.size();
+  int n = d_children.getLength();
   //cout << "VrmlNodeGroup[" << this << "]::updateModified():n=" << n << endl;
   for (int i=0; i<n; ++i) {
     //cout << "VrmlNodeGroup[" << this << "]::updateModified():" << d_children[i] << endl;
@@ -139,7 +139,7 @@ VrmlNodeGroup::updateModified(VrmlNodePath& path, int flags)
 void VrmlNodeGroup::clearFlags()
 {
   VrmlNode::clearFlags();
-  int n = d_children.size();
+  int n = d_children.getLength();
   for (int i=0; i<n; ++i)
     d_children[i]->clearFlags();
 }
@@ -156,7 +156,7 @@ void VrmlNodeGroup::addToScene(VrmlScene *s, const char *relativeUrl)
   if ( ! currentRel || ! relativeUrl || strcmp(currentRel, relativeUrl) != 0)
     d_relative.set( relativeUrl );
   
-  int n = d_children.size();
+  int n = d_children.getLength();
 
   for (int i = 0; i<n; ++i)
     d_children[i]->addToScene(s, d_relative.get());
@@ -170,7 +170,7 @@ void VrmlNodeGroup::copyRoutes( VrmlNamespace *ns ) const
   VrmlNode::copyRoutes(ns);  // Copy my routes
 
   // Copy childrens' routes
-  int n = d_children.size();
+  int n = d_children.getLength();
   for (int i = 0; i<n; ++i)
     d_children[i]->copyRoutes( ns );
 }
@@ -189,7 +189,7 @@ ostream& VrmlNodeGroup::printFields(ostream& os, int indent)
       d_bboxSize.getZ() != -1.0 ||
       d_bboxSize.getY() != -1.0)
     PRINT_FIELD(bboxSize);
-  if (d_children.size() > 0)
+  if (d_children.getLength() > 0)
     PRINT_FIELD(children);
 
   return os;
@@ -240,9 +240,9 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
   if (d_viewerObject)
     viewer->insertReference(d_viewerObject);
 
-  else if (d_children.size() > 0)
+  else if (d_children.getLength() > 0)
     {
-      int i, n = d_children.size();
+      int i, n = d_children.getLength();
       int nSensors = 0;
 
       d_viewerObject = viewer->beginObject(name());
@@ -294,7 +294,7 @@ void VrmlNodeGroup::accumulateTransform(VrmlNode *parent)
 {
   d_parentTransform = parent;
 
-  int i, n = d_children.size();
+  int i, n = d_children.getLength();
 
   for (i = 0; i<n; ++i)
     {
@@ -310,7 +310,7 @@ void VrmlNodeGroup::activate( double time,
 			      bool isOver, bool isActive,
 			      double *p )
 {
-  int i, n = d_children.size();
+  int i, n = d_children.getLength();
 
   for (i = 0; i<n; ++i)
     {
@@ -343,8 +343,8 @@ void VrmlNodeGroup::activate( double time,
 
 void VrmlNodeGroup::addChildren( const VrmlMFNode &children )
 {
-  int nNow = d_children.size();
-  int n = children.size();
+  int nNow = d_children.getLength();
+  int n = children.getLength();
 
   for (int i=0; i<n; ++i)
     {
@@ -369,7 +369,7 @@ void VrmlNodeGroup::addChildren( const VrmlMFNode &children )
 	      child->nodeType().getName(), nodeType().getName());
     }
 
-  if (nNow != (int) d_children.size())
+  if (nNow != (int) d_children.getLength())
     {
       //??eventOut( d_scene->timeNow(), "children_changed", d_children );
       setModified();
@@ -380,13 +380,13 @@ void VrmlNodeGroup::addChildren( const VrmlMFNode &children )
 
 void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
 {
-  int nNow = d_children.size();
-  int n = children.size();
+  int nNow = d_children.getLength();
+  int n = children.getLength();
 
   for (int i=0; i<n; ++i)
     d_children.removeNode(children[i]);
 
-  if (nNow != (int) d_children.size())
+  if (nNow != (int) d_children.getLength())
     {
       //??eventOut( d_scene->timeNow(), "children_changed", d_children );
       setModified();
@@ -397,7 +397,7 @@ void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
 
 void VrmlNodeGroup::removeChildren()
 {
-  int n = d_children.size();
+  int n = d_children.getLength();
 
   for (int i=n; i>0; --i)
     d_children.removeNode( d_children[i-1] );
@@ -461,12 +461,12 @@ void VrmlNodeGroup::setField(const char *fieldName,
 
 int VrmlNodeGroup::size()
 {
-  return d_children.size();
+  return d_children.getLength();
 }
 
 VrmlNode *VrmlNodeGroup::child(int index)
 {
-  if (index >= 0 && index < (int) d_children.size())
+  if (index >= 0 && index < (int) d_children.getLength())
     return d_children[index];
 
   return 0;
@@ -491,7 +491,7 @@ VrmlNodeGroup::recalcBSphere()
 {
   //cout << "VrmlNodeGroup[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
-  for (int i = 0; i< (int) d_children.size(); ++i) {
+  for (int i = 0; i< (int) d_children.getLength(); ++i) {
     VrmlNode* ci = d_children[i];
     const VrmlBVolume* ci_bv = ci->getBVolume();
     if (ci_bv)

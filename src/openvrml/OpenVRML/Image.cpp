@@ -199,13 +199,13 @@ bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc2 * relative)
 
 bool Image::tryURLs(const VrmlMFString & urls, Doc2 * relative) {
     size_t i(0);
-    for (; i < urls.size(); ++i) {
+    for (; i < urls.getLength(); ++i) {
         if (urls[i] && setURL(urls[i], relative)) {
             break;
         }
     }
     
-    return (i < urls.size());
+    return (i < urls.getLength());
 }
 
 const char *Image::url() { return d_url ? d_url->url() : 0; }

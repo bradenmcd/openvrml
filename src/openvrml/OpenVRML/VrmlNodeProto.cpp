@@ -156,7 +156,7 @@ void VrmlNodeProto::instantiate()
   if (! d_nodes)
     {
       VrmlMFNode *protoNodes = d_nodeType->getImplementationNodes();
-      int nNodes = protoNodes ? protoNodes->size() : 0;
+      int nNodes = protoNodes ? protoNodes->getLength() : 0;
       int i;
 
       d_scope = new VrmlNamespace();
@@ -273,7 +273,7 @@ void VrmlNodeProto::addToScene(VrmlScene *s, const char *relUrl)
   if (d_nodes)
     {
       const char *rel = d_nodeType->url();
-      int j, n = d_nodes->size();
+      int j, n = d_nodes->getLength();
       for (j=0; j<n; ++j)
 	d_nodes->get(j)->addToScene(s, rel ? rel : relUrl);
     }
@@ -292,7 +292,7 @@ void VrmlNodeProto::accumulateTransform( VrmlNode *n )
   // ... and process the implementation nodes.
   if (d_nodes)
     {
-      int i, j = d_nodes->size();
+      int i, j = d_nodes->getLength();
       for (i=0; i<j; ++i)
 	d_nodes->get(i)->accumulateTransform(n);
     }
@@ -300,12 +300,12 @@ void VrmlNodeProto::accumulateTransform( VrmlNode *n )
 
 
 int VrmlNodeProto::size()
-{   return d_nodes ? d_nodes->size() : 0;  }
+{   return d_nodes ? d_nodes->getLength() : 0;  }
 
 
 VrmlNode *VrmlNodeProto::child(int index)
 {
-  if (d_nodes && index >= 0 && index < (int) d_nodes->size())
+  if (d_nodes && index >= 0 && index < (int) d_nodes->getLength())
     return (*d_nodes)[index];
   return 0;
 }
@@ -323,7 +323,7 @@ ostream& VrmlNodeProto::printFields(ostream& os, int )
 
 VrmlNode *VrmlNodeProto::firstNode() const 
 {
-  return ((d_nodes && d_nodes->size())
+  return ((d_nodes && d_nodes->getLength())
 	  ? d_nodes->get(0)
 	  : d_nodeType->firstNode());
 }
@@ -479,7 +479,7 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
       d_viewerObject = viewer->beginObject( name() );
 
       // render the nodes with the new values
-      int n = d_nodes->size();
+      int n = d_nodes->getLength();
       for (int j = 0; j<n; ++j)
 	d_nodes->get(j)->render(viewer, rc);
 

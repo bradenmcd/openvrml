@@ -72,7 +72,7 @@ VrmlNodeNormal* VrmlNodeNormal::toNormal() const
 
 ostream& VrmlNodeNormal::printFields(ostream& os, int indent)
 {
-  if (d_vector.size() > 0) PRINT_FIELD(vector);
+  if (d_vector.getLength() > 0) PRINT_FIELD(vector);
   return os;
 }
 

@@ -93,7 +93,7 @@ void VrmlNodeBillboard::render(Viewer *viewer, VrmlRenderContext rc)
   if (d_xformObject)
     viewer->insertReference(d_xformObject);
 
-  else if (d_children.size() > 0)
+  else if (d_children.getLength() > 0)
     {
       d_xformObject = viewer->beginObject(name());
 
@@ -117,7 +117,7 @@ void VrmlNodeBillboard::accumulateTransform( VrmlNode *parent )
 {
   d_parentTransform = parent;
 
-  int i, n = d_children.size();
+  int i, n = d_children.getLength();
 
   for (i = 0; i<n; ++i)
     {

@@ -128,7 +128,7 @@ ostream& VrmlNodeAudioClip::printFields(ostream& os, int indent)
   if (! FPEQUAL(d_pitch.get(),1.0)) PRINT_FIELD(pitch);
   if (! FPZERO(d_startTime.get())) PRINT_FIELD(startTime);
   if (! FPZERO(d_stopTime.get())) PRINT_FIELD(stopTime);
-  if (d_url.size() > 0) PRINT_FIELD(url);
+  if (d_url.getLength() > 0) PRINT_FIELD(url);
   return os;
 }
 
@@ -141,7 +141,7 @@ void VrmlNodeAudioClip::update (VrmlSFTime &inTime)
         Doc relDoc(d_relativeUrl.get(), static_cast<Doc const *>(0));
         delete d_audio;
         d_audio = new Audio(0);
-        if (d_audio->tryURLs (d_url.size(),
+        if (d_audio->tryURLs (d_url.getLength(),
                               d_url.get(),
 			      &relDoc))
         {

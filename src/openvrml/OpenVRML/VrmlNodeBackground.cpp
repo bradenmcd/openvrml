@@ -111,9 +111,9 @@ void VrmlNodeBackground::addToScene(VrmlScene *s, const char *rel)
 
 ostream& VrmlNodeBackground::printFields(ostream& os, int indent)
 {
-  if (d_groundAngle.size()) PRINT_FIELD(groundAngle);
+  if (d_groundAngle.getLength()) PRINT_FIELD(groundAngle);
   if (d_groundColor.getLength()) PRINT_FIELD(groundColor);
-  if (d_skyAngle.size()) PRINT_FIELD(skyAngle);
+  if (d_skyAngle.getLength()) PRINT_FIELD(skyAngle);
   if (d_skyColor.getLength()) PRINT_FIELD(skyColor);
   if (d_backUrl.get()) PRINT_FIELD(backUrl);
   if (d_bottomUrl.get()) PRINT_FIELD(bottomUrl);
@@ -135,7 +135,7 @@ static Image* getTexture( VrmlMFString &urls,
 			  Viewer *viewer )
 {
   // Check whether the url has already been loaded
-  int n = urls.size();
+  int n = urls.getLength();
   if (n > 0)
     {
       for (int index=thisIndex-1; index >= 0; --index)

@@ -73,7 +73,7 @@ VrmlNode *VrmlNodeSwitch::cloneMe() const
 
 void VrmlNodeSwitch::cloneChildren(VrmlNamespace *ns)
 {
-  int n = d_choice.size();
+  int n = d_choice.getLength();
   VrmlNode **kids = d_choice.get();
   for (int i = 0; i<n; ++i)
     {
@@ -91,7 +91,7 @@ bool VrmlNodeSwitch::isModified() const
 
   int w = d_whichChoice.get();
 
-  return (w >= 0 && w < (int) d_choice.size() && d_choice[w]->isModified());
+  return (w >= 0 && w < (int) d_choice.getLength() && d_choice[w]->isModified());
 }
 
 
@@ -104,7 +104,7 @@ void VrmlNodeSwitch::updateModified(VrmlNodePath& path)
 {
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
-  int n = d_choice.size();
+  int n = d_choice.getLength();
   for (int i=0; i<n; ++i)
     d_choice[i]->updateModified(path);
   path.pop_front();
@@ -115,7 +115,7 @@ void VrmlNodeSwitch::clearFlags()
 {
   VrmlNode::clearFlags();
   
-  int n = d_choice.size();
+  int n = d_choice.getLength();
   for (int i = 0; i<n; ++i)
     d_choice[i]->clearFlags();
 }
@@ -124,7 +124,7 @@ void VrmlNodeSwitch::addToScene( VrmlScene *s, const char *rel )
 {
   d_scene = s;
   
-  int n = d_choice.size();
+  int n = d_choice.getLength();
 
   for (int i = 0; i<n; ++i)
     d_choice[i]->addToScene(s, rel);
@@ -134,7 +134,7 @@ void VrmlNodeSwitch::copyRoutes( VrmlNamespace *ns ) const
 {
   VrmlNode::copyRoutes(ns);
   
-  int n = d_choice.size();
+  int n = d_choice.getLength();
   for (int i = 0; i<n; ++i)
     d_choice[i]->copyRoutes(ns);
 }
@@ -142,7 +142,7 @@ void VrmlNodeSwitch::copyRoutes( VrmlNamespace *ns ) const
 
 ostream& VrmlNodeSwitch::printFields(ostream& os, int indent)
 {
-  if (d_choice.size() > 0) PRINT_FIELD(choice);
+  if (d_choice.getLength() > 0) PRINT_FIELD(choice);
   if (d_whichChoice.get() != -1) PRINT_FIELD(whichChoice);
   return os;
 }
@@ -154,7 +154,7 @@ void VrmlNodeSwitch::render(Viewer *viewer, VrmlRenderContext rc)
 {
   int w = d_whichChoice.get();
 
-  if (w >= 0 && w < (int) d_choice.size())
+  if (w >= 0 && w < (int) d_choice.getLength())
     d_choice[w]->render(viewer, rc);
 
   clearModified();
@@ -201,7 +201,7 @@ VrmlNodeSwitch::recalcBSphere()
   //cout << "VrmlNodeSwitch[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
   int w = d_whichChoice.get();
-  if (w >= 0 && w < (int) d_choice.size()) {
+  if (w >= 0 && w < (int) d_choice.getLength()) {
     const VrmlBVolume* ci_bv = d_choice[w]->getBVolume();
     if (ci_bv)
       d_bsphere.extend(*ci_bv);

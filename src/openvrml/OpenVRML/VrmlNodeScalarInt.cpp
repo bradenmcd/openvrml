@@ -76,8 +76,8 @@ VrmlNode *VrmlNodeScalarInt::cloneMe() const
 
 ostream& VrmlNodeScalarInt::printFields(ostream& os, int indent)
 {
-  if (d_key.size() > 0) PRINT_FIELD(key);
-  if (d_keyValue.size() > 0) PRINT_FIELD(keyValue);
+  if (d_key.getLength() > 0) PRINT_FIELD(key);
+  if (d_keyValue.getLength() > 0) PRINT_FIELD(keyValue);
 
   return os;
 }
@@ -97,7 +97,7 @@ void VrmlNodeScalarInt::eventIn(double timeStamp,
 	}
       float f = fieldValue->toSFFloat()->get();
 
-      int n = d_key.size() - 1;
+      int n = d_key.getLength() - 1;
       if (f < d_key[0])
 	d_value.set( d_keyValue[0] );
       else if (f > d_key[n])

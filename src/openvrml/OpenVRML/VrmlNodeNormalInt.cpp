@@ -77,8 +77,8 @@ VrmlNode *VrmlNodeNormalInt::cloneMe() const
 
 ostream& VrmlNodeNormalInt::printFields(ostream& os, int indent)
 {
-  if (d_key.size() > 0) PRINT_FIELD(key);
-  if (d_keyValue.size() > 0) PRINT_FIELD(keyValue);
+  if (d_key.getLength() > 0) PRINT_FIELD(key);
+  if (d_keyValue.getLength() > 0) PRINT_FIELD(keyValue);
 
   return os;
 }
@@ -99,8 +99,8 @@ void VrmlNodeNormalInt::eventIn(double timeStamp,
 	}
       float f = fieldValue->toSFFloat()->get();
 
-      int nNormals = d_keyValue.size() / d_key.size();
-      int n = d_key.size() - 1;
+      int nNormals = d_keyValue.getLength() / d_key.getLength();
+      int n = d_key.getLength() - 1;
 
       if (f < d_key[0])
 	{

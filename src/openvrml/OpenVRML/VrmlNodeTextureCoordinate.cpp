@@ -74,7 +74,7 @@ VrmlNodeTextureCoordinate* VrmlNodeTextureCoordinate::toTextureCoordinate() cons
 
 ostream& VrmlNodeTextureCoordinate::printFields(ostream& os, int indent)
 {
-  if (d_point.size() > 0) PRINT_FIELD(point);
+  if (d_point.getLength() > 0) PRINT_FIELD(point);
   return os;
 }
 

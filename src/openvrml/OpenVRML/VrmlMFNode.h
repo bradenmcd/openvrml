@@ -47,7 +47,7 @@ public:
   virtual const VrmlMFNode* toMFNode() const;
   virtual VrmlMFNode* toMFNode();
 
-  size_t size() const			{ return d_size; }
+  size_t getLength() const			{ return d_size; }
   VrmlNode ** get()			{ return d_v; }
   VrmlNode* get(size_t index) const		{ return d_v[index]; }
 

@@ -69,7 +69,7 @@ public:
   virtual const VrmlMFFloat* toMFFloat() const;
   virtual VrmlMFFloat* toMFFloat();
 
-  size_t size() const			{ return d_data->d_n; }
+  size_t getLength() const			{ return d_data->d_n; }
   const float * get() const			{ return d_data->d_v; }
   const float & operator[](size_t i) const	{ return d_data->d_v[i]; }
 

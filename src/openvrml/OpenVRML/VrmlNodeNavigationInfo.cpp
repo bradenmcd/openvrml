@@ -102,14 +102,14 @@ void VrmlNodeNavigationInfo::addToScene(VrmlScene *s, const char *)
 
 ostream& VrmlNodeNavigationInfo::printFields(ostream& os, int indent)
 {
-  if (d_avatarSize.size() != 3 ||
+  if (d_avatarSize.getLength() != 3 ||
       ! FPEQUAL(d_avatarSize[0], 0.25) ||
       ! FPEQUAL(d_avatarSize[1], 1.6) ||
       ! FPEQUAL(d_avatarSize[2], 0.75) )
     PRINT_FIELD(avatarSize);
   if (! d_headlight.get()) PRINT_FIELD(headlight);
   if (! FPEQUAL(d_speed.get(), 1.0)) PRINT_FIELD(speed);
-  if (d_type.size() != 2 ||
+  if (d_type.getLength() != 2 ||
       strcmp(d_type[0], "WALK") != 0 ||
       strcmp(d_type[1], "ANY") != 0 )
     PRINT_FIELD(type);

@@ -47,7 +47,7 @@ public:
   virtual ostream& print(ostream& os) const;
 
 
-  size_t size() const;
+  size_t getLength() const;
   char const * const * get() const;
   char const * get(size_t) const;
   char const * operator[](size_t) const;

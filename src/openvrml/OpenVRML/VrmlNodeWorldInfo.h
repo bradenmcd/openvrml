@@ -49,7 +49,7 @@ public:
 
   const char** info() { return (const char**) (d_info.get()); }
 
-  const int    size() { return d_info.size(); }
+  const int    size() { return d_info.getLength(); }
 
 
 private:

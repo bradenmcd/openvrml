@@ -113,9 +113,9 @@ void VrmlNodeText::copyRoutes( VrmlNamespace *ns ) const
 
 ostream& VrmlNodeText::printFields(ostream& os, int indent)
 {
-  if (d_string.size() > 0) PRINT_FIELD(string);
+  if (d_string.getLength() > 0) PRINT_FIELD(string);
   if (d_fontStyle.get()) PRINT_FIELD(fontStyle);
-  if (d_length.size() > 0) PRINT_FIELD(length);
+  if (d_length.getLength() > 0) PRINT_FIELD(length);
   if (! FPZERO(d_maxExtent.get()) ) PRINT_FIELD(maxExtent);
   return os;
 }
@@ -136,7 +136,7 @@ Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc
         if (f) {
             VrmlMFString & j = f->justify();
             
-            for (size_t i=0; i<j.size(); ++i) {
+            for (size_t i=0; i<j.getLength(); ++i) {
                 if (strcmp(j[i], "END") == 0) {
                     justify[i] = -1;
                 } else if (strcmp(j[i], "MIDDLE") == 0) {
@@ -146,7 +146,7 @@ Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc
             size = f->size();
         }
         
-        return viewer->insertText(justify, size, d_string.size(), s);
+        return viewer->insertText(justify, size, d_string.getLength(), s);
     }
     
     return 0;

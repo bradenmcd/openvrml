@@ -85,8 +85,8 @@ VrmlNode *VrmlNodeOrientationInt::cloneMe() const
 
 ostream& VrmlNodeOrientationInt::printFields(ostream& os, int indent)
 {
-  if (d_key.size() > 0) PRINT_FIELD(key);
-  if (d_keyValue.size() > 0) PRINT_FIELD(keyValue);
+  if (d_key.getLength() > 0) PRINT_FIELD(key);
+  if (d_keyValue.getLength() > 0) PRINT_FIELD(keyValue);
 
   return os;
 }
@@ -109,7 +109,7 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
 
       //printf("OI.set_fraction %g ", f);
 
-      int n = d_key.size() - 1;
+      int n = d_key.getLength() - 1;
       if (f < d_key[0])
 	{
 	  const float * v0 = d_keyValue[0];
