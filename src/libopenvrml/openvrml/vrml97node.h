@@ -28,6 +28,7 @@
 #   include <openvrml/node.h>
 #   include <openvrml/img.h>
 #   include <openvrml/bounding_volume.h>
+#   include <openvrml/exposedfield.h>
 
 typedef unsigned int FT_UInt;
 typedef struct FT_LibraryRec_ * FT_Library;

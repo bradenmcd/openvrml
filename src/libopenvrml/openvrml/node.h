@@ -31,7 +31,7 @@
 #   include <utility>
 #   include <boost/shared_ptr.hpp>
 #   include <boost/utility.hpp>
-#   include <openvrml/field.h>
+#   include <openvrml/field_value.h>
 #   include <openvrml/viewer.h>
 #   include <openvrml/rendering_context.h>
 #   include <openvrml/scope.h>
@@ -298,6 +298,9 @@ namespace openvrml {
 
     template <typename To>
     To node_cast(node * n) throw ();
+
+    class event_listener;
+    class event_emitter;
 
     template <typename FieldValue>
     class exposedfield;
@@ -901,58 +904,6 @@ namespace openvrml {
 
         void do_traversal(node & n);
     };
-
-
-    template <typename FieldValue>
-    class exposedfield : public FieldValue,
-                         public field_value_listener<FieldValue>,
-                         public field_value_emitter<FieldValue> {
-    public:
-        exposedfield(openvrml::node & node,
-                     const typename FieldValue::value_type & value =
-                     typename FieldValue::value_type());
-        virtual ~exposedfield() throw ();
-
-    private:
-        virtual void do_process_event(const FieldValue & value,
-                                      double timestamp)
-            throw (std::bad_alloc);
-        virtual void event_side_effect(const FieldValue & value,
-                                       double timestamp)
-            throw (std::bad_alloc);
-    };
-
-    template <typename FieldValue>
-    inline exposedfield<FieldValue>::exposedfield(
-        openvrml::node & node,
-        const typename FieldValue::value_type & value):
-        FieldValue(value),
-        field_value_listener<FieldValue>(node),
-        field_value_emitter<FieldValue>(static_cast<FieldValue &>(*this))
-    {}
-
-    template <typename FieldValue>
-    inline exposedfield<FieldValue>::~exposedfield() throw ()
-    {}
-
-    template <typename FieldValue>
-    inline void
-    exposedfield<FieldValue>::do_process_event(const FieldValue & value,
-                                               const double timestamp)
-        throw (std::bad_alloc)
-    {
-        static_cast<FieldValue &>(*this) = value;
-        this->do_process_event(value, timestamp);
-        this->node().modified(true);
-        node::emit_event(*this, timestamp);
-    }
-
-    template <typename FieldValue>
-    inline void
-    exposedfield<FieldValue>::event_side_effect(const FieldValue & value,
-                                                const double timestamp)
-        throw (std::bad_alloc)
-    {}
 }
 
 # endif

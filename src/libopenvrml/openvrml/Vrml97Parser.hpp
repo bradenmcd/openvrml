@@ -12,7 +12,7 @@
 
 # include <memory>
 # include <boost/shared_ptr.hpp>
-# include "field.h"
+# include "field_value.h"
 # include "node_ptr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }

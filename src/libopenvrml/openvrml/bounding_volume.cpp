@@ -22,7 +22,7 @@
 # include <limits>
 # include "private.h"
 # include "bounding_volume.h"
-# include "field.h"
+# include "field_value.h"
 # include "frustum.h"
 
 namespace openvrml {

@@ -25,6 +25,7 @@
 
 #   include <boost/scoped_ptr.hpp>
 #   include <openvrml/node.h>
+#   include <openvrml/event.h>
 
 namespace openvrml {
 

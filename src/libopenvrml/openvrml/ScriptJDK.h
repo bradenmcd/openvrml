@@ -30,7 +30,7 @@
 
 #include <jni.h>
 
-#include "field.h"
+#include "field_value.h"
 
 namespace openvrml {
 

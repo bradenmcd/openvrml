@@ -6,7 +6,9 @@ openvrml_include_HEADERS = \
         openvrml/basetypes.h \
         openvrml/img.h \
         openvrml/system.h \
-        openvrml/field.h \
+        openvrml/field_value.h \
+        openvrml/event.h \
+	openvrml/exposedfield.h \
         openvrml/scope.h \
         openvrml/node.h \
         openvrml/node_ptr.h \
@@ -53,7 +55,9 @@ libopenvrml_la_SOURCES = \
         openvrml/basetypes.cpp \
         openvrml/img.cpp \
         openvrml/system.cpp \
-        openvrml/field.cpp \
+        openvrml/field_value.cpp \
+        openvrml/event.cpp \
+	openvrml/exposedfield.cpp \
         openvrml/scope.cpp \
         openvrml/node.cpp \
         openvrml/node_ptr.cpp \
