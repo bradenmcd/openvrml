@@ -13319,7 +13319,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
             }
         } else if (justify[0] == "END") {
             if (horizontal) {
-                xOffset = lineGeometry.xMax - lineGeometry.xMin;
+                xOffset = -(lineGeometry.xMax - lineGeometry.xMin);
             } else {
                 yOffset = lineGeometry.yMax - lineGeometry.yMin;
             }
