@@ -22,21 +22,89 @@ package vrml.field;
 
 import vrml.ConstMField;
 
+/**
+ * Represents a read-only VRML MFColor field in Java.
+ */
 public class ConstMFColor extends ConstMField
 {
   public native int getSize();
 
+  /**
+   * Construct a new MFColor field in OpenVRML using the given params.
+   *
+   * @param size Number of SFColor elements passed in.
+   * @param colors List of RGB 3-tuples
+   */
   private native void CreateObject(int size, float colors[]);
+
+  /**
+   * Construct a new MFColor field in OpenVRML using the given params.
+   *
+   * @param colors An array of sets of three float values (RGB)
+   */
   private native void CreateObject(float colors[][]);
 
-  public ConstMFColor(float colors[][]) { CreateObject(colors); }
-  public ConstMFColor(float colors[]) { CreateObject(colors.length, colors); }
-  public ConstMFColor(int size, float colors[]) { CreateObject(size, colors); }
-       
+  /**
+   * Construct a read-only MFColor field.
+   *
+   * @param colors An array of sets of three-float values (RGB)
+   */
+  public ConstMFColor(float colors[][])
+  {
+    CreateObject(colors);
+  }
+
+  /**
+   * Construct a read-only MFColor field.
+   *
+   * @param colors An array of RGB values.
+   */
+  public ConstMFColor(float colors[])
+  {
+    CreateObject(colors.length, colors);
+  }
+
+  /**
+   * Construct a read-only MFColor field.
+   *
+   * @param size Number of RGB value passed in array.
+   * @param colors Array of RGB values.
+   */
+  public ConstMFColor(int size, float colors[])
+  {
+    CreateObject(size, colors);
+  }
+  
+  /**
+   * Retrieves the value of an MFColor field.
+   *
+   * @param 2D array of sets of RGB values to be returned.
+   */
   public native void getValue(float colors[][]);
+
+  /**
+   * Retrieves the value of an MFColor field.
+   *
+   * @param Array of sets of RGB values to be returned.
+   */
   public native void getValue(float colors[]);
-	
+
+  /**
+   * Retrieves a specific SFColor element in an MFColor and
+   * returns it as a float array.
+   *
+   * @param index Position of desired SFColor
+   * @param colors RGB value of specified SFColor.
+   */	
   public native void get1Value(int index, float colors[]);
+
+  /**
+   * Retrieves a specific SFColor element in an MFColor and
+   * returns it as an SFColor object.
+   *
+   * @param index Position of desired SFColor
+   * @param color SFColor that will be set to desired value.
+   */
   public native void get1Value(int index, SFColor color);
 	
   public native String toString();
