@@ -3065,51 +3065,55 @@ void browser::load_url(const std::vector<std::string> & url,
     // Create the new scene.
     //
     this->init_node_class_map();
-    this->scene_ = new scene(*this, url);
-    this->scene_->initialize(now);
+    try {
+        this->scene_ = new scene(*this, url);
+        this->scene_->initialize(now);
 
-    //
-    // Get the initial viewpoint_node, if any was specified.
-    //
-    viewpoint_node * initialViewpoint = 0;
-    const string viewpointNodeId = URI(this->scene_->url()).getFragment();
-    if (!viewpointNodeId.empty()) {
-        if (!this->scene_->nodes().empty()) {
-            const node_ptr & n = this->scene_->nodes()[0];
-            if (n) {
-                node * const vp = n->scope()->find_node(viewpointNodeId);
-                initialViewpoint = dynamic_cast<viewpoint_node *>(vp);
+        //
+        // Get the initial viewpoint_node, if any was specified.
+        //
+        viewpoint_node * initialViewpoint = 0;
+        const string viewpointNodeId = URI(this->scene_->url()).getFragment();
+        if (!viewpointNodeId.empty()) {
+            if (!this->scene_->nodes().empty()) {
+                const node_ptr & n = this->scene_->nodes()[0];
+                if (n) {
+                    node * const vp = n->scope()->find_node(viewpointNodeId);
+                    initialViewpoint = dynamic_cast<viewpoint_node *>(vp);
+                }
             }
         }
+
+        //
+        // Initialize the node_classes.
+        //
+        for_each(this->node_class_map.begin(), this->node_class_map.end(),
+                 InitNodeClass(initialViewpoint, now));
+
+        //
+        // Send initial bind events to bindable nodes.
+        //
+        if (!this->navigation_infos.empty()) {
+            assert(this->navigation_infos.front());
+            event_listener & listener =
+                navigation_infos.front()->event_listener("set_bind");
+            assert(dynamic_cast<sfbool_listener *>(&listener));
+            static_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), now);
+        }
+
+        if (this->active_viewpoint_
+            != node_cast<viewpoint_node *>(this->default_viewpoint.get())) {
+            event_listener & listener =
+                this->active_viewpoint_->event_listener("set_bind");
+            assert(dynamic_cast<sfbool_listener *>(&listener));
+            static_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), now);
+        }
+    } catch (invalid_vrml & ex) {
+        this->err << ex.url << ':' << ex.line << ':' << ex.column
+                  << ": error: " << ex.what() << std::endl;
     }
-
-    //
-    // Initialize the node_classes.
-    //
-    for_each(this->node_class_map.begin(), this->node_class_map.end(),
-             InitNodeClass(initialViewpoint, now));
-
-    //
-    // Send initial bind events to bindable nodes.
-    //
-    if (!this->navigation_infos.empty()) {
-        assert(this->navigation_infos.front());
-        event_listener & listener =
-            navigation_infos.front()->event_listener("set_bind");
-        assert(dynamic_cast<sfbool_listener *>(&listener));
-        static_cast<sfbool_listener &>(listener)
-            .process_event(sfbool(true), now);
-    }
-
-    if (this->active_viewpoint_
-        != node_cast<viewpoint_node *>(this->default_viewpoint.get())) {
-        event_listener & listener =
-            this->active_viewpoint_->event_listener("set_bind");
-        assert(dynamic_cast<sfbool_listener *>(&listener));
-        static_cast<sfbool_listener &>(listener)
-            .process_event(sfbool(true), now);
-    }
-
     this->modified(true);
     this->new_view = true;		// Force resetUserNav
 }
@@ -3633,9 +3637,12 @@ void browser::render(openvrml::viewer & viewer)
         if (x) { x->renderScoped(viewer); }
     }
 
-    // Render the nodes
-    assert(this->scene_);
-    this->scene_->render(viewer, rc);
+    //
+    // Render the nodes.  scene_ may be 0 if the world failed to load.
+    //
+    if (this->scene_) {
+        this->scene_->render(viewer, rc);
+    }
 
     viewer.end_object();
 
@@ -4127,7 +4134,7 @@ namespace {
  * @param url       the URI for the scene.
  * @param parent    the parent scene.
  *
- * @exception invalid_vrml       if there is a syntax error in the VRML input.
+ * @exception invalid_vrml      if there is a syntax error in the VRML input.
  * @exception std::bad_alloc    if memory allocation fails.
  */
 scene::scene(openvrml::browser & browser,
@@ -4179,6 +4186,8 @@ scene::scene(openvrml::browser & browser,
                                    ex.getLine(),
                                    ex.getColumn(),
                                    ex.getMessage());
+            } catch (antlr::ANTLRException & ex) {
+                browser.err << ex.getMessage() << std::endl;
             } catch (std::bad_alloc &) {
                 throw;
             } catch (...) {
