@@ -291,6 +291,97 @@ void ViewerOpenGL::getOrientation( float *orientation )
     }
 }
 
+// Find out whether the box is within the viewing volume S. K. Bose March 02/2000
+
+bool ViewerOpenGL::IsBoxOutside(float *min,float *max)
+{
+  float M[4][4],Vmin[4],Vmax[4];
+  float v[8][4],tv[8][4];
+
+  glGetFloatv (GL_MODELVIEW_MATRIX, (float *)M);
+  axis_aligned_bbox(M,min,max);
+  v[0][0] = v[1][0] = v[2][0] = v[3][0] = min[0];
+  v[4][0] = v[5][0] = v[6][0] = v[7][0] = max[0];
+  v[0][1] = v[1][1] = v[4][1] = v[7][1] = max[1];
+  v[2][1] = v[3][1] = v[5][1] = v[6][1] = min[1];
+  v[1][2] = v[2][2] = v[4][2] = v[5][2] = min[2];
+  v[0][2] = v[3][2] = v[6][2] = v[7][2] = max[2];
+  glPushMatrix();
+  glLoadIdentity();
+  glPopMatrix();	 
+  glGetFloatv (GL_PROJECTION_MATRIX, (float *)M);
+  int k;
+  for (k=0; k<8; k++)
+    for (int i=0; i<4; ++i)
+      tv[k][i] = (M[0][i] * v[k][0] + M[1][i] * v[k][1] + M[2][i] * v[k][2] + M[3][i]);
+
+  Vmin[0] = Vmax[0] = tv[0][0]/tv[0][3];
+  Vmin[1] = Vmax[1] = tv[0][1]/tv[0][3];
+  Vmin[2] = Vmax[2] = tv[0][2]/tv[0][3];
+
+  // Transformed into NDC
+  for (k=0;k<8;k++)
+    for (int i=0; i<3; ++i)
+      {
+	tv[k][i] = tv[k][i]/tv[k][3];
+	Vmin[i] = Vmin[i] < tv[k][i] ? Vmin[i] : tv[k][i];
+	Vmax[i] = Vmax[i] > tv[k][i] ? Vmax[i] : tv[k][i];
+      }
+
+  if ((Vmax[0] >= -1) && (Vmin[0] <= 1) && 
+      (Vmax[1] >= -1) && (Vmin[1] <= 1) &&  
+      (Vmax[2] >= -1) && (Vmin[2] <= 1))
+    return false;
+
+  return true;
+}
+
+// Construct transformation matrix M for bounding box calculation
+// S. K. Bose March. 02/2000
+
+void ViewerOpenGL::getTransformMatrix(float M[4][4],
+                float * center,
+				float * rotation,
+				float * scale,
+				float * scaleOrientation,
+				float * translation) 
+{
+
+  glPushMatrix();
+  glLoadIdentity();
+  glTranslatef(translation[0], translation[1], translation[2]);
+  glTranslatef(center[0], center[1], center[2]);
+
+  if (! FPZERO(rotation[3]) )
+    glRotatef(rotation[3] * 180.0 / M_PI,
+	      rotation[0],
+	      rotation[1],
+	      rotation[2]);
+
+  if (! FPEQUAL(scale[0], 1.0) ||
+      ! FPEQUAL(scale[1], 1.0) ||
+      ! FPEQUAL(scale[2], 1.0) )
+    {
+      if (! FPZERO(scaleOrientation[3]) )
+	glRotatef(scaleOrientation[3] * 180.0 / M_PI,
+		  scaleOrientation[0],
+		  scaleOrientation[1],
+		  scaleOrientation[2]);
+
+      glScalef(scale[0], scale[1], scale[2]);
+
+      if (! FPZERO(scaleOrientation[3]) )
+	glRotatef(-scaleOrientation[3] * 180.0 / M_PI,
+		  scaleOrientation[0],
+		  scaleOrientation[1],
+		  scaleOrientation[2]);
+    }
+
+  glTranslatef(-center[0], -center[1], -center[2]);
+  glGetFloatv (GL_MODELVIEW_MATRIX,(float *) M);
+  glPopMatrix();
+}
+
 // Construct Billboard transformation matrix M  
 // S. K. Bose March 02/2000
  
@@ -381,6 +472,7 @@ void ViewerOpenGL::resetUserNavigation()
   trackball(d_curquat, 0.0, 0.0, 0.0, 0.0);
   d_rotationChanged = true;
   d_activeSensitive = 0;
+  d_nSensitive = 0;
   d_overSensitive = 0;
   wsPostRedraw();
 }
