@@ -1,6 +1,6 @@
 docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
-EXTRA_DIST = $(doc_DATA) Doxyfile.in openvrml.css doxygen-header doxygen-footer
+EXTRA_DIST = Doxyfile.in openvrml.css doxygen-header doxygen-footer
 
 if WITH_DOXYGEN
 install-data-local:
