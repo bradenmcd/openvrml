@@ -1,3 +1,11 @@
+2000-08-27  Christopher St. John <cstjohn@acm.org>
+
+	* ViewerOpenGL.cpp Changed the default znear in setViewpoint()
+	from 1000 to 30,000. This helps with, but doesn't really properly
+	fix, conformance bugs #'s 111350, 111338, 111339, 111340. It might
+	also cause problems with z-precision, likely to show up as
+	z-fighting, but it seems worth a shot.
+
 2000-08-19  Christopher St. John <cstjohn@acm.org>
 
 	* ViewerOpenGL.cpp Fixed a problem with the check for non -1
