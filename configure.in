@@ -4,7 +4,7 @@ PACKAGE=openvrml
 OPENVRML_MAJOR_VERSION="0"
 OPENVRML_MINOR_VERSION="9"
 OPENVRML_MICRO_VERSION="0"
-VERSION="${OPENVRML_MAJOR_VERSION}.${OPENVRML_MINOR_VERSION}.${OPENVRML_MICRO_VERSION}pre1"
+VERSION="${OPENVRML_MAJOR_VERSION}.${OPENVRML_MINOR_VERSION}.${OPENVRML_MICRO_VERSION}pre2"
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 AM_CONFIG_HEADER(config.h)
 
@@ -62,7 +62,7 @@ dnl
 dnl Check for Java runtime
 AC_PATH_PROG(JAVA, java, no)
 if test X"$JAVA" = Xno; then
-  AC_MSG_ERROR(Java runtime not found. Check config.log for details.)
+  have_antlr=no
 else
   AC_MSG_CHECKING(for ANTLR)
   cat > conftest.g <<EOF
@@ -72,11 +72,15 @@ EOF
   sh -c "$JAVA antlr.Tool conftest.g" 1>&5 2>&5
   if test $? = 0; then
     AC_MSG_RESULT(yes)
+    have_antlr=yes
   else
     AC_MSG_RESULT(no)
-    AC_MSG_WARN(ANTLR not found. You will need ANTLR to recompile the parser grammar if you modify it.)
+    have_antlr=no
   fi
   rm -f conftest.g ConfTest.java ConfTestTokenTypes.java ConfTestTokenTypes.txt
+fi
+if test X"$have_antlr" = Xno; then
+  AC_MSG_WARN(ANTLR not found. You will need ANTLR to recompile the parser grammar if you modify it.)
 fi
 
 
