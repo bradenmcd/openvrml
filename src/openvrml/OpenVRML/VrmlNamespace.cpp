@@ -28,7 +28,6 @@
 # include "node.h"
 # include "System.h"
 # include "script.h"
-# include "proto.h"
 
 # ifndef NDEBUG
 #   include <typeinfo>

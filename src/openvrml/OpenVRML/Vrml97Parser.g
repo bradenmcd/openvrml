@@ -125,7 +125,6 @@ header "post_include_cpp" {
 # include "VrmlNamespace.h"
 # include "node.h"
 # include "script.h"
-# include "proto.h"
 # include "private.h"
 
 namespace {
