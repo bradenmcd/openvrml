@@ -1,0 +1,1778 @@
+#VRML V2.0 utf8
+
+# do not read this
+
+# this is a conclusion of files consisting of various inlines and protos,
+# but openvrml-people only want to have only one file...
+
+# Better versions are 
+# http://www.lug-s.org/dokumentation/software/vrml/vrmldemo/compressed/warbird.wrz
+# or
+# http://www.lug-s.org/dokumentation/software/vrml/vrmldemo1.26/compressed/warbird.wrz
+# The later uses a transparent object directly in front of the user, you 
+# better use cosmoplayer for that 8-(
+
+# do not make the background too dark...
+
+Background 
+   {
+   skyColor [0 0 1]
+   groundColor [0 0 1]
+   }
+
+Billboard 
+   {
+   children 
+      [
+      DEF WALL_SENSOR PlaneSensor             
+         {        
+         maxPosition  10000 10000
+         minPosition -10000 -10000
+         }               
+      Shape 
+         {
+         appearance Appearance 
+            {
+            material Material 
+               {
+               diffuseColor 0 0 1
+               transparency 0
+               }
+            }
+         geometry IndexedFaceSet 
+            {
+            solid TRUE
+            coord DEF COORD Coordinate 
+               {
+               point 
+                  [ 
+                  -600  -600 -35,
+                   600  -600 -35, 
+                  -600   600 -35,
+                   600   600 -35, 
+                  ]
+               }
+            coordIndex 
+               [
+               0 1 3 2  -1
+               ]
+            texCoordIndex
+               [
+               0 1 3 2  -1
+               ]
+            }
+         }
+      ]
+   }
+
+   DEF WALL_FIRE Script             
+      {            
+      eventIn SFBool   isactive_in
+      eventOut SFBool  fire 
+      field SFBool old_isactive FALSE
+      url "vrmlscript:            
+      function initialize()            
+         {            
+         fire=FALSE;
+         }            
+// release button == fire     
+      function isactive_in(val)            
+         {            
+         if ((!val) && old_isactive) 
+            fire=TRUE;
+         else 
+            fire=FALSE;           
+         old_isactive=val;           
+         }            
+      "            
+      }            
+
+# VRML-Proto which rotate the vector translation_in by rotation_in 
+# to the vector translation_out
+
+#VRML V2.0 utf8
+
+   PROTO ROTATE_TRANSLATION
+      [
+      eventIn SFVec3f translation_in
+      eventIn SFRotation rotation_in
+      eventOut SFVec3f translation_out
+      ] 
+      {
+      Script
+         {
+         eventIn SFVec3f  translation_in IS translation_in
+         eventIn SFRotation rotation_in IS rotation_in
+         eventOut SFVec3f  translation_out IS translation_out           
+         field SFRotation rotation    0 0 0 0
+         field SFRotation quaternion1 0 0 0 0
+         field SFRotation quaternion2 0 0 0 0
+         field SFRotation quaternion3 0 0 0 0
+         field SFFloat leng 1
+         field SFFloat winkelkorrektur 0
+
+         url "vrmlscript:
+         function initialize()
+            {
+            translation_out[0]=0;
+            translation_out[1]=0;
+            translation_out[2]=0;
+            }
+// account vektorproduct c = a x b
+         function vectorproduct(c,a,b)
+            {
+            c[0]=a[1]*b[2]-a[2]*b[1];
+            c[1]=a[2]*b[0]-a[0]*b[2];
+            c[2]=a[0]*b[1]-a[1]*b[0];
+            }
+// account scalarproduct a * b
+         function scalarproduct(a,b)
+            {
+            return(a[0]*b[0]+a[1]*b[1]+a[2]*b[2]);
+            }
+// account quaternion multiplication a b
+         function quaternionmult(c,a,b)
+            {
+            vectorproduct(c,a,b);
+            c[0]=c[0]+a[3]*b[0]+b[3]*a[0];
+            c[1]=c[1]+a[3]*b[1]+b[3]*a[1];
+            c[2]=c[2]+a[3]*b[2]+b[3]*a[2];
+            c[3]=a[3]*b[3]-scalarproduct(a,b);
+            }             
+// make rotation to quaternion with norm 1 
+         function norm_quaternion_from_rotation(quad,rot)  
+            {
+            quad[3]=Math.cos(rot[3]/2.0);
+            winkelkorrektur=Math.sin(rot[3]/2.0);
+            quad[0]=rot[0]*winkelkorrektur;
+            quad[1]=rot[1]*winkelkorrektur;
+            quad[2]=rot[2]*winkelkorrektur;
+            leng=Math.sqrt(quad[0]*quad[0]+quad[1]*quad[1]+quad[2]*quad[2]+
+                           quad[3]*quad[3]);
+            if (leng!=0)
+               {
+               quad[0]=quad[0]/leng;
+               quad[1]=quad[1]/leng;
+               quad[2]=quad[2]/leng;
+               quad[3]=quad[3]/leng;
+               }
+            else
+               {
+               quad[0]=0;
+               quad[1]=0;
+               quad[2]=0;
+               quad[3]=0;
+               }
+            }
+         function rotation_in(val)  
+            {
+            rotation=val;
+            }
+         function translation_in(val)  
+            {
+            norm_quaternion_from_rotation(quaternion1,rotation);
+            quaternion2[0]=val[0];
+            quaternion2[1]=val[1];
+            quaternion2[2]=val[2];
+            quaternion2[3]=0;
+            quaternionmult(quaternion3,quaternion1,quaternion2);
+            quaternion1[0]=-quaternion1[0];
+            quaternion1[1]=-quaternion1[1];
+            quaternion1[2]=-quaternion1[2];
+            quaternion1[3]= quaternion1[3];
+            quaternionmult(quaternion2,quaternion3,quaternion1);
+            translation_out[0]=quaternion2[0];
+            translation_out[1]=quaternion2[1];
+            translation_out[2]=quaternion2[2];
+            }
+         "
+         }
+      }
+
+# we need 2 of this 
+
+DEF ROT_TRANS1 ROTATE_TRANSLATION { }
+DEF ROT_TRANS2 ROTATE_TRANSLATION { }
+
+# a moving box 
+# each box get a timer input to move randomly
+# if the vector translation_in is equal to the position of the box
+# the box will be switched off
+
+#VRML V2.0 utf8
+ 
+PROTO moving_box
+   [
+   eventIn SFVec3f translation_in
+   eventOut SFInt32 deleted_out
+   exposedField MFNode children []
+   ] 
+   {
+   DEF HIDE_BOX Transform
+      {
+      children DEF BOX_SWITCH Switch
+         {
+         choice
+            [
+            DEF BOX_MOVE Transform
+               {
+               scale 1.5 1.5 1.5
+               children
+                  [
+                  # dummy touchsensor to switch out navigation in lookat
+                  DEF BOX_SENSOR TouchSensor {}
+#VRML V2.0 utf8
+
+Shape {
+appearance Appearance { 
+ material Material {  }
+ }
+geometry IndexedFaceSet {
+solid FALSE
+creaseAngle 0.5
+coord Coordinate { 
+point [
+-0.5 -0.5 -0.5,
+-0.5 0.5 -0.5,
+0.5 0.5 -0.5,
+0.5 -0.5 -0.5,
+-0.5 -0.5 0.4,
+-0.5 0.5 0.4,
+0.5 0.5 0.4,
+0.5 -0.5 0.4]
+}
+
+    coordIndex [ 0, 1, 2, 3, -1,
+6, 7, 3, 2, -1,
+7, 6, 5, 4, -1,
+4, 5, 1, 0, -1,
+1, 5, 6, 2, -1,
+4, 0, 3, 7, -1]
+    color Color { 
+    color [ 0.24 0.21 0.06,
+0.24 0.21 0.06,
+0.24 0.21 0.06,
+0.24 0.21 0.06,
+0.24 0.21 0.06,
+0.24 0.21 0.06]
+}
+colorPerVertex FALSE
+}
+}
+
+Transform
+   {
+   translation 0  0 2
+   children
+      [
+      # dummy touchsensor to switch out navigation in lookat
+      DEF DUMMY_TEXT TouchSensor {}
+      Group 
+         {
+         children IS children
+         }
+      ]
+   }
+                  ]
+               }
+            ]
+         }
+      }
+
+   DEF HIT_CHECK Script 
+      {
+      eventIn SFVec3f   translation_in IS translation_in
+      eventIn SFVec3f   box_position
+      eventOut SFInt32  deleted_out IS deleted_out
+      eventOut SFInt32  choice_out
+      field SFInt32 deleted 0
+      field SFVec3f box 10000 10000 10000
+      field SFFloat boxsize 1.5
+      url "vrmlscript:
+      function initialize()
+         {
+         choice_out=0;
+         deleted_out=1;
+         }
+      function translation_in(val)  
+         {
+         if (!deleted)
+            if (   (val[0]>=box[0]-boxsize/2) && (val[0]<=box[0]+boxsize/2)
+                && (val[1]>=box[1]-boxsize/2) && (val[1]<=box[1]+boxsize/2)
+                && (val[2]>=box[2]-boxsize/2) && (val[2]<=box[2]+boxsize/2)
+               )
+               {
+               choice_out=1;
+               deleted_out=0;
+               deleted=1;
+               }
+            else
+               choice_out=0;
+         else
+            choice_out=1;
+         }
+         
+      function box_position(val)
+         {
+         box[0]=val[0];
+         box[1]=val[1];
+         box[2]=val[2];
+         }  
+      "
+      }
+   
+   DEF MOVE_ON Script 
+      {
+      eventIn SFVec3f   translation_in IS translation_in
+      eventOut SFVec3f  translation_out            
+      field SFVec3f     step_translation 0 0 0
+      field SFInt32 step 0
+      url "vrmlscript:
+      function nextsteps()
+         {
+         step_translation[0]=(Math.random()-0.5)*0.04;
+         step_translation[1]=(Math.random()-0.5)*0.04;
+         step_translation[2]=(Math.random()-0.5)*0.04;
+         step=Math.random()*200+1;
+         }
+      function initialize()
+         {
+         translation_out[0]=Math.random()*8-4;
+         translation_out[1]=Math.random()*6-3;
+         translation_out[2]=Math.random()*-30-1;
+         nextsteps();
+         }
+      function translation_in(val)  
+         {
+         step--;
+         if (step<=0)
+            nextsteps();
+         if (   (translation_out[0]+step_translation[0]<4) 
+             && (translation_out[0]+step_translation[0]>-4)) 
+            translation_out[0]+=step_translation[0];
+         if (   (translation_out[1]+step_translation[1]<3) 
+             && (translation_out[1]+step_translation[1]>-3)) 
+             translation_out[1]+=step_translation[1];
+         if (   (translation_out[2]+step_translation[2]<-1) 
+             && (translation_out[2]+step_translation[2]>-30)) 
+            translation_out[2]+=step_translation[2];
+         }
+      "
+      }
+
+DEF HIDE_SCRIPT Script 
+   {
+   eventIn SFBool isover_in
+   eventOut SFVec3f hide_out
+   url "vrmlscript:
+   function isover_in(val)            
+      {            
+      if (val)
+         {
+         hide_out[0]=0;
+         hide_out[1]=0;
+         hide_out[2]=100;
+         }
+      else
+         {
+         hide_out[0]=0;
+         hide_out[1]=0;
+         hide_out[2]=0;
+         }
+      }    
+   "
+   }
+
+   ROUTE MOVE_ON.translation_out   TO HIT_CHECK.box_position
+   ROUTE MOVE_ON.translation_out   TO BOX_MOVE.set_translation
+   ROUTE HIT_CHECK.choice_out      TO BOX_SWITCH.whichChoice
+
+   ROUTE BOX_SENSOR.isOver         TO HIDE_SCRIPT.isover_in
+   ROUTE HIDE_SCRIPT.hide_out       TO HIDE_BOX.set_translation
+   }
+
+# we use 2 of these
+
+DEF BOX1 moving_box {
+   children      Shape
+         {
+         appearance Appearance 
+            {
+            material Material 
+               {
+               diffuseColor 1 1 1 
+               }
+         }
+         geometry Text
+            {
+            string ["internet warbird","mouse drag -> blue background "]
+            fontStyle FontStyle
+               {
+#               size 1
+               }
+            }
+         }
+   }
+
+DEF BOX2 moving_box {
+   children      Shape
+         {
+         appearance Appearance
+            {
+            material Material
+               {
+               diffuseColor 1 1 1
+               }
+         }
+         geometry Text
+            {
+            string ["internet openvrml","mouse drag -> blue background "]
+            fontStyle FontStyle
+               {
+#               size 1
+               }
+            }
+   }
+}
+
+## a extra box, usable for marking the position of the top of the bird
+## if this box run into the moving_box, the box will disappear
+
+# The steer thing and it's need axes
+
+      DEF THING Transform
+         {
+         children
+            [
+            DEF ROLL_AXIS Transform
+               {
+               children
+                  [
+                  DEF UP_DOWN_AXIS Transform 
+                     {
+                     children
+                        [
+                        DEF THING_SENSOR TouchSensor {}
+                        # include the 3D Model of the steered thing
+                        DEF HIDE_THING Transform
+                           {
+                           scale 1 1 1 
+                           children
+                              [
+#VRML V2.0 utf8
+
+# check changes to this file with 'lookat thing.wrl' (or use other vrmlbrowser)
+
+Transform 
+   {
+   translation 0 -0.37 0
+   rotation 0 1 0 3.141
+   children 
+      [
+#VRML V2.0 utf8
+
+Group {
+children [
+Transform {
+children Shape {
+appearance Appearance {
+material DEF _0 Material {
+}
+
+}
+
+geometry IndexedFaceSet {
+coord Coordinate {
+point [ 0.15 0.33 1.55
+0.26 0.63 1.21
+0.04 0.58 1.40
+0.04 0.28 1.58
+-0.10 0.31 1.54
+-0.17 0.63 1.21
+-0.24 0.53 1.15
+-0.07 0.33 1.55
+0.04 0.58 1.40
+0.04 0.26 1.51
+0.04 0.26 1.51
+0.15 0.28 1.53
+0.32 0.53 1.15
+0.04 0.28 1.58
+-0.07 0.28 1.53
+0.18 0.31 1.54
+0.09 0.55 1.39
+0.25 0.60 1.23
+0.25 0.59 1.24
+0.05 0.55 1.42
+0.03 0.54 1.43
+-0.01 0.55 1.39
+-0.16 0.59 1.25
+-0.17 0.59 1.24
+0.23 0.40 1.19
+0.20 0.39 1.20
+0.04 0.33 1.09
+-0.12 0.39 1.19
+0.04 0.33 1.09
+-0.15 0.40 1.20 ]
+}
+
+color Color {
+color [ 1 0.79 0.09
+1 0.64 0.08
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.79 0.09
+1 0.75 0.08
+1 0.75 0.08
+1 0.78 0.09
+1 0.76 0.08
+1 0.76 0.08
+1 0.78 0.09 ]
+}
+
+coordIndex [ 3, 0, 19, 2, -1, 22, 5, 23,
+4, 7, -1, 3, 10, 11, -1, 13,
+8, 20, 7, -1, 13, 7, 4, -1,
+13, 4, 14, -1, 6, 14, 4, -1,
+13, 14, 9, -1, 3, 15, 0, -1,
+3, 11, 15, -1, 12, 15, 11, -1,
+17, 0, 15, 18, 1, -1, 16, 0,
+17, -1, 15, 12, 18, -1, 12, 1,
+18, -1, 19, 0, 16, -1, 21, 7,
+20, -1, 7, 21, 22, -1, 4, 23,
+6, -1, 11, 24, 12, -1, 24, 11,
+10, 25, -1, 10, 26, 25, -1, 9,
+27, 28, -1, 14, 6, 29, -1, 27,
+9, 14, 29, -1 ]
+colorIndex [ 1, 0, 11, 0, -1, 16, 0, 19,
+0, 0, -1, 1, 1, 0, -1, 1,
+0, 13, 0, -1, 1, 0, 0, -1,
+1, 0, 0, -1, 0, 0, 0, -1,
+1, 0, 1, -1, 1, 0, 0, -1,
+1, 0, 0, -1, 0, 0, 0, -1,
+7, 0, 0, 9, 2, -1, 5, 0,
+6, -1, 0, 0, 8, -1, 0, 3,
+8, -1, 10, 0, 4, -1, 15, 0,
+12, -1, 0, 14, 17, -1, 0, 18,
+0, -1, 0, 23, 0, -1, 22, 0,
+1, 25, -1, 1, 26, 24, -1, 1,
+27, 29, -1, 0, 0, 21, -1, 28,
+1, 0, 20, -1 ]
+ccw TRUE
+solid TRUE
+convex TRUE
+creaseAngle 2.94
+}
+
+}
+
+translation -2.98023e-08 0.01 -0.03
+}
+Transform {
+children Shape {
+appearance Appearance {
+material USE _0
+
+}
+
+geometry IndexedFaceSet {
+coord Coordinate {
+point [ 0.04 0.19 -1.97
+0.28 0.19 -1.18
+0.61 0.19 -1.85
+0.04 0.19 -1.97
+-0.52 0.19 -1.85
+-0.19 0.19 -1.18
+0.04 0.18 -1.95
+0.28 0.05 -1.17
+0.61 0.16 -1.84
+0.04 0.18 -1.95
+-0.52 0.16 -1.84
+-0.19 0.05 -1.17
+0.04 0.19 -1.97
+0.28 0.19 -1.18
+0.61 0.19 -1.85
+0.04 0.19 -1.97
+-0.52 0.19 -1.85
+-0.19 0.19 -1.18 ]
+}
+
+color Color {
+color [ 1 0.96 0.06
+1 0.52 0.03
+1 0.52 0.03
+1 0.96 0.06
+1 0.52 0.03
+1 0.96 0.06 ]
+}
+
+coordIndex [ 0, 1, 7, 6, -1, 1, 2, 8,
+7, -1, 0, 2, 8, 6, -1, 3,
+4, 10, 9, -1, 4, 5, 11, 10,
+-1, 3, 5, 11, 9, -1, 8, 6,
+7, -1, 11, 9, 10, -1, 14, 13,
+12, -1, 17, 16, 15, -1 ]
+colorIndex [ 0, 0, 0, 0, -1, 0, 0, 0,
+0, -1, 0, 0, 0, 0, -1, 0,
+0, 0, 0, -1, 0, 0, 0, 0,
+-1, 0, 0, 0, 0, -1, 1, 1,
+0, -1, 0, 1, 1, -1, 2, 3,
+2, -1, 5, 4, 4, -1 ]
+ccw FALSE
+solid FALSE
+convex TRUE
+creaseAngle 3.14
+}
+
+}
+
+translation 0 0.18 -0.10
+}
+Transform {
+children Shape {
+appearance Appearance {
+material Material {
+ambientIntensity 0
+diffuseColor 0 0 0
+specularColor 0.22 0.27 0.27
+emissiveColor 0 0 0
+shininess 0.09
+transparency 0.06
+}
+
+}
+
+geometry IndexedFaceSet {
+coord Coordinate {
+point [ 0.04 0.35 1.37
+-0.26 0.27 0.39
+0.36 0.27 0.39
+0.44 0.28 -1.41
+0.73 0.28 -1.01
+0.80 0.28 -0.49
+0.81 0.29 -0.17
+0.64 0.31 0.14
+-0.58 0.30 0.14
+-0.74 0.27 -0.17
+-0.74 0.27 -0.48
+-0.66 0.26 -1.01
+-0.36 0.27 -1.40
+0.03 1.52 0.07
+0.03 1.26 0.40
+0.32 1.23 0.43
+0.38 1.44 0.11
+0.46 1.08 0.51
+0.63 1.09 0.20
+0.04 1.64 -0.32
+0.47 1.54 -0.27
+0.78 1.16 -0.15
+0.75 0.78 0.30
+0.88 0.75 0.01
+0.65 0.46 0.39
+0.04 1.66 -0.69
+0.52 1.55 -0.63
+0.87 1.15 -0.50
+0.98 0.69 -0.32
+0.04 1.56 -1.01
+0.54 1.45 -0.95
+0.88 1.08 -0.82
+0.98 0.63 -0.64
+0.67 0.89 -1.30
+0.88 0.53 -1.12
+0.44 0.64 -1.53
+0.48 0.46 -1.46
+0.03 0.46 -1.52
+0.03 0.20 -1.39
+-0.26 1.23 0.43
+-0.32 1.43 0.12
+-0.40 1.08 0.51
+-0.57 1.09 0.20
+-0.40 1.53 -0.26
+-0.72 1.15 -0.15
+-0.69 0.78 0.30
+-0.82 0.73 0.01
+-0.58 0.46 0.39
+-0.45 1.54 -0.63
+-0.81 1.13 -0.49
+-0.92 0.67 -0.32
+-0.47 1.44 -0.95
+-0.82 1.06 -0.81
+-0.93 0.61 -0.64
+-0.39 1.16 -1.43
+-0.82 0.51 -1.12
+-0.42 0.45 -1.46
+0.03 1.32 1.24
+0.23 1.35 0.98
+0.03 1.38 0.91
+0.31 1.29 1.11
+0.31 1.21 1.27
+0.23 1.14 1.41
+0.03 1.11 1.48
+0.03 1.28 0.66
+0.31 1.24 0.76
+0.44 1.14 0.96
+0.44 0.96 1.19
+0.31 0.92 1.38
+0.03 0.88 1.50
+0.46 0.60 1.02
+0.33 0.45 1.07
+-0.16 1.35 0.98
+-0.25 1.29 1.11
+-0.25 1.21 1.27
+-0.16 1.14 1.41
+-0.25 1.24 0.76
+-0.37 1.14 0.96
+-0.37 0.96 1.19
+-0.25 0.92 1.38
+-0.41 0.60 1.02
+-0.28 0.45 1.07
+0.03 0.46 -1.52
+0.20 0.78 -2.02
+0.02 0.82 -2.02
+-0.15 0.79 -2.02
+0.03 0.46 -1.52
+-0.64 0.90 -1.30
+-0.39 0.65 -1.53
+0.01 1.28 -1.49
+0.02 0.82 -2.02
+0.01 1.28 -1.49
+0.45 1.15 -1.43 ]
+}
+
+color NULL
+
+coordIndex [ 13, 14, 15, -1, 15, 16, 13, -1,
+16, 15, 17, -1, 17, 18, 16, -1,
+19, 13, 16, -1, 16, 20, 19, -1,
+20, 16, 18, -1, 18, 21, 20, -1,
+21, 18, 22, -1, 22, 23, 21, -1,
+23, 22, 24, -1, 24, 7, 23, -1,
+25, 19, 20, -1, 20, 26, 25, -1,
+26, 20, 21, -1, 21, 27, 26, -1,
+27, 21, 23, -1, 23, 28, 27, -1,
+28, 23, 7, -1, 7, 6, 28, -1,
+29, 25, 26, -1, 26, 30, 29, -1,
+30, 26, 27, -1, 27, 31, 30, -1,
+31, 27, 28, -1, 28, 32, 31, -1,
+32, 28, 6, -1, 6, 5, 32, -1,
+33, 31, 32, -1, 32, 34, 33, -1,
+34, 32, 5, -1, 5, 4, 34, -1,
+35, 33, 34, -1, 34, 36, 35, -1,
+36, 34, 4, -1, 4, 3, 36, -1,
+37, 35, 36, -1, 37, 36, 3, -1,
+37, 3, 38, -1, 13, 39, 14, -1,
+39, 13, 40, -1, 40, 41, 39, -1,
+41, 40, 42, -1, 19, 40, 13, -1,
+40, 19, 43, -1, 43, 42, 40, -1,
+42, 43, 44, -1, 44, 45, 42, -1,
+45, 44, 46, -1, 46, 47, 45, -1,
+47, 46, 8, -1, 25, 43, 19, -1,
+43, 25, 48, -1, 48, 44, 43, -1,
+44, 48, 49, -1, 49, 46, 44, -1,
+46, 49, 50, -1, 50, 8, 46, -1,
+8, 50, 9, -1, 29, 48, 25, -1,
+48, 29, 51, -1, 51, 49, 48, -1,
+49, 51, 52, -1, 52, 50, 49, -1,
+50, 52, 53, -1, 53, 9, 50, -1,
+9, 53, 10, -1, 54, 52, 51, -1,
+55, 10, 53, -1, 10, 55, 11, -1,
+56, 11, 55, -1, 11, 56, 12, -1,
+37, 12, 56, -1, 37, 38, 12, -1,
+8, 1, 47, -1, 0, 47, 1, -1,
+7, 24, 2, -1, 57, 58, 59, -1,
+57, 60, 58, -1, 57, 61, 60, -1,
+57, 62, 61, -1, 57, 63, 62, -1,
+64, 59, 58, -1, 58, 65, 64, -1,
+65, 58, 60, -1, 60, 66, 65, -1,
+66, 60, 61, -1, 61, 67, 66, -1,
+67, 61, 62, -1, 62, 68, 67, -1,
+68, 62, 63, -1, 63, 69, 68, -1,
+14, 64, 65, -1, 65, 15, 14, -1,
+15, 65, 66, -1, 66, 17, 15, -1,
+17, 66, 67, -1, 67, 70, 17, -1,
+70, 67, 68, -1, 68, 71, 70, -1,
+71, 68, 69, -1, 69, 0, 71, -1,
+18, 17, 70, -1, 70, 22, 18, -1,
+22, 70, 71, -1, 71, 24, 22, -1,
+24, 71, 0, -1, 57, 59, 72, -1,
+57, 72, 73, -1, 57, 73, 74, -1,
+57, 74, 75, -1, 57, 75, 63, -1,
+64, 72, 59, -1, 72, 64, 76, -1,
+76, 73, 72, -1, 73, 76, 77, -1,
+77, 74, 73, -1, 74, 77, 78, -1,
+78, 75, 74, -1, 75, 78, 79, -1,
+79, 63, 75, -1, 63, 79, 69, -1,
+14, 76, 64, -1, 76, 14, 39, -1,
+39, 77, 76, -1, 77, 39, 41, -1,
+41, 78, 77, -1, 78, 41, 80, -1,
+80, 79, 78, -1, 79, 80, 81, -1,
+81, 69, 79, -1, 69, 81, 0, -1,
+42, 80, 41, -1, 80, 42, 45, -1,
+45, 81, 80, -1, 81, 45, 47, -1,
+47, 0, 81, -1, 24, 0, 2, -1,
+86, 85, 84, -1, 87, 85, 88, -1,
+86, 88, 85, -1, 82, 90, 83, -1,
+90, 91, 92, -1, 92, 83, 90, -1,
+30, 31, 92, -1, 31, 33, 92, -1,
+83, 92, 33, -1, 52, 54, 87, -1,
+53, 52, 87, -1, 55, 53, 87, -1,
+29, 30, 89, -1, 51, 29, 89, -1,
+54, 51, 89, -1, 30, 92, 89, -1,
+84, 85, 54, -1, 85, 87, 54, -1,
+89, 84, 54, -1, 56, 55, 88, -1,
+37, 56, 88, -1, 55, 87, 88, -1,
+82, 83, 35, -1, 83, 33, 35, -1 ]
+colorIndex [ ]
+ccw TRUE
+solid TRUE
+convex TRUE
+creaseAngle 3.10
+}
+
+}
+
+translation 0.01 0 0.00
+}
+Transform {
+children Shape {
+appearance Appearance {
+material Material {
+ambientIntensity 1
+diffuseColor 1 1 1
+specularColor 0.77 0.77 0.77
+emissiveColor 0.69 0.69 0.69
+shininess 1
+transparency 0.37
+}
+
+}
+
+geometry IndexedFaceSet {
+coord Coordinate {
+point [ 0.02 0.13 0.10
+-0.74 0.27 -0.48
+0.02 0.16 -0.24
+-0.74 0.27 -0.17
+0.04 0.35 1.37
+-0.26 0.27 0.39
+0.03 0.29 0.40
+-0.58 0.30 0.14
+0.36 0.27 0.39
+0.64 0.31 0.14
+0.03 0.15 0.29
+0.81 0.29 -0.17
+0.80 0.28 -0.49
+-0.66 0.26 -1.01
+0.02 0.17 -0.59
+-0.36 0.27 -1.40
+0.03 0.20 -1.39
+0.73 0.28 -1.01
+0.44 0.28 -1.41 ]
+}
+
+coordIndex [ 0, 1, 2, -1, 1, 0, 3, -1,
+4, 5, 6, -1, 7, 6, 5, -1,
+4, 6, 8, -1, 9, 8, 6, -1,
+10, 3, 0, -1, 6, 10, 9, -1,
+6, 7, 10, -1, 3, 10, 7, -1,
+10, 0, 11, -1, 11, 9, 10, -1,
+0, 2, 12, -1, 12, 11, 0, -1,
+13, 2, 1, -1, 14, 15, 16, -1,
+2, 13, 14, -1, 15, 14, 13, -1,
+2, 14, 17, -1, 17, 12, 2, -1,
+14, 16, 18, -1, 18, 17, 14, -1 ]
+colorIndex [ ]
+ccw TRUE
+solid TRUE
+convex TRUE
+creaseAngle 3.14
+}
+
+}
+
+translation 0.01 0 0.00
+}
+]
+}
+
+#VRML V2.0 utf8 CosmoWorlds V1.0
+
+Group {
+  children	  Transform {
+    children	    Group {
+      children	[
+	Transform {
+	  children	Shape {
+	    appearance	Appearance {
+	      material	DEF _0 Material {
+		ambientIntensity	0
+		diffuseColor	0 0 0
+		specularColor	0 0 0
+		emissiveColor	0 0 0
+		shininess	0.2
+		transparency	1
+	      }
+
+	      texture	ImageTexture {
+		url	"textures/p_fly_eye_left.png"
+		repeatS	FALSE
+		repeatT	FALSE
+	      }
+
+	      textureTransform	TextureTransform {
+		translation	0 -0.16
+		rotation	0
+		scale	1.2386 1.70147
+		center	0 0
+	      }
+
+	    }
+
+	    geometry	IndexedFaceSet {
+	      coord	Coordinate {
+		point	[ -0.239684 0.91645 1.37242,
+			  0.041913 0.878853 1.49368,
+			  0.0419132 0.616343 1.43187,
+			  -0.108708 0.641629 1.28025,
+			  -0.249507 0.660427 1.21961 ]
+	      }
+
+	      color	NULL
+
+	      coordIndex	[ 1, 3, 2, -1, 3, 1, 0, 4,
+		        -1 ]
+	      colorIndex	[  ]
+	      colorPerVertex	FALSE
+	      solid	TRUE
+	      creaseAngle	3.14159
+	    }
+
+	  }
+
+	  translation	0.0193974 -0.306637 -0.563685
+	  scale	1.4155 1.4155 1.4155
+	}
+	Transform {
+	  children	Shape {
+	    appearance	Appearance {
+	      material	USE _0
+
+	      texture	ImageTexture {
+		url	"textures/p_fly_eye_right.png"
+		repeatS	FALSE
+		repeatT	FALSE
+	      }
+
+	      textureTransform	TextureTransform {
+		translation	0.04 -0.12
+		rotation	0
+		scale	1.14803 1.67814
+		center	0 0
+	      }
+
+	    }
+
+	    geometry	IndexedFaceSet {
+	      coord	Coordinate {
+		point	[ 0.323506 0.916734 1.37242,
+			  0.041913 0.878853 1.49368,
+			  0.192535 0.64177 1.28025,
+			  0.041913 0.616344 1.43187,
+			  0.333331 0.660711 1.21961 ]
+	      }
+
+	      color	NULL
+
+	      coordIndex	[ 1, 3, 2, -1, 2, 4, 0, 1,
+		        -1 ]
+	      colorIndex	[  ]
+	      colorPerVertex	FALSE
+	      solid	TRUE
+	      creaseAngle	3.14159
+	    }
+
+	  }
+
+	  translation	0.0115847 -0.247596 -0.455337
+	  rotation	0 0 1  0
+	  scale	1.33563 1.33563 1.33563
+	}
+      ]
+    }
+
+    translation	-3.91901e-06 -0.0299954 0.00720346
+  }
+
+}
+
+#VRML V2.0 utf8
+
+#VRML V2.0 utf8 CosmoWorlds V1.0
+
+Group {
+children Transform {
+children [
+DEF CORINT_0 CoordinateInterpolator {
+key [ 0, 0.15 0.30 0.45
+0.60 0.75 0.80 0.85
+0.90 0.95 1 ]
+keyValue [ 0.63 0.89 -0.22
+0.52 0.89 -0.90
+1.07 0.78 -0.29
+0.95 0.73 -0.98
+1.65 0.31 -0.51
+1.53 0.28 -1.02
+2.02 -0.28 -0.97
+0.68 0.89 -0.22
+0.57 0.89 -0.90
+1.13 0.81 -0.29
+1.00 0.76 -0.98
+1.73 0.44 -0.51
+1.62 0.34 -1.02
+2.22 -0.13 -0.98
+0.68 0.89 -0.22
+0.57 0.89 -0.90
+1.13 0.83 -0.29
+0.99 0.81 -0.98
+1.70 0.58 -0.51
+1.63 0.42 -0.93
+2.30 0.20 -0.78
+0.68 0.89 -0.22
+0.57 0.89 -0.90
+1.13 0.83 -0.29
+0.99 0.89 -0.98
+1.79 0.74 -0.51
+1.71 0.60 -0.93
+2.28 0.35 -0.78
+0.68 0.89 -0.22
+0.57 0.89 -0.90
+1.13 0.83 -0.29
+0.99 0.89 -0.98
+1.79 0.90 -0.51
+1.59 0.90 -0.93
+2.27 1.06 -0.67
+0.68 0.89 -0.22
+0.62 0.96 -0.90
+1.13 0.83 -0.29
+0.99 0.89 -0.98
+1.78 0.97 -0.51
+1.65 0.96 -0.93
+2.26 1.17 -0.67
+0.68 0.89 -0.22
+0.57 0.89 -0.90
+1.13 0.83 -0.29
+0.99 0.89 -0.98
+1.79 0.90 -0.51
+1.59 0.90 -0.93
+2.27 1.06 -0.67
+0.68 0.89 -0.22
+0.57 0.89 -0.90
+1.13 0.83 -0.29
+0.99 0.89 -0.98
+1.79 0.74 -0.51
+1.71 0.60 -0.93
+2.28 0.35 -0.78
+0.68 0.89 -0.22
+0.57 0.89 -0.90
+1.13 0.83 -0.29
+0.99 0.81 -0.98
+1.70 0.58 -0.51
+1.63 0.42 -0.93
+2.30 0.20 -0.78
+0.68 0.89 -0.22
+0.57 0.89 -0.90
+1.13 0.81 -0.29
+1.00 0.76 -0.98
+1.73 0.44 -0.51
+1.62 0.34 -1.02
+2.22 -0.13 -0.98
+0.63 0.89 -0.22
+0.52 0.89 -0.90
+1.08 0.78 -0.29
+0.95 0.73 -0.98
+1.65 0.31 -0.51
+1.53 0.28 -1.02
+2.02 -0.28 -0.98 ]
+}
+DEF TIMER_1 TimeSensor {
+cycleInterval 2
+loop TRUE
+}
+Group {
+children [
+Background {
+groundColor 0 0 1
+skyColor 0 0 1
+}
+Shape {
+appearance Appearance {
+material Material {
+ambientIntensity 0
+diffuseColor 0 0 0
+specularColor 0.22 0.27 0.27
+emissiveColor 0 0 0
+shininess 0.09
+transparency 0.06
+}
+
+}
+
+geometry IndexedFaceSet {
+coord DEF COORD1_2 Coordinate {
+point [ 0.68 0.89 -0.22
+0.57 0.89 -0.90
+1.13 0.78 -0.29
+1.00 0.73 -0.98
+1.70 0.31 -0.51
+1.58 0.28 -1.02
+2.07 -0.28 -0.98 ]
+}
+coordIndex [ 2, 1, 0, -1, 1, 2, 3, -1,
+4, 3, 2, -1, 3, 4, 5, -1,
+6, 5, 4, -1 ]
+colorIndex [ ]
+solid FALSE
+creaseAngle 1
+}
+}
+]
+}
+]
+}
+
+}
+
+#VRML V2.0 utf8 CosmoWorlds V1.0
+
+Group {
+children Transform {
+children [
+DEF CORINT_1 CoordinateInterpolator {
+key [ 0, 0.15 0.30 0.45
+0.60 0.75 0.80 0.85
+0.90 0.95 1 ]
+keyValue [ -0.63 0.89 -0.22
+-0.52 0.89 -0.90
+-1.08 0.78 -0.29
+-0.95 0.73 -0.98
+-1.65 0.31 -0.51
+-1.53 0.28 -1.02
+-2.02 -0.28 -0.98
+-0.68 0.89 -0.22
+-0.57 0.89 -0.90
+-1.13 0.81 -0.29
+-1.00 0.76 -0.98
+-1.73 0.44 -0.51
+-1.62 0.34 -1.02
+-2.22 -0.13 -0.98
+-0.68 0.89 -0.22
+-0.57 0.89 -0.90
+-1.13 0.83 -0.29
+-0.99 0.81 -0.98
+-1.70 0.58 -0.51
+-1.63 0.42 -0.93
+-2.30 0.20 -0.78
+-0.68 0.89 -0.22
+-0.57 0.89 -0.90
+-1.13 0.83 -0.29
+-0.99 0.89 -0.98
+-1.79 0.74 -0.51
+-1.71 0.60 -0.93
+-2.28 0.35 -0.78
+-0.68 0.89 -0.22
+-0.57 0.89 -0.90
+-1.13 0.83 -0.29
+-0.99 0.89 -0.98
+-1.79 0.90 -0.51
+-1.59 0.90 -0.93
+-2.27 1.06 -0.67
+-0.68 0.89 -0.22
+-0.62 0.96 -0.90
+-1.13 0.83 -0.29
+-0.99 0.89 -0.98
+-1.78 0.97 -0.51
+-1.65 0.96 -0.93
+-2.26 1.17 -0.67
+-0.68 0.89 -0.22
+-0.57 0.89 -0.90
+-1.13 0.83 -0.29
+-0.99 0.89 -0.98
+-1.79 0.90 -0.51
+-1.59 0.90 -0.93
+-2.27 1.06 -0.67
+-0.68 0.89 -0.22
+-0.57 0.89 -0.90
+-1.13 0.83 -0.29
+-0.99 0.89 -0.98
+-1.79 0.74 -0.51
+-1.71 0.60 -0.93
+-2.28 0.35 -0.78
+-0.68 0.89 -0.22
+-0.57 0.89 -0.90
+-1.13 0.83 -0.29
+-0.99 0.81 -0.98
+-1.70 0.58 -0.51
+-1.63 0.42 -0.93
+-2.30 0.20 -0.78
+-0.68 0.89 -0.22
+-0.57 0.89 -0.90
+-1.13 0.81 -0.29
+-1.00 0.76 -0.98
+-1.73 0.44 -0.51
+-1.62 0.34 -1.02
+-2.22 -0.13 -0.98
+-0.63 0.89 -0.22
+-0.52 0.89 -0.90
+-1.08 0.78 -0.29
+-0.95 0.73 -0.98
+-1.65 0.31 -0.51
+-1.53 0.28 -1.02
+-2.02 -0.28 -0.98 ]
+}
+Group {
+children [
+Background {
+groundColor 0 0 1
+skyColor 0 0 1
+}
+Shape {
+appearance Appearance {
+material Material {
+ambientIntensity 0
+diffuseColor 0 0 0
+specularColor 0.22 0.27 0.27
+emissiveColor 0 0 0
+shininess 0.09
+transparency 0.06
+}
+
+}
+
+geometry IndexedFaceSet {
+coord DEF COORD1_3 Coordinate {
+point [ -0.68 0.89 -0.22
+-0.57 0.89 -0.90
+-1.13 0.78 -0.29
+-1.00 0.73 -0.98
+-1.70 0.31 -0.51
+-1.58 0.28 -1.02
+-2.07 -0.28 -0.98 ]
+}
+
+coordIndex [ 2, 1, 0, -1, 1, 2, 3, -1,
+4, 3, 2, -1, 3, 4, 5, -1,
+6, 5, 4, -1 ]
+colorIndex [ ]
+solid FALSE
+creaseAngle 1
+}
+
+}
+]
+}
+]
+}
+
+}
+
+
+      ]
+   }
+
+
+# Copyright statement
+
+WorldInfo 
+   {
+   title "Silly 3D Game (no name yet)"
+   info 
+      [
+      "(C) Copyright 1999 ICA University Stuttgart (modified by mufti@csv.ica.uni-stuttgart.de)"
+
+      "This program is free software; you can redistribute it and/or modify"
+      "it under the terms of the GNU General Public License as published by"
+      "the Free Software Foundation; version 2 of the License              "
+
+      "p_fly is a modification of the program tux_aqfh by Steve Baker"
+      "tux_aqfh is GPL"
+      ]
+   }
+
+                              Transform
+                                 {
+                                 translation 0 0 -1.15
+                                 children 
+                                    [
+                                    DEF VISIBLE VisibilitySensor 
+                                       {
+                                       }
+                                    ]
+                                 }
+                              ]
+                           }
+                        ]
+                     }
+                  ]
+               }
+            ]
+         }
+
+# bullet
+
+DEF BULLET_SWITCH Switch
+   {
+   choice
+      [              
+      DEF BULLET_MOVE Transform
+         {      
+         children
+            [
+            # dummy touchsensor to switch out navigation in lookat
+            DEF DUMMY_BULLET TouchSensor {}
+#VRML V2.0 utf8
+
+Shape
+   {
+   appearance Appearance 
+      {
+      material Material 
+         {
+         ambientIntensity 0.248649
+         diffuseColor 0.9 0.9 0.9
+         specularColor 0.405259 0.410811 0.410811
+         emissiveColor 0 0 0
+         shininess 0.524324
+         transparency 0.5
+         }
+      }
+      geometry Sphere { radius 0.2 }
+   }
+           ]
+        }
+      ]
+   }
+
+
+# this is a timer 
+
+DEF TIMER TimeSensor  
+   {
+   cycleInterval 1
+   loop TRUE
+   }
+
+NavigationInfo { type "NONE" }
+      
+# transform the x-Value of the steer to a rotation
+
+DEF ROLL_TURN Script
+   {
+   eventIn SFFloat  xvalue_in
+   eventOut SFRotation rotation_out
+   url "vrmlscript:
+   function initialize()            
+      {            
+      rotation_out[0]=1;            
+      rotation_out[1]=0;            
+      rotation_out[2]=0;            
+      rotation_out[3]=0;            
+      }            
+   function xvalue_in(val)  
+      {
+      rotation_out[0]=0;
+      rotation_out[1]=1;
+      rotation_out[2]=0;
+      rotation_out[3]=-val;
+      }
+   "
+   }
+
+# transform the y-Value of the steer to a rotation
+
+DEF UP_DOWN_TURN Script
+   {
+   eventIn SFFloat  yvalue_in
+   eventOut SFRotation rotation_out
+   url "vrmlscript:
+   function initialize()            
+      {            
+      rotation_out[0]=0;            
+      rotation_out[1]=0;            
+      rotation_out[2]=0;            
+      rotation_out[3]=0;            
+      }            
+   function yvalue_in(val)  
+      {
+      rotation_out[0]=1;
+      rotation_out[1]=0;
+      rotation_out[2]=0;
+      rotation_out[3]=-val;
+      }
+   "
+   }
+
+# this is called every time it get a timer event
+# it generated the forward movement of the thing
+
+DEF FLY_FORWARD Script 
+   {
+   eventIn  SFTime  time_in
+   eventOut SFVec3f translation_out            
+   eventOut  SFTime time_out
+   url "vrmlscript:
+   function initialize()
+      {
+      translation_out[0]=0;
+      translation_out[1]=0;
+      translation_out[2]=0;
+      }
+   function time_in(val)  
+      {
+      translation_out[0]=0;
+      translation_out[1]=0;
+      translation_out[2]=1.15;
+      time_out=val;
+      }
+   "
+   }
+
+# this add the forward movement (translation_in) of the thing to the already 
+# moved way (translation_old)
+# it also add the forward movement to the collisionpoint with a box
+# (top_translation_out)
+
+DEF FLY_ON Script 
+   {
+   eventIn SFVec3f   translation_in
+   eventIn SFTime    time_in
+   eventIn SFTime    enter_time
+   eventIn SFTime    exit_time
+   eventIn SFBool    fire_in
+   eventOut SFVec3f  translation_out            
+   eventOut SFVec3f  top_translation_out            
+   eventOut SFInt32  bullet_choice_out            
+   eventOut SFVec3f  bullet_translation_out            
+   field SFVec3f translation_old 0 0 -1
+   field SFBool brake FALSE
+   field SFVec3f bullet_translation_start 0 0 0
+   field SFVec3f bullet_direction 0 0 0           
+   field SFFloat bulletway_length 0 
+   field  SFFloat old_time 0
+   field SFFloat factor 1000
+   url "vrmlscript:
+   function initialize()
+      {
+      bullet_choice_out=-1;
+      }
+   // stop movement 
+   function exit_time(val)
+      {
+      brake=TRUE;
+      }
+   // restart movement
+   function enter_time(val)
+      {
+      brake=FALSE;
+      }
+   function time_in(val)
+      {
+      if (old_time==0)
+         factor=1000;
+      else         
+         factor=1/(val-old_time)/1.6;
+      old_time=val;
+      }
+   function fire_in(val)
+      {
+      if (val)
+         {
+         bullet_translation_start=top_translation_out;
+         // switch on bullet
+         bullet_choice_out=0;
+         bulletway_length=0;
+         }
+      }
+   function drive_bullet(val)
+      {
+      if (bulletway_length==0)
+         {
+         bullet_direction=val;
+         }
+      if ((bullet_translation_out[2]>10) ||
+          (bullet_translation_out[2]<-35))
+         {
+         bulletway_length=0;
+         bullet_choice_out=-1;
+         bullet_translation_out[2]=val[2];
+         }
+      else if (bulletway_length<45)
+         {
+         bullet_translation_out[0]=bullet_translation_start[0]-
+                                   bulletway_length*bullet_direction[0];
+         bullet_translation_out[1]=bullet_translation_start[1]-
+                                   bulletway_length*bullet_direction[1];
+         bullet_translation_out[2]=bullet_translation_start[2]-
+                                   bulletway_length*bullet_direction[2];
+         bulletway_length+=5/factor;
+         }
+      else
+         {
+         bulletway_length=0;
+         bullet_choice_out=-1;
+         bullet_translation_out[2]=val[2];
+         }
+      }
+   //
+   function translation_in(val)  
+      {
+      top_translation_out[0]=translation_old[0]-val[0];
+      top_translation_out[1]=translation_old[1]-val[1];
+      top_translation_out[2]=translation_old[2]-val[2];
+      if (brake || (top_translation_out[2]<-35) || (top_translation_out[2]>7))
+         {
+         translation_out=translation_old;
+         }
+      else
+         {
+         translation_out[0]=translation_old[0]-val[0]/factor;
+         translation_out[1]=translation_old[1]-val[1]/factor;
+         translation_out[2]=translation_old[2]-val[2]/factor;
+         translation_old=translation_out;
+         }
+      if (bullet_choice_out==0)
+         drive_bullet(val);
+      }
+   "
+   }
+
+DEF STEER Script 
+   {
+   eventIn SFVec3f wall_xy_in
+   eventOut SFFloat xvalue
+   eventOut SFFloat yvalue
+   field SFVec3f wall_xy 0 0 0
+   url "vrmlscript:
+   function initialize()
+      {
+      }
+   function plane_xy(xy,val)            
+      {            
+// the following lines are correct for cosmoplayer and some versions of lookat 
+      xy[0]=val[0];            
+      xy[1]=val[1];            
+// If the steeringeffect is far too small this bug is either  
+// a Mesa/GLU/glut problem, or a lookat problem
+// Please uncomment the following lines to fix the problem
+//      xy[0]=val[0]*75;            
+//      xy[1]=val[1]*75;            
+      }    
+   function steer()
+      {
+      xvalue=wall_xy[0];
+      yvalue=wall_xy[1];
+      }
+   function wall_xy_in(val)
+      {
+      plane_xy(wall_xy,val);
+      steer();
+      }
+   "
+   }
+
+DEF THING_SCRIPT Script 
+   {
+   eventIn SFBool isover_in
+   eventIn SFBool fire_in
+   eventOut SFVec3f hide_out
+   url "vrmlscript:
+   function isover_in(val)            
+      {            
+      if (val)
+         {
+         hide_out[0]=0.1;
+         hide_out[1]=0.1;
+         hide_out[2]=0.1;
+         }
+      else
+         {
+         hide_out[0]=1.0;
+         hide_out[1]=1.0;
+         hide_out[2]=1.0;
+         }
+      }    
+   function fire_in(val)            
+      {
+      if (val)
+         {
+         hide_out[0]=1;
+         hide_out[1]=1;
+         hide_out[2]=1;
+         }                  
+      }
+   "
+   }
+
+DEF LOAD_NEW_WORLD Script 
+   {
+   eventIn SFInt32 box1_in
+   eventIn SFInt32 box2_in
+   eventOut SFTime starttime_out
+   eventOut MFString string_out 
+   field MFInt32 box_in 0 
+   field MFString your_url1 ""
+   field MFString your_url2 ""
+   field MFString param ""
+   field SFInt32 deleted 0 
+   field SFInt32 waitticks 300
+   field SFBool victory FALSE
+   url "vrmlscript:
+   function initialize()
+      {
+      // insert your url at game end here 
+      your_url1[0]='http://openvrml.sourceforge.net';
+      your_url2[0]='http://www.lug-s.org/dokumentation/software/vrml/vrmldemo/compressed/warbird.wrz'
+      param[0]='';
+      box_in[1]=1;
+      box_in[2]=1;
+      box_in[3]=1;
+      box_in[4]=1;
+      box_in[5]=1;
+      starttime_out=0;
+      string_out=new MFString('');
+      }
+   function test_end()
+      {
+      deleted=waitticks;
+      if (box_in[1]==0)
+         {
+         victory=TRUE;
+         Browser.loadURL(your_url1,param); 
+         string_out=new MFString('victory','game over');
+         }
+      if (box_in[2]==0)
+         {
+         victory=TRUE;
+         Browser.loadURL(your_url2,param); 
+         string_out=new MFString('victory','game over');
+         }
+      }
+   function box1_in(val)
+      {
+      box_in[1]=val;
+      test_end();
+      }
+   function box2_in(val)
+      {
+      box_in[2]=val;
+      test_end();
+      }
+   "
+   }
+
+
+ROUTE TIMER_1.fraction_changed TO CORINT_0.set_fraction
+ROUTE TIMER_1.fraction_changed TO CORINT_1.set_fraction
+ROUTE CORINT_0.value_changed TO COORD1_2.set_point
+ROUTE CORINT_1.value_changed TO COORD1_3.set_point
+ 
+# Turn the thing via the axes
+
+ROUTE WALL_SENSOR.translation_changed TO STEER.wall_xy_in
+
+ROUTE STEER.xvalue               TO ROLL_TURN.xvalue_in
+ROUTE ROLL_TURN.rotation_out     TO ROLL_AXIS.set_rotation
+
+ROUTE STEER.yvalue               TO UP_DOWN_TURN.yvalue_in
+ROUTE UP_DOWN_TURN.rotation_out  TO UP_DOWN_AXIS.set_rotation
+
+ROUTE WALL_SENSOR.isActive       TO WALL_FIRE.isactive_in
+ROUTE WALL_FIRE.fire             TO FLY_ON.fire_in
+
+ROUTE THING_SENSOR.isOver         TO THING_SCRIPT.isover_in
+ROUTE WALL_FIRE.fire              TO THING_SCRIPT.fire_in
+ROUTE THING_SCRIPT.hide_out       TO HIDE_THING.scale
+
+# forward movement
+
+ROUTE TIMER.time           TO FLY_FORWARD.time_in
+ROUTE FLY_FORWARD.time_out TO FLY_ON.time_in
+
+# Bullet steering
+
+ROUTE FLY_ON.bullet_translation_out  TO  BULLET_MOVE.translation
+ROUTE FLY_ON.bullet_choice_out       TO  BULLET_SWITCH.whichChoice
+
+# Turn the forward movement via the axes
+      
+ROUTE FLY_FORWARD.translation_out     TO ROT_TRANS1.translation_in
+ROUTE UP_DOWN_TURN.rotation_out       TO ROT_TRANS1.rotation_in
+
+ROUTE ROT_TRANS1.translation_out      TO ROT_TRANS2.translation_in
+ROUTE ROLL_TURN.rotation_out          TO ROT_TRANS2.rotation_in
+
+ROUTE ROT_TRANS2.translation_out      TO FLY_ON.translation_in
+
+ROUTE FLY_ON.translation_out          TO THING.set_translation 
+
+# handle Moving Boxes
+
+ROUTE FLY_ON.top_translation_out    TO BOX1.translation_in
+ROUTE FLY_ON.bullet_translation_out TO BOX1.translation_in
+ROUTE BOX1.deleted_out              TO LOAD_NEW_WORLD.box1_in 
+
+ROUTE FLY_ON.top_translation_out    TO BOX2.translation_in
+ROUTE FLY_ON.bullet_translation_out TO BOX2.translation_in
+ROUTE BOX2.deleted_out              TO LOAD_NEW_WORLD.box2_in 
+
+## if you want to see the movement of the collition point as a box
+## uncomment this (and the box itself too)
+#ROUTE FLY_ON.top_translation_out TO BOX.set_translation
+
+# Stop the thing, if the visible point get out of view
+ 
+ROUTE VISIBLE.enterTime                TO FLY_ON.enter_time
+ROUTE VISIBLE.exitTime                 TO FLY_ON.exit_time
+
+# 2 default Viewpoints, so you can easyly switch back to the default Viewpoint
+
+Viewpoint 
+   {
+   }
+
+Viewpoint 
+   {
+   }
+
+# Copyright statement
+
+WorldInfo 
+   {
+   title "Silly 3D Game (no name yet)"
+   info 
+      [
+      "(C) Copyright 1999 ICA University Stuttgart (modified by mufti@csv.ica.uni-stuttgart.de)"
+
+      "This program is free software; you can redistribute it and/or modify"
+      "it under the terms of the GNU General Public License as published by"
+      "the Free Software Foundation; version 2 of the License              "
+      ]
+   }
+
