@@ -1,6 +1,10 @@
 2002-04-28  Thomas Flynn  <tflynn@users.sourceforge.net>
 
-	* Update JSAI Test world and class.
+        * Update JSAI Test world and class.
+
+        * Use C++ style casts instead of C-style in ScriptJDK.
+
+        * Fix a couple of bugs with MF* construction in ScriptJDK.
 
 2002-04-14  Thomas Flynn  <tflynn@users.sourceforge.net>
 
