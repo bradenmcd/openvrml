@@ -12,17 +12,23 @@ import vrml.node.*;
  * This class is meant to be used only with the TestJSAI.wrl sample world.
  *
  * Fully tested classes
+ *   ConstMFColor
+ *   ConstMFString
  *   ConstSFBool
  *   ConstSFColor
  *   ConstSFFloat
+ *   ConstSFImage
  *   ConstSFInt32
  *   ConstSFString
+ *   ConstSFTime
  *   Event
+ *   MFColor
  *   SFBool
  *   SFColor
  *   SFFloat
  *   SFInt32
  *   SFString
+ *   SFTime
  *
  * Partially tested classes with list of tested methods.
  *
@@ -35,10 +41,6 @@ import vrml.node.*;
  *   setDescription
  *   toString
  *
- * ConstMFColor
- *   ConstMFColor(float[][])
- *   getSize
- *
  * Script
  *   getBrowser
  *   getEventOut
@@ -47,6 +49,33 @@ import vrml.node.*;
  * Methods known not to be not working
  *
  *
+ * Classes not tested
+ *   BaseNode
+ *   ConstMFFloat
+ *   ConstMFInt32
+ *   ConstMFNode
+ *   ConstMFRotation
+ *   ConstMFTime
+ *   ConstMFVec2f
+ *   ConstMFVec3f
+ *   ConstSFNode
+ *   ConstSFRotation
+ *   ConstSFVec2f
+ *   ConstSFVec3f
+ *   MFFloat
+ *   MFInt32
+ *   MFNode
+ *   MFRotation
+ *   MFString
+ *   MFTime
+ *   MFVec2f
+ *   MFVec3f
+ *   Node
+ *   SFImage
+ *   SFNode
+ *   SFRotation
+ *   SFVec2f
+ *   SFVec3f
  */
 class TestJSAI extends Script {
 
@@ -94,6 +123,7 @@ class TestJSAI extends Script {
     browser.setDescription("JSAI Test World");
 
     /* Test ConstSFBool/SFBool methods */
+    System.out.println("Test ConstSFBool/SFBool");
     SFBool testBool = (SFBool) getField("testBool");
     if (testBool == null)
       System.out.println("get SFBool field failed");
@@ -114,6 +144,7 @@ class TestJSAI extends Script {
     System.out.println("testBool = " + testBool);
 
     /* Test ConstSFColor/SFColor methods */
+    System.out.println("Test ConstSFColor/SFColor");
     System.out.println("activeColor = " + activeColor);
     System.out.println("activeColor = " +
                        "[" + activeColor.getRed() + "][" +
@@ -138,6 +169,7 @@ class TestJSAI extends Script {
     testDefaultSFColor.setValue(testSFColor);
 
     /* Test ConstSFFloat/SFFloat methods */
+    System.out.println("Test ConstSFFloat/SFFloat");
     SFFloat testFloat = (SFFloat) getField("testFloat");
     if (testFloat == null)
       System.out.println("get SFFloat field failed");
@@ -154,8 +186,19 @@ class TestJSAI extends Script {
     testFloat.setValue(testSFFloat);
 
     /* Test ConstSFImage/SFImage methods */
+    System.out.println("Test ConstSFImage/SFImage");
+    byte[] byteArray1 = {32, 0};
+    ConstSFImage testConstSFImage = new ConstSFImage(1, 1, 1, byteArray1);
+    System.out.println("width = " + testConstSFImage.getWidth());
+    System.out.println("height = " + testConstSFImage.getHeight());
+    System.out.println("components = " + testConstSFImage.getComponents());
+    byte[] testPixels = new byte[2];
+    testConstSFImage.getPixels(testPixels);
+    System.out.println("testConstSFImage = " + testConstSFImage);
+
 
     /* Test ConstSFInt32/SFInt32 methods */
+    System.out.println("Test ConstSFInt32/SFInt32");
     SFInt32 testInt32 = (SFInt32) getField("testInt32");
     if (testInt32 == null) 
       System.out.println("get SFInt32 field failed");
@@ -172,10 +215,14 @@ class TestJSAI extends Script {
     testInt32.setValue(testConstSFInt32);
 
     /* Test ConstSFNode/SFNode methods */
+    /*   System.out.println("Test ConstSFNode/SFNode");
+         SFNode testSFNode = (SFNode) getField("testViewpoint");*/
 
     /* Test ConstSFRotation/SFRotation methods */
+    System.out.println("Test ConstSFRotation/SFRotation");
 
     /* Test ConstSFString/SFString methods */
+    System.out.println("Test ConstSFString/SFString");
     SFString testString = (SFString) getField("testString");
     testString.setValue("testString2");
     System.out.println("testString = " + testString);
@@ -191,12 +238,26 @@ class TestJSAI extends Script {
     testString.setValue(testConstSFString);
 
     /* Test ConstSFTime/SFTime methods */
+    System.out.println("Test ConstSFTime/SFTime");
+    ConstSFTime testConstSFTime = new ConstSFTime(500.0d);
+    System.out.println("testConstSFTime = " + testConstSFTime.getValue());
+    System.out.println("testConstSFTime = " + testConstSFTime);
+    SFTime testSFTime1 = new SFTime();
+    SFTime testSFTime2 = new SFTime(25.0d);
+    System.out.println("testSFTime1 = " + testSFTime2.getValue());
+    testSFTime1.setValue(300.0d);
+    testSFTime2.setValue(testConstSFTime);
+    testSFTime1.setValue(testSFTime2);
+    System.out.println("testSFTime1 = " + testSFTime1);
 
     /* Test ConstSFVec2f/SFVec2f methods */
+    System.out.println("Test ConstSFVec2f/SFVec2f");
 
     /* Test ConstSFVec3f/SFVec3f methods */
+    System.out.println("Test ConstSFVec3f/SFVec3f");
 
     /* Test ConstMFColor/MFColor methods */
+    System.out.println("Test ConstMFColor/MFColor");
     float[] colorArray1 = {1.0f, 0.0f, 1.0f};
     float[] colorArray2 = {0.0f, 0.0f, 1.0f};
     float[] colorArray3 = {1.0f, 1.0f, 0.0f};
@@ -204,23 +265,113 @@ class TestJSAI extends Script {
     ConstMFColor testConstMFColor1= new ConstMFColor(colorArrays);
     if (testConstMFColor1.getSize() != 3)
       System.out.println("ConstMFColor.getSize() failed");
-
+    ConstMFColor testConstMFColor2 = new ConstMFColor(colorArray1);
+    ConstMFColor testConstMFColor3 = new ConstMFColor(1, colorArray2);
+    float[][] result1 = new float[3][3];
+    testConstMFColor1.getValue(result1);
+    float[] result2 = new float[9];
+    testConstMFColor1.getValue(result2);
+    float[] result3 = new float[3];
+    testConstMFColor1.get1Value(2, result3);
+    SFColor result4 = new SFColor();
+    testConstMFColor1.get1Value(1, result4);
+    System.out.println("ConstMFColor = " + testConstMFColor1);
+    MFColor testMFColor1 = new MFColor();
+    MFColor testMFColor2 = new MFColor(colorArrays);
+    MFColor testMFColor3 = new MFColor(colorArray2);
+    // Is this correct or should the first param be 1
+    MFColor testMFColor4 = new MFColor(3, colorArray3);
+    if (testMFColor3.getSize() != 1)
+      System.out.println("MFColor.getSize() failed");
+    System.out.println("testMFColor2(pre-delete) = " + testMFColor2);
+    testMFColor2.delete(2);
+    System.out.println("testMFColor2(post-delete) = " + testMFColor2);
+    System.out.println("testMFColor3(before clear) = " + testMFColor3);
+    testMFColor3.clear();
+    System.out.println("testMFColor3(after clear) = " + testMFColor3);
+    System.out.println("testMFColor4 = " + testMFColor4);
+    testMFColor2.getValue(result2);
+    testMFColor2.getValue(result1);
+    System.out.println("testMFColor2[0] = " + result2[0] + "," + result2[1] +
+                       "," + result2[2]);
+    testMFColor2.get1Value(0, result2);
+    System.out.println("testMFColor2[0] = " + result2[0] + "," + result2[1] +
+                       "," + result2[2]);
+    System.out.println("testMFColor2[0] = " + result1[0][0] + "," + 
+                       result1[0][1] + "," + result1[0][2]);
+    SFColor result5 = new SFColor();
+    testMFColor2.get1Value(0, result5);
+    System.out.println("testMFColor2[0] = " + result5); 
+    testMFColor3.setValue(colorArrays);
+    System.out.println("testMFColor3 = " + testMFColor3);
+    testMFColor1.setValue(colorArray2);
+    System.out.println("testMFColor1 = " + testMFColor1);
+    testMFColor1.setValue(3, colorArray1);
+    System.out.println("testMFColor1 = " + testMFColor1);
+    testMFColor2.setValue(testMFColor1);
+    System.out.println("testMFColor2 = " + testMFColor2);
+    testMFColor1.setValue(testConstMFColor2);
+    System.out.println("testMFColor1 = " + testMFColor1);
+    testMFColor3.set1Value(1, testConstSFColor);
+    System.out.println("testMFColor3 = " + testMFColor3);
+    testMFColor3.set1Value(0, testSFColor);
+    System.out.println("testMFColor3 = " + testMFColor3);
+    testMFColor3.set1Value(2, 1.0f, 1.0f, 1.0f);
+    System.out.println("testMFColor3 = " + testMFColor3);
+    testMFColor3.addValue(testConstSFColor);
+    System.out.println("testMFColor3 = " + testMFColor3);
+    testMFColor3.addValue(testSFColor);
+    System.out.println("testMFColor3 = " + testMFColor3);
+    testMFColor3.addValue(0.0f, 1.0f, 0.0f);
+    System.out.println("testMFColor3 = " + testMFColor3);
+    testMFColor3.insertValue(0, testConstSFColor);
+    System.out.println("testMFColor3 = " + testMFColor3);
+    testMFColor3.insertValue(2, testSFColor);
+    System.out.println("testMFColor3 = " + testMFColor3);
+    testMFColor3.insertValue(1, 0.0f, 0.0f, 0.0f);
+    System.out.println("testMFColor3 = " + testMFColor3);
 
     /* Test ConstMFFloat/MFFloat methods */
+    System.out.println("Test ConstMFFloat/MFFloat");
 
     /* Test ConstMFInt32/MFInt32 methods */
+    System.out.println("Test ConstMFint32/MFInt32");
 
     /* Test ConstMFNode/MFNode methods */
+    System.out.println("Test ConstMFNode/MFNode");
 
     /* Test ConstMFRotation/MFRotation methods */
+    System.out.println("Test ConstMFRotation/MFRotation");
 
     /* Test ConstMFString/MFString methods */
+    System.out.println("Test ConstMFString/MFString");
+    String[] stringArray = {"test1", "test2", "test3", "test4"};
+    ConstMFString testConstMFString1 = new ConstMFString(stringArray);
+    ConstMFString testConstMFString2 = new ConstMFString(4, stringArray);
+    String[] resultString1 = new String[4];
+    testConstMFString1.getValue(resultString1);
+    System.out.println("testConstMFString1[0] = " + resultString1[0]);
+    System.out.println("testConstMFString1[1] = " + 
+                       testConstMFString1.get1Value(1));
+    System.out.println("Size of testConstMFString2 = " + 
+                       testConstMFString2.getSize());
+    System.out.println("testConstMFString2 = " + testConstMFString2);
+    MFString testMFString1 = new MFString();
+    MFString testMFString2 = new MFString(4, stringArray);
+    MFString testMFString3 = new MFString(stringArray);
+    String[] stringArray2 = new String[4];
+    testMFString2.getValue(stringArray2);
+    System.out.println("testMFString2[0] = " + testMFString2.get1Value(0));
+    System.out.println("testMFString2 = " + testMFString2);
 
     /* Test ConstMFTime/MFTime methods */
+    System.out.println("Test ConstMFTime/MFTime");
 
     /* Test ConstMFVec2f/MFVec2f methods */
+    System.out.println("Test ConstMFVec2f/MFVec2f");
 
     /* Test ConstMFVec3f/MFVec3f methods */
+    System.out.println("Test ConstMFVec3f/MFVec3f");
  
     System.out.println("exit initialize method");
   }
@@ -240,7 +391,7 @@ class TestJSAI extends Script {
       if (event.getTimeStamp() != clonedEvent.getTimeStamp())
         System.out.println("Cloned timestamp does not equal timestamp");
 
-      if (event.getName() == "isActive")
+      if (event.getName().equals("isActive"))
       {
         ConstSFBool test = (ConstSFBool)event.getValue();
         System.out.println("test of ConstSFBool toString = " + test);
