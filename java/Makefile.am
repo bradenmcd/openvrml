@@ -7,7 +7,7 @@ script.jar: vrml/InvalidEventInException.class \
 vrml/InvalidEventOutException.class vrml/InvalidExposedFieldException.class \
 vrml/InvalidFieldChangeException.class vrml/InvalidFieldException.class \
 vrml/InvalidRouteException.class vrml/InvalidVRMLSyntaxException.class \
-vrml/Browser.class vrml/Event.class vrml/Field.class \
+vrml/Browser.class vrml/Event.class vrml/Field.class vrml/ConstMField.class \
 vrml/MField.class vrml/ConstField.class vrml/BaseNode.class \
 vrml/field/SFBool.class vrml/field/SFColor.class vrml/field/SFFloat.class \
 vrml/field/SFImage.class vrml/field/SFInt32.class vrml/field/SFNode.class \
