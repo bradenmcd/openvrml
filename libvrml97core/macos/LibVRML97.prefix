@@ -2,7 +2,7 @@
 
 #define LIBVRML97_MAJOR_VERSION	0
 #define LIBVRML97_MINOR_VERSION	8
-#define LIBVRML97_MICRO_VERSION	2
+#define LIBVRML97_MICRO_VERSION	3
 
 #include <fstream.h>
 #include <iostream.h>
