@@ -22,21 +22,96 @@ package vrml.field;
 
 import vrml.Field;
 
+/**
+ * Represents a VRML SFColor field in Java.
+ */
 public class SFColor extends Field
 {
+  /**
+   * Construct a new SFColor field in OpenVRML using the given RGB value.
+   *
+   * @param red R-component of color 
+   * @param green G-component of color
+   * @param blue B-component of color
+   */
   private native void CreateObject(float red, float green, float blue);
 
-  public SFColor() { CreateObject(0f, 0f, 0f); }
-  public SFColor(float red, float green, float blue) { CreateObject(red, green, blue); }
-	
+  /**
+   * Construct an SFColor field with the default values.
+   */
+  public SFColor() 
+  {
+    CreateObject(0f, 0f, 0f);
+  }
+
+  /**
+   * Construct an SFColor field.
+   *
+   * @param red R-component of color
+   * @param green G-component of color
+   * @param blue B-component of color
+   */
+  public SFColor(float red, float green, float blue)
+  {
+    CreateObject(red, green, blue);
+  }
+
+  /**
+   * Get the R,G,B values representing the SFColor.
+   *
+   * @param colors R,G,B value representing the SFColor
+   */
   public native void getValue(float colors[]);
+
+  /**
+   * Get the R-component of the SFColor.
+   *
+   * @return R-component of the SFColor
+   */
   public native float getRed();
+
+  /**
+   * Get the G-component of the SFColor.
+   *
+   * @return G-component of the SFColor
+   */
   public native float getGreen();
+
+  /**
+   * Get the B-component of the SFColor.
+   *
+   * @return B-component of the SFColor
+   */
   public native float getBlue();
-	
+
+  /**
+   * Set the value of an SFColor.
+   *
+   * @param colors 
+   */
   public native void setValue(float colors[]);
+
+  /**
+   * Set an SFColor with the given RGB values.
+   *
+   * @param red R-component of the color
+   * @param green G-component of the color
+   * @param blue B-component of the color
+   */
   public native void setValue(float red, float green, float blue);
+
+  /**
+   * Set the value of an SFColor using the given SFColor.
+   *
+   * @param color SFColor to take RGB value from
+   */
   public native void setValue(ConstSFColor color);
+
+  /**
+   * Set the value of an SFColor using the given SFColor.
+   *
+   * @param color SFColor to take RGB value from
+   */
   public native void setValue(SFColor color);
 
   public native String toString();

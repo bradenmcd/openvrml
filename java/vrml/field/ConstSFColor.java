@@ -22,15 +22,58 @@ package vrml.field;
 
 import vrml.ConstField;
 
+/**
+ * Read-only SFColor field.
+ */
 public class ConstSFColor extends ConstField
 {
+  /**
+   * Construct a new SFColor field in OpenVRML using the given RGB value.
+   *
+   * @param red R-component of color 
+   * @param green G-component of color
+   * @param blue B-component of color
+   */
   private native void CreateObject(float red, float green, float blue);
 
-  public ConstSFColor(float red, float green, float blue) { CreateObject(red, green, blue); }
-	
+  /**
+   * Construct a read-only SFColor field.
+   *
+   * @param red R-component of color
+   * @param green G-component of color
+   * @param blue B-component of color
+   */
+  public ConstSFColor(float red, float green, float blue)
+  {
+    CreateObject(red, green, blue);
+  }
+
+  /**
+   * Get the R,G,B values representing the SFColor.
+   *
+   * @param colors R,G,B value representing the SFColor
+   */	
   public native void getValue(float colors[]);
+
+  /**
+   * Get the R-component of the SFColor.
+   *
+   * @return R-component of the SFColor
+   */
   public native float getRed();
+
+  /**
+   * Get the G-component of the SFColor.
+   *
+   * @return G-component of the SFColor
+   */
   public native float getGreen();
+
+  /**
+   * Get the B-component of the SFColor.
+   *
+   * @return B-component of the SFColor
+   */
   public native float getBlue();
 	
   public native String toString();
