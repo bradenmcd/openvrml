@@ -53,6 +53,15 @@ public:
   virtual void getPosition( float *x, float *y, float *z );
   virtual void getOrientation( float *orientation );
 
+  // S. K. Bose March. 02/2000
+  virtual bool IsBoxOutside(float *,float *);
+  virtual void getTransformMatrix(float [4][4] /*Matrix*/, 
+			    float * /*center*/,
+			    float * /*rotation*/,
+			    float * /*scale*/,
+			    float * /*scaleOrientation*/,
+			    float * /*translation*/);
+
   // S. K. Bose March 02/2000
   virtual void getBillboardTransformMatrix(float [4][4], float *);
 
