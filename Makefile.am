@@ -18,10 +18,5 @@ pkgconfig_DATA = openvrml.pc $(OPENVRML_GL_PC)
 pixmapdatadir = $(datadir)/pixmaps
 pixmapdata_DATA = lookat.xpm
 
-doc:
-	cd doc && $(MAKE) $(AM_MAKEFLAGS) doc
-
 dist-hook: openvrml.spec
 	cp openvrml.spec $(distdir)
-
-.PHONY: doc
