@@ -1,3 +1,8 @@
+2003-11-02  Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac:  Don't optionally generate Makefiles--that
+	screws up make.
+
 2003-10-31  Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/img.cpp (img::img):  Initialize

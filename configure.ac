@@ -14,9 +14,17 @@ AC_CONFIG_FILES([Makefile]
                 [lib/antlr/antlr/GNUmakefile]
                 [lib/antlr/src/GNUmakefile]
                 [lib/regex/Makefile]
+                [java/Makefile]
+                [java/vrml/Makefile]
+                [java/vrml/node/Makefile]
+                [java/vrml/field/Makefile]
                 [src/Makefile]
                 [src/libopenvrml/Makefile]
                 [src/libopenvrml/openvrml/Makefile]
+                [src/libopenvrml-gl/Makefile]
+                [src/libopenvrml-gl/openvrml/Makefile]
+                [src/libopenvrml-gl/openvrml/gl/Makefile]
+                [src/lookat/Makefile]
                 [test/Makefile]
                 [openvrml.pc]
                 [openvrml.spec])
@@ -158,10 +166,6 @@ else
   fi
   AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVA], [1],
             [Defined if Script node Java support is enabled.])
-  AC_CONFIG_FILES([java/Makefile]
-                  [java/vrml/Makefile]
-                  [java/vrml/node/Makefile]
-                  [java/vrml/field/Makefile])
 fi
 AC_SUBST([JNI_CFLAGS])
 AC_SUBST([JNI_LIBS])
@@ -178,10 +182,7 @@ if test "X$enable_gl_renderer" != "Xno"; then
   if test "X$no_gl" = "Xyes"; then
     AC_MSG_ERROR([OpenGL/Mesa is required for the GL renderer])
   fi
-  AC_CONFIG_FILES([src/libopenvrml-gl/Makefile]
-                  [src/libopenvrml-gl/openvrml/Makefile]
-                  [src/libopenvrml-gl/openvrml/gl/Makefile]
-                  [openvrml-gl.pc])
+  AC_CONFIG_FILES([openvrml-gl.pc])
 fi
 AM_CONDITIONAL([ENABLE_GL_RENDERER],
                [test "X$enable_gl_renderer" != "Xno" -a "X$no_gl" != "Xyes"])
@@ -195,9 +196,7 @@ if test "X$enable_lookat" != "Xno"; then
   if test "X$no_glut" = "Xyes"; then
     AC_MSG_ERROR([glut is required for lookat])
   fi
-  AC_CONFIG_FILES([src/lookat/Makefile]
-                  [src/lookat/lookat],
-                  [chmod +x src/lookat/lookat])
+  AC_CONFIG_FILES([src/lookat/lookat], [chmod +x src/lookat/lookat])
 fi
 AM_CONDITIONAL([ENABLE_LOOKAT],
                [test "X$enable_lookat" != "Xno" -a "X$no_glut" != "Xyes"])
