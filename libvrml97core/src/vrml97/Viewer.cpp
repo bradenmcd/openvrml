@@ -357,14 +357,11 @@ void Viewer::computeSphere(double radius,
 //
 
 void Viewer::computeView(const float position[3],
-			 const float in_orientation[3],
+			 float orientation[3],
 			 float distance,
 			 float target[3],
 			 float up[3])
 {
-  float orientation[3] = {in_orientation[0], 
-			  in_orientation[1], 
-			  in_orientation[2]};
   // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
   double len = sqrt( orientation[0]*orientation[0] +
 		     orientation[1]*orientation[1] +

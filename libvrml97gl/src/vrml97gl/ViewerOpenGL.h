@@ -212,7 +212,7 @@ public:
 
 
   virtual void setViewpoint(const float *position,
-			    const float *orientation,
+			    float *orientation,
 			    float fieldOfView,
 			    float avatarSize,
 			    float visLimit);

@@ -2479,7 +2479,7 @@ void ViewerOpenGL::unsetBillboardTransform(float * /*axisOfRotation*/)
 }
 
 void ViewerOpenGL::setViewpoint(const float *position,
-				const float *in_orientation,
+				float *orientation,
 				float fieldOfView,
 				float avatarSize,
 				float visibilityLimit)
@@ -2507,13 +2507,6 @@ void ViewerOpenGL::setViewpoint(const float *position,
   if (d < znear || d > zfar) d = 0.2 * (avatarSize + zfar);
 
   float target[3], up[3];
-  float len = sqrt(in_orientation[0]*in_orientation[0]
-		   + in_orientation[1]*in_orientation[1]
-		   + in_orientation[2]*in_orientation[2]);
-  if (len == 0.0) len = 1.0;
-  float orientation[3] = {in_orientation[0] / len, 
-		       in_orientation[1] / len, 
-		       in_orientation[2] / len};
   computeView(position, orientation, d, target, up);
 
   // Save position for use when drawing background

@@ -235,7 +235,7 @@ public:
   virtual void unsetBillboardTransform(float * /*axisOfRotation*/) = 0;
 
   virtual void setViewpoint(const float * /*position*/,
-			    const float * /*orientation*/,
+			    float * /*orientation*/,
 			    float /*fieldOfView*/,
 			    float /*avatarSize*/,
 			    float /*visLimit*/) = 0;
@@ -304,7 +304,7 @@ protected:
 		     int faces[]);
 
   static void computeView(const float position[3],
-		   const float orientation[3],
+		   float orientation[3],
 		   float distance,
 		   float target[3],
 		   float up[3]);
