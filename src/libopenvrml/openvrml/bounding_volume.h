@@ -76,8 +76,8 @@ namespace openvrml {
         virtual void maximize();
         virtual bool maximized() const;
 
-        virtual void ortho_transform(const mat4f & M);
-        virtual void transform(const mat4f & M);
+        virtual void ortho_transform(const mat4f & t);
+        virtual void transform(const mat4f & t);
 
         void center(const vec3f & c);
         const vec3f & center() const;

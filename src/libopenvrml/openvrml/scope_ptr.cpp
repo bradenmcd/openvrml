@@ -37,7 +37,7 @@ namespace openvrml {
  */
 
 /**
- * @fn bool scope_ptr::operator==(const scope_ptr & lhs, const scope_ptr & rhs) throw ()
+ * @fn bool operator==(const scope_ptr & lhs, const scope_ptr & rhs) throw ()
  *
  * @brief Compare for equality.
  *

@@ -39,7 +39,7 @@ namespace openvrml {
  */
 
 /**
- * @fn bool node_type_ptr::operator==(const node_type_ptr & lhs, const node_type_ptr & rhs) throw ()
+ * @fn bool operator==(const node_type_ptr & lhs, const node_type_ptr & rhs) throw ()
  *
  * @brief Compare for equality.
  *

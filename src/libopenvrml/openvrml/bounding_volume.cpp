@@ -334,6 +334,11 @@ void bounding_sphere::extend(const bounding_volume & bv)
     }
 }
 
+/**
+ * @brief Extend to enclose @p p.
+ *
+ * @param p a point.
+ */
 void bounding_sphere::extend(const vec3f & p)
 {
     using openvrml_::fequal;
@@ -574,43 +579,59 @@ void bounding_sphere::radius(const float r)
     this->radius_ = r;
 }
 
+/**
+ * @brief Extend the bounding sphere to infinity.
+ */
 void bounding_sphere::maximize()
 {
     this->radius_ = std::numeric_limits<float>::max();
     this->center_ = vec3f(0.0, 0.0, 0.0);
 }
 
+/**
+ * @brief Whether the bounding_sphere is maximized.
+ *
+ * @return @c true if the bounding_sphere has been maximized; @c false
+ *         otherwise.
+ */
 bool bounding_sphere::maximized() const
 {
     if (this->radius_ == std::numeric_limits<float>::max()) { return true; }
     return false;
 }
 
-
-
-void bounding_sphere::ortho_transform(const mat4f & M)
+/**
+ * @brief Orthographically transform the bounding_sphere by @p t.
+ *
+ * @param t transformation matrix.
+ */
+void bounding_sphere::ortho_transform(const mat4f & t)
 {
     if (this->maximized()) { return; }
     if (this->radius_ == -1) { return; }
     // ortho is easy: since we know it's uniform scaling, we can just
     // scale the radius and translate the center, and we're done.
-    this->center_ *= M;
+    this->center_ *= t;
 
     // uniform scale means we can pick any of the scale elements? wait:
     // can we really do this?
-    this->radius_ *= vec3f(M[0][0], M[1][0], M[2][0]).length();
+    this->radius_ *= vec3f(t[0][0], t[1][0], t[2][0]).length();
 }
 
-
-void bounding_sphere::transform(const mat4f & M)
+/**
+ * @brief Transform the bounding_sphere by @p t.
+ *
+ * @param t transformation matrix.
+ */
+void bounding_sphere::transform(const mat4f & t)
 {
     if (this->maximized()) { return; }
     if (this->radius_ == -1) { return; }
-    this->center_ *= M;
+    this->center_ *= t;
 
-    vec3f x_scale_v(M[0][0], M[1][0], M[2][0]);
-    vec3f y_scale_v(M[0][1], M[1][1], M[2][1]);
-    vec3f z_scale_v(M[0][2], M[1][2], M[2][2]);
+    vec3f x_scale_v(t[0][0], t[1][0], t[2][0]);
+    vec3f y_scale_v(t[0][1], t[1][1], t[2][1]);
+    vec3f z_scale_v(t[0][2], t[1][2], t[2][2]);
 
     float scale_x = x_scale_v.length();
     float scale_y = y_scale_v.length();
@@ -694,19 +715,31 @@ void axis_aligned_bounding_box::extend(const bounding_sphere& b)
 void axis_aligned_bounding_box::enclose(const std::vector<vec3f> & points)
 {}
 
+/**
+ * @brief Implement me!
+ */
 void axis_aligned_bounding_box::maximize()
 {
 }
 
+/**
+ * @brief Implement me!
+ */
 bool axis_aligned_bounding_box::maximized() const
 {
   return true;
 }
 
+/**
+ * @brief Implement me!
+ */
 void axis_aligned_bounding_box::ortho_transform(const mat4f & M)
 {
 }
 
+/**
+ * @brief Implement me!
+ */
 void axis_aligned_bounding_box::transform(const mat4f & M)
 {
 }

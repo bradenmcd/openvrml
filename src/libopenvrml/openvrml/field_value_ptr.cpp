@@ -41,7 +41,7 @@ namespace openvrml {
  */
 
 /**
- * @fn bool field_value_ptr::operator==(const field_value_ptr & lhs, const field_value_ptr & rhs) throw ()
+ * @fn bool operator==(const field_value_ptr & lhs, const field_value_ptr & rhs) throw ()
  *
  * @brief Compare for equality.
  *

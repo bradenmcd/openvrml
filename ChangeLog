@@ -1,3 +1,17 @@
+2003-09-25  Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment improvements.
+
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/bounding_volume.h
+	* src/libopenvrml/openvrml/field_value_ptr.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node_type_ptr.cpp
+	* src/libopenvrml/openvrml/scope_ptr.cpp
+	* src/libopenvrml/openvrml/scope_ptr.h
+	* src/libopenvrml/openvrml/system.cpp
+	* src/libopenvrml/openvrml/system.h
+
 2003-09-23  Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements.

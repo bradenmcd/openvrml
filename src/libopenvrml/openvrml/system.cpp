@@ -67,8 +67,10 @@ namespace openvrml {
 // A default system object
 static system defaultSystem;
 
-// The global system object
-system * openvrml::the_system = &defaultSystem;
+/**
+ * @brief The global system object.
+ */
+system * the_system = &defaultSystem;
 
 // This won't work under windows or if netscape isn't running...
 

@@ -250,7 +250,7 @@ node_interface::node_interface(const type_id type,
 /**
  * @fn bool operator!=(const node_interface & lhs, const node_interface & rhs) throw ()
  *
- * @relates node_interface
+ * @relates openvrml::node_interface
  *
  * @brief Compare for openvrml::inequality.
  *

@@ -33,7 +33,7 @@ namespace openvrml {
     class system {
     public:
         virtual bool load_url(const std::string & url,
-                             const mfstring & parameters);
+                              const mfstring & parameters);
         virtual int connect_socket( const char *host, int port );
         virtual const char *http_host(const char *url, int *port);
         virtual const char *http_fetch( const char *url );

@@ -96,6 +96,7 @@ namespace openvrml {
     }
 
     inline bool operator!=(const scope_ptr & lhs, const scope_ptr & rhs)
+        throw ()
     {
         return !(lhs == rhs);
     }
