@@ -2,7 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
+// Copyright 1998  Chris Morley
+// Copyright 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -242,8 +243,6 @@ node_interface::node_interface(const type_id type,
 {}
 
 /**
- * @fn bool operator==(const node_interface & lhs, const node_interface & rhs) throw ()
- *
  * @relatesalso node_interface
  *
  * @brief Compare for equality.
@@ -253,10 +252,15 @@ node_interface::node_interface(const type_id type,
  *
  * @return @c true if the two node_interfaces are equal, @c false otherwise.
  */
+bool operator==(const node_interface & lhs, const node_interface & rhs)
+    throw ()
+{
+    return lhs.type == rhs.type
+        && lhs.field_type == rhs.field_type
+        && lhs.id == rhs.id;
+}
 
 /**
- * @fn bool operator!=(const node_interface & lhs, const node_interface & rhs) throw ()
- *
  * @relatesalso node_interface
  *
  * @brief Compare for openvrml::inequality.
@@ -266,6 +270,43 @@ node_interface::node_interface(const type_id type,
  *
  * @return @c true if the two node_interfaces are equal, @c false otherwise.
  */
+bool operator!=(const node_interface & lhs, const node_interface & rhs)
+    throw ()
+{
+    return !(lhs == rhs);
+}
+
+/**
+ * @relatesalso node_interface
+ *
+ * @brief Stream output.
+ *
+ * @param out       output stream.
+ * @param interface node_interface.
+ *
+ * @return @p out.
+ */
+std::ostream & operator<<(std::ostream & out, const node_interface & interface)
+{
+    return out << interface.type << ' ' << interface.field_type << ' '
+               << interface.id;
+}
+
+/**
+ * @relatesalso node_interface
+ *
+ * @brief Stream input.
+ *
+ * @param in        input stream.
+ * @param interface node_interface.
+ *
+ * @return @p in.
+ */
+std::istream & operator>>(std::istream & in, node_interface & interface)
+{
+    return in >> interface.type >> interface.field_type >> interface.id;
+}
+
 
 /**
  * @typedef node_interface_set
@@ -281,7 +322,8 @@ node_interface::node_interface(const type_id type,
 /**
  * @brief Add an interface.
  *
- * @param interface a node_interface.
+ * @param interfaces    set of node_interfaces.
+ * @param interface     a node_interface.
  *
  * @exception std::invalid_argument if @p node_interface conflicts with an
  *                                  interface already in the
@@ -342,7 +384,8 @@ namespace {
  * If no interface is found with an interface identifier that is an exact match
  * for @p id, this method will look for @c set_ and @c _changed variants.
  *
- * @param id    the interface id to look for.
+ * @param interfaces    a set of node_interfaces.
+ * @param id            the interface id to look for.
  *
  * @return a const_iterator to the interface, or node_interface_set::end if no
  *      interface is found.
@@ -353,38 +396,6 @@ find_interface(const node_interface_set & interfaces, const std::string & id)
 {
     return std::find_if(interfaces.begin(), interfaces.end(),
                         interface_id_matches_(id));
-}
-
-
-/**
- * @relates node_interface
- *
- * @brief Stream output.
- *
- * @param out       output stream.
- * @param interface node_interface.
- *
- * @return @p out.
- */
-std::ostream & operator<<(std::ostream & out, const node_interface & interface)
-{
-    return out << interface.type << ' ' << interface.field_type << ' '
-               << interface.id;
-}
-
-/**
- * @relates node_interface
- *
- * @brief Stream input.
- *
- * @param in        input stream.
- * @param interface node_interface.
- *
- * @return @p in.
- */
-std::istream & operator<<(std::istream & in, node_interface & interface)
-{
-    return in >> interface.type >> interface.field_type >> interface.id;
 }
 
 
@@ -468,9 +479,14 @@ void node_class::render(openvrml::viewer & viewer) throw ()
  * @return a node_type_ptr to the newly created node_type.
  *
  * @exception std::invalid_argument if the node_class cannot support one of the
- *                              @link node_interface node_interfaces@endlink in
- *                              @p interfaces.
+ *                                  node_interfaces in @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
+ */
+
+/**
+ * @typedef node_class_ptr
+ *
+ * @brief A boost::shared_ptr to a node_class.
  */
 
 
@@ -699,6 +715,12 @@ field_value::type_id node_type::has_field(const std::string & id) const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 
+/**
+ * @typedef node_type_ptr
+ *
+ * @brief A boost::shared_ptr to a node_type.
+ */
+
 
 /**
  * @class field_value_type_mismatch
@@ -743,6 +765,166 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @class node
  *
  * @brief A node in the scene graph.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sfbool>
+ *
+ * @brief sfbool exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sfcolor>
+ *
+ * @brief sfcolor exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sffloat>
+ *
+ * @brief sffloat exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sfimage>
+ *
+ * @brief sfimage exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sfint32>
+ *
+ * @brief sfint32 exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sfnode>
+ *
+ * @brief sfnode exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sfrotation>
+ *
+ * @brief sfrotation exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sfstring>
+ *
+ * @brief sfstring exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sftime>
+ *
+ * @brief sftime exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sfvec2f>
+ *
+ * @brief sfvec2f exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<sfvec3f>
+ *
+ * @brief sfvec3f exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<mfcolor>
+ *
+ * @brief mfcolor exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<mffloat>
+ *
+ * @brief mffloat exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<mfint32>
+ *
+ * @brief mfint32 exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<mfnode>
+ *
+ * @brief mfnode exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<mfrotation>
+ *
+ * @brief mfrotation exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<mfstring>
+ *
+ * @brief mfstring exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<mftime>
+ *
+ * @brief mftime exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<mfvec2f>
+ *
+ * @brief mfvec2f exposedfield.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::exposedfield<mfvec3f>
+ *
+ * @brief mfvec3f exposedfield.
  */
 
 /**
@@ -1637,15 +1819,16 @@ namespace {
  *
  * If the route being added already exists, this method has no effect.
  *
- * @param from_eventout an eventOut of the node.
- * @param to_node       a node.
- * @param to_eventin    an eventIn of @p to_node.
+ * @param from      source node.
+ * @param eventout  an eventOut of @p from.
+ * @param to        destination node.
+ * @param eventin   an eventIn of @p to.
  *
  * @exception unsupported_interface     if the node has no eventOut
- *                                      @p from_eventout; or if @p to_node has
- *                                      no eventIn @p to_eventin.
- * @exception field_value_type_mismatch if @p from_eventout and @p to_eventin
- *                                      have different field value types.
+ *                                      @p eventout; or if @p to has no eventIn
+ *                                      @p eventin.
+ * @exception field_value_type_mismatch if @p eventout and @p eventin have
+ *                                      different field value types.
  *
  * @pre @p to_node is not null.
  */
@@ -1743,20 +1926,21 @@ namespace {
  *
  * If no such route exists, this method has no effect.
  *
- * @param from_eventout an eventOut of the node.
- * @param to_node       a node.
- * @param to_eventin    an eventIn of @p to_node.
+ * @param from      source node.
+ * @param eventout  an eventOut of @p from.
+ * @param to        destination node.
+ * @param eventin   an eventIn of @p to.
  */
-void delete_route(node & from_node,
-                  const std::string & from_eventout,
-                  node & to_node,
-                  const std::string & to_eventin)
+void delete_route(node & from,
+                  const std::string & eventout,
+                  node & to,
+                  const std::string & eventin)
     throw ()
 {
     using std::bad_cast;
 
-    event_emitter & emitter = from_node.event_emitter(from_eventout);
-    event_listener & listener = to_node.event_listener(to_eventin);
+    event_emitter & emitter = from.event_emitter(eventout);
+    event_listener & listener = to.event_listener(eventin);
 
     try {
         switch (emitter.value.type()) {

@@ -25,12 +25,14 @@ div.qindex {
 }
 a.qindex {
   text-decoration: inherit;
-  color: inherit
+  color: inherit;
+  padding: 0;
 }
 a.qindex:visited {
   text-decoration: inherit;
   font-weight: inherit;
-  color: inherit
+  color: inherit;
+  padding: 0;
 }
 a.qindex:hover {
   text-decoration: inherit;

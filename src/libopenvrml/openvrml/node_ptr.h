@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2000  Braden McDaniel
+// Copyright 2000, 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -63,6 +63,8 @@ namespace openvrml {
         void share(std::map<node *, size_t>::value_type * count_ptr) throw ();
     };
 
+    bool operator!=(const node_ptr & lhs, const node_ptr & rhs) throw ();
+
 
     inline node_ptr::~node_ptr() throw ()
     {
@@ -102,16 +104,6 @@ namespace openvrml {
     inline void node_ptr::swap(node_ptr & ptr) throw ()
     {
         std::swap(this->count_ptr, ptr.count_ptr);
-    }
-
-    inline bool operator==(const node_ptr & lhs, const node_ptr & rhs) throw ()
-    {
-        return lhs.count_ptr == rhs.count_ptr;
-    }
-
-    inline bool operator!=(const node_ptr & lhs, const node_ptr & rhs) throw ()
-    {
-        return !(lhs == rhs);
     }
 }
 

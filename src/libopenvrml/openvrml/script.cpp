@@ -1315,11 +1315,11 @@ event_emitter & script_node::do_event_emitter(const std::string & id)
  */
 
 /**
- * @fn const script_node::eventout_value_map_t & script_node::eventout_value_map() const throw ()
+ * @fn const script_node::eventout_map_t & script_node::eventout_map() const throw ()
  *
- * @brief eventOut value map.
+ * @brief eventOut map.
  *
- * @return the eventOut value map.
+ * @return the eventOut map.
  */
 
 /**

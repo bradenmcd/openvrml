@@ -323,6 +323,12 @@ field_value & field_value::operator=(const field_value & value) throw ()
  * @return the type_id enumerant corresponding to the field_value's type
  */
 
+/**
+ * @typedef field_value_ptr
+ *
+ * @brief A boost::shared_ptr to a field_value.
+ */
+
 namespace {
     const char * const field_value_type_id_[] = {
         "<invalid field type>",
@@ -3186,14 +3192,6 @@ event_listener::~event_listener() throw ()
  * @fn field_value_listener<FieldValue>::~field_value_listener() throw ()
  *
  * @brief Destroy.
- */
-
-/**
- * @fn field_value::type_id field_value_listener<FieldValue>::type() const throw ()
- *
- * @brief Field value type identifier.
- *
- * @return Field value type identifier.
  */
 
 /**

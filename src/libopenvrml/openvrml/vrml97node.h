@@ -2,9 +2,9 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
-// Copyright (C) 1999  Kumaran Santhanam
-// Copyright (C) 2001  Braden McDaniel
+// Copyright 1998  Chris Morley
+// Copyright 1999  Kumaran Santhanam
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public

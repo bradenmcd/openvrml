@@ -62,21 +62,10 @@ namespace openvrml {
     std::istream & operator>>(std::istream & in,
                               node_interface::type_id & type);
 
-    inline bool operator==(const node_interface & lhs,
-                           const node_interface & rhs)
-        throw ()
-    {
-        return lhs.type == rhs.type
-            && lhs.field_type == rhs.field_type
-            && lhs.id == rhs.id;
-    }
-
-    inline bool operator!=(const node_interface & lhs,
-                           const node_interface & rhs)
-        throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const node_interface & lhs, const node_interface & rhs)
+        throw ();
+    bool operator!=(const node_interface & lhs, const node_interface & rhs)
+        throw ();
 
     std::ostream & operator<<(std::ostream & out,
                               const node_interface & interface);

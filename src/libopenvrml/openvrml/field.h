@@ -95,7 +95,7 @@ namespace openvrml {
 
     std::ostream & operator<<(std::ostream & out,
                               field_value::type_id type_id);
-    std::istream & operator>>(std::istream & out,
+    std::istream & operator>>(std::istream & in,
                               field_value::type_id & type_id);
 
 

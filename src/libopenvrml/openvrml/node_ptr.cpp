@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2000  Braden McDaniel
+// Copyright 2000, 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -37,18 +37,6 @@ namespace openvrml {
  *
  * @brief Script nodes can be self-referential, so node_ptr works some special
  *      magic.
- */
-
-/**
- * @fn bool node_ptr::operator==(const node_ptr & lhs, const node_ptr & rhs) throw ()
- *
- * @brief Compare for equality.
- *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
- *
- * @return @c true if @p lhs and @p rhs point to the same node; @c false
- *         otherwise.
  */
 
 namespace {
@@ -207,9 +195,21 @@ void node_ptr::share(std::map<node *, size_t>::value_type * count_ptr) throw ()
 }
 
 /**
- * @fn bool operator!=(const node_ptr & lhs, const node_ptr & rhs) throw ()
+ * @brief Compare for equality.
  *
- * @relates openvrml::node_ptr
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs point to the same node; @c false
+ *         otherwise.
+ */
+bool operator==(const node_ptr & lhs, const node_ptr & rhs) throw ()
+{
+    return lhs.count_ptr == rhs.count_ptr;
+}
+
+/**
+ * @relatesalso node_ptr
  *
  * @brief Compare for inequality.
  *
@@ -219,5 +219,9 @@ void node_ptr::share(std::map<node *, size_t>::value_type * count_ptr) throw ()
  * @return @c true if @p lhs and @p rhs point to different
  *         @link openvrml::node nodes@endlink; @c false otherwise.
  */
+bool operator!=(const node_ptr & lhs, const node_ptr & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 } // namespace openvrml

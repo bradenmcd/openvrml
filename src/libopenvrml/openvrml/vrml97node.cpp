@@ -7558,7 +7558,7 @@ void group_node::add_children_listener::process_event(const mfnode & value,
 }
 
 /**
- * @class group_node::add_children_listener
+ * @class group_node::remove_children_listener
  *
  * @brief removeChildren event listener.
  */
@@ -10166,12 +10166,6 @@ movie_texture_node::set_speed_listener::process_event(const sffloat & speed,
  */
 
 /**
- * @var viewer::texture_object_t movie_texture_node::texObject
- *
- * @brief Handle for the renderer.
- */
-
-/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
@@ -11612,12 +11606,6 @@ pixel_texture_class::create_type(const std::string & id,
  * @var sfimage pixel_texture_node::image_
  *
  * @brief image exposedField.
- */
-
-/**
- * @var viewer::texture_object_t pixel_texture_node::texObject
- *
- * @brief Handle for the renderer.
  */
 
 /**

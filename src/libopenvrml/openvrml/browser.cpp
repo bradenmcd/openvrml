@@ -187,7 +187,7 @@ namespace openvrml {
             bool is(event_emitter_type & emitter) throw (std::bad_alloc);
 
         private:
-            double last_time() const { return this->event_emitter::last_time; }
+            double last_time() const;
         };
 
         static boost::shared_ptr<openvrml::event_emitter>
@@ -820,6 +820,17 @@ proto_node::proto_eventout<FieldValue>::
 is(event_emitter_type & emitter) throw (std::bad_alloc)
 {
     return emitter.add(this->listener);
+}
+
+/**
+ * @brief The timestamp of the most recently emitted event.
+ *
+ * @return the timestamp of the most recently emitted event.
+ */
+template <typename FieldValue>
+double proto_node::proto_eventout<FieldValue>::last_time() const
+{
+    return this->event_emitter::last_time;
 }
 
 /**
@@ -2316,12 +2327,6 @@ invalid_vrml::~invalid_vrml() throw ()
  */
 
 /**
- * @var browser::ProtoNodeClass
- *
- * @brief Class object for @link ProtoNode ProtoNodes@endlink.
- */
-
-/**
  * @var browser::Vrml97RootScope
  *
  * @brief Root scope that is initialized with the VRML97 node types.
@@ -2455,12 +2460,6 @@ invalid_vrml::~invalid_vrml() throw ()
  * @var std::list<node *> browser::movies
  *
  * @brief A list of all the MovieTexture nodes in the browser.
- */
-
-/**
- * @var std::list<ProtoNode *> browser::proto_node_list
- *
- * @brief A list of all the prototype nodes in the browser.
  */
 
 /**

@@ -1264,8 +1264,6 @@ rotation & rotation::operator*=(const rotation & rot) throw ()
 }
 
 /**
- * @fn const rotation operator*(const rotation & lhs, const rotation & rhs) throw ()
- *
  * @relatesalso rotation
  *
  * @brief Multiply rotations.
