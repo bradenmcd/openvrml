@@ -1,1 +1,0 @@
-SUBDIRS = vrml97js
