@@ -6,6 +6,10 @@
         * src/openvrml/OpenVRML/node.cpp:  Put Node's initializer list
           in the right order.
 
+        * src/openvrml-gl/OpenVRML/GL/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  libopenvrml-gl
+          no longer depends on glut.
+
 2002-11-19  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/MathUtils.cpp,

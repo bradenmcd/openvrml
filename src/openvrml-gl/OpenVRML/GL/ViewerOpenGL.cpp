@@ -41,13 +41,6 @@
 #   include <GL/glu.h>
 # endif
 
-# ifdef OPENVRML_HAVE_GLUT
-#   if defined(HAVE_GLUT_GLUT_H)
-#     include <GLUT/glut.h>
-#   elif defined(HAVE_GL_GLUT_H)
-#     include <GL/glut.h>
-#   endif
-# endif
 # include <stdio.h> // sprintf
 # include <math.h>
 
