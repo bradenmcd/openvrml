@@ -1,3 +1,14 @@
+2003-08-22  Braden McDaniel  <braden@endoframe.com>
+
+	Added Microsoft Visual Studio 7.0 solution and project files.
+
+	* ide-projects/Windows/VisualC7/OpenVRML/OpenVRML.sln
+	* ide-projects/Windows/VisualC7/OpenVRML/antlr/antlr.vcproj
+	* ide-projects/Windows/VisualC7/OpenVRML/lookat/lookat.vcproj
+	* ide-projects/Windows/VisualC7/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC7/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC7/OpenVRML/regex/regex.vcproj
+
 2003-08-21  Braden McDaniel  <braden@endoframe.com>
 
 	Changes to build with cl 13.00.9466.
