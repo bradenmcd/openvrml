@@ -319,8 +319,10 @@ namespace {
             throw (unsupported_interface);
 
         virtual const node_interface_set & interfaces() const throw ();
-        virtual const node_ptr create_node(const scope_ptr & scope) const
-            throw (std::bad_alloc);
+        virtual const node_ptr
+        create_node(const scope_ptr & scope,
+                    const initial_value_map & initial_values) const
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
 
     private:
         void do_field_value(NodeT & node, const std::string & id,
@@ -504,10 +506,28 @@ namespace {
 
     template <typename NodeT>
     const node_ptr
-    vrml97_node_type_impl<NodeT>::create_node(const scope_ptr & scope) const
-        throw (std::bad_alloc)
+    vrml97_node_type_impl<NodeT>::
+    create_node(const scope_ptr & scope,
+                const initial_value_map & initial_values) const
+        throw (unsupported_interface, std::bad_cast, std::bad_alloc)
     {
-        return node_ptr(new NodeT(*this, scope));
+        NodeT * const concrete_node_ptr = new NodeT(*this, scope);
+        const node_ptr result(concrete_node_ptr);
+        for (initial_value_map::const_iterator initial_value =
+                 initial_values.begin();
+             initial_value != initial_values.end();
+             ++initial_value) {
+            const typename field_value_map_t::const_iterator field =
+                this->field_value_map.find(initial_value->first);
+            if (field == this->field_value_map.end()) {
+                throw unsupported_interface(*this,
+                                            node_interface::field_id,
+                                            initial_value->first);
+            }
+            field->second->deref(*concrete_node_ptr)
+                .assign(*initial_value->second);
+        }
+        return result;
     }
 
     template <typename NodeT>
@@ -11943,7 +11963,7 @@ plane_sensor_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 plane_sensor_node::plane_sensor_node(const node_type & type,
-                         const scope_ptr & scope):
+                                     const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
     auto_offset_(*this, true),
@@ -11953,8 +11973,8 @@ plane_sensor_node::plane_sensor_node(const node_type & type,
     offset_(*this, vec3f(0.0, 0.0, 0.0)),
     is_active_(false),
     is_active_emitter_(this->is_active_),
-    translation_changed_emitter_(this->translation_changed_),
-    track_point_changed_emitter_(this->track_point_changed_)
+    track_point_changed_emitter_(this->track_point_changed_),
+    translation_changed_emitter_(this->translation_changed_)
 {
     this->node::modified(true);
 }

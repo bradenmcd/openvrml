@@ -43,7 +43,10 @@ namespace openvrml {
     protected:
         script_node & node;
 
-        script(script_node & node);
+        explicit script(script_node & node);
+
+        void field(const std::string & id, const field_value & value)
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
     };
 
 
@@ -60,6 +63,8 @@ namespace openvrml {
 
 
     class script_node : public child_node {
+        friend class script;
+
     public:
         typedef std::map<std::string, field_value_ptr> field_value_map_t;
 
@@ -100,8 +105,10 @@ namespace openvrml {
                 throw (std::invalid_argument);
 
             virtual const node_interface_set & interfaces() const throw ();
-            virtual const node_ptr create_node(const scope_ptr & scope) const
-                throw (std::bad_alloc);
+            virtual const node_ptr
+            create_node(const scope_ptr & scope,
+                        const initial_value_map & initial_values) const
+                throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         };
 
         friend class script_node_type;
@@ -140,7 +147,7 @@ namespace openvrml {
         typedef script_event_listener<mfvec2f> mfvec2f_listener;
         typedef script_event_listener<mfvec3f> mfvec3f_listener;
 
-        static std::auto_ptr<openvrml::event_listener>
+        static const boost::shared_ptr<openvrml::event_listener>
         create_listener(field_value::type_id type, const std::string & id,
                         script_node & node)
             throw (std::bad_alloc);
@@ -170,19 +177,13 @@ namespace openvrml {
         int events_received;
 
     public:
-        script_node(script_node_class & class_, const scope_ptr & scope)
-            throw ();
+        script_node(script_node_class & class_,
+                    const scope_ptr & scope,
+                    const node_interface_set & interfaces,
+                    const initial_value_map & initial_values)
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc,
+                   std::invalid_argument);
         virtual ~script_node() throw ();
-
-        const node_interface_set::const_iterator
-        add_eventin(field_value::type_id type, const std::string & id)
-            throw (std::invalid_argument, std::bad_alloc);
-        const node_interface_set::const_iterator
-        add_eventout(field_value::type_id type, const std::string & id)
-            throw (std::invalid_argument, std::bad_alloc);
-        const node_interface_set::const_iterator
-        add_field(const std::string & id, const field_value_ptr & default_val)
-            throw (std::invalid_argument, std::bad_alloc);
 
         void update(double current_time);
 
@@ -200,9 +201,6 @@ namespace openvrml {
         virtual script_node * to_script() throw ();
 
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
-        virtual void do_field(const std::string & id,
-                              const field_value & value)
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         virtual const field_value & do_field(const std::string & id) const
             throw (unsupported_interface);
         virtual openvrml::event_listener &

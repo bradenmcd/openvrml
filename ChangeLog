@@ -1,5 +1,23 @@
 2004-02-23 Braden McDaniel  <braden@endoframe.com>
 
+	Removed node::field mutator in favor of initializing the fields
+	of a node with initial values at construction time.
+	node_type::create_node now takes a map of fields and initial
+	values.
+
+	* src/libopenvrml/openvrml/ScriptJDK.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
+2004-02-23 Braden McDaniel  <braden@endoframe.com>
+
 	Improved FieldValueConcept documentation.
 
 	* src/libopenvrml/openvrml/field.cpp

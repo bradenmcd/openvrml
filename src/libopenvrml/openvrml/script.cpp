@@ -87,6 +87,29 @@ script::~script()
  * @brief Shut down the Script node.
  */
 
+/**
+ * @brief Set the value of a field.
+ *
+ * @param id    field identifier.
+ * @param value new value.
+ *
+ * @exception unsupported_interface if the Script node has no field @p id.
+ * @exception std::bad_cast         if @p value is the wrong type.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+void script::field(const std::string & id, const field_value & value)
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+{
+    const script_node::field_value_map_t::iterator field =
+        this->node.field_value_map_.find(id);
+    if (field == this->node.field_value_map_.end()) {
+        throw unsupported_interface(this->node.type,
+                                    node_interface::field_id,
+                                    id);
+    }
+    field->second->assign(value); // throws std::bad_cast, std::bad_alloc
+}
+
 
 /**
  * @class script_node_class
@@ -133,6 +156,12 @@ const node_type_ptr script_node_class::create_type(const std::string &,
  * @class script_node
  *
  * @brief Represents a VRML Script node.
+ */
+
+/**
+ * @var script_node::script
+ *
+ * @brief Abstract base class for script runtimes.
  */
 
 /**
@@ -277,6 +306,8 @@ void script_node::eventout::emit_event(const double timestamp)
  */
 
 /**
+ * @internal
+ *
  * @class script_node::script_node_type
  *
  * @brief Type objects for @link script_node script_nodes@endlink.
@@ -290,6 +321,26 @@ void script_node::eventout::emit_event(const double timestamp)
  * @brief Node interfaces.
  */
 
+namespace {
+
+    //
+    // The order of the node_interfaces in this array is significant. This
+    // range is used with std::set_difference, so the elements *must* be in
+    // lexicographically increasing order according to their "id" member.
+    //
+    const node_interface built_in_script_interfaces_[] = {
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "directOutput"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "mustEvaluate"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url")
+    };
+}
+
 /**
  * @brief Construct.
  *
@@ -298,20 +349,9 @@ void script_node::eventout::emit_event(const double timestamp)
 script_node::script_node_type::script_node_type(script_node_class & class_):
     node_type(class_, "Script")
 {
-    static const node_interface interfaces[] = {
-        node_interface(node_interface::exposedfield_id,
-                      field_value::mfstring_id,
-                      "url"),
-        node_interface(node_interface::field_id,
-                      field_value::sfbool_id,
-                      "directOutput"),
-        node_interface(node_interface::field_id,
-                      field_value::sfbool_id,
-                      "mustEvaluate")
-    };
-    openvrml::add_interface(this->interfaces_, interfaces[0]);
-    openvrml::add_interface(this->interfaces_, interfaces[1]);
-    openvrml::add_interface(this->interfaces_, interfaces[2]);
+    openvrml::add_interface(this->interfaces_, built_in_script_interfaces_[0]);
+    openvrml::add_interface(this->interfaces_, built_in_script_interfaces_[1]);
+    openvrml::add_interface(this->interfaces_, built_in_script_interfaces_[2]);
 }
 
 /**
@@ -354,74 +394,52 @@ const node_interface_set & script_node::script_node_type::interfaces() const
  * to use this method. The "primordial" script_node instance must be created
  * with a call to the script_node constructor.
  *
- * @param scope
+ * @param scope             the scope to which the node should belong.
+ * @param initial_values    a map of initial values for the node's fields and
+ *                          exposedFields.
  *
- * @exception std::bad_alloc    if memory allocation fails.
+ * @exception unsupported_interface if @p initial_values specifies a field
+ *                                  name that is not supported by the node
+ *                                  type.
+ * @exception std::bad_cast         if a value in @p initial_values is the
+ *                                  wrong type.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_ptr
-script_node::script_node_type::create_node(const scope_ptr & scope) const
-    throw (std::bad_alloc)
+script_node::script_node_type::
+create_node(const scope_ptr & scope,
+            const initial_value_map & initial_values) const
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
+    using std::insert_iterator;
+    using std::set_difference;
+
     script_node_class & scriptNodeClass =
         static_cast<script_node_class &>(this->node_class);
-    const node_ptr node(new script_node(scriptNodeClass, scope));
-    assert(dynamic_cast<script_node *>(node.get()));
-    script_node & scriptNode = dynamic_cast<script_node &>(*node);
 
     //
-    // Copy the interfaces.
+    // First, we need the set of node_interfaces *without* the built-in
+    // Script node interfaces (url, directOutput, mustEvaluate).
     //
-    scriptNode.type.interfaces_ = this->interfaces_; // throws std::bad_alloc.
+    node_interface_set interfaces;
+    insert_iterator<node_interface_set> interface_inserter(interfaces,
+                                                           interfaces.begin());
+    set_difference(this->interfaces_.begin(),
+                   this->interfaces_.end(),
+                   built_in_script_interfaces_,
+                   built_in_script_interfaces_ + 3,
+                   interface_inserter,
+                   node_interface_set::key_compare());
 
-    //
-    // Add the default field and eventOut values.
-    //
-    for (node_interface_set::const_iterator interface =
-             this->interfaces_.begin();
-         interface != this->interfaces_.end();
-         ++interface) {
-        using std::auto_ptr;
-        using std::make_pair;
-
-        bool succeeded;
-
-        auto_ptr<openvrml::event_listener> listener;
-        auto_ptr<field_value> value;
-        switch (interface->type) {
-        case node_interface::eventin_id:
-            listener = create_listener(interface->field_type,
-                                       interface->id,
-                                       scriptNode);
-            succeeded = scriptNode.event_listener_map
-                .insert(make_pair(interface->id,
-                                  event_listener_ptr(listener))).second;
-            assert(succeeded);
-            break;
-        case node_interface::eventout_id:
-            succeeded = scriptNode.eventout_map_
-                .insert(make_pair(interface->id,
-                                  eventout_ptr(
-                                      new eventout(interface->field_type,
-                                                   scriptNode))))
-                .second;
-            assert(succeeded);
-            break;
-        case node_interface::field_id:
-            value = field_value::create(interface->field_type);
-            succeeded = scriptNode.field_value_map_
-                .insert(make_pair(interface->id, field_value_ptr(value)))
-                .second;
-            assert(succeeded);
-            break;
-        case node_interface::exposedfield_id:
-            //
-            // The only exposedField is url, and we don't need to do anything
-            // for it.
-            //
-            break;
-        default:
-            assert(false);
-        }
+    node_ptr node;
+    try {
+        node.reset(new script_node(scriptNodeClass,
+                                   scope,
+                                   interfaces,
+                                   initial_values));
+    } catch (std::invalid_argument & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+        assert(false);
     }
     return node;
 }
@@ -471,126 +489,168 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sfbool_listener
  *
  * @brief sfbool event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sfcolor_listener
  *
  * @brief sfcolor event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sffloat_listener
  *
  * @brief sffloat event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sfimage_listener
  *
  * @brief sfimage event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sfint32_listener
  *
  * @brief sfint32 event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sfnode_listener
  *
  * @brief sfnode event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sfrotation_listener
  *
  * @brief sfrotation event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sfstring_listener
  *
  * @brief sfstring event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sftime_listener
  *
  * @brief sftime event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sfvec2f_listener
  *
  * @brief sfvec2f event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::sfvec3f_listener
  *
  * @brief sfvec3f event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::mfcolor_listener
  *
  * @brief mfcolor event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::mffloat_listener
  *
  * @brief mffloat event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::mfint32_listener
  *
  * @brief mfint32 event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::mfnode_listener
  *
  * @brief mfnode event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::mfrotation_listener
  *
  * @brief mfrotation event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::mfstring_listener
  *
  * @brief mfstring event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::mftime_listener
  *
  * @brief mftime event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::mfvec2f_listener
  *
  * @brief mfvec2f event listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::mfvec3f_listener
  *
  * @brief mfvec3f event listener.
  */
 
 /**
+ * @internal
+ *
  * @brief Create a Script node event listener.
  *
  * @param type  the type of listener to create.
@@ -601,13 +661,13 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<event_listener>
+const boost::shared_ptr<event_listener>
 script_node::create_listener(const field_value::type_id type,
                              const std::string & id,
                              script_node & node)
     throw (std::bad_alloc)
 {
-    std::auto_ptr<openvrml::event_listener> listener;
+    boost::shared_ptr<openvrml::event_listener> listener;
     switch (type) {
     case field_value::sfbool_id:
         listener.reset(new sfbool_listener(id, node));
@@ -676,6 +736,8 @@ script_node::create_listener(const field_value::type_id type,
 }
 
 /**
+ * @internal
+ *
  * @class script_node::set_url_listener_t
  *
  * @brief set_url event listener.
@@ -723,6 +785,8 @@ void script_node::set_url_listener_t::process_event(const mfstring & value,
 }
 
 /**
+ * @internal
+ *
  * @var script_node::script_node_type script_node::type
  *
  * @brief Type object for the script_node instance.
@@ -731,7 +795,7 @@ void script_node::set_url_listener_t::process_event(const mfstring & value,
  * different from other @link openvrml::node_type node_types@endlink. While
  * most @link openvrml::node_type node_types@endlink are shared by the node
  * instances they spawn, the script_node_type is unique to a script_node
- * instance, and it* shares the script_node's lifetime. This reflects the fact
+ * instance, and it shares the script_node's lifetime. This reflects the fact
  * that Script nodes in VRML get their functionality by the addition of fields,
  * eventIns, and eventOuts on a per-instance basis.
  *
@@ -740,72 +804,96 @@ void script_node::set_url_listener_t::process_event(const mfstring & value,
  */
 
 /**
+ * @internal
+ *
  * @var sfbool script_node::direct_output
  *
  * @brief directOutput field.
  */
 
 /**
+ * @internal
+ *
  * @var sfbool script_node::must_evaluate
  *
  * @brief mustEvaluate field.
  */
 
 /**
+ * @internal
+ *
  * @var script_node::set_url_listener_t script_node::set_url_listener
  *
  * @brief set_url eventIn handler.
  */
 
 /**
+ * @internal
+ *
  * @var mfstring script_node::url_
  *
  * @brief url exposedField.
  */
 
 /**
+ * @internal
+ *
  * @var mfstring_emitter script_node::url_changed_emitter
  *
  * @brief url_changed eventOut emitter.
  */
 
 /**
+ * @internal
+ *
  * @var script_node::field_value_map_t script_node::field_value_map_
  *
  * @brief Maps user-defined field names to their values.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::event_listener_ptr
  *
  * @brief Reference-counted smart pointer to an event_listener.
  */
 
 /**
+ * @internal
+ *
  * @typedef script_node::event_listener_map_t
  *
  * @brief Map of event listeners.
  */
 
 /**
+ * @internal
+ *
  * @var script_node::event_listener_map_t script_node::event_listener_map
  *
  * @brief Map of event listeners.
  */
 
 /**
+ * @internal
+ *
  * @var script_node::eventout_map_t script_node::eventout_map_
  *
  * @brief Map of eventout instances.
  */
 
 /**
+ * @internal
+ *
  * @var script * script_node::script_
  *
  * @brief A pointer to a script object.
  */
 
 /**
+ * @internal
+ *
  * @var int script_node::events_received
  *
  * @brief A count of the number of events received since script_node::update
@@ -815,12 +903,45 @@ void script_node::set_url_listener_t::process_event(const mfstring & value,
 /**
  * @brief Construct.
  *
- * @param class_
- * @param scope
+ * Unlike other concrete node types, which are always instantiated via
+ * node_type::create_node, the script_node constructor is called directly when
+ * creating a new script_node from scratch.  However, a script_node can be
+ * duplicated (or "cloned") by calling node_type::create_node on
+ * script_node::type of a script_node instance.  This provides a consistent
+ * interface for cloning any node, regardless of its type.  OpenVRML uses this
+ * internally when instantiating PROTOs.
+ *
+ * @param class_            the script_node_class.  Typically there is one
+ *                          script_node_class per browser instance.
+ * @param scope             the scope to which the node should belong.
+ * @param interfaces        a node_interface_set containing specifications of
+ *                          user-defined fields, eventIns, and eventOuts
+ *                          particular to the script_node instance.
+ * @param initial_values    a map of initial values for fields of the
+ *                          script_node.
+ *
+ * @exception unsupported_interface if @p initial_values specifies a field that
+ *                                  is not supported by the script_node.
+ * @exception std::bad_cast         if @p initial_values includes a field value
+ *                                  that is the wrong type for the specified
+ *                                  field.
+ * @exception std::bad_alloc        if memory allocation fails.
+ * @exception std::invalid_argument if:
+ *                                  - @p interfaces includes an exposedField
+ *                                    specification.
+ *                                  - @p interfaces includes an interface
+ *                                    specification that duplicates an existing
+ *                                    Script node interface.
+ *                                  - @p initial_values is missing an initial
+ *                                    value for a user-defined field in
+ *                                    @p interfaces.
  */
 script_node::script_node(script_node_class & class_,
-                         const scope_ptr & scope)
-    throw ():
+                         const scope_ptr & scope,
+                         const node_interface_set & interfaces,
+                         const initial_value_map & initial_values)
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc,
+           std::invalid_argument):
     node(this->type, scope),
     child_node(this->type, scope),
     type(class_),
@@ -830,7 +951,61 @@ script_node::script_node(script_node_class & class_,
     url_changed_emitter(this->url_),
     script_(0),
     events_received(0)
-{}
+{
+    for (node_interface_set::const_iterator interface = interfaces.begin();
+         interface != interfaces.end();
+         ++interface) {
+        using std::invalid_argument;
+        using boost::shared_ptr;
+        shared_ptr<openvrml::event_listener> listener;
+        shared_ptr<eventout> eventout;
+        initial_value_map::const_iterator initial_value;
+        bool succeeded;
+        switch (interface->type) {
+        case node_interface::eventin_id:
+            listener = create_listener(interface->field_type,
+                                       interface->id,
+                                       *this);
+            succeeded = this->event_listener_map
+                .insert(make_pair(interface->id, listener)).second;
+            break;
+        case node_interface::eventout_id:
+            eventout.reset(new script_node::eventout(interface->field_type,
+                                                     *this));
+            succeeded = this->eventout_map_
+                .insert(make_pair(interface->id, eventout)).second;
+            break;
+        case node_interface::field_id:
+            initial_value = initial_values.find(interface->id);
+            if (initial_value == initial_values.end()) {
+                throw invalid_argument("Missing initial value for field \""
+                                       + interface->id + "\".");
+            }
+            succeeded = this->field_value_map_.insert(*initial_value).second;
+            break;
+        case node_interface::exposedfield_id:
+            throw invalid_argument("Script cannot support user-defined "
+                                   "exposedFields.");
+        default:
+            assert(false);
+        }
+        assert(succeeded);
+        this->type.add_interface(*interface); // Throws std::invalid_argument.
+    }
+
+    for (initial_value_map::const_iterator initial_value =
+             initial_values.begin();
+         initial_value != initial_values.end();
+         ++initial_value) {
+        if (initial_value->first == "url") {
+            this->url_.assign(*initial_value->second);
+        } else if (initial_value->first == "directOutput") {
+            this->direct_output.assign(*initial_value->second);
+        } else if (initial_value->first == "mustEvaluate") {
+            this->must_evaluate.assign(*initial_value->second);
+        }
+    }
+}
 
 /**
  * @brief Destroy.
@@ -841,179 +1016,8 @@ script_node::~script_node() throw ()
 }
 
 /**
- * @brief Add an eventIn.
+ * @internal
  *
- * @param type  value type.
- * @param id    identifier.
- *
- * @return a const_iterator to the node_interface added to the node's
- *         node_type.
- *
- * @exception std::invalid_argument if the node already has an interface @p id.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const node_interface_set::const_iterator
-script_node::add_eventin(const field_value::type_id type,
-                         const std::string & id)
-    throw (std::invalid_argument, std::bad_alloc)
-{
-    using openvrml_::unary_function_base;
-    typedef openvrml_::unary_function_wrapper<event_listener_map_t::iterator,
-                                              void>
-        erase_wrapper;
-
-    struct erase : unary_function_base<event_listener_map_t::iterator, void> {
-        explicit erase(event_listener_map_t & event_listener_map):
-            event_listener_map(&event_listener_map)
-        {}
-
-        void operator()(const event_listener_map_t::iterator & pos) const
-        {
-            this->event_listener_map->erase(pos);
-        }
-
-    private:
-        event_listener_map_t * event_listener_map;
-    };
-
-    using std::auto_ptr;
-    using std::pair;
-    using std::invalid_argument;
-    using openvrml_::scope_guard;
-    using openvrml_::make_guard;
-
-    auto_ptr<openvrml::event_listener> listener =
-        create_listener(type, id, *this);
-
-    event_listener_map_t::value_type value(id, event_listener_ptr(listener));
-    pair<event_listener_map_t::iterator, bool> insert_result =
-        this->event_listener_map.insert(value);
-    scope_guard guard =
-        make_guard(erase_wrapper(erase(this->event_listener_map)),
-                   insert_result.first);
-    if (!insert_result.second) {
-        throw invalid_argument("Interface already defined.");
-    }
-
-    const node_interface interface(node_interface::eventin_id, type, id);
-    node_interface_set::const_iterator result =
-        this->type.add_interface(interface);
-
-    guard.dismiss();
-
-    return result;
-}
-
-/**
- * @brief Add an eventOut.
- *
- * @param type  value type.
- * @param id    identifier.
- */
-const node_interface_set::const_iterator
-script_node::add_eventout(const field_value::type_id type,
-                          const std::string & id)
-    throw (std::invalid_argument, std::bad_alloc)
-{
-    using openvrml_::unary_function_base;
-    typedef openvrml_::unary_function_wrapper<eventout_map_t::iterator,
-                                              void>
-        erase_wrapper;
-
-    struct erase : unary_function_base<eventout_map_t::iterator, void> {
-        explicit erase(eventout_map_t & eventout_map):
-            eventout_map(&eventout_map)
-        {}
-
-        void operator()(const eventout_map_t::iterator & pos) const
-        {
-            this->eventout_map->erase(pos);
-        }
-
-    private:
-        eventout_map_t * eventout_map;
-    };
-
-    using std::pair;
-    using std::invalid_argument;
-    using openvrml_::scope_guard;
-    using openvrml_::make_guard;
-    const eventout_map_t::value_type
-        value(id, eventout_ptr(new eventout(type, *this)));
-    pair<eventout_map_t::iterator, bool> insert_result =
-        this->eventout_map_.insert(value);
-    scope_guard guard =
-        make_guard(erase_wrapper(erase(this->eventout_map_)),
-                   insert_result.first);
-    if (!insert_result.second) {
-        throw invalid_argument("Interface already defined.");
-    }
-
-    const node_interface interface(node_interface::eventout_id, type, id);
-    node_interface_set::const_iterator result =
-        this->type.add_interface(interface);
-
-    guard.dismiss();
-
-    return result;
-}
-
-/**
- * @brief Add a field.
- *
- * @param id            identifier.
- * @param default_val   default value.
- */
-const node_interface_set::const_iterator
-script_node::add_field(const std::string & id,
-                       const field_value_ptr & default_val)
-    throw (std::invalid_argument, std::bad_alloc)
-{
-    using openvrml_::unary_function_base;
-    typedef openvrml_::unary_function_wrapper<field_value_map_t::iterator,
-                                              void>
-        erase_wrapper;
-
-    struct erase : unary_function_base<field_value_map_t::iterator, void> {
-        explicit erase(field_value_map_t & field_value_map):
-            field_value_map(&field_value_map)
-        {}
-
-        void operator()(const field_value_map_t::iterator & pos) const
-        {
-            this->field_value_map->erase(pos);
-        }
-
-    private:
-        field_value_map_t * field_value_map;
-    };
-
-    using std::pair;
-    using std::invalid_argument;
-    using openvrml_::scope_guard;
-    using openvrml_::make_guard;
-    //
-    // field value.
-    //
-    const field_value_map_t::value_type value(id, default_val);
-    pair<field_value_map_t::iterator, bool> insert_result =
-        this->field_value_map_.insert(value);
-    scope_guard guard =
-        make_guard(erase_wrapper(erase(this->field_value_map_)),
-                   insert_result.first);
-
-    const node_interface interface(node_interface::field_id,
-                                   default_val->type(),
-                                   id);
-    const node_interface_set::const_iterator result =
-        this->type.add_interface(interface);
-
-    guard.dismiss();
-
-    return result;
-}
-
-/**
  * @brief Return a pointer to this script_node.
  *
  * @return a pointer to this script_node.
@@ -1066,6 +1070,8 @@ void script_node::update(const double current_time)
  */
 
 /**
+ * @internal
+ *
  * @brief Special assignment function to take into account the fact that
  *        Script nodes can be self referential.
  *
@@ -1112,6 +1118,8 @@ void script_node::assign_with_self_ref_check(const sfnode & inval,
 }
 
 /**
+ * @internal
+ *
  * @brief Special assignment function to take into account the fact that
  *        Script nodes can be self referential.
  *
@@ -1173,48 +1181,6 @@ void script_node::do_initialize(const double timestamp) throw (std::bad_alloc)
         if (eventout->second->modified()) {
             eventout->second->emit_event(timestamp);
         }
-    }
-}
-
-/**
- * @brief Set the value of one of the node's fields.
- *
- * @param id    the name of the field to set.
- * @param value the new value.
- *
- * @exception unsupported_interface if the node has no field @p id.
- * @exception std::bad_cast         if @p value is the wrong type.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-void script_node::do_field(const std::string & id, const field_value & value)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
-{
-    field_value_map_t::iterator itr;
-    if (id == "url") {
-        //
-        // Don't call setUrl() here, as that will emit a "url_changed" event.
-        //
-        this->url_ = dynamic_cast<const mfstring &>(value);
-    } else if (id == "directOutput") {
-        this->direct_output = dynamic_cast<const sfbool &>(value);
-    } else if (id == "mustEvaluate") {
-        this->must_evaluate = dynamic_cast<const sfbool &>(value);
-    } else if (!((itr = this->field_value_map_.find(id))
-            == this->field_value_map_.end())) {
-        if (itr->second->type() == field_value::sfnode_id) {
-            this->assign_with_self_ref_check(
-                dynamic_cast<const sfnode &>(value),
-                static_cast<sfnode &>(*itr->second));
-        } else if (itr->second->type() == field_value::mfnode_id) {
-            this->assign_with_self_ref_check(
-                dynamic_cast<const mfnode &>(value),
-                static_cast<mfnode &>(*itr->second));
-        } else {
-            itr->second->assign(value); // Throws std::bad_cast.
-        }
-    } else {
-        throw unsupported_interface("Script node has no field \"" + id
-                                    + "\".");
     }
 }
 
@@ -1386,6 +1352,10 @@ public:
     jsval vrmlFieldToJSVal(const openvrml::field_value & value) throw ();
 
 private:
+    static JSBool field_setProperty(JSContext * cx, JSObject * obj,
+                                    jsval id, jsval * val)
+        throw ();
+
     void initVrmlClasses(bool direct_output) throw (std::bad_alloc);
     void defineBrowserObject() throw (std::bad_alloc);
     void defineFields() throw (std::bad_alloc);
@@ -1399,6 +1369,8 @@ private:
 # endif // OPENVRML_SCRIPT_NODE_JAVASCRIPT
 
 /**
+ * @internal
+ *
  * @brief Create a script object.
  *
  * @return a new script object.
@@ -2102,9 +2074,6 @@ size_t script::nInstances = 0; // Number of distinct script objects
 JSBool eventOut_setProperty(JSContext * cx, JSObject * obj,
                             jsval id, jsval * val) throw ();
 
-JSBool field_setProperty(JSContext * cx, JSObject * obj,
-                         jsval id, jsval * val) throw ();
-
 void errorReporter(JSContext * cx, const char * message,
                    JSErrorReport * report);
 
@@ -2582,13 +2551,17 @@ JSBool eventOut_setProperty(JSContext * const cx,
 
     script_node & scriptNode = script->script_node();
 
-    const field_value::type_id field_type_id =
-        scriptNode.node::type.has_eventout(eventId);
+    const node_interface_set & interfaces = scriptNode.node::type.interfaces();
+    const node_interface_set::const_iterator interface =
+        find_if(interfaces.begin(), interfaces.end(),
+                bind2nd(node_interface_matches_eventout(), eventId));
     //
     // If this assertion is false, then we accidentally gave this
     // setter to an object that doesn't correspond to an eventOut!
     //
-    assert(field_type_id != field_value::invalid_type_id);
+    assert(interface != interfaces.end());
+
+    const field_value::type_id field_type_id = interface->field_type;
 
     //
     // Convert to an openvrml::field_value and set the eventOut value.
@@ -2611,8 +2584,10 @@ JSBool eventOut_setProperty(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool field_setProperty(JSContext * const cx, JSObject * const obj,
-                         const jsval id, jsval * const val)
+JSBool script::field_setProperty(JSContext * const cx,
+                                 JSObject * const obj,
+                                 const jsval id,
+                                 jsval * const val)
     throw ()
 {
     JSString * const str = JS_ValueToString(cx, id);
@@ -2627,25 +2602,35 @@ JSBool field_setProperty(JSContext * const cx, JSObject * const obj,
         static_cast<js_::script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    script_node & scriptNode = script->script_node();
+    openvrml::script_node & scriptNode = script->script_node();
 
-    const field_value::type_id field_type_id =
-        scriptNode.node::type.has_field(fieldId);
+    const node_interface_set & interfaces = scriptNode.node::type.interfaces();
+    const node_interface_set::const_iterator interface =
+        find_if(interfaces.begin(), interfaces.end(),
+                bind2nd(node_interface_matches_field(), fieldId));
     //
     // If this assertion is false, then we accidentally gave this
     // setter to an object that doesn't correspond to a field!
     //
-    assert(field_type_id != field_value::invalid_type_id);
+    assert(interface != interfaces.end());
+
+    const field_value::type_id field_type_id = interface->field_type;
 
     //
-    // Convert to an openvrml::FieldValue and set the eventOut value.
+    // Convert to an openvrml::FieldValue and set the field value.
     //
     try {
         using std::auto_ptr;
         auto_ptr<field_value> fieldValue =
             createFieldValueFromJsval(cx, *val, field_type_id);
-        scriptNode.field(fieldId, *fieldValue);
+        script->field(fieldId, *fieldValue);
     } catch (bad_conversion & ex) {
+        JS_ReportError(cx, ex.what());
+        return JS_FALSE;
+    } catch (unsupported_interface & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+        assert(false);
+    } catch (std::bad_cast & ex) {
         JS_ReportError(cx, ex.what());
         return JS_FALSE;
     } catch (std::bad_alloc &) {
@@ -4155,8 +4140,12 @@ JSBool SFNode::setProperty(JSContext * const cx,
         const char * const eventInId = JS_GetStringBytes(JSVAL_TO_STRING(id));
 
         // convert vp to field, send eventIn to node
-        field_value::type_id expectType = nodePtr->type.has_eventin(eventInId);
-        if (expectType == field_value::invalid_type_id) { return JS_TRUE; }
+        const node_interface_set & interfaces = nodePtr->type.interfaces();
+        const node_interface_set::const_iterator interface =
+            find_if(interfaces.begin(), interfaces.end(),
+                    bind2nd(node_interface_matches_eventin(), eventInId));
+        if (interface == interfaces.end()) { return JS_TRUE; }
+        field_value::type_id expectType = interface->field_type;
         auto_ptr<field_value> fieldValue;
         try {
             fieldValue = createFieldValueFromJsval(cx, *vp, expectType);

@@ -104,6 +104,12 @@ namespace {
         bool        read_too_much_;
         bool        expecting_field_type_;
     };
+
+    //
+    // Per-node list of IS mappings. A multimap is used for no other reason
+    // than that redundancies are checked later.
+    //
+    typedef std::multimap<std::string, std::string> is_list;
 }
 
 namespace openvrml ANTLR_LBRACE
@@ -565,20 +571,21 @@ inline bool isHexDigit(const char c)
     return false;
 }
 
-struct interface_id_equals_ :
-        std::unary_function<openvrml::node_interface, bool> {
-    explicit interface_id_equals_(const std::string & interface_id):
-        interface_id(&interface_id)
-    {}
-
-    bool operator()(const openvrml::node_interface & interface) const
-    {
-        return interface.id == *this->interface_id;
-    }
-
-private:
-    const std::string * interface_id;
+const openvrml::node_interface script_node_interfaces[] = {
+    openvrml::node_interface(openvrml::node_interface::exposedfield_id,
+                             openvrml::field_value::mfstring_id,
+                             "url"),
+    openvrml::node_interface(openvrml::node_interface::field_id,
+                             openvrml::field_value::sfbool_id,
+                             "directOutput"),
+    openvrml::node_interface(openvrml::node_interface::field_id,
+                             openvrml::field_value::sfbool_id,
+                             "mustEvaluate")
 };
+
+const openvrml::node_interface_set
+    script_node_interface_set(script_node_interfaces,
+                              script_node_interfaces + 3);
 
 } // namespace
 
@@ -1028,9 +1035,14 @@ protoRouteStatement[const openvrml::scope & scope,
             // routes (event_listeners) are established when the PROTO is
             // instantiated.  So, we need to do validation here.
             //
-            const field_value::type_id eventout_type =
-                from_node->type.has_eventout(eventout_id->getText());
-            if (eventout_type == field_value::invalid_type_id) {
+            const node_interface_set & from_node_interfaces =
+                from_node->type.interfaces();
+            const node_interface_set::const_iterator from_interface =
+                find_if(from_node_interfaces.begin(),
+                        from_node_interfaces.end(),
+                        bind2nd(node_interface_matches_eventout(),
+                                eventout_id->getText()));
+            if (from_interface == from_node_interfaces.end()) {
                 throw SemanticException(from_node->type.id + " node has no "
                                         "eventOut \"" + eventout_id->getText()
                                         + "\".",
@@ -1039,9 +1051,13 @@ protoRouteStatement[const openvrml::scope & scope,
                                         eventout_id->getColumn());
             }
 
-            const field_value::type_id eventin_type =
-                to_node->type.has_eventin(eventin_id->getText());
-            if (eventin_type == field_value::invalid_type_id) {
+            const node_interface_set & to_node_interfaces =
+                to_node->type.interfaces();
+            const node_interface_set::const_iterator to_interface =
+                find_if(to_node_interfaces.begin(), to_node_interfaces.end(),
+                        bind2nd(node_interface_matches_eventin(),
+                                eventin_id->getText()));
+            if (to_interface == to_node_interfaces.end()) {
                 throw SemanticException(to_node->type.id + " node has no "
                                         "eventIn \"" + eventin_id->getText()
                                         + "\".",
@@ -1050,7 +1066,7 @@ protoRouteStatement[const openvrml::scope & scope,
                                         eventin_id->getColumn());
             }
 
-            if (eventin_type != eventout_type) {
+            if (to_interface->field_type != from_interface->field_type) {
                 throw SemanticException("Mismatch between eventOut and "
                                         "eventIn types.",
                                         this->uri,
@@ -1072,19 +1088,26 @@ options { defaultErrorHandler = false; }
 {
     using antlr::SemanticException;
 
+    initial_value_map initial_values;
+    node_interface_set interfaces;
     node_type_ptr nodeType;
 }
-    : { !LT(1)->getText().compare("Script") }? scriptId:ID {
-            n.reset(new script_node(browser.script_node_class_, scope));
+    : { !LT(1)->getText().compare("Script") }? scriptId:ID LBRACE (
+            nodeBodyElement[browser,
+                            scope,
+                            script_node_interface_set,
+                            initial_values]
+            | scriptInterfaceDeclaration[browser,
+                                         scope,
+                                         interfaces,
+                                         initial_values]
+        )* RBRACE {
+            n.reset(new script_node(browser.script_node_class_,
+                                    scope,
+                                    interfaces,
+                                    initial_values));
             if (!nodeId.empty()) { n->id(nodeId); }
-
-            script_node * const scriptNode = node_cast<script_node *>(n.get());
-            assert(scriptNode);
-        } LBRACE (
-            nodeBodyElement[scope, *n]
-            | scriptInterfaceDeclaration[scope, *scriptNode]
-        )* RBRACE
-
+        }
     | nodeTypeId:ID {
             nodeType = scope->find_type(nodeTypeId->getText());
             if (!nodeType) {
@@ -1095,85 +1118,81 @@ options { defaultErrorHandler = false; }
                                         nodeTypeId->getColumn());
             }
 
-            n = node_ptr(nodeType->create_node(scope));
+        } LBRACE (nodeBodyElement[browser,
+                                  scope,
+                                  nodeType->interfaces(),
+                                  initial_values])*
+        RBRACE {
+            n = node_ptr(nodeType->create_node(scope, initial_values));
 
             if (!nodeId.empty()) { n->id(nodeId); }
-        } LBRACE (nodeBodyElement[scope, *n])* RBRACE
+        }
     ;
+    exception
+    catch [std::invalid_argument & ex] {
+        throw SemanticException(ex.what());
+    }
+    catch [unsupported_interface & ex] {
+        throw SemanticException(ex.what());
+    }
+    catch [std::bad_cast & ex] {
+        throw SemanticException("Incorrect value type for field or "
+                                "exposedField.");
+    }
 
-nodeBodyElement[const scope_ptr & scope, openvrml::node & node]
+nodeBodyElement[browser & b,
+                const scope_ptr & scope,
+                const node_interface_set & interfaces,
+                initial_value_map & initial_values]
 {
+    using std::find_if;
+    using std::bind2nd;
     using antlr::SemanticException;
-    field_value::type_id ft(field_value::invalid_type_id);
+    field_value::type_id ft = field_value::invalid_type_id;
     field_value_ptr fv;
 }
-    : id:ID {
-            ft = node.type.has_field(id->getText());
-            if (ft == field_value::invalid_type_id) {
-                ft = node.type.has_exposedfield(id->getText());
-                if (ft == field_value::invalid_type_id) {
-                    throw SemanticException(node.type.id + " node has no "
-                                            "field or exposedField \""
-                                            + id->getText() + "\"",
-                                            this->uri,
-                                            id->getLine(),
-                                            id->getColumn());
-                }
+    :   id:ID {
+            node_interface_set::const_iterator interface =
+                find_if(interfaces.begin(), interfaces.end(),
+                        bind2nd(node_interface_matches_field(),
+                                id->getText()));
+            if (interface == interfaces.end()) {
+                interface =
+                    find_if(interfaces.begin(), interfaces.end(),
+                            bind2nd(node_interface_matches_exposedfield(),
+                                    id->getText()));
+            }
+            if (interface == interfaces.end()) {
+                throw SemanticException("Node has no field or exposedField \""
+                                        + id->getText() + "\"",
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
+            }
+            ft = interface->field_type;
+        } fv=fieldValue[b, scope, ft] {
+            assert(fv);
+            const bool succeeded =
+                initial_values.insert(make_pair(id->getText(), fv)).second;
+            if (!succeeded) {
+                throw SemanticException("Value for " + id->getText()
+                                        + " already declared.");
             }
         }
-        fv=fieldValue[node.type.node_class.browser, scope, ft] {
-            assert(fv);
-            node.field(id->getText(), *fv);
-        }
     |   routeStatement[*scope]
-    |   protoStatement[node.type.node_class.browser, scope]
+    |   protoStatement[b, scope]
     ;
 
-scriptInterfaceDeclaration[const scope_ptr & scope, script_node & node]
+scriptInterfaceDeclaration[browser & b,
+                           const scope_ptr & scope,
+                           node_interface_set & interfaces,
+                           initial_value_map & initial_values]
 {
     using antlr::SemanticException;
     node_interface::type_id it(node_interface::invalid_type_id);
     field_value::type_id ft(field_value::invalid_type_id);
 }
     : it=eventInterfaceType ft=fieldType id:ID {
-            const node_interface_set::const_iterator pos =
-                find_interface(node.node::type.interfaces(),
-                               id->getText());
-            if (pos != node.node::type.interfaces().end()) {
-                throw SemanticException("Interface \"" + id->getText()
-                                        + "\" already declared for Script "
-                                        "node.",
-                                        this->uri,
-                                        id->getLine(),
-                                        id->getColumn());
-            }
-            switch (it) {
-            case node_interface::eventin_id:
-                node.add_eventin(ft, id->getText());
-                break;
-            case node_interface::eventout_id:
-                node.add_eventout(ft, id->getText());
-                break;
-            default:
-                assert(false);
-            }
-        }
-    | scriptFieldInterfaceDeclaration[scope, node]
-    ;
-
-scriptFieldInterfaceDeclaration[const scope_ptr & scope, script_node & node]
-{
-    using std::find_if;
-    using antlr::SemanticException;
-
-    field_value::type_id ft = field_value::invalid_type_id;
-    field_value_ptr fv;
-}
-    : KEYWORD_FIELD ft=fieldType id:ID
-        fv=fieldValue[node.node::type.node_class.browser, scope, ft] {
-            assert(fv);
-            const node_interface_set & interfaces =
-                node.node::type.interfaces();
             const node_interface_set::const_iterator pos =
                 find_interface(interfaces, id->getText());
             if (pos != interfaces.end()) {
@@ -1184,7 +1203,40 @@ scriptFieldInterfaceDeclaration[const scope_ptr & scope, script_node & node]
                                         id->getLine(),
                                         id->getColumn());
             }
-            node.add_field(id->getText(), fv);
+            add_interface(interfaces, node_interface(it, ft, id->getText()));
+        }
+    | scriptFieldInterfaceDeclaration[b, scope, interfaces, initial_values]
+    ;
+
+scriptFieldInterfaceDeclaration[browser & b,
+                                const scope_ptr & scope,
+                                node_interface_set & interfaces,
+                                initial_value_map & initial_values]
+{
+    using std::find_if;
+    using antlr::SemanticException;
+
+    field_value::type_id ft = field_value::invalid_type_id;
+    field_value_ptr fv;
+}
+    : KEYWORD_FIELD ft=fieldType id:ID fv=fieldValue[b, scope, ft] {
+            assert(fv);
+            bool succeeded =
+                interfaces.insert(node_interface(node_interface::field_id,
+                                                 ft,
+                                                 id->getText()))
+                    .second;
+            if (!succeeded) {
+                throw SemanticException("Interface \"" + id->getText()
+                                        + "\" already declared for Script "
+                                        "node.",
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
+            }
+            succeeded = initial_values.insert(make_pair(id->getText(), fv))
+                        .second;
+            assert(succeeded);
         }
     ;
 
@@ -1199,48 +1251,67 @@ options { defaultErrorHandler=false; }
 {
     using antlr::SemanticException;
 
+    initial_value_map initial_values;
+    node_interface_set interfaces;
+    is_list is_mappings;
     node_type_ptr nodeType;
 }
-    : { !LT(1)->getText().compare("Script") }? scriptId:ID {
-            n.reset(new script_node(browser.script_node_class_, scope));
-            if (!nodeId.empty()) { n->id(nodeId); }
-
-            script_node * const scriptNode = node_cast<script_node *>(n.get());
-            assert(scriptNode);
-        }
-        LBRACE (
-            protoNodeBodyElement[browser,
-                                 scope,
-                                 proto_interfaces,
-                                 is_map,
-                                 routes,
-                                 *n]
-            | protoScriptInterfaceDeclaration[browser,
-                                              scope,
-                                              proto_interfaces,
-                                              is_map,
-                                              routes,
-                                              *scriptNode]
-        )* RBRACE
-
-    | nodeTypeId:ID {
-            nodeType = scope->find_type(nodeTypeId->getText());
-            if (!nodeType) {
-                throw SemanticException("Unknown node type \""
-                                        + nodeTypeId->getText() + "\".",
-                                        this->uri,
-                                        nodeTypeId->getLine(),
-                                        nodeTypeId->getColumn());
-            }
-            n = nodeType->create_node(scope);
-            if (!nodeId.empty()) { n->id(nodeId); }
-        }
-        LBRACE (protoNodeBodyElement[browser,
+    : (
+            { !LT(1)->getText().compare("Script") }? scriptId:ID LBRACE (
+                protoNodeBodyElement[browser,
                                      scope,
                                      proto_interfaces,
                                      is_map,
                                      routes,
-                                     *n])* RBRACE
+                                     script_node_interface_set,
+                                     initial_values,
+                                     is_mappings]
+                | protoScriptInterfaceDeclaration[browser,
+                                                  scope,
+                                                  proto_interfaces,
+                                                  is_map,
+                                                  routes,
+                                                  interfaces,
+                                                  initial_values,
+                                                  is_mappings]
+            )* RBRACE {
+                n.reset(new script_node(browser.script_node_class_,
+                                        scope,
+                                        interfaces,
+                                        initial_values));
+                if (!nodeId.empty()) { n->id(nodeId); }
+            }
+
+        | nodeTypeId:ID {
+                nodeType = scope->find_type(nodeTypeId->getText());
+                if (!nodeType) {
+                    throw SemanticException("Unknown node type \""
+                                            + nodeTypeId->getText() + "\".",
+                                            this->uri,
+                                            nodeTypeId->getLine(),
+                                            nodeTypeId->getColumn());
+                }
+            }
+            LBRACE (protoNodeBodyElement[browser,
+                                         scope,
+                                         proto_interfaces,
+                                         is_map,
+                                         routes,
+                                         nodeType->interfaces(),
+                                         initial_values,
+                                         is_mappings])* RBRACE {
+                n = nodeType->create_node(scope, initial_values);
+                if (!nodeId.empty()) { n->id(nodeId); }
+            }
+        ) {
+            for (is_list::const_iterator is_mapping = is_mappings.begin();
+                 is_mapping != is_mappings.end();
+                 ++is_mapping) {
+                typedef proto_node_class::is_target is_target;
+                is_map.insert(make_pair(is_mapping->second,
+                                        is_target(*n, is_mapping->first)));
+            }
+        }
     ;
 
 protoNodeBodyElement[openvrml::browser & browser,
@@ -1248,115 +1319,57 @@ protoNodeBodyElement[openvrml::browser & browser,
                      const node_interface_set & proto_interfaces,
                      proto_node_class::is_map_t & is_map,
                      proto_node_class::routes_t & routes,
-                     openvrml::node & node]
+                     const node_interface_set & node_interfaces,
+                     initial_value_map & initial_values,
+                     is_list & is_mappings]
 {
     using std::string;
     using antlr::SemanticException;
 
-    field_value::type_id ft;
     field_value_ptr fv;
 }
     :   interface_id:ID {
             const node_interface_set::const_iterator impl_node_interface =
-                find_interface(node.type.interfaces(),
-                               interface_id->getText());
-            if (impl_node_interface == node.type.interfaces().end()) {
-                throw SemanticException(node.type.id + " node has no "
-                                        "interface \""
+                find_interface(node_interfaces, interface_id->getText());
+            if (impl_node_interface == node_interfaces.end()) {
+                throw SemanticException("Node has no interface \""
                                         + interface_id->getText() + "\".",
                                         this->uri,
                                         interface_id->getLine(),
                                         interface_id->getColumn());
             }
-        } (
-            {impl_node_interface->type == node_interface::field_id
-             || impl_node_interface->type == node_interface::exposedfield_id}?
+        } ( {impl_node_interface->type == node_interface::field_id
+            || impl_node_interface->type == node_interface::exposedfield_id}?
             (
-                    fv=protoFieldValue[browser,
-                                       scope,
-                                       proto_interfaces,
-                                       is_map,
-                                       routes,
-                                       impl_node_interface->field_type] {
-                        assert(fv);
-                        node.field(interface_id->getText(), *fv);
-                    }
-                |   isStatement[proto_interfaces,
-                                is_map,
-                                node,
-                                *impl_node_interface]
+                fv=protoFieldValue[browser,
+                                   scope,
+                                   proto_interfaces,
+                                   is_map,
+                                   routes,
+                                   impl_node_interface->field_type] {
+                    assert(fv);
+                    bool succeeded =
+                        initial_values.insert(
+                            make_pair(interface_id->getText(), fv)).second;
+                    assert(succeeded);
+                }
+            |   isStatement[impl_node_interface->id, is_mappings]
             )
         )
     |   protoRouteStatement[*scope, routes]
     |   protoStatement[browser, scope]
     ;
 
-isStatement[const node_interface_set & proto_interfaces,
-            proto_node_class::is_map_t & is_map,
-            openvrml::node & node,
-            const node_interface & impl_node_interface]
+isStatement[const std::string & impl_node_interface_id,
+            is_list & is_mappings]
 {
     using std::string;
     using boost::lexical_cast;
     using antlr::SemanticException;
 }
     :   KEYWORD_IS id:ID {
-            node_interface_set::const_iterator proto_interface =
-                find_interface(proto_interfaces, id->getText());
-            if (proto_interface == proto_interfaces.end()) {
-                throw SemanticException("PROTO has no interface \""
-                                        + id->getText() + "\".",
-                                        this->uri,
-                                        id->getLine(),
-                                        id->getColumn());
-            }
-
-            //
-            // An exposedField in the PROTO implementation can be mapped to
-            // an exposedField, field, eventIn, or eventOut in the PROTO
-            // PROTO interface.  Otherwise, the PROTO interface and
-            // implementation interface types must agree.
-            //
-            assert(proto_interface->type
-                   != node_interface::invalid_type_id);
-            assert(impl_node_interface.type
-                   != node_interface::invalid_type_id);
-
-            if (proto_interface->type != impl_node_interface.type
-                && impl_node_interface.type != node_interface::exposedfield_id)
-            {
-                throw SemanticException(
-                    "Cannot map a(n) "
-                    + lexical_cast<string>(proto_interface->type)
-                    + " in the PROTO interface to a(n) "
-                    + lexical_cast<string>(impl_node_interface.type)
-                    + " in the PROTO implementation.",
-                    this->uri,
-                    id->getLine(),
-                    id->getColumn());
-            }
-
-            assert(proto_interface->field_type
-                   != field_value::invalid_type_id);
-            assert(impl_node_interface.field_type
-                   != field_value::invalid_type_id);
-
-            if (proto_interface->field_type != impl_node_interface.field_type)
-            {
-                throw SemanticException("Type mismatch.",
-                                        this->uri,
-                                        id->getLine(),
-                                        id->getColumn());
-            }
-
-            //
-            // Finally, add the IS mapping.
-            //
-            const proto_node_class::is_map_t::value_type
-                value(proto_interface->id,
-                      proto_node_class::is_target(node,
-                                                  impl_node_interface.id));
-            is_map.insert(value);
+            is_mappings.insert(make_pair(impl_node_interface_id,
+                                         id->getText()));
         }
     ;
 
@@ -1365,7 +1378,9 @@ protoScriptInterfaceDeclaration[openvrml::browser & browser,
                                 const node_interface_set & proto_interfaces,
                                 proto_node_class::is_map_t & is_map,
                                 proto_node_class::routes_t & routes,
-                                openvrml::script_node & node]
+                                node_interface_set & interfaces,
+                                initial_value_map & initial_values,
+                                is_list & is_mappings]
 {
     using antlr::SemanticException;
     node_interface::type_id it;
@@ -1373,63 +1388,7 @@ protoScriptInterfaceDeclaration[openvrml::browser & browser,
 }
     :   it=eventInterfaceType ft=fieldType id:ID {
             const node_interface_set::const_iterator pos =
-                find_interface(node.node::type.interfaces(), id->getText());
-            if (pos != node.node::type.interfaces().end()) {
-                throw SemanticException("Interface \"" + id->getText()
-                                        + "\" already declared for Script "
-                                        "node.",
-                                        this->uri,
-                                        id->getLine(),
-                                        id->getColumn());
-            }
-            node_interface_set::const_iterator interface;
-            switch (it) {
-            case node_interface::eventin_id:
-                interface = node.add_eventin(ft, id->getText());
-                break;
-            case node_interface::eventout_id:
-                interface = node.add_eventout(ft, id->getText());
-                break;
-            default:
-                assert(false);
-            }
-        } (isStatement[proto_interfaces, is_map, node, *interface])?
-    |   protoScriptFieldInterfaceDeclaration[browser,
-                                             scope,
-                                             proto_interfaces,
-                                             is_map,
-                                             routes,
-                                             node]
-    ;
-
-protoScriptFieldInterfaceDeclaration[
-    openvrml::browser & browser,
-    const scope_ptr & scope,
-    const node_interface_set & proto_interfaces,
-    proto_node_class::is_map_t & is_map,
-    proto_node_class::routes_t & routes,
-    script_node & node]
-{
-    using std::auto_ptr;
-    using std::find_if;
-    using std::string;
-    using boost::lexical_cast;
-    using antlr::SemanticException;
-
-    field_value::type_id ft;
-    field_value_ptr fv;
-}
-    : KEYWORD_FIELD ft=fieldType id:ID {
-            //
-            // We need to check if the fieldId is an exact match for any
-            // existing interface for the Script node; so, we don't use
-            // node_interface_set::find.
-            //
-            const node_interface_set & interfaces =
-                node.node::type.interfaces();
-            const node_interface_set::const_iterator pos =
-                    find_if(interfaces.begin(), interfaces.end(),
-                            interface_id_equals_(id->getText()));
+                find_interface(interfaces, id->getText());
             if (pos != interfaces.end()) {
                 throw SemanticException("Interface \"" + id->getText()
                                         + "\" already declared for Script "
@@ -1438,79 +1397,80 @@ protoScriptFieldInterfaceDeclaration[
                                         id->getLine(),
                                         id->getColumn());
             }
+            const node_interface_set::const_iterator interface =
+                add_interface(interfaces,
+                              node_interface(it, ft, id->getText()));
+        } (isStatement[interface->id, is_mappings])?
+    |   protoScriptFieldInterfaceDeclaration[browser,
+                                             scope,
+                                             proto_interfaces,
+                                             is_map,
+                                             routes,
+                                             interfaces,
+                                             initial_values,
+                                             is_mappings]
+    ;
+
+protoScriptFieldInterfaceDeclaration[
+    openvrml::browser & browser,
+    const scope_ptr & scope,
+    const node_interface_set & proto_interfaces,
+    proto_node_class::is_map_t & is_map,
+    proto_node_class::routes_t & routes,
+    node_interface_set & interfaces,
+    initial_value_map & initial_values,
+    is_list & is_mappings]
+{
+    using std::auto_ptr;
+    using std::find_if;
+    using std::string;
+    using boost::lexical_cast;
+    using boost::shared_ptr;
+    using antlr::SemanticException;
+
+    field_value::type_id ft;
+    field_value_ptr fv;
+    bool succeeded;
+}
+    : KEYWORD_FIELD ft=fieldType id:ID {
+            succeeded =
+                interfaces.insert(node_interface(node_interface::field_id,
+                                                 ft,
+                                                 id->getText()))
+                    .second;
+            if (!succeeded) {
+                throw SemanticException("Interface \"" + id->getText()
+                                        + "\" already declared for Script "
+                                        "node.",
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
+            }
         } (
-            (
-                fv=protoFieldValue[browser,
-                                   scope,
-                                   proto_interfaces,
-                                   is_map,
-                                   routes,
-                                   ft] {
-                    assert(fv);
-                    node.add_field(id->getText(), fv);
-                }
-            )
-            | KEYWORD_IS proto_field_id:ID {
+            fv=protoFieldValue[browser,
+                               scope,
+                               proto_interfaces,
+                               is_map,
+                               routes,
+                               ft] {
+                assert(fv);
+                succeeded = initial_values.insert(make_pair(id->getText(),
+                                                            fv))
+                    .second;
+                assert(succeeded);
+            }
+            | isStatement[id->getText(), is_mappings] {
+                //
+                // The field needs some default value as a placeholder. This
+                // is never actually used in a PROTO instance.
+                //
                 auto_ptr<field_value> value = field_value::create(ft);
-                const node_interface_set::const_iterator impl_node_interface =
-                    node.add_field(id->getText(), field_value_ptr(value));
-
-                const node_interface_set::const_iterator proto_interface =
-                    find_interface(proto_interfaces,
-                                   proto_field_id->getText());
-                if (proto_interface == proto_interfaces.end()) {
-                    throw SemanticException("PROTO has no interface \""
-                                            + proto_field_id->getText()
-                                            + "\".",
-                                            this->uri,
-                                            proto_field_id->getLine(),
-                                            proto_field_id->getColumn());
-                }
-
-                assert(proto_interface->type
-                       != node_interface::invalid_type_id);
-                assert(impl_node_interface->type
-                       != node_interface::invalid_type_id);
-
-                assert(impl_node_interface->type
-                       != node_interface::exposedfield_id);
-
-                if (proto_interface->type != impl_node_interface->type) {
-                    throw SemanticException(
-                        "Cannot map a "
-                        + lexical_cast<string>(proto_interface->type)
-                        + " in the PROTO interface to a "
-                        + lexical_cast<string>(impl_node_interface->type)
-                        + " in the PROTO implementation.",
-                        this->uri,
-                        proto_field_id->getLine(),
-                        proto_field_id->getColumn());
-                }
-
-                assert(proto_interface->field_type
-                       != field_value::invalid_type_id);
-                assert(impl_node_interface->field_type
-                       != field_value::invalid_type_id);
-
-                if (proto_interface->field_type
-                    != impl_node_interface->field_type) {
-                    throw SemanticException("Type mismatch.",
-                                            this->uri,
-                                            proto_field_id->getLine(),
-                                            proto_field_id->getColumn());
-                }
-
-                //
-                // Finally, add the IS mapping.
-                //
-                {
-                    const proto_node_class::is_map_t::value_type
-                        value(proto_interface->id,
-                              proto_node_class::is_target(
-                                node,
-                                impl_node_interface->id));
-                    is_map.insert(value);
-                }
+                succeeded =
+                    initial_values.insert(
+                        make_pair(id->getText(),
+                                  shared_ptr<field_value>(value)))
+                    .second;
+                assert(succeeded);
             }
         )
     ;

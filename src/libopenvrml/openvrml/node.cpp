@@ -38,9 +38,9 @@ namespace openvrml {
  *
  * @brief Exception to indicate that a node interface is not supported.
  *
- * This exception is thrown by node::field, node::event_listener, and
- * node::event_emitter to indicate that the node doesn't support the interface
- * through which the caller is trying to modify the node. It is also thrown by
+ * This exception is thrown by node::event_listener and node::event_emitter to
+ * indicate that the node doesn't support the interface through which the
+ * caller is trying to modify the node. It is also thrown by
  * node_class::create_type if the class object doesn't support an interface
  * specified in the node_interface_set given to that method.
  */
@@ -100,6 +100,191 @@ unsupported_interface::unsupported_interface(
  */
 unsupported_interface::~unsupported_interface() throw ()
 {}
+
+
+/**
+ * @struct node_interface_id_less
+ *
+ * @brief Function object to compare two node_interfaces based on their id.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_id_less::result_type node_interface_id_less::operator()(const node_interface_id_less::first_argument_type & lhs, const node_interface_id_less::second_argument_type & rhs) const
+ *
+ * @brief Compare two node_interfaces based on their id.
+ *
+ * @param lhs   node_interface.
+ * @param rhs   node_interface.
+ *
+ * @return @c true if @p lhs.id is lexicographically less than @p rhs.id;
+ *         @c false otherwise.
+ */
+
+
+/**
+ * @struct node_interface_id_equals
+ *
+ * @brief Function object to compare two node_interfaces based on their id.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_id_equals::result_type node_interface_id_equals::operator()(const node_interface_id_equals::first_argument_type & lhs, const node_interface_id_equals::second_argument_type & rhs) const
+ *
+ * @brief Compare two node_interfaces based on their id.
+ *
+ * @param lhs   node_interface.
+ * @param rhs   node_interface.
+ *
+ * @return @c true if @p lhs.id is lexicographically equal to @p rhs.id;
+ *         @c false otherwise.
+ */
+
+
+/**
+ * @struct node_interface_matches_eventin
+ *
+ * @brief Determine if a node_interface matches an eventIn identifier.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_matches_eventin::result_type node_interface_matches_eventin::operator()(const node_interface_matches_eventin::first_argument_type & interface, const node_interface_matches_eventin::second_argument_type & eventin_id const
+ *
+ * @brief Determine if a node_interface matches an eventIn identifier.
+ *
+ * A node_interface matches an eventIn identifier if:
+ * - the node_interface's @a type is node_interface::eventin_id and
+ *   - the node_interface's @a id is lexicographically equal to the eventIn
+ *     identifier
+ *   - or the node_interface's @a id is lexicographically equal to the eventIn
+ *     identifier with the string "set_" prepended.
+ * - or, the node_interface's @a type is node_interface::exposedfield_id and
+ *   - the node_interface's @a id is lexicographically equal to the eventIn
+ *     identifier
+ *   - or the node_interface's @a id with the string "set_" prepended is
+ *     lexicographically equal to the eventIn identifier.
+ *
+ * @param interface     node_interface.
+ * @param eventin_id    eventIn identifier.
+ *
+ * @return @c true if @p interface matches @p eventin_id; @c false otherwise.
+ */
+
+
+/**
+ * @struct node_interface_matches_eventout
+ *
+ * @brief Determine if a node_interface matches an eventOut identifier.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_matches_eventout::result_type node_interface_matches_eventout::operator()(const node_interface_matches_eventout::first_argument_type & interface, const node_interface_matches_eventout::second_argument_type & eventout_id) const
+ *
+ * @brief Determine if a node_interface matches an eventOut identifier.
+ *
+ * A node_interface matches an eventOut identifier if:
+ * - the node_interface's @a type is node_interface::eventout_id and
+ *   - the node_interface's @a id is lexicographically equal to the eventOut
+ *     identifier
+ *   - or the node_interface's @a id is lexicographically equal to the eventOut
+ *     identifier with the string "_changed" appended.
+ * - or, the node_interface's @a type is node_interface::exposedfield_id and
+ *   - the node_interface's @a id is lexicographically equal to the eventOut
+ *     identifier
+ *   - or the node_interface's @a id with the string "_changed" appended is
+ *     lexicographically equal to the eventOut identifier.
+ *
+ * @param interface     node_interface.
+ * @param eventout_id   eventOut identifier.
+ *
+ * @return @c true if @p interface matches @p eventout_id; @c false otherwise.
+ */
+
+
+/**
+ * @struct node_interface_matches_exposedfield
+ *
+ * @brief Determine if a node_interface matches an exposedField identifier.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_matches_exposedfield::result_type node_interface_matches_exposedfield::operator()(const node_interface_matches_exposedfield::first_argument_type & interface, const node_interface_matches_exposedfield::second_argument_type & exposedfield_id) const
+ *
+ * @brief Determine if a node_interface matches an exposedField identifier.
+ *
+ * A node_interface matches an exposedField identifier if the node_interface's
+ * @a type is node_interface::exposedfield_id and the node_interface's @a id is
+ * lexicographically equal to the exposedField identifier.
+ *
+ * @param interface         node_interface.
+ * @param exposedfield_id   exposedField identifier.
+ *
+ * @return @c true if @p interface matches @p exposedfield_id; @c false
+ *         otherwise.
+ */
+
+
+/**
+ * @struct node_interface_matches_field
+ *
+ * @brief Determine if a node_interface matches an field identifier.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_matches_field::result_type node_interface_matches_field::operator()(const node_interface_matches_field::first_argument_type & interface, const node_interface_matches_field::second_argument_type & field_id) const
+ *
+ * @brief Determine if a node_interface matches an field identifier.
+ *
+ * A node_interface matches a field identifier if the node_interface's @a type
+ * is node_interface::field_id and the node_interface's @a id is
+ * lexicographically equal to the field identifier.
+ *
+ * @param interface node_interface.
+ * @param field_id  field identifier.
+ *
+ * @return @c true if @p interface matches @p field_id; @c false otherwise.
+ *
+ * @todo In order to be consistent with the behavior of
+ *       node_interface_matches_eventin and node_interface_matches_eventout,
+ *       this predicate really should return true for matching exposedFields
+ *       as well as fields. Is that really desirable? Assess use cases for this
+ *       predicate.
+ */
 
 
 /**
@@ -325,6 +510,9 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  * @param interfaces    set of node_interfaces.
  * @param interface     a node_interface.
  *
+ * @return a const_iterator to the node_interface that was added to the set.
+ *         This iterator is guaranteed to be valid.
+ *
  * @exception std::invalid_argument if @p node_interface conflicts with an
  *                                  interface already in the
  *                                  node_interface_set.
@@ -528,173 +716,6 @@ node_type::node_type(openvrml::node_class & c, const std::string & id)
 node_type::~node_type() throw ()
 {}
 
-namespace {
-    struct IsEventIn_ : public std::unary_function<node_interface, bool> {
-    private:
-        const std::string & id;
-
-    public:
-        explicit IsEventIn_(const std::string & id):
-            id(id)
-        {}
-
-        bool operator()(const node_interface & nodeInterface) const
-        {
-            return (nodeInterface.type == node_interface::eventin_id
-                        && (this->id == nodeInterface.id
-                            || "set_" + this->id == nodeInterface.id))
-                    || (nodeInterface.type == node_interface::exposedfield_id
-                        && (this->id == nodeInterface.id
-                            || this->id == "set_" + nodeInterface.id));
-        }
-    };
-}
-
-/**
- * @brief Determine if the node type has an eventIn.
- *
- * If the node type supports an eventIn named @p id, this method will return
- * the type identifier corresponding to the data type handled by the eventIn.
- * Note that the actual interface type that supports the eventIn may be either
- * an eventIn or an exposedField.
- *
- * @param id    the name of the eventIn.
- *
- * @return the data type of the eventIn, or field_value::invalid_type_id if no
- *         such eventIn exists.
- */
-field_value::type_id node_type::has_eventin(const std::string & id) const
-    throw ()
-{
-    const node_interface_set & interfaces = this->interfaces();
-    const node_interface_set::const_iterator end = interfaces.end();
-    const node_interface_set::const_iterator pos =
-            std::find_if(interfaces.begin(), end, IsEventIn_(id));
-    if (pos == end) { return field_value::invalid_type_id; }
-    return pos->field_type;
-}
-
-namespace {
-    struct IsEventOut_ : public std::unary_function<node_interface, bool> {
-    private:
-        const std::string & id;
-
-    public:
-        IsEventOut_(const std::string & id): id(id) {}
-
-        bool operator()(const node_interface & nodeInterface) const
-        {
-            return (nodeInterface.type == node_interface::eventout_id
-                        && (this->id == nodeInterface.id
-                            || this->id + "_changed" == nodeInterface.id))
-                    || (nodeInterface.type == node_interface::exposedfield_id
-                        && (this->id == nodeInterface.id
-                            || this->id == nodeInterface.id + "_changed"));
-        }
-    };
-}
-
-/**
- * @brief Determine if the node type has an eventOut.
- *
- * If the node type supports an eventOut named @p id, this method will return
- * the type identifier corresponding to the data type handled by the eventOut.
- * Note that the actual interface type that supports the eventOut may be either
- * an eventOut or an exposedField.
- *
- * @param id    the name of the eventOut.
- *
- * @return the data type of the eventOut, or field_value::invalid_type_id if no
- *         such eventOut exists.
- */
-field_value::type_id node_type::has_eventout(const std::string & id) const
-    throw ()
-{
-    const node_interface_set & interfaces = this->interfaces();
-    const node_interface_set::const_iterator end = interfaces.end();
-    const node_interface_set::const_iterator pos =
-            std::find_if(interfaces.begin(), end, IsEventOut_(id));
-    if (pos == end) { return field_value::invalid_type_id; }
-    return pos->field_type;
-}
-
-namespace {
-    struct IsExposedField_ : public std::unary_function<node_interface, bool> {
-    private:
-        const std::string & id;
-
-    public:
-        IsExposedField_(const std::string & id): id(id) {}
-
-        bool operator()(const node_interface & nodeInterface) const
-        {
-            return nodeInterface.type == node_interface::exposedfield_id
-                    && this->id == nodeInterface.id;
-        }
-    };
-}
-
-/**
- * @brief Determine if the node type has an exposedField.
- *
- * If the node type has an exposedField named @p id, this method will return
- * the type identifier corresponding to the data type handled by the
- * exposedField.
- *
- * @param id    the name of the exposedField.
- *
- * @return the data type of the exposedField, or field_value::invalid_type_id
- *         if no such exposedField exists.
- */
-field_value::type_id node_type::has_exposedfield(const std::string & id) const
-    throw ()
-{
-    const node_interface_set & interfaces = this->interfaces();
-    const node_interface_set::const_iterator end = interfaces.end();
-    const node_interface_set::const_iterator pos =
-            std::find_if(interfaces.begin(), end, IsExposedField_(id));
-    if (pos == end) { return field_value::invalid_type_id; }
-    return pos->field_type;
-}
-
-namespace {
-    struct IsField_ : public std::unary_function<node_interface, bool> {
-    private:
-        const std::string & id;
-
-    public:
-        IsField_(const std::string & id): id(id) {}
-
-        bool operator()(const node_interface & nodeInterface) const
-        {
-            return nodeInterface.type == node_interface::field_id
-                    && this->id == nodeInterface.id;
-        }
-    };
-}
-
-/**
- * @brief Determine if the node type has a field.
- *
- * If the node type has a field named @p id, this method will return the type
- * identifier corresponding to the data type accepted by the field.
- *
- * @param id    the name of the field.
- *
- * @return the data type of the field, or field_value::invalid_type_id if no
- *         such field exists.
- */
-field_value::type_id node_type::has_field(const std::string & id) const
-    throw ()
-{
-    const node_interface_set & interfaces = this->interfaces();
-    const node_interface_set::const_iterator end = interfaces.end();
-    const node_interface_set::const_iterator pos =
-            std::find_if(interfaces.begin(), end, IsField_(id));
-    if (pos == end) { return field_value::invalid_type_id; }
-    return pos->field_type;
-}
-
 /**
  * @fn const node_interface_set & node_type::interfaces() const throw ()
  *
@@ -704,15 +725,22 @@ field_value::type_id node_type::has_field(const std::string & id) const
  */
 
 /**
- * @fn const node_ptr node_type::create_node(const scope_ptr & scope) const throw (std::bad_alloc)
+ * @fn const node_ptr node_type::create_node(const scope_ptr & scope, const initial_value_map & initial_values) const throw (unsupported_interface, std::bad_cast, std::bad_alloc)
  *
  * @brief Create a new node with this node_type.
  *
- * @param scope         the Scope that the new node should belong to.
+ * @param scope             the scope to which the new node should belong.
+ * @param initial_values    a map of initial values for the node's fields and
+ *                          exposedFields.
  *
  * @return a node_ptr to a new node.
  *
- * @exception std::bad_alloc    if memory allocation fails.
+ * @exception unsupported_interface if @p initial_values specifies a field
+ *                                  name that is not supported by the node
+ *                                  type.
+ * @exception std::bad_cast         if a value in @p initial_values is the
+ *                                  wrong type.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 
 /**
@@ -1126,37 +1154,6 @@ void node::initialize(openvrml::scene & scene, const double timestamp)
     }
     assert(this->scene_ == &scene);
 }
-
-/**
- * @brief Generalized field mutator.
- *
- * @param id    the name of the field.
- * @param value the new value.
- *
- * @exception unsupported_interface  if the node has no field named @p id.
- * @exception std::bad_cast         if @p value is not the correct type.
- * @exception std::bad_alloc        if memory allocation fails.
- *
- * @pre @p value must be the appropriate type for the interface.
- */
-void node::field(const std::string & id, const field_value & value)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
-{
-    this->do_field(id, value);
-}
-
-/**
- * @fn void node::do_field(const std::string & id, const field_value & value) throw (unsupported_interface, std::bad_cast, std::bad_alloc)
- *
- * @brief Called by node::field to set a field.
- *
- * @param id    field identifier.
- * @param value value.
- *
- * @exception unsupported_interface if the node has no field @p id.
- * @exception std::bad_cast         if @p value is not the correct type.
- * @exception std::bad_alloc        if memory allocation fails.
- */
 
 /**
  * @brief Generalized field accessor.

@@ -94,14 +94,20 @@ namespace {
         bool        read_too_much_;
         bool        expecting_field_type_;
     };
+
+    //
+    // Per-node list of IS mappings. A multimap is used for no other reason
+    // than that redundancies are checked later.
+    //
+    typedef std::multimap<std::string, std::string> is_list;
 }
 
 namespace openvrml ANTLR_LBRACE
 
-#line 102 "Vrml97Parser.hpp"
+#line 108 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
 {
-#line 599 "Vrml97Parser.g"
+#line 606 "Vrml97Parser.g"
 
 public:
     Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
@@ -111,7 +117,7 @@ public:
 
 private:
     const std::string uri;
-#line 106 "Vrml97Parser.hpp"
+#line 112 "Vrml97Parser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:
@@ -223,13 +229,22 @@ public:
 	public: node_interface::type_id  interfaceType();
 	public: std::string  stringValue();
 	public: void nodeBodyElement(
-		const scope_ptr & scope, openvrml::node & node
+		browser & b,
+                const scope_ptr & scope,
+                const node_interface_set & interfaces,
+                initial_value_map & initial_values
 	);
 	public: void scriptInterfaceDeclaration(
-		const scope_ptr & scope, script_node & node
+		browser & b,
+                           const scope_ptr & scope,
+                           node_interface_set & interfaces,
+                           initial_value_map & initial_values
 	);
 	public: void scriptFieldInterfaceDeclaration(
-		const scope_ptr & scope, script_node & node
+		browser & b,
+                                const scope_ptr & scope,
+                                node_interface_set & interfaces,
+                                initial_value_map & initial_values
 	);
 	public: void protoNodeBodyElement(
 		openvrml::browser & browser,
@@ -237,7 +252,9 @@ public:
                      const node_interface_set & proto_interfaces,
                      proto_node_class::is_map_t & is_map,
                      proto_node_class::routes_t & routes,
-                     openvrml::node & node
+                     const node_interface_set & node_interfaces,
+                     initial_value_map & initial_values,
+                     is_list & is_mappings
 	);
 	public: void protoScriptInterfaceDeclaration(
 		openvrml::browser & browser,
@@ -245,7 +262,9 @@ public:
                                 const node_interface_set & proto_interfaces,
                                 proto_node_class::is_map_t & is_map,
                                 proto_node_class::routes_t & routes,
-                                openvrml::script_node & node
+                                node_interface_set & interfaces,
+                                initial_value_map & initial_values,
+                                is_list & is_mappings
 	);
 	public: field_value_ptr  protoFieldValue(
 		openvrml::browser & browser,
@@ -256,10 +275,8 @@ public:
                 const field_value::type_id ft
 	);
 	public: void isStatement(
-		const node_interface_set & proto_interfaces,
-            proto_node_class::is_map_t & is_map,
-            openvrml::node & node,
-            const node_interface & impl_node_interface
+		const std::string & impl_node_interface_id,
+            is_list & is_mappings
 	);
 	public: void protoScriptFieldInterfaceDeclaration(
 		
@@ -268,7 +285,9 @@ public:
     const node_interface_set & proto_interfaces,
     proto_node_class::is_map_t & is_map,
     proto_node_class::routes_t & routes,
-    script_node & node
+    node_interface_set & interfaces,
+    initial_value_map & initial_values,
+    is_list & is_mappings
 	);
 	public: openvrml::field_value_ptr  nodeFieldValue(
 		openvrml::browser & browser,

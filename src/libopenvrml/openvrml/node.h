@@ -2,8 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
-// Copyright (C) 2002  Braden McDaniel
+// Copyright 1998  Chris Morley
+// Copyright 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -91,10 +91,68 @@ namespace openvrml {
 
     struct node_interface_id_less :
         std::binary_function<node_interface, node_interface, bool> {
-        bool operator()(const node_interface & lhs,
-                        const node_interface & rhs) const
+        result_type operator()(const first_argument_type & lhs,
+                               const second_argument_type & rhs) const
         {
             return lhs.id < rhs.id;
+        }
+    };
+
+    struct node_interface_id_equals :
+        std::binary_function<node_interface, node_interface, bool> {
+        result_type operator()(const first_argument_type & lhs,
+                               const second_argument_type & rhs) const
+        {
+            return lhs.id == rhs.id;
+        }
+    };
+
+    struct node_interface_matches_eventin :
+        std::binary_function<node_interface, std::string, bool> {
+        result_type operator()(const first_argument_type & interface,
+                               const second_argument_type & eventin_id) const
+        {
+            return (interface.type == node_interface::eventin_id
+                    && (eventin_id == interface.id
+                        || "set_" + eventin_id == interface.id))
+                || (interface.type == node_interface::exposedfield_id
+                    && (eventin_id == interface.id
+                        || eventin_id == "set_" + interface.id));
+        }
+    };
+
+    struct node_interface_matches_eventout :
+        std::binary_function<node_interface, std::string, bool> {
+        result_type operator()(const first_argument_type & interface,
+                               const second_argument_type & eventout_id) const
+        {
+            return (interface.type == node_interface::eventout_id
+                    && (eventout_id == interface.id
+                        || eventout_id + "_changed" == interface.id))
+                || (interface.type == node_interface::exposedfield_id
+                    && (eventout_id == interface.id
+                        || eventout_id == interface.id + "_changed"));
+        }
+    };
+
+    struct node_interface_matches_exposedfield :
+        std::binary_function<node_interface, std::string, bool> {
+        result_type
+        operator()(const first_argument_type & interface,
+                   const second_argument_type & exposedfield_id) const
+        {
+            return interface.type == node_interface::exposedfield_id
+                && interface.id == exposedfield_id;
+        }
+    };
+
+    struct node_interface_matches_field :
+        std::binary_function<node_interface, std::string, bool> {
+        result_type operator()(const first_argument_type & interface,
+                               const second_argument_type & field_id) const
+        {
+            return interface.type == node_interface::field_id
+                && interface.id == field_id;
         }
     };
 
@@ -137,6 +195,10 @@ namespace openvrml {
     typedef boost::shared_ptr<node_class> node_class_ptr;
 
 
+    typedef std::map<std::string, boost::shared_ptr<field_value> >
+        initial_value_map;
+
+
     class node_type : boost::noncopyable {
     public:
         openvrml::node_class & node_class;
@@ -144,18 +206,12 @@ namespace openvrml {
 
         virtual ~node_type() throw () = 0;
 
-        field_value::type_id has_eventin(const std::string & id) const
-            throw ();
-        field_value::type_id has_eventout(const std::string & id) const
-            throw ();
-        field_value::type_id has_field(const std::string & id) const
-            throw ();
-        field_value::type_id has_exposedfield(const std::string & id) const
-            throw ();
-
         virtual const node_interface_set & interfaces() const throw () = 0;
-        virtual const node_ptr create_node(const scope_ptr & scope) const
-            throw (std::bad_alloc) = 0;
+        virtual const node_ptr
+        create_node(const scope_ptr & scope,
+                    const initial_value_map & initial_values =
+                    initial_value_map()) const
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
 
     protected:
         node_type(openvrml::node_class & c, const std::string & id)
@@ -281,11 +337,8 @@ namespace openvrml {
 
         void initialize(openvrml::scene & scene, double timestamp)
             throw (std::bad_alloc);
-
         const field_value & field(const std::string & id) const
             throw (unsupported_interface);
-        void field(const std::string & id, const field_value & value)
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         openvrml::event_listener & event_listener(const std::string & id)
             throw (unsupported_interface);
         openvrml::event_emitter & event_emitter(const std::string & id)
@@ -315,7 +368,8 @@ namespace openvrml {
         virtual bool bounding_volume_dirty() const;
 
     protected:
-        node(const node_type & type, const scope_ptr & scope) throw ();
+        node(const node_type & type, const scope_ptr & scope)
+            throw ();
 
         static void emit_event(openvrml::event_emitter & emitter,
                                double timestamp)
@@ -323,10 +377,6 @@ namespace openvrml {
 
     private:
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
-
-        virtual void do_field(const std::string & id,
-                              const field_value & value)
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
         virtual const field_value & do_field(const std::string & id) const
             throw (unsupported_interface) = 0;
         virtual openvrml::event_listener &

@@ -2,9 +2,9 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
-// Copyright (C) 2001  Henri Manson
-// Copyright (C) 2002  Thomas Flynn
+// Copyright 1998  Chris Morley
+// Copyright 2001  Henri Manson
+// Copyright 2002  Thomas Flynn
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -6646,58 +6646,58 @@ jobject JNICALL Java_vrml_node_Script_getEventOut(JNIEnv * env,
                                                   jobject obj,
                                                   jstring jstrEventOutName)
 {
-  jobject eventOut;
-  const char *charEventOut = env->GetStringUTFChars(jstrEventOutName , 0);
-  std::string eventOutName(charEventOut);
-  jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  if (!fid) return 0;
-  script_node* script =
-    reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
-  if (!script) return 0;
+    jobject eventOut;
+    const char *charEventOut = env->GetStringUTFChars(jstrEventOutName , 0);
+    std::string eventOutName(charEventOut);
+    jfieldID fid = getFid(env, obj, "NodePtr", "I");
+    if (!fid) return 0;
+    script_node* script =
+        reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
+    if (!script) return 0;
 
-  field_value::type_id eventOutType =
-    script->node::type.has_eventout(eventOutName);
+    const node_interface_set & interfaces = script->node::type.interfaces();
+    const node_interface_set::const_iterator interface =
+        find_if(interfaces.begin(), interfaces.end(),
+                bind2nd(node_interface_matches_eventout(), eventOutName));
 
-  if (eventOutType != field_value::invalid_type_id)
-  {
-    const script_node::eventout_map_t & eventOutMap = script->eventout_map();
-    script_node::eventout_map_t::const_iterator iter =
-      eventOutMap.find(eventOutName);
+    field_value::type_id eventOutType = interface->field_type;
 
-    if (iter != eventOutMap.end())
-    {
-      // Found the eventOut
-      std::ostringstream out;
-      out << "vrml/field/" << iter->second->value().type();
-      jclass clazz = env->FindClass(out.str().c_str());
-      eventOut = env->AllocObject(clazz);
-      fid = getFid(env, eventOut, "FieldPtr", "I");
-      if (!fid) return 0;
-      env->SetIntField(eventOut,
-                       fid,
-                       reinterpret_cast<int>(&iter->second->value()));
+    if (eventOutType != field_value::invalid_type_id) {
+        const script_node::eventout_map_t & eventOutMap =
+            script->eventout_map();
+        script_node::eventout_map_t::const_iterator iter =
+            eventOutMap.find(eventOutName);
+
+        if (iter != eventOutMap.end()) {
+            // Found the eventOut
+            std::ostringstream out;
+            out << "vrml/field/" << iter->second->value().type();
+            jclass clazz = env->FindClass(out.str().c_str());
+            eventOut = env->AllocObject(clazz);
+            fid = getFid(env, eventOut, "FieldPtr", "I");
+            if (!fid) return 0;
+            env->SetIntField(eventOut,
+                             fid,
+                             reinterpret_cast<int>(&iter->second->value()));
+        }
+    } else {
+        jclass excClazz = env->FindClass("vrml/InvalidEventOutException");
+        if (excClazz == 0) {
+            // Can't find exception, just return
+            return 0;
+        }
+
+        // throw an exception as the given eventOut doesn't exist
+        env->ThrowNew(excClazz, "EventOut not found");
+        return 0;
     }
-  }
-  else
-  {
-    jclass excClazz = env->FindClass("vrml/InvalidEventOutException");
-    if (excClazz == 0)
-    {
-      // Can't find exception, just return
-      return 0;
-    }
 
-    // throw an exception as the given eventOut doesn't exist
-    env->ThrowNew(excClazz, "EventOut not found");
-    return 0;
-  }
+    fid = getFid(env, eventOut,"isEventOut", "Z");
+    if (!fid) return 0;
+    env->SetBooleanField(eventOut, fid, true);
+    env->ReleaseStringUTFChars(jstrEventOutName, charEventOut);
 
-  fid = getFid(env, eventOut,"isEventOut", "Z");
-  if (!fid) return 0;
-  env->SetBooleanField(eventOut, fid, true);
-  env->ReleaseStringUTFChars(jstrEventOutName, charEventOut);
-
-  return eventOut;
+    return eventOut;
 }
 
 /**
@@ -6708,72 +6708,51 @@ jobject JNICALL Java_vrml_node_Script_getEventOut(JNIEnv * env,
  * @param jstrEventInName EventIn name
  * @return EventIn field object.
  */
-jobject JNICALL Java_vrml_node_Script_getEventIn
-  (JNIEnv *env, jobject obj, jstring jstrEventInName)
+jobject JNICALL Java_vrml_node_Script_getEventIn(JNIEnv * env,
+                                                 jobject obj,
+                                                 jstring jstrEventInName)
 {
-  const char *charEventInName = env->GetStringUTFChars(jstrEventInName, 0);
-  std::string eventInName(charEventInName);
-  jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  if (!fid) return 0;
-  script_node* script =
-    reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
-  if (!script) return 0;
-  jobject eventIn;
-  field_value::type_id eventInType =
-    script->node::type.has_eventin(eventInName);
-
-  if (eventInType != field_value::invalid_type_id)
-  {
-    // Then we've found the eventIn
-    field_value* fieldPtr = newField(eventInType);
-    assert(fieldPtr);
-    std::ostrstream os;
-    os << "vrml/field/" << ftn[eventInType] << '\0';
-    jclass clazz = env->FindClass(os.str());
-    os.rdbuf()->freeze(false);
-    eventIn = env->AllocObject(clazz);
-    fid = getFid(env, eventIn, "FieldPtr", "I");
+    const char * charEventInName = env->GetStringUTFChars(jstrEventInName, 0);
+    std::string eventInName(charEventInName);
+    jfieldID fid = getFid(env, obj, "NodePtr", "I");
     if (!fid) return 0;
-    env->SetIntField(eventIn, fid, reinterpret_cast<int>(fieldPtr));
-  }
-  else
-  {
-    // look for eventIn in exposed field list
-    eventInType = script->node::type.has_field(eventInName);
+    script_node* script =
+        reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
+    if (!script) return 0;
+    jobject eventIn;
 
-    if (eventInType != field_value::invalid_type_id)
-    {
-      // Then we've found the eventIn
-      field_value* fieldPtr = newField(eventInType);
-      assert(fieldPtr);
-      std::ostrstream os;
-      os << "vrml/field/" << ftn[eventInType] << '\0';
-      jclass clazz = env->FindClass(os.str());
-      os.rdbuf()->freeze(false);
-      eventIn = env->AllocObject(clazz);
-      fid = getFid(env, eventIn, "FieldPtr", "I");
-      if (!fid) return 0;
-      env->SetIntField(eventIn, fid, reinterpret_cast<int>(fieldPtr));
-    }
-    else
-    {
-      jclass excClazz = env->FindClass("vrml/InvalidEventInException");
-      if (excClazz == 0)
-      {
-        // Can't find exception, just return
+    const node_interface_set & interfaces = script->node::type.interfaces();
+    const node_interface_set::const_iterator interface =
+        find_if(interfaces.begin(), interfaces.end(),
+                bind2nd(node_interface_matches_eventin(), eventInName));
+    if (interface != interfaces.end()) {
+        // Then we've found the eventIn
+        field_value* fieldPtr = newField(interface->field_type);
+        assert(fieldPtr);
+        std::ostrstream os;
+        os << "vrml/field/" << ftn[interface->field_type] << '\0';
+        jclass clazz = env->FindClass(os.str());
+        os.rdbuf()->freeze(false);
+        eventIn = env->AllocObject(clazz);
+        fid = getFid(env, eventIn, "FieldPtr", "I");
+        if (!fid) return 0;
+        env->SetIntField(eventIn, fid, reinterpret_cast<int>(fieldPtr));
+    } else {
+        jclass excClazz = env->FindClass("vrml/InvalidEventInException");
+        if (excClazz == 0) {
+            // Can't find exception, just return
+            return 0;
+        }
+        // throw an exception as the given eventIn doesn't exist
+        env->ThrowNew(excClazz, "EventIn not found");
         return 0;
-      }
-      // throw an exception as the given eventIn doesn't exist
-      env->ThrowNew(excClazz, "EventIn not found");
-      return 0;
     }
-  }
 
-  fid = getFid(env, eventIn,"isEventIn", "Z");
-  if (!fid) return 0;
-  env->SetBooleanField(eventIn, fid, true);
-  env->ReleaseStringUTFChars(jstrEventInName, charEventInName );
-  return eventIn;
+    fid = getFid(env, eventIn,"isEventIn", "Z");
+    if (!fid) return 0;
+    env->SetBooleanField(eventIn, fid, true);
+    env->ReleaseStringUTFChars(jstrEventInName, charEventInName );
+    return eventIn;
 }
 
 /**
