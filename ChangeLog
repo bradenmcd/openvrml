@@ -5,6 +5,8 @@
 
         * MathUtils.h: Made Vlength const-correct.
 
+        * Doxyfile.in: various tweaks.
+
 2002-03-02  Braden McDaniel  <braden@endoframe.com>
 
         * More doxygen love.
