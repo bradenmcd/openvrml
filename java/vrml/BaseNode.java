@@ -20,14 +20,28 @@
 
 package vrml;
 
+/**
+ * Base class for all VRML nodes.
+ */
 public abstract class BaseNode 
 {
+  /**
+   * Stores a pointer to a VrmlNode in OpenVRML.
+   */
   private int NodePtr;
 
-  // Returns the type of the node.  If the node is a prototype
-  // it returns the name of the prototype.
+  /**
+   * Returns the type of the node.  If the node is a prototype
+   * it returns the name of the prototype.
+   *
+   * @param Type of the node.
+   */
   public native String getType();
-    
-  // Get the Browser that this node is contained in.
+
+  /**
+   * Get the Browser that this node is contained in.
+   *
+   * @return Browser node is contained in.
+   */
   public native Browser getBrowser();
 }

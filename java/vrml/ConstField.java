@@ -20,6 +20,9 @@
 
 package vrml;
 
+/**
+ * Parent for all constant fields.
+ */
 public abstract class ConstField extends Field
 {
 }

@@ -20,10 +20,20 @@
 
 package vrml;
 
+/**
+ * Parent class of all VRML fields.
+ */
 public abstract class Field implements Cloneable
 {
+  /**
+   * Indicates whether the field is stored as an eventOut or as a
+   * simple field. 
+   */
   private boolean isEventOut = false;
 
+  /**
+   * Stores a pointer to a VrmlField object on the C++ side.
+   */
   private int FieldPtr;
 
   public native Object clone();

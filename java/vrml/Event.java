@@ -20,11 +20,35 @@
 
 package vrml;
 
+/**
+ * Represents a VRML event.
+ */
 public class Event implements Cloneable
 {
+  /**
+   * Stores a pointer to a VrmlEvent object.
+   */
   private int EventPtr;
+
+  /**
+   * Returns the name of the event.
+   *
+   * @return Name of the event.
+   */
   public native String getName();
+
+  /**
+   * Returns the timestamp of the event.
+   *
+   * @return Timestamp of the event.
+   */
   public native double getTimeStamp();
+
+  /**
+   * Returns the Field the event has been generated for.
+   *
+   * @return Field the event has been generated for.
+   */
   public native ConstField getValue();
 
   public native Object clone();

@@ -20,7 +20,15 @@
 
 package vrml;
 
+/**
+ * Parent for all constant MFields.
+ */
 public abstract class ConstMField extends ConstField
 {
+  /**
+   * Number of elements contained in the MField.
+   *
+   * @return Number of elements.
+   */
   public abstract int getSize();
 }
