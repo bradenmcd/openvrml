@@ -90,16 +90,11 @@ namespace {
             ConcreteFieldValue NodeT::* itsPtr;
 
         public:
-            NodeFieldPtrImpl(ConcreteFieldValue NodeT::* ptr);
+            NodeFieldPtrImpl(ConcreteFieldValue NodeT::* ptr): itsPtr(ptr) {}
             virtual ~NodeFieldPtrImpl();
             virtual FieldValue & dereference(NodeT &);
             virtual const FieldValue & dereference(const NodeT &);
         };
-
-    template <typename NodeT, typename ConcreteFieldValue>
-        NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::
-                NodeFieldPtrImpl(ConcreteFieldValue NodeT::* ptr):
-                itsPtr(ptr) {}
 
     template <typename NodeT, typename ConcreteFieldValue>
         NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::~NodeFieldPtrImpl() {}

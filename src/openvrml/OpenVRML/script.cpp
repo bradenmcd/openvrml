@@ -705,8 +705,8 @@ Script * ScriptNode::createScript() {
         // Get the protocol & mimetype...
 # ifdef OPENVRML_HAVE_SPIDERMONKEY
         // Need to handle external .js files too...
-        const char javascriptScheme[] = "javascript:";
-        const char vrmlscriptScheme[] = "vrmlscript:";
+        const char * javascriptScheme = "javascript:";
+        const char * vrmlscriptScheme = "vrmlscript:";
         if (std::equal(javascriptScheme, javascriptScheme + 11,
                        this->url.getElement(i).begin())
                 || std::equal(vrmlscriptScheme, vrmlscriptScheme + 11,
@@ -1383,7 +1383,7 @@ namespace {
             //
             // Define the global objects (builtins, Browser, SF*, MF*) ...
             //
-            
+
             JSObject * const globalObj =
                     JS_NewObject(this->cx, &Global::jsclass, 0, 0);
             if (!globalObj) { throw std::bad_alloc(); }
