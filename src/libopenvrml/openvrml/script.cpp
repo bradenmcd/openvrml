@@ -1607,10 +1607,25 @@ namespace {
 namespace js_ {
 
 class SFNode;
+class MFNode;
+
+namespace Browser {
+    JSBool addRoute(JSContext * cx, JSObject * obj,
+                    uintN argc, jsval * argv, jsval * rval) throw ();
+    JSBool deleteRoute(JSContext * cx, JSObject * obj,
+                       uintN argc, jsval * argv, jsval * rval) throw ();
+}
 
 class script : public openvrml::script {
 
     friend class SFNode;
+    friend class MFNode;
+    friend JSBool Browser::addRoute(JSContext * cx, JSObject * obj,
+                                    uintN argc, jsval * argv, jsval * rval)
+        throw ();
+    friend JSBool Browser::deleteRoute(JSContext * cx, JSObject * obj,
+                                       uintN argc, jsval * argv, jsval * rval)
+        throw ();
 
     static JSRuntime * rt;
     static size_t nInstances;
@@ -1643,7 +1658,7 @@ private:
     virtual void do_events_processed(double timeStamp);
     virtual void do_shutdown(double timeStamp);
 
-    void initVrmlClasses(bool direct_output) throw (std::bad_alloc);
+    void initVrmlClasses() throw (std::bad_alloc);
     void defineBrowserObject() throw (std::bad_alloc);
     void defineFields() throw (std::bad_alloc);
     void activate(double timeStamp, const std::string & fname,
@@ -1901,8 +1916,7 @@ public:
     static JSClass jsclass;
     static JSClass direct_output_jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj,
-                                bool direct_output)
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
         throw ();
     static JSBool toJsval(const node_ptr & node,
                           JSContext * cx, JSObject * obj, jsval * rval)
@@ -2438,10 +2452,7 @@ script::script(openvrml::script_node & node, const std::string & source)
     //
     // Define SF*/MF* classes.
     //
-    const bool direct_output =
-        static_cast<const sfbool &>(
-            this->script_node().field("directOutput")).value;
-    this->initVrmlClasses(direct_output);
+    this->initVrmlClasses();
 
     //
     // Define field/eventOut vars for this script.
@@ -2937,13 +2948,13 @@ JSBool script::field_setProperty(JSContext * const cx,
 //
 // Initialize SF*/MF* types.
 //
-void script::initVrmlClasses(const bool direct_output) throw (std::bad_alloc)
+void script::initVrmlClasses() throw (std::bad_alloc)
 {
     JSObject * const globalObj = JS_GetGlobalObject(this->cx);
     assert(globalObj);
     if (!(SFColor::initClass(this->cx, globalObj)
             && SFImage::initClass(this->cx, globalObj)
-            && SFNode::initClass(this->cx, globalObj, direct_output)
+            && SFNode::initClass(this->cx, globalObj)
             && SFRotation::initClass(this->cx, globalObj)
             && SFVec2f::initClass(this->cx, globalObj)
             && SFVec3f::initClass(this->cx, globalObj)
@@ -3493,9 +3504,13 @@ JSBool createVrmlFromURL(JSContext * const cx,
     //
     // Make sure our second arument is an SFNode.
     //
+    js_::script & script =
+        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+    JSClass & sfnode_jsclass = script.sfnode_class;
+
     JSObject * arg1_obj;
     if (!JS_ValueToObject(cx, argv[1], &arg1_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg1_obj, &SFNode::jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg1_obj, &sfnode_jsclass, argv)) {
         return JS_FALSE;
     }
 
@@ -3541,7 +3556,10 @@ JSBool addRoute(JSContext * const cx,
     //
     JSObject * arg0_obj;
     if (!JS_ValueToObject(cx, argv[0], &arg0_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg0_obj, &SFNode::jsclass, argv)) {
+    js_::script & script =
+        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+    JSClass & sfnode_jsclass = script.sfnode_class;
+    if (!JS_InstanceOf(cx, arg0_obj, &sfnode_jsclass, argv)) {
         return JS_FALSE;
     }
     auto_ptr<openvrml::sfnode> fromNode =
@@ -3566,7 +3584,7 @@ JSBool addRoute(JSContext * const cx,
     //
     JSObject * arg2_obj;
     if (!JS_ValueToObject(cx, argv[2], &arg2_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg2_obj, &SFNode::jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg2_obj, &sfnode_jsclass, argv)) {
         return JS_FALSE;
     }
     auto_ptr<openvrml::sfnode> toNode =
@@ -3613,7 +3631,10 @@ JSBool deleteRoute(JSContext * const cx,
     //
     JSObject * arg0_obj;
     if (!JS_ValueToObject(cx, argv[0], &arg0_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg0_obj, &SFNode::jsclass, argv)) {
+    js_::script & script =
+        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+    JSClass & sfnode_jsclass = script.sfnode_class;
+    if (!JS_InstanceOf(cx, arg0_obj, &sfnode_jsclass, argv)) {
         return JS_FALSE;
     }
     auto_ptr<openvrml::sfnode> fromNode =
@@ -3631,7 +3652,7 @@ JSBool deleteRoute(JSContext * const cx,
     //
     JSObject * arg2_obj;
     if (!JS_ValueToObject(cx, argv[2], &arg2_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg2_obj, &SFNode::jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg2_obj, &sfnode_jsclass, argv)) {
         return JS_FALSE;
     }
     auto_ptr<openvrml::sfnode> toNode =
@@ -4235,8 +4256,7 @@ JSClass SFNode::direct_output_jsclass = {
 };
 
 JSObject * SFNode::initClass(JSContext * const cx,
-                             JSObject * const obj,
-                             const bool direct_output)
+                             JSObject * const obj)
     throw ()
 {
     static JSFunctionSpec methods[] =
@@ -4295,7 +4315,11 @@ SFNode::createFromJSObject(JSContext * const cx,
     throw (bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
-    if (!JS_InstanceOf(cx, obj, &SFNode::jsclass, 0)) {
+    js_::script & script =
+        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+    JSClass & sfnode_jsclass = script.sfnode_class;
+
+    if (!JS_InstanceOf(cx, obj, &sfnode_jsclass, 0)) {
         throw bad_conversion("SFNode object expected.");
     }
     assert(JS_GetPrivate(cx, obj));
@@ -6990,13 +7014,18 @@ JSBool MFNode::initObject(JSContext * const cx, JSObject * const obj,
 
     try {
         std::auto_ptr<MFData> mfdata(new MFData(argc));
+
+        js_::script & script =
+            *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+        JSClass & sfnode_jsclass = script.sfnode_class;
+
         for (uintN i = 0; i < argc; ++i) {
             //
             // Make sure all args are SFNodes.
             //
             if (!JSVAL_IS_OBJECT(argv[i])
                     || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[i]),
-                                      &SFNode::jsclass, argv)) {
+                                      &sfnode_jsclass, argv)) {
                 return JS_FALSE;
             }
             mfdata->array[i] = argv[i];
@@ -7040,6 +7069,12 @@ MFNode::createFromJSObject(JSContext * const cx, JSObject * const obj)
     assert(cx);
     assert(obj);
 
+# ifndef NDEBUG
+    js_::script & script =
+        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+    JSClass & sfnode_jsclass = script.sfnode_class;
+# endif
+
     if (!JS_InstanceOf(cx, obj, &MFNode::jsclass, 0)) {
         throw bad_conversion("MFNode object expected.");
     }
@@ -7051,7 +7086,7 @@ MFNode::createFromJSObject(JSContext * const cx, JSObject * const obj)
     for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         assert(JSVAL_IS_OBJECT(mfdata->array[i]));
         assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
-                             &SFNode::jsclass, 0));
+                             &sfnode_jsclass, 0));
         const sfield::sfdata * const sfdata =
             static_cast<sfield::sfdata *>
                 (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
@@ -7105,7 +7140,10 @@ JSBool MFNode::setElement(JSContext * const cx,
         //
         JSObject * vp_obj;
         if (!JS_ValueToObject(cx, *vp, &vp_obj)) { return JS_FALSE; }
-        if (!JS_InstanceOf(cx, vp_obj, &SFNode::jsclass, 0)) {
+        js_::script & script =
+            *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+        JSClass & sfnode_jsclass = script.sfnode_class;
+        if (!JS_InstanceOf(cx, vp_obj, &sfnode_jsclass, 0)) {
             JS_ReportError(cx, "Expected an SFNode.");
             return JS_FALSE;
         }
@@ -7166,9 +7204,13 @@ JSBool MFNode::setLength(JSContext * const cx,
         try {
             jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "Group {}"));
 
+            js_::script & script =
+                *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+            JSClass & sfnode_jsclass = script.sfnode_class;
+
             for (size_t i = length; i < newArray.size(); ++i) {
                 JSObject * const element =
-                    JS_ConstructObjectWithArguments(cx, &SFNode::jsclass, 0, 0,
+                    JS_ConstructObjectWithArguments(cx, &sfnode_jsclass, 0, 0,
                                                     1, &arg);
                 if (!element) { throw std::bad_alloc(); }
                 newArray[i] = OBJECT_TO_JSVAL(element);

@@ -1,5 +1,10 @@
 2004-12-09 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/script.cpp:  Consistently use
+	js_::script::sfnode_class.
+
+2004-12-09 Braden McDaniel  <braden@endoframe.com>
+
 	Fixes for direct output from Script nodes.
 
 	* src/libopenvrml/openvrml/script.cpp
