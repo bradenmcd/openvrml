@@ -742,7 +742,6 @@ protoInterfaceDeclaration[
     proto_node_class::default_value_map_t & default_value_map]
 options { defaultErrorHandler=false; }
 {
-    using std::invalid_argument;
     using antlr::SemanticException;
 
     node_interface::type_id it;
@@ -750,11 +749,15 @@ options { defaultErrorHandler=false; }
     field_value_ptr fv;
 }
     :   it=eventInterfaceType ft=fieldType id0:ID {
-            try {
-                add_interface(interfaces,
-                              node_interface(it, ft, id0->getText()));
-            } catch (invalid_argument & ex) {
-                throw SemanticException(ex.what(),
+            const node_interface interface(it, ft, id0->getText());
+            const bool succeeded = interfaces.insert(interface).second;
+            if (!succeeded) {
+                using std::string;
+                using boost::lexical_cast;
+                throw SemanticException("Interface \""
+                                        + lexical_cast<string>(interface)
+                                        + "\" conflicts with previous "
+                                        "declaration",
                                         this->uri,
                                         id0->getLine(),
                                         id0->getColumn());
@@ -771,16 +774,21 @@ options { defaultErrorHandler=false; }
         }
         fv=fieldValue[browser, field_decl_scope, ft] {
             assert(fv);
-            try {
-                add_interface(interfaces,
-                              node_interface(it, ft, id1->getText()));
-            } catch (invalid_argument & ex) {
-                throw SemanticException(ex.what(),
+
+            const node_interface interface(it, ft, id1->getText());
+            bool succeeded = interfaces.insert(interface).second;
+            if (!succeeded) {
+                using std::string;
+                using boost::lexical_cast;
+                throw SemanticException("Interface \""
+                                        + lexical_cast<string>(interface)
+                                        + "\" conflicts with previous "
+                                        "declaration",
                                         this->uri,
-                                        id0->getLine(),
-                                        id0->getColumn());
+                                        id1->getLine(),
+                                        id1->getColumn());
             }
-            const bool succeeded =
+            succeeded =
                 default_value_map.insert(make_pair(id1->getText(), fv)).second;
             assert(succeeded);
         }
@@ -935,10 +943,14 @@ options { defaultErrorHandler=false; }
 }
     :   it=interfaceType ft=fieldType id:ID {
             const node_interface interface(it, ft, id->getText());
-            try {
-                add_interface(interfaces, interface);
-            } catch (std::invalid_argument & ex) {
-            	throw SemanticException(ex.what(),
+            bool succeeded = interfaces.insert(interface).second;
+            if (!succeeded) {
+                using std::string;
+                using boost::lexical_cast;
+            	throw SemanticException("Interface \""
+                                        + lexical_cast<string>(interface)
+                                        + "\" conflicts with previous "
+                                        "declaration",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
@@ -1220,17 +1232,19 @@ options { defaultErrorHandler=false; }
     field_value::type_id ft(field_value::invalid_type_id);
 }
     : it=eventInterfaceType ft=fieldType id:ID {
-            const node_interface_set::const_iterator pos =
-                find_interface(interfaces, id->getText());
-            if (pos != interfaces.end()) {
-                throw SemanticException("Interface \"" + id->getText()
-                                        + "\" already declared for Script "
-                                        "node.",
+            const node_interface interface(it, ft, id->getText());
+            const bool succeeded = interfaces.insert(interface).second;
+            if (!succeeded) {
+                using std::string;
+                using boost::lexical_cast;
+                throw SemanticException("Interface \""
+                                        + lexical_cast<string>(interface)
+                                        + "\" conflicts with previous "
+                                        "declaration",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
             }
-            add_interface(interfaces, node_interface(it, ft, id->getText()));
         }
     | scriptFieldInterfaceDeclaration[b, scope, interfaces, initial_values]
     ;
@@ -1414,20 +1428,20 @@ options { defaultErrorHandler=false; }
     field_value::type_id ft;
 }
     :   it=eventInterfaceType ft=fieldType id:ID {
-            const node_interface_set::const_iterator pos =
-                find_interface(interfaces, id->getText());
-            if (pos != interfaces.end()) {
-                throw SemanticException("Interface \"" + id->getText()
-                                        + "\" already declared for Script "
-                                        "node.",
+            const node_interface interface(it, ft, id->getText());
+            const bool succeeded = interfaces.insert(interface).second;
+            if (!succeeded) {
+                using std::string;
+                using boost::lexical_cast;
+                throw SemanticException("Interface  \""
+                                        + lexical_cast<string>(interface)
+                                        + "\" conflicts with previous "
+                                        "declaration",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
             }
-            const node_interface_set::const_iterator interface =
-                add_interface(interfaces,
-                              node_interface(it, ft, id->getText()));
-        } (isStatement[interface->id, is_mappings])?
+        } (isStatement[id->getText(), is_mappings])?
     |   protoScriptFieldInterfaceDeclaration[browser,
                                              scope,
                                              proto_interfaces,
@@ -1449,13 +1463,6 @@ protoScriptFieldInterfaceDeclaration[
     is_list & is_mappings]
 options { defaultErrorHandler=false; }
 {
-    using std::auto_ptr;
-    using std::find_if;
-    using std::string;
-    using boost::lexical_cast;
-    using boost::shared_ptr;
-    using antlr::SemanticException;
-
     field_value::type_id ft;
     field_value_ptr fv;
     bool succeeded;
@@ -1467,6 +1474,7 @@ options { defaultErrorHandler=false; }
                                                  id->getText()))
                     .second;
             if (!succeeded) {
+                using antlr::SemanticException;
                 throw SemanticException("Interface \"" + id->getText()
                                         + "\" already declared for Script "
                                         "node.",
@@ -1482,12 +1490,14 @@ options { defaultErrorHandler=false; }
                                routes,
                                ft] {
                 assert(fv);
-                succeeded = initial_values.insert(make_pair(id->getText(),
-                                                            fv))
+                succeeded = initial_values.insert(make_pair(id->getText(), fv))
                     .second;
                 assert(succeeded);
             }
             | isStatement[id->getText(), is_mappings] {
+                using std::auto_ptr;
+                using boost::shared_ptr;
+
                 //
                 // The field needs some default value as a placeholder. This
                 // is never actually used in a PROTO instance.

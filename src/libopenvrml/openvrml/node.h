@@ -160,11 +160,6 @@ namespace openvrml {
         node_interface_set;
 
     const node_interface_set::const_iterator
-    add_interface(node_interface_set & interfaces,
-                  const node_interface & interface)
-        throw (std::invalid_argument, std::bad_alloc);
-
-    const node_interface_set::const_iterator
     find_interface(const node_interface_set & interfaces,
                    const std::string & id)
         throw ();

@@ -504,36 +504,6 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  * are guaranteed to be unique and non-conflicting.
  */
 
-/**
- * @brief Add an interface.
- *
- * @param interfaces    set of node_interfaces.
- * @param interface     a node_interface.
- *
- * @return a const_iterator to the node_interface that was added to the set.
- *         This iterator is guaranteed to be valid.
- *
- * @exception std::invalid_argument if @p node_interface conflicts with an
- *                                  interface already in the
- *                                  node_interface_set.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const node_interface_set::const_iterator
-add_interface(node_interface_set & interfaces,
-              const node_interface & interface)
-    throw (std::invalid_argument, std::bad_alloc)
-{
-    using std::pair;
-    using std::set;
-    pair<node_interface_set::iterator, bool> result =
-        interfaces.insert(interface);
-    if (!result.second) {
-        throw std::invalid_argument("Interface conflicts with an interface "
-                                    "already in this set.");
-    }
-    return result.first;
-}
-
 namespace {
 
     /**

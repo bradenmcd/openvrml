@@ -347,14 +347,8 @@ proto_node_type::proto_node_type(proto_node_class & node_class,
         if (pos == node_class.interfaces.end()) {
             throw unsupported_interface(*interface);
         }
-        try {
-            //
-            // Throws std::invalid_argument, std::bad_alloc.
-            //
-            add_interface(this->interfaces_, *interface);
-        } catch (invalid_argument & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
+        const bool succeeded = this->interfaces_.insert(*interface).second;
+        assert(succeeded);
     }
 }
 
@@ -4384,27 +4378,15 @@ void scene::shutdown(const double timestamp) throw ()
  */
 
 namespace {
-    class AddInterfaceToSet_ : std::unary_function<node_interface, void> {
-        node_interface_set & nodeInterfaceSet;
-
-    public:
-        AddInterfaceToSet_(node_interface_set & nodeInterfaceSet):
-                nodeInterfaceSet(nodeInterfaceSet) {}
-
-        void operator()(const node_interface & nodeInterface) const
-                throw (std::invalid_argument, std::bad_alloc) {
-            add_interface(this->nodeInterfaceSet, nodeInterface);
-        }
-    };
-
     /**
      * @internal
      */
     class vrml97_node_interface_set_ : public node_interface_set {
     public:
         vrml97_node_interface_set_(const node_interface * const begin,
-                                const node_interface * const end) {
-            std::for_each(begin, end, AddInterfaceToSet_(*this));
+                                   const node_interface * const end)
+        {
+            this->insert(begin, end);
         }
     };
 }

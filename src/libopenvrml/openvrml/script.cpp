@@ -349,9 +349,11 @@ namespace {
 script_node::script_node_type::script_node_type(script_node_class & class_):
     node_type(class_, "Script")
 {
-    openvrml::add_interface(this->interfaces_, built_in_script_interfaces_[0]);
-    openvrml::add_interface(this->interfaces_, built_in_script_interfaces_[1]);
-    openvrml::add_interface(this->interfaces_, built_in_script_interfaces_[2]);
+    for (size_t i = 0; i < 3; ++i) {
+        bool succeeded =
+            this->interfaces_.insert(built_in_script_interfaces_[i]).second;
+        assert(succeeded);
+    }
 }
 
 /**
@@ -365,14 +367,19 @@ script_node::script_node_type::~script_node_type() throw ()
  *
  * @param interface
  *
+ * @exception std::bad_alloc        if memory allocation fails.
  * @exception std::invalid_argument if the script_node_type already has an
  *                                  interface that conflicts with @p interface.
  */
-const node_interface_set::const_iterator
+void
 script_node::script_node_type::add_interface(const node_interface & interface)
-    throw (std::invalid_argument)
+    throw (std::bad_alloc, std::invalid_argument)
 {
-    return openvrml::add_interface(this->interfaces_, interface);
+    bool succeeded  = this->interfaces_.insert(interface).second;
+    if (!succeeded) {
+        throw std::invalid_argument("Interface conflicts with an interface "
+                                    "already in this set.");
+    }
 }
 
 /**

@@ -292,18 +292,18 @@ namespace {
 
         void add_eventin(field_value::type_id, const std::string & id,
                          const event_listener_ptr_ptr & event_listener)
-            throw (unsupported_interface, std::bad_alloc);
+            throw (std::invalid_argument, std::bad_alloc);
         void add_eventout(field_value::type_id, const std::string & id,
                           const event_emitter_ptr_ptr & event_emitter)
-            throw (unsupported_interface, std::bad_alloc);
+            throw (std::invalid_argument, std::bad_alloc);
         void add_exposedfield(field_value::type_id, const std::string & id,
                               const event_listener_ptr_ptr & event_listener,
                               const field_ptr_ptr & field,
                               const event_emitter_ptr_ptr & event_emitter)
-            throw (unsupported_interface, std::bad_alloc);
+            throw (std::invalid_argument, std::bad_alloc);
         void add_field(field_value::type_id, const std::string & id,
                        const field_ptr_ptr & fieldPtrPtr)
-            throw (unsupported_interface, std::bad_alloc);
+            throw (std::invalid_argument, std::bad_alloc);
 
         virtual void field_value(openvrml::node & node, const std::string & id,
                                  const openvrml::field_value &) const
@@ -383,13 +383,17 @@ namespace {
     add_eventin(const field_value::type_id type,
                 const std::string & id,
                 const event_listener_ptr_ptr & event_listener)
-        throw (unsupported_interface, std::bad_alloc)
+        throw (std::invalid_argument, std::bad_alloc)
     {
         const node_interface interface(node_interface::eventin_id, type, id);
-        add_interface(this->interfaces_, interface);
+        bool succeeded = this->interfaces_.insert(interface).second;
+        if (!succeeded) {
+            throw std::invalid_argument("Interface \"" + id + "\" already "
+                                        "defined for " + this->id + " node");
+        }
         const typename event_listener_map_t::value_type value(id,
                                                               event_listener);
-        const bool succeeded = this->event_listener_map.insert(value).second;
+        succeeded = this->event_listener_map.insert(value).second;
         assert(succeeded);
     }
 
@@ -398,13 +402,17 @@ namespace {
     add_eventout(const field_value::type_id type,
                  const std::string & id,
                  const event_emitter_ptr_ptr & event_emitter)
-        throw (unsupported_interface, std::bad_alloc)
+        throw (std::invalid_argument, std::bad_alloc)
     {
         const node_interface interface(node_interface::eventout_id, type, id);
-        add_interface(this->interfaces_, interface);
+        bool succeeded = this->interfaces_.insert(interface).second;
+        if (!succeeded) {
+            throw std::invalid_argument("Interface \"" + id + "\" already "
+                                        "defined for " + this->id + " node");
+        }
         const typename event_emitter_map_t::value_type value(id,
                                                              event_emitter);
-        const bool succeeded = this->event_emitter_map.insert(value).second;
+        succeeded = this->event_emitter_map.insert(value).second;
         assert(succeeded);
     }
 
@@ -415,13 +423,16 @@ namespace {
             const event_listener_ptr_ptr & event_listener,
             const field_ptr_ptr & field,
             const event_emitter_ptr_ptr & event_emitter)
-        throw (unsupported_interface, std::bad_alloc)
+        throw (std::invalid_argument, std::bad_alloc)
     {
         const node_interface interface(node_interface::exposedfield_id,
                                        type,
                                        id);
-        add_interface(this->interfaces_, interface);
-        bool succeeded;
+        bool succeeded = this->interfaces_.insert(interface).second;
+        if (!succeeded) {
+            throw std::invalid_argument("Interface \"" + id + "\" already "
+                                        "defined for " + this->id + " node");
+        }
         {
             const typename event_listener_map_t::value_type
                 value("set_" + id, event_listener);
@@ -446,13 +457,17 @@ namespace {
             const field_value::type_id type,
             const std::string & id,
             const field_ptr_ptr & nodeFieldPtrPtr)
-        throw (unsupported_interface, std::bad_alloc)
+        throw (std::invalid_argument, std::bad_alloc)
     {
         const node_interface interface(node_interface::field_id, type, id);
-        add_interface(this->interfaces_, interface);
+        bool succeeded = this->interfaces_.insert(interface).second;
+        if (!succeeded) {
+            throw std::invalid_argument("Interface \"" + id + "\" already "
+                                        "defined for " + this->id + " node");
+        }
         const typename field_value_map_t::value_type
             value(id, nodeFieldPtrPtr);
-        const bool succeeded = this->field_value_map.insert(value).second;
+        succeeded = this->field_value_map.insert(value).second;
         assert(succeeded);
     }
 
