@@ -189,7 +189,7 @@ namespace {
             } else if (scriptField->type == VrmlField::MFNODE) {
                 assert(dynamic_cast<VrmlMFNode *>(scriptField->value));
                 VrmlMFNode &
-                        nodes = *static_cast<VrmlMFNode *>(scriptField->value));
+                        nodes = *static_cast<VrmlMFNode *>(scriptField->value);
                 this->children.setLength(children.getLength()
                                             + nodes.getLength());
                 for (size_t i = 0; i < nodes.getLength(); ++i) {

@@ -18,6 +18,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
+# include <algorithm>
+# include "VrmlNodeProto.h"
+# include "VrmlNamespace.h"
+# include "VrmlNodeVisitor.h"
+# include "Route.h"
+# include "VrmlBSphere.h"
 
 /**
  * @class VrmlNodeProto
@@ -54,16 +60,6 @@
  * EventOuts from an implementation node to a node outside the
  * PROTO can be directly replaced at copy time.
  */
-
-#include "VrmlNodeProto.h"
-#include "VrmlNamespace.h"
-#include "VrmlNodeVisitor.h"
-#include "Route.h"
-#include "VrmlBSphere.h"
-
-#ifndef NDEBUG
-#define VRML_NODE_PROTO_DEBUG
-#endif
 
 // Field name/value pairs specified in PROTO instantiation
 struct VrmlNodeProto::NameValueRec {
@@ -148,6 +144,7 @@ namespace {
     struct AccumulateNodes_ :
             std::unary_function<VrmlNodeProto::NameValueRec *, void> {
         explicit AccumulateNodes_(VrmlMFNode & children): children(children) {};
+        
         result_type operator()(argument_type protoFieldRec) {
             assert(protoFieldRec);
             if (protoFieldRec->value->fieldType() == VrmlField::SFNODE) {
