@@ -2,6 +2,9 @@
 
         * configure.ac, README: Incremented version number to 0.12.2.
 
+        * src/openvrml/OpenVRML/ScriptJDK.cpp: Use const_cast to blow
+          off const for JNI.
+
 2002-06-17  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.1.
