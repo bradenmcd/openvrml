@@ -1,3 +1,13 @@
+2004-12-18  Braden McDaniel  <braden@endoframe.com>
+
+	* src/lookat/ViewerGlut.cpp (ViewerGlut::ViewerGlut):  Set
+	ViewerGlut::d_window to the result of glutCreateWindow.  This
+	shouldn't be any different from the previously used method of
+	calling glutGetWindow immediately after the glutCreateWindow
+	call; however, freeglut (2.2.0) is exhibiting some unusual and
+	not consistently reproducible results from calls to
+	glutGetWindow.
+
 2004-12-10  Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml/OpenVRML/ScriptJS.cpp:  Adjusted #includes for

@@ -222,8 +222,7 @@ ViewerGlut::ViewerGlut(VrmlScene *scene) : ViewerOpenGL(scene)
     exit(1);
 #endif
 
-  glutCreateWindow("VRML97 OpenGL Viewer");
-  d_window = glutGetWindow();
+  d_window = glutCreateWindow("VRML97 OpenGL Viewer");
   d_timerPending = false;
 
   // If d_window is not "small", convert viewers to a map...
