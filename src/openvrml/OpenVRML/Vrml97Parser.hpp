@@ -19,8 +19,8 @@
 
 namespace OpenVRML {
     class Scope;
-    class ScriptNode;
-    class NodeType;
+    class script_node;
+    class node_type;
     class Doc2;
 }
 
@@ -211,11 +211,11 @@ public:
 	);
 	public: void scriptInterfaceDeclaration(
 		const OpenVRML::ScopePtr & scope,
-                           OpenVRML::ScriptNode & node
+                           OpenVRML::script_node & node
 	);
 	public: void scriptFieldInterfaceDeclaration(
 		const OpenVRML::ScopePtr & scope,
-                                OpenVRML::ScriptNode & node
+                                OpenVRML::script_node & node
 	);
 	public: void protoNodeBodyElement(
 		OpenVRML::ProtoNodeClass & proto,
@@ -225,7 +225,7 @@ public:
 	public: void protoScriptInterfaceDeclaration(
 		OpenVRML::ProtoNodeClass & proto,
                                 const OpenVRML::ScopePtr & scope,
-                                OpenVRML::ScriptNode & node
+                                OpenVRML::script_node & node
 	);
 	public: OpenVRML::field_value_ptr  protoFieldValue(
 		OpenVRML::ProtoNodeClass & proto,
@@ -239,7 +239,7 @@ public:
 	public: void protoScriptFieldInterfaceDeclaration(
 		OpenVRML::ProtoNodeClass & proto,
                                      const OpenVRML::ScopePtr & scope,
-                                     OpenVRML::ScriptNode & node
+                                     OpenVRML::script_node & node
 	);
 	public: OpenVRML::field_value_ptr  nodeFieldValue(
 		OpenVRML::Browser & browser,

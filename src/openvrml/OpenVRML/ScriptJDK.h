@@ -34,10 +34,10 @@
 
 namespace OpenVRML {
 
-    class ScriptNode;
+    class script_node;
 
-    class ScriptJDK : public Script {
-        // Shared by all JDK Script objects
+    class ScriptJDK : public script {
+        // Shared by all JDK script objects
         static JavaVM * d_jvm;
         static JNIEnv * d_env;
 
@@ -46,14 +46,15 @@ namespace OpenVRML {
         jmethodID d_processEventsID, d_processEventID, d_eventsProcessedID;
 
     public:
-        ScriptJDK(ScriptNode & scriptNode,
+        ScriptJDK(script_node & scriptNode,
                   const char * className, const char * classDir);
         virtual ~ScriptJDK();
 
         virtual void initialize(double timestamp);
-        virtual void processEvent(const std::string & id,
-                                  const field_value & value, double timestamp);
-        virtual void eventsProcessed(double timestamp);
+        virtual void process_event(const std::string & id,
+                                   const field_value & value,
+                                   double timestamp);
+        virtual void events_processed(double timestamp);
         virtual void shutdown(double timestamp);
 
     private:

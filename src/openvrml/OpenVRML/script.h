@@ -28,34 +28,34 @@
 
 namespace OpenVRML {
 
-    class ScriptNode;
+    class script_node;
 
-    class OPENVRML_SCOPE Script {
+    class OPENVRML_SCOPE script {
     public:
-        virtual ~Script() = 0;
+        virtual ~script() = 0;
         virtual void initialize(double timestamp) = 0;
-        virtual void processEvent(const std::string & id,
-                                  const field_value & value,
-                                  double timestamp) = 0;
-        virtual void eventsProcessed(double timestamp) = 0;
+        virtual void process_event(const std::string & id,
+                                   const field_value & value,
+                                   double timestamp) = 0;
+        virtual void events_processed(double timestamp) = 0;
         virtual void shutdown(double timestamp) = 0;
 
     protected:
-        ScriptNode & scriptNode;
+        script_node & node;
 
-        Script(ScriptNode & scriptNode);
+        script(script_node & node);
 
     private:
         // non-copyable
-        Script(const Script &);
-        Script & operator=(const Script &);
+        script(const script &);
+        script & operator=(const script &);
     };
 
 
-    class OPENVRML_SCOPE ScriptNodeClass : public node_class {
+    class OPENVRML_SCOPE script_node_class : public node_class {
     public:
-        ScriptNodeClass(Browser & browser);
-        virtual ~ScriptNodeClass() throw ();
+        script_node_class(Browser & browser);
+        virtual ~script_node_class() throw ();
 
         virtual const node_type_ptr
         create_type(const std::string & id,
@@ -64,70 +64,73 @@ namespace OpenVRML {
     };
 
 
-    class OPENVRML_SCOPE ScriptNode : public child_node {
+    class OPENVRML_SCOPE script_node : public child_node {
     public:
-        typedef std::map<std::string, field_value_ptr> FieldValueMap;
-        typedef std::map<std::string, polled_eventout_value> EventOutValueMap;
+        typedef std::map<std::string, field_value_ptr> field_value_map_t;
+        typedef std::map<std::string, polled_eventout_value>
+            eventout_value_map_t;
 
     private:
-        class ScriptNodeType : public node_type {
+        class script_node_type : public node_type {
             node_interface_set interfaces_;
 
         public:
-            ScriptNodeType(ScriptNodeClass & nodeClass);
-            virtual ~ScriptNodeType() throw ();
+            script_node_type(script_node_class & class_);
+            virtual ~script_node_type() throw ();
 
-            void addInterface(const node_interface & interface)
-                    throw (std::invalid_argument);
+            void add_interface(const node_interface & interface)
+                throw (std::invalid_argument);
 
             virtual const node_interface_set & interfaces() const throw ();
             virtual const node_ptr create_node(const ScopePtr & scope) const
-                    throw (std::bad_alloc);
+                throw (std::bad_alloc);
         };
 
-        friend class ScriptNodeType;
+        friend class script_node_type;
 
-        ScriptNodeType scriptNodeType;
-        sfbool directOutput;
-        sfbool mustEvaluate;
-        mfstring url;
-        FieldValueMap fieldValueMap;
-        EventOutValueMap eventOutValueMap;
-        Script * script;
-        int eventsReceived;
+        script_node_type type;
+        sfbool direct_output;
+        sfbool must_evaluate;
+        mfstring url_;
+        field_value_map_t field_value_map_;
+        eventout_value_map_t eventout_value_map_;
+        script * script_;
+        int events_received;
 
     public:
-        ScriptNode(ScriptNodeClass & nodeClass,
-                   const ScopePtr & scope);
-        virtual ~ScriptNode() throw ();
+        script_node(script_node_class & class_, const ScopePtr & scope)
+            throw ();
+        virtual ~script_node() throw ();
 
-        void setUrl(const mfstring & value, double timestamp);
-        const mfstring & getUrl() const;
+        void url(const mfstring & value, double timestamp);
+        const mfstring & url() const;
 
-        void addEventIn(field_value::type_id type_id, const std::string & id)
+        void add_eventin(field_value::type_id type_id, const std::string & id)
             throw (std::invalid_argument, std::bad_alloc);
-        void addEventOut(field_value::type_id type_id, const std::string & id)
+        void add_eventout(field_value::type_id type_id, const std::string & id)
             throw (std::invalid_argument, std::bad_alloc);
-        void addField(const std::string & id,
+        void add_field(const std::string & id,
                       const field_value_ptr & defaultValue)
             throw (std::invalid_argument, std::bad_alloc);
 
         void update(double timestamp);
 
-        void setEventOut(const std::string & id, const field_value & value)
+        void eventout(const std::string & id, const field_value & value)
             throw (unsupported_interface, std::bad_cast, std::bad_alloc);
 
-        const FieldValueMap & getFieldValueMap() const throw ();
-        const EventOutValueMap & getEventOutValueMap() const throw ();
+        const field_value_map_t & field_value_map() const throw ();
+        const eventout_value_map_t & eventout_value_map() const throw ();
 
-        virtual const ScriptNode * to_script() const throw ();
-        virtual ScriptNode * to_script() throw ();
+        virtual const script_node * to_script() const throw ();
+        virtual script_node * to_script() throw ();
 
     private:
-        Script * createScript();
+        script * create_script();
 
-        void assignWithSelfRefCheck(const sfnode &, sfnode &) const throw ();
-        void assignWithSelfRefCheck(const mfnode &, mfnode &) const throw ();
+        void assign_with_self_ref_check(const sfnode &, sfnode &) const
+            throw ();
+        void assign_with_self_ref_check(const mfnode &, mfnode &) const
+            throw ();
 
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
         virtual void do_field(const std::string & id,
@@ -145,14 +148,16 @@ namespace OpenVRML {
         virtual void do_shutdown(double timestamp) throw ();
     };
 
-    inline const ScriptNode::FieldValueMap &
-            ScriptNode::getFieldValueMap() const throw () {
-        return this->fieldValueMap;
+    inline const script_node::field_value_map_t &
+    script_node::field_value_map() const throw ()
+    {
+        return this->field_value_map_;
     }
 
-    inline const ScriptNode::EventOutValueMap &
-            ScriptNode::getEventOutValueMap() const throw () {
-        return this->eventOutValueMap;
+    inline const script_node::eventout_value_map_t &
+    script_node::eventout_value_map() const throw ()
+    {
+        return this->eventout_value_map_;
     }
 }
 

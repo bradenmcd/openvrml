@@ -29,8 +29,8 @@ header "post_include_hpp" {
 
 namespace OpenVRML {
     class Scope;
-    class ScriptNode;
-    class NodeType;
+    class script_node;
+    class node_type;
     class Doc2;
 }
 
@@ -945,16 +945,16 @@ options { defaultErrorHandler = false; }
 {
     using OpenVRML::node_type_ptr;
     using OpenVRML::node_ptr;
-    using OpenVRML::ScriptNode;
+    using OpenVRML::script_node;
     using antlr::SemanticException;
 
     node_type_ptr nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
-            n.reset(new ScriptNode(browser.scriptNodeClass, scope));
+            n.reset(new script_node(browser.scriptNodeClass, scope));
             if (!nodeId.empty()) { n->id(nodeId); }
 
-            ScriptNode * const scriptNode = n->to_script();
+            script_node * const scriptNode = n->to_script();
             assert(scriptNode);
         } LBRACE (
             nodeBodyElement[scope, *n]
@@ -1008,7 +1008,7 @@ nodeBodyElement[const OpenVRML::ScopePtr & scope,
     ;
 
 scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
-                           OpenVRML::ScriptNode & node]
+                           OpenVRML::script_node & node]
     {
         using OpenVRML::node_interface;
         using OpenVRML::field_value;
@@ -1018,8 +1018,8 @@ scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
     }
     : it=eventInterfaceType ft=fieldType id:ID {
             const node_interface_set::const_iterator pos =
-                    node.type.interfaces().find(id->getText());
-            if (pos != node.type.interfaces().end()) {
+                    node.node::type.interfaces().find(id->getText());
+            if (pos != node.node::type.interfaces().end()) {
                 throw SemanticException("Interface \"" + id->getText()
                                         + "\" already declared for Script "
                                         "node.",
@@ -1029,10 +1029,10 @@ scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
             }
             switch (it) {
             case node_interface::eventin_id:
-                node.addEventIn(ft, id->getText());
+                node.add_eventin(ft, id->getText());
                 break;
             case node_interface::eventout_id:
-                node.addEventOut(ft, id->getText());
+                node.add_eventout(ft, id->getText());
                 break;
             default:
                 assert(false);
@@ -1042,7 +1042,7 @@ scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
     ;
 
 scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
-                                OpenVRML::ScriptNode & node]
+                                OpenVRML::script_node & node]
 {
     using std::find_if;
     using OpenVRML::field_value;
@@ -1052,11 +1052,12 @@ scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
     field_value_ptr fv;
 }
     : KEYWORD_FIELD ft=fieldType id:ID
-        fv=fieldValue[node.type._class.browser, scope, ft] {
+        fv=fieldValue[node.node::type._class.browser, scope, ft] {
             assert(fv);
-            const node_interface_set & interfaces = node.type.interfaces();
+            const node_interface_set & interfaces =
+                node.node::type.interfaces();
             const node_interface_set::const_iterator pos =
-                    interfaces.find(id->getText());
+                interfaces.find(id->getText());
             if (pos != interfaces.end()) {
                 throw SemanticException("Interface \"" + id->getText()
                                         + "\" already declared for Script "
@@ -1065,7 +1066,7 @@ scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                                         id->getLine(),
                                         id->getColumn());
             }
-            node.addField(id->getText(), fv);
+            node.add_field(id->getText(), fv);
         }
     ;
 
@@ -1077,16 +1078,16 @@ options { defaultErrorHandler=false; }
 {
     using OpenVRML::node_type_ptr;
     using OpenVRML::node_ptr;
-    using OpenVRML::ScriptNode;
+    using OpenVRML::script_node;
     using antlr::SemanticException;
 
     node_type_ptr nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
-            n.reset(new ScriptNode(proto.browser.scriptNodeClass, scope));
+            n.reset(new script_node(proto.browser.scriptNodeClass, scope));
             if (!nodeId.empty()) { n->id(nodeId); }
 
-            ScriptNode * const scriptNode = n->to_script();
+            script_node * const scriptNode = n->to_script();
             assert(scriptNode);
         }
         LBRACE (
@@ -1172,7 +1173,7 @@ isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::node & node,
 
 protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                                 const OpenVRML::ScopePtr & scope,
-                                OpenVRML::ScriptNode & node]
+                                OpenVRML::script_node & node]
 {
     using OpenVRML::node_interface;
     using OpenVRML::field_value;
@@ -1182,8 +1183,8 @@ protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
 }
     : it=eventInterfaceType ft=fieldType id:ID {
             const node_interface_set::const_iterator pos =
-                    node.type.interfaces().find(id->getText());
-            if (pos != node.type.interfaces().end()) {
+                node.node::type.interfaces().find(id->getText());
+            if (pos != node.node::type.interfaces().end()) {
                 throw SemanticException("Interface \"" + id->getText()
                                         + "\" already declared for Script "
                                         "node.",
@@ -1193,10 +1194,10 @@ protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
             }
             switch (it) {
             case node_interface::eventin_id:
-                node.addEventIn(ft, id->getText());
+                node.add_eventin(ft, id->getText());
                 break;
             case node_interface::eventout_id:
-                node.addEventOut(ft, id->getText());
+                node.add_eventout(ft, id->getText());
                 break;
             default:
                 assert(false);
@@ -1207,7 +1208,7 @@ protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
 
 protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                                      const OpenVRML::ScopePtr & scope,
-                                     OpenVRML::ScriptNode & node]
+                                     OpenVRML::script_node & node]
 {
     using std::find_if;
     using OpenVRML::field_value;
@@ -1222,7 +1223,8 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
             // existing interface for the Script node; so, we don't use
             // node_interface_set::findInterface.
             //
-            const node_interface_set & interfaces = node.type.interfaces();
+            const node_interface_set & interfaces =
+                node.node::type.interfaces();
             const node_interface_set::const_iterator pos =
                     find_if(interfaces.begin(), interfaces.end(),
                             interface_id_equals_(id->getText()));
@@ -1238,7 +1240,7 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
             (
                 fv=protoFieldValue[proto, scope, ft] {
                     assert(fv);
-                    node.addField(id->getText(), fv);
+                    node.add_field(id->getText(), fv);
                 }
             )
             | (
@@ -1262,7 +1264,7 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                     // Now, add the field to the Script node with the default
                     // value.
                     //
-                    node.addField(id->getText(), pos->second);
+                    node.add_field(id->getText(), pos->second);
 
                     //
                     // Finally, add the IS mapping.

@@ -182,11 +182,16 @@ JNIEnv *ScriptJDK::d_env = 0;
  * @param className Name of the Java class.
  * @param classDir Location of Java class.
  */
-ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
+ScriptJDK::ScriptJDK(script_node & node,
+                     const char * className,
 		     const char * classDir):
-        Script(scriptNode), d_class(0), d_object(0), d_processEventsID(0),
-        d_processEventID(0), d_eventsProcessedID(0) {
-
+    script(node),
+    d_class(0),
+    d_object(0),
+    d_processEventsID(0),
+    d_processEventID(0),
+    d_eventsProcessedID(0)
+{
   if (! d_jvm)			// Initialize static members
   {
     JavaVMInitArgs vm_args;
@@ -253,7 +258,7 @@ ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
       d_object = d_env->NewObject(d_class, ctorId);
 
     jfieldID fid = d_env->GetFieldID(d_class, "NodePtr", "I");
-    d_env->SetIntField(d_object, fid, reinterpret_cast<int>(&scriptNode));
+    d_env->SetIntField(d_object, fid, reinterpret_cast<int>(&node));
 
     // Cache other method IDs
     d_processEventID =
@@ -347,8 +352,8 @@ namespace {
 
       if (eventOut)
       {
-        ScriptNode::polled_eventout_value * const eventOutPtr =
-          reinterpret_cast<ScriptNode::polled_eventout_value *>
+        script_node::polled_eventout_value * const eventOutPtr =
+          reinterpret_cast<script_node::polled_eventout_value *>
             (env->GetIntField(obj, fid));
         fieldPtr = eventOutPtr->value.get();
         eventOutPtr->modified = true;
@@ -401,8 +406,9 @@ void ScriptJDK::initialize(const double timestamp)
  * @param value Value of the event.
  * @param timestamp Time at which event occurred.
  */
-void ScriptJDK::processEvent(const std::string & id, const field_value & value,
-                             const double timestamp)
+void ScriptJDK::process_event(const std::string & id,
+                              const field_value & value,
+                              const double timestamp)
 {
   const sftime timestampArg(timestamp);
   const field_value * argv[] = { &value, &timestampArg };
@@ -414,7 +420,7 @@ void ScriptJDK::processEvent(const std::string & id, const field_value & value,
  *
  * @param timestamp Time at which last event occurred.
  */
-void ScriptJDK::eventsProcessed(const double timestamp)
+void ScriptJDK::events_processed(const double timestamp)
 {
   const sftime arg(timestamp);
   const field_value * argv[] = { &arg };
@@ -6586,13 +6592,13 @@ jobject JNICALL Java_vrml_node_Script_getField
   std::string fieldName(charFieldName);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   if (!fid) return 0;
-  ScriptNode* script =
-    reinterpret_cast<ScriptNode*>(env->GetIntField(obj, fid));
+  script_node* script =
+    reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
   if (!script) return 0;
   jobject Field;
 
-  ScriptNode::FieldValueMap fieldMap = script->getFieldValueMap();
-  ScriptNode::FieldValueMap::iterator iter = fieldMap.find(fieldName);
+  script_node::field_value_map_t fieldMap = script->field_value_map();
+  script_node::field_value_map_t::iterator iter = fieldMap.find(fieldName);
 
   if (iter != fieldMap.end())
   {
@@ -6644,23 +6650,23 @@ jobject JNICALL Java_vrml_node_Script_getEventOut
   std::string eventOutName(charEventOut);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   if (!fid) return 0;
-  ScriptNode* script =
-    reinterpret_cast<ScriptNode*>(env->GetIntField(obj, fid));
+  script_node* script =
+    reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
   if (!script) return 0;
 
   field_value::type_id eventOutType =
-    script->type.has_eventout(eventOutName);
+    script->node::type.has_eventout(eventOutName);
 
   if (eventOutType != field_value::invalid_type_id)
   {
-    const ScriptNode::EventOutValueMap& eventOutMap =
-      script->getEventOutValueMap();
-    ScriptNode::EventOutValueMap::const_iterator iter =
+    const script_node::eventout_value_map_t& eventOutMap =
+      script->eventout_value_map();
+    script_node::eventout_value_map_t::const_iterator iter =
       eventOutMap.find(eventOutName);
 
     if (iter != eventOutMap.end())
     {
-      const ScriptNode::polled_eventout_value & eventOutValue = iter->second;
+      const script_node::polled_eventout_value & eventOutValue = iter->second;
       // Found the eventOut
       std::ostrstream os;
       os << "vrml/field/" << iter->second.value->type() << '\0';
@@ -6709,12 +6715,12 @@ jobject JNICALL Java_vrml_node_Script_getEventIn
   std::string eventInName(charEventInName);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   if (!fid) return 0;
-  ScriptNode* script =
-    reinterpret_cast<ScriptNode*>(env->GetIntField(obj, fid));
+  script_node* script =
+    reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
   if (!script) return 0;
   jobject eventIn;
   field_value::type_id eventInType =
-    script->type.has_eventin(eventInName);
+    script->node::type.has_eventin(eventInName);
 
   if (eventInType != field_value::invalid_type_id)
   {
@@ -6733,7 +6739,7 @@ jobject JNICALL Java_vrml_node_Script_getEventIn
   else
   {
     // look for eventIn in exposed field list
-    eventInType = script->type.has_field(eventInName);
+    eventInType = script->node::type.has_field(eventInName);
 
     if (eventInType != field_value::invalid_type_id)
     {
@@ -6783,7 +6789,7 @@ jstring JNICALL Java_vrml_node_Script_toString
   std::ostrstream os;
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   if (!fid) return 0;
-  ScriptNode* node = reinterpret_cast<ScriptNode*>(env->GetIntField(obj, fid));
+  script_node* node = reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
   if (!node) return 0;
   os << *node << std::ends;
   char* szString = os.str();
@@ -6828,8 +6834,8 @@ jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
     if (!fid) { return 0; }
 
     if (isScript) {
-        ScriptNode * const node =
-            reinterpret_cast<ScriptNode *>(env->GetIntField(obj, fid));
+        script_node * const node =
+            reinterpret_cast<script_node *>(env->GetIntField(obj, fid));
         assert(node);
         assert(node->scene());
         fid = getFid(env, jBrowser, "BrowserPtr", "I");

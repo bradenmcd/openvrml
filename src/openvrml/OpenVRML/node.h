@@ -188,7 +188,7 @@ namespace OpenVRML {
 
     class Scope;
     class BVolume;
-    class ScriptNode;
+    class script_node;
     class appearance_node;
     class child_node;
     class color_node;
@@ -295,8 +295,8 @@ namespace OpenVRML {
 
         void shutdown(double timestamp) throw ();
 
-        virtual const ScriptNode * to_script() const throw ();
-        virtual ScriptNode * to_script() throw ();
+        virtual const script_node * to_script() const throw ();
+        virtual script_node * to_script() throw ();
         virtual const appearance_node * to_appearance() const throw ();
         virtual appearance_node * to_appearance() throw ();
         virtual const child_node * to_child() const throw ();
@@ -377,7 +377,7 @@ namespace OpenVRML {
         virtual void render(Viewer & viewer, VrmlRenderContext context);
 
     protected:
-        node(const node_type & type, const ScopePtr & scope);
+        node(const node_type & type, const ScopePtr & scope) throw ();
 
         // Send a named event from this node.
         void emit_event(const std::string & id,
@@ -448,7 +448,8 @@ namespace OpenVRML {
         virtual const node_ptr & texture_transform() const throw () = 0;
 
     protected:
-        appearance_node(const node_type & type, const ScopePtr & scope);
+        appearance_node(const node_type & type, const ScopePtr & scope)
+            throw ();
     };
 
 
@@ -460,7 +461,7 @@ namespace OpenVRML {
         virtual child_node * to_child() throw ();
 
     protected:
-        child_node(const node_type & type, const ScopePtr & scope);
+        child_node(const node_type & type, const ScopePtr & scope) throw ();
     };
 
 
@@ -471,10 +472,11 @@ namespace OpenVRML {
         virtual const color_node * to_color() const throw ();
         virtual color_node * to_color() throw ();
 
-        virtual const std::vector<OpenVRML::color> & color() const throw () = 0;
+        virtual const std::vector<OpenVRML::color> & color() const
+            throw () = 0;
 
     protected:
-        color_node(const node_type & type, const ScopePtr & scope);
+        color_node(const node_type & type, const ScopePtr & scope) throw ();
     };
 
 
@@ -488,7 +490,8 @@ namespace OpenVRML {
         virtual const std::vector<vec3f> & point() const throw () = 0;
 
     protected:
-        coordinate_node(const node_type & type, const ScopePtr & scope);
+        coordinate_node(const node_type & type, const ScopePtr & scope)
+            throw ();
     };
 
 
@@ -512,7 +515,8 @@ namespace OpenVRML {
         virtual bool top_to_bottom() const throw () = 0;
 
     protected:
-        font_style_node(const node_type & type, const ScopePtr & scope);
+        font_style_node(const node_type & type, const ScopePtr & scope)
+            throw ();
     };
 
 
@@ -528,7 +532,7 @@ namespace OpenVRML {
         virtual const color_node * color() const throw ();
 
     protected:
-        geometry_node(const node_type & type, const ScopePtr & scope);
+        geometry_node(const node_type & type, const ScopePtr & scope) throw ();
     };
 
 
@@ -544,7 +548,7 @@ namespace OpenVRML {
                               double *p) = 0;
 
     protected:
-        grouping_node(const node_type & type, const ScopePtr & scope);
+        grouping_node(const node_type & type, const ScopePtr & scope) throw ();
     };
 
 
@@ -563,7 +567,7 @@ namespace OpenVRML {
         virtual float transparency() const throw () = 0;
 
     protected:
-        material_node(const node_type & type, const ScopePtr & scope);
+        material_node(const node_type & type, const ScopePtr & scope) throw ();
     };
 
 
@@ -577,7 +581,7 @@ namespace OpenVRML {
         virtual const std::vector<vec3f> & vector() const throw () = 0;
 
     protected:
-        normal_node(const node_type & type, const ScopePtr & scope);
+        normal_node(const node_type & type, const ScopePtr & scope) throw ();
     };
 
 
@@ -588,7 +592,8 @@ namespace OpenVRML {
         virtual sound_source_node * to_sound_source() throw ();
 
     protected:
-        sound_source_node(const node_type & type, const ScopePtr & scope);
+        sound_source_node(const node_type & type, const ScopePtr & scope)
+            throw ();
     };
 
 
@@ -608,7 +613,7 @@ namespace OpenVRML {
         virtual bool repeat_t() const throw () = 0;
 
     protected:
-        texture_node(const node_type & type, const ScopePtr & scope);
+        texture_node(const node_type & type, const ScopePtr & scope) throw ();
     };
 
 
@@ -624,7 +629,8 @@ namespace OpenVRML {
 
     protected:
         texture_coordinate_node(const node_type & type,
-                                const ScopePtr & scope);
+                                const ScopePtr & scope)
+            throw ();
     };
 
 
@@ -638,7 +644,8 @@ namespace OpenVRML {
 
     protected:
         texture_transform_node(const node_type & type,
-                               const ScopePtr & scope);
+                               const ScopePtr & scope)
+            throw ();
     };
 
 
@@ -652,7 +659,8 @@ namespace OpenVRML {
         virtual const mat4f & transform() const throw () = 0;
 
     protected:
-        transform_node(const node_type & type, const ScopePtr & scope);
+        transform_node(const node_type & type, const ScopePtr & scope)
+            throw ();
     };
 
 
@@ -671,7 +679,8 @@ namespace OpenVRML {
         virtual float field_of_view() const throw () = 0;
 
     protected:
-        viewpoint_node(const node_type & type, const ScopePtr & scope);
+        viewpoint_node(const node_type & type, const ScopePtr & scope)
+            throw ();
     };
 
 

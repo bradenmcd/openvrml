@@ -878,7 +878,7 @@ node::polled_eventout_value::polled_eventout_value(
  * @param type  the node_type associated with the instance.
  * @param scope the Scope associated with the instance.
  */
-node::node(const node_type & type, const ScopePtr & scope):
+node::node(const node_type & type, const ScopePtr & scope) throw ():
     scope_(scope),
     scene_(0),
     type(type),
@@ -1204,25 +1204,25 @@ void node::shutdown(const double timestamp) throw ()
 }
 
 /**
- * @brief Cast to a const ScriptNode.
+ * @brief Cast to a const script_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const ScriptNode * node::to_script() const throw ()
+const script_node * node::to_script() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a ScriptNode.
+ * @brief Cast to a script_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-ScriptNode * node::to_script() throw ()
+script_node * node::to_script() throw ()
 {
     return 0;
 }
@@ -2008,7 +2008,8 @@ void node::do_shutdown(const double timestamp) throw ()
  * @param scope the Scope the node belongs to.
  */
 appearance_node::appearance_node(const node_type & type,
-                                 const ScopePtr & scope):
+                                 const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2075,7 +2076,8 @@ appearance_node * appearance_node::to_appearance() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-child_node::child_node(const node_type & type, const ScopePtr & scope):
+child_node::child_node(const node_type & type, const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2118,7 +2120,8 @@ child_node * child_node::to_child() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-color_node::color_node(const node_type & type, const ScopePtr & scope):
+color_node::color_node(const node_type & type, const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2170,7 +2173,8 @@ color_node * color_node::to_color() throw ()
  * @param scope the Scope the node belongs to.
  */
 coordinate_node::coordinate_node(const node_type & type,
-                                 const ScopePtr & scope):
+                                 const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2222,7 +2226,8 @@ coordinate_node * coordinate_node::to_coordinate() throw ()
  * @param scope the Scope the node belongs to.
  */
 font_style_node::font_style_node(const node_type & type,
-                                 const ScopePtr & scope):
+                                 const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2344,7 +2349,8 @@ font_style_node * font_style_node::to_font_style() throw ()
  * @param scope the Scope the node belongs to.
  */
 geometry_node::geometry_node(const node_type & type,
-                             const ScopePtr & scope):
+                             const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2402,7 +2408,8 @@ const color_node * geometry_node::color() const throw ()
  * @param scope the Scope the node belongs to.
  */
 grouping_node::grouping_node(const node_type & type,
-                             const ScopePtr & scope):
+                             const ScopePtr & scope)
+    throw ():
     node(type, scope),
     child_node(type, scope)
 {}
@@ -2454,7 +2461,8 @@ grouping_node * grouping_node::to_grouping() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-material_node::material_node(const node_type & type, const ScopePtr & scope):
+material_node::material_node(const node_type & type, const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2545,7 +2553,8 @@ material_node * material_node::to_material() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-normal_node::normal_node(const node_type & type, const ScopePtr & scope):
+normal_node::normal_node(const node_type & type, const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2597,7 +2606,8 @@ normal_node * normal_node::to_normal() throw ()
  * @param scope the Scope the node belongs to.
  */
 sound_source_node::sound_source_node(const node_type & type,
-                                     const ScopePtr & scope):
+                                     const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2643,7 +2653,8 @@ sound_source_node * sound_source_node::to_sound_source() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-texture_node::texture_node(const node_type & type, const ScopePtr & scope):
+texture_node::texture_node(const node_type & type, const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2750,7 +2761,8 @@ texture_node * texture_node::to_texture() throw ()
  * @param scope the Scope the node belongs to.
  */
 texture_coordinate_node::texture_coordinate_node(const node_type & type,
-                                                 const ScopePtr & scope):
+                                                 const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2796,7 +2808,8 @@ texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
  * @param scope the Scope the node belongs to.
  */
 texture_transform_node::texture_transform_node(const node_type & type,
-                                               const ScopePtr & scope):
+                                               const ScopePtr & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2842,7 +2855,8 @@ texture_transform_node * texture_transform_node::to_texture_transform()
  * @param scope the Scope the node belongs to.
  */
 transform_node::transform_node(const node_type & type,
-                               const ScopePtr & scope):
+                               const ScopePtr & scope)
+    throw ():
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope)
@@ -2896,7 +2910,8 @@ transform_node * transform_node::to_transform() throw ()
  * @param scope     the Scope the node belongs to.
  */
 viewpoint_node::viewpoint_node(const node_type & nodeType,
-                             const ScopePtr & scope):
+                             const ScopePtr & scope)
+    throw ():
     node(nodeType, scope),
     child_node(nodeType, scope)
 {}

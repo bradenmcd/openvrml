@@ -111,8 +111,8 @@ namespace OpenVRML {
 
         void update(double time);
 
-        virtual const ScriptNode * to_script() const throw ();
-        virtual ScriptNode * to_script() throw ();
+        virtual const script_node * to_script() const throw ();
+        virtual script_node * to_script() throw ();
         virtual const appearance_node * to_appearance() const throw ();
         virtual appearance_node * to_appearance() throw ();
         virtual const child_node * to_child() const throw ();
@@ -418,9 +418,9 @@ InvalidVrml::~InvalidVrml() throw ()
  */
 
 /**
- * @var ScriptNodeClass Browser::scriptNodeClass
+ * @var script_node_class Browser::scriptNodeClass
  *
- * @brief NodeClass for Script nodes in the browser.
+ * @brief node_class for Script nodes in the browser.
  */
 
 /**
@@ -466,7 +466,7 @@ InvalidVrml::~InvalidVrml() throw ()
  */
 
 /**
- * @var std::list<ScriptNode *> Browser::d_scripts
+ * @var std::list<script_node *> Browser::d_scripts
  *
  * @brief A list of all the Script nodes in the browser.
  */
@@ -1330,7 +1330,7 @@ bool Browser::update(double currentTime) {
     // Update each of the scripts.
     //
     std::for_each(this->d_scripts.begin(), this->d_scripts.end(),
-                  UpdatePolledNode_<ScriptNode *>(currentTime));
+                  UpdatePolledNode_<script_node *>(currentTime));
 
     //
     // Update each of the prototype instances.
@@ -1648,7 +1648,7 @@ void Browser::removeMovie(Vrml97Node::MovieTexture & movie)
  *
  * @pre @p script is not in the list of Script nodes for the browser.
  */
-void Browser::addScript(ScriptNode & script) {
+void Browser::addScript(script_node & script) {
     assert(std::find(this->d_scripts.begin(), this->d_scripts.end(), &script)
             == this->d_scripts.end());
     this->d_scripts.push_back(&script);
@@ -1661,9 +1661,9 @@ void Browser::addScript(ScriptNode & script) {
  *
  * @pre @p script is in the list of Script nodes for the browser.
  */
-void Browser::removeScript(ScriptNode & script) {
+void Browser::removeScript(script_node & script) {
     assert(!this->d_scripts.empty());
-    typedef std::list<ScriptNode *> ScriptNodeList;
+    typedef std::list<script_node *> ScriptNodeList;
     const ScriptNodeList::iterator end = this->d_scripts.end();
     const ScriptNodeList::iterator pos =
             std::find(this->d_scripts.begin(), end, &script);
@@ -2639,12 +2639,12 @@ ProtoNode::~ProtoNode() throw ()
 {}
 
 /**
- * @brief Cast to a ScriptNode.
+ * @brief Cast to a script_node.
  *
  * @return a pointer to the first node in the implementation if that node is
- *      a ScriptNode, or 0 otherwise.
+ *      a script_node, or 0 otherwise.
  */
-const ScriptNode * ProtoNode::to_script() const throw ()
+const script_node * ProtoNode::to_script() const throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
@@ -2652,12 +2652,12 @@ const ScriptNode * ProtoNode::to_script() const throw ()
 }
 
 /**
- * @brief Cast to a ScriptNode.
+ * @brief Cast to a script_node.
  *
  * @return a pointer to the first node in the implementation if that node is
- *      a ScriptNode, or 0 otherwise.
+ *      a script_node, or 0 otherwise.
  */
-ScriptNode * ProtoNode::to_script() throw ()
+script_node * ProtoNode::to_script() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);

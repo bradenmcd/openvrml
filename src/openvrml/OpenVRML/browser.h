@@ -63,7 +63,7 @@ namespace OpenVRML {
         std::auto_ptr<NullNodeType> nullNodeType;
         typedef std::map<std::string, node_class_ptr> NodeClassMap;
         NodeClassMap nodeClassMap;
-        ScriptNodeClass scriptNodeClass;
+        script_node_class scriptNodeClass;
         Scene * scene;
         node_ptr defaultViewpoint;
         viewpoint_node * activeViewpoint;
@@ -72,7 +72,7 @@ namespace OpenVRML {
         BindStack d_navigationInfoStack;
         std::list<node *> d_navigationInfos;
         std::list<node *> d_scopedLights;
-        std::list<ScriptNode *> d_scripts;
+        std::list<script_node *> d_scripts;
         std::list<node *> d_timers;
         std::list<node *> d_audioClips;
         std::list<node *> d_movies;
@@ -179,8 +179,8 @@ namespace OpenVRML {
 
         void addProto(ProtoNode & node);
         void removeProto(ProtoNode & node);
-        void addScript(ScriptNode &);
-        void removeScript(ScriptNode &);
+        void addScript(script_node &);
+        void removeScript(script_node &);
 
         void updateFlags();
 
