@@ -17,51 +17,19 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
+
 #ifndef VRMLSFIMAGE_H
 #define VRMLSFIMAGE_H
 
 #include "VrmlField.h"
 
-
-/**
- * A single uncompressed 2-dimensional pixel image. The first
- * hexadecimal value is the lower left pixel and the last value is the
- * upper right pixel.Pixel values are limited to 256 levels of
- * intensity. A one-component image specifies one-byte greyscale
- * values. A two-component image specifies the intensity in the first
- * (high) byte and the alpha opacity in the second (low) byte. A
- * three-component image specifies the red component in the first
- * (high) byte, followed by the green and blue components.
- * Four-component images specify the alpha opacity byte after
- * red/green/blue.
- *
- */
 class VrmlSFImage : public VrmlField {
 public:
 
   VrmlSFImage();
-  /**
-   * Create an SFImage.
-   * <p>
-   * Note that the pixels read from lower left to upper right, which
-   * is a reflection around the y-axis from the "normal" convention.
-   * <p>
-   * Note also that width and height are specified in pixels, and a
-   * pixel may be more than one byte wide. For example, an image with
-   * a width and height of 16, and nc==3, would have a pixel array
-   * w*h*nc = 16*16*3 = 768 bytes long. See the class intro above for
-   * the interpretation of different pixel depths.
-   * 
-   * @param w width in pixels
-   * @param h height in pixels
-   * @param nc number of components/pixel (see above)
-   * @param pixels the caller owns the bytes, so this ctr makes a copy
-   *
-   */
   VrmlSFImage(size_t w, size_t h, size_t nc, const unsigned char * pixels = 0);
 
   VrmlSFImage(const VrmlSFImage&);
-
   ~VrmlSFImage();
 
   // Assignment.

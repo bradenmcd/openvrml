@@ -492,53 +492,111 @@ VrmlField *VrmlSFFloat::clone() const { return new VrmlSFFloat(d_value); }
 VrmlField::VrmlFieldType VrmlSFFloat::fieldType() const { return SFFLOAT; }
 
 
-// SFImage
-
+/**
+ * @class VrmlSFImage
+ * A single uncompressed 2-dimensional pixel image. The first
+ * hexadecimal value is the lower left pixel and the last value is the
+ * upper right pixel.Pixel values are limited to 256 levels of
+ * intensity. A one-component image specifies one-byte greyscale
+ * values. A two-component image specifies the intensity in the first
+ * (high) byte and the alpha opacity in the second (low) byte. A
+ * three-component image specifies the red component in the first
+ * (high) byte, followed by the green and blue components.
+ * Four-component images specify the alpha opacity byte after
+ * red/green/blue.
+ *
+ */
 #include "VrmlSFImage.h"
 
+/**
+ * Construct the default SFImage.
+ */
 VrmlSFImage::VrmlSFImage(): d_w(0), d_h(0), d_nc(0), d_pixels(0) {}
 
+/**
+ * Create an SFImage.
+ * <p>
+ * Note that the pixels read from lower left to upper right, which
+ * is a reflection around the y-axis from the "normal" convention.
+ * <p>
+ * Note also that width and height are specified in pixels, and a
+ * pixel may be more than one byte wide. For example, an image with
+ * a width and height of 16, and nc==3, would have a pixel array
+ * w*h*nc = 16*16*3 = 768 bytes long. See the class intro above for
+ * the interpretation of different pixel depths.
+ * 
+ * @param width width in pixels
+ * @param height height in pixels
+ * @param components number of components/pixel (see above)
+ * @param pixels the caller owns the bytes, so this ctr makes a copy
+ *
+ */
 VrmlSFImage::VrmlSFImage(size_t width, size_t height, size_t components,
                          const unsigned char * pixels):
-        d_w(width), d_h(height), d_nc(components),
-        d_pixels(new unsigned char[width * height * components]) {
-    if (pixels) {
+        d_w(0L), d_h(0L), d_nc(0L), d_pixels(0L) {
+    const size_t nbytes = width * height * components;
+    try {
+        this->d_pixels = new unsigned char[nbytes];
+        this->d_w = width;
+        this->d_h = height;
+        this->d_nc = components;
         std::copy(pixels, pixels + (width * height * components),
                   this->d_pixels);
+    } catch (std::bad_alloc & ex) {
+# ifndef NDEBUG
+        cerr << ex.what() << endl;
+# endif
     }
 }
 
+/**
+ * Copy constructor.
+ */
 VrmlSFImage::VrmlSFImage(const VrmlSFImage& rhs): d_w(0), d_h(0), d_nc(0),
         d_pixels(0) {
-  size_t nbytes = rhs.d_w * rhs.d_h * rhs.d_nc;
-  if ((d_pixels = new unsigned char[nbytes]) != 0)
-    {
-      d_w = rhs.d_w;
-      d_h = rhs.d_h;
-      d_nc = rhs.d_nc;
-      memcpy(d_pixels, rhs.d_pixels, nbytes);
+    const size_t nbytes = rhs.d_w * rhs.d_h * rhs.d_nc;
+    try {
+        this->d_pixels = new unsigned char[nbytes];
+        this->d_w = rhs.d_w;
+        this->d_h = rhs.d_h;
+        this->d_nc = rhs.d_nc;
+        std::copy(rhs.d_pixels, rhs.d_pixels + nbytes, this->d_pixels);
+    } catch (std::bad_alloc & ex) {
+# ifndef NDEBUG
+        cerr << ex.what() << endl;
+# endif
     }
 }
 
+/**
+ * Destructor.
+ */
 VrmlSFImage::~VrmlSFImage()
 {
   delete [] d_pixels; 
 }
 
-VrmlSFImage& VrmlSFImage::operator=(const VrmlSFImage& rhs)
-{
-  if (this == &rhs) return *this;
-  if (d_pixels) delete [] d_pixels;
-  d_w = d_h = d_nc = 0;
-  size_t nbytes = rhs.d_w * rhs.d_h * rhs.d_nc;
-  if ((d_pixels = new unsigned char[nbytes]) != 0)
-    {
-      d_w = rhs.d_w;
-      d_h = rhs.d_h;
-      d_nc = rhs.d_nc;
-      memcpy(d_pixels, rhs.d_pixels, nbytes);
+/**
+ * Assignment.
+ */
+VrmlSFImage & VrmlSFImage::operator=(const VrmlSFImage & rhs) {
+    if (this != &rhs) {
+        delete [] this->d_pixels;
+        this->d_w = this->d_h = this->d_nc = 0L;
+        const size_t nbytes = rhs.d_w * rhs.d_h * rhs.d_nc;
+        try {
+            this->d_pixels = new unsigned char[nbytes];
+            this->d_w = rhs.d_w;
+            this->d_h = rhs.d_h;
+            this->d_nc = rhs.d_nc;
+            std::copy(rhs.d_pixels, rhs.d_pixels + nbytes, this->d_pixels);
+        } catch (std::bad_alloc & ex) {
+# ifndef NDEBUG
+            cerr << ex.what() << endl;
+# endif
+        }
     }
-  return *this;
+    return *this;
 }
 
 ostream& VrmlSFImage::print(ostream& os) const
@@ -558,8 +616,9 @@ ostream& VrmlSFImage::print(ostream& os) const
   return os;
 }
 
-VrmlField *VrmlSFImage::clone() const
-{ VrmlSFImage *i = new VrmlSFImage(); *i = *this; return i; }
+VrmlField * VrmlSFImage::clone() const {
+    return new VrmlSFImage(*this);
+}
 
 VrmlField::VrmlFieldType VrmlSFImage::fieldType() const { return SFIMAGE; }
 
@@ -579,6 +638,14 @@ const unsigned char * VrmlSFImage::getPixels() const {
     return this->d_pixels;
 }
 
+/**
+ * Set the image.
+ * @param width width in pixels
+ * @param height height in pixels
+ * @param components number of components
+ * @param pixels array of (width * height * components) bytes comprising the
+ *        image data.
+ */
 void VrmlSFImage::set(size_t width, size_t height, size_t components,
                       const unsigned char * pixels) {
     delete this->d_pixels;
