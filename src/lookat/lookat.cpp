@@ -24,6 +24,12 @@
 #include <floatingpoint.h>
 #endif
 
+#ifdef macintosh
+#include "console.h"
+#include "unix.h"
+#include "SIOUX.h"
+#endif
+
 #include <stdio.h>
 #include <GL/glut.h>
 #include <OpenVRML/doc2.hpp>
@@ -46,8 +52,16 @@ main(int argc, char **argv)
 {
 #if defined(__FreeBSD__)
   fpsetmask(0);
-#endif;  
-  
+#endif;
+ 
+#ifdef macintosh
+  SIOUXSettings.asktosaveonclose = 0;
+  argc = ccommand(&argv);
+  _fcreator = 'ttxt';
+  _ftype = 'TEXT';
+#endif
+
+
   glutInitWindowSize(400, 320);
   glutInit( &argc, argv);
 
