@@ -45,10 +45,6 @@
 # include "VrmlScene.h"
 # include "doc2.hpp"
 
-#ifdef macintosh
-extern char* strdup( const char* );
-#endif
-
 #if defined(WIN32)
 // Disable warning messages about forcing value to bool 'true' or 'false'
 #pragma warning (disable:4800)
@@ -596,7 +592,7 @@ void VrmlNodeScript::set(const FieldList & recs, const std::string & fieldId,
     }
 }
 
-# ifdef HAVE_MOZJS
+# ifdef OPENVRML_HAVE_JS
 #   include <mozilla/jsapi.h>
 namespace {
 
@@ -637,7 +633,7 @@ ScriptObject * VrmlNodeScript::createScript() {
         if (this->d_url.getElement(i).length() == 0) continue;
 
         // Get the protocol & mimetype...
-# ifdef HAVE_MOZJS
+# ifdef OPENVRML_HAVE_JS
         // Need to handle external .js files too...
         const char javascriptScheme[] = "javascript:";
         const char vrmlscriptScheme[] = "vrmlscript:";
@@ -673,7 +669,7 @@ ScriptObject * VrmlNodeScript::createScript() {
 
 namespace {
 
-# ifdef HAVE_MOZJS
+# ifdef OPENVRML_HAVE_JS
     namespace JavaScript_ {
 
         const long MAX_HEAP_BYTES = 4L * 1024L * 1024L;
@@ -1585,7 +1581,7 @@ namespace {
             // context.
             //
             Script * const script =
-                    reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                    static_cast<Script *>(JS_GetContextPrivate(cx));
             assert(script);
 
             VrmlNodeScript & scriptNode = script->getScriptNode();
@@ -1695,7 +1691,7 @@ namespace {
                 jsval val = vrmlFieldToJSVal(*(*i)->value, false);
                 if (JSVAL_IS_OBJECT(val)) {
                     FieldData * const fieldData =
-                            reinterpret_cast<FieldData *>
+                            static_cast<FieldData *>
                                 (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
                     fieldData->scriptFieldId = &(*i)->name;
                 }
@@ -1713,7 +1709,7 @@ namespace {
                 jsval val = vrmlFieldToJSVal(*(*i)->value, false);
                 if (JSVAL_IS_OBJECT(val)) {
                     FieldData * const fieldData =
-                            reinterpret_cast<FieldData *>
+                            static_cast<FieldData *>
                                 (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
                     fieldData->scriptFieldId = &(*i)->name;
                     fieldData->isEventOut = true;
@@ -1932,13 +1928,13 @@ namespace {
         void checkEventOut(JSContext * const cx, JSObject * const obj,
                            const VrmlField & val) {
             const FieldData * const fieldData =
-                    reinterpret_cast<FieldData *>(JS_GetPrivate(cx, obj));
+                    static_cast<FieldData *>(JS_GetPrivate(cx, obj));
             assert(fieldData);
             
             if (fieldData->isEventOut) {
                 assert(fieldData->scriptFieldId);
                 Script * const script =
-                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                        static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 script->getScriptNode().setEventOut(*fieldData->scriptFieldId,
                                                     val);
@@ -1966,7 +1962,7 @@ namespace {
             JSBool getName(JSContext * const cx, JSObject *,
 		           uintN, jsval *, jsval * const rval) throw () {
                 Script * const script =
-                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                        static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -1981,7 +1977,7 @@ namespace {
             JSBool getVersion(JSContext * const cx, JSObject *,
 		              uintN, jsval *, jsval * const rval) throw () {
                 Script * const script =
-                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                        static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2003,7 +1999,7 @@ namespace {
                                        uintN, jsval *, jsval * const rval)
                     throw () {
                 Script * const script =
-                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                        static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2017,7 +2013,7 @@ namespace {
             JSBool getWorldURL(JSContext * const cx, JSObject *,
                                uintN, jsval *, jsval * const rval) throw () {
                 Script * const script =
-                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                        static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2043,7 +2039,7 @@ namespace {
                 assert(argc >= 2);
                 
                 Script * const script =
-                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                        static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2091,7 +2087,7 @@ namespace {
                 assert(argc >= 1);
                 
                 Script * const script =
-                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                        static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2158,7 +2154,7 @@ namespace {
                 assert(argc >= 3);
 
                 Script * const script =
-                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                        static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2386,14 +2382,14 @@ namespace {
         
         void SField::finalize(JSContext * const cx, JSObject * const obj)
                 throw () {
-            delete reinterpret_cast<FieldData *>(JS_GetPrivate(cx, obj));
+            delete static_cast<FieldData *>(JS_GetPrivate(cx, obj));
             JS_SetPrivate(cx, obj, 0);
         }
 
         JSBool SField::toString(JSContext * const cx, JSObject * const obj,
                                 uintN, jsval *, jsval * const rval) throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
 
             ostrstream os;
@@ -2450,7 +2446,7 @@ namespace {
             }
 
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, sfcolorObj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, sfcolorObj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
             
@@ -2467,7 +2463,7 @@ namespace {
                                                   JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFColor::jsclass, 0));
             const SFData * const sfdata =
-                reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
             return static_cast<VrmlSFColor *>(sfdata->getFieldValue().clone());
@@ -2525,7 +2521,7 @@ namespace {
                                     const jsval id, jsval * const rval)
                 throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
             const VrmlSFColor & thisColor
@@ -2546,7 +2542,7 @@ namespace {
         JSBool SFColor::setProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
             VrmlSFColor & thisColor
@@ -2574,7 +2570,7 @@ namespace {
             assert(argc >= 3);
             
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
             VrmlSFColor & thisColor
@@ -2600,7 +2596,7 @@ namespace {
         JSBool SFColor::getHSV(JSContext * const cx, JSObject * const obj,
                                uintN, jsval *, jsval * rval) throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
             VrmlSFColor & thisColor
@@ -2687,7 +2683,7 @@ namespace {
                                                   JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFImage::jsclass, 0));
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFImage *>(&sfdata->getFieldValue()));
             return static_cast<VrmlSFImage *>(sfdata->getFieldValue().clone());
@@ -2759,7 +2755,7 @@ namespace {
             }
             
             MField::MFData * const mfdata =
-                    reinterpret_cast<MField::MFData *>
+                    static_cast<MField::MFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[3])));
             
             if (mfdata->array.size() != (x * y)) {
@@ -2812,7 +2808,7 @@ namespace {
         JSBool SFImage::getProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFImage *>(&sfdata->getFieldValue()));
             const VrmlSFImage & thisImage =
@@ -2911,7 +2907,7 @@ namespace {
                                                 JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFNode::jsclass, 0));
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFNode *>(&sfdata->getFieldValue()));
             return static_cast<VrmlSFNode *>(sfdata->getFieldValue().clone());
@@ -2985,7 +2981,7 @@ namespace {
         JSBool SFNode::getProperty(JSContext * const cx, JSObject * const obj,
                                    const jsval id, jsval * const vp) throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFNode *>(&sfdata->getFieldValue()));
             const VrmlSFNode & thisNode
@@ -2996,7 +2992,7 @@ namespace {
             }
             
             Script * const script =
-                    reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                    static_cast<Script *>(JS_GetContextPrivate(cx));
             assert(script);
 
             JSString * str = 0;
@@ -3023,7 +3019,7 @@ namespace {
         JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
                                    const jsval id, jsval * const vp) throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFNode *>(&sfdata->getFieldValue()));
             VrmlSFNode & thisNode
@@ -3057,7 +3053,7 @@ namespace {
 	        // the timestamp should be stored as a global property and
 	        // looked up via obj somehow...
 	        Script * const script = 
-                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                        static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
 	        if (script->getScriptNode().scene()) {
 	            script->getScriptNode().scene()
@@ -3118,7 +3114,7 @@ namespace {
             }
 
             const SFData * const sfdata =
-                reinterpret_cast<SFData *>(JS_GetPrivate(cx, sfrotationObj));
+                static_cast<SFData *>(JS_GetPrivate(cx, sfrotationObj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             
@@ -3135,7 +3131,7 @@ namespace {
                                                         JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFRotation::jsclass, 0));
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             return static_cast<VrmlSFRotation *>
@@ -3198,7 +3194,7 @@ namespace {
                         return JS_FALSE;
                     }
                     const SFData * sfdata =
-                            reinterpret_cast<SFData *>
+                            static_cast<SFData *>
                                 (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
                     assert(sfdata);
                     assert(dynamic_cast<VrmlSFVec3f *>
@@ -3212,7 +3208,7 @@ namespace {
                                            &JavaScript_::SFVec3f::jsclass, 0)) {
                                 return JS_FALSE;
                             }
-                            sfdata = reinterpret_cast<SFData *>
+                            sfdata = static_cast<SFData *>
                                 (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
                             assert(sfdata);
                             assert(dynamic_cast<VrmlSFVec3f *>
@@ -3270,7 +3266,7 @@ namespace {
                                        const jsval id, jsval * const rval)
                 throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             const VrmlSFRotation & thisRot
@@ -3294,7 +3290,7 @@ namespace {
                                        const jsval id, jsval * const vp)
                 throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             VrmlSFRotation & thisRot
@@ -3342,7 +3338,7 @@ namespace {
                                    uintN, jsval *, jsval * const rval)
                 throw () {
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             const VrmlSFRotation & thisRot
@@ -3355,7 +3351,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             VrmlSFVec3f & resultVec
@@ -3378,7 +3374,7 @@ namespace {
                                    uintN, jsval *, jsval * const rval)
                 throw () {
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             const VrmlSFRotation & thisRot
@@ -3392,7 +3388,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>
                         (&sfdata->getFieldValue()));
@@ -3418,7 +3414,7 @@ namespace {
                                     jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             const VrmlSFRotation & thisRot
@@ -3434,7 +3430,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
@@ -3450,7 +3446,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>
                         (&sfdata->getFieldValue()));
@@ -3476,7 +3472,7 @@ namespace {
 	                           jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             const VrmlSFRotation & thisRot
@@ -3492,7 +3488,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & argVec
@@ -3508,7 +3504,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             VrmlSFVec3f & resultVec
@@ -3533,7 +3529,7 @@ namespace {
                                    jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             VrmlSFRotation & thisRot
@@ -3549,7 +3545,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
@@ -3568,7 +3564,7 @@ namespace {
                                  jsval * const rval) throw () {
             assert(argc >= 2);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             const VrmlSFRotation & thisRot
@@ -3584,7 +3580,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
@@ -3610,7 +3606,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             VrmlSFRotation & resultRot
@@ -3677,7 +3673,7 @@ namespace {
             }
 
             const SFData * const sfdata =
-                reinterpret_cast<SFData *>(JS_GetPrivate(cx, sfvec2fObj));
+                static_cast<SFData *>(JS_GetPrivate(cx, sfvec2fObj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             
@@ -3694,7 +3690,7 @@ namespace {
                                                   JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFVec2f::jsclass, 0));
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             return static_cast<VrmlSFVec2f *>(sfdata->getFieldValue().clone());
@@ -3757,7 +3753,7 @@ namespace {
                                     const jsval id, jsval * const rval)
                 throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             const VrmlSFVec2f & thisVec
@@ -3778,7 +3774,7 @@ namespace {
         JSBool SFVec2f::setProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             VrmlSFVec2f & thisVec
@@ -3807,7 +3803,7 @@ namespace {
                             jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             const VrmlSFVec2f & thisVec
@@ -3823,7 +3819,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
@@ -3840,7 +3836,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             VrmlSFVec2f & resultVec
@@ -3857,7 +3853,7 @@ namespace {
                                jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             const VrmlSFVec2f & thisVec
@@ -3883,7 +3879,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             VrmlSFVec2f & resultVec
@@ -3900,7 +3896,7 @@ namespace {
                             jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             const VrmlSFVec2f & thisVec
@@ -3916,7 +3912,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
@@ -3931,7 +3927,7 @@ namespace {
         JSBool SFVec2f::length(JSContext * const cx, JSObject * const obj,
                                uintN, jsval *, jsval * const rval) throw () {
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             const VrmlSFVec2f & thisVec
@@ -3949,7 +3945,7 @@ namespace {
                                  jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             const VrmlSFVec2f & thisVec
@@ -3974,7 +3970,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             VrmlSFVec2f & resultVec
@@ -3989,7 +3985,7 @@ namespace {
         JSBool SFVec2f::negate(JSContext * const cx, JSObject * const obj,
                                uintN, jsval *, jsval * const rval) throw () {
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             const VrmlSFVec2f & thisVec
@@ -4005,7 +4001,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             VrmlSFVec2f & resultVec
@@ -4020,7 +4016,7 @@ namespace {
         JSBool SFVec2f::normalize(JSContext * const cx, JSObject * const obj,
                                   uintN, jsval *, jsval * const rval) throw () {
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             const VrmlSFVec2f & thisVec
@@ -4036,7 +4032,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             VrmlSFVec2f & resultVec
@@ -4053,7 +4049,7 @@ namespace {
                                  jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             const VrmlSFVec2f & thisVec
@@ -4069,7 +4065,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
@@ -4086,7 +4082,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
             VrmlSFVec2f & resultVec
@@ -4146,7 +4142,7 @@ namespace {
             }
 
             const SFData * const sfdata =
-                reinterpret_cast<SFData *>(JS_GetPrivate(cx, sfvec3fObj));
+                static_cast<SFData *>(JS_GetPrivate(cx, sfvec3fObj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             
@@ -4163,7 +4159,7 @@ namespace {
                                                   JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFVec3f::jsclass, 0));
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             return static_cast<VrmlSFVec3f *>(sfdata->getFieldValue().clone());
@@ -4222,7 +4218,7 @@ namespace {
         JSBool SFVec3f::getProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & thisVec
@@ -4243,7 +4239,7 @@ namespace {
         JSBool SFVec3f::setProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
             const SFData * const sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             VrmlSFVec3f & thisVec
@@ -4270,7 +4266,7 @@ namespace {
                             jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & thisVec
@@ -4286,7 +4282,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
@@ -4303,7 +4299,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             VrmlSFVec3f & resultVec
@@ -4320,7 +4316,7 @@ namespace {
                               jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & thisVec
@@ -4336,7 +4332,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
@@ -4353,7 +4349,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
@@ -4371,7 +4367,7 @@ namespace {
                                jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & thisVec
@@ -4396,7 +4392,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             VrmlSFVec3f & resultVec
@@ -4413,7 +4409,7 @@ namespace {
                             jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & thisVec
@@ -4429,7 +4425,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                     (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
@@ -4443,7 +4439,7 @@ namespace {
         JSBool SFVec3f::length(JSContext * const cx, JSObject * const obj,
                                uintN, jsval *, jsval * const rval) throw () {
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & thisVec
@@ -4461,7 +4457,7 @@ namespace {
                                jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & thisVec
@@ -4486,7 +4482,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             VrmlSFVec3f & resultVec
@@ -4501,7 +4497,7 @@ namespace {
         JSBool SFVec3f::negate(JSContext * const cx, JSObject * const obj,
                                uintN, jsval *, jsval * const rval) throw () {
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & thisVec
@@ -4517,7 +4513,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             VrmlSFVec3f & resultVec
@@ -4532,7 +4528,7 @@ namespace {
         JSBool SFVec3f::normalize(JSContext * const cx, JSObject * const obj,
                                   uintN, jsval *, jsval * const rval) throw () {
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & thisVec
@@ -4548,7 +4544,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             VrmlSFVec3f & resultVec
@@ -4565,7 +4561,7 @@ namespace {
                                  jsval * const rval) throw () {
             assert(argc >= 1);
             const SFData * sfdata =
-                    reinterpret_cast<SFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             const VrmlSFVec3f & thisVec
@@ -4581,7 +4577,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>
+            sfdata = static_cast<SFData *>
                     (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
@@ -4598,7 +4594,7 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = reinterpret_cast<SFData *>(JS_GetPrivate(cx, robj));
+            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
             VrmlSFVec3f & resultVec
@@ -4623,7 +4619,7 @@ namespace {
             assert(cx);
             assert(obj);
             assert(vp);
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -4644,7 +4640,7 @@ namespace {
             assert(cx);
             assert(obj);
             assert(vp);
-            const MFData * const mfdata = reinterpret_cast<MFData *>
+            const MFData * const mfdata = static_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -4755,7 +4751,7 @@ namespace {
                 assert(obj);
                 assert(vp);
                 
-                MFData * const mfdata = reinterpret_cast<MFData *>
+                MFData * const mfdata = static_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -4813,7 +4809,7 @@ namespace {
                 assert(obj);
                 assert(vp);
                 
-                MFData * const mfdata = reinterpret_cast<MFData *>
+                MFData * const mfdata = static_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -4878,7 +4874,7 @@ namespace {
                 assert(obj);
                 assert(rval);
                 
-                MFData * const mfdata = reinterpret_cast<MFData *>
+                MFData * const mfdata = static_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -4888,7 +4884,7 @@ namespace {
                         ++i) {
                     assert(JSVAL_IS_OBJECT(mfdata->array[i]));
                     const SField::SFData * const sfdata =
-                            reinterpret_cast<SField::SFData *>
+                            static_cast<SField::SFData *>
                                 (JS_GetPrivate(cx,
                                     JSVAL_TO_OBJECT(mfdata->array[i])));
                     assert(sfdata);
@@ -4920,7 +4916,7 @@ namespace {
                 assert(cx);
                 assert(obj);
                 
-                MFData * const mfdata = reinterpret_cast<MFData *>
+                MFData * const mfdata = static_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -5035,7 +5031,7 @@ namespace {
                                                     JSObject * const obj,
                                                     const jsval id,
                                                     jsval * const vp) throw () {
-                MFData * const mfdata = reinterpret_cast<MFData *>
+                MFData * const mfdata = static_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -5101,7 +5097,7 @@ namespace {
                                                    JSObject * const obj,
                                                    const jsval id,
                                                    jsval * const vp) throw () {
-                MFData * const mfdata = reinterpret_cast<MFData *>
+                MFData * const mfdata = static_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -5156,7 +5152,7 @@ namespace {
                                                   JSObject * const obj,
                                                   uintN, jsval *,
                                                   jsval * const rval) throw () {
-                MFData * const mfdata = reinterpret_cast<MFData *>
+                MFData * const mfdata = static_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -5190,7 +5186,7 @@ namespace {
         template <typename Subclass>
             void MFJSDouble<Subclass>::finalize(JSContext * const cx,
                                                 JSObject * const obj) throw () {
-                MFData * const mfdata = reinterpret_cast<MFData *>
+                MFData * const mfdata = static_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -5218,7 +5214,7 @@ namespace {
             assert(JS_InstanceOf(cx, obj, &MFColor::jsclass, 0));
             
             MField::MFData * const mfdata =
-                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFColor * const mfcolor =
                     new VrmlMFColor(mfdata->array.size());
@@ -5229,7 +5225,7 @@ namespace {
                                      JSVAL_TO_OBJECT(mfdata->array[i]),
                                      &SFColor::jsclass, 0));
                 const SField::SFData * const sfdata =
-                        reinterpret_cast<SField::SFData *>
+                        static_cast<SField::SFData *>
                             (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
                 assert(sfdata);
                 
@@ -5250,7 +5246,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mfcolorObj));
 
             mfdata->array.resize(mfcolor.getLength());
@@ -5293,7 +5289,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mffloatObj));
 
             mfdata->array.resize(mffloat.getLength());
@@ -5324,7 +5320,7 @@ namespace {
             assert(obj);
             assert(JS_InstanceOf(cx, obj, &MFFloat::jsclass, 0));
             MField::MFData * const mfdata =
-                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFFloat * mffloat =
                     new VrmlMFFloat(mfdata->array.size());
@@ -5381,7 +5377,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mfint32Obj));
 
             mfdata->array.resize(mfint32.getLength());
@@ -5406,7 +5402,7 @@ namespace {
             assert(obj);
             assert(JS_InstanceOf(cx, obj, &MFInt32::jsclass, 0));
             MField::MFData * const mfdata =
-                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFInt32 * const mfint32 = new VrmlMFInt32(mfdata->array.size());
             for (MField::JsvalArray::size_type i = 0;
@@ -5477,7 +5473,7 @@ namespace {
             assert(vp);
             
             MFData * const mfdata =
-                    reinterpret_cast<MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             //
@@ -5516,7 +5512,7 @@ namespace {
             assert(vp);
             
             MFData * const mfdata =
-                    reinterpret_cast<MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             if (!JSVAL_IS_INT(*vp) || JSVAL_TO_INT(*vp) < 0) {
@@ -5543,7 +5539,7 @@ namespace {
             assert(cx);
             assert(obj);
             
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                         (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -5574,7 +5570,7 @@ namespace {
         }
 
         void MFInt32::finalize(JSContext * const cx, JSObject * const obj) {
-            delete reinterpret_cast<MFData *>(JS_GetPrivate(cx, obj));
+            delete static_cast<MFData *>(JS_GetPrivate(cx, obj));
         }
 
         JSClass MFNode::jsclass =
@@ -5653,7 +5649,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mfnodeObj));
 
             mfdata->array.resize(mfnode.getLength());
@@ -5680,7 +5676,7 @@ namespace {
                                                 JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &MFNode::jsclass, 0));
             MField::MFData * const mfdata =
-                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFNode * const mfnode =
                     new VrmlMFNode(mfdata->array.size());
@@ -5690,7 +5686,7 @@ namespace {
                 assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
                                      &SFNode::jsclass, 0));
                 const SField::SFData * const sfdata =
-                    reinterpret_cast<SField::SFData *>
+                    static_cast<SField::SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
                 assert(sfdata);
                 
@@ -5730,7 +5726,7 @@ namespace {
             assert(vp);
             
             MFData * const mfdata =
-                    reinterpret_cast<MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             
             //
@@ -5769,7 +5765,7 @@ namespace {
             assert(obj);
             assert(vp);
 
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -5835,7 +5831,7 @@ namespace {
             assert(cx);
             assert(obj);
             
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                         (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -5844,7 +5840,7 @@ namespace {
             for (JsvalArray::size_type i = 0; i < mfdata->array.size();
                     ++i) {
                 const SField::SFData * const sfdata =
-                    reinterpret_cast<SField::SFData *>
+                    static_cast<SField::SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
                 assert(sfdata);
                 os << sfdata->getFieldValue();
@@ -5872,7 +5868,7 @@ namespace {
         void MFNode::finalize(JSContext * const cx, JSObject * const obj)
                 throw () {
             MFData * const mfdata =
-                    reinterpret_cast<MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
             
             //
             // Allow individual SFNodes to be garbage collected.
@@ -5904,7 +5900,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mfrotationObj));
 
             mfdata->array.resize(mfrotation.getLength());
@@ -5931,7 +5927,7 @@ namespace {
                                                         JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &MFRotation::jsclass, 0));
             MField::MFData * const mfdata =
-                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFRotation * const mfrotation =
                     new VrmlMFRotation(mfdata->array.size());
@@ -5942,7 +5938,7 @@ namespace {
                                      JSVAL_TO_OBJECT(mfdata->array[i]),
                                      &SFRotation::jsclass, 0));
                 const SField::SFData * const sfdata =
-                    reinterpret_cast<SField::SFData *>
+                    static_cast<SField::SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
                 assert(sfdata);
                 
@@ -5996,7 +5992,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mfstringObj));
 
             mfdata->array.resize(mfstring.getLength());
@@ -6027,7 +6023,7 @@ namespace {
                                                     JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &MFString::jsclass, 0));
             MField::MFData * const mfdata =
-                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFString * const mfstring =
                     new VrmlMFString(mfdata->array.size());
@@ -6105,7 +6101,7 @@ namespace {
 
         JSBool MFString::setElement(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -6154,7 +6150,7 @@ namespace {
 
         JSBool MFString::setLength(JSContext * const cx, JSObject * const obj,
                                    const jsval id, jsval * const vp) throw () {
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -6208,7 +6204,7 @@ namespace {
 
         JSBool MFString::toString(JSContext * const cx, JSObject * const obj,
                                   uintN, jsval *, jsval * const rval) throw () {
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                         (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -6243,7 +6239,7 @@ namespace {
 
         void MFString::finalize(JSContext * const cx, JSObject * const obj)
                 throw () {
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -6271,7 +6267,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mftimeObj));
 
             mfdata->array.resize(mftime.getLength());
@@ -6300,7 +6296,7 @@ namespace {
                                                 JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &MFTime::jsclass, 0));
             MField::MFData * const mfdata =
-                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFTime * mftime =
                     new VrmlMFTime(mfdata->array.size());
@@ -6331,7 +6327,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mfvec2fObj));
 
             mfdata->array.resize(mfvec2f.getLength());
@@ -6358,7 +6354,7 @@ namespace {
                                                   JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &MFVec2f::jsclass, 0));
             MField::MFData * const mfdata =
-                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFVec2f * mfvec2f =
                     new VrmlMFVec2f(mfdata->array.size());
@@ -6369,7 +6365,7 @@ namespace {
                                      JSVAL_TO_OBJECT(mfdata->array[i]),
                                      &SFVec2f::jsclass, 0));
                 const SField::SFData * const sfdata =
-                        reinterpret_cast<SField::SFData *>
+                        static_cast<SField::SFData *>
                             (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
                 assert(sfdata);
                 
@@ -6399,7 +6395,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = reinterpret_cast<MFData *>
+            MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mfvec3fObj));
 
             mfdata->array.resize(mfvec3f.getLength());
@@ -6428,17 +6424,16 @@ namespace {
             assert(obj);
             assert(JS_InstanceOf(cx, obj, &MFVec3f::jsclass, 0));
             MField::MFData * const mfdata =
-                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
-            VrmlMFVec3f * mfvec3f =
-                    new VrmlMFVec3f(mfdata->array.size());
+            VrmlMFVec3f * mfvec3f = new VrmlMFVec3f(mfdata->array.size());
             for (MField::JsvalArray::size_type i = 0;
                     i < mfdata->array.size(); ++i) {
                 assert(JSVAL_IS_OBJECT(mfdata->array[i]));
                 assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
                                      &SFVec3f::jsclass, 0));
                 const SField::SFData * const sfdata =
-                    reinterpret_cast<SField::SFData *>
+                    static_cast<SField::SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
                 assert(sfdata);
                 
@@ -6450,5 +6445,5 @@ namespace {
             return mfvec3f;
         }
     }
-# endif // HAVE_MOZJS
+# endif // OPENVRML_HAVE_JS
 }
