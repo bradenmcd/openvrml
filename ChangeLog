@@ -1,3 +1,8 @@
+2001-10-12  Braden McDaniel  <braden@endoframe.com>
+
+        * A bit of finesse to get the ANTLR parser in an anonymous namespace
+          in the VrmlScene implementation.
+
 2001-10-09 Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Checkin fix for bug 210073.

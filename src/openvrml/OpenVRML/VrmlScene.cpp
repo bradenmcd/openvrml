@@ -41,10 +41,11 @@
 #include "Viewer.h"
 #include "System.h"
 #include "MathUtils.h"
-#include "Vrml97Parser.hpp"
 #include "VrmlNamespace.h"
 #include "nodetype.h"
 #include "VrmlRenderContext.h"
+
+#include "Vrml97Parser.cpp"
 
 // List of Scripts in the scene
 #include "VrmlNodeScript.h"
