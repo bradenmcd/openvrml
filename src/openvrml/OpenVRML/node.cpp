@@ -476,7 +476,7 @@ void node_class::render(OpenVRML::viewer & viewer) throw ()
  */
 
 /**
- * @var node_class & node_type::nodeClass
+ * @var OpenVRML::node_class & node_type::node_class
  *
  * @brief The class object associated with the node_type.
  */
@@ -495,9 +495,9 @@ void node_class::render(OpenVRML::viewer & viewer) throw ()
  *
  * @throw std::bad_alloc    if memory allocation fails.
  */
-node_type::node_type(node_class & _class, const std::string & id)
+node_type::node_type(OpenVRML::node_class & node_class, const std::string & id)
     throw (std::bad_alloc):
-    _class(_class),
+    node_class(node_class),
     id(id)
 {}
 
@@ -1717,7 +1717,7 @@ const node::routes_t & node::routes() const
 void node::modified(const bool value)
 {
     this->modified_ = value;
-    if (this->modified_) { this->type._class.browser.modified(true); }
+    if (this->modified_) { this->type.node_class.browser.modified(true); }
 }
 
 /**
@@ -1833,7 +1833,7 @@ void node::bounding_volume_dirty(const bool value)
 {
     this->bounding_volume_dirty_ = value;
     if (value) { // only if dirtying, not clearing
-        this->type._class.browser.flags_need_updating = true;
+        this->type.node_class.browser.flags_need_updating = true;
     }
 }
 
@@ -1843,9 +1843,9 @@ void node::bounding_volume_dirty(const bool value)
  */
 bool node::bounding_volume_dirty() const
 {
-    if (this->type._class.browser.flags_need_updating) {
-        this->type._class.browser.update_flags();
-        this->type._class.browser.flags_need_updating = false;
+    if (this->type.node_class.browser.flags_need_updating) {
+        this->type.node_class.browser.update_flags();
+        this->type.node_class.browser.flags_need_updating = false;
     }
     return this->bounding_volume_dirty_;
 }

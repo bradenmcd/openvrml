@@ -150,7 +150,7 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE node_type {
     public:
-        node_class & _class;
+        OpenVRML::node_class & node_class;
         const std::string id;
 
         virtual ~node_type() throw () = 0;
@@ -169,7 +169,7 @@ namespace OpenVRML {
             throw (std::bad_alloc) = 0;
 
     protected:
-        node_type(node_class & _class, const std::string & id)
+        node_type(OpenVRML::node_class & node_class, const std::string & id)
             throw (std::bad_alloc);
     };
 

@@ -1002,12 +1002,12 @@ nodeBodyElement[const OpenVRML::scope_ptr & scope,
                 }
             }
         }
-        fv=fieldValue[node.type._class.browser, scope, ft] {
+        fv=fieldValue[node.type.node_class.browser, scope, ft] {
             assert(fv);
             node.field(id->getText(), *fv);
         }
     |   routeStatement[*scope]
-    |   protoStatement[node.type._class.browser, scope]
+    |   protoStatement[node.type.node_class.browser, scope]
     ;
 
 scriptInterfaceDeclaration[const OpenVRML::scope_ptr & scope,
@@ -1055,7 +1055,7 @@ scriptFieldInterfaceDeclaration[const OpenVRML::scope_ptr & scope,
     field_value_ptr fv;
 }
     : KEYWORD_FIELD ft=fieldType id:ID
-        fv=fieldValue[node.node::type._class.browser, scope, ft] {
+        fv=fieldValue[node.node::type.node_class.browser, scope, ft] {
             assert(fv);
             const node_interface_set & interfaces =
                 node.node::type.interfaces();

@@ -1829,7 +1829,7 @@ void Vrml97Parser::nodeBodyElement(
 			}
 			
 #line 1832 "Vrml97Parser.cpp"
-			fv=fieldValue(node.type._class.browser, scope, ft);
+			fv=fieldValue(node.type.node_class.browser, scope, ft);
 #line 1005 "Vrml97Parser.g"
 			
 			assert(fv);
@@ -1846,7 +1846,7 @@ void Vrml97Parser::nodeBodyElement(
 		case KEYWORD_EXTERNPROTO:
 		case KEYWORD_PROTO:
 		{
-			protoStatement(node.type._class.browser, scope);
+			protoStatement(node.type.node_class.browser, scope);
 			break;
 		}
 		default:
@@ -1951,7 +1951,7 @@ void Vrml97Parser::scriptFieldInterfaceDeclaration(
 		ft=fieldType();
 		id = LT(1);
 		match(ID);
-		fv=fieldValue(node.node::type._class.browser, scope, ft);
+		fv=fieldValue(node.node::type.node_class.browser, scope, ft);
 #line 1058 "Vrml97Parser.g"
 		
 		assert(fv);

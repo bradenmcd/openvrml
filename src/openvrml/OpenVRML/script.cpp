@@ -293,7 +293,7 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
     throw (std::bad_alloc)
 {
     script_node_class & scriptNodeClass =
-        static_cast<script_node_class &>(this->_class);
+        static_cast<script_node_class &>(this->node_class);
     const node_ptr node(new script_node(scriptNodeClass, scope));
     assert(dynamic_cast<script_node *>(node.get()));
     script_node & scriptNode = dynamic_cast<script_node &>(*node);
@@ -852,7 +852,7 @@ script * script_node::create_script() {
                                this->url_.value[i].end() - 6)
                     || std::equal(javaExtension2, javaExtension2 + 6,
                                   this->url_.value[i].end() - 6))) {
-            doc2 base(this->type._class.browser.world_url());
+            doc2 base(this->type.node_class.browser.world_url());
             doc2 doc(this->url_.value[i], &base);
             if (doc.local_name()) {
                 return new ScriptJDK(*this,
@@ -2354,7 +2354,7 @@ JSBool getName(JSContext * const cx, JSObject *,
     assert(script);
 
     const char * const name =
-            script->getScriptNode().node::type._class.browser.name();
+        script->getScriptNode().node::type.node_class.browser.name();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, name));
     return JS_TRUE;
 }
@@ -2368,7 +2368,7 @@ JSBool getVersion(JSContext * const cx, JSObject *,
     assert(script);
 
     const char * const version =
-            script->getScriptNode().node::type._class.browser.version();
+        script->getScriptNode().node::type.node_class.browser.version();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, version));
     return JS_TRUE;
 }
@@ -2381,27 +2381,35 @@ JSBool getCurrentSpeed(JSContext * const cx, JSObject *,
             static_cast<Script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    float speed = script->getScriptNode().node::type._class
+    float speed = script->getScriptNode().node::type.node_class
                   .browser.current_speed();
     *rval = DOUBLE_TO_JSVAL(JS_NewDouble( cx, speed ));
     return JS_TRUE;
 }
 
-JSBool getCurrentFrameRate(JSContext * const cx, JSObject *,
-                           uintN, jsval *, jsval * const rval)
+JSBool getCurrentFrameRate(JSContext * const cx,
+                           JSObject *,
+                           uintN,
+                           jsval *,
+                           jsval * const rval)
     throw ()
 {
     Script * const script =
             static_cast<Script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    *rval = DOUBLE_TO_JSVAL(JS_NewDouble(cx,
-            script->getScriptNode().node::type._class.browser.frame_rate()));
+    jsdouble * d = JS_NewDouble(cx,
+                                script->getScriptNode().node::type.node_class
+                                .browser.frame_rate());
+    *rval = DOUBLE_TO_JSVAL(d);
     return JS_TRUE;
 }
 
-JSBool getWorldURL(JSContext * const cx, JSObject *,
-                   uintN, jsval *, jsval * const rval)
+JSBool getWorldURL(JSContext * const cx,
+                   JSObject *,
+                   uintN,
+                   jsval *,
+                   jsval * const rval)
     throw ()
 {
     Script * const script =
@@ -2409,7 +2417,7 @@ JSBool getWorldURL(JSContext * const cx, JSObject *,
     assert(script);
 
     const std::string url =
-            script->getScriptNode().node::type._class.browser.world_url();
+        script->getScriptNode().node::type.node_class.browser.world_url();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, url.c_str()));
     return JS_TRUE;
 }

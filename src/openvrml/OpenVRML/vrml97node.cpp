@@ -186,12 +186,13 @@ namespace {
             throw (unsupported_interface) = 0;
 
     protected:
-        Vrml97NodeType(node_class & nodeClass, const std::string & id);
+        Vrml97NodeType(OpenVRML::node_class & node_class,
+                       const std::string & id);
     };
 
-    Vrml97NodeType::Vrml97NodeType(node_class & nodeClass,
+    Vrml97NodeType::Vrml97NodeType(OpenVRML::node_class & node_class,
                                    const std::string & id):
-        node_type(nodeClass, id)
+        node_type(node_class, id)
     {}
 
     Vrml97NodeType::~Vrml97NodeType() throw ()
@@ -260,7 +261,8 @@ namespace {
         FieldValueMap eventOutValueMap;
 
     public:
-        Vrml97NodeTypeImpl(node_class & nodeClass, const std::string & id);
+        Vrml97NodeTypeImpl(OpenVRML::node_class & node_class,
+                           const std::string & id);
         virtual ~Vrml97NodeTypeImpl() throw ();
 
         void addEventIn(field_value::type_id, const std::string & id,
@@ -314,9 +316,10 @@ namespace {
     };
 
     template <typename NodeT>
-    Vrml97NodeTypeImpl<NodeT>::Vrml97NodeTypeImpl(node_class & nodeClass,
-                                                  const std::string & id):
-        Vrml97NodeType(nodeClass, id)
+    Vrml97NodeTypeImpl<NodeT>::Vrml97NodeTypeImpl(
+        OpenVRML::node_class & node_class,
+        const std::string & id):
+        Vrml97NodeType(node_class, id)
     {}
 
     template <typename NodeT>
@@ -2353,9 +2356,9 @@ Background::~Background() throw ()
  */
 void Background::do_initialize(const double timestamp) throw ()
 {
-    assert(dynamic_cast<BackgroundClass *>(&this->type._class));
+    assert(dynamic_cast<BackgroundClass *>(&this->type.node_class));
     BackgroundClass & nodeClass =
-            static_cast<BackgroundClass &>(this->type._class);
+            static_cast<BackgroundClass &>(this->type.node_class);
     if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
 }
 
@@ -2369,7 +2372,7 @@ void Background::do_initialize(const double timestamp) throw ()
 void Background::do_shutdown(const double timestamp) throw ()
 {
     BackgroundClass & nodeClass =
-            static_cast<BackgroundClass &>(this->type._class);
+            static_cast<BackgroundClass &>(this->type.node_class);
     nodeClass.unbind(*this, timestamp);
 }
 
@@ -2387,9 +2390,9 @@ void Background::processSet_bind(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     const sfbool & bind = dynamic_cast<const sfbool &>(value);
-    assert(dynamic_cast<BackgroundClass *>(&this->type._class));
+    assert(dynamic_cast<BackgroundClass *>(&this->type.node_class));
     BackgroundClass & nodeClass =
-            static_cast<BackgroundClass &>(this->type._class);
+            static_cast<BackgroundClass &>(this->type.node_class);
     if (bind.value) {
         nodeClass.bind(*this, timestamp);
     } else {
@@ -5344,7 +5347,7 @@ Fog::~Fog() throw ()
  */
 void Fog::do_initialize(const double timestamp) throw ()
 {
-    FogClass & nodeClass = static_cast<FogClass &>(this->type._class);
+    FogClass & nodeClass = static_cast<FogClass &>(this->type.node_class);
     if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
 }
 
@@ -5357,7 +5360,7 @@ void Fog::do_initialize(const double timestamp) throw ()
  */
 void Fog::do_shutdown(const double timestamp) throw ()
 {
-    FogClass & nodeClass = static_cast<FogClass &>(this->type._class);
+    FogClass & nodeClass = static_cast<FogClass &>(this->type.node_class);
     nodeClass.unbind(*this, timestamp);
 }
 
@@ -5374,7 +5377,7 @@ void Fog::processSet_bind(const field_value & value, const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     const sfbool & bind = dynamic_cast<const sfbool &>(value);
-    FogClass & nodeClass = static_cast<FogClass &>(this->type._class);
+    FogClass & nodeClass = static_cast<FogClass &>(this->type.node_class);
     if (bind.value) {
         nodeClass.bind(*this, timestamp);
     } else {
@@ -7978,7 +7981,7 @@ void MovieTexture::update(const double currentTime)
     if (this->active.value) {
         double d = this->lastFrameTime + fabs(1 / this->speed.value)
                     - currentTime;
-        this->type._class.browser.delta(0.9 * d);
+        this->type.node_class.browser.delta(0.9 * d);
     }
 }
 
@@ -8366,7 +8369,7 @@ void NavigationInfo::processSet_bind(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     NavigationInfo * current =
-        this->node::type._class.browser.bindable_navigation_info_top();
+        this->node::type.node_class.browser.bindable_navigation_info_top();
     const sfbool & b = dynamic_cast<const sfbool &>(value);
 
     if (b.value) {        // set_bind TRUE
@@ -8375,16 +8378,16 @@ void NavigationInfo::processSet_bind(const field_value & value,
                 current->bound.value = false;
                 current->emit_event("isBound", current->bound, timestamp);
             }
-            this->node::type._class.browser.bindable_push(this);
+            this->node::type.node_class.browser.bindable_push(this);
             this->bound.value = true;
             this->emit_event("isBound", this->bound, timestamp);
         }
     } else {            // set_bind FALSE
-        this->node::type._class.browser.bindable_remove(this);
+        this->node::type.node_class.browser.bindable_remove(this);
         if (this == current) {
             this->bound.value = false;
             this->emit_event("isBound", this->bound, timestamp);
-            current = this->node::type._class.browser
+            current = this->node::type.node_class.browser
                         .bindable_navigation_info_top();
             if (current) {
                 current->bound.value = true;
@@ -13723,7 +13726,7 @@ void Text::updateFace() throw (std::bad_alloc)
             if (result != FcResultMatch) { throw FontconfigError(result); }
 
             TextClass & nodeClass =
-                    static_cast<TextClass &>(this->type._class);
+                    static_cast<TextClass &>(this->type.node_class);
 
             size_t filenameLen = 0;
             for (; filename[filenameLen]; ++filenameLen) {}
@@ -14928,7 +14931,7 @@ void TimeSensor::update(const double currentTime)
         // Should check whether time, fraction_changed eventOuts are
         // being used, and set delta to cycleTime if not...
         if (this->active.value) {
-            this->type._class.browser.delta(0.0);
+            this->type.node_class.browser.delta(0.0);
         }
         this->lastTime = currentTime;
     }
@@ -16210,9 +16213,9 @@ void Viewpoint::do_initialize(const double timestamp) throw ()
 {
     assert(this->scene());
     this->scene()->browser.add_viewpoint(*this);
-    assert(dynamic_cast<ViewpointClass *>(&this->type._class));
+    assert(dynamic_cast<ViewpointClass *>(&this->type.node_class));
     ViewpointClass & nodeClass =
-            static_cast<ViewpointClass &>(this->type._class);
+            static_cast<ViewpointClass &>(this->type.node_class);
     if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
 }
 
@@ -16279,9 +16282,9 @@ void Viewpoint::processSet_bind(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     const sfbool & bind = dynamic_cast<const sfbool &>(value);
-    assert(dynamic_cast<ViewpointClass *>(&this->type._class));
+    assert(dynamic_cast<ViewpointClass *>(&this->type.node_class));
     ViewpointClass & nodeClass =
-            static_cast<ViewpointClass &>(this->type._class);
+            static_cast<ViewpointClass &>(this->type.node_class);
     if (bind.value) {
         nodeClass.bind(*this, timestamp);
     } else {
@@ -16591,7 +16594,7 @@ void VisibilitySensor::render(OpenVRML::viewer & viewer,
         // Is the sphere visible? ...
         bool inside = xyz[0][2] < 0.0; // && z > - scene->visLimit()
         if (inside) {
-            NavigationInfo * ni = this->type._class.browser
+            NavigationInfo * ni = this->type.node_class.browser
                                     .bindable_navigation_info_top();
             if (ni && !fpzero(ni->getVisibilityLimit())
                     && xyz[0][2] < -(ni->getVisibilityLimit())) {

@@ -1,5 +1,39 @@
 2003-06-04  Braden McDaniel  <braden@endoframe.com>
 
+	Changed node_type::_class to node_type::node_class.
+
+	* src/openvrml/OpenVRML/Vrml97Parser.cpp:  Reflects changes to
+	Vrml97Parser.g.
+	* src/openvrml/OpenVRML/Vrml97Parser.g (nodeBodyElement,
+	scriptInterfaceDeclaration):  Changed node_type::_class to
+	node_type::node_class.
+	* src/openvrml/OpenVRML/browser.cpp (ProtoNode::ProtoNode,
+	ProtoNodeClass::ProtoNodeType::create_node):  Changed
+	node_type::_class to node_type::node_class.
+	* src/openvrml/OpenVRML/node.cpp (node_type::node_type,
+	node::modified, node::bounding_volume_dirty):  Changed
+	node_type::_class to node_type::node_class.
+	* src/openvrml/OpenVRML/node.h (node_type::node_type):  Changed
+	node_type::_class to node_type::node_class.
+	* src/openvrml/OpenVRML/script.cpp
+	(script_node::script_node_type::create_node,
+	script_node::create_script, Browser::getName,
+	Browser::getCurrentSpeed, Browser::getCurrentFrameRate,
+	Browser::getWorldURL):  Changed node_type::_class to
+	node_type::node_class.
+	* src/openvrml/OpenVRML/vrml97node.cpp
+	(Vrml97NodeType::Vrml97NodeType,
+	Vrml97NodeTypeImpl::Vrml97NodeTypeImpl,
+	Backgroung::do_initialize, Background::do_shutdown,
+	Background::processSet_bind, Fog::do_initialize,
+	Fog::do_shutdown, Fog::processSet_bind, MovieTexture::update,
+	NavigationInfo::processSet_bind, Text::updateFace,
+	TimeSensor::update, Viewpoint::do_initialize,
+	Viewpoint::processSet_bind, VisibilitySensor::render):  Changed
+	node_type::_class to node_type::node_class.
+
+2003-06-04  Braden McDaniel  <braden@endoframe.com>
+
 	Removed system::error, system::warn, system::inform,
 	system::debug.  Use OPENVRML_PRINT_MESSAGE_ instead.
 

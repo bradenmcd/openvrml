@@ -2643,7 +2643,7 @@ ProtoNode::ProtoNode(const node_type & nodeType,
 
     typedef ProtoNodeClass::DefaultValueMap DefaultValueMap;
     DefaultValueMap & defaultValueMap =
-        static_cast<ProtoNodeClass &>(nodeType._class).defaultValueMap;
+        static_cast<ProtoNodeClass &>(nodeType.node_class).defaultValueMap;
     const scope_ptr & protoScope = this->implNodes[0]->scope();
 
     for (DefaultValueMap::const_iterator i(defaultValueMap.begin());
@@ -3530,8 +3530,8 @@ ProtoNodeClass::ProtoNodeType::create_node(const scope_ptr & scope) const
     throw (std::bad_alloc)
 {
     return node_ptr(new ProtoNode(*this, scope,
-                                 static_cast<ProtoNodeClass &>(this->_class)
-                                    .protoNode));
+                                  static_cast<ProtoNodeClass &>
+                                  (this->node_class).protoNode));
 }
 
 /**
