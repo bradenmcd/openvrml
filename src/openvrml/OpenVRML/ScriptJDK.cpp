@@ -191,7 +191,7 @@ ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
   {
     JavaVMInitArgs vm_args;
     jint res;
-    JavaVMOption options[4];
+    JavaVMOption options[3];
 
     /* get the currently defined CLASSPATH env variable */
     char* classPath = getenv("CLASSPATH");
@@ -214,17 +214,16 @@ ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
     appendedClassPath << std::ends;
 
     options[0].optionString = appendedClassPath.str();
-    options[1].optionString = "-verbose:class";
-    options[2].optionString = "-verbose:jni";
+    options[1].optionString = "-verbose:class,jni";
 #ifndef _WIN32
-    options[3].optionString = "-Djava.library.path=" OPENVRML_LIBDIR_;
+    options[2].optionString = "-Djava.library.path=" OPENVRML_LIBDIR_;
 #endif
     vm_args.version = JNI_VERSION_1_2;
     vm_args.options = options;
 #ifdef _WIN32
-    vm_args.nOptions = 3;
+    vm_args.nOptions = 2;
 #else
-    vm_args.nOptions = 4;
+    vm_args.nOptions = 3;
 #endif
     /* Create the Java VM */
     res = JNI_CreateJavaVM(&d_jvm, (void**) &d_env, &vm_args);
@@ -1407,6 +1406,13 @@ jint JNICALL Java_vrml_field_SFInt32_getValue
   return Java_vrml_field_ConstSFInt32_getValue(env, obj);
 }
 
+/**
+ * @brief JNI implementation of SFInt32::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFInt32 object
+ * @param value New value of SFInt32
+ */
 void JNICALL Java_vrml_field_SFInt32_setValue__I
   (JNIEnv *env, jobject obj, jint value)
 {
@@ -1415,6 +1421,13 @@ void JNICALL Java_vrml_field_SFInt32_setValue__I
   sfint32->set(static_cast<int>(value));
 }
 
+/**
+ * @brief JNI implementation of SFInt32::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFInt32 object
+ * @param value New value of SFInt32
+ */
 void JNICALL
 Java_vrml_field_SFInt32_setValue__Lvrml_field_ConstSFInt32_2
   (JNIEnv *env, jobject obj, jobject value)
@@ -1425,6 +1438,13 @@ Java_vrml_field_SFInt32_setValue__Lvrml_field_ConstSFInt32_2
   sfint32->set(newSFInt32->get());
 }
 
+/**
+ * @brief JNI implementation of SFInt32::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFInt32 object
+ * @param value New value of SFInt32
+ */
 void JNICALL
 Java_vrml_field_SFInt32_setValue__Lvrml_field_SFInt32_2
   (JNIEnv *env, jobject obj, jobject value)
@@ -1537,6 +1557,13 @@ jobject JNICALL Java_vrml_field_SFNode_getValue
   return Java_vrml_field_ConstSFNode_getValue(env, obj);
 }
 
+/**
+ * @brief JNI implementation of SFNode::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFNode object
+ * @param value New value of SFNode
+ */
 void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_BaseNode_2
   (JNIEnv *env, jobject obj, jobject value)
 {
@@ -1548,6 +1575,13 @@ void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_BaseNode_2
   sfnode->set(NodePtr(node));
 }
 
+/**
+ * @brief JNI implementation of SFNode::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFNode object
+ * @param value New value of SFNode
+ */
 void JNICALL
 Java_vrml_field_SFNode_setValue__Lvrml_field_ConstSFNode_2
   (JNIEnv *env, jobject obj, jobject value)
@@ -1558,6 +1592,13 @@ Java_vrml_field_SFNode_setValue__Lvrml_field_ConstSFNode_2
   *sfnode = *newSFNode;
 }
 
+/**
+ * @brief JNI implementation of SFNode::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFNode object
+ * @param value New value of SFNode
+ */
 void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_field_SFNode_2
   (JNIEnv *env, jobject obj, jobject value)
 {
@@ -2623,9 +2664,7 @@ Java_vrml_field_MFColor_addValue__Lvrml_field_ConstSFColor_2
   MFColor* mfcolor = static_cast<MFColor*>(getFieldValue(env, obj));
   SFColor* sfcolor = static_cast<SFColor*>(getFieldValue(env, sfcolorObj));
   if (!mfcolor || !sfcolor) return;
-  size_t curLength = mfcolor->getLength();
-  mfcolor->setLength(curLength + 1);
-  mfcolor->setElement(curLength, sfcolor->get());
+  mfcolor->addElement(sfcolor->get());
 }
 
 /**
@@ -2658,9 +2697,7 @@ void JNICALL Java_vrml_field_MFColor_addValue__FFF
   MFColor* mfcolor = static_cast<MFColor*>(getFieldValue(env, obj));
   if (!mfcolor) return;
   float newData[] = { red, green, blue };
-  size_t curLength = mfcolor->getLength();
-  mfcolor->setLength(curLength + 1);
-  mfcolor->setElement(curLength, newData);
+  mfcolor->addElement(newData);
 }
 
 void JNICALL
@@ -2911,9 +2948,7 @@ void JNICALL Java_vrml_field_MFFloat_addValue__F
 {
   MFFloat* mffloat = static_cast<MFFloat*>(getFieldValue(env, obj));
   if (!mffloat) return;
-  size_t curLength = mffloat->getLength();
-  mffloat->setLength(curLength + 1);
-  mffloat->setElement(curLength, value);
+  mffloat->addElement(value);
 }
 
 /**
@@ -2930,9 +2965,7 @@ Java_vrml_field_MFFloat_addValue__Lvrml_field_ConstSFFloat_2
   MFFloat* mffloat = static_cast<MFFloat*>(getFieldValue(env, obj));
   SFFloat* sffloat = static_cast<SFFloat*>(getFieldValue(env, value));
   if (!mffloat || !sffloat) return;
-  size_t curLength = mffloat->getLength();
-  mffloat->setLength(curLength + 1);
-  mffloat->setElement(curLength, sffloat->get());
+  mffloat->addElement(sffloat->get());
 }
 
 /**
@@ -3209,9 +3242,7 @@ void JNICALL Java_vrml_field_MFInt32_addValue__I(JNIEnv * env,
 {
   MFInt32 * mfint32 = static_cast<MFInt32 *>(getFieldValue(env, obj));
   if (!mfint32) return;
-  size_t curLength = mfint32->getLength();
-  mfint32->setLength(curLength + 1);
-  mfint32->setElement(curLength, value);
+  mfint32->addElement(value);
 }
 
 /**
@@ -3228,9 +3259,7 @@ Java_vrml_field_MFInt32_addValue__Lvrml_field_ConstSFInt32_2
   MFInt32* mfint32 = static_cast<MFInt32*>(getFieldValue(env, obj));
   SFInt32* sfint32 = static_cast<SFInt32*>(getFieldValue(env, value));
   if (!mfint32 || !sfint32) return;
-  size_t curLength = mfint32->getLength();
-  mfint32->setLength(curLength + 1);
-  mfint32->setElement(curLength, sfint32->get());
+  mfint32->addElement(sfint32->get());
 }
 
 /**
@@ -3506,7 +3535,7 @@ void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_BaseNode_2
   if (!fid) return;
   Node* newNode = reinterpret_cast<Node*>(env->GetIntField(value, fid));
   if (!newNode) return;
-  mfnode->addNode(NodePtr(newNode));
+  mfnode->addElement(NodePtr(newNode));
 }
 
 /**
@@ -3523,7 +3552,7 @@ Java_vrml_field_MFNode_addValue__Lvrml_field_ConstSFNode_2
   MFNode* mfnode = static_cast<MFNode*>(getFieldValue(env, obj));
   SFNode* sfnode = static_cast<SFNode*>(getFieldValue(env, value));
   if (!mfnode || !sfnode) return;
-  mfnode->addNode(sfnode->get());
+  mfnode->addElement(sfnode->get());
 }
 
 /**
@@ -3952,9 +3981,7 @@ Java_vrml_field_MFRotation_addValue__Lvrml_field_ConstSFRotation_2(
   SFRotation * sfrotation =
     static_cast<SFRotation *>(getFieldValue(env, sfrotationObj));
   if (!mfrotation || !sfrotation) return;
-  size_t curLength = mfrotation->getLength();
-  mfrotation->setLength(curLength + 1);
-  mfrotation->setElement(curLength, sfrotation->get());
+  mfrotation->addElement(sfrotation->get());
 }
 
 /**
@@ -3989,9 +4016,7 @@ void JNICALL Java_vrml_field_MFRotation_addValue__FFFF
   MFRotation* mfrotation = static_cast<MFRotation*>(getFieldValue(env, obj));
   if (!mfrotation) return;
   float newData[] = { axisX, axisY, axisZ, angle };
-  size_t curLength = mfrotation->getLength();
-  mfrotation->setLength(curLength + 1);
-  mfrotation->setElement(curLength, newData);
+  mfrotation->addElement(newData);
 }
 
 void JNICALL
@@ -4240,10 +4265,7 @@ Java_vrml_field_MFString_addValue__Ljava_lang_String_2
 {
   MFString* mfstring = static_cast<MFString*>(getFieldValue(env, obj));
   if (!mfstring) return;
-  size_t curLength = mfstring->getLength();
-  mfstring->setLength(curLength + 1);
-  mfstring->setElement(curLength,
-                       value ? env->GetStringUTFChars(value, 0) : NULL);
+  mfstring->addElement(value ? env->GetStringUTFChars(value, 0) : NULL);
 }
 
 /**
@@ -4260,10 +4282,7 @@ Java_vrml_field_MFString_addValue__Lvrml_field_ConstSFString_2
   MFString* mfstring = static_cast<MFString*>(getFieldValue(env, obj));
   SFString* sfstring = static_cast<SFString*>(getFieldValue(env, sfstringObj));
   if (!mfstring || !sfstring) return;
-  size_t curLength = mfstring->getLength();
-  mfstring->setLength(curLength + 1);
-  mfstring->setElement(curLength,
-                       (sfstring->get()).c_str());
+  mfstring->addElement((sfstring->get()).c_str());
 }
 
 /**
@@ -4548,9 +4567,7 @@ void JNICALL Java_vrml_field_MFTime_addValue__D(JNIEnv * env,
                                                 jdouble value) {
   MFTime * mftime = static_cast<MFTime *>(getFieldValue(env, obj));
   if (!mftime) return;
-  size_t curLength = mftime->getLength();
-  mftime->setLength(curLength + 1);
-  mftime->setElement(curLength, value);
+  mftime->addElement(value);
 }
 
 /**
@@ -4567,9 +4584,7 @@ Java_vrml_field_MFTime_addValue__Lvrml_field_ConstSFTime_2
   MFTime* mftime = static_cast<MFTime*>(getFieldValue(env, obj));
   SFTime* sftime = static_cast<SFTime*>(getFieldValue(env, sftimeObj));
   if (!mftime || !sftime) return;
-  size_t curLength = mftime->getLength();
-  mftime->setLength(curLength + 1);
-  mftime->setElement(curLength, sftime->get());
+  mftime->addElement(sftime->get());
 }
 
 /**
@@ -5012,9 +5027,7 @@ void JNICALL Java_vrml_field_MFVec2f_addValue__FF
   MFVec2f* mfvec2f = static_cast<MFVec2f*>(getFieldValue(env, obj));
   if (!mfvec2f) return;
   float farr[] = { x, y };
-  size_t curLength = mfvec2f->getLength();
-  mfvec2f->setLength(curLength + 1);
-  mfvec2f->setElement(curLength, farr);
+  mfvec2f->addElement(farr);
 }
 
 /**
@@ -5031,9 +5044,7 @@ Java_vrml_field_MFVec2f_addValue__Lvrml_field_ConstSFVec2f_2
   MFVec2f* mfvec2f = static_cast<MFVec2f*>(getFieldValue(env, obj));
   SFVec2f* sfvec2f = static_cast<SFVec2f*>(getFieldValue(env, sfvec2fObj));
   if (!mfvec2f || !sfvec2f) return;
-  size_t curLength = mfvec2f->getLength();
-  mfvec2f->setLength(curLength + 1);
-  mfvec2f->setElement(curLength, sfvec2f->get());
+  mfvec2f->addElement(sfvec2f->get());
 }
 
 /**
@@ -5482,9 +5493,7 @@ void JNICALL Java_vrml_field_MFVec3f_addValue__FFF
   MFVec3f* mfvec3f = static_cast<MFVec3f*>(getFieldValue(env, obj));
   if (!mfvec3f) return;
   float farr[] = { x, y, z };
-  size_t curLength = mfvec3f->getLength();
-  mfvec3f->setLength(curLength + 1);
-  mfvec3f->setElement(curLength, farr);
+  mfvec3f->addElement(farr);
 }
 
 /**
@@ -5501,9 +5510,7 @@ Java_vrml_field_MFVec3f_addValue__Lvrml_field_ConstSFVec3f_2
   MFVec3f* mfvec3f = static_cast<MFVec3f*>(getFieldValue(env, obj));
   SFVec3f* sfvec3f = static_cast<SFVec3f*>(getFieldValue(env, sfvec3fObj));
   if (!mfvec3f || !sfvec3f) return;
-  size_t curLength = mfvec3f->getLength();
-  mfvec3f->setLength(curLength + 1);
-  mfvec3f->setElement(curLength, sfvec3f->get());
+  mfvec3f->addElement(sfvec3f->get());
 }
 
 /**
@@ -6159,7 +6166,7 @@ jfloat JNICALL Java_vrml_Browser_getCurrentSpeed(JNIEnv * const env,
   Browser * const browser =
     reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
   assert(browser);
-  return 0.0;
+  return browser->getCurrentSpeed();
 }
 
 /**
