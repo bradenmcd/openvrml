@@ -138,7 +138,7 @@ viewer::~viewer() throw ()
  *         <code>viewer</code> is currently associated, or 0 if the
  *         <code>viewer</code> is not associated with a <code>browser</code>.
  */
-browser * viewer::browser() const throw ()
+openvrml::browser * viewer::browser() const throw ()
 {
     return this->browser_;
 }

@@ -1,5 +1,10 @@
 2005-01-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/viewer.cpp:  Explicitly qualify
+	openvrml::browser to make doxygen happy.
+
+2005-01-05 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed a problem with browser::find_node along with a more
 	general problem with node_traverser.
 
