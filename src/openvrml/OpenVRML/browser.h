@@ -176,7 +176,7 @@ namespace OpenVRML {
         void getViewpoint(size_t index,
                           std::string & name, std::string & description);
         void setViewpoint(const std::string & name);
-        void setViewpoint(size_t);
+        void setViewpoint(size_t index);
 
         void addScopedLight(Vrml97Node::AbstractLight &);
         void removeScopedLight(Vrml97Node::AbstractLight &);

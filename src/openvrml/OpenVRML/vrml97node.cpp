@@ -2316,8 +2316,8 @@ void Billboard::render(Viewer * const viewer, VrmlRenderContext rc) {
 }
 
 /**
- * Cache a pointer to (one of the) parent transforms for proper
- * rendering of bindables.
+ * @brief Cache a pointer to (one of the) parent transforms for proper
+ *      rendering of bindables.
  */
 void Billboard::accumulateTransform(Node * parent) {
     this->parentTransform = parent;
@@ -2347,7 +2347,8 @@ void Billboard::inverseTransform(VrmlMatrix & m)
 }
 
 /**
- * Calculate bb transformation matrix. Store it in M.
+ * @brief Calculate bb transformation matrix and store it in @p M.
+ *
  * Here we are dealing with VrmlMatrix format (Matrices are stored
  * in row-major order).
  *
@@ -10038,7 +10039,8 @@ const NodeTypePtr SoundClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the instance.
+ * @param scope     the Scope associated with the instance.
  */
 Sound::Sound(const NodeType & nodeType,
              const ScopePtr & scope):

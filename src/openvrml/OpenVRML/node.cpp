@@ -601,6 +601,7 @@ Node::PolledEventOutValue::PolledEventOutValue(const FieldValuePtr & value,
  * @brief Constructor.
  *
  * @param type  the NodeType associated with the instance.
+ * @param scope the Scope associated with the instance.
  */
 Node::Node(const NodeType & type, const ScopePtr & scope):
         nodeType(type),
@@ -1151,9 +1152,10 @@ bool Node::isModified() const { return this->d_modified; }
  *
  * Convenience function used by updateModified.
  *
- * @param path
- * @param mod
- * @param flags
+ * @param path  stack of ancestor nodes.
+ * @param mod   set modified flag to this value.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
  */
 void Node::markPathModified(NodePath& path, bool mod, int flags) {
   NodePath::iterator i;
@@ -1180,23 +1182,24 @@ void Node::markPathModified(NodePath& path, bool mod, int flags) {
   }
 }
 
-
-void Node::updateModified(NodePath& path, int flags) {
-  if (this->d_modified||this->d_bvol_dirty) markPathModified(path, true, flags);
-}
-
-
 /**
- * Propagate the bvolume dirty flag from children to parents. I
- * don't like this at all, but it's not worth making it pretty
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * I don't like this at all, but it's not worth making it pretty
  * because the need for it will go away when parent pointers are
  * implemented.
  *
- * @param path stack of ancestor nodes
- * @param mod set modified flag to this value
+ * @param path  stack of ancestor nodes.
  * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both
+ *              bvolume dirty flag, 3 indicates both.
  */
+void Node::updateModified(NodePath & path, int flags)
+{
+    if (this->d_modified || this->d_bvol_dirty) {
+        this->markPathModified(path, true, flags);
+    }
+}
+
 // note not virtual
 //
 void Node::updateModified(int flags)
@@ -1294,18 +1297,19 @@ bool Node::isBVolumeDirty() const {
 }
 
 /**
- * Render this node. Actually, most of the rendering work is
- * delegated to the viewer, but this method is responsible for
- * traversal to the node's renderable children, including
- * culling. Each node class needs to implement this routine
- * appropriately. It's not abstract since it doesn't make sense to
- * call render on some nodes. Alternative would be to break render
- * out into a seperate mixins class, but that's probably overkill.
+ * @brief Render this node.
  *
- * @param v viewer implementation responsible for actually doing the
- *          drawing
- * @param rc generic context argument, holds things like the
- *          accumulated modelview transform.
+ * Actually, most of the rendering work is delegated to the viewer, but this
+ * method is responsible for traversal to the node's renderable children,
+ * including culling. Each node class needs to implement this routine
+ * appropriately. It's not abstract since it doesn't make sense to call render
+ * on some nodes. Alternative would be to break render out into a seperate
+ * mixins class, but that's probably overkill.
+ *
+ * @param v     viewer implementation responsible for actually doing the
+ *              drawing.
+ * @param rc    generic context argument, holds things like the
+ *              accumulated modelview transform.
  */
 void Node::render(Viewer* v, VrmlRenderContext rc)
 {

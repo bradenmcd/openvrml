@@ -182,13 +182,13 @@ namespace OpenVRML {
         long value;
 
     public:
-        explicit SFInt32(long = 0) throw ();
+        explicit SFInt32(long value = 0) throw ();
         virtual ~SFInt32() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
         long get() const throw ();
-        void set(long) throw ();
+        void set(long value) throw ();
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -245,13 +245,13 @@ namespace OpenVRML {
         ConstArrayReference get() const throw ();
         void set(ConstArrayReference rot) throw ();
         float getX() const throw ();
-        void setX(float) throw ();
+        void setX(float value) throw ();
         float getY() const throw ();
-        void setY(float) throw ();
+        void setY(float value) throw ();
         float getZ() const throw ();
-        void setZ(float) throw ();
+        void setZ(float value) throw ();
         float getAngle() const throw ();
-        void setAngle(float) throw ();
+        void setAngle(float value) throw ();
         const SFVec3f getAxis() const throw ();
         void setAxis(const SFVec3f & vec) throw ();
         const SFRotation inverse() const throw ();

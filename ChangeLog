@@ -1,3 +1,13 @@
+2002-08-28  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/browser.h,
+          src/openvrml/OpenVRML/field.cpp,
+          src/openvrml/OpenVRML/field.h,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp: Doc-comment fixes and
+          code beautification.
+
 2002-08-27  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,

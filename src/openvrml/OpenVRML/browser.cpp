@@ -40,6 +40,14 @@
 # include "VrmlRenderContext.h"
 # include "script.h"
 
+/**
+ * @mainpage
+ *
+ * @section intro Introduction
+ *
+ * %OpenVRML is a runtime library for VRML97.
+ */
+
 namespace OpenVRML {
 
     namespace Vrml97Node {
@@ -333,15 +341,7 @@ InvalidVrml::~InvalidVrml() throw ()
 /**
  * @var Browser::ProtoNodeClass
  *
- * @brief Class object for @link ProtoNodes@endlink.
- */
-
-/**
- * @var Browser::Vrml97Node::Inline
- *
- * @brief VRML97 Inline node.
- *
- * @todo Fix Inline nodes.
+ * @brief Class object for @link ProtoNode ProtoNodes@endlink.
  */
 
 /**
@@ -542,7 +542,7 @@ InvalidVrml::~InvalidVrml() throw ()
  */
 
 /**
- * @var Browser::SceneCBList Browser::d_browserCallbacks
+ * @var Browser::SceneCBList Browser::d_sceneCallbacks
  *
  * @brief List of functions to call when the world is changed.
  */
@@ -987,9 +987,9 @@ void Browser::flushEvents()
  * an enabled TouchSensor child).
  */
 void Browser::sensitiveEvent(Node * const n,
-                               const double timeStamp,
-                               const bool isOver, const bool isActive,
-                               double * const point) {
+                             const double timeStamp,
+                             const bool isOver, const bool isActive,
+                             double * const point) {
     if (n) {
         Vrml97Node::Anchor * a = n->toAnchor();
         if (a) {
@@ -1571,16 +1571,18 @@ size_t Browser::nViewpoints() { return d_viewpoints.size(); }
 /**
  * @brief Get the name and description of a Viewpoint.
  *
- * @param nvp           the index of the Viewpoint.
- * @retval name         the name of the Viewpoint
+ * @param index         the index of the Viewpoint.
+ * @retval name         the name of the Viewpoint.
  * @retval description  the description of the Viewpoint.
  */
-void Browser::getViewpoint(const size_t nvp, std::string & name,
-                             std::string & description) {
-    std::list<Node *>::const_iterator i = this->d_viewpoints.begin();
+void Browser::getViewpoint(const size_t index,
+                           std::string & name,
+                           std::string & description)
+{
     size_t n = 0;
-    for (; i != this->d_viewpoints.end(); ++i, ++n ) {
-        if (n == nvp) {
+    for (std::list<Node *>::const_iterator i = this->d_viewpoints.begin();
+            i != this->d_viewpoints.end(); ++i, ++n ) {
+        if (n == index) {
             name = (*i)->getId();
             description = (*i)->toViewpoint()->getDescription().get();
             return;
@@ -1611,23 +1613,19 @@ void Browser::setViewpoint(const std::string & name)
 /**
  * @brief Bind to a Viewpoint with a particular index.
  *
- * @param nvp   the index of the Viewpoint to bind to.
+ * @param index the index of the Viewpoint to bind to.
  *
- * If @p nvp is not a valid index, this method has no effect.
+ * If @p index is not a valid index, this method has no effect.
  */
-void Browser::setViewpoint(size_t nvp) {
-    std::list<Node *>::iterator i;
+void Browser::setViewpoint(const size_t index) {
     size_t j = 0;
-
-    for (i = d_viewpoints.begin(); i != d_viewpoints.end(); ++i) {
-        if (j == nvp) {
-            Vrml97Node::Viewpoint * const vp = (*i)->toViewpoint();
-            if (vp) {
-                vp->processEvent("set_bind", SFBool(true), theSystem->time());
-            }
+    for (std::list<Node *>::iterator i = this->d_viewpoints.begin();
+            i != this->d_viewpoints.end(); ++i, ++j) {
+        if (j == index) {
+            assert((*i)->toViewpoint());
+            (*i)->processEvent("set_bind", SFBool(true), theSystem->time());
 	    return;
         }
-        ++j;
     }
 }
 
@@ -3153,7 +3151,7 @@ void ProtoNode::render(Viewer * const viewer, const VrmlRenderContext rc) {
  */
 
 /**
- * @var ProtoNodeClass:ProtoNodeType::nodeInterfaces
+ * @var ProtoNodeClass::ProtoNodeType::nodeInterfaces
  *
  * @brief The list of interfaces supported by a node of this type.
  */
@@ -3402,6 +3400,8 @@ const NodeTypePtr
 
 
 /**
+ * @internal
+ *
  * @class Vrml97RootScope
  *
  * @brief Root namespace for VRML97 browsers.

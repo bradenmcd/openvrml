@@ -568,8 +568,8 @@ void SFColor::set(ConstArrayReference rgb) throw ()
  * Convert from HSV (with(with @e h in [0,360), @e s, @e v in [0,1]) to RGB
  * (with each component in [0,1]).
  *
- * @param hsv a 3-element array comprising an HSV value
- * @retval rgb a 3-element array comprising an RGB value
+ * @param hsv   a 3-element array comprising an HSV value
+ * @retval rgb  a 3-element array comprising an RGB value
  */
 void SFColor::HSVtoRGB(ConstArrayReference hsv, ArrayReference rgb) throw ()
 {
@@ -604,8 +604,8 @@ void SFColor::HSVtoRGB(ConstArrayReference hsv, ArrayReference rgb) throw ()
  * Convert from RGB (with each component in [0,1]) to HSV (with @e h in
  * [0,360), @e s, @e v in [0,1]).
  *
- * @param rgb a 3-element array comprising an RGB value
- * @retval hsv a 3-element array comprising an HSV value
+ * @param rgb   a 3-element array comprising an RGB value.
+ * @retval hsv  a 3-element array comprising an HSV value.
  */
 void SFColor::RGBtoHSV(ConstArrayReference rgb, ArrayReference hsv) throw ()
 {
@@ -953,7 +953,7 @@ void SFImage::set(size_t width, size_t height, size_t components,
 /**
  * @brief Constructor.
  *
- * @param value initial value
+ * @param value initial value.
  */
 SFInt32::SFInt32(const long value) throw ():
     value(value)
