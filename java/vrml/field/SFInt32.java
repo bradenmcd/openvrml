@@ -22,16 +22,62 @@ package vrml.field;
 
 import vrml.Field;
 
+/**
+ * Represents a VRML SFInt32 field in Java.
+ */
 public class SFInt32 extends Field
 {
+  /**
+   * Construct a new SFInt32 field in OpenVRML using the given value.
+   *
+   * @param value Initial value of field.
+   */
   private native void CreateObject(int value);
 
-  public SFInt32() { CreateObject(0); }
-  public SFInt32(int value) { CreateObject(value); }
+  /**
+   * Construct a default SFInt32 field.
+   */
+  public SFInt32()
+  {
+    CreateObject(0);
+  }
 
-  public native int getValue();	
+  /**
+   * Construct an SFInt32 field.
+   *
+   * @param value Initial value of field.
+   */
+  public SFInt32(int value)
+  {
+    CreateObject(value);
+  }
+
+  /**
+   * Get the value of the SFInt32 field.
+   *
+   * @return Value of field.
+   */
+  public native int getValue();
+
+  /**
+   * Set the value of an SFInt32 field.
+   *
+   * @param i Value to set field to.
+   */
   public native void setValue(int i);
+
+  /**
+   * Set the value of an SFInt32 field.
+   *
+   * @param i Value to set field to.
+   */
   public native void setValue(ConstSFInt32 i);
+
+  /**
+   * Set the value of an SFInt32 field.
+   *
+   * @param i Value to set field to.
+   */
   public native void setValue(SFInt32 i);
 	
   public native String toString();

@@ -22,17 +22,63 @@ package vrml.field;
 
 import vrml.Field;
 
+
+/**
+ * Represents a VRML SFTime field in Java.
+ */
 public class SFTime extends Field
 {
+  /**
+   * Construct a new SFTime field in OpenVRML using the given value.
+   *
+   * @param time Initial value of field.
+   */
   private native void CreateObject(double time);
 
-  public SFTime() { CreateObject(0.0); }
-  public SFTime(double time) { CreateObject(time); }
+ /**
+   * Construct a default SFTime field.
+   */
+  public SFTime()
+  {
+    CreateObject(0.0);
+  }
 
+  /**
+   * Construct an SFTime field using the given value.
+   *
+   * @param time Initial value of field.
+   */
+  public SFTime(double time)
+  {
+    CreateObject(time);
+  }
+
+  /**
+   * Get the value of the SFTime field.
+   *
+   * @return Value of SFTime.
+   */
   public native double getValue();
 
+  /**
+   * Set the value of an SFTime field.
+   *
+   * @param time Value to set SFTime field to.
+   */
   public native void setValue(double time);
+
+  /**
+   * Set the value of an SFTime field.
+   *
+   * @param time Value to set SFTime field to.
+   */
   public native void setValue(ConstSFTime time);
+
+  /**
+   * Set the value of an SFTime field.
+   *
+   * @param time Value to set SFTime field to.
+   */
   public native void setValue(SFTime time);
 
   public native String toString();
