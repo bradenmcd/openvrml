@@ -3,21 +3,21 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
@@ -53,9 +53,9 @@ extern "C" {
 namespace {
     Browser * browser = 0;
     ViewerGlut * viewer = 0;
-    
+
     bool setTitleUrl = true;
-    
+
     void onExit();
     void worldChangedCB(Browser::CBReason);
     void buildViewpointMenu();
@@ -67,13 +67,13 @@ int main(int argc, char * argv[]) {
     using std::endl;
     using std::string;
     using std::vector;
-    
+
     atexit(onExit);
-    
+
 #if defined(__FreeBSD__)
     fpsetmask(0);
 # endif
- 
+
 # ifdef macintosh
     SIOUXSettings.asktosaveonclose = 0;
     argc = ccommand(&argv);
@@ -173,7 +173,7 @@ namespace {
                     && viewpoint != viewpoints.end()) {
             ++viewpoint;
         }
-        (*viewpoint)->processEvent("set_bind", SFBool(true),
+        (*viewpoint)->processEvent("set_bind", sfbool(true),
                                    Browser::getCurrentTime());
     }
 
@@ -188,7 +188,8 @@ namespace {
             for (int i = nvp; i > 0; --i) { glutRemoveMenuItem(i); }
         } else {
             topmenu = glutCreateMenu(0);
-            vpmenu = glutCreateMenu(reinterpret_cast<GlutMenu>(lookatViewpointMenu));
+            vpmenu = glutCreateMenu(reinterpret_cast<GlutMenu>
+                                    (lookatViewpointMenu));
             glutSetMenu(topmenu);
 
             glutAddSubMenu("Viewpoints", vpmenu);

@@ -726,7 +726,7 @@ protoInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
     using antlr::SemanticException;
 
     NodeInterface::Type it(NodeInterface::invalidType);
-    OpenVRML::FieldValue::Type ft(FieldValue::invalidType);
+    OpenVRML::field_value::type_id ft(field_value::invalid_type_id);
     OpenVRML::FieldValuePtr fv;
 }
     : it=eventInterfaceType ft=fieldType id0:ID {
@@ -828,7 +828,7 @@ options { defaultErrorHandler=false; }
 externproto[OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope]
 {
     OpenVRML::NodeInterfaceSet interfaces;
-    OpenVRML::MFString urlList;
+    OpenVRML::mfstring urlList;
     OpenVRML::NodeTypePtr nodeType;
 }
     : KEYWORD_EXTERNPROTO id:ID LBRACKET
@@ -858,10 +858,10 @@ externproto[OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope]
 externInterfaceDeclaration[OpenVRML::NodeInterfaceSet & interfaces]
         {
             using OpenVRML::NodeInterface;
-            using OpenVRML::FieldValue;
+            using OpenVRML::field_value;
             using antlr::SemanticException;
             NodeInterface::Type it(NodeInterface::invalidType);
-            FieldValue::Type ft(FieldValue::invalidType);
+            field_value::type_id ft(field_value::invalid_type_id);
         }
     :   it=interfaceType ft=fieldType id:ID {
             const NodeInterface interface(it, ft, id->getText());
@@ -882,10 +882,10 @@ returns [OpenVRML::NodeInterface::Type it = OpenVRML::NodeInterface::invalidType
     | it=fieldInterfaceType
     ;
 
-externprotoUrlList returns [OpenVRML::MFString urlList]
+externprotoUrlList returns [OpenVRML::mfstring urlList]
 {
     using std::string;
-    using OpenVRML::MFString;
+    using OpenVRML::mfstring;
 
     string s;
 }
@@ -897,7 +897,7 @@ routeStatement[const OpenVRML::Scope & scope]
     :   KEYWORD_ROUTE fromNodeId:ID PERIOD fromInterfaceId:ID
         KEYWORD_TO toNodeId:ID PERIOD toInterfaceId:ID
         {
-            using OpenVRML::FieldValue;
+            using OpenVRML::field_value;
             using OpenVRML::Node;
             using OpenVRML::NodePtr;
             using antlr::SemanticException;
@@ -972,16 +972,16 @@ options { defaultErrorHandler = false; }
 nodeBodyElement[const OpenVRML::ScopePtr & scope,
                 OpenVRML::Node & node]
 {
-    using OpenVRML::FieldValue;
+    using OpenVRML::field_value;
     using antlr::SemanticException;
-    FieldValue::Type ft(FieldValue::invalidType);
+    field_value::type_id ft(field_value::invalid_type_id);
     FieldValuePtr fv;
 }
     : id:ID {
             ft = node.nodeType.hasField(id->getText());
-            if (ft == FieldValue::invalidType) {
+            if (ft == field_value::invalid_type_id) {
                 ft = node.nodeType.hasExposedField(id->getText());
-                if (ft == FieldValue::invalidType) {
+                if (ft == field_value::invalid_type_id) {
                     throw SemanticException(node.nodeType.id + " node has no field or exposedField \"" + id->getText() + "\"",
                                             this->uri,
                                             id->getLine(),
@@ -1001,10 +1001,10 @@ scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                            OpenVRML::ScriptNode & node]
     {
         using OpenVRML::NodeInterface;
-        using OpenVRML::FieldValue;
+        using OpenVRML::field_value;
         using antlr::SemanticException;
         NodeInterface::Type it(NodeInterface::invalidType);
-        FieldValue::Type ft(FieldValue::invalidType);
+        field_value::type_id ft(field_value::invalid_type_id);
     }
     : it=eventInterfaceType ft=fieldType id:ID {
             const NodeInterfaceSet::const_iterator pos =
@@ -1033,10 +1033,10 @@ scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                                 OpenVRML::ScriptNode & node]
 {
     using std::find_if;
-    using OpenVRML::FieldValue;
+    using OpenVRML::field_value;
     using antlr::SemanticException;
 
-    FieldValue::Type ft = FieldValue::invalidType;
+    field_value::type_id ft = field_value::invalid_type_id;
     FieldValuePtr fv;
 }
     : KEYWORD_FIELD ft=fieldType id:ID
@@ -1098,18 +1098,18 @@ protoNodeBodyElement[OpenVRML::ProtoNodeClass & proto,
                      const OpenVRML::ScopePtr & scope,
                      OpenVRML::Node & node]
 {
-    using OpenVRML::FieldValue;
+    using OpenVRML::field_value;
     using antlr::SemanticException;
 
-    FieldValue::Type ft(FieldValue::invalidType);
+    field_value::type_id ft(field_value::invalid_type_id);
     FieldValuePtr fv;
 }
     : { node.nodeType.hasField(LT(1)->getText())
         || node.nodeType.hasExposedField(LT(1)->getText()) }? id:ID {
             ft = node.nodeType.hasField(id->getText());
-            if (ft == FieldValue::invalidType) {
+            if (ft == field_value::invalid_type_id) {
                 ft = node.nodeType.hasExposedField(id->getText());
-                if (ft == FieldValue::invalidType) {
+                if (ft == field_value::invalid_type_id) {
                     throw SemanticException(node.nodeType.id + " node has no field or exposedField \"" + id->getText() + "\".",
                                             this->uri,
                                             id->getLine(),
@@ -1158,10 +1158,10 @@ protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                                 OpenVRML::ScriptNode & node]
 {
     using OpenVRML::NodeInterface;
-    using OpenVRML::FieldValue;
+    using OpenVRML::field_value;
     using antlr::SemanticException;
     NodeInterface::Type it(NodeInterface::invalidType);
-    FieldValue::Type ft(FieldValue::invalidType);
+    field_value::type_id ft(field_value::invalid_type_id);
 }
     : it=eventInterfaceType ft=fieldType id:ID {
             const NodeInterfaceSet::const_iterator pos =
@@ -1191,10 +1191,10 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                                      OpenVRML::ScriptNode & node]
 {
     using std::find_if;
-    using OpenVRML::FieldValue;
+    using OpenVRML::field_value;
     using antlr::SemanticException;
 
-    FieldValue::Type ft(FieldValue::invalidType);
+    field_value::type_id ft(field_value::invalid_type_id);
     FieldValuePtr fv;
 }
     : KEYWORD_FIELD ft=fieldType id:ID {
@@ -1265,101 +1265,101 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
     ;
 
 fieldType
-returns [OpenVRML::FieldValue::Type ft = OpenVRML::FieldValue::invalidType]
+returns [OpenVRML::field_value::type_id ft = OpenVRML::field_value::invalid_type_id]
 {
-    using OpenVRML::FieldValue;
+    using OpenVRML::field_value;
 }
-    : FIELDTYPE_MFCOLOR     { ft = FieldValue::mfcolor; }
-    | FIELDTYPE_MFFLOAT     { ft = FieldValue::mffloat; }
-    | FIELDTYPE_MFINT32     { ft = FieldValue::mfint32; }
-    | FIELDTYPE_MFNODE      { ft = FieldValue::mfnode; }
-    | FIELDTYPE_MFROTATION  { ft = FieldValue::mfrotation; }
-    | FIELDTYPE_MFSTRING    { ft = FieldValue::mfstring; }
-    | FIELDTYPE_MFTIME      { ft = FieldValue::mftime; }
-    | FIELDTYPE_MFVEC2F     { ft = FieldValue::mfvec2f; }
-    | FIELDTYPE_MFVEC3F     { ft = FieldValue::mfvec3f; }
-    | FIELDTYPE_SFBOOL      { ft = FieldValue::sfbool; }
-    | FIELDTYPE_SFCOLOR     { ft = FieldValue::sfcolor; }
-    | FIELDTYPE_SFFLOAT     { ft = FieldValue::sffloat; }
-    | FIELDTYPE_SFIMAGE     { ft = FieldValue::sfimage; }
-    | FIELDTYPE_SFINT32     { ft = FieldValue::sfint32; }
-    | FIELDTYPE_SFNODE      { ft = FieldValue::sfnode; }
-    | FIELDTYPE_SFROTATION  { ft = FieldValue::sfrotation; }
-    | FIELDTYPE_SFSTRING    { ft = FieldValue::sfstring; }
-    | FIELDTYPE_SFTIME      { ft = FieldValue::sftime; }
-    | FIELDTYPE_SFVEC2F     { ft = FieldValue::sfvec2f; }
-    | FIELDTYPE_SFVEC3F     { ft = FieldValue::sfvec3f; }
+    : FIELDTYPE_MFCOLOR     { ft = field_value::mfcolor_id; }
+    | FIELDTYPE_MFFLOAT     { ft = field_value::mffloat_id; }
+    | FIELDTYPE_MFINT32     { ft = field_value::mfint32_id; }
+    | FIELDTYPE_MFNODE      { ft = field_value::mfnode_id; }
+    | FIELDTYPE_MFROTATION  { ft = field_value::mfrotation_id; }
+    | FIELDTYPE_MFSTRING    { ft = field_value::mfstring_id; }
+    | FIELDTYPE_MFTIME      { ft = field_value::mftime_id; }
+    | FIELDTYPE_MFVEC2F     { ft = field_value::mfvec2f_id; }
+    | FIELDTYPE_MFVEC3F     { ft = field_value::mfvec3f_id; }
+    | FIELDTYPE_SFBOOL      { ft = field_value::sfbool_id; }
+    | FIELDTYPE_SFCOLOR     { ft = field_value::sfcolor_id; }
+    | FIELDTYPE_SFFLOAT     { ft = field_value::sffloat_id; }
+    | FIELDTYPE_SFIMAGE     { ft = field_value::sfimage_id; }
+    | FIELDTYPE_SFINT32     { ft = field_value::sfint32_id; }
+    | FIELDTYPE_SFNODE      { ft = field_value::sfnode_id; }
+    | FIELDTYPE_SFROTATION  { ft = field_value::sfrotation_id; }
+    | FIELDTYPE_SFSTRING    { ft = field_value::sfstring_id; }
+    | FIELDTYPE_SFTIME      { ft = field_value::sftime_id; }
+    | FIELDTYPE_SFVEC2F     { ft = field_value::sfvec2f_id; }
+    | FIELDTYPE_SFVEC3F     { ft = field_value::sfvec3f_id; }
     ;
 
 fieldValue[OpenVRML::Browser & browser,
            const OpenVRML::ScopePtr & scope,
-           OpenVRML::FieldValue::Type ft]
+           OpenVRML::field_value::type_id ft]
 returns [OpenVRML::FieldValuePtr fv]
 options { defaultErrorHandler=false; }
 {
-    using OpenVRML::FieldValue;
+    using OpenVRML::field_value;
 }
-    : { (ft == FieldValue::sfnode) || (ft == FieldValue::mfnode) }?
+    : { (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) }?
         fv=nodeFieldValue[browser, scope, ft]
     | fv=nonNodeFieldValue[ft]
     ;
 
 protoFieldValue[OpenVRML::ProtoNodeClass & proto,
                 const OpenVRML::ScopePtr & scope,
-                OpenVRML::FieldValue::Type ft]
+                OpenVRML::field_value::type_id ft]
 returns [OpenVRML::FieldValuePtr fv]
 {
-    using OpenVRML::FieldValue;
+    using OpenVRML::field_value;
 }
-    : { (ft == FieldValue::sfnode) || (ft == FieldValue::mfnode) }?
+    : { (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) }?
         fv=protoNodeFieldValue[proto, scope, ft] { assert(fv); }
     | fv=nonNodeFieldValue[ft] { assert(fv); }
     ;
 
-nonNodeFieldValue[OpenVRML::FieldValue::Type ft]
+nonNodeFieldValue[OpenVRML::field_value::type_id ft]
 returns [OpenVRML::FieldValuePtr fv = OpenVRML::FieldValuePtr(0)]
 options { defaultErrorHandler=false; }
 {
-    using OpenVRML::FieldValue;
+    using OpenVRML::field_value;
 }
-    : { ft == FieldValue::sfbool }? fv=sfBoolValue
-    | { ft == FieldValue::sfcolor }? fv=sfColorValue
-    | { ft == FieldValue::sffloat }? fv=sfFloatValue
-    | { ft == FieldValue::sfimage }? fv=sfImageValue
-    | { ft == FieldValue::sfint32 }? fv=sfInt32Value
-    | { ft == FieldValue::sfrotation }? fv=sfRotationValue
-    | { ft == FieldValue::sfstring }? fv=sfStringValue
-    | { ft == FieldValue::sftime }? fv=sfTimeValue
-    | { ft == FieldValue::sfvec2f }? fv=sfVec2fValue
-    | { ft == FieldValue::sfvec3f }? fv=sfVec3fValue
-    | { ft == FieldValue::mfcolor }? fv=mfColorValue
-    | { ft == FieldValue::mffloat }? fv=mfFloatValue
-    | { ft == FieldValue::mfint32 }? fv=mfInt32Value
-    | { ft == FieldValue::mfrotation }? fv=mfRotationValue
-    | { ft == FieldValue::mfstring }? fv=mfStringValue
-    | { ft == FieldValue::mftime }? fv=mfTimeValue
-    | { ft == FieldValue::mfvec2f }? fv=mfVec2fValue
+    : { ft == field_value::sfbool_id }? fv=sfBoolValue
+    | { ft == field_value::sfcolor_id }? fv=sfColorValue
+    | { ft == field_value::sffloat_id }? fv=sfFloatValue
+    | { ft == field_value::sfimage_id }? fv=sfImageValue
+    | { ft == field_value::sfint32_id }? fv=sfInt32Value
+    | { ft == field_value::sfrotation_id }? fv=sfRotationValue
+    | { ft == field_value::sfstring_id }? fv=sfStringValue
+    | { ft == field_value::sftime_id }? fv=sfTimeValue
+    | { ft == field_value::sfvec2f_id }? fv=sfVec2fValue
+    | { ft == field_value::sfvec3f_id }? fv=sfVec3fValue
+    | { ft == field_value::mfcolor_id }? fv=mfColorValue
+    | { ft == field_value::mffloat_id }? fv=mfFloatValue
+    | { ft == field_value::mfint32_id }? fv=mfInt32Value
+    | { ft == field_value::mfrotation_id }? fv=mfRotationValue
+    | { ft == field_value::mfstring_id }? fv=mfStringValue
+    | { ft == field_value::mftime_id }? fv=mfTimeValue
+    | { ft == field_value::mfvec2f_id }? fv=mfVec2fValue
     | fv=mfVec3fValue
     ;
 
 nodeFieldValue[OpenVRML::Browser & browser,
                const OpenVRML::ScopePtr & scope,
-               OpenVRML::FieldValue::Type ft]
+               OpenVRML::field_value::type_id ft]
 returns [OpenVRML::FieldValuePtr fv]
 options { defaultErrorHandler=false; }
 {
-    using OpenVRML::FieldValue;
+    using OpenVRML::field_value;
 }
-    : { ft == FieldValue::sfnode }? fv=sfNodeValue[browser, scope]
+    : { ft == field_value::sfnode_id }? fv=sfNodeValue[browser, scope]
     | fv=mfNodeValue[browser, scope]
     ;
 
 protoNodeFieldValue[OpenVRML::ProtoNodeClass & proto,
                     const OpenVRML::ScopePtr & scope,
-                    OpenVRML::FieldValue::Type ft]
+                    OpenVRML::field_value::type_id ft]
 returns [OpenVRML::FieldValuePtr fv]
 options { defaultErrorHandler=false; }
-    : { ft == OpenVRML::FieldValue::sfnode }?
+    : { ft == OpenVRML::field_value::sfnode_id }?
         fv=protoSfNodeValue[proto, scope]
     | fv=protoMfNodeValue[proto, scope]
     ;
@@ -1369,7 +1369,7 @@ options { defaultErrorHandler=false; }
 {
     bool val(false);
 }
-    : val=boolValue { sbv.reset(new SFBool(val)); }
+    : val=boolValue { sbv.reset(new sfbool(val)); }
     ;
 
 boolValue returns [bool val = false]
@@ -1383,15 +1383,15 @@ options { defaultErrorHandler=false; }
 {
     color c;
 }
-    : colorValue[c] { scv.reset(new SFColor(c)); }
+    : colorValue[c] { scv.reset(new sfcolor(c)); }
     ;
 
 mfColorValue
-returns [OpenVRML::FieldValuePtr mcv = OpenVRML::FieldValuePtr(new MFColor)]
+returns [OpenVRML::FieldValuePtr mcv = OpenVRML::FieldValuePtr(new mfcolor)]
 options { defaultErrorHandler=false; }
 {
     color c;
-    MFColor & colors = static_cast<MFColor &>(*mcv);
+    mfcolor & colors = static_cast<mfcolor &>(*mcv);
 }
     : colorValue[c] { colors.value.push_back(c); }
     | LBRACKET (colorValue[c] { colors.value.push_back(c); })* RBRACKET
@@ -1414,7 +1414,8 @@ colorComponent returns [float val = 0.0f]
 options { defaultErrorHandler=false; }
     : val=floatValue {
             if (val < 0.0 || val > 1.0) {
-                this->reportWarning("Color component values must be from 0 to 1.");
+                this->reportWarning("Color component values must be from 0 to "
+                                    "1.");
                 if (val < 0.0) {
                     val = 0.0;
                 } else if (val > 1.0) {
@@ -1429,15 +1430,15 @@ options { defaultErrorHandler=false; }
 {
     float f;
 }
-    : f=floatValue { sfv.reset(new SFFloat(f)); }
+    : f=floatValue { sfv.reset(new sffloat(f)); }
     ;
 
 mfFloatValue
-returns [OpenVRML::FieldValuePtr mfv = OpenVRML::FieldValuePtr(new MFFloat)]
+returns [OpenVRML::FieldValuePtr mfv = OpenVRML::FieldValuePtr(new mffloat)]
 options { defaultErrorHandler=false; }
 {
     float f;
-    MFFloat & floats = static_cast<MFFloat &>(*mfv);
+    mffloat & floats = static_cast<mffloat &>(*mfv);
 }
     : f=floatValue { floats.value.push_back(f); }
     | LBRACKET (f=floatValue { floats.value.push_back(f); })* RBRACKET
@@ -1483,7 +1484,7 @@ options { defaultErrorHandler=false; }
                                                LT(1)->getLine(),
                                                LT(1)->getColumn());
             }
-            siv.reset(new SFImage(w, h, com, &pixelVector[0]));
+            siv.reset(new sfimage(w, h, com, &pixelVector[0]));
         }
     ;
 
@@ -1492,15 +1493,15 @@ options { defaultErrorHandler=false; }
 {
     long i;
 }
-    : i=intValue { siv.reset(new SFInt32(i)); }
+    : i=intValue { siv.reset(new sfint32(i)); }
     ;
 
 mfInt32Value
-returns [OpenVRML::FieldValuePtr miv = OpenVRML::FieldValuePtr(new MFInt32)]
+returns [OpenVRML::FieldValuePtr miv = OpenVRML::FieldValuePtr(new mfint32)]
 options { defaultErrorHandler=false; }
 {
     long i;
-    MFInt32 & int32s = static_cast<MFInt32 &>(*miv);
+    mfint32 & int32s = static_cast<mfint32 &>(*miv);
 }
     : i=intValue { int32s.value.push_back(i); }
     | LBRACKET (i=intValue { int32s.value.push_back(i); })* RBRACKET
@@ -1518,8 +1519,8 @@ returns [OpenVRML::FieldValuePtr snv]
 {
     OpenVRML::NodePtr n;
 }
-    : n=nodeStatement[browser, scope] { snv.reset(new SFNode(n)); }
-    | KEYWORD_NULL                    { snv.reset(new SFNode); }
+    : n=nodeStatement[browser, scope] { snv.reset(new sfnode(n)); }
+    | KEYWORD_NULL                    { snv.reset(new sfnode); }
     ;
 
 protoSfNodeValue[OpenVRML::ProtoNodeClass & proto,
@@ -1528,16 +1529,16 @@ returns [OpenVRML::FieldValuePtr snv]
 {
     OpenVRML::NodePtr n;
 }
-    : n=protoNodeStatement[proto, scope] { snv.reset(new SFNode(n)); }
-    | KEYWORD_NULL                       { snv.reset(new SFNode); }
+    : n=protoNodeStatement[proto, scope] { snv.reset(new sfnode(n)); }
+    | KEYWORD_NULL                       { snv.reset(new sfnode); }
     ;
 
 mfNodeValue[OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope]
-returns [OpenVRML::FieldValuePtr mnv = OpenVRML::FieldValuePtr(new MFNode)]
+returns [OpenVRML::FieldValuePtr mnv = OpenVRML::FieldValuePtr(new mfnode)]
 {
     OpenVRML::NodePtr n;
-    MFNode & nodes = static_cast<MFNode &>(*mnv);
+    mfnode & nodes = static_cast<mfnode &>(*mnv);
 }
     : n=nodeStatement[browser, scope] { if (n) { nodes.value.push_back(n); } }
     | LBRACKET (
@@ -1549,10 +1550,10 @@ returns [OpenVRML::FieldValuePtr mnv = OpenVRML::FieldValuePtr(new MFNode)]
 
 protoMfNodeValue[OpenVRML::ProtoNodeClass & proto,
                  const OpenVRML::ScopePtr & scope]
-returns [OpenVRML::FieldValuePtr mnv = OpenVRML::FieldValuePtr(new MFNode)]
+returns [OpenVRML::FieldValuePtr mnv = OpenVRML::FieldValuePtr(new mfnode)]
 {
     OpenVRML::NodePtr n;
-    MFNode & nodes = static_cast<MFNode &>(*mnv);
+    mfnode & nodes = static_cast<mfnode &>(*mnv);
 }
     : n=protoNodeStatement[proto, scope] {
             if (n) { nodes.value.push_back(n); }
@@ -1566,14 +1567,14 @@ returns [OpenVRML::FieldValuePtr mnv = OpenVRML::FieldValuePtr(new MFNode)]
 
 sfRotationValue returns [OpenVRML::FieldValuePtr srv]
     { rotation r; }
-    : rotationValue[r] { srv.reset(new SFRotation(r)); }
+    : rotationValue[r] { srv.reset(new sfrotation(r)); }
     ;
 
 mfRotationValue
-returns [OpenVRML::FieldValuePtr mrv = OpenVRML::FieldValuePtr(new MFRotation)]
+returns [OpenVRML::FieldValuePtr mrv = OpenVRML::FieldValuePtr(new mfrotation)]
 {
     rotation r;
-    MFRotation & rotations = static_cast<MFRotation &>(*mrv);
+    mfrotation & rotations = static_cast<mfrotation &>(*mrv);
 }
     : rotationValue[r] { rotations.value.push_back(r); }
     | LBRACKET (rotationValue[r] { rotations.value.push_back(r); })* RBRACKET
@@ -1609,15 +1610,15 @@ options { defaultErrorHandler=false; }
 sfStringValue returns [OpenVRML::FieldValuePtr ssv]
 options { defaultErrorHandler=false; }
     { std::string s; }
-    : s=stringValue { ssv.reset(new SFString(s)); }
+    : s=stringValue { ssv.reset(new sfstring(s)); }
     ;
 
 mfStringValue
-returns [OpenVRML::FieldValuePtr msv = OpenVRML::FieldValuePtr(new MFString)]
+returns [OpenVRML::FieldValuePtr msv = OpenVRML::FieldValuePtr(new mfstring)]
 options { defaultErrorHandler=false; }
 {
     std::string s;
-    MFString & strings = static_cast<MFString &>(*msv);
+    mfstring & strings = static_cast<mfstring &>(*msv);
 }
     : s=stringValue { strings.value.push_back(s); }
     | LBRACKET (s=stringValue { strings.value.push_back(s); })* RBRACKET
@@ -1640,15 +1641,15 @@ options { defaultErrorHandler=false; }
 sfTimeValue returns [OpenVRML::FieldValuePtr stv]
 options { defaultErrorHandler=false; }
     { double t(0.0); }
-    : t=doubleValue { stv.reset(new SFTime(t)); }
+    : t=doubleValue { stv.reset(new sftime(t)); }
     ;
 
 mfTimeValue
-returns [OpenVRML::FieldValuePtr mtv = OpenVRML::FieldValuePtr(new MFTime)]
+returns [OpenVRML::FieldValuePtr mtv = OpenVRML::FieldValuePtr(new mftime)]
 options { defaultErrorHandler=false; }
 {
     double t;
-    MFTime & times = static_cast<MFTime &>(*mtv);
+    mftime & times = static_cast<mftime &>(*mtv);
 }
     : t=doubleValue { times.value.push_back(t); }
     | LBRACKET (t=doubleValue { times.value.push_back(t); })* RBRACKET
@@ -1663,15 +1664,15 @@ options { defaultErrorHandler=false; }
 sfVec2fValue returns [OpenVRML::FieldValuePtr svv]
 options { defaultErrorHandler=false; }
     { vec2f v; }
-    : vec2fValue[v] { svv.reset(new SFVec2f(v)); }
+    : vec2fValue[v] { svv.reset(new sfvec2f(v)); }
     ;
 
 mfVec2fValue
-returns [OpenVRML::FieldValuePtr mvv = OpenVRML::FieldValuePtr(new MFVec2f)]
+returns [OpenVRML::FieldValuePtr mvv = OpenVRML::FieldValuePtr(new mfvec2f)]
 options { defaultErrorHandler=false; }
 {
     vec2f v;
-    MFVec2f & vec2fs = static_cast<MFVec2f &>(*mvv);
+    mfvec2f & vec2fs = static_cast<mfvec2f &>(*mvv);
 }
     : vec2fValue[v] { vec2fs.value.push_back(v); }
     | LBRACKET (vec2fValue[v] { vec2fs.value.push_back(v); })* RBRACKET
@@ -1691,15 +1692,15 @@ options { defaultErrorHandler=false; }
 {
     vec3f v;
 }
-    : vec3fValue[v] { svv.reset(new SFVec3f(v)); }
+    : vec3fValue[v] { svv.reset(new sfvec3f(v)); }
     ;
 
 mfVec3fValue
-returns [OpenVRML::FieldValuePtr mvv = OpenVRML::FieldValuePtr(new MFVec3f)]
+returns [OpenVRML::FieldValuePtr mvv = OpenVRML::FieldValuePtr(new mfvec3f)]
 options { defaultErrorHandler=false; }
 {
     vec3f v;
-    MFVec3f & vec3fs = static_cast<MFVec3f &>(*mvv);
+    mfvec3f & vec3fs = static_cast<mfvec3f &>(*mvv);
 }
     : vec3fValue[v] { vec3fs.value.push_back(v); }
     | LBRACKET (vec3fValue[v] { vec3fs.value.push_back(v); })* RBRACKET

@@ -86,7 +86,7 @@ namespace OpenVRML {
 
         struct Event {
             double timeStamp;
-            FieldValue * value;
+            field_value * value;
             NodePtr toNode;
             std::string toEventIn;
         };
@@ -138,7 +138,7 @@ namespace OpenVRML {
         void sensitiveEvent(Node * object, double timeStamp,
 		            bool isOver, bool isActive, double *point );
 
-        void queueEvent(double timeStamp, FieldValue * value,
+        void queueEvent(double timeStamp, field_value * value,
                         const NodePtr & toNode, const std::string & toEventIn);
 
         bool eventsPending();

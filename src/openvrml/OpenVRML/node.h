@@ -49,11 +49,11 @@ namespace OpenVRML {
         };
 
         Type type;
-        FieldValue::Type fieldType;
+        field_value::type_id fieldType;
         std::string id;
 
         NodeInterface(Type type,
-                      FieldValue::Type fieldType,
+                      field_value::type_id fieldType,
                       const std::string & id);
     };
 
@@ -62,7 +62,8 @@ namespace OpenVRML {
     std::istream & OPENVRML_SCOPE operator>>(std::istream & in,
                                              NodeInterface::Type & type);
 
-    inline bool operator==(const NodeInterface & lhs, const NodeInterface & rhs)
+    inline bool operator==(const NodeInterface & lhs,
+                           const NodeInterface & rhs)
         throw ()
     {
         return lhs.type == rhs.type
@@ -70,7 +71,8 @@ namespace OpenVRML {
                 && lhs.id == rhs.id;
     }
 
-    inline bool operator!=(const NodeInterface & lhs, const NodeInterface & rhs)
+    inline bool operator!=(const NodeInterface & lhs,
+                           const NodeInterface & rhs)
         throw ()
     {
         return !(lhs == rhs);
@@ -152,10 +154,12 @@ namespace OpenVRML {
 
         virtual ~NodeType() throw () = 0;
 
-        FieldValue::Type hasEventIn(const std::string & id) const throw ();
-        FieldValue::Type hasEventOut(const std::string & id) const throw ();
-        FieldValue::Type hasField(const std::string & id) const throw ();
-        FieldValue::Type hasExposedField(const std::string & id) const throw ();
+        field_value::type_id hasEventIn(const std::string & id) const throw ();
+        field_value::type_id hasEventOut(const std::string & id) const
+            throw ();
+        field_value::type_id hasField(const std::string & id) const throw ();
+        field_value::type_id hasExposedField(const std::string & id) const
+            throw ();
 
         virtual const NodeInterfaceSet & getInterfaces() const throw () = 0;
         virtual const NodePtr createNode(const ScopePtr & scope) const
@@ -270,14 +274,14 @@ namespace OpenVRML {
         void initialize(Scene & scene, double timestamp) throw (std::bad_alloc);
         void relocate() throw (std::bad_alloc);
 
-        void setField(const std::string & id, const FieldValue & value)
+        void setField(const std::string & id, const field_value & value)
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        const FieldValue & getField(const std::string & id) const
+        const field_value & getField(const std::string & id) const
             throw (UnsupportedInterface);
-        void processEvent(const std::string & id, const FieldValue & value,
+        void processEvent(const std::string & id, const field_value & value,
                           double timestamp)
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        const FieldValue & getEventOut(const std::string & id) const
+        const field_value & getEventOut(const std::string & id) const
             throw (UnsupportedInterface);
 
         void shutdown(double timestamp) throw ();
@@ -369,7 +373,7 @@ namespace OpenVRML {
         Node(const NodeType & nodeType, const ScopePtr & scope);
 
         // Send a named event from this node.
-        void emitEvent(const std::string & id, const FieldValue & fieldValue,
+        void emitEvent(const std::string & id, const field_value & fieldValue,
                        double timestamp)
             throw (std::bad_cast, std::bad_alloc);
 
@@ -385,15 +389,15 @@ namespace OpenVRML {
         virtual void do_relocate() throw (std::bad_alloc);
 
         virtual void do_setField(const std::string & id,
-                                 const FieldValue & value)
+                                 const field_value & value)
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
-        virtual const FieldValue & do_getField(const std::string & id) const
+        virtual const field_value & do_getField(const std::string & id) const
             throw (UnsupportedInterface) = 0;
         virtual void do_processEvent(const std::string & id,
-                                     const FieldValue & value,
+                                     const field_value & value,
                                      double timestamp)
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
-        virtual const FieldValue & do_getEventOut(const std::string & id) const
+        virtual const field_value & do_getEventOut(const std::string & id) const
             throw (UnsupportedInterface) = 0;
         virtual void do_shutdown(double timestamp) throw ();
     };

@@ -6900,10 +6900,11 @@ bool Image::setURL(const char * const url, const Doc2 * const relative)
     return (this->d_pixels != 0);
 }
 
-bool Image::tryURLs(const MFString & urls, const Doc2 * const relative) {
+bool Image::tryURLs(const mfstring & urls, const Doc2 * const relative) {
     size_t i(0);
     for (; i < urls.value.size(); ++i) {
-        if (!urls.value[i].empty() && setURL(urls.value[i].c_str(), relative)) {
+        if (!urls.value[i].empty()
+            && setURL(urls.value[i].c_str(), relative)) {
             break;
         }
     }

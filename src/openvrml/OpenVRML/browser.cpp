@@ -165,16 +165,17 @@ namespace OpenVRML {
 
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
         virtual void do_setField(const std::string & id,
-                                 const FieldValue & value)
+                                 const field_value & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        virtual const FieldValue & do_getField(const std::string & id) const
+        virtual const field_value & do_getField(const std::string & id) const
                 throw (UnsupportedInterface);
         virtual void do_processEvent(const std::string & id,
-                                      const FieldValue & value,
-                                      double timestamp)
+                                     const field_value & value,
+                                     double timestamp)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        virtual const FieldValue & do_getEventOut(const std::string & id) const
-                throw (UnsupportedInterface);
+        virtual const field_value &
+        do_getEventOut(const std::string & id) const
+            throw (UnsupportedInterface);
         virtual void do_shutdown(double timestamp) throw ();
     };
 
@@ -213,9 +214,9 @@ namespace OpenVRML {
         explicit ProtoNodeClass(Browser & browser) throw ();
         virtual ~ProtoNodeClass() throw ();
 
-        void addEventIn(FieldValue::Type, const std::string & id)
+        void addEventIn(field_value::type_id, const std::string & id)
             throw (std::invalid_argument, std::bad_alloc);
-        void addEventOut(FieldValue::Type, const std::string & id)
+        void addEventOut(field_value::type_id, const std::string & id)
             throw (std::invalid_argument, std::bad_alloc);
         void addExposedField(const std::string & id,
                              const FieldValuePtr & defaultValue)
@@ -299,15 +300,15 @@ public:
     virtual float getFieldOfView() const throw ();
 
 private:
-    virtual void do_setField(const std::string & id, const FieldValue & value)
+    virtual void do_setField(const std::string & id, const field_value & value)
         throw ();
-    virtual const FieldValue & do_getField(const std::string & id) const
+    virtual const field_value & do_getField(const std::string & id) const
         throw ();
     virtual void do_processEvent(const std::string & id,
-                                 const FieldValue & value,
+                                 const field_value & value,
                                  double timestamp)
         throw ();
-    virtual const FieldValue & do_getEventOut(const std::string & id) const
+    virtual const field_value & do_getEventOut(const std::string & id) const
         throw ();
 };
 
@@ -531,7 +532,7 @@ InvalidVrml::~InvalidVrml() throw ()
  */
 
 /**
- * @var FieldValue * Browser::Event::value
+ * @var field_value * Browser::Event::value
  *
  * @brief The value associated with the event.
  */
@@ -997,11 +998,11 @@ void Browser::loadURI(const std::vector<std::string> & uri,
     if (!this->d_navigationInfos.empty()) {
         assert(this->d_navigationInfos.front());
         this->d_navigationInfos.front()
-                ->processEvent("set_bind", SFBool(true), now);
+                ->processEvent("set_bind", sfbool(true), now);
     }
 
     if (this->activeViewpoint != this->defaultViewpoint->toViewpoint()) {
-        this->activeViewpoint->processEvent("set_bind", SFBool(true), now);
+        this->activeViewpoint->processEvent("set_bind", sfbool(true), now);
     }
 
     this->setModified();
@@ -1203,7 +1204,7 @@ double Browser::getFrameRate() const { return this->d_frameRate; }
  * maximum number of events. If we are so far behind that the queue is filled,
  * the oldest events get overwritten.
  */
-void Browser::queueEvent(double timeStamp, FieldValue * value,
+void Browser::queueEvent(double timeStamp, field_value * value,
 			   const NodePtr & toNode,
 			   const std::string & toEventIn) {
     Event * e = &this->d_eventMem[this->d_lastEvent];
@@ -1830,7 +1831,7 @@ UnreachableURI::~UnreachableURI() throw () {}
  */
 
 /**
- * @var MFNode Scene::nodes
+ * @var mfnode Scene::nodes
  *
  * @brief The nodes for the scene.
  */
@@ -2179,33 +2180,36 @@ NodeInterfaceTypeMismatch::~NodeInterfaceTypeMismatch() throw ()
  * @param node          a reference to a node in the prototype implementation.
  * @param interfaceId   an interface of @p node.
  */
-ProtoNode::ImplNodeInterface::ImplNodeInterface(Node & node,
-                                                const std::string & interfaceId):
-        node(node), interfaceId(interfaceId) {}
+ProtoNode::
+ImplNodeInterface::ImplNodeInterface(Node & node,
+                                     const std::string & interfaceId):
+    node(node), interfaceId(interfaceId)
+{}
 
 namespace {
-    const FieldValuePtr defaultFieldValue(const FieldValue::Type fieldType) {
+    const FieldValuePtr defaultFieldValue(const field_value::type_id fieldType)
+    {
         switch (fieldType) {
-        case FieldValue::sfbool:        return FieldValuePtr(new SFBool);
-        case FieldValue::sfcolor:       return FieldValuePtr(new SFColor);
-        case FieldValue::sffloat:       return FieldValuePtr(new SFFloat);
-        case FieldValue::sfimage:       return FieldValuePtr(new SFImage);
-        case FieldValue::sfint32:       return FieldValuePtr(new SFInt32);
-        case FieldValue::sfnode:        return FieldValuePtr(new SFNode);
-        case FieldValue::sfrotation:    return FieldValuePtr(new SFRotation);
-        case FieldValue::sfstring:      return FieldValuePtr(new SFString);
-        case FieldValue::sftime:        return FieldValuePtr(new SFTime);
-        case FieldValue::sfvec2f:       return FieldValuePtr(new SFVec2f);
-        case FieldValue::sfvec3f:       return FieldValuePtr(new SFVec3f);
-        case FieldValue::mfcolor:       return FieldValuePtr(new MFColor);
-        case FieldValue::mffloat:       return FieldValuePtr(new MFFloat);
-        case FieldValue::mfint32:       return FieldValuePtr(new MFInt32);
-        case FieldValue::mfnode:        return FieldValuePtr(new MFNode);
-        case FieldValue::mfrotation:    return FieldValuePtr(new MFRotation);
-        case FieldValue::mfstring:      return FieldValuePtr(new MFString);
-        case FieldValue::mftime:        return FieldValuePtr(new MFTime);
-        case FieldValue::mfvec2f:       return FieldValuePtr(new MFVec2f);
-        case FieldValue::mfvec3f:       return FieldValuePtr(new MFVec3f);
+        case field_value::sfbool_id:     return FieldValuePtr(new sfbool);
+        case field_value::sfcolor_id:    return FieldValuePtr(new sfcolor);
+        case field_value::sffloat_id:    return FieldValuePtr(new sffloat);
+        case field_value::sfimage_id:    return FieldValuePtr(new sfimage);
+        case field_value::sfint32_id:    return FieldValuePtr(new sfint32);
+        case field_value::sfnode_id:     return FieldValuePtr(new sfnode);
+        case field_value::sfrotation_id: return FieldValuePtr(new sfrotation);
+        case field_value::sfstring_id:   return FieldValuePtr(new sfstring);
+        case field_value::sftime_id:     return FieldValuePtr(new sftime);
+        case field_value::sfvec2f_id:    return FieldValuePtr(new sfvec2f);
+        case field_value::sfvec3f_id:    return FieldValuePtr(new sfvec3f);
+        case field_value::mfcolor_id:    return FieldValuePtr(new mfcolor);
+        case field_value::mffloat_id:    return FieldValuePtr(new mffloat);
+        case field_value::mfint32_id:    return FieldValuePtr(new mfint32);
+        case field_value::mfnode_id:     return FieldValuePtr(new mfnode);
+        case field_value::mfrotation_id: return FieldValuePtr(new mfrotation);
+        case field_value::mfstring_id:   return FieldValuePtr(new mfstring);
+        case field_value::mftime_id:     return FieldValuePtr(new mftime);
+        case field_value::mfvec2f_id:    return FieldValuePtr(new mfvec2f);
+        case field_value::mfvec3f_id:    return FieldValuePtr(new mfvec3f);
         default: assert(false);
         }
         return FieldValuePtr(0);
@@ -2321,18 +2325,18 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
         }
 
     private:
-        const SFNode cloneFieldValue(const SFNode & node,
+        const sfnode cloneFieldValue(const sfnode & node,
                                      const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
-            return SFNode(this->cloneNode(node.value, targetScope));
+            return sfnode(this->cloneNode(node.value, targetScope));
         }
 
-        const MFNode cloneFieldValue(const MFNode & nodes,
+        const mfnode cloneFieldValue(const mfnode & nodes,
                                      const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
-            MFNode result(nodes.value.size());
+            mfnode result(nodes.value.size());
             for (size_t i = 0; i < nodes.value.size(); ++i) {
                 result.value[i] = this->cloneNode(nodes.value[i], targetScope);
             }
@@ -2391,16 +2395,17 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
                     try {
                         if (interface->type == NodeInterface::exposedField
                                 || interface->type == NodeInterface::field) {
-                            if (interface->fieldType == FieldValue::sfnode) {
-                                const SFNode & value =
-                                        static_cast<const SFNode &>
+                            if (interface->fieldType
+                                    == field_value::sfnode_id) {
+                                const sfnode & value =
+                                        static_cast<const sfnode &>
                                             (node->getField(interface->id));
                                 result->setField(interface->id,
                                     this->cloneFieldValue(value, targetScope));
                             } else if (interface->fieldType
-                                    == FieldValue::mfnode) {
-                                const MFNode & value =
-                                        static_cast<const MFNode &>
+                                    == field_value::mfnode_id) {
+                                const mfnode & value =
+                                        static_cast<const mfnode &>
                                             (node->getField(interface->id));
                                 result->setField(interface->id,
                                     this->cloneFieldValue(value, targetScope));
@@ -2464,39 +2469,39 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
         std::set<Node *> traversedNodes;
 
     public:
-        const SFNode clone(const SFNode & node,
+        const sfnode clone(const sfnode & node,
                            const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
             assert(this->traversedNodes.empty());
-            const SFNode result = this->cloneFieldValue(node, targetScope);
+            const sfnode result = this->cloneFieldValue(node, targetScope);
             this->traversedNodes.clear();
             return result;
         }
 
-        const MFNode clone(const MFNode & nodes,
+        const mfnode clone(const mfnode & nodes,
                            const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
             assert(this->traversedNodes.empty());
-            const MFNode result = this->cloneFieldValue(nodes, targetScope);
+            const mfnode result = this->cloneFieldValue(nodes, targetScope);
             this->traversedNodes.clear();
             return result;
         }
 
     private:
-        const SFNode cloneFieldValue(const SFNode & node,
+        const sfnode cloneFieldValue(const sfnode & node,
                                      const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
-            return SFNode(this->cloneNode(node.value, targetScope));
+            return sfnode(this->cloneNode(node.value, targetScope));
         }
 
-        const MFNode cloneFieldValue(const MFNode & nodes,
+        const mfnode cloneFieldValue(const mfnode & nodes,
                                      const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
-            MFNode result(nodes.value.size());
+            mfnode result(nodes.value.size());
             for (size_t i = 0; i < nodes.value.size(); ++i) {
                 result.value[i] = this->cloneNode(nodes.value[i], targetScope);
             }
@@ -2533,16 +2538,17 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
                     try {
                         if (interface->type == NodeInterface::exposedField
                                 || interface->type == NodeInterface::field) {
-                            if (interface->fieldType == FieldValue::sfnode) {
-                                const SFNode & value =
-                                        static_cast<const SFNode &>
+                            if (interface->fieldType
+                                    == field_value::sfnode_id) {
+                                const sfnode & value =
+                                        static_cast<const sfnode &>
                                             (node->getField(interface->id));
                                 result->setField(interface->id,
                                     this->cloneFieldValue(value, targetScope));
                             } else if (interface->fieldType
-                                    == FieldValue::mfnode) {
-                                const MFNode & value =
-                                        static_cast<const MFNode &>
+                                    == field_value::mfnode_id) {
+                                const mfnode & value =
+                                        static_cast<const mfnode &>
                                             (node->getField(interface->id));
                                 result->setField(interface->id,
                                     this->cloneFieldValue(value, targetScope));
@@ -2575,13 +2581,13 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
         // copy.
         //
         FieldValuePtr fieldValue;
-        const FieldValue::Type type = i->second->type();
-        if (type == FieldValue::sfnode) {
-            const SFNode & node = static_cast<const SFNode &>(*i->second);
-            fieldValue.reset(new SFNode(nodeCloner.clone(node, protoScope)));
-        } else if (type == FieldValue::mfnode) {
-            const MFNode & nodes = static_cast<const MFNode &>(*i->second);
-            fieldValue.reset(new MFNode(nodeCloner.clone(nodes, protoScope)));
+        const field_value::type_id type = i->second->type();
+        if (type == field_value::sfnode_id) {
+            const sfnode & node = static_cast<const sfnode &>(*i->second);
+            fieldValue.reset(new sfnode(nodeCloner.clone(node, protoScope)));
+        } else if (type == field_value::mfnode_id) {
+            const mfnode & nodes = static_cast<const mfnode &>(*i->second);
+            fieldValue.reset(new mfnode(nodeCloner.clone(nodes, protoScope)));
         } else {
             fieldValue = i->second;
         }
@@ -3141,7 +3147,7 @@ void ProtoNode::do_initialize(const double timestamp) throw (std::bad_alloc)
 }
 
 void ProtoNode::do_setField(const std::string & id,
-                            const FieldValue & value)
+                            const field_value & value)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
     const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
@@ -3180,7 +3186,7 @@ void ProtoNode::do_setField(const std::string & id,
     }
 }
 
-const FieldValue & ProtoNode::do_getField(const std::string & id) const
+const field_value & ProtoNode::do_getField(const std::string & id) const
     throw (UnsupportedInterface)
 {
     //
@@ -3228,7 +3234,7 @@ namespace {
      */
     struct DispatchEvent_ :
             std::unary_function<ProtoNode::ISMap::value_type, void> {
-        DispatchEvent_(const FieldValue & value, const double timestamp):
+        DispatchEvent_(const field_value & value, const double timestamp):
             value(&value),
             timestamp(timestamp)
         {}
@@ -3240,13 +3246,13 @@ namespace {
         }
 
     private:
-        const FieldValue * value;
+        const field_value * value;
         double timestamp;
     };
 }
 
 void ProtoNode::do_processEvent(const std::string & id,
-                                const FieldValue & value,
+                                const field_value & value,
                                 const double timestamp)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
@@ -3270,7 +3276,7 @@ void ProtoNode::do_processEvent(const std::string & id,
     }
 }
 
-const FieldValue & ProtoNode::do_getEventOut(const std::string & id) const
+const field_value & ProtoNode::do_getEventOut(const std::string & id) const
         throw (UnsupportedInterface) {
     //
     // If we have a real eventOut (not an exposedField) ...
@@ -3488,7 +3494,7 @@ ProtoNodeClass::~ProtoNodeClass() throw () {}
  *                                  defined for the prototype.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-void ProtoNodeClass::addEventIn(const FieldValue::Type type,
+void ProtoNodeClass::addEventIn(const field_value::type_id type,
                                 const std::string & id)
         throw (std::invalid_argument, std::bad_alloc) {
     const NodeInterface interface(NodeInterface::eventIn, type, id);
@@ -3505,7 +3511,7 @@ void ProtoNodeClass::addEventIn(const FieldValue::Type type,
  *                                  defined for the prototype.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-void ProtoNodeClass::addEventOut(const FieldValue::Type type,
+void ProtoNodeClass::addEventOut(const field_value::type_id type,
                                  const std::string & id)
         throw (std::invalid_argument, std::bad_alloc) {
     const NodeInterface interface(NodeInterface::eventOut, type, id);
@@ -3705,14 +3711,14 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Anchor node
     //
     static const NodeInterface anchorInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "description"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "parameter"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfstring_id, "description"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "parameter"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
     };
     static const Vrml97NodeInterfaceSet_
             anchorInterfaceSet(anchorInterfaces, anchorInterfaces + 8);
@@ -3724,9 +3730,9 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Appearance node
     //
     static const NodeInterface appearanceInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "material"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texture"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "textureTransform")
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "material"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "texture"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "textureTransform")
     };
     static const Vrml97NodeInterfaceSet_
             appearanceInterfaceSet(appearanceInterfaces,
@@ -3740,14 +3746,14 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // AudioClip node
     //
     static const NodeInterface audioClipInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "description"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "pitch"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "duration_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
+        NodeInterface(NodeInterface::exposedField, field_value::sfstring_id, "description"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "loop"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "pitch"),
+        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "startTime"),
+        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "stopTime"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
+        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "duration_changed"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive")
     };
     static const Vrml97NodeInterfaceSet_
             audioClipInterfaceSet(audioClipInterfaces,
@@ -3761,18 +3767,18 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Background node
     //
     static const NodeInterface backgroundInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "groundAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "groundColor"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "backUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "bottomUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "frontUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "leftUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "rightUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "topUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "skyAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "skyColor"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+        NodeInterface(NodeInterface::eventIn, field_value::sfbool_id, "set_bind"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "groundAngle"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfcolor_id, "groundColor"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "backUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "bottomUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "frontUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "leftUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "rightUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "topUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "skyAngle"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfcolor_id, "skyColor"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isBound")
     };
     static const Vrml97NodeInterfaceSet_
             backgroundInterfaceSet(backgroundInterfaces,
@@ -3786,12 +3792,12 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Billboard node
     //
     static const NodeInterface billboardInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "axisOfRotation"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "axisOfRotation"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
     };
     static const Vrml97NodeInterfaceSet_
             billboardInterfaceSet(billboardInterfaces,
@@ -3805,7 +3811,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Box node
     //
     static const NodeInterface boxInterface =
-            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "size");
+            NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "size");
     static const Vrml97NodeInterfaceSet_
             boxInterfaceSet(&boxInterface, &boxInterface + 1);
     pos = nodeClassMap.find("urn:X-openvrml:node:Box");
@@ -3816,17 +3822,17 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Collision node
     //
     static const NodeInterface collisionInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "collide"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize"),
-        NodeInterface(NodeInterface::field, FieldValue::sfnode, "proxy"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "collideTime")
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "collide"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize"),
+        NodeInterface(NodeInterface::field, field_value::sfnode_id, "proxy"),
+        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "collideTime")
     };
     static const Vrml97NodeInterfaceSet_
-            collisionInterfaceSet(collisionInterfaces, collisionInterfaces + 8);
+        collisionInterfaceSet(collisionInterfaces, collisionInterfaces + 8);
     pos = nodeClassMap.find("urn:X-openvrml:node:Collision");
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Collision",
@@ -3836,7 +3842,9 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Color node
     //
     static const NodeInterface colorInterface =
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "color");
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mfcolor_id,
+                      "color");
     static const Vrml97NodeInterfaceSet_
             colorInterfaceSet(&colorInterface, &colorInterface + 1);
     pos = nodeClassMap.find("urn:X-openvrml:node:Color");
@@ -3847,10 +3855,18 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // ColorInterpolator node
     //
     static const NodeInterface colorInterpolatorInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfcolor, "value_changed")
+        NodeInterface(NodeInterface::eventIn,
+                      field_value::sffloat_id,
+                      "set_fraction"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mffloat_id,
+                      "key"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mfcolor_id,
+                      "keyValue"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfcolor_id,
+                      "value_changed")
     };
     static const Vrml97NodeInterfaceSet_
             colorInterpolatorInterfaceSet(colorInterpolatorInterfaces,
@@ -3864,10 +3880,10 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Cone node
     //
     static const NodeInterface coneInterfaces[] = {
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "bottomRadius"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "height"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "side"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "bottom")
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "bottomRadius"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "height"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "side"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "bottom")
     };
     static const Vrml97NodeInterfaceSet_
             coneInterfaceSet(coneInterfaces, coneInterfaces + 4);
@@ -3879,7 +3895,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Coordinate node
     //
     static const NodeInterface coordinateInterface =
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "point");
+            NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "point");
     static const Vrml97NodeInterfaceSet_
             coordinateInterfaceSet(&coordinateInterface,
                                    &coordinateInterface + 1);
@@ -3892,10 +3908,10 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // CoordinateInterpolator node
     //
     static const NodeInterface coordinateInterpolatorInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed")
+        NodeInterface(NodeInterface::eventIn, field_value::sffloat_id, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "key"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, field_value::mfvec3f_id, "value_changed")
     };
     static const Vrml97NodeInterfaceSet_
             coordinateInterpolatorInterfaceSet(coordinateInterpolatorInterfaces,
@@ -3909,11 +3925,11 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Cylinder node
     //
     static const NodeInterface cylinderInterfaces[] = {
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "bottom"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "height"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "radius"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "side"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "top")
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "bottom"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "height"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "radius"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "side"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "top")
     };
     static const Vrml97NodeInterfaceSet_
             cylinderInterfaceSet(cylinderInterfaces, cylinderInterfaces + 5);
@@ -3926,15 +3942,15 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // CylinderSensor node
     //
     static const NodeInterface cylinderSensorInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "diskAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed")
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "autoOffset"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "diskAngle"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxAngle"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "minAngle"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "offset"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfrotation_id, "rotation_changed"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "trackPoint_changed")
     };
     static const Vrml97NodeInterfaceSet_
             cylinderSensorInterfaceSet(cylinderSensorInterfaces,
@@ -3948,11 +3964,11 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // DirectionalLight node
     //
     static const NodeInterface directionalLightInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on")
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "ambientIntensity"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "color"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "direction"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "intensity"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "on")
     };
     static const Vrml97NodeInterfaceSet_
             directionalLightInterfaceSet(directionalLightInterfaces,
@@ -3966,20 +3982,20 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // ElevationGrid node
     //
     static const NodeInterface elevationGridInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mffloat, "set_height"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "normal"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texCoord"),
-        NodeInterface(NodeInterface::field, FieldValue::mffloat, "height"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "normalPerVertex"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
-        NodeInterface(NodeInterface::field, FieldValue::sfint32, "xDimension"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "xSpacing"),
-        NodeInterface(NodeInterface::field, FieldValue::sfint32, "zDimension"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "zSpacing")
+        NodeInterface(NodeInterface::eventIn, field_value::mffloat_id, "set_height"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "color"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "normal"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "texCoord"),
+        NodeInterface(NodeInterface::field, field_value::mffloat_id, "height"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "ccw"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "colorPerVertex"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "creaseAngle"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "normalPerVertex"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "solid"),
+        NodeInterface(NodeInterface::field, field_value::sfint32_id, "xDimension"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "xSpacing"),
+        NodeInterface(NodeInterface::field, field_value::sfint32_id, "zDimension"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "zSpacing")
     };
     static const Vrml97NodeInterfaceSet_
             elevationGridInterfaceSet(elevationGridInterfaces,
@@ -3994,20 +4010,20 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfvec2f, "set_crossSection"),
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfrotation, "set_orientation"),
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfvec2f, "set_scale"),
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfvec3f, "set_spine"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "beginCap"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "convex"),
-            NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
-            NodeInterface(NodeInterface::field, FieldValue::mfvec2f, "crossSection"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "endCap"),
-            NodeInterface(NodeInterface::field, FieldValue::mfrotation, "orientation"),
-            NodeInterface(NodeInterface::field, FieldValue::mfvec2f, "scale"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
-            NodeInterface(NodeInterface::field, FieldValue::mfvec3f, "spine")
+            NodeInterface(NodeInterface::eventIn, field_value::mfvec2f_id, "set_crossSection"),
+            NodeInterface(NodeInterface::eventIn, field_value::mfrotation_id, "set_orientation"),
+            NodeInterface(NodeInterface::eventIn, field_value::mfvec2f_id, "set_scale"),
+            NodeInterface(NodeInterface::eventIn, field_value::mfvec3f_id, "set_spine"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "beginCap"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "ccw"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "convex"),
+            NodeInterface(NodeInterface::field, field_value::sffloat_id, "creaseAngle"),
+            NodeInterface(NodeInterface::field, field_value::mfvec2f_id, "crossSection"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "endCap"),
+            NodeInterface(NodeInterface::field, field_value::mfrotation_id, "orientation"),
+            NodeInterface(NodeInterface::field, field_value::mfvec2f_id, "scale"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "solid"),
+            NodeInterface(NodeInterface::field, field_value::mfvec3f_id, "spine")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 14);
@@ -4022,11 +4038,11 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "fogType"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "visibilityRange"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+            NodeInterface(NodeInterface::eventIn, field_value::sfbool_id, "set_bind"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "color"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfstring_id, "fogType"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "visibilityRange"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isBound")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
@@ -4040,15 +4056,15 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::field, FieldValue::mfstring, "family"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "horizontal"),
-            NodeInterface(NodeInterface::field, FieldValue::mfstring, "justify"),
-            NodeInterface(NodeInterface::field, FieldValue::sfstring, "language"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "leftToRight"),
-            NodeInterface(NodeInterface::field, FieldValue::sffloat, "size"),
-            NodeInterface(NodeInterface::field, FieldValue::sffloat, "spacing"),
-            NodeInterface(NodeInterface::field, FieldValue::sfstring, "style"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "topToBottom")
+            NodeInterface(NodeInterface::field, field_value::mfstring_id, "family"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "horizontal"),
+            NodeInterface(NodeInterface::field, field_value::mfstring_id, "justify"),
+            NodeInterface(NodeInterface::field, field_value::sfstring_id, "language"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "leftToRight"),
+            NodeInterface(NodeInterface::field, field_value::sffloat_id, "size"),
+            NodeInterface(NodeInterface::field, field_value::sffloat_id, "spacing"),
+            NodeInterface(NodeInterface::field, field_value::sfstring_id, "style"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "topToBottom")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
@@ -4063,11 +4079,11 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
-            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+            NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
+            NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
+            NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
+            NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+            NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
@@ -4082,9 +4098,9 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT")
+            NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "repeatS"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "repeatT")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
@@ -4099,24 +4115,24 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex"),
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex"),
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_normalIndex"),
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_texCoordIndex"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "normal"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texCoord"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
-            NodeInterface(NodeInterface::field, FieldValue::mfint32, "colorIndex"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "convex"),
-            NodeInterface(NodeInterface::field, FieldValue::mfint32, "coordIndex"),
-            NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
-            NodeInterface(NodeInterface::field, FieldValue::mfint32, "normalIndex"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "normalPerVertex"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
-            NodeInterface(NodeInterface::field, FieldValue::mfint32, "texCoordIndex")
+            NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_colorIndex"),
+            NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_coordIndex"),
+            NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_normalIndex"),
+            NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_texCoordIndex"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "color"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "coord"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "normal"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "texCoord"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "ccw"),
+            NodeInterface(NodeInterface::field, field_value::mfint32_id, "colorIndex"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "colorPerVertex"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "convex"),
+            NodeInterface(NodeInterface::field, field_value::mfint32_id, "coordIndex"),
+            NodeInterface(NodeInterface::field, field_value::sffloat_id, "creaseAngle"),
+            NodeInterface(NodeInterface::field, field_value::mfint32_id, "normalIndex"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "normalPerVertex"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "solid"),
+            NodeInterface(NodeInterface::field, field_value::mfint32_id, "texCoordIndex")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 18);
@@ -4131,13 +4147,27 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex"),
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord"),
-            NodeInterface(NodeInterface::field, FieldValue::mfint32, "colorIndex"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
-            NodeInterface(NodeInterface::field, FieldValue::mfint32, "coordIndex")
+            NodeInterface(NodeInterface::eventIn,
+                          field_value::mfint32_id,
+                          "set_colorIndex"),
+            NodeInterface(NodeInterface::eventIn,
+                          field_value::mfint32_id,
+                          "set_coordIndex"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfnode_id,
+                          "color"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfnode_id,
+                          "coord"),
+            NodeInterface(NodeInterface::field,
+                          field_value::mfint32_id,
+                          "colorIndex"),
+            NodeInterface(NodeInterface::field,
+                          field_value::sfbool_id,
+                          "colorPerVertex"),
+            NodeInterface(NodeInterface::field,
+                          field_value::mfint32_id,
+                          "coordIndex")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
@@ -4152,9 +4182,9 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
-            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+            NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
+            NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+            NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
@@ -4168,9 +4198,9 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "level"),
-            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "center"),
-            NodeInterface(NodeInterface::field, FieldValue::mffloat, "range")
+            NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "level"),
+            NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "center"),
+            NodeInterface(NodeInterface::field, field_value::mffloat_id, "range")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
@@ -4184,12 +4214,12 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "diffuseColor"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "emissiveColor"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "shininess"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "specularColor"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "transparency")
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "ambientIntensity"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "diffuseColor"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "emissiveColor"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "shininess"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "specularColor"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "transparency")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
@@ -4204,15 +4234,15 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "speed"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "duration_changed"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
+            NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "loop"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "speed"),
+            NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "startTime"),
+            NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "stopTime"),
+            NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "repeatS"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "repeatT"),
+            NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "duration_changed"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
@@ -4227,13 +4257,13 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "avatarSize"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "headlight"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "speed"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "type"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "visibilityLimit"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+            NodeInterface(NodeInterface::eventIn, field_value::sfbool_id, "set_bind"),
+            NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "avatarSize"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "headlight"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "speed"),
+            NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "type"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "visibilityLimit"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isBound")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
@@ -4248,7 +4278,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterface =
-                NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "vector");
+                NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "vector");
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
         pos = nodeClassMap.find("urn:X-openvrml:node:Normal");
@@ -4262,10 +4292,10 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed")
+            NodeInterface(NodeInterface::eventIn, field_value::sffloat_id, "set_fraction"),
+            NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "key"),
+            NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "keyValue"),
+            NodeInterface(NodeInterface::eventOut, field_value::mfvec3f_id, "value_changed")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
@@ -4280,10 +4310,18 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfrotation, "keyValue"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "value_changed")
+            NodeInterface(NodeInterface::eventIn,
+                          field_value::sffloat_id,
+                          "set_fraction"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::mffloat_id,
+                          "key"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::mfrotation_id,
+                          "keyValue"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sfrotation_id,
+                          "value_changed")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
@@ -4298,9 +4336,15 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfimage, "image"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT")
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfimage_id,
+                          "image"),
+            NodeInterface(NodeInterface::field,
+                          field_value::sfbool_id,
+                          "repeatS"),
+            NodeInterface(NodeInterface::field,
+                          field_value::sfbool_id,
+                          "repeatT")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
@@ -4315,14 +4359,14 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "maxPosition"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "minPosition"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "offset"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "translation_changed")
+            NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "autoOffset"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "maxPosition"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "minPosition"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "offset"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "trackPoint_changed"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "translation_changed")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
@@ -4337,13 +4381,13 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "radius")
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "ambientIntensity"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "attenuation"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "color"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "intensity"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "location"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "on"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "radius")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
@@ -4358,8 +4402,8 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord")
+            NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "color"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "coord")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
@@ -4374,10 +4418,18 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "value_changed")
+            NodeInterface(NodeInterface::eventIn,
+                          field_value::sffloat_id,
+                          "set_fraction"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::mffloat_id,
+                          "key"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::mfvec3f_id,
+                          "keyValue"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sfvec3f_id,
+                          "value_changed")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
@@ -4392,14 +4444,14 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "size"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "position_changed"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "orientation_changed"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "enterTime"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "exitTime")
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "center"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "size"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "position_changed"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfrotation_id, "orientation_changed"),
+            NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "enterTime"),
+            NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "exitTime")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
@@ -4414,10 +4466,10 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "keyValue"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sffloat, "value_changed")
+            NodeInterface(NodeInterface::eventIn, field_value::sffloat_id, "set_fraction"),
+            NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "key"),
+            NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "keyValue"),
+            NodeInterface(NodeInterface::eventOut, field_value::sffloat_id, "value_changed")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
@@ -4432,8 +4484,8 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "appearance"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "geometry")
+            NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "appearance"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "geometry")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
@@ -4447,16 +4499,16 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxBack"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxFront"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minBack"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minFront"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "priority"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "source"),
-            NodeInterface(NodeInterface::field, FieldValue::sfbool, "spatialize")
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "direction"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "intensity"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "location"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxBack"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxFront"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "minBack"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "minFront"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "priority"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "source"),
+            NodeInterface(NodeInterface::field, field_value::sfbool_id, "spatialize")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
@@ -4470,7 +4522,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterface =
-                NodeInterface(NodeInterface::field, FieldValue::sffloat, "radius");
+                NodeInterface(NodeInterface::field, field_value::sffloat_id, "radius");
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
         pos = nodeClassMap.find("urn:X-openvrml:node:Sphere");
@@ -4483,12 +4535,12 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed")
+            NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "autoOffset"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "offset"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfrotation_id, "rotation_changed"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "trackPoint_changed")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
@@ -4503,16 +4555,36 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "beamWidth"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "cutOffAngle"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "radius")
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sffloat_id,
+                          "ambientIntensity"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfvec3f_id,
+                          "attenuation"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sffloat_id,
+                          "beamWidth"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfcolor_id,
+                          "color"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sffloat_id,
+                          "cutOffAngle"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfvec3f_id,
+                          "direction"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sffloat_id,
+                          "intensity"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfvec3f_id,
+                          "location"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfbool_id,
+                          "on"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sffloat_id,
+                          "radius")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
@@ -4527,8 +4599,12 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "choice"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfint32, "whichChoice")
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::mfnode_id,
+                          "choice"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfint32_id,
+                          "whichChoice")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
@@ -4542,10 +4618,18 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "string"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "fontStyle"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "length"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxExtent")
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::mfstring_id,
+                          "string"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfnode_id,
+                          "fontStyle"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::mffloat_id,
+                          "length"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sffloat_id,
+                          "maxExtent")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
@@ -4559,7 +4643,9 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterface =
-                NodeInterface(NodeInterface::exposedField, FieldValue::mfvec2f, "point");
+                NodeInterface(NodeInterface::exposedField,
+                              field_value::mfvec2f_id,
+                              "point");
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
         pos = nodeClassMap.find("urn:X-openvrml:node:TextureCoordinate");
@@ -4573,10 +4659,10 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "center"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "rotation"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "scale"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "translation")
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "center"),
+            NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "rotation"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "scale"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "translation")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
@@ -4591,15 +4677,15 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "cycleInterval"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "cycleTime"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sffloat, "fraction_changed"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "time")
+            NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "cycleInterval"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "loop"),
+            NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "startTime"),
+            NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "stopTime"),
+            NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "cycleTime"),
+            NodeInterface(NodeInterface::eventOut, field_value::sffloat_id, "fraction_changed"),
+            NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
+            NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "time")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
@@ -4614,13 +4700,27 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "hitNormal_changed"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "hitPoint_changed"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec2f, "hitTexCoord_changed"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isOver"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "touchTime")
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfbool_id,
+                          "enabled"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sfvec3f_id,
+                          "hitNormal_changed"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sfvec3f_id,
+                          "hitPoint_changed"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sfvec2f_id,
+                          "hitTexCoord_changed"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sfbool_id,
+                          "isActive"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sfbool_id,
+                          "isOver"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sftime_id,
+                          "touchTime")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
@@ -4635,16 +4735,16 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
-            NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "rotation"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "scale"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "scaleOrientation"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "translation"),
-            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+            NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
+            NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "center"),
+            NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfrotation_id, "rotation"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "scale"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfrotation_id, "scaleOrientation"),
+            NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "translation"),
+            NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+            NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
@@ -4659,14 +4759,29 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "fieldOfView"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "jump"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "orientation"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "position"),
-            NodeInterface(NodeInterface::field, FieldValue::sfstring, "description"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "bindTime"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+            NodeInterface(NodeInterface::eventIn,
+                          field_value::sfbool_id,
+                          "set_bind"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sffloat_id,
+                          "fieldOfView"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfbool_id, "jump"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfrotation_id,
+                          "orientation"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfvec3f_id,
+                          "position"),
+            NodeInterface(NodeInterface::field,
+                          field_value::sfstring_id,
+                          "description"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sftime_id,
+                          "bindTime"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sfbool_id,
+                          "isBound")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
@@ -4681,12 +4796,24 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "size"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "enterTime"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "exitTime"),
-            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfvec3f_id,
+                          "center"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfbool_id,
+                          "enabled"),
+            NodeInterface(NodeInterface::exposedField,
+                          field_value::sfvec3f_id,
+                          "size"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sftime_id,
+                          "enterTime"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sftime_id,
+                          "exitTime"),
+            NodeInterface(NodeInterface::eventOut,
+                          field_value::sfbool_id,
+                          "isActive")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
@@ -4701,8 +4828,12 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     //
     {
         static const NodeInterface nodeInterfaces[] = {
-            NodeInterface(NodeInterface::field, FieldValue::mfstring, "info"),
-            NodeInterface(NodeInterface::field, FieldValue::sfstring, "title")
+            NodeInterface(NodeInterface::field,
+                          field_value::mfstring_id,
+                          "info"),
+            NodeInterface(NodeInterface::field,
+                          field_value::sfstring_id,
+                          "title")
         };
         static const Vrml97NodeInterfaceSet_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
@@ -4811,33 +4942,33 @@ float DefaultViewpoint::getFieldOfView() const throw ()
 }
 
 void DefaultViewpoint::do_setField(const std::string & id,
-                                   const FieldValue & value)
+                                   const field_value & value)
     throw ()
 {
     assert(false);
 }
 
-const FieldValue & DefaultViewpoint::do_getField(const std::string & id) const
+const field_value & DefaultViewpoint::do_getField(const std::string & id) const
     throw ()
 {
     assert(false);
-    static const SFBool value;
+    static const sfbool value;
     return value;
 }
 
 void DefaultViewpoint::do_processEvent(const std::string & id,
-                                       const FieldValue & value,
+                                       const field_value & value,
                                        double timestamp)
     throw ()
 {
     assert(false);
 }
 
-const FieldValue &
+const field_value &
 DefaultViewpoint::do_getEventOut(const std::string & id) const throw ()
 {
     assert(false);
-    static const SFBool value;
+    static const sfbool value;
     return value;
 }
 

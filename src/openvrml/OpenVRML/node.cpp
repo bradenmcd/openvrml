@@ -228,7 +228,7 @@ std::istream & operator>>(std::istream & in, NodeInterface::Type & type)
  * @param id        the name of the interface.
  */
 NodeInterface::NodeInterface(const Type type,
-                             const FieldValue::Type fieldType,
+                             const field_value::type_id fieldType,
                              const std::string & id):
     type(type),
     fieldType(fieldType),
@@ -312,7 +312,8 @@ void NodeInterfaceSet::add(const NodeInterface & nodeInterface)
     throw (std::invalid_argument, std::bad_alloc)
 {
     if (!this->nodeInterfaceSet.insert(nodeInterface).second) {
-        throw std::invalid_argument("Interface conflicts with an interface already in this set.");
+        throw std::invalid_argument("Interface conflicts with an interface "
+                                    "already in this set.");
     }
 }
 
@@ -535,16 +536,17 @@ namespace {
  *
  * @param id    the name of the eventIn.
  *
- * @return the data type of the eventIn, or FieldValue::invalidType if no such
- *      eventIn exists.
+ * @return the data type of the eventIn, or field_value::invalid_type_id if no
+ *         such eventIn exists.
  */
-FieldValue::Type NodeType::hasEventIn(const std::string & id) const throw ()
+field_value::type_id NodeType::hasEventIn(const std::string & id) const
+    throw ()
 {
     const NodeInterfaceSet & interfaces = this->getInterfaces();
     const NodeInterfaceSet::const_iterator end = interfaces.end();
     const NodeInterfaceSet::const_iterator pos =
             std::find_if(interfaces.begin(), end, IsEventIn_(id));
-    if (pos == end) { return FieldValue::invalidType; }
+    if (pos == end) { return field_value::invalid_type_id; }
     return pos->fieldType;
 }
 
@@ -578,16 +580,17 @@ namespace {
  *
  * @param id    the name of the eventOut.
  *
- * @return the data type of the eventOut, or FieldValue::invalidType if no such
- *      eventOut exists.
+ * @return the data type of the eventOut, or field_value::invalid_type_id if no
+ *         such eventOut exists.
  */
-FieldValue::Type NodeType::hasEventOut(const std::string & id) const throw ()
+field_value::type_id NodeType::hasEventOut(const std::string & id) const
+    throw ()
 {
     const NodeInterfaceSet & interfaces = this->getInterfaces();
     const NodeInterfaceSet::const_iterator end = interfaces.end();
     const NodeInterfaceSet::const_iterator pos =
             std::find_if(interfaces.begin(), end, IsEventOut_(id));
-    if (pos == end) { return FieldValue::invalidType; }
+    if (pos == end) { return field_value::invalid_type_id; }
     return pos->fieldType;
 }
 
@@ -616,17 +619,17 @@ namespace {
  *
  * @param id    the name of the exposedField.
  *
- * @return the data type of the exposedField, or FieldValue::invalidType if no
- *      such exposedField exists.
+ * @return the data type of the exposedField, or field_value::invalid_type_id
+ *         if no such exposedField exists.
  */
-FieldValue::Type NodeType::hasExposedField(const std::string & id) const
+field_value::type_id NodeType::hasExposedField(const std::string & id) const
     throw ()
 {
     const NodeInterfaceSet & interfaces = this->getInterfaces();
     const NodeInterfaceSet::const_iterator end = interfaces.end();
     const NodeInterfaceSet::const_iterator pos =
             std::find_if(interfaces.begin(), end, IsExposedField_(id));
-    if (pos == end) { return FieldValue::invalidType; }
+    if (pos == end) { return field_value::invalid_type_id; }
     return pos->fieldType;
 }
 
@@ -654,16 +657,16 @@ namespace {
  *
  * @param id    the name of the field.
  *
- * @return the data type of the field, or FieldValue::invalidType if no such
- *      field exists.
+ * @return the data type of the field, or field_value::invalid_type_id if no
+ *         such field exists.
  */
-FieldValue::Type NodeType::hasField(const std::string & id) const throw ()
+field_value::type_id NodeType::hasField(const std::string & id) const throw ()
 {
     const NodeInterfaceSet & interfaces = this->getInterfaces();
     const NodeInterfaceSet::const_iterator end = interfaces.end();
     const NodeInterfaceSet::const_iterator pos =
             std::find_if(interfaces.begin(), end, IsField_(id));
-    if (pos == end) { return FieldValue::invalidType; }
+    if (pos == end) { return field_value::invalid_type_id; }
     return pos->fieldType;
 }
 
@@ -1030,22 +1033,20 @@ void Node::initialize(Scene & scene, const double timestamp)
                 interface != interfaces.end(); ++interface) {
             if (interface->type == NodeInterface::exposedField
                     || interface->type == NodeInterface::field) {
-                if (interface->fieldType == FieldValue::sfnode) {
-                    assert(dynamic_cast<const SFNode *>
+                if (interface->fieldType == field_value::sfnode_id) {
+                    assert(dynamic_cast<const sfnode *>
                            (&this->getField(interface->id)));
-                    const SFNode & sfnode = static_cast<const SFNode &>
-                                            (this->getField(interface->id));
-                    if (sfnode.value) {
-                        sfnode.value->initialize(scene, timestamp);
-                    }
-                } else if (interface->fieldType == FieldValue::mfnode) {
-                    assert(dynamic_cast<const MFNode *>
+                    const sfnode & sfn = static_cast<const sfnode &>
+                                         (this->getField(interface->id));
+                    if (sfn.value) { sfn.value->initialize(scene, timestamp); }
+                } else if (interface->fieldType == field_value::mfnode_id) {
+                    assert(dynamic_cast<const mfnode *>
                            (&this->getField(interface->id)));
-                    const MFNode & mfnode = static_cast<const MFNode &>
-                                            (this->getField(interface->id));
-                    for (size_t i = 0; i < mfnode.value.size(); ++i) {
-                        if (mfnode.value[i]) {
-                            mfnode.value[i]->initialize(scene, timestamp);
+                    const mfnode & mfn = static_cast<const mfnode &>
+                                         (this->getField(interface->id));
+                    for (size_t i = 0; i < mfn.value.size(); ++i) {
+                        if (mfn.value[i]) {
+                            mfn.value[i]->initialize(scene, timestamp);
                         }
                     }
                 }
@@ -1103,7 +1104,7 @@ void Node::relocate() throw (std::bad_alloc)
  *
  * @pre @p value must be the appropriate type for the interface.
  */
-void Node::setField(const std::string & id, const FieldValue & value)
+void Node::setField(const std::string & id, const field_value & value)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
     this->do_setField(id, value);
@@ -1116,7 +1117,7 @@ void Node::setField(const std::string & id, const FieldValue & value)
  *
  * @throw UnsupportedInterface  if the node has no field named @p id.
  */
-const FieldValue & Node::getField(const std::string & id) const
+const field_value & Node::getField(const std::string & id) const
     throw (UnsupportedInterface)
 {
     return this->do_getField(id);
@@ -1136,7 +1137,7 @@ const FieldValue & Node::getField(const std::string & id) const
  * @pre @p value must be the appropriate type for the interface.
  */
 void Node::processEvent(const std::string & id,
-                        const FieldValue & value,
+                        const field_value & value,
                         const double timestamp)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
@@ -1151,7 +1152,7 @@ void Node::processEvent(const std::string & id,
  *
  * @throw UnsupportedInterface  if the node has no eventOut named @p id.
  */
-const FieldValue & Node::getEventOut(const std::string & id) const
+const field_value & Node::getEventOut(const std::string & id) const
     throw (UnsupportedInterface)
 {
     return this->do_getEventOut(id);
@@ -1178,22 +1179,20 @@ void Node::shutdown(const double timestamp) throw ()
                 interface != interfaces.end(); ++interface) {
             if (interface->type == NodeInterface::exposedField
                     || interface->type == NodeInterface::field) {
-                if (interface->fieldType == FieldValue::sfnode) {
-                    assert(dynamic_cast<const SFNode *>
+                if (interface->fieldType == field_value::sfnode_id) {
+                    assert(dynamic_cast<const sfnode *>
                            (&this->getField(interface->id)));
-                    const SFNode & sfnode = static_cast<const SFNode &>
-                                            (this->getField(interface->id));
-                    if (sfnode.value) {
-                        sfnode.value->shutdown(timestamp);
-                    }
-                } else if (interface->fieldType == FieldValue::mfnode) {
-                    assert(dynamic_cast<const MFNode *>
+                    const sfnode & sfn = static_cast<const sfnode &>
+                                         (this->getField(interface->id));
+                    if (sfn.value) { sfn.value->shutdown(timestamp); }
+                } else if (interface->fieldType == field_value::mfnode_id) {
+                    assert(dynamic_cast<const mfnode *>
                            (&this->getField(interface->id)));
-                    const MFNode & mfnode = static_cast<const MFNode &>
-                                            (this->getField(interface->id));
-                    for (size_t i = 0; i < mfnode.value.size(); ++i) {
-                        if (mfnode.value[i]) {
-                            mfnode.value[i]->shutdown(timestamp);
+                    const mfnode & mfn = static_cast<const mfnode &>
+                                         (this->getField(interface->id));
+                    for (size_t i = 0; i < mfn.value.size(); ++i) {
+                        if (mfn.value[i]) {
+                            mfn.value[i]->shutdown(timestamp);
                         }
                     }
                 }
@@ -1644,16 +1643,16 @@ void Node::addRoute(const std::string & fromEventOut,
 {
     assert(toNode);
 
-    const FieldValue::Type fromInterfaceType =
+    const field_value::type_id fromInterfaceType =
             this->nodeType.hasEventOut(fromEventOut);
-    if (fromInterfaceType == FieldValue::invalidType) {
+    if (fromInterfaceType == field_value::invalid_type_id) {
         throw UnsupportedInterface(this->nodeType, NodeInterface::eventOut,
                                    fromEventOut);
     }
 
-    const FieldValue::Type toInterfaceType =
+    const field_value::type_id toInterfaceType =
             toNode->nodeType.hasEventIn(toEventIn);
-    if (toInterfaceType == FieldValue::invalidType) {
+    if (toInterfaceType == field_value::invalid_type_id) {
         throw UnsupportedInterface(toNode->nodeType, NodeInterface::eventIn,
                                    toEventIn);
     }
@@ -1900,7 +1899,7 @@ void Node::render(Viewer & viewer, VrmlRenderContext context)
  * @brief Send an event from this node.
  */
 void Node::emitEvent(const std::string & id,
-                     const FieldValue & value,
+                     const field_value & value,
                      const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
@@ -1914,7 +1913,7 @@ void Node::emitEvent(const std::string & id,
     for (RouteList::const_iterator itr = this->routes.begin();
             itr != this->routes.end(); ++itr) {
         if (id == itr->fromEventOut) {
-            FieldValue * const eventValue = value.clone().release();
+            field_value * const eventValue = value.clone().release();
             this->getScene()->browser.queueEvent(timestamp, eventValue,
                                                  itr->toNode, itr->toEventIn);
         }
@@ -1930,7 +1929,9 @@ namespace {
         const size_t indent;
 
     public:
-        PrintField_(const Node & node, std::ostream & out, const size_t indent):
+        PrintField_(const Node & node,
+                    std::ostream & out,
+                    const size_t indent):
             node(node), out(out), indent(indent)
         {}
 
@@ -1939,7 +1940,8 @@ namespace {
             if (interface.type == NodeInterface::exposedField
                     || interface.type == NodeInterface::field) {
                 this->out << std::string(this->indent + indentIncrement_, ' ')
-                          << interface.id << ' ' << node.getField(interface.id);
+                          << interface.id << ' '
+                          << node.getField(interface.id);
             }
         }
     };
@@ -3046,7 +3048,7 @@ void NodeTraverser::traverse(Node & node)
 }
 
 /**
- * @brief Traverse an SFNode.
+ * @brief Traverse an sfnode.
  *
  * No guarantee is made about the state of the NodeTraverser instance in the
  * event that this method throws.
@@ -3078,7 +3080,7 @@ void NodeTraverser::traverse(const NodePtr & node)
 }
 
 /**
- * @brief Traverse an MFNode.
+ * @brief Traverse an mfnode.
  *
  * No guarantee is made about the state of the NodeTraverser instance in the
  * event that this method throws.
@@ -3149,16 +3151,16 @@ void NodeTraverser::do_traversal(Node & node)
                 interface != interfaces.end() && !this->halt; ++interface) {
             if (interface->type == NodeInterface::field
                     || interface->type == NodeInterface::exposedField) {
-                if (interface->fieldType == FieldValue::sfnode) {
-                    const SFNode & value =
-                            static_cast<const SFNode &>
+                if (interface->fieldType == field_value::sfnode_id) {
+                    const sfnode & value =
+                            static_cast<const sfnode &>
                                 (node.getField(interface->id));
                     if (value.value) {
                         this->do_traversal(*value.value);
                     }
-                } else if (interface->fieldType == FieldValue::mfnode) {
-                    const MFNode & children =
-                            static_cast<const MFNode &>
+                } else if (interface->fieldType == field_value::mfnode_id) {
+                    const mfnode & children =
+                            static_cast<const mfnode &>
                                 (node.getField(interface->id));
                     for (size_t i = 0; i < children.value.size(); ++i) {
                         if (children.value[i]) {

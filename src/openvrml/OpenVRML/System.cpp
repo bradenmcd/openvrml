@@ -137,7 +137,7 @@ bool System::loadUrl(char *url, int np, char **parameters )
 
 // This won't work under windows or if netscape isn't running...
 
-bool System::loadUrl(const std::string & url, const MFString & parameters)
+bool System::loadUrl(const std::string & url, const mfstring & parameters)
 {
     return false;
 }

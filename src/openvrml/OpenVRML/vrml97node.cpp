@@ -173,15 +173,15 @@ namespace {
     public:
         virtual ~Vrml97NodeType() throw () = 0;
         virtual void setFieldValue(Node & node, const std::string & id,
-                                   const FieldValue &) const
+                                   const field_value &) const
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
-        virtual const FieldValue & getFieldValue(const Node & node,
+        virtual const field_value & getFieldValue(const Node & node,
                                                  const std::string & id) const
             throw (UnsupportedInterface) = 0;
         virtual void dispatchEventIn(Node & node, const std::string & id,
-                                     const FieldValue &, double timestamp) const
+                                     const field_value &, double timestamp) const
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
-        virtual const FieldValue & getEventOutValue(const Node & node,
+        virtual const field_value & getEventOutValue(const Node & node,
                                                     const std::string & id) const
             throw (UnsupportedInterface) = 0;
 
@@ -202,8 +202,8 @@ namespace {
     class NodeFieldPtr {
     public:
         virtual ~NodeFieldPtr() = 0;
-        virtual FieldValue & dereference(NodeT & obj) = 0;
-        virtual const FieldValue & dereference(const NodeT & obj) = 0;
+        virtual field_value & dereference(NodeT & obj) = 0;
+        virtual const field_value & dereference(const NodeT & obj) = 0;
     };
 
     template <typename NodeT>
@@ -222,8 +222,8 @@ namespace {
 
         virtual ~NodeFieldPtrImpl();
 
-        virtual FieldValue & dereference(NodeT &);
-        virtual const FieldValue & dereference(const NodeT &);
+        virtual field_value & dereference(NodeT &);
+        virtual const field_value & dereference(const NodeT &);
     };
 
     template <typename NodeT, typename ConcreteFieldValue>
@@ -231,14 +231,14 @@ namespace {
     {}
 
     template <typename NodeT, typename ConcreteFieldValue>
-    FieldValue &
+    field_value &
     NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::dereference(NodeT & obj)
     {
         return obj.*itsPtr;
     }
 
     template <typename NodeT, typename ConcreteFieldValue>
-    const FieldValue &
+    const field_value &
     NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::dereference(const NodeT & obj)
     {
         return obj.*itsPtr;
@@ -249,7 +249,7 @@ namespace {
     class Vrml97NodeTypeImpl : public Vrml97NodeType {
     public:
         typedef OpenVRML_::SharedPtr<NodeFieldPtr<NodeT> > NodeFieldPtrPtr;
-        typedef void (NodeT::* EventInHandlerPtr)(const FieldValue &, double);
+        typedef void (NodeT::* EventInHandlerPtr)(const field_value &, double);
 
     private:
         NodeInterfaceSet interfaces;
@@ -263,33 +263,33 @@ namespace {
         Vrml97NodeTypeImpl(NodeClass & nodeClass, const std::string & id);
         virtual ~Vrml97NodeTypeImpl() throw ();
 
-        void addEventIn(FieldValue::Type, const std::string & id,
+        void addEventIn(field_value::type_id, const std::string & id,
                         EventInHandlerPtr eventInHandlerPtr)
             throw (UnsupportedInterface, std::bad_alloc);
-        void addEventOut(FieldValue::Type, const std::string & id,
+        void addEventOut(field_value::type_id, const std::string & id,
                          const NodeFieldPtrPtr & eventOutPtrPtr)
             throw (UnsupportedInterface, std::bad_alloc);
-        void addExposedField(FieldValue::Type, const std::string & id,
+        void addExposedField(field_value::type_id, const std::string & id,
                              EventInHandlerPtr eventInHandlerPtr,
                              const NodeFieldPtrPtr & fieldPtrPtr)
             throw (UnsupportedInterface, std::bad_alloc);
-        void addField(FieldValue::Type, const std::string & id,
+        void addField(field_value::type_id, const std::string & id,
                       const NodeFieldPtrPtr & fieldPtrPtr)
             throw (UnsupportedInterface, std::bad_alloc);
 
         virtual void setFieldValue(Node & node, const std::string & id,
-                                   const FieldValue &) const
+                                   const field_value &) const
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        virtual const FieldValue &
+        virtual const field_value &
                 getFieldValue(const Node & node,
                               const std::string & id) const
             throw (UnsupportedInterface);
         virtual void dispatchEventIn(Node & node,
                                      const std::string & id,
-                                     const FieldValue &,
+                                     const field_value &,
                                      double timestamp) const
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        virtual const FieldValue &
+        virtual const field_value &
                 getEventOutValue(const Node & node,
                                  const std::string & id) const
             throw (UnsupportedInterface);
@@ -301,15 +301,15 @@ namespace {
 
     private:
         void do_setFieldValue(NodeT & node, const std::string & id,
-                              const FieldValue &) const
+                              const field_value &) const
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        const FieldValue & do_getFieldValue(const NodeT & node,
+        const field_value & do_getFieldValue(const NodeT & node,
                                             const std::string & id) const
             throw (UnsupportedInterface);
         void do_dispatchEventIn(NodeT & node, const std::string & id,
-                                 const FieldValue &, double timestamp) const
+                                 const field_value &, double timestamp) const
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        const FieldValue & do_getEventOutValue(const NodeT & node,
+        const field_value & do_getEventOutValue(const NodeT & node,
                                                 const std::string & id) const
             throw (UnsupportedInterface);
     };
@@ -326,7 +326,7 @@ namespace {
 
     template <typename NodeT>
     void Vrml97NodeTypeImpl<NodeT>::addEventIn(
-            const FieldValue::Type type,
+            const field_value::type_id type,
             const std::string & id,
             const EventInHandlerPtr eventInHandlerPtr)
         throw (UnsupportedInterface, std::bad_alloc)
@@ -341,7 +341,7 @@ namespace {
 
     template <typename NodeT>
     void Vrml97NodeTypeImpl<NodeT>::addEventOut(
-            const FieldValue::Type type,
+            const field_value::type_id type,
             const std::string & id,
             const NodeFieldPtrPtr & eventOutPtrPtr)
         throw (UnsupportedInterface, std::bad_alloc)
@@ -355,7 +355,7 @@ namespace {
 
     template <typename NodeT>
     void Vrml97NodeTypeImpl<NodeT>::addExposedField(
-            const FieldValue::Type type,
+            const field_value::type_id type,
             const std::string & id,
             const EventInHandlerPtr eventInHandlerPtr,
             const NodeFieldPtrPtr & fieldPtrPtr)
@@ -386,7 +386,7 @@ namespace {
 
     template <typename NodeT>
     void Vrml97NodeTypeImpl<NodeT>::addField(
-            const FieldValue::Type type,
+            const field_value::type_id type,
             const std::string & id,
             const NodeFieldPtrPtr & nodeFieldPtrPtr)
         throw (UnsupportedInterface, std::bad_alloc)
@@ -402,7 +402,7 @@ namespace {
     void Vrml97NodeTypeImpl<NodeT>::setFieldValue(
             Node & node,
             const std::string & id,
-            const FieldValue & newVal) const
+            const field_value & newVal) const
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
     {
         assert(dynamic_cast<NodeT *>(&node));
@@ -410,7 +410,7 @@ namespace {
     }
 
     template <typename NodeT>
-    const FieldValue &
+    const field_value &
     Vrml97NodeTypeImpl<NodeT>::getFieldValue(const Node & node,
                                              const std::string & id) const
         throw (UnsupportedInterface)
@@ -423,7 +423,7 @@ namespace {
     void
     Vrml97NodeTypeImpl<NodeT>::dispatchEventIn(Node & node,
                                                const std::string & id,
-                                               const FieldValue & value,
+                                               const field_value & value,
                                                const double timestamp) const
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
     {
@@ -433,7 +433,7 @@ namespace {
     }
 
     template <typename NodeT>
-    const FieldValue &
+    const field_value &
     Vrml97NodeTypeImpl<NodeT>::getEventOutValue(const Node & node,
                                                 const std::string & id) const
         throw (UnsupportedInterface)
@@ -461,7 +461,7 @@ namespace {
     void Vrml97NodeTypeImpl<NodeT>::do_setFieldValue(
             NodeT & node,
             const std::string & id,
-            const FieldValue & newVal) const
+            const field_value & newVal) const
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
     {
         typename FieldValueMap::iterator itr = this->fieldValueMap.find(id);
@@ -472,7 +472,7 @@ namespace {
     }
 
     template <typename NodeT>
-    const FieldValue &
+    const field_value &
     Vrml97NodeTypeImpl<NodeT>::do_getFieldValue(const NodeT & node,
                                                 const std::string & id) const
         throw (UnsupportedInterface)
@@ -489,7 +489,7 @@ namespace {
     void Vrml97NodeTypeImpl<NodeT>::do_dispatchEventIn(
             NodeT & node,
             const std::string & id,
-            const FieldValue & value,
+            const field_value & value,
             const double timestamp) const
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
     {
@@ -507,7 +507,7 @@ namespace {
     }
 
     template <typename NodeT>
-    const FieldValue &
+    const field_value &
     Vrml97NodeTypeImpl<NodeT>::do_getEventOutValue(
             const NodeT & node,
             const std::string & id) const
@@ -556,7 +556,7 @@ AbstractBase::~AbstractBase() throw ()
  * @brief Set a field value for a node.
  *
  * @param id    a field name.
- * @param value a FieldValue.
+ * @param value a field_value.
  *
  * @exception UnsupportedInterface  if the node has no field @p id.
  * @exception std::bad_cast         if @p value is not the correct type.
@@ -565,7 +565,7 @@ AbstractBase::~AbstractBase() throw ()
  * @pre @p value must be of the correct type.
  */
 void AbstractBase::do_setField(const std::string & id,
-                               const FieldValue & value)
+                               const field_value & value)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
@@ -580,7 +580,7 @@ void AbstractBase::do_setField(const std::string & id,
  *
  * @exception UnsupportedInterface  if the node has no field @p id.
  */
-const FieldValue & AbstractBase::do_getField(const std::string & id) const
+const field_value & AbstractBase::do_getField(const std::string & id) const
     throw (UnsupportedInterface)
 {
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
@@ -592,7 +592,7 @@ const FieldValue & AbstractBase::do_getField(const std::string & id) const
  * @brief Process an event.
  *
  * @param id        an eventIn name.
- * @param value     a FieldValue.
+ * @param value     a field_value.
  * @param timestamp the current time.
  *
  * @exception UnsupportedInterface  if the node has no eventIn @p id.
@@ -602,7 +602,7 @@ const FieldValue & AbstractBase::do_getField(const std::string & id) const
  * @pre @p value must be of the correct type.
  */
 void AbstractBase::do_processEvent(const std::string & id,
-                                   const FieldValue & value,
+                                   const field_value & value,
                                    const double timestamp)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
@@ -618,7 +618,7 @@ void AbstractBase::do_processEvent(const std::string & id,
  *
  * @exception UnsupportedInterface  if the node has no eventOut @p id.
  */
-const FieldValue & AbstractBase::do_getEventOut(const std::string & id) const
+const field_value & AbstractBase::do_getEventOut(const std::string & id) const
     throw (UnsupportedInterface)
 {
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
@@ -772,17 +772,17 @@ const ColorNode * AbstractIndexedSet::getColor() const throw ()
 /**
  * @brief set_color eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void AbstractIndexedSet::processSet_color(const FieldValue & sfnode,
+void AbstractIndexedSet::processSet_color(const field_value & value,
                                           const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->color = dynamic_cast<const SFNode &>(sfnode);
+    this->color = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("color_changed", this->color, timestamp);
 }
@@ -790,34 +790,34 @@ void AbstractIndexedSet::processSet_color(const FieldValue & sfnode,
 /**
  * @brief set_colorIndex eventIn handler.
  *
- * @param mfint32   an MFInt32 value.
+ * @param value     an mfint32 value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfint32 is not an MFInt32.
+ * @exception std::bad_cast     if @p value is not an mfint32.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void AbstractIndexedSet::processSet_colorIndex(const FieldValue & mfint32,
+void AbstractIndexedSet::processSet_colorIndex(const field_value & value,
                                                const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->colorIndex = dynamic_cast<const MFInt32 &>(mfint32);
+    this->colorIndex = dynamic_cast<const mfint32 &>(value);
     this->setModified();
 }
 
 /**
  * @brief set_coord eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void AbstractIndexedSet::processSet_coord(const FieldValue & sfnode,
+void AbstractIndexedSet::processSet_coord(const field_value & value,
                                           const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->coord = dynamic_cast<const SFNode &>(sfnode);
+    this->coord = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("coord_changed", this->coord, timestamp);
 }
@@ -825,17 +825,17 @@ void AbstractIndexedSet::processSet_coord(const FieldValue & sfnode,
 /**
  * @brief set_coordIndex eventIn handler.
  *
- * @param mfint32   an MFInt32 value.
+ * @param value     an mfint32 value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfint32 is not an MFInt32.
+ * @exception std::bad_cast     if @p value is not an mfint32.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void AbstractIndexedSet::processSet_coordIndex(const FieldValue & mfint32,
+void AbstractIndexedSet::processSet_coordIndex(const field_value & value,
                                                const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->coordIndex = dynamic_cast<const MFInt32 &>(mfint32);
+    this->coordIndex = dynamic_cast<const mfint32 &>(value);
     this->setModified();
 }
 
@@ -890,16 +890,16 @@ void AbstractLight::renderScoped(Viewer & viewer)
 /**
  * @brief set_ambientIntensity eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an SFFloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void AbstractLight::processSet_ambientIntensity(const FieldValue & sffloat,
+void AbstractLight::processSet_ambientIntensity(const field_value & value,
                                                 const double timestamp)
     throw (std::bad_cast)
 {
-    this->ambientIntensity = dynamic_cast<const SFFloat &>(sffloat);
+    this->ambientIntensity = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("ambientIntensity_changed", this->ambientIntensity,
                     timestamp);
@@ -908,16 +908,16 @@ void AbstractLight::processSet_ambientIntensity(const FieldValue & sffloat,
 /**
  * @brief set_color eventIn handler.
  *
- * @param sfcolor   an SFColor value.
+ * @param value     an sfcolor value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfcolor is not an SFColor.
+ * @exception std::bad_cast if @p value is not an sfcolor.
  */
-void AbstractLight::processSet_color(const FieldValue & sfcolor,
+void AbstractLight::processSet_color(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast)
 {
-    this->color = dynamic_cast<const SFColor &>(sfcolor);
+    this->color = dynamic_cast<const sfcolor &>(value);
     this->setModified();
     this->emitEvent("color_changed", this->color, timestamp);
 }
@@ -925,16 +925,16 @@ void AbstractLight::processSet_color(const FieldValue & sfcolor,
 /**
  * @brief set_intensity eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void AbstractLight::processSet_intensity(const FieldValue & sffloat,
+void AbstractLight::processSet_intensity(const field_value & value,
                                          const double timestamp)
     throw (std::bad_cast)
 {
-    this->intensity = dynamic_cast<const SFFloat &>(sffloat);
+    this->intensity = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("intensity_changed", this->intensity, timestamp);
 }
@@ -942,16 +942,16 @@ void AbstractLight::processSet_intensity(const FieldValue & sffloat,
 /**
  * @brief set_on eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void AbstractLight::processSet_on(const FieldValue & sfbool,
+void AbstractLight::processSet_on(const field_value & value,
                                   const double timestamp)
     throw (std::bad_cast)
 {
-    this->on = dynamic_cast<const SFBool &>(sfbool);
+    this->on = dynamic_cast<const sfbool &>(value);
     this->setModified();
     this->emitEvent("on_changed", this->on, timestamp);
 }
@@ -1045,14 +1045,14 @@ const NodeTypePtr AnchorClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "description"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "parameter"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfstring_id, "description"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "parameter"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Anchor>(*this, id));
     Vrml97NodeTypeImpl<Anchor> & anchorNodeType =
@@ -1073,40 +1073,40 @@ const NodeTypePtr AnchorClass::createType(const std::string & id,
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Anchor::processSet_children,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, MFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, mfnode>
                                     (&Anchor::children)));
         } else if (*itr == supportedInterfaces[3]) {
             anchorNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &Anchor::processSet_description,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, SFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, sfstring>
                                     (&Anchor::description)));
         } else if (*itr == supportedInterfaces[4]) {
             anchorNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &Anchor::processSet_parameter,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, mfstring>
                                     (&Anchor::parameter)));
         } else if (*itr == supportedInterfaces[5]) {
             anchorNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &Anchor::processSet_url,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, mfstring>
                                     (&Anchor::url)));
         } else if (*itr == supportedInterfaces[6]) {
             anchorNodeType.addField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, sfvec3f>
                                     (&Anchor::bboxCenter)));
         } else if (*itr == supportedInterfaces[7]) {
             anchorNodeType.addField(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, sfvec3f>
                                 (&Anchor::bboxSize)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -1146,52 +1146,52 @@ Anchor::~Anchor() throw ()
 /**
  * @brief set_description eventIn handler.
  *
- * @param sfstring  an SFString value.
+ * @param value     an sfstring value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfstring is not an SFString.
+ * @exception std::bad_cast     if @p value is not an sfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Anchor::processSet_description(const FieldValue & sfstring,
+void Anchor::processSet_description(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->description = dynamic_cast<const SFString &>(sfstring);
-    this->emitEvent("description_changed", sfstring, timestamp);
+    this->description = dynamic_cast<const sfstring &>(value);
+    this->emitEvent("description_changed", this->description, timestamp);
 }
 
 /**
  * @brief set_parameter eventIn handler.
  *
- * @param mfstring  an MFString value.
+ * @param value     an mfstring value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Anchor::processSet_parameter(const FieldValue & mfstring,
+void Anchor::processSet_parameter(const field_value & value,
                                   const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->parameter = dynamic_cast<const MFString &>(mfstring);
-    this->emitEvent("parameter_changed", mfstring, timestamp);
+    this->parameter = dynamic_cast<const mfstring &>(value);
+    this->emitEvent("parameter_changed", this->parameter, timestamp);
 }
 
 /**
  * @brief set_url eventIn handler.
  *
- * @param mfstring  an MFString value.
+ * @param value     an mfstring value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Anchor::processSet_url(const FieldValue & mfstring,
+void Anchor::processSet_url(const field_value & value,
                             const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->url = dynamic_cast<const MFString &>(mfstring);
-    this->emitEvent("url_changed", mfstring, timestamp);
+    this->url = dynamic_cast<const mfstring &>(value);
+    this->emitEvent("url_changed", this->url, timestamp);
 }
 
 /**
@@ -1278,9 +1278,9 @@ AppearanceClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "material"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texture"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "textureTransform")
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "material"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "texture"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "textureTransform")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Appearance>(*this, id));
     Vrml97NodeTypeImpl<Appearance> & appearanceNodeType =
@@ -1293,21 +1293,21 @@ AppearanceClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &Appearance::processSet_material,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Appearance, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Appearance, sfnode>
                                     (&Appearance::material)));
         } else if (*itr == supportedInterfaces[1]) {
             appearanceNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &Appearance::processSet_texture,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Appearance, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Appearance, sfnode>
                                     (&Appearance::texture)));
         } else if (*itr == supportedInterfaces[2]) {
             appearanceNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Appearance::processSet_textureTransform,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Appearance, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Appearance, sfnode>
                                     (&Appearance::textureTransform)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -1344,55 +1344,57 @@ Appearance::~Appearance() throw ()
 /**
  * @brief set_material eventIn handler.
  *
- * @param sfnode    an SFNode value; should be a Material node.
+ * @param value     an sfnode value; should be a Material node.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Appearance::processSet_material(const FieldValue & sfnode,
+void Appearance::processSet_material(const field_value & value,
                                      double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->material = dynamic_cast<const SFNode &>(sfnode);
+    this->material = dynamic_cast<const sfnode &>(value);
     this->setModified();
-    this->emitEvent("material_changed", sfnode, timestamp);
+    this->emitEvent("material_changed", this->material, timestamp);
 }
 
 /**
  * @brief set_texture eventIn handler.
  *
- * @param sfnode    an SFNode value; should be a Texture node.
+ * @param value     an sfnode value; should be a Texture node.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Appearance::processSet_texture(const FieldValue & sfnode,
+void Appearance::processSet_texture(const field_value & value,
                                     double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->texture = dynamic_cast<const SFNode &>(sfnode);
+    this->texture = dynamic_cast<const sfnode &>(value);
     this->setModified();
-    this->emitEvent("texture_changed", sfnode, timestamp);
+    this->emitEvent("texture_changed", this->texture, timestamp);
 }
 
 /**
  * @brief set_textureTransform eventIn handler.
  *
- * @param sfnode    an SFNode value; should be a TextureTransform node.
+ * @param value     an sfnode value; should be a TextureTransform node.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Appearance::processSet_textureTransform(const FieldValue & sfnode,
+void Appearance::processSet_textureTransform(const field_value & value,
                                              double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->textureTransform = dynamic_cast<const SFNode &>(sfnode);
+    this->textureTransform = dynamic_cast<const sfnode &>(value);
     this->setModified();
-    this->emitEvent("textureTransform_changed", sfnode, timestamp);
+    this->emitEvent("textureTransform_changed",
+                    this->textureTransform,
+                    timestamp);
 }
 
 /**
@@ -1483,7 +1485,7 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
 /**
  * @brief Get the material node.
  *
- * @returns an SFNode object containing the Material node associated with
+ * @returns an sfnode object containing the Material node associated with
  *          this Appearance.
  */
 const NodePtr & Appearance::getMaterial() const throw ()
@@ -1494,7 +1496,7 @@ const NodePtr & Appearance::getMaterial() const throw ()
 /**
  * @brief Get the texture node.
  *
- * @return an SFNode object containing the texture node associated with
+ * @return an sfnode object containing the texture node associated with
  *         this Appearance.
  */
 const NodePtr & Appearance::getTexture() const throw ()
@@ -1505,7 +1507,7 @@ const NodePtr & Appearance::getTexture() const throw ()
 /**
  * @brief Get the texture transform node.
  *
- * @return an SFNode object containing the TextureTransform node
+ * @return an sfnode object containing the TextureTransform node
  *         associated with this Appearance.
  */
 const NodePtr & Appearance::getTextureTransform() const throw ()
@@ -1553,14 +1555,14 @@ AudioClipClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "description"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "pitch"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "duration_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
+        NodeInterface(NodeInterface::exposedField, field_value::sfstring_id, "description"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "loop"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "pitch"),
+        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "startTime"),
+        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "stopTime"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
+        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "duration_changed"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<AudioClip>(*this, id));
     Vrml97NodeTypeImpl<AudioClip> & audioClipNodeType =
@@ -1573,54 +1575,54 @@ AudioClipClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &AudioClip::processSet_description,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, SFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sfstring>
                                     (&AudioClip::description)));
         } else if (*itr == supportedInterfaces[1]) {
             audioClipNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &AudioClip::processSet_loop,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sfbool>
                                     (&AudioClip::loop)));
         } else if (*itr == supportedInterfaces[2]) {
             audioClipNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &AudioClip::processSet_pitch,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sffloat>
                                     (&AudioClip::pitch)));
         } else if (*itr == supportedInterfaces[3]) {
             audioClipNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &AudioClip::processSet_startTime,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sftime>
                                     (&AudioClip::startTime)));
         } else if (*itr == supportedInterfaces[4]) {
             audioClipNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &AudioClip::processSet_stopTime,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sftime>
                                     (&AudioClip::stopTime)));
         } else if (*itr == supportedInterfaces[5]) {
             audioClipNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &AudioClip::processSet_url,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, mfstring>
                                     (&AudioClip::url)));
         } else if (*itr == supportedInterfaces[6]) {
             audioClipNodeType.addEventOut(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sftime>
                                     (&AudioClip::duration)));
         } else if (*itr == supportedInterfaces[7]) {
             audioClipNodeType.addEventOut(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sfbool>
                                     (&AudioClip::active)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -1787,32 +1789,32 @@ void AudioClip::do_shutdown(const double timestamp) throw ()
 /**
  * @brief set_description eventIn handler.
  *
- * @param sfstring  an SFString.
+ * @param value     an sfstring.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfstring is not an SFString.
+ * @exception std::bad_cast     if @p value is not an sfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void AudioClip::processSet_description(const FieldValue & sfstring,
+void AudioClip::processSet_description(const field_value & value,
                                        const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->description = dynamic_cast<const SFString &>(sfstring);
+    this->description = dynamic_cast<const sfstring &>(value);
     this->emitEvent("description_changed", this->description, timestamp);
 }
 
 /**
  * @brief set_loop eventIn handler.
  *
- * @param sfbool    an SFBool.
+ * @param value     an sfbool.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfbool is not an SFBool.
+ * @exception std::bad_cast     if @p value is not an sfbool.
  */
-void AudioClip::processSet_loop(const FieldValue & sfbool, double timestamp)
+void AudioClip::processSet_loop(const field_value & value, double timestamp)
     throw (std::bad_cast)
 {
-    this->loop = dynamic_cast<const SFBool &>(sfbool);
+    this->loop = dynamic_cast<const sfbool &>(value);
     this->setModified();
     this->emitEvent("loop_changed", this->loop, timestamp);
 }
@@ -1820,15 +1822,15 @@ void AudioClip::processSet_loop(const FieldValue & sfbool, double timestamp)
 /**
  * @brief set_pitch eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  */
-void AudioClip::processSet_pitch(const FieldValue & sffloat, double timestamp)
+void AudioClip::processSet_pitch(const field_value & value, double timestamp)
     throw (std::bad_cast)
 {
-    this->pitch = dynamic_cast<const SFFloat &>(sffloat);
+    this->pitch = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("pitch_changed", this->pitch, timestamp);
 }
@@ -1836,16 +1838,16 @@ void AudioClip::processSet_pitch(const FieldValue & sffloat, double timestamp)
 /**
  * @brief set_startTime eventIn handler.
  *
- * @param sftime    an SFTime.
+ * @param value     an sftime.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sftime is not an SFTime.
+ * @exception std::bad_cast     if @p value is not an sftime.
  */
-void AudioClip::processSet_startTime(const FieldValue & sftime,
+void AudioClip::processSet_startTime(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast)
 {
-    this->startTime = dynamic_cast<const SFTime &>(sftime);
+    this->startTime = dynamic_cast<const sftime &>(value);
     this->setModified();
     this->emitEvent("startTime_changed", this->startTime, timestamp);
 }
@@ -1853,16 +1855,16 @@ void AudioClip::processSet_startTime(const FieldValue & sftime,
 /**
  * @brief set_stopTime eventIn handler.
  *
- * @param sftime    an SFTime.
+ * @param value     an sftime.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sftime is not an SFTime.
+ * @exception std::bad_cast     if @p value is not an sftime.
  */
-void AudioClip::processSet_stopTime(const FieldValue & sftime,
+void AudioClip::processSet_stopTime(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast)
 {
-    this->stopTime = dynamic_cast<const SFTime &>(sftime);
+    this->stopTime = dynamic_cast<const sftime &>(value);
     this->setModified();
     this->emitEvent("stopTime_changed", this->stopTime, timestamp);
 }
@@ -1870,17 +1872,17 @@ void AudioClip::processSet_stopTime(const FieldValue & sftime,
 /**
  * @brief set_url eventIn handler.
  *
- * @param mfstring  an MFString.
+ * @param value     an mfstring.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void AudioClip::processSet_url(const FieldValue & mfstring,
+void AudioClip::processSet_url(const field_value & value,
                                const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->url = dynamic_cast<const MFString &>(mfstring);
+    this->url = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("url_changed", this->url, timestamp);
 }
@@ -2017,7 +2019,7 @@ void BackgroundClass::initialize(ViewpointNode * initialViewpoint,
     throw ()
 {
     if (this->first) {
-        this->first->processEvent("set_bind", SFBool(true), timestamp);
+        this->first->processEvent("set_bind", sfbool(true), timestamp);
     }
 }
 
@@ -2025,7 +2027,7 @@ namespace {
     /**
      * @brief Load and scale textures as needed.
      */
-    Image * getTexture(const MFString & urls, Doc2 & baseDoc,
+    Image * getTexture(const mfstring & urls, Doc2 & baseDoc,
                        Image * tex, int thisIndex, Viewer & viewer)
     {
         // Check whether the url has already been loaded
@@ -2182,18 +2184,18 @@ BackgroundClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "groundAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "groundColor"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "backUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "bottomUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "frontUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "leftUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "rightUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "topUrl"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "skyAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "skyColor"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+        NodeInterface(NodeInterface::eventIn, field_value::sfbool_id, "set_bind"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "groundAngle"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfcolor_id, "groundColor"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "backUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "bottomUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "frontUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "leftUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "rightUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "topUrl"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "skyAngle"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfcolor_id, "skyColor"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Background>(*this, id));
     Vrml97NodeTypeImpl<Background> & backgroundNodeType =
@@ -2210,76 +2212,76 @@ BackgroundClass::createType(const std::string & id,
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &Background::processSet_groundAngle,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mffloat>
                                     (&Background::groundAngle)));
         } else if (*itr == supportedInterfaces[2]) {
             backgroundNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Background::processSet_groundColor,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, MFColor>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfcolor>
                                     (&Background::groundColor)));
         } else if (*itr == supportedInterfaces[3]) {
             backgroundNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &Background::processSet_backUrl,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::backUrl)));
         } else if (*itr == supportedInterfaces[4]) {
             backgroundNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &Background::processSet_bottomUrl,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::bottomUrl)));
         } else if (*itr == supportedInterfaces[5]) {
             backgroundNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &Background::processSet_frontUrl,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::frontUrl)));
         } else if (*itr == supportedInterfaces[6]) {
             backgroundNodeType.addExposedField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
                 &Background::processSet_leftUrl,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::leftUrl)));
         } else if (*itr == supportedInterfaces[7]) {
             backgroundNodeType.addExposedField(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
                 &Background::processSet_rightUrl,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::rightUrl)));
         } else if (*itr == supportedInterfaces[8]) {
             backgroundNodeType.addExposedField(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
                 &Background::processSet_topUrl,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::topUrl)));
         } else if (*itr == supportedInterfaces[9]) {
             backgroundNodeType.addExposedField(
                 supportedInterfaces[9].fieldType,
                 supportedInterfaces[9].id,
                 &Background::processSet_skyAngle,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mffloat>
                                     (&Background::skyAngle)));
         } else if (*itr == supportedInterfaces[10]) {
             backgroundNodeType.addExposedField(
                 supportedInterfaces[10].fieldType,
                 supportedInterfaces[10].id,
                 &Background::processSet_skyColor,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, MFColor>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfcolor>
                                     (&Background::skyColor)));
         } else if (*itr == supportedInterfaces[11]) {
             backgroundNodeType.addEventOut(
                 supportedInterfaces[11].fieldType,
                 supportedInterfaces[11].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, sfbool>
                                     (&Background::bound)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -2348,17 +2350,17 @@ void Background::do_shutdown(const double timestamp) throw ()
 /**
  * @brief set_bind eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfbool is not an SFBool.
+ * @exception std::bad_cast     if @p value is not an sfbool.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_bind(const FieldValue & sfbool,
+void Background::processSet_bind(const field_value & value,
                                  const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    const SFBool & bind = dynamic_cast<const SFBool &>(sfbool);
+    const sfbool & bind = dynamic_cast<const sfbool &>(value);
     assert(dynamic_cast<BackgroundClass *>(&this->nodeType.nodeClass));
     BackgroundClass & nodeClass =
             static_cast<BackgroundClass &>(this->nodeType.nodeClass);
@@ -2372,17 +2374,17 @@ void Background::processSet_bind(const FieldValue & sfbool,
 /**
  * @brief set_groundAngle eventIn handler.
  *
- * @param mffloat   an MFFloat.
+ * @param value     an mffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_groundAngle(const FieldValue & mffloat,
+void Background::processSet_groundAngle(const field_value & value,
                                         const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->groundAngle = dynamic_cast<const MFFloat &>(mffloat);
+    this->groundAngle = dynamic_cast<const mffloat &>(value);
     this->setModified();
     this->emitEvent("groundAngle_changed", this->groundAngle, timestamp);
 }
@@ -2390,17 +2392,17 @@ void Background::processSet_groundAngle(const FieldValue & mffloat,
 /**
  * @brief set_groundColor eventIn handler.
  *
- * @param mfcolor   an MFColor.
+ * @param value     an mfcolor.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfcolor is not an MFColor.
+ * @exception std::bad_cast     if @p value is not an mfcolor.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_groundColor(const FieldValue & mfcolor,
+void Background::processSet_groundColor(const field_value & value,
                                         const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->groundColor = dynamic_cast<const MFColor &>(mfcolor);
+    this->groundColor = dynamic_cast<const mfcolor &>(value);
     this->setModified();
     this->emitEvent("groundColor_changed", this->groundColor, timestamp);
 }
@@ -2408,17 +2410,17 @@ void Background::processSet_groundColor(const FieldValue & mfcolor,
 /**
  * @brief set_backUrl eventIn handler.
  *
- * @param mfstring  an MFString.
+ * @param value     an mfstring.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_backUrl(const FieldValue & mfstring,
+void Background::processSet_backUrl(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->backUrl = dynamic_cast<const MFString &>(mfstring);
+    this->backUrl = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("backUrl_changed", this->backUrl, timestamp);
 }
@@ -2426,17 +2428,17 @@ void Background::processSet_backUrl(const FieldValue & mfstring,
 /**
  * @brief set_bottomUrl eventIn handler.
  *
- * @param mfstring  an MFString.
+ * @param value     an mfstring.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_bottomUrl(const FieldValue & mfstring,
+void Background::processSet_bottomUrl(const field_value & value,
                                       const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->bottomUrl = dynamic_cast<const MFString &>(mfstring);
+    this->bottomUrl = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("bottomUrl_changed", this->bottomUrl, timestamp);
 }
@@ -2444,17 +2446,17 @@ void Background::processSet_bottomUrl(const FieldValue & mfstring,
 /**
  * @brief set_frontUrl eventIn handler.
  *
- * @param mfstring  an MFString.
+ * @param value     an mfstring.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_frontUrl(const FieldValue & mfstring,
+void Background::processSet_frontUrl(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->frontUrl = dynamic_cast<const MFString &>(mfstring);
+    this->frontUrl = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("frontUrl_changed", this->backUrl, timestamp);
 }
@@ -2462,17 +2464,17 @@ void Background::processSet_frontUrl(const FieldValue & mfstring,
 /**
  * @brief set_leftUrl eventIn handler.
  *
- * @param mfstring  an MFString.
+ * @param value     an mfstring.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_leftUrl(const FieldValue & mfstring,
+void Background::processSet_leftUrl(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->leftUrl = dynamic_cast<const MFString &>(mfstring);
+    this->leftUrl = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("leftUrl_changed", this->leftUrl, timestamp);
 }
@@ -2480,17 +2482,17 @@ void Background::processSet_leftUrl(const FieldValue & mfstring,
 /**
  * @brief set_rightUrl eventIn handler.
  *
- * @param mfstring  an MFString.
+ * @param value     an mfstring.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_rightUrl(const FieldValue & mfstring,
+void Background::processSet_rightUrl(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->rightUrl = dynamic_cast<const MFString &>(mfstring);
+    this->rightUrl = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("rightUrl_changed", this->rightUrl, timestamp);
 }
@@ -2498,17 +2500,17 @@ void Background::processSet_rightUrl(const FieldValue & mfstring,
 /**
  * @brief set_topUrl eventIn handler.
  *
- * @param mfstring  an MFString.
+ * @param value     an mfstring.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_topUrl(const FieldValue & mfstring,
+void Background::processSet_topUrl(const field_value & value,
                                    const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->topUrl = dynamic_cast<const MFString &>(mfstring);
+    this->topUrl = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("topUrl_changed", this->topUrl, timestamp);
 }
@@ -2516,17 +2518,17 @@ void Background::processSet_topUrl(const FieldValue & mfstring,
 /**
  * @brief set_skyAngle eventIn handler.
  *
- * @param mffloat   an MFFloat.
+ * @param value     an mffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_skyAngle(const FieldValue & mffloat,
+void Background::processSet_skyAngle(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->skyAngle = dynamic_cast<const MFFloat &>(mffloat);
+    this->skyAngle = dynamic_cast<const mffloat &>(value);
     this->setModified();
     this->emitEvent("skyAngle_changed", this->skyAngle, timestamp);
 }
@@ -2534,17 +2536,17 @@ void Background::processSet_skyAngle(const FieldValue & mffloat,
 /**
  * @brief set_skyColor eventIn handler.
  *
- * @param mfcolor   an MFColor.
+ * @param value     an mfcolor.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfcolor is not an MFColor.
+ * @exception std::bad_cast     if @p value is not an mfcolor.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Background::processSet_skyColor(const FieldValue & mfcolor,
+void Background::processSet_skyColor(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->skyColor = dynamic_cast<const MFColor &>(mfcolor);
+    this->skyColor = dynamic_cast<const mfcolor &>(value);
     this->setModified();
     this->emitEvent("skyColor_changed", this->skyColor, timestamp);
 }
@@ -2588,12 +2590,12 @@ BillboardClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "axisOfRotation"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "axisOfRotation"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Billboard>(*this, id));
     Vrml97NodeTypeImpl<Billboard> & billboardNodeType =
@@ -2614,26 +2616,26 @@ BillboardClass::createType(const std::string & id,
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Billboard::processSet_axisOfRotation,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, sfvec3f>
                                     (&Billboard::axisOfRotation)));
         } else if (*itr == supportedInterfaces[3]) {
             billboardNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &Billboard::processSet_children,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, MFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, mfnode>
                                     (&Billboard::children)));
         } else if (*itr == supportedInterfaces[4]) {
             billboardNodeType.addField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, sfvec3f>
                                     (&Billboard::bboxCenter)));
         } else if (*itr == supportedInterfaces[5]) {
             billboardNodeType.addField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, sfvec3f>
                                     (&Billboard::bboxSize)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -2770,16 +2772,16 @@ void Billboard::billboard_to_matrix(const Billboard* t_arg,
 /**
  * @brief set_axisOfRotation eventIn handler.
  *
- * @param sfvec3f   an SFVec3f.
+ * @param value     an sfvec3f.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void Billboard::processSet_axisOfRotation(const FieldValue & sfvec3f,
+void Billboard::processSet_axisOfRotation(const field_value & value,
                                           const double timestamp)
     throw (std::bad_cast)
 {
-    this->axisOfRotation = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->axisOfRotation = dynamic_cast<const sfvec3f &>(value);
     this->emitEvent("axisOfRotation_changed", this->axisOfRotation, timestamp);
 }
 
@@ -2822,7 +2824,7 @@ const NodeTypePtr BoxClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "size");
+            NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "size");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Box>(*this, id));
     Vrml97NodeTypeImpl<Box> & boxNodeType =
             static_cast<Vrml97NodeTypeImpl<Box> &>(*nodeType);
@@ -2833,7 +2835,7 @@ const NodeTypePtr BoxClass::createType(const std::string & id,
             boxNodeType.addField(
                 supportedInterface.fieldType,
                 supportedInterface.id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Box, SFVec3f>(&Box::size)));
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Box, sfvec3f>(&Box::size)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
         }
@@ -2941,14 +2943,14 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "collide"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize"),
-        NodeInterface(NodeInterface::field, FieldValue::sfnode, "proxy"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "collideTime")
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "collide"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize"),
+        NodeInterface(NodeInterface::field, field_value::sfnode_id, "proxy"),
+        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "collideTime")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Collision>(*this, id));
     Vrml97NodeTypeImpl<Collision> & collisionNodeType =
@@ -2969,38 +2971,38 @@ const NodeTypePtr
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Collision::processSet_children,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, MFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, mfnode>
                                     (&Collision::children)));
         } else if (*itr == supportedInterfaces[3]) {
             collisionNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &Collision::processSet_collide,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, sfbool>
                                     (&Collision::collide)));
         } else if (*itr == supportedInterfaces[4]) {
             collisionNodeType.addField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, sfvec3f>
                                     (&Collision::bboxCenter)));
         } else if (*itr == supportedInterfaces[5]) {
             collisionNodeType.addField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, sfvec3f>
                                     (&Collision::bboxSize)));
         } else if (*itr == supportedInterfaces[6]) {
             collisionNodeType.addField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, sfnode>
                                     (&Collision::proxy)));
         } else if (*itr == supportedInterfaces[7]) {
             collisionNodeType.addEventOut(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, sftime>
                                     (&Collision::collideTime)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -3049,15 +3051,16 @@ bool Collision::isModified() const {
 /**
  * @brief set_collide eventIn handler.
  *
- * @param sfbool    an SFBool.
+ * @param value     an sfbool.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void Collision::processSet_collide(const FieldValue & sfbool,
+void Collision::processSet_collide(const field_value & value,
                                    const double timestamp)
-        throw (std::bad_cast) {
-    this->collide = dynamic_cast<const SFBool &>(sfbool);
+    throw (std::bad_cast)
+{
+    this->collide = dynamic_cast<const sfbool &>(value);
     this->emitEvent("collide_changed", this->collide, timestamp);
 }
 
@@ -3096,7 +3099,7 @@ const NodeTypePtr ColorClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "color");
+            NodeInterface(NodeInterface::exposedField, field_value::mfcolor_id, "color");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Color>(*this, id));
     Vrml97NodeTypeImpl<Color> & colorNodeType =
             static_cast<Vrml97NodeTypeImpl<Color> &>(*nodeType);
@@ -3108,7 +3111,7 @@ const NodeTypePtr ColorClass::createType(const std::string & id,
                 supportedInterface.fieldType,
                 supportedInterface.id,
                 &Color::processSet_color,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Color, MFColor>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Color, mfcolor>
                                     (&Color::color)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -3153,15 +3156,15 @@ const std::vector<color> & Color::getColor() const throw ()
 /**
  * @brief set_color eventIn handler.
  *
- * @param mfcolor   an MFColor.
+ * @param value     an mfcolor.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfcolor is not an MFColor.
+ * @exception std::bad_cast     if @p value is not an mfcolor.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Color::processSet_color(const FieldValue & mfcolor, const double timestamp)
+void Color::processSet_color(const field_value & value, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->color = dynamic_cast<const MFColor &>(mfcolor);
+    this->color = dynamic_cast<const mfcolor &>(value);
     this->setModified();
     this->emitEvent("color_changed", this->color, timestamp);
 }
@@ -3204,15 +3207,25 @@ const NodeTypePtr ColorInterpolatorClass::
                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfcolor, "value_changed")
+        NodeInterface(NodeInterface::eventIn,
+                      field_value::sffloat_id,
+                      "set_fraction"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mffloat_id,
+                      "key"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mfcolor_id,
+                      "keyValue"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfcolor_id,
+                      "value_changed")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ColorInterpolator>(*this, id));
+    const NodeTypePtr
+        nodeType(new Vrml97NodeTypeImpl<ColorInterpolator>(*this, id));
     Vrml97NodeTypeImpl<ColorInterpolator> & colorInterpolatorNodeType =
             static_cast<Vrml97NodeTypeImpl<ColorInterpolator> &>(*nodeType);
-    typedef Vrml97NodeTypeImpl<ColorInterpolator>::NodeFieldPtrPtr NodeFieldPtrPtr;
+    typedef Vrml97NodeTypeImpl<ColorInterpolator>::NodeFieldPtrPtr
+        NodeFieldPtrPtr;
     for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
@@ -3225,21 +3238,24 @@ const NodeTypePtr ColorInterpolatorClass::
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &ColorInterpolator::processSet_key,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ColorInterpolator, MFFloat>
-                                    (&ColorInterpolator::key)));
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ColorInterpolator,
+                                                     mffloat>
+                                (&ColorInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             colorInterpolatorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &ColorInterpolator::processSet_keyValue,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ColorInterpolator, MFColor>
-                                    (&ColorInterpolator::keyValue)));
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ColorInterpolator,
+                                                     mfcolor>
+                                (&ColorInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             colorInterpolatorNodeType.addEventOut(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ColorInterpolator, SFColor>
-                                    (&ColorInterpolator::value)));
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ColorInterpolator,
+                                                     sfcolor>
+                                (&ColorInterpolator::value)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
         }
@@ -3272,16 +3288,17 @@ ColorInterpolator::~ColorInterpolator() throw () {}
 /**
  * @brief set_fraction eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ColorInterpolator::processSet_fraction(const FieldValue & sffloat,
+void ColorInterpolator::processSet_fraction(const field_value & value,
                                             const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    float f = dynamic_cast<const SFFloat &>(sffloat).value;
+    throw (std::bad_cast, std::bad_alloc)
+{
+    float f = dynamic_cast<const sffloat &>(value).value;
 
     int n = this->key.value.size() - 1;
     if (f < this->key.value[0]) {
@@ -3331,32 +3348,34 @@ void ColorInterpolator::processSet_fraction(const FieldValue & sffloat,
 /**
  * @brief set_key eventIn handler.
  *
- * @param mffloat   an MFFloat.
+ * @param value     an mffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ColorInterpolator::processSet_key(const FieldValue & mffloat,
+void ColorInterpolator::processSet_key(const field_value & value,
                                        const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->key = dynamic_cast<const MFFloat &>(mffloat);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->key = dynamic_cast<const mffloat &>(value);
     this->emitEvent("key_changed", this->key, timestamp);
 }
 
 /**
  * @brief set_keyValue eventIn handler.
  *
- * @param mfcolor   an MFColor.
+ * @param value     an mfcolor.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfcolor is not an MFColor.
+ * @exception std::bad_cast     if @p value is not an mfcolor.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ColorInterpolator::processSet_keyValue(const FieldValue & mfcolor,
+void ColorInterpolator::processSet_keyValue(const field_value & value,
                                             const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->keyValue = dynamic_cast<const MFColor &>(mfcolor);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->keyValue = dynamic_cast<const mfcolor &>(value);
     this->emitEvent("keyValue_changed", this->keyValue, timestamp);
 }
 
@@ -3395,10 +3414,10 @@ const NodeTypePtr ConeClass::createType(const std::string & id,
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "bottomRadius"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "height"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "side"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "bottom")
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "bottomRadius"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "height"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "side"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "bottom")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Cone>(*this, id));
     Vrml97NodeTypeImpl<Cone> & coneNodeType =
@@ -3410,25 +3429,25 @@ const NodeTypePtr ConeClass::createType(const std::string & id,
             coneNodeType.addField(
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, sffloat>
                                     (&Cone::bottomRadius)));
         } else if (*itr == supportedInterfaces[1]) {
             coneNodeType.addField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, sffloat>
                                     (&Cone::height)));
         } else if (*itr == supportedInterfaces[2]) {
             coneNodeType.addField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, sfbool>
                                     (&Cone::side)));
         } else if (*itr == supportedInterfaces[3]) {
             coneNodeType.addField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, sfbool>
                                     (&Cone::bottom)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -3514,7 +3533,7 @@ const NodeTypePtr
                                     const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "point");
+            NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "point");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Coordinate>(*this, id));
     Vrml97NodeTypeImpl<Coordinate> & coordinateNodeType =
             static_cast<Vrml97NodeTypeImpl<Coordinate> &>(*nodeType);
@@ -3526,7 +3545,7 @@ const NodeTypePtr
                 supportedInterface.fieldType,
                 supportedInterface.id,
                 &Coordinate::processSet_point,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Coordinate, MFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Coordinate, mfvec3f>
                                     (&Coordinate::point)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -3561,17 +3580,17 @@ Coordinate::~Coordinate() throw () {}
 /**
  * @brief set_point eventIn handler.
  *
- * @param mfvec3f   an array of vectors representing points.
+ * @param value     an array of vectors representing points.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfvec3f is not an MFVec3f.
+ * @exception std::bad_cast     if @p value is not an mfvec3f.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Coordinate::processSet_point(const FieldValue & mfvec3f,
+void Coordinate::processSet_point(const field_value & value,
                                   const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->point = dynamic_cast<const MFVec3f &>(mfvec3f);
+    this->point = dynamic_cast<const mfvec3f &>(value);
     this->setModified();
     this->emitEvent("point_changed", this->point, timestamp);
 }
@@ -3624,10 +3643,10 @@ const NodeTypePtr CoordinateInterpolatorClass::
                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed")
+        NodeInterface(NodeInterface::eventIn, field_value::sffloat_id, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "key"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, field_value::mfvec3f_id, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<CoordinateInterpolator>(*this, id));
     Vrml97NodeTypeImpl<CoordinateInterpolator> & coordinateInterpolatorNodeType =
@@ -3645,20 +3664,20 @@ const NodeTypePtr CoordinateInterpolatorClass::
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &CoordinateInterpolator::processSet_key,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator, mffloat>
                                     (&CoordinateInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             coordinateInterpolatorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &CoordinateInterpolator::processSet_keyValue,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator, MFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator, mfvec3f>
                                     (&CoordinateInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             coordinateInterpolatorNodeType.addEventOut(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator, MFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator, mfvec3f>
                                     (&CoordinateInterpolator::value)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -3692,17 +3711,17 @@ CoordinateInterpolator::~CoordinateInterpolator() throw () {}
 /**
  * @brief set_fraction eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
+void CoordinateInterpolator::processSet_fraction(const field_value & value,
                                                  const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    float f = dynamic_cast<const SFFloat &>(sffloat).value;
+    float f = dynamic_cast<const sffloat &>(value).value;
 
     size_t nCoords = this->keyValue.value.size() / this->key.value.size();
     size_t n = this->key.value.size() - 1;
@@ -3749,32 +3768,32 @@ void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
 /**
  * @brief set_key eventIn handler.
  *
- * @param mffloat   an MFFloat.
+ * @param value     an mffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void CoordinateInterpolator::processSet_key(const FieldValue & mffloat,
+void CoordinateInterpolator::processSet_key(const field_value & value,
                                             const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->key = dynamic_cast<const MFFloat &>(mffloat);
+    this->key = dynamic_cast<const mffloat &>(value);
     this->emitEvent("key_changed", this->key, timestamp);
 }
 
 /**
  * @brief set_keyValue field mutator.
  *
- * @param mfvec3f   an MFVec3f.
+ * @param value     an mfvec3f.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfvec3f is not an MFVec3f.
+ * @exception std::bad_cast     if @p value is not an mfvec3f.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void CoordinateInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
+void CoordinateInterpolator::processSet_keyValue(const field_value & value,
                                                  const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->keyValue = dynamic_cast<const MFVec3f &>(mfvec3f);
+    this->keyValue = dynamic_cast<const mfvec3f &>(value);
     this->emitEvent("keyValue_changed", this->keyValue, timestamp);
 }
 
@@ -3813,11 +3832,11 @@ const NodeTypePtr CylinderClass::createType(const std::string & id,
                                             const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "bottom"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "height"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "radius"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "side"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "top")
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "bottom"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "height"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "radius"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "side"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "top")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Cylinder>(*this, id));
     Vrml97NodeTypeImpl<Cylinder> & cylinderNodeType =
@@ -3829,31 +3848,31 @@ const NodeTypePtr CylinderClass::createType(const std::string & id,
             cylinderNodeType.addField(
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, sfbool>
                                     (&Cylinder::bottom)));
         } else if (*itr == supportedInterfaces[1]) {
             cylinderNodeType.addField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, sffloat>
                                     (&Cylinder::height)));
         } else if (*itr == supportedInterfaces[2]) {
             cylinderNodeType.addField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, sffloat>
                                     (&Cylinder::radius)));
         } else if (*itr == supportedInterfaces[3]) {
             cylinderNodeType.addField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, sfbool>
                                     (&Cylinder::side)));
         } else if (*itr == supportedInterfaces[4]) {
             cylinderNodeType.addField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, sfbool>
                                     (&Cylinder::top)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -3943,15 +3962,15 @@ const NodeTypePtr
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "diskAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed")
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "autoOffset"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "diskAngle"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxAngle"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "minAngle"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "offset"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfrotation_id, "rotation_changed"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "trackPoint_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<CylinderSensor>(*this, id));
     Vrml97NodeTypeImpl<CylinderSensor> & cylinderSensorNodeType =
@@ -3964,60 +3983,60 @@ const NodeTypePtr
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &CylinderSensor::processSet_autoOffset,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sfbool>
                                     (&CylinderSensor::autoOffset)));
         } else if (*itr == supportedInterfaces[1]) {
             cylinderSensorNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &CylinderSensor::processSet_diskAngle,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sffloat>
                                     (&CylinderSensor::diskAngle)));
         } else if (*itr == supportedInterfaces[2]) {
             cylinderSensorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &CylinderSensor::processSet_enabled,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sfbool>
                                     (&CylinderSensor::enabled)));
         } else if (*itr == supportedInterfaces[3]) {
             cylinderSensorNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &CylinderSensor::processSet_maxAngle,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sffloat>
                                     (&CylinderSensor::maxAngle)));
         } else if (*itr == supportedInterfaces[4]) {
             cylinderSensorNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &CylinderSensor::processSet_minAngle,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sffloat>
                                     (&CylinderSensor::minAngle)));
         } else if (*itr == supportedInterfaces[5]) {
             cylinderSensorNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &CylinderSensor::processSet_offset,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sffloat>
                                     (&CylinderSensor::offset)));
         } else if (*itr == supportedInterfaces[6]) {
             cylinderSensorNodeType.addEventOut(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sfbool>
                                     (&CylinderSensor::active)));
         } else if (*itr == supportedInterfaces[7]) {
             cylinderSensorNodeType.addEventOut(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, SFRotation>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sfrotation>
                                     (&CylinderSensor::rotation)));
         } else if (*itr == supportedInterfaces[8]) {
             cylinderSensorNodeType.addEventOut(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sfvec3f>
                                     (&CylinderSensor::trackPoint)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -4168,90 +4187,96 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p)
 /**
  * @brief set_autoOffset eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void CylinderSensor::processSet_autoOffset(const FieldValue & sfbool,
+void CylinderSensor::processSet_autoOffset(const field_value & value,
                                            const double timestamp)
-        throw (std::bad_cast) {
-    this->autoOffset = dynamic_cast<const SFBool &>(sfbool);
+    throw (std::bad_cast)
+{
+    this->autoOffset = dynamic_cast<const sfbool &>(value);
     this->emitEvent("autoOffset_changed", this->autoOffset, timestamp);
 }
 
 /**
  * @brief set_diskAngle eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void CylinderSensor::processSet_diskAngle(const FieldValue & sffloat,
+void CylinderSensor::processSet_diskAngle(const field_value & value,
                                           const double timestamp)
-        throw (std::bad_cast) {
-    this->diskAngle = dynamic_cast<const SFFloat &>(sffloat);
+    throw (std::bad_cast)
+{
+    this->diskAngle = dynamic_cast<const sffloat &>(value);
     this->emitEvent("diskAngle_changed", this->diskAngle, timestamp);
 }
 
 /**
  * @brief set_enabled eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void CylinderSensor::processSet_enabled(const FieldValue & sfbool,
+void CylinderSensor::processSet_enabled(const field_value & value,
                                         const double timestamp)
-        throw (std::bad_cast) {
-    this->enabled = dynamic_cast<const SFBool &>(sfbool);
+    throw (std::bad_cast)
+{
+    this->enabled = dynamic_cast<const sfbool &>(value);
     this->emitEvent("enabled_changed", this->enabled, timestamp);
 }
 
 /**
  * @brief set_maxAngle eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void CylinderSensor::processSet_maxAngle(const FieldValue & sffloat,
+void CylinderSensor::processSet_maxAngle(const field_value & value,
                                          const double timestamp)
-        throw (std::bad_cast) {
-    this->maxAngle = dynamic_cast<const SFFloat &>(sffloat);
+    throw (std::bad_cast)
+{
+    this->maxAngle = dynamic_cast<const sffloat &>(value);
     this->emitEvent("maxAngle_changed", this->maxAngle, timestamp);
 }
 
 /**
  * @brief set_minAngle eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void CylinderSensor::processSet_minAngle(const FieldValue & sffloat,
+void CylinderSensor::processSet_minAngle(const field_value & value,
                                          const double timestamp)
-        throw (std::bad_cast) {
-    this->minAngle = dynamic_cast<const SFFloat &>(sffloat);
+    throw (std::bad_cast)
+{
+    this->minAngle = dynamic_cast<const sffloat &>(value);
     this->emitEvent("minAngle_changed", this->minAngle, timestamp);
 }
 
 /**
  * @brief set_offset eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void CylinderSensor::processSet_offset(const FieldValue & sffloat,
+void CylinderSensor::processSet_offset(const field_value & value,
                                        const double timestamp)
-        throw (std::bad_cast) {
-    this->offset = dynamic_cast<const SFFloat &>(sffloat);
+    throw (std::bad_cast)
+{
+    this->offset = dynamic_cast<const sffloat &>(value);
     this->emitEvent("offset_changed", this->offset, timestamp);
 }
 
@@ -4293,11 +4318,11 @@ const NodeTypePtr
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on")
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "ambientIntensity"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "color"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "direction"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "intensity"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "on")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<DirectionalLight>(*this, id));
     Vrml97NodeTypeImpl<DirectionalLight> & directionalLightNodeType =
@@ -4310,35 +4335,35 @@ const NodeTypePtr
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &DirectionalLight::processSet_ambientIntensity,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, sffloat>
                                     (&DirectionalLight::ambientIntensity)));
         } else if (*itr == supportedInterfaces[1]) {
             directionalLightNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &DirectionalLight::processSet_color,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, SFColor>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, sfcolor>
                                     (&DirectionalLight::color)));
         } else if (*itr == supportedInterfaces[2]) {
             directionalLightNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &DirectionalLight::processSet_direction,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, sfvec3f>
                                     (&DirectionalLight::direction)));
         } else if (*itr == supportedInterfaces[3]) {
             directionalLightNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &DirectionalLight::processSet_intensity,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, sffloat>
                                     (&DirectionalLight::intensity)));
         } else if (*itr == supportedInterfaces[4]) {
             directionalLightNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &DirectionalLight::processSet_on,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, sfbool>
                                     (&DirectionalLight::on)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -4393,15 +4418,15 @@ void DirectionalLight::render(Viewer & viewer, const VrmlRenderContext rc)
 /**
  * @brief set_direction eventIn handler.
  *
- * @param sfvec3f   an SFVec3f.
+ * @param value     an sfvec3f.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void DirectionalLight::processSet_direction(const FieldValue & sfvec3f,
+void DirectionalLight::processSet_direction(const field_value & value,
                                             const double timestamp)
         throw (std::bad_cast) {
-    this->direction = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->direction = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("direction_changed", this->direction, timestamp);
 }
@@ -4442,20 +4467,20 @@ const NodeTypePtr
                                        const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mffloat, "set_height"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "normal"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texCoord"),
-        NodeInterface(NodeInterface::field, FieldValue::mffloat, "height"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "normalPerVertex"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
-        NodeInterface(NodeInterface::field, FieldValue::sfint32, "xDimension"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "xSpacing"),
-        NodeInterface(NodeInterface::field, FieldValue::sfint32, "zDimension"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "zSpacing")
+        NodeInterface(NodeInterface::eventIn, field_value::mffloat_id, "set_height"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "color"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "normal"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "texCoord"),
+        NodeInterface(NodeInterface::field, field_value::mffloat_id, "height"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "ccw"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "colorPerVertex"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "creaseAngle"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "normalPerVertex"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "solid"),
+        NodeInterface(NodeInterface::field, field_value::sfint32_id, "xDimension"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "xSpacing"),
+        NodeInterface(NodeInterface::field, field_value::sfint32_id, "zDimension"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "zSpacing")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ElevationGrid>(*this, id));
     Vrml97NodeTypeImpl<ElevationGrid> & elevationGridNodeType =
@@ -4473,81 +4498,81 @@ const NodeTypePtr
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &ElevationGrid::processSet_color,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfnode>
                                     (&ElevationGrid::color)));
         } else if (*itr == supportedInterfaces[2]) {
             elevationGridNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &ElevationGrid::processSet_normal,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfnode>
                                     (&ElevationGrid::normal)));
         } else if (*itr == supportedInterfaces[3]) {
             elevationGridNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &ElevationGrid::processSet_texCoord,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfnode>
                                     (&ElevationGrid::texCoord)));
         } else if (*itr == supportedInterfaces[4]) {
             elevationGridNodeType.addField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, mffloat>
                                     (&ElevationGrid::height)));
         } else if (*itr == supportedInterfaces[5]) {
             elevationGridNodeType.addField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfbool>
                                     (&ElevationGrid::ccw)));
         } else if (*itr == supportedInterfaces[6]) {
             elevationGridNodeType.addField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfbool>
                                     (&ElevationGrid::colorPerVertex)));
         } else if (*itr == supportedInterfaces[7]) {
             elevationGridNodeType.addField(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sffloat>
                                     (&ElevationGrid::creaseAngle)));
         } else if (*itr == supportedInterfaces[8]) {
             elevationGridNodeType.addField(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfbool>
                                     (&ElevationGrid::normalPerVertex)));
         } else if (*itr == supportedInterfaces[9]) {
             elevationGridNodeType.addField(
                 supportedInterfaces[9].fieldType,
                 supportedInterfaces[9].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfbool>
                                     (&ElevationGrid::solid)));
         } else if (*itr == supportedInterfaces[10]) {
             elevationGridNodeType.addField(
                 supportedInterfaces[10].fieldType,
                 supportedInterfaces[10].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFInt32>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfint32>
                                     (&ElevationGrid::xDimension)));
         } else if (*itr == supportedInterfaces[11]) {
             elevationGridNodeType.addField(
                 supportedInterfaces[11].fieldType,
                 supportedInterfaces[11].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sffloat>
                                     (&ElevationGrid::xSpacing)));
         } else if (*itr == supportedInterfaces[12]) {
             elevationGridNodeType.addField(
                 supportedInterfaces[12].fieldType,
                 supportedInterfaces[12].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFInt32>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfint32>
                                     (&ElevationGrid::zDimension)));
         } else if (*itr == supportedInterfaces[13]) {
             elevationGridNodeType.addField(
                 supportedInterfaces[13].fieldType,
                 supportedInterfaces[13].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sffloat>
                                     (&ElevationGrid::zSpacing)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -4682,16 +4707,16 @@ Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
 /**
  * @brief set_color eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ElevationGrid::processSet_color(const FieldValue & sfnode,
+void ElevationGrid::processSet_color(const field_value & value,
                                      const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->color = dynamic_cast<const SFNode &>(sfnode);
+    this->color = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("color_changed", this->color, timestamp);
 }
@@ -4699,16 +4724,16 @@ void ElevationGrid::processSet_color(const FieldValue & sfnode,
 /**
  * @brief set_height eventIn handler.
  *
- * @param mffloat   an MFFloat value.
+ * @param value     an mffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ElevationGrid::processSet_height(const FieldValue & mffloat,
+void ElevationGrid::processSet_height(const field_value & value,
                                       const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->height = dynamic_cast<const MFFloat &>(mffloat);
+    this->height = dynamic_cast<const mffloat &>(value);
     this->setModified();
     this->emitEvent("height_changed", this->height, timestamp);
 }
@@ -4716,32 +4741,32 @@ void ElevationGrid::processSet_height(const FieldValue & mffloat,
 /**
  * @brief set_normal eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ElevationGrid::processSet_normal(const FieldValue & sfnode,
+void ElevationGrid::processSet_normal(const field_value & value,
                                       const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->normal = dynamic_cast<const SFNode &>(sfnode);
+    this->normal = dynamic_cast<const sfnode &>(value);
     this->emitEvent("normal_changed", this->normal, timestamp);
 }
 
 /**
  * @brief set_texCoord eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ElevationGrid::processSet_texCoord(const FieldValue & sfnode,
+void ElevationGrid::processSet_texCoord(const field_value & value,
                                         const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->texCoord = dynamic_cast<const SFNode &>(sfnode);
+    this->texCoord = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("texCoord_changed", this->texCoord, timestamp);
 }
@@ -4782,20 +4807,20 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfvec2f, "set_crossSection"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfrotation, "set_orientation"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfvec2f, "set_scale"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfvec3f, "set_spine"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "beginCap"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "convex"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
-        NodeInterface(NodeInterface::field, FieldValue::mfvec2f, "crossSection"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "endCap"),
-        NodeInterface(NodeInterface::field, FieldValue::mfrotation, "orientation"),
-        NodeInterface(NodeInterface::field, FieldValue::mfvec2f, "scale"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
-        NodeInterface(NodeInterface::field, FieldValue::mfvec3f, "spine")
+        NodeInterface(NodeInterface::eventIn, field_value::mfvec2f_id, "set_crossSection"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfrotation_id, "set_orientation"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfvec2f_id, "set_scale"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfvec3f_id, "set_spine"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "beginCap"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "ccw"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "convex"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "creaseAngle"),
+        NodeInterface(NodeInterface::field, field_value::mfvec2f_id, "crossSection"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "endCap"),
+        NodeInterface(NodeInterface::field, field_value::mfrotation_id, "orientation"),
+        NodeInterface(NodeInterface::field, field_value::mfvec2f_id, "scale"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "solid"),
+        NodeInterface(NodeInterface::field, field_value::mfvec3f_id, "spine")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Extrusion>(*this, id));
     Vrml97NodeTypeImpl<Extrusion> & extrusionNodeType =
@@ -4823,61 +4848,61 @@ const NodeTypePtr
             extrusionNodeType.addField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sfbool>
                                     (&Extrusion::beginCap)));
         } else if (*itr == supportedInterfaces[5]) {
             extrusionNodeType.addField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sfbool>
                                     (&Extrusion::ccw)));
         } else if (*itr == supportedInterfaces[6]) {
             extrusionNodeType.addField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sfbool>
                                     (&Extrusion::convex)));
         } else if (*itr == supportedInterfaces[7]) {
             extrusionNodeType.addField(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sffloat>
                                     (&Extrusion::creaseAngle)));
         } else if (*itr == supportedInterfaces[8]) {
             extrusionNodeType.addField(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, MFVec2f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, mfvec2f>
                                     (&Extrusion::crossSection)));
         } else if (*itr == supportedInterfaces[9]) {
             extrusionNodeType.addField(
                 supportedInterfaces[9].fieldType,
                 supportedInterfaces[9].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sfbool>
                                     (&Extrusion::endCap)));
         } else if (*itr == supportedInterfaces[10]) {
             extrusionNodeType.addField(
                 supportedInterfaces[10].fieldType,
                 supportedInterfaces[10].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, MFRotation>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, mfrotation>
                                     (&Extrusion::orientation)));
         } else if (*itr == supportedInterfaces[11]) {
             extrusionNodeType.addField(
                 supportedInterfaces[11].fieldType,
                 supportedInterfaces[11].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, MFVec2f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, mfvec2f>
                                     (&Extrusion::scale)));
         } else if (*itr == supportedInterfaces[12]) {
             extrusionNodeType.addField(
                 supportedInterfaces[12].fieldType,
                 supportedInterfaces[12].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sfbool>
                                     (&Extrusion::solid)));
         } else if (*itr == supportedInterfaces[13]) {
             extrusionNodeType.addField(
                 supportedInterfaces[13].fieldType,
                 supportedInterfaces[13].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, MFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, mfvec3f>
                                     (&Extrusion::spine)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -4965,64 +4990,66 @@ Viewer::Object Extrusion::insertGeometry(Viewer & viewer,
 /**
  * @brief set_crossSection eventIn handler.
  *
- * @param mfvec2f   an MFVec2f value.
+ * @param value     an mfvec2f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfvec2f is not an MFVec2f.
+ * @exception std::bad_cast     if @p value is not an mfvec2f.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Extrusion::processSet_crossSection(const FieldValue & mfvec2f,
+void Extrusion::processSet_crossSection(const field_value & value,
                                         const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->crossSection = dynamic_cast<const MFVec2f &>(mfvec2f);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->crossSection = dynamic_cast<const mfvec2f &>(value);
     this->setModified();
 }
 
 /**
  * @brief set_orientation field mutator.
  *
- * @param mfrotation   an MFRotation value.
+ * @param value     an mfrotation value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfrotation is not an MFRotation.
+ * @exception std::bad_cast     if @p value is not an mfrotation.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Extrusion::processSet_orientation(const FieldValue & mfrotation,
+void Extrusion::processSet_orientation(const field_value & value,
                                        const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->orientation = dynamic_cast<const MFRotation &>(mfrotation);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->orientation = dynamic_cast<const mfrotation &>(value);
     this->setModified();
 }
 
 /**
  * @brief set_scale eventIn handler.
  *
- * @param mfvec2f   an MFVec2f value.
+ * @param value     an mfvec2f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfvec2f is not an MFVec2f.
+ * @exception std::bad_cast     if @p value is not an mfvec2f.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Extrusion::processSet_scale(const FieldValue & mfvec2f,
+void Extrusion::processSet_scale(const field_value & value,
                                  const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->scale = dynamic_cast<const MFVec2f &>(mfvec2f);
+    this->scale = dynamic_cast<const mfvec2f &>(value);
     this->setModified();
 }
 
 /**
  * @brief set_spine eventIn handler.
  *
- * @param mfvec3f   an MFVec3f value.
+ * @param value     an mfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfvec2f is not an MFVec3f.
+ * @exception std::bad_cast     if @p value is not an mfvec3f.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Extrusion::processSet_spine(const FieldValue & mfvec3f,
+void Extrusion::processSet_spine(const field_value & value,
                                  const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->spine = dynamic_cast<const MFVec3f &>(mfvec3f);
+    this->spine = dynamic_cast<const mfvec3f &>(value);
     this->setModified();
 }
 
@@ -5150,7 +5177,7 @@ void FogClass::initialize(ViewpointNode * initialViewpoint,
     throw ()
 {
     if (this->first) {
-        this->first->processEvent("set_bind", SFBool(true), timestamp);
+        this->first->processEvent("set_bind", sfbool(true), timestamp);
     }
 }
 
@@ -5187,11 +5214,11 @@ const NodeTypePtr FogClass::createType(const std::string & id,
                                        const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "fogType"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "visibilityRange"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+        NodeInterface(NodeInterface::eventIn, field_value::sfbool_id, "set_bind"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "color"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfstring_id, "fogType"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "visibilityRange"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Fog>(*this, id));
     Vrml97NodeTypeImpl<Fog> & fogNodeType =
@@ -5208,27 +5235,27 @@ const NodeTypePtr FogClass::createType(const std::string & id,
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &Fog::processSet_color,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, SFColor>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, sfcolor>
                                     (&Fog::color)));
         } else if (*itr == supportedInterfaces[2]) {
             fogNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Fog::processSet_fogType,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, SFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, sfstring>
                                     (&Fog::fogType)));
         } else if (*itr == supportedInterfaces[3]) {
             fogNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &Fog::processSet_visibilityRange,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, sffloat>
                                     (&Fog::visibilityRange)));
         } else if (*itr == supportedInterfaces[4]) {
             fogNodeType.addEventOut(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, sfbool>
                                     (&Fog::bound)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -5292,16 +5319,16 @@ void Fog::do_shutdown(const double timestamp) throw ()
 /**
  * @brief set_bind eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfbool is not an SFBool value.
+ * @exception std::bad_cast     if @p value is not an sfbool value.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Fog::processSet_bind(const FieldValue & sfbool, const double timestamp)
-        throw (std::bad_cast, std::bad_alloc)
+void Fog::processSet_bind(const field_value & value, const double timestamp)
+    throw (std::bad_cast, std::bad_alloc)
 {
-    const SFBool & bind = dynamic_cast<const SFBool &>(sfbool);
+    const sfbool & bind = dynamic_cast<const sfbool &>(value);
     FogClass & nodeClass = static_cast<FogClass &>(this->nodeType.nodeClass);
     if (bind.value) {
         nodeClass.bind(*this, timestamp);
@@ -5313,14 +5340,15 @@ void Fog::processSet_bind(const FieldValue & sfbool, const double timestamp)
 /**
  * @brief set_color eventIn handler.
  *
- * @param sfcolor   an SFColor value.
+ * @param value     an sfcolor value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfcolor is not an SFColor value.
+ * @exception std::bad_cast     if @p value is not an sfcolor value.
  */
-void Fog::processSet_color(const FieldValue & sfcolor, const double timestamp)
-        throw (std::bad_cast) {
-    this->color = dynamic_cast<const SFColor &>(sfcolor);
+void Fog::processSet_color(const field_value & value, const double timestamp)
+    throw (std::bad_cast)
+{
+    this->color = dynamic_cast<const sfcolor &>(value);
     this->setModified();
     this->emitEvent("color_changed", this->color, timestamp);
 }
@@ -5328,16 +5356,17 @@ void Fog::processSet_color(const FieldValue & sfcolor, const double timestamp)
 /**
  * @brief set_fogType eventIn handler.
  *
- * @param sfstring  an SFString value.
+ * @param value     an sfstring value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfstring is not an SFString value.
+ * @exception std::bad_cast     if @p value is not an sfstring value.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Fog::processSet_fogType(const FieldValue & sfstring,
+void Fog::processSet_fogType(const field_value & value,
                              const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->fogType = dynamic_cast<const SFString &>(sfstring);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->fogType = dynamic_cast<const sfstring &>(value);
     this->setModified();
     this->emitEvent("fogType_changed", this->fogType, timestamp);
 }
@@ -5345,15 +5374,16 @@ void Fog::processSet_fogType(const FieldValue & sfstring,
 /**
  * @brief set_visibilityRange eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat value.
+ * @exception std::bad_cast     if @p value is not an sffloat value.
  */
-void Fog::processSet_visibilityRange(const FieldValue & sffloat,
+void Fog::processSet_visibilityRange(const field_value & value,
                                      const double timestamp)
-        throw (std::bad_cast) {
-    this->visibilityRange = dynamic_cast<const SFFloat &>(sffloat);
+    throw (std::bad_cast)
+{
+    this->visibilityRange = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("visibilityRange_changed", this->visibilityRange,
                     timestamp);
@@ -5392,15 +5422,15 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::field, FieldValue::mfstring, "family"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "horizontal"),
-        NodeInterface(NodeInterface::field, FieldValue::mfstring, "justify"),
-        NodeInterface(NodeInterface::field, FieldValue::sfstring, "language"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "leftToRight"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "size"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "spacing"),
-        NodeInterface(NodeInterface::field, FieldValue::sfstring, "style"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "topToBottom")
+        NodeInterface(NodeInterface::field, field_value::mfstring_id, "family"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "horizontal"),
+        NodeInterface(NodeInterface::field, field_value::mfstring_id, "justify"),
+        NodeInterface(NodeInterface::field, field_value::sfstring_id, "language"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "leftToRight"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "size"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "spacing"),
+        NodeInterface(NodeInterface::field, field_value::sfstring_id, "style"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "topToBottom")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<FontStyle>(*this, id));
     Vrml97NodeTypeImpl<FontStyle> & fontStyleNodeType =
@@ -5412,55 +5442,55 @@ const NodeTypePtr
             fontStyleNodeType.addField(
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, mfstring>
                                     (&FontStyle::family)));
         } else if (*itr == supportedInterfaces[1]) {
             fontStyleNodeType.addField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sfbool>
                                     (&FontStyle::horizontal)));
         } else if (*itr == supportedInterfaces[2]) {
             fontStyleNodeType.addField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, mfstring>
                                     (&FontStyle::justify)));
         } else if (*itr == supportedInterfaces[3]) {
             fontStyleNodeType.addField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, SFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sfstring>
                                     (&FontStyle::language)));
         } else if (*itr == supportedInterfaces[4]) {
             fontStyleNodeType.addField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sfbool>
                                     (&FontStyle::leftToRight)));
         } else if (*itr == supportedInterfaces[5]) {
             fontStyleNodeType.addField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sffloat>
                                     (&FontStyle::size)));
         } else if (*itr == supportedInterfaces[6]) {
             fontStyleNodeType.addField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sffloat>
                                     (&FontStyle::spacing)));
         } else if (*itr == supportedInterfaces[7]) {
             fontStyleNodeType.addField(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, SFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sfstring>
                                     (&FontStyle::style)));
         } else if (*itr == supportedInterfaces[8]) {
             fontStyleNodeType.addField(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sfbool>
                                     (&FontStyle::topToBottom)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -5510,7 +5540,7 @@ FontStyle::~FontStyle() throw ()
 /**
  * @brief Get the list of font families.
  *
- * @return an MFString containing the font families that may be used for this
+ * @return an mfstring containing the font families that may be used for this
  *      FontStyle.
  */
 const std::vector<std::string> & FontStyle::getFamily() const throw ()
@@ -5640,11 +5670,11 @@ const NodeTypePtr GroupClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Group>(*this, id));
     Vrml97NodeTypeImpl<Group> & groupNodeType =
@@ -5665,19 +5695,19 @@ const NodeTypePtr GroupClass::createType(const std::string & id,
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Group::processSet_children,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Group, MFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Group, mfnode>
                                     (&Group::children)));
         } else if (*itr == supportedInterfaces[3]) {
             groupNodeType.addField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Group, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Group, sfvec3f>
                                     (&Group::bboxCenter)));
         } else if (*itr == supportedInterfaces[4]) {
             groupNodeType.addField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Group, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Group, sfvec3f>
                                 (&Group::bboxSize)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -5720,17 +5750,17 @@ Group::~Group() throw () {
 /**
  * @brief addChildren eventIn handler.
  *
- * @param mfnode    an MFNode containing nodes to add to this Group.
+ * @param value     an mfnode containing nodes to add to this Group.
  * @param timestamp the current timestamp
  *
- * @exception std::bad_cast     if @p mfnode is not an MFNode.
+ * @exception std::bad_cast     if @p value is not an mfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Group::processAddChildren(const FieldValue & mfnode,
+void Group::processAddChildren(const field_value & value,
                                const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    const MFNode & newChildren = dynamic_cast<const MFNode &>(mfnode);
+    const mfnode & newChildren = dynamic_cast<const mfnode &>(value);
     size_t nNow = this->children.value.size();
 
     for (size_t i = 0; i < newChildren.value.size(); ++i) {
@@ -5754,17 +5784,17 @@ void Group::processAddChildren(const FieldValue & mfnode,
 /**
  * @brief removeChildren eventIn handler.
  *
- * @param mfnode    an MFNode containing nodes to remove from this Group.
+ * @param value     an mfnode containing nodes to remove from this Group.
  * @param timestamp the current timestamp
  *
- * @exception std::bad_cast     if @p mfnode is not an MFNode.
+ * @exception std::bad_cast     if @p value is not an mfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Group::processRemoveChildren(const FieldValue & mfnode,
+void Group::processRemoveChildren(const field_value & value,
                                   const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    const MFNode & childrenToRemove = dynamic_cast<const MFNode &>(mfnode);
+    const mfnode & childrenToRemove = dynamic_cast<const mfnode &>(value);
     const size_t oldLength = this->children.value.size();
 
     for (size_t i = 0; i < childrenToRemove.value.size(); ++i) {
@@ -5787,16 +5817,16 @@ void Group::processRemoveChildren(const FieldValue & mfnode,
 /**
  * @brief set_children eventIn handler.
  *
- * @param mfnode    an MFNode containing nodes for this Group.
+ * @param value     an mfnode containing nodes for this Group.
  * @param timestamp the current timestamp
  *
- * @exception std::bad_cast     if @p mfnode is not an MFNode.
+ * @exception std::bad_cast     if @p value is not an mfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Group::processSet_children(const FieldValue & mfnode,
+void Group::processSet_children(const field_value & value,
                                 const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->children = dynamic_cast<const MFNode &>(mfnode);
+    this->children = dynamic_cast<const mfnode &>(value);
 
     for (size_t i = 0; i < this->children.value.size(); ++i) {
         if (children.value[i]) {
@@ -6023,9 +6053,9 @@ const NodeTypePtr ImageTextureClass::
                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT")
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "repeatS"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "repeatT")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ImageTexture>(*this, id));
     Vrml97NodeTypeImpl<ImageTexture> & imageTextureNodeType =
@@ -6038,19 +6068,19 @@ const NodeTypePtr ImageTextureClass::
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &ImageTexture::processSet_url,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ImageTexture, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ImageTexture, mfstring>
                                     (&ImageTexture::url)));
         } else if (*itr == supportedInterfaces[1]) {
             imageTextureNodeType.addField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ImageTexture, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ImageTexture, sfbool>
                                     (&ImageTexture::repeatS)));
         } else if (*itr == supportedInterfaces[2]) {
             imageTextureNodeType.addField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ImageTexture, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ImageTexture, sfbool>
                                     (&ImageTexture::repeatT)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -6178,16 +6208,16 @@ const unsigned char * ImageTexture::pixels() const throw () {
 /**
  * @brief set_url eventIn handler.
  *
- * @param mfstring  an MFString value.
+ * @param value     an mfstring value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ImageTexture::processSet_url(const FieldValue & mfstring,
+void ImageTexture::processSet_url(const field_value & value,
                                   const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->url = dynamic_cast<const MFString &>(mfstring);
+    this->url = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("url_changed", this->url, timestamp);
 }
@@ -6228,24 +6258,24 @@ const NodeTypePtr
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_normalIndex"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_texCoordIndex"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "normal"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texCoord"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
-        NodeInterface(NodeInterface::field, FieldValue::mfint32, "colorIndex"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "convex"),
-        NodeInterface(NodeInterface::field, FieldValue::mfint32, "coordIndex"),
-        NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
-        NodeInterface(NodeInterface::field, FieldValue::mfint32, "normalIndex"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "normalPerVertex"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
-        NodeInterface(NodeInterface::field, FieldValue::mfint32, "texCoordIndex")
+        NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_colorIndex"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_coordIndex"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_normalIndex"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_texCoordIndex"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "color"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "coord"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "normal"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "texCoord"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "ccw"),
+        NodeInterface(NodeInterface::field, field_value::mfint32_id, "colorIndex"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "colorPerVertex"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "convex"),
+        NodeInterface(NodeInterface::field, field_value::mfint32_id, "coordIndex"),
+        NodeInterface(NodeInterface::field, field_value::sffloat_id, "creaseAngle"),
+        NodeInterface(NodeInterface::field, field_value::mfint32_id, "normalIndex"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "normalPerVertex"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "solid"),
+        NodeInterface(NodeInterface::field, field_value::mfint32_id, "texCoordIndex")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<IndexedFaceSet>(*this, id));
     Vrml97NodeTypeImpl<IndexedFaceSet> & indexedFaceSetNodeType =
@@ -6278,88 +6308,88 @@ const NodeTypePtr
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &IndexedFaceSet::processSet_color,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfnode>
                                     (&IndexedFaceSet::color)));
         } else if (*itr == supportedInterfaces[5]) {
             indexedFaceSetNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &IndexedFaceSet::processSet_coord,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfnode>
                                     (&IndexedFaceSet::coord)));
         } else if (*itr == supportedInterfaces[6]) {
             indexedFaceSetNodeType.addExposedField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
                 &IndexedFaceSet::processSet_normal,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfnode>
                                     (&IndexedFaceSet::normal)));
         } else if (*itr == supportedInterfaces[7]) {
             indexedFaceSetNodeType.addExposedField(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
                 &IndexedFaceSet::processSet_texCoord,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfnode>
                                     (&IndexedFaceSet::texCoord)));
         } else if (*itr == supportedInterfaces[8]) {
             indexedFaceSetNodeType.addField(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfbool>
                                     (&IndexedFaceSet::ccw)));
         } else if (*itr == supportedInterfaces[9]) {
             indexedFaceSetNodeType.addField(
                 supportedInterfaces[9].fieldType,
                 supportedInterfaces[9].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, MFInt32>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, mfint32>
                                     (&IndexedFaceSet::colorIndex)));
         } else if (*itr == supportedInterfaces[10]) {
             indexedFaceSetNodeType.addField(
                 supportedInterfaces[10].fieldType,
                 supportedInterfaces[10].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfbool>
                                     (&IndexedFaceSet::colorPerVertex)));
         } else if (*itr == supportedInterfaces[11]) {
             indexedFaceSetNodeType.addField(
                 supportedInterfaces[11].fieldType,
                 supportedInterfaces[11].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfbool>
                                     (&IndexedFaceSet::convex)));
         } else if (*itr == supportedInterfaces[12]) {
             indexedFaceSetNodeType.addField(
                 supportedInterfaces[12].fieldType,
                 supportedInterfaces[12].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, MFInt32>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, mfint32>
                                     (&IndexedFaceSet::coordIndex)));
         } else if (*itr == supportedInterfaces[13]) {
             indexedFaceSetNodeType.addField(
                 supportedInterfaces[13].fieldType,
                 supportedInterfaces[13].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sffloat>
                                     (&IndexedFaceSet::creaseAngle)));
         } else if (*itr == supportedInterfaces[14]) {
             indexedFaceSetNodeType.addField(
                 supportedInterfaces[14].fieldType,
                 supportedInterfaces[14].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, MFInt32>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, mfint32>
                                     (&IndexedFaceSet::normalIndex)));
         } else if (*itr == supportedInterfaces[15]) {
             indexedFaceSetNodeType.addField(
                 supportedInterfaces[15].fieldType,
                 supportedInterfaces[15].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfbool>
                                     (&IndexedFaceSet::normalPerVertex)));
         } else if (*itr == supportedInterfaces[16]) {
             indexedFaceSetNodeType.addField(
                 supportedInterfaces[16].fieldType,
                 supportedInterfaces[16].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfbool>
                                     (&IndexedFaceSet::solid)));
         } else if (*itr == supportedInterfaces[17]) {
             indexedFaceSetNodeType.addField(
                 supportedInterfaces[17].fieldType,
                 supportedInterfaces[17].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, MFInt32>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, mfint32>
                                     (&IndexedFaceSet::texCoordIndex)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -6541,16 +6571,16 @@ const BVolume * IndexedFaceSet::getBVolume() const {
 /**
  * @brief set_normal eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void IndexedFaceSet::processSet_normal(const FieldValue & sfnode,
+void IndexedFaceSet::processSet_normal(const field_value & value,
                                        const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->normal = dynamic_cast<const SFNode &>(sfnode);
+    this->normal = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("normal_changed", this->normal, timestamp);
 }
@@ -6558,32 +6588,33 @@ void IndexedFaceSet::processSet_normal(const FieldValue & sfnode,
 /**
  * @brief set_normalIndex eventIn handler.
  *
- * @param mfint32   an MFInt32 value.
+ * @param value     an mfint32 value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfint32 is not an MFInt32.
+ * @exception std::bad_cast     if @p value is not an mfint32.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void IndexedFaceSet::processSet_normalIndex(const FieldValue & mfint32,
+void IndexedFaceSet::processSet_normalIndex(const field_value & value,
                                             const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->normalIndex = dynamic_cast<const MFInt32 &>(mfint32);
+    this->normalIndex = dynamic_cast<const mfint32 &>(value);
     this->setModified();
 }
 
 /**
  * @brief set_texCoord eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void IndexedFaceSet::processSet_texCoord(const FieldValue & sfnode,
+void IndexedFaceSet::processSet_texCoord(const field_value & value,
                                          const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->texCoord = dynamic_cast<const SFNode &>(sfnode);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->texCoord = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("texCoord_changed", this->texCoord, timestamp);
 }
@@ -6591,16 +6622,17 @@ void IndexedFaceSet::processSet_texCoord(const FieldValue & sfnode,
 /**
  * @brief set_texCoordIndex eventIn handler.
  *
- * @param mfint32   an MFInt32 value.
+ * @param value     an mfint32 value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfint32 is not an MFInt32.
+ * @exception std::bad_cast     if @p value is not an mfint32.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void IndexedFaceSet::processSet_texCoordIndex(const FieldValue & mfint32,
+void IndexedFaceSet::processSet_texCoordIndex(const field_value & value,
                                               const double timestamp)
-         throw (std::bad_cast, std::bad_alloc) {
-    this->texCoordIndex = dynamic_cast<const MFInt32 &>(mfint32);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->texCoordIndex = dynamic_cast<const mfint32 &>(value);
     this->setModified();
 }
 
@@ -6616,7 +6648,9 @@ void IndexedFaceSet::processSet_texCoordIndex(const FieldValue & mfint32,
  *
  * @param browser the Browser associated with this node class object.
  */
-IndexedLineSetClass::IndexedLineSetClass(Browser & browser): NodeClass(browser) {}
+IndexedLineSetClass::IndexedLineSetClass(Browser & browser):
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
@@ -6629,29 +6663,47 @@ IndexedLineSetClass::~IndexedLineSetClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating IndexedLineSet nodes.
+ * @return a NodeTypePtr to a NodeType capable of creating IndexedLineSet
+ *         nodes.
  *
  * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by IndexedLineSetClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        IndexedLineSetClass::createType(const std::string & id,
-                                        const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+IndexedLineSetClass::createType(const std::string & id,
+                                const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord"),
-        NodeInterface(NodeInterface::field, FieldValue::mfint32, "colorIndex"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
-        NodeInterface(NodeInterface::field, FieldValue::mfint32, "coordIndex")
+        NodeInterface(NodeInterface::eventIn,
+                      field_value::mfint32_id,
+                      "set_colorIndex"),
+        NodeInterface(NodeInterface::eventIn,
+                      field_value::mfint32_id,
+                      "set_coordIndex"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfnode_id,
+                      "color"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfnode_id,
+                      "coord"),
+        NodeInterface(NodeInterface::field,
+                      field_value::mfint32_id,
+                      "colorIndex"),
+        NodeInterface(NodeInterface::field,
+                      field_value::sfbool_id,
+                      "colorPerVertex"),
+        NodeInterface(NodeInterface::field,
+                      field_value::mfint32_id,
+                      "coordIndex")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<IndexedLineSet>(*this, id));
+    const NodeTypePtr
+        nodeType(new Vrml97NodeTypeImpl<IndexedLineSet>(*this, id));
     Vrml97NodeTypeImpl<IndexedLineSet> & indexedLineSetNodeType =
-            static_cast<Vrml97NodeTypeImpl<IndexedLineSet> &>(*nodeType);
-    typedef Vrml97NodeTypeImpl<IndexedLineSet>::NodeFieldPtrPtr NodeFieldPtrPtr;
+        static_cast<Vrml97NodeTypeImpl<IndexedLineSet> &>(*nodeType);
+    typedef Vrml97NodeTypeImpl<IndexedLineSet>::NodeFieldPtrPtr
+        NodeFieldPtrPtr;
     for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
@@ -6669,32 +6721,32 @@ const NodeTypePtr
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &IndexedLineSet::processSet_color,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, sfnode>
                                     (&IndexedLineSet::color)));
         } else if (*itr == supportedInterfaces[3]) {
             indexedLineSetNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &IndexedLineSet::processSet_coord,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, sfnode>
                                     (&IndexedLineSet::coord)));
         } else if (*itr == supportedInterfaces[4]) {
             indexedLineSetNodeType.addField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, MFInt32>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, mfint32>
                                     (&IndexedLineSet::colorIndex)));
         } else if (*itr == supportedInterfaces[5]) {
             indexedLineSetNodeType.addField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, sfbool>
                                     (&IndexedLineSet::colorPerVertex)));
         } else if (*itr == supportedInterfaces[6]) {
             indexedLineSetNodeType.addField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, MFInt32>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, mfint32>
                                     (&IndexedLineSet::coordIndex)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -6797,9 +6849,9 @@ const NodeTypePtr InlineClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Inline>(*this, id));
     Vrml97NodeTypeImpl<Inline> & inlineNodeType =
@@ -6812,19 +6864,19 @@ const NodeTypePtr InlineClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &Inline::processSet_url,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Inline, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Inline, mfstring>
                                     (&Inline::url)));
         } else if (*itr == supportedInterfaces[1]) {
             inlineNodeType.addField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Inline, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Inline, sfvec3f>
                                     (&Inline::bboxCenter)));
         } else if (*itr == supportedInterfaces[2]) {
             inlineNodeType.addField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Inline, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Inline, sfvec3f>
                                     (&Inline::bboxSize)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -6938,18 +6990,18 @@ void Inline::load() {
 /**
  * @brief set_url eventIn handler.
  *
- * @param mfstring  an MFString value.
+ * @param value     an mfstring value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  *
  * @todo Currently this only changes the field value; it does not load a new
  *      Scene.
  */
-void Inline::processSet_url(const FieldValue & mfstring, const double timestamp)
+void Inline::processSet_url(const field_value & value, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->url = dynamic_cast<const MFString &>(mfstring);
+    this->url = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("url_changed", this->url, timestamp);
 }
@@ -6989,9 +7041,9 @@ const NodeTypePtr LODClass::createType(const std::string & id,
                                        const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "level"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "center"),
-        NodeInterface(NodeInterface::field, FieldValue::mffloat, "range")
+        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "level"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "center"),
+        NodeInterface(NodeInterface::field, field_value::mffloat_id, "range")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<LOD>(*this, id));
     Vrml97NodeTypeImpl<LOD> & lodNodeType =
@@ -7004,19 +7056,19 @@ const NodeTypePtr LODClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &LOD::processSet_level,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<LOD, MFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<LOD, mfnode>
                                     (&LOD::level)));
         } else if (*itr == supportedInterfaces[1]) {
             lodNodeType.addField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<LOD, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<LOD, sfvec3f>
                                     (&LOD::center)));
         } else if (*itr == supportedInterfaces[2]) {
             lodNodeType.addField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<LOD, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<LOD, mffloat>
                                     (&LOD::range)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -7216,15 +7268,15 @@ void LOD::recalcBSphere() {
 /**
  * @brief set_level eventIn handler.
  *
- * @param mfnode    an MFNode value.
+ * @param value     an mfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfnode is not an MFNode.
+ * @exception std::bad_cast     if @p value is not an mfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void LOD::processSet_level(const FieldValue & mfnode, const double timestamp)
+void LOD::processSet_level(const field_value & value, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->level = dynamic_cast<const MFNode &>(mfnode);
+    this->level = dynamic_cast<const mfnode &>(value);
     this->setModified();
     this->emitEvent("level_changed", this->level, timestamp);
 }
@@ -7264,12 +7316,12 @@ const NodeTypePtr MaterialClass::createType(const std::string & id,
                                             const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "diffuseColor"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "emissiveColor"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "shininess"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "specularColor"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "transparency")
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "ambientIntensity"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "diffuseColor"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "emissiveColor"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "shininess"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "specularColor"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "transparency")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Material>(*this, id));
     Vrml97NodeTypeImpl<Material> & materialNodeType =
@@ -7282,42 +7334,42 @@ const NodeTypePtr MaterialClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &Material::processSet_ambientIntensity,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sffloat>
                                     (&Material::ambientIntensity)));
         } else if (*itr == supportedInterfaces[1]) {
             materialNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &Material::processSet_diffuseColor,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, SFColor>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sfcolor>
                                     (&Material::diffuseColor)));
         } else if (*itr == supportedInterfaces[2]) {
             materialNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Material::processSet_emissiveColor,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, SFColor>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sfcolor>
                                     (&Material::emissiveColor)));
         } else if (*itr == supportedInterfaces[3]) {
             materialNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &Material::processSet_shininess,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sffloat>
                                     (&Material::shininess)));
         } else if (*itr == supportedInterfaces[4]) {
             materialNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &Material::processSet_specularColor,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, SFColor>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sfcolor>
                                     (&Material::specularColor)));
         } else if (*itr == supportedInterfaces[5]) {
             materialNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &Material::processSet_transparency,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sffloat>
                                     (&Material::transparency)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -7359,15 +7411,16 @@ Material::~Material() throw () {}
 /**
  * @brief set_ambientIntensity eventIn handler.
  *
- * @param sffloat   a value from 0.0 to 1.0.
+ * @param value     a value from 0.0 to 1.0.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  */
-void Material::processSet_ambientIntensity(const FieldValue & sffloat,
+void Material::processSet_ambientIntensity(const field_value & value,
                                            const double timestamp)
-        throw (std::bad_cast) {
-    this->ambientIntensity = dynamic_cast<const SFFloat &>(sffloat);
+    throw (std::bad_cast)
+{
+    this->ambientIntensity = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("ambientIntensity_changed", this->ambientIntensity,
                     timestamp);
@@ -7376,15 +7429,16 @@ void Material::processSet_ambientIntensity(const FieldValue & sffloat,
 /**
  * @brief set_diffuseColor eventIn handler.
  *
- * @param sfcolor   an SFColor value.
+ * @param value     an sfcolor value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfcolor is not an SFColor.
+ * @exception std::bad_cast     if @p value is not an sfcolor.
  */
-void Material::processSet_diffuseColor(const FieldValue & sfcolor,
+void Material::processSet_diffuseColor(const field_value & value,
                                        const double timestamp)
-        throw (std::bad_cast) {
-    this->diffuseColor = dynamic_cast<const SFColor &>(sfcolor);
+    throw (std::bad_cast)
+{
+    this->diffuseColor = dynamic_cast<const sfcolor &>(value);
     this->setModified();
     this->emitEvent("diffuseColor_changed", this->diffuseColor, timestamp);
 }
@@ -7392,15 +7446,16 @@ void Material::processSet_diffuseColor(const FieldValue & sfcolor,
 /**
  * @brief set_emissiveColor eventIn handler.
  *
- * @param sfcolor   an SFColor value.
+ * @param value     an sfcolor value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfcolor is not an SFColor.
+ * @exception std::bad_cast     if @p value is not an sfcolor.
  */
-void Material::processSet_emissiveColor(const FieldValue & sfcolor,
+void Material::processSet_emissiveColor(const field_value & value,
                                         const double timestamp)
-        throw (std::bad_cast) {
-    this->emissiveColor = dynamic_cast<const SFColor &>(sfcolor);
+    throw (std::bad_cast)
+{
+    this->emissiveColor = dynamic_cast<const sfcolor &>(value);
     this->setModified();
     this->emitEvent("emissiveColor_changed", this->emissiveColor, timestamp);
 }
@@ -7408,15 +7463,16 @@ void Material::processSet_emissiveColor(const FieldValue & sfcolor,
 /**
  * @brief set_shininess eventIn handler.
  *
- * @param sffloat   a value from 0.0 to 1.0.
+ * @param value     a value from 0.0 to 1.0.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  */
-void Material::processSet_shininess(const FieldValue & sffloat,
+void Material::processSet_shininess(const field_value & value,
                                     const double timestamp)
-        throw (std::bad_cast) {
-    this->shininess = dynamic_cast<const SFFloat &>(sffloat);
+    throw (std::bad_cast)
+{
+    this->shininess = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("shininess_changed", this->shininess, timestamp);
 }
@@ -7424,15 +7480,16 @@ void Material::processSet_shininess(const FieldValue & sffloat,
 /**
  * @brief set_specularColor eventIn handler.
  *
- * @param sfcolor   an SFColor value.
+ * @param value     an sfcolor value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfcolor is not an SFColor.
+ * @exception std::bad_cast     if @p value is not an sfcolor.
  */
-void Material::processSet_specularColor(const FieldValue & sfcolor,
+void Material::processSet_specularColor(const field_value & value,
                                         const double timestamp)
-        throw (std::bad_cast) {
-    this->specularColor = dynamic_cast<const SFColor &>(sfcolor);
+    throw (std::bad_cast)
+{
+    this->specularColor = dynamic_cast<const sfcolor &>(value);
     this->setModified();
     this->emitEvent("specularColor_changed", this->specularColor, timestamp);
 }
@@ -7440,15 +7497,16 @@ void Material::processSet_specularColor(const FieldValue & sfcolor,
 /**
  * @brief set_transparency eventIn handler.
  *
- * @param sffloat   a value from 0.0 to 1.0.
+ * @param value     a value from 0.0 to 1.0.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  */
-void Material::processSet_transparency(const FieldValue & sffloat,
+void Material::processSet_transparency(const field_value & value,
                                        const double timestamp)
-        throw (std::bad_cast) {
-    this->transparency = dynamic_cast<const SFFloat &>(sffloat);
+    throw (std::bad_cast)
+{
+    this->transparency = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("transparency_changed", this->transparency, timestamp);
 }
@@ -7546,21 +7604,41 @@ MovieTextureClass::~MovieTextureClass() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        MovieTextureClass::createType(const std::string & id,
-                                      const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+MovieTextureClass::createType(const std::string & id,
+                              const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "speed"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "duration_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfbool_id,
+                      "loop"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sffloat_id,
+                      "speed"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sftime_id,
+                      "startTime"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sftime_id,
+                      "stopTime"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mfstring_id,
+                      "url"),
+        NodeInterface(NodeInterface::field,
+                      field_value::sfbool_id,
+                      "repeatS"),
+        NodeInterface(NodeInterface::field,
+                      field_value::sfbool_id,
+                      "repeatT"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sftime_id,
+                      "duration_changed"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfbool_id,
+                      "isActive")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<MovieTexture>(*this, id));
+    const NodeTypePtr
+        nodeType(new Vrml97NodeTypeImpl<MovieTexture>(*this, id));
     Vrml97NodeTypeImpl<MovieTexture> & movieTextureNodeType =
             static_cast<Vrml97NodeTypeImpl<MovieTexture> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<MovieTexture>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -7571,59 +7649,59 @@ const NodeTypePtr
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &MovieTexture::processSet_loop,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sfbool>
                                     (&MovieTexture::loop)));
         } else if (*itr == supportedInterfaces[1]) {
             movieTextureNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &MovieTexture::processSet_speed,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sffloat>
                                     (&MovieTexture::speed)));
         } else if (*itr == supportedInterfaces[2]) {
             movieTextureNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &MovieTexture::processSet_startTime,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sftime>
                                     (&MovieTexture::startTime)));
         } else if (*itr == supportedInterfaces[3]) {
             movieTextureNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &MovieTexture::processSet_stopTime,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sftime>
                                     (&MovieTexture::stopTime)));
         } else if (*itr == supportedInterfaces[4]) {
             movieTextureNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &MovieTexture::processSet_url,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, mfstring>
                                     (&MovieTexture::url)));
         } else if (*itr == supportedInterfaces[5]) {
             movieTextureNodeType.addField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sfbool>
                                     (&MovieTexture::repeatS)));
         } else if (*itr == supportedInterfaces[6]) {
             movieTextureNodeType.addField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sfbool>
                                     (&MovieTexture::repeatT)));
         } else if (*itr == supportedInterfaces[7]) {
             movieTextureNodeType.addEventOut(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sftime>
                                     (&MovieTexture::duration)));
         } else if (*itr == supportedInterfaces[8]) {
             movieTextureNodeType.addEventOut(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sfbool>
                                     (&MovieTexture::active)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -7703,7 +7781,7 @@ void MovieTexture::update(const double currentTime)
         }
 
         int nFrames = this->image->nFrames();
-        this->duration = SFTime((nFrames >= 0) ? double(nFrames) : double(-1));
+        this->duration = sftime((nFrames >= 0) ? double(nFrames) : double(-1));
         this->emitEvent("duration_changed", this->duration, currentTime);
         this->frame = (this->speed.value >= 0) ? 0 : nFrames-1;
         // Set the last frame equal to the start time.
@@ -7885,15 +7963,16 @@ void MovieTexture::do_shutdown(const double timestamp) throw ()
 /**
  * @brief set_loop eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void MovieTexture::processSet_loop(const FieldValue & sfbool,
+void MovieTexture::processSet_loop(const field_value & value,
                                    const double timestamp)
-        throw (std::bad_cast) {
-    this->loop = dynamic_cast<const SFBool &>(sfbool);
+    throw (std::bad_cast)
+{
+    this->loop = dynamic_cast<const sfbool &>(value);
     this->setModified();
     this->emitEvent("loop_changed", this->loop, timestamp);
 }
@@ -7901,19 +7980,20 @@ void MovieTexture::processSet_loop(const FieldValue & sfbool,
 /**
  * @brief set_speed eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void MovieTexture::processSet_speed(const FieldValue & sffloat,
+void MovieTexture::processSet_speed(const field_value & value,
                                     const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     //
     // set_speed is ignored if the MovieTexture is active.
     //
     if (!this->active.value) {
-        this->speed = dynamic_cast<const SFFloat &>(sffloat);
+        this->speed = dynamic_cast<const sffloat &>(value);
         this->setModified();
         this->emitEvent("speed_changed", this->speed, timestamp);
     }
@@ -7922,15 +8002,15 @@ void MovieTexture::processSet_speed(const FieldValue & sffloat,
 /**
  * @brief set_startTime eventIn handler.
  *
- * @param sftime    an SFTime value.
+ * @param value     an sftime value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sftime is not an SFTime.
+ * @exception std::bad_cast if @p value is not an sftime.
  */
-void MovieTexture::processSet_startTime(const FieldValue & sftime,
+void MovieTexture::processSet_startTime(const field_value & value,
                                         const double timestamp)
         throw (std::bad_cast) {
-    this->startTime = dynamic_cast<const SFTime &>(sftime);
+    this->startTime = dynamic_cast<const sftime &>(value);
     this->setModified();
     this->emitEvent("startTime_changed", this->startTime, timestamp);
 }
@@ -7938,15 +8018,15 @@ void MovieTexture::processSet_startTime(const FieldValue & sftime,
 /**
  * @brief set_stopTime eventIn handler.
  *
- * @param sftime    an SFTime value.
+ * @param value     an sftime value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sftime is not an SFTime.
+ * @exception std::bad_cast if @p value is not an sftime.
  */
-void MovieTexture::processSet_stopTime(const FieldValue & sftime,
+void MovieTexture::processSet_stopTime(const field_value & value,
                                        const double timestamp)
         throw (std::bad_cast) {
-    this->stopTime = dynamic_cast<const SFTime &>(sftime);
+    this->stopTime = dynamic_cast<const sftime &>(value);
     this->setModified();
     this->emitEvent("stopTime_changed", this->stopTime, timestamp);
 }
@@ -7954,16 +8034,16 @@ void MovieTexture::processSet_stopTime(const FieldValue & sftime,
 /**
  * @brief set_url eventIn handler.
  *
- * @param mfstring  an MFString value.
+ * @param value     an mfstring value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MovieTexture::processSet_url(const FieldValue & mfstring,
+void MovieTexture::processSet_url(const field_value & value,
                                   const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->url = dynamic_cast<const MFString &>(mfstring);
+    this->url = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("url_changed", this->url, timestamp);
 }
@@ -8005,13 +8085,13 @@ const NodeTypePtr
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "avatarSize"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "headlight"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "speed"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "type"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "visibilityLimit"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+        NodeInterface(NodeInterface::eventIn, field_value::sfbool_id, "set_bind"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "avatarSize"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "headlight"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "speed"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "type"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "visibilityLimit"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<NavigationInfo>(*this, id));
     Vrml97NodeTypeImpl<NavigationInfo> & navigationInfoNodeType =
@@ -8028,41 +8108,41 @@ const NodeTypePtr
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &NavigationInfo::processSet_avatarSize,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, mffloat>
                                     (&NavigationInfo::avatarSize)));
         } else if (*itr == supportedInterfaces[2]) {
             navigationInfoNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &NavigationInfo::processSet_headlight,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, sfbool>
                                     (&NavigationInfo::headlight)));
         } else if (*itr == supportedInterfaces[3]) {
             navigationInfoNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &NavigationInfo::processSet_speed,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, sffloat>
                                     (&NavigationInfo::speed)));
         } else if (*itr == supportedInterfaces[4]) {
             navigationInfoNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &NavigationInfo::processSet_type,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, mfstring>
                                     (&NavigationInfo::type)));
         } else if (*itr == supportedInterfaces[5]) {
             navigationInfoNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &NavigationInfo::processSet_visibilityLimit,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, sffloat>
                                     (&NavigationInfo::visibilityLimit)));
         } else if (*itr == supportedInterfaces[6]) {
             navigationInfoNodeType.addEventOut(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, sfbool>
                                     (&NavigationInfo::bound)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -8137,16 +8217,16 @@ void NavigationInfo::do_shutdown(const double timestamp) throw ()
 /**
  * @brief set_avatarSize eventIn handler.
  *
- * @param mffloat   an MFFloat value.
+ * @param value     an mffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NavigationInfo::processSet_avatarSize(const FieldValue & mffloat,
+void NavigationInfo::processSet_avatarSize(const field_value & value,
                                            const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->avatarSize = dynamic_cast<const MFFloat &>(mffloat);
+    this->avatarSize = dynamic_cast<const mffloat &>(value);
     this->setModified();
     this->emitEvent("avatarSize_changed", this->avatarSize, timestamp);
 }
@@ -8154,18 +8234,19 @@ void NavigationInfo::processSet_avatarSize(const FieldValue & mffloat,
 /**
  * @brief set_bind eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfbool is not an SFBool.
+ * @exception std::bad_cast     if @p value is not an sfbool.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NavigationInfo::processSet_bind(const FieldValue & sfbool,
+void NavigationInfo::processSet_bind(const field_value & value,
                                      const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     NavigationInfo * current =
-            this->nodeType.nodeClass.browser.bindableNavigationInfoTop();
-    const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
+        this->nodeType.nodeClass.browser.bindableNavigationInfoTop();
+    const sfbool & b = dynamic_cast<const sfbool &>(value);
 
     if (b.value) {        // set_bind TRUE
         if (this != current) {
@@ -8195,15 +8276,16 @@ void NavigationInfo::processSet_bind(const FieldValue & sfbool,
 /**
  * @brief set_headlight eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfbool is not an SFBool.
+ * @exception std::bad_cast     if @p value is not an sfbool.
  */
-void NavigationInfo::processSet_headlight(const FieldValue & sfbool,
+void NavigationInfo::processSet_headlight(const field_value & value,
                                           const double timestamp)
-        throw (std::bad_cast) {
-    this->headlight = dynamic_cast<const SFBool &>(sfbool);
+    throw (std::bad_cast)
+{
+    this->headlight = dynamic_cast<const sfbool &>(value);
     this->setModified();
     this->emitEvent("headlight_changed", this->headlight, timestamp);
 }
@@ -8211,15 +8293,16 @@ void NavigationInfo::processSet_headlight(const FieldValue & sfbool,
 /**
  * @brief set_speed eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  */
-void NavigationInfo::processSet_speed(const FieldValue & sffloat,
+void NavigationInfo::processSet_speed(const field_value & value,
                                       const double timestamp)
-        throw (std::bad_cast) {
-    this->speed = dynamic_cast<const SFFloat &>(sffloat);
+    throw (std::bad_cast)
+{
+    this->speed = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("speed_changed", this->speed, timestamp);
 }
@@ -8227,16 +8310,16 @@ void NavigationInfo::processSet_speed(const FieldValue & sffloat,
 /**
  * @brief set_type eventIn handler.
  *
- * @param mfstring  an MFString value.
+ * @param value     an mfstring value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NavigationInfo::processSet_type(const FieldValue & mfstring,
+void NavigationInfo::processSet_type(const field_value & value,
                                      const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->type = dynamic_cast<const MFString &>(mfstring);
+    this->type = dynamic_cast<const mfstring &>(value);
     this->setModified();
     this->emitEvent("type_changed", this->type, timestamp);
 }
@@ -8244,15 +8327,15 @@ void NavigationInfo::processSet_type(const FieldValue & mfstring,
 /**
  * @brief set_visibilityLimit eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  */
-void NavigationInfo::processSet_visibilityLimit(const FieldValue & sffloat,
+void NavigationInfo::processSet_visibilityLimit(const field_value & value,
                                                 const double timestamp)
         throw (std::bad_cast) {
-    this->visibilityLimit = dynamic_cast<const SFFloat &>(sffloat);
+    this->visibilityLimit = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("visibilityLimit_changed", this->visibilityLimit,
                     timestamp);
@@ -8293,7 +8376,7 @@ const NodeTypePtr NormalClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "vector");
+            NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "vector");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Normal>(*this, id));
     Vrml97NodeTypeImpl<Normal> & normalNodeType =
             static_cast<Vrml97NodeTypeImpl<Normal> &>(*nodeType);
@@ -8305,7 +8388,7 @@ const NodeTypePtr NormalClass::createType(const std::string & id,
                 supportedInterface.fieldType,
                 supportedInterface.id,
                 &Normal::processSet_vector,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Normal, MFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Normal, mfvec3f>
                                     (&Normal::vector)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -8350,16 +8433,16 @@ const std::vector<vec3f> & Normal::getVector() const throw ()
 /**
  * @brief set_vector eventIn handler.
  *
- * @param mfvec3f   an MFVec3f value.
+ * @param value     an mfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfvec3f is not an MFVec3f.
+ * @exception std::bad_cast     if @p value is not an mfvec3f.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Normal::processSet_vector(const FieldValue & mfvec3f,
+void Normal::processSet_vector(const field_value & value,
                                const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->vector = dynamic_cast<const MFVec3f &>(mfvec3f);
+    this->vector = dynamic_cast<const mfvec3f &>(value);
     this->setModified();
     this->emitEvent("vector_changed", this->vector, timestamp);
 }
@@ -8402,10 +8485,10 @@ const NodeTypePtr
                                             const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed")
+        NodeInterface(NodeInterface::eventIn, field_value::sffloat_id, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "key"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, field_value::mfvec3f_id, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<NormalInterpolator>(*this, id));
     Vrml97NodeTypeImpl<NormalInterpolator> & normalInterpolatorNodeType =
@@ -8423,20 +8506,20 @@ const NodeTypePtr
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &NormalInterpolator::processSet_key,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<NormalInterpolator, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<NormalInterpolator, mffloat>
                                     (&NormalInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             normalInterpolatorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &NormalInterpolator::processSet_keyValue,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<NormalInterpolator, MFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<NormalInterpolator, mfvec3f>
                                     (&NormalInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             normalInterpolatorNodeType.addEventOut(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<NormalInterpolator, MFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<NormalInterpolator, mfvec3f>
                                     (&NormalInterpolator::value)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -8470,19 +8553,19 @@ NormalInterpolator::~NormalInterpolator() throw () {}
 /**
  * @brief set_fraction eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
+void NormalInterpolator::processSet_fraction(const field_value & value,
                                              const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     using OpenVRML_::fptolerance;
 
-    float f = dynamic_cast<const SFFloat &>(sffloat).value;
+    float f = dynamic_cast<const sffloat &>(value).value;
 
     size_t nNormals = this->keyValue.value.size() / this->key.value.size();
     size_t n = this->key.value.size() - 1;
@@ -8549,32 +8632,32 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
 /**
  * @brief set_key eventIn handler.
  *
- * @param mffloat   an MFFloat value.
+ * @param value     an mffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NormalInterpolator::processSet_key(const FieldValue & mffloat,
+void NormalInterpolator::processSet_key(const field_value & value,
                                         const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->key = dynamic_cast<const MFFloat &>(mffloat);
+    this->key = dynamic_cast<const mffloat &>(value);
     this->emitEvent("key_changed", this->key, timestamp);
 }
 
 /**
  * @brief set_keyValue eventIn handler.
  *
- * @param mfvec3f   an MFVec3f value.
+ * @param value     an mfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfvec3f is not an MFVec3f.
+ * @exception std::bad_cast     if @p value is not an mfvec3f.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NormalInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
+void NormalInterpolator::processSet_keyValue(const field_value & value,
                                              const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    this->keyValue = dynamic_cast<const MFVec3f &>(mfvec3f);
+    this->keyValue = dynamic_cast<const mfvec3f &>(value);
     this->emitEvent("keyValue_changed", this->keyValue, timestamp);
 }
 
@@ -8590,8 +8673,9 @@ void NormalInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
  *
  * @param browser the Browser associated with this class object.
  */
-OrientationInterpolatorClass::
-        OrientationInterpolatorClass(Browser & browser): NodeClass(browser) {}
+OrientationInterpolatorClass::OrientationInterpolatorClass(Browser & browser):
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
@@ -8611,19 +8695,32 @@ OrientationInterpolatorClass::~OrientationInterpolatorClass() throw () {}
  *                              supported by OrientationInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr OrientationInterpolatorClass::
-        createType(const std::string & id, const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+const NodeTypePtr
+OrientationInterpolatorClass::createType(const std::string & id,
+                                         const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfrotation, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "value_changed")
+        NodeInterface(NodeInterface::eventIn,
+                      field_value::sffloat_id,
+                      "set_fraction"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mffloat_id,
+                      "key"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mfrotation_id,
+                      "keyValue"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfrotation_id,
+                      "value_changed")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<OrientationInterpolator>(*this, id));
-    Vrml97NodeTypeImpl<OrientationInterpolator> & orientationInterpolatorNodeType =
-            static_cast<Vrml97NodeTypeImpl<OrientationInterpolator> &>(*nodeType);
-    typedef Vrml97NodeTypeImpl<OrientationInterpolator>::NodeFieldPtrPtr NodeFieldPtrPtr;
+    const NodeTypePtr
+        nodeType(new Vrml97NodeTypeImpl<OrientationInterpolator>(*this, id));
+    Vrml97NodeTypeImpl<OrientationInterpolator> &
+        orientationInterpolatorNodeType =
+        static_cast<Vrml97NodeTypeImpl<OrientationInterpolator> &>(*nodeType);
+    typedef Vrml97NodeTypeImpl<OrientationInterpolator>::NodeFieldPtrPtr
+        NodeFieldPtrPtr;
     for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
@@ -8636,21 +8733,24 @@ const NodeTypePtr OrientationInterpolatorClass::
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &OrientationInterpolator::processSet_key,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<OrientationInterpolator, MFFloat>
-                                    (&OrientationInterpolator::key)));
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<OrientationInterpolator,
+                                                     mffloat>
+                                (&OrientationInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             orientationInterpolatorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &OrientationInterpolator::processSet_keyValue,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<OrientationInterpolator, MFRotation>
-                                    (&OrientationInterpolator::keyValue)));
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<OrientationInterpolator,
+                                                     mfrotation>
+                                (&OrientationInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             orientationInterpolatorNodeType.addEventOut(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<OrientationInterpolator, SFRotation>
-                                    (&OrientationInterpolator::value)));
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<OrientationInterpolator,
+                                                     sfrotation>
+                                (&OrientationInterpolator::value)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
         }
@@ -8683,17 +8783,17 @@ OrientationInterpolator::~OrientationInterpolator() throw () {}
 /**
  * @brief set_fraction eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
+void OrientationInterpolator::processSet_fraction(const field_value & value,
                                                   const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    float f = dynamic_cast<const SFFloat &>(sffloat).value;
+    float f = dynamic_cast<const sffloat &>(value).value;
 
     size_t n = this->key.value.size() - 1;
     if (f < this->key.value[0]) {
@@ -8756,32 +8856,34 @@ void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
 /**
  * @brief set_key eventIn handler.
  *
- * @param mffloat   an MFFloat value.
+ * @param value     an mffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void OrientationInterpolator::processSet_key(const FieldValue & mffloat,
+void OrientationInterpolator::processSet_key(const field_value & value,
                                              const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->key = dynamic_cast<const MFFloat &>(mffloat);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->key = dynamic_cast<const mffloat &>(value);
     this->emitEvent("key_changed", this->key, timestamp);
 }
 
 /**
  * @brief set_keyValue eventIn handler.
  *
- * @param mfrotation    an MFRotation value.
- * @param timestamp     the current time.
+ * @param value     an mfrotation value.
+ * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfrotation is not an MFRotation.
+ * @exception std::bad_cast     if @p value is not an mfrotation.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void OrientationInterpolator::processSet_keyValue(const FieldValue & mfrotation,
+void OrientationInterpolator::processSet_keyValue(const field_value & value,
                                                   const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->keyValue = dynamic_cast<const MFRotation &>(mfrotation);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->keyValue = dynamic_cast<const mfrotation &>(value);
     this->emitEvent("keyValue_changed", this->keyValue, timestamp);
 }
 
@@ -8818,17 +8920,25 @@ PixelTextureClass::~PixelTextureClass() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        PixelTextureClass::createType(const std::string & id,
-                                      const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+PixelTextureClass::createType(const std::string & id,
+                              const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfimage, "image"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT")
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfimage_id,
+                      "image"),
+        NodeInterface(NodeInterface::field,
+                      field_value::sfbool_id,
+                      "repeatS"),
+        NodeInterface(NodeInterface::field,
+                      field_value::sfbool_id,
+                      "repeatT")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PixelTexture>(*this, id));
+    const NodeTypePtr
+        nodeType(new Vrml97NodeTypeImpl<PixelTexture>(*this, id));
     Vrml97NodeTypeImpl<PixelTexture> & pixelTextureNodeType =
-            static_cast<Vrml97NodeTypeImpl<PixelTexture> &>(*nodeType);
+        static_cast<Vrml97NodeTypeImpl<PixelTexture> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<PixelTexture>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -8837,19 +8947,19 @@ const NodeTypePtr
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &PixelTexture::processSet_image,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PixelTexture, SFImage>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PixelTexture, sfimage>
                                     (&PixelTexture::image)));
         } else if (*itr == supportedInterfaces[1]) {
             pixelTextureNodeType.addField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PixelTexture, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PixelTexture, sfbool>
                                     (&PixelTexture::repeatS)));
         } else if (*itr == supportedInterfaces[2]) {
             pixelTextureNodeType.addField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PixelTexture, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PixelTexture, sfbool>
                                     (&PixelTexture::repeatT)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -8899,16 +9009,16 @@ void PixelTexture::render(Viewer & viewer, const VrmlRenderContext context)
         }
     }
 
-    if (this->image.getPixels()) {
+    if (this->image.array()) {
         if (this->texObject) {
             viewer.insertTextureReference(this->texObject,
-                                          this->image.getComponents());
+                                          this->image.comp());
         } else {
             // Ensure the image dimensions are powers of two
             const int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
             const int nSizes = sizeof(sizes) / sizeof(int);
-            int w = this->image.getWidth();
-            int h = this->image.getHeight();
+            int w = this->image.x();
+            int h = this->image.y();
             int i, j;
             for (i = 0; i < nSizes; ++i) { if (w < sizes[i]) { break; } }
             for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
@@ -8922,28 +9032,27 @@ void PixelTexture::render(Viewer & viewer, const VrmlRenderContext context)
                 // in a cache in the renderer.
                 //   -- Braden McDaniel <braden@endoframe.com>, 9 Dec, 2000
                 if (w != sizes[i - 1] || h != sizes[j - 1]) {
-                    const size_t numBytes =
-                            this->image.getWidth() * this->image.getHeight()
-                                * this->image.getComponents();
+                    const size_t numBytes = this->image.x() * this->image.y()
+                                            * this->image.comp();
                     unsigned char * pixels = new unsigned char[numBytes];
-                    std::copy(this->image.getPixels(),
-                              this->image.getPixels() + numBytes,
+                    std::copy(this->image.array(),
+                              this->image.array() + numBytes,
                               pixels);
 
                     viewer.scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
-                                        this->image.getComponents(), pixels);
+                                        this->image.comp(), pixels);
                     this->image.set(sizes[i - 1], sizes[j - 1],
-                                    this->image.getComponents(), pixels);
+                                    this->image.comp(), pixels);
                     delete [] pixels;
                 }
 
                 this->texObject =
-                        viewer.insertTexture(this->image.getWidth(),
-                                             this->image.getHeight(),
-                                             this->image.getComponents(),
+                        viewer.insertTexture(this->image.x(),
+                                             this->image.y(),
+                                             this->image.comp(),
                                              this->repeatS.value,
                                              this->repeatT.value,
-                                             this->image.getPixels(),
+                                             this->image.array(),
                                              true);
             }
         }
@@ -8951,33 +9060,45 @@ void PixelTexture::render(Viewer & viewer, const VrmlRenderContext context)
     this->clearModified();
 }
 
-size_t PixelTexture::nComponents() const throw () {
-    return this->image.getComponents();
+size_t PixelTexture::nComponents() const throw ()
+{
+    return this->image.comp();
 }
 
-size_t PixelTexture::width() const throw () { return this->image.getWidth(); }
+size_t PixelTexture::width() const throw ()
+{
+    return this->image.x();
+}
 
-size_t PixelTexture::height() const throw () { return this->image.getHeight(); }
+size_t PixelTexture::height() const throw ()
+{
+    return this->image.y();
+}
 
-size_t PixelTexture::nFrames() const throw () { return 0; }
+size_t PixelTexture::nFrames() const throw ()
+{
+    return 0;
+}
 
-const unsigned char * PixelTexture::pixels() const throw () {
-    return this->image.getPixels();
+const unsigned char * PixelTexture::pixels() const throw ()
+{
+    return this->image.array();
 }
 
 /**
  * @brief set_image eventIn handler.
  *
- * @param sfimage   an SFImage value.
+ * @param value     an sfimage value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfimage is not an SFImage.
+ * @exception std::bad_cast     if @p value is not an SFImage.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void PixelTexture::processSet_image(const FieldValue & sfimage,
+void PixelTexture::processSet_image(const field_value & value,
                                     const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->image = dynamic_cast<const SFImage &>(sfimage);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->image = dynamic_cast<const sfimage &>(value);
     this->setModified();
     this->emitEvent("image_changed", this->image, timestamp);
 }
@@ -9019,14 +9140,14 @@ const NodeTypePtr
                                      const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "maxPosition"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "minPosition"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "offset"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "translation_changed")
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "autoOffset"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "maxPosition"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "minPosition"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "offset"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "trackPoint_changed"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "translation_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PlaneSensor>(*this, id));
     Vrml97NodeTypeImpl<PlaneSensor> & planeSensorNodeType =
@@ -9039,53 +9160,53 @@ const NodeTypePtr
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &PlaneSensor::processSet_autoOffset,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfbool>
                                     (&PlaneSensor::autoOffset)));
         } else if (*itr == supportedInterfaces[1]) {
             planeSensorNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &PlaneSensor::processSet_enabled,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfbool>
                                     (&PlaneSensor::enabled)));
         } else if (*itr == supportedInterfaces[2]) {
             planeSensorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &PlaneSensor::processSet_maxPosition,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, SFVec2f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfvec2f>
                                     (&PlaneSensor::maxPosition)));
         } else if (*itr == supportedInterfaces[3]) {
             planeSensorNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &PlaneSensor::processSet_minPosition,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, SFVec2f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfvec2f>
                                     (&PlaneSensor::minPosition)));
         } else if (*itr == supportedInterfaces[4]) {
             planeSensorNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &PlaneSensor::processSet_offset,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfvec3f>
                                     (&PlaneSensor::offset)));
         } else if (*itr == supportedInterfaces[5]) {
             planeSensorNodeType.addEventOut(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfbool>
                                     (&PlaneSensor::active)));
         } else if (*itr == supportedInterfaces[6]) {
             planeSensorNodeType.addEventOut(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfvec3f>
                                     (&PlaneSensor::trackPoint)));
         } else if (*itr == supportedInterfaces[7]) {
             planeSensorNodeType.addEventOut(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfvec3f>
                                     (&PlaneSensor::translation)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -9113,55 +9234,55 @@ const NodeTypePtr
  */
 
 /**
- * @var SFBool PlaneSensor::autoOffset
+ * @var sfbool PlaneSensor::autoOffset
  *
  * @brief autoOffset exposedField.
  */
 
 /**
- * @var SFBool PlaneSensor::enabled
+ * @var sfbool PlaneSensor::enabled
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var SFVec2f PlaneSensor::maxPosition
+ * @var sfvec2f PlaneSensor::maxPosition
  *
  * @brief maxPosition exposedField.
  */
 
 /**
- * @var SFVec2f PlaneSensor::minPosition
+ * @var sfvec2f PlaneSensor::minPosition
  *
  * @brief minPosition exposedField.
  */
 
 /**
- * @var SFVec3f PlaneSensor::offset
+ * @var sfvec3f PlaneSensor::offset
  *
  * @brief offset exposedField.
  */
 
 /**
- * @var SFBool PlaneSensor::active
+ * @var sfbool PlaneSensor::active
  *
  * @brief isActive eventOut.
  */
 
 /**
- * @var SFVec3f PlaneSensor::trackPoint
+ * @var sfvec3f PlaneSensor::trackPoint
  *
  * @brief trackPoint_changed eventOut.
  */
 
 /**
- * @var SFVec3f PlaneSensor::translation
+ * @var sfvec3f PlaneSensor::translation
  *
  * @brief translation_changed eventOut.
  */
 
 /**
- * @var SFVec3f PlaneSensor::activationPoint
+ * @var sfvec3f PlaneSensor::activationPoint
  *
  * @brief The point at which the PlaneSensor was activated.
  */
@@ -9304,15 +9425,16 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p)
 /**
  * @brief set_autoOffset eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void PlaneSensor::processSet_autoOffset(const FieldValue & sfbool,
+void PlaneSensor::processSet_autoOffset(const field_value & value,
                                         const double timestamp)
-        throw (std::bad_cast) {
-    this->autoOffset = dynamic_cast<const SFBool &>(sfbool);
+    throw (std::bad_cast)
+{
+    this->autoOffset = dynamic_cast<const sfbool &>(value);
     this->setModified();
     this->emitEvent("autoOffset_changed", this->autoOffset, timestamp);
 }
@@ -9320,15 +9442,16 @@ void PlaneSensor::processSet_autoOffset(const FieldValue & sfbool,
 /**
  * @brief set_enabled eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void PlaneSensor::processSet_enabled(const FieldValue & sfbool,
+void PlaneSensor::processSet_enabled(const field_value & value,
                                      const double timestamp)
-        throw (std::bad_cast) {
-    this->enabled = dynamic_cast<const SFBool &>(sfbool);
+    throw (std::bad_cast)
+{
+    this->enabled = dynamic_cast<const sfbool &>(value);
     this->setModified();
     this->emitEvent("enabled_changed", this->enabled, timestamp);
 }
@@ -9336,15 +9459,16 @@ void PlaneSensor::processSet_enabled(const FieldValue & sfbool,
 /**
  * @brief set_maxPosition eventIn handler.
  *
- * @param sfvec2f   an SFVec2f value.
+ * @param value     an sfvec2f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec2f is not an SFVec2f.
+ * @exception std::bad_cast if @p value is not an sfvec2f.
  */
-void PlaneSensor::processSet_maxPosition(const FieldValue & sfvec2f,
+void PlaneSensor::processSet_maxPosition(const field_value & value,
                                          const double timestamp)
-        throw (std::bad_cast) {
-    this->maxPosition = dynamic_cast<const SFVec2f &>(sfvec2f);
+    throw (std::bad_cast)
+{
+    this->maxPosition = dynamic_cast<const sfvec2f &>(value);
     this->setModified();
     this->emitEvent("maxPosition_changed", this->maxPosition, timestamp);
 }
@@ -9352,15 +9476,15 @@ void PlaneSensor::processSet_maxPosition(const FieldValue & sfvec2f,
 /**
  * @brief set_minPosition eventIn handler.
  *
- * @param sfvec2f   an SFVec2f value.
+ * @param value     an sfvec2f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec2f is not an SFVec2f.
+ * @exception std::bad_cast if @p value is not an sfvec2f.
  */
-void PlaneSensor::processSet_minPosition(const FieldValue & sfvec2f,
+void PlaneSensor::processSet_minPosition(const field_value & value,
                                          const double timestamp)
         throw (std::bad_cast) {
-    this->minPosition = dynamic_cast<const SFVec2f &>(sfvec2f);
+    this->minPosition = dynamic_cast<const sfvec2f &>(value);
     this->setModified();
     this->emitEvent("minPosition_changed", this->minPosition, timestamp);
 }
@@ -9368,15 +9492,15 @@ void PlaneSensor::processSet_minPosition(const FieldValue & sfvec2f,
 /**
  * @brief set_offset eventIn handler.
  *
- * @param sfvec3f   an SFVec3f value.
+ * @param value     an sfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void PlaneSensor::processSet_offset(const FieldValue & sfvec3f,
+void PlaneSensor::processSet_offset(const field_value & value,
                                     const double timestamp)
         throw (std::bad_cast) {
-    this->offset = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->offset = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("offset_changed", this->offset, timestamp);
 }
@@ -9419,13 +9543,13 @@ PointLightClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "radius")
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "ambientIntensity"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "attenuation"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "color"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "intensity"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "location"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "on"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "radius")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PointLight>(*this, id));
     Vrml97NodeTypeImpl<PointLight> & pointLightNodeType =
@@ -9438,49 +9562,49 @@ PointLightClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &PointLight::processSet_ambientIntensity,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sffloat>
                                     (&PointLight::ambientIntensity)));
         } else if (*itr == supportedInterfaces[1]) {
             pointLightNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &PointLight::processSet_attenuation,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sfvec3f>
                                     (&PointLight::attenuation)));
         } else if (*itr == supportedInterfaces[2]) {
             pointLightNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &PointLight::processSet_color,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, SFColor>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sfcolor>
                                     (&PointLight::color)));
         } else if (*itr == supportedInterfaces[3]) {
             pointLightNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &PointLight::processSet_intensity,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sffloat>
                                     (&PointLight::intensity)));
         } else if (*itr == supportedInterfaces[4]) {
             pointLightNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &PointLight::processSet_location,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sfvec3f>
                                     (&PointLight::location)));
         } else if (*itr == supportedInterfaces[5]) {
             pointLightNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &PointLight::processSet_on,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sfbool>
                                     (&PointLight::on)));
         } else if (*itr == supportedInterfaces[6]) {
             pointLightNodeType.addExposedField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
                 &PointLight::processSet_radius,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sffloat>
                                     (&PointLight::radius)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -9502,19 +9626,19 @@ PointLightClass::createType(const std::string & id,
  */
 
 /**
- * @var SFVec3f PointLight::attenuation
+ * @var sfvec3f PointLight::attenuation
  *
  * @brief attenuation exposedField.
  */
 
 /**
- * @var SFVec3f PointLight::location
+ * @var sfvec3f PointLight::location
  *
  * @brief location exposedField.
  */
 
 /**
- * @var SFFloat PointLight::radius
+ * @var sffloat PointLight::radius
  *
  * @brief radius exposedField.
  */
@@ -9602,16 +9726,16 @@ void PointLight::do_shutdown(const double timestamp) throw ()
 /**
  * @brief set_attenuation eventIn handler.
  *
- * @param sfvec3f   an SFVec3f.
+ * @param value     an sfvec3f.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void PointLight::processSet_attenuation(const FieldValue & sfvec3f,
+void PointLight::processSet_attenuation(const field_value & value,
                                         const double timestamp)
     throw (std::bad_cast)
 {
-    this->attenuation = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->attenuation = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("attenuation_changed", this->attenuation, timestamp);
 }
@@ -9619,16 +9743,16 @@ void PointLight::processSet_attenuation(const FieldValue & sfvec3f,
 /**
  * @brief set_location eventIn handler.
  *
- * @param sfvec3f   an SFVec3f.
+ * @param value     an sfvec3f.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void PointLight::processSet_location(const FieldValue & sfvec3f,
+void PointLight::processSet_location(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast)
 {
-    this->location = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->location = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("location_changed", this->location, timestamp);
 }
@@ -9636,16 +9760,16 @@ void PointLight::processSet_location(const FieldValue & sfvec3f,
 /**
  * @brief set_radius eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void PointLight::processSet_radius(const FieldValue & sffloat,
+void PointLight::processSet_radius(const field_value & value,
                                    const double timestamp)
     throw (std::bad_cast)
 {
-    this->radius = dynamic_cast<const SFFloat &>(sffloat);
+    this->radius = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("radius_changed", this->radius, timestamp);
 }
@@ -9689,8 +9813,8 @@ const NodeTypePtr PointSetClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord")
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "color"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "coord")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PointSet>(*this, id));
     Vrml97NodeTypeImpl<PointSet> & pointSetNodeType =
@@ -9703,14 +9827,14 @@ const NodeTypePtr PointSetClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &PointSet::processSet_color,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointSet, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointSet, sfnode>
                                     (&PointSet::color)));
         } else if (*itr == supportedInterfaces[1]) {
             pointSetNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &PointSet::processSet_coord,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointSet, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PointSet, sfnode>
                                     (&PointSet::coord)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -9732,13 +9856,13 @@ const NodeTypePtr PointSetClass::createType(const std::string & id,
  */
 
 /**
- * @var SFNode PointSet::color
+ * @var sfnode PointSet::color
  *
  * @brief color exposedField.
  */
 
 /**
- * @var SFNode PointSet::coord
+ * @var sfnode PointSet::coord
  *
  * @brief coord exposedField.
  */
@@ -9808,7 +9932,7 @@ Viewer::Object PointSet::insertGeometry(Viewer & viewer,
                                         const VrmlRenderContext context)
 {
     using std::vector;
-    
+
     if (context.getDrawBSpheres()) {
         const BSphere * bs = (const BSphere*)this->getBVolume();
         viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
@@ -9871,17 +9995,17 @@ const BVolume* PointSet::getBVolume() const
 /**
  * @brief set_color eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void PointSet::processSet_color(const FieldValue & sfnode,
+void PointSet::processSet_color(const field_value & value,
                                 const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->color = dynamic_cast<const SFNode &>(sfnode);
+    this->color = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("color_changed", this->color, timestamp);
 }
@@ -9889,17 +10013,17 @@ void PointSet::processSet_color(const FieldValue & sfnode,
 /**
  * @brief set_coord eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void PointSet::processSet_coord(const FieldValue & sfnode,
+void PointSet::processSet_coord(const field_value & value,
                                 const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->coord = dynamic_cast<const SFNode &>(sfnode);
+    this->coord = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("coord_changed", this->coord, timestamp);
 }
@@ -9945,15 +10069,25 @@ PositionInterpolatorClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "value_changed")
+        NodeInterface(NodeInterface::eventIn,
+                      field_value::sffloat_id,
+                      "set_fraction"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mffloat_id,
+                      "key"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mfvec3f_id,
+                      "keyValue"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfvec3f_id,
+                      "value_changed")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PositionInterpolator>(*this, id));
+    const NodeTypePtr
+        nodeType(new Vrml97NodeTypeImpl<PositionInterpolator>(*this, id));
     Vrml97NodeTypeImpl<PositionInterpolator> & positionInterpolatorNodeType =
             static_cast<Vrml97NodeTypeImpl<PositionInterpolator> &>(*nodeType);
-    typedef Vrml97NodeTypeImpl<PositionInterpolator>::NodeFieldPtrPtr NodeFieldPtrPtr;
+    typedef Vrml97NodeTypeImpl<PositionInterpolator>::NodeFieldPtrPtr
+        NodeFieldPtrPtr;
     for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
@@ -9966,20 +10100,20 @@ PositionInterpolatorClass::createType(const std::string & id,
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &PositionInterpolator::processSet_key,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PositionInterpolator, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PositionInterpolator, mffloat>
                                     (&PositionInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             positionInterpolatorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &PositionInterpolator::processSet_keyValue,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PositionInterpolator, MFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PositionInterpolator, mfvec3f>
                                     (&PositionInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             positionInterpolatorNodeType.addEventOut(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<PositionInterpolator, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<PositionInterpolator, sfvec3f>
                                     (&PositionInterpolator::value)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -10001,19 +10135,19 @@ PositionInterpolatorClass::createType(const std::string & id,
  */
 
 /**
- * @var MFFloat PositionInterpolator::key
+ * @var mffloat PositionInterpolator::key
  *
  * @brief key exposedField.
  */
 
 /**
- * @var MFVec3f PositionInterpolator::keyValue
+ * @var mfvec3f PositionInterpolator::keyValue
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var SFVec3f PositionInterpolator::value
+ * @var sfvec3f PositionInterpolator::value
  *
  * @brief value_changed eventOut.
  */
@@ -10040,17 +10174,17 @@ PositionInterpolator::~PositionInterpolator() throw ()
 /**
  * @brief set_fraction eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void PositionInterpolator::processSet_fraction(const FieldValue & sffloat,
+void PositionInterpolator::processSet_fraction(const field_value & value,
                                                const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    float f = dynamic_cast<const SFFloat &>(sffloat).value;
+    float f = dynamic_cast<const sffloat &>(value).value;
 
     int n = this->key.value.size() - 1;
     if (f < this->key.value[0]) {
@@ -10082,34 +10216,34 @@ void PositionInterpolator::processSet_fraction(const FieldValue & sffloat,
 /**
  * @brief set_key eventIn handler.
  *
- * @param mffloat   an MFFloat value.
+ * @param value     an mffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void PositionInterpolator::processSet_key(const FieldValue & mffloat,
+void PositionInterpolator::processSet_key(const field_value & value,
                                           const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->key = dynamic_cast<const MFFloat &>(mffloat);
+    this->key = dynamic_cast<const mffloat &>(value);
     this->emitEvent("key_changed", this->key, timestamp);
 }
 
 /**
  * @brief set_keyValue field mutator.
  *
- * @param mfvec3f   an MFVec3f value.
+ * @param value     an mfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfvec3f is not an MFVec3f.
+ * @exception std::bad_cast     if @p value is not an mfvec3f.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void PositionInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
+void PositionInterpolator::processSet_keyValue(const field_value & value,
                                                const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->keyValue = dynamic_cast<const MFVec3f &>(mfvec3f);
+    this->keyValue = dynamic_cast<const mfvec3f &>(value);
     this->emitEvent("keyValue_changed", this->keyValue, timestamp);
 }
 
@@ -10154,14 +10288,14 @@ ProximitySensorClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "size"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "position_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "orientation_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "enterTime"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "exitTime")
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "center"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "size"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "position_changed"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfrotation_id, "orientation_changed"),
+        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "enterTime"),
+        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "exitTime")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ProximitySensor>(*this, id));
     Vrml97NodeTypeImpl<ProximitySensor> & proximitySensorNodeType =
@@ -10174,51 +10308,51 @@ ProximitySensorClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &ProximitySensor::processSet_center,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfvec3f>
                                     (&ProximitySensor::center)));
         } else if (*itr == supportedInterfaces[1]) {
             proximitySensorNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &ProximitySensor::processSet_size,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfvec3f>
                                     (&ProximitySensor::size)));
         } else if (*itr == supportedInterfaces[2]) {
             proximitySensorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &ProximitySensor::processSet_enabled,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfbool>
                                     (&ProximitySensor::enabled)));
         } else if (*itr == supportedInterfaces[3]) {
             proximitySensorNodeType.addEventOut(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfbool>
                                     (&ProximitySensor::active)));
         } else if (*itr == supportedInterfaces[4]) {
             proximitySensorNodeType.addEventOut(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfvec3f>
                                     (&ProximitySensor::position)));
         } else if (*itr == supportedInterfaces[5]) {
             proximitySensorNodeType.addEventOut(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, SFRotation>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfrotation>
                                     (&ProximitySensor::orientation)));
         } else if (*itr == supportedInterfaces[6]) {
             proximitySensorNodeType.addEventOut(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sftime>
                                     (&ProximitySensor::enterTime)));
         } else if (*itr == supportedInterfaces[7]) {
             proximitySensorNodeType.addEventOut(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sftime>
                                     (&ProximitySensor::exitTime)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -10240,49 +10374,49 @@ ProximitySensorClass::createType(const std::string & id,
  */
 
 /**
- * @var SFVec3f ProximitySensor::center
+ * @var sfvec3f ProximitySensor::center
  *
  * @brief center exposedField.
  */
 
 /**
- * @var SFBool ProximitySensor::enabled
+ * @var sfbool ProximitySensor::enabled
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var SFVec3f ProximitySensor::size
+ * @var sfvec3f ProximitySensor::size
  *
  * @brief size exposedField.
  */
 
 /**
- * @var SFBool ProximitySensor::active
+ * @var sfbool ProximitySensor::active
  *
  * @brief isActive eventOut.
  */
 
 /**
- * @var SFVec3f ProximitySensor::position
+ * @var sfvec3f ProximitySensor::position
  *
  * @brief position_changed eventOut.
  */
 
 /**
- * @var SFVec3f ProximitySensor::orientation
+ * @var sfvec3f ProximitySensor::orientation
  *
  * @brief orientation_changed eventOut.
  */
 
 /**
- * @var SFTime ProximitySensor::enterTime
+ * @var sftime ProximitySensor::enterTime
  *
  * @brief enterTime eventOut.
  */
 
 /**
- * @var SFTime ProximitySensor::exitTime
+ * @var sftime ProximitySensor::exitTime
  *
  * @brief exitTime eventOut.
  */
@@ -10346,7 +10480,7 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
             && this->size.value.y() > 0.0
             && this->size.value.z() > 0.0
             && viewer.getRenderMode() == Viewer::RENDER_MODE_DRAW) {
-        SFTime timeNow(Browser::getCurrentTime());
+        sftime timeNow(Browser::getCurrentTime());
         float x, y, z;
 
         // Is viewer inside the box?
@@ -10404,16 +10538,16 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
 /**
  * @brief set_center eventIn handler.
  *
- * @param sfvec3f   an SFVec3f value.
+ * @param value     an sfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void ProximitySensor::processSet_center(const FieldValue & sfvec3f,
+void ProximitySensor::processSet_center(const field_value & value,
                                         const double timestamp)
     throw (std::bad_cast)
 {
-    this->center = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->center = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("center_changed", this->center, timestamp);
 }
@@ -10421,16 +10555,16 @@ void ProximitySensor::processSet_center(const FieldValue & sfvec3f,
 /**
  * @brief set_size eventIn handler.
  *
- * @param sfvec3f   an SFVec3f value.
+ * @param value     an sfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void ProximitySensor::processSet_size(const FieldValue & sfvec3f,
+void ProximitySensor::processSet_size(const field_value & value,
                                       const double timestamp)
     throw (std::bad_cast)
 {
-    this->size = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->size = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("size_changed", this->size, timestamp);
 }
@@ -10438,16 +10572,16 @@ void ProximitySensor::processSet_size(const FieldValue & sfvec3f,
 /**
  * @brief set_enabled eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an value.
  */
-void ProximitySensor::processSet_enabled(const FieldValue & sfbool,
+void ProximitySensor::processSet_enabled(const field_value & value,
                                          double timestamp)
     throw (std::bad_cast)
 {
-    this->enabled = dynamic_cast<const SFBool &>(sfbool);
+    this->enabled = dynamic_cast<const sfbool &>(value);
     this->setModified();
     this->emitEvent("enabled_changed", this->enabled, timestamp);
 }
@@ -10456,7 +10590,8 @@ void ProximitySensor::processSet_enabled(const FieldValue & sfbool,
 /**
  * @class ScalarInterpolatorClass
  *
- * @brief Class object for @link ScalarInterpolator ScalarInterpolators@endlink.
+ * @brief Class object for @link ScalarInterpolator
+ *        ScalarInterpolators@endlink.
  */
 
 /**
@@ -10493,10 +10628,10 @@ ScalarInterpolatorClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sffloat, "value_changed")
+        NodeInterface(NodeInterface::eventIn, field_value::sffloat_id, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "key"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, field_value::sffloat_id, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ScalarInterpolator>(*this, id));
     Vrml97NodeTypeImpl<ScalarInterpolator> & scalarInterpolatorNodeType =
@@ -10514,20 +10649,20 @@ ScalarInterpolatorClass::createType(const std::string & id,
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &ScalarInterpolator::processSet_key,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ScalarInterpolator, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ScalarInterpolator, mffloat>
                                     (&ScalarInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             scalarInterpolatorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &ScalarInterpolator::processSet_keyValue,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ScalarInterpolator, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ScalarInterpolator, mffloat>
                                     (&ScalarInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             scalarInterpolatorNodeType.addEventOut(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<ScalarInterpolator, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<ScalarInterpolator, sffloat>
                                     (&ScalarInterpolator::value)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -10549,19 +10684,19 @@ ScalarInterpolatorClass::createType(const std::string & id,
  */
 
 /**
- * @var MFFloat ScalarInterpolator::key
+ * @var mffloat ScalarInterpolator::key
  *
  * @brief key exposedField.
  */
 
 /**
- * @var MFFloat ScalarInterpolator::keyValue
+ * @var mffloat ScalarInterpolator::keyValue
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var SFFloat ScalarInterpolator::value
+ * @var sffloat ScalarInterpolator::value
  *
  * @brief value_changed eventOut.
  */
@@ -10587,17 +10722,17 @@ ScalarInterpolator::~ScalarInterpolator() throw ()
 /**
  * @brief set_fraction eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ScalarInterpolator::processSet_fraction(const FieldValue & sffloat,
+void ScalarInterpolator::processSet_fraction(const field_value & value,
                                              const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    float f = dynamic_cast<const SFFloat &>(sffloat).value;
+    float f = dynamic_cast<const sffloat &>(value).value;
 
     int n = this->key.value.size() - 1;
     if (f < this->key.value[0]) {
@@ -10625,34 +10760,34 @@ void ScalarInterpolator::processSet_fraction(const FieldValue & sffloat,
 /**
  * @brief set_key eventIn handler.
  *
- * @param mffloat   an MFFloat value.
+ * @param value     an mffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ScalarInterpolator::processSet_key(const FieldValue & mffloat,
+void ScalarInterpolator::processSet_key(const field_value & value,
                                         const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->key = dynamic_cast<const MFFloat &>(mffloat);
+    this->key = dynamic_cast<const mffloat &>(value);
     this->emitEvent("key_changed", this->key, timestamp);
 }
 
 /**
  * @brief set_keyValue field mutator.
  *
- * @param mffloat   an MFFloat value.
+ * @param value     an mffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ScalarInterpolator::processSet_keyValue(const FieldValue & mffloat,
+void ScalarInterpolator::processSet_keyValue(const field_value & value,
                                              const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->keyValue = dynamic_cast<const MFFloat &>(mffloat);
+    this->keyValue = dynamic_cast<const mffloat &>(value);
     this->emitEvent("keyValue_changed", this->keyValue, timestamp);
 }
 
@@ -10695,8 +10830,8 @@ const NodeTypePtr ShapeClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "appearance"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "geometry")
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "appearance"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "geometry")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Shape>(*this, id));
     Vrml97NodeTypeImpl<Shape> & shapeNodeType =
@@ -10709,14 +10844,14 @@ const NodeTypePtr ShapeClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &Shape::processSet_appearance,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Shape, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Shape, sfnode>
                                     (&Shape::appearance)));
         } else if (*itr == supportedInterfaces[1]) {
             shapeNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &Shape::processSet_geometry,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Shape, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Shape, sfnode>
                                     (&Shape::geometry)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -10738,13 +10873,13 @@ const NodeTypePtr ShapeClass::createType(const std::string & id,
  */
 
 /**
- * @var SFNode Shape::appearance
+ * @var sfnode Shape::appearance
  *
  * @brief appearance exposedField.
  */
 
 /**
- * @var SFNode Shape::geometry
+ * @var sfnode Shape::geometry
  *
  * @brief geometry exposedField.
  */
@@ -10887,17 +11022,17 @@ const BVolume* Shape::getBVolume() const
 /**
  * @brief set_appearance eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Shape::processSet_appearance(const FieldValue & sfnode,
+void Shape::processSet_appearance(const field_value & value,
                                   const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->appearance = dynamic_cast<const SFNode &>(sfnode);
+    this->appearance = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("appearance_changed", this->appearance, timestamp);
 }
@@ -10905,17 +11040,17 @@ void Shape::processSet_appearance(const FieldValue & sfnode,
 /**
  * @brief set_geometry eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Shape::processSet_geometry(const FieldValue & sfnode,
+void Shape::processSet_geometry(const field_value & value,
                                 const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->geometry = dynamic_cast<const SFNode &>(sfnode);
+    this->geometry = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("geometry_changed", this->geometry, timestamp);
 }
@@ -10959,16 +11094,16 @@ const NodeTypePtr SoundClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxBack"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxFront"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minBack"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minFront"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "priority"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "source"),
-        NodeInterface(NodeInterface::field, FieldValue::sfbool, "spatialize")
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "direction"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "intensity"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "location"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxBack"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxFront"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "minBack"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "minFront"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "priority"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "source"),
+        NodeInterface(NodeInterface::field, field_value::sfbool_id, "spatialize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Sound>(*this, id));
     Vrml97NodeTypeImpl<Sound> & soundNodeType =
@@ -10981,69 +11116,69 @@ const NodeTypePtr SoundClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &Sound::processSet_direction,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sfvec3f>
                                     (&Sound::direction)));
         } else if (*itr == supportedInterfaces[1]) {
             soundNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &Sound::processSet_intensity,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::intensity)));
         } else if (*itr == supportedInterfaces[2]) {
             soundNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Sound::processSet_location,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sfvec3f>
                                     (&Sound::location)));
         } else if (*itr == supportedInterfaces[3]) {
             soundNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &Sound::processSet_maxBack,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::maxBack)));
         } else if (*itr == supportedInterfaces[4]) {
             soundNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &Sound::processSet_maxFront,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::maxFront)));
         } else if (*itr == supportedInterfaces[5]) {
             soundNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &Sound::processSet_minBack,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::minBack)));
         } else if (*itr == supportedInterfaces[6]) {
             soundNodeType.addExposedField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
                 &Sound::processSet_minFront,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::minFront)));
         } else if (*itr == supportedInterfaces[7]) {
             soundNodeType.addExposedField(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
                 &Sound::processSet_priority,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::priority)));
         } else if (*itr == supportedInterfaces[8]) {
             soundNodeType.addExposedField(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
                 &Sound::processSet_source,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sfnode>
                                     (&Sound::source)));
         } else if (*itr == supportedInterfaces[9]) {
             soundNodeType.addField(
                 supportedInterfaces[9].fieldType,
                 supportedInterfaces[9].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sfbool>
                                     (&Sound::spatialize)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -11065,61 +11200,61 @@ const NodeTypePtr SoundClass::createType(const std::string & id,
  */
 
 /**
- * @var SFVec3f Sound::direction
+ * @var sfvec3f Sound::direction
  *
  * @brief direction exposedField.
  */
 
 /**
- * @var SFFloat Sound::intensity
+ * @var sffloat Sound::intensity
  *
  * @brief intensity exposedField.
  */
 
 /**
- * @var SFVec3f Sound::location
+ * @var sfvec3f Sound::location
  *
  * @brief location exposedField.
  */
 
 /**
- * @var SFFloat Sound::maxBack
+ * @var sffloat Sound::maxBack
  *
  * @brief maxBack exposedField.
  */
 
 /**
- * @var SFFloat Sound::maxFront
+ * @var sffloat Sound::maxFront
  *
  * @brief maxFront exposedField.
  */
 
 /**
- * @var SFFloat Sound::minBack
+ * @var sffloat Sound::minBack
  *
  * @brief minBack exposedField.
  */
 
 /**
- * @var SFFloat Sound::minFront
+ * @var sffloat Sound::minFront
  *
  * @brief minFront exposedField.
  */
 
 /**
- * @var SFFloat Sound::priority
+ * @var sffloat Sound::priority
  *
  * @brief priority exposedField.
  */
 
 /**
- * @var SFNode Sound::source
+ * @var sfnode Sound::source
  *
  * @brief source exposedField.
  */
 
 /**
- * @var SFBool Sound::spatialize
+ * @var sfbool Sound::spatialize
  *
  * @brief spatialize field.
  */
@@ -11181,16 +11316,16 @@ void Sound::render(Viewer & viewer, const VrmlRenderContext context)
 /**
  * @brief set_direction eventIn handler.
  *
- * @param sfvec3f   an SFVec3f.
+ * @param value     an sfvec3f.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void Sound::processSet_direction(const FieldValue & sfvec3f,
+void Sound::processSet_direction(const field_value & value,
                                  const double timestamp)
     throw (std::bad_cast)
 {
-    this->direction = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->direction = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("direction_changed", this->direction, timestamp);
 }
@@ -11198,16 +11333,16 @@ void Sound::processSet_direction(const FieldValue & sfvec3f,
 /**
  * @brief set_intensity eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void Sound::processSet_intensity(const FieldValue & sffloat,
+void Sound::processSet_intensity(const field_value & value,
                                  const double timestamp)
     throw (std::bad_cast)
 {
-    this->intensity = dynamic_cast<const SFFloat &>(sffloat);
+    this->intensity = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("intensity_changed", this->intensity, timestamp);
 }
@@ -11215,16 +11350,16 @@ void Sound::processSet_intensity(const FieldValue & sffloat,
 /**
  * @brief set_location eventIn handler.
  *
- * @param sfvec3f   an SFVec3f.
+ * @param value     an sfvec3f.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void Sound::processSet_location(const FieldValue & sfvec3f,
+void Sound::processSet_location(const field_value & value,
                                 const double timestamp)
     throw (std::bad_cast)
 {
-    this->location = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->location = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("location_changed", this->location, timestamp);
 }
@@ -11232,16 +11367,16 @@ void Sound::processSet_location(const FieldValue & sfvec3f,
 /**
  * @brief set_maxBack eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void Sound::processSet_maxBack(const FieldValue & sffloat,
+void Sound::processSet_maxBack(const field_value & value,
                                const double timestamp)
     throw (std::bad_cast)
 {
-    this->maxBack = dynamic_cast<const SFFloat &>(sffloat);
+    this->maxBack = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("maxBack_changed", this->maxBack, timestamp);
 }
@@ -11249,16 +11384,16 @@ void Sound::processSet_maxBack(const FieldValue & sffloat,
 /**
  * @brief set_maxFront eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void Sound::processSet_maxFront(const FieldValue & sffloat,
+void Sound::processSet_maxFront(const field_value & value,
                                 const double timestamp)
     throw (std::bad_cast)
 {
-    this->maxFront = dynamic_cast<const SFFloat &>(sffloat);
+    this->maxFront = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("maxFront_changed", this->maxFront, timestamp);
 }
@@ -11266,16 +11401,16 @@ void Sound::processSet_maxFront(const FieldValue & sffloat,
 /**
  * @brief set_minBack eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void Sound::processSet_minBack(const FieldValue & sffloat,
+void Sound::processSet_minBack(const field_value & value,
                                const double timestamp)
     throw (std::bad_cast)
 {
-    this->minBack = dynamic_cast<const SFFloat &>(sffloat);
+    this->minBack = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("minBack_changed", this->minBack, timestamp);
 }
@@ -11283,16 +11418,16 @@ void Sound::processSet_minBack(const FieldValue & sffloat,
 /**
  * @brief set_minFront eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void Sound::processSet_minFront(const FieldValue & sffloat,
+void Sound::processSet_minFront(const field_value & value,
                                 const double timestamp)
     throw (std::bad_cast)
 {
-    this->minFront = dynamic_cast<const SFFloat &>(sffloat);
+    this->minFront = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("minFront_changed", this->minFront, timestamp);
 }
@@ -11300,16 +11435,16 @@ void Sound::processSet_minFront(const FieldValue & sffloat,
 /**
  * @brief set_priority eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void Sound::processSet_priority(const FieldValue & sffloat,
+void Sound::processSet_priority(const field_value & value,
                                 const double timestamp)
     throw (std::bad_cast)
 {
-    this->priority = dynamic_cast<const SFFloat &>(sffloat);
+    this->priority = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("priority_changed", this->priority, timestamp);
 }
@@ -11317,15 +11452,15 @@ void Sound::processSet_priority(const FieldValue & sffloat,
 /**
  * @brief set_source eventIn handler.
  *
- * @param sfnode    an SFNode.
+ * @param value     an sfnode.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfnode is not an SFNode.
+ * @exception std::bad_cast if @p value is not an sfnode.
  */
-void Sound::processSet_source(const FieldValue & sfnode, double timestamp)
+void Sound::processSet_source(const field_value & value, double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->source = dynamic_cast<const SFNode &>(sfnode);
+    this->source = dynamic_cast<const sfnode &>(value);
     this->setModified();
     this->emitEvent("source_changed", this->source, timestamp);
 }
@@ -11369,7 +11504,7 @@ const NodeTypePtr SphereClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::field, FieldValue::sffloat, "radius");
+            NodeInterface(NodeInterface::field, field_value::sffloat_id, "radius");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Sphere>(*this, id));
     Vrml97NodeTypeImpl<Sphere> & spereNodeType =
             static_cast<Vrml97NodeTypeImpl<Sphere> &>(*nodeType);
@@ -11380,7 +11515,7 @@ const NodeTypePtr SphereClass::createType(const std::string & id,
             spereNodeType.addField(
                 supportedInterface.fieldType,
                 supportedInterface.id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sphere, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Sphere, sffloat>
                                     (&Sphere::radius)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -11402,7 +11537,7 @@ const NodeTypePtr SphereClass::createType(const std::string & id,
  */
 
 /**
- * @var SFFloat Sphere::radius
+ * @var sffloat Sphere::radius
  *
  * @brief radius field.
  */
@@ -11500,12 +11635,12 @@ SphereSensorClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed")
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "autoOffset"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "offset"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfrotation_id, "rotation_changed"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "trackPoint_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<SphereSensor>(*this, id));
     Vrml97NodeTypeImpl<SphereSensor> & sphereSensorNodeType =
@@ -11518,39 +11653,39 @@ SphereSensorClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &SphereSensor::processSet_autoOffset,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfbool>
                                     (&SphereSensor::autoOffset)));
         } else if (*itr == supportedInterfaces[1]) {
             sphereSensorNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &SphereSensor::processSet_enabled,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfbool>
                                     (&SphereSensor::enabled)));
         } else if (*itr == supportedInterfaces[2]) {
             sphereSensorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &SphereSensor::processSet_offset,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, SFRotation>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfrotation>
                                     (&SphereSensor::offset)));
         } else if (*itr == supportedInterfaces[3]) {
             sphereSensorNodeType.addEventOut(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfbool>
                                     (&SphereSensor::active)));
         } else if (*itr == supportedInterfaces[4]) {
             sphereSensorNodeType.addEventOut(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, SFRotation>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfrotation>
                                     (&SphereSensor::rotation)));
         } else if (*itr == supportedInterfaces[5]) {
             sphereSensorNodeType.addEventOut(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfvec3f>
                                     (&SphereSensor::trackPoint)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -11572,49 +11707,49 @@ SphereSensorClass::createType(const std::string & id,
  */
 
 /**
- * @var SFBool SphereSensor::autoOffset
+ * @var sfbool SphereSensor::autoOffset
  *
  * @brief autoOffset exposedField.
  */
 
 /**
- * @var SFBool SphereSensor::enabled
+ * @var sfbool SphereSensor::enabled
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var SFRotation SphereSensor::offset
+ * @var sfrotation SphereSensor::offset
  *
  * @brief offset exposedField.
  */
 
 /**
- * @var SFBool SphereSensor::active
+ * @var sfbool SphereSensor::active
  *
  * @brief isActive eventOut.
  */
 
 /**
- * @var SFRotation SphereSensor::rotation
+ * @var sfrotation SphereSensor::rotation
  *
  * @brief rotation_changed eventOut.
  */
 
 /**
- * @var SFVec3f SphereSensor::trackPoint
+ * @var sfvec3f SphereSensor::trackPoint
  *
  * @brief trackPoint_changed eventOut.
  */
 
 /**
- * @var SFVec3f SphereSensor::activationPoint
+ * @var sfvec3f SphereSensor::activationPoint
  *
  * @brief The start point of a drag operation.
  */
 
 /**
- * @var SFVec3f SphereSensor::centerPoint
+ * @var sfvec3f SphereSensor::centerPoint
  *
  * @brief Center point.
  */
@@ -11763,48 +11898,48 @@ bool SphereSensor::isEnabled() const throw ()
 /**
  * @brief set_autoOffset eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void SphereSensor::processSet_autoOffset(const FieldValue & sfbool,
+void SphereSensor::processSet_autoOffset(const field_value & value,
                                          const double timestamp)
     throw (std::bad_cast)
 {
-    this->autoOffset = dynamic_cast<const SFBool &>(sfbool);
+    this->autoOffset = dynamic_cast<const sfbool &>(value);
     this->emitEvent("autoOffset_changed", this->autoOffset, timestamp);
 }
 
 /**
  * @brief set_enabled eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void SphereSensor::processSet_enabled(const FieldValue & sfbool,
+void SphereSensor::processSet_enabled(const field_value & value,
                                       const double timestamp)
     throw (std::bad_cast)
 {
-    this->enabled = dynamic_cast<const SFBool &>(sfbool);
+    this->enabled = dynamic_cast<const sfbool &>(value);
     this->emitEvent("enabled_changed", this->enabled, timestamp);
 }
 
 /**
  * @brief set_offset eventIn handler.
  *
- * @param sfrotation    an SFRotation value.
+ * @param value     an sfrotation value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfrotation is not an SFRotation.
+ * @exception std::bad_cast if @p value is not an sfrotation.
  */
-void SphereSensor::processSet_offset(const FieldValue & sfrotation,
+void SphereSensor::processSet_offset(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast)
 {
-    this->offset = dynamic_cast<const SFRotation &>(sfrotation);
+    this->offset = dynamic_cast<const sfrotation &>(value);
     this->emitEvent("offset_changed", this->offset, timestamp);
 }
 
@@ -11848,16 +11983,36 @@ SpotLightClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "beamWidth"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "cutOffAngle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "radius")
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sffloat_id,
+                      "ambientIntensity"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfvec3f_id,
+                      "attenuation"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sffloat_id,
+                      "beamWidth"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfcolor_id,
+                      "color"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sffloat_id,
+                      "cutOffAngle"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfvec3f_id,
+                      "direction"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sffloat_id,
+                      "intensity"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfvec3f_id,
+                      "location"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfbool_id,
+                      "on"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sffloat_id,
+                      "radius")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<SpotLight>(*this, id));
     Vrml97NodeTypeImpl<SpotLight> & spotLightNodeType =
@@ -11870,70 +12025,70 @@ SpotLightClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &SpotLight::processSet_ambientIntensity,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sffloat>
                                     (&SpotLight::ambientIntensity)));
         } else if (*itr == supportedInterfaces[1]) {
             spotLightNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &SpotLight::processSet_attenuation,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sfvec3f>
                                     (&SpotLight::attenuation)));
         } else if (*itr == supportedInterfaces[2]) {
             spotLightNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &SpotLight::processSet_beamWidth,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sffloat>
                                     (&SpotLight::beamWidth)));
         } else if (*itr == supportedInterfaces[3]) {
             spotLightNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &SpotLight::processSet_color,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, SFColor>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sfcolor>
                                     (&SpotLight::color)));
         } else if (*itr == supportedInterfaces[4]) {
             spotLightNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &SpotLight::processSet_cutOffAngle,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sffloat>
                                     (&SpotLight::cutOffAngle)));
         } else if (*itr == supportedInterfaces[5]) {
             spotLightNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &SpotLight::processSet_direction,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sfvec3f>
                                     (&SpotLight::direction)));
         } else if (*itr == supportedInterfaces[6]) {
             spotLightNodeType.addExposedField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
                 &SpotLight::processSet_intensity,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sffloat>
                                     (&SpotLight::intensity)));
         } else if (*itr == supportedInterfaces[7]) {
             spotLightNodeType.addExposedField(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
                 &SpotLight::processSet_location,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sfvec3f>
                                     (&SpotLight::location)));
         } else if (*itr == supportedInterfaces[8]) {
             spotLightNodeType.addExposedField(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
                 &SpotLight::processSet_on,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sfbool>
                                     (&SpotLight::on)));
         } else if (*itr == supportedInterfaces[9]) {
             spotLightNodeType.addExposedField(
                 supportedInterfaces[9].fieldType,
                 supportedInterfaces[9].id,
                 &SpotLight::processSet_radius,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sffloat>
                                     (&SpotLight::radius)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -11955,37 +12110,37 @@ SpotLightClass::createType(const std::string & id,
  */
 
 /**
- * @var SFVec3f SpotLight::attenuation
+ * @var sfvec3f SpotLight::attenuation
  *
  * @brief attenuation exposedField.
  */
 
 /**
- * @var SFFloat SpotLight::beamWidth
+ * @var sffloat SpotLight::beamWidth
  *
  * @brief beamWidth exposedField.
  */
 
 /**
- * @var SFFloat SpotLight::cutOffAngle
+ * @var sffloat SpotLight::cutOffAngle
  *
  * @brief cutOffAngle exposedField.
  */
 
 /**
- * @var SFVec3f SpotLight::direction
+ * @var sfvec3f SpotLight::direction
  *
  * @brief direction exposedField.
  */
 
 /**
- * @var SFVec3f SpotLight::location
+ * @var sfvec3f SpotLight::location
  *
  * @brief location exposedField.
  */
 
 /**
- * @var SFFloat SpotLight::radius
+ * @var sffloat SpotLight::radius
  *
  * @brief radius exposedField.
  */
@@ -12079,16 +12234,16 @@ void SpotLight::do_shutdown(const double timestamp) throw ()
 /**
  * @brief set_attenuation eventIn handler.
  *
- * @param sfvec3f   an SFVec3f.
+ * @param value     an sfvec3f.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void SpotLight::processSet_attenuation(const FieldValue & sfvec3f,
+void SpotLight::processSet_attenuation(const field_value & value,
                                        const double timestamp)
     throw (std::bad_cast)
 {
-    this->attenuation = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->attenuation = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("attenuation_changed", this->attenuation, timestamp);
 }
@@ -12096,16 +12251,16 @@ void SpotLight::processSet_attenuation(const FieldValue & sfvec3f,
 /**
  * @brief set_beamWidth eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void SpotLight::processSet_beamWidth(const FieldValue & sffloat,
+void SpotLight::processSet_beamWidth(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast)
 {
-    this->beamWidth = dynamic_cast<const SFFloat &>(sffloat);
+    this->beamWidth = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("beamWidth_changed", this->beamWidth, timestamp);
 }
@@ -12113,16 +12268,16 @@ void SpotLight::processSet_beamWidth(const FieldValue & sffloat,
 /**
  * @brief set_cutOffAngle eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void SpotLight::processSet_cutOffAngle(const FieldValue & sffloat,
+void SpotLight::processSet_cutOffAngle(const field_value & value,
                                        const double timestamp)
     throw (std::bad_cast)
 {
-    this->cutOffAngle = dynamic_cast<const SFFloat &>(sffloat);
+    this->cutOffAngle = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("cutOffAngle_changed", this->cutOffAngle, timestamp);
 }
@@ -12130,16 +12285,16 @@ void SpotLight::processSet_cutOffAngle(const FieldValue & sffloat,
 /**
  * @brief set_direction eventIn handler.
  *
- * @param sfvec3f   an SFVec3f.
+ * @param value     an sfvec3f.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void SpotLight::processSet_direction(const FieldValue & sfvec3f,
+void SpotLight::processSet_direction(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast)
 {
-    this->direction = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->direction = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("direction_changed", this->direction, timestamp);
 }
@@ -12147,16 +12302,16 @@ void SpotLight::processSet_direction(const FieldValue & sfvec3f,
 /**
  * @brief set_location eventIn handler.
  *
- * @param sfvec3f   an SFVec3f.
+ * @param value     an sfvec3f.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void SpotLight::processSet_location(const FieldValue & sfvec3f,
+void SpotLight::processSet_location(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast)
 {
-    this->location = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->location = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("location_changed", this->location, timestamp);
 }
@@ -12164,16 +12319,16 @@ void SpotLight::processSet_location(const FieldValue & sfvec3f,
 /**
  * @brief set_radius eventIn handler.
  *
- * @param sffloat   an SFFloat.
+ * @param value     an sffloat.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void SpotLight::processSet_radius(const FieldValue & sffloat,
+void SpotLight::processSet_radius(const field_value & value,
                                   const double timestamp)
     throw (std::bad_cast)
 {
-    this->radius = dynamic_cast<const SFFloat &>(sffloat);
+    this->radius = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("radius_changed", this->radius, timestamp);
 }
@@ -12216,8 +12371,12 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "choice"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfint32, "whichChoice")
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mfnode_id,
+                      "choice"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfint32_id,
+                      "whichChoice")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Switch>(*this, id));
     Vrml97NodeTypeImpl<Switch> & switchNodeType =
@@ -12230,14 +12389,14 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &Switch::processSet_choice,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Switch, MFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Switch, mfnode>
                                     (&Switch::choice)));
         } else if (*itr == supportedInterfaces[1]) {
             switchNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &Switch::processSet_whichChoice,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Switch, SFInt32>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Switch, sfint32>
                                     (&Switch::whichChoice)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -12259,19 +12418,19 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
  */
 
 /**
- * @var MFNode Switch::choice
+ * @var mfnode Switch::choice
  *
  * @brief choice exposedField.
  */
 
 /**
- * @var SFInt32 Switch::whichChoice
+ * @var sfint32 Switch::whichChoice
  *
  * @brief whichChoice exposedField.
  */
 
 /**
- * @var MFNode Switch::children
+ * @var mfnode Switch::children
  *
  * @brief The children currently in the scene graph.
  */
@@ -12423,17 +12582,17 @@ void Switch::recalcBSphere() {
 /**
  * @brief set_choice eventIn handler.
  *
- * @param mfnode    an MFNode value.
+ * @param value     an mfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfnode is not an MFNode.
+ * @exception std::bad_cast     if @p value is not an mfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Switch::processSet_choice(const FieldValue & mfnode,
+void Switch::processSet_choice(const field_value & value,
                                const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->choice = dynamic_cast<const MFNode &>(mfnode);
+    this->choice = dynamic_cast<const mfnode &>(value);
     const size_t whichChoice = size_t(this->whichChoice.value);
     this->children.value[0] = (whichChoice < this->choice.value.size())
                             ? this->choice.value[whichChoice]
@@ -12445,17 +12604,16 @@ void Switch::processSet_choice(const FieldValue & mfnode,
 /**
  * @brief set_whichChoice eventIn handler.
  *
- * @param sfint32   an SFInt32 value.
+ * @param value     an sfint32 value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfint32 is not an SFInt32.
- * @exception std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p value is not an sfint32.
  */
-void Switch::processSet_whichChoice(const FieldValue & sfint32,
+void Switch::processSet_whichChoice(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast)
 {
-    this->whichChoice = dynamic_cast<const SFInt32 &>(sfint32);
+    this->whichChoice = dynamic_cast<const sfint32 &>(value);
     const size_t whichChoice = size_t(this->whichChoice.value);
     this->children.value[0] = (whichChoice < this->choice.value.size())
                             ? this->choice.value[whichChoice]
@@ -12526,10 +12684,10 @@ const NodeTypePtr TextClass::createType(const std::string & id,
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "string"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "fontStyle"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "length"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxExtent")
+        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "string"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "fontStyle"),
+        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "length"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxExtent")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Text>(*this, id));
     Vrml97NodeTypeImpl<Text> & textNodeType =
@@ -12542,28 +12700,28 @@ const NodeTypePtr TextClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &Text::processSet_string,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, mfstring>
                                     (&Text::string)));
         } else if (*itr == supportedInterfaces[1]) {
             textNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &Text::processSet_fontStyle,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, SFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, sfnode>
                                     (&Text::fontStyle)));
         } else if (*itr == supportedInterfaces[2]) {
             textNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Text::processSet_length,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, MFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, mffloat>
                                     (&Text::length)));
         } else if (*itr == supportedInterfaces[3]) {
             textNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &Text::processSet_maxExtent,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, sffloat>
                                     (&Text::maxExtent)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -12585,25 +12743,25 @@ const NodeTypePtr TextClass::createType(const std::string & id,
  */
 
 /**
- * @var MFString Text::string
+ * @var mfstring Text::string
  *
  * @brief string exposedField.
  */
 
 /**
- * @var SFNode Text::fontStyle
+ * @var sfnode Text::fontStyle
  *
  * @brief fontStyle exposedField.
  */
 
 /**
- * @var MFFloat Text::length
+ * @var mffloat Text::length
  *
  * @brief length exposedField.
  */
 
 /**
- * @var SFFloat Text::maxExtent
+ * @var sffloat Text::maxExtent
  *
  * @brief maxExtent exposedField.
  */
@@ -12615,13 +12773,13 @@ const NodeTypePtr TextClass::createType(const std::string & id,
  */
 
 /**
- * @var MFVec2f Text::GlyphGeometry::coord
+ * @var mfvec2f Text::GlyphGeometry::coord
  *
  * @brief Glyph coordinates.
  */
 
 /**
- * @var MFInt32 Text::GlyphGeometry::coordIndex
+ * @var mfint32 Text::GlyphGeometry::coordIndex
  *
  * @brief Glyph coordinate indices.
  */
@@ -13020,19 +13178,19 @@ Text::GlyphGeometry::GlyphGeometry(
  */
 
 /**
- * @var MFVec3f Text::TextGeometry::coord
+ * @var mfvec3f Text::TextGeometry::coord
  *
  * @brief Text geometry coordinates.
  */
 
 /**
- * @var MFInt32 Text::TextGeometry::coordIndex
+ * @var mfint32 Text::TextGeometry::coordIndex
  *
  * @brief Text geometry coordinate indices.
  */
 
 /**
- * @var MFVec3f Text::TextGeometry::normal
+ * @var mfvec3f Text::TextGeometry::normal
  *
  * @brief Text geometry normals.
  */
@@ -13180,17 +13338,17 @@ void Text::do_shutdown(const double timestamp) throw ()
 /**
  * @brief set_string eventIn handler.
  *
- * @param mfstring  an MFString value.
+ * @param value     an mfstring value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_cast     if @p value is not an mfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Text::processSet_string(const FieldValue & mfstring,
+void Text::processSet_string(const field_value & value,
                              const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->string = dynamic_cast<const MFString &>(mfstring);
+    this->string = dynamic_cast<const mfstring &>(value);
     this->updateUcs4();
     this->updateGeometry();
     this->setModified();
@@ -13200,17 +13358,17 @@ void Text::processSet_string(const FieldValue & mfstring,
 /**
  * @brief set_fontStyle eventIn handler.
  *
- * @param sfnode    an SFNode value.
+ * @param value     an sfnode value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_cast     if @p value is not an sfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Text::processSet_fontStyle(const FieldValue & sfnode,
+void Text::processSet_fontStyle(const field_value & value,
                                 const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->fontStyle = dynamic_cast<const SFNode &>(sfnode);
+    this->fontStyle = dynamic_cast<const sfnode &>(value);
     this->updateFace();
     this->updateGeometry();
     this->setModified();
@@ -13220,17 +13378,17 @@ void Text::processSet_fontStyle(const FieldValue & sfnode,
 /**
  * @brief set_length eventIn handler.
  *
- * @param mffloat   an MFFloat value.
+ * @param value     an mffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_cast     if @p value is not an mffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Text::processSet_length(const FieldValue & mffloat,
+void Text::processSet_length(const field_value & value,
                              const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->length = dynamic_cast<const MFFloat &>(mffloat);
+    this->length = dynamic_cast<const mffloat &>(value);
     this->updateGeometry();
     this->setModified();
     this->emitEvent("length_changed", this->length, timestamp);
@@ -13239,16 +13397,16 @@ void Text::processSet_length(const FieldValue & mffloat,
 /**
  * @brief set_maxExtent eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p value is not an sffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Text::processSet_maxExtent(const FieldValue & sffloat,
+void Text::processSet_maxExtent(const field_value & value,
                                 const double timestamp) throw (std::bad_cast)
 {
-    this->maxExtent = dynamic_cast<const SFFloat &>(sffloat);
+    this->maxExtent = dynamic_cast<const sffloat &>(value);
     this->updateGeometry();
     this->setModified();
     this->emitEvent("maxExtent_changed", this->maxExtent, timestamp);
@@ -13982,11 +14140,15 @@ const NodeTypePtr
                                            const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec2f, "point");
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TextureCoordinate>(*this, id));
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::mfvec2f_id,
+                      "point");
+    const NodeTypePtr
+        nodeType(new Vrml97NodeTypeImpl<TextureCoordinate>(*this, id));
     Vrml97NodeTypeImpl<TextureCoordinate> & textureCoordinateNodeType =
             static_cast<Vrml97NodeTypeImpl<TextureCoordinate> &>(*nodeType);
-    typedef Vrml97NodeTypeImpl<TextureCoordinate>::NodeFieldPtrPtr NodeFieldPtrPtr;
+    typedef Vrml97NodeTypeImpl<TextureCoordinate>::NodeFieldPtrPtr
+        NodeFieldPtrPtr;
     for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterface) {
@@ -13994,8 +14156,9 @@ const NodeTypePtr
                 supportedInterface.fieldType,
                 supportedInterface.id,
                 &TextureCoordinate::processSet_point,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureCoordinate, MFVec2f>
-                                    (&TextureCoordinate::point)));
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureCoordinate,
+                                                     mfvec2f>
+                                (&TextureCoordinate::point)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
         }
@@ -14016,7 +14179,7 @@ const NodeTypePtr
  */
 
 /**
- * @var MFVec2f TextureCoordinate::point
+ * @var mfvec2f TextureCoordinate::point
  *
  * @brief point exposedField.
  */
@@ -14041,7 +14204,7 @@ TextureCoordinate::~TextureCoordinate() throw () {}
 /**
  * @brief Get the points encapsulated by this node.
  *
- * @return the MFVec2f array of points for this node.
+ * @return the mfvec2f array of points for this node.
  */
 const std::vector<vec2f> & TextureCoordinate::getPoint() const throw ()
 {
@@ -14051,16 +14214,17 @@ const std::vector<vec2f> & TextureCoordinate::getPoint() const throw ()
 /**
  * @brief set_point eventIn handler.
  *
- * @param mfvec2f   an array of vectors representing points.
+ * @param value     an array of vectors representing points.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p mfvec2f is not an MFVec2f.
+ * @exception std::bad_cast     if @p value is not an mfvec2f.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void TextureCoordinate::processSet_point(const FieldValue & mfvec2f,
+void TextureCoordinate::processSet_point(const field_value & value,
                                          const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->point = dynamic_cast<const MFVec2f &>(mfvec2f);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->point = dynamic_cast<const mfvec2f &>(value);
     this->setModified();
     this->emitEvent("point_changed", this->point, timestamp);
 }
@@ -14106,10 +14270,10 @@ TextureTransformClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "center"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "rotation"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "scale"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "translation")
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "center"),
+        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "rotation"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "scale"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "translation")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TextureTransform>(*this, id));
     Vrml97NodeTypeImpl<TextureTransform> & textureTransformNodeType =
@@ -14122,28 +14286,28 @@ TextureTransformClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &TextureTransform::processSet_center,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, SFVec2f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, sfvec2f>
                                     (&TextureTransform::center)));
         } else if (*itr == supportedInterfaces[1]) {
             textureTransformNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &TextureTransform::processSet_rotation,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, sffloat>
                                     (&TextureTransform::rotation)));
         } else if (*itr == supportedInterfaces[2]) {
             textureTransformNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &TextureTransform::processSet_scale,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, SFVec2f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, sfvec2f>
                                     (&TextureTransform::scale)));
         } else if (*itr == supportedInterfaces[3]) {
             textureTransformNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &TextureTransform::processSet_translation,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, SFVec2f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, sfvec2f>
                                     (&TextureTransform::translation)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -14165,25 +14329,25 @@ TextureTransformClass::createType(const std::string & id,
  */
 
 /**
- * @var SFVec2f TextureTransform::center
+ * @var sfvec2f TextureTransform::center
  *
  * @brief center exposedField.
  */
 
 /**
- * @var SFFloat TextureTransform::rotation
+ * @var sffloat TextureTransform::rotation
  *
  * @brief rotation exposedField.
  */
 
 /**
- * @var SFVec2f TextureTransform::scale
+ * @var sfvec2f TextureTransform::scale
  *
  * @brief scale exposedField.
  */
 
 /**
- * @var SFVec2f TextureTransform::translation
+ * @var sfvec2f TextureTransform::translation
  *
  * @brief translation exposedField.
  */
@@ -14229,16 +14393,16 @@ void TextureTransform::render(Viewer & viewer, const VrmlRenderContext context)
 /**
  * @brief set_center eventIn handler.
  *
- * @param sfvec2f   an SFVec2f value.
+ * @param value     an sfvec2f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec2f is not an SFVec2f.
+ * @exception std::bad_cast if @p value is not an sfvec2f.
  */
-void TextureTransform::processSet_center(const FieldValue & sfvec2f,
+void TextureTransform::processSet_center(const field_value & value,
                                          const double timestamp)
     throw (std::bad_cast)
 {
-    this->center = dynamic_cast<const SFVec2f &>(sfvec2f);
+    this->center = dynamic_cast<const sfvec2f &>(value);
     this->setModified();
     this->emitEvent("center_changed", this->center, timestamp);
 }
@@ -14246,16 +14410,16 @@ void TextureTransform::processSet_center(const FieldValue & sfvec2f,
 /**
  * @brief set_rotation eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-void TextureTransform::processSet_rotation(const FieldValue & sffloat,
+void TextureTransform::processSet_rotation(const field_value & value,
                                            const double timestamp)
     throw (std::bad_cast)
 {
-    this->rotation = dynamic_cast<const SFFloat &>(sffloat);
+    this->rotation = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("rotation_changed", this->rotation, timestamp);
 }
@@ -14263,16 +14427,16 @@ void TextureTransform::processSet_rotation(const FieldValue & sffloat,
 /**
  * @brief set_scale eventIn handler.
  *
- * @param sfvec2f   an SFVec2f value.
+ * @param value     an sfvec2f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec2f is not an SFVec2f.
+ * @exception std::bad_cast if @p value is not an sfvec2f.
  */
-void TextureTransform::processSet_scale(const FieldValue & sfvec2f,
+void TextureTransform::processSet_scale(const field_value & value,
                                         const double timestamp)
     throw (std::bad_cast)
 {
-    this->scale = dynamic_cast<const SFVec2f &>(sfvec2f);
+    this->scale = dynamic_cast<const sfvec2f &>(value);
     this->setModified();
     this->emitEvent("scale_changed", this->scale, timestamp);
 }
@@ -14280,16 +14444,16 @@ void TextureTransform::processSet_scale(const FieldValue & sfvec2f,
 /**
  * @brief set_translation eventIn handler.
  *
- * @param sfvec2f   an SFVec2f value.
+ * @param value     an sfvec2f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec2f is not an SFVec2f.
+ * @exception std::bad_cast if @p value is not an sfvec2f.
  */
-void TextureTransform::processSet_translation(const FieldValue & sfvec2f,
+void TextureTransform::processSet_translation(const field_value & value,
                                               const double timestamp)
     throw (std::bad_cast)
 {
-    this->translation = dynamic_cast<const SFVec2f &>(sfvec2f);
+    this->translation = dynamic_cast<const sfvec2f &>(value);
     this->setModified();
     this->emitEvent("translation_changed", this->translation, timestamp);
 }
@@ -14334,15 +14498,15 @@ TimeSensorClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "cycleInterval"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "cycleTime"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sffloat, "fraction_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "time")
+        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "cycleInterval"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "loop"),
+        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "startTime"),
+        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "stopTime"),
+        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "cycleTime"),
+        NodeInterface(NodeInterface::eventOut, field_value::sffloat_id, "fraction_changed"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
+        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "time")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TimeSensor>(*this, id));
     Vrml97NodeTypeImpl<TimeSensor> & timeSensorNodeType =
@@ -14355,59 +14519,59 @@ TimeSensorClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &TimeSensor::processSet_cycleInterval,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sftime>
                                     (&TimeSensor::cycleInterval)));
         } else if (*itr == supportedInterfaces[1]) {
             timeSensorNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &TimeSensor::processSet_enabled,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sfbool>
                                     (&TimeSensor::enabled)));
         } else if (*itr == supportedInterfaces[2]) {
             timeSensorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &TimeSensor::processSet_loop,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sfbool>
                                     (&TimeSensor::loop)));
         } else if (*itr == supportedInterfaces[3]) {
             timeSensorNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &TimeSensor::processSet_startTime,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sftime>
                                     (&TimeSensor::startTime)));
         } else if (*itr == supportedInterfaces[4]) {
             timeSensorNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &TimeSensor::processSet_stopTime,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sftime>
                                     (&TimeSensor::stopTime)));
         } else if (*itr == supportedInterfaces[5]) {
             timeSensorNodeType.addEventOut(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sftime>
                                     (&TimeSensor::cycleTime)));
         } else if (*itr == supportedInterfaces[6]) {
             timeSensorNodeType.addEventOut(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sffloat>
                                     (&TimeSensor::fraction)));
         } else if (*itr == supportedInterfaces[7]) {
             timeSensorNodeType.addEventOut(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sfbool>
                                     (&TimeSensor::active)));
         } else if (*itr == supportedInterfaces[8]) {
             timeSensorNodeType.addEventOut(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sftime>
                                     (&TimeSensor::time)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -14429,55 +14593,55 @@ TimeSensorClass::createType(const std::string & id,
  */
 
 /**
- * @var SFTime TimeSensor::cycleInterval
+ * @var sftime TimeSensor::cycleInterval
  *
  * @brief cycleInterval exposedField.
  */
 
 /**
- * @var SFBool TimeSensor::enabled
+ * @var sfbool TimeSensor::enabled
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var SFBool TimeSensor::loop
+ * @var sfbool TimeSensor::loop
  *
  * @brief loop exposedField.
  */
 
 /**
- * @var SFTime TimeSensor::startTime
+ * @var sftime TimeSensor::startTime
  *
  * @brief startTime exposedField.
  */
 
 /**
- * @var SFTime TimeSensor::stopTime
+ * @var sftime TimeSensor::stopTime
  *
  * @brief stopTime exposedField.
  */
 
 /**
- * @var SFTime TimeSensor::cycleTime
+ * @var sftime TimeSensor::cycleTime
  *
  * @brief cycleTime eventOut.
  */
 
 /**
- * @var SFFloat TimeSensor::fraction
+ * @var sffloat TimeSensor::fraction
  *
  * @brief fraction_changed eventOut.
  */
 
 /**
- * @var SFBool TimeSensor::active
+ * @var sfbool TimeSensor::active
  *
  * @brief isActive eventOut.
  */
 
 /**
- * @var SFTime TimeSensor::time
+ * @var sftime TimeSensor::time
  *
  * @brief time eventOut.
  */
@@ -14536,7 +14700,7 @@ void TimeSensor::update(const double currentTime)
     using OpenVRML_::fpzero;
     using OpenVRML_::fpequal;
 
-    SFTime timeNow(currentTime);
+    sftime timeNow(currentTime);
 
     if (this->enabled.value) {
         if (this->lastTime > timeNow.value) { this->lastTime = timeNow.value; }
@@ -14554,7 +14718,7 @@ void TimeSensor::update(const double currentTime)
             // Start at first tick >= startTime
             this->emitEvent("isActive", this->active, timeNow.value);
             this->emitEvent("time", timeNow, timeNow.value);
-            this->emitEvent("fraction_changed", SFFloat(0.0), timeNow.value);
+            this->emitEvent("fraction_changed", sffloat(0.0), timeNow.value);
             this->emitEvent("cycleTime", timeNow, timeNow.value);
         }
 
@@ -14572,7 +14736,7 @@ void TimeSensor::update(const double currentTime)
 
                 // Must respect stopTime/cycleInterval exactly
                 if (this->startTime.value + cycleInt < this->stopTime.value) {
-                    timeNow = SFTime(this->startTime.value + cycleInt);
+                    timeNow = sftime(this->startTime.value + cycleInt);
                 } else {
                     timeNow = this->stopTime;
                 }
@@ -14587,7 +14751,7 @@ void TimeSensor::update(const double currentTime)
             }
 
             // Fraction of cycle message
-            SFFloat fraction_changed(fpzero(f) ? 1.0 : (f / cycleInt));
+            sffloat fraction_changed(fpzero(f) ? 1.0 : (f / cycleInt));
             this->emitEvent("fraction_changed", fraction_changed, timeNow.value);
 
             // Current time message
@@ -14656,17 +14820,17 @@ void TimeSensor::do_shutdown(const double timestamp) throw ()
 /**
  * @brief set_cycleInterval eventIn handler.
  *
- * @param sftime    an SFTime value.
+ * @param value     an sftime value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sftime is not an SFTime.
+ * @exception std::bad_cast if @p value is not an sftime.
  */
-void TimeSensor::processSet_cycleInterval(const FieldValue & sftime,
+void TimeSensor::processSet_cycleInterval(const field_value & value,
                                           const double timestamp)
     throw (std::bad_cast)
 {
     if (!this->active.value) {
-        this->cycleInterval = dynamic_cast<const SFTime &>(sftime);
+        this->cycleInterval = dynamic_cast<const sftime &>(value);
         this->lastTime = timestamp;
         this->emitEvent("cycleInterval_changed", this->cycleInterval,
                         timestamp);
@@ -14676,18 +14840,18 @@ void TimeSensor::processSet_cycleInterval(const FieldValue & sftime,
 /**
  * @brief set_enabled eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void TimeSensor::processSet_enabled(const FieldValue & sfbool,
+void TimeSensor::processSet_enabled(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast)
 {
     using OpenVRML_::fpzero;
 
-    this->enabled = dynamic_cast<const SFBool &>(sfbool);
+    this->enabled = dynamic_cast<const sfbool &>(value);
     if (this->enabled.value != this->active.value) {
         if (this->active.value) {
             //
@@ -14722,33 +14886,33 @@ void TimeSensor::processSet_enabled(const FieldValue & sfbool,
 /**
  * @brief set_loop eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value    an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void TimeSensor::processSet_loop(const FieldValue & sfbool,
+void TimeSensor::processSet_loop(const field_value & value,
                                  const double timestamp)
     throw (std::bad_cast)
 {
-    this->loop = dynamic_cast<const SFBool &>(sfbool);
+    this->loop = dynamic_cast<const sfbool &>(value);
     this->emitEvent("loop_changed", this->loop, timestamp);
 }
 
 /**
  * @brief set_startTime eventIn handler.
  *
- * @param sftime    an SFTime value.
+ * @param value     an sftime value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sftime is not an SFTime.
+ * @exception std::bad_cast if @p value is not an sftime.
  */
-void TimeSensor::processSet_startTime(const FieldValue & sftime,
+void TimeSensor::processSet_startTime(const field_value & value,
                                       const double timestamp)
     throw (std::bad_cast)
 {
     if (!this->active.value) {
-        this->startTime = dynamic_cast<const SFTime &>(sftime);
+        this->startTime = dynamic_cast<const sftime &>(value);
         this->lastTime = timestamp;
         this->emitEvent("startTime_changed", this->startTime, timestamp);
     }
@@ -14757,16 +14921,16 @@ void TimeSensor::processSet_startTime(const FieldValue & sftime,
 /**
  * @brief set_stopTime eventIn handler.
  *
- * @param sftime    an SFTime value.
+ * @param value     an sftime value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sftime is not an SFTime.
+ * @exception std::bad_cast if @p value is not an sftime.
  */
-void TimeSensor::processSet_stopTime(const FieldValue & sftime,
+void TimeSensor::processSet_stopTime(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast)
 {
-    this->stopTime = dynamic_cast<const SFTime &>(sftime);
+    this->stopTime = dynamic_cast<const sftime &>(value);
     this->emitEvent("stopTime_changed", this->stopTime, timestamp);
 }
 
@@ -14810,13 +14974,27 @@ TouchSensorClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "hitNormal_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "hitPoint_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec2f, "hitTexCoord_changed"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isOver"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "touchTime")
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfbool_id,
+                      "enabled"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfvec3f_id,
+                      "hitNormal_changed"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfvec3f_id,
+                      "hitPoint_changed"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfvec2f_id,
+                      "hitTexCoord_changed"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfbool_id,
+                      "isActive"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfbool_id,
+                      "isOver"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sftime_id,
+                      "touchTime")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TouchSensor>(*this, id));
     Vrml97NodeTypeImpl<TouchSensor> & touchSensorNodeType =
@@ -14829,43 +15007,43 @@ TouchSensorClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &TouchSensor::processSet_enabled,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfbool>
                                     (&TouchSensor::enabled)));
         } else if (*itr == supportedInterfaces[1]) {
             touchSensorNodeType.addEventOut(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfvec3f>
                                     (&TouchSensor::hitNormal)));
         } else if (*itr == supportedInterfaces[2]) {
             touchSensorNodeType.addEventOut(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfvec3f>
                                     (&TouchSensor::hitPoint)));
         } else if (*itr == supportedInterfaces[3]) {
             touchSensorNodeType.addEventOut(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, SFVec2f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfvec2f>
                                     (&TouchSensor::hitTexCoord)));
         } else if (*itr == supportedInterfaces[4]) {
             touchSensorNodeType.addEventOut(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfbool>
                                     (&TouchSensor::active)));
         } else if (*itr == supportedInterfaces[5]) {
             touchSensorNodeType.addEventOut(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfbool>
                                     (&TouchSensor::over)));
         } else if (*itr == supportedInterfaces[6]) {
             touchSensorNodeType.addEventOut(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sftime>
                                     (&TouchSensor::touchTime)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -14887,43 +15065,43 @@ TouchSensorClass::createType(const std::string & id,
  */
 
 /**
- * @var SFBool TouchSensor::enabled
+ * @var sfbool TouchSensor::enabled
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var SFVec3f TouchSensor::hitNormal
+ * @var sfvec3f TouchSensor::hitNormal
  *
  * @brief hitNormal_changed eventOut.
  */
 
 /**
- * @var SFVec3f TouchSensor::hitPoint
+ * @var sfvec3f TouchSensor::hitPoint
  *
  * @brief hitPoint_changed eventOut.
  */
 
 /**
- * @var SFVec2f TouchSensor::hitTexCoord
+ * @var sfvec2f TouchSensor::hitTexCoord
  *
  * @brief hitTexCoord_changed eventOut.
  */
 
 /**
- * @var SFBool TouchSensor::active
+ * @var sfbool TouchSensor::active
  *
  * @brief isActive eventOut.
  */
 
 /**
- * @var SFBool TouchSensor::over
+ * @var sfbool TouchSensor::over
  *
  * @brief isOver eventOut.
  */
 
 /**
- * @var SFTime TouchSensor::touchTime
+ * @var sftime TouchSensor::touchTime
  *
  * @brief touchTime eventOut.
  */
@@ -14999,16 +15177,16 @@ bool TouchSensor::isEnabled() const
 /**
  * @brief set_enabled eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value    an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void TouchSensor::processSet_enabled(const FieldValue & sfbool,
+void TouchSensor::processSet_enabled(const field_value & value,
                                      const double timestamp)
     throw (std::bad_cast)
 {
-    this->enabled = dynamic_cast<const SFBool &>(sfbool);
+    this->enabled = dynamic_cast<const sfbool &>(value);
     this->emitEvent("enabled_changed", this->enabled, timestamp);
 }
 
@@ -15052,16 +15230,16 @@ TransformClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "rotation"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "scale"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "scaleOrientation"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "translation"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
-        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "center"),
+        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfrotation_id, "rotation"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "scale"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfrotation_id, "scaleOrientation"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "translation"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
+        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Transform>(*this, id));
     Vrml97NodeTypeImpl<Transform> & transformNodeType =
@@ -15082,54 +15260,54 @@ TransformClass::createType(const std::string & id,
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Transform::processSet_center,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfvec3f>
                                     (&Transform::center)));
         } else if (*itr == supportedInterfaces[3]) {
             transformNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &Transform::processSet_children,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, MFNode>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, mfnode>
                                     (&Transform::children)));
         } else if (*itr == supportedInterfaces[4]) {
             transformNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &Transform::processSet_rotation,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, SFRotation>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfrotation>
                                     (&Transform::rotation)));
         } else if (*itr == supportedInterfaces[5]) {
             transformNodeType.addExposedField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
                 &Transform::processSet_scale,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfvec3f>
                                     (&Transform::scale)));
         } else if (*itr == supportedInterfaces[6]) {
             transformNodeType.addExposedField(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
                 &Transform::processSet_scaleOrientation,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, SFRotation>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfrotation>
                                     (&Transform::scaleOrientation)));
         } else if (*itr == supportedInterfaces[7]) {
             transformNodeType.addExposedField(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
                 &Transform::processSet_translation,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfvec3f>
                                     (&Transform::translation)));
         } else if (*itr == supportedInterfaces[8]) {
             transformNodeType.addField(
                 supportedInterfaces[8].fieldType,
                 supportedInterfaces[8].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfvec3f>
                                     (&Transform::bboxCenter)));
         } else if (*itr == supportedInterfaces[9]) {
             transformNodeType.addField(
                 supportedInterfaces[9].fieldType,
                 supportedInterfaces[9].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfvec3f>
                                 (&Transform::bboxSize)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -15151,31 +15329,31 @@ TransformClass::createType(const std::string & id,
  */
 
 /**
- * @var SFVec3f Transform::center
+ * @var sfvec3f Transform::center
  *
  * @brief center exposedField.
  */
 
 /**
- * @var SFRotation Transform::rotation
+ * @var sfrotation Transform::rotation
  *
  * @brief rotation exposedField.
  */
 
 /**
- * @var SFVec3f Transform::scale
+ * @var sfvec3f Transform::scale
  *
  * @brief scale exposedField.
  */
 
 /**
- * @var SFRotation Transform::scaleOrientation
+ * @var sfrotation Transform::scaleOrientation
  *
  * @brief scaleOrientation exposedField.
  */
 
 /**
- * @var SFVec3f Transform::translation
+ * @var sfvec3f Transform::translation
  *
  * @brief translation exposedField.
  */
@@ -15373,16 +15551,16 @@ void Transform::updateTransform() const throw ()
 /**
  * @brief set_center eventIn handler.
  *
- * @param sfvec3f   an SFVec3f value.
+ * @param value     an sfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void Transform::processSet_center(const FieldValue & sfvec3f,
+void Transform::processSet_center(const field_value & value,
                                   const double timestamp)
     throw (std::bad_cast)
 {
-    this->center = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->center = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->setBVolumeDirty(true);
     this->transformDirty = true;
@@ -15392,16 +15570,16 @@ void Transform::processSet_center(const FieldValue & sfvec3f,
 /**
  * @brief set_rotation eventIn handler.
  *
- * @param sfrotation    an SFRotation value.
+ * @param value     an sfrotation value.
  * @param timestamp     the current time.
  *
- * @exception std::bad_cast if @p sfrotation is not an SFRotation.
+ * @exception std::bad_cast if @p value is not an sfrotation.
  */
-void Transform::processSet_rotation(const FieldValue & sfrotation,
+void Transform::processSet_rotation(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast)
 {
-    this->rotation = dynamic_cast<const SFRotation &>(sfrotation);
+    this->rotation = dynamic_cast<const sfrotation &>(value);
     this->setModified();
     this->setBVolumeDirty(true);
     this->transformDirty = true;
@@ -15411,16 +15589,16 @@ void Transform::processSet_rotation(const FieldValue & sfrotation,
 /**
  * @brief set_scale eventIn handler.
  *
- * @param sfvec3f   an SFVec3f value.
+ * @param value     an sfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void Transform::processSet_scale(const FieldValue & sfvec3f,
+void Transform::processSet_scale(const field_value & value,
                                  const double timestamp)
     throw (std::bad_cast)
 {
-    this->scale = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->scale = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->setBVolumeDirty(true);
     this->transformDirty = true;
@@ -15430,16 +15608,16 @@ void Transform::processSet_scale(const FieldValue & sfvec3f,
 /**
  * @brief set_scaleOrientation eventIn handler.
  *
- * @param sfrotation    an SFRotation value.
+ * @param value     an sfrotation value.
  * @param timestamp     the current time.
  *
- * @exception std::bad_cast if @p sfrotation is not an SFRotation.
+ * @exception std::bad_cast if @p value is not an sfrotation.
  */
-void Transform::processSet_scaleOrientation(const FieldValue & sfrotation,
+void Transform::processSet_scaleOrientation(const field_value & value,
                                             const double timestamp)
     throw (std::bad_cast)
 {
-    this->scaleOrientation = dynamic_cast<const SFRotation &>(sfrotation);
+    this->scaleOrientation = dynamic_cast<const sfrotation &>(value);
     this->setModified();
     this->setBVolumeDirty(true);
     this->transformDirty = true;
@@ -15450,16 +15628,16 @@ void Transform::processSet_scaleOrientation(const FieldValue & sfrotation,
 /**
  * @brief set_translation eventIn handler.
  *
- * @param sfvec3f   an SFVec3f value.
+ * @param value     an sfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void Transform::processSet_translation(const FieldValue & sfvec3f,
+void Transform::processSet_translation(const field_value & value,
                                        const double timestamp)
     throw (std::bad_cast)
 {
-    this->translation = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->translation = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->setBVolumeDirty(true);
     this->transformDirty = true;
@@ -15601,7 +15779,7 @@ void ViewpointClass::initialize(ViewpointNode * initialViewpoint,
 {
     if (!initialViewpoint) { initialViewpoint = this->first; }
     if (initialViewpoint) {
-        initialViewpoint->processEvent("set_bind", SFBool(true), timestamp);
+        initialViewpoint->processEvent("set_bind", sfbool(true), timestamp);
     }
 }
 
@@ -15623,14 +15801,30 @@ ViewpointClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "fieldOfView"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "jump"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "orientation"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "position"),
-        NodeInterface(NodeInterface::field, FieldValue::sfstring, "description"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "bindTime"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+        NodeInterface(NodeInterface::eventIn,
+                      field_value::sfbool_id,
+                      "set_bind"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sffloat_id,
+                      "fieldOfView"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfbool_id,
+                      "jump"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfrotation_id,
+                      "orientation"),
+        NodeInterface(NodeInterface::exposedField,
+                      field_value::sfvec3f_id,
+                      "position"),
+        NodeInterface(NodeInterface::field,
+                      field_value::sfstring_id,
+                      "description"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sftime_id,
+                      "bindTime"),
+        NodeInterface(NodeInterface::eventOut,
+                      field_value::sfbool_id,
+                      "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Viewpoint>(*this, id));
     Vrml97NodeTypeImpl<Viewpoint> & viewpointNodeType =
@@ -15647,46 +15841,46 @@ ViewpointClass::createType(const std::string & id,
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &Viewpoint::processSet_fieldOfView,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, SFFloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sffloat>
                                     (&Viewpoint::fieldOfView)));
         } else if (*itr == supportedInterfaces[2]) {
             viewpointNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &Viewpoint::processSet_jump,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sfbool>
                                     (&Viewpoint::jump)));
         } else if (*itr == supportedInterfaces[3]) {
             viewpointNodeType.addExposedField(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
                 &Viewpoint::processSet_orientation,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, SFRotation>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sfrotation>
                                     (&Viewpoint::orientation)));
         } else if (*itr == supportedInterfaces[4]) {
             viewpointNodeType.addExposedField(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
                 &Viewpoint::processSet_position,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sfvec3f>
                                     (&Viewpoint::position)));
         } else if (*itr == supportedInterfaces[5]) {
             viewpointNodeType.addField(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, SFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sfstring>
                                     (&Viewpoint::description)));
         } else if (*itr == supportedInterfaces[6]) {
             viewpointNodeType.addEventOut(
                 supportedInterfaces[6].fieldType,
                 supportedInterfaces[6].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sftime>
                                     (&Viewpoint::bindTime)));
         } else if (*itr == supportedInterfaces[7]) {
             viewpointNodeType.addEventOut(
                 supportedInterfaces[7].fieldType,
                 supportedInterfaces[7].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sfbool>
                                     (&Viewpoint::bound)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -15708,43 +15902,43 @@ ViewpointClass::createType(const std::string & id,
  */
 
 /**
- * @var SFFloat Viewpoint::fieldOfView
+ * @var sffloat Viewpoint::fieldOfView
  *
  * @brief fieldOfView exposedField.
  */
 
 /**
- * @var SFBool Viewpoint::jump
+ * @var sfbool Viewpoint::jump
  *
  * @brief jump exposedField.
  */
 
 /**
- * @var SFRotation Viewpoint::orientation
+ * @var sfrotation Viewpoint::orientation
  *
  * @brief orientation exposedField.
  */
 
 /**
- * @var SFVec3f Viewpoint::position
+ * @var sfvec3f Viewpoint::position
  *
  * @brief position exposedField.
  */
 
 /**
- * @var SFString Viewpoint::description
+ * @var sfstring Viewpoint::description
  *
  * @brief description field.
  */
 
 /**
- * @var SFBool Viewpoint::bound
+ * @var sfbool Viewpoint::bound
  *
  * @brief isBound eventOut.
  */
 
 /**
- * @var SFTime Viewpoint::bindTime
+ * @var sftime Viewpoint::bindTime
  *
  * @brief bindTime eventOut.
  */
@@ -15866,7 +16060,7 @@ const BVolume * Viewpoint::getBVolume() const
  *
  * @return the orientation.
  */
-const SFRotation & Viewpoint::getOrientation() const
+const sfrotation & Viewpoint::getOrientation() const
 {
     return this->orientation;
 }
@@ -15876,7 +16070,7 @@ const SFRotation & Viewpoint::getOrientation() const
  *
  * @return the position.
  */
-const SFVec3f & Viewpoint::getPosition() const
+const sfvec3f & Viewpoint::getPosition() const
 {
     return this->position;
 }
@@ -15948,21 +16142,21 @@ void Viewpoint::do_shutdown(const double timestamp) throw ()
 /**
  * @brief set_bind eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfbool is not an SFBool value.
+ * @exception std::bad_cast     if @p value is not an sfbool value.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Viewpoint::processSet_bind(const FieldValue & sfbool,
+void Viewpoint::processSet_bind(const field_value & value,
                                 const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    const SFBool & value = dynamic_cast<const SFBool &>(sfbool);
+    const sfbool & bind = dynamic_cast<const sfbool &>(value);
     assert(dynamic_cast<ViewpointClass *>(&this->nodeType.nodeClass));
     ViewpointClass & nodeClass =
             static_cast<ViewpointClass &>(this->nodeType.nodeClass);
-    if (value.value) {
+    if (bind.value) {
         nodeClass.bind(*this, timestamp);
     } else {
         nodeClass.unbind(*this, timestamp);
@@ -15972,17 +16166,17 @@ void Viewpoint::processSet_bind(const FieldValue & sfbool,
 /**
  * @brief set_fieldOfView eventIn handler.
  *
- * @param sffloat   an SFFloat value.
+ * @param value     an sffloat value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sffloat is not an SFFloat value.
+ * @exception std::bad_cast     if @p value is not an sffloat value.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Viewpoint::processSet_fieldOfView(const FieldValue & sffloat,
+void Viewpoint::processSet_fieldOfView(const field_value & value,
                                        const double timestamp)
     throw (std::bad_cast)
 {
-    this->fieldOfView = dynamic_cast<const SFFloat &>(sffloat);
+    this->fieldOfView = dynamic_cast<const sffloat &>(value);
     this->setModified();
     this->emitEvent("fieldOfView_changed", this->fieldOfView, timestamp);
 }
@@ -15990,17 +16184,17 @@ void Viewpoint::processSet_fieldOfView(const FieldValue & sffloat,
 /**
  * @brief set_jump eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfbool is not an SFBool value.
+ * @exception std::bad_cast     if @p value is not an sfbool value.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Viewpoint::processSet_jump(const FieldValue & sfbool,
+void Viewpoint::processSet_jump(const field_value & value,
                                 const double timestamp)
     throw (std::bad_cast)
 {
-    this->jump = dynamic_cast<const SFBool &>(sfbool);
+    this->jump = dynamic_cast<const sfbool &>(value);
     this->setModified();
     this->emitEvent("jump_changed", this->jump, timestamp);
 }
@@ -16008,17 +16202,17 @@ void Viewpoint::processSet_jump(const FieldValue & sfbool,
 /**
  * @brief set_orientation eventIn handler.
  *
- * @param sfrotation    an SFRotation value.
- * @param timestamp     the current time.
+ * @param value     an sfrotation value.
+ * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfrotation is not an SFRotation value.
+ * @exception std::bad_cast     if @p value is not an sfrotation value.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Viewpoint::processSet_orientation(const FieldValue & sfrotation,
+void Viewpoint::processSet_orientation(const field_value & value,
                                        const double timestamp)
     throw (std::bad_cast)
 {
-    this->orientation = dynamic_cast<const SFRotation &>(sfrotation);
+    this->orientation = dynamic_cast<const sfrotation &>(value);
     this->setModified();
     this->finalTransformationDirty = true;
     this->emitEvent("orientation_changed", this->orientation, timestamp);
@@ -16027,17 +16221,17 @@ void Viewpoint::processSet_orientation(const FieldValue & sfrotation,
 /**
  * @brief set_position eventIn handler.
  *
- * @param sfvec3f   an SFVec3f value.
+ * @param value     an sfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast     if @p sfvec3f is not an SFVec3f value.
+ * @exception std::bad_cast     if @p value is not an sfvec3f value.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Viewpoint::processSet_position(const FieldValue & sfvec3f,
+void Viewpoint::processSet_position(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast)
 {
-    this->position = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->position = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->finalTransformationDirty = true;
     this->emitEvent("position_changed", this->position, timestamp);
@@ -16100,12 +16294,12 @@ VisibilitySensorClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "size"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "enterTime"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "exitTime"),
-        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "center"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
+        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "size"),
+        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "enterTime"),
+        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "exitTime"),
+        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<VisibilitySensor>(*this, id));
     Vrml97NodeTypeImpl<VisibilitySensor> & visibilitySensorNodeType =
@@ -16118,39 +16312,39 @@ VisibilitySensorClass::createType(const std::string & id,
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
                 &VisibilitySensor::processSet_center,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sfvec3f>
                                     (&VisibilitySensor::center)));
         } else if (*itr == supportedInterfaces[1]) {
             visibilitySensorNodeType.addExposedField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
                 &VisibilitySensor::processSet_enabled,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sfbool>
                                     (&VisibilitySensor::enabled)));
         } else if (*itr == supportedInterfaces[2]) {
             visibilitySensorNodeType.addExposedField(
                 supportedInterfaces[2].fieldType,
                 supportedInterfaces[2].id,
                 &VisibilitySensor::processSet_size,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, SFVec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sfvec3f>
                                     (&VisibilitySensor::size)));
         } else if (*itr == supportedInterfaces[3]) {
             visibilitySensorNodeType.addEventOut(
                 supportedInterfaces[3].fieldType,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sftime>
                                     (&VisibilitySensor::enterTime)));
         } else if (*itr == supportedInterfaces[4]) {
             visibilitySensorNodeType.addEventOut(
                 supportedInterfaces[4].fieldType,
                 supportedInterfaces[4].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, SFTime>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sftime>
                                     (&VisibilitySensor::exitTime)));
         } else if (*itr == supportedInterfaces[5]) {
             visibilitySensorNodeType.addEventOut(
                 supportedInterfaces[5].fieldType,
                 supportedInterfaces[5].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, SFBool>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sfbool>
                                     (&VisibilitySensor::active)));
         } else {
             throw UnsupportedInterface("Invalid interface.");
@@ -16245,7 +16439,7 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
     using OpenVRML_::fpzero;
 
     if (this->enabled.value) {
-        SFTime timeNow(Browser::getCurrentTime());
+        sftime timeNow(Browser::getCurrentTime());
         float xyz[2][3];
 
         // hack: enclose box in a sphere...
@@ -16309,16 +16503,16 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
 /**
  * @brief set_center eventIn handler.
  *
- * @param sfvec3f   an SFVec3f value.
+ * @param value     an sfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void VisibilitySensor::processSet_center(const FieldValue & sfvec3f,
+void VisibilitySensor::processSet_center(const field_value & value,
                                          const double timestamp)
     throw (std::bad_cast)
 {
-    this->center = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->center = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("center_changed", this->center, timestamp);
 }
@@ -16326,16 +16520,16 @@ void VisibilitySensor::processSet_center(const FieldValue & sfvec3f,
 /**
  * @brief set_enabled eventIn handler.
  *
- * @param sfbool    an SFBool value.
+ * @param value     an sfbool value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-void VisibilitySensor::processSet_enabled(const FieldValue & sfbool,
+void VisibilitySensor::processSet_enabled(const field_value & value,
                                           double timestamp)
     throw (std::bad_cast)
 {
-    this->enabled = dynamic_cast<const SFBool &>(sfbool);
+    this->enabled = dynamic_cast<const sfbool &>(value);
     this->setModified();
     this->emitEvent("enabled_changed", this->enabled, timestamp);
 }
@@ -16343,16 +16537,16 @@ void VisibilitySensor::processSet_enabled(const FieldValue & sfbool,
 /**
  * @brief set_size eventIn handler.
  *
- * @param sfvec3f   an SFVec3f value.
+ * @param value     an sfvec3f value.
  * @param timestamp the current time.
  *
- * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p value is not an sfvec3f.
  */
-void VisibilitySensor::processSet_size(const FieldValue & sfvec3f,
+void VisibilitySensor::processSet_size(const field_value & value,
                                        const double timestamp)
     throw (std::bad_cast)
 {
-    this->size = dynamic_cast<const SFVec3f &>(sfvec3f);
+    this->size = dynamic_cast<const sfvec3f &>(value);
     this->setModified();
     this->emitEvent("size_changed", this->size, timestamp);
 }
@@ -16396,8 +16590,8 @@ const NodeTypePtr WorldInfoClass::createType(const std::string & id,
     throw (UnsupportedInterface, std::bad_alloc)
 {
     static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::field, FieldValue::mfstring, "info"),
-        NodeInterface(NodeInterface::field, FieldValue::sfstring, "title")
+        NodeInterface(NodeInterface::field, field_value::mfstring_id, "info"),
+        NodeInterface(NodeInterface::field, field_value::sfstring_id, "title")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<WorldInfo>(*this, id));
     Vrml97NodeTypeImpl<WorldInfo> & worldInfoNodeType =
@@ -16409,13 +16603,13 @@ const NodeTypePtr WorldInfoClass::createType(const std::string & id,
             worldInfoNodeType.addField(
                 supportedInterfaces[0].fieldType,
                 supportedInterfaces[0].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<WorldInfo, MFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<WorldInfo, mfstring>
                                     (&WorldInfo::info)));
         } else if (*itr == supportedInterfaces[1]) {
             worldInfoNodeType.addField(
                 supportedInterfaces[1].fieldType,
                 supportedInterfaces[1].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<WorldInfo, SFString>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<WorldInfo, sfstring>
                                     (&WorldInfo::title)));
         } else {
             throw UnsupportedInterface("Invalid interface.");

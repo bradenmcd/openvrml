@@ -179,12 +179,12 @@ public:
           OpenVRML::ProtoNodeClass & proto
 	);
 	public: OpenVRML::NodeInterface::Type  eventInterfaceType();
-	public: OpenVRML::FieldValue::Type  fieldType();
+	public: OpenVRML::field_value::type_id  fieldType();
 	public: OpenVRML::NodeInterface::Type  fieldInterfaceType();
 	public: OpenVRML::FieldValuePtr  fieldValue(
 		OpenVRML::Browser & browser,
            const OpenVRML::ScopePtr & scope,
-           OpenVRML::FieldValue::Type ft
+           OpenVRML::field_value::type_id ft
 	);
 	public: OpenVRML::NodePtr  protoNodeStatement(
 		OpenVRML::ProtoNodeClass & proto,
@@ -202,7 +202,7 @@ public:
 	public: void externInterfaceDeclaration(
 		OpenVRML::NodeInterfaceSet & interfaces
 	);
-	public: OpenVRML::MFString  externprotoUrlList();
+	public: OpenVRML::mfstring  externprotoUrlList();
 	public: OpenVRML::NodeInterface::Type  interfaceType();
 	public: std::string  stringValue();
 	public: void nodeBodyElement(
@@ -230,7 +230,7 @@ public:
 	public: OpenVRML::FieldValuePtr  protoFieldValue(
 		OpenVRML::ProtoNodeClass & proto,
                 const OpenVRML::ScopePtr & scope,
-                OpenVRML::FieldValue::Type ft
+                OpenVRML::field_value::type_id ft
 	);
 	public: void isStatement(
 		OpenVRML::ProtoNodeClass & proto, OpenVRML::Node & node,
@@ -244,15 +244,15 @@ public:
 	public: OpenVRML::FieldValuePtr  nodeFieldValue(
 		OpenVRML::Browser & browser,
                const OpenVRML::ScopePtr & scope,
-               OpenVRML::FieldValue::Type ft
+               OpenVRML::field_value::type_id ft
 	);
 	public: OpenVRML::FieldValuePtr  nonNodeFieldValue(
-		OpenVRML::FieldValue::Type ft
+		OpenVRML::field_value::type_id ft
 	);
 	public: OpenVRML::FieldValuePtr  protoNodeFieldValue(
 		OpenVRML::ProtoNodeClass & proto,
                     const OpenVRML::ScopePtr & scope,
-                    OpenVRML::FieldValue::Type ft
+                    OpenVRML::field_value::type_id ft
 	);
 	public: OpenVRML::FieldValuePtr  sfBoolValue();
 	public: OpenVRML::FieldValuePtr  sfColorValue();

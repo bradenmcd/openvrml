@@ -3304,7 +3304,7 @@ void ViewerOpenGL::handleKey(int key)
             if (pos != viewpoints.end()) {
                 ++pos;
                 if (pos == viewpoints.end()) { pos = viewpoints.begin(); }
-                (*pos)->processEvent("set_bind", SFBool(true),
+                (*pos)->processEvent("set_bind", sfbool(true),
                                      Browser::getCurrentTime());
             }
         }
@@ -3325,7 +3325,7 @@ void ViewerOpenGL::handleKey(int key)
                     pos = viewpoints.end();
                 }
                 --pos;
-                (*pos)->processEvent("set_bind", SFBool(true),
+                (*pos)->processEvent("set_bind", sfbool(true),
                                      Browser::getCurrentTime());
             }
         }

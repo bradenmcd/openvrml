@@ -176,7 +176,7 @@ bool Audio::setURL(const std::string & url, Doc *relative)
  * @param urls      list of URLs.
  * @param relative  Doc object.
  */
-bool Audio::tryURLs(const MFString & urls, Doc * relative)
+bool Audio::tryURLs(const mfstring & urls, Doc * relative)
 {
     for (size_t i = 0; i < urls.value.size(); ++i) {
         if (this->setURL(urls.value[i], relative)) { return true; }

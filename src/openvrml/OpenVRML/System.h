@@ -31,7 +31,7 @@
 
 namespace OpenVRML {
 
-    class MFString;
+    class mfstring;
 
     class OPENVRML_SCOPE System {
     public:
@@ -43,7 +43,7 @@ namespace OpenVRML {
         virtual bool loadUrl(char *url, int np, char **parameters );
 #   else
         virtual bool loadUrl(const std::string & url,
-                             const MFString & parameters);
+                             const mfstring & parameters);
 #   endif
         virtual int connectSocket( const char *host, int port );
         virtual const char *httpHost(const char *url, int *port);

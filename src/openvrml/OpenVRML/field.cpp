@@ -3,21 +3,21 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
@@ -39,19 +39,19 @@ namespace OpenVRML {
 /**
  * @brief Stream output.
  *
- * @param out           an output stream.
- * @param fieldValue    a FieldValue.
+ * @param out   an output stream.
+ * @param value a field value.
  *
  * @return @p out.
  */
-std::ostream & operator<<(std::ostream & out, const FieldValue & fieldValue)
+std::ostream & operator<<(std::ostream & out, const field_value & value)
 {
-    fieldValue.print(out);
+    value.print(out);
     return out;
 }
 
 /**
- * @class FieldValue
+ * @class field_value
  *
  * @ingroup fieldvalues
  *
@@ -59,178 +59,182 @@ std::ostream & operator<<(std::ostream & out, const FieldValue & fieldValue)
  */
 
 /**
- * @enum FieldValue::Type
+ * @enum field_value::type_id
  *
- * @brief Used to identify FieldValue types.
+ * @brief Used to identify field_value types.
  *
  * These tags are typically used to designate an expected type or to avoid a
  * @c dynamic_cast.
  */
 
 /**
- * @var FieldValue::invalidType
+ * @var field_value::invalid_type_id
  *
  * @brief Zero value typically used to indicate failure.
  */
 
 /**
- * @var FieldValue::sfbool
+ * @var field_value::sfbool_id
  *
- * @brief Designates an SFBool.
+ * @brief Designates an sfbool.
  */
 
 /**
- * @var FieldValue::sfcolor
+ * @var field_value::sfcolor_id
  *
- * @brief Designates an SFColor.
+ * @brief Designates an sfcolor.
  */
 
 /**
- * @var FieldValue::sffloat
+ * @var field_value::sffloat_id
  *
- * @brief Designates an SFFloat.
+ * @brief Designates an sffloat.
  */
 
 /**
- * @var FieldValue::sfimage
+ * @var field_value::sfimage_id
  *
- * @brief Designates an SFImage.
+ * @brief Designates an sfimage.
  */
 
 /**
- * @var FieldValue::sfint32
+ * @var field_value::sfint32_id
  *
- * @brief Designates an SFInt32.
+ * @brief Designates an sfint32.
  */
 
 /**
- * @var FieldValue::sfnode
+ * @var field_value::sfnode_id
  *
- * @brief Designates an SFNode.
+ * @brief Designates an sfnode.
  */
 
 /**
- * @var FieldValue::sfrotation
+ * @var field_value::sfrotation_id
  *
- * @brief Designates an SFRotation.
+ * @brief Designates an sfrotation.
  */
 
 /**
- * @var FieldValue::sfstring
+ * @var field_value::sfstring_id
  *
- * @brief Designates an SFString.
+ * @brief Designates an sfstring.
  */
 
 /**
- * @var FieldValue::sftime
+ * @var field_value::sftime_id
  *
- * @brief Designates an SFTime.
+ * @brief Designates an sftime.
  */
 
 /**
- * @var FieldValue::sfvec2f
+ * @var field_value::sfvec2f_id
  *
- * @brief Designates an SFVec2f.
+ * @brief Designates an sfvec2f.
  */
 
 /**
- * @var FieldValue::sfvec3f
+ * @var field_value::sfvec3f_id
  *
- * @brief Designates an SFVec3f.
+ * @brief Designates an sfvec3f.
  */
 
 /**
- * @var FieldValue::mfcolor
+ * @var field_value::mfcolor_id
  *
- * @brief Designates an MFColor.
+ * @brief Designates an mfcolor.
  */
 
 /**
- * @var FieldValue::mffloat
+ * @var field_value::mffloat_id
  *
- * @brief Designates an MFFloat.
+ * @brief Designates an mffloat.
  */
 
 /**
- * @var FieldValue::mfint32
+ * @var field_value::mfint32_id
  *
- * @brief Designates an MFInt32.
+ * @brief Designates an mfint32.
  */
 
 /**
- * @var FieldValue::mfnode
+ * @var field_value::mfnode_id
  *
- * @brief Designates an MFNode.
+ * @brief Designates an mfnode.
  */
 
 /**
- * @var FieldValue::mfrotation
+ * @var field_value::mfrotation_id
  *
- * @brief Designates an MFRotation.
+ * @brief Designates an mfrotation.
  */
 
 /**
- * @var FieldValue::mfstring
+ * @var field_value::mfstring_id
  *
- * @brief Designates an MFString.
+ * @brief Designates an mfstring.
  */
 
 /**
- * @var FieldValue::mftime
+ * @var field_value::mftime_id
  *
- * @brief Designates an MFTime.
+ * @brief Designates an mftime.
  */
 
 /**
- * @var FieldValue::mfvec2f
+ * @var field_value::mfvec2f_id
  *
- * @brief Designates an MFVec2f.
+ * @brief Designates an mfvec2f.
  */
 
 /**
- * @var FieldValue::mfvec3f
+ * @var field_value::mfvec3f_id
  *
- * @brief Designates an MFVec3f.
+ * @brief Designates an mfvec3f.
  */
 
 /**
  * @brief Constructor.
  */
-FieldValue::FieldValue() throw ()
+field_value::field_value() throw ()
 {}
 
 /**
  * @brief Copy constructor.
+ *
+ * @param value field value to copy.
  */
-FieldValue::FieldValue(const FieldValue & value) throw ()
+field_value::field_value(const field_value & value) throw ()
 {}
 
 /**
  * @brief Destroy.
  */
-FieldValue::~FieldValue() throw ()
+field_value::~field_value() throw ()
 {}
 
 /**
  * @brief Assignment operator.
+ *
+ * @param value field value to assign.
  */
-FieldValue & FieldValue::operator=(const FieldValue & value) throw ()
+field_value & field_value::operator=(const field_value & value) throw ()
 {
     return *this;
 }
 
 /**
- * @fn std::auto_ptr<FieldValue> FieldValue::clone() const throw (std::bad_alloc)
+ * @fn std::auto_ptr<field_value> field_value::clone() const throw (std::bad_alloc)
  *
  * @brief Virtual copy constructor.
  *
- * @return a new FieldValue identical to this one.
+ * @return a new field_value identical to this one.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
 
 /**
- * @fn FieldValue & FieldValue::assign(const FieldValue & value) throw (std::bad_cast, std::bad_alloc)
+ * @fn field_value & field_value::assign(const field_value & value) throw (std::bad_cast, std::bad_alloc)
  *
  * @brief Virtual assignment.
  *
@@ -244,7 +248,7 @@ FieldValue & FieldValue::operator=(const FieldValue & value) throw ()
  */
 
 /**
- * @fn void FieldValue::print(std::ostream & out) const
+ * @fn void field_value::print(std::ostream & out) const
  *
  * @brief Print to an output stream.
  *
@@ -252,15 +256,15 @@ FieldValue & FieldValue::operator=(const FieldValue & value) throw ()
  */
 
 /**
- * @fn FieldValue::Type FieldValue::type() const throw ()
+ * @fn field_value::type_id field_value::type() const throw ()
  *
  * @brief Get the field type.
  *
- * @return the Type enumerant corresponding to this FieldValue's type
+ * @return the type_id enumerant corresponding to the field_value's type
  */
 
 namespace {
-    const char * const fieldValueTypeId_[] = {
+    const char * const field_value_type_id_[] = {
         "<invalid field type>",
         "SFBool",
         "SFColor",
@@ -288,21 +292,22 @@ namespace {
 /**
  * @brief Stream output.
  *
- * @relates FieldValue
+ * @relates field_value
  *
- * If @p type is FieldValue::invalidType, @c failbit is set on @p out.
+ * If @p type is field_value::invalidType, @c failbit is set on @p out.
  *
  * @param out   an output stream.
- * @param type  a FieldValue type identifier.
+ * @param type  a field_value type identifier.
  *
  * @return @p out.
  */
-std::ostream & operator<<(std::ostream & out, const FieldValue::Type type)
+std::ostream & operator<<(std::ostream & out,
+                          const field_value::type_id type_id)
 {
-    if (type == FieldValue::invalidType) {
+    if (type_id == field_value::invalid_type_id) {
         out.setstate(std::ios_base::failbit);
     } else {
-        out << fieldValueTypeId_[type];
+        out << field_value_type_id_[type_id];
     }
     return out;
 }
@@ -310,24 +315,24 @@ std::ostream & operator<<(std::ostream & out, const FieldValue::Type type)
 /**
  * @brief Stream input.
  *
- * @relates FieldValue
+ * @relates field_value
  *
  * @param in    an input stream.
- * @param type  a FieldValue type identifier.
+ * @param type  a field_value type identifier.
  *
  * @return @p in.
  */
-std::istream & operator>>(std::istream & in, FieldValue::Type & type)
+std::istream & operator>>(std::istream & in, field_value::type_id & type_id)
 {
     std::string str;
     in >> str;
     static const char * const * const begin =
-            fieldValueTypeId_ + FieldValue::sfbool;
+            field_value_type_id_ + field_value::sfbool_id;
     static const char * const * const end =
-            fieldValueTypeId_ + FieldValue::mfvec3f + 1;
+            field_value_type_id_ + field_value::mfvec3f_id + 1;
     const char * const * const pos = std::find(begin, end, str);
     if (pos != end) {
-        type = FieldValue::Type(pos - begin);
+        type_id = field_value::type_id(pos - begin);
     } else {
         in.setstate(std::ios_base::failbit);
     }
@@ -335,7 +340,7 @@ std::istream & operator>>(std::istream & in, FieldValue::Type & type)
 }
 
 /**
- * @class SFBool
+ * @class sfbool
  *
  * @ingroup fieldvalues
  *
@@ -343,7 +348,7 @@ std::istream & operator>>(std::istream & in, FieldValue::Type & type)
  */
 
 /**
- * @var SFBool::value
+ * @var sfbool::value
  *
  * @brief Boolean value.
  */
@@ -353,14 +358,14 @@ std::istream & operator>>(std::istream & in, FieldValue::Type & type)
  *
  * @param value initial value
  */
-SFBool::SFBool(const bool value) throw ():
+sfbool::sfbool(const bool value) throw ():
     value(value)
 {}
 
 /**
  * @brief Destroy.
  */
-SFBool::~SFBool() throw ()
+sfbool::~sfbool() throw ()
 {}
 
 /**
@@ -370,9 +375,9 @@ SFBool::~SFBool() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFBool::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sfbool::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFBool(*this));
+    return std::auto_ptr<field_value>(new sfbool(*this));
 }
 
 /**
@@ -382,11 +387,11 @@ std::auto_ptr<FieldValue> SFBool::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast if @p value is not an SFBool.
+ * @exception std::bad_cast if @p value is not an sfbool.
  */
-FieldValue & SFBool::assign(const FieldValue & value) throw (std::bad_cast)
+field_value & sfbool::assign(const field_value & value) throw (std::bad_cast)
 {
-    return (*this = dynamic_cast<const SFBool &>(value));
+    return (*this = dynamic_cast<const sfbool &>(value));
 }
 
 /**
@@ -394,38 +399,39 @@ FieldValue & SFBool::assign(const FieldValue & value) throw (std::bad_cast)
  *
  * @param out   an output stream.
  */
-void SFBool::print(std::ostream & out) const
+void sfbool::print(std::ostream & out) const
 {
     out << (this->value ? "TRUE" : "FALSE");
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sfbool.
+ * @return @c field_value::sfbool.
  */
-FieldValue::Type SFBool::type() const throw ()
+field_value::type_id sfbool::type() const throw ()
 {
-    return FieldValue::sfbool;
+    return field_value::sfbool_id;
 }
 
 /**
- * @fn bool operator==(const SFBool & lhs, const SFBool & rhs) throw ()
+ * @fn bool operator==(const sfbool & lhs, const sfbool & rhs) throw ()
  *
- * @relates SFBool
+ * @relates sfbool
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const SFBool & lhs, const SFBool & rhs) throw ()
+ * @fn bool operator!=(const sfbool & lhs, const sfbool & rhs) throw ()
  *
- * @relates SFBool
+ * @relates sfbool
  *
  * @brief Compare for inequality.
  *
@@ -433,12 +439,12 @@ FieldValue::Type SFBool::type() const throw ()
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
- *      otherwise.
+ *         otherwise.
  */
 
 
 /**
- * @class SFColor
+ * @class sfcolor
  *
  * @ingroup fieldvalues
  *
@@ -446,7 +452,7 @@ FieldValue::Type SFBool::type() const throw ()
  */
 
 /**
- * @var SFColor::value
+ * @var sfcolor::value
  *
  * @brief Color value.
  */
@@ -456,14 +462,14 @@ FieldValue::Type SFBool::type() const throw ()
  *
  * @param value initial value.
  */
-SFColor::SFColor(const color & value) throw ():
+sfcolor::sfcolor(const color & value) throw ():
     value(value)
 {}
 
 /**
  * @brief Destroy.
  */
-SFColor::~SFColor() throw ()
+sfcolor::~sfcolor() throw ()
 {}
 
 /**
@@ -473,9 +479,9 @@ SFColor::~SFColor() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFColor::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sfcolor::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFColor(*this));
+    return std::auto_ptr<field_value>(new sfcolor(*this));
 }
 
 /**
@@ -487,9 +493,9 @@ std::auto_ptr<FieldValue> SFColor::clone() const throw (std::bad_alloc)
  *
  * @exception std::bad_cast if @p value is not an SFColor.
  */
-FieldValue & SFColor::assign(const FieldValue & value) throw (std::bad_cast)
+field_value & sfcolor::assign(const field_value & value) throw (std::bad_cast)
 {
-    return (*this = dynamic_cast<const SFColor &>(value));
+    return (*this = dynamic_cast<const sfcolor &>(value));
 }
 
 /**
@@ -497,38 +503,39 @@ FieldValue & SFColor::assign(const FieldValue & value) throw (std::bad_cast)
  *
  * @param out   an output stream.
  */
-void SFColor::print(std::ostream & out) const
+void sfcolor::print(std::ostream & out) const
 {
     out << this->value;
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sfcolor.
+ * @return @c field_value::sfcolor.
  */
-FieldValue::Type SFColor::type() const throw ()
+field_value::type_id sfcolor::type() const throw ()
 {
-    return FieldValue::sfcolor;
+    return field_value::sfcolor_id;
 }
 
 /**
- * @fn bool operator==(const SFColor & lhs, const SFColor & rhs) throw ()
+ * @fn bool operator==(const sfcolor & lhs, const sfcolor & rhs) throw ()
  *
- * @relates SFColor
+ * @relates sfcolor
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const SFColor & lhs, const SFColor & rhs) throw ()
+ * @fn bool operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ()
  *
- * @relates SFColor
+ * @relates sfcolor
  *
  * @brief Compare for inequality.
  *
@@ -541,7 +548,7 @@ FieldValue::Type SFColor::type() const throw ()
 
 
 /**
- * @class SFFloat
+ * @class sffloat
  *
  * @ingroup fieldvalues
  *
@@ -549,7 +556,7 @@ FieldValue::Type SFColor::type() const throw ()
  */
 
 /**
- * @var SFFloat::value
+ * @var sffloat::value
  *
  * @brief Single precision floating point value.
  */
@@ -559,14 +566,14 @@ FieldValue::Type SFColor::type() const throw ()
  *
  * @param value initial value
  */
-SFFloat::SFFloat(const float value) throw ():
+sffloat::sffloat(const float value) throw ():
     value(value)
 {}
 
 /**
  * @brief Destroy.
  */
-SFFloat::~SFFloat() throw ()
+sffloat::~sffloat() throw ()
 {}
 
 /**
@@ -574,7 +581,7 @@ SFFloat::~SFFloat() throw ()
  *
  * @param out   an output stream.
  */
-void SFFloat::print(std::ostream & out) const
+void sffloat::print(std::ostream & out) const
 {
     out << this->value;
 }
@@ -586,9 +593,9 @@ void SFFloat::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFFloat::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sffloat::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFFloat(*this));
+    return std::auto_ptr<field_value>(new sffloat(*this));
 }
 
 /**
@@ -598,40 +605,41 @@ std::auto_ptr<FieldValue> SFFloat::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast if @p value is not an SFFloat.
+ * @exception std::bad_cast if @p value is not an sffloat.
  */
-FieldValue & SFFloat::assign(const FieldValue & value) throw (std::bad_cast)
+field_value & sffloat::assign(const field_value & value) throw (std::bad_cast)
 {
-    return (*this = dynamic_cast<const SFFloat &>(value));
+    return (*this = dynamic_cast<const sffloat &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sffloat.
+ * @return @c field_value::sffloat.
  */
-FieldValue::Type SFFloat::type() const throw ()
+field_value::type_id sffloat::type() const throw ()
 {
-    return FieldValue::sffloat;
+    return field_value::sffloat_id;
 }
 
 /**
- * @fn bool operator==(const SFFloat & lhs, const SFFloat & rhs) throw ()
+ * @fn bool operator==(const sffloat & lhs, const sffloat & rhs) throw ()
  *
- * @relates SFFloat
+ * @relates sffloat
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const SFFloat & lhs, const SFFloat & rhs) throw ()
+ * @fn bool operator!=(const sffloat & lhs, const sffloat & rhs) throw ()
  *
- * @relates SFFloat
+ * @relates sffloat
  *
  * @brief Compare for inequality.
  *
@@ -639,12 +647,12 @@ FieldValue::Type SFFloat::type() const throw ()
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
- *      otherwise.
+ *         otherwise.
  */
 
 
 /**
- * @class SFImage
+ * @class sfimage
  *
  * @ingroup fieldvalues
  *
@@ -661,12 +669,17 @@ FieldValue::Type SFFloat::type() const throw ()
  */
 
 /**
- * Construct the default SFImage.
+ * Construct.
  */
-SFImage::SFImage() throw (): d_w(0), d_h(0), d_nc(0), d_pixels(0) {}
+sfimage::sfimage() throw ():
+    d_w(0),
+    d_h(0),
+    d_nc(0),
+    d_pixels(0)
+{}
 
 /**
- * @brief Create an SFImage.
+ * @brief Construct.
  *
  * Note that the pixels read from lower left to upper right, which
  * is a reflection around the y-axis from the "normal" convention.
@@ -676,55 +689,64 @@ SFImage::SFImage() throw (): d_w(0), d_h(0), d_nc(0), d_pixels(0) {}
  * a width and height of 16, and nc==3, would have a pixel array
  * w*h*nc = 16*16*3 = 768 bytes long. See the class intro above for
  * the interpretation of different pixel depths.
- * 
- * @param width width in pixels
- * @param height height in pixels
- * @param components number of components/pixel (see above)
- * @param pixels the caller owns the bytes, so this ctr makes a copy
+ *
+ * @param x     width in pixels
+ * @param y     height in pixels
+ * @param comp  number of components/pixel (see above)
+ * @param array the caller owns the bytes, so this ctr makes a copy
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-SFImage::SFImage(size_t width, size_t height, size_t components,
-                 const unsigned char * pixels) throw (std::bad_alloc):
-        d_w(0L), d_h(0L), d_nc(0L), d_pixels(0L) {
-    const size_t nbytes = width * height * components;
+sfimage::sfimage(size_t x,
+                 size_t y,
+                 size_t comp,
+                 const unsigned char * array)
+    throw (std::bad_alloc):
+    d_w(x),
+    d_h(y),
+    d_nc(comp),
+    d_pixels(0L)
+{
+    const size_t nbytes = x * y * comp;
     this->d_pixels = new unsigned char[nbytes];
-    this->d_w = width;
-    this->d_h = height;
-    this->d_nc = components;
-    std::copy(pixels, pixels + (width * height * components), this->d_pixels);
+    std::copy(array, array + nbytes, this->d_pixels);
 }
 
 /**
  * @brief Copy constructor.
  *
- * @param sfimage   the SFImage object to copy.
+ * @param sfimage the sfimage object to copy.
  *
- * @exception std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_alloc if memory allocation fails.
  */
-SFImage::SFImage(const SFImage & sfimage) throw (std::bad_alloc):
-        d_w(0), d_h(0), d_nc(0), d_pixels(0) {
+sfimage::sfimage(const sfimage & sfimage) throw (std::bad_alloc):
+    d_w(sfimage.d_w),
+    d_h(sfimage.d_h),
+    d_nc(sfimage.d_nc),
+    d_pixels(0)
+{
     const size_t nbytes = sfimage.d_w * sfimage.d_h * sfimage.d_nc;
     this->d_pixels = new unsigned char[nbytes];
-    this->d_w = sfimage.d_w;
-    this->d_h = sfimage.d_h;
-    this->d_nc = sfimage.d_nc;
     std::copy(sfimage.d_pixels, sfimage.d_pixels + nbytes, this->d_pixels);
 }
 
 /**
  * @brief Destroy.
  */
-SFImage::~SFImage() throw () { delete [] d_pixels; }
+sfimage::~sfimage() throw ()
+{
+    delete [] d_pixels;
+}
 
 /**
  * @brief Assignment.
  *
- * @param sfimage   the SFImage value to assign to the object.
+ * @param sfimage the sfimage value to assign to the object.
  *
- * @exception std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_alloc if memory allocation fails.
  */
-SFImage & SFImage::operator=(const SFImage & sfimage) throw (std::bad_alloc) {
+sfimage & sfimage::operator=(const sfimage & sfimage) throw (std::bad_alloc)
+{
     if (this != &sfimage) {
         delete [] this->d_pixels;
         this->d_w = this->d_h = this->d_nc = 0L;
@@ -743,7 +765,7 @@ SFImage & SFImage::operator=(const SFImage & sfimage) throw (std::bad_alloc) {
  *
  * @param out   an output stream.
  */
-void SFImage::print(std::ostream & out) const
+void sfimage::print(std::ostream & out) const
 {
     out << d_w << " " << d_h << " " << d_nc;
 
@@ -764,9 +786,9 @@ void SFImage::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFImage::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sfimage::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFImage(*this));
+    return std::auto_ptr<field_value>(new sfimage(*this));
 }
 
 /**
@@ -776,47 +798,62 @@ std::auto_ptr<FieldValue> SFImage::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast if @p value is not an SFImage.
+ * @exception std::bad_cast  if @p value is not an sfimage.
+ * @exception std::bad_alloc if memory allocation fails.
  */
-FieldValue & SFImage::assign(const FieldValue & value)
-        throw (std::bad_cast, std::bad_alloc) {
-    return (*this = dynamic_cast<const SFImage &>(value));
+field_value & sfimage::assign(const field_value & value)
+    throw (std::bad_cast, std::bad_alloc)
+{
+    return (*this = dynamic_cast<const sfimage &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sfimage.
+ * @return @c field_value::sfimage.
  */
-FieldValue::Type SFImage::type() const throw () { return sfimage; }
+field_value::type_id sfimage::type() const throw ()
+{
+    return field_value::sfimage_id;
+}
 
 /**
  * @brief Get the image width.
  *
  * @return the image width
  */
-size_t SFImage::getWidth() const throw () { return this->d_w; }
+size_t sfimage::x() const throw ()
+{
+    return this->d_w;
+}
 
 /**
  * @brief Get the image height.
  *
  * @return the image height
  */
-size_t SFImage::getHeight() const throw () { return this->d_h; }
+size_t sfimage::y() const throw ()
+{
+    return this->d_h;
+}
 
 /**
  * @brief Get the number of components.
  *
  * @return the number of components
  */
-size_t SFImage::getComponents() const throw () { return this->d_nc; }
+size_t sfimage::comp() const throw ()
+{
+    return this->d_nc;
+}
 
 /**
  * @brief Get the pixel data.
  *
  * @return a pointer to the array of pixel data.
  */
-const unsigned char * SFImage::getPixels() const throw () {
+const unsigned char * sfimage::array() const throw ()
+{
     return this->d_pixels;
 }
 
@@ -829,21 +866,22 @@ const unsigned char * SFImage::getPixels() const throw () {
  * @param pixels array of (width * height * components) bytes comprising the
  *        image data.
  */
-void SFImage::set(size_t width, size_t height, size_t components,
+void sfimage::set(size_t width, size_t height, size_t components,
                   const unsigned char * pixels)
-        throw (std::bad_alloc) {
+    throw (std::bad_alloc)
+{
     delete this->d_pixels;
-    
+
     this->d_w = width;
     this->d_h = height;
     this->d_nc = components;
-    
+
     this->d_pixels = new unsigned char[width * height * components];
     std::copy(pixels, pixels + (width * height * components), this->d_pixels);
 }
 
 /**
- * @class SFInt32
+ * @class sfint32
  *
  * @ingroup fieldvalues
  *
@@ -851,24 +889,24 @@ void SFImage::set(size_t width, size_t height, size_t components,
  */
 
 /**
- * @var SFInt32::value
+ * @var sfint32::value
  *
  * @brief Signed 32-bit integer value.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
  * @param value initial value.
  */
-SFInt32::SFInt32(const int32 value) throw ():
+sfint32::sfint32(const int32 value) throw ():
     value(value)
 {}
 
 /**
  * @brief Destroy.
  */
-SFInt32::~SFInt32() throw ()
+sfint32::~sfint32() throw ()
 {}
 
 /**
@@ -876,7 +914,7 @@ SFInt32::~SFInt32() throw ()
  *
  * @param out   an output stream.
  */
-void SFInt32::print(std::ostream & out) const
+void sfint32::print(std::ostream & out) const
 {
     out << this->value;
 }
@@ -888,9 +926,9 @@ void SFInt32::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFInt32::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sfint32::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFInt32(*this));
+    return std::auto_ptr<field_value>(new sfint32(*this));
 }
 
 /**
@@ -900,40 +938,41 @@ std::auto_ptr<FieldValue> SFInt32::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast if @p value is not an SFInt32.
+ * @exception std::bad_cast if @p value is not an sfint32.
  */
-FieldValue & SFInt32::assign(const FieldValue & value) throw (std::bad_cast)
+field_value & sfint32::assign(const field_value & value) throw (std::bad_cast)
 {
-    return (*this = dynamic_cast<const SFInt32 &>(value));
+    return (*this = dynamic_cast<const sfint32 &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sfint32.
+ * @return @c field_value::sfint32.
  */
-FieldValue::Type SFInt32::type() const throw ()
+field_value::type_id sfint32::type() const throw ()
 {
-    return FieldValue::sfint32;
+    return field_value::sfint32_id;
 }
 
 /**
- * @fn bool operator==(const SFInt32 & lhs, const SFInt32 & rhs) throw ()
+ * @fn bool operator==(const sfint32 & lhs, const sfint32 & rhs) throw ()
  *
- * @relates SFInt32
+ * @relates sfint32
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const SFInt32 & lhs, const SFInt32 & rhs) throw ()
+ * @fn bool operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ()
  *
- * @relates SFInt32
+ * @relates sfint32
  *
  * @brief Compare for inequality.
  *
@@ -946,7 +985,7 @@ FieldValue::Type SFInt32::type() const throw ()
 
 
 /**
- * @class SFNode
+ * @class sfnode
  *
  * @ingroup fieldvalues
  *
@@ -954,7 +993,7 @@ FieldValue::Type SFInt32::type() const throw ()
  */
 
 /**
- * @var SFNode::value
+ * @var sfnode::value
  *
  * @brief A Node reference.
  */
@@ -964,14 +1003,14 @@ FieldValue::Type SFInt32::type() const throw ()
  *
  * @param node a NodePtr
  */
-SFNode::SFNode(const NodePtr & node) throw ():
+sfnode::sfnode(const NodePtr & node) throw ():
     value(node)
 {}
 
 /**
  * @brief Destroy.
  */
-SFNode::~SFNode() throw ()
+sfnode::~sfnode() throw ()
 {}
 
 /**
@@ -979,7 +1018,7 @@ SFNode::~SFNode() throw ()
  *
  * @param out   an output stream.
  */
-void SFNode::print(std::ostream & out) const
+void sfnode::print(std::ostream & out) const
 {
     if (this->value) {
         out << *this->value;
@@ -995,9 +1034,9 @@ void SFNode::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFNode::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sfnode::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFNode(*this));
+    return std::auto_ptr<field_value>(new sfnode(*this));
 }
 
 /**
@@ -1007,40 +1046,41 @@ std::auto_ptr<FieldValue> SFNode::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast if @p value is not an SFNode.
+ * @exception std::bad_cast if @p value is not an sfnode.
  */
-FieldValue & SFNode::assign(const FieldValue & value) throw (std::bad_cast)
+field_value & sfnode::assign(const field_value & value) throw (std::bad_cast)
 {
-    return (*this = dynamic_cast<const SFNode &>(value));
+    return (*this = dynamic_cast<const sfnode &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sfnode.
+ * @return @c field_value::sfnode.
  */
-FieldValue::Type SFNode::type() const throw ()
+field_value::type_id sfnode::type() const throw ()
 {
-    return FieldValue::sfnode;
+    return field_value::sfnode_id;
 }
 
 /**
- * @fn bool operator==(const SFNode & lhs, const SFNode & rhs) throw ()
+ * @fn bool operator==(const sfnode & lhs, const sfnode & rhs) throw ()
  *
- * @relates SFNode
+ * @relates sfnode
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const SFNode & lhs, const SFNode & rhs) throw ()
+ * @fn bool operator!=(const sfnode & lhs, const sfnode & rhs) throw ()
  *
- * @relates SFNode
+ * @relates sfnode
  *
  * @brief Compare for inequality.
  *
@@ -1053,19 +1093,19 @@ FieldValue::Type SFNode::type() const throw ()
 
 
 /**
- * @class SFRotation
+ * @class sfrotation
  *
  * @ingroup fieldvalues
  *
  * @brief A rotation node field value.
  *
- * Per the VRML97 specification, the axis of an SFRotation is a normalized
+ * Per the VRML97 specification, the axis of an sfrotation is a normalized
  * vector (5.8). The specification leaves undefined how to deal with an
- * attempt to construct an SFRotation from an axis vector that is not
+ * attempt to construct an sfrotation from an axis vector that is not
  * normalized. In order to allow users of the library to minimize the number
  * of normalizations, OpenVRML takes the following approach:
  *
- * - Attempts to construct an SFRotation axis from a vector that is not
+ * - Attempts to construct an sfrotation axis from a vector that is not
  *   normalized will yield an assertion failure (abort) unless NDEBUG is
  *   defined when compiling the library (in which case truly wacky behavior
  *   could result).
@@ -1074,7 +1114,7 @@ FieldValue::Type SFNode::type() const throw ()
  */
 
 /**
- * @var SFRotation::value
+ * @var sfrotation::value
  *
  * @brief Rotation value.
  */
@@ -1084,14 +1124,14 @@ FieldValue::Type SFNode::type() const throw ()
  *
  * @param rot   initial value.
  */
-SFRotation::SFRotation(const rotation & rot) throw ():
+sfrotation::sfrotation(const rotation & rot) throw ():
     value(rot)
 {}
 
 /**
  * @brief Destroy.
  */
-SFRotation::~SFRotation() throw ()
+sfrotation::~sfrotation() throw ()
 {}
 
 /**
@@ -1101,9 +1141,9 @@ SFRotation::~SFRotation() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFRotation::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sfrotation::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFRotation(*this));
+    return std::auto_ptr<field_value>(new sfrotation(*this));
 }
 
 /**
@@ -1113,21 +1153,21 @@ std::auto_ptr<FieldValue> SFRotation::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast if @p value is not an SFRotation.
+ * @exception std::bad_cast if @p value is not an sfrotation.
  */
-FieldValue & SFRotation::assign(const FieldValue & value) throw (std::bad_cast)
+field_value & sfrotation::assign(const field_value & value) throw (std::bad_cast)
 {
-    return (*this = dynamic_cast<const SFRotation &>(value));
+    return (*this = dynamic_cast<const sfrotation &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sfrotation.
+ * @return @c field_value::sfrotation.
  */
-FieldValue::Type SFRotation::type() const throw ()
+field_value::type_id sfrotation::type() const throw ()
 {
-    return FieldValue::sfrotation;
+    return field_value::sfrotation_id;
 }
 
 /**
@@ -1135,28 +1175,29 @@ FieldValue::Type SFRotation::type() const throw ()
  *
  * @param out   an output stream.
  */
-void SFRotation::print(std::ostream & out) const
+void sfrotation::print(std::ostream & out) const
 {
     out << this->value;
 }
 
 /**
- * @fn bool operator==(const SFRotation & lhs, const SFRotation & rhs) throw ()
+ * @fn bool operator==(const sfrotation & lhs, const sfrotation & rhs) throw ()
  *
- * @relates SFRotation
+ * @relates sfrotation
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const SFRotation & lhs, const SFRotation & rhs) throw ()
+ * @fn bool operator!=(const sfrotation & lhs, const sfrotation & rhs) throw ()
  *
- * @relates SFRotation
+ * @relates sfrotation
  *
  * @brief Compare for inequality.
  *
@@ -1169,7 +1210,7 @@ void SFRotation::print(std::ostream & out) const
 
 
 /**
- * @class SFString
+ * @class sfstring
  *
  * @ingroup fieldvalues
  *
@@ -1177,7 +1218,7 @@ void SFRotation::print(std::ostream & out) const
  */
 
 /**
- * @var SFString::value
+ * @var sfstring::value
  *
  * @brief String value.
  */
@@ -1189,14 +1230,14 @@ void SFRotation::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-SFString::SFString(const std::string & value) throw (std::bad_alloc):
+sfstring::sfstring(const std::string & value) throw (std::bad_alloc):
    value(value)
 {}
 
 /**
  * @brief Destroy.
  */
-SFString::~SFString() throw ()
+sfstring::~sfstring() throw ()
 {}
 
 /**
@@ -1206,9 +1247,9 @@ SFString::~SFString() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFString::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sfstring::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFString(*this));
+    return std::auto_ptr<field_value>(new sfstring(*this));
 }
 
 /**
@@ -1218,13 +1259,13 @@ std::auto_ptr<FieldValue> SFString::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast     if @p value is not an SFString.
+ * @exception std::bad_cast     if @p value is not an sfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue & SFString::assign(const FieldValue & value)
+field_value & sfstring::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    return (*this = dynamic_cast<const SFString &>(value));
+    return (*this = dynamic_cast<const sfstring &>(value));
 }
 
 /**
@@ -1232,38 +1273,39 @@ FieldValue & SFString::assign(const FieldValue & value)
  *
  * @param out   an output stream.
  */
-void SFString::print(std::ostream & out) const
+void sfstring::print(std::ostream & out) const
 {
     out << '\"' << this->value << '\"';
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sfstring.
+ * @return @c field_value::sfstring.
  */
-FieldValue::Type SFString::type() const throw ()
+field_value::type_id sfstring::type() const throw ()
 {
-    return FieldValue::sfstring;
+    return field_value::sfstring_id;
 }
 
 /**
- * @fn bool operator==(const SFString & lhs, const SFString & rhs) throw ()
+ * @fn bool operator==(const sfstring & lhs, const sfstring & rhs) throw ()
  *
- * @relates SFString
+ * @relates sfstring
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const SFString & lhs, const SFString & rhs) throw ()
+ * @fn bool operator!=(const sfstring & lhs, const sfstring & rhs) throw ()
  *
- * @relates SFString
+ * @relates sfstring
  *
  * @brief Compare for inequality.
  *
@@ -1276,7 +1318,7 @@ FieldValue::Type SFString::type() const throw ()
 
 
 /**
- * @class SFTime
+ * @class sftime
  *
  * @ingroup fieldvalues
  *
@@ -1284,7 +1326,7 @@ FieldValue::Type SFString::type() const throw ()
  */
 
 /**
- * @var SFTime::value
+ * @var sftime::value
  *
  * @brief Double precision floating point value.
  */
@@ -1294,14 +1336,14 @@ FieldValue::Type SFString::type() const throw ()
  *
  * @param value initial value
  */
-SFTime::SFTime(double value) throw ():
+sftime::sftime(double value) throw ():
     value(value)
 {}
 
 /**
  * @brief Destroy.
  */
-SFTime::~SFTime() throw ()
+sftime::~sftime() throw ()
 {}
 
 /**
@@ -1311,9 +1353,9 @@ SFTime::~SFTime() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFTime::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sftime::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFTime(*this));
+    return std::auto_ptr<field_value>(new sftime(*this));
 }
 
 /**
@@ -1323,11 +1365,11 @@ std::auto_ptr<FieldValue> SFTime::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast if @p value is not an SFString.
+ * @exception std::bad_cast if @p value is not an sftime.
  */
-FieldValue & SFTime::assign(const FieldValue & value) throw (std::bad_cast)
+field_value & sftime::assign(const field_value & value) throw (std::bad_cast)
 {
-    return (*this = dynamic_cast<const SFTime &>(value));
+    return (*this = dynamic_cast<const sftime &>(value));
 }
 
 /**
@@ -1335,38 +1377,39 @@ FieldValue & SFTime::assign(const FieldValue & value) throw (std::bad_cast)
  *
  * @param out   an output stream.
  */
-void SFTime::print(std::ostream & out) const
+void sftime::print(std::ostream & out) const
 {
     out << this->value;
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sftime.
+ * @return @c field_value::sftime.
  */
-FieldValue::Type SFTime::type() const throw ()
+field_value::type_id sftime::type() const throw ()
 {
-    return FieldValue::sftime;
+    return field_value::sftime_id;
 }
 
 /**
- * @fn bool operator==(const SFTime & lhs, const SFTime & rhs) throw ()
+ * @fn bool operator==(const sftime & lhs, const sftime & rhs) throw ()
  *
- * @relates SFTime
+ * @relates sftime
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const SFTime & lhs, const SFTime & rhs) throw ()
+ * @fn bool operator!=(const sftime & lhs, const sftime & rhs) throw ()
  *
- * @relates SFTime
+ * @relates sftime
  *
  * @brief Compare for inequality.
  *
@@ -1379,7 +1422,7 @@ FieldValue::Type SFTime::type() const throw ()
 
 
 /**
- * @class SFVec2f
+ * @class sfvec2f
  *
  * @ingroup fieldvalues
  *
@@ -1387,7 +1430,7 @@ FieldValue::Type SFTime::type() const throw ()
  */
 
 /**
- * @var SFVec2f::value
+ * @var sfvec2f::value
  *
  * @brief 2-component vector value.
  */
@@ -1397,14 +1440,14 @@ FieldValue::Type SFTime::type() const throw ()
  *
  * @param vec   initial value.
  */
-SFVec2f::SFVec2f(const vec2f & vec) throw ():
+sfvec2f::sfvec2f(const vec2f & vec) throw ():
     value(vec)
 {}
 
 /**
  * @brief Destroy.
  */
-SFVec2f::~SFVec2f() throw ()
+sfvec2f::~sfvec2f() throw ()
 {}
 
 /**
@@ -1414,9 +1457,9 @@ SFVec2f::~SFVec2f() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFVec2f::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sfvec2f::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFVec2f(*this));
+    return std::auto_ptr<field_value>(new sfvec2f(*this));
 }
 
 /**
@@ -1426,21 +1469,21 @@ std::auto_ptr<FieldValue> SFVec2f::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast if @p value is not an SFVec2f.
+ * @exception std::bad_cast if @p value is not an sfvec2f.
  */
-FieldValue & SFVec2f::assign(const FieldValue & value) throw (std::bad_cast)
+field_value & sfvec2f::assign(const field_value & value) throw (std::bad_cast)
 {
-    return (*this = dynamic_cast<const SFVec2f &>(value));
+    return (*this = dynamic_cast<const sfvec2f &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sfvec2f.
+ * @return @c field_value::sfvec2f.
  */
-FieldValue::Type SFVec2f::type() const throw ()
+field_value::type_id sfvec2f::type() const throw ()
 {
-    return FieldValue::sfvec2f;
+    return field_value::sfvec2f_id;
 }
 
 /**
@@ -1448,28 +1491,29 @@ FieldValue::Type SFVec2f::type() const throw ()
  *
  * @param out   an output stream.
  */
-void SFVec2f::print(std::ostream & out) const
+void sfvec2f::print(std::ostream & out) const
 {
     out << this->value;
 }
 
 /**
- * @fn bool operator==(const SFVec2f & lhs, const SFVec2f & rhs) throw ()
+ * @fn bool operator==(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
  *
- * @relates SFVec2f
+ * @relates sfvec2f
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const SFVec2f & lhs, const SFVec2f & rhs) throw ()
+ * @fn bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
  *
- * @relates SFVec2f
+ * @relates sfvec2f
  *
  * @brief Compare for inequality.
  *
@@ -1482,7 +1526,7 @@ void SFVec2f::print(std::ostream & out) const
 
 
 /**
- * @class SFVec3f
+ * @class sfvec3f
  *
  * @ingroup fieldvalues
  *
@@ -1490,7 +1534,7 @@ void SFVec2f::print(std::ostream & out) const
  */
 
 /**
- * @var SFVec3f::value
+ * @var sfvec3f::value
  *
  * @brief 3-component vector value.
  */
@@ -1500,14 +1544,14 @@ void SFVec2f::print(std::ostream & out) const
  *
  * @param vec   initial value.
  */
-SFVec3f::SFVec3f(const vec3f & vec) throw ():
+sfvec3f::sfvec3f(const vec3f & vec) throw ():
     value(vec)
 {}
 
 /**
  * @brief Destroy.
  */
-SFVec3f::~SFVec3f() throw ()
+sfvec3f::~sfvec3f() throw ()
 {}
 
 /**
@@ -1517,9 +1561,9 @@ SFVec3f::~SFVec3f() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> SFVec3f::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> sfvec3f::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new SFVec3f(*this));
+    return std::auto_ptr<field_value>(new sfvec3f(*this));
 }
 
 /**
@@ -1531,19 +1575,19 @@ std::auto_ptr<FieldValue> SFVec3f::clone() const throw (std::bad_alloc)
  *
  * @exception std::bad_cast if @p value is not an SFBool.
  */
-FieldValue & SFVec3f::assign(const FieldValue & value) throw (std::bad_cast)
+field_value & sfvec3f::assign(const field_value & value) throw (std::bad_cast)
 {
-    return (*this = dynamic_cast<const SFVec3f &>(value));
+    return (*this = dynamic_cast<const sfvec3f &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::sfvec3f.
+ * @return @c field_value::sfvec3f.
  */
-FieldValue::Type SFVec3f::type() const throw ()
+field_value::type_id sfvec3f::type() const throw ()
 {
-    return FieldValue::sfvec3f;
+    return field_value::sfvec3f_id;
 }
 
 /**
@@ -1551,28 +1595,29 @@ FieldValue::Type SFVec3f::type() const throw ()
  *
  * @param out   an output stream.
  */
-void SFVec3f::print(std::ostream & out) const
+void sfvec3f::print(std::ostream & out) const
 {
     out << this->value;
 }
 
 /**
- * @fn bool operator==(const SFVec3f & lhs, const SFVec3f & rhs) throw ()
+ * @fn bool operator==(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
  *
- * @relates SFVec3f
+ * @relates sfvec3f
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const SFVec3f & lhs, const SFVec3f & rhs) throw ()
+ * @fn bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
  *
- * @relates SFVec3f
+ * @relates sfvec3f
  *
  * @brief Compare for inequality.
  *
@@ -1585,7 +1630,7 @@ void SFVec3f::print(std::ostream & out) const
 
 
 /**
- * @class MFColor
+ * @class mfcolor
  *
  * @ingroup fieldvalues
  *
@@ -1593,7 +1638,7 @@ void SFVec3f::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<color> MFColor::value
+ * @var std::vector<color> mfcolor::value
  *
  * @brief Color values.
  */
@@ -1601,26 +1646,26 @@ void SFVec3f::print(std::ostream & out) const
 /**
  * @brief Construct.
  *
- * Creates an MFColor with @p n copies of @p value.
+ * Creates an mfcolor with @p n copies of @p value.
  *
- * @param n     the number elements in the MFColor.
- * @param value used to initialize the MFColor.
+ * @param n     the number elements in the mfcolor.
+ * @param value used to initialize the mfcolor.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
  * @post size is @p n. Every element is a copy of @p value.
  */
-MFColor::MFColor(const std::vector<color>::size_type n, const color & value)
+mfcolor::mfcolor(const std::vector<color>::size_type n, const color & value)
     throw (std::bad_alloc):
     value(n, value)
 {}
 
 /**
- * @fn template <typename InputIterator> MFColor::MFColor(InputIterator first, InputIterator last)
+ * @fn template <typename InputIterator> mfcolor::mfcolor(InputIterator first, InputIterator last)
  *
- * @brief Create an MFColor with a copy of a range.
+ * @brief Create an mfcolor with a copy of a range.
  *
- * Creates an MFColor with a @a value that is a copy of the range
+ * Creates an mfcolor with a @a value that is a copy of the range
  * [@p first, @p last).
  *
  * @param first an iterator pointing to the beginning of the range.
@@ -1630,10 +1675,10 @@ MFColor::MFColor(const std::vector<color>::size_type n, const color & value)
 /**
  * @brief Destroy.
  *
- * Each of the MFColor's @a value elements is destroyed, and memory allocated
+ * Each of the mfcolor's @a value elements is destroyed, and memory allocated
  * for them (if any) is deallocated.
  */
-MFColor::~MFColor() throw ()
+mfcolor::~mfcolor() throw ()
 {}
 
 /**
@@ -1643,9 +1688,9 @@ MFColor::~MFColor() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> MFColor::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> mfcolor::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new MFColor(*this));
+    return std::auto_ptr<field_value>(new mfcolor(*this));
 }
 
 /**
@@ -1653,23 +1698,23 @@ std::auto_ptr<FieldValue> MFColor::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast     if  @p value is not an MFColor object.
+ * @exception std::bad_cast     if  @p value is not an mfcolor object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue & MFColor::assign(const FieldValue & value)
+field_value & mfcolor::assign(const field_value & value)
         throw (std::bad_cast, std::bad_alloc)
 {
-    return (*this = dynamic_cast<const MFColor &>(value));
+    return (*this = dynamic_cast<const mfcolor &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::mfcolor.
+ * @return @c field_value::mfcolor.
  */
-FieldValue::Type MFColor::type() const throw ()
+field_value::type_id mfcolor::type() const throw ()
 {
-    return FieldValue::mfcolor;
+    return field_value::mfcolor_id;
 }
 
 /**
@@ -1677,7 +1722,7 @@ FieldValue::Type MFColor::type() const throw ()
  *
  * @param out   an output stream.
  */
-void MFColor::print(std::ostream & out) const
+void mfcolor::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
@@ -1693,20 +1738,23 @@ void MFColor::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const MFColor & lhs, const MFColor & rhs) throw ()
+ * @fn bool operator==(const mfcolor & lhs, const mfcolor & rhs) throw ()
+ *
+ * @relates mfcolor
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const MFColor & lhs, const MFColor & rhs) throw ()
+ * @fn bool operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
  *
- * @relates MFColor
+ * @relates mfcolor
  *
  * @brief Compare for inequality.
  *
@@ -1714,12 +1762,12 @@ void MFColor::print(std::ostream & out) const
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
- *      otherwise.
+ *         otherwise.
  */
 
 
 /**
- * @class MFFloat
+ * @class mffloat
  *
  * @ingroup fieldvalues
  *
@@ -1727,7 +1775,7 @@ void MFColor::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<float> MFFloat::value
+ * @var std::vector<float> mffloat::value
  *
  * @brief Single precision floating point values.
  */
@@ -1735,26 +1783,26 @@ void MFColor::print(std::ostream & out) const
 /**
  * @brief Construct.
  *
- * Creates an MFFloat with @p n copies of @p value.
+ * Creates an mffloat with @p n copies of @p value.
  *
- * @param n     the number of elements in the MFFloat.
- * @param value used to initialize the MFFloat.
+ * @param n     the number of elements in the mffloat.
+ * @param value used to initialize the mffloat.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
  * @post size is @p n. Every element is a copy of @p value.
  */
-MFFloat::MFFloat(const std::vector<float>::size_type n, const float value)
+mffloat::mffloat(const std::vector<float>::size_type n, const float value)
     throw (std::bad_alloc):
     value(n, value)
 {}
 
 /**
- * @fn template <typename InputIterator> MFFloat::MFFloat(InputIterator first, InputIterator last)
+ * @fn template <typename InputIterator> mffloat::mffloat(InputIterator first, InputIterator last)
  *
- * @brief Create an MFFloat with a copy of a range.
+ * @brief Create an mffloat with a copy of a range.
  *
- * Creates an MFFloat with a @a value that is a copy of the range
+ * Creates an mffloat with a @a value that is a copy of the range
  * [@p first, @p last).
  *
  * @param first an iterator pointing to the beginning of the range.
@@ -1764,10 +1812,10 @@ MFFloat::MFFloat(const std::vector<float>::size_type n, const float value)
 /**
  * @brief Destroy.
  *
- * Each of the MFFloat's @a value elements is destroyed, and memory allocated
+ * Each of the mffloat's @a value elements is destroyed, and memory allocated
  * for them (if any) is deallocated.
  */
-MFFloat::~MFFloat() throw ()
+mffloat::~mffloat() throw ()
 {}
 
 /**
@@ -1777,9 +1825,9 @@ MFFloat::~MFFloat() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> MFFloat::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> mffloat::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new MFFloat(*this));
+    return std::auto_ptr<field_value>(new mffloat(*this));
 }
 
 /**
@@ -1787,23 +1835,23 @@ std::auto_ptr<FieldValue> MFFloat::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast     if  @p value is not an MFFloat object.
+ * @exception std::bad_cast     if  @p value is not an mffloat object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue & MFFloat::assign(const FieldValue & value)
+field_value & mffloat::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    return (*this = dynamic_cast<const MFFloat &>(value));
+    return (*this = dynamic_cast<const mffloat &>(value));
 }
 
 /**
  * @brief Get the type identifier for the class.
  *
- * @return the type identifer for the class.
+ * @return @c field_value::mffloat_id.
  */
-FieldValue::Type MFFloat::type() const throw ()
+field_value::type_id mffloat::type() const throw ()
 {
-    return FieldValue::mffloat;
+    return field_value::mffloat_id;
 }
 
 /**
@@ -1811,7 +1859,7 @@ FieldValue::Type MFFloat::type() const throw ()
  *
  * @param out   an output stream.
  */
-void MFFloat::print(std::ostream & out) const
+void mffloat::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
@@ -1827,20 +1875,23 @@ void MFFloat::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const MFFloat & lhs, const MFFloat & rhs) throw ()
+ * @fn bool operator==(const mffloat & lhs, const mffloat & rhs) throw ()
+ *
+ * @relates mffloat
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const MFFloat & lhs, const MFFloat & rhs) throw ()
+ * @fn bool operator!=(const mffloat & lhs, const mffloat & rhs) throw ()
  *
- * @relates MFFloat
+ * @relates mffloat
  *
  * @brief Compare for inequality.
  *
@@ -1853,7 +1904,7 @@ void MFFloat::print(std::ostream & out) const
 
 
 /**
- * @class MFInt32
+ * @class mfint32
  *
  * @ingroup fieldvalues
  *
@@ -1861,7 +1912,7 @@ void MFFloat::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<int32> MFInt32::value
+ * @var std::vector<int32> mfint32::value
  *
  * @brief Signed 32-bit integer values.
  */
@@ -1869,26 +1920,26 @@ void MFFloat::print(std::ostream & out) const
 /**
  * @brief Construct.
  *
- * Creates an MFInt32 with @p n copies of @p value.
+ * Creates an mfint32 with @p n copies of @p value.
  *
- * @param n     the number of elements in the MFInt32.
- * @param value used to initialize the MFInt32.
+ * @param n     the number of elements in the mfint32.
+ * @param value used to initialize the mfint32.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
  * @post size is @p n. Every element is a copy of @p value.
  */
-MFInt32::MFInt32(const std::vector<int32>::size_type n, const int32 value)
+mfint32::mfint32(const std::vector<int32>::size_type n, const int32 value)
     throw (std::bad_alloc):
     value(n, value)
 {}
 
 /**
- * @fn template <typename InputIterator> MFInt32::MFInt32(InputIterator first, InputIterator last)
+ * @fn template <typename InputIterator> mfint32::mfint32(InputIterator first, InputIterator last)
  *
- * @brief Create an MFInt32 with a copy of a range.
+ * @brief Create an mfint32 with a copy of a range.
  *
- * Creates an MFInt32 with a @a value that is a copy of the range
+ * Creates an mfint32 with a @a value that is a copy of the range
  * [@p first, @p last).
  *
  * @param first an iterator pointing to the beginning of the range.
@@ -1898,10 +1949,10 @@ MFInt32::MFInt32(const std::vector<int32>::size_type n, const int32 value)
 /**
  * @brief Destroy.
  *
- * Each of the MFInt32's @a value elements is destroyed, and memory allocated
+ * Each of the mfint32's @a value elements is destroyed, and memory allocated
  * for them (if any) is deallocated.
  */
-MFInt32::~MFInt32() throw ()
+mfint32::~mfint32() throw ()
 {}
 
 /**
@@ -1911,9 +1962,9 @@ MFInt32::~MFInt32() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> MFInt32::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> mfint32::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new MFInt32(*this));
+    return std::auto_ptr<field_value>(new mfint32(*this));
 }
 
 /**
@@ -1921,23 +1972,23 @@ std::auto_ptr<FieldValue> MFInt32::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast     if  @p value is not an MFInt32 object.
+ * @exception std::bad_cast     if  @p value is not an mfint32 object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue & MFInt32::assign(const FieldValue & value)
+field_value & mfint32::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    return (*this = dynamic_cast<const MFInt32 &>(value));
+    return (*this = dynamic_cast<const mfint32 &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::mfint32.
+ * @return @c field_value::mfint32_id.
  */
-FieldValue::Type MFInt32::type() const throw ()
+field_value::type_id mfint32::type() const throw ()
 {
-    return FieldValue::mfint32;
+    return field_value::mfint32_id;
 }
 
 /**
@@ -1945,7 +1996,7 @@ FieldValue::Type MFInt32::type() const throw ()
  *
  * @param out   an output stream.
  */
-void MFInt32::print(std::ostream & out) const
+void mfint32::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
@@ -1961,20 +2012,23 @@ void MFInt32::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const MFInt32 & lhs, const MFInt32 & rhs) throw ()
+ * @fn bool operator==(const mfint32 & lhs, const mfint32 & rhs) throw ()
+ *
+ * @relates mfint32
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const MFInt32 & lhs, const MFInt32 & rhs) throw ()
+ * @fn bool operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ()
  *
- * @relates MFInt32
+ * @relates mfint32
  *
  * @brief Compare for inequality.
  *
@@ -1987,7 +2041,7 @@ void MFInt32::print(std::ostream & out) const
 
 
 /**
- * @class MFNode
+ * @class mfnode
  *
  * @ingroup fieldvalues
  *
@@ -1995,7 +2049,7 @@ void MFInt32::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<NodePtr> MFNode::value
+ * @var std::vector<NodePtr> mfnode::value
  *
  * @brief Node references.
  */
@@ -2003,26 +2057,26 @@ void MFInt32::print(std::ostream & out) const
 /**
  * @brief Construct.
  *
- * Creates an MFNode with @p n copies of @p value.
+ * Creates an mfnode with @p n copies of @p value.
  *
- * @param n     the number elements in the MFNode.
- * @param value used to initialize the MFNode.
+ * @param n     the number elements in the mfnode.
+ * @param value used to initialize the mfnode.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
  * @post size is @p n. Every element is a copy of @p value.
  */
-MFNode::MFNode(const std::vector<NodePtr>::size_type n, const NodePtr & value)
+mfnode::mfnode(const std::vector<NodePtr>::size_type n, const NodePtr & value)
     throw (std::bad_alloc):
     value(n, value)
 {}
 
 /**
- * @fn template <typename InputIterator> MFNode::MFNode(InputIterator first, InputIterator last)
+ * @fn template <typename InputIterator> mfnode::mfnode(InputIterator first, InputIterator last)
  *
- * @brief Create an MFNode with a copy of a range.
+ * @brief Create an mfnode with a copy of a range.
  *
- * Creates an MFNode with a @a value that is a copy of the range
+ * Creates an mfnode with a @a value that is a copy of the range
  * [@p first, @p last).
  *
  * @param first an iterator pointing to the beginning of the range.
@@ -2032,10 +2086,10 @@ MFNode::MFNode(const std::vector<NodePtr>::size_type n, const NodePtr & value)
 /**
  * @brief Destroy.
  *
- * Each of the MFNode's @a value elements is destroyed, and memory allocated
+ * Each of the mfnode's @a value elements is destroyed, and memory allocated
  * for them (if any) is deallocated.
  */
-MFNode::~MFNode() throw ()
+mfnode::~mfnode() throw ()
 {}
 
 /**
@@ -2045,9 +2099,9 @@ MFNode::~MFNode() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> MFNode::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> mfnode::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new MFNode(*this));
+    return std::auto_ptr<field_value>(new mfnode(*this));
 }
 
 /**
@@ -2055,34 +2109,34 @@ std::auto_ptr<FieldValue> MFNode::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast     if  @p value is not an MFNode object.
+ * @exception std::bad_cast     if  @p value is not an mfnode object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue & MFNode::assign(const FieldValue & value)
+field_value & mfnode::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    return (*this = dynamic_cast<const MFNode &>(value));
+    return (*this = dynamic_cast<const mfnode &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::mfnode.
+ * @return @c field_value::mfnode_id.
  */
-FieldValue::Type MFNode::type() const throw ()
+field_value::type_id mfnode::type() const throw ()
 {
-    return FieldValue::mfnode;
+    return field_value::mfnode_id;
 }
 
 /**
  * @brief Print to an output stream.
  *
- * Any null elements in the MFNode will not get printed; VRML97 syntax does not
- * accommodate NULL in an MFNode.
+ * Any null elements in the mfnode will not get printed; VRML97 syntax does not
+ * accommodate NULL in an mfnode.
  *
  * @param out   an output stream.
  */
-void MFNode::print(std::ostream & out) const
+void mfnode::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
@@ -2098,20 +2152,23 @@ void MFNode::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const MFNode & lhs, const MFNode & rhs) throw ()
+ * @fn bool operator==(const mfnode & lhs, const mfnode & rhs) throw ()
+ *
+ * @relates mfnode
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const MFNode & lhs, const MFNode & rhs) throw ()
+ * @fn bool operator!=(const mfnode & lhs, const mfnode & rhs) throw ()
  *
- * @relates MFNode
+ * @relates mfnode
  *
  * @brief Compare for inequality.
  *
@@ -2124,7 +2181,7 @@ void MFNode::print(std::ostream & out) const
 
 
 /**
- * @class MFRotation
+ * @class mfrotation
  *
  * @ingroup fieldvalues
  *
@@ -2132,7 +2189,7 @@ void MFNode::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<rotation> MFRotation::value
+ * @var std::vector<rotation> mfrotation::value
  *
  * @brief Rotation values.
  */
@@ -2140,27 +2197,27 @@ void MFNode::print(std::ostream & out) const
 /**
  * @brief Construct.
  *
- * Creates an MFRotation with @p n copies of @p value.
+ * Creates an mfrotation with @p n copies of @p value.
  *
- * @param n     the number elements in the MFRotation.
- * @param value used to initialize the MFRotation.
+ * @param n     the number elements in the mfrotation.
+ * @param value used to initialize the mfrotation.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
  * @post size is @p n. Every element is a copy of @p value.
  */
-MFRotation::MFRotation(const std::vector<rotation>::size_type n,
+mfrotation::mfrotation(const std::vector<rotation>::size_type n,
                        const rotation & value)
     throw (std::bad_alloc):
     value(n, value)
 {}
 
 /**
- * @fn template <typename InputIterator> MFRotation::MFRotation(InputIterator first, InputIterator last)
+ * @fn template <typename InputIterator> mfrotation::mfrotation(InputIterator first, InputIterator last)
  *
- * @brief Create an MFRotation with a copy of a range.
+ * @brief Create an mfrotation with a copy of a range.
  *
- * Creates an MFRotation with a @a value that is a copy of the range
+ * Creates an mfrotation with a @a value that is a copy of the range
  * [@p first, @p last).
  *
  * @param first an iterator pointing to the beginning of the range.
@@ -2170,10 +2227,10 @@ MFRotation::MFRotation(const std::vector<rotation>::size_type n,
 /**
  * @brief Destroy.
  *
- * Each of the MFRotation's @a value elements is destroyed, and memory
+ * Each of the mfrotation's @a value elements is destroyed, and memory
  * allocated for them (if any) is deallocated.
  */
-MFRotation::~MFRotation() throw ()
+mfrotation::~mfrotation() throw ()
 {}
 
 /**
@@ -2183,9 +2240,9 @@ MFRotation::~MFRotation() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> MFRotation::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> mfrotation::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new MFRotation(*this));
+    return std::auto_ptr<field_value>(new mfrotation(*this));
 }
 
 /**
@@ -2193,23 +2250,23 @@ std::auto_ptr<FieldValue> MFRotation::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast     if  @p value is not an MFRotation object.
+ * @exception std::bad_cast     if  @p value is not an mfrotation object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue & MFRotation::assign(const FieldValue & value)
+field_value & mfrotation::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    return (*this = dynamic_cast<const MFRotation &>(value));
+    return (*this = dynamic_cast<const mfrotation &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::mfrotation.
+ * @return @c field_value::mfrotation_id.
  */
-FieldValue::Type MFRotation::type() const throw ()
+field_value::type_id mfrotation::type() const throw ()
 {
-    return FieldValue::mfrotation;
+    return field_value::mfrotation_id;
 }
 
 /**
@@ -2217,7 +2274,7 @@ FieldValue::Type MFRotation::type() const throw ()
  *
  * @param out   an output stream.
  */
-void MFRotation::print(std::ostream & out) const
+void mfrotation::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
@@ -2233,20 +2290,23 @@ void MFRotation::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const MFRotation & lhs, const MFRotation & rhs) throw ()
+ * @fn bool operator==(const mfrotation & lhs, const mfrotation & rhs) throw ()
+ *
+ * @relates mfrotation
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const MFRotation & lhs, const MFRotation & rhs) throw ()
+ * @fn bool operator!=(const mfrotation & lhs, const mfrotation & rhs) throw ()
  *
- * @relates MFRotation
+ * @relates mfrotation
  *
  * @brief Compare for inequality.
  *
@@ -2259,7 +2319,7 @@ void MFRotation::print(std::ostream & out) const
 
 
 /**
- * @class MFString
+ * @class mfstring
  *
  * @ingroup fieldvalues
  *
@@ -2267,7 +2327,7 @@ void MFRotation::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<std::string> MFString::value
+ * @var std::vector<std::string> mfstring::value
  *
  * @brief String values.
  */
@@ -2275,28 +2335,28 @@ void MFRotation::print(std::ostream & out) const
 /**
  * @brief Construct.
  *
- * Creates an MFString with @p n copies of @p value.
+ * Creates an mfstring with @p n copies of @p value.
  *
- * @param n     the number elements in @a MFString::value.
- * @param value used to initialize @a MFString::value.
+ * @param n     the number elements in @a mfstring::value.
+ * @param value used to initialize @a mfstring::value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
- * @post <code>MFString::value.size()</code> is @p n. Every element in
- *      @a MFString::value is a copy of @p value.
+ * @post <code>mfstring::value.size()</code> is @p n. Every element in
+ *      @a mfstring::value is a copy of @p value.
  */
-MFString::MFString(const std::vector<std::string>::size_type n,
+mfstring::mfstring(const std::vector<std::string>::size_type n,
                    const std::string & value)
     throw (std::bad_alloc):
     value(n, value)
 {}
 
 /**
- * @fn template <typename InputIterator> MFString::MFString(InputIterator first, InputIterator last)
+ * @fn template <typename InputIterator> mfstring::mfstring(InputIterator first, InputIterator last)
  *
- * @brief Create an MFString with a copy of a range.
+ * @brief Create an mfstring with a copy of a range.
  *
- * Creates an MFString with a @a value that is a copy of the range
+ * Creates an mfstring with a @a value that is a copy of the range
  * [@p first, @p last).
  *
  * @param first an iterator pointing to the beginning of the range.
@@ -2306,10 +2366,10 @@ MFString::MFString(const std::vector<std::string>::size_type n,
 /**
  * @brief Destroy.
  *
- * Each of the MFString's elements is destroyed, and memory allocated for them
+ * Each of the mfstring's elements is destroyed, and memory allocated for them
  * (if any) is deallocated.
  */
-MFString::~MFString() throw ()
+mfstring::~mfstring() throw ()
 {}
 
 /**
@@ -2319,8 +2379,8 @@ MFString::~MFString() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> MFString::clone() const throw (std::bad_alloc) {
-    return std::auto_ptr<FieldValue>(new MFString(*this));
+std::auto_ptr<field_value> mfstring::clone() const throw (std::bad_alloc) {
+    return std::auto_ptr<field_value>(new mfstring(*this));
 }
 
 /**
@@ -2328,27 +2388,30 @@ std::auto_ptr<FieldValue> MFString::clone() const throw (std::bad_alloc) {
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast     if  @p value is not an MFString object.
+ * @exception std::bad_cast     if  @p value is not an mfstring object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue & MFString::assign(const FieldValue & value)
+field_value & mfstring::assign(const field_value & value)
         throw (std::bad_cast, std::bad_alloc) {
-    return (*this = dynamic_cast<const MFString &>(value));
+    return (*this = dynamic_cast<const mfstring &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::mfstring.
+ * @return @c field_value::mfstring_id.
  */
-FieldValue::Type MFString::type() const throw () { return mfstring; }
+field_value::type_id mfstring::type() const throw ()
+{
+    return field_value::mfstring_id;
+}
 
 /**
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
  */
-void MFString::print(std::ostream & out) const
+void mfstring::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
@@ -2364,20 +2427,23 @@ void MFString::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const MFString & lhs, const MFString & rhs) throw ()
+ * @fn bool operator==(const mfstring & lhs, const mfstring & rhs) throw ()
+ *
+ * @relates mfstring
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const MFString & lhs, const MFString & rhs) throw ()
+ * @fn bool operator!=(const mfstring & lhs, const mfstring & rhs) throw ()
  *
- * @relates MFString
+ * @relates mfstring
  *
  * @brief Compare for inequality.
  *
@@ -2390,7 +2456,7 @@ void MFString::print(std::ostream & out) const
 
 
 /**
- * @class MFTime
+ * @class mftime
  *
  * @ingroup fieldvalues
  *
@@ -2398,7 +2464,7 @@ void MFString::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<double> MFTime::value
+ * @var std::vector<double> mftime::value
  *
  * @brief Double precision floating point values.
  */
@@ -2406,27 +2472,27 @@ void MFString::print(std::ostream & out) const
 /**
  * @brief Construct.
  *
- * Creates an MFTime with @p n copies of @p value.
+ * Creates an mftime with @p n copies of @p value.
  *
- * @param n     the number of elements in @a MFTime::value.
- * @param value used to initialize @a MFTime::value.
+ * @param n     the number of elements in @a mftime::value.
+ * @param value used to initialize @a mftime::value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
- * @post <code>MFTime::value.size()</code> is @p n. Every element in
- *      @a MFTime::value is a copy of @p value.
+ * @post <code>mftime::value.size()</code> is @p n. Every element in
+ *      @a mftime::value is a copy of @p value.
  */
-MFTime::MFTime(const std::vector<double>::size_type n, const double value)
+mftime::mftime(const std::vector<double>::size_type n, const double value)
     throw (std::bad_alloc):
     value(n, value)
 {}
 
 /**
- * @fn template <typename InputIterator> MFTime::MFTime(InputIterator first, InputIterator last)
+ * @fn template <typename InputIterator> mftime::mftime(InputIterator first, InputIterator last)
  *
- * @brief Create an MFTime with a copy of a range.
+ * @brief Create an mftime with a copy of a range.
  *
- * Creates an MFTime with a @a value that is a copy of the range
+ * Creates an mftime with a @a value that is a copy of the range
  * [@p first, @p last).
  *
  * @param first an iterator pointing to the beginning of the range.
@@ -2436,10 +2502,10 @@ MFTime::MFTime(const std::vector<double>::size_type n, const double value)
 /**
  * @brief Destroy.
  *
- * Each of the MFTime's @a value elements is destroyed, and memory allocated
+ * Each of the mftime's @a value elements is destroyed, and memory allocated
  * for them (if any) is deallocated.
  */
-MFTime::~MFTime() throw ()
+mftime::~mftime() throw ()
 {}
 
 /**
@@ -2449,9 +2515,9 @@ MFTime::~MFTime() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> MFTime::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> mftime::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new MFTime(*this));
+    return std::auto_ptr<field_value>(new mftime(*this));
 }
 
 /**
@@ -2459,23 +2525,23 @@ std::auto_ptr<FieldValue> MFTime::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast     if  @p value is not an MFTime object.
+ * @exception std::bad_cast     if  @p value is not an mftime object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue & MFTime::assign(const FieldValue & value)
+field_value & mftime::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    return (*this = dynamic_cast<const MFTime &>(value));
+    return (*this = dynamic_cast<const mftime &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::mftime.
+ * @return @c field_value::mftime_id.
  */
-FieldValue::Type MFTime::type() const throw ()
+field_value::type_id mftime::type() const throw ()
 {
-    return FieldValue::mftime;
+    return field_value::mftime_id;
 }
 
 /**
@@ -2483,7 +2549,7 @@ FieldValue::Type MFTime::type() const throw ()
  *
  * @param out   an output stream.
  */
-void MFTime::print(std::ostream & out) const
+void mftime::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
@@ -2499,20 +2565,23 @@ void MFTime::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const MFTime & lhs, const MFTime & rhs) throw ()
+ * @fn bool operator==(const mftime & lhs, const mftime & rhs) throw ()
+ *
+ * @relates mftime
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const MFTime & lhs, const MFTime & rhs) throw ()
+ * @fn bool operator!=(const mftime & lhs, const mftime & rhs) throw ()
  *
- * @relates MFTime
+ * @relates mftime
  *
  * @brief Compare for inequality.
  *
@@ -2525,7 +2594,7 @@ void MFTime::print(std::ostream & out) const
 
 
 /**
- * @class MFVec2f
+ * @class mfvec2f
  *
  * @ingroup fieldvalues
  *
@@ -2533,7 +2602,7 @@ void MFTime::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<vec2f> MFVec2f::value
+ * @var std::vector<vec2f> mfvec2f::value
  *
  * @brief 2-component vector values.
  */
@@ -2541,27 +2610,27 @@ void MFTime::print(std::ostream & out) const
 /**
  * @brief Construct.
  *
- * Creates an MFVec2f with @p n copies of @p value.
+ * Creates an mfvec2f with @p n copies of @p value.
  *
- * @param n     the number elements in @a MFVec2f::value.
- * @param value used to initialize @a MFVec2f::value.
+ * @param n     the number elements in @a mfvec2f::value.
+ * @param value used to initialize @a mfvec2f::value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
- * @post <code>MFVec2f::value.size()</code> is @p n. Every element in
- *      @a MFVec2f::value is a copy of @p value.
+ * @post <code>mfvec2f::value.size()</code> is @p n. Every element in
+ *      @a mfvec2f::value is a copy of @p value.
  */
-MFVec2f::MFVec2f(const std::vector<vec2f>::size_type n, const vec2f & value)
+mfvec2f::mfvec2f(const std::vector<vec2f>::size_type n, const vec2f & value)
     throw (std::bad_alloc):
     value(n, value)
 {}
 
 /**
- * @fn template <typename InputIterator> MFVec2f::MFVec2f(InputIterator first, InputIterator last)
+ * @fn template <typename InputIterator> mfvec2f::mfvec2f(InputIterator first, InputIterator last)
  *
- * @brief Create an MFVec2f with a copy of a range.
+ * @brief Create an mfvec2f with a copy of a range.
  *
- * Creates an MFVec2f with a @a value that is a copy of the range
+ * Creates an mfvec2f with a @a value that is a copy of the range
  * [@p first, @p last).
  *
  * @param first an iterator pointing to the beginning of the range.
@@ -2571,10 +2640,10 @@ MFVec2f::MFVec2f(const std::vector<vec2f>::size_type n, const vec2f & value)
 /**
  * @brief Destroy.
  *
- * Each of the MFVec2f's @a value elements is destroyed, and memory allocated
+ * Each of the mfvec2f's @a value elements is destroyed, and memory allocated
  * for them (if any) is deallocated.
  */
-MFVec2f::~MFVec2f() throw ()
+mfvec2f::~mfvec2f() throw ()
 {}
 
 /**
@@ -2584,9 +2653,9 @@ MFVec2f::~MFVec2f() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> MFVec2f::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> mfvec2f::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new MFVec2f(*this));
+    return std::auto_ptr<field_value>(new mfvec2f(*this));
 }
 
 /**
@@ -2594,23 +2663,23 @@ std::auto_ptr<FieldValue> MFVec2f::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast     if  @p value is not an MFVec2f object.
+ * @exception std::bad_cast     if  @p value is not an mfvec2f object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue & MFVec2f::assign(const FieldValue & value)
+field_value & mfvec2f::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    return (*this = dynamic_cast<const MFVec2f &>(value));
+    return (*this = dynamic_cast<const mfvec2f &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::mfvec2f.
+ * @return @c field_value::mfvec2f_id.
  */
-FieldValue::Type MFVec2f::type() const throw ()
+field_value::type_id mfvec2f::type() const throw ()
 {
-    return FieldValue::mfvec2f;
+    return field_value::mfvec2f_id;
 }
 
 /**
@@ -2618,7 +2687,7 @@ FieldValue::Type MFVec2f::type() const throw ()
  *
  * @param out   an output stream.
  */
-void MFVec2f::print(std::ostream & out) const
+void mfvec2f::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
@@ -2634,20 +2703,23 @@ void MFVec2f::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const MFVec2f & lhs, const MFVec2f & rhs) throw ()
+ * @fn bool operator==(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
+ *
+ * @relates mfvec2f
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const MFVec2f & lhs, const MFVec2f & rhs) throw ()
+ * @fn bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
  *
- * @relates MFVec2f
+ * @relates mfvec2f
  *
  * @brief Compare for inequality.
  *
@@ -2660,7 +2732,7 @@ void MFVec2f::print(std::ostream & out) const
 
 
 /**
- * @class MFVec3f
+ * @class mfvec3f
  *
  * @ingroup fieldvalues
  *
@@ -2668,7 +2740,7 @@ void MFVec2f::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<vec3f> MFVec3f::value
+ * @var std::vector<vec3f> mfvec3f::value
  *
  * @brief 3-component vector values.
  */
@@ -2676,27 +2748,27 @@ void MFVec2f::print(std::ostream & out) const
 /**
  * @brief Construct.
  *
- * Creates an MFVec3f with @p n copies of @p value.
+ * Creates an mfvec3f with @p n copies of @p value.
  *
- * @param n     the number elements in @a MFVec3f::value.
- * @param value used to initialize @a MFVec3f::value.
+ * @param n     the number elements in @a mfvec3f::value.
+ * @param value used to initialize @a mfvec3f::value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
- * @post <code>MFVec3f::value.size()</code> is @p n. Every element in
- *      @a MFVec3f::value is a copy of @p value.
+ * @post <code>mfvec3f::value.size()</code> is @p n. Every element in
+ *      @a mfvec3f::value is a copy of @p value.
  */
-MFVec3f::MFVec3f(const std::vector<vec3f>::size_type n, const vec3f & value)
+mfvec3f::mfvec3f(const std::vector<vec3f>::size_type n, const vec3f & value)
     throw (std::bad_alloc):
     value(n, value)
 {}
 
 /**
- * @fn template <typename InputIterator> MFVec3f::MFVec3f(InputIterator first, InputIterator last)
+ * @fn template <typename InputIterator> mfvec3f::mfvec3f(InputIterator first, InputIterator last)
  *
- * @brief Create an MFVec3f with a copy of a range.
+ * @brief Create an mfvec3f with a copy of a range.
  *
- * Creates an MFVec3f with a @a value that is a copy of the range
+ * Creates an mfvec3f with a @a value that is a copy of the range
  * [@p first, @p last).
  *
  * @param first an iterator pointing to the beginning of the range.
@@ -2706,10 +2778,10 @@ MFVec3f::MFVec3f(const std::vector<vec3f>::size_type n, const vec3f & value)
 /**
  * @brief Destroy.
  *
- * Each of the MFVec3f's @a value elements is destroyed, and memory allocated
+ * Each of the mfvec3f's @a value elements is destroyed, and memory allocated
  * for them (if any) is deallocated.
  */
-MFVec3f::~MFVec3f() throw ()
+mfvec3f::~mfvec3f() throw ()
 {}
 
 /**
@@ -2719,9 +2791,9 @@ MFVec3f::~MFVec3f() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<FieldValue> MFVec3f::clone() const throw (std::bad_alloc)
+std::auto_ptr<field_value> mfvec3f::clone() const throw (std::bad_alloc)
 {
-    return std::auto_ptr<FieldValue>(new MFVec3f(*this));
+    return std::auto_ptr<field_value>(new mfvec3f(*this));
 }
 
 /**
@@ -2729,23 +2801,23 @@ std::auto_ptr<FieldValue> MFVec3f::clone() const throw (std::bad_alloc)
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast     if  @p value is not an MFVec3f object.
+ * @exception std::bad_cast     if  @p value is not an mfvec3f object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue & MFVec3f::assign(const FieldValue & value)
+field_value & mfvec3f::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    return (*this = dynamic_cast<const MFVec3f &>(value));
+    return (*this = dynamic_cast<const mfvec3f &>(value));
 }
 
 /**
- * @brief Get the FieldValue::Type associated with this class.
+ * @brief Get the field_value::type_id associated with this class.
  *
- * @return @c FieldValue::mfvec3f.
+ * @return @c field_value::mfvec3f_id.
  */
-FieldValue::Type MFVec3f::type() const throw ()
+field_value::type_id mfvec3f::type() const throw ()
 {
-    return FieldValue::mfvec3f;
+    return field_value::mfvec3f_id;
 }
 
 /**
@@ -2753,7 +2825,7 @@ FieldValue::Type MFVec3f::type() const throw ()
  *
  * @param out   an output stream.
  */
-void MFVec3f::print(std::ostream & out) const
+void mfvec3f::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
@@ -2769,20 +2841,23 @@ void MFVec3f::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const MFVec3f & lhs, const MFVec3f & rhs) throw ()
+ * @fn bool operator==(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
+ *
+ * @relates mfvec3f
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const MFVec3f & lhs, const MFVec3f & rhs) throw ()
+ * @fn bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
  *
- * @relates MFVec3f
+ * @relates mfvec3f
  *
  * @brief Compare for inequality.
  *
@@ -2798,22 +2873,9 @@ void MFVec3f::print(std::ostream & out) const
 namespace std {
 
 /**
- * @fn template <> void swap(OpenVRML::MFColor & a, OpenVRML::MFColor & b)
+ * @fn template <> void swap(OpenVRML::mfcolor & a, OpenVRML::mfcolor & b)
  *
- * @relates OpenVRML::MFColor
- *
- * @brief Swap the values of @p a and @p b.
- *
- * Does not throw.
- *
- * @param a
- * @param b
- */
-
-/**
- * @fn template <> void swap(OpenVRML::MFFloat & a, OpenVRML::MFFloat & b)
- *
- * @relates OpenVRML::MFFloat
+ * @relates OpenVRML::mfcolor
  *
  * @brief Swap the values of @p a and @p b.
  *
@@ -2824,22 +2886,9 @@ namespace std {
  */
 
 /**
- * @fn template <> void swap(OpenVRML::MFInt32 & a, OpenVRML::MFInt32 & b)
+ * @fn template <> void swap(OpenVRML::mffloat & a, OpenVRML::mffloat & b)
  *
- * @relates OpenVRML::MFInt32
- *
- * @brief Swap the values of @p a and @p b.
- *
- * Does not throw.
- *
- * @param a
- * @param b
- */
-
-/**
- * @fn template <> void swap(OpenVRML::MFNode & a, OpenVRML::MFNode & b)
- *
- * @relates OpenVRML::MFNode
+ * @relates OpenVRML::mffloat
  *
  * @brief Swap the values of @p a and @p b.
  *
@@ -2850,22 +2899,9 @@ namespace std {
  */
 
 /**
- * @fn template <> void swap(OpenVRML::MFRotation & a, OpenVRML::MFRotation & b)
+ * @fn template <> void swap(OpenVRML::mfint32 & a, OpenVRML::mfint32 & b)
  *
- * @relates OpenVRML::MFRotation
- *
- * @brief Swap the values of @p a and @p b.
- *
- * Does not throw.
- *
- * @param a
- * @param b
- */
-
-/**
- * @fn template <> void swap(OpenVRML::MFString & a, OpenVRML::MFString & b)
- *
- * @relates OpenVRML::MFString
+ * @relates OpenVRML::mfint32
  *
  * @brief Swap the values of @p a and @p b.
  *
@@ -2876,22 +2912,9 @@ namespace std {
  */
 
 /**
- * @fn template <> void swap(OpenVRML::MFTime & a, OpenVRML::MFTime & b)
+ * @fn template <> void swap(OpenVRML::mfnode & a, OpenVRML::mfnode & b)
  *
- * @relates OpenVRML::MFTime
- *
- * @brief Swap the values of @p a and @p b.
- *
- * Does not throw.
- *
- * @param a
- * @param b
- */
-
-/**
- * @fn template <> void swap(OpenVRML::MFVec2f & a, OpenVRML::MFVec2f & b)
- *
- * @relates OpenVRML::MFVec2f
+ * @relates OpenVRML::mfnode
  *
  * @brief Swap the values of @p a and @p b.
  *
@@ -2902,9 +2925,61 @@ namespace std {
  */
 
 /**
- * @fn template <> void swap(OpenVRML::MFVec3f & a, OpenVRML::MFVec3f & b)
+ * @fn template <> void swap(OpenVRML::mfrotation & a, OpenVRML::mfrotation & b)
  *
- * @relates OpenVRML::MFVec3f
+ * @relates OpenVRML::mfrotation
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void swap(OpenVRML::mfstring & a, OpenVRML::mfstring & b)
+ *
+ * @relates OpenVRML::mfstring
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void swap(OpenVRML::mftime & a, OpenVRML::mftime & b)
+ *
+ * @relates OpenVRML::mftime
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void swap(OpenVRML::mfvec2f & a, OpenVRML::mfvec2f & b)
+ *
+ * @relates OpenVRML::mfvec2f
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void swap(OpenVRML::mfvec3f & a, OpenVRML::mfvec3f & b)
+ *
+ * @relates OpenVRML::mfvec3f
  *
  * @brief Swap the values of @p a and @p b.
  *

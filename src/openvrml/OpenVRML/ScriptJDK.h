@@ -52,13 +52,13 @@ namespace OpenVRML {
 
         virtual void initialize(double timestamp);
         virtual void processEvent(const std::string & id,
-                                  const FieldValue & value, double timestamp);
+                                  const field_value & value, double timestamp);
         virtual void eventsProcessed(double timestamp);
         virtual void shutdown(double timestamp);
 
     private:
         void activate(double timeStamp, const std::string & fname,
-                      size_t argc, const FieldValue * const argv[]);
+                      size_t argc, const field_value * const argv[]);
     };
 }
 

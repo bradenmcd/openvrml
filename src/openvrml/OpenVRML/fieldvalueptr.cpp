@@ -3,21 +3,21 @@
 // OpenVRML
 //
 // Copyright (C) 2000  Braden McDaniel
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # include "fieldvalueptr.h"
 # include "field.h"
@@ -29,7 +29,8 @@ namespace OpenVRML {
  *
  * @brief FieldValuePtr is a reference-counting smart pointer for FieldValues.
  *
- * FieldValuePtr is patterned after the <a href="http://boost.org/libs/smart_ptr/shared_ptr.htm">Boost shared_ptr</a>,
+ * FieldValuePtr is patterned after the <a
+ * href="http://boost.org/libs/smart_ptr/shared_ptr.htm">Boost shared_ptr</a>,
  * and it works basically the same way. A FieldValuePtr should be constructed
  * or reset with a FieldValue created with @c new (or 0).
  *
@@ -41,8 +42,9 @@ namespace OpenVRML {
  *
  * @param fieldValue a pointer to a FieldValue constructed with @c new.
  */
-FieldValuePtr::FieldValuePtr(FieldValue * const fieldValue):
-        fieldValue(fieldValue) {
+FieldValuePtr::FieldValuePtr(field_value * const fieldValue):
+    fieldValue(fieldValue)
+{
     try {
         this->count = new size_t(1); // prevent leak if new throws
     } catch (...) {
@@ -57,7 +59,8 @@ FieldValuePtr::FieldValuePtr(FieldValue * const fieldValue):
  * @param fieldValuePtr the FieldValuePtr to copy.
  */
 FieldValuePtr::FieldValuePtr(const FieldValuePtr & fieldValuePtr):
-        fieldValue(fieldValuePtr.fieldValue) {
+    fieldValue(fieldValuePtr.fieldValue)
+{
     ++*(this->count = fieldValuePtr.count); // never throws
 }
 
@@ -66,7 +69,8 @@ FieldValuePtr::FieldValuePtr(const FieldValuePtr & fieldValuePtr):
  *
  * @param fieldValuePtr
  */
-FieldValuePtr & FieldValuePtr::operator=(const FieldValuePtr & fieldValuePtr) {
+FieldValuePtr & FieldValuePtr::operator=(const FieldValuePtr & fieldValuePtr)
+{
     if (this->count != fieldValuePtr.count) {
         ++*fieldValuePtr.count;
         this->dispose();
@@ -81,7 +85,8 @@ FieldValuePtr & FieldValuePtr::operator=(const FieldValuePtr & fieldValuePtr) {
  *
  * @param fieldValue a pointer to a FieldValue constructed with @c new.
  */
-void FieldValuePtr::reset(FieldValue * const fieldValue) {
+void FieldValuePtr::reset(field_value * const fieldValue)
+{
     if (this->fieldValue == fieldValue) { return; }
     if (--*this->count == 0) {
         delete this->fieldValue;
@@ -98,7 +103,8 @@ void FieldValuePtr::reset(FieldValue * const fieldValue) {
     this->fieldValue = fieldValue;
 }
 
-void FieldValuePtr::dispose() {
+void FieldValuePtr::dispose()
+{
     if (--*this->count == 0) {
         delete this->fieldValue;
         delete this->count;
