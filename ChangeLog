@@ -1,5 +1,13 @@
 2004-03-07 Braden McDaniel  <braden@endoframe.com>
 
+	Corrected SphereSensor "offset" exposedField type to
+	"SFRotation".
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
+2004-03-07 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed a problem with establishing IS mappings from exposedFields
 	in the PROTO implementation to eventIns and eventOuts in the
 	PROTO interface.
