@@ -1,3 +1,26 @@
+Changes new in version 0.8.3, July 2000
+==========================================
+
+- New parser from Braden McDaniel <braden@endoframe.com>, removing
+  the dependency on SGI parser code.
+
+- Inclusion of Michael Louka's  <michael.louka@hrp.no> MacLookat
+  in the standard distribution.
+
+- View frustrum culling from Christopher K. St. John <cstjohn@acm.org>
+  and S. K. Bose <bose@pavan.barc.ernet.in> and some navigation fixes.
+
+- MPEG reader for MovieTexture nodes.
+
+- Braden updated the javascript support to use mozilla JS 1.5.
+
+- SourceForge web site http://openvrml.sourceforge.net/
+
+- New license for the library code: LGPL (see COPYING file for details).
+
+- Lots of clean ups and fixes.
+
+
 Changes new in version 0.8.2, January 2000
 ==========================================
 
