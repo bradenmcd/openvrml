@@ -120,7 +120,6 @@ namespace openvrml {
         const field_value_map_t & field_value_map() const throw ();
         const eventout_value_map_t & eventout_value_map() const throw ();
 
-        virtual const script_node * to_script() const throw ();
         virtual script_node * to_script() throw ();
 
     private:

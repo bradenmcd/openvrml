@@ -733,6 +733,16 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 
 
 /**
+ * @fn To * node_cast(node * n) throw ()
+ *
+ * @brief Downcast a node to one of the abstract node types.
+ *
+ * @param n a node.
+ *
+ * @return a pointer to the downcast node, or 0 if the cast fails.
+ */
+
+/**
  * @class node
  *
  * @brief A node in the scene graph.
@@ -1306,18 +1316,6 @@ void node::shutdown(const double timestamp) throw ()
  */
 
 /**
- * @brief Cast to a const script_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const script_node * node::to_script() const throw ()
-{
-    return 0;
-}
-
-/**
  * @brief Cast to a script_node.
  *
  * Default implementation returns 0.
@@ -1325,18 +1323,6 @@ const script_node * node::to_script() const throw ()
  * @return 0
  */
 script_node * node::to_script() throw ()
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a const appearance_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const appearance_node * node::to_appearance() const throw ()
 {
     return 0;
 }
@@ -1354,18 +1340,6 @@ appearance_node * node::to_appearance() throw ()
 }
 
 /**
- * @brief Cast to a const child_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const child_node * node::to_child() const throw ()
-{
-    return 0;
-}
-
-/**
  * @brief Cast to a child_node.
  *
  * Default implementation returns 0.
@@ -1373,18 +1347,6 @@ const child_node * node::to_child() const throw ()
  * @return 0
  */
 child_node * node::to_child() throw ()
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a const color_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const color_node * node::to_color() const throw ()
 {
     return 0;
 }
@@ -1402,18 +1364,6 @@ color_node * node::to_color() throw ()
 }
 
 /**
- * @brief Cast to a const CoordinateNode.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const coordinate_node * node::to_coordinate() const throw ()
-{
-    return 0;
-}
-
-/**
  * @brief Cast to a coordinate_node.
  *
  * Default implementation returns 0.
@@ -1421,18 +1371,6 @@ const coordinate_node * node::to_coordinate() const throw ()
  * @return 0
  */
 coordinate_node * node::to_coordinate() throw ()
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a const FontStyleNode.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const font_style_node * node::to_font_style() const throw ()
 {
     return 0;
 }
@@ -1450,18 +1388,6 @@ font_style_node * node::to_font_style() throw ()
 }
 
 /**
- * @brief Cast to a const geometry_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const geometry_node * node::to_geometry() const throw ()
-{
-    return 0;
-}
-
-/**
  * @brief Cast to a geometry_node.
  *
  * Default implementation returns 0.
@@ -1469,18 +1395,6 @@ const geometry_node * node::to_geometry() const throw ()
  * @return 0
  */
 geometry_node * node::to_geometry() throw ()
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a const grouping_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const grouping_node * node::to_grouping() const throw ()
 {
     return 0;
 }
@@ -1498,18 +1412,6 @@ grouping_node * node::to_grouping() throw ()
 }
 
 /**
- * @brief Cast to a const material_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const material_node * node::to_material() const throw ()
-{
-    return 0;
-}
-
-/**
  * @brief Cast to a material_node.
  *
  * Default implementation returns 0.
@@ -1517,18 +1419,6 @@ const material_node * node::to_material() const throw ()
  * @return 0
  */
 material_node * node::to_material() throw ()
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a const normal_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const normal_node * node::to_normal() const throw ()
 {
     return 0;
 }
@@ -1546,18 +1436,6 @@ normal_node * node::to_normal() throw ()
 }
 
 /**
- * @brief Cast to a const sound_source_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const sound_source_node * node::to_sound_source() const throw ()
-{
-    return 0;
-}
-
-/**
  * @brief Cast to a sound_source_node.
  *
  * Default implementation returns 0.
@@ -1565,18 +1443,6 @@ const sound_source_node * node::to_sound_source() const throw ()
  * @return 0
  */
 sound_source_node * node::to_sound_source() throw ()
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a const texture_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const texture_node * node::to_texture() const throw ()
 {
     return 0;
 }
@@ -1594,18 +1460,6 @@ texture_node * node::to_texture() throw ()
 }
 
 /**
- * @brief Cast to a const texture_coordinate_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const texture_coordinate_node * node::to_texture_coordinate() const throw ()
-{
-    return 0;
-}
-
-/**
  * @brief Cast to a texture_coordinate_node.
  *
  * Default implementation returns 0.
@@ -1613,18 +1467,6 @@ const texture_coordinate_node * node::to_texture_coordinate() const throw ()
  * @return 0
  */
 texture_coordinate_node * node::to_texture_coordinate() throw ()
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a const texture_transform_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const texture_transform_node * node::to_texture_transform() const throw ()
 {
     return 0;
 }
@@ -1642,18 +1484,6 @@ texture_transform_node * node::to_texture_transform() throw ()
 }
 
 /**
- * @brief Cast to a const transform_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const transform_node * node::to_transform() const throw ()
-{
-    return 0;
-}
-
-/**
  * @brief Cast to a transform_node.
  *
  * Default implementation returns 0.
@@ -1661,18 +1491,6 @@ const transform_node * node::to_transform() const throw ()
  * @return 0
  */
 transform_node * node::to_transform() throw ()
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a const viewpoint_node.
- *
- * Default implementation returns 0.
- *
- * @return 0
- */
-const viewpoint_node * node::to_viewpoint() const throw ()
 {
     return 0;
 }
@@ -2159,16 +1977,6 @@ appearance_node::~appearance_node() throw ()
  *
  * @return a pointer to this appearance_node.
  */
-const appearance_node * appearance_node::to_appearance() const throw ()
-{
-    return this;
-}
-
-/**
- * @brief Cast to an appearance_node.
- *
- * @return a pointer to this appearance_node.
- */
 appearance_node * appearance_node::to_appearance() throw ()
 {
     return this;
@@ -2249,7 +2057,7 @@ void child_node::relocate() throw (std::bad_alloc)
     private:
         virtual void on_entering(node & n) throw (std::bad_alloc)
         {
-            child_node * const child = n.to_child();
+            child_node * const child = node_cast<child_node *>(&n);
             if (child) { (child->*this->do_relocate)(); }
         }
     };
@@ -2257,16 +2065,6 @@ void child_node::relocate() throw (std::bad_alloc)
     Do_relocate do_reloc = &child_node::do_relocate;
 
     RelocateTraverser(do_reloc).traverse(*this);
-}
-
-/**
- * @brief Cast to a child_node.
- *
- * @return a pointer to this child_node.
- */
-const child_node * child_node::to_child() const throw ()
-{
-    return this;
 }
 
 /**
@@ -2321,16 +2119,6 @@ color_node::~color_node() throw ()
  *
  * @return a pointer to this color_node.
  */
-const color_node * color_node::to_color() const throw ()
-{
-    return this;
-}
-
-/**
- * @brief Cast to a color_node.
- *
- * @return a pointer to this color_node.
- */
 color_node * color_node::to_color() throw ()
 {
     return this;
@@ -2374,16 +2162,6 @@ coordinate_node::~coordinate_node() throw ()
  *
  * @return a pointer to this coordinate_node.
  */
-const coordinate_node * coordinate_node::to_coordinate() const throw ()
-{
-    return this;
-}
-
-/**
- * @brief Cast to a coordinate_node.
- *
- * @return a pointer to this coordinate_node.
- */
 coordinate_node * coordinate_node::to_coordinate() throw ()
 {
     return this;
@@ -2421,16 +2199,6 @@ font_style_node::font_style_node(const node_type & type,
  */
 font_style_node::~font_style_node() throw ()
 {}
-
-/**
- * @brief Cast to a font_style_node.
- *
- * @return a pointer to this font_style_node.
- */
-const font_style_node * font_style_node::to_font_style() const throw ()
-{
-    return this;
-}
 
 /**
  * @brief Cast to a font_style_node.
@@ -2550,16 +2318,6 @@ geometry_node::~geometry_node() throw ()
  *
  * @return a pointer to this geometry_node.
  */
-const geometry_node * geometry_node::to_geometry() const throw ()
-{
-    return this;
-}
-
-/**
- * @brief Cast to a geometry_node.
- *
- * @return a pointer to this geometry_node.
- */
 geometry_node * geometry_node::to_geometry() throw ()
 {
     return this;
@@ -2619,16 +2377,6 @@ grouping_node::~grouping_node() throw ()
  *
  * @return a pointer to this grouping_node.
  */
-const grouping_node * grouping_node::to_grouping() const throw ()
-{
-    return this;
-}
-
-/**
- * @brief Cast to a grouping_node.
- *
- * @return a pointer to this grouping_node.
- */
 grouping_node * grouping_node::to_grouping() throw ()
 {
     return this;
@@ -2677,16 +2425,6 @@ material_node::material_node(const node_type & type, const scope_ptr & scope)
  */
 material_node::~material_node() throw ()
 {}
-
-/**
- * @brief Cast to a material_node.
- *
- * @return a pointer to this material_node.
- */
-const material_node * material_node::to_material() const throw ()
-{
-    return this;
-}
 
 /**
  * @brief Cast to a material_node.
@@ -2775,16 +2513,6 @@ normal_node::~normal_node() throw ()
  *
  * @return a pointer to this normal_node.
  */
-const normal_node * normal_node::to_normal() const throw ()
-{
-    return this;
-}
-
-/**
- * @brief Cast to a normal_node.
- *
- * @return a pointer to this normal_node.
- */
 normal_node * normal_node::to_normal() throw ()
 {
     return this;
@@ -2828,16 +2556,6 @@ sound_source_node::~sound_source_node() throw ()
  *
  * @return a pointer to this sound_source_node.
  */
-const sound_source_node * sound_source_node::to_sound_source() const throw ()
-{
-    return this;
-}
-
-/**
- * @brief Cast to a sound_source_node.
- *
- * @return a pointer to this sound_source_node.
- */
 sound_source_node * sound_source_node::to_sound_source() throw ()
 {
     return this;
@@ -2869,16 +2587,6 @@ texture_node::texture_node(const node_type & type, const scope_ptr & scope)
  */
 texture_node::~texture_node() throw ()
 {}
-
-/**
- * @brief Cast to a texture_node.
- *
- * @return a pointer to this texture_node.
- */
-const texture_node * texture_node::to_texture() const throw ()
-{
-    return this;
-}
 
 /**
  * @brief Cast to a texture_node.
@@ -2983,17 +2691,6 @@ texture_coordinate_node::~texture_coordinate_node() throw ()
  *
  * @return a pointer to this texture_coordinate_node.
  */
-const texture_coordinate_node *
-texture_coordinate_node::to_texture_coordinate() const throw ()
-{
-    return this;
-}
-
-/**
- * @brief Cast to a texture_coordinate_node.
- *
- * @return a pointer to this texture_coordinate_node.
- */
 texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
     throw ()
 {
@@ -3038,17 +2735,6 @@ texture_transform_node::~texture_transform_node() throw ()
  *
  * @return a pointer to this texture_transform_node.
  */
-const texture_transform_node *
-texture_transform_node::to_texture_transform() const throw ()
-{
-    return this;
-}
-
-/**
- * @brief Cast to a texture_transform_node.
- *
- * @return a pointer to this texture_transform_node.
- */
 texture_transform_node * texture_transform_node::to_texture_transform()
     throw ()
 {
@@ -3081,16 +2767,6 @@ transform_node::transform_node(const node_type & type,
  */
 transform_node::~transform_node() throw ()
 {}
-
-/**
- * @brief Cast to a transform_node.
- *
- * @return a pointer to this transform_node.
- */
-const transform_node * transform_node::to_transform() const throw ()
-{
-    return this;
-}
 
 /**
  * @brief Cast to a transform_node.
@@ -3135,16 +2811,6 @@ viewpoint_node::viewpoint_node(const node_type & type,
  */
 viewpoint_node::~viewpoint_node() throw ()
 {}
-
-/**
- * @brief Cast to a viewpoint_node.
- *
- * @return a pointer to this viewpoint_node.
- */
-const viewpoint_node * viewpoint_node::to_viewpoint() const throw ()
-{
-    return this;
-}
 
 /**
  * @brief Cast to a viewpoint_node.

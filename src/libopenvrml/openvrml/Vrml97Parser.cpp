@@ -781,7 +781,7 @@ openvrml::node_ptr  Vrml97Parser::node(
 		n.reset(new script_node(browser.script_node_class_, scope));
 		if (!nodeId.empty()) { n->id(nodeId); }
 		
-		script_node * const scriptNode = n->to_script();
+		script_node * const scriptNode = node_cast<script_node *>(n.get());
 		assert(scriptNode);
 		
 #line 788 "Vrml97Parser.cpp"
@@ -1590,7 +1590,7 @@ openvrml::node_ptr  Vrml97Parser::protoNode(
 		n.reset(new script_node(proto.browser.script_node_class_, scope));
 		if (!nodeId.empty()) { n->id(nodeId); }
 		
-		script_node * const scriptNode = n->to_script();
+		script_node * const scriptNode = node_cast<script_node *>(n.get());
 		assert(scriptNode);
 		
 #line 1597 "Vrml97Parser.cpp"

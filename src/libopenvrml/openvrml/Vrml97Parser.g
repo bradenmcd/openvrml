@@ -976,7 +976,7 @@ options { defaultErrorHandler = false; }
             n.reset(new script_node(browser.script_node_class_, scope));
             if (!nodeId.empty()) { n->id(nodeId); }
 
-            script_node * const scriptNode = n->to_script();
+            script_node * const scriptNode = node_cast<script_node *>(n.get());
             assert(scriptNode);
         } LBRACE (
             nodeBodyElement[scope, *n]
@@ -1109,7 +1109,7 @@ options { defaultErrorHandler=false; }
             n.reset(new script_node(proto.browser.script_node_class_, scope));
             if (!nodeId.empty()) { n->id(nodeId); }
 
-            script_node * const scriptNode = n->to_script();
+            script_node * const scriptNode = node_cast<script_node *>(n.get());
             assert(scriptNode);
         }
         LBRACE (

@@ -474,16 +474,6 @@ void script_node::add_field(const std::string & id,
  *
  * @return a pointer to this script_node.
  */
-const script_node * script_node::to_script() const throw ()
-{
-    return this;
-}
-
-/**
- * @brief Return a pointer to this script_node.
- *
- * @return a pointer to this script_node.
- */
 script_node * script_node::to_script() throw ()
 {
     return this;

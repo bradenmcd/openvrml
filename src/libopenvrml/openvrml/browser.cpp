@@ -91,39 +91,6 @@ namespace openvrml {
 
         void update(double time);
 
-        virtual const script_node * to_script() const throw ();
-        virtual script_node * to_script() throw ();
-        virtual const appearance_node * to_appearance() const throw ();
-        virtual appearance_node * to_appearance() throw ();
-        virtual const child_node * to_child() const throw ();
-        virtual child_node * to_child() throw ();
-        virtual const color_node * to_color() const throw ();
-        virtual color_node * to_color() throw ();
-        virtual const coordinate_node * to_coordinate() const throw ();
-        virtual coordinate_node * to_coordinate() throw ();
-        virtual const font_style_node * to_font_style() const throw ();
-        virtual font_style_node * to_font_style() throw () ;
-        virtual const geometry_node * to_geometry() const throw ();
-        virtual geometry_node * to_geometry() throw ();
-        virtual const material_node * to_material() const throw ();
-        virtual material_node * to_material() throw ();
-        virtual const normal_node * to_normal() const throw ();
-        virtual normal_node * to_normal() throw ();
-        virtual const sound_source_node * to_sound_source() const throw ();
-        virtual sound_source_node * to_sound_source() throw ();
-        virtual const texture_node * to_texture() const throw ();
-        virtual texture_node * to_texture() throw ();
-        virtual const texture_coordinate_node * to_texture_coordinate() const
-                throw ();
-        virtual texture_coordinate_node * to_texture_coordinate() throw ();
-        virtual const texture_transform_node * to_texture_transform() const
-                throw ();
-        virtual texture_transform_node * to_texture_transform() throw ();
-        virtual const transform_node * to_transform() const throw ();
-        virtual transform_node * to_transform() throw ();
-        virtual const viewpoint_node * to_viewpoint() const throw ();
-        virtual viewpoint_node * to_viewpoint() throw ();
-
         virtual vrml97_node::anchor_node * to_anchor() const;
         virtual vrml97_node::audio_clip_node * to_audio_clip() const;
         virtual vrml97_node::cylinder_sensor_node * to_cylinder_sensor() const;
@@ -159,6 +126,22 @@ namespace openvrml {
         do_eventout(const std::string & id) const
             throw (unsupported_interface);
         virtual void do_shutdown(double timestamp) throw ();
+
+        virtual script_node * to_script() throw ();
+        virtual appearance_node * to_appearance() throw ();
+        virtual child_node * to_child() throw ();
+        virtual color_node * to_color() throw ();
+        virtual coordinate_node * to_coordinate() throw ();
+        virtual font_style_node * to_font_style() throw () ;
+        virtual geometry_node * to_geometry() throw ();
+        virtual material_node * to_material() throw ();
+        virtual normal_node * to_normal() throw ();
+        virtual sound_source_node * to_sound_source() throw ();
+        virtual texture_node * to_texture() throw ();
+        virtual texture_coordinate_node * to_texture_coordinate() throw ();
+        virtual texture_transform_node * to_texture_transform() throw ();
+        virtual transform_node * to_transform() throw ();
+        virtual viewpoint_node * to_viewpoint() throw ();
     };
 
 
@@ -659,7 +642,7 @@ browser::browser(std::ostream & out, std::ostream & err)
     script_node_class_(*this),
     scene_(0),
     default_viewpoint(new DefaultViewpoint(*null_node_type_)),
-    active_viewpoint_(default_viewpoint->to_viewpoint()),
+    active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint.get())),
     modified_(false),
     new_view(false),
     delta_time(DEFAULT_DELTA),
@@ -806,8 +789,9 @@ void browser::active_viewpoint(viewpoint_node & viewpoint) throw ()
 void browser::reset_default_viewpoint() throw ()
 {
     assert(this->default_viewpoint);
-    assert(this->default_viewpoint->to_viewpoint());
-    this->active_viewpoint_ = this->default_viewpoint->to_viewpoint();
+    this->active_viewpoint_ =
+        node_cast<viewpoint_node *>(this->default_viewpoint.get());
+    assert(this->active_viewpoint_);
 }
 
 /**
@@ -1058,7 +1042,8 @@ void browser::load_url(const std::vector<std::string> & url,
                 ->process_event("set_bind", sfbool(true), now);
     }
 
-    if (this->active_viewpoint_ != this->default_viewpoint->to_viewpoint()) {
+    if (this->active_viewpoint_
+        != node_cast<viewpoint_node *>(this->default_viewpoint.get())) {
         this->active_viewpoint_->process_event("set_bind", sfbool(true), now);
     }
 
@@ -1337,7 +1322,7 @@ void browser::sensitive_event(node * const n,
             //
             // The parent grouping node is registered for Touch/Drag Sensors.
             //
-            grouping_node * const g = n->to_grouping();
+            grouping_node * const g = node_cast<grouping_node *>(n);
             if (g) {
                 g->activate(timestamp, is_over, is_active, point);
                 this->modified(true);
@@ -2137,7 +2122,7 @@ void scene::initialize(const double timestamp) throw (std::bad_alloc)
          ++node) {
         assert(*node);
         (*node)->initialize(*this, timestamp);
-        child_node * const child = (*node)->to_child();
+        child_node * const child = node_cast<child_node *>(node->get());
         assert(child);
         child->relocate();
     }
@@ -2756,37 +2741,11 @@ ProtoNode::~ProtoNode() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a script_node, or 0 otherwise.
  */
-const script_node * ProtoNode::to_script() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_script();
-}
-
-/**
- * @brief Cast to a script_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a script_node, or 0 otherwise.
- */
 script_node * ProtoNode::to_script() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_script();
-}
-
-/**
- * @brief Cast to an appearance_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      an appearance_node, or 0 otherwise.
- */
-const appearance_node * ProtoNode::to_appearance() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_appearance();
+    return node_cast<script_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -2799,20 +2758,7 @@ appearance_node * ProtoNode::to_appearance() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_appearance();
-}
-
-/**
- * @brief Cast to a child_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a child_node, or 0 otherwise.
- */
-const child_node * ProtoNode::to_child() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_child();
+    return node_cast<appearance_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -2825,20 +2771,7 @@ child_node * ProtoNode::to_child() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_child();
-}
-
-/**
- * @brief Cast to a color_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a color_node, or 0 otherwise.
- */
-const color_node * ProtoNode::to_color() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_color();
+    return node_cast<child_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -2851,20 +2784,7 @@ color_node * ProtoNode::to_color() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_color();
-}
-
-/**
- * @brief Cast to a coordinate_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a coordinate_node, or 0 otherwise.
- */
-const coordinate_node * ProtoNode::to_coordinate() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_coordinate();
+    return node_cast<color_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -2877,20 +2797,7 @@ coordinate_node * ProtoNode::to_coordinate() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_coordinate();
-}
-
-/**
- * @brief Cast to a font_style_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a font_style_node, or 0 otherwise.
- */
-const font_style_node * ProtoNode::to_font_style() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_font_style();
+    return node_cast<coordinate_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -2903,20 +2810,7 @@ font_style_node * ProtoNode::to_font_style() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_font_style();
-}
-
-/**
- * @brief Cast to a geometry_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a geometry_node, or 0 otherwise.
- */
-const geometry_node * ProtoNode::to_geometry() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_geometry();
+    return node_cast<font_style_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -2929,20 +2823,7 @@ geometry_node * ProtoNode::to_geometry() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_geometry();
-}
-
-/**
- * @brief Cast to a material_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a material_node, or 0 otherwise.
- */
-const material_node * ProtoNode::to_material() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_material();
+    return node_cast<geometry_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -2955,20 +2836,7 @@ material_node * ProtoNode::to_material() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_material();
-}
-
-/**
- * @brief Cast to a normal_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a normal_node, or 0 otherwise.
- */
-const normal_node * ProtoNode::to_normal() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_normal();
+    return node_cast<material_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -2981,20 +2849,7 @@ normal_node * ProtoNode::to_normal() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_normal();
-}
-
-/**
- * @brief Cast to a sound_source_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a sound_source_node, or 0 otherwise.
- */
-const sound_source_node * ProtoNode::to_sound_source() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_sound_source();
+    return node_cast<normal_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -3007,20 +2862,7 @@ sound_source_node * ProtoNode::to_sound_source() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_sound_source();
-}
-
-/**
- * @brief Cast to a texture_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a texture_node, or 0 otherwise.
- */
-const texture_node * ProtoNode::to_texture() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_texture();
+    return node_cast<sound_source_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -3033,20 +2875,7 @@ texture_node * ProtoNode::to_texture() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_texture();
-}
-
-/**
- * @brief Cast to a texture_coordinate_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a texture_coordinate_node, or 0 otherwise.
- */
-const texture_coordinate_node * ProtoNode::to_texture_coordinate() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_texture_coordinate();
+    return node_cast<texture_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -3059,20 +2888,7 @@ texture_coordinate_node * ProtoNode::to_texture_coordinate() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_texture_coordinate();
-}
-
-/**
- * @brief Cast to a texture_transform_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a texture_transform_node, or 0 otherwise.
- */
-const texture_transform_node * ProtoNode::to_texture_transform() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_texture_transform();
+    return node_cast<texture_coordinate_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -3085,20 +2901,7 @@ texture_transform_node * ProtoNode::to_texture_transform() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_texture_transform();
-}
-
-/**
- * @brief Cast to a transform_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a transform_node, or 0 otherwise.
- */
-const transform_node * ProtoNode::to_transform() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_transform();
+    return node_cast<texture_transform_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -3111,20 +2914,7 @@ transform_node * ProtoNode::to_transform() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_transform();
-}
-
-/**
- * @brief Cast to a viewpoint_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a viewpoint_node, or 0 otherwise.
- */
-const viewpoint_node * ProtoNode::to_viewpoint() const throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return this->implNodes[0]->to_viewpoint();
+    return node_cast<transform_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -3137,7 +2927,7 @@ viewpoint_node * ProtoNode::to_viewpoint() throw ()
 {
     assert(!this->implNodes.empty());
     assert(this->implNodes[0]);
-    return this->implNodes[0]->to_viewpoint();
+    return node_cast<viewpoint_node *>(this->implNodes[0].get());
 }
 
 /**
@@ -3172,8 +2962,8 @@ void ProtoNode::addRootNode(const node_ptr & node) throw (std::bad_alloc)
  *                                      @p protoInterfaceId.
  * @exception NodeInterfaceTypeMismatch if the two interface types are
  *                                      incompatible.
- * @exception field_value_type_mismatch    if the field types of the interfaces are
- *                                      not identical.
+ * @exception field_value_type_mismatch if the field types of the interfaces
+ *                                      are not identical.
  * @exception std::bad_alloc            if memory allocation fails.
  *
  * @see http://www.web3d.org/technicalinfo/specifications/vrml97/part1/concepts.html#Table4.4
@@ -3231,7 +3021,8 @@ void ProtoNode::addIS(node & implNode,
     //
     // Add the IS.
     //
-    const ImplNodeInterface implNodeInterfaceRef(implNode, implNodeInterfaceId);
+    const ImplNodeInterface implNodeInterfaceRef(implNode,
+                                                 implNodeInterfaceId);
     const ISMap::value_type value(protoInterfaceId, implNodeInterfaceRef);
     this->isMap.insert(value);
 

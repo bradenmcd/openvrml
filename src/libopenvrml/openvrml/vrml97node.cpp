@@ -726,9 +726,7 @@ bool abstract_indexed_set_node::modified() const
  */
 const openvrml::color_node * abstract_indexed_set_node::color() const throw ()
 {
-    return this->color_.value
-            ? this->color_.value->to_color()
-            : 0;
+    return node_cast<openvrml::color_node *>(this->color_.value.get());
 }
 
 /**
@@ -1543,12 +1541,9 @@ void appearance_node::render(openvrml::viewer & viewer,
                              const rendering_context context)
 {
     openvrml::material_node * const material =
-        this->material_.value
-        ? this->material_.value->to_material()
-        : 0;
-    texture_node * const texture = this->texture_.value
-                                 ? this->texture_.value->to_texture()
-                                 : 0;
+        node_cast<openvrml::material_node *>(this->material_.value.get());
+    texture_node * const texture =
+        node_cast<texture_node *>(this->texture_.value.get());
 
     if (material) {
         float trans = material->transparency();
@@ -5546,27 +5541,22 @@ elevation_grid_node::insert_geometry(openvrml::viewer & viewer,
         using std::vector;
 
         openvrml::color_node * const colorNode =
-            this->color.value
-            ? this->color.value->to_color()
-            : 0;
+            node_cast<openvrml::color_node *>(this->color.value.get());
         const vector<openvrml::color> & color =
             colorNode
             ? colorNode->color()
             : vector<openvrml::color>();
 
         openvrml::normal_node * const normalNode =
-            this->normal.value
-            ? this->normal.value->to_normal()
-            : 0;
+            node_cast<openvrml::normal_node *>(this->normal.value.get());
         const vector<vec3f> & normal =
             normalNode
             ? normalNode->vector()
             : vector<vec3f>();
 
         openvrml::texture_coordinate_node * const texCoordNode =
-            this->texCoord.value
-            ? this->texCoord.value->to_texture_coordinate()
-            : 0;
+            node_cast<openvrml::texture_coordinate_node *>(
+                this->texCoord.value.get());
         const vector<vec2f> & texCoord =
             texCoordNode
             ? texCoordNode->point()
@@ -6932,9 +6922,7 @@ void group_node::process_addChildren(const field_value & value,
 
     for (size_t i = 0; i < newChildren.value.size(); ++i) {
         const node_ptr & n = newChildren.value[i];
-        child_node * const child = n
-                                 ? n->to_child()
-                                 : 0;
+        child_node * const child = node_cast<child_node *>(n.get());
         if (child) {
             this->children_.value.push_back(n);
             child->relocate();
@@ -7011,9 +6999,7 @@ void group_node::process_set_children(const field_value & value,
          i < new_children.value.size();
          ++i) {
         const node_ptr & n = new_children.value[i];
-        child_node * const child = n
-                                 ? n->to_child()
-                                 : 0;
+        child_node * const child = node_cast<child_node *>(n.get());
         if (!n || child) {
             children.value[i] = n;
             if (child) { child->relocate(); }
@@ -7788,31 +7774,27 @@ viewer::object_t indexed_face_set_node::insert_geometry(openvrml::viewer & viewe
         viewer.draw_bounding_sphere(bs, static_cast<bounding_volume::intersection>(4));
     }
 
-    openvrml::coordinate_node * const coordinateNode = this->coord.value
-        ? this->coord.value->to_coordinate()
-        : 0;
+    openvrml::coordinate_node * const coordinateNode =
+        node_cast<openvrml::coordinate_node *>(this->coord.value.get());
     const vector<vec3f> & coord = coordinateNode
                                 ? coordinateNode->point()
                                 : vector<vec3f>();
 
-    openvrml::color_node * const colorNode = this->color_.value
-                                           ? this->color_.value->to_color()
-                                           : 0;
+    openvrml::color_node * const colorNode =
+        node_cast<openvrml::color_node *>(this->color_.value.get());
     const vector<openvrml::color> & color = colorNode
                                           ? colorNode->color()
                                           : vector<openvrml::color>();
 
-    openvrml::normal_node * const normalNode = this->normal.value
-                                   ? this->normal.value->to_normal()
-                                   : 0;
+    openvrml::normal_node * const normalNode =
+        node_cast<openvrml::normal_node *>(this->normal.value.get());
     const vector<vec3f> & normal = normalNode
                                  ? normalNode->vector()
                                  : vector<vec3f>();
 
     openvrml::texture_coordinate_node * const texCoordNode =
-        this->texCoord.value
-        ? this->texCoord.value->to_texture_coordinate()
-        : 0;
+        node_cast<openvrml::texture_coordinate_node *>(
+            this->texCoord.value.get());
     const vector<vec2f> & texCoord = texCoordNode
                                    ? texCoordNode->point()
                                    : vector<vec2f>();
@@ -7860,9 +7842,8 @@ void indexed_face_set_node::recalcBSphere()
     // then we don't have to update the bvolume when the index
     // changes). motto: always do it the simple way first...
     //
-    openvrml::coordinate_node * const coordinateNode = this->coord.value
-        ? this->coord.value->to_coordinate()
-        : 0;
+    openvrml::coordinate_node * const coordinateNode =
+        node_cast<openvrml::coordinate_node *>(this->coord.value.get());
     if (coordinateNode) {
         const std::vector<vec3f> & coord = coordinateNode->point();
         this->bsphere = bounding_sphere();
@@ -8116,16 +8097,14 @@ indexed_line_set_node::insert_geometry(openvrml::viewer & viewer,
 {
     using std::vector;
 
-    openvrml::coordinate_node * const coordinateNode = this->coord.value
-        ? this->coord.value->to_coordinate()
-        : 0;
+    openvrml::coordinate_node * const coordinateNode =
+        node_cast<openvrml::coordinate_node *>(this->coord.value.get());
     const vector<vec3f> & coord = coordinateNode
                                 ? coordinateNode->point()
                                 : vector<vec3f>();
 
-    openvrml::color_node * const colorNode = this->color_.value
-                                           ? this->color_.value->to_color()
-                                           : 0;
+    openvrml::color_node * const colorNode =
+        node_cast<openvrml::color_node *>(this->color_.value.get());
     const vector<openvrml::color> & color = colorNode
                                           ? colorNode->color()
                                           : vector<openvrml::color>();
@@ -11751,16 +11730,14 @@ viewer::object_t point_set_node::insert_geometry(openvrml::viewer & viewer,
         viewer.draw_bounding_sphere(bs, bounding_volume::intersection(4));
     }
 
-    openvrml::coordinate_node * const coordinateNode = this->coord.value
-        ? this->coord.value->to_coordinate()
-        : 0;
+    openvrml::coordinate_node * const coordinateNode =
+        node_cast<openvrml::coordinate_node *>(this->coord.value.get());
     const vector<vec3f> & coord = coordinateNode
                                 ? coordinateNode->point()
                                 : vector<vec3f>();
 
-    openvrml::color_node * const colorNode = this->color.value
-        ? this->color.value->to_color()
-        : 0;
+    openvrml::color_node * const colorNode =
+        node_cast<openvrml::color_node *>(this->color.value.get());
     const vector<openvrml::color> & color = colorNode
                                           ? colorNode->color()
                                           : vector<openvrml::color>();
@@ -11779,9 +11756,8 @@ viewer::object_t point_set_node::insert_geometry(openvrml::viewer & viewer,
 void point_set_node::recalcBSphere()
 {
     this->bsphere = bounding_sphere();
-    openvrml::coordinate_node * const coordinateNode = this->coord.value
-        ? this->coord.value->to_coordinate()
-        : 0;
+    openvrml::coordinate_node * const coordinateNode =
+        node_cast<openvrml::coordinate_node *>(this->coord.value.get());
     if (coordinateNode) {
         const std::vector<vec3f> & coord = coordinateNode->point();
         for(std::vector<vec3f>::const_iterator vec(coord.begin());
@@ -12757,16 +12733,15 @@ bool shape_node::modified() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void shape_node::render(openvrml::viewer & viewer, const rendering_context context)
+void shape_node::render(openvrml::viewer & viewer,
+                        const rendering_context context)
 {
     if (this->viewerObject && modified()) {
         viewer.remove_object(this->viewerObject);
         this->viewerObject = 0;
     }
 
-    geometry_node * g = this->geometry.value
-                      ? this->geometry.value->to_geometry()
-                      : 0;
+    geometry_node * g = node_cast<geometry_node *>(this->geometry.value.get());
 
     if (this->viewerObject) {
         viewer.insert_reference(this->viewerObject);
@@ -12778,15 +12753,15 @@ void shape_node::render(openvrml::viewer & viewer, const rendering_context conte
         if (!picking) {
             size_t nTexComponents = 0;
 
-            if (!picking && this->appearance.value
-                    && this->appearance.value->to_appearance()) {
-                openvrml::appearance_node * const a =
-                    this->appearance.value->to_appearance();
-                a->render(viewer, context);
+            openvrml::appearance_node * appearance =
+                node_cast<openvrml::appearance_node *>(
+                    this->appearance.value.get());
+            if (!picking && appearance) {
+                appearance->render(viewer, context);
 
-                if (a->texture() && a->texture()->to_texture()) {
-                    nTexComponents = a->texture()->to_texture()->components();
-                }
+                texture_node * const texture =
+                    node_cast<texture_node *>(appearance->texture().get());
+                if (texture) { nTexComponents = texture->components(); }
             } else {
                 viewer.set_color(color(1.0, 1.0, 1.0)); // default object color
                 viewer.enable_lighting(false);  // turn lighting off
@@ -15413,9 +15388,8 @@ void text_node::update_face() throw (std::bad_alloc)
 
     string style;
 
-    openvrml::font_style_node * const fontStyle = this->fontStyle.value
-        ? this->fontStyle.value->to_font_style()
-        : 0;
+    openvrml::font_style_node * const fontStyle =
+        node_cast<openvrml::font_style_node *>(this->fontStyle.value.get());
     if (fontStyle) {
         if (!fontStyle->family().empty()) {
             family = fontStyle->family();
@@ -15723,9 +15697,9 @@ void text_node::update_geometry() throw (std::bad_alloc)
     bool topToBottom = true;
     float size = 1.0;
     float spacing = 1.0;
-    openvrml::font_style_node * fontStyle;
-    if (this->fontStyle.value
-            && (fontStyle = this->fontStyle.value->to_font_style())) {
+    openvrml::font_style_node * fontStyle =
+        node_cast<openvrml::font_style_node *>(this->fontStyle.value.get());
+    if (fontStyle) {
         horizontal = fontStyle->horizontal();
         if (!fontStyle->justify().empty()) {
             justify[0] = fontStyle->justify()[0];
@@ -18054,16 +18028,16 @@ void viewpoint_node::do_initialize(const double timestamp) throw ()
 
 namespace {
 
-    struct accumulate_transform_ : std::unary_function<const node *, void> {
+    struct accumulate_transform_ : std::unary_function<node *, void> {
         explicit accumulate_transform_(mat4f & transform) throw ():
             transform(&transform)
         {}
 
-        void operator()(const openvrml::node * node) const throw ()
+        void operator()(openvrml::node * node) const throw ()
         {
             assert(node);
-            const openvrml::transform_node * const transformNode =
-                node->to_transform();
+            openvrml::transform_node * const transformNode =
+                node_cast<openvrml::transform_node *>(node);
             if (transformNode) {
                 *this->transform =
                     transformNode->transform() * *this->transform;
