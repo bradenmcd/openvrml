@@ -10,6 +10,8 @@ Changes new in version 0.8.3, July 2000
 - View frustrum culling from Christopher K. St. John <cstjohn@acm.org>
   and S. K. Bose <bose@pavan.barc.ernet.in> and some navigation fixes.
 
+- SphereSensor support implemented by Matt Giger <mgiger@lunarsoft.com>
+
 - MPEG reader for MovieTexture nodes.
 
 - Braden updated the javascript support to use mozilla JS 1.5.
