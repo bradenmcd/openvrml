@@ -110,7 +110,7 @@ public:
 class VrmlSFBool : public VrmlField {
     bool d_value;
 public:
-    VrmlSFBool(bool value = false);
+    explicit VrmlSFBool(bool value = false);
     virtual ~VrmlSFBool();
 
     bool get() const;
@@ -131,7 +131,7 @@ public:
     static void RGBtoHSV(const float rgb[3], float hsv[3]);
 
     VrmlSFColor();
-    VrmlSFColor(const float rgb[3]);
+    explicit VrmlSFColor(const float rgb[3]);
     VrmlSFColor(float r, float g, float b);
     virtual ~VrmlSFColor();
 
@@ -156,7 +156,7 @@ public:
 class VrmlSFFloat : public VrmlField {
     float d_value;
 public:
-    VrmlSFFloat(float value = 0.0);
+    explicit VrmlSFFloat(float value = 0.0);
     virtual ~VrmlSFFloat();
 
     float get() const;
@@ -199,7 +199,7 @@ public:
 class VrmlSFInt32 : public VrmlField {
     long d_value;
 public:
-    VrmlSFInt32(long = 0);
+    explicit VrmlSFInt32(long = 0);
     virtual ~VrmlSFInt32();
 
     long get() const;
@@ -216,7 +216,7 @@ public:
 class VrmlSFNode : public VrmlField {
     VrmlNodePtr node;
 public:
-    VrmlSFNode(const VrmlNodePtr & node = VrmlNodePtr(0));
+    explicit VrmlSFNode(const VrmlNodePtr & node = VrmlNodePtr(0));
     VrmlSFNode(const VrmlSFNode & sfnode);
     virtual ~VrmlSFNode();
 
@@ -237,7 +237,7 @@ class VrmlSFRotation : public VrmlField {
     float d_x[4];
 public:
     VrmlSFRotation();
-    VrmlSFRotation(const float rotation[4]);
+    explicit VrmlSFRotation(const float rotation[4]);
     VrmlSFRotation(float x, float y, float z, float angle);
     VrmlSFRotation(const VrmlSFVec3f & axis, float angle);
     VrmlSFRotation(const VrmlSFVec3f & fromVector,
@@ -279,7 +279,7 @@ private:
 class VrmlSFString : public VrmlField {
     char * d_s;
 public:
-    VrmlSFString(const char *s = 0);
+    explicit VrmlSFString(const char *s = 0);
     VrmlSFString(const VrmlSFString&);
     virtual ~VrmlSFString();
 
@@ -299,7 +299,7 @@ public:
 class VrmlSFTime : public VrmlField {
     double d_value;
 public:
-    VrmlSFTime(double value = 0.0);
+    explicit VrmlSFTime(double value = 0.0);
     virtual ~VrmlSFTime();
 
     double get() const;
@@ -317,7 +317,7 @@ class VrmlSFVec2f : public VrmlField {
     float d_x[2];
 public:
     VrmlSFVec2f();
-    VrmlSFVec2f(const float vec[2]);
+    explicit VrmlSFVec2f(const float vec[2]);
     VrmlSFVec2f(float x, float y);
     virtual ~VrmlSFVec2f();
 
@@ -350,7 +350,7 @@ class VrmlSFVec3f : public VrmlField {
     float d_x[3];
 public:
     VrmlSFVec3f();
-    VrmlSFVec3f(const float vec[3]);
+    explicit VrmlSFVec3f(const float vec[3]);
     VrmlSFVec3f(float x, float y, float z);
     virtual ~VrmlSFVec3f();
 
@@ -522,7 +522,7 @@ class VrmlMFString : public VrmlField {
     size_t d_allocated;
     size_t d_size;
 public:
-    VrmlMFString(size_t n = 0, char const * const * values = 0);
+    explicit VrmlMFString(size_t n = 0, char const * const * values = 0);
     VrmlMFString(const VrmlMFString&);
 
     virtual ~VrmlMFString();

@@ -5453,7 +5453,7 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
 
 
       int nFrames = d_image->nFrames();
-      d_duration = (nFrames >= 0) ? nFrames : -1;
+      d_duration = VrmlSFTime((nFrames >= 0) ? double(nFrames) : double(-1));
       eventOut( timeNow.get(), "duration_changed", d_duration );
       d_frame = (d_speed.get() >= 0) ? 0 : nFrames-1;
 
@@ -9268,7 +9268,7 @@ void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
 
 	      // Must respect stopTime/cycleInterval exactly
 	      if (d_startTime.get() + cycleInt < d_stopTime.get())
-		timeNow = d_startTime.get() + cycleInt;
+		timeNow = VrmlSFTime(d_startTime.get() + cycleInt);
 	      else
 		timeNow = d_stopTime;
 
