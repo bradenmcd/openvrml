@@ -26,19 +26,12 @@
 #include "vrml97node.h"
 
 class VrmlNode;
-
-// List of nodes
-//class VrmlNodeList; Why doesn't this work? 
-// I would rather not include <list> in here.
-typedef std::list<VrmlNodePtr> VrmlNodeList;
-
-
 class Doc2;
 class Viewer;
-
-// PROTO definitions
 class VrmlNamespace;
 class VrmlNodeType;
+
+typedef std::list<VrmlNodePtr> VrmlNodeList;
 
 class OPENVRML_SCOPE VrmlScene {
 
