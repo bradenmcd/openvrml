@@ -4915,8 +4915,12 @@ void NodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
   if (d_level.getLength() <= 0) return;
 
   float x, y, z;
-  viewer->getPosition( &x, &y, &z );
 
+// viewer position w.r.t local coordinate system
+//  viewer->getPosition( &x, &y, &z );
+  VrmlMatrix MV = rc.getMatrix();
+  MV = MV.affine_inverse();
+  x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
   float dx = x - d_center.getX();
   float dy = y - d_center.getY();
   float dz = z - d_center.getZ();

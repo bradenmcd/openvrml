@@ -1,3 +1,15 @@
+2002-01-28  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * In "NodeLOD", accumulated modelview matrix within 
+          rendercontext is used to find the viewer position in local
+          coordinate system.
+
+        * Fixed the "step" method in ViewerOpenGL to take care the "Z"
+          values.
+
+        * "getPosition" method is removed from ViewerOpenGL. This is
+          no longer needed.
+ 
 2002-01-25  Thomas Flynn <tflynn@users.sourceforge.net>
 
         * Update OpenVRML autoconf macros to use namespaces.

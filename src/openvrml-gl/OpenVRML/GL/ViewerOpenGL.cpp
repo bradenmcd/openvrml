@@ -309,28 +309,6 @@ void ViewerOpenGL::endGeometry()
   glMatrixMode(GL_MODELVIEW);
 }
 
-
-// Queries
-
-void ViewerOpenGL::getPosition( float *x, float *y, float *z )
-{
-  //cout << "ViewerOpenGL::getPosition()" << endl;
-  GLint viewport[4];
-  GLdouble modelview[16], projection[16];
-  glGetIntegerv (GL_VIEWPORT, viewport);
-  glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
-  glGetDoublev (GL_PROJECTION_MATRIX, projection);
-  
-  GLdouble dx, dy, dz;
-  gluUnProject( modelview[12], modelview[13], modelview[14],
-		modelview, projection, viewport,
-		&dx, &dy, &dz);
-  *x = dx;
-  *y = dy;
-  *z = dz;
-}
-
-
 // Construct Billboard transformation matrix M  
 //
 // get rid of this asap: change over to use the transformation matrix
@@ -2839,12 +2817,21 @@ void ViewerOpenGL::step( float x, float y, float z )
   glGetIntegerv (GL_VIEWPORT, viewport);
   glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
   glGetDoublev (GL_PROJECTION_MATRIX, projection);
-
+  NodeNavigationInfo * nav = this->scene.bindableNavigationInfoTop();
+  GLdouble x_c = d_winWidth/2;
+  GLdouble y_c = d_winHeight/2;
+  GLdouble z_c = 0.5;
+  float visibilityLimit=0.0;
+  if (nav) visibilityLimit = nav->visibilityLimit();
+  if(fpzero(visibilityLimit))visibilityLimit=30000.0;
   GLdouble ox, oy, oz;
-  gluUnProject( 0.0, 0.0, 0.0, modelview, projection, viewport,
+  gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
                 &ox, &oy, &oz);
   GLdouble dx, dy, dz;
-  gluUnProject( 100.*x, 100.*y, z, modelview, projection, viewport,
+  x_c = x_c + 100.*x;
+  y_c = y_c + 100.*y;
+  z_c = z_c + 100.*z/visibilityLimit;
+  gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
                 &dx, &dy, &dz);
   dx -= ox; dy -= oy; dz -= oz;
   VrmlMatrix rot_mat(d_rotationMatrix);
@@ -2857,7 +2844,6 @@ void ViewerOpenGL::step( float x, float y, float z )
   double dist = d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
   if (dist < 1.0e-25 )return;
   dist = sqrt(dist);
-  NodeNavigationInfo * nav = this->scene.bindableNavigationInfoTop();
   float speed = 1.0;
   if (nav) speed = nav->speed();
   dist = speed / dist;
@@ -2877,15 +2863,16 @@ void ViewerOpenGL::zoom( float z )
   glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
   glGetDoublev (GL_PROJECTION_MATRIX, projection);
   NodeNavigationInfo * nav = this->scene.bindableNavigationInfoTop();
-  float x_c = d_winWidth/2;
-  float y_c = d_winHeight/2;
+  GLdouble x_c = d_winWidth/2;
+  GLdouble y_c = d_winHeight/2;
+  GLdouble z_c = 0.5;
   float visibilityLimit=0.0;
   if (nav) visibilityLimit = nav->visibilityLimit();
-  float z_c = (visibilityLimit > 0.0) ? visibilityLimit/2 : 15000.0;
+  if (fpzero(visibilityLimit))visibilityLimit=30000.0;
   GLdouble ox, oy, oz;
   gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
                 &ox, &oy, &oz);
-  z_c = z_c-100.*z;
+  z_c = z_c-100.*z/visibilityLimit;
   GLdouble dx, dy, dz;
   gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
                 &dx, &dy, &dz);

@@ -60,8 +60,6 @@ namespace OpenVRML {
 
         VrmlScene & getScene();
 
-        // Query
-        virtual void getPosition( float *x, float *y, float *z ) = 0;
 
         enum RenderMode {
           RENDER_MODE_DRAW,

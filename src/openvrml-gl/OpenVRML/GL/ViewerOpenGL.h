@@ -43,10 +43,6 @@ namespace OpenVRML {
             ViewerOpenGL(VrmlScene & scene);
             virtual ~ViewerOpenGL();
 
-            // Queries
-            virtual void getPosition( float *x, float *y, float *z );
-
-
             // get rid of this asap.
             virtual void getBillboardTransformMatrix(float [4][4],
                                                      const float axisOfRotation[3]);
