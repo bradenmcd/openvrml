@@ -7,6 +7,10 @@
         * src/openvrml/OpenVRML/script.h: Made
           ScriptNode::ScriptNodeType a friend of ScriptNode.
 
+        * configure.ac: Removed obsolete AC_DEFINEs:
+          OPENVRML_MAJOR_VERSION, OPENVRML_MINOR_VERSION,
+          OPENVRML_MICRO_VERSION.
+
 2002-06-04  Braden McDaniel  <braden@endoframe.com>
 
         * Made zlib an optional dependency.

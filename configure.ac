@@ -1,19 +1,8 @@
-AC_PREREQ(2.52)
-AC_INIT(OpenVRML, 0.12.0, openvrml-develop@lists.sourceforge.net)
-AM_INIT_AUTOMAKE($PACKAGE_TARNAME, $PACKAGE_VERSION)
+AC_PREREQ([2.52])
+AC_INIT([OpenVRML], [0.12.0], [openvrml-develop@lists.sourceforge.net])
+AM_INIT_AUTOMAKE([$PACKAGE_TARNAME], [$PACKAGE_VERSION])
 
-AM_CONFIG_HEADER(config.h)
-
-OPENVRML_MAJOR_VERSION="0"
-OPENVRML_MINOR_VERSION="12"
-OPENVRML_MICRO_VERSION="0"
-
-AC_DEFINE_UNQUOTED([OPENVRML_MAJOR_VERSION], ${OPENVRML_MAJOR_VERSION},
-                   [Major version number.])
-AC_DEFINE_UNQUOTED([OPENVRML_MINOR_VERSION], ${OPENVRML_MINOR_VERSION},
-                   [Minor version number.])
-AC_DEFINE_UNQUOTED([OPENVRML_MICRO_VERSION], ${OPENVRML_MICRO_VERSION},
-                   [Micro version number.])
+AM_CONFIG_HEADER([config.h])
 
 #
 # Checks for programs.
