@@ -1,8 +1,8 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
-//  %W% %G%
 //  VrmlNodeElevationGrid.h
+//
 
 #ifndef  _VRMLNODEELEVATIONGRID_
 #define  _VRMLNODEELEVATIONGRID_
@@ -81,3 +81,4 @@ protected:
 };
 
 #endif _VRMLNODEELEVATIONGRID_
+
