@@ -9,14 +9,13 @@ endif
 # Add any debug flags
 #
 if DEBUG
-  DEBUG_CXXFLAGS = -g
 else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
 INCLUDES = -I$(top_srcdir)/libvrml97js/src -I../../../libvrml97js/src/vrml97js
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF)
-AM_CXXFLAGS = -Wall $(DEBUG_CXXFLAGS) @JPEG_CFLAGS@ @PNG_CFLAGS@
+AM_CXXFLAGS = -Wall @JPEG_CFLAGS@ @PNG_CFLAGS@
 AM_LFLAGS = -Ls
 AM_YFLAGS = -d
 LDFLAGS = -version-info @LIBVRML97_SO_VERSION@ @JPEG_LIBS@ @PNG_LIBS@

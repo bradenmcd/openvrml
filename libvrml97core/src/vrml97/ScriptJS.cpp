@@ -590,7 +590,7 @@ node_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 
 	  VrmlField *f = jsvalToVrmlField( cx, *vp, expect );
 	  // This should only happen if directOutput is set...
-#if SCRIPTJS_DEBUG
+#ifdef SCRIPTJS_DEBUG
 	  cout << "ScriptJS::node_setProperty sending " << eventIn
 	       << " (" << (*f) << ") to "
 	       << n->nodeType()->getName() << "::"
@@ -2340,7 +2340,7 @@ void ScriptJS::defineFields()
   for (i=d_node->fields().begin(); i!=end; ++i)
     {
       jsval val = vrmlFieldToJSVal( (*i)->type, (*i)->value, false );
-#if SCRIPTJS_DEBUG
+#ifdef SCRIPTJS_DEBUG
       if ( (*i)->value )
 	cout << "field " << (*i)->name << " value "
 	     << *((*i)->value) << endl;

@@ -396,7 +396,7 @@ void VrmlNode::eventOut(double timeStamp,
 			const char *eventOut,
 			const VrmlField &fieldValue)
 {
-#if VRML_NODE_DEBUG
+#ifdef VRML_NODE_DEBUG
   fprintf(stderr,"%s::%s 0x%x eventOut %s\n",
 	  nodeType()->getName(), name(),
 	  (unsigned) this, eventOut);
@@ -408,7 +408,7 @@ void VrmlNode::eventOut(double timeStamp,
     {
       if (strcmp(eventOut, r->fromEventOut()) == 0)
 	{
-#if VRML_NODE_DEBUG
+#ifdef VRML_NODE_DEBUG
 	  cerr << "  => "
 	       << r->toNode()->nodeType()->getName()
 	       << "::"

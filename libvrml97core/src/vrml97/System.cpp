@@ -70,7 +70,7 @@ void System::inform(const char *fmt, ...)
     }
 }
 
-#if SYSTEM_DEBUG
+#ifdef SYSTEM_DEBUG
 void System::debug(const char *fmt, ...)
 {
   va_list ap;

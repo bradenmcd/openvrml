@@ -2,14 +2,13 @@
 # Add any debug flags
 #
 if DEBUG
-  DEBUG_CXXFLAGS = -g
 else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
 INCLUDES = -I$(top_srcdir)/libvrml97core/src
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
-AM_CXXFLAGS = -Wall $(DEBUG_CXXFLAGS) @GLUT_CFLAGS@
+AM_CXXFLAGS = -Wall @GLUT_CFLAGS@
 LDFLAGS = -version-info @LIBVRML97GL_SO_VERSION@ @GLUT_LIBS@
 
 lib_LTLIBRARIES = libvrml97gl.la
