@@ -280,7 +280,7 @@ Tools->Options->Directories in MSVC++6.
 Lookat in debug mode.  Release mode does not experience this.
 
 
-3  CodeWarrior 5.0 Professional for Macintosh
+3  CodeWarrior 5.x Professional for Macintosh
 =============================================
 
 3.1  Source directory structure
@@ -297,43 +297,45 @@ SDK, is in the folder that contains the OpenVRML CVS root folder, i.e.:
        - zlib
        - OpenVRML             <- CVS root
          - libvrml97
-           - libvrml97core
-           - libvrml97gl
-           - lookat
+           - ide-projects
+           - src
+           - lib
            - ...
 
 3.2  Build order
 ================
 
-   Observe the following order when building Lookat:
+  The project files are located in `ide-projects/Macintosh/CodeWarrior5'.
+  
+  Observe the following order when building OpenVRML.Lib and Lookat:
 
-  1. Compile the `LibVRML97gl.mcp' project in `libvrml97gl/macos'.
+  1. Compile the `openVRMLgl.mcp' project.
 
-  2. Compile the `ImageReader.mcp' project in `libvrml97core/macos'.
+  2. Compile the `ImageReader.mcp' project.
 
-  3. Compile the `LibANTLR.mcp' project in `libvrml97core/macos'.
+  3. Compile the `LibANTLR.mcp' project.
 
-  4. Compile the `LibVRML97core.mcp' project in `libvrml97core/macos'.
+  4. Compile the `OpenVRMLcore.mcp' project.
 
-  5. Compile the `LibVRML97.mcp' project in `libvrml97core/macos'.
+  5. Compile the `Javascript.mcp' project.
 
-  6. Decode `LibVRML97.rsrc.hqx' (e.g., using Stuffit Expander) in
-     `libvrml97core/macos'.
+  6. Compile the `OpenVRML.mcp' project.
+  
+  7. Decode `OpenVRML.rsrc.hqx' (e.g., using Stuffit Expander).
 
-  7. Compile the `Lookat.mcp' project in `lookat/macos'.
+  8. Compile the `Lookat.mcp' project.
 
-   For steps 1 and 7, you will need to adjust the project access paths
+   For steps 1 and 8, you will need to adjust the project access paths
 so that CodeWarrior can locate your OpenGL SDK files.  If you do not
 have the libjpeg, libpng, zlib and InternetConfig files in the default
 file structure described above then you will need to adjust the access
-paths for those for steps 2 and 5, too.  `Lookat.mcp' in step 7 needs to
-be able to locate the JavaScript library file.
+paths for those for steps 2 and 4, too.
 
    NOTE:  If you have problems with the project files then create new
    ones using the supplied XML files instead (using the
    "Import Project..." command in CodeWarrior's "File" menu).
 
-   The final result should be a `LibVRML97.Lib' library in
-`libvrml97core/macos' and a simple GLUT-based viewer in `lookat/macos'.
+   The final result should be a `OpenVRML.Lib' library
+and a simple GLUT-based viewer called `Lookat'.
 You can enter URLs (file or http) into the dialog box that appears when
-you start Lookat to choose which VRML files to view.
+you start `Lookat' to choose which VRML files to view.
