@@ -163,7 +163,7 @@ AC_DEFUN(VRMLGL_PATH_GLUT,
     fi
 
     X__cflags="${X__Idir} ${X_CFLAGS}"
-    X__libs="${X__Ldir} $X_LDFLAGS ${X_PRE_LIBS} ${X_LIBS} ${X_EXTRA_LIBS}"
+    X__libs="${X__Ldir} $X_LDFLAGS ${X_PRE_LIBS} ${X_LIBS} -lX11 ${X_EXTRA_LIBS}"
     
     AC_CHECK_LIB(Xi, XListInputDevices,
       xi_libs="-lXi", 
