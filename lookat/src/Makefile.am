@@ -10,9 +10,10 @@ endif
 INCLUDES = -I$(top_srcdir)/libvrml97core/src -I$(top_srcdir)/libvrml97gl/src
 CXXFLAGS = -O2 -Wall $(DEBUG_CXXFLAGS) @GLUT_CFLAGS@
 LDADD = \
-        ../../libvrml97js/src/vrml97js/libvrml97js.la \
+        ../../libvrml97gl/src/vrml97gl/libvrml97gl.la \
         ../../libvrml97core/src/vrml97/libvrml97.la \
-        ../../libvrml97gl/src/vrml97gl/libvrml97gl.la
+        ../../libvrml97js/src/vrml97js/libvrml97js.la
+
 LDFLAGS = @GLUT_LIBS@
 
 bin_PROGRAMS = lookat
