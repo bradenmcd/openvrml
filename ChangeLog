@@ -10,6 +10,9 @@
           AbstractLight::renderScoped to take a Viewer & instead of a
           Viewer *.
 
+        * src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h:
+          Made NodeVisitor destructor non-throwing.
+
 2002-12-26  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.h:  Made Node::visited private.

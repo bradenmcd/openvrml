@@ -2737,7 +2737,7 @@ TextureTransformNode * TextureTransformNode::toTextureTransform() throw ()
 /**
  * @brief Destructor.
  */
-NodeVisitor::~NodeVisitor()
+NodeVisitor::~NodeVisitor() throw ()
 {}
 
 /**

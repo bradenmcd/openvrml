@@ -614,7 +614,7 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE NodeVisitor {
     public:
-        virtual ~NodeVisitor() = 0;
+        virtual ~NodeVisitor() throw () = 0;
 
         virtual void visit(Node & node) = 0;
     };
