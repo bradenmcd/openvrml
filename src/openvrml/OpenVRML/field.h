@@ -54,7 +54,7 @@ namespace OpenVRML {
         virtual Type type() const throw () = 0;
     
     private:
-        virtual std::ostream & print(std::ostream & out) const = 0;
+        virtual void print(std::ostream & out) const = 0;
     };
 
     std::ostream & operator<<(std::ostream & out, FieldValue::Type type);
@@ -62,7 +62,7 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE SFBool : public FieldValue {
-        bool d_value;
+        bool value;
 
     public:
         explicit SFBool(bool value = false) throw ();
@@ -79,12 +79,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream & out) const;
+        virtual void print(std::ostream & out) const;
     };
 
 
     class OPENVRML_SCOPE SFColor : public FieldValue {
-        float d_rgb[3];
+        float value[3];
 
     public:
         typedef float (&ArrayReference)[3];
@@ -120,12 +120,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream & out) const;
+        virtual void print(std::ostream & out) const;
     };
 
 
     class OPENVRML_SCOPE SFFloat : public FieldValue {
-        float d_value;
+        float value;
 
     public:
         explicit SFFloat(float value = 0.0) throw ();
@@ -142,7 +142,7 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream & out) const;
+        virtual void print(std::ostream & out) const;
     };
 
 
@@ -172,12 +172,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream & out) const;
+        virtual void print(std::ostream & out) const;
     };
 
 
     class OPENVRML_SCOPE SFInt32 : public FieldValue {
-        long d_value;
+        long value;
 
     public:
         explicit SFInt32(long = 0) throw ();
@@ -193,7 +193,7 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
@@ -214,14 +214,14 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class SFVec3f;
     
     class OPENVRML_SCOPE SFRotation : public FieldValue {
-        float d_x[4];
+        float value[4];
 
     public:
         typedef float (&ArrayReference)[4];
@@ -261,7 +261,7 @@ namespace OpenVRML {
         virtual Type type() const throw ();
 
     private:
-        virtual std::ostream & print(std::ostream & os) const;
+        virtual void print(std::ostream & os) const;
     };
 
 
@@ -284,12 +284,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class OPENVRML_SCOPE SFTime : public FieldValue {
-        double d_value;
+        double value;
 
     public:
         explicit SFTime(double value = 0.0) throw ();
@@ -305,12 +305,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class OPENVRML_SCOPE SFVec2f : public FieldValue {
-        float d_x[2];
+        float value[2];
 
     public:
         typedef float (&ArrayReference)[2];
@@ -347,12 +347,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class OPENVRML_SCOPE SFVec3f : public FieldValue {
-        float d_x[3];
+        float value[3];
 
     public:
         typedef float (&ArrayReference)[3];
@@ -392,12 +392,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class OPENVRML_SCOPE MFColor : public FieldValue {
-        void * data;
+        void * values;
 
     public:
         explicit MFColor(size_t length = 0,
@@ -423,12 +423,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class OPENVRML_SCOPE MFFloat : public FieldValue {
-        std::vector<float> data;
+        std::vector<float> values;
 
     public:
         explicit MFFloat(size_t length = 0, float const * numbers = 0)
@@ -450,12 +450,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class OPENVRML_SCOPE MFInt32 : public FieldValue {
-        std::vector<long> data;
+        std::vector<long> values;
 
     public:
         explicit MFInt32(size_t length = 0, const long * numbers = 0)
@@ -477,7 +477,7 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
@@ -509,12 +509,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class OPENVRML_SCOPE MFRotation : public FieldValue {
-        void * data;
+        void * values;
 
     public:
         explicit MFRotation(size_t length = 0,
@@ -541,7 +541,7 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
@@ -571,12 +571,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class OPENVRML_SCOPE MFTime : public FieldValue {
-        std::vector<double> data;
+        std::vector<double> values;
 
     public:
         explicit MFTime(size_t length = 0, const double * times = 0)
@@ -598,12 +598,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class OPENVRML_SCOPE MFVec2f : public FieldValue {
-        void * data;
+        void * values;
 
     public:
         explicit MFVec2f(size_t length = 0,
@@ -629,12 +629,12 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 
 
     class OPENVRML_SCOPE MFVec3f : public FieldValue {
-        void * data;
+        void * values;
 
     public:
         explicit MFVec3f(size_t length = 0,
@@ -660,7 +660,7 @@ namespace OpenVRML {
         virtual Type type() const throw ();
     
     private:
-        virtual std::ostream & print(std::ostream &) const;
+        virtual void print(std::ostream &) const;
     };
 }
 

@@ -29,10 +29,6 @@
 # include "private.h"
 # include "node.h"
 
-// Printing methods
-
-
-
 namespace OpenVRML {
 
 /**
@@ -43,8 +39,10 @@ namespace OpenVRML {
  *
  * @return @p out.
  */
-std::ostream & operator<<(std::ostream & out, const FieldValue & fieldValue) {
-    return fieldValue.print(out);
+std::ostream & operator<<(std::ostream & out, const FieldValue & fieldValue)
+{
+    fieldValue.print(out);
+    return out;
 }
 
 /**
@@ -58,8 +56,8 @@ std::ostream & operator<<(std::ostream & out, const FieldValue & fieldValue) {
  *
  * @brief Used to identify FieldValue types.
  *
- * These tags are typically used to designate an expected type or avoid a
- * <code>dynamic_cast</code>.
+ * These tags are typically used to designate an expected type or to avoid a
+ * @c dynamic_cast.
  */
 
 /**
@@ -191,7 +189,8 @@ std::ostream & operator<<(std::ostream & out, const FieldValue & fieldValue) {
 /**
  * @brief Destructor.
  */
-FieldValue::~FieldValue() throw () {}
+FieldValue::~FieldValue() throw ()
+{}
 
 /**
  * @fn FieldValue * FieldValue::clone() const throw (std::bad_alloc)
@@ -219,13 +218,11 @@ FieldValue::~FieldValue() throw () {}
  */
 
 /**
- * @fn std::ostream & FieldValue::print(std::ostream & out) const
+ * @fn void FieldValue::print(std::ostream & out) const
  *
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
 
 /**
@@ -272,7 +269,8 @@ namespace {
  *
  * @return @p out.
  */
-std::ostream & operator<<(std::ostream & out, const FieldValue::Type type) {
+std::ostream & operator<<(std::ostream & out, const FieldValue::Type type)
+{
     return out << ftn[type];
 }
 
@@ -286,7 +284,8 @@ std::ostream & operator<<(std::ostream & out, const FieldValue::Type type) {
  *
  * @return @p in.
  */
-std::istream & operator>>(std::istream & in, FieldValue::Type & type) {
+std::istream & operator>>(std::istream & in, FieldValue::Type & type)
+{
     std::string str;
     in >> str;
     const char * const * const begin = ftn + FieldValue::sfbool;
@@ -294,8 +293,7 @@ std::istream & operator>>(std::istream & in, FieldValue::Type & type) {
     const char * const * pos = std::find(begin, end, str);
     type = (pos == end)
          ? FieldValue::invalidType
-         : static_cast<FieldValue::Type>
-                (FieldValue::invalidType + (pos - begin));
+         : FieldValue::Type(FieldValue::invalidType + (pos - begin));
     return in;
 }
 
@@ -310,12 +308,15 @@ std::istream & operator>>(std::istream & in, FieldValue::Type & type) {
  *
  * @param value initial value
  */
-SFBool::SFBool(bool value) throw (): d_value(value) {}
+SFBool::SFBool(const bool value) throw ():
+    value(value)
+{}
 
 /**
  * @brief Destructor.
  */
-SFBool::~SFBool() throw () {}
+SFBool::~SFBool() throw ()
+{}
 
 /**
  * @brief Virtual copy constructor.
@@ -324,7 +325,8 @@ SFBool::~SFBool() throw () {}
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFBool::clone() const throw (std::bad_alloc) {
+FieldValue * SFBool::clone() const throw (std::bad_alloc)
+{
     return new SFBool(*this);
 }
 
@@ -337,7 +339,8 @@ FieldValue * SFBool::clone() const throw (std::bad_alloc) {
  *
  * @exception std::bad_cast if @p value is not an SFBool.
  */
-FieldValue & SFBool::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFBool::assign(const FieldValue & value) throw (std::bad_cast)
+{
     return (*this = dynamic_cast<const SFBool &>(value));
 }
 
@@ -345,11 +348,10 @@ FieldValue & SFBool::assign(const FieldValue & value) throw (std::bad_cast) {
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & SFBool::print(std::ostream & out) const {
-    return out << (d_value ? "TRUE" : "FALSE");
+void SFBool::print(std::ostream & out) const
+{
+    out << (this->value ? "TRUE" : "FALSE");
 }
 
 /**
@@ -357,21 +359,30 @@ std::ostream & SFBool::print(std::ostream & out) const {
  *
  * @return @c FieldValue::sfbool.
  */
-FieldValue::Type SFBool::type() const throw () { return sfbool; }
+FieldValue::Type SFBool::type() const throw ()
+{
+    return FieldValue::sfbool;
+}
 
 /**
  * @brief Get the value.
  *
  * @return the value of this SFBool
  */
-bool SFBool::get() const throw () { return this->d_value; }
+bool SFBool::get() const throw ()
+{
+    return this->value;
+}
 
 /**
  * @brief Set the value.
  *
  * @param value the new value
  */
-void SFBool::set(bool value) throw () { this->d_value = value; }
+void SFBool::set(const bool value) throw ()
+{
+    this->value = value;
+}
 
 
 /**
@@ -389,10 +400,11 @@ void SFBool::set(bool value) throw () { this->d_value = value; }
 /**
  * @brief Construct with the default value, (0, 0, 0).
  */
-SFColor::SFColor() throw () {
-    this->d_rgb[0] = 0.0f;
-    this->d_rgb[1] = 0.0f;
-    this->d_rgb[2] = 0.0f;
+SFColor::SFColor() throw ()
+{
+    this->value[0] = 0.0f;
+    this->value[1] = 0.0f;
+    this->value[2] = 0.0f;
 }
 
 /**
@@ -400,10 +412,11 @@ SFColor::SFColor() throw () {
  *
  * @param rgb a 3-element array
  */
-SFColor::SFColor(ConstArrayReference rgb) throw () {
-    this->d_rgb[0] = rgb[0];
-    this->d_rgb[1] = rgb[1];
-    this->d_rgb[2] = rgb[2];
+SFColor::SFColor(ConstArrayReference rgb) throw ()
+{
+    this->value[0] = rgb[0];
+    this->value[1] = rgb[1];
+    this->value[2] = rgb[2];
 }
 
 /**
@@ -413,10 +426,14 @@ SFColor::SFColor(ConstArrayReference rgb) throw () {
  * @param g green component
  * @param b blue component
  */
-SFColor::SFColor(float r, float g, float b) throw () {
-    d_rgb[0] = r;
-    d_rgb[1] = g;
-    d_rgb[2] = b;
+SFColor::SFColor(const float r,
+                 const float g,
+                 const float b)
+    throw ()
+{
+    this->value[0] = r;
+    this->value[1] = g;
+    this->value[2] = b;
 }
 
 /**
@@ -431,7 +448,8 @@ SFColor::~SFColor() throw () {}
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFColor::clone() const throw (std::bad_alloc) {
+FieldValue * SFColor::clone() const throw (std::bad_alloc)
+{
     return new SFColor(*this);
 }
 
@@ -444,7 +462,8 @@ FieldValue * SFColor::clone() const throw (std::bad_alloc) {
  *
  * @exception std::bad_cast if @p value is not an SFColor.
  */
-FieldValue & SFColor::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFColor::assign(const FieldValue & value) throw (std::bad_cast)
+{
     return (*this = dynamic_cast<const SFColor &>(value));
 }
 
@@ -452,11 +471,10 @@ FieldValue & SFColor::assign(const FieldValue & value) throw (std::bad_cast) {
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & SFColor::print(std::ostream & out) const {
-    return out << d_rgb[0] << ' ' << d_rgb[1] << ' ' << d_rgb[2];
+void SFColor::print(std::ostream & out) const
+{
+    out << this->value[0] << ' ' << this->value[1] << ' ' << this->value[2];
 }
 
 /**
@@ -464,66 +482,83 @@ std::ostream & SFColor::print(std::ostream & out) const {
  *
  * @return @c FieldValue::sfcolor.
  */
-FieldValue::Type SFColor::type() const throw () { return sfcolor; }
+FieldValue::Type SFColor::type() const throw ()
+{
+    return FieldValue::sfcolor;
+}
 
 /**
  * @brief Array element dereference operator (const version).
  *
- * @param index an index from 0 - 2
+ * @param index an index from 0 - 2.
  */
-float SFColor::operator[](size_t index) const throw () {
+float SFColor::operator[](const size_t index) const throw ()
+{
     assert(index < 3);
-    return this->d_rgb[index];
+    return this->value[index];
 }
 
 /**
  * @brief Array element dereference operator (non-const version).
  *
- * @param index an index from 0 - 2
+ * @param index an index from 0 - 2.
  */
-float & SFColor::operator[](size_t index) throw () {
+float & SFColor::operator[](const size_t index) throw ()
+{
     assert(index < 3);
-    return this->d_rgb[index];
+    return this->value[index];
 }
 
 /**
  * @brief Get the red component.
  *
- * @return the red component value
+ * @return the red component value.
  */
-float SFColor::getR() const throw () { return this->d_rgb[0]; }
+float SFColor::getR() const throw ()
+{
+    return this->value[0];
+}
 
 /**
  * @brief Get the green component.
  *
- * @return the green component value
+ * @return the green component value.
  */
-float SFColor::getG() const throw () { return this->d_rgb[1]; }
+float SFColor::getG() const throw ()
+{
+    return this->value[1];
+}
 
 /**
  * @brief Get the blue component.
- * @return the blue component value
+ *
+ * @return the blue component value.
  */
-float SFColor::getB() const throw () { return this->d_rgb[2]; }
+float SFColor::getB() const throw ()
+{
+    return this->value[2];
+}
 
 /**
  * @brief Get the value.
  *
- * @return a reference to a 3-element array comprising the RGB value
+ * @return a reference to a 3-element array comprising the RGB value.
  */
-SFColor::ConstArrayReference SFColor::get() const throw () {
-    return this->d_rgb;
+SFColor::ConstArrayReference SFColor::get() const throw ()
+{
+    return this->value;
 }
 
 /**
  * @brief Set the value.
  *
- * @param rgb a 3-element vector comprising a RGB value
+ * @param rgb a 3-element vector comprising a RGB value.
  */
-void SFColor::set(ConstArrayReference rgb) throw () {
-    this->d_rgb[0] = rgb[0];
-    this->d_rgb[1] = rgb[1];
-    this->d_rgb[2] = rgb[2];
+void SFColor::set(ConstArrayReference rgb) throw ()
+{
+    this->value[0] = rgb[0];
+    this->value[1] = rgb[1];
+    this->value[2] = rgb[2];
 }
 
 // Conversion functions between RGB each in [0,1] and HSV with  
@@ -532,8 +567,8 @@ void SFColor::set(ConstArrayReference rgb) throw () {
 /**
  * @brief Convert a color from HSV to RGB.
  *
- * Convert from HSV (with(with <var>h</var> in [0,360), <var>s</var>,
- * <var>v</var> in [0,1]) to RGB (with each component in [0,1]).
+ * Convert from HSV (with(with @e h in [0,360), @e s, @e v in [0,1]) to RGB
+ * (with each component in [0,1]).
  *
  * @param hsv a 3-element array comprising an HSV value
  * @retval rgb a 3-element array comprising an RGB value
@@ -568,8 +603,8 @@ void SFColor::HSVtoRGB(ConstArrayReference hsv, ArrayReference rgb) throw ()
 /**
  * @brief Convert a color from RGB to HSV.
  *
- * Convert from RGB (with each component in [0,1]) to HSV (with <var>h</var> in
- * [0,360), <var>s</var>, <var>v</var> in [0,1]).
+ * Convert from RGB (with each component in [0,1]) to HSV (with @e h in
+ * [0,360), @e s, @e v in [0,1]).
  *
  * @param rgb a 3-element array comprising an RGB value
  * @retval hsv a 3-element array comprising an HSV value
@@ -610,9 +645,10 @@ void SFColor::RGBtoHSV(ConstArrayReference rgb, ArrayReference hsv) throw ()
  * @param s the saturation component
  * @param v the value component
  */
-void SFColor::setHSV(float h, float s, float v) throw () {
+void SFColor::setHSV(const float h, const float s, const float v) throw ()
+{
     const float hsv[3] = { h, s, v };
-    HSVtoRGB(hsv, this->d_rgb);
+    SFColor::HSVtoRGB(hsv, this->value);
 }
 
 /**
@@ -620,8 +656,9 @@ void SFColor::setHSV(float h, float s, float v) throw () {
  *
  * @retval hsv a 3-element array comprising the HSV value.
  */
-void SFColor::getHSV(ArrayReference hsv) const throw () {
-    RGBtoHSV(this->d_rgb, hsv);
+void SFColor::getHSV(ArrayReference hsv) const throw ()
+{
+    SFColor::RGBtoHSV(this->value, hsv);
 }
 
 
@@ -636,22 +673,24 @@ void SFColor::getHSV(ArrayReference hsv) const throw () {
  *
  * @param value initial value
  */
-SFFloat::SFFloat(float value) throw (): d_value(value) {}
+SFFloat::SFFloat(const float value) throw ():
+    value(value)
+{}
 
 /**
  * @brief Destructor.
  */
-SFFloat::~SFFloat() throw () {}
+SFFloat::~SFFloat() throw ()
+{}
 
 /**
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & SFFloat::print(std::ostream & out) const {
-    return out << d_value;
+void SFFloat::print(std::ostream & out) const
+{
+    out << this->value;
 }
 
 /**
@@ -661,7 +700,8 @@ std::ostream & SFFloat::print(std::ostream & out) const {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFFloat::clone() const throw (std::bad_alloc) {
+FieldValue * SFFloat::clone() const throw (std::bad_alloc)
+{
     return new SFFloat(*this);
 }
 
@@ -674,7 +714,8 @@ FieldValue * SFFloat::clone() const throw (std::bad_alloc) {
  *
  * @exception std::bad_cast if @p value is not an SFFloat.
  */
-FieldValue & SFFloat::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFFloat::assign(const FieldValue & value) throw (std::bad_cast)
+{
     return (*this = dynamic_cast<const SFFloat &>(value));
 }
 
@@ -683,21 +724,30 @@ FieldValue & SFFloat::assign(const FieldValue & value) throw (std::bad_cast) {
  *
  * @return @c FieldValue::sffloat.
  */
-FieldValue::Type SFFloat::type() const throw () { return sffloat; }
+FieldValue::Type SFFloat::type() const throw ()
+{
+    return FieldValue::sffloat;
+}
 
 /**
  * @brief Get value.
  *
  * @return the SFFloat value
  */
-float SFFloat::get() const throw () { return this->d_value; }
+float SFFloat::get() const throw ()
+{
+    return this->value;
+}
 
 /**
  * @brief Set value.
  *
  * @param value the new value
  */
-void SFFloat::set(float value) throw () { this->d_value = value; }
+void SFFloat::set(const float value) throw ()
+{
+    this->value = value;
+}
 
 /**
  * @class SFImage
@@ -796,10 +846,9 @@ SFImage & SFImage::operator=(const SFImage & sfimage) throw (std::bad_alloc) {
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & SFImage::print(std::ostream & out) const {
+void SFImage::print(std::ostream & out) const
+{
     out << d_w << " " << d_h << " " << d_nc;
 
     size_t np = d_w * d_h;
@@ -810,7 +859,6 @@ std::ostream & SFImage::print(std::ostream & out) const {
         for (size_t j=0; j<d_nc; ++j) { pixval = (pixval << 8) | *p++; }
         out << " " << pixval;
     }
-    return out;
 }
 
 /**
@@ -905,24 +953,27 @@ void SFImage::set(size_t width, size_t height, size_t components,
 
 /**
  * @brief Constructor.
+ *
  * @param value initial value
  */
-SFInt32::SFInt32(long value) throw (): d_value(value) {}
+SFInt32::SFInt32(const long value) throw ():
+    value(value)
+{}
 
 /**
  * @brief Destructor.
  */
-SFInt32::~SFInt32() throw () {}
+SFInt32::~SFInt32() throw ()
+{}
 
 /**
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & SFInt32::print(std::ostream & out) const {
-    return out << d_value;
+void SFInt32::print(std::ostream & out) const
+{
+    out << this->value;
 }
 
 /**
@@ -932,7 +983,8 @@ std::ostream & SFInt32::print(std::ostream & out) const {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFInt32::clone() const throw (std::bad_alloc) {
+FieldValue * SFInt32::clone() const throw (std::bad_alloc)
+{
     return new SFInt32(*this);
 }
 
@@ -945,7 +997,8 @@ FieldValue * SFInt32::clone() const throw (std::bad_alloc) {
  *
  * @exception std::bad_cast if @p value is not an SFInt32.
  */
-FieldValue & SFInt32::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFInt32::assign(const FieldValue & value) throw (std::bad_cast)
+{
     return (*this = dynamic_cast<const SFInt32 &>(value));
 }
 
@@ -954,21 +1007,30 @@ FieldValue & SFInt32::assign(const FieldValue & value) throw (std::bad_cast) {
  *
  * @return @c FieldValue::sfint32.
  */
-FieldValue::Type SFInt32::type() const throw () { return sfint32; }
+FieldValue::Type SFInt32::type() const throw ()
+{
+    return FieldValue::sfint32;
+}
 
 /**
  * @brief Get value.
  *
  * @return the integer value
  */
-long SFInt32::get() const throw () { return this->d_value; }
+long SFInt32::get() const throw ()
+{
+    return this->value;
+}
 
 /**
  * @brief Set value.
  *
  * @param value the new integer value
  */
-void SFInt32::set(long value) throw () { this->d_value = value; }
+void SFInt32::set(const long value) throw ()
+{
+    this->value = value;
+}
 
 
 /**
@@ -982,25 +1044,28 @@ void SFInt32::set(long value) throw () { this->d_value = value; }
  *
  * @param node a NodePtr
  */
-SFNode::SFNode(const NodePtr & node) throw (): node(node) {}
+SFNode::SFNode(const NodePtr & node) throw ():
+    node(node)
+{}
 
 /**
  * @brief Destructor.
  */
-SFNode::~SFNode() throw () {}
+SFNode::~SFNode() throw ()
+{}
 
 /**
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & SFNode::print(std::ostream & out) const {
-    if (!this->node) {
-        return out << "NULL" << std::endl;
+void SFNode::print(std::ostream & out) const
+{
+    if (this->node) {
+        out << *this->node;
+    } else {
+        out << "NULL";
     }
-    return out << *this->node << std::endl;
 }
 
 /**
@@ -1010,7 +1075,8 @@ std::ostream & SFNode::print(std::ostream & out) const {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFNode::clone() const throw (std::bad_alloc) {
+FieldValue * SFNode::clone() const throw (std::bad_alloc)
+{
     return new SFNode(*this);
 }
 
@@ -1023,7 +1089,8 @@ FieldValue * SFNode::clone() const throw (std::bad_alloc) {
  *
  * @exception std::bad_cast if @p value is not an SFNode.
  */
-FieldValue & SFNode::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFNode::assign(const FieldValue & value) throw (std::bad_cast)
+{
     return (*this = dynamic_cast<const SFNode &>(value));
 }
 
@@ -1032,22 +1099,31 @@ FieldValue & SFNode::assign(const FieldValue & value) throw (std::bad_cast) {
  *
  * @return @c FieldValue::sfnode.
  */
-FieldValue::Type SFNode::type() const throw () { return FieldValue::sfnode; }
+FieldValue::Type SFNode::type() const throw ()
+{
+    return FieldValue::sfnode;
+}
 
 /**
  * @brief Get value.
  *
  * @return a smart pointer to this object's Node
  */
-const NodePtr & SFNode::get() const throw () { return this->node; }
+const NodePtr & SFNode::get() const throw ()
+{
+    return this->node;
+}
 
 /**
  * @brief Set value.
  *
  * @param node a smart pointer to a Node, or to 0 if setting this
- *             SFNode to <code>NULL</code>
+ *             SFNode to @c NULL.
  */
-void SFNode::set(const NodePtr & node) throw () { this->node = NodePtr(node); }
+void SFNode::set(const NodePtr & node) throw ()
+{
+    this->node = NodePtr(node);
+}
 
 
 /**
@@ -1061,14 +1137,12 @@ void SFNode::set(const NodePtr & node) throw () { this->node = NodePtr(node); }
  * normalized. In order to allow users of the library to minimize the number
  * of normalizations, OpenVRML takes the following approach:
  *
- * <ul>
- * <li>Attempts to construct an SFRotation axis from a vector that is not
- * normalized will yield an assertion failure (abort) unless NDEBUG is defined
- * when compiling the library (in which case truly wacky behavior could
- * result).
- * <li>Assignment to individual components of the axis will result in the
- * axis being re-normalized upon each assignment.
- * </ul>
+ * - Attempts to construct an SFRotation axis from a vector that is not
+ *   normalized will yield an assertion failure (abort) unless NDEBUG is
+ *   defined when compiling the library (in which case truly wacky behavior
+ *   could result).
+ * - Assignment to individual components of the axis will result in the
+ *   axis being re-normalized upon each assignment.
  */
 
 /**
@@ -1082,11 +1156,12 @@ void SFNode::set(const NodePtr & node) throw () { this->node = NodePtr(node); }
  *
  * Construct with the default value, (0, 0, 1, 0).
  */
-SFRotation::SFRotation() throw () {
-    this->d_x[0] = 0.0; // x
-    this->d_x[1] = 0.0; // y
-    this->d_x[2] = 1.0; // z
-    this->d_x[3] = 0.0; // angle
+SFRotation::SFRotation() throw ()
+{
+    this->value[0] = 0.0; // x
+    this->value[1] = 0.0; // y
+    this->value[2] = 1.0; // z
+    this->value[3] = 0.0; // angle
 }
 
 /**
@@ -1097,7 +1172,8 @@ SFRotation::SFRotation() throw () {
  * @pre The first three elements of the argument array constitute a
  *      normalized vector.
  */
-SFRotation::SFRotation(ConstArrayReference rot) throw () {
+SFRotation::SFRotation(ConstArrayReference rot) throw ()
+{
     using OpenVRML_::fpequal;
     using OpenVRML_::length;
     
@@ -1106,33 +1182,38 @@ SFRotation::SFRotation(ConstArrayReference rot) throw () {
     //
     assert(fpequal(length(rot), 1.0));
     
-    std::copy(rot, rot + 4, this->d_x);
+    std::copy(rot, rot + 4, this->value);
 }
 
 /**
  * @brief Constructor.
  *
- * @param x the <var>x</var>-component of the axis of rotation
- * @param y the <var>y</var>-component of the axis of rotation
- * @param z the <var>z</var>-component of the axis of rotation
+ * @param x the @e x-component of the axis of rotation
+ * @param y the @e y-component of the axis of rotation
+ * @param z the @e z-component of the axis of rotation
  * @param angle the rotation angle
  *
  * @pre The first three arguments constitute a normalized vector.
  */
-SFRotation::SFRotation(float x, float y, float z, float angle) throw () {
+SFRotation::SFRotation(const float x,
+                       const float y,
+                       const float z,
+                       const float angle)
+    throw ()
+{
     using OpenVRML_::fpequal;
     using OpenVRML_::length;
     
-    this->d_x[0] = x;
-    this->d_x[1] = y;
-    this->d_x[2] = z;
+    this->value[0] = x;
+    this->value[1] = y;
+    this->value[2] = z;
     
     //
     // Make sure axis is normalized.
     //
-    assert(fpequal(length(this->d_x), 1.0));
+    assert(fpequal(length(this->value), 1.0));
     
-    this->d_x[3] = angle;
+    this->value[3] = angle;
 }
 
 /**
@@ -1143,7 +1224,8 @@ SFRotation::SFRotation(float x, float y, float z, float angle) throw () {
  *
  * @pre The first argument is a normalized vector.
  */
-SFRotation::SFRotation(const SFVec3f & axis, float angle) throw () {
+SFRotation::SFRotation(const SFVec3f & axis, const float angle) throw ()
+{
     using OpenVRML_::fpequal;
     using OpenVRML_::length;
     
@@ -1152,8 +1234,8 @@ SFRotation::SFRotation(const SFVec3f & axis, float angle) throw () {
     //
     assert(fpequal(length(axis.get()), 1.0));
     
-    std::copy(axis.get(), axis.get() + 3, this->d_x);
-    this->d_x[3] = angle;
+    std::copy(axis.get(), axis.get() + 3, this->value);
+    this->value[3] = angle;
 }
 
 /**
@@ -1166,26 +1248,28 @@ SFRotation::SFRotation(const SFVec3f & axis, float angle) throw () {
  * @param toVector the ending vector
  */
 SFRotation::SFRotation(const SFVec3f & fromVector, const SFVec3f & toVector)
-        throw () {
+    throw ()
+{
     this->setAxis(fromVector.cross(toVector));
-    this->d_x[3] = acos(fromVector.dot(toVector) /
-                        (fromVector.length() * toVector.length()));
+    this->value[3] = acos(fromVector.dot(toVector)
+                            / (fromVector.length() * toVector.length()));
 }
 
 /**
  * @brief Destructor.
  */
-SFRotation::~SFRotation() throw () {}
+SFRotation::~SFRotation() throw ()
+{}
 
 /**
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & SFRotation::print(std::ostream & out) const {
-    return out <<d_x[0] << " " << d_x[1] << " " << d_x[2] << " " << d_x[3];
+void SFRotation::print(std::ostream & out) const
+{
+    out << this->value[0] << ' ' << this->value[1] << ' ' << this->value[2]
+        << ' ' << this->value[3];
 }
 
 /**
@@ -1195,7 +1279,8 @@ std::ostream & SFRotation::print(std::ostream & out) const {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFRotation::clone() const throw (std::bad_alloc) {
+FieldValue * SFRotation::clone() const throw (std::bad_alloc)
+{
     return new SFRotation(*this);
 }
 
@@ -1208,7 +1293,8 @@ FieldValue * SFRotation::clone() const throw (std::bad_alloc) {
  *
  * @exception std::bad_cast if @p value is not an SFRotation.
  */
-FieldValue & SFRotation::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFRotation::assign(const FieldValue & value) throw (std::bad_cast)
+{
     return (*this = dynamic_cast<const SFRotation &>(value));
 }
 
@@ -1217,17 +1303,25 @@ FieldValue & SFRotation::assign(const FieldValue & value) throw (std::bad_cast) 
  *
  * @return @c FieldValue::sfrotation.
  */
-FieldValue::Type SFRotation::type() const throw () { return sfrotation; }
+FieldValue::Type SFRotation::type() const throw ()
+{
+    return FieldValue::sfrotation;
+}
 
 /**
- * @brief Get the <var>x</var>-component of the rotation axis.
+ * @brief Get the @e x-component of the rotation axis.
  *
- * @return the <var>x</var>-component of the rotation axis.
+ * @return the @e x-component of the rotation axis.
  */
-float SFRotation::getX() const throw () { return this->d_x[0]; }
+float SFRotation::getX() const throw ()
+{
+    return this->value[0];
+}
 
 namespace {
-    void normalizeAxis_(float axis[3]) throw () {
+
+    void normalizeAxis_(float axis[3]) throw ()
+    {
         using OpenVRML_::length;
         using OpenVRML_::fpequal;
         using OpenVRML_::normalize;
@@ -1242,70 +1336,86 @@ namespace {
 }
 
 /**
- * @brief Set the <var>x</var>-component of the rotation axis.
+ * @brief Set the @e x-component of the rotation axis.
  *
  * @param value
  */
-void SFRotation::setX(float value) throw () {
-    this->d_x[0] = value;
-    normalizeAxis_(this->d_x);
+void SFRotation::setX(const float value) throw ()
+{
+    this->value[0] = value;
+    normalizeAxis_(this->value);
 }
 
 /**
- * @brief Get the <var>y</var>-component of the rotation axis.
+ * @brief Get the @e y-component of the rotation axis.
  *
- * @return the <var>y</var>-component of the rotation axis
+ * @return the @e y-component of the rotation axis.
  */
-float SFRotation::getY() const throw () { return this->d_x[1]; }
-
-/**
- * @brief Set the <var>y</var>-component of the rotation axis.
- *
- * @param value
- */
-void SFRotation::setY(float value) throw () {
-    this->d_x[1] = value;
-    normalizeAxis_(this->d_x);
+float SFRotation::getY() const throw ()
+{
+    return this->value[1];
 }
 
 /**
- * @brief Get the <var>z</var>-component of the rotation axis.
- *
- * @return the <var>z</var>-component of the rotation axis
- */
-float SFRotation::getZ() const throw () { return this->d_x[2]; }
-
-/**
- * @brief Set the <var>z</var>-component of the rotation axis
+ * @brief Set the @e y-component of the rotation axis.
  *
  * @param value
  */
-void SFRotation::setZ(float value) throw () {
-    this->d_x[2] = value;
-    normalizeAxis_(this->d_x);
+void SFRotation::setY(const float value) throw ()
+{
+    this->value[1] = value;
+    normalizeAxis_(this->value);
+}
+
+/**
+ * @brief Get the @e z-component of the rotation axis.
+ *
+ * @return the @e z-component of the rotation axis.
+ */
+float SFRotation::getZ() const throw ()
+{
+    return this->value[2];
+}
+
+/**
+ * @brief Set the @e z-component of the rotation axis.
+ *
+ * @param value
+ */
+void SFRotation::setZ(const float value) throw ()
+{
+    this->value[2] = value;
+    normalizeAxis_(this->value);
 }
 
 /**
  * @brief Get the rotation angle.
  *
- * @return the rotation angle
+ * @return the rotation angle.
  */
-float SFRotation::getAngle() const throw () { return this->d_x[3]; }
+float SFRotation::getAngle() const throw ()
+{
+    return this->value[3];
+}
 
 /**
  * @brief Set the rotation angle.
  *
  * @param value
  */
-void SFRotation::setAngle(float value) throw () { this->d_x[3] = value; }
+void SFRotation::setAngle(const float value) throw ()
+{
+    this->value[3] = value;
+}
 
 /**
  * @brief Get the value of this rotation.
  *
  * @return a reference to a 4-element array.
  */
-SFRotation::ConstArrayReference SFRotation::get() const throw () {
-    return this->d_x;
+SFRotation::ConstArrayReference SFRotation::get() const throw ()
+{
+    return this->value;
 }
 
 /**
@@ -1313,7 +1423,7 @@ SFRotation::ConstArrayReference SFRotation::get() const throw () {
  *
  * @param rot a 4-element array
  *
- * @pre The first three elements of <var>rot</var> constitute a normalized
+ * @pre The first three elements of @p rot constitute a normalized
  *      vector.
  */
 void SFRotation::set(ConstArrayReference rot) throw ()
@@ -1326,7 +1436,7 @@ void SFRotation::set(ConstArrayReference rot) throw ()
     //
     assert(fpequal(length(rot), 1.0));
     
-    std::copy(rot, rot + 4, this->d_x);
+    std::copy(rot, rot + 4, this->value);
 }
 
 /**
@@ -1334,18 +1444,22 @@ void SFRotation::set(ConstArrayReference rot) throw ()
  *
  * @return the axis of rotation
  */
-const SFVec3f SFRotation::getAxis() const throw () {
-    return SFVec3f(this->d_x[0], this->d_x[1], this->d_x[2]);
+const SFVec3f SFRotation::getAxis() const throw ()
+{
+    return SFVec3f(this->value[0],
+                   this->value[1],
+                   this->value[2]);
 }
 
 /**
  * @brief Set the axis of rotation using a SFVec3f.
  *
- * @param axis the new rotation axis
+ * @param axis  the new rotation axis.
  *
- * @pre <var>axis</var> is a normalized vector.
+ * @pre @p axis is a normalized vector.
  */
-void SFRotation::setAxis(const SFVec3f & axis) throw () {
+void SFRotation::setAxis(const SFVec3f & axis) throw ()
+{
     using OpenVRML_::fpequal;
     using OpenVRML_::length;
     
@@ -1354,38 +1468,40 @@ void SFRotation::setAxis(const SFVec3f & axis) throw () {
     //
     assert(fpequal(length(axis.get()), 1.0));
     
-    std::copy(axis.get(), axis.get() + 3, this->d_x);
+    std::copy(axis.get(), axis.get() + 3, this->value);
 }
 
 /**
  * @brief Get the inverse.
  *
- * @return a SFRotation that is the inverse of this one
+ * @return a SFRotation that is the inverse of this one.
  */
-const SFRotation SFRotation::inverse() const throw () {
+const SFRotation SFRotation::inverse() const throw ()
+{
     SFRotation result(*this);
-    result.d_x[3] = -d_x[3];
+    result.value[3] = -value[3];
     return result;
 }
 
 namespace {
     void multQuat(const float quat1[4], const float quat2[4], float result[4])
-            throw () {
-        result[3] = quat1[3]*quat2[3] - quat1[0]*quat2[0]
-                - quat1[1]*quat2[1] - quat1[2]*quat2[2];
+        throw ()
+    {
+        result[3] = quat1[3] * quat2[3] - quat1[0] * quat2[0]
+                    - quat1[1] * quat2[1] - quat1[2] * quat2[2];
 
-        result[0] = quat1[3]*quat2[0] + quat1[0]*quat2[3]
-                + quat1[1]*quat2[2] - quat1[2]*quat2[1];
+        result[0] = quat1[3] * quat2[0] + quat1[0] * quat2[3]
+                    + quat1[1] * quat2[2] - quat1[2] * quat2[1];
 
-        result[1] = quat1[3]*quat2[1] + quat1[1]*quat2[3]
-                + quat1[2]*quat2[0] - quat1[0]*quat2[2];
+        result[1] = quat1[3] * quat2[1] + quat1[1] * quat2[3]
+                    + quat1[2] * quat2[0] - quat1[0] * quat2[2];
 
-        result[2] = quat1[3]*quat2[2] + quat1[2]*quat2[3]
-                + quat1[0]*quat2[1] - quat1[1]*quat2[0];
+        result[2] = quat1[3] * quat2[2] + quat1[2] * quat2[3]
+                    + quat1[0] * quat2[1] - quat1[1] * quat2[0];
     }
     
-    void sfrotToQuat(const SFRotation & rot, float quat[4])
-            throw () {
+    void sfrotToQuat(const SFRotation & rot, float quat[4]) throw ()
+    {
         const float sintd2 = sin(rot.getAngle() * 0.5);
         const float len = sqrt((rot.getX() * rot.getX())
                              + (rot.getY() * rot.getY())
@@ -1397,8 +1513,8 @@ namespace {
         quat[2] = rot.getZ() * f;
     }
     
-    void quatToSFRot(const float quat[4], SFRotation & rot)
-            throw () {
+    void quatToSFRot(const float quat[4], SFRotation & rot) throw ()
+    {
         double sina2 = sqrt(quat[0] * quat[0]
                           + quat[1] * quat[1]
                           + quat[2] * quat[2]);
@@ -1420,11 +1536,12 @@ namespace {
 /**
  * @brief Multiply two rotations.
  *
- * @param rot   the rotation by which to multiply this one
+ * @param rot   the rotation by which to multiply this one.
  *
- * @return the result rotation
+ * @return the result rotation.
  */
-const SFRotation SFRotation::multiply(const SFRotation & rot) const throw () {
+const SFRotation SFRotation::multiply(const SFRotation & rot) const throw ()
+{
     // convert to quaternions
     float quatUS[4], quatVec[4];
     sfrotToQuat(*this, quatUS);
@@ -1445,21 +1562,25 @@ const SFRotation SFRotation::multiply(const SFRotation & rot) const throw () {
  *
  * @todo IMPLEMENT ME!
  *
- * @param vec vector by which to multiply this rotation
- * @return the result of multiplying this rotation by vec
+ * @param vec   vector by which to multiply this rotation.
+ *
+ * @return the result of multiplying this rotation by vec.
  */
-const SFVec3f SFRotation::multVec(const SFVec3f & vec) const {
+const SFVec3f SFRotation::multVec(const SFVec3f & vec) const
+{
     return SFVec3f();
 }
 
 /**
- * @brief Perform a <b>S</b>pherical <b>L</b>inear Int<b>ERP</b>olation.
+ * @brief Perform a Spherical Linear IntERPolation.
  *
- * @param destRotation the destination rotation
- * @param t the interval fraction
+ * @param destRotation  the destination rotation
+ * @param t             the interval fraction
  */
 const SFRotation SFRotation::slerp(const SFRotation & destRotation,
-                                   const float t) const throw () {
+                                   const float t) const
+    throw ()
+{
     using OpenVRML_::fptolerance;
     
     float fromQuat[4], toQuat[4];
@@ -1528,28 +1649,38 @@ const SFRotation SFRotation::slerp(const SFRotation & destRotation,
  * @brief Constructor.
  *
  * @param value
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 SFString::SFString(const std::string & value) throw (std::bad_alloc):
-        value(value) {}
+   value(value)
+{}
 
 /**
  * @brief Destructor.
  */
-SFString::~SFString() throw () {}
+SFString::~SFString() throw ()
+{}
 
 /**
  * @brief Get value.
  *
  * @return a string
  */
-const std::string & SFString::get() const throw () { return this->value; }
+const std::string & SFString::get() const throw ()
+{
+    return this->value;
+}
 
 /**
  * @brief Set value.
  *
  * @param value
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void SFString::set(const std::string & value) throw (std::bad_alloc) {
+void SFString::set(const std::string & value) throw (std::bad_alloc)
+{
     this->value = value;
 }
 
@@ -1560,7 +1691,8 @@ void SFString::set(const std::string & value) throw (std::bad_alloc) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFString::clone() const throw (std::bad_alloc) {
+FieldValue * SFString::clone() const throw (std::bad_alloc)
+{
     return new SFString(*this);
 }
 
@@ -1571,10 +1703,12 @@ FieldValue * SFString::clone() const throw (std::bad_alloc) {
  *
  * @return a reference to the object.
  *
- * @exception std::bad_cast if @p value is not an SFString.
+ * @exception std::bad_cast     if @p value is not an SFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 FieldValue & SFString::assign(const FieldValue & value)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     return (*this = dynamic_cast<const SFString &>(value));
 }
 
@@ -1582,11 +1716,10 @@ FieldValue & SFString::assign(const FieldValue & value)
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & SFString::print(std::ostream & out) const {
-    return out << '\"' << this->value.c_str() << '\"';
+void SFString::print(std::ostream & out) const
+{
+    out << '\"' << this->value << '\"';
 }
 
 /**
@@ -1594,7 +1727,10 @@ std::ostream & SFString::print(std::ostream & out) const {
  *
  * @return @c FieldValue::sfstring.
  */
-FieldValue::Type SFString::type() const throw () { return sfstring; }
+FieldValue::Type SFString::type() const throw ()
+{
+    return FieldValue::sfstring;
+}
 
 
 /**
@@ -1608,39 +1744,81 @@ FieldValue::Type SFString::type() const throw () { return sfstring; }
  *
  * @param value initial value
  */
-SFTime::SFTime(double value) throw (): d_value(value) {}
+SFTime::SFTime(double value) throw ():
+    value(value)
+{}
 
 /**
  * @brief Destructor.
  */
-SFTime::~SFTime() throw () {}
+SFTime::~SFTime() throw ()
+{}
 
-FieldValue * SFTime::clone() const throw (std::bad_alloc) {
+/**
+ * @brief Virtual copy constructor.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+FieldValue * SFTime::clone() const throw (std::bad_alloc)
+{
     return new SFTime(*this);
 }
 
-FieldValue & SFTime::assign(const FieldValue & value) throw (std::bad_cast) {
+/**
+ * @brief Virtual assignment.
+ *
+ * @param value the new value to give the object.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast if @p value is not an SFString.
+ */
+FieldValue & SFTime::assign(const FieldValue & value) throw (std::bad_cast)
+{
     return (*this = dynamic_cast<const SFTime &>(value));
 }
 
-std::ostream & SFTime::print(std::ostream & os) const
-{ return (os << d_value); }
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void SFTime::print(std::ostream & out) const
+{
+    out << this->value;
+}
 
-FieldValue::Type SFTime::type() const throw () { return sftime; }
+/**
+ * @brief Get the FieldValue::Type associated with this class.
+ *
+ * @return @c FieldValue::sftime.
+ */
+FieldValue::Type SFTime::type() const throw ()
+{
+    return FieldValue::sftime;
+}
 
 /**
  * @brief Get value.
  *
  * @return the value.
  */
-double SFTime::get() const throw () { return this->d_value; }
+double SFTime::get() const throw ()
+{
+    return this->value;
+}
 
 /**
  * @brief Set value.
  *
  * @param value the new value
  */
-void SFTime::set(double value) throw () { this->d_value = value; }
+void SFTime::set(double value) throw ()
+{
+    this->value = value;
+}
 
 
 /**
@@ -1658,67 +1836,72 @@ void SFTime::set(double value) throw () { this->d_value = value; }
 /**
  * @brief Construct a SFVec2f with the default values, (0, 0).
  */
-SFVec2f::SFVec2f() throw () { this->d_x[0] = this->d_x[1] = 0; }
-        
-/**
- * @brief Construct a SFVec2f.
- *
- * @param vec a 2-element array
- */
-SFVec2f::SFVec2f(ConstArrayReference vec) throw () {
-    this->d_x[0] = vec[0];
-    this->d_x[1] = vec[1];
+SFVec2f::SFVec2f() throw ()
+{
+    this->value[0] = this->value[1] = 0;
 }
-        
+
 /**
  * @brief Construct a SFVec2f.
  *
- * @param x the <var>x</var>-component
- * @param y the <var>y</var>-component
+ * @param vec a 2-element array.
  */
-SFVec2f::SFVec2f(float x, float y) throw () {
-    this->d_x[0] = x;
-    this->d_x[1] = y;
+SFVec2f::SFVec2f(ConstArrayReference vec) throw ()
+{
+    this->value[0] = vec[0];
+    this->value[1] = vec[1];
+}
+
+/**
+ * @brief Construct a SFVec2f.
+ *
+ * @param x the @e x-component.
+ * @param y the @e y-component.
+ */
+SFVec2f::SFVec2f(const float x, const float y) throw ()
+{
+    this->value[0] = x;
+    this->value[1] = y;
 }
 
 /**
  * @brief Destructor.
  */
-SFVec2f::~SFVec2f() throw () {}
+SFVec2f::~SFVec2f() throw ()
+{}
 
 /**
  * @brief Array element dereference operator (const version).
  *
- * @param index a value from 0 - 1. 0 corresponds to the
- *              <var>x</var>-component, and 1 corresponds to the
- *              <var>y</var>-component.
+ * @param index a value from 0 - 1. 0 corresponds to the @e x-component, and 1
+ *              corresponds to the @e y-component.
  */
-float SFVec2f::operator[](size_t index) const throw () {
+float SFVec2f::operator[](size_t index) const throw ()
+{
     assert(index < 2);
-    return this->d_x[index];
+    return this->value[index];
 }
 
 /**
  * @brief Array element dereference operator (non-const version).
  *
- * @param index a value from 0 - 1. 0 corresponds to the
- *              <var>x</var>-component, and 1 corresponds to the
- *              <var>y</var>-component.
+ * @param index a value from 0 - 1. 0 corresponds to the @e x-component, and 1
+ *              corresponds to the @e y-component.
  */
-float & SFVec2f::operator[](size_t index) throw () {
+float & SFVec2f::operator[](size_t index) throw ()
+{
     assert(index < 2);
-    return this->d_x[index];
+    return this->value[index];
 }
 
 /**
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & SFVec2f::print(std::ostream & out) const {
-    return out << d_x[0] << " " << d_x[1];
+void SFVec2f::print(std::ostream & out) const
+{
+    out << this->value[0] << ' ' << this->value[1];
 }
 
 /**
@@ -1728,7 +1911,8 @@ std::ostream & SFVec2f::print(std::ostream & out) const {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFVec2f::clone() const throw (std::bad_alloc) {
+FieldValue * SFVec2f::clone() const throw (std::bad_alloc)
+{
     return new SFVec2f(*this);
 }
 
@@ -1741,7 +1925,8 @@ FieldValue * SFVec2f::clone() const throw (std::bad_alloc) {
  *
  * @exception std::bad_cast if @p value is not an SFVec2f.
  */
-FieldValue & SFVec2f::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFVec2f::assign(const FieldValue & value) throw (std::bad_cast)
+{
     return (*this = dynamic_cast<const SFVec2f &>(value));
 }
 
@@ -1750,35 +1935,59 @@ FieldValue & SFVec2f::assign(const FieldValue & value) throw (std::bad_cast) {
  *
  * @return @c FieldValue::sfvec2f.
  */
-FieldValue::Type SFVec2f::type() const throw () { return sfvec2f; }
+FieldValue::Type SFVec2f::type() const throw ()
+{
+    return FieldValue::sfvec2f;
+}
 
 /**
- * @brief Get the x component.
+ * @brief Get the @e x-component.
+ *
+ * @return the @e x-component.
  */
-float SFVec2f::getX() const throw () { return this->d_x[0]; }
+float SFVec2f::getX() const throw ()
+{
+    return this->value[0];
+}
     
 /**
- * @brief Set the x component.
+ * @brief Set the @e x-component.
+ *
+ * @param value the new @e x-component value.
  */
-void SFVec2f::setX(float value) throw () { this->d_x[0] = value; }
+void SFVec2f::setX(const float value) throw ()
+{
+    this->value[0] = value;
+}
 
 /**
- * @brief Get the y component.
+ * @brief Get the @e y-component.
+ *
+ * @return the @e y-component.
  */
-float SFVec2f::getY() const throw () { return this->d_x[1]; }
+float SFVec2f::getY() const throw ()
+{
+    return this->value[1];
+}
         
 /**
- * @brief Set the y component.
+ * @brief Set the @e y-component.
+ *
+ * @param value the new @e y-component value.
  */
-void SFVec2f::setY(float value) throw () { this->d_x[1] = value; }
+void SFVec2f::setY(const float value) throw ()
+{
+    this->value[1] = value;
+}
 
 /**
  * @brief Get the value of this vector.
  *
  * @returns a reference to a 2-element array.
  */
-SFVec2f::ConstArrayReference SFVec2f::get() const throw () {
-    return this->d_x;
+SFVec2f::ConstArrayReference SFVec2f::get() const throw ()
+{
+    return this->value;
 }
 
 /**
@@ -1788,47 +1997,52 @@ SFVec2f::ConstArrayReference SFVec2f::get() const throw () {
  */
 void SFVec2f::set(ConstArrayReference vec) throw ()
 {
-    this->d_x[0] = vec[0];
-    this->d_x[1] = vec[1];
+    this->value[0] = vec[0];
+    this->value[1] = vec[1];
 }
 
 /**
  * @brief Add two vectors.
  *
- * @param vec the vector to add to this one.
+ * @param vec   the vector to add to this one.
  *
  * @return a SFVec2f with a value that is the passed SFVec2f added,
  *         componentwise, to this object.
  */
-const SFVec2f SFVec2f::add(const SFVec2f & vec) const throw () {
+const SFVec2f SFVec2f::add(const SFVec2f & vec) const throw ()
+{
     SFVec2f result(*this);
-    result.d_x[0] += this->d_x[0];
-    result.d_x[1] += this->d_x[1];
+    result.value[0] += this->value[0];
+    result.value[1] += this->value[1];
     return result;
 }
 
 /**
  * @brief Divide this vector by a scalar.
- * @param number a scalar value.
+ *
+ * @param number    a scalar value.
+ *
  * @return a SFVec2f with a value that is the object divided by the
- *         passed numeric value.
+ *      passed numeric value.
  */
-const SFVec2f SFVec2f::divide(float number) const throw () {
+const SFVec2f SFVec2f::divide(const float number) const throw ()
+{
     SFVec2f result(*this);
-    result.d_x[0] /= number;
-    result.d_x[1] /= number;
+    result.value[0] /= number;
+    result.value[1] /= number;
     return result;
 }
 
 /**
  * @brief Dot product.
  *
- * @param vec
+ * @param vec   a SFVec2f value.
  *
  * @return the dot product of this vector and vec.
  */
-double SFVec2f::dot(const SFVec2f & vec) const throw () {
-    return (this->d_x[0] * vec.d_x[0]) + (this->d_x[1] * vec.d_x[1]);
+double SFVec2f::dot(const SFVec2f & vec) const throw ()
+{
+    return (this->value[0] * vec.value[0]) + (this->value[1] * vec.value[1]);
 }
 
 /**
@@ -1836,22 +2050,25 @@ double SFVec2f::dot(const SFVec2f & vec) const throw () {
  *
  * @return the length of this vector.
  */
-double SFVec2f::length() const throw () {
-    return sqrt(d_x[0] * d_x[0] + d_x[1] * d_x[1]);
+double SFVec2f::length() const throw ()
+{
+    return sqrt(this->value[0] * this->value[0]
+                + this->value[1] * this->value[1]);
 }
 
 /**
  * @brief Multiply by a scalar.
  *
- * @param number a scalar value
+ * @param number    a scalar value.
  *
  * @return a SFVec2f with a value that is the object multiplied by the
- *         passed numeric value.
+ *      passed numeric value.
  */
-const SFVec2f SFVec2f::multiply(float number) const throw () {
+const SFVec2f SFVec2f::multiply(const float number) const throw ()
+{
     SFVec2f result(*this);
-    result.d_x[0] *= number;
-    result.d_x[1] *= number;
+    result.value[0] *= number;
+    result.value[1] *= number;
     return result;
 }
 
@@ -1860,10 +2077,11 @@ const SFVec2f SFVec2f::multiply(float number) const throw () {
  *
  * @return a SFVec2f that the result of negating this vector.
  */
-const SFVec2f SFVec2f::negate() const throw () {
+const SFVec2f SFVec2f::negate() const throw ()
+{
     SFVec2f result;
-    result.d_x[0] = -this->d_x[0];
-    result.d_x[1] = -this->d_x[1];
+    result.value[0] = -this->value[0];
+    result.value[1] = -this->value[1];
     return result;
 }
 
@@ -1872,26 +2090,30 @@ const SFVec2f SFVec2f::negate() const throw () {
  *
  * @return a SFVec2f that is this vector normalized.
  */
-const SFVec2f SFVec2f::normalize() const throw () {
+const SFVec2f SFVec2f::normalize() const throw ()
+{
     using OpenVRML_::fpzero;
     
     const double len = this->length();
     if (fpzero(len)) { return *this; }
     SFVec2f result(*this);
-    result.d_x[0] /= len;
-    result.d_x[1] /= len;
+    result.value[0] /= len;
+    result.value[1] /= len;
     return result;
 }
 
 /**
  * @brief Take the difference of two vectors.
- * @param vec the vector to subtract from this one
- * @return a SFVec2f that is the difference between this vector and vec
+ *
+ * @param vec   the vector to subtract from this one.
+ *
+ * @return a SFVec2f that is the difference between this vector and vec.
  */
-const SFVec2f SFVec2f::subtract(const SFVec2f & vec) const throw () {
+const SFVec2f SFVec2f::subtract(const SFVec2f & vec) const throw ()
+{
     SFVec2f result(*this);
-    result.d_x[0] -= vec.d_x[0];
-    result.d_x[1] -= vec.d_x[1];
+    result.value[0] -= vec.value[0];
+    result.value[1] -= vec.value[1];
     return result;
 }
 
@@ -1911,7 +2133,8 @@ const SFVec2f SFVec2f::subtract(const SFVec2f & vec) const throw () {
 /**
  * @brief Construct a SFVec3f with the default value, (0, 0, 0).
  */
-SFVec3f::SFVec3f() throw () {}
+SFVec3f::SFVec3f() throw ()
+{}
 
 /**
  * @brief Construct a SFVec3f.
@@ -1920,59 +2143,63 @@ SFVec3f::SFVec3f() throw () {}
  */
 SFVec3f::SFVec3f(ConstArrayReference vec) throw ()
 {
-    std::copy(vec, vec + 3, this->d_x);
+    std::copy(vec, vec + 3, this->value);
 }
 
 /**
  * @brief Construct a SFVec3f.
  *
- * @param x the <var>x</var>-component
- * @param y the <var>y</var>-component
- * @param z the <var>z</var>-component
+ * @param x the @e x-component.
+ * @param y the @e y-component.
+ * @param z the @e z-component.
  */
-SFVec3f::SFVec3f(float x, float y, float z) throw ()
-{ d_x[0] = x; d_x[1] = y; d_x[2] = z; }
+SFVec3f::SFVec3f(const float x, const float y, const float z) throw ()
+{
+    this->value[0] = x;
+    this->value[1] = y;
+    this->value[2] = z;
+}
 
 /**
  * @brief Destructor.
  */
-SFVec3f::~SFVec3f() throw () {}
+SFVec3f::~SFVec3f() throw ()
+{}
 
 /**
  * @brief Array element dereference operator (const version).
  *
- * @param index a value from 0 - 2. 0 corresponds to the
- *              <var>x</var>-component, 1 corresponds to the
- *              <var>y</var>-component, and 2 corresponds to the
- *              <var>z</var>-component.
+ * @param index a value from 0 - 2. 0 corresponds to the @e x-component, 1
+ *              corresponds to the @e y-component, and 2 corresponds to the
+ *              @e z-component.
  */
-float SFVec3f::operator[](size_t index) const throw () {
+float SFVec3f::operator[](const size_t index) const throw ()
+{
     assert(index < 3);
-    return this->d_x[index];
+    return this->value[index];
 }
 
 /**
  * @brief Array element dereference operator (non-const version).
  *
- * @param index a value from 0 - 2. 0 corresponds to the
- *              <var>x</var>-component, 1 corresponds to the
- *              <var>y</var>-component, and 2 corresponds to the
- *              <var>z</var>-component.
+ * @param index a value from 0 - 2. 0 corresponds to the @e x-component, 1
+ *              corresponds to the @e y-component, and 2 corresponds to the
+ *              @e z-component.
  */
-float & SFVec3f::operator[](size_t index) throw () {
+float & SFVec3f::operator[](const size_t index) throw ()
+{
     assert(index < 3);
-    return this->d_x[index];
+    return this->value[index];
 }
 
 /**
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & SFVec3f::print(std::ostream & out) const {
-    return out << d_x[0] << " " << d_x[1] << " " << d_x[2];
+void SFVec3f::print(std::ostream & out) const
+{
+    out << this->value[0] << ' ' << this->value[1] << ' ' << this->value[2];
 }
 
 /**
@@ -1982,7 +2209,8 @@ std::ostream & SFVec3f::print(std::ostream & out) const {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFVec3f::clone() const throw (std::bad_alloc) {
+FieldValue * SFVec3f::clone() const throw (std::bad_alloc)
+{
     return new SFVec3f(*this);
 }
 
@@ -1995,7 +2223,8 @@ FieldValue * SFVec3f::clone() const throw (std::bad_alloc) {
  *
  * @exception std::bad_cast if @p value is not an SFBool.
  */
-FieldValue & SFVec3f::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFVec3f::assign(const FieldValue & value) throw (std::bad_cast)
+{
     return (*this = dynamic_cast<const SFVec3f &>(value));
 }
 
@@ -2004,57 +2233,79 @@ FieldValue & SFVec3f::assign(const FieldValue & value) throw (std::bad_cast) {
  *
  * @return @c FieldValue::sfvec3f.
  */
-FieldValue::Type SFVec3f::type() const throw () { return sfvec3f; }
+FieldValue::Type SFVec3f::type() const throw ()
+{
+    return FieldValue::sfvec3f;
+}
 
 /**
- * @brief Get the <var>x</var>-component.
+ * @brief Get the @e x-component.
  *
- * @return the <var>x</var>-component of this vector
+ * @return the @e x-component of this vector.
  */
-float SFVec3f::getX() const throw () { return this->d_x[0]; }
+float SFVec3f::getX() const throw ()
+{
+    return this->value[0];
+}
 
 /**
- * @brief Set the <var>x</var>-component.
+ * @brief Set the @e x-component.
  *
- * @param value
+ * @param value the new @e x-component value.
  */
-void SFVec3f::setX(float value) throw () { this->d_x[0] = value; }
+void SFVec3f::setX(const float value) throw ()
+{
+    this->value[0] = value;
+}
 
 /**
- * @brief Get the <var>y</var>-component.
+ * @brief Get the @e y-component.
  *
- * @return the <var>y</var>-component of this vector
+ * @return the @e y-component of this vector.
  */
-float SFVec3f::getY() const throw () { return this->d_x[1]; }
+float SFVec3f::getY() const throw ()
+{
+    return this->value[1];
+}
 
 /**
- * @brief Set the <var>y</var>-component.
+ * @brief Set the @e y-component.
  *
- * @param value
+ * @param value the new @e y-component value.
  */
-void SFVec3f::setY(float value) throw () { this->d_x[1] = value; }
+void SFVec3f::setY(const float value) throw ()
+{
+    this->value[1] = value;
+}
 
 /**
- * @brief Get the <var>z</var>-component.
+ * @brief Get the @e z-component.
  *
- * @return the <var>z</var>-component of this vector
+ * @return the @e z-component of this vector.
  */
-float SFVec3f::getZ() const throw () { return this->d_x[2]; }
+float SFVec3f::getZ() const throw ()
+{
+    return this->value[2];
+}
 
 /**
- * @brief Set the <var>z</var>-component.
+ * @brief Set the @e z-component.
  *
- * @param value
+ * @param value the new @e z-component value.
  */
-void SFVec3f::setZ(float value) throw () { this->d_x[2] = value; }
+void SFVec3f::setZ(const float value) throw ()
+{
+    this->value[2] = value;
+}
 
 /**
  * @brief Get the vector value.
  *
  * @return a reference to a 3-element array
  */
-SFVec3f::ConstArrayReference SFVec3f::get() const throw () {
-    return this->d_x;
+SFVec3f::ConstArrayReference SFVec3f::get() const throw ()
+{
+    return this->value;
 }
 
 /**
@@ -2064,9 +2315,9 @@ SFVec3f::ConstArrayReference SFVec3f::get() const throw () {
  */
 void SFVec3f::set(ConstArrayReference vec) throw ()
 {
-    this->d_x[0] = vec[0];
-    this->d_x[1] = vec[1];
-    this->d_x[2] = vec[2];
+    this->value[0] = vec[0];
+    this->value[1] = vec[1];
+    this->value[2] = vec[2];
 }
 
 /**
@@ -2074,11 +2325,12 @@ void SFVec3f::set(ConstArrayReference vec) throw ()
  *
  * @param vec   a vector.
  */
-const SFVec3f SFVec3f::add(const SFVec3f & vec) const throw () {
+const SFVec3f SFVec3f::add(const SFVec3f & vec) const throw ()
+{
     SFVec3f result(*this);
-    result.d_x[0] += vec.d_x[0];
-    result.d_x[1] += vec.d_x[1];
-    result.d_x[2] += vec.d_x[2];
+    result.value[0] += vec.value[0];
+    result.value[1] += vec.value[1];
+    result.value[2] += vec.value[2];
     return result;
 }
 
@@ -2087,11 +2339,15 @@ const SFVec3f SFVec3f::add(const SFVec3f & vec) const throw () {
  *
  * @param vec   a vector.
  */
-const SFVec3f SFVec3f::cross(const SFVec3f & vec) const throw () {
+const SFVec3f SFVec3f::cross(const SFVec3f & vec) const throw ()
+{
     SFVec3f result;
-    result.d_x[0] = (this->d_x[1] * vec.d_x[2]) - (this->d_x[2] * vec.d_x[1]);
-    result.d_x[1] = (this->d_x[2] * vec.d_x[0]) - (this->d_x[0] * vec.d_x[2]);
-    result.d_x[2] = (this->d_x[0] * vec.d_x[1]) - (this->d_x[1] * vec.d_x[0]);
+    result.value[0] = (this->value[1] * vec.value[2])
+                        - (this->value[2] * vec.value[1]);
+    result.value[1] = (this->value[2] * vec.value[0])
+                        - (this->value[0] * vec.value[2]);
+    result.value[2] = (this->value[0] * vec.value[1])
+                        - (this->value[1] * vec.value[0]);
     return result;
 }
 
@@ -2100,11 +2356,12 @@ const SFVec3f SFVec3f::cross(const SFVec3f & vec) const throw () {
  *
  * @param number    a scalar value.
  */
-const SFVec3f SFVec3f::divide(float number) const throw () {
+const SFVec3f SFVec3f::divide(float number) const throw ()
+{
     SFVec3f result(*this);
-    result.d_x[0] /= number;
-    result.d_x[1] /= number;
-    result.d_x[2] /= number;
+    result.value[0] /= number;
+    result.value[1] /= number;
+    result.value[2] /= number;
     return result;
 }
 
@@ -2113,9 +2370,10 @@ const SFVec3f SFVec3f::divide(float number) const throw () {
  *
  * @param vec   a vector.
  */
-double SFVec3f::dot(const SFVec3f & vec) const throw () {
-    return ((this->d_x[0] * vec.d_x[0]) + (this->d_x[1] * vec.d_x[1])
-            + (this->d_x[2] * vec.d_x[2]));
+double SFVec3f::dot(const SFVec3f & vec) const throw ()
+{
+    return ((this->value[0] * vec.value[0]) + (this->value[1] * vec.value[1])
+            + (this->value[2] * vec.value[2]));
 }
 
 /**
@@ -2123,12 +2381,13 @@ double SFVec3f::dot(const SFVec3f & vec) const throw () {
  *
  * @return the geometric length of the vector.
  */
-double SFVec3f::length() const throw () {
+double SFVec3f::length() const throw ()
+{
     using OpenVRML_::fpzero;
     
-    const double len = sqrt((d_x[0] * d_x[0])
-                          + (d_x[1] * d_x[1])
-                          + (d_x[2] * d_x[2]));
+    const double len = sqrt((this->value[0] * this->value[0])
+                          + (this->value[1] * this->value[1])
+                          + (this->value[2] * this->value[2]));
     return fpzero(len) ? 0.0 : len;
 }
 
@@ -2139,11 +2398,12 @@ double SFVec3f::length() const throw () {
  *
  * @return the product
  */
-const SFVec3f SFVec3f::multiply(float number) const throw () {
+const SFVec3f SFVec3f::multiply(float number) const throw ()
+{
     SFVec3f result(*this);
-    result.d_x[0] *= number;
-    result.d_x[1] *= number;
-    result.d_x[2] *= number;
+    result.value[0] *= number;
+    result.value[1] *= number;
+    result.value[2] *= number;
     return result;
 }
 
@@ -2152,11 +2412,12 @@ const SFVec3f SFVec3f::multiply(float number) const throw () {
  *
  * @return the negatation of this vector
  */
-const SFVec3f SFVec3f::negate() const throw () {
+const SFVec3f SFVec3f::negate() const throw ()
+{
     SFVec3f result(*this);
-    result.d_x[0] = -result.d_x[0];
-    result.d_x[1] = -result.d_x[1];
-    result.d_x[2] = -result.d_x[2];
+    result.value[0] = -result.value[0];
+    result.value[1] = -result.value[1];
+    result.value[2] = -result.value[2];
     return result;
 }
 
@@ -2165,15 +2426,16 @@ const SFVec3f SFVec3f::negate() const throw () {
  *
  * @return a copy of this vector normalized
  */
-const SFVec3f SFVec3f::normalize() const throw () {
+const SFVec3f SFVec3f::normalize() const throw ()
+{
     using OpenVRML_::fpzero;
     
     const double len = this->length();
     SFVec3f result(*this);
     if (!fpzero(len)) {
-        result.d_x[0] /= len;
-        result.d_x[1] /= len;
-        result.d_x[2] /= len;
+        result.value[0] /= len;
+        result.value[1] /= len;
+        result.value[2] /= len;
     }
   
     return result;
@@ -2188,9 +2450,9 @@ const SFVec3f SFVec3f::normalize() const throw () {
  */
 const SFVec3f SFVec3f::subtract(const SFVec3f & vec) const throw () {
     SFVec3f result(*this);
-    result.d_x[0] -= vec.d_x[0];
-    result.d_x[1] -= vec.d_x[1];
-    result.d_x[2] -= vec.d_x[2];
+    result.value[0] -= vec.value[0];
+    result.value[1] -= vec.value[1];
+    result.value[2] -= vec.value[2];
     return result;
 }
 
@@ -2550,7 +2812,7 @@ typedef array_vector<float, 3> ColorVec;
  */
 
 /**
- * @var void * MFColor::data
+ * @var void * MFColor::values
  *
  * @brief Internal representation.
  */
@@ -2566,7 +2828,7 @@ typedef array_vector<float, 3> ColorVec;
  */
 MFColor::MFColor(size_t length, SFColor::ConstArrayPointer values)
     throw (std::bad_alloc):
-    data(new ColorVec(length))
+    values(new ColorVec(length))
 {
     if (values) {
         for (size_t i(0); i < length; ++i) { this->setElement(i, values[i]); }
@@ -2581,7 +2843,7 @@ MFColor::MFColor(size_t length, SFColor::ConstArrayPointer values)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 MFColor::MFColor(const MFColor & mfcolor) throw (std::bad_alloc):
-    data(new ColorVec(*static_cast<const ColorVec *>(mfcolor.data)))
+    values(new ColorVec(*static_cast<const ColorVec *>(mfcolor.values)))
 {}
 
 /**
@@ -2589,7 +2851,7 @@ MFColor::MFColor(const MFColor & mfcolor) throw (std::bad_alloc):
  */
 MFColor::~MFColor() throw ()
 {
-    delete static_cast<ColorVec *>(this->data);
+    delete static_cast<ColorVec *>(this->values);
 }
 
 /**
@@ -2604,8 +2866,8 @@ MFColor::~MFColor() throw ()
 MFColor & MFColor::operator=(const MFColor & mfcolor) throw (std::bad_alloc)
 {
     MFColor temp(mfcolor);
-    static_cast<ColorVec *>(temp.data)
-        ->swap(*static_cast<ColorVec *>(this->data));
+    static_cast<ColorVec *>(temp.values)
+        ->swap(*static_cast<ColorVec *>(this->values));
     return *this;
 }
 
@@ -2617,7 +2879,7 @@ MFColor & MFColor::operator=(const MFColor & mfcolor) throw (std::bad_alloc)
 SFColor::ConstArrayReference MFColor::getElement(size_t index) const throw ()
 {
     assert(index < this->getLength());
-    return (*static_cast<const ColorVec *>(this->data))[index];
+    return (*static_cast<const ColorVec *>(this->values))[index];
 }
 
 /**
@@ -2630,7 +2892,8 @@ void MFColor::setElement(size_t index, SFColor::ConstArrayReference value)
     throw ()
 {
     assert(index < this->getLength());
-    std::copy(value, value + 3, (*static_cast<ColorVec *>(this->data))[index]);
+    std::copy(value, value + 3,
+              (*static_cast<ColorVec *>(this->values))[index]);
 }
 
 /**
@@ -2640,7 +2903,7 @@ void MFColor::setElement(size_t index, SFColor::ConstArrayReference value)
  */
 size_t MFColor::getLength() const throw ()
 {
-    return static_cast<ColorVec *>(this->data)->size();
+    return static_cast<ColorVec *>(this->values)->size();
 }
 
 /**
@@ -2656,7 +2919,7 @@ size_t MFColor::getLength() const throw ()
  */
 void MFColor::setLength(size_t length) throw (std::bad_alloc)
 {
-    static_cast<ColorVec *>(this->data)->resize(length);
+    static_cast<ColorVec *>(this->values)->resize(length);
 }
 
 /**
@@ -2671,8 +2934,8 @@ void MFColor::insertElement(const size_t index,
                             SFColor::ConstArrayReference value)
     throw (std::bad_alloc)
 {
-    ColorVec & data = *static_cast<ColorVec *>(this->data);
-    data.insert(data.begin() + index, value);
+    ColorVec & values = *static_cast<ColorVec *>(this->values);
+    values.insert(values.begin() + index, value);
 }
 
 /**
@@ -2685,8 +2948,8 @@ void MFColor::insertElement(const size_t index,
  */
 void MFColor::removeElement(size_t index) throw ()
 {
-    ColorVec & data = *static_cast<ColorVec *>(this->data);
-    data.erase(data.begin() + index);
+    ColorVec & values = *static_cast<ColorVec *>(this->values);
+    values.erase(values.begin() + index);
 }
 
 /**
@@ -2729,18 +2992,22 @@ FieldValue::Type MFColor::type() const throw ()
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & MFColor::print(std::ostream & out) const
+void MFColor::print(std::ostream & out) const
 {
-    const ColorVec & data = *static_cast<ColorVec *>(this->data);
+    const ColorVec & values = *static_cast<ColorVec *>(this->values);
     out << '[';
-    for (ColorVec::const_iterator i(data.begin()); i != data.end() - 1; ++i) {
-        out << (*i)[0] << ' ' << (*i)[1] << ' ' << (*i)[2] << ", ";
+    if (this->getLength() > 1) {
+        for (ColorVec::const_iterator i(values.begin()); i != values.end() - 1;
+                ++i) {
+            out << (*i)[0] << ' ' << (*i)[1] << ' ' << (*i)[2] << ", ";
+        }
     }
-    return out << data.back()[0] << ' ' << data.back()[1] << ' '
-               << data.back()[2] << ']';
+    if (this->getLength() > 0) {
+        out << values.back()[0] << ' ' << values.back()[1] << ' '
+            << values.back()[2];
+    }
+    out << ']';
 }
 
 
@@ -2756,11 +3023,12 @@ std::ostream & MFColor::print(std::ostream & out) const
  * @param length the number of floats in the array
  * @param values a pointer to a float array
  */
-MFFloat::MFFloat(size_t length, const float * values) throw (std::bad_alloc):
-    data(length)
+MFFloat::MFFloat(const size_t length, const float * values)
+    throw (std::bad_alloc):
+    values(length)
 {
     if (values) {
-        std::copy(values, values + length, this->data.begin());
+        std::copy(values, values + length, this->values.begin());
     }
 }
 
@@ -2775,10 +3043,10 @@ MFFloat::~MFFloat() throw ()
  *
  * @param index
  */
-const float & MFFloat::getElement(size_t index) const throw ()
+const float & MFFloat::getElement(const size_t index) const throw ()
 {
     assert(index < this->getLength());
-    return this->data[index];
+    return this->values[index];
 }
 
 /**
@@ -2790,7 +3058,7 @@ const float & MFFloat::getElement(size_t index) const throw ()
 void MFFloat::setElement(const size_t index, const float value) throw ()
 {
     assert(index < this->getLength());
-    this->data[index] = value;
+    this->values[index] = value;
 }
 
 /**
@@ -2800,7 +3068,7 @@ void MFFloat::setElement(const size_t index, const float value) throw ()
  */
 size_t MFFloat::getLength() const throw ()
 {
-    return this->data.size();
+    return this->values.size();
 }
 
 /**
@@ -2816,7 +3084,7 @@ size_t MFFloat::getLength() const throw ()
  */
 void MFFloat::setLength(const size_t length) throw (std::bad_alloc)
 {
-    this->data.resize(length);
+    this->values.resize(length);
 }
 
 /**
@@ -2830,7 +3098,7 @@ void MFFloat::setLength(const size_t length) throw (std::bad_alloc)
 void MFFloat::insertElement(const size_t index, const float value)
     throw (std::bad_alloc)
 {
-    this->data.insert(this->data.begin() + index, value);
+    this->values.insert(this->values.begin() + index, value);
 }
 
 /**
@@ -2843,7 +3111,7 @@ void MFFloat::insertElement(const size_t index, const float value)
  */
 void MFFloat::removeElement(size_t index) throw ()
 {
-    this->data.erase(this->data.begin() + index);
+    this->values.erase(this->values.begin() + index);
 }
 
 /**
@@ -2886,17 +3154,20 @@ FieldValue::Type MFFloat::type() const throw ()
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & MFFloat::print(std::ostream & out) const
+void MFFloat::print(std::ostream & out) const
 {
     out << '[';
-    for (std::vector<float>::const_iterator i(this->data.begin());
-            i != this->data.end() - 1; ++i) {
-        out << *i << ", ";
+    if (this->getLength() > 1) {
+        for (std::vector<float>::const_iterator i(this->values.begin());
+                i != this->values.end() - 1; ++i) {
+            out << *i << ", ";
+        }
     }
-    return out << this->data.back() << ']';
+    if (this->getLength() > 0) {
+        out << this->values.back();
+    }
+    out << ']';
 }
 
 
@@ -2914,10 +3185,10 @@ std::ostream & MFFloat::print(std::ostream & out) const
  */
 MFInt32::MFInt32(const size_t length, const long * const values)
     throw (std::bad_alloc):
-    data(length)
+    values(length)
 {
     if (values) {
-        std::copy(values, values + length, this->data.begin());
+        std::copy(values, values + length, this->values.begin());
     }
 }
 
@@ -2935,7 +3206,7 @@ MFInt32::~MFInt32() throw ()
 const long & MFInt32::getElement(const size_t index) const throw ()
 {
     assert(index < this->getLength());
-    return this->data[index];
+    return this->values[index];
 }
 
 /**
@@ -2947,7 +3218,7 @@ const long & MFInt32::getElement(const size_t index) const throw ()
 void MFInt32::setElement(const size_t index, const long value) throw ()
 {
     assert(index < this->getLength());
-    this->data[index] = value;
+    this->values[index] = value;
 }
 
 /**
@@ -2957,7 +3228,7 @@ void MFInt32::setElement(const size_t index, const long value) throw ()
  */
 size_t MFInt32::getLength() const throw ()
 {
-    return this->data.size();
+    return this->values.size();
 }
 
 /**
@@ -2973,7 +3244,7 @@ size_t MFInt32::getLength() const throw ()
  */
 void MFInt32::setLength(size_t length) throw (std::bad_alloc)
 {
-    this->data.resize(length);
+    this->values.resize(length);
 }
 
 /**
@@ -2987,7 +3258,7 @@ void MFInt32::setLength(size_t length) throw (std::bad_alloc)
 void MFInt32::insertElement(const size_t index, const long value)
     throw (std::bad_alloc)
 {
-    this->data.insert(this->data.begin() + index, value);
+    this->values.insert(this->values.begin() + index, value);
 }
 
 /**
@@ -3000,7 +3271,7 @@ void MFInt32::insertElement(const size_t index, const long value)
  */
 void MFInt32::removeElement(size_t index) throw ()
 {
-    this->data.erase(this->data.begin() + index);
+    this->values.erase(this->values.begin() + index);
 }
 
 /**
@@ -3043,16 +3314,20 @@ FieldValue::Type MFInt32::type() const throw ()
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & MFInt32::print(std::ostream & out) const {
+void MFInt32::print(std::ostream & out) const
+{
     out << '[';
-    for (std::vector<long>::const_iterator i(this->data.begin());
-            i != this->data.end() - 1; ++i) {
-        out << *i << ", ";
+    if (this->getLength() > 1) {
+        for (std::vector<long>::const_iterator i(this->values.begin());
+                i != this->values.end() - 1; ++i) {
+            out << *i << ", ";
+        }
     }
-    return out << this->data.back() << ']';
+    if (this->getLength() > 0) {
+        out << this->values.back();
+    }
+    out << ']';
 }
 
 
@@ -3069,17 +3344,17 @@ std::ostream & MFInt32::print(std::ostream & out) const {
  * @param nodes a pointer to an array of Node pointers
  */
 MFNode::MFNode(const size_t length, const NodePtr * nodes)
-        throw (std::bad_alloc):
-        nodes(length) {
-    if (nodes) {
-        std::copy(nodes, nodes + length, this->nodes.begin());
-    }
+    throw (std::bad_alloc):
+    nodes(length)
+{
+    if (nodes) { std::copy(nodes, nodes + length, this->nodes.begin()); }
 }
 
 /**
  * @brief Destructor.
  */
-MFNode::~MFNode() throw () {}
+MFNode::~MFNode() throw ()
+{}
 
 /**
  * @brief Get element.
@@ -3087,7 +3362,8 @@ MFNode::~MFNode() throw () {}
  * @param index
  * @return a smart pointer to a Node
  */
-const NodePtr & MFNode::getElement(const size_t index) const throw () {
+const NodePtr & MFNode::getElement(const size_t index) const throw ()
+{
     assert(index < this->nodes.size());
     return this->nodes[index];
 }
@@ -3095,7 +3371,10 @@ const NodePtr & MFNode::getElement(const size_t index) const throw () {
 /**
  * @brief Remove all elements.
  */
-void MFNode::clear() throw () { this->nodes.clear(); }
+void MFNode::clear() throw ()
+{
+    this->nodes.clear();
+}
 
 /**
  * @brief Set element.
@@ -3103,7 +3382,8 @@ void MFNode::clear() throw () { this->nodes.clear(); }
  * @param index
  * @param node
  */
-void MFNode::setElement(const size_t index, const NodePtr & node) throw () {
+void MFNode::setElement(const size_t index, const NodePtr & node) throw ()
+{
     assert(index < this->nodes.size());
     this->nodes[index] = node;
 }
@@ -3113,7 +3393,10 @@ void MFNode::setElement(const size_t index, const NodePtr & node) throw () {
  *
  * @return the number of nodes in the array
  */
-size_t MFNode::getLength() const throw () { return this->nodes.size(); }
+size_t MFNode::getLength() const throw ()
+{
+    return this->nodes.size();
+}
 
 /**
  * @brief Set the length.
@@ -3125,7 +3408,8 @@ size_t MFNode::getLength() const throw () { return this->nodes.size(); }
  *
  * @param length the new length
  */
-void MFNode::setLength(const size_t length) throw (std::bad_alloc) {
+void MFNode::setLength(const size_t length) throw (std::bad_alloc)
+{
     this->nodes.resize(length);
 }
 
@@ -3134,14 +3418,14 @@ void MFNode::setLength(const size_t length) throw (std::bad_alloc) {
  *
  * @param node
  */
-bool MFNode::exists(const Node & node) const {
+bool MFNode::exists(const Node & node) const
+{
     for (std::vector<NodePtr>::const_iterator i(this->nodes.begin());
             i != this->nodes.end(); ++i) {
         if (i->get() == &node) {
             return true;
         }
     }
-    
     return false;
 }
 
@@ -3155,7 +3439,8 @@ bool MFNode::exists(const Node & node) const {
  *
  * @return @c true if a node was added, @c false otherwise.
  */
-bool MFNode::addNode(const NodePtr & node) {
+bool MFNode::addNode(const NodePtr & node)
+{
     assert(node);
     if (!this->exists(*node)) {
         this->nodes.push_back(node);
@@ -3175,7 +3460,8 @@ bool MFNode::addNode(const NodePtr & node) {
  * @return <code>true</code> if a node was removed, <code>false</code>
  *         otherwise
  */
-bool MFNode::removeNode(const Node & node) {
+bool MFNode::removeNode(const Node & node)
+{
     for (std::vector<NodePtr>::iterator i(this->nodes.begin());
             i != this->nodes.end(); ++i) {
         if (i->get() == &node) {
@@ -3195,9 +3481,10 @@ bool MFNode::removeNode(const Node & node) {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void MFNode::insertElement(size_t index, const NodePtr & node)
-        throw (std::bad_alloc) {
-  assert(index < this->nodes.size());
-  this->nodes.insert(this->nodes.begin() + index, node);
+    throw (std::bad_alloc)
+{
+    assert(index < this->nodes.size());
+    this->nodes.insert(this->nodes.begin() + index, node);
 }
 
 /**
@@ -3208,9 +3495,10 @@ void MFNode::insertElement(size_t index, const NodePtr & node)
  * @todo Right now this fails silently if @p index is out of range. We should
  *      either fail with an assertion or throw std::out_of_range.
  */
-void MFNode::removeElement(size_t index) throw () {
-  assert(index < this->nodes.size());
-  this->nodes.erase(this->nodes.begin() + index);
+void MFNode::removeElement(size_t index) throw ()
+{
+    assert(index < this->nodes.size());
+    this->nodes.erase(this->nodes.begin() + index);
 }
 
 /**
@@ -3220,7 +3508,8 @@ void MFNode::removeElement(size_t index) throw () {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFNode::clone() const throw (std::bad_alloc) {
+FieldValue * MFNode::clone() const throw (std::bad_alloc)
+{
     return new MFNode(*this);
 }
 
@@ -3233,7 +3522,8 @@ FieldValue * MFNode::clone() const throw (std::bad_alloc) {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 FieldValue & MFNode::assign(const FieldValue & value)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     return (*this = dynamic_cast<const MFNode &>(value));
 }
 
@@ -3242,24 +3532,29 @@ FieldValue & MFNode::assign(const FieldValue & value)
  *
  * @return @c FieldValue::mfnode.
  */
-FieldValue::Type MFNode::type() const throw () { return mfnode; }
+FieldValue::Type MFNode::type() const throw ()
+{
+    return FieldValue::mfnode;
+}
 
 /**
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & MFNode::print(std::ostream & out) const {
-    if (this->nodes.size() != 1) { out << '['; }
-    for (std::vector<NodePtr>::const_iterator i(this->nodes.begin());
-            i != this->nodes.end(); ++i) {
-        out << **i << std::endl;
+void MFNode::print(std::ostream & out) const
+{
+    out << '[';
+    if (this->getLength() > 1) {
+        for (std::vector<NodePtr>::const_iterator i(this->nodes.begin());
+                i != this->nodes.end() - 1; ++i) {
+            out << **i << ", ";
+        }
     }
-    if (this->nodes.size() != 1) { out << ']'; }
-    
-    return out;
+    if (this->getLength() > 0) {
+        out << this->nodes.back();
+    }
+    out << ']';
 }
 
 typedef array_vector<float, 4> RotationVec;
@@ -3271,7 +3566,7 @@ typedef array_vector<float, 4> RotationVec;
  */
 
 /**
- * @var void * MFRotation::data
+ * @var void * MFRotation::values
  *
  * @brief Internal representation.
  */
@@ -3283,9 +3578,10 @@ typedef array_vector<float, 4> RotationVec;
  * @param values    a pointer to an array of 4-element arrays comprising
  *                  rotation values to initialize the MFRotation.
  */
-MFRotation::MFRotation(size_t length, SFRotation::ConstArrayPointer values)
+MFRotation::MFRotation(const size_t length,
+                       SFRotation::ConstArrayPointer values)
     throw (std::bad_alloc):
-    data(new RotationVec(length))
+    values(new RotationVec(length))
 {
     if (values) {
         for (size_t i(0); i < length; ++i) { this->setElement(i, values[i]); }
@@ -3298,7 +3594,7 @@ MFRotation::MFRotation(size_t length, SFRotation::ConstArrayPointer values)
  * @param mfrotation the object to copy
  */
 MFRotation::MFRotation(const MFRotation & mfrotation) throw (std::bad_alloc):
-    data(new RotationVec(*static_cast<const RotationVec *>(mfrotation.data)))
+    values(new RotationVec(*static_cast<const RotationVec *>(mfrotation.values)))
 {}
 
 /**
@@ -3306,7 +3602,7 @@ MFRotation::MFRotation(const MFRotation & mfrotation) throw (std::bad_alloc):
  */
 MFRotation::~MFRotation() throw ()
 {
-    delete static_cast<RotationVec *>(this->data);
+    delete static_cast<RotationVec *>(this->values);
 }
 
 /**
@@ -3318,8 +3614,8 @@ MFRotation & MFRotation::operator=(const MFRotation & mfrotation)
     throw (std::bad_alloc)
 {
     MFRotation temp(mfrotation);
-    static_cast<RotationVec *>(temp.data)
-        ->swap(*static_cast<RotationVec *>(this->data));
+    static_cast<RotationVec *>(temp.values)
+        ->swap(*static_cast<RotationVec *>(this->values));
     return *this;
 }
 
@@ -3332,7 +3628,7 @@ SFRotation::ConstArrayReference MFRotation::getElement(size_t index) const
     throw ()
 {
     assert(index < this->getLength());
-    return (*static_cast<const RotationVec *>(this->data))[index];
+    return (*static_cast<const RotationVec *>(this->values))[index];
 }
 
 /**
@@ -3346,7 +3642,7 @@ void MFRotation::setElement(size_t index, SFRotation::ConstArrayReference value)
 {
     assert(index < this->getLength());
     std::copy(value, value + 4,
-              (*static_cast<RotationVec *>(this->data))[index]);
+              (*static_cast<RotationVec *>(this->values))[index]);
 }
 
 /**
@@ -3356,7 +3652,7 @@ void MFRotation::setElement(size_t index, SFRotation::ConstArrayReference value)
  */
 size_t MFRotation::getLength() const throw ()
 {
-    return static_cast<RotationVec *>(this->data)->size();
+    return static_cast<RotationVec *>(this->values)->size();
 }
 
 /**
@@ -3370,7 +3666,7 @@ size_t MFRotation::getLength() const throw ()
  */
 void MFRotation::setLength(size_t length) throw (std::bad_alloc)
 {
-    static_cast<RotationVec *>(this->data)->resize(length);
+    static_cast<RotationVec *>(this->values)->resize(length);
 }
 
 /**
@@ -3385,8 +3681,8 @@ void MFRotation::insertElement(size_t index,
                                SFRotation::ConstArrayReference value)
         throw (std::bad_alloc)
 {
-    RotationVec & data = *static_cast<RotationVec *>(this->data);
-    data.insert(data.begin() + index, value);
+    RotationVec & values = *static_cast<RotationVec *>(this->values);
+    values.insert(values.begin() + index, value);
 }
 
 /**
@@ -3399,8 +3695,8 @@ void MFRotation::insertElement(size_t index,
  */
 void MFRotation::removeElement(const size_t index) throw ()
 {
-    RotationVec & data = *static_cast<RotationVec *>(this->data);
-    data.erase(data.begin() + index);
+    RotationVec & values = *static_cast<RotationVec *>(this->values);
+    values.erase(values.begin() + index);
 }
 
 /**
@@ -3443,18 +3739,22 @@ FieldValue::Type MFRotation::type() const throw ()
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & MFRotation::print(std::ostream & out) const
+void MFRotation::print(std::ostream & out) const
 {
-    const RotationVec & data = *static_cast<RotationVec *>(this->data);
+    const RotationVec & values = *static_cast<RotationVec *>(this->values);
     out << '[';
-    for (RotationVec::const_iterator i(data.begin()); i != data.end() - 1; ++i) {
-        out << (*i)[0] << ' ' << (*i)[1] << ' ' << (*i)[2] << ", ";
+    if (this->getLength() > 1) {
+        for (RotationVec::const_iterator i(values.begin()); i != values.end() - 1;
+                ++i) {
+            out << (*i)[0] << ' ' << (*i)[1] << ' ' << (*i)[2] << ", ";
+        }
     }
-    return out << data.back()[0] << ' ' << data.back()[1] << ' '
-               << data.back()[2] << ']';
+    if (this->getLength() > 0) {
+        out << values.back()[0] << ' ' << values.back()[1] << ' '
+            << values.back()[2];
+    }
+    out << ']';
 }
 
 
@@ -3472,9 +3772,10 @@ std::ostream & MFRotation::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-MFString::MFString(size_t length, const std::string * values)
-        throw (std::bad_alloc):
-        values(length) {
+MFString::MFString(const size_t length, const std::string * values)
+    throw (std::bad_alloc):
+    values(length)
+{
     if (values) { std::copy(values, values + length, this->values.begin()); }
 }
 
@@ -3486,12 +3787,14 @@ MFString::MFString(size_t length, const std::string * values)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 MFString::MFString(const MFString & mfstring) throw (std::bad_alloc):
-        values(mfstring.values) {}
+    values(mfstring.values)
+{}
 
 /**
  * @brief Destructor.
  */
-MFString::~MFString() throw () {}
+MFString::~MFString() throw ()
+{}
 
 /**
  * @brief Assignment operator.
@@ -3499,7 +3802,8 @@ MFString::~MFString() throw () {}
  * @param mfstring  the object to copy into this one
  */
 MFString & MFString::operator=(const MFString & mfstring)
-        throw (std::bad_alloc) {
+    throw (std::bad_alloc)
+{
     if (this != &mfstring) { this->values = mfstring.values; }
     return *this;
 }
@@ -3511,7 +3815,8 @@ MFString & MFString::operator=(const MFString & mfstring)
  *
  * @return the array element
  */
-const std::string & MFString::getElement(size_t index) const throw () {
+const std::string & MFString::getElement(size_t index) const throw ()
+{
     assert(index < this->values.size());
     return this->values[index];
 }
@@ -3521,9 +3826,12 @@ const std::string & MFString::getElement(size_t index) const throw () {
  *
  * @param index the index of the element to set
  * @param value the new value
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFString::setElement(size_t index, const std::string & value)
-        throw (std::bad_alloc) {
+void MFString::setElement(const size_t index, const std::string & value)
+    throw (std::bad_alloc)
+{
     assert(index < this->values.size());
     this->values[index] = value;
 }
@@ -3533,16 +3841,23 @@ void MFString::setElement(size_t index, const std::string & value)
  *
  * @return the number of values in the array
  */
-size_t MFString::getLength() const throw () { return this->values.size(); }
+size_t MFString::getLength() const throw ()
+{
+    return this->values.size();
+}
 
 /**
- * Set the length of the vector of std::strings. If the new length is
- * greater than the current length, the new positions are filled with
- * empty std::strings.
+ * @brief Set the length of the vector of std::strings.
+ *
+ * If the new length is greater than the current length, the new positions are
+ * filled with empty std::strings.
  *
  * @param length the new length
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFString::setLength(const size_t length) throw (std::bad_alloc) {
+void MFString::setLength(const size_t length) throw (std::bad_alloc)
+{
     this->values.resize(length);
 }
 
@@ -3554,8 +3869,9 @@ void MFString::setLength(const size_t length) throw (std::bad_alloc) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFString::insertElement(size_t index, const std::string & value)
-        throw (std::bad_alloc) {
+void MFString::insertElement(const size_t index, const std::string & value)
+    throw (std::bad_alloc)
+{
     assert(index < this->values.size());
     this->values.insert(this->values.begin() + index, value);
 }
@@ -3568,7 +3884,8 @@ void MFString::insertElement(size_t index, const std::string & value)
  * @todo Right now this fails silently if @p index is out of range. We should
  *      either fail with an assertion or throw std::out_of_range.
  */
-void MFString::removeElement(size_t index) throw () {
+void MFString::removeElement(const size_t index) throw ()
+{
     assert(index < this->values.size());
     this->values.erase(this->values.begin() + index);
 }
@@ -3608,18 +3925,23 @@ FieldValue::Type MFString::type() const throw () { return mfstring; }
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & MFString::print(std::ostream & os) const {
-  int n = getLength();
-
-  if (n != 1) os << '[';
-  for (int i=0; i<n; ++i)
-    os << '\"' << (this->values[i]).c_str() << "\" ";
-  if (n != 1) os << ']';
-
-  return os;
+void MFString::print(std::ostream & out) const
+{
+    using std::string;
+    using std::vector;
+    
+    out << '[';
+    if (this->getLength() > 1) {
+        for (vector<string>::const_iterator i(this->values.begin());
+                i != this->values.end() - 1; ++i) {
+            out << '\"' << *i << "\", ";
+        }
+    }
+    if (this->getLength() > 0) {
+        out << '\"' << this->values.back() << '\"';
+    }
+    out << ']';
 }
 
 
@@ -3639,10 +3961,10 @@ std::ostream & MFString::print(std::ostream & os) const {
  */
 MFTime::MFTime(const size_t length, const double * const values)
     throw (std::bad_alloc):
-    data(length)
+    values(length)
 {
     if (values) {
-        std::copy(values, values + length, this->data.begin());
+        std::copy(values, values + length, this->values.begin());
     }
 }
 
@@ -3660,7 +3982,7 @@ MFTime::~MFTime() throw ()
 const double & MFTime::getElement(const size_t index) const throw ()
 {
     assert(index < this->getLength());
-    return this->data[index];
+    return this->values[index];
 }
 
 /**
@@ -3672,7 +3994,7 @@ const double & MFTime::getElement(const size_t index) const throw ()
 void MFTime::setElement(const size_t index, const double value) throw ()
 {
     assert(index < this->getLength());
-    this->data[index] = value;
+    this->values[index] = value;
 }
 
 /**
@@ -3682,7 +4004,7 @@ void MFTime::setElement(const size_t index, const double value) throw ()
  */
 size_t MFTime::getLength() const throw ()
 {
-    return this->data.size();
+    return this->values.size();
 }
 
 /**
@@ -3696,7 +4018,7 @@ size_t MFTime::getLength() const throw ()
  */
 void MFTime::setLength(const size_t length) throw (std::bad_alloc)
 {
-    this->data.resize(length);
+    this->values.resize(length);
 }
 
 /**
@@ -3710,7 +4032,7 @@ void MFTime::setLength(const size_t length) throw (std::bad_alloc)
 void MFTime::insertElement(const size_t index, const double value)
     throw (std::bad_alloc)
 {
-    this->data.insert(this->data.begin() + index, value);
+    this->values.insert(this->values.begin() + index, value);
 }
 
 /**
@@ -3723,7 +4045,7 @@ void MFTime::insertElement(const size_t index, const double value)
  */
 void MFTime::removeElement(const size_t index) throw ()
 {
-    this->data.erase(this->data.begin() + index);
+    this->values.erase(this->values.begin() + index);
 }
 
 /**
@@ -3766,17 +4088,20 @@ FieldValue::Type MFTime::type() const throw ()
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & MFTime::print(std::ostream & out) const
+void MFTime::print(std::ostream & out) const
 {
     out << '[';
-    for (std::vector<double>::const_iterator i(this->data.begin());
-            i != this->data.end() - 1; ++i) {
-        out << *i << ", ";
+    if (this->getLength() > 1) {
+        for (std::vector<double>::const_iterator i(this->values.begin());
+                i != this->values.end() - 1; ++i) {
+            out << *i << ", ";
+        }
     }
-    return out << this->data.back() << ']';
+    if (this->getLength() > 0) {
+        out << this->values.back();
+    }
+    out << ']';
 }
 
 
@@ -3797,7 +4122,7 @@ typedef array_vector<float, 2> Vec2fVec;
  */
 MFVec2f::MFVec2f(size_t length, SFVec2f::ConstArrayPointer values)
     throw (std::bad_alloc):
-    data(new Vec2fVec(length))
+    values(new Vec2fVec(length))
 {
     if (values) {
         for (size_t i(0); i < length; ++i) { this->setElement(i, values[i]); }
@@ -3812,7 +4137,7 @@ MFVec2f::MFVec2f(size_t length, SFVec2f::ConstArrayPointer values)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 MFVec2f::MFVec2f(const MFVec2f & mfvec2f) throw (std::bad_alloc):
-    data(new Vec2fVec(*static_cast<const Vec2fVec *>(mfvec2f.data)))
+    values(new Vec2fVec(*static_cast<const Vec2fVec *>(mfvec2f.values)))
 {}
 
 /**
@@ -3820,7 +4145,7 @@ MFVec2f::MFVec2f(const MFVec2f & mfvec2f) throw (std::bad_alloc):
  */
 MFVec2f::~MFVec2f() throw ()
 {
-    delete static_cast<Vec2fVec *>(this->data);
+    delete static_cast<Vec2fVec *>(this->values);
 }
 
 /**
@@ -3833,8 +4158,8 @@ MFVec2f::~MFVec2f() throw ()
 MFVec2f & MFVec2f::operator=(const MFVec2f & mfvec2f) throw (std::bad_alloc)
 {
     MFVec2f temp(mfvec2f);
-    static_cast<Vec2fVec *>(temp.data)
-        ->swap(*static_cast<Vec2fVec *>(this->data));
+    static_cast<Vec2fVec *>(temp.values)
+        ->swap(*static_cast<Vec2fVec *>(this->values));
     return *this;
 }
 
@@ -3843,10 +4168,11 @@ MFVec2f & MFVec2f::operator=(const MFVec2f & mfvec2f) throw (std::bad_alloc)
  *
  * @param index
  */
-SFVec2f::ConstArrayReference MFVec2f::getElement(size_t index) const throw ()
+SFVec2f::ConstArrayReference MFVec2f::getElement(const size_t index) const
+    throw ()
 {
     assert(index < this->getLength());
-    return (*static_cast<const Vec2fVec *>(this->data))[index];
+    return (*static_cast<const Vec2fVec *>(this->values))[index];
 }
 
 /**
@@ -3859,7 +4185,8 @@ void MFVec2f::setElement(size_t index, SFVec2f::ConstArrayReference value)
     throw ()
 {
     assert(index < this->getLength());
-    std::copy(value, value + 2, (*static_cast<Vec2fVec *>(this->data))[index]);
+    std::copy(value, value + 2,
+              (*static_cast<Vec2fVec *>(this->values))[index]);
 }
 
 /**
@@ -3869,7 +4196,7 @@ void MFVec2f::setElement(size_t index, SFVec2f::ConstArrayReference value)
  */
 size_t MFVec2f::getLength() const throw ()
 {
-    return static_cast<const Vec2fVec *>(this->data)->size();
+    return static_cast<const Vec2fVec *>(this->values)->size();
 }
 
 /**
@@ -3884,7 +4211,7 @@ size_t MFVec2f::getLength() const throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void MFVec2f::setLength(size_t length) throw (std::bad_alloc) {
-    static_cast<Vec2fVec *>(this->data)->resize(length);
+    static_cast<Vec2fVec *>(this->values)->resize(length);
 }
 
 /**
@@ -3898,8 +4225,8 @@ void MFVec2f::setLength(size_t length) throw (std::bad_alloc) {
 void MFVec2f::insertElement(size_t index, SFVec2f::ConstArrayReference value)
     throw (std::bad_alloc)
 {
-    Vec2fVec & data = *static_cast<Vec2fVec *>(this->data);
-    data.insert(data.begin() + index, value);
+    Vec2fVec & values = *static_cast<Vec2fVec *>(this->values);
+    values.insert(values.begin() + index, value);
 }
 
 /**
@@ -3912,8 +4239,8 @@ void MFVec2f::insertElement(size_t index, SFVec2f::ConstArrayReference value)
  */
 void MFVec2f::removeElement(size_t index) throw ()
 {
-    Vec2fVec & data = *static_cast<Vec2fVec *>(this->data);
-    data.erase(data.begin() + index);
+    Vec2fVec & values = *static_cast<Vec2fVec *>(this->values);
+    values.erase(values.begin() + index);
 }
 
 /**
@@ -3956,16 +4283,21 @@ FieldValue::Type MFVec2f::type() const throw ()
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & MFVec2f::print(std::ostream & out) const {
-    const Vec2fVec & data = *static_cast<Vec2fVec *>(this->data);
+void MFVec2f::print(std::ostream & out) const
+{
+    const Vec2fVec & values = *static_cast<Vec2fVec *>(this->values);
     out << '[';
-    for (Vec2fVec::const_iterator i(data.begin()); i != data.end() - 1; ++i) {
-        out << (*i)[0] << ' ' << (*i)[1] << ", ";
+    if (this->getLength() > 1) {
+        for (Vec2fVec::const_iterator i(values.begin()); i != values.end() - 1;
+                ++i) {
+            out << (*i)[0] << ' ' << (*i)[1] << ", ";
+        }
     }
-    return out << data.back()[0] << ' ' << data.back()[1] << ']';
+    if (this->getLength() > 0) {
+        out << values.back()[0] << ' ' << values.back()[1];
+    }
+    out << ']';
 }
 
 
@@ -3986,9 +4318,9 @@ typedef array_vector<float, 3> Vec3fVec;
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-MFVec3f::MFVec3f(size_t length, SFVec3f::ConstArrayPointer values)
+MFVec3f::MFVec3f(const size_t length, SFVec3f::ConstArrayPointer values)
     throw (std::bad_alloc):
-    data(new Vec3fVec(length))
+    values(new Vec3fVec(length))
 {
     if (values) {
         for (size_t i(0); i < length; ++i) { this->setElement(i, values[i]); }
@@ -4003,7 +4335,7 @@ MFVec3f::MFVec3f(size_t length, SFVec3f::ConstArrayPointer values)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 MFVec3f::MFVec3f(const MFVec3f & mfvec3f) throw (std::bad_alloc):
-    data(new Vec3fVec(*static_cast<const Vec3fVec *>(mfvec3f.data)))
+    values(new Vec3fVec(*static_cast<const Vec3fVec *>(mfvec3f.values)))
 {}
 
 /**
@@ -4011,7 +4343,7 @@ MFVec3f::MFVec3f(const MFVec3f & mfvec3f) throw (std::bad_alloc):
  */
 MFVec3f::~MFVec3f() throw ()
 {
-    delete static_cast<Vec3fVec *>(this->data);
+    delete static_cast<Vec3fVec *>(this->values);
 }
 
 /**
@@ -4022,8 +4354,8 @@ MFVec3f::~MFVec3f() throw ()
 MFVec3f & MFVec3f::operator=(const MFVec3f & mfvec3f) throw (std::bad_alloc)
 {
     MFVec3f temp(mfvec3f);
-    static_cast<Vec3fVec *>(temp.data)
-        ->swap(*static_cast<Vec3fVec *>(this->data));
+    static_cast<Vec3fVec *>(temp.values)
+        ->swap(*static_cast<Vec3fVec *>(this->values));
     return *this;
 }
 
@@ -4032,10 +4364,11 @@ MFVec3f & MFVec3f::operator=(const MFVec3f & mfvec3f) throw (std::bad_alloc)
  *
  * @param index
  */
-SFVec3f::ConstArrayReference MFVec3f::getElement(size_t index) const throw ()
+SFVec3f::ConstArrayReference MFVec3f::getElement(const size_t index) const
+    throw ()
 {
     assert(index < this->getLength());
-    return (*static_cast<const Vec3fVec *>(this->data))[index];
+    return (*static_cast<const Vec3fVec *>(this->values))[index];
 }
 
 /**
@@ -4044,11 +4377,12 @@ SFVec3f::ConstArrayReference MFVec3f::getElement(size_t index) const throw ()
  * @param index
  * @param value
  */
-void MFVec3f::setElement(size_t index, SFVec3f::ConstArrayReference value)
+void MFVec3f::setElement(const size_t index, SFVec3f::ConstArrayReference value)
     throw ()
 {
     assert(index < this->getLength());
-    std::copy(value, value + 3, (*static_cast<Vec3fVec *>(this->data))[index]);
+    std::copy(value, value + 3,
+              (*static_cast<Vec3fVec *>(this->values))[index]);
 }
 
 /**
@@ -4058,7 +4392,7 @@ void MFVec3f::setElement(size_t index, SFVec3f::ConstArrayReference value)
  */
 size_t MFVec3f::getLength() const throw ()
 {
-    return static_cast<const Vec3fVec *>(this->data)->size();
+    return static_cast<const Vec3fVec *>(this->values)->size();
 }
 
 /**
@@ -4073,7 +4407,7 @@ size_t MFVec3f::getLength() const throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void MFVec3f::setLength(size_t length) throw (std::bad_alloc) {
-    static_cast<Vec3fVec *>(this->data)->resize(length);
+    static_cast<Vec3fVec *>(this->values)->resize(length);
 }
 
 /**
@@ -4087,8 +4421,8 @@ void MFVec3f::setLength(size_t length) throw (std::bad_alloc) {
 void MFVec3f::insertElement(size_t index, SFVec3f::ConstArrayReference value)
     throw (std::bad_alloc)
 {
-    Vec3fVec & data = *static_cast<Vec3fVec *>(this->data);
-    data.insert(data.begin() + index, value);
+    Vec3fVec & values = *static_cast<Vec3fVec *>(this->values);
+    values.insert(values.begin() + index, value);
 }
 
 /**
@@ -4101,8 +4435,8 @@ void MFVec3f::insertElement(size_t index, SFVec3f::ConstArrayReference value)
  */
 void MFVec3f::removeElement(size_t index) throw ()
 {
-    Vec2fVec & data = *static_cast<Vec2fVec *>(this->data);
-    data.erase(data.begin() + index);
+    Vec2fVec & values = *static_cast<Vec2fVec *>(this->values);
+    values.erase(values.begin() + index);
 }
 
 /**
@@ -4145,18 +4479,22 @@ FieldValue::Type MFVec3f::type() const throw ()
  * @brief Print to an output stream.
  *
  * @param out   an output stream.
- *
- * @return @p out.
  */
-std::ostream & MFVec3f::print(std::ostream & out) const
+void MFVec3f::print(std::ostream & out) const
 {
-    const Vec3fVec & data = *static_cast<Vec3fVec *>(this->data);
+    const Vec3fVec & values = *static_cast<Vec3fVec *>(this->values);
     out << '[';
-    for (Vec3fVec::const_iterator i(data.begin()); i != data.end() - 1; ++i) {
-        out << (*i)[0] << ' ' << (*i)[1] << ' ' << (*i)[2] << ", ";
+    if (this->getLength() > 1) {
+        for (Vec3fVec::const_iterator i(values.begin()); i != values.end() - 1;
+                ++i) {
+            out << (*i)[0] << ' ' << (*i)[1] << ' ' << (*i)[2] << ", ";
+        }
     }
-    return out << data.back()[0] << ' ' << data.back()[1] << ' '
-               << data.back()[2] << ']';
+    if (this->getLength() > 0) {
+        out << values.back()[0] << ' ' << values.back()[1] << ' '
+            << values.back()[2];
+    }
+    out << ']';
 }
 
 } // namespace OpenVRML
