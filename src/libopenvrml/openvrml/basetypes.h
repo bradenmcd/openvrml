@@ -618,7 +618,7 @@ namespace openvrml {
         for (size_t component = this->comp_, i = index * this->comp_;
              component > 0;
              --component, ++i) {
-            retval |= int32(this->array_[i]) << (8 * component);
+            retval |= int32(this->array_[i]) << (8 * (component - 1));
         }
         return retval;
     }

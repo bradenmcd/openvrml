@@ -1,3 +1,8 @@
+2005-03-18 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.h (image::pixel):  Fixed
+	pixel mutator.
+
 2005-03-14 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp:  Removed tabs.
