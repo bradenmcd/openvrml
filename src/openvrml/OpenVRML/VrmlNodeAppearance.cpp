@@ -232,7 +232,7 @@ const VrmlSFNode & VrmlNodeAppearance::getMaterial() const {
  * @param material an SFNode object containing a Material node
  */
 void VrmlNodeAppearance::setMaterial(const VrmlSFNode & material) {
-    assert(!material.get() || dynamic_cast<VrmlNodeMaterial *>(material.get()));
+    assert(!material.get() || material.get()->toMaterial());
     this->d_material = material;
 }
 
@@ -252,7 +252,7 @@ const VrmlSFNode & VrmlNodeAppearance::getTexture() const {
  * @param texture an SFNode object containing a texture node.
  */
 void VrmlNodeAppearance::setTexture(const VrmlSFNode & texture) {
-    assert(!texture.get() || dynamic_cast<VrmlNodeTexture *>(texture.get()));
+    assert(!texture.get() || texture.get()->toTexture());
     this->d_texture = texture;
 }
 
@@ -274,6 +274,6 @@ const VrmlSFNode & VrmlNodeAppearance::getTextureTransform() const {
  */
 void VrmlNodeAppearance::setTextureTransform(const VrmlSFNode & textureTransform) {
     assert(!textureTransform.get()
-            || dynamic_cast<VrmlNodeTextureTransform *>(textureTransform.get()));
+            || textureTransform.get()->toTextureTransform());
     this->d_textureTransform = textureTransform;
 }

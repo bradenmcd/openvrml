@@ -1,3 +1,8 @@
+2001-02-05  Braden McDaniel  <braden@endoframe.com>
+
+        * Removed dynamic_cast in assertions in VrmlNodeAppearance's
+          setters in favor of toNode() methods.
+
 2001-01-29 Michael Louka  <michael.louka@hrp.no>
 
         * For Mac OS only: Updated System.cpp to removed dependency on
