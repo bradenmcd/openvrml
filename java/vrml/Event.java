@@ -20,15 +20,14 @@
 
 package vrml;
 
-//public class Event implements Cloneable (this is what the spec specifies!)
-public class Event
+public class Event implements Cloneable
 {
   private int EventPtr;
   public native String getName();
   public native double getTimeStamp();
   public native ConstField getValue();
 
-//	public Object clone();
+  public native Object clone();
 
-//	public String toString();
+  public native String toString();
 }
