@@ -134,8 +134,10 @@ void VrmlNodeAudioClip::update (VrmlSFTime &inTime)
         }
         else
         {
+#if HAVE_SOUND
             cerr << "Error: couldn't read AudioClip from URL "
                  << d_url << endl;
+#endif
             delete d_audio;
             d_audio = 0;
         }
