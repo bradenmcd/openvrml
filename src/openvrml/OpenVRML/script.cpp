@@ -2647,7 +2647,7 @@ namespace {
         }
         
         SField::SFData::~SFData() {
-            delete fieldValue;
+            delete this->fieldValue;
         }
         
         FieldValue & SField::SFData::getFieldValue() const {
@@ -5193,8 +5193,8 @@ namespace {
                 assert(cx);
                 assert(obj);
                 
-                MFData * const mfdata = static_cast<MFData *>
-                                                (JS_GetPrivate(cx, obj));
+                MFData * const mfdata =
+                        static_cast<MFData *>(JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
                 for (JsvalArray::iterator i(mfdata->array.begin());
@@ -5203,6 +5203,7 @@ namespace {
                     assert(ok);
                 }
                 delete mfdata;
+                JS_SetPrivate(cx, obj, 0);
             }
 
 
@@ -5448,8 +5449,8 @@ namespace {
         template <typename Subclass>
             void MFJSDouble<Subclass>::finalize(JSContext * const cx,
                                                 JSObject * const obj) throw () {
-                MFData * const mfdata = static_cast<MFData *>
-                                                (JS_GetPrivate(cx, obj));
+                MFData * const mfdata =
+                        static_cast<MFData *>(JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
                 for (JsvalArray::iterator i(mfdata->array.begin());
@@ -5458,6 +5459,7 @@ namespace {
                     assert(ok);
                 }
                 delete mfdata;
+                JS_SetPrivate(cx, obj, 0);
             }
 
         JSClass MFColor::jsclass =
@@ -5819,6 +5821,7 @@ namespace {
 
         void MFInt32::finalize(JSContext * const cx, JSObject * const obj) {
             delete static_cast<MFData *>(JS_GetPrivate(cx, obj));
+            JS_SetPrivate(cx, obj, 0);
         }
 
         JSClass MFNode::jsclass =
@@ -6121,6 +6124,7 @@ namespace {
             }
             
             delete mfdata;
+            JS_SetPrivate(cx, obj, 0);
         }
         
         JSClass MFRotation::jsclass =
@@ -6451,8 +6455,8 @@ namespace {
 
         void MFString::finalize(JSContext * const cx, JSObject * const obj)
                 throw () {
-            MFData * const mfdata = static_cast<MFData *>
-                                            (JS_GetPrivate(cx, obj));
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             for (JsvalArray::iterator i(mfdata->array.begin());
@@ -6461,6 +6465,7 @@ namespace {
                 assert(ok);
             }
             delete mfdata;
+            JS_SetPrivate(cx, obj, 0);
         }
 
         JSClass MFTime::jsclass =

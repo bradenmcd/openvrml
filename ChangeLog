@@ -3,6 +3,11 @@
         * src/openvrml/OpenVRML/script.cpp: Changed usage of
           JS_AddRoot/JS_RemoveRoot in the JavaScript binding.
 
+        * src/openvrml/OpenVRML/script.cpp: Use JS_SetPrivate to set the
+          private data pointer to 0 after deleting the object's private
+          data. (Per recommendation from <philm@codesmiths.com.au>, to
+          quell warnings from memory leak checker.)
+
 2002-05-22  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,
