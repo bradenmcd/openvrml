@@ -247,8 +247,7 @@ const VrmlSFNode & VrmlNodeShape::getAppearance() const {
  * @param appearance
  */
 void VrmlNodeShape::setAppearance(const VrmlSFNode & appearance) {
-    assert(!appearance.get()
-            || dynamic_cast<VrmlNodeAppearance *>(appearance.get()));
+    assert(!appearance.get() || appearance.get()->toAppearance());
     this->d_appearance = appearance;
 }
 
@@ -267,7 +266,6 @@ const VrmlSFNode & VrmlNodeShape::getGeometry() const {
  * @param geometry
  */
 void VrmlNodeShape::setGeometry(const VrmlSFNode & geometry) {
-    assert(!geometry.get()
-            || dynamic_cast<VrmlNodeGeometry *>(geometry.get()));
+    assert(!geometry.get() || geometry.get()->toGeometry());
     this->d_geometry = geometry;
 }
