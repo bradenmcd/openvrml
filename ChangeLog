@@ -49,7 +49,11 @@
 
         * Fixed undefined symbol problems while making "lookat" in
           debug mode using microsoft DevStudio.
-          
+
+2001-01-10  Michael Louka <Michael.Louka@hrp.no>
+
+        * Updated CodeWarrior 5.x files for Macintosh for new
+          OpenVRML structure.
 
 2001-01-10  Braden McDaniel  <braden@endoframe.com>
 
