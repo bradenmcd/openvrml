@@ -740,13 +740,47 @@ void Node::addEventOutIS(const std::string & eventOutId,
 /**
  * @brief Initialize the Node.
  *
+ * This method works recursively, initializing any child nodes to the same
+ * @p scene and @p timestamp. If the node has already been initialized, this
+ * method has no effect.
+ *
  * @param scene     the Scene to which the Node will belong.
  * @param timestamp the current time.
  */
-void Node::initialize(Scene & scene, const double timestamp) throw () {
-    assert(!this->scene);
-    this->scene = &scene;
-    this->initializeImpl(timestamp);
+void Node::initialize(Scene & scene, const double timestamp) throw ()
+{
+    if (!this->scene) {
+        this->scene = &scene;
+        this->initializeImpl(timestamp);
+        
+        const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
+        for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
+                interface != interfaces.end(); ++interface) {
+            if (interface->type == NodeInterface::exposedField
+                    || interface->type == NodeInterface::field) {
+                if (interface->fieldType == FieldValue::sfnode) {
+                    assert(dynamic_cast<const SFNode *>
+                           (&this->getField(interface->id)));
+                    const SFNode & sfnode = static_cast<const SFNode &>
+                                            (this->getField(interface->id));
+                    if (sfnode.get()) {
+                        sfnode.get()->initialize(scene, timestamp);
+                    }
+                } else if (interface->fieldType == FieldValue::mfnode) {
+                    assert(dynamic_cast<const MFNode *>
+                           (&this->getField(interface->id)));
+                    const MFNode & mfnode = static_cast<const MFNode &>
+                                            (this->getField(interface->id));
+                    for (size_t i = 0; i < mfnode.getLength(); ++i) {
+                        if (mfnode.getElement(i)) {
+                            mfnode.getElement(i)->initialize(scene, timestamp);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    assert(this->scene == &scene);
 }
 
 /**

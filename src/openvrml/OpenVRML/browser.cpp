@@ -134,11 +134,13 @@ namespace OpenVRML {
             ImplNodeInterface(Node & node, const std::string & interfaceId);
         };
         typedef std::multimap<std::string, ImplNodeInterface> ISMap;
+        typedef std::map<std::string, FieldValuePtr> FieldValueMap;
         typedef std::map<std::string, PolledEventOutValue> EventOutValueMap;
 
     private:
         const bool inProtoDef;
         ISMap isMap;
+        FieldValueMap unISedFieldValueMap;
         EventOutValueMap eventOutValueMap;
         MFNode implNodes;
 
@@ -2068,32 +2070,14 @@ const std::string Scene::getURI() const throw (std::bad_alloc) {
             : this->uri;
 }
 
-namespace {
-    
-    class InitVisitor : public NodeVisitor {
-        Scene & scene;
-        const double timestamp;
-    
-    public:
-        InitVisitor(Scene & scene, double timestamp);
-        virtual ~InitVisitor();
-        
-        void initialize(const MFNode & nodes);
-        
-        virtual void visit(Node & node);
-    
-    private:
-        // Noncopyable.
-        InitVisitor(const InitVisitor &);
-        InitVisitor & operator=(const InitVisitor &);
-    };
-}
-
 /**
  * @brief Initialize the scene.
  */
 void Scene::initialize(const double timestamp) {
-    InitVisitor(*this, timestamp).initialize(this->nodes);
+    for (size_t i = 0; i < this->nodes.getLength(); ++i) {
+        assert(this->nodes.getElement(i));
+        this->nodes.getElement(i)->initialize(*this, timestamp);
+    }
 }
 
 /**
@@ -2960,9 +2944,13 @@ void ProtoNode::update(const double currentTime) {
  */
 void ProtoNode::initializeImpl(const double timestamp) throw () {
     assert(this->getScene());
-    this->getScene()->browser.addProto(*this);
     
-    InitVisitor(*this->getScene(), timestamp).initialize(this->implNodes);
+    for (size_t i = 0; i < this->implNodes.getLength(); ++i) {
+        assert(this->implNodes.getElement(i));
+        this->implNodes.getElement(i)->initialize(*this->getScene(), timestamp);
+    }
+    
+    this->getScene()->browser.addProto(*this);
 }
 
 void ProtoNode::setFieldImpl(const std::string & id,
@@ -4671,38 +4659,6 @@ namespace {
     }
     
     
-    InitVisitor::InitVisitor(Scene & scene, const double timestamp):
-            scene(scene), timestamp(timestamp) {}
-    
-    InitVisitor::~InitVisitor() {}
-    
-    void InitVisitor::initialize(const MFNode & nodes) {
-        size_t i;
-        for (i = 0; i < nodes.getLength(); ++i) {
-            const NodePtr & node = nodes.getElement(i);
-            if (node) { node->accept(*this); }
-        }
-        
-        for (i = 0; i < nodes.getLength(); ++i) {
-            const NodePtr & node = nodes.getElement(i);
-            if (node) { node->resetVisitedFlag(); }
-        }
-    }
-    
-    void InitVisitor::visit(Node & node) {
-        node.initialize(this->scene, this->timestamp);
-
-        //
-        // Visit the children.
-        //
-        const MFNode & children = node.getChildren();
-        for (size_t i = 0; i < children.getLength(); ++i) {
-            if (children.getElement(i)) {
-                children.getElement(i)->accept(*this);
-            }
-        }
-    }
-
 } // namespace
 
 } // namespace OpenVRML

@@ -3,6 +3,11 @@
         * src/openvrml/OpenVRML/field.cpp: Fixed size increment in
           array_vector<>::insert.
 
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/node.cpp: Made Node::initialize
+          recursive, so it no longer needs to be used with a
+          NodeVisitor.
+
 2002-08-31  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/nodeptr.cpp: Fixed bug in NodePtr::reset
