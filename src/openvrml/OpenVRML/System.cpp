@@ -181,20 +181,9 @@ bool System::loadUrl(char *url, int np, char **parameters )
 
 // This won't work under windows or if netscape isn't running...
 
-bool System::loadUrl(const char * url, size_t np, char const * const * parameters )
+bool System::loadUrl(const std::string & url, const VrmlMFString & parameters)
 {
-  if (! url) return false;
-# if defined(__CYGWIN__) || ! defined(_WIN32)
-  char buf[1024];
-  if (np)
-    sprintf(buf,"/bin/csh -c \"netscape -remote 'openURL(%s, %s)'\" &",
-	    url, parameters[0]);
-  else
-    sprintf(buf,"/bin/csh -c \"netscape -remote 'openURL(%s)'\" &", url);
-  return system(buf) != -1;
-#else
   return false;
-#endif // _WIN32
 }
 
 // added for working under windows (and is not needed for mac os)...

@@ -206,12 +206,12 @@ static void buildViewpointMenu() {
   if (numberOfViewpoints > 0 )
     {
       for (int i = 0; i < numberOfViewpoints; i++) {
-	const char *name, *description;
-	vrmlScene->getViewpoint(i, &name, &description);
-	if ( description && *description )
-	  glutAddMenuEntry(description, i+1);
-	else if ( name && *name )
-	  glutAddMenuEntry(name, i+1);
+	std::string name, description;
+	vrmlScene->getViewpoint(i, name, description);
+	if (description.length() > 0)
+	  glutAddMenuEntry(description.c_str(), i+1);
+	else if (name.length() > 0)
+	  glutAddMenuEntry(name.c_str(), i+1);
 	else
 	  {
 	    char buf[25];

@@ -22,51 +22,52 @@
 # define DOC2_HPP
 
 # include <iostream.h>
+# include <string>
 # include "common.h"
 
 class OPENVRML_SCOPE Doc2 {
-    public:
-        
-        Doc2(const char *url = 0, Doc2 const *relative = 0);
-        Doc2(Doc2 const *);
-        ~Doc2();
-        
-        void seturl(const char *url, Doc2 const *relative = 0);
-        
-        char const * url() const;         // "http://www.foo.com/dir/file.xyz#Viewpoint"
-        char const * urlBase() const;     // "file" or ""
-        char const * urlExt() const;      // "xyz" or ""
-        char const * urlPath() const;     // "http://www.foo.com/dir/" or ""
-        char const * urlProtocol() const; // "http"
-        char const * urlModifier() const; // "#Viewpoint" or ""
-        
-        const char *localName();    // "/tmp/file.xyz" or NULL
-        const char *localPath();    // "/tmp/" or NULL
-        
-        ::istream & inputStream();
-        ::ostream & outputStream();
-        
-    private:
-        //
-        // Non-copyable; copy ctor and operator= are declared private and not
-        // defined.
-        //
-        Doc2(Doc2 const &);
-        Doc2 & operator=(Doc2 const &);
-        
-        static char const * stripProtocol(char const * url);
-        static bool isAbsolute(char const * url);
-        
-        bool filename(char * fn, int nfn);
-        
+    char * url_;
+    char * tmpfile_;            // Local copy of http: files
+    istream * istm_;
+    ostream * ostm_;
+
+public:
+    explicit Doc2(const std::string & url = std::string(),
+                  const Doc2 * relative = 0);
+    Doc2(const Doc2 *);
+    ~Doc2();
+
+    void seturl(const char *url, Doc2 const *relative = 0);
+
+    char const * url() const;         // "http://www.foo.com/dir/file.xyz#Viewpoint"
+    char const * urlBase() const;     // "file" or ""
+    char const * urlExt() const;      // "xyz" or ""
+    char const * urlPath() const;     // "http://www.foo.com/dir/" or ""
+    char const * urlProtocol() const; // "http"
+    char const * urlModifier() const; // "#Viewpoint" or ""
+
+    const char *localName();    // "/tmp/file.xyz" or NULL
+    const char *localPath();    // "/tmp/" or NULL
+
+    ::istream & inputStream();
+    ::ostream & outputStream();
+
+private:
+    //
+    // Non-copyable; copy ctor and operator= are declared private and not
+    // defined.
+    //
+    Doc2(Doc2 const &);
+    Doc2 & operator=(Doc2 const &);
+
+    static char const * stripProtocol(char const * url);
+    static bool isAbsolute(char const * url);
+
+    bool filename(char * fn, int nfn);
+
 # ifdef macintosh
-        char * convertCommonToMacPath(char * fn, int nfn);
+    char * convertCommonToMacPath(char * fn, int nfn);
 # endif
-        
-        char * url_;
-        char * tmpfile_;            // Local copy of http: files
-        istream * istm_;
-        ostream * ostm_;
 };
 
 # endif

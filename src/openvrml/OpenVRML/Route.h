@@ -21,30 +21,27 @@
 # ifndef ROUTE_H
 #   define ROUTE_H
 
+#   include <string>
 #   include "common.h"
 #   include "VrmlNodePtr.h"
 
 class OPENVRML_SCOPE Route {
+    Route * prevRoute;
+    Route * nextRoute;
+
 public:
-  Route(const char * fromEventOut, const VrmlNodePtr & toNode,
-        const char * toEventIn);
-  Route(const Route&);
-  ~Route();
+    const std::string fromEventOut;
+    const VrmlNodePtr toNode;
+    const std::string toEventIn;
+    
+    Route(const std::string & fromEventOut, const VrmlNodePtr & toNode,
+          const std::string & toEventIn);
+    Route(const Route&);
 
-  char *fromEventOut() { return d_fromEventOut; }
-  char *toEventIn() { return d_toEventIn; }
-  const VrmlNodePtr & toNode() { return d_toNode; }
-
-  Route *prev() { return d_prev; }
-  Route *next() { return d_next; }
-  void setPrev(Route* r) { d_prev = r; }
-  void setNext(Route* r) { d_next = r; }
-  
-private:
-  char *d_fromEventOut;
-  const VrmlNodePtr d_toNode;
-  char *d_toEventIn;
-  Route *d_prev, *d_next;
+    Route * getPrev() const;
+    void setPrev(Route * route);
+    Route * getNext() const;
+    void setNext(Route * route);
 };
 
 # endif

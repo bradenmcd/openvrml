@@ -21,6 +21,7 @@
 #ifndef SCRIPTOBJECT_H
 #define SCRIPTOBJECT_H
 
+#include <string>
 #include <stddef.h>
 #include "common.h"
 
@@ -30,7 +31,7 @@ class VrmlNodeScript;
 class OPENVRML_SCOPE ScriptObject {
 public:
     virtual ~ScriptObject() = 0;
-    virtual void activate(double timeStamp, const char * fname,
+    virtual void activate(double timeStamp, const std::string & fname,
                           size_t argc, const VrmlField * const argv[]) = 0;
 
 protected:

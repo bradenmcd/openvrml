@@ -42,19 +42,17 @@
 #include "doc2.hpp"
 #include "System.h"
 
-Doc::Doc(char const * url, Doc const * relative)
-  : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
-{
-    if (url) {
-        seturl(url, relative);
+Doc::Doc(const std::string & url, Doc const * relative): d_url(0), d_ostream(0),
+        d_fp(0), d_gz(0), d_tmpfile(0) {
+    if (url.length() > 0) {
+        this->seturl(url.c_str(), relative);
     }
 }
 
-Doc::Doc(char const * url, Doc2 const * relative)
-  : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
-{
-    if (url) {
-        seturl(url, relative);
+Doc::Doc(const std::string & url, const Doc2 * relative): d_url(0),
+        d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0) {
+    if (url.length() > 0) {
+        this->seturl(url.c_str(), relative);
     }
 }
 

@@ -127,7 +127,8 @@ public:
 		VrmlNamespace const & vrmlNamespace
 	);
 	public: VrmlNodePtr  node(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc, std::string const & nodeId
+		VrmlNamespace & vrmlNamespace, const Doc2 * doc,
+     const std::string & nodeId
 	);
 	public: void externproto(
 		VrmlNamespace & vrmlNamespace, Doc2 const * doc
@@ -154,9 +155,8 @@ public:
 		Doc2 const * doc, VrmlNodeType & nodeType
 	);
 	public: VrmlNodePtr  protoNode(
-		Doc2 const * doc,
-          VrmlNodeType & protoNodeType,
-          std::string const & nodeId
+		const Doc2 * doc, VrmlNodeType & protoNodeType,
+          const std::string & nodeId
 	);
 	public: void externInterfaceDeclaration(
 		VrmlNodeType & nodeType
@@ -165,8 +165,7 @@ public:
 	public: Vrml97Parser::NodeInterfaceType  interfaceType();
 	public: std::string  stringValue();
 	public: void nodeBodyElement(
-		VrmlNamespace & vrmlNamespace,
-                Doc2 const * doc,
+		VrmlNamespace & vrmlNamespace, Doc2 const * doc,
                 VrmlNode & node
 	);
 	public: void scriptInterfaceDeclaration(

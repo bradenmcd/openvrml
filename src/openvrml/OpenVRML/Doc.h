@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <iostream.h>
+#include <string>
 #include "common.h"
 
 class Doc2;
@@ -35,8 +36,9 @@ class OPENVRML_SCOPE  Doc {
 
 public:
 
-  Doc(char const * url = 0, Doc const *relative = 0);
-  Doc(char const * url, Doc2 const * relative);
+  explicit Doc(const std::string & url = std::string(),
+               const Doc * relative = 0);
+  Doc(const std::string & url, const Doc2 * relative);
   Doc(Doc const *);
   Doc(Doc2 const *);
   ~Doc();

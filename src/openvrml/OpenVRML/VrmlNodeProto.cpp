@@ -34,15 +34,8 @@
 #include "Route.h"
 #include "VrmlBSphere.h"
 
-#include <string.h>
-#include <stdio.h>
-
 #ifndef NDEBUG
 #define VRML_NODE_PROTO_DEBUG
-#endif
-
-#ifdef macintosh
-extern char* strdup( const char* );
 #endif
 
 //
@@ -106,35 +99,24 @@ VrmlNodeProto::VrmlNodeProto(const VrmlNodeProto &n) :
   this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-VrmlNodeProto::~VrmlNodeProto()
-{
-  // Free strings & values
-  std::list<NameValueRec*>::iterator i;
-
-  for (i = d_fields.begin(); i != d_fields.end(); i++) {
-    NameValueRec *r = *i;
-    free(r->name);
-    delete r->value;
-    delete r;
-  }
-
-  EventDispatchList::iterator e;
-  for (e = d_eventDispatch.begin(); e != d_eventDispatch.end(); ++e)
-    {
-      EventDispatch *ed = *e;
-      delete [] ed->name;
-      VrmlNodeType::ISMap::iterator j;
-      for (j = ed->ismap.begin(); j != ed->ismap.end(); ++j)
-	{
-	  VrmlNodeType::NodeFieldRec *nf = (*j);
-	  delete [] nf->fieldName;
-	  delete nf;
-	}
-      delete ed;
+VrmlNodeProto::~VrmlNodeProto() {
+    for (std::list<NameValueRec*>::iterator i(d_fields.begin());
+            i != d_fields.end(); i++) {
+        delete (*i)->value;
+        delete *i;
     }
-  
-  delete d_scope;
-  d_nodeType->dereference();
+
+    for (EventDispatchList::iterator e(d_eventDispatch.begin());
+            e != d_eventDispatch.end(); ++e) {
+        for (VrmlNodeType::ISMap::iterator j((*e)->ismap.begin());
+                j != (*e)->ismap.end(); ++j) {
+            delete *j;
+        }
+        delete *e;
+    }
+
+    delete d_scope;
+    d_nodeType->dereference();
 }
 
 
@@ -186,25 +168,21 @@ void VrmlNodeProto::instantiate()
       // nodes/eventIns is constructed for each instance.
       VrmlNodeType::FieldList &eventIns = d_nodeType->eventIns();
       VrmlNodeType::FieldList::iterator ev;
-      VrmlNodeType::ISMap *ismap;
+      const VrmlNodeType::ISMap * ismap;
       VrmlNodeType::ISMap::const_iterator j;
 
       for (ev = eventIns.begin(); ev != eventIns.end(); ++ev)
 	{
 	  EventDispatch *ed = new EventDispatch;
-	  char *eventName = (*ev)->name;
-
-	  ed->name = new char[strlen(eventName)+1];
-	  strcpy(ed->name, eventName);
+          ed->name = (*ev)->name;
 	  ismap = &(*ev)->thisIS;
 	  d_eventDispatch.push_front(ed);
 
 	  for (j = ismap->begin(); j != ismap->end(); ++j)
 	    {
 	      VrmlNodeType::NodeFieldRec *nf = new VrmlNodeType::NodeFieldRec;
-	      nf->node = d_scope->findNode((*j)->node->name());
-	      nf->fieldName = new char[strlen((*j)->fieldName)+1];
-	      strcpy(nf->fieldName, (*j)->fieldName);
+	      nf->node = d_scope->findNode((*j)->node->getName());
+	      nf->fieldName = (*j)->fieldName;
 	      ed->ismap.push_front(nf);
 	    }
 	}
@@ -214,17 +192,14 @@ void VrmlNodeProto::instantiate()
       for (ev = fields.begin(); ev != fields.end(); ++ev )
         {
           EventDispatch *ed = new EventDispatch;
-          char *fieldName = (*ev)->name;
-          ed->name = new char [ strlen(fieldName)+5 ];
-          sprintf ( ed->name, "set_%s", fieldName );
+          ed->name = "set_" + (*ev)->name;
           ismap = &(*ev)->thisIS;
           d_eventDispatch.push_front(ed);
           for (j = ismap->begin(); j != ismap->end(); ++j)
             {
               VrmlNodeType::NodeFieldRec *nf = new VrmlNodeType::NodeFieldRec;
-              nf->node = d_scope->findNode((*j)->node->name());
-              nf->fieldName = new char[strlen((*j)->fieldName)+1];
-              strcpy(nf->fieldName, (*j)->fieldName);
+              nf->node = d_scope->findNode((*j)->node->getName());
+              nf->fieldName = (*j)->fieldName;
               ed->ismap.push_front(nf);
             }
         }
@@ -233,17 +208,16 @@ void VrmlNodeProto::instantiate()
       // directly to the local nodes that have IS'd the PROTO
       // eventOut.
       VrmlNodeType::FieldList &eventOuts = d_nodeType->eventOuts();
-      for (Route *r = d_routes; r; r = r->next())
+      for (Route *r = d_routes; r; r = r->getNext())
 	for (ev = eventOuts.begin(); ev != eventOuts.end(); ++ev)
-	  if (strcmp((*ev)->name, r->fromEventOut()) == 0)
+	  if ((*ev)->name == r->fromEventOut)
 	    {
 	      ismap = &(*ev)->thisIS;
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  const VrmlNodePtr  & n = d_scope->findNode((*j)->node->name());
+		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->getName()));
 		  if (n)
-		    n->addRoute((*j)->fieldName,
-				r->toNode(), r->toEventIn() );
+		    n->addRoute((*j)->fieldName, r->toNode, r->toEventIn);
 		}
 	    }
 
@@ -255,7 +229,7 @@ void VrmlNodeProto::instantiate()
 	{
 	  VrmlField *value = (*ifld)->value;
 #ifdef VRML_NODE_PROTO_DEBUG
-	  cerr << d_nodeType->getName() << "::" << name()
+	  cerr << d_nodeType->getName() << "::" << this->getName()
 	       << " setting IS field " << (*ifld)->name;
 	  // Too much stuff...
 	  //if (value) cerr << " to " << *value << endl;
@@ -267,9 +241,9 @@ void VrmlNodeProto::instantiate()
 	    {
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  const VrmlNodePtr & n = d_scope->findNode((*j)->node->name());
+		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->getName()));
 #ifdef VRML_NODE_PROTO_DEBUG
-		  cerr << " on " << n->name() << "::" << (*j)->fieldName << endl;
+		  cerr << " on " << n->getName() << "::" << (*j)->fieldName << endl;
 #endif
 		  if (n) n->setField( (*j)->fieldName, *value );
 		}
@@ -282,23 +256,22 @@ void VrmlNodeProto::instantiate()
 }
 
 
-void VrmlNodeProto::addToScene(VrmlScene *s, const char *relUrl)
-{
-  //theSystem->debug("VrmlNodeProto::%s addToScene\n", name());
-  d_scene = s;
+void VrmlNodeProto::addToScene(VrmlScene * scene, const std::string & relUrl) {
+    //theSystem->debug("VrmlNodeProto::%s addToScene\n", name());
+    this->d_scene = scene;
 
-  // Make sure my nodes are here
-  if (! d_instantiated) instantiate();
-  //theSystem->debug("VrmlNodeProto::%s addToScene(%d nodes)\n",
-  //	   name(), d_nodes ? d_nodes->size() : 0);
+    // Make sure my nodes are here
+    if (! d_instantiated) instantiate();
+    //theSystem->debug("VrmlNodeProto::%s addToScene(%d nodes)\n",
+    //	   name(), d_nodes ? d_nodes->size() : 0);
 
-  // ... and add the implementation nodes to the scene.
-  if (this->implNodes.getLength() > 0)
-    {
-      const char * rel = d_nodeType->getActualUrl();
-      int j, n = this->implNodes.getLength();
-      for (j=0; j<n; ++j)
-	this->implNodes.getElement(j)->addToScene(s, rel ? rel : relUrl);
+    // ... and add the implementation nodes to the scene.
+    if (this->implNodes.getLength() > 0) {
+        const std::string & rel = d_nodeType->getActualUrl();
+        for (size_t i(0); i<this->implNodes.getLength(); ++i) {
+            this->implNodes.getElement(i)
+                  ->addToScene(scene, (rel.length() > 0) ? rel : relUrl);
+        }
     }
 }
 
@@ -308,7 +281,7 @@ void VrmlNodeProto::accumulateTransform( VrmlNode *n )
   if (! d_instantiated)
     {
       theSystem->debug("VrmlNodeProto::%s accumTrans before instantiation\n",
-		       name());
+		       this->getName().c_str());
       instantiate();
     }
 
@@ -478,7 +451,7 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
   if (! d_instantiated)
     {
       theSystem->debug("VrmlNodeProto::%s render before instantiation\n",
-		       name());
+		       this->getName().c_str());
       instantiate();
     }
 
@@ -495,7 +468,7 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
 
   else if (this->implNodes.getLength() > 0)
     {
-      d_viewerObject = viewer->beginObject( name() );
+      d_viewerObject = viewer->beginObject(this->getName().c_str());
 
       // render the nodes with the new values
       int n = this->implNodes.getLength();
@@ -510,69 +483,71 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
 
 
 void VrmlNodeProto::eventIn(double timeStamp,
-			    const char *eventName,
-			    const VrmlField & fieldValue)
-{
-  if (! d_instantiated)
-    {
-      theSystem->debug("VrmlNodeProto::%s eventIn before instantiation\n",
-		       name());
-      instantiate();
+			    const std::string & eventName,
+			    const VrmlField & fieldValue) {
+//    cout << "eventIn " << this->nodeType().getName()
+//         << "::" << this->getName() << "." << eventName
+//         << " " << fieldValue << endl;
+
+    if (!d_instantiated) {
+        theSystem->debug("VrmlNodeProto::%s eventIn before instantiation\n",
+                         this->getName().c_str());
+        instantiate();
     }
 
-  const char *origEventName = eventName;
-  if ( strncmp(eventName, "set_", 4) == 0 )
-    eventName += 4;
+    static const char * eventInPrefix = "set_";
+    std::string basicEventName;
+    if (std::equal(eventInPrefix, eventInPrefix + 4, eventName.begin())) {
+        basicEventName = eventName.substr(4);
+    } else {
+        basicEventName = eventName;
+    }
 
-#if 0
-  cerr << "eventIn " << nodeType()->getName()
-       << "::" << name() << "." << origEventName
-       << " " << fieldValue << endl;
-#endif
-
-  EventDispatchList::iterator i;
-  for (i=d_eventDispatch.begin(); i != d_eventDispatch.end(); ++i) {
-    if ( strcmp(eventName, (*i)->name) == 0 ||
-	 strcmp(origEventName, (*i)->name) == 0 )
-      {
-	VrmlNodeType::ISMap *ismap = & ((*i)->ismap);
-	VrmlNodeType::ISMap::iterator j;
-	for (j = ismap->begin(); j != ismap->end(); ++j)
-	  (*j)->node->eventIn( timeStamp, (*j)->fieldName, fieldValue );
-
-	return;
-      }
-  }
-  // Let the generic code handle errors.
-  VrmlNode::eventIn( timeStamp, origEventName, fieldValue );
-  this->setBVolumeDirty(true); // lazy calc of bvolume
+    for (EventDispatchList::iterator i(d_eventDispatch.begin());
+            i != d_eventDispatch.end(); ++i) {
+//        cout << "basicEventName = " << basicEventName
+//             << ", eventName = " << eventName
+//             << ", (*i)->name = " << (*i)->name << endl;
+        if (basicEventName == (*i)->name || eventName == (*i)->name) {
+            VrmlNodeType::ISMap * ismap = &(*i)->ismap;
+            for (VrmlNodeType::ISMap::iterator j(ismap->begin());
+                    j != ismap->end(); ++j) {
+//                cout << "Relaying event." << endl;
+                (*j)->node->eventIn(timeStamp, (*j)->fieldName, fieldValue);
+            }
+	    return;
+        }
+    }
+    // Let the generic code handle errors.
+    VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+    this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 
-VrmlNodeProto::NameValueRec *VrmlNodeProto::findField(const char *fieldName) const
-{
-  std::list<NameValueRec*>::const_iterator i;
-  for (i = d_fields.begin(); i != d_fields.end(); ++i) {
-    NameValueRec *nv = *i;
-    if (nv != NULL && strcmp(nv->name, fieldName) == 0) {
-      return nv;
+VrmlNodeProto::NameValueRec * VrmlNodeProto::findField(
+                                                const std::string & fieldName)
+        const {
+    for (std::list<NameValueRec *>::const_iterator i(d_fields.begin());
+            i != d_fields.end(); ++i) {
+        if (*i && (*i)->name == fieldName) {
+            return *i;
+        }
     }
-  }
-  return NULL;
+    return 0;
 }
 
 // Set the value of one of the node fields (creates the field if
 // it doesn't exist - is that necessary?...)
 
-void VrmlNodeProto::setField(const char *fieldName,
-			     const VrmlField &fieldValue)
+void VrmlNodeProto::setField(const std::string & fieldName,
+			     const VrmlField & fieldValue)
 {
   NameValueRec *nv = findField(fieldName);
 
   if (! nv)
     {
       nv = new NameValueRec;
-      nv->name = strdup(fieldName);
+      nv->name = fieldName;
       d_fields.push_front(nv);
     }
   else
@@ -584,11 +559,12 @@ void VrmlNodeProto::setField(const char *fieldName,
   this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-const VrmlField *VrmlNodeProto::getField(const char *fieldName) const
-{
-  NameValueRec *nv = findField(fieldName);
-  if (nv) return nv->value;
-  return d_nodeType->fieldDefault(fieldName);
+const VrmlField *VrmlNodeProto::getField(const std::string & fieldName) const {
+    NameValueRec * nv = findField(fieldName);
+    if (nv) {
+        return nv->value;
+    }
+    return d_nodeType->fieldDefault(fieldName);
 }
 
 VrmlNodeLOD* VrmlNodeProto::toLOD() const

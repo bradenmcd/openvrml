@@ -1,3 +1,7 @@
+2001-08-13  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed most uses of char * to std::string.
+
 2001-08-09  Braden McDaniel  <braden@endoframe.com>
 
         * Changed JavaScript binding to use a wrapper class to track

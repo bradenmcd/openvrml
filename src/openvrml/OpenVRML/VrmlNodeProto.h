@@ -34,6 +34,11 @@
 class OPENVRML_SCOPE VrmlNodeProto : public VrmlNode {
 
 public:
+  // Field name/value pairs specified in PROTO instantiation
+  struct NameValueRec {
+    std::string name;
+    VrmlField * value;
+  };
 
   virtual VrmlNodeType & nodeType() const;
 
@@ -44,8 +49,8 @@ public:
   virtual bool accept(VrmlNodeVisitor & visitor);
   virtual void resetVisitedFlag();
   
-  virtual void addToScene( VrmlScene *, const char *relUrl );
-  virtual ostream& printFields(ostream& os, int indent);
+  virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
+  virtual ostream & printFields(ostream & os, int indent);
 
   virtual VrmlNodeProto* toProto() const;
 
@@ -102,12 +107,11 @@ public:
 
   virtual void render(Viewer *, VrmlRenderContext rc);
 
-  virtual void eventIn(double timeStamp,
-		       const char *eventName,
+  virtual void eventIn(double timeStamp, const std::string & eventName,
 		       const VrmlField & fieldValue);
 
-  virtual const VrmlField *getField(const char *fieldName) const;
-  virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+  virtual const VrmlField * getField(const std::string & fieldName) const;
+  virtual void setField(const std::string & fieldName, const VrmlField &fieldValue);
 
   virtual bool isModified() const;
   virtual void updateModified(VrmlNodePath& path, int flags);
@@ -115,12 +119,6 @@ public:
   virtual void accumulateTransform( VrmlNode* );
 
   const VrmlMFNode & getImplNodes() const;
-
-  // Field name/value pairs specified in PROTO instantiation
-  typedef struct {
-    char *name;
-    VrmlField *value;
-  } NameValueRec;
 
   const VrmlBVolume* getBVolume() const;
 
@@ -132,7 +130,7 @@ private:
   void instantiate();
 
   // Find a field by name
-  NameValueRec *findField(const char *fieldName) const;
+  NameValueRec * findField(const std::string & fieldName) const;
 
   VrmlNodeType *d_nodeType;	// Definition
 
@@ -144,10 +142,10 @@ private:
   std::list<NameValueRec*> d_fields;	// Field values
 
   // Dispatch eventIns from outside the PROTO to internal eventIns
-  typedef struct {
-    char *name;
+  struct EventDispatch {
+    std::string name;
     VrmlNodeType::ISMap ismap;
-  } EventDispatch;
+  };
 
   typedef std::list<EventDispatch*> EventDispatchList;
 

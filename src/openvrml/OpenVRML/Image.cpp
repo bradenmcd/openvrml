@@ -6964,10 +6964,23 @@ bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc2 * relative)
     return i < nUrls;
 }
 
+bool Image::tryURLs(const VrmlMFString & urls, Doc * relative) {
+    size_t i(0);
+    for (; i < urls.getLength(); ++i) {
+        if ((urls.getElement(i).length() > 0)
+                && setURL(urls.getElement(i).c_str(), relative)) {
+            break;
+        }
+    }
+    
+    return (i < urls.getLength());
+}
+
 bool Image::tryURLs(const VrmlMFString & urls, Doc2 * relative) {
     size_t i(0);
     for (; i < urls.getLength(); ++i) {
-        if (urls.getElement(i) && setURL(urls.getElement(i), relative)) {
+        if ((urls.getElement(i).length() > 0)
+                && setURL(urls.getElement(i).c_str(), relative)) {
             break;
         }
     }

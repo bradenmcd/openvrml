@@ -25,10 +25,8 @@
 # include <algorithm>
 # include <numeric>
 # include <assert.h>
-# include <string.h>
 # include "field.h"
 # include "private.h"
-//# include "MathUtils.h"
 
 namespace {
     ::ostream & mffprint(::ostream &, float const * c, int n, int eltsize);
@@ -1437,61 +1435,44 @@ const VrmlSFRotation VrmlSFRotation::slerp(const VrmlSFRotation & destRotation,
 
 /**
  * @class VrmlSFString
+ *
  * @brief Encapsulates an SFString.
  */
 
 /**
- * @brief Constructor
- * @param s a C-style string
+ * @brief Constructor.
+ *
+ * @param value
  */
-VrmlSFString::VrmlSFString(const char *s)
-{ if (s) { d_s = new char[strlen(s)+1]; strcpy(d_s,s); } else d_s = 0; }
-
-/**
- * @brief Copy constructor.
- * @param sfs the VrmlSFString to copy
- */
-VrmlSFString::VrmlSFString(const VrmlSFString &sfs)
-{
-  const char *s = sfs.get();
-  if (s) { d_s = new char[strlen(s)+1]; strcpy(d_s,s); } else d_s = 0; 
-}
+VrmlSFString::VrmlSFString(const std::string & value): value(value) {}
 
 /**
  * @brief Destructor.
  */
-VrmlSFString::~VrmlSFString() { if (d_s) delete [] d_s; }
+VrmlSFString::~VrmlSFString() {}
 
 /**
  * @brief Get value.
- * @return a C-style string
+ *
+ * @return a string
  */
-const char * VrmlSFString::get() const {
-    return this->d_s;
+const std::string & VrmlSFString::get() const {
+    return this->value;
 }
 
 /**
  * @brief Set value.
- * @param s a C-style string
+ *
+ * @param value
  */
-void VrmlSFString::set(const char *s)
-{
-  if (d_s) delete [] d_s;
-  if (s) { d_s = new char[strlen(s)+1]; strcpy(d_s,s); }
-  else d_s = 0;
+void VrmlSFString::set(const std::string & value) {
+    this->value = value;
 }
 
-/**
- * @brief Assignment.
- * @param rhs value to assign to this object
- */
-VrmlSFString& VrmlSFString::operator=(const VrmlSFString& rhs)
-{ if (this != &rhs) set(rhs.d_s); return *this; }
-
 ostream& VrmlSFString::print(ostream& os) const
-{ return (os << '\"' << d_s << '\"'); }
+{ return (os << '\"' << this->value << '\"'); }
 
-VrmlField *VrmlSFString::clone() const { return new VrmlSFString(d_s); }
+VrmlField *VrmlSFString::clone() const { return new VrmlSFString(*this); }
 
 VrmlField::VrmlFieldType VrmlSFString::fieldType() const { return SFSTRING; }
 
@@ -2735,77 +2716,54 @@ ostream& VrmlMFRotation::print(ostream& os) const
  * @brief Encapsulates a MFString.
  */
 
-VrmlMFString::VrmlMFString(size_t n, char const * const * v)
-  : d_v(n ? new char *[n] : 0), d_allocated(n), d_size(n)
-{
-    if (v) {
-        for (size_t i(0); i < n; ++i, ++v) {
-            if (*v) {
-                char * const s = new char[strlen(*v) + 1];
-                strcpy(s, *v);
-                d_v[i] = s;
-            } else {
-                d_v[i] = 0;
-            }
-        }
-    } else {
-        std::fill(d_v, d_v + n, static_cast<char *>(0));
+/**
+ * @brief Constructor.
+ *
+ * @param length the length of the passed array
+ * @param values an array of std::string
+ */
+VrmlMFString::VrmlMFString(size_t length, const std::string * values):
+        values(length) {
+    if (values) {
+        std::copy(values, values + length, this->values.begin());
     }
 }
 
+/**
+ * @brief Destructor.
+ */
+VrmlMFString::~VrmlMFString() {}
 
-VrmlMFString::VrmlMFString(VrmlMFString const & rhs)
-  : d_v(new char *[rhs.d_size]), d_allocated(rhs.d_size), d_size(rhs.d_size)
-{
-    for (size_t i(0); i < rhs.d_size; ++i) {
-        if (rhs.d_v[i]) {
-            char * const s = new char[strlen(rhs.d_v[i])+1];
-            strcpy(s, rhs.d_v[i]);
-            d_v[i] = s;
-        } else {
-            d_v[i] = 0;
-        }
-    }
+/**
+ * @brief Get an element of the array.
+ *
+ * @param index the index of the element to retrieve
+ *
+ * @return the array element
+ */
+const std::string & VrmlMFString::getElement(size_t index) const {
+    assert(index < this->values.size());
+    return this->values[index];
 }
 
-VrmlMFString::~VrmlMFString()
-{
-    for (size_t i(0); i < d_size; ++i) {
-        delete [] d_v[i];
-    }
-    delete [] d_v;
+/**
+ * @brief Set an element of the array.
+ *
+ * @param index the index of the element to set
+ * @param value the new value
+ */
+void VrmlMFString::setElement(size_t index, const std::string & value) {
+    assert(index < this->values.size());
+    this->values[index] = value;
 }
 
-void VrmlMFString::set(size_t n, char const * const v[])
-{
-    for (size_t i = 0; i < d_size; ++i) {
-        delete [] d_v[i];
-    }
-    
-    if (d_allocated < n) {
-        delete [] d_v;
-        d_v = 0;
-        d_allocated = d_size = 0;
-        d_v = new char *[n];
-        d_allocated = n;
-    }
-    d_size = n;
-    
-    for (size_t j = 0; j < n; ++j) {
-        if (v[j]) {
-            char * const s = new char[strlen(v[j]) + 1];
-            strcpy(s, v[j]);
-            d_v[j] = s;
-        } else {
-            d_v[j] = 0;
-        }
-    }
-}
-
-VrmlMFString& VrmlMFString::operator=(const VrmlMFString& rhs)
-{
-  if (this != &rhs) set( rhs.d_size, rhs.d_v );
-  return *this;
+/**
+ * @brief Get the length.
+ *
+ * @return the number of values in the array
+ */
+size_t VrmlMFString::getLength() const {
+    return this->values.size();
 }
 
 VrmlField *VrmlMFString::clone() const
@@ -2813,34 +2771,13 @@ VrmlField *VrmlMFString::clone() const
 
 VrmlField::VrmlFieldType VrmlMFString::fieldType() const { return MFSTRING; }
 
-size_t VrmlMFString::getLength() const
-{
-    return d_size;
-}
-
-char const * const * VrmlMFString::get() const {
-    return d_v;
-}
-
-char const * VrmlMFString::getElement(size_t index) const {
-    assert(index < this->d_size);
-    return this->d_v[index];
-}
-
-void VrmlMFString::setElement(size_t index, const char * str) {
-    delete [] this->d_v[index];
-    char * const s = new char[strlen(str) + 1];
-    strcpy(s, str);
-    this->d_v[index] = s;
-}
-
 ostream& VrmlMFString::print(ostream& os) const
 {
   int n = getLength();
 
   if (n != 1) os << '[';
   for (int i=0; i<n; ++i)
-    os << '\"' << (d_v[i]) << "\" ";
+    os << '\"' << (this->values[i]) << "\" ";
   if (n != 1) os << ']';
 
   return os;

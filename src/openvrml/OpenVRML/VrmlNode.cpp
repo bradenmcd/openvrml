@@ -43,11 +43,9 @@
 #include "VrmlBSphere.h"
 #include "VrmlRenderContext.h"
 
-#include <stdio.h>		// sprintf
-
-#ifndef NDEBUG
-//#   define VRML_NODE_DEBUG
-#endif
+# ifndef NDEBUG
+#   define VRML_NODE_DEBUG
+# endif
 
 /**
  * Given a VrmlNodeType, add in the fields, exposedFields, eventIns
@@ -69,20 +67,13 @@
 VrmlNodeType *VrmlNode::defineType(VrmlNodeType *t) { return t; }
 
 VrmlNode::VrmlNode(VrmlScene * scene): d_scene(scene), d_modified(false),
-        visited(false), d_routes(0), d_name(0) {
+        visited(false), d_routes(0) {
   this->setBVolumeDirty(true);
 }
 
-VrmlNode::VrmlNode(const VrmlNode & node):
-  d_scene(0),
-  d_modified(true),
-  d_routes(0),
-  d_name(node.d_name ? new char[strlen(node.d_name) + 1] : 0)
-{
-  if (this->d_name) {
-      strcpy(this->d_name, node.d_name);
-  }
-  this->setBVolumeDirty(true);
+VrmlNode::VrmlNode(const VrmlNode & node): name(node.name), d_scene(0),
+        d_modified(true), d_routes(0) {
+    this->setBVolumeDirty(true);
 }
 
 
@@ -94,18 +85,17 @@ VrmlNode::VrmlNode(const VrmlNode & node):
 VrmlNode::~VrmlNode() 
 {
   // Remove the node's name (if any) from the map...
-  if (d_name)
+  if (this->name.length() > 0)
     {
       if (d_scene && d_scene->scope())
 	d_scene->scope()->removeNodeName(*this);
-      delete [] d_name;
     }
 
   // Remove all routes from this node
   Route *r = d_routes;
   while (r)
     {
-      Route *next = r->next();
+      Route * next = r->getNext();
       delete r;
       r = next;
     }
@@ -155,22 +145,15 @@ void VrmlNode::resetVisitedFlag() {
  * Some one else (the parser) needs to tell the scene about the name for
  * use in USE/ROUTEs.
  *
- * @param nodeName a C-style string
+ * @param nodeName a string
  * @param ns a pointer to the VrmlNamespace to which this node should
  *           belong
  */
-void VrmlNode::setName(const char *nodeName, VrmlNamespace *ns)
-{
-  if (d_name) delete d_name;
-
-  if (nodeName && *nodeName)
-    {
-      d_name = new char[strlen(nodeName)+1];
-      strcpy(d_name, nodeName);
-      if (ns) ns->addNodeName(VrmlNodePtr(this));
+void VrmlNode::setName(const std::string & nodeName, VrmlNamespace * const ns) {
+    this->name = nodeName;
+    if (nodeName.length() > 0 && ns) {
+        ns->addNodeName(VrmlNodePtr(this));
     }
-  else
-    d_name = 0;
 }
 
 /**
@@ -178,9 +161,8 @@ void VrmlNode::setName(const char *nodeName, VrmlNamespace *ns)
  *
  * @return a pointer to a C-style (0-terminated) string
  */
-const char *VrmlNode::name() const
-{
-  return d_name ? d_name : "";
+const std::string & VrmlNode::getName() const {
+    return this->name;
 }
 
 /**
@@ -192,9 +174,11 @@ const char *VrmlNode::name() const
  * @param scene
  * @param relativeUrl
  */
-void VrmlNode::addToScene(VrmlScene * scene, const char * relativeUrl)
-{
-  d_scene = scene;
+void VrmlNode::addToScene(VrmlScene * scene, const std::string &) {
+    cout << "Adding " << this->nodeType().getName() << " " << this->getName()
+         << " to scene 0x" << hex << reinterpret_cast<unsigned long>(scene)
+         << dec << endl;
+    this->d_scene = scene;
 }
 
 
@@ -289,25 +273,25 @@ VrmlNodeProto*		VrmlNode::toProto() const { return 0; }
 
 // Add a route from an eventOut of this node to an eventIn of another node.
 
-void VrmlNode::addRoute(const char *fromEventOut,
+void VrmlNode::addRoute(const std::string & fromEventOut,
 			const VrmlNodePtr & toNode,
-			const char *toEventIn)
-{
-#ifdef VRML_NODE_DEBUG
-  fprintf(stderr,"%s::%s 0x%x addRoute %s\n",
-	  nodeType()->getName(), name(), (unsigned) this, fromEventOut);
-#endif
+			const std::string & toEventIn) {
+# ifdef VRML_NODE_DEBUG
+    cout << this->nodeType().getName() << "::" << this->getName() << " "
+         << hex << reinterpret_cast<unsigned long>(this) << dec
+         << " addRoute " << fromEventOut << endl;
+# endif
 
 
   // Check to make sure fromEventOut and toEventIn are valid names...
   
   // Is this route already here?
   Route *r;
-  for (r=d_routes; r; r=r->next())
+  for (r=d_routes; r; r=r->getNext())
     {
-      if (toNode == r->toNode() &&
-	  strcmp(fromEventOut, r->fromEventOut()) == 0 &&
-	  strcmp(toEventIn, r->toEventIn()) == 0 )
+      if (toNode == r->toNode
+            && fromEventOut == r->fromEventOut
+            && toEventIn == r->toEventIn)
 	return;       // Ignore duplicate routes
     }
 
@@ -324,29 +308,28 @@ void VrmlNode::addRoute(const char *fromEventOut,
 
 // Remove a route from an eventOut of this node to an eventIn of another node.
 
-void VrmlNode::deleteRoute(const char *fromEventOut,
+void VrmlNode::deleteRoute(const std::string & fromEventOut,
 			   const VrmlNodePtr & toNode,
-			   const char *toEventIn)
+			   const std::string & toEventIn)
 {
   Route *r;
-  for (r=d_routes; r; r=r->next())
+  for (r=d_routes; r; r=r->getNext())
     {
-      if (toNode == r->toNode() &&
-	  strcmp(fromEventOut, r->fromEventOut()) == 0 &&
-	  strcmp(toEventIn, r->toEventIn()) == 0 )
-	{
-	  if (r->prev())
+      if (toNode == r->toNode
+            && fromEventOut == r->fromEventOut
+            && toEventIn == r->toEventIn) {
+	  if (r->getPrev())
             {
-	      r->prev()->setNext(r->next());
+	      r->getPrev()->setNext(r->getNext());
             }
           else
             {
               // point to new head of route list if deleting first route
-              d_routes = r->next();
+              d_routes = r->getNext();
             }
 
-	  if (r->next())
-	    r->next()->setPrev(r->prev());
+	  if (r->getNext())
+	    r->getNext()->setPrev(r->getPrev());
 	  delete r;
 	  break;
 	}
@@ -623,81 +606,78 @@ void VrmlNode::inverseTransform(double m[4][4])
  * (should be) handled here...
  */
 void VrmlNode::eventIn(double timeStamp,
-		       const char *eventName,
-		       const VrmlField & fieldValue)
-{
+		       const std::string & eventName,
+		       const VrmlField & fieldValue) {
 #ifdef VRML_NODE_DEBUG
   cout << "eventIn "
-       << nodeType()->getName()
+       << nodeType().getName()
        << "::"
-       << (name() ? name() : "")
+       << this->name
        << "."
        << eventName
        << " "
-       << *fieldValue
+       << fieldValue
        << endl;
 #endif
 
-  // Strip set_ prefix
-  const char *origEventName = eventName;
-  if ( strncmp(eventName, "set_", 4) == 0 )
-    eventName += 4;
-
-  // Handle exposedFields 
-  if ( nodeType().hasExposedField( eventName ) )
-    {
-      setField(eventName, fieldValue);
-      char eventOutName[256];
-      sprintf(eventOutName, "%s_changed", eventName);
-      eventOut(timeStamp, eventOutName, fieldValue);
-      setModified();
+    // Strip set_ prefix
+    static const char * eventInPrefix = "set_";
+//    const char *origEventName = eventName;
+    std::string basicEventName;
+    if (std::equal(eventInPrefix, eventInPrefix + 4, eventName.begin())) {
+        basicEventName = eventName.substr(4);
+    } else {
+        basicEventName = eventName;
     }
 
-  // Handle set_field eventIn/field
-  else if ( nodeType().hasEventIn( origEventName ) &&
-	    nodeType().hasField( eventName ) )
-    {
-      setField(eventName, fieldValue);
-      setModified();
+    // Handle exposedFields 
+    if (nodeType().hasExposedField(basicEventName)) {
+        this->setField(basicEventName, fieldValue);
+        std::string eventOutName = basicEventName + "_changed";
+        this->eventOut(timeStamp, eventOutName, fieldValue);
+        setModified();
     }
-
-  else
-    cerr << "Error: unhandled eventIn " << nodeType().getName()
-		<< "::" << name() << "." << origEventName << endl;
-
+    
+    // Handle set_field eventIn/field
+    else if (nodeType().hasEventIn(eventName)
+            && nodeType().hasField(basicEventName)) {
+        this->setField(eventName, fieldValue);
+        this->setModified();
+    } else
+        cerr << "Error: unhandled eventIn " << nodeType().getName()
+		    << "::" << this->name << "." << eventName << endl;
 }
 
 
 // Send a named event from this node.
 
-void VrmlNode::eventOut(double timeStamp,
-			const char *eventOut,
-			const VrmlField &fieldValue)
-{
-#ifdef VRML_NODE_DEBUG
-  fprintf(stderr,"%s::%s 0x%x eventOut %s\n",
-	  nodeType()->getName(), name(),
-	  (unsigned) this, eventOut);
-#endif	  
+void VrmlNode::eventOut(double timeStamp, const std::string & eventOut,
+			const VrmlField & fieldValue) {
+# ifdef VRML_NODE_DEBUG
+    cout << this->nodeType().getName() << "::" << this->name
+         << hex << reinterpret_cast<unsigned long>(this) << dec
+         << " eventOut " << eventOut << endl;
+# endif	  
 
   // Find routes from this eventOut
   Route *r;
-  for (r=d_routes; r; r=r->next())
+  for (r=d_routes; r; r=r->getNext())
     {
-      if (strcmp(eventOut, r->fromEventOut()) == 0)
+      if (eventOut == r->fromEventOut)
 	{
 #ifdef VRML_NODE_DEBUG
 	  cerr << "  => "
-	       << r->toNode()->nodeType()->getName()
+	       << r->toNode->nodeType().getName()
 	       << "::"
-	       << r->toNode()->name()
+	       << r->toNode->name
 	       << "."
-	       << r->toEventIn()
+	       << r->toEventIn
 	       << endl;
 #endif	  
-	  VrmlField *eventValue = fieldValue.clone();
-	  d_scene->queueEvent(timeStamp, eventValue,
-			      r->toNode(), r->toEventIn());
+	  VrmlField * eventValue = fieldValue.clone();
+          assert(this->d_scene);
+	  this->d_scene->queueEvent(timeStamp, eventValue, r->toNode,
+                                    r->toEventIn);
 	}
     }
 }
@@ -709,12 +689,12 @@ ostream& operator<<(ostream& os, const VrmlNode& f)
 
 ostream& VrmlNode::print(ostream& os, int indent) const
 {
-  const char *nm = name();
   for (int i=0; i<indent; ++i)
     os << ' ';
 
-  if (nm && *nm)
-    os << "DEF " << nm << " ";
+  if (this->name.length() > 0) {
+    os << "DEF " << this->name << " ";
+  }
 
   os << nodeType().getName() << " { ";
 
@@ -763,10 +743,9 @@ ostream& VrmlNode::printField(ostream& os,
  *
  * @todo Make this method pure virtual.
  */
-void VrmlNode::setField(const char *fieldName, const VrmlField &)
-{
-  theSystem->error("%s::setField: no such field (%s)",
-		   nodeType().getName(), fieldName);
+void VrmlNode::setField(const std::string & fieldId, const VrmlField &) {
+    theSystem->error("%s::setField: no such field (%s)",
+		     nodeType().getName().c_str(), fieldId.c_str());
 }
 
 /**
@@ -775,12 +754,13 @@ void VrmlNode::setField(const char *fieldName, const VrmlField &)
  * getField is used by Script nodes to access exposedFields. It does not
  * allow access to private fields (there tend to be specific access
  * functions for each field for programmatic access).
+ *
+ * @todo Make this method pure virtual.
  */
-const VrmlField *VrmlNode::getField(const char *fieldName) const
-{
-  theSystem->error("%s::getField: no such field (%s)\n",
-		   nodeType().getName(), fieldName);
-  return 0;
+const VrmlField * VrmlNode::getField(const std::string & fieldId) const {
+    theSystem->error("%s::getField: no such field (%s)\n",
+		     nodeType().getName().c_str(), fieldId.c_str());
+    return 0;
 }
 
 
@@ -790,23 +770,22 @@ const VrmlField *VrmlNode::getField(const char *fieldName) const
  * Used by the script node to access the node fields. This just strips
  * the _changed suffix and tries to access the field using getField.
  */
-const VrmlField *VrmlNode::getEventOut(const char *fieldName) const
-{
-  // Strip _changed prefix
-  char shortName[256];
-  int rootLen = strlen(fieldName) - strlen("_changed");
-  if (rootLen >= (int) sizeof(shortName))
-    rootLen = sizeof(shortName) - 1;
- 
-  if (rootLen > 0 && strcmp(fieldName+rootLen, "_changed") == 0)
-    strncpy(shortName, fieldName, rootLen);
-  else
-    strncpy(shortName, fieldName, sizeof(shortName));
-
-  // Handle exposedFields 
-  if ( nodeType().hasExposedField( shortName ) )
-    return getField( shortName );
-  else if ( nodeType().hasEventOut( fieldName ) )
-    return getField( fieldName );
-  return 0;
+const VrmlField * VrmlNode::getEventOut(const std::string & fieldName) const {
+    static const char * eventOutSuffix = "_changed";
+    std::string basicFieldName;
+    if (fieldName.length() > 8
+            && std::equal(fieldName.end() - 8, fieldName.end(),
+                          eventOutSuffix)) {
+        basicFieldName = fieldName.substr(0, fieldName.length() - 8);
+    } else {
+        basicFieldName = fieldName;
+    }
+    
+    // Handle exposedFields 
+    if (nodeType().hasExposedField(basicFieldName)) {
+        return getField(basicFieldName);
+    } else if (nodeType().hasEventOut(fieldName)) {
+        return getField(fieldName);
+    }
+    return 0;
 }

@@ -18,8 +18,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifndef VRMLSCENE_H
-#define VRMLSCENE_H
+# ifndef OPENVRML_VRMLSCENE_H
+#   define OPENVRML_VRMLSCENE_H
 
 #include <list>
 #include "common.h"
@@ -31,14 +31,11 @@ class Viewer;
 class VrmlNamespace;
 class VrmlNodeType;
 
-typedef std::list<VrmlNodePtr> VrmlNodeList;
-
 class OPENVRML_SCOPE VrmlScene {
     VrmlMFNode nodes;
     
 public:
-    // These are available without a scene object
-    static VrmlMFNode * readWrl(VrmlMFString * url, Doc2 * relative,
+    static VrmlMFNode * readWrl(const VrmlMFString & urls, Doc2 * relative,
                                 VrmlNamespace * ns);
     static VrmlMFNode * readWrl(Doc2 * url, VrmlNamespace * ns );
     static const VrmlMFNode readString(char const * vrmlString,
@@ -47,9 +44,10 @@ public:
     static VrmlNodeType * readPROTO(const VrmlMFString & url,
                                     const Doc2 * relative = 0);
 
-    VrmlScene(const char * url = 0, const char * localCopy = 0);
+    explicit VrmlScene(const std::string & url = std::string(),
+                       const std::string & localCopy = std::string());
     virtual ~VrmlScene();
-    
+
     const VrmlMFNode & getRootNodes() const throw ();
     
     // Destroy world (just passes destroy request up to client)
@@ -57,10 +55,10 @@ public:
 
     // Replace world with nodes, recording url as the source URL.
     void replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
-		      Doc2 * url = 0, Doc2 * urlLocal = 0);
+		      Doc2 * url=0, Doc2 * urlLocal=0);
 
     // A way to let the app know when a world is loaded, changed, etc.
-    typedef void (* SceneCB)(int reason);
+    typedef void (*SceneCB)( int reason );
 
     // Valid reasons for scene callback (need more...)
     enum {
@@ -68,13 +66,14 @@ public:
         REPLACE_WORLD
     };
 
-    void addWorldChangedCallback(SceneCB);
+    void addWorldChangedCallback( SceneCB );
 
     // Load a generic file (possibly non-VRML)
-    bool loadUrl(const VrmlMFString * url, const VrmlMFString * parameters = 0);
+    bool loadUrl(const VrmlMFString & url, const VrmlMFString & parameters = VrmlMFString());
 
     // Load a VRML file
-    bool load(const char *url, const char *localCopy = 0);
+    bool load(const std::string & url,
+              const std::string & localCopy = std::string());
 
     // Load a VRML string
     bool loadFromString(const char *string);
@@ -89,23 +88,23 @@ public:
     VrmlNamespace *scope() { return d_namespace; }
 
     // Queue an event to load URL/nodes (async so it can be called from a node)
-    void queueLoadUrl(VrmlMFString * url, VrmlMFString * parameters);
-    void queueReplaceNodes(VrmlMFNode * nodes, VrmlNamespace * ns);
+    void queueLoadUrl( VrmlMFString *url, VrmlMFString *parameters );
+    void queueReplaceNodes( VrmlMFNode *nodes, VrmlNamespace *ns );
 
-    void sensitiveEvent(void * object, double timeStamp,
-                        bool isOver, bool isActive, double * point);
+    void sensitiveEvent( void *object, double timeStamp,
+		         bool isOver, bool isActive, double *point );
 
     // Queue an event for a given node
     void queueEvent(double timeStamp, VrmlField * value,
-		    const VrmlNodePtr & toNode, const char * toEventIn);
+                    const VrmlNodePtr & toNode, const std::string & toEventIn);
 
     bool eventsPending();
 
     void flushEvents();
 
     // Script node API support functions. Can be overridden if desired.
-    virtual const char * getName();
-    virtual const char * getVersion();
+    virtual const char *getName();
+    virtual const char *getVersion();
     double getFrameRate();
 
     // Returns true if scene needs to be re-rendered
@@ -162,8 +161,8 @@ public:
     void nextViewpoint();
     void prevViewpoint();  
     int nViewpoints();
-    void getViewpoint(int, const char **, const char **);
-    void setViewpoint(const char *, const char *);
+    void getViewpoint(size_t index, std::string & name, std::string & description);
+    void setViewpoint(const std::string & name, const std::string & description);
     void setViewpoint(int);
 
     // Other (non-bindable) node types that the scene needs access to:
@@ -188,6 +187,9 @@ public:
     void addMovie( VrmlNodeMovieTexture * );
     void removeMovie( VrmlNodeMovieTexture * );
 
+
+    VrmlNode* getRoot();
+
     /**
      * True if the bvolume dirty flag has been set on a node in the
      * scene graph, but has not yet been propegated to that node's
@@ -199,12 +201,17 @@ public:
     void updateFlags();
 
 protected:
+    typedef std::list<VrmlNodePtr> VrmlNodeList;
+    
     bool headlightOn();
-    void doCallbacks( int reason );
+    void doCallbacks(int reason);
 
     // Document URL
     Doc2 * d_url;
     Doc2 * d_urlLocal;
+
+    // Scene graph
+    VrmlNodeGroup d_nodes;
 
     // Nodes and node types defined in this scope
     VrmlNamespace *d_namespace;
@@ -258,11 +265,11 @@ protected:
     BindStack d_viewpointStack;		// Viewpoint stack
 
     // An event has a value and a destination, and is associated with a time
-    struct OPENVRML_SCOPE Event {
-        double timeStamp;
-        VrmlField *value;
-        VrmlNodePtr toNode;
-        const char *toEventIn;
+    struct Event{
+      double timeStamp;
+      VrmlField *value;
+      VrmlNodePtr toNode;
+      std::string toEventIn;
     };
 
     // For each scene can have a limited number of pending events.
@@ -274,7 +281,8 @@ protected:
     //static const int MAXEVENTS = 400; MSVC++5 doesn't like this.
     enum { MAXEVENTS = 400 };
     Event d_eventMem[MAXEVENTS];
-    int d_firstEvent, d_lastEvent;
+    size_t d_firstEvent;
+    size_t d_lastEvent;
 
     // Scene-scoped lights (PointLights and SpotLights)
     VrmlNodeList* d_scopedLights;
@@ -292,4 +300,4 @@ protected:
     VrmlNodeList* d_movies;
 };
 
-#endif // VRMLSCENE_H
+# endif

@@ -68,8 +68,9 @@ public:
     VrmlNodeLight(VrmlScene *);
 
     virtual VrmlNodeType & nodeType() const;
-    virtual const VrmlField * getField(const char * fieldName) const;
-    virtual void setField(const char * fieldName, const VrmlField & fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
     virtual void renderScoped(Viewer *);
     virtual ostream& printFields(ostream& os, int indent);
     virtual VrmlNodeLight* toLight() const;
@@ -105,7 +106,7 @@ public:
     virtual void updateModified(VrmlNodePath& path, int flags);
     virtual void clearFlags();
 
-    virtual void addToScene( VrmlScene *s, const char *relativeUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relativeUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
@@ -122,11 +123,12 @@ public:
     void removeChildren(const VrmlMFNode & children);
     void removeChildren();
 
-    virtual void eventIn(double timeStamp, const char * eventName,
+    virtual void eventIn(double timeStamp, const std::string & eventName,
 		         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNode* getParentTransform();
 
@@ -173,13 +175,12 @@ public:
 
     void activate();
 
-    virtual const VrmlField *getField(const char *fieldName) const;
+    virtual const VrmlField * getField(const std::string & fieldName) const;
+    virtual void setField(const std::string & fieldId,
+			  const VrmlField & fieldValue);
 
-    virtual void setField(const char *fieldName,
-			  const VrmlField &fieldValue);
-
-    const char *description() { return d_description.get(); }
-    const char *url() { return d_url.getLength() > 0 ? d_url.getElement(0) : 0; }
+    const std::string & description() { return d_description.get(); }
+    const std::string & url() { assert(d_url.getLength() > 0); return d_url.getElement(0); }
 
     const VrmlBVolume* getBVolume() const;
 
@@ -208,17 +209,16 @@ public:
     virtual void updateModified(VrmlNodePath& path);
     virtual void clearFlags();	// Clear childrens flags too.
 
-    virtual void addToScene( VrmlScene *s, const char *relativeUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relativeUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
     // Get a field or eventOut by name.
-    virtual const VrmlField *getField(const char *fieldName) const;
-
-    virtual void setField(const char *fieldName,
-			  const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+			  const VrmlField & fieldValue);
 
     const VrmlSFNode & getMaterial() const;
     void setMaterial(const VrmlSFNode & material);
@@ -265,7 +265,7 @@ public:
     virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
 
-    virtual void addToScene(VrmlScene *s, const char *relativeUrl);
+    virtual void addToScene(VrmlScene * scene, const std::string & relativeUrl);
 
     void update(VrmlSFTime & now);
 
@@ -273,8 +273,9 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 };
 
 
@@ -312,19 +313,19 @@ public:
 
     virtual VrmlNodeBackground* toBackground() const;
 
-    virtual void addToScene( VrmlScene *s, const char *relativeUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relativeUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     // render backgrounds once per scene, not via the render() method
     void renderBindable(Viewer *);
 
-    virtual void eventIn(double timeStamp,
-		         const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     size_t nGroundAngles()	{ return d_groundAngle.getLength(); }
     const float * groundAngle()	{ return d_groundAngle.get(); }
@@ -360,8 +361,9 @@ public:
     virtual void inverseTransform(Viewer *);
     virtual void inverseTransform(double [4][4]);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual const VrmlNodeBillboard * toBillboard() const;
     virtual VrmlNodeBillboard * toBillboard();
@@ -383,7 +385,8 @@ public:
 
     virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodeBox* toBox() const; //LarryD Mar 08/99
     virtual const VrmlSFVec3f& getSize() const;  //LarryD Mar 08/99
@@ -415,12 +418,13 @@ public:
     virtual bool isModified() const;
     virtual void clearFlags();	// Clear childrens flags too.
 
-    virtual void addToScene( VrmlScene *s, const char *rel );
+    virtual void addToScene(VrmlScene * scene, const std::string & rel);
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     const VrmlSFNode & getProxy() const;
     void setProxy(const VrmlSFNode & proxy);
@@ -447,8 +451,9 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     VrmlMFColor &color()	{ return d_color; }
 };
@@ -474,12 +479,12 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void eventIn(double timeStamp,
-		         const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 };
 
 
@@ -498,7 +503,8 @@ public:
 
     virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodeCone* toCone() const; //LarryD Mar 08/99
     virtual bool getBottom() { return d_bottom.get(); } //LarryD Mar 08/99
@@ -531,8 +537,9 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     VrmlMFVec3f &coordinate()	{ return d_point; }
 };
@@ -558,12 +565,12 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void eventIn(double timeStamp,
-		         const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 };
 
 
@@ -582,7 +589,8 @@ public:
 
     virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodeCylinder* toCylinder() const; //LarryD Mar 08/99
     virtual bool getBottom() { return d_bottom.get(); }  //LarryD Mar 08/99
@@ -627,8 +635,9 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     void activate( double timeStamp, bool isActive, double *p );
 
@@ -651,9 +660,9 @@ public:
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName,
-			  const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual const VrmlSFVec3f& getDirection() const;  //LarryD Mar 04/99
     virtual VrmlNodeDirLight* toDirLight() const;  //LarryD Mar 04/99
@@ -679,14 +688,15 @@ public:
     virtual void updateModified(VrmlNodePath& path);
     virtual void clearFlags();
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField * getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodeElevationGrid * toElevationGrid() const; //LarryD Mar 09/99
 
@@ -761,7 +771,8 @@ public:
 
     virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodeExtrusion* toExtrusion() const;
     virtual bool getBeginCap(){ return d_beginCap.get(); }
@@ -807,21 +818,19 @@ public:
 
     virtual VrmlNodeFog* toFog() const;
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void eventIn(double timeStamp,
-		         const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    // Get a field or eventOut by name.
-    virtual const VrmlField *getField(const char *fieldName) const;
-
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     const float *color() const	{ return d_color.get(); }
-    const char *fogType()	const	{ return d_fogType.get(); }
+    const std::string & fogType() const	{ return d_fogType.get(); }
     float visibilityRange() const	{ return d_visibilityRange.get(); }
 };
 
@@ -851,7 +860,8 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     VrmlMFString &justify() { return d_justify; }
     float size() { return d_size.get(); }
@@ -870,12 +880,13 @@ public:
     virtual void updateModified(VrmlNodePath& path);
     virtual void clearFlags();
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     const VrmlSFNode & getColor() const;
     void setColor(const VrmlSFNode & color);
@@ -915,14 +926,15 @@ public:
     virtual void updateModified(VrmlNodePath& path, int flags);
     virtual void clearFlags();
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     virtual Viewer::Object insertGeometry(Viewer *v, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodeIFaceSet* toIFaceSet() const;
 
@@ -996,7 +1008,7 @@ public:
     virtual VrmlNodePixelTexture*	toPixelTexture() const { return NULL; }
     virtual VrmlNodeImageTexture*	toImageTexture() const { return NULL; }
 
-    void addToScene( VrmlScene *scene, const char *relativeUrl )
+    void addToScene(VrmlScene * scene, const std::string & relativeUrl)
       { d_scene = scene; d_relativeUrl.set( relativeUrl ); }
 
 protected:
@@ -1027,8 +1039,9 @@ public:
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual size_t nComponents();
     virtual size_t width();
@@ -1067,13 +1080,13 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void addToScene( VrmlScene *s, const char* relativeUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relativeUrl);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName,
-			  const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
-    void load(const char *relativeUrl);
+    void load(const std::string & relativeUrl);
 
 protected:
     VrmlMFString d_url;
@@ -1098,14 +1111,15 @@ public:
     virtual void updateModified(VrmlNodePath& path);
     virtual void clearFlags();
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodeLOD* toLOD() const;
     const VrmlMFNode & getLevel() const;
@@ -1157,8 +1171,9 @@ public:
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
           float  ambientIntensity() const { return d_ambientIntensity.get(); }
     const float* diffuseColor() const { return d_diffuseColor.get(); }
@@ -1200,7 +1215,7 @@ public:
 
     virtual VrmlNodeMovieTexture* toMovieTexture() const;
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
@@ -1208,11 +1223,12 @@ public:
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual void eventIn(double timeStamp, const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual size_t nComponents();
     virtual size_t width();
@@ -1244,18 +1260,16 @@ public:
     virtual VrmlNodeNavigationInfo* toNavigationInfo() const;
 
     // Bindable nodes must notify the scene of their existence.
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void eventIn(double timeStamp,
-		         const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    // Get a field or eventOut by name.
-    virtual const VrmlField *getField(const char *fieldName) const;
-
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     const float * avatarSize()		{ return d_avatarSize.get(); }
     bool headlightOn()		{ return d_headlight.get(); }
@@ -1281,8 +1295,9 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     VrmlMFVec3f &normal()	{ return d_vector; }
 };
@@ -1310,12 +1325,12 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void eventIn(double timeStamp,
-		         const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 };
 
 
@@ -1339,12 +1354,12 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void eventIn(double timeStamp,
-		         const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodeOrientationInt* toOrientationInt() const;  
     virtual const VrmlMFFloat& getKey() const;   
@@ -1373,8 +1388,9 @@ public:
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual size_t nComponents();
     virtual size_t width();
@@ -1414,8 +1430,9 @@ public:
 
     void activate( double timeStamp, bool isActive, double *p );
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual void accumulateTransform( VrmlNode* );
     virtual VrmlNode* getParentTransform();
@@ -1462,14 +1479,15 @@ public:
     virtual VrmlNodePointLight* toPointLight() const;
 
     // Bindable/scoped nodes must notify the scene of their existence.
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     virtual void renderScoped(Viewer *);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual const VrmlSFVec3f& getAttenuation() const;  //LarryD Mar 04/99
     virtual const VrmlSFVec3f& getLocation() const;  //LarryD Mar 04/99
@@ -1499,14 +1517,15 @@ public:
 
     virtual void clearFlags();
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     const VrmlSFNode & getColor() const;
     void setColor(const VrmlSFNode & color);
@@ -1545,12 +1564,12 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void eventIn(double timeStamp,
-		         const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodePositionInt* toPositionInt() const;  
     virtual const VrmlMFFloat& getKey() const;   
@@ -1585,8 +1604,9 @@ public:
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 };
 
 
@@ -1610,11 +1630,12 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void eventIn(double timeStamp, const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodeScalarInt* toScalarInt() const;
     virtual const VrmlMFFloat& getKey() const;
@@ -1646,14 +1667,15 @@ public:
 
     virtual VrmlNodeShape* toShape()	const;
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     const VrmlSFNode & getAppearance() const;
     void setAppearance(const VrmlSFNode & appearance);
@@ -1689,7 +1711,7 @@ public:
     virtual void updateModified(VrmlNodePath& path);
     virtual void clearFlags();
 
-    virtual void addToScene(VrmlScene *s, const char *);
+    virtual void addToScene(VrmlScene * scene, const std::string &);
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
@@ -1697,8 +1719,9 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     const VrmlSFNode & getSource() const;
     void setSource(const VrmlSFNode & source);
@@ -1720,7 +1743,8 @@ public:
 
     virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual VrmlNodeSphere* toSphere() const; //LarryD Mar 08/99
     virtual float getRadius() { return d_radius.get(); }   //LarryD Mar 08/99
@@ -1760,8 +1784,9 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     void activate( double timeStamp, bool isActive, double *p );
 
@@ -1782,14 +1807,15 @@ public:
 
     virtual VrmlNodeSpotLight* toSpotLight() const;
 
-    virtual void addToScene( VrmlScene *s, const char * );
+    virtual void addToScene(VrmlScene * scene, const std::string &);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     virtual void renderScoped(Viewer *);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual const VrmlSFVec3f& getAttenuation() const;  //LarryD Mar 04/99
     virtual const VrmlSFVec3f& getDirection() const;  //LarryD Mar 04/99
@@ -1826,14 +1852,15 @@ public:
     virtual void updateModified(VrmlNodePath& path);
     virtual void clearFlags();
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     const VrmlMFNode & getChoice() const;
     void setChoice(const VrmlMFNode & choice);
@@ -1876,15 +1903,15 @@ public:
     virtual void updateModified(VrmlNodePath& path);
     virtual void clearFlags();
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     const VrmlSFNode & getFontStyle() const;
     void setFontStyle(const VrmlSFNode & fontStyle);
@@ -1914,8 +1941,9 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     VrmlMFVec2f &coordinate()	{ return d_point; }
 };
@@ -1943,8 +1971,9 @@ public:
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     const VrmlSFVec2f & getCenter() const;
     const VrmlSFFloat & getRotation() const;
@@ -1977,17 +2006,18 @@ public:
 
     virtual VrmlNodeTimeSensor* toTimeSensor() const;
 
-    virtual void addToScene( VrmlScene *s, const char* );
+    virtual void addToScene(VrmlScene * scene, const std::string &);
 
     virtual ostream& printFields(ostream& os, int indent);
 
     void update( VrmlSFTime &now );
 
-    virtual void eventIn(double timeStamp, const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual double getCycleInterval(){ return d_cycleInterval.get();} 
     virtual bool getEnabled(){ return d_enabled.get();} 
@@ -2026,8 +2056,9 @@ public:
 
     void activate( double timeStamp, bool isOver, bool isActive, double *p );
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     bool isEnabled() { return d_enabled.get(); }
 };
@@ -2051,8 +2082,9 @@ public:
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual void accumulateTransform(VrmlNode*);
     virtual void inverseTransform(Viewer *);
@@ -2147,16 +2179,16 @@ public:
 
     virtual VrmlNodeViewpoint* toViewpoint() const;
 
-    virtual void addToScene( VrmlScene *s, const char *relUrl );
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void eventIn(double timeStamp,
-		         const char *eventName,
-		         const VrmlField & fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+                         const VrmlField & fieldValue);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
     virtual void accumulateTransform( VrmlNode* );
     virtual VrmlNode* getParentTransform();
@@ -2183,7 +2215,7 @@ public:
     // not implemented
     void getFrustum(VrmlFrustum& frust) const; // get a copy
 
-    const char *description() { return d_description.get() ? d_description.get() : ""; }
+    const std::string & description() { return d_description.get(); }
 };
 
 
@@ -2212,8 +2244,9 @@ public:
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual const VrmlField * getField(const std::string & fieldId) const;
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 };
 
 
@@ -2233,11 +2266,12 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
-    virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+    virtual void setField(const std::string & fieldId,
+                          const VrmlField & fieldValue);
 
-    const char* title() { return d_title.get(); }
+    const std::string & title() { return d_title.get(); }
 
-    const char * const * info() { return d_info.get(); }
+//    const char * const * info() { return d_info.get(); }
 
     size_t size() { return d_info.getLength(); }
 };

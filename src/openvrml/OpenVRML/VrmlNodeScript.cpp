@@ -69,6 +69,8 @@ static VrmlNode *creator( VrmlScene *scene )
 }
 
 
+// Define the built in VrmlNodeType:: "Script" fields
+
 /**
  * Define the built in VrmlNodeType:: "Script" fields
  */
@@ -138,21 +140,18 @@ VrmlNodeScript::~VrmlNodeScript()
   for (i = d_eventIns.begin(); i != d_eventIns.end(); ++i)
     {
       ScriptField *r = *i;
-      free(r->name);
       delete r->value;
       delete r;
     }
   for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
     {
       ScriptField *r = *i;
-      free(r->name);
       delete r->value;
       delete r;
     }
   for (i = d_fields.begin(); i != d_fields.end(); ++i)
     {
       ScriptField *r = *i;
-      free(r->name);
       delete r->value;
       delete r;
     }
@@ -251,49 +250,58 @@ void VrmlNodeScript::update(const VrmlSFTime & timeNow) {
 }
 
 
-// 
-
 void VrmlNodeScript::eventIn(double timeStamp,
-			     const char *eventName,
-			     const VrmlField & fieldValue)
-{
-  if (! d_script ) initialize( timeStamp );
-  if (! d_script ) return;
-
-  const char *origEventName = eventName;
-  bool valid = hasEventIn( eventName );
-  if (! valid && strncmp(eventName, "set_", 4) == 0 )
-    {
-      eventName += 4;
-      valid = hasEventIn( eventName );
+			     const std::string & eventName,
+			     const VrmlField & fieldValue) {
+    if (!d_script) {
+        this->initialize(timeStamp);
     }
-  if ( valid )
-    {
-      setEventIn( eventName, fieldValue );
+    if (!d_script) {
+        return;
+    }
+    
+    static const char * eventInPrefix = "set_";
+    std::string basicEventName;
+    if (std::equal(eventInPrefix, eventInPrefix + 4, eventName.begin())) {
+        basicEventName = eventName.substr(4);
+    } else {
+        basicEventName = eventName;
+    }
+    bool valid = (this->hasEventIn(eventName)
+                || this->hasEventIn(basicEventName));
+    cerr << "eventIn Script::" << this->getName() << "." << eventName
+         << " " << fieldValue << ", valid " << valid
+         << ", d_script " << (unsigned long)d_script
+         << endl;
+    if (valid) {
+        this->setEventIn(eventName, fieldValue);
 
-      VrmlSFTime ts( timeStamp );
-      const VrmlField *args[] = { &fieldValue, &ts };
+        VrmlSFTime ts( timeStamp );
+        const VrmlField *args[] = { &fieldValue, &ts };
 
-      FieldList::const_iterator i;
-      for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
-	(*i)->modified = false;
+        FieldList::const_iterator i;
+        for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
+	  (*i)->modified = false;
 
-      d_script->activate( timeStamp, eventName, 2, args );
+        d_script->activate( timeStamp, eventName, 2, args );
 
-      // For each modified eventOut, send an event
-      for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
-	if ((*i)->modified)
-	  eventOut( timeStamp, (*i)->name, *((*i)->value) );
+        // For each modified eventOut, send an event
+        for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i) {
+	    if ((*i)->modified) {
+                cout << "Sending eventOut." << endl;
+                eventOut(timeStamp, (*i)->name, *((*i)->value));
+            }
+        }
 
-      ++d_eventsReceived;	// call eventsProcessed later
+        ++d_eventsReceived;	// call eventsProcessed later
     }
 
-  // Let the generic code handle the rest.
-  else
-    VrmlNode::eventIn( timeStamp, origEventName, fieldValue );
+    // Let the generic code handle the rest.
+    else
+      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
 
-  // Scripts shouldn't generate redraws.
-  clearModified();
+    // Scripts shouldn't generate redraws.
+    clearModified();
 }
 
 
@@ -301,11 +309,11 @@ void VrmlNodeScript::eventIn(double timeStamp,
 // add events/fields
 
 namespace {
-    void add(VrmlNodeScript::FieldList & recs, const char * ename,
+    void add(VrmlNodeScript::FieldList & recs, const std::string & ename,
              VrmlField::VrmlFieldType type) {
         VrmlNodeScript::ScriptField * const scriptField =
                 new VrmlNodeScript::ScriptField;
-        scriptField->name = strdup(ename);
+        scriptField->name = ename;
         scriptField->type = type;
         switch (type) {
         case VrmlField::SFBOOL:
@@ -377,17 +385,18 @@ namespace {
     }
 }
 
-void VrmlNodeScript::addEventIn(const char *ename, VrmlField::VrmlFieldType t)
-{
-  add(d_eventIns, ename, t);
+void VrmlNodeScript::addEventIn(const std::string & ename,
+                                VrmlField::VrmlFieldType t) {
+    add(this->d_eventIns, ename, t);
 }
 
-void VrmlNodeScript::addEventOut(const char *ename, VrmlField::VrmlFieldType t)
-{
-  add(d_eventOuts, ename, t);
+void VrmlNodeScript::addEventOut(const std::string & ename,
+                                 VrmlField::VrmlFieldType t) {
+    add(this->d_eventOuts, ename, t);
 }
 
-void VrmlNodeScript::addField(const char *ename, VrmlField::VrmlFieldType t,
+void VrmlNodeScript::addField(const std::string & ename,
+                              VrmlField::VrmlFieldType t,
 			      const VrmlField * val) {
     add(this->d_fields, ename, t);
     if (val) {
@@ -395,39 +404,35 @@ void VrmlNodeScript::addField(const char *ename, VrmlField::VrmlFieldType t,
     }
 }
 
-VrmlField*
-VrmlNodeScript::get(const FieldList &recs, const char *fname) const
-{
-  FieldList::const_iterator i;
-  for (i = recs.begin(); i != recs.end(); ++i) {
-    if (strcmp((*i)->name, fname) == 0)
-      return (*i)->value;
-  }
-  return 0;
+VrmlField * VrmlNodeScript::get(const FieldList & recs,
+                                const std::string & fieldId) const {
+    for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
+        if ((*i)->name == fieldId) {
+            return (*i)->value;
+        }
+    }
+    return 0;
 }
 
 // has
 
-VrmlField::VrmlFieldType
-VrmlNodeScript::hasEventIn(const char *ename) const
-{
-  return has(d_eventIns, ename);
+VrmlField::VrmlFieldType VrmlNodeScript::hasEventIn(const std::string & id)
+        const {
+    return has(d_eventIns, id);
 }
 
-VrmlField::VrmlFieldType
-VrmlNodeScript::hasEventOut(const char *ename) const
-{
-  return has(d_eventOuts, ename);
+VrmlField::VrmlFieldType VrmlNodeScript::hasEventOut(const std::string & id)
+        const {
+    return has(d_eventOuts, id);
 }
 
-VrmlField::VrmlFieldType
-VrmlNodeScript::hasField(const char *ename) const
-{
-  return has(d_fields, ename);
+VrmlField::VrmlFieldType VrmlNodeScript::hasField(const std::string & id)
+        const {
+    return has(d_fields, id);
 }
 
-VrmlField::VrmlFieldType VrmlNodeScript::hasInterface(const char * id) const
-{
+VrmlField::VrmlFieldType VrmlNodeScript::hasInterface(const std::string & id)
+        const {
     VrmlField::VrmlFieldType fieldType = VrmlField::NO_FIELD;
     
     if ((fieldType = this->hasField(id)) != VrmlField::NO_FIELD) {
@@ -445,84 +450,80 @@ VrmlField::VrmlFieldType VrmlNodeScript::hasInterface(const char * id) const
     return fieldType;
 }
 
-VrmlField::VrmlFieldType
-VrmlNodeScript::has(const FieldList &recs, const char *ename) const
-{
-  FieldList::const_iterator i;
-  for (i = recs.begin(); i != recs.end(); ++i) {
-    if (strcmp((*i)->name, ename) == 0)
-      return (*i)->type;
-  }
-  return VrmlField::NO_FIELD;
+VrmlField::VrmlFieldType VrmlNodeScript::has(const FieldList & recs,
+                                             const std::string & id) const {
+    for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
+        if ((*i)->name == id) {
+            return (*i)->type;
+        }
+    }
+    return VrmlField::NO_FIELD;
 }
 
 // Get the value of a field or eventOut.
 
-const VrmlField *VrmlNodeScript::getField(const char *fieldName) const
+const VrmlField * VrmlNodeScript::getField(const std::string & fieldId) const
 {
-  // exposedFields
-  if ( strcmp( fieldName, "url" ) == 0 )
-    return &d_url;
+    // exposedFields
+    if (fieldId == "url") {
+        return &d_url;
+    }
 
-  // look up 
-  else if ( hasField(fieldName) )
-    return get(d_fields, fieldName);
+    // look up 
+    else if (this->hasField(fieldId)) {
+        return get(d_fields, fieldId);
+    }
 
-  // look up event outs? ....
+    // look up event outs? ....
 
 
-  return VrmlNodeChild::getField( fieldName );
+    return VrmlNodeChild::getField(fieldId);
 }
 
 
 // Set the value of one of the node fields/events.
 // setField is public so the parser can access it.
 
-void VrmlNodeScript::setField(const char *fieldName,
-			      const VrmlField &fieldValue)
-{
+void VrmlNodeScript::setField(const std::string & fieldId,
+			      const VrmlField & fieldValue) {
   VrmlField::VrmlFieldType ft;
 
   if TRY_FIELD(url, MFString)	// need to re-initialize() if url changes...
   else if TRY_FIELD(directOutput, SFBool)
   else if TRY_FIELD(mustEvaluate, SFBool)
-  else if ( (ft = hasField(fieldName)) != 0 )
+  else if ( (ft = hasField(fieldId)) != 0 )
     {
       if (ft == VrmlField::fieldType( fieldValue.fieldTypeName() ))
-	set(d_fields, fieldName, fieldValue);
+	set(d_fields, fieldId, fieldValue);
       else
 	theSystem->error("Invalid type (%s) for %s field of Script node.\n",
-		      fieldValue.fieldTypeName(), fieldName );
+                         fieldValue.fieldTypeName(), fieldId.c_str());
     }
   else
-    VrmlNodeChild::setField(fieldName, fieldValue);
-}
-
-void VrmlNodeScript::setEventIn(const char * id, const VrmlField & value) {
-    this->set(this->d_eventIns, id, value);
-}
-
-void VrmlNodeScript::setEventOut(const char * id, const VrmlField & value) {
-    this->set(this->d_eventOuts, id, value);
+    VrmlNodeChild::setField(fieldId, fieldValue);
 }
 
 VrmlNodeScript::FieldList & VrmlNodeScript::eventIns() {
     return this->d_eventIns;
 }
 
-VrmlNodeScript::FieldList & VrmlNodeScript::eventOuts() {
-    return this->d_eventOuts;
+void VrmlNodeScript::setEventIn(const std::string & fname,
+                                const VrmlField & value) {
+    this->set(d_eventIns, fname, value);
 }
 
-VrmlNodeScript::FieldList & VrmlNodeScript::fields() {
-    return this->d_fields;
+void VrmlNodeScript::setEventOut(const std::string & fname,
+                                 const VrmlField & value) {
+    cout << "Script::" << this->getName() << " setEventOut(" << fname << ", "
+         << value << endl;
+    this->set(d_eventOuts, fname, value);
 }
 
-void VrmlNodeScript::set(const FieldList & recs, const char * fname,
+void VrmlNodeScript::set(const FieldList & recs, const std::string & fieldId,
                          const VrmlField & value) {
     for (FieldList::const_iterator itr = recs.begin(); itr != recs.end();
             ++itr) {
-        if (strcmp((*itr)->name, fname) == 0) {
+        if ((*itr)->name == fieldId) {
             //
             // Script nodes can be self referential! Check this condition,
             // and "undo" the refcounting: decrement the refcount on any
@@ -610,11 +611,11 @@ namespace {
             JSContext * cx;
 
         public:
-            Script(VrmlNodeScript & scriptNode, const char * source)
+            Script(VrmlNodeScript & scriptNode, const std::string & source)
                 throw (std::bad_alloc);
             virtual ~Script();
 
-            virtual void activate(double timeStamp, const char * fname,
+            virtual void activate(double timeStamp, const std::string & fname,
                                   size_t argc, const VrmlField * const argv[]);
 
             VrmlNodeScript & getScriptNode();
@@ -633,15 +634,19 @@ namespace {
 ScriptObject * VrmlNodeScript::createScript() {
     // Try each url until we find one we like
     for (size_t i = 0; i < this->d_url.getLength(); ++i) {
-        if (!this->d_url.getElement(i)) continue;
+        if (this->d_url.getElement(i).length() == 0) continue;
 
         // Get the protocol & mimetype...
 # ifdef HAVE_MOZJS
         // Need to handle external .js files too...
-        if (strncmp(this->d_url.getElement(i), "javascript:", 11) == 0
-                || strncmp(this->d_url.getElement(i), "vrmlscript:", 11) == 0) {
+        const char javascriptScheme[] = "javascript:";
+        const char vrmlscriptScheme[] = "vrmlscript:";
+        if (std::equal(javascriptScheme, javascriptScheme + 11,
+                       this->d_url.getElement(i).begin())
+                || std::equal(vrmlscriptScheme, vrmlscriptScheme + 11,
+                              this->d_url.getElement(i).begin())) {
             return new JavaScript_::Script(*this,
-                                           this->d_url.getElement(i) + 11);
+                                        this->d_url.getElement(i).substr(11));
 	}
 # endif
 
@@ -740,7 +745,7 @@ namespace {
         //
         class FieldData {
         public:
-            const char * const scriptFieldId;
+            const std::string * scriptFieldId;
             bool isEventOut;
         
             virtual ~FieldData() = 0;
@@ -748,7 +753,7 @@ namespace {
             bool isScriptField() const;
             
         protected:
-            FieldData(const char * scriptFieldId, bool isEventOut);
+            FieldData(const std::string * scriptFieldId, bool isEventOut);
         };
         
         class SField {
@@ -762,7 +767,7 @@ namespace {
                 
             public:
                 explicit SFData(VrmlField * fieldValue,
-                                const char * scriptFieldId = 0,
+                                const std::string * scriptFieldId = 0,
                                 bool isEventOut = false);
                 virtual ~SFData();
                 
@@ -1002,7 +1007,7 @@ namespace {
                 JsvalArray array;
 
                 MFData(JsvalArray::size_type size,
-                       const char * scriptFieldId = 0, bool isEventOut = false);
+                       const std::string * scriptFieldId = 0, bool isEventOut = false);
                 virtual ~MFData();
 
             private:
@@ -1159,19 +1164,6 @@ namespace {
             static void finalize(JSContext * cx, JSObject * obj) throw ();
         };
         
-/*
-        class MFNode : public MFJSObject<MFNode> {
-        public:
-            static JSClass jsclass;
-            static JSClass & sfjsclass;
-            
-            static JSBool toJsval(const VrmlMFNode & mfnode, bool protect,
-                                  JSContext * cx, JSObject * obj, jsval * rval)
-                    throw ();
-            static VrmlMFNode * createFromJSObject(JSContext * cx,
-                                                   JSObject * obj);
-        };
-*/
         class MFRotation : public MFJSObject<MFRotation> {
         public:
             static JSClass jsclass;
@@ -1258,7 +1250,7 @@ namespace {
 
         // Construct from inline script
 
-        Script::Script(VrmlNodeScript & scriptNode, const char * source)
+        Script::Script(VrmlNodeScript & scriptNode, const std::string & source)
                 throw (std::bad_alloc):
                 ScriptObject(scriptNode), cx(0) {
 
@@ -1333,8 +1325,9 @@ namespace {
             uintN lineno = 0;
 
             jsval rval;
-            if (! JS_EvaluateScript( cx, globalObj, source, strlen(source),
-			             filename, lineno, &rval))
+            if (!JS_EvaluateScript(cx, globalObj,
+                                   source.c_str(), source.length(),
+                                   filename, lineno, &rval))
 	      theSystem->error("JS_EvaluateScript failed\n");
             
             ++nInstances;
@@ -1356,18 +1349,17 @@ namespace {
          * @todo Decide what to do if a call to a JavaScript function fails
          *      (probably due to an error in the script).
          */
-        void Script::activate(const double timeStamp, const char * const fname,
+        void Script::activate(const double timeStamp, const std::string & fname,
                               const size_t argc,
                               const VrmlField * const argv[]) {
             assert(this->cx);
-            assert(fname);
 
             jsval fval, rval;
             JSObject * const globalObj = JS_GetGlobalObject(this->cx);
             assert(globalObj);
             
             try {
-                if (!JS_LookupProperty(cx, globalObj, fname, &fval)) {
+                if (!JS_LookupProperty(cx, globalObj, fname.c_str(), &fval)) {
                     throw std::bad_alloc();
                 }
 
@@ -1398,7 +1390,7 @@ namespace {
 # ifndef NDEBUG
                 if (!ok) {
                     cerr << "Call to " << fname << " in Script node "
-                         << this->scriptNode.name() << " failed." << endl;
+                         << this->scriptNode.getName() << " failed." << endl;
                 }
 # endif
 
@@ -1479,7 +1471,7 @@ namespace {
             case VrmlField::SFSTRING:
                 {
 	            JSString * s = JS_NewStringCopyZ(cx,
-                                    static_cast<const VrmlSFString &>(f).get());
+                            static_cast<const VrmlSFString &>(f).get().c_str());
 	            if (protect) JS_AddRoot( cx, s );
 	            rval = STRING_TO_JSVAL(s);
                     break;
@@ -1701,10 +1693,16 @@ namespace {
             for (i = this->scriptNode.fields().begin();
                     i != this->scriptNode.fields().end(); ++i) {
                 jsval val = vrmlFieldToJSVal(*(*i)->value, false);
-                if (!JS_DefineProperty(this->cx, globalObj, (*i)->name, val,
-                                       //getter, setter, ...
-                                       0, 0,
-                                       JSPROP_PERMANENT )) {
+                if (JSVAL_IS_OBJECT(val)) {
+                    FieldData * const fieldData =
+                            reinterpret_cast<FieldData *>
+                                (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
+                    fieldData->scriptFieldId = &(*i)->name;
+                }
+                if (!JS_DefineProperty(this->cx, globalObj,
+                                       (*i)->name.c_str(), val,
+                                       0, 0, // getter, setter, ...
+                                       JSPROP_PERMANENT)) {
                     return false;
                 }
             }
@@ -1717,10 +1715,12 @@ namespace {
                     FieldData * const fieldData =
                             reinterpret_cast<FieldData *>
                                 (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
+                    fieldData->scriptFieldId = &(*i)->name;
                     fieldData->isEventOut = true;
                 }
                 
-                if (!JS_DefineProperty(this->cx, globalObj, (*i)->name, val,
+                if (!JS_DefineProperty(this->cx, globalObj,
+                                       (*i)->name.c_str(), val,
 			               0, eventOut_setProperty, //getter, setter
 			               JSPROP_PERMANENT)) {
 # ifndef NDEBUG
@@ -1940,7 +1940,7 @@ namespace {
                 Script * const script =
                         reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-                script->getScriptNode().setEventOut(fieldData->scriptFieldId,
+                script->getScriptNode().setEventOut(*fieldData->scriptFieldId,
                                                     val);
             }
         }
@@ -2210,7 +2210,7 @@ namespace {
                 
 	        VrmlNamespace ns;	// this is a problem...
 	        std::auto_ptr<VrmlMFNode>
-                        kids(VrmlScene::readWrl(url.get(), relative, &ns));
+                        kids(VrmlScene::readWrl(*url, relative, &ns));
                 
                 if (!kids.get()) {
                     return JS_FALSE;
@@ -2354,7 +2354,7 @@ namespace {
         // FieldData
         //
         
-        FieldData::FieldData(const char * const scriptFieldId,
+        FieldData::FieldData(const std::string * const scriptFieldId,
                              const bool isEventOut):
                 scriptFieldId(scriptFieldId), isEventOut(isEventOut) {}
         
@@ -2370,7 +2370,7 @@ namespace {
         //
         
         SField::SFData::SFData(VrmlField * const fieldValue,
-                               const char * const scriptFieldId,
+                               const std::string * const scriptFieldId,
                                const bool isEventOut):
                 FieldData(scriptFieldId, isEventOut), fieldValue(fieldValue) {
             assert(fieldValue);
@@ -4612,7 +4612,7 @@ namespace {
         
         
         MField::MFData::MFData(JsvalArray::size_type size,
-                               const char * const scriptFieldId,
+                               const std::string * const scriptFieldId,
                                const bool isEventOut):
                 FieldData(scriptFieldId, isEventOut), array(size) {}
         
@@ -6003,7 +6003,7 @@ namespace {
 
             for (size_t i = 0; i < mfstring.getLength(); ++i) {
                 JSString * jsstring =
-                        JS_NewStringCopyZ(cx, mfstring.getElement(i));
+                        JS_NewStringCopyZ(cx, mfstring.getElement(i).c_str());
                 if (!jsstring) {
                     return JS_FALSE;
                 }

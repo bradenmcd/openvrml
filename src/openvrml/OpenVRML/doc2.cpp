@@ -98,11 +98,11 @@ namespace {
     }
 }
 
-Doc2::Doc2(const char * url, Doc2 const * relative)
+Doc2::Doc2(const std::string & url, const Doc2 * relative)
   : url_(0), tmpfile_(0), istm_(0), ostm_(0)
 {
-    if (url != 0) {
-        this->seturl(url, relative);
+    if (url.length() > 0) {
+        this->seturl(url.c_str(), relative);
     }
 }
 

@@ -2462,7 +2462,7 @@ ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
   glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
   GLubyte* texturepart=new GLubyte[w*h*nc];
-  for (int i=0;i<h;i++)
+  for (size_t i = 0; i < h; i++)
     memcpy(texturepart+i*w*nc,pixels+(i+yoffset)*whole_w*nc+xoffset*nc, w*nc);
 
   glTexImage2D( GL_TEXTURE_2D, 0, nc, w, h, 0,

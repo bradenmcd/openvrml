@@ -27,11 +27,6 @@
 #include "VrmlScene.h"
 
 #include <stdio.h>
-#include <string.h>
-
-#ifdef macintosh
-extern char* strdup( const char* );
-#endif
 
 /**
  * @class VrmlNodeType
@@ -49,10 +44,9 @@ extern char* strdup( const char* );
  * @param name the name of the node.
  * @param creator a factory function for creating nodes of this type.
  */
-VrmlNodeType::VrmlNodeType(const char * name,
+VrmlNodeType::VrmlNodeType(const std::string & name,
                            VrmlNode * (*creator)(VrmlScene *)):
-        d_refCount(0), d_name(strdup(name ? name : "<unnamed type>")),
-        d_namespace(0), d_url(0), d_actualUrl(0), d_relative(0),
+        d_refCount(0), name(name), d_namespace(0), d_url(0), d_relative(0),
         d_creator(creator), d_fieldsInitialized(false) {}
 
 namespace {
@@ -61,7 +55,6 @@ namespace {
       VrmlNodeType::FieldList::iterator i;
       for (i = f.begin(); i != f.end(); ++i) {
         VrmlNodeType::ProtoField *r = *i;
-        free(r->name);
         if (r->defaultValue) delete r->defaultValue;
 
         // free NodeFieldRec* s in r->thisIS;
@@ -69,7 +62,6 @@ namespace {
         for (j = r->thisIS.begin(); j != r->thisIS.end(); ++j)
           {
 	    VrmlNodeType::NodeFieldRec *nf = *j;
-	    free(nf->fieldName);
 	    delete nf;
           }
 
@@ -85,11 +77,8 @@ namespace {
  */
 VrmlNodeType::~VrmlNodeType()
 {
-  free(d_name);
-
   delete d_namespace;
   delete d_url;
-  delete d_actualUrl;
   delete d_relative;
 
   // Free strings & defaults duplicated when fields/eventIns/eventOuts added:
@@ -136,6 +125,13 @@ VrmlNode * VrmlNodeType::newNode(VrmlScene * scene) const
 }
 
 /**
+ * @brief Get the node name defined by this type.
+ */
+const std::string & VrmlNodeType::getName() const {
+    return this->name;
+}
+
+/**
  * @brief Get the scope of this type.
  *
  * @return a pointer to the VrmlNamespace corresponding to this node type's
@@ -161,27 +157,26 @@ void VrmlNodeType::setScope(VrmlNamespace & scope)
  *
  * @param url
  */
-void VrmlNodeType::setActualUrl(const char *url)
-{
-  if (d_actualUrl) delete d_actualUrl;
-  d_actualUrl = url ? new VrmlSFString(url): 0;
+void VrmlNodeType::setActualUrl(const std::string & url) {
+    this->actualUrl = url;
 }
 
 /**
  * @brief Retrieve the actual URL the PROTO was retrieved from.
  */
-const char * VrmlNodeType::getActualUrl() const {
-    return d_actualUrl ? d_actualUrl->get() : 0;
+const std::string & VrmlNodeType::getActualUrl() const {
+    return this->actualUrl;
 }
 
 namespace {
     //
     // Helper method to add a field or event.
     //
-    void add(VrmlNodeType::FieldList & recs, const char * id, VrmlField::VrmlFieldType type) {
+    void add(VrmlNodeType::FieldList & recs, const std::string & id,
+             VrmlField::VrmlFieldType type) {
         VrmlNodeType::ProtoField * const protoField =
                 new VrmlNodeType::ProtoField;
-        protoField->name = strdup(id);
+        protoField->name = id;
         protoField->type = type;
         protoField->defaultValue = 0;
         recs.push_front(protoField);
@@ -194,7 +189,8 @@ namespace {
  * @param id
  * @param type
  */
-void VrmlNodeType::addEventIn(const char * id, VrmlField::VrmlFieldType type) {
+void VrmlNodeType::addEventIn(const std::string & id,
+                              VrmlField::VrmlFieldType type) {
     add(d_eventIns, id, type);
 }
 
@@ -204,7 +200,8 @@ void VrmlNodeType::addEventIn(const char * id, VrmlField::VrmlFieldType type) {
  * @param id
  * @param type
  */
-void VrmlNodeType::addEventOut(const char * id, VrmlField::VrmlFieldType type) {
+void VrmlNodeType::addEventOut(const std::string & id,
+                               VrmlField::VrmlFieldType type) {
     add(d_eventOuts, id, type);
 }
 
@@ -215,7 +212,7 @@ void VrmlNodeType::addEventOut(const char * id, VrmlField::VrmlFieldType type) {
  * @param type
  * @param defaultValue
  */
-void VrmlNodeType::addField(const char * id,
+void VrmlNodeType::addField(const std::string & id,
                             const VrmlField::VrmlFieldType type,
                             const VrmlField * defaultValue) {
     add(d_fields, id, type);
@@ -231,19 +228,16 @@ void VrmlNodeType::addField(const char * id,
  * @param type
  * @param defaultValue
  */
-void VrmlNodeType::addExposedField(const char * id,
+void VrmlNodeType::addExposedField(const std::string & id,
                                    const VrmlField::VrmlFieldType type,
-                                   const VrmlField * defaultValue) {
-    char tmp[1000];
+                                   const VrmlField * const defaultValue) {
     add(d_fields, id, type);
     if (defaultValue) {
         this->setFieldDefault(id, defaultValue);
     }
 
-    sprintf(tmp, "set_%s", id);
-    add(d_eventIns, tmp, type);
-    sprintf(tmp, "%s_changed", id);
-    add(d_eventOuts, tmp, type);
+    add(d_eventIns, "set_" + id, type);
+    add(d_eventOuts, id + "_changed", type);
 }
 
 /**
@@ -252,25 +246,22 @@ void VrmlNodeType::addExposedField(const char * id,
  * @param fname field name
  * @param defaultValue default value
  */
-void VrmlNodeType::setFieldDefault(const char * fname,
+void VrmlNodeType::setFieldDefault(const std::string & fname,
                                    const VrmlField * defaultValue) {
-  FieldList::const_iterator i;
-
-  for (i = d_fields.begin(); i != d_fields.end(); ++i)
-    if (strcmp((*i)->name, fname) == 0)
-      {
-	if ((*i)->defaultValue)
-	  {
-	    theSystem->error("Default for field %s of %s already set.",
-			     fname, getName());
-	    delete (*i)->defaultValue;
-	  }
-	(*i)->defaultValue = defaultValue ? defaultValue->clone() : 0;
-	return;
-      }
-
-  theSystem->error("setFieldDefault for field %s of %s failed: no such field.",
-		   fname, getName());
+    for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
+            ++i) {
+        if (fname == (*i)->name) {
+            if ((*i)->defaultValue) {
+                theSystem->error("Default for field %s of %s already set.",
+                                 fname.c_str(), this->getName().c_str());
+	        delete (*i)->defaultValue;
+            }
+	    (*i)->defaultValue = defaultValue ? defaultValue->clone() : 0;
+	    return;
+        }
+    }      
+    theSystem->error("setFieldDefault for field %s of %s failed: no such field.",
+                     fname.c_str(), getName().c_str());
 }
 
 
@@ -312,7 +303,8 @@ void VrmlNodeType::fetchImplementation()
     }
   else
     {
-      theSystem->warn("Couldn't read EXTERNPROTO %s\n", getName());
+      theSystem->warn("Couldn't read EXTERNPROTO %s\n",
+                      this->getName().c_str());
     }
 }
 
@@ -343,8 +335,8 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n = (*j)->node;
-	      if (strcmp(n->name(),"") == 0)
+	      const VrmlNodePtr & n((*j)->node);
+	      if (n->getName().length() == 0)
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
 		  n->setName( buf );
@@ -363,8 +355,8 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n = (*j)->node;
-	      if (strcmp(n->name(),"") == 0)
+	      const VrmlNodePtr & n((*j)->node);
+	      if (n->getName().length() == 0)
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
 		  n->setName( buf );
@@ -377,8 +369,8 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n = (*j)->node;
-	      if (strcmp(n->name(),"") == 0)
+	      const VrmlNodePtr & n((*j)->node);
+	      if (n->getName().length() == 0)
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
 		  n->setName( buf );
@@ -416,8 +408,9 @@ const VrmlNodePtr VrmlNodeType::firstNode() const {
  * @return the VrmlFieldType of the eventIn if it exists, or
  *      VrmlField::NO_FIELD otherwise.
  */
-VrmlField::VrmlFieldType VrmlNodeType::hasEventIn(const char * id) const {
-    return has(d_eventIns, id);
+VrmlField::VrmlFieldType VrmlNodeType::hasEventIn(const std::string & id)
+        const {
+    return has(this->d_eventIns, id);
 }
 
 /**
@@ -428,8 +421,9 @@ VrmlField::VrmlFieldType VrmlNodeType::hasEventIn(const char * id) const {
  * @return the VrmlFieldType of the eventOut if it exists, or
  *      VrmlField::NO_FIELD otherwise
  */
-VrmlField::VrmlFieldType VrmlNodeType::hasEventOut(const char * id) const {
-    return has(d_eventOuts, id);
+VrmlField::VrmlFieldType VrmlNodeType::hasEventOut(const std::string & id)
+        const {
+    return has(this->d_eventOuts, id);
 }
 
 /**
@@ -440,8 +434,8 @@ VrmlField::VrmlFieldType VrmlNodeType::hasEventOut(const char * id) const {
  * @return the VrmlFieldType of the field if it exists, or
  *      VrmlField::NO_FIELD otherwise.
  */
-VrmlField::VrmlFieldType VrmlNodeType::hasField(const char * id) const {
-    return has(d_fields, id);
+VrmlField::VrmlFieldType VrmlNodeType::hasField(const std::string & id) const {
+    return has(this->d_fields, id);
 }
 
 /**
@@ -452,20 +446,23 @@ VrmlField::VrmlFieldType VrmlNodeType::hasField(const char * id) const {
  * @return the VrmlFieldType of the exposedField if it exists, or
  *      VrmlField::NO_FIELD otherwise.
  */
-VrmlField::VrmlFieldType VrmlNodeType::hasExposedField(const char * id) const {
+VrmlField::VrmlFieldType VrmlNodeType::hasExposedField(const std::string & id)
+        const {
     // Must have field "name", eventIn "set_name", and eventOut
     // "name_changed", all with same type:
-    char tmp[1000];
     VrmlField::VrmlFieldType type;
 
-    if ( (type = has(d_fields, id)) == VrmlField::NO_FIELD)
-      return VrmlField::NO_FIELD;
+    if ((type = this->has(this->d_fields, id)) == VrmlField::NO_FIELD) {
+        return VrmlField::NO_FIELD;
+    }
 
-    sprintf(tmp, "set_%s", id);
-    if (type != has(d_eventIns, tmp)) return VrmlField::NO_FIELD;
+    if (type != this->has(this->d_eventIns, "set_" + id)) {
+        return VrmlField::NO_FIELD;
+    }
 
-    sprintf(tmp, "%s_changed", id);
-    if (type != has(d_eventOuts, tmp)) return VrmlField::NO_FIELD;
+    if (type != this->has(this->d_eventOuts, id + "_changed")) {
+        return VrmlField::NO_FIELD;
+    }
 
     return type;
 }
@@ -481,8 +478,8 @@ VrmlField::VrmlFieldType VrmlNodeType::hasExposedField(const char * id) const {
  * @return the VrmlFieldType of the interface if it exists, or
  *      VrmlField::NO_FIELD otherwise.
  */
-VrmlField::VrmlFieldType VrmlNodeType::hasInterface(char const * id) const
-{
+VrmlField::VrmlFieldType VrmlNodeType::hasInterface(const std::string & id)
+        const {
     VrmlField::VrmlFieldType fieldType = VrmlField::NO_FIELD;
     
     if ((fieldType = this->hasField(id)) != VrmlField::NO_FIELD) {
@@ -500,26 +497,24 @@ VrmlField::VrmlFieldType VrmlNodeType::hasInterface(char const * id) const
     return fieldType;
 }
 
-VrmlField::VrmlFieldType
-VrmlNodeType::has(const FieldList &recs, const char *ename) const
-{
-  FieldList::const_iterator i;
-  for (i = recs.begin(); i != recs.end(); ++i) {
-    if (strcmp((*i)->name, ename) == 0)
-      return (*i)->type;
-  }
-  return VrmlField::NO_FIELD;
+VrmlField::VrmlFieldType VrmlNodeType::has(const FieldList & recs,
+                                           const std::string & id) const {
+    for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
+        if ((*i)->name == id) {
+            return (*i)->type;
+        }
+    }
+    return VrmlField::NO_FIELD;
 }
 
-VrmlField*
-VrmlNodeType::fieldDefault(const char *fname) const
-{
-  FieldList::const_iterator i;
-  for (i = d_fields.begin(); i != d_fields.end(); ++i) {
-    if (strcmp((*i)->name, fname) == 0)
-      return (*i)->defaultValue;
-  }
-  return 0;
+const VrmlField * VrmlNodeType::fieldDefault(const std::string & fname) const {
+    for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
+            ++i) {
+        if ((*i)->name == fname) {
+            return (*i)->defaultValue;
+        }
+    }
+    return 0;
 }
 
 /**
@@ -545,27 +540,27 @@ void VrmlNodeType::addNode(VrmlNode & node) {
     this->implNodes.addNode(node);
 }
 
-void VrmlNodeType::addIS(const char *isFieldName,
+void VrmlNodeType::addIS(const std::string & isFieldName,
 			 VrmlNode & implNode,
-			 const char *implFieldName)
+			 const std::string & implFieldName)
 {
   FieldList::iterator i;
 
   theSystem->debug("%s::addIS(%s, %s::%s.%s)\n",
-		   getName(),
-		   isFieldName,
-		   implNode.nodeType().getName(),
-		   implNode.name(),
-		   implFieldName);
+		   getName().c_str(),
+		   isFieldName.c_str(),
+		   implNode.nodeType().getName().c_str(),
+		   implNode.getName().c_str(),
+		   implFieldName.c_str());
 
   // Fields
   for (i = d_fields.begin(); i != d_fields.end(); ++i)
     {
-      if (strcmp((*i)->name, isFieldName) == 0)
+      if ((*i)->name == isFieldName)
 	{
 	  NodeFieldRec *nf = new NodeFieldRec;
 	  nf->node.reset(&implNode);
-	  nf->fieldName = strdup(implFieldName);
+	  nf->fieldName = implFieldName;
 	  (*i)->thisIS.push_front(nf);
 	  break;
 	}
@@ -574,11 +569,11 @@ void VrmlNodeType::addIS(const char *isFieldName,
   // EventIns
   for (i = d_eventIns.begin(); i != d_eventIns.end(); ++i)
     {
-      if (strcmp((*i)->name, isFieldName) == 0)
+      if ((*i)->name == isFieldName)
 	{
 	  NodeFieldRec *nf = new NodeFieldRec;
 	  nf->node.reset(&implNode);
-	  nf->fieldName = strdup(implFieldName);
+	  nf->fieldName = implFieldName;
 	  (*i)->thisIS.push_front(nf);
 	  break;
 	}
@@ -587,26 +582,28 @@ void VrmlNodeType::addIS(const char *isFieldName,
   // EventOuts
   for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
     {
-      if (strcmp((*i)->name, isFieldName) == 0)
+      if ((*i)->name == isFieldName)
 	{
 	  NodeFieldRec *nf = new NodeFieldRec;
 	  nf->node.reset(&implNode);
-	  nf->fieldName = strdup(implFieldName);
+	  nf->fieldName = implFieldName;
 	  (*i)->thisIS.push_front(nf);
 	  break;
 	}
     }
-
 }
 
 
-VrmlNodeType::ISMap *VrmlNodeType::getFieldISMap( const char *fieldName )
-{
-  FieldList::iterator i;
-  for (i = d_fields.begin(); i != d_fields.end(); ++i)
-    if (strcmp((*i)->name, fieldName) == 0)
-      return & ((*i)->thisIS);
-  return 0;
+const VrmlNodeType::ISMap * VrmlNodeType::getFieldISMap(
+                                                const std::string & fieldName)
+        const {
+    for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
+            ++i) {
+        if ((*i)->name == fieldName) {
+            return & ((*i)->thisIS);
+        }
+    }
+    return 0;
 }
 
 /**

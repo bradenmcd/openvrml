@@ -31,6 +31,7 @@
 #include "Audio.h"
 #include "Doc.h"
 #include "System.h"
+#include "field.h"
 
 
 /*=========================================================================
@@ -95,17 +96,19 @@ struct WaveHeader
  ========================================================================*/
 // FILE * is included in case this function is to be updated to
 // peek at the file header.  - ks 11Nov98
-static AudioFileType audioFileType(const char *url, FILE *)
-{
-    char *suffix = strrchr(url, '.');
-    if (suffix) ++suffix;
-
-    if (strcmp (suffix,"wav") == 0 ||
-        strcmp (suffix,"WAV") == 0)
+static AudioFileType audioFileType(const std::string & url, FILE *) {
+    using std::string;
+    string::size_type dotPos = url.find_last_of('.');
+    if (dotPos != string::npos) {
+        ++dotPos;
+    }
+    
+    const string ext(url.substr(dotPos));
+    if (ext == "wav" || ext == "WAV") {
         return AudioFile_WAV;
-
-    else
+    } else {
         return AudioFile_UNKNOWN;
+    }
 }
 
 
@@ -174,7 +177,7 @@ Audio::~Audio()
 | Rev     Date      Who         Description
 | 0.8     11Nov98   kumaran     Created
  ========================================================================*/
-bool Audio::setURL(const char *url, Doc *relative)
+bool Audio::setURL(const std::string & url, Doc *relative)
 {
 #if HAVE_SOUND
     if (url == 0)
@@ -197,7 +200,7 @@ bool Audio::setURL(const char *url, Doc *relative)
             break;
 
           default:
-            theSystem->warn("Unrecognized audio file format (%s).\n", url);
+            theSystem->warn("Unrecognized audio file format (%s).\n", url.c_str());
 
 
             // Suppress the error message below
@@ -206,14 +209,14 @@ bool Audio::setURL(const char *url, Doc *relative)
         }
 
         if (success == false)
-            theSystem->warn("Unable to read audio file (%s).\n", url);
+            theSystem->warn("Unable to read audio file (%s).\n", url.c_str());
             
         
         _doc->fclose ();
     }
 
     else
-        theSystem->warn("Unable to find audio file (%s).\n", url);
+        theSystem->warn("Unable to find audio file (%s).\n", url.c_str());
  
 
     return (_num_samples > 0);
@@ -228,9 +231,8 @@ bool Audio::setURL(const char *url, Doc *relative)
 |
 |--------------------------------------------------------------------------
 | ARGUMENTS
-|     1. Number of URLs to try
-|     2. List of URLs
-|     3. Document object
+|     1. List of URLs
+|     2. Document object
 |
 | RETURNS
 |     True if one of the URLs succeeded, false if they all failed
@@ -240,14 +242,12 @@ bool Audio::setURL(const char *url, Doc *relative)
 | Rev     Date      Who         Description
 | 0.8     11Nov98   kumaran     Created
  ========================================================================*/
-bool Audio::tryURLs (int nUrls, const char * const *urls, Doc *relative)
-{
-    int i;
-
-    for (i = 0; i < nUrls; ++i)
-        if (setURL (urls[i], relative))
+bool Audio::tryURLs(const VrmlMFString & urls, Doc * relative) {
+    for (size_t i = 0; i < urls.getLength(); ++i) {
+        if (this->setURL(urls.getElement(i), relative)) {
             return true;
-
+        }
+    }
     return false;
 }
 

@@ -22,6 +22,7 @@
 # ifndef OPENVRML_FIELD_H
 #   define OPENVRML_FIELD_H
 
+#   include <string>
 #   include <vector>
 #   include <iostream.h>
 #   include "common.h"
@@ -279,16 +280,16 @@ private:
 
 
 class OPENVRML_SCOPE VrmlSFString : public VrmlField {
-    char * d_s;
+    std::string value;
+
 public:
-    explicit VrmlSFString(const char *s = 0);
-    VrmlSFString(const VrmlSFString&);
+    explicit VrmlSFString(const std::string & value = std::string());
     virtual ~VrmlSFString();
 
-    VrmlSFString& operator=(const VrmlSFString& rhs);
+    // Use compiler-defined copy ctor and operator=.
 
-    void set(const char *s);
-    const char * get() const;
+    const std::string & get() const;
+    void set(const std::string & value);
 
     virtual ostream& print(ostream& os) const;
     virtual VrmlField *clone() const;
@@ -519,21 +520,16 @@ public:
 
 
 class OPENVRML_SCOPE VrmlMFString : public VrmlField {
-    char * * d_v;
-    size_t d_allocated;
-    size_t d_size;
-public:
-    explicit VrmlMFString(size_t n = 0, const char * const * values = 0);
-    VrmlMFString(const VrmlMFString&);
+    std::vector<std::string> values;
 
+public:
+    explicit VrmlMFString(size_t length = 0, const std::string * values = 0);
     virtual ~VrmlMFString();
 
-    VrmlMFString& operator=(const VrmlMFString& rhs);
+    // Use compiler-defined copy ctor and operator=.
 
-    void set(size_t n, const char * const v[]);
-    const char * const * get() const;
-    const char * getElement(size_t) const;
-    void setElement(size_t, const char *);
+    const std::string & getElement(size_t index) const;
+    void setElement(size_t index, const std::string & value);
     size_t getLength() const;
 
     virtual VrmlField *clone() const;
