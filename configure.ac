@@ -16,16 +16,6 @@ AC_DEFINE_UNQUOTED([OPENVRML_MICRO_VERSION], ${OPENVRML_MICRO_VERSION},
                    [Micro version number.])
 
 #
-# Build libantlr as a convenience library.
-#
-NOINSTALL_LIBANTLR=libantlr.la
-AC_SUBST(INSTALL_LIBANTLR)
-AC_SUBST(NOINSTALL_LIBANTLR)
-AC_SUBST(LIBANTLR_RPATH_FLAG)
-AC_SUBST(ANTLR_INCLUDEDIR)
-AM_CONDITIONAL(ANTLR_INSTALL_HFILES, test "apple" = "orange")
-
-#
 # Checks for Win32 stuff.
 #
 AC_CYGWIN
