@@ -11,7 +11,16 @@ import vrml.node.*;
  *
  * This class is meant to be used only with the TestJSAI.wrl sample world.
  *
- * Here are the objects and methods currently tested with this class.
+ * Fully tested classes
+ *   ConstSFBool
+ *   ConstSFFloat
+ *   ConstSFInt32
+ *   Event
+ *   SFBool
+ *   SFFloat
+ *   SFInt32
+ *
+ * Partially tested classes with list of tested methods.
  *
  * Browser
  *   getCurrentFrameRate
@@ -21,14 +30,6 @@ import vrml.node.*;
  *   getWorldURL
  *   setDescription
  *   toString
- *
- * ConstSFBool
- *   getValue
- *   toString
- *
- * Event
- *   getName
- *   getValue
  *
  * Script
  *   getBrowser
@@ -40,13 +41,13 @@ import vrml.node.*;
  *   getGreen
  *   getRed
  *   setValue(float, float, float)
+ *   toString
  *
- *
+ * SFString
+ *   toString
  *
  * Methods known not to be not working
  *
- * SFColor
- *   toString 
  *
  */
 class TestJSAI extends Script {
@@ -61,16 +62,7 @@ class TestJSAI extends Script {
 
     /* Test getField */
     activeColor = (SFColor) getField("activeColor");
-// TODO: This call causes a segfault in SFColor::print
-//    System.out.println("activeColor = " + activeColor);
-    System.out.println("activeColor = " +
-                       "[" + activeColor.getRed() + "][" +
-                       activeColor.getGreen() + "][" + 
-                       activeColor.getBlue() + "]");
     SFColor inactiveColor = (SFColor) getField("inactiveColor");
-    Field invalidField = getField("blah2");
-    if (invalidField != null) System.out.println("getField(1) failed");
-
     /* Test getEventOut */
     color = (SFColor) getEventOut("color");
     SFColor activeColorEventOut = (SFColor)getEventOut("activeColor");
@@ -102,6 +94,102 @@ class TestJSAI extends Script {
     System.out.println("World URL = " + browser.getWorldURL());
     /* Set Browser Description */
     browser.setDescription("JSAI Test World");
+
+    /* Test ConstSFBool/SFBool methods */
+    SFBool testBool = (SFBool) getField("testBool");
+    if (testBool == null)
+      System.out.println("get SFBool field failed");
+    else
+      System.out.println("testBool = " + testBool);
+    System.out.println("testBool = " + testBool.getValue());
+    testBool.setValue(false);
+    System.out.println("testBool = " + testBool.getValue());
+    ConstSFBool testConstSFBool = new ConstSFBool(true);
+    System.out.println("testConstSFBool = " + testConstSFBool);
+    System.out.println("testConstSFBool = " + testConstSFBool.getValue());
+    testBool.setValue(testConstSFBool);
+    SFBool testSFBool = new SFBool(false);
+    testBool.setValue(testSFBool);
+    SFBool testSFBool2 = new SFBool();
+    testSFBool2.setValue(true);
+    testBool.setValue(testSFBool2);
+    System.out.println("testBool = " + testBool);
+
+    /* Test ConstSFColor/SFColor methods */
+    System.out.println("activeColor = " + activeColor);
+    System.out.println("activeColor = " +
+                       "[" + activeColor.getRed() + "][" +
+                       activeColor.getGreen() + "][" + 
+                       activeColor.getBlue() + "]");
+
+    /* Test ConstSFFloat/SFFloat methods */
+    SFFloat testFloat = (SFFloat) getField("testFloat");
+    if (testFloat == null)
+      System.out.println("get SFFloat field failed");
+    else
+      System.out.println("testFloat = " + testFloat);
+    System.out.println("testFloat = " + testFloat.getValue());
+    testFloat.setValue(10.0f);
+    ConstSFFloat testConstSFFloat = new ConstSFFloat(2.0f);
+    System.out.println("testConstFloat = " + testConstSFFloat);
+    System.out.println("testConstFloat = " + testConstSFFloat.getValue());
+    testFloat.setValue(testConstSFFloat);
+    SFFloat testSFFloat = new SFFloat();
+    SFFloat testSFFloat2 = new SFFloat(7.0f);
+    testFloat.setValue(testSFFloat);
+
+    /* Test ConstSFImage/SFImage methods */
+
+    /* Test ConstSFInt32/SFInt32 methods */
+    SFInt32 testInt32 = (SFInt32) getField("testInt32");
+    if (testInt32 == null) 
+      System.out.println("get SFInt32 field failed");
+    else
+      System.out.println("testInt32 = " + testInt32);
+    System.out.println("testInt32 = " + testInt32.getValue());
+    SFInt32 testSFInt32 = new SFInt32();
+    SFInt32 testSFInt32_2 = new SFInt32(500);
+    ConstSFInt32 testConstSFInt32 = new ConstSFInt32(100);
+    System.out.println("testConstSFInt32 = " + testConstSFInt32);
+    System.out.println("testConstSFInt32 = " + testConstSFInt32.getValue());
+    testInt32.setValue(250);
+    testInt32.setValue(testSFInt32);
+    testInt32.setValue(testConstSFInt32);
+
+    /* Test ConstSFNode/SFNode methods */
+
+    /* Test ConstSFRotation/SFRotation methods */
+
+    /* Test ConstSFString/SFString methods */
+    SFString testString = (SFString) getField("testString");
+    System.out.println("testString = " + testString);
+    Field invalidField = getField("blah2");
+    if (invalidField != null) System.out.println("getField(1) failed");
+
+    /* Test ConstSFTime/SFTime methods */
+
+    /* Test ConstSFVec2f/SFVec2f methods */
+
+    /* Test ConstSFVec3f/SFVec3f methods */
+
+    /* Test ConstMFColor/MFColor methods */
+
+    /* Test ConstMFFloat/MFFloat methods */
+
+    /* Test ConstMFInt32/MFInt32 methods */
+
+    /* Test ConstMFNode/MFNode methods */
+
+    /* Test ConstMFRotation/MFRotation methods */
+
+    /* Test ConstMFString/MFString methods */
+
+    /* Test ConstMFTime/MFTime methods */
+
+    /* Test ConstMFVec2f/MFVec2f methods */
+
+    /* Test ConstMFVec3f/MFVec3f methods */
+ 
     System.out.println("exit initialize method");
   }
 
@@ -110,20 +198,33 @@ class TestJSAI extends Script {
     try 
     {
       System.out.println("in process event in java");
+      /* Test Event class methods */
       System.out.println("Event name = " + event.getName());
-      if (event.getName().equals("isActive")) {
-        System.out.println("Event name = isActive is true");
-      ConstSFBool test = (ConstSFBool)event.getValue();
-      System.out.println("test of ConstSFBool toString = " + test);
-      float val1 = 0.5F;
-      float val2 = 0.8F;
+      System.out.println("Event.toString = " + event);
+      System.out.println("Event timestamp = " + event.getTimeStamp());
+      Event clonedEvent = (Event)event.clone();
+      if (!event.getName().equals(clonedEvent.getName()))
+        System.out.println("Cloned event name does not equal event name");
+      if (event.getTimeStamp() != clonedEvent.getTimeStamp())
+        System.out.println("Cloned timestamp does not equal timestamp");
 
-      if (test.getValue()){
-        System.out.println("set to active color");
-        color.setValue(val2, val2, val2);}
-      else {
-        System.out.println("set to inactive color");
-        color.setValue(val1, val1, val1);}
+      if (event.getName() == "isActive")
+      {
+        ConstSFBool test = (ConstSFBool)event.getValue();
+        System.out.println("test of ConstSFBool toString = " + test);
+        float val1 = 0.5F;
+        float val2 = 0.8F;
+
+        if (test.getValue())
+        {
+          System.out.println("set to active color");
+          color.setValue(val2, val2, val2);
+        }
+        else 
+        {
+          System.out.println("set to inactive color");
+          color.setValue(val1, val1, val1);
+        }
       }
     }
     catch(Exception e)
@@ -131,5 +232,17 @@ class TestJSAI extends Script {
       e.printStackTrace();
     }
     System.out.println("exit processEvent in java");
+  }
+
+  public void eventsProcessed()
+  {
+    System.out.println("enter eventsProcessed in java");
+    System.out.println("exit eventsProcessed in java");
+  }
+
+  public void shutdown()
+  {
+    System.out.println("enter shutdown in java");
+    System.out.println("exit shutdown in java");
   }
 }
