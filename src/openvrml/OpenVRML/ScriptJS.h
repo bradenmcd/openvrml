@@ -29,41 +29,31 @@ class VrmlScene;
 typedef long jsval;
 
 class ScriptJS: public ScriptObject {
+    static struct JSRuntime * rt;
+    static size_t nInstances;
+
+    double d_timeStamp;
+
+    struct JSContext * d_cx;
+    struct JSObject * d_globalObj;
+    struct JSObject * d_browserObj;
 
 public:
+    ScriptJS(VrmlNodeScript & scriptNode, const char * source);
+    virtual ~ScriptJS();
 
-  ScriptJS( VrmlNodeScript *, const char *source );
-  ~ScriptJS();
+    virtual void activate(double timeStamp, const char * fname,
+                          size_t argc, const VrmlField * argv[]);
 
-  virtual void activate( double timeStamp,
-			 const char *fname,
-			 int argc,
-			 const VrmlField *argv[]);
+    VrmlNodeScript & getScriptNode() { return this->scriptNode; }
 
-  VrmlScene *browser();
-  VrmlNodeScript *scriptNode() { return d_node; }
+    jsval vrmlFieldToJSVal(VrmlField::VrmlFieldType, const VrmlField * f,
+                           bool protect);
 
-  jsval vrmlFieldToJSVal( VrmlField::VrmlFieldType,
-			  const VrmlField *f, bool protect );
-
-
-protected:
-
-  static struct JSRuntime *rt;
-  static int nInstances;
-
-  void defineAPI();
-  void defineFields();
-
-  VrmlNodeScript *d_node;
-
-  double d_timeStamp;
-
-  struct JSContext *d_cx;
-  struct JSObject *d_globalObj;
-  struct JSObject *d_browserObj;
-
+private:
+    void defineAPI();
+    void defineFields();
 };
 
-#endif // SCRIPTJS_H
+#endif
 

@@ -858,7 +858,10 @@ VrmlSFNode & VrmlSFNode::operator=(const VrmlSFNode & sfnode) {
 }
 
 ostream & VrmlSFNode::print(ostream & os) const {
-    return os << *(this->node) << endl;
+    if (!this->node) {
+        return os << "NULL" << endl;
+    }
+    return os << *this->node << endl;
 }
 
 VrmlField * VrmlSFNode::clone() const {

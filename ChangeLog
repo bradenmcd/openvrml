@@ -1,3 +1,12 @@
+2001-05-20  Braden McDaniel <braden@endoframe.com>
+
+        * Fixed a crash when printing NULL SFNodes.
+
+        * Some minor cleanup of ScriptObject.
+
+        * JavaScript SFNode constructor now fails if the vrmlstring
+          argument does not produce exactly one node.
+
 2001-05-19  Braden McDaniel <braden@endoframe.com>
 
         * Made all single-argument constructors for field classes

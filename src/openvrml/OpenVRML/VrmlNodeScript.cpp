@@ -192,12 +192,13 @@ ostream& VrmlNodeScript::printFields(ostream& os, int indent)
 void VrmlNodeScript::initialize( double ts )
 {
   theSystem->debug("Script.%s::initialize\n", name());
+  assert(!this->d_script);
 
-  if (d_script) return;	       // How did I get here? Letting the days go by...
+//  if (d_script) return;	       // How did I get here? Letting the days go by...
   d_eventsReceived = 0;
   if (d_url.getLength() > 0)
     {
-      d_script = ScriptObject::create( this, d_url );
+      d_script = ScriptObject::create(*this, d_url);
       if (d_script)
 	d_script->activate( ts, "initialize", 0, 0 );
     }

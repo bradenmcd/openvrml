@@ -16,35 +16,30 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
+
 #ifndef SCRIPTOBJECT_H
 #define SCRIPTOBJECT_H
-//
-//  Abstract Script Object class
-//
+
+#include <stddef.h>
 
 class VrmlField;
 class VrmlMFString;
 class VrmlNodeScript;
 
 class ScriptObject {
-
-protected:  
-  ScriptObject();		// Use create()
-
 public:
+    static ScriptObject * create(VrmlNodeScript & scriptNode,
+                                 const VrmlMFString & url);
 
-  virtual ~ScriptObject() = 0;
+    virtual ~ScriptObject() = 0;
+    virtual void activate(double timeStamp, const char * fname,
+                          size_t argc, const VrmlField * argv[]) = 0;
 
-  // Script object factory.
-  static ScriptObject *create( VrmlNodeScript *, VrmlMFString &url );
+protected:
+    ScriptObject(VrmlNodeScript & scriptNode);
 
-  // Invoke a named function
-  virtual void activate( double timeStamp,
-			 const char *fname,
-			 int argc,
-			 const VrmlField *argv[] ) = 0;
-
+    VrmlNodeScript & scriptNode;
 };
 
-#endif // SCRIPTOBJECT_H
+#endif

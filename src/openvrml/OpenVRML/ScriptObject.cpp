@@ -50,17 +50,15 @@
 # include "ScriptJDK.h"
 #endif
 
-
-ScriptObject::ScriptObject() {}
+ScriptObject::ScriptObject(VrmlNodeScript & scriptNode): scriptNode(scriptNode)
+{}
 
 ScriptObject::~ScriptObject() {}
 
-ScriptObject *ScriptObject::create( VrmlNodeScript *node,
-				    VrmlMFString &url )
-{
+ScriptObject * ScriptObject::create(VrmlNodeScript & scriptNode,
+                                    const VrmlMFString & url) {
     // Try each url until we find one we like
-    int i, n = url.getLength();
-    for (i = 0; i < n; ++i) {
+    for (size_t i = 0; i < url.getLength(); ++i) {
         if (! url.get(i)) continue;
 
         // Get the protocol & mimetype...
@@ -69,7 +67,7 @@ ScriptObject *ScriptObject::create( VrmlNodeScript *node,
         if (strncmp(url.get(i), "javascript:", 11) == 0 ||
 	    strncmp(url.get(i), "vrmlscript:", 11) == 0 )
 	{
-	    return new ScriptJS( node, url.get(i)+11 );
+	    return new ScriptJS(scriptNode, url.get(i) + 11);
 	}
 # endif
 
