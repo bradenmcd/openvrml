@@ -1,3 +1,10 @@
+Changes new in version 0.14.1, 30 September, 2003
+=================================================
+
+- Fixed error in floating point tolerance computation that would result
+  in assertion failures.
+
+
 Changes new in version 0.14.0, 28 September, 2003
 =================================================
 

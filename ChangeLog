@@ -1,5 +1,14 @@
 2003-09-30  Braden McDaniel  <braden@endoframe.com>
 
+	Updated version to 0.14.1.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+
+2003-09-30  Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/private.h:  Allow for 10 rounding
 	errors in computation of floating point error tolerance.
 
