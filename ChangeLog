@@ -1,3 +1,8 @@
+2004-11-27 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/event.h:  event_emitter::last_time
+	accessor should be public.
+
 2004-11-26 Braden McDaniel  <braden@endoframe.com>
 
 	Updated version number for 0.15.0 release.

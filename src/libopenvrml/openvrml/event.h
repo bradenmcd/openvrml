@@ -120,10 +120,10 @@ namespace openvrml {
 
         const field_value & value() const throw ();
         const listener_set & listeners() const throw ();
+        double last_time() const throw ();
 
     protected:
         listener_set & listeners() throw ();
-        double last_time() const throw ();
         void last_time(double t) throw ();
 
         explicit event_emitter(const field_value & value) throw ();
