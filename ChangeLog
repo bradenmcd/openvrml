@@ -1,5 +1,12 @@
 2004-12-24 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglconfig.c:  Use
+	g_type_from_name to first check if the type has already been
+	registered.  This would be the case if the shared object had
+	previously been loaded and then unloaded.
+
+2004-12-24 Braden McDaniel  <braden@endoframe.com>
+
 	Added GtkGLExt to the distribution.  We need to patch it to get
 	it to work with the Mozilla plug-in and the project does not
 	appear to be actively maintained.
