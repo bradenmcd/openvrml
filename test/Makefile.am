@@ -6,7 +6,8 @@ LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 TESTS = browser_basic \
         browser-create_vrml_from_stream \
-	parse-anchor
+	parse-anchor \
+        node_interface_set
 
 noinst_PROGRAMS = $(TESTS)
 
@@ -15,3 +16,5 @@ browser_basic_SOURCES = browser_basic.cpp
 browser_create_vrml_from_stream_SOURCES = browser-create_vrml_from_stream.cpp
 
 parse_anchor_SOURCES = parse-anchor.cpp
+
+node_interface_set_SOURCES = node_interface_set.cpp

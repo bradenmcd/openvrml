@@ -89,15 +89,6 @@ namespace openvrml {
     };
 
 
-    struct node_interface_id_less :
-        std::binary_function<node_interface, node_interface, bool> {
-        result_type operator()(const first_argument_type & lhs,
-                               const second_argument_type & rhs) const
-        {
-            return lhs.id < rhs.id;
-        }
-    };
-
     struct node_interface_id_equals :
         std::binary_function<node_interface, node_interface, bool> {
         result_type operator()(const first_argument_type & lhs,
@@ -156,7 +147,35 @@ namespace openvrml {
         }
     };
 
-    typedef std::set<node_interface, node_interface_id_less>
+
+    struct node_interface_compare :
+        std::binary_function<node_interface, node_interface, bool> {
+
+        result_type operator()(const first_argument_type & lhs,
+                               const second_argument_type & rhs) const
+        {
+            static const char eventin_prefix[] = "set_";
+            static const char eventout_suffix[] = "_changed";
+
+            if (lhs.type == node_interface::exposedfield_id) {
+                if (rhs.type == node_interface::eventin_id) {
+                    return eventin_prefix + lhs.id < rhs.id;
+                } else if (rhs.type == node_interface::eventout_id) {
+                    return lhs.id + eventout_suffix < rhs.id;
+                }
+            } else if (rhs.type == node_interface::exposedfield_id) {
+                if (lhs.type == node_interface::eventin_id) {
+                    return lhs.id < eventin_prefix + rhs.id;
+                } else if (lhs.type == node_interface::eventout_id) {
+                    return lhs.id < rhs.id + eventout_suffix;
+                }
+            }
+            return lhs.id < rhs.id;
+        }
+    };
+
+
+    typedef std::set<node_interface, node_interface_compare>
         node_interface_set;
 
     const node_interface_set::const_iterator

@@ -103,191 +103,6 @@ unsupported_interface::~unsupported_interface() throw ()
 
 
 /**
- * @struct node_interface_id_less
- *
- * @brief Function object to compare two node_interfaces based on their id.
- *
- * @par Model of
- * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
- * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
- */
-
-/**
- * @fn node_interface_id_less::result_type node_interface_id_less::operator()(const node_interface_id_less::first_argument_type & lhs, const node_interface_id_less::second_argument_type & rhs) const
- *
- * @brief Compare two node_interfaces based on their id.
- *
- * @param lhs   node_interface.
- * @param rhs   node_interface.
- *
- * @return @c true if @p lhs.id is lexicographically less than @p rhs.id;
- *         @c false otherwise.
- */
-
-
-/**
- * @struct node_interface_id_equals
- *
- * @brief Function object to compare two node_interfaces based on their id.
- *
- * @par Model of
- * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
- * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
- */
-
-/**
- * @fn node_interface_id_equals::result_type node_interface_id_equals::operator()(const node_interface_id_equals::first_argument_type & lhs, const node_interface_id_equals::second_argument_type & rhs) const
- *
- * @brief Compare two node_interfaces based on their id.
- *
- * @param lhs   node_interface.
- * @param rhs   node_interface.
- *
- * @return @c true if @p lhs.id is lexicographically equal to @p rhs.id;
- *         @c false otherwise.
- */
-
-
-/**
- * @struct node_interface_matches_eventin
- *
- * @brief Determine if a node_interface matches an eventIn identifier.
- *
- * @par Model of
- * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
- * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
- */
-
-/**
- * @fn node_interface_matches_eventin::result_type node_interface_matches_eventin::operator()(const node_interface_matches_eventin::first_argument_type & interface, const node_interface_matches_eventin::second_argument_type & eventin_id const
- *
- * @brief Determine if a node_interface matches an eventIn identifier.
- *
- * A node_interface matches an eventIn identifier if:
- * - the node_interface's @a type is node_interface::eventin_id and
- *   - the node_interface's @a id is lexicographically equal to the eventIn
- *     identifier
- *   - or the node_interface's @a id is lexicographically equal to the eventIn
- *     identifier with the string "set_" prepended.
- * - or, the node_interface's @a type is node_interface::exposedfield_id and
- *   - the node_interface's @a id is lexicographically equal to the eventIn
- *     identifier
- *   - or the node_interface's @a id with the string "set_" prepended is
- *     lexicographically equal to the eventIn identifier.
- *
- * @param interface     node_interface.
- * @param eventin_id    eventIn identifier.
- *
- * @return @c true if @p interface matches @p eventin_id; @c false otherwise.
- */
-
-
-/**
- * @struct node_interface_matches_eventout
- *
- * @brief Determine if a node_interface matches an eventOut identifier.
- *
- * @par Model of
- * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
- * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
- */
-
-/**
- * @fn node_interface_matches_eventout::result_type node_interface_matches_eventout::operator()(const node_interface_matches_eventout::first_argument_type & interface, const node_interface_matches_eventout::second_argument_type & eventout_id) const
- *
- * @brief Determine if a node_interface matches an eventOut identifier.
- *
- * A node_interface matches an eventOut identifier if:
- * - the node_interface's @a type is node_interface::eventout_id and
- *   - the node_interface's @a id is lexicographically equal to the eventOut
- *     identifier
- *   - or the node_interface's @a id is lexicographically equal to the eventOut
- *     identifier with the string "_changed" appended.
- * - or, the node_interface's @a type is node_interface::exposedfield_id and
- *   - the node_interface's @a id is lexicographically equal to the eventOut
- *     identifier
- *   - or the node_interface's @a id with the string "_changed" appended is
- *     lexicographically equal to the eventOut identifier.
- *
- * @param interface     node_interface.
- * @param eventout_id   eventOut identifier.
- *
- * @return @c true if @p interface matches @p eventout_id; @c false otherwise.
- */
-
-
-/**
- * @struct node_interface_matches_exposedfield
- *
- * @brief Determine if a node_interface matches an exposedField identifier.
- *
- * @par Model of
- * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
- * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
- */
-
-/**
- * @fn node_interface_matches_exposedfield::result_type node_interface_matches_exposedfield::operator()(const node_interface_matches_exposedfield::first_argument_type & interface, const node_interface_matches_exposedfield::second_argument_type & exposedfield_id) const
- *
- * @brief Determine if a node_interface matches an exposedField identifier.
- *
- * A node_interface matches an exposedField identifier if the node_interface's
- * @a type is node_interface::exposedfield_id and the node_interface's @a id is
- * lexicographically equal to the exposedField identifier.
- *
- * @param interface         node_interface.
- * @param exposedfield_id   exposedField identifier.
- *
- * @return @c true if @p interface matches @p exposedfield_id; @c false
- *         otherwise.
- */
-
-
-/**
- * @struct node_interface_matches_field
- *
- * @brief Determine if a node_interface matches an field identifier.
- *
- * @par Model of
- * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
- * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
- */
-
-/**
- * @fn node_interface_matches_field::result_type node_interface_matches_field::operator()(const node_interface_matches_field::first_argument_type & interface, const node_interface_matches_field::second_argument_type & field_id) const
- *
- * @brief Determine if a node_interface matches an field identifier.
- *
- * A node_interface matches a field identifier if the node_interface's @a type
- * is node_interface::field_id and the node_interface's @a id is
- * lexicographically equal to the field identifier.
- *
- * @param interface node_interface.
- * @param field_id  field identifier.
- *
- * @return @c true if @p interface matches @p field_id; @c false otherwise.
- *
- * @todo In order to be consistent with the behavior of
- *       node_interface_matches_eventin and node_interface_matches_eventout,
- *       this predicate really should return true for matching exposedFields
- *       as well as fields. Is that really desirable? Assess use cases for this
- *       predicate.
- */
-
-
-/**
  * @class node_interface
  *
  * @brief Type information for an interface of a node.
@@ -491,6 +306,205 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 {
     return in >> interface.type >> interface.field_type >> interface.id;
 }
+
+
+/**
+ * @struct node_interface_id_equals
+ *
+ * @brief Function object to compare two node_interfaces based on their id.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_id_equals::result_type node_interface_id_equals::operator()(const node_interface_id_equals::first_argument_type & lhs, const node_interface_id_equals::second_argument_type & rhs) const
+ *
+ * @brief Compare two node_interfaces based on their id.
+ *
+ * @param lhs   node_interface.
+ * @param rhs   node_interface.
+ *
+ * @return @c true if @p lhs.id is lexicographically equal to @p rhs.id;
+ *         @c false otherwise.
+ */
+
+
+/**
+ * @struct node_interface_matches_eventin
+ *
+ * @brief Determine if a node_interface matches an eventIn identifier.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_matches_eventin::result_type node_interface_matches_eventin::operator()(const node_interface_matches_eventin::first_argument_type & interface, const node_interface_matches_eventin::second_argument_type & eventin_id const
+ *
+ * @brief Determine if a node_interface matches an eventIn identifier.
+ *
+ * A node_interface matches an eventIn identifier if:
+ * - the node_interface's @a type is node_interface::eventin_id and
+ *   - the node_interface's @a id is lexicographically equal to the eventIn
+ *     identifier
+ *   - or the node_interface's @a id is lexicographically equal to the eventIn
+ *     identifier with the string "set_" prepended.
+ * - or, the node_interface's @a type is node_interface::exposedfield_id and
+ *   - the node_interface's @a id is lexicographically equal to the eventIn
+ *     identifier
+ *   - or the node_interface's @a id with the string "set_" prepended is
+ *     lexicographically equal to the eventIn identifier.
+ *
+ * @param interface     node_interface.
+ * @param eventin_id    eventIn identifier.
+ *
+ * @return @c true if @p interface matches @p eventin_id; @c false otherwise.
+ */
+
+
+/**
+ * @struct node_interface_matches_eventout
+ *
+ * @brief Determine if a node_interface matches an eventOut identifier.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_matches_eventout::result_type node_interface_matches_eventout::operator()(const node_interface_matches_eventout::first_argument_type & interface, const node_interface_matches_eventout::second_argument_type & eventout_id) const
+ *
+ * @brief Determine if a node_interface matches an eventOut identifier.
+ *
+ * A node_interface matches an eventOut identifier if:
+ * - the node_interface's @a type is node_interface::eventout_id and
+ *   - the node_interface's @a id is lexicographically equal to the eventOut
+ *     identifier
+ *   - or the node_interface's @a id is lexicographically equal to the eventOut
+ *     identifier with the string "_changed" appended.
+ * - or, the node_interface's @a type is node_interface::exposedfield_id and
+ *   - the node_interface's @a id is lexicographically equal to the eventOut
+ *     identifier
+ *   - or the node_interface's @a id with the string "_changed" appended is
+ *     lexicographically equal to the eventOut identifier.
+ *
+ * @param interface     node_interface.
+ * @param eventout_id   eventOut identifier.
+ *
+ * @return @c true if @p interface matches @p eventout_id; @c false otherwise.
+ */
+
+
+/**
+ * @struct node_interface_matches_exposedfield
+ *
+ * @brief Determine if a node_interface matches an exposedField identifier.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_matches_exposedfield::result_type node_interface_matches_exposedfield::operator()(const node_interface_matches_exposedfield::first_argument_type & interface, const node_interface_matches_exposedfield::second_argument_type & exposedfield_id) const
+ *
+ * @brief Determine if a node_interface matches an exposedField identifier.
+ *
+ * A node_interface matches an exposedField identifier if the node_interface's
+ * @a type is node_interface::exposedfield_id and the node_interface's @a id is
+ * lexicographically equal to the exposedField identifier.
+ *
+ * @param interface         node_interface.
+ * @param exposedfield_id   exposedField identifier.
+ *
+ * @return @c true if @p interface matches @p exposedfield_id; @c false
+ *         otherwise.
+ */
+
+
+/**
+ * @struct node_interface_matches_field
+ *
+ * @brief Determine if a node_interface matches an field identifier.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ */
+
+/**
+ * @fn node_interface_matches_field::result_type node_interface_matches_field::operator()(const node_interface_matches_field::first_argument_type & interface, const node_interface_matches_field::second_argument_type & field_id) const
+ *
+ * @brief Determine if a node_interface matches an field identifier.
+ *
+ * A node_interface matches a field identifier if the node_interface's @a type
+ * is node_interface::field_id and the node_interface's @a id is
+ * lexicographically equal to the field identifier.
+ *
+ * @param interface node_interface.
+ * @param field_id  field identifier.
+ *
+ * @return @c true if @p interface matches @p field_id; @c false otherwise.
+ *
+ * @todo In order to be consistent with the behavior of
+ *       node_interface_matches_eventin and node_interface_matches_eventout,
+ *       this predicate really should return true for matching exposedFields
+ *       as well as fields. Is that really desirable? Assess use cases for this
+ *       predicate.
+ */
+
+
+/**
+ * @struct node_interface_compare
+ *
+ * @brief Function object to compare two node_interfaces based on their id.
+ *
+ * node_interface_compare provides a
+ * <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html">
+ * StrictWeakOrdering</a> for node_interfaces and ensures that exposedField
+ * definitions appropriately encroach on the namespace of eventIn and eventOut
+ * definitions. That is, per 4.7 of the VRML97 spec: "An exposedField named zzz
+ * can be referred to as 'set_zzz' and treated as an eventIn, and can be
+ * referred to as 'zzz_changed' and treated as an eventOut."
+ *
+ * node_interface_compare is the comparator used by node_interface_set.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
+ * AdaptableBinaryPredicate</a>,
+ * <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html">
+ * StrictWeakOrdering</a>,
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>
+ *
+ * @see node_interface_set
+ */
+
+/**
+ * @fn node_interface_compare::result_type node_interface_compare::operator()(const node_interface_compare::first_argument_type & lhs, const node_interface_compare::second_argument_type & rhs) const
+ *
+ * @brief Compare two node_interfaces based on their id.
+ *
+ * @param lhs   node_interface.
+ * @param rhs   node_interface.
+ *
+ * @return @c true if @p lhs.id is lexicographically less than @p rhs.id;
+ *         @c false otherwise.
+ */
 
 
 /**
