@@ -545,7 +545,6 @@ namespace OpenVRML {
 
             virtual void accumulateTransform(Node*);
             virtual Node* getParentTransform();
-            virtual void inverseTransform(Viewer *);
             virtual void inverseTransform(VrmlMatrix &);
         
         private:
@@ -2468,7 +2467,6 @@ namespace OpenVRML {
             virtual void render(Viewer * viewer, VrmlRenderContext rc);
 
             virtual void accumulateTransform(Node*);
-            virtual void inverseTransform(Viewer *);
             virtual void inverseTransform(VrmlMatrix &);
             virtual const BVolume * getBVolume() const;
 

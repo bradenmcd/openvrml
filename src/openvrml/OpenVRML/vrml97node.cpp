@@ -50,16 +50,16 @@ namespace {
         virtual ~Vrml97NodeType() throw () = 0;
         virtual void setFieldValue(Node & node, const std::string & id,
                                    const FieldValue &) const
-                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
+            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
         virtual const FieldValue & getFieldValue(const Node & node,
                                                  const std::string & id) const
-                throw (UnsupportedInterface) = 0;
+            throw (UnsupportedInterface) = 0;
         virtual void dispatchEventIn(Node & node, const std::string & id,
                                      const FieldValue &, double timestamp) const
-                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
+            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
         virtual const FieldValue & getEventOutValue(const Node & node,
                                                     const std::string & id) const
-                throw (UnsupportedInterface) = 0;
+            throw (UnsupportedInterface) = 0;
 
     protected:
         Vrml97NodeType(NodeClass & nodeClass, const std::string & id);
@@ -67,314 +67,341 @@ namespace {
 
     Vrml97NodeType::Vrml97NodeType(NodeClass & nodeClass,
                                    const std::string & id):
-            NodeType(nodeClass, id) {}
+        NodeType(nodeClass, id)
+    {}
 
-    Vrml97NodeType::~Vrml97NodeType() throw () {}
-
-
-    template <typename NodeT>
-        class NodeFieldPtr {
-        public:
-            virtual ~NodeFieldPtr() = 0;
-            virtual FieldValue & dereference(NodeT & obj) = 0;
-            virtual const FieldValue & dereference(const NodeT & obj) = 0;
-        };
-
-    template <typename NodeT>
-        NodeFieldPtr<NodeT>::~NodeFieldPtr() {}
-
-
-    template <typename NodeT, typename ConcreteFieldValue>
-        class NodeFieldPtrImpl : public NodeFieldPtr<NodeT> {
-            ConcreteFieldValue NodeT::* itsPtr;
-
-        public:
-            NodeFieldPtrImpl(ConcreteFieldValue NodeT::* ptr): itsPtr(ptr) {}
-            virtual ~NodeFieldPtrImpl();
-            virtual FieldValue & dereference(NodeT &);
-            virtual const FieldValue & dereference(const NodeT &);
-        };
-
-    template <typename NodeT, typename ConcreteFieldValue>
-        NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::~NodeFieldPtrImpl() {}
-
-    template <typename NodeT, typename ConcreteFieldValue>
-        FieldValue & NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::
-                dereference(NodeT & obj) {
-            return obj.*itsPtr;
-        }
-
-    template <typename NodeT, typename ConcreteFieldValue>
-        const FieldValue & NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::
-                dereference(const NodeT & obj) {
-            return obj.*itsPtr;
-        }
+    Vrml97NodeType::~Vrml97NodeType() throw ()
+    {}
 
 
     template <typename NodeT>
-        class Vrml97NodeTypeImpl : public Vrml97NodeType {
-        public:
-            typedef OpenVRML_::SharedPtr<NodeFieldPtr<NodeT> > NodeFieldPtrPtr;
-            typedef void (NodeT::* EventInHandlerPtr)(const FieldValue &, double);
+    class NodeFieldPtr {
+    public:
+        virtual ~NodeFieldPtr() = 0;
+        virtual FieldValue & dereference(NodeT & obj) = 0;
+        virtual const FieldValue & dereference(const NodeT & obj) = 0;
+    };
 
-        private:
-            NodeInterfaceSet interfaces;
-            typedef std::map<std::string, EventInHandlerPtr> EventInHandlerMap;
-            typedef std::map<std::string, NodeFieldPtrPtr> FieldValueMap;
-            mutable FieldValueMap fieldValueMap;
-            EventInHandlerMap eventInHandlerMap;
-            FieldValueMap eventOutValueMap;
+    template <typename NodeT>
+    NodeFieldPtr<NodeT>::~NodeFieldPtr()
+    {}
 
-        public:
-            Vrml97NodeTypeImpl(NodeClass & nodeClass, const std::string & id);
-            virtual ~Vrml97NodeTypeImpl() throw ();
 
-            void addEventIn(FieldValue::Type, const std::string & id,
-                            EventInHandlerPtr eventInHandlerPtr)
-                    throw (UnsupportedInterface, std::bad_alloc);
-            void addEventOut(FieldValue::Type, const std::string & id,
-                             const NodeFieldPtrPtr & eventOutPtrPtr)
-                    throw (UnsupportedInterface, std::bad_alloc);
-            void addExposedField(FieldValue::Type, const std::string & id,
-                                 EventInHandlerPtr eventInHandlerPtr,
-                                 const NodeFieldPtrPtr & fieldPtrPtr)
-                    throw (UnsupportedInterface, std::bad_alloc);
-            void addField(FieldValue::Type, const std::string & id,
-                          const NodeFieldPtrPtr & fieldPtrPtr)
-                    throw (UnsupportedInterface, std::bad_alloc);
+    template <typename NodeT, typename ConcreteFieldValue>
+    class NodeFieldPtrImpl : public NodeFieldPtr<NodeT> {
+        ConcreteFieldValue NodeT::* itsPtr;
 
-            virtual void setFieldValue(Node & node, const std::string & id,
-                                       const FieldValue &) const
-                    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-            virtual const FieldValue &
-                    getFieldValue(const Node & node,
-                                  const std::string & id) const
-                    throw (UnsupportedInterface);
-            virtual void dispatchEventIn(Node & node,
-                                         const std::string & id,
-                                         const FieldValue &,
-                                         double timestamp) const
-                    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-            virtual const FieldValue &
-                    getEventOutValue(const Node & node,
-                                     const std::string & id) const
-                    throw (UnsupportedInterface);
+    public:
+        NodeFieldPtrImpl(ConcreteFieldValue NodeT::* ptr):
+            itsPtr(ptr)
+        {}
 
-            virtual const NodeInterfaceSet & getInterfaces() const throw ();
-            
-            virtual const NodePtr createNode(const ScopePtr & scope) const
-                    throw (std::bad_alloc);
-        
-        private:
-            void setFieldValueImpl(NodeT & node, const std::string & id,
+        virtual ~NodeFieldPtrImpl();
+
+        virtual FieldValue & dereference(NodeT &);
+        virtual const FieldValue & dereference(const NodeT &);
+    };
+
+    template <typename NodeT, typename ConcreteFieldValue>
+    NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::~NodeFieldPtrImpl()
+    {}
+
+    template <typename NodeT, typename ConcreteFieldValue>
+    FieldValue &
+    NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::dereference(NodeT & obj)
+    {
+        return obj.*itsPtr;
+    }
+
+    template <typename NodeT, typename ConcreteFieldValue>
+    const FieldValue &
+    NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::dereference(const NodeT & obj)
+    {
+        return obj.*itsPtr;
+    }
+
+
+    template <typename NodeT>
+    class Vrml97NodeTypeImpl : public Vrml97NodeType {
+    public:
+        typedef OpenVRML_::SharedPtr<NodeFieldPtr<NodeT> > NodeFieldPtrPtr;
+        typedef void (NodeT::* EventInHandlerPtr)(const FieldValue &, double);
+
+    private:
+        NodeInterfaceSet interfaces;
+        typedef std::map<std::string, EventInHandlerPtr> EventInHandlerMap;
+        typedef std::map<std::string, NodeFieldPtrPtr> FieldValueMap;
+        mutable FieldValueMap fieldValueMap;
+        EventInHandlerMap eventInHandlerMap;
+        FieldValueMap eventOutValueMap;
+
+    public:
+        Vrml97NodeTypeImpl(NodeClass & nodeClass, const std::string & id);
+        virtual ~Vrml97NodeTypeImpl() throw ();
+
+        void addEventIn(FieldValue::Type, const std::string & id,
+                        EventInHandlerPtr eventInHandlerPtr)
+            throw (UnsupportedInterface, std::bad_alloc);
+        void addEventOut(FieldValue::Type, const std::string & id,
+                         const NodeFieldPtrPtr & eventOutPtrPtr)
+            throw (UnsupportedInterface, std::bad_alloc);
+        void addExposedField(FieldValue::Type, const std::string & id,
+                             EventInHandlerPtr eventInHandlerPtr,
+                             const NodeFieldPtrPtr & fieldPtrPtr)
+            throw (UnsupportedInterface, std::bad_alloc);
+        void addField(FieldValue::Type, const std::string & id,
+                      const NodeFieldPtrPtr & fieldPtrPtr)
+            throw (UnsupportedInterface, std::bad_alloc);
+
+        virtual void setFieldValue(Node & node, const std::string & id,
                                    const FieldValue &) const
-                    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-            const FieldValue & getFieldValueImpl(const NodeT & node,
-                                                 const std::string & id) const
-                    throw (UnsupportedInterface);
-            void dispatchEventInImpl(NodeT & node, const std::string & id,
-                                     const FieldValue &, double timestamp) const
-                    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-            const FieldValue & getEventOutValueImpl(const NodeT & node,
-                                                    const std::string & id) const
-                    throw (UnsupportedInterface);
-        };
-
-    template <typename NodeT>
-        Vrml97NodeTypeImpl<NodeT>::Vrml97NodeTypeImpl(NodeClass & nodeClass,
-                                                      const std::string & id):
-                Vrml97NodeType(nodeClass, id) {}
-
-    template <typename NodeT>
-        Vrml97NodeTypeImpl<NodeT>::~Vrml97NodeTypeImpl() throw () {}
-
-    template <typename NodeT>
-        void Vrml97NodeTypeImpl<NodeT>::
-                addEventIn(const FieldValue::Type type,
-                           const std::string & id,
-                           const EventInHandlerPtr eventInHandlerPtr)
-                throw (UnsupportedInterface, std::bad_alloc) {
-            const NodeInterface interface(NodeInterface::eventIn, type, id);
-            this->interfaces.add(interface);
-            const typename EventInHandlerMap::value_type
-                    value(id, eventInHandlerPtr);
-            const bool succeeded = this->eventInHandlerMap.insert(value).second;
-            assert(succeeded);
-        }
-
-    template <typename NodeT>
-        void Vrml97NodeTypeImpl<NodeT>::
-                addEventOut(const FieldValue::Type type,
-                            const std::string & id,
-                            const NodeFieldPtrPtr & eventOutPtrPtr)
-                throw (UnsupportedInterface, std::bad_alloc) {
-            const NodeInterface interface(NodeInterface::eventOut, type, id);
-            this->interfaces.add(interface);
-            const typename FieldValueMap::value_type value(id, eventOutPtrPtr);
-            const bool succeeded = this->eventOutValueMap.insert(value).second;
-            assert(succeeded);
-        }
-
-    template <typename NodeT>
-        void Vrml97NodeTypeImpl<NodeT>::
-            addExposedField(const FieldValue::Type type,
-                            const std::string & id,
-                            const EventInHandlerPtr eventInHandlerPtr,
-                            const NodeFieldPtrPtr & fieldPtrPtr)
-                throw (UnsupportedInterface, std::bad_alloc) {
-            const NodeInterface interface(NodeInterface::exposedField, type, id);
-            this->interfaces.add(interface);
-
-            bool succeeded;
-            {
-                const typename EventInHandlerMap::value_type
-                        value("set_" + id, eventInHandlerPtr);
-                succeeded = this->eventInHandlerMap.insert(value).second;
-                assert(succeeded);
-            }
-            {
-                const typename FieldValueMap::value_type value(id, fieldPtrPtr);
-                succeeded = this->fieldValueMap.insert(value).second;
-                assert(succeeded);
-            }
-            {
-                const typename FieldValueMap::value_type
-                        value(id + "_changed", fieldPtrPtr);
-                succeeded = this->eventOutValueMap.insert(value).second;
-                assert(succeeded);
-            }
-        }
-
-    template <typename NodeT>
-        void Vrml97NodeTypeImpl<NodeT>::
-            addField(const FieldValue::Type type,
-                     const std::string & id,
-                     const NodeFieldPtrPtr & nodeFieldPtrPtr)
-                throw (UnsupportedInterface, std::bad_alloc) {
-            const NodeInterface interface(NodeInterface::field, type, id);
-            this->interfaces.add(interface);
-            const typename FieldValueMap::value_type value(id, nodeFieldPtrPtr);
-            const bool succeeded = this->fieldValueMap.insert(value).second;
-            assert(succeeded);
-        }
-
-    template <typename NodeT>
-        void Vrml97NodeTypeImpl<NodeT>::
-                setFieldValue(Node & node,
-                              const std::string & id,
-                              const FieldValue & newVal) const
-                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
-            assert(dynamic_cast<NodeT *>(&node));
-            this->setFieldValueImpl(dynamic_cast<NodeT &>(node), id, newVal);
-        }
-
-    template <typename NodeT>
-        const FieldValue & Vrml97NodeTypeImpl<NodeT>::
+            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        virtual const FieldValue &
                 getFieldValue(const Node & node,
                               const std::string & id) const
-                throw (UnsupportedInterface) {
-            assert(dynamic_cast<const NodeT *>(&node));
-            return this->getFieldValueImpl(dynamic_cast<const NodeT &>(node),
-                                           id);
-        }
-
-    template <typename NodeT>
-        void Vrml97NodeTypeImpl<NodeT>::
-                dispatchEventIn(Node & node,
-                                const std::string & id,
-                                const FieldValue & value,
-                                const double timestamp) const
-                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
-            assert(dynamic_cast<NodeT *>(&node));
-            this->dispatchEventInImpl(dynamic_cast<NodeT &>(node), id, value,
-                                      timestamp);
-        }
-
-    template <typename NodeT>
-        const FieldValue & Vrml97NodeTypeImpl<NodeT>::
+            throw (UnsupportedInterface);
+        virtual void dispatchEventIn(Node & node,
+                                     const std::string & id,
+                                     const FieldValue &,
+                                     double timestamp) const
+            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        virtual const FieldValue &
                 getEventOutValue(const Node & node,
                                  const std::string & id) const
-                throw (UnsupportedInterface) {
-            assert(dynamic_cast<const NodeT *>(&node));
-            return this->getEventOutValueImpl(dynamic_cast<const NodeT &>(node),
-                                              id);
-        }
-    template <typename NodeT>
-        const NodeInterfaceSet &
-                Vrml97NodeTypeImpl<NodeT>::getInterfaces() const throw () {
-            return this->interfaces;
-        }
+            throw (UnsupportedInterface);
+
+        virtual const NodeInterfaceSet & getInterfaces() const throw ();
+
+        virtual const NodePtr createNode(const ScopePtr & scope) const
+            throw (std::bad_alloc);
+
+    private:
+        void setFieldValueImpl(NodeT & node, const std::string & id,
+                               const FieldValue &) const
+            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        const FieldValue & getFieldValueImpl(const NodeT & node,
+                                             const std::string & id) const
+            throw (UnsupportedInterface);
+        void dispatchEventInImpl(NodeT & node, const std::string & id,
+                                 const FieldValue &, double timestamp) const
+            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        const FieldValue & getEventOutValueImpl(const NodeT & node,
+                                                const std::string & id) const
+            throw (UnsupportedInterface);
+    };
 
     template <typename NodeT>
-        const NodePtr Vrml97NodeTypeImpl<NodeT>::
-                createNode(const ScopePtr & scope) const
-                throw (std::bad_alloc) {
-            return NodePtr(new NodeT(*this, scope));
-        }
+    Vrml97NodeTypeImpl<NodeT>::Vrml97NodeTypeImpl(NodeClass & nodeClass,
+                                                  const std::string & id):
+        Vrml97NodeType(nodeClass, id)
+    {}
 
     template <typename NodeT>
-        void Vrml97NodeTypeImpl<NodeT>::
-                setFieldValueImpl(NodeT & node,
-                                  const std::string & id,
-                                  const FieldValue & newVal) const
-                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)  {
-            typename FieldValueMap::iterator itr = this->fieldValueMap.find(id);
-            if (itr == this->fieldValueMap.end()) {
-                throw UnsupportedInterface(node.nodeType.id
-                                            + " node has no field " + id);
-            }
-            itr->second->dereference(node).assign(newVal);
-        }
+    Vrml97NodeTypeImpl<NodeT>::~Vrml97NodeTypeImpl() throw ()
+    {}
 
     template <typename NodeT>
-        const FieldValue & Vrml97NodeTypeImpl<NodeT>::
-                getFieldValueImpl(const NodeT & node,
-                                  const std::string & id) const
-                throw (UnsupportedInterface) {
-            const typename FieldValueMap::const_iterator itr =
-                    this->fieldValueMap.find(id);
-            if (itr == this->fieldValueMap.end()) {
-                throw UnsupportedInterface(node.nodeType.id
-                                            + " node has no field " + id);
-            }
-            return itr->second->dereference(node);
-        }
+    void Vrml97NodeTypeImpl<NodeT>::addEventIn(
+            const FieldValue::Type type,
+            const std::string & id,
+            const EventInHandlerPtr eventInHandlerPtr)
+        throw (UnsupportedInterface, std::bad_alloc)
+    {
+        const NodeInterface interface(NodeInterface::eventIn, type, id);
+        this->interfaces.add(interface);
+        const typename EventInHandlerMap::value_type
+                value(id, eventInHandlerPtr);
+        const bool succeeded = this->eventInHandlerMap.insert(value).second;
+        assert(succeeded);
+    }
 
     template <typename NodeT>
-        void Vrml97NodeTypeImpl<NodeT>::
-                dispatchEventInImpl(NodeT & node,
-                                    const std::string & id,
-                                    const FieldValue & value,
-                                    const double timestamp) const
-                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
-            typename EventInHandlerMap::const_iterator
-                    itr(this->eventInHandlerMap.find(id));
-            if (itr == this->eventInHandlerMap.end()) {
-                itr = this->eventInHandlerMap.find("set_" + id);
-            }
-            if (itr == this->eventInHandlerMap.end()) {
-                throw UnsupportedInterface(node.nodeType.id
-                                            + " node has no eventIn " + id);
-            }
-            (node.*(itr->second))(value, timestamp);
-        }
+    void Vrml97NodeTypeImpl<NodeT>::addEventOut(
+            const FieldValue::Type type,
+            const std::string & id,
+            const NodeFieldPtrPtr & eventOutPtrPtr)
+        throw (UnsupportedInterface, std::bad_alloc)
+    {
+        const NodeInterface interface(NodeInterface::eventOut, type, id);
+        this->interfaces.add(interface);
+        const typename FieldValueMap::value_type value(id, eventOutPtrPtr);
+        const bool succeeded = this->eventOutValueMap.insert(value).second;
+        assert(succeeded);
+    }
 
     template <typename NodeT>
-        const FieldValue & Vrml97NodeTypeImpl<NodeT>::
-                getEventOutValueImpl(const NodeT & node,
-                                     const std::string & id) const
-                throw (UnsupportedInterface) {
-            typename FieldValueMap::const_iterator
-                    itr(this->eventOutValueMap.find(id));
-            if (itr == this->eventOutValueMap.end()) {
-                itr = this->eventOutValueMap.find(id + "_changed");
-            }
-            if (itr == this->eventOutValueMap.end()) {
-                throw UnsupportedInterface(node.nodeType.id
-                                            + " node has no eventOut " + id);
-            }
-            return itr->second->dereference(node);
+    void Vrml97NodeTypeImpl<NodeT>::addExposedField(
+            const FieldValue::Type type,
+            const std::string & id,
+            const EventInHandlerPtr eventInHandlerPtr,
+            const NodeFieldPtrPtr & fieldPtrPtr)
+        throw (UnsupportedInterface, std::bad_alloc)
+    {
+        const NodeInterface interface(NodeInterface::exposedField, type, id);
+        this->interfaces.add(interface);
+
+        bool succeeded;
+        {
+            const typename EventInHandlerMap::value_type
+                    value("set_" + id, eventInHandlerPtr);
+            succeeded = this->eventInHandlerMap.insert(value).second;
+            assert(succeeded);
         }
+        {
+            const typename FieldValueMap::value_type value(id, fieldPtrPtr);
+            succeeded = this->fieldValueMap.insert(value).second;
+            assert(succeeded);
+        }
+        {
+            const typename FieldValueMap::value_type
+                    value(id + "_changed", fieldPtrPtr);
+            succeeded = this->eventOutValueMap.insert(value).second;
+            assert(succeeded);
+        }
+    }
+
+    template <typename NodeT>
+    void Vrml97NodeTypeImpl<NodeT>::addField(
+            const FieldValue::Type type,
+            const std::string & id,
+            const NodeFieldPtrPtr & nodeFieldPtrPtr)
+        throw (UnsupportedInterface, std::bad_alloc)
+    {
+        const NodeInterface interface(NodeInterface::field, type, id);
+        this->interfaces.add(interface);
+        const typename FieldValueMap::value_type value(id, nodeFieldPtrPtr);
+        const bool succeeded = this->fieldValueMap.insert(value).second;
+        assert(succeeded);
+    }
+
+    template <typename NodeT>
+    void Vrml97NodeTypeImpl<NodeT>::setFieldValue(
+            Node & node,
+            const std::string & id,
+            const FieldValue & newVal) const
+        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+    {
+        assert(dynamic_cast<NodeT *>(&node));
+        this->setFieldValueImpl(dynamic_cast<NodeT &>(node), id, newVal);
+    }
+
+    template <typename NodeT>
+    const FieldValue &
+    Vrml97NodeTypeImpl<NodeT>::getFieldValue(const Node & node,
+                                             const std::string & id) const
+        throw (UnsupportedInterface)
+    {
+        assert(dynamic_cast<const NodeT *>(&node));
+        return this->getFieldValueImpl(dynamic_cast<const NodeT &>(node), id);
+    }
+
+    template <typename NodeT>
+    void
+    Vrml97NodeTypeImpl<NodeT>::dispatchEventIn(Node & node,
+                                               const std::string & id,
+                                               const FieldValue & value,
+                                               const double timestamp) const
+        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+    {
+        assert(dynamic_cast<NodeT *>(&node));
+        this->dispatchEventInImpl(dynamic_cast<NodeT &>(node), id, value,
+                                  timestamp);
+    }
+
+    template <typename NodeT>
+    const FieldValue &
+    Vrml97NodeTypeImpl<NodeT>::getEventOutValue(const Node & node,
+                                                const std::string & id) const
+        throw (UnsupportedInterface)
+    {
+        assert(dynamic_cast<const NodeT *>(&node));
+        return this->getEventOutValueImpl(dynamic_cast<const NodeT &>(node),
+                                          id);
+    }
+
+    template <typename NodeT>
+    const NodeInterfaceSet & Vrml97NodeTypeImpl<NodeT>::getInterfaces() const
+        throw ()
+    {
+        return this->interfaces;
+    }
+
+    template <typename NodeT>
+    const NodePtr
+    Vrml97NodeTypeImpl<NodeT>::createNode(const ScopePtr & scope) const
+        throw (std::bad_alloc)
+    {
+        return NodePtr(new NodeT(*this, scope));
+    }
+
+    template <typename NodeT>
+    void Vrml97NodeTypeImpl<NodeT>::setFieldValueImpl(
+            NodeT & node,
+            const std::string & id,
+            const FieldValue & newVal) const
+        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+    {
+        typename FieldValueMap::iterator itr = this->fieldValueMap.find(id);
+        if (itr == this->fieldValueMap.end()) {
+            throw UnsupportedInterface(node.nodeType.id
+                                        + " node has no field " + id);
+        }
+        itr->second->dereference(node).assign(newVal);
+    }
+
+    template <typename NodeT>
+    const FieldValue &
+    Vrml97NodeTypeImpl<NodeT>::getFieldValueImpl(const NodeT & node,
+                                                 const std::string & id) const
+        throw (UnsupportedInterface)
+    {
+        const typename FieldValueMap::const_iterator itr =
+                this->fieldValueMap.find(id);
+        if (itr == this->fieldValueMap.end()) {
+            throw UnsupportedInterface(node.nodeType.id + " node has no field "
+                                       + id);
+        }
+        return itr->second->dereference(node);
+    }
+
+    template <typename NodeT>
+    void Vrml97NodeTypeImpl<NodeT>::dispatchEventInImpl(
+            NodeT & node,
+            const std::string & id,
+            const FieldValue & value,
+            const double timestamp) const
+        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+    {
+        typename EventInHandlerMap::const_iterator
+                itr(this->eventInHandlerMap.find(id));
+        if (itr == this->eventInHandlerMap.end()) {
+            itr = this->eventInHandlerMap.find("set_" + id);
+        }
+        if (itr == this->eventInHandlerMap.end()) {
+            throw UnsupportedInterface(node.nodeType.id
+                                        + " node has no eventIn " + id);
+        }
+        (node.*(itr->second))(value, timestamp);
+    }
+
+    template <typename NodeT>
+    const FieldValue &
+    Vrml97NodeTypeImpl<NodeT>::getEventOutValueImpl(
+            const NodeT & node,
+            const std::string & id) const
+        throw (UnsupportedInterface)
+    {
+        typename FieldValueMap::const_iterator
+                itr(this->eventOutValueMap.find(id));
+        if (itr == this->eventOutValueMap.end()) {
+            itr = this->eventOutValueMap.find(id + "_changed");
+        }
+        if (itr == this->eventOutValueMap.end()) {
+            throw UnsupportedInterface(node.nodeType.id
+                                        + " node has no eventOut " + id);
+        }
+        return itr->second->dereference(node);
+    }
 }
 
 /**
@@ -393,12 +420,14 @@ namespace {
  * @param scope     the Scope to which the node belongs.
  */
 AbstractBase::AbstractBase(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-AbstractBase::~AbstractBase() throw () {}
+AbstractBase::~AbstractBase() throw ()
+{}
 
 /**
  * @brief Set a field value for a node.
@@ -406,15 +435,16 @@ AbstractBase::~AbstractBase() throw () {}
  * @param id    a field name.
  * @param value a FieldValue.
  *
- * @throw UnsupportedInterface  if the node has no field @p id.
- * @throw std::bad_cast         if @p value is not the correct type.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception UnsupportedInterface  if the node has no field @p id.
+ * @exception std::bad_cast         if @p value is not the correct type.
+ * @exception std::bad_alloc        if memory allocation fails.
  *
  * @pre @p value must be of the correct type.
  */
 void AbstractBase::setFieldImpl(const std::string & id,
                                 const FieldValue & value)
-        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+{
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
     static_cast<const Vrml97NodeType &>(this->nodeType)
             .setFieldValue(*this, id, value);
@@ -425,10 +455,11 @@ void AbstractBase::setFieldImpl(const std::string & id,
  *
  * @param id    a field name.
  *
- * @throw UnsupportedInterface  if the node has no field @p id.
+ * @exception UnsupportedInterface  if the node has no field @p id.
  */
 const FieldValue & AbstractBase::getFieldImpl(const std::string & id) const
-        throw (UnsupportedInterface) {
+    throw (UnsupportedInterface)
+{
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
     return static_cast<const Vrml97NodeType &>(this->nodeType)
             .getFieldValue(*this, id);
@@ -441,16 +472,17 @@ const FieldValue & AbstractBase::getFieldImpl(const std::string & id) const
  * @param value     a FieldValue.
  * @param timestamp the current time.
  *
- * @throw UnsupportedInterface  if the node has no eventIn @p id.
- * @throw std::bad_cast         if @p value is not the correct type.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception UnsupportedInterface  if the node has no eventIn @p id.
+ * @exception std::bad_cast         if @p value is not the correct type.
+ * @exception std::bad_alloc        if memory allocation fails.
  *
  * @pre @p value must be of the correct type.
  */
 void AbstractBase::processEventImpl(const std::string & id,
                                     const FieldValue & value,
                                     const double timestamp)
-        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+{
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
     static_cast<const Vrml97NodeType &>(this->nodeType)
             .dispatchEventIn(*this, id, value, timestamp);
@@ -461,10 +493,11 @@ void AbstractBase::processEventImpl(const std::string & id,
  *
  * @param id    an eventOut name.
  *
- * @throw UnsupportedInterface  if the node has no eventOut @p id.
+ * @exception UnsupportedInterface  if the node has no eventOut @p id.
  */
 const FieldValue & AbstractBase::getEventOutImpl(const std::string & id) const
-        throw (UnsupportedInterface) {
+    throw (UnsupportedInterface)
+{
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
     return static_cast<const Vrml97NodeType &>(this->nodeType)
             .getEventOutValue(*this, id);
@@ -489,13 +522,16 @@ const FieldValue & AbstractBase::getEventOutImpl(const std::string & id) const
  * @param scope     the Scope the new node should belong to.
  */
 AbstractChild::AbstractChild(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
-        ChildNode(nodeType, scope) {}
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    ChildNode(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-AbstractChild::~AbstractChild() throw () {}
+AbstractChild::~AbstractChild() throw ()
+{}
 
 /**
  * @class AbstractGeometry
@@ -511,13 +547,17 @@ AbstractChild::~AbstractChild() throw () {}
  */
 AbstractGeometry::AbstractGeometry(const NodeType & nodeType,
                                    const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
-        GeometryNode(nodeType, scope), d_viewerObject(0) {}
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    GeometryNode(nodeType, scope),
+    d_viewerObject(0)
+{}
 
 /**
  * @brief Destructor.
  */
-AbstractGeometry::~AbstractGeometry() throw () {
+AbstractGeometry::~AbstractGeometry() throw ()
+{
     /* Need access to viewer to delete viewerObject...*/
 }
 
@@ -529,7 +569,8 @@ AbstractGeometry::~AbstractGeometry() throw () {
  * @param viewer a renderer
  * @param context the renderer context
  */
-void AbstractGeometry::render(Viewer * viewer, VrmlRenderContext context) {
+void AbstractGeometry::render(Viewer * viewer, VrmlRenderContext context)
+{
     if (d_viewerObject && isModified()) {
         viewer->removeObject(d_viewerObject);
         d_viewerObject = 0;
@@ -558,14 +599,16 @@ void AbstractGeometry::render(Viewer * viewer, VrmlRenderContext context) {
  */
 AbstractIndexedSet::AbstractIndexedSet(const NodeType & nodeType,
                                        const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractGeometry(nodeType, scope),
-        colorPerVertex(true) {}
+    Node(nodeType, scope),
+    AbstractGeometry(nodeType, scope),
+    colorPerVertex(true)
+{}
 
 /**
  * @brief Destructor.
  */
-AbstractIndexedSet::~AbstractIndexedSet() throw () {}
+AbstractIndexedSet::~AbstractIndexedSet() throw ()
+{}
 
 /**
  * @brief Determine whether the node has been modified.
@@ -573,13 +616,15 @@ AbstractIndexedSet::~AbstractIndexedSet() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool AbstractIndexedSet::isModified() const {
-    return (d_modified
+bool AbstractIndexedSet::isModified() const
+{
+    return (this->d_modified
             || (this->color.get() && this->color.get()->isModified())
             || (this->coord.get() && this->coord.get()->isModified()));
 }
 
-void AbstractIndexedSet::updateModified(NodePath & path, int flags) {
+void AbstractIndexedSet::updateModified(NodePath & path, int flags)
+{
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->color.get()) { this->color.get()->updateModified(path); }
@@ -587,14 +632,18 @@ void AbstractIndexedSet::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
-void AbstractIndexedSet::clearFlags() {
+void AbstractIndexedSet::clearFlags()
+{
     Node::clearFlags();
     if (this->color.get()) { this->color.get()->clearFlags(); }
     if (this->coord.get()) { this->coord.get()->clearFlags(); }
 }
 
-const ColorNode * AbstractIndexedSet::getColor() const throw () {
-    return this->color.get() ? this->color.get()->toColor() : 0;
+const ColorNode * AbstractIndexedSet::getColor() const throw ()
+{
+    return this->color.get()
+            ? this->color.get()->toColor()
+            : 0;
 }
 
 /**
@@ -603,12 +652,13 @@ const ColorNode * AbstractIndexedSet::getColor() const throw () {
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void AbstractIndexedSet::processSet_color(const FieldValue & sfnode,
                                           const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->color = dynamic_cast<const SFNode &>(sfnode);
     this->setModified();
     this->emitEvent("color_changed", this->color, timestamp);
@@ -620,12 +670,13 @@ void AbstractIndexedSet::processSet_color(const FieldValue & sfnode,
  * @param mfint32   an MFInt32 value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfint32 is not an MFInt32.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfint32 is not an MFInt32.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void AbstractIndexedSet::processSet_colorIndex(const FieldValue & mfint32,
                                                const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->colorIndex = dynamic_cast<const MFInt32 &>(mfint32);
     this->setModified();
 }
@@ -636,12 +687,13 @@ void AbstractIndexedSet::processSet_colorIndex(const FieldValue & mfint32,
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void AbstractIndexedSet::processSet_coord(const FieldValue & sfnode,
                                           const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->coord = dynamic_cast<const SFNode &>(sfnode);
     this->setModified();
     this->emitEvent("coord_changed", this->coord, timestamp);
@@ -653,12 +705,13 @@ void AbstractIndexedSet::processSet_coord(const FieldValue & sfnode,
  * @param mfint32   an MFInt32 value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfint32 is not an MFInt32.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfint32 is not an MFInt32.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void AbstractIndexedSet::processSet_coordIndex(const FieldValue & mfint32,
                                                const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->coordIndex = dynamic_cast<const MFInt32 &>(mfint32);
     this->setModified();
 }
@@ -677,20 +730,27 @@ void AbstractIndexedSet::processSet_coordIndex(const FieldValue & mfint32,
  * @param scope     the Scope to which the node belongs.
  */
 AbstractLight::AbstractLight(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope),
-        ambientIntensity(0.0), color(1.0, 1.0, 1.0), intensity(1.0), on(true) {}
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    ambientIntensity(0.0),
+    color(1.0, 1.0, 1.0),
+    intensity(1.0),
+    on(true)
+{}
 
 /**
  * @brief Destructor.
  */
-AbstractLight::~AbstractLight() throw () {}
+AbstractLight::~AbstractLight() throw ()
+{}
 
 /**
  * @brief Downcast to a light node.
  *
  * @return a pointer to this object.
  */
-AbstractLight * AbstractLight::toLight() const {
+AbstractLight * AbstractLight::toLight() const
+{
     return const_cast<AbstractLight *>(this);
 }
 
@@ -701,7 +761,8 @@ AbstractLight * AbstractLight::toLight() const {
  *
  * @param viewer a renderer.
  */
-void AbstractLight::renderScoped(Viewer * viewer) {}
+void AbstractLight::renderScoped(Viewer * viewer)
+{}
 
 /**
  * @brief set_ambientIntensity eventIn handler.
@@ -709,11 +770,12 @@ void AbstractLight::renderScoped(Viewer * viewer) {}
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void AbstractLight::processSet_ambientIntensity(const FieldValue & sffloat,
                                                 const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->ambientIntensity = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("ambientIntensity_changed", this->ambientIntensity,
@@ -726,11 +788,12 @@ void AbstractLight::processSet_ambientIntensity(const FieldValue & sffloat,
  * @param sfcolor   an SFColor value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfcolor is not an SFColor.
+ * @exception std::bad_cast if @p sfcolor is not an SFColor.
  */
 void AbstractLight::processSet_color(const FieldValue & sfcolor,
                                      const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->color = dynamic_cast<const SFColor &>(sfcolor);
     this->setModified();
     this->emitEvent("color_changed", this->color, timestamp);
@@ -742,11 +805,12 @@ void AbstractLight::processSet_color(const FieldValue & sfcolor,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void AbstractLight::processSet_intensity(const FieldValue & sffloat,
                                          const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->intensity = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("intensity_changed", this->intensity, timestamp);
@@ -758,11 +822,12 @@ void AbstractLight::processSet_intensity(const FieldValue & sffloat,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void AbstractLight::processSet_on(const FieldValue & sfbool,
                                   const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->on = dynamic_cast<const SFBool &>(sfbool);
     this->setModified();
     this->emitEvent("on_changed", this->on, timestamp);
@@ -783,15 +848,18 @@ void AbstractLight::processSet_on(const FieldValue & sfbool,
  */
 AbstractTexture::AbstractTexture(const NodeType & nodeType,
                                  const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
-        TextureNode(nodeType, scope),
-        repeatS(true),
-        repeatT(true) {}
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    TextureNode(nodeType, scope),
+    repeatS(true),
+    repeatT(true)
+{}
 
 /**
  * @brief Destructor.
  */
-AbstractTexture::~AbstractTexture() throw () {}
+AbstractTexture::~AbstractTexture() throw ()
+{}
 
 /**
  * @brief Get the repeatS flag.
@@ -799,7 +867,8 @@ AbstractTexture::~AbstractTexture() throw () {}
  * @return @c TRUE if the texture should repeat in the <var>S</var> direction,
  *      @c FALSE otherwise.
  */
-const SFBool & AbstractTexture::getRepeatS() const throw () {
+const SFBool & AbstractTexture::getRepeatS() const throw ()
+{
     return this->repeatS;
 }
 
@@ -809,7 +878,8 @@ const SFBool & AbstractTexture::getRepeatS() const throw () {
  * @return @c TRUE if the texture should repeat in the <var>T</var> direction,
  *      @c FALSE otherwise.
  */
-const SFBool & AbstractTexture::getRepeatT() const throw () {
+const SFBool & AbstractTexture::getRepeatT() const throw ()
+{
     return this->repeatT;
 }
 
@@ -825,12 +895,15 @@ const SFBool & AbstractTexture::getRepeatT() const throw () {
  *
  * @param browser the Browser associated with this AnchorClass.
  */
-AnchorClass::AnchorClass(Browser & browser): NodeClass(browser) {}
+AnchorClass::AnchorClass(Browser & browser):
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-AnchorClass::~AnchorClass() throw () {}
+AnchorClass::~AnchorClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -840,13 +913,14 @@ AnchorClass::~AnchorClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Anchor nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by AnchorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr AnchorClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
         NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
@@ -932,15 +1006,17 @@ const NodeTypePtr AnchorClass::createType(const std::string & id,
  */
 Anchor::Anchor(const NodeType & nodeType,
                const ScopePtr & scope):
-        Node(nodeType, scope),
-        Group(nodeType, scope) {
+    Node(nodeType, scope),
+    Group(nodeType, scope)
+{
     this->setBVolumeDirty(true);
 }
 
 /**
  * @brief Destructor.
  */
-Anchor::~Anchor() throw () {}
+Anchor::~Anchor() throw ()
+{}
 
 /**
  * @brief set_description eventIn handler.
@@ -948,12 +1024,13 @@ Anchor::~Anchor() throw () {}
  * @param sfstring  an SFString value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfstring is not an SFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfstring is not an SFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Anchor::processSet_description(const FieldValue & sfstring,
                                     const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->description = dynamic_cast<const SFString &>(sfstring);
     this->emitEvent("description_changed", sfstring, timestamp);
 }
@@ -964,12 +1041,13 @@ void Anchor::processSet_description(const FieldValue & sfstring,
  * @param mfstring  an MFString value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Anchor::processSet_parameter(const FieldValue & mfstring,
                                   const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->parameter = dynamic_cast<const MFString &>(mfstring);
     this->emitEvent("parameter_changed", mfstring, timestamp);
 }
@@ -980,12 +1058,13 @@ void Anchor::processSet_parameter(const FieldValue & mfstring,
  * @param mfstring  an MFString value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Anchor::processSet_url(const FieldValue & mfstring,
                             const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->url = dynamic_cast<const MFString &>(mfstring);
     this->emitEvent("url_changed", mfstring, timestamp);
 }
@@ -995,7 +1074,10 @@ void Anchor::processSet_url(const FieldValue & mfstring,
  *
  * @return a pointer to this node.
  */
-Anchor * Anchor::toAnchor() const { return const_cast<Anchor *>(this); }
+Anchor * Anchor::toAnchor() const
+{
+    return const_cast<Anchor *>(this);
+}
 
 /**
  * @brief Render the node.
@@ -1003,7 +1085,8 @@ Anchor * Anchor::toAnchor() const { return const_cast<Anchor *>(this); }
  * @param viewer
  * @param rc
  */
-void Anchor::render(Viewer *viewer, VrmlRenderContext rc) {
+void Anchor::render(Viewer *viewer, VrmlRenderContext rc)
+{
     viewer->setSensitive( this );
 
     // Render children
@@ -1012,11 +1095,11 @@ void Anchor::render(Viewer *viewer, VrmlRenderContext rc) {
     viewer->setSensitive( 0 );
 }
 
-
 /**
  * @brief Handle a click by loading the url.
  */
-void Anchor::activate() {
+void Anchor::activate()
+{
     assert(this->getScene());
     this->getScene()->loadURI(this->url, this->parameter);
 }
@@ -1024,7 +1107,8 @@ void Anchor::activate() {
 /**
  * @brief Get the bounding volume.
  */
-const BVolume * Anchor::getBVolume() const {
+const BVolume * Anchor::getBVolume() const
+{
     return Group::getBVolume();
 }
 
@@ -1039,12 +1123,15 @@ const BVolume * Anchor::getBVolume() const {
  *
  * @param browser the Browser associated with this class object.
  */
-AppearanceClass::AppearanceClass(Browser & browser): NodeClass(browser) {}
+AppearanceClass::AppearanceClass(Browser & browser):
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-AppearanceClass::~AppearanceClass() throw () {}
+AppearanceClass::~AppearanceClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -1054,14 +1141,15 @@ AppearanceClass::~AppearanceClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Appearance nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by AppearanceClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        AppearanceClass::createType(const std::string & id,
-                                    const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+AppearanceClass::createType(const std::string & id,
+                            const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "material"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texture"),
@@ -1115,14 +1203,16 @@ const NodeTypePtr
  */
 Appearance::Appearance(const NodeType & nodeType,
                        const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        AppearanceNode(nodeType, scope) {}
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    AppearanceNode(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-Appearance::~Appearance() throw () {}
+Appearance::~Appearance() throw ()
+{}
 
 /**
  * @brief set_material eventIn handler.
@@ -1130,12 +1220,13 @@ Appearance::~Appearance() throw () {}
  * @param sfnode    an SFNode value; should be a Material node.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Appearance::processSet_material(const FieldValue & sfnode,
                                      double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->material = dynamic_cast<const SFNode &>(sfnode);
     this->setModified();
     this->emitEvent("material_changed", sfnode, timestamp);
@@ -1147,12 +1238,13 @@ void Appearance::processSet_material(const FieldValue & sfnode,
  * @param sfnode    an SFNode value; should be a Texture node.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Appearance::processSet_texture(const FieldValue & sfnode,
                                     double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->texture = dynamic_cast<const SFNode &>(sfnode);
     this->setModified();
     this->emitEvent("texture_changed", sfnode, timestamp);
@@ -1164,54 +1256,51 @@ void Appearance::processSet_texture(const FieldValue & sfnode,
  * @param sfnode    an SFNode value; should be a TextureTransform node.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Appearance::processSet_textureTransform(const FieldValue & sfnode,
                                              double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->textureTransform = dynamic_cast<const SFNode &>(sfnode);
     this->setModified();
     this->emitEvent("textureTransform_changed", sfnode, timestamp);
 }
 
-bool Appearance::isModified() const {
-  return (d_modified
+bool Appearance::isModified() const
+{
+    return (this->d_modified
           || (this->material.get() && this->material.get()->isModified())
           || (this->texture.get() && this->texture.get()->isModified())
           || (this->textureTransform.get()
                 && this->textureTransform.get()->isModified()));
 }
 
-void Appearance::updateModified(NodePath & path, int flags) {
+void Appearance::updateModified(NodePath & path, int flags)
+{
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
-    if (this->material.get()) {
-        this->material.get()->updateModified(path);
-    }
-    if (this->texture.get()) {
-        this->texture.get()->updateModified(path);
-    }
+    if (this->material.get()) { this->material.get()->updateModified(path); }
+    if (this->texture.get()) { this->texture.get()->updateModified(path); }
     if (this->textureTransform.get()) {
         this->textureTransform.get()->updateModified(path);
     }
     path.pop_front();
 }
 
-void Appearance::clearFlags() {
+void Appearance::clearFlags()
+{
     Node::clearFlags();
-    if (this->material.get()) {
-        this->material.get()->clearFlags();
-    }
-    if (this->texture.get()) {
-        this->texture.get()->clearFlags();
-    }
+    if (this->material.get()) { this->material.get()->clearFlags(); }
+    if (this->texture.get()) { this->texture.get()->clearFlags(); }
     if (this->textureTransform.get()) {
         this->textureTransform.get()->clearFlags();
     }
 }
 
-void Appearance::render(Viewer * const viewer, const VrmlRenderContext rc) {
+void Appearance::render(Viewer * const viewer, const VrmlRenderContext rc)
+{
     MaterialNode * const material = this->material.get()
                                   ? this->material.get()->toMaterial()
                                   : 0;
@@ -1247,10 +1336,8 @@ void Appearance::render(Viewer * const viewer, const VrmlRenderContext rc) {
         } else {
             viewer->setTextureTransform(0, 0, 0, 0);
         }
-
         texture->render(viewer, rc);
     }
-
     clearModified();
 }
 
@@ -1260,7 +1347,8 @@ void Appearance::render(Viewer * const viewer, const VrmlRenderContext rc) {
  * @returns an SFNode object containing the Material node associated with
  *          this Appearance.
  */
-const SFNode & Appearance::getMaterial() const throw () {
+const SFNode & Appearance::getMaterial() const throw ()
+{
     return this->material;
 }
 
@@ -1270,7 +1358,10 @@ const SFNode & Appearance::getMaterial() const throw () {
  * @return an SFNode object containing the texture node associated with
  *         this Appearance.
  */
-const SFNode & Appearance::getTexture() const throw () { return this->texture; }
+const SFNode & Appearance::getTexture() const throw ()
+{
+    return this->texture;
+}
 
 /**
  * @brief Get the texture transform node.
@@ -1278,7 +1369,8 @@ const SFNode & Appearance::getTexture() const throw () { return this->texture; }
  * @return an SFNode object containing the TextureTransform node
  *         associated with this Appearance.
  */
-const SFNode & Appearance::getTextureTransform() const throw () {
+const SFNode & Appearance::getTextureTransform() const throw ()
+{
     return this->textureTransform;
 }
 
@@ -1294,12 +1386,15 @@ const SFNode & Appearance::getTextureTransform() const throw () {
  *
  * @param browser the Browser associated with this class object.
  */
-AudioClipClass::AudioClipClass(Browser & browser): NodeClass(browser) {}
+AudioClipClass::AudioClipClass(Browser & browser):
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-AudioClipClass::~AudioClipClass() throw () {}
+AudioClipClass::~AudioClipClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -1309,14 +1404,15 @@ AudioClipClass::~AudioClipClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating AudioClip nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by AudioClipClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        AudioClipClass::createType(const std::string & id,
-                                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+AudioClipClass::createType(const std::string & id,
+                           const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "description"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
@@ -1408,24 +1504,24 @@ const NodeTypePtr
  */
 AudioClip::AudioClip(const NodeType & nodeType,
                      const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        pitch(1.0),
-        active(false),
-        audio(0),
-        url_modified(false),
-        audio_index(0),
-        audio_intensity(1.0),
-        audio_fd(-1) {}
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    pitch(1.0),
+    active(false),
+    audio(0),
+    url_modified(false),
+    audio_index(0),
+    audio_intensity(1.0),
+    audio_fd(-1)
+{}
 
 /**
  * @brief Destructor.
  */
-AudioClip::~AudioClip() throw () {
+AudioClip::~AudioClip() throw ()
+{
     delete this->audio;
-    if (this->getScene()) {
-        this->getScene()->browser.removeAudioClip(*this);
-    }
+    if (this->getScene()) { this->getScene()->browser.removeAudioClip(*this); }
 }
 
 /**
@@ -1434,9 +1530,12 @@ AudioClip::~AudioClip() throw () {
  * @return a pointer to this node.
  */
 AudioClip* AudioClip::toAudioClip() const
-{ return (AudioClip*)this; }
+{
+    return (AudioClip*)this;
+}
 
-void AudioClip::update(const double currentTime) {
+void AudioClip::update(const double currentTime)
+{
     // If the URL has been modified, update the audio object
     if (this->url_modified) {
         Doc relDoc(this->relativeUrl.get(), static_cast<Doc const *>(0));
@@ -1527,7 +1626,8 @@ void AudioClip::update(const double currentTime) {
  *
  * @param timestamp the current time.
  */
-void AudioClip::initializeImpl(const double timestamp) throw () {
+void AudioClip::initializeImpl(const double timestamp) throw ()
+{
     assert(this->getScene());
     this->getScene()->browser.addAudioClip(*this);
 }
@@ -1538,12 +1638,13 @@ void AudioClip::initializeImpl(const double timestamp) throw () {
  * @param sfstring  an SFString.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfstring is not an SFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfstring is not an SFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void AudioClip::processSet_description(const FieldValue & sfstring,
                                        const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->description = dynamic_cast<const SFString &>(sfstring);
     this->emitEvent("description_changed", this->description, timestamp);
 }
@@ -1554,10 +1655,11 @@ void AudioClip::processSet_description(const FieldValue & sfstring,
  * @param sfbool    an SFBool.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfbool is not an SFBool.
+ * @exception std::bad_cast     if @p sfbool is not an SFBool.
  */
 void AudioClip::processSet_loop(const FieldValue & sfbool, double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->loop = dynamic_cast<const SFBool &>(sfbool);
     this->setModified();
     this->emitEvent("loop_changed", this->loop, timestamp);
@@ -1569,10 +1671,11 @@ void AudioClip::processSet_loop(const FieldValue & sfbool, double timestamp)
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
  */
 void AudioClip::processSet_pitch(const FieldValue & sffloat, double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->pitch = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("pitch_changed", this->pitch, timestamp);
@@ -1584,11 +1687,12 @@ void AudioClip::processSet_pitch(const FieldValue & sffloat, double timestamp)
  * @param sftime    an SFTime.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sftime is not an SFTime.
+ * @exception std::bad_cast     if @p sftime is not an SFTime.
  */
 void AudioClip::processSet_startTime(const FieldValue & sftime,
                                      const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->startTime = dynamic_cast<const SFTime &>(sftime);
     this->setModified();
     this->emitEvent("startTime_changed", this->startTime, timestamp);
@@ -1600,11 +1704,12 @@ void AudioClip::processSet_startTime(const FieldValue & sftime,
  * @param sftime    an SFTime.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sftime is not an SFTime.
+ * @exception std::bad_cast     if @p sftime is not an SFTime.
  */
 void AudioClip::processSet_stopTime(const FieldValue & sftime,
                                     const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->stopTime = dynamic_cast<const SFTime &>(sftime);
     this->setModified();
     this->emitEvent("stopTime_changed", this->stopTime, timestamp);
@@ -1616,12 +1721,13 @@ void AudioClip::processSet_stopTime(const FieldValue & sftime,
  * @param mfstring  an MFString.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void AudioClip::processSet_url(const FieldValue & mfstring,
                                const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->url = dynamic_cast<const MFString &>(mfstring);
     this->setModified();
     this->emitEvent("url_changed", this->url, timestamp);
@@ -1639,12 +1745,15 @@ void AudioClip::processSet_url(const FieldValue & mfstring,
  *
  * @param browser the Browser associated with this class object.
  */
-BackgroundClass::BackgroundClass(Browser & browser): NodeClass(browser) {}
+BackgroundClass::BackgroundClass(Browser & browser):
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-BackgroundClass::~BackgroundClass() throw () {}
+BackgroundClass::~BackgroundClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -1654,14 +1763,15 @@ BackgroundClass::~BackgroundClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Background nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by BackgroundClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        BackgroundClass::createType(const std::string & id,
-                                    const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+BackgroundClass::createType(const std::string & id,
+                            const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
         NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "groundAngle"),
@@ -1783,35 +1893,38 @@ const NodeTypePtr
  */
 Background::Background(const NodeType & nodeType,
                        const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        bound(false),
-        viewerObject(0) {
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    bound(false),
+    viewerObject(0)
+{
     std::fill(this->texPtr, this->texPtr + 6, static_cast<Image *>(0));
 }
 
 /**
  * @brief Destructor.
  */
-Background::~Background() throw () {
-    if (this->getScene()) {
-        this->getScene()->browser.removeBackground(*this);
-    }
+Background::~Background() throw ()
+{
+    if (this->getScene()) { this->getScene()->browser.removeBackground(*this); }
     // remove d_viewerObject...
 }
 
 /**
  * @brief Cast to a Background node.
  */
-Background* Background::toBackground() const
-{ return (Background*) this; }
+Background * Background::toBackground() const
+{
+    return (Background*) this;
+}
 
 namespace {
     /**
      * @brief Load and scale textures as needed.
      */
     Image * getTexture(const MFString & urls, Doc2 & baseDoc,
-                       Image * tex, int thisIndex, Viewer *viewer) {
+                       Image * tex, int thisIndex, Viewer *viewer)
+    {
         // Check whether the url has already been loaded
         int n = urls.getLength();
         if (n > 0) {
@@ -1876,7 +1989,8 @@ namespace {
  * Backgrounds are rendered once per scene at the beginning, not
  * when they are traversed by the standard render() method.
  */
-void Background::renderBindable(Viewer * const viewer) {
+void Background::renderBindable(Viewer * const viewer)
+{
     // Background isn't selectable, so don't waste the time.
     if (viewer->getRenderMode() == Viewer::RENDER_MODE_PICK) { return; }
 
@@ -1944,7 +2058,8 @@ void Background::renderBindable(Viewer * const viewer) {
  *
  * @param timestamp the current time.
  */
-void Background::initializeImpl(const double timestamp) throw () {
+void Background::initializeImpl(const double timestamp) throw ()
+{
     assert(this->getScene());
     this->getScene()->browser.addBackground(*this);
 }
@@ -1955,12 +2070,13 @@ void Background::initializeImpl(const double timestamp) throw () {
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfbool is not an SFBool.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfbool is not an SFBool.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_bind(const FieldValue & sfbool,
                                  const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     Background * current =
             this->nodeType.nodeClass.browser.bindableBackgroundTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
@@ -1996,12 +2112,13 @@ void Background::processSet_bind(const FieldValue & sfbool,
  * @param mffloat   an MFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_groundAngle(const FieldValue & mffloat,
                                         const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->groundAngle = dynamic_cast<const MFFloat &>(mffloat);
     this->setModified();
     this->emitEvent("groundAngle_changed", this->groundAngle, timestamp);
@@ -2013,12 +2130,13 @@ void Background::processSet_groundAngle(const FieldValue & mffloat,
  * @param mfcolor   an MFColor.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfcolor is not an MFColor.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfcolor is not an MFColor.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_groundColor(const FieldValue & mfcolor,
                                         const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->groundColor = dynamic_cast<const MFColor &>(mfcolor);
     this->setModified();
     this->emitEvent("groundColor_changed", this->groundColor, timestamp);
@@ -2030,12 +2148,13 @@ void Background::processSet_groundColor(const FieldValue & mfcolor,
  * @param mfstring  an MFString.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_backUrl(const FieldValue & mfstring,
                                     const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->backUrl = dynamic_cast<const MFString &>(mfstring);
     this->setModified();
     this->emitEvent("backUrl_changed", this->backUrl, timestamp);
@@ -2047,12 +2166,13 @@ void Background::processSet_backUrl(const FieldValue & mfstring,
  * @param mfstring  an MFString.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_bottomUrl(const FieldValue & mfstring,
                                       const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->bottomUrl = dynamic_cast<const MFString &>(mfstring);
     this->setModified();
     this->emitEvent("bottomUrl_changed", this->bottomUrl, timestamp);
@@ -2064,12 +2184,13 @@ void Background::processSet_bottomUrl(const FieldValue & mfstring,
  * @param mfstring  an MFString.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_frontUrl(const FieldValue & mfstring,
                                      const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->frontUrl = dynamic_cast<const MFString &>(mfstring);
     this->setModified();
     this->emitEvent("frontUrl_changed", this->backUrl, timestamp);
@@ -2081,12 +2202,13 @@ void Background::processSet_frontUrl(const FieldValue & mfstring,
  * @param mfstring  an MFString.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_leftUrl(const FieldValue & mfstring,
                                     const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->leftUrl = dynamic_cast<const MFString &>(mfstring);
     this->setModified();
     this->emitEvent("leftUrl_changed", this->leftUrl, timestamp);
@@ -2098,12 +2220,13 @@ void Background::processSet_leftUrl(const FieldValue & mfstring,
  * @param mfstring  an MFString.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_rightUrl(const FieldValue & mfstring,
                                      const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->rightUrl = dynamic_cast<const MFString &>(mfstring);
     this->setModified();
     this->emitEvent("rightUrl_changed", this->rightUrl, timestamp);
@@ -2115,12 +2238,13 @@ void Background::processSet_rightUrl(const FieldValue & mfstring,
  * @param mfstring  an MFString.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_topUrl(const FieldValue & mfstring,
                                    const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->topUrl = dynamic_cast<const MFString &>(mfstring);
     this->setModified();
     this->emitEvent("topUrl_changed", this->topUrl, timestamp);
@@ -2132,12 +2256,13 @@ void Background::processSet_topUrl(const FieldValue & mfstring,
  * @param mffloat   an MFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_skyAngle(const FieldValue & mffloat,
                                      const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->skyAngle = dynamic_cast<const MFFloat &>(mffloat);
     this->setModified();
     this->emitEvent("skyAngle_changed", this->skyAngle, timestamp);
@@ -2149,12 +2274,13 @@ void Background::processSet_skyAngle(const FieldValue & mffloat,
  * @param mfcolor   an MFColor.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfcolor is not an MFColor.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfcolor is not an MFColor.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Background::processSet_skyColor(const FieldValue & mfcolor,
                                      const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->skyColor = dynamic_cast<const MFColor &>(mfcolor);
     this->setModified();
     this->emitEvent("skyColor_changed", this->skyColor, timestamp);
@@ -2172,12 +2298,14 @@ void Background::processSet_skyColor(const FieldValue & mfcolor,
  *
  * @param browser the Browser associated with this class object.
  */
-BillboardClass::BillboardClass(Browser & browser): NodeClass(browser) {}
+BillboardClass::BillboardClass(Browser & browser): NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-BillboardClass::~BillboardClass() throw () {}
+BillboardClass::~BillboardClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -2187,14 +2315,15 @@ BillboardClass::~BillboardClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Billboard nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by BillboardClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        BillboardClass::createType(const std::string & id,
-                                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+BillboardClass::createType(const std::string & id,
+                           const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
         NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
@@ -2264,15 +2393,17 @@ const NodeTypePtr
  */
 Billboard::Billboard(const NodeType & nodeType,
                      const ScopePtr & scope):
-        Node(nodeType, scope),
-        Group(nodeType, scope),
-        axisOfRotation(0.0, 1.0, 0.0),
-	xformObject(0) {}
+    Node(nodeType, scope),
+    Group(nodeType, scope),
+    axisOfRotation(0.0, 1.0, 0.0),
+    xformObject(0)
+{}
 
 /**
  * @brief Destructor.
  */
-Billboard::~Billboard() throw () {
+Billboard::~Billboard() throw ()
+{
     // delete xformObject...
 }
 
@@ -2282,7 +2413,8 @@ Billboard::~Billboard() throw () {
  * @param viewer    a Viewer.
  * @param rv        the rendering context.
  */
-void Billboard::render(Viewer * const viewer, VrmlRenderContext rc) {
+void Billboard::render(Viewer * const viewer, VrmlRenderContext rc)
+{
     VrmlMatrix LM;
     VrmlMatrix new_LM = rc.getMatrix();
     billboard_to_matrix(this, new_LM, LM);
@@ -2319,7 +2451,8 @@ void Billboard::render(Viewer * const viewer, VrmlRenderContext rc) {
  * @brief Cache a pointer to (one of the) parent transforms for proper
  *      rendering of bindables.
  */
-void Billboard::accumulateTransform(Node * parent) {
+void Billboard::accumulateTransform(Node * parent)
+{
     this->parentTransform = parent;
     for (size_t i = 0; i < this->children.getLength(); ++i) {
         if (this->children.getElement(i)) {
@@ -2328,22 +2461,16 @@ void Billboard::accumulateTransform(Node * parent) {
     }
 }
 
-Node * Billboard::getParentTransform() { return this->parentTransform; }
-
-void Billboard::inverseTransform(Viewer * const viewer) {
-    Node * parentTransform = getParentTransform();
-    if (parentTransform) { parentTransform->inverseTransform(viewer); }
-
-    // Apply inverted bb transforms...
-    //viewer->setBillboardTransform( d_axisOfRotation.get() );
+Node * Billboard::getParentTransform()
+{
+    return this->parentTransform;
 }
 
 void Billboard::inverseTransform(VrmlMatrix & m)
 {
-// It is calling program's responsibility to pass m as an unit matrix. skb
-  Node *parentTransform = getParentTransform();
-  if (parentTransform)
-    parentTransform->inverseTransform(m);
+    // It is calling program's responsibility to pass m as an unit matrix. skb
+    Node * const parentTransform = getParentTransform();
+    if (parentTransform) { parentTransform->inverseTransform(m); }
 }
 
 /**
@@ -2357,7 +2484,8 @@ void Billboard::inverseTransform(VrmlMatrix & m)
  * @retval M    a copy of the resulting transform.
  */
 void Billboard::billboard_to_matrix(const Billboard* t_arg,
-                                    const VrmlMatrix & L_MV, VrmlMatrix& M) {
+                                    const VrmlMatrix & L_MV, VrmlMatrix& M)
+{
     VrmlMatrix MV = L_MV.affine_inverse();
 
     // Viewer position in local coordinate system
@@ -2411,11 +2539,12 @@ void Billboard::billboard_to_matrix(const Billboard* t_arg,
  * @param sfvec3f   an SFVec3f.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void Billboard::processSet_axisOfRotation(const FieldValue & sfvec3f,
                                           const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->axisOfRotation = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->emitEvent("axisOfRotation_changed", this->axisOfRotation, timestamp);
 }
@@ -2432,12 +2561,15 @@ void Billboard::processSet_axisOfRotation(const FieldValue & sfvec3f,
  *
  * @param browser the Browser associated with this class object.
  */
-BoxClass::BoxClass(Browser & browser): NodeClass(browser) {}
+BoxClass::BoxClass(Browser & browser):
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-BoxClass::~BoxClass() throw () {}
+BoxClass::~BoxClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -2447,13 +2579,14 @@ BoxClass::~BoxClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Box nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by BoxClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr BoxClass::createType(const std::string & id,
                                        const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterface =
             NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "size");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Box>(*this, id));
@@ -2488,22 +2621,25 @@ const NodeTypePtr BoxClass::createType(const std::string & id,
  */
 Box::Box(const NodeType & nodeType,
          const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractGeometry(nodeType, scope),
-        size(2.0, 2.0, 2.0) {
+    Node(nodeType, scope),
+    AbstractGeometry(nodeType, scope),
+    size(2.0, 2.0, 2.0)
+{
     this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 /**
  * @brief Destructor.
  */
-Box::~Box() throw () {}
+Box::~Box() throw ()
+{}
 
 /**
  * @brief Insert the geometry when rendering.
  */
 Viewer::Object Box::insertGeometry(Viewer * const viewer,
-                                   const VrmlRenderContext rc) {
+                                   const VrmlRenderContext rc)
+{
     return viewer->insertBox(this->size.getX(), this->size.getY(),
                              this->size.getZ());
 }
@@ -2511,14 +2647,15 @@ Viewer::Object Box::insertGeometry(Viewer * const viewer,
 /**
  * @brief Get the bounding volume.
  */
-const BVolume * Box::getBVolume() const {
+const BVolume * Box::getBVolume() const
+{
     if (this->isBVolumeDirty()) {
-      const float corner[3] = { this->size.getX() / 2.0f,
-                                this->size.getY() / 2.0f,
-                                this->size.getZ() / 2.0f };
-      float r = Vlength(corner);
-      ((Box*)this)->bsphere.setRadius(r);
-      ((Box*)this)->setBVolumeDirty(false); // logical const
+        const float corner[3] = { this->size.getX() / 2.0f,
+                                  this->size.getY() / 2.0f,
+                                  this->size.getZ() / 2.0f };
+        float r = Vlength(corner);
+        ((Box*)this)->bsphere.setRadius(r);
+        ((Box*)this)->setBVolumeDirty(false); // logical const
     }
     return &this->bsphere;
 }
@@ -2535,12 +2672,15 @@ const BVolume * Box::getBVolume() const {
  *
  * @param browser the Browser associated with this class object.
  */
-CollisionClass::CollisionClass(Browser & browser): NodeClass(browser) {}
+CollisionClass::CollisionClass(Browser & browser):
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-CollisionClass::~CollisionClass() throw () {}
+CollisionClass::~CollisionClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -2550,9 +2690,9 @@ CollisionClass::~CollisionClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Collision nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by CollisionClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         CollisionClass::createType(const std::string & id,
@@ -2666,7 +2806,7 @@ void Collision::clearFlags() {
  * @param sfbool    an SFBool.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void Collision::processSet_collide(const FieldValue & sfbool,
                                    const double timestamp)
@@ -2702,9 +2842,9 @@ ColorClass::~ColorClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Color nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by ColorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr ColorClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
@@ -2767,8 +2907,8 @@ const MFColor & Color::getColor() const throw () { return this->color; }
  * @param mfcolor   an MFColor.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfcolor is not an MFColor.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfcolor is not an MFColor.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Color::processSet_color(const FieldValue & mfcolor, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
@@ -2806,9 +2946,9 @@ ColorInterpolatorClass::~ColorInterpolatorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating ColorInterpolator
  *      nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by ColorInterpolatorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr ColorInterpolatorClass::
         createType(const std::string & id,
@@ -2886,8 +3026,8 @@ ColorInterpolator::~ColorInterpolator() throw () {}
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ColorInterpolator::processSet_fraction(const FieldValue & sffloat,
                                             const double timestamp)
@@ -2947,8 +3087,8 @@ void ColorInterpolator::processSet_fraction(const FieldValue & sffloat,
  * @param mffloat   an MFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ColorInterpolator::processSet_key(const FieldValue & mffloat,
                                        const double timestamp)
@@ -2963,8 +3103,8 @@ void ColorInterpolator::processSet_key(const FieldValue & mffloat,
  * @param mfcolor   an MFColor.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfcolor is not an MFColor.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfcolor is not an MFColor.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ColorInterpolator::processSet_keyValue(const FieldValue & mfcolor,
                                             const double timestamp)
@@ -3000,9 +3140,9 @@ ConeClass::~ConeClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Cone nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by ConeClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr ConeClass::createType(const std::string & id,
                                         const NodeInterfaceSet & interfaces)
@@ -3117,9 +3257,9 @@ CoordinateClass::~CoordinateClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Coordinate nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by CoordinateClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         CoordinateClass::createType(const std::string & id,
@@ -3176,8 +3316,8 @@ Coordinate::~Coordinate() throw () {}
  * @param mfvec3f   an array of vectors representing points.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfvec3f is not an MFVec3f.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfvec3f is not an MFVec3f.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Coordinate::processSet_point(const FieldValue & mfvec3f,
                                   const double timestamp)
@@ -3223,9 +3363,9 @@ CoordinateInterpolatorClass::~CoordinateInterpolatorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating
  *      CoordinateInterpolator nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by CoordinateInterpolatorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr CoordinateInterpolatorClass::
         createType(const std::string & id,
@@ -3303,8 +3443,8 @@ CoordinateInterpolator::~CoordinateInterpolator() throw () {}
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
                                                  const double timestamp)
@@ -3358,8 +3498,8 @@ void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
  * @param mffloat   an MFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void CoordinateInterpolator::processSet_key(const FieldValue & mffloat,
                                             const double timestamp)
@@ -3374,8 +3514,8 @@ void CoordinateInterpolator::processSet_key(const FieldValue & mffloat,
  * @param mfvec3f   an MFVec3f.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfvec3f is not an MFVec3f.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfvec3f is not an MFVec3f.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void CoordinateInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
                                                  const double timestamp)
@@ -3411,9 +3551,9 @@ CylinderClass::~CylinderClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Cylinder nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by CylinderClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr CylinderClass::createType(const std::string & id,
                                             const NodeInterfaceSet & interfaces)
@@ -3539,9 +3679,9 @@ CylinderSensorClass::~CylinderSensorClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating CylinderSensor nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by CylinderSensorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         CylinderSensorClass::createType(const std::string & id,
@@ -3768,7 +3908,7 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p) {
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void CylinderSensor::processSet_autoOffset(const FieldValue & sfbool,
                                            const double timestamp)
@@ -3783,7 +3923,7 @@ void CylinderSensor::processSet_autoOffset(const FieldValue & sfbool,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void CylinderSensor::processSet_diskAngle(const FieldValue & sffloat,
                                           const double timestamp)
@@ -3798,7 +3938,7 @@ void CylinderSensor::processSet_diskAngle(const FieldValue & sffloat,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void CylinderSensor::processSet_enabled(const FieldValue & sfbool,
                                         const double timestamp)
@@ -3813,7 +3953,7 @@ void CylinderSensor::processSet_enabled(const FieldValue & sfbool,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void CylinderSensor::processSet_maxAngle(const FieldValue & sffloat,
                                          const double timestamp)
@@ -3828,7 +3968,7 @@ void CylinderSensor::processSet_maxAngle(const FieldValue & sffloat,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void CylinderSensor::processSet_minAngle(const FieldValue & sffloat,
                                          const double timestamp)
@@ -3843,7 +3983,7 @@ void CylinderSensor::processSet_minAngle(const FieldValue & sffloat,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void CylinderSensor::processSet_offset(const FieldValue & sffloat,
                                        const double timestamp)
@@ -3897,9 +4037,9 @@ DirectionalLightClass::~DirectionalLightClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating DirectionalLight
  *      nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by DirectionalLightClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         DirectionalLightClass::createType(const std::string & id,
@@ -4003,7 +4143,7 @@ void DirectionalLight::render(Viewer * const viewer,
  * @param sfvec3f   an SFVec3f.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void DirectionalLight::processSet_direction(const FieldValue & sfvec3f,
                                             const double timestamp)
@@ -4040,9 +4180,9 @@ ElevationGridClass::~ElevationGridClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating ElevationGrid nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by ElevationGridClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         ElevationGridClass::createType(const std::string & id,
@@ -4278,8 +4418,8 @@ Viewer::Object ElevationGrid::insertGeometry(Viewer * const viewer,
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ElevationGrid::processSet_color(const FieldValue & sfnode,
                                      const double timestamp)
@@ -4295,8 +4435,8 @@ void ElevationGrid::processSet_color(const FieldValue & sfnode,
  * @param mffloat   an MFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ElevationGrid::processSet_height(const FieldValue & mffloat,
                                       const double timestamp)
@@ -4312,8 +4452,8 @@ void ElevationGrid::processSet_height(const FieldValue & mffloat,
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ElevationGrid::processSet_normal(const FieldValue & sfnode,
                                       const double timestamp)
@@ -4328,8 +4468,8 @@ void ElevationGrid::processSet_normal(const FieldValue & sfnode,
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ElevationGrid::processSet_texCoord(const FieldValue & sfnode,
                                         const double timestamp)
@@ -4366,9 +4506,9 @@ ExtrusionClass::~ExtrusionClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Extrusion nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by ExtrusionClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         ExtrusionClass::createType(const std::string & id,
@@ -4564,8 +4704,8 @@ Viewer::Object Extrusion::insertGeometry(Viewer * const viewer,
  * @param mfvec2f   an MFVec2f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfvec2f is not an MFVec2f.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfvec2f is not an MFVec2f.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Extrusion::processSet_crossSection(const FieldValue & mfvec2f,
                                         const double timestamp)
@@ -4580,8 +4720,8 @@ void Extrusion::processSet_crossSection(const FieldValue & mfvec2f,
  * @param mfrotation   an MFRotation value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfrotation is not an MFRotation.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfrotation is not an MFRotation.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Extrusion::processSet_orientation(const FieldValue & mfrotation,
                                        const double timestamp)
@@ -4596,8 +4736,8 @@ void Extrusion::processSet_orientation(const FieldValue & mfrotation,
  * @param mfvec2f   an MFVec2f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfvec2f is not an MFVec2f.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfvec2f is not an MFVec2f.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Extrusion::processSet_scale(const FieldValue & mfvec2f,
                                  const double timestamp)
@@ -4612,8 +4752,8 @@ void Extrusion::processSet_scale(const FieldValue & mfvec2f,
  * @param mfvec3f   an MFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfvec2f is not an MFVec3f.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfvec2f is not an MFVec3f.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Extrusion::processSet_spine(const FieldValue & mfvec3f,
                                  const double timestamp)
@@ -4649,9 +4789,9 @@ FogClass::~FogClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Fog nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by FogClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr FogClass::createType(const std::string & id,
                                        const NodeInterfaceSet & interfaces)
@@ -4754,8 +4894,8 @@ void Fog::initializeImpl(const double timestamp) throw () {
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfbool is not an SFBool value.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfbool is not an SFBool value.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Fog::processSet_bind(const FieldValue & sfbool, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
@@ -4792,7 +4932,7 @@ void Fog::processSet_bind(const FieldValue & sfbool, const double timestamp)
  * @param sfcolor   an SFColor value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfcolor is not an SFColor value.
+ * @exception std::bad_cast     if @p sfcolor is not an SFColor value.
  */
 void Fog::processSet_color(const FieldValue & sfcolor, const double timestamp)
         throw (std::bad_cast) {
@@ -4807,8 +4947,8 @@ void Fog::processSet_color(const FieldValue & sfcolor, const double timestamp)
  * @param sfstring  an SFString value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfstring is not an SFString value.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfstring is not an SFString value.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Fog::processSet_fogType(const FieldValue & sfstring,
                              const double timestamp)
@@ -4824,7 +4964,7 @@ void Fog::processSet_fogType(const FieldValue & sfstring,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat value.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat value.
  */
 void Fog::processSet_visibilityRange(const FieldValue & sffloat,
                                      const double timestamp)
@@ -4859,9 +4999,9 @@ FontStyleClass::~FontStyleClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating FontStyle nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by FontStyleClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         FontStyleClass::createType(const std::string & id,
@@ -5089,9 +5229,9 @@ GroupClass::~GroupClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Group nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by GroupClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr GroupClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
@@ -5178,8 +5318,8 @@ Group::~Group() throw () {
  * @param mfnode    an MFNode containing nodes to add to this Group.
  * @param timestamp the current timestamp
  *
- * @throw std::bad_cast     if @p mfnode is not an MFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfnode is not an MFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Group::processAddChildren(const FieldValue & mfnode,
                                const double timestamp)
@@ -5193,8 +5333,8 @@ void Group::processAddChildren(const FieldValue & mfnode,
  * @param mfnode    an MFNode containing nodes to remove from this Group.
  * @param timestamp the current timestamp
  *
- * @throw std::bad_cast     if @p mfnode is not an MFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfnode is not an MFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Group::processRemoveChildren(const FieldValue & mfnode,
                                   const double timestamp)
@@ -5208,8 +5348,8 @@ void Group::processRemoveChildren(const FieldValue & mfnode,
  * @param mfnode    an MFNode containing nodes for this Group.
  * @param timestamp the current timestamp
  *
- * @throw std::bad_cast     if @p mfnode is not an MFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfnode is not an MFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Group::processSet_children(const FieldValue & mfnode,
                                 const double timestamp)
@@ -5529,9 +5669,9 @@ ImageTextureClass::~ImageTextureClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating ImageTexture nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by ImageTextureClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr ImageTextureClass::
         createType(const std::string & id,
@@ -5689,8 +5829,8 @@ const unsigned char * ImageTexture::pixels() const throw () {
  * @param mfstring  an MFString value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ImageTexture::processSet_url(const FieldValue & mfstring,
                                   const double timestamp)
@@ -5727,9 +5867,9 @@ IndexedFaceSetClass::~IndexedFaceSetClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating IndexedFaceSet nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by IndexedFaceSetClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         IndexedFaceSetClass::createType(const std::string & id,
@@ -6053,8 +6193,8 @@ const BVolume * IndexedFaceSet::getBVolume() const {
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void IndexedFaceSet::processSet_normal(const FieldValue & sfnode,
                                        const double timestamp)
@@ -6070,8 +6210,8 @@ void IndexedFaceSet::processSet_normal(const FieldValue & sfnode,
  * @param mfint32   an MFInt32 value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfint32 is not an MFInt32.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfint32 is not an MFInt32.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void IndexedFaceSet::processSet_normalIndex(const FieldValue & mfint32,
                                             const double timestamp)
@@ -6086,8 +6226,8 @@ void IndexedFaceSet::processSet_normalIndex(const FieldValue & mfint32,
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void IndexedFaceSet::processSet_texCoord(const FieldValue & sfnode,
                                          const double timestamp)
@@ -6103,8 +6243,8 @@ void IndexedFaceSet::processSet_texCoord(const FieldValue & sfnode,
  * @param mfint32   an MFInt32 value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfint32 is not an MFInt32.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfint32 is not an MFInt32.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void IndexedFaceSet::processSet_texCoordIndex(const FieldValue & mfint32,
                                               const double timestamp)
@@ -6140,9 +6280,9 @@ IndexedLineSetClass::~IndexedLineSetClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating IndexedLineSet nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by IndexedLineSetClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         IndexedLineSetClass::createType(const std::string & id,
@@ -6301,9 +6441,9 @@ InlineClass::~InlineClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Inline nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by InlineClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr InlineClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
@@ -6406,8 +6546,8 @@ void Inline::load() {
  * @param mfstring  an MFString value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Inline::processSet_url(const FieldValue & mfstring, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
@@ -6443,9 +6583,9 @@ LODClass::~LODClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating LOD nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by LODClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr LODClass::createType(const std::string & id,
                                        const NodeInterfaceSet & interfaces)
@@ -6630,8 +6770,8 @@ void LOD::recalcBSphere() {
  * @param mfnode    an MFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfnode is not an MFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfnode is not an MFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void LOD::processSet_level(const FieldValue & mfnode, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
@@ -6667,9 +6807,9 @@ MaterialClass::~MaterialClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Material nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by MaterialClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr MaterialClass::createType(const std::string & id,
                                             const NodeInterfaceSet & interfaces)
@@ -6772,7 +6912,7 @@ Material::~Material() throw () {}
  * @param sffloat   a value from 0.0 to 1.0.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
  */
 void Material::processSet_ambientIntensity(const FieldValue & sffloat,
                                            const double timestamp)
@@ -6789,7 +6929,7 @@ void Material::processSet_ambientIntensity(const FieldValue & sffloat,
  * @param sfcolor   an SFColor value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfcolor is not an SFColor.
+ * @exception std::bad_cast     if @p sfcolor is not an SFColor.
  */
 void Material::processSet_diffuseColor(const FieldValue & sfcolor,
                                        const double timestamp)
@@ -6805,7 +6945,7 @@ void Material::processSet_diffuseColor(const FieldValue & sfcolor,
  * @param sfcolor   an SFColor value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfcolor is not an SFColor.
+ * @exception std::bad_cast     if @p sfcolor is not an SFColor.
  */
 void Material::processSet_emissiveColor(const FieldValue & sfcolor,
                                         const double timestamp)
@@ -6821,7 +6961,7 @@ void Material::processSet_emissiveColor(const FieldValue & sfcolor,
  * @param sffloat   a value from 0.0 to 1.0.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
  */
 void Material::processSet_shininess(const FieldValue & sffloat,
                                     const double timestamp)
@@ -6837,7 +6977,7 @@ void Material::processSet_shininess(const FieldValue & sffloat,
  * @param sfcolor   an SFColor value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfcolor is not an SFColor.
+ * @exception std::bad_cast     if @p sfcolor is not an SFColor.
  */
 void Material::processSet_specularColor(const FieldValue & sfcolor,
                                         const double timestamp)
@@ -6853,7 +6993,7 @@ void Material::processSet_specularColor(const FieldValue & sfcolor,
  * @param sffloat   a value from 0.0 to 1.0.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
  */
 void Material::processSet_transparency(const FieldValue & sffloat,
                                        const double timestamp)
@@ -6945,9 +7085,9 @@ MovieTextureClass::~MovieTextureClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating MovieTexture nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by MovieTextureClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         MovieTextureClass::createType(const std::string & id,
@@ -7245,7 +7385,7 @@ void MovieTexture::initializeImpl(const double timestamp) throw () {
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void MovieTexture::processSet_loop(const FieldValue & sfbool,
                                    const double timestamp)
@@ -7261,7 +7401,7 @@ void MovieTexture::processSet_loop(const FieldValue & sfbool,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void MovieTexture::processSet_speed(const FieldValue & sffloat,
                                     const double timestamp)
@@ -7282,7 +7422,7 @@ void MovieTexture::processSet_speed(const FieldValue & sffloat,
  * @param sftime    an SFTime value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sftime is not an SFTime.
+ * @exception std::bad_cast if @p sftime is not an SFTime.
  */
 void MovieTexture::processSet_startTime(const FieldValue & sftime,
                                         const double timestamp)
@@ -7298,7 +7438,7 @@ void MovieTexture::processSet_startTime(const FieldValue & sftime,
  * @param sftime    an SFTime value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sftime is not an SFTime.
+ * @exception std::bad_cast if @p sftime is not an SFTime.
  */
 void MovieTexture::processSet_stopTime(const FieldValue & sftime,
                                        const double timestamp)
@@ -7314,8 +7454,8 @@ void MovieTexture::processSet_stopTime(const FieldValue & sftime,
  * @param mfstring  an MFString value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void MovieTexture::processSet_url(const FieldValue & mfstring,
                                   const double timestamp)
@@ -7353,9 +7493,9 @@ NavigationInfoClass::~NavigationInfoClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating NavigationInfo nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by NavigationInfoClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         NavigationInfoClass::createType(const std::string & id,
@@ -7484,8 +7624,8 @@ void NavigationInfo::initializeImpl(const double timestamp) throw () {
  * @param mffloat   an MFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void NavigationInfo::processSet_avatarSize(const FieldValue & mffloat,
                                            const double timestamp)
@@ -7501,8 +7641,8 @@ void NavigationInfo::processSet_avatarSize(const FieldValue & mffloat,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfbool is not an SFBool.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfbool is not an SFBool.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void NavigationInfo::processSet_bind(const FieldValue & sfbool,
                                      const double timestamp)
@@ -7542,7 +7682,7 @@ void NavigationInfo::processSet_bind(const FieldValue & sfbool,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfbool is not an SFBool.
+ * @exception std::bad_cast     if @p sfbool is not an SFBool.
  */
 void NavigationInfo::processSet_headlight(const FieldValue & sfbool,
                                           const double timestamp)
@@ -7558,7 +7698,7 @@ void NavigationInfo::processSet_headlight(const FieldValue & sfbool,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
  */
 void NavigationInfo::processSet_speed(const FieldValue & sffloat,
                                       const double timestamp)
@@ -7574,8 +7714,8 @@ void NavigationInfo::processSet_speed(const FieldValue & sffloat,
  * @param mfstring  an MFString value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void NavigationInfo::processSet_type(const FieldValue & mfstring,
                                      const double timestamp)
@@ -7591,7 +7731,7 @@ void NavigationInfo::processSet_type(const FieldValue & mfstring,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
  */
 void NavigationInfo::processSet_visibilityLimit(const FieldValue & sffloat,
                                                 const double timestamp)
@@ -7629,9 +7769,9 @@ NormalClass::~NormalClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Normal nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by NormalClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr NormalClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
@@ -7694,8 +7834,8 @@ const MFVec3f & Normal::getVector() const throw () { return this->vector; }
  * @param mfvec3f   an MFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfvec3f is not an MFVec3f.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfvec3f is not an MFVec3f.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Normal::processSet_vector(const FieldValue & mfvec3f,
                                const double timestamp)
@@ -7734,9 +7874,9 @@ NormalInterpolatorClass::~NormalInterpolatorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating NormalInterpolator
  *      nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by NormalInterpolatorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         NormalInterpolatorClass::createType(const std::string & id,
@@ -7814,8 +7954,8 @@ NormalInterpolator::~NormalInterpolator() throw () {}
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
                                              const double timestamp)
@@ -7892,8 +8032,8 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
  * @param mffloat   an MFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void NormalInterpolator::processSet_key(const FieldValue & mffloat,
                                         const double timestamp)
@@ -7908,8 +8048,8 @@ void NormalInterpolator::processSet_key(const FieldValue & mffloat,
  * @param mfvec3f   an MFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfvec3f is not an MFVec3f.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfvec3f is not an MFVec3f.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void NormalInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
                                              const double timestamp)
@@ -7947,9 +8087,9 @@ OrientationInterpolatorClass::~OrientationInterpolatorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating
  *      OrientationInterpolator nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by OrientationInterpolatorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr OrientationInterpolatorClass::
         createType(const std::string & id, const NodeInterfaceSet & interfaces)
@@ -8026,8 +8166,8 @@ OrientationInterpolator::~OrientationInterpolator() throw () {}
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
                                                   const double timestamp)
@@ -8103,8 +8243,8 @@ void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
  * @param mffloat   an MFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void OrientationInterpolator::processSet_key(const FieldValue & mffloat,
                                              const double timestamp)
@@ -8119,8 +8259,8 @@ void OrientationInterpolator::processSet_key(const FieldValue & mffloat,
  * @param mfrotation    an MFRotation value.
  * @param timestamp     the current time.
  *
- * @throw std::bad_cast     if @p mfrotation is not an MFRotation.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfrotation is not an MFRotation.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void OrientationInterpolator::processSet_keyValue(const FieldValue & mfrotation,
                                                   const double timestamp)
@@ -8157,9 +8297,9 @@ PixelTextureClass::~PixelTextureClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating PixelTexture nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by PixelTextureClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         PixelTextureClass::createType(const std::string & id,
@@ -8308,8 +8448,8 @@ const unsigned char * PixelTexture::pixels() const throw () {
  * @param sfimage   an SFImage value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfimage is not an SFImage.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfimage is not an SFImage.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void PixelTexture::processSet_image(const FieldValue & sfimage,
                                     const double timestamp)
@@ -8347,9 +8487,9 @@ PlaneSensorClass::~PlaneSensorClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating PlaneSensor nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by PlaneSensorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         PlaneSensorClass::createType(const std::string & id,
@@ -8579,7 +8719,7 @@ void PlaneSensor::setMVMatrix(const VrmlMatrix & M_in) {
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void PlaneSensor::processSet_autoOffset(const FieldValue & sfbool,
                                         const double timestamp)
@@ -8595,7 +8735,7 @@ void PlaneSensor::processSet_autoOffset(const FieldValue & sfbool,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void PlaneSensor::processSet_enabled(const FieldValue & sfbool,
                                      const double timestamp)
@@ -8611,7 +8751,7 @@ void PlaneSensor::processSet_enabled(const FieldValue & sfbool,
  * @param sfvec2f   an SFVec2f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec2f is not an SFVec2f.
+ * @exception std::bad_cast if @p sfvec2f is not an SFVec2f.
  */
 void PlaneSensor::processSet_maxPosition(const FieldValue & sfvec2f,
                                          const double timestamp)
@@ -8627,7 +8767,7 @@ void PlaneSensor::processSet_maxPosition(const FieldValue & sfvec2f,
  * @param sfvec2f   an SFVec2f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec2f is not an SFVec2f.
+ * @exception std::bad_cast if @p sfvec2f is not an SFVec2f.
  */
 void PlaneSensor::processSet_minPosition(const FieldValue & sfvec2f,
                                          const double timestamp)
@@ -8643,7 +8783,7 @@ void PlaneSensor::processSet_minPosition(const FieldValue & sfvec2f,
  * @param sfvec3f   an SFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void PlaneSensor::processSet_offset(const FieldValue & sfvec3f,
                                     const double timestamp)
@@ -8681,9 +8821,9 @@ PointLightClass::~PointLightClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating PointLight nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by PointLightClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         PointLightClass::createType(const std::string & id,
@@ -8828,7 +8968,7 @@ void PointLight::initializeImpl(const double timestamp) throw () {
  * @param sfvec3f   an SFVec3f.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void PointLight::processSet_attenuation(const FieldValue & sfvec3f,
                                         const double timestamp)
@@ -8844,7 +8984,7 @@ void PointLight::processSet_attenuation(const FieldValue & sfvec3f,
  * @param sfvec3f   an SFVec3f.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void PointLight::processSet_location(const FieldValue & sfvec3f,
                                      const double timestamp)
@@ -8860,7 +9000,7 @@ void PointLight::processSet_location(const FieldValue & sfvec3f,
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void PointLight::processSet_radius(const FieldValue & sffloat,
                                    const double timestamp)
@@ -8898,9 +9038,9 @@ PointSetClass::~PointSetClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating PointSet nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by PointSetClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr PointSetClass::createType(const std::string & id,
                                             const NodeInterfaceSet & interfaces)
@@ -9040,8 +9180,8 @@ const BVolume* PointSet::getBVolume() const {
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void PointSet::processSet_color(const FieldValue & sfnode,
                                 const double timestamp)
@@ -9057,8 +9197,8 @@ void PointSet::processSet_color(const FieldValue & sfnode,
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void PointSet::processSet_coord(const FieldValue & sfnode,
                                 const double timestamp)
@@ -9097,9 +9237,9 @@ PositionInterpolatorClass::~PositionInterpolatorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating
  *      CoordinateInterpolator nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by CoordinateInterpolatorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr PositionInterpolatorClass::
         createType(const std::string & id,
@@ -9177,8 +9317,8 @@ PositionInterpolator::~PositionInterpolator() throw () {}
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void PositionInterpolator::processSet_fraction(const FieldValue & sffloat,
                                                const double timestamp)
@@ -9219,8 +9359,8 @@ void PositionInterpolator::processSet_fraction(const FieldValue & sffloat,
  * @param mffloat   an MFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void PositionInterpolator::processSet_key(const FieldValue & mffloat,
                                           const double timestamp)
@@ -9235,8 +9375,8 @@ void PositionInterpolator::processSet_key(const FieldValue & mffloat,
  * @param mfvec3f   an MFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfvec3f is not an MFVec3f.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfvec3f is not an MFVec3f.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void PositionInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
                                                const double timestamp)
@@ -9274,9 +9414,9 @@ ProximitySensorClass::~ProximitySensorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating ProximitySensor
  *      nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by ProximitySensorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         ProximitySensorClass::createType(const std::string & id,
@@ -9478,7 +9618,7 @@ void ProximitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
  * @param sfvec3f   an SFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void ProximitySensor::processSet_center(const FieldValue & sfvec3f,
                                         const double timestamp)
@@ -9494,7 +9634,7 @@ void ProximitySensor::processSet_center(const FieldValue & sfvec3f,
  * @param sfvec3f   an SFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void ProximitySensor::processSet_size(const FieldValue & sfvec3f,
                                       const double timestamp)
@@ -9510,7 +9650,7 @@ void ProximitySensor::processSet_size(const FieldValue & sfvec3f,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void ProximitySensor::processSet_enabled(const FieldValue & sfbool,
                                          double timestamp)
@@ -9549,9 +9689,9 @@ ScalarInterpolatorClass::~ScalarInterpolatorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating
  *      CoordinateInterpolator nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by CoordinateInterpolatorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr ScalarInterpolatorClass::
         createType(const std::string & id,
@@ -9629,8 +9769,8 @@ ScalarInterpolator::~ScalarInterpolator() throw () {}
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ScalarInterpolator::processSet_fraction(const FieldValue & sffloat,
                                              const double timestamp)
@@ -9666,8 +9806,8 @@ void ScalarInterpolator::processSet_fraction(const FieldValue & sffloat,
  * @param mffloat   an MFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ScalarInterpolator::processSet_key(const FieldValue & mffloat,
                                         const double timestamp)
@@ -9682,8 +9822,8 @@ void ScalarInterpolator::processSet_key(const FieldValue & mffloat,
  * @param mffloat   an MFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void ScalarInterpolator::processSet_keyValue(const FieldValue & mffloat,
                                              const double timestamp)
@@ -9720,9 +9860,9 @@ ShapeClass::~ShapeClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Shape nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by ShapeClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr ShapeClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
@@ -9873,8 +10013,8 @@ const BVolume* Shape::getBVolume() const {
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Shape::processSet_appearance(const FieldValue & sfnode,
                                   const double timestamp)
@@ -9890,8 +10030,8 @@ void Shape::processSet_appearance(const FieldValue & sfnode,
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Shape::processSet_geometry(const FieldValue & sfnode,
                                 const double timestamp)
@@ -9929,9 +10069,9 @@ SoundClass::~SoundClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Sound nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by SoundClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr SoundClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
@@ -10084,7 +10224,7 @@ void Sound::render(Viewer * const viewer, const VrmlRenderContext rc) {
  * @param sfvec3f   an SFVec3f.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void Sound::processSet_direction(const FieldValue & sfvec3f,
                                  const double timestamp) throw (std::bad_cast) {
@@ -10099,7 +10239,7 @@ void Sound::processSet_direction(const FieldValue & sfvec3f,
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_intensity(const FieldValue & sffloat,
                                  const double timestamp) throw (std::bad_cast) {
@@ -10114,7 +10254,7 @@ void Sound::processSet_intensity(const FieldValue & sffloat,
  * @param sfvec3f   an SFVec3f.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void Sound::processSet_location(const FieldValue & sfvec3f,
                                 const double timestamp) throw (std::bad_cast) {
@@ -10129,7 +10269,7 @@ void Sound::processSet_location(const FieldValue & sfvec3f,
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_maxBack(const FieldValue & sffloat,
                                const double timestamp) throw (std::bad_cast) {
@@ -10144,7 +10284,7 @@ void Sound::processSet_maxBack(const FieldValue & sffloat,
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_maxFront(const FieldValue & sffloat,
                                 const double timestamp) throw (std::bad_cast) {
@@ -10159,7 +10299,7 @@ void Sound::processSet_maxFront(const FieldValue & sffloat,
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_minBack(const FieldValue & sffloat,
                                const double timestamp) throw (std::bad_cast) {
@@ -10174,7 +10314,7 @@ void Sound::processSet_minBack(const FieldValue & sffloat,
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_minFront(const FieldValue & sffloat,
                                 const double timestamp) throw (std::bad_cast) {
@@ -10189,7 +10329,7 @@ void Sound::processSet_minFront(const FieldValue & sffloat,
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_priority(const FieldValue & sffloat,
                                 const double timestamp) throw (std::bad_cast) {
@@ -10204,7 +10344,7 @@ void Sound::processSet_priority(const FieldValue & sffloat,
  * @param sfnode    an SFNode.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfnode is not an SFNode.
+ * @exception std::bad_cast if @p sfnode is not an SFNode.
  */
 void Sound::processSet_source(const FieldValue & sfnode, double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
@@ -10241,9 +10381,9 @@ SphereClass::~SphereClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Sphere nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by SphereClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr SphereClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
@@ -10335,9 +10475,9 @@ SphereSensorClass::~SphereSensorClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating SphereSensor nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by SphereSensorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         SphereSensorClass::createType(const std::string & id,
@@ -10526,7 +10666,7 @@ void SphereSensor::setMVMatrix(const VrmlMatrix & M_in) { this->M = M_in; }
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void SphereSensor::processSet_autoOffset(const FieldValue & sfbool,
                                          const double timestamp)
@@ -10541,7 +10681,7 @@ void SphereSensor::processSet_autoOffset(const FieldValue & sfbool,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void SphereSensor::processSet_enabled(const FieldValue & sfbool,
                                       const double timestamp)
@@ -10556,7 +10696,7 @@ void SphereSensor::processSet_enabled(const FieldValue & sfbool,
  * @param sfrotation    an SFRotation value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfrotation is not an SFRotation.
+ * @exception std::bad_cast if @p sfrotation is not an SFRotation.
  */
 void SphereSensor::processSet_offset(const FieldValue & sfrotation,
                                      const double timestamp)
@@ -10592,9 +10732,9 @@ SpotLightClass::~SpotLightClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating PointLight nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by PointLightClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         SpotLightClass::createType(const std::string & id,
@@ -10767,7 +10907,7 @@ void SpotLight::initializeImpl(const double timestamp) throw () {
  * @param sfvec3f   an SFVec3f.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void SpotLight::processSet_attenuation(const FieldValue & sfvec3f,
                                        const double timestamp)
@@ -10783,7 +10923,7 @@ void SpotLight::processSet_attenuation(const FieldValue & sfvec3f,
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void SpotLight::processSet_beamWidth(const FieldValue & sffloat,
                                      const double timestamp)
@@ -10799,7 +10939,7 @@ void SpotLight::processSet_beamWidth(const FieldValue & sffloat,
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void SpotLight::processSet_cutOffAngle(const FieldValue & sffloat,
                                        const double timestamp)
@@ -10815,7 +10955,7 @@ void SpotLight::processSet_cutOffAngle(const FieldValue & sffloat,
  * @param sfvec3f   an SFVec3f.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void SpotLight::processSet_direction(const FieldValue & sfvec3f,
                                      const double timestamp)
@@ -10831,7 +10971,7 @@ void SpotLight::processSet_direction(const FieldValue & sfvec3f,
  * @param sfvec3f   an SFVec3f.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void SpotLight::processSet_location(const FieldValue & sfvec3f,
                                     const double timestamp)
@@ -10847,7 +10987,7 @@ void SpotLight::processSet_location(const FieldValue & sfvec3f,
  * @param sffloat   an SFFloat.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void SpotLight::processSet_radius(const FieldValue & sffloat,
                                   const double timestamp)
@@ -10885,9 +11025,9 @@ SwitchClass::~SwitchClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Switch nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by SwitchClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr SwitchClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
@@ -11026,8 +11166,8 @@ void Switch::recalcBSphere() {
  * @param mfnode    an MFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfnode is not an MFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfnode is not an MFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Switch::processSet_choice(const FieldValue & mfnode,
                                const double timestamp)
@@ -11043,8 +11183,8 @@ void Switch::processSet_choice(const FieldValue & mfnode,
  * @param sfint32   an SFInt32 value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfint32 is not an SFInt32.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfint32 is not an SFInt32.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Switch::processSet_whichChoice(const FieldValue & sfint32,
                                     const double timestamp)
@@ -11082,9 +11222,9 @@ TextClass::~TextClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Text nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by TextClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr TextClass::createType(const std::string & id,
                                         const NodeInterfaceSet & interfaces)
@@ -11247,8 +11387,8 @@ Viewer::Object Text::insertGeometry(Viewer *viewer, VrmlRenderContext rc) {
  * @param mfstring  an MFString value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfstring is not an MFString.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfstring is not an MFString.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Text::processSet_string(const FieldValue & mfstring,
                              const double timestamp)
@@ -11264,8 +11404,8 @@ void Text::processSet_string(const FieldValue & mfstring,
  * @param sfnode    an SFNode value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfnode is not an SFNode.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfnode is not an SFNode.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Text::processSet_fontStyle(const FieldValue & sfnode,
                                 const double timestamp)
@@ -11281,8 +11421,8 @@ void Text::processSet_fontStyle(const FieldValue & sfnode,
  * @param mffloat   an MFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mffloat is not an MFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mffloat is not an MFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Text::processSet_length(const FieldValue & mffloat,
                              const double timestamp)
@@ -11298,8 +11438,8 @@ void Text::processSet_length(const FieldValue & mffloat,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Text::processSet_maxExtent(const FieldValue & sffloat,
                                 const double timestamp) throw (std::bad_cast) {
@@ -11337,9 +11477,9 @@ TextureCoordinateClass::~TextureCoordinateClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating TextureCoordinate
  *      nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by TextureCoordinateClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
         TextureCoordinateClass::createType(const std::string & id,
@@ -11417,8 +11557,8 @@ const MFVec2f & TextureCoordinate::getPoint() const throw () {
  * @param mfvec2f   an array of vectors representing points.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p mfvec2f is not an MFVec2f.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p mfvec2f is not an MFVec2f.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void TextureCoordinate::processSet_point(const FieldValue & mfvec2f,
                                          const double timestamp)
@@ -11441,12 +11581,14 @@ void TextureCoordinate::processSet_point(const FieldValue & mfvec2f,
  * @param browser the Browser associated with this NodeClass.
  */
 TextureTransformClass::TextureTransformClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-TextureTransformClass::~TextureTransformClass() throw () {}
+TextureTransformClass::~TextureTransformClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -11457,14 +11599,15 @@ TextureTransformClass::~TextureTransformClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating TextureTransform
  *      nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
- *                              supported by TextureTransformClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ *                                  supported by TextureTransformClass.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        TextureTransformClass::createType(const std::string & id,
-                                          const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+TextureTransformClass::createType(const std::string & id,
+                                  const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "center"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "rotation"),
@@ -11556,18 +11699,20 @@ const NodeTypePtr
  */
 TextureTransform::TextureTransform(const NodeType & nodeType,
                                    const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        TextureTransformNode(nodeType, scope),
-        center(0.0, 0.0),
-        rotation(0.0),
-        scale(1.0, 1.0),
-        translation(0.0, 0.0) {}
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    TextureTransformNode(nodeType, scope),
+    center(0.0, 0.0),
+    rotation(0.0),
+    scale(1.0, 1.0),
+    translation(0.0, 0.0)
+{}
 
 /**
  * @brief Destructor.
  */
-TextureTransform::~TextureTransform() throw () {}
+TextureTransform::~TextureTransform() throw ()
+{}
 
 /**
  * @brief Render the node.
@@ -11575,7 +11720,8 @@ TextureTransform::~TextureTransform() throw () {}
  * @param viewer    a Viewer.
  * @param rc        a rendering context.
  */
-void TextureTransform::render(Viewer * const viewer, VrmlRenderContext rc) {
+void TextureTransform::render(Viewer * const viewer, VrmlRenderContext rc)
+{
     viewer->setTextureTransform(this->center.get(),
                                 this->rotation.get(),
                                 this->scale.get(),
@@ -11589,11 +11735,12 @@ void TextureTransform::render(Viewer * const viewer, VrmlRenderContext rc) {
  * @param sfvec2f   an SFVec2f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec2f is not an SFVec2f.
+ * @exception std::bad_cast if @p sfvec2f is not an SFVec2f.
  */
 void TextureTransform::processSet_center(const FieldValue & sfvec2f,
                                          const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->center = dynamic_cast<const SFVec2f &>(sfvec2f);
     this->setModified();
     this->emitEvent("center_changed", this->center, timestamp);
@@ -11605,11 +11752,12 @@ void TextureTransform::processSet_center(const FieldValue & sfvec2f,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sffloat is not an SFFloat.
+ * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void TextureTransform::processSet_rotation(const FieldValue & sffloat,
                                            const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->rotation = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("rotation_changed", this->rotation, timestamp);
@@ -11621,11 +11769,12 @@ void TextureTransform::processSet_rotation(const FieldValue & sffloat,
  * @param sfvec2f   an SFVec2f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec2f is not an SFVec2f.
+ * @exception std::bad_cast if @p sfvec2f is not an SFVec2f.
  */
 void TextureTransform::processSet_scale(const FieldValue & sfvec2f,
                                         const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->scale = dynamic_cast<const SFVec2f &>(sfvec2f);
     this->setModified();
     this->emitEvent("scale_changed", this->scale, timestamp);
@@ -11637,11 +11786,12 @@ void TextureTransform::processSet_scale(const FieldValue & sfvec2f,
  * @param sfvec2f   an SFVec2f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec2f is not an SFVec2f.
+ * @exception std::bad_cast if @p sfvec2f is not an SFVec2f.
  */
 void TextureTransform::processSet_translation(const FieldValue & sfvec2f,
                                               const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->translation = dynamic_cast<const SFVec2f &>(sfvec2f);
     this->setModified();
     this->emitEvent("translation_changed", this->translation, timestamp);
@@ -11657,15 +11807,17 @@ void TextureTransform::processSet_translation(const FieldValue & sfvec2f,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser   the Browser associated with this NodeClass.
  */
 TimeSensorClass::TimeSensorClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-TimeSensorClass::~TimeSensorClass() throw () {}
+TimeSensorClass::~TimeSensorClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -11675,13 +11827,15 @@ TimeSensorClass::~TimeSensorClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating TimeSensor nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
- *                              supported by TimeSensorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ *                                  supported by TimeSensorClass.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr TimeSensorClass::createType(const std::string & id,
-                                        const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+const NodeTypePtr
+TimeSensorClass::createType(const std::string & id,
+                            const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "cycleInterval"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
@@ -11845,20 +11999,22 @@ const NodeTypePtr TimeSensorClass::createType(const std::string & id,
  */
 TimeSensor::TimeSensor(const NodeType & nodeType,
                        const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        cycleInterval(1.0),
-        enabled(true),
-        loop(false),
-        startTime(0.0),
-        stopTime(0.0),
-        active(false),
-        lastTime(-1.0) {}
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    cycleInterval(1.0),
+    enabled(true),
+    loop(false),
+    startTime(0.0),
+    stopTime(0.0),
+    active(false),
+    lastTime(-1.0)
+{}
 
 /**
  * @brief Destructor.
  */
-TimeSensor::~TimeSensor() throw () {
+TimeSensor::~TimeSensor() throw ()
+{
     if (this->getScene()) {
         this->getScene()->browser.removeTimeSensor(*this);
     }
@@ -11869,7 +12025,10 @@ TimeSensor::~TimeSensor() throw () {
  *
  * @return a pointer to the object.
  */
-TimeSensor* TimeSensor::toTimeSensor() const { return (TimeSensor*) this; }
+TimeSensor * TimeSensor::toTimeSensor() const
+{
+    return (TimeSensor*) this;
+}
 
 /**
  * Generate timer events. If necessary, events prior to the timestamp (inTime)
@@ -11879,7 +12038,8 @@ TimeSensor* TimeSensor::toTimeSensor() const { return (TimeSensor*) this; }
  * Should ensure continuous events are delivered before discrete ones
  * (such as cycleTime, isActive).
  */
-void TimeSensor::update(const double currentTime) {
+void TimeSensor::update(const double currentTime)
+{
     using OpenVRML_::fpzero;
     using OpenVRML_::fpequal;
 
@@ -11969,7 +12129,8 @@ void TimeSensor::update(const double currentTime) {
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * TimeSensor::getBVolume() const {
+const BVolume * TimeSensor::getBVolume() const
+{
     static BSphere * inf_bsphere = 0;
     if (!inf_bsphere) { inf_bsphere = new BSphere(); }
     return inf_bsphere;
@@ -11980,7 +12141,8 @@ const BVolume * TimeSensor::getBVolume() const {
  *
  * @param timestamp the current time.
  */
-void TimeSensor::initializeImpl(const double timestamp) throw () {
+void TimeSensor::initializeImpl(const double timestamp) throw ()
+{
     assert(this->getScene());
     this->getScene()->browser.addTimeSensor(*this);
 }
@@ -11991,11 +12153,12 @@ void TimeSensor::initializeImpl(const double timestamp) throw () {
  * @param sftime    an SFTime value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sftime is not an SFTime.
+ * @exception std::bad_cast if @p sftime is not an SFTime.
  */
 void TimeSensor::processSet_cycleInterval(const FieldValue & sftime,
                                           const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     if (!this->active.get()) {
         this->cycleInterval = dynamic_cast<const SFTime &>(sftime);
         this->lastTime = timestamp;
@@ -12010,11 +12173,12 @@ void TimeSensor::processSet_cycleInterval(const FieldValue & sftime,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void TimeSensor::processSet_enabled(const FieldValue & sfbool,
                                     const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     using OpenVRML_::fpzero;
 
     // Shutdown if set_enabled FALSE is received when active
@@ -12050,11 +12214,12 @@ void TimeSensor::processSet_enabled(const FieldValue & sfbool,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void TimeSensor::processSet_loop(const FieldValue & sfbool,
                                  const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->loop = dynamic_cast<const SFBool &>(sfbool);
     this->emitEvent("loop_changed", this->loop, timestamp);
 }
@@ -12065,11 +12230,12 @@ void TimeSensor::processSet_loop(const FieldValue & sfbool,
  * @param sftime    an SFTime value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sftime is not an SFTime.
+ * @exception std::bad_cast if @p sftime is not an SFTime.
  */
 void TimeSensor::processSet_startTime(const FieldValue & sftime,
                                       const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     if (!this->active.get()) {
         this->startTime = dynamic_cast<const SFTime &>(sftime);
         this->lastTime = timestamp;
@@ -12083,11 +12249,12 @@ void TimeSensor::processSet_startTime(const FieldValue & sftime,
  * @param sftime    an SFTime value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sftime is not an SFTime.
+ * @exception std::bad_cast if @p sftime is not an SFTime.
  */
 void TimeSensor::processSet_stopTime(const FieldValue & sftime,
                                      const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->stopTime = dynamic_cast<const SFTime &>(sftime);
     this->emitEvent("stopTime_changed", this->stopTime, timestamp);
 }
@@ -12105,12 +12272,14 @@ void TimeSensor::processSet_stopTime(const FieldValue & sftime,
  * @param browser the Browser associated with this NodeClass.
  */
 TouchSensorClass::TouchSensorClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-TouchSensorClass::~TouchSensorClass() throw () {}
+TouchSensorClass::~TouchSensorClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -12120,13 +12289,15 @@ TouchSensorClass::~TouchSensorClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating TouchSensor nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
- *                              supported by TouchSensorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ *                                  supported by TouchSensorClass.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr TouchSensorClass::createType(const std::string & id,
-                                        const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+const NodeTypePtr
+TouchSensorClass::createType(const std::string & id,
+                             const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
         NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "hitNormal_changed"),
@@ -12254,19 +12425,21 @@ const NodeTypePtr TouchSensorClass::createType(const std::string & id,
  */
 TouchSensor::TouchSensor(const NodeType & nodeType,
                          const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        enabled(true),
-        active(false),
-        over(false),
-        touchTime(0.0) {
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    enabled(true),
+    active(false),
+    over(false),
+    touchTime(0.0)
+{
     this->setModified();
 }
 
 /**
  * @brief Destructor.
  */
-TouchSensor::~TouchSensor() throw () {}
+TouchSensor::~TouchSensor() throw ()
+{}
 
 /**
  * @brief Cast to a TouchSensor.
@@ -12274,13 +12447,16 @@ TouchSensor::~TouchSensor() throw () {}
  * @return a pointer to the object.
  */
 TouchSensor* TouchSensor::toTouchSensor() const
-{ return (TouchSensor*) this; }
+{
+    return (TouchSensor*) this;
+}
 
 /**
  * @todo Doesn't compute the xxx_changed eventOuts yet...
  */
 void TouchSensor::activate(double timeStamp, bool isOver, bool isActive,
-                           double *) {
+                           double *)
+{
     if (isOver && !isActive && this->active.get()) {
         this->touchTime.set(timeStamp);
         this->emitEvent("touchTime", this->touchTime, timeStamp);
@@ -12304,7 +12480,10 @@ void TouchSensor::activate(double timeStamp, bool isOver, bool isActive,
  *
  * @return @c true if the TouchSensor is enabled, @c false otherwise.
  */
-bool TouchSensor::isEnabled() const { return this->enabled.get(); }
+bool TouchSensor::isEnabled() const
+{
+    return this->enabled.get();
+}
 
 /**
  * @brief set_enabled eventIn handler.
@@ -12312,11 +12491,12 @@ bool TouchSensor::isEnabled() const { return this->enabled.get(); }
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void TouchSensor::processSet_enabled(const FieldValue & sfbool,
                                      const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->enabled = dynamic_cast<const SFBool &>(sfbool);
     this->emitEvent("enabled_changed", this->enabled, timestamp);
 }
@@ -12334,12 +12514,14 @@ void TouchSensor::processSet_enabled(const FieldValue & sfbool,
  * @param browser the Browser associated with this NodeClass.
  */
 TransformClass::TransformClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-TransformClass::~TransformClass() throw () {}
+TransformClass::~TransformClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -12349,14 +12531,15 @@ TransformClass::~TransformClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Transform nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
  *                              supported by TransformClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        TransformClass::createType(const std::string & id,
-                                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+TransformClass::createType(const std::string & id,
+                           const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
         NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
@@ -12520,14 +12703,15 @@ const NodeTypePtr
  */
 Transform::Transform(const NodeType & nodeType,
                      const ScopePtr & scope):
-        Node(nodeType, scope),
-        Group(nodeType, scope),
-        center(0.0, 0.0, 0.0),
-        rotation(0.0, 0.0, 1.0, 0.0),
-        scale(1.0, 1.0, 1.0),
-        scaleOrientation(0.0, 0.0, 1.0, 0.0),
-        translation(0.0, 0.0, 0.0),
-        xformObject(0) {
+    Node(nodeType, scope),
+    Group(nodeType, scope),
+    center(0.0, 0.0, 0.0),
+    rotation(0.0, 0.0, 1.0, 0.0),
+    scale(1.0, 1.0, 1.0),
+    scaleOrientation(0.0, 0.0, 1.0, 0.0),
+    translation(0.0, 0.0, 0.0),
+    xformObject(0)
+{
     this->M_dirty = true;
     this->setBVolumeDirty(true);
 }
@@ -12535,7 +12719,8 @@ Transform::Transform(const NodeType & nodeType,
 /**
  * @brief Destructor.
  */
-Transform::~Transform() throw () {
+Transform::~Transform() throw ()
+{
     // delete xformObject...
 }
 
@@ -12545,7 +12730,8 @@ Transform::~Transform() throw () {
  * @param viewer    a Viewer.
  * @param rc        the rendering context.
  */
-void Transform::render(Viewer * const viewer, VrmlRenderContext rc) {
+void Transform::render(Viewer * const viewer, VrmlRenderContext rc)
+{
     if (rc.getCullFlag() != BVolume::BV_INSIDE) {
         const BSphere * bs = (BSphere*)this->getBVolume();
         BSphere bv_copy(*bs);
@@ -12608,28 +12794,14 @@ void Transform::render(Viewer * const viewer, VrmlRenderContext rc) {
  * Cache a pointer to (one of the) parent transforms for proper
  * rendering of bindables.
  */
-void Transform::accumulateTransform(Node * parent) {
+void Transform::accumulateTransform(Node * parent)
+{
     this->parentTransform = parent;
     for (size_t i = 0; i < this->children.getLength(); ++i) {
         if (this->children.getElement(i)) {
             this->children.getElement(i)->accumulateTransform(this);
         }
     }
-}
-
-/**
- * @brief Apply the inverse of this Transform to a Viewer.
- *
- * @param viewer    a Viewer.
- */
-void Transform::inverseTransform(Viewer * viewer) {
-    viewer->unsetTransform(this->center.get(),
-                           this->rotation.get(),
-                           this->scale.get(),
-                           this->scaleOrientation.get(),
-                           this->translation.get());
-    Node * parentTransform = getParentTransform();
-    if (parentTransform) { parentTransform->inverseTransform(viewer); }
 }
 
 /**
@@ -12640,7 +12812,8 @@ void Transform::inverseTransform(Viewer * viewer) {
  *
  * @pre @p m is a unit matrix.
  */
-void Transform::inverseTransform(VrmlMatrix & m) {
+void Transform::inverseTransform(VrmlMatrix & m)
+{
     VrmlMatrix M;
     synch_cached_matrix();
     this->getMatrix(M);
@@ -12655,7 +12828,8 @@ void Transform::inverseTransform(VrmlMatrix & m) {
  *
  * @return a pointer to the BVolume for the Transform.
  */
-const BVolume * Transform::getBVolume() const {
+const BVolume * Transform::getBVolume() const
+{
     if (this->isBVolumeDirty()) {
         ((Transform*)this)->recalcBSphere();
     }
@@ -12665,7 +12839,8 @@ const BVolume * Transform::getBVolume() const {
 /**
  * @brief Recalculate the BSphere.
  */
-void Transform::recalcBSphere() {
+void Transform::recalcBSphere()
+{
     this->bsphere.reset();
     for (size_t i = 0; i < this->children.getLength(); ++i) {
         const NodePtr & node = this->children.getElement(i);
@@ -12712,7 +12887,8 @@ Transform::recalcBSphere()
  * Resynchronize the cached matrix <code>M</code> with the node
  * fields, but only if M_dirty is true. Think logical const.
  */
-void Transform::synch_cached_matrix() {
+void Transform::synch_cached_matrix()
+{
     if (M_dirty) {
         M.setTransform(this->translation,
                        this->rotation,
@@ -12729,7 +12905,8 @@ void Transform::synch_cached_matrix() {
  *
  * @return a copy of the cached transformation matrix
  */
-void Transform::getMatrix(VrmlMatrix & M_out) const {
+void Transform::getMatrix(VrmlMatrix & M_out) const
+{
     ((Transform*)this)->synch_cached_matrix();
     M_out = M;
 }
@@ -12740,11 +12917,12 @@ void Transform::getMatrix(VrmlMatrix & M_out) const {
  * @param sfvec3f   an SFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void Transform::processSet_center(const FieldValue & sfvec3f,
                                   const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->center = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->setBVolumeDirty(true);
@@ -12758,11 +12936,12 @@ void Transform::processSet_center(const FieldValue & sfvec3f,
  * @param sfrotation    an SFRotation value.
  * @param timestamp     the current time.
  *
- * @throw std::bad_cast if @p sfrotation is not an SFRotation.
+ * @exception std::bad_cast if @p sfrotation is not an SFRotation.
  */
 void Transform::processSet_rotation(const FieldValue & sfrotation,
                                     const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->rotation = dynamic_cast<const SFRotation &>(sfrotation);
     this->setModified();
     this->setBVolumeDirty(true);
@@ -12776,11 +12955,12 @@ void Transform::processSet_rotation(const FieldValue & sfrotation,
  * @param sfvec3f   an SFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void Transform::processSet_scale(const FieldValue & sfvec3f,
                                  const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->scale = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->setBVolumeDirty(true);
@@ -12794,11 +12974,12 @@ void Transform::processSet_scale(const FieldValue & sfvec3f,
  * @param sfrotation    an SFRotation value.
  * @param timestamp     the current time.
  *
- * @throw std::bad_cast if @p sfrotation is not an SFRotation.
+ * @exception std::bad_cast if @p sfrotation is not an SFRotation.
  */
 void Transform::processSet_scaleOrientation(const FieldValue & sfrotation,
                                             const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->scaleOrientation = dynamic_cast<const SFRotation &>(sfrotation);
     this->setModified();
     this->setBVolumeDirty(true);
@@ -12813,11 +12994,12 @@ void Transform::processSet_scaleOrientation(const FieldValue & sfrotation,
  * @param sfvec3f   an SFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void Transform::processSet_translation(const FieldValue & sfvec3f,
                                        const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->translation = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->setBVolumeDirty(true);
@@ -12838,12 +13020,14 @@ void Transform::processSet_translation(const FieldValue & sfvec3f,
  * @param browser the Browser associated with this NodeClass.
  */
 ViewpointClass::ViewpointClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-ViewpointClass::~ViewpointClass() throw () {}
+ViewpointClass::~ViewpointClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -12853,14 +13037,15 @@ ViewpointClass::~ViewpointClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Viewpoint nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
- *                              supported by ViewpointClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ *                                  supported by ViewpointClass.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        ViewpointClass::createType(const std::string & id,
-                                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+ViewpointClass::createType(const std::string & id,
+                           const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "fieldOfView"),
@@ -13006,20 +13191,22 @@ namespace {
  */
 Viewpoint::Viewpoint(const NodeType & nodeType,
                      const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        fieldOfView(DEFAULT_FIELD_OF_VIEW),
-        jump(true),
-        orientation(0.0, 0.0, 1.0, 0.0),
-        position(0.0, 0.0, 10.0),
-        bound(false),
-        bindTime(0),
-        parentTransform(0) {}
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    fieldOfView(DEFAULT_FIELD_OF_VIEW),
+    jump(true),
+    orientation(0.0, 0.0, 1.0, 0.0),
+    position(0.0, 0.0, 10.0),
+    bound(false),
+    bindTime(0),
+    parentTransform(0)
+{}
 
 /**
  * @brief Destructor.
  */
-Viewpoint::~Viewpoint() throw () {
+Viewpoint::~Viewpoint() throw ()
+{
     if (this->getScene()) {
         this->getScene()->browser.removeViewpoint(*this);
     }
@@ -13031,13 +13218,16 @@ Viewpoint::~Viewpoint() throw () {
  * @return a pointer to this Viewpoint.
  */
 Viewpoint* Viewpoint::toViewpoint() const
-{ return (Viewpoint*) this; }
+{
+    return (Viewpoint*) this;
+}
 
 /**
  * Cache a pointer to (one of the) parent transforms for proper
  * rendering of bindables.
  */
-void Viewpoint::accumulateTransform(Node * parent) {
+void Viewpoint::accumulateTransform(Node * parent)
+{
     this->parentTransform = parent;
 }
 
@@ -13049,7 +13239,10 @@ void Viewpoint::accumulateTransform(Node * parent) {
  *
  * @return the most immediate parent Transform node.
  */
-Node * Viewpoint::getParentTransform() { return this->parentTransform; }
+Node * Viewpoint::getParentTransform()
+{
+    return this->parentTransform;
+}
 
 /**
  * @brief Get the inverse of the transform represented by the viewpoint's
@@ -13061,7 +13254,8 @@ Node * Viewpoint::getParentTransform() { return this->parentTransform; }
  *
  * @param mat   inverse of the position/orientation transform.
  */
-void Viewpoint::getInverseMatrix(VrmlMatrix & mat) const {
+void Viewpoint::getInverseMatrix(VrmlMatrix & mat) const
+{
     VrmlMatrix tmp;
     float rot_aa[4];
     rot_aa[0] =  this->orientation.getX();
@@ -13080,7 +13274,8 @@ void Viewpoint::getInverseMatrix(VrmlMatrix & mat) const {
 /**
  * @todo Implement me!
  */
-void Viewpoint::getFrustum(VrmlFrustum& frust) const {
+void Viewpoint::getFrustum(VrmlFrustum& frust) const
+{
     // XXX Implement me!
 }
 
@@ -13089,7 +13284,8 @@ void Viewpoint::getFrustum(VrmlFrustum& frust) const {
  *
  * @return a pointer to the BSphere associated with the node.
  */
-const BVolume * Viewpoint::getBVolume() const {
+const BVolume * Viewpoint::getBVolume() const
+{
     static BSphere * inf_bsphere = 0;
     if (!inf_bsphere) { inf_bsphere = new BSphere(); }
     return inf_bsphere;
@@ -13100,7 +13296,8 @@ const BVolume * Viewpoint::getBVolume() const {
  *
  * @return the fieldOfView.
  */
-const SFFloat & Viewpoint::getFieldOfView() const {
+const SFFloat & Viewpoint::getFieldOfView() const
+{
     return this->fieldOfView;
 }
 
@@ -13109,7 +13306,8 @@ const SFFloat & Viewpoint::getFieldOfView() const {
  *
  * @return the orientation.
  */
-const SFRotation & Viewpoint::getOrientation() const {
+const SFRotation & Viewpoint::getOrientation() const
+{
     return this->orientation;
 }
 
@@ -13118,7 +13316,8 @@ const SFRotation & Viewpoint::getOrientation() const {
  *
  * @return the position.
  */
-const SFVec3f & Viewpoint::getPosition() const {
+const SFVec3f & Viewpoint::getPosition() const
+{
     return this->position;
 }
 
@@ -13127,7 +13326,8 @@ const SFVec3f & Viewpoint::getPosition() const {
  *
  * @return the description.
  */
-const SFString & Viewpoint::getDescription() const {
+const SFString & Viewpoint::getDescription() const
+{
     return this->description;
 }
 
@@ -13136,7 +13336,8 @@ const SFString & Viewpoint::getDescription() const {
  *
  * @param timestamp the current time.
  */
-void Viewpoint::initializeImpl(const double timestamp) throw () {
+void Viewpoint::initializeImpl(const double timestamp) throw ()
+{
     assert(this->getScene());
     this->getScene()->browser.addViewpoint(*this);
 }
@@ -13147,12 +13348,13 @@ void Viewpoint::initializeImpl(const double timestamp) throw () {
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfbool is not an SFBool value.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfbool is not an SFBool value.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Viewpoint::processSet_bind(const FieldValue & sfbool,
                                 const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     Viewpoint * current =
             this->nodeType.nodeClass.browser.bindableViewpointTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
@@ -13199,12 +13401,13 @@ void Viewpoint::processSet_bind(const FieldValue & sfbool,
  * @param sffloat   an SFFloat value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sffloat is not an SFFloat value.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sffloat is not an SFFloat value.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Viewpoint::processSet_fieldOfView(const FieldValue & sffloat,
                                        const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->fieldOfView = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("fieldOfView_changed", this->fieldOfView, timestamp);
@@ -13216,12 +13419,13 @@ void Viewpoint::processSet_fieldOfView(const FieldValue & sffloat,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfbool is not an SFBool value.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfbool is not an SFBool value.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Viewpoint::processSet_jump(const FieldValue & sfbool,
                                 const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->jump = dynamic_cast<const SFBool &>(sfbool);
     this->setModified();
     this->emitEvent("jump_changed", this->jump, timestamp);
@@ -13233,12 +13437,13 @@ void Viewpoint::processSet_jump(const FieldValue & sfbool,
  * @param sfrotation    an SFRotation value.
  * @param timestamp     the current time.
  *
- * @throw std::bad_cast     if @p sfrotation is not an SFRotation value.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfrotation is not an SFRotation value.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Viewpoint::processSet_orientation(const FieldValue & sfrotation,
                                        const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->orientation = dynamic_cast<const SFRotation &>(sfrotation);
     this->setModified();
     this->emitEvent("orientation_changed", this->orientation, timestamp);
@@ -13250,12 +13455,13 @@ void Viewpoint::processSet_orientation(const FieldValue & sfrotation,
  * @param sfvec3f   an SFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast     if @p sfvec3f is not an SFVec3f value.
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p sfvec3f is not an SFVec3f value.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Viewpoint::processSet_position(const FieldValue & sfvec3f,
                                     const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->position = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("position_changed", this->position, timestamp);
@@ -13274,12 +13480,14 @@ void Viewpoint::processSet_position(const FieldValue & sfvec3f,
  * @param browser the Browser associated with this NodeClass.
  */
 VisibilitySensorClass::VisibilitySensorClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-VisibilitySensorClass::~VisibilitySensorClass() throw () {}
+VisibilitySensorClass::~VisibilitySensorClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -13290,14 +13498,15 @@ VisibilitySensorClass::~VisibilitySensorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating VisibilitySensor
  *      nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
- *                              supported by VisibilitySensorClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ *                                  supported by VisibilitySensorClass.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        VisibilitySensorClass::createType(const std::string & id,
-                                          const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+VisibilitySensorClass::createType(const std::string & id,
+                                  const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
@@ -13414,21 +13623,23 @@ const NodeTypePtr
  */
 VisibilitySensor::VisibilitySensor(const NodeType & nodeType,
                                    const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        center(0.0, 0.0, 0.0),
-        enabled(true),
-        size(0.0, 0.0, 0.0),
-        active(false),
-        enterTime(0.0),
-        exitTime(0.0) {
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    center(0.0, 0.0, 0.0),
+    enabled(true),
+    size(0.0, 0.0, 0.0),
+    active(false),
+    enterTime(0.0),
+    exitTime(0.0)
+{
     this->setModified();
 }
 
 /**
  * @brief Destructor.
  */
-VisibilitySensor::~VisibilitySensor() throw () {}
+VisibilitySensor::~VisibilitySensor() throw ()
+{}
 
 /**
  * @brief Generate visibility events.
@@ -13437,7 +13648,8 @@ VisibilitySensor::~VisibilitySensor() throw () {}
  * with respect to the accumulated transformations above it in the
  * scene graph. Move to update() when xforms are accumulated in Groups...
  */
-void VisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
+void VisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
+{
     using OpenVRML_::fpzero;
 
     if (this->enabled.get()) {
@@ -13508,11 +13720,12 @@ void VisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
  * @param sfvec3f   an SFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void VisibilitySensor::processSet_center(const FieldValue & sfvec3f,
                                          const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->center = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("center_changed", this->center, timestamp);
@@ -13524,11 +13737,12 @@ void VisibilitySensor::processSet_center(const FieldValue & sfvec3f,
  * @param sfbool    an SFBool value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfbool is not an SFBool.
+ * @exception std::bad_cast if @p sfbool is not an SFBool.
  */
 void VisibilitySensor::processSet_enabled(const FieldValue & sfbool,
                                           double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->enabled = dynamic_cast<const SFBool &>(sfbool);
     this->setModified();
     this->emitEvent("enabled_changed", this->enabled, timestamp);
@@ -13540,11 +13754,12 @@ void VisibilitySensor::processSet_enabled(const FieldValue & sfbool,
  * @param sfvec3f   an SFVec3f value.
  * @param timestamp the current time.
  *
- * @throw std::bad_cast if @p sfvec3f is not an SFVec3f.
+ * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void VisibilitySensor::processSet_size(const FieldValue & sfvec3f,
                                        const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->size = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("size_changed", this->size, timestamp);
@@ -13563,12 +13778,14 @@ void VisibilitySensor::processSet_size(const FieldValue & sfvec3f,
  * @param browser the Browser associated with this NodeClass.
  */
 WorldInfoClass::WorldInfoClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-WorldInfoClass::~WorldInfoClass() throw () {}
+WorldInfoClass::~WorldInfoClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -13578,13 +13795,14 @@ WorldInfoClass::~WorldInfoClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating WorldInfo nodes.
  *
- * @throw UnsupportedInterface  if @p interfaces includes an interface not
- *                              supported by WorldInfoClass.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ *                                  supported by WorldInfoClass.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr WorldInfoClass::createType(const std::string & id,
                                         const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::field, FieldValue::mfstring, "info"),
         NodeInterface(NodeInterface::field, FieldValue::sfstring, "title")
@@ -13646,13 +13864,15 @@ const NodeTypePtr WorldInfoClass::createType(const std::string & id,
  */
 WorldInfo::WorldInfo(const NodeType & nodeType,
                      const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope) {}
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-WorldInfo::~WorldInfo() throw () {}
+WorldInfo::~WorldInfo() throw ()
+{}
 
 } // namespace Vrml97Node
 

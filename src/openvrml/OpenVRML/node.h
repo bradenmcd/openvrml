@@ -341,9 +341,6 @@ namespace OpenVRML {
         virtual void accumulateTransform(Node*);
 
         virtual Node* getParentTransform();
-
-        virtual void inverseTransform(Viewer *);
-
         virtual void inverseTransform(VrmlMatrix &);
 
     protected:

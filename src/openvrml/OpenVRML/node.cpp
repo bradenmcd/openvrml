@@ -1391,24 +1391,6 @@ void Node::accumulateTransform(Node *) {}
 Node * Node::getParentTransform() { return 0; }
 
 /**
- * Compute the inverse of the transform above a viewpoint node. Just
- * like the version that takes a matrix, but instead calls
- * Viewer::setTransform at each level. The idea is to call this
- * routine right before the start of a render traversal.
- *
- * @see getParentTransform
- *
- * @deprecated This method is (gradually) being replaces by
- *      inverseTranform(double[4][4]) and should no longer be used.
- */
-void Node::inverseTransform(Viewer *v)
-{
-  Node *parentTransform = getParentTransform();
-  if (parentTransform)
-    parentTransform->inverseTransform(v);
-}
-
-/**
  * Compute the inverse of the transform stack above a Viewpoint
  * node. This is safe since the behavior of multi-parented
  * Viewpoint nodes is undefined. May be called at any time.
