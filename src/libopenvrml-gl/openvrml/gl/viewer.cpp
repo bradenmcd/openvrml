@@ -3694,7 +3694,7 @@ void viewer::transform_points(const size_t nPoints, vec3f * point) const
     mat4f m;
     glGetFloatv(GL_MODELVIEW_MATRIX, &m[0][0]);
     vec3f * const end = point + nPoints;
-    for (; point != end; ++point) { *point = m * *point; }
+    for (; point != end; ++point) { *point *= m; }
 }
 
 /**

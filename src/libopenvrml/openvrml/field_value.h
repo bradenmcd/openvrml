@@ -121,11 +121,6 @@ namespace openvrml {
             // Make sure T::value_type is Assignable.
             //
             v1 = v2;
-
-            //
-            // Make sure T::field_value_type_id exists.
-            //
-            field_value::type_id id = T::field_value_type_id;
         }
     };
 
@@ -133,8 +128,6 @@ namespace openvrml {
     class sfbool : public field_value {
     public:
         typedef bool value_type;
-
-        static const type_id field_value_type_id;
 
         bool value;
 
@@ -161,8 +154,6 @@ namespace openvrml {
     public:
         typedef color value_type;
 
-        static const type_id field_value_type_id;
-
         color value;
 
         explicit sfcolor(const color & value = color()) throw ();
@@ -187,8 +178,6 @@ namespace openvrml {
     class sffloat : public field_value {
     public:
         typedef float value_type;
-
-        static const type_id field_value_type_id;
 
         float value;
 
@@ -215,8 +204,6 @@ namespace openvrml {
     public:
         typedef image value_type;
 
-        static const type_id field_value_type_id;
-
         image value;
 
         explicit sfimage(const image & value = image()) throw (std::bad_alloc);
@@ -241,8 +228,6 @@ namespace openvrml {
     class sfint32 : public field_value {
     public:
         typedef int32 value_type;
-
-        static const type_id field_value_type_id;
 
         int32 value;
 
@@ -269,8 +254,6 @@ namespace openvrml {
     public:
         typedef node_ptr value_type;
 
-        static const type_id field_value_type_id;
-
         node_ptr value;
 
         explicit sfnode(const node_ptr & node = node_ptr(0)) throw ();
@@ -296,8 +279,6 @@ namespace openvrml {
     public:
         typedef rotation value_type;
 
-        static const type_id field_value_type_id;
-
         rotation value;
 
         explicit sfrotation(const rotation & rot = rotation()) throw ();
@@ -322,8 +303,6 @@ namespace openvrml {
     class sfstring : public field_value {
     public:
         typedef std::string value_type;
-
-        static const type_id field_value_type_id;
 
         std::string value;
 
@@ -351,8 +330,6 @@ namespace openvrml {
     public:
         typedef double value_type;
 
-        static const type_id field_value_type_id;
-
         double value;
 
         explicit sftime(double value = 0.0) throw ();
@@ -377,8 +354,6 @@ namespace openvrml {
     class sfvec2f : public field_value {
     public:
         typedef vec2f value_type;
-
-        static const type_id field_value_type_id;
 
         vec2f value;
 
@@ -405,8 +380,6 @@ namespace openvrml {
     public:
         typedef vec3f value_type;
 
-        static const type_id field_value_type_id;
-
         vec3f value;
 
         explicit sfvec3f(const vec3f & vec = vec3f()) throw ();
@@ -431,8 +404,6 @@ namespace openvrml {
     class mfcolor : public field_value {
     public:
         typedef std::vector<color> value_type;
-
-        static const type_id field_value_type_id;
 
         std::vector<color> value;
 
@@ -474,8 +445,6 @@ namespace openvrml {
     public:
         typedef std::vector<float> value_type;
 
-        static const type_id field_value_type_id;
-
         std::vector<float> value;
 
         explicit mffloat(std::vector<float>::size_type n = 0,
@@ -516,8 +485,6 @@ namespace openvrml {
     public:
         typedef std::vector<int32> value_type;
 
-        static const type_id field_value_type_id;
-
         std::vector<int32> value;
 
         explicit mfint32(std::vector<int32>::size_type n = 0, int32 value = 0)
@@ -556,8 +523,6 @@ namespace openvrml {
     class mfnode : public field_value {
     public:
         typedef std::vector<node_ptr> value_type;
-
-        static const type_id field_value_type_id;
 
         std::vector<node_ptr> value;
 
@@ -599,8 +564,6 @@ namespace openvrml {
     public:
         typedef std::vector<rotation> value_type;
 
-        static const type_id field_value_type_id;
-
         std::vector<rotation> value;
 
         explicit mfrotation(std::vector<rotation>::size_type n = 0,
@@ -640,8 +603,6 @@ namespace openvrml {
     class mfstring : public field_value {
     public:
         typedef std::vector<std::string> value_type;
-
-        static const type_id field_value_type_id;
 
         std::vector<std::string> value;
 
@@ -683,8 +644,6 @@ namespace openvrml {
     public:
         typedef std::vector<double> value_type;
 
-        static const type_id field_value_type_id;
-
         std::vector<double> value;
 
         explicit mftime(std::vector<double>::size_type n = 0,
@@ -725,8 +684,6 @@ namespace openvrml {
     public:
         typedef std::vector<vec2f> value_type;
 
-        static const type_id field_value_type_id;
-
         std::vector<vec2f> value;
 
         explicit mfvec2f(std::vector<vec2f>::size_type n = 0,
@@ -766,8 +723,6 @@ namespace openvrml {
     class mfvec3f : public field_value {
     public:
         typedef std::vector<vec3f> value_type;
-
-        static const type_id field_value_type_id;
 
         std::vector<vec3f> value;
 

@@ -87,9 +87,6 @@ AM_INIT_AUTOMAKE([1.7 no-define dist-bzip2 dist-zip])
 # Specify a configuration file
 AM_CONFIG_HEADER([config.h])
 
-dnl Initialize maintainer mode
-AM_MAINTAINER_MODE
-
 AC_CANONICAL_HOST
 
 # GtkGLExt version
@@ -134,6 +131,7 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_ISC_POSIX
 #AM_DISABLE_STATIC
+AM_DISABLE_SHARED
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 

@@ -33,6 +33,7 @@
 # include <cstdlib>
 # include <cstring>
 # include <algorithm>
+# include <iostream>
 # include <sstream>
 
 // added for working under windows (and is not needed for mac os)...
@@ -55,7 +56,7 @@
 # include <unistd.h>
 #endif
 
-# include <private.h>
+# include "private.h"
 # include "system.h"
 
 # ifndef NDEBUG

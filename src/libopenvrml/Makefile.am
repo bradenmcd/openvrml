@@ -21,13 +21,13 @@ openvrml_include_HEADERS = \
         openvrml/vrml97node.h
 
 noinst_HEADERS = \
-        private.h \
         openvrml/Vrml97Parser.cpp \
         openvrml/Vrml97Parser.hpp \
         openvrml/Vrml97ParserTokenTypes.hpp \
+        openvrml/private.h \
         openvrml/ScriptJDK.h
 
-LIBRARY_VERSION = 5:0:0
+LIBRARY_VERSION = 5:1:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |
