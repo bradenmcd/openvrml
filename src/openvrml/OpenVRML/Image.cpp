@@ -710,7 +710,8 @@ namespace {
 //
 // PNG reader
 //
-#include <png.h>
+# ifdef HAVE_PNG
+#   include <png.h>
 namespace {
     
     double get_gamma_exp( void );
@@ -790,9 +791,9 @@ namespace {
         }
 
       /* Set up the input control if you are using standard C streams */
-    #if !defined(PNG_NO_STDIO)
+#   if !defined(PNG_NO_STDIO)
       png_init_io(png_ptr, fp);
-    #endif
+#   endif
       /* The call to png_read_info() gives us all of the information from the
        * PNG file before the first IDAT (image data chunk).  REQUIRED
        */
@@ -940,10 +941,10 @@ namespace {
       if (! set)
         {
 
-    #if defined(NeXT)
+#   if defined(NeXT)
           default_exponent = 1.0;   /* 2.2/next_gamma for 3rd-party utils */
 
-    #elif defined(sgi)
+#   elif defined(sgi)
           default_exponent = 1.3;   /* default == 2.2 / 1.7 */
           /* there doesn't seem to be any documented function to get the
        * "gamma" value, so we do it the hard way */
@@ -958,14 +959,14 @@ namespace {
 	      default_exponent = 2.2 / sgi_gamma;
           }
 
-    #elif defined(Macintosh)
+#   elif defined(Macintosh)
           default_exponent = 1.5;   /* default == (1.8/2.61) * 2.2 */
           /*
 	    if (mac_gamma = some_mac_function_that_returns_gamma())
 	    default_exponent = (mac_gamma/2.61) * 2.2;
 	    */
 
-    #endif
+#   endif
 
           set = 1;
         }
@@ -973,10 +974,13 @@ namespace {
       return default_exponent;
     }
 }
+# endif
 
 //
 // JPEG reader
 //
+#include <setjmp.h>
+
 extern "C" {
 #include <jpeglib.h>
 }
@@ -6799,8 +6803,10 @@ typedef enum {
 
   ImageFile_GIF,
   ImageFile_JPG,
-  ImageFile_MPG,
-  ImageFile_PNG
+  ImageFile_MPG
+# ifdef HAVE_PNG
+  , ImageFile_PNG
+# endif
 
 } ImageFileType;
 
@@ -6856,11 +6862,11 @@ bool Image::setURL(const char *url, Doc *relative)
 	      case ImageFile_MPG:
 	        d_pixels = mpgread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	        break;
-
+# ifdef HAVE_PNG
 	      case ImageFile_PNG:
 	        d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
 	        break;
-
+# endif
 	      default:
 	        theSystem->error("Error: unrecognized image file format (%s).\n", url);
 	        break;
@@ -6907,11 +6913,11 @@ bool Image::setURL(const char *url, Doc2 *relative)
 	      case ImageFile_MPG:
 	        d_pixels = mpgread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	        break;
-
+# ifdef HAVE_PNG
 	      case ImageFile_PNG:
 	        d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
 	        break;
-
+# endif
 	      default:
 	        theSystem->error("Error: unrecognized image file format (%s).\n", url);
 	        break;
@@ -6986,11 +6992,11 @@ static ImageFileType imageFileType(const char *url, FILE *)
 	   strcmp(suffix,"mpeg") == 0 ||
 	   strcmp(suffix,"MPEG") == 0)
     return ImageFile_MPG;
-
+# ifdef HAVE_PNG
   else if (strcmp(suffix,"png") == 0 ||
 	   strcmp(suffix,"PNG") == 0)
     return ImageFile_PNG;
-
+# endif
   else
     return ImageFile_UNKNOWN;
 }

@@ -46,10 +46,11 @@ endif
 
 INCLUDES = -I$(top_srcdir)/lib $(JAVASCRIPT_INCLUDES)
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF) $(JS_CPPFLAGS)
-AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@
+AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@ @Z_CFLAGS@
 
 lib_LTLIBRARIES = libopenvrml.la 
-libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@
+libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
+@PNG_LIBS@ @Z_LIBS@
 
 Vrml97Scanner.o Vrml97Scanner.lo: Vrml97Scanner.cpp Vrml97Scanner.h
 	$(LTCXXCOMPILE) -c $<

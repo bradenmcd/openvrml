@@ -51,14 +51,11 @@ AC_PROG_CXXCPP
 
 
 dnl
-dnl Check for libjpeg
+dnl Check for libjpeg, libpng, zlib
 dnl
-OV_PATH_JPEG(, [libjpeg not found. Check 'config.log' for details.])
-
-dnl
-dnl Check for libpng, zlib
-dnl
-OV_PATH_PNG(, [libpng or zlib not found. Check 'config.log' for details.])
+OV_PATH_JPEG(, AC_MSG_ERROR([libjpeg not found.]))
+OV_PATH_ZLIB(, AC_MSG_ERROR([zlib not found.]))
+OV_PATH_PNG(, AC_MSG_WARN([Building without PNG support.]))
 
 dnl
 dnl Check for X, GL/Mesa, glut
