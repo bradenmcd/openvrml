@@ -1,14 +1,14 @@
 #ifndef INC_Vrml97Parser_hpp_
 #define INC_Vrml97Parser_hpp_
 
-#include "antlr/config.hpp"
-/* $ANTLR 2.7.1: "Vrml97Parser.g" -> "Vrml97Parser.hpp"$ */
-#include "antlr/TokenStream.hpp"
-#include "antlr/TokenBuffer.hpp"
+#include <antlr/config.hpp>
+/* $ANTLR 2.7.2: "Vrml97Parser.g" -> "Vrml97Parser.hpp"$ */
+#include <antlr/TokenStream.hpp>
+#include <antlr/TokenBuffer.hpp>
 #include "Vrml97ParserTokenTypes.hpp"
-#include "antlr/LLkParser.hpp"
+#include <antlr/LLkParser.hpp>
 
-#line 21 "Vrml97Parser.g"
+#line 22 "Vrml97Parser.g"
 
 # include <memory>
 # include "field.h"
@@ -81,44 +81,41 @@ namespace {
 
         virtual antlr::RefToken nextToken();
 
-        size_t line() const;
-        size_t col() const;
-
     private:
-        void _getNextChar();
-        void _identifyKeyword(antlr::Token &);
-        void _identifyFieldType(antlr::Token &);
-        void _identifyTerminalSymbol(antlr::Token &);
+        void getNextChar();
+        void identifyKeyword(antlr::Token &);
+        void identifyFieldType(antlr::Token &);
+        void identifyTerminalSymbol(antlr::Token &);
 
-        std::istream & _istm;
-        size_t      _line;
-        size_t      _col;
-        int         _c;
-        int         _prevChar;
-        int         _prevTokenType;
-        bool        _readTooMuch;
-        bool        _expectingFieldType;
+        std::istream & in_;
+        size_t      line_;
+        size_t      col_;
+        int         c_;
+        int         prev_char_;
+        int         prev_token_type_;
+        bool        read_too_much_;
+        bool        expecting_field_type_;
     };
 }
 
 namespace OpenVRML ANTLR_LBRACE
 
-#line 107 "Vrml97Parser.hpp"
+#line 104 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
- {
-#line 605 "Vrml97Parser.g"
+{
+#line 600 "Vrml97Parser.g"
 
 public:
     Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
         antlr::LLkParser(lexer, 1),
         uri(uri)
-    {
-        setTokenNames(_tokenNames);
-    }
+    {}
 
 private:
     const std::string uri;
-#line 111 "Vrml97Parser.hpp"
+#line 108 "Vrml97Parser.hpp"
+public:
+	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);
 public:
@@ -128,6 +125,19 @@ protected:
 public:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenStream& lexer);
 	Vrml97Parser(const ANTLR_USE_NAMESPACE(antlr)ParserSharedInputState& state);
+	int getNumTokens() const
+	{
+		return Vrml97Parser::NUM_TOKENS;
+	}
+	const char* getTokenName( int type ) const
+	{
+		if( type > getNumTokens() ) return 0;
+		return Vrml97Parser::tokenNames[type];
+	}
+	const char* const* getTokenNames() const
+	{
+		return Vrml97Parser::tokenNames;
+	}
 	public: void vrmlScene(
 		OpenVRML::Browser & browser,
           std::vector<NodePtr> & nodes
@@ -296,7 +306,14 @@ public:
 		vec3f & v
 	);
 private:
-	static const char* _tokenNames[];
+	static const char* tokenNames[];
+#ifndef NO_STATIC_CONSTS
+	static const int NUM_TOKENS = 48;
+#else
+	enum {
+		NUM_TOKENS = 48
+	};
+#endif
 	
 	static const unsigned long _tokenSet_0_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_0;

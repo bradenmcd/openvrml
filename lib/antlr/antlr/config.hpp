@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/RIGHTS.html
  *
- * $Id: config.hpp,v 1.1.1.1 2003-04-06 22:26:27 braden Exp $
+ * $Id: config.hpp,v 1.2 2003-04-07 00:38:00 braden Exp $
  */
 
 /*
@@ -66,6 +66,16 @@
 // RK: belongs to what compiler?
 #if defined(__ICL)
 # define NO_STRCASECMP
+#endif
+
+/*****************************************************************************/
+/*{{{ Irix Compiler
+ *****************************************************************************/
+#if defined(__sgi) && !defined(__GNUC__)
+#define HAS_NOT_CASSERT_H
+#define HAS_NOT_CCTYPE_H
+#define HAS_NOT_CSTRING_H
+#define HAS_NOT_CSTDIO_H
 #endif
 
 /*****************************************************************************/

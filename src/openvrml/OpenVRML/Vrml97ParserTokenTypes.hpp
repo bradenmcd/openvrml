@@ -1,7 +1,7 @@
 #ifndef INC_Vrml97ParserTokenTypes_hpp_
 #define INC_Vrml97ParserTokenTypes_hpp_
 
-/* $ANTLR 2.7.1: "Vrml97Parser.g" -> "Vrml97ParserTokenTypes.hpp"$ */
+/* $ANTLR 2.7.2: "Vrml97Parser.g" -> "Vrml97ParserTokenTypes.hpp"$ */
 struct Vrml97ParserTokenTypes {
 	enum {
 		EOF_ = 1,

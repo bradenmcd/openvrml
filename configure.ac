@@ -190,7 +190,9 @@ models/Makefile \
 models/audio/Makefile \
 models/textures/Makefile \
 lib/Makefile \
-lib/antlr/Makefile \
+lib/antlr/GNUmakefile \
+lib/antlr/antlr/GNUmakefile \
+lib/antlr/src/GNUmakefile \
 src/Makefile \
 src/openvrml/Makefile \
 src/openvrml/OpenVRML/Makefile \

@@ -12,7 +12,7 @@ LIBRARY_VERSION = 3:0:0
 #          +- Increment if interfaces have been added, removed or changed
 
 AM_CPPFLAGS = \
-        -I$(top_srcdir)/lib \
+        -I$(top_srcdir)/lib/antlr \
         -I$(top_builddir)/java \
         -I$(top_srcdir)/src/openvrml \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
@@ -52,7 +52,7 @@ libopenvrml_la_SOURCES = \
         VrmlFrustum.cpp \
         vrml97node.cpp
 
-libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
+libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/src/libantlr.la
 
 OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = \

@@ -91,23 +91,20 @@ namespace {
 
         virtual antlr::RefToken nextToken();
 
-        size_t line() const;
-        size_t col() const;
-
     private:
-        void _getNextChar();
-        void _identifyKeyword(antlr::Token &);
-        void _identifyFieldType(antlr::Token &);
-        void _identifyTerminalSymbol(antlr::Token &);
+        void getNextChar();
+        void identifyKeyword(antlr::Token &);
+        void identifyFieldType(antlr::Token &);
+        void identifyTerminalSymbol(antlr::Token &);
 
-        std::istream & _istm;
-        size_t      _line;
-        size_t      _col;
-        int         _c;
-        int         _prevChar;
-        int         _prevTokenType;
-        bool        _readTooMuch;
-        bool        _expectingFieldType;
+        std::istream & in_;
+        size_t      line_;
+        size_t      col_;
+        int         c_;
+        int         prev_char_;
+        int         prev_token_type_;
+        bool        read_too_much_;
+        bool        expecting_field_type_;
     };
 }
 
@@ -187,9 +184,15 @@ const int Vrml97Scanner::FIELDTYPE_MFTIME       (45);
 const int Vrml97Scanner::FIELDTYPE_MFVEC2F      (46);
 const int Vrml97Scanner::FIELDTYPE_MFVEC3F      (47);
 
-Vrml97Scanner::Vrml97Scanner(std::istream & istm)
-  : _istm(istm), _line(1), _col(0), _c(' '), _prevChar('\0'), _prevTokenType(0),
-    _readTooMuch(false), _expectingFieldType(false)
+Vrml97Scanner::Vrml97Scanner(std::istream & in):
+    in_(in),
+    line_(1),
+    col_(0),
+    c_(' '),
+    prev_char_('\0'),
+    prev_token_type_(0),
+    read_too_much_(false),
+    expecting_field_type_(false)
 {}
 
 antlr::RefToken Vrml97Scanner::nextToken()
@@ -198,179 +201,184 @@ antlr::RefToken Vrml97Scanner::nextToken()
     using antlr::RefToken;
     using antlr::CommonToken;
 
-    RefToken    token(new CommonToken);
-    string      tokenString;
+    RefToken token(new CommonToken);
+    string token_string;
 
-    if (_readTooMuch) {
-        _readTooMuch = false;
+    if (this->read_too_much_) {
+        this->read_too_much_ = false;
     } else {
-        _getNextChar();
+        this->getNextChar();
     }
 
-    while (isWhitespaceChar(_c) || (_c == '#')) {
-        if (_c == '#') {
-            while (!(isNewlineChar(_c) || _c == EOF)) { _getNextChar(); }
+    while (isWhitespaceChar(this->c_) || this->c_ == '#') {
+        if (this->c_ == '#') {
+            while (!(isNewlineChar(this->c_) || this->c_ == EOF)) {
+                this->getNextChar();
+            }
         } else {
-            _getNextChar();
+            getNextChar();
         }
     }
 
-    if (_c == EOF) {
+    if (this->c_ == EOF) {
         token->setType(EOF_);
-    } else if (isValidIdFirstChar(_c)) {
+    } else if (isValidIdFirstChar(this->c_)) {
         //
         // in an identifier or a keyword
         //
         token->setType(ID);
 
-        while (isValidIdRestChars(_c)) {
-            tokenString += _c;
-            _getNextChar();
+        while (isValidIdRestChars(this->c_)) {
+            token_string += this->c_;
+            getNextChar();
         }
 
-        _readTooMuch = true;
+        read_too_much_ = true;
 
-        token->setText(tokenString);
+        token->setText(token_string);
 
-        if (_expectingFieldType) {
-            _identifyFieldType(*token);
-            _expectingFieldType = false;
+        if (expecting_field_type_) {
+            this->identifyFieldType(*token);
+            expecting_field_type_ = false;
         }
-        _identifyKeyword(*token);
+        this->identifyKeyword(*token);
 
-    } else if ((_c == '.') || (_c == '+') || (_c == '-') || isdigit(_c)) {
+    } else if (this->c_ == '.'
+            || this->c_ == '+'
+            || this->c_ == '-'
+            || isdigit(this->c_)) {
         //
         // probably in a number
         //
 
-        if ((_c == '+') || (_c == '-')) {
-            tokenString += _c;
-            _getNextChar();
-            _readTooMuch = true;
+        if (this->c_ == '+' || this->c_ == '-') {
+            token_string += this->c_;
+            this->getNextChar();
+            read_too_much_ = true;
         }
 
-        if (isdigit(_c)) {
+        if (isdigit(this->c_)) {
             //
             // definitely in a number
             //
             token->setType(INTEGER);
 
-            tokenString += _c;
+            token_string += this->c_;
 
-            _getNextChar();
+            getNextChar();
 
-            if ((_prevChar == '0') && ((_c == 'x') || (_c == 'X'))) {
+            if (this->prev_char_ == '0' && (this->c_ == 'x' || this->c_ == 'X')) {
                 //
                 // in an integer expressed in hexadecimal
                 //
                 token->setType(HEX_INTEGER);
 
-                tokenString += _c;
-                _getNextChar();
-                while (isHexDigit(_c)) {
-                    tokenString += _c;
-                    _getNextChar();
+                token_string += this->c_;
+                getNextChar();
+                while (isHexDigit(this->c_)) {
+                    token_string += this->c_;
+                    getNextChar();
                 }
             } else {
-                while (isdigit(_c)) {
-                    tokenString += _c;
-                    _getNextChar();
+                while (isdigit(this->c_)) {
+                    token_string += this->c_;
+                    getNextChar();
                 }
             }
 
-            if (_c == '.') {
+            if (this->c_ == '.') {
                 //
                 // in a floating-point number
                 //
                 token->setType(REAL);
 
-                tokenString += _c;
-                _getNextChar();
+                token_string += this->c_;
+                getNextChar();
 
-                while (isdigit(_c)) {
-                    tokenString += _c;
-                    _getNextChar();
+                while (isdigit(this->c_)) {
+                    token_string += this->c_;
+                    getNextChar();
                 }
 
-                if ((_c == 'E') || (_c == 'e')) {
+                if (this->c_ == 'E' || this->c_ == 'e') {
                     //
                     // in an exponent
                     //
-                    tokenString += _c;
-                    _getNextChar();
+                    token_string += this->c_;
+                    getNextChar();
 
-                    if ((_c == '+') || (_c == '-') || isdigit(_c)) {
+                    if ((c_ == '+') || (c_ == '-') || isdigit(this->c_)) {
                         //
                         // exponent may be signed
                         //
-                        tokenString += _c;
-                        _getNextChar();
+                        token_string += this->c_;
+                        getNextChar();
 
-                        while (isdigit(_c)) {
-                            tokenString += _c;
-                            _getNextChar();
+                        while (isdigit(this->c_)) {
+                            token_string += this->c_;
+                            getNextChar();
                         }
                     }
                 }
-            } else if ((_c == 'E') || (_c == 'e')) {
+            } else if (this->c_ == 'E' || this->c_ == 'e') {
                 //
                 // in an exponent
                 //
                 token->setType(REAL);
 
-                tokenString += _c;
-                _getNextChar();
+                token_string += this->c_;
+                getNextChar();
 
-                if ((_c == '+') || (_c == '-') || isdigit(_c)) {
+                if (this->c_ == '+' || this->c_ == '-' || isdigit(this->c_)) {
                     //
                     // exponent may be signed
                     //
-                    tokenString += _c;
-                    _getNextChar();
+                    token_string += this->c_;
+                    getNextChar();
 
-                    while (isdigit(_c)) {
-                        tokenString += _c;
-                        _getNextChar();
+                    while (isdigit(this->c_)) {
+                        token_string += this->c_;
+                        getNextChar();
                     }
                 }
             }
 
-            _readTooMuch = true;
+            this->read_too_much_ = true;
 
-        } else if (_c == '.') {
+        } else if (this->c_ == '.') {
             //
             // in a floating-point number or a lone full-stop (as in a ROUTE)
             //
 
-            tokenString += _c;
-            _getNextChar();
+            token_string += this->c_;
+            getNextChar();
 
-            if (isdigit(_c)) {
+            if (isdigit(this->c_)) {
 
                 token->setType(REAL);
 
-                while (isdigit(_c)) {
-                    tokenString += _c;
-                    _getNextChar();
+                while (isdigit(this->c_)) {
+                    token_string += this->c_;
+                    getNextChar();
                 }
 
-                if ((_c == 'E') || (_c == 'e')) {
+                if ((this->c_ == 'E') || (this->c_ == 'e')) {
                     //
                     // in an exponent
                     //
-                    tokenString += _c;
-                    _getNextChar();
+                    token_string += this->c_;
+                    getNextChar();
 
-                    if ((_c == '+') || (_c == '-') || isdigit(_c)) {
+                    if ((c_ == '+') || (c_ == '-') || isdigit(this->c_)) {
                         //
                         // exponent may be signed
                         //
-                        tokenString += _c;
-                        _getNextChar();
+                        token_string += this->c_;
+                        getNextChar();
 
-                        while (isdigit(_c)) {
-                            tokenString += _c;
-                            _getNextChar();
+                        while (isdigit(this->c_)) {
+                            token_string += this->c_;
+                            getNextChar();
                         }
                     }
                 }
@@ -378,213 +386,199 @@ antlr::RefToken Vrml97Scanner::nextToken()
                 token->setType(PERIOD);
             }
 
-            _readTooMuch = true;
+            this->read_too_much_ = true;
         }
 
-        token->setText(tokenString);
+        token->setText(token_string);
 
-    } else if (_c == '"') {
+    } else if (this->c_ == '"') {
         //
         // in a string
         //
         token->setType(STRING);
 
-        tokenString += _c;
-        _getNextChar();
+        token_string += this->c_;
+        this->getNextChar();
 
-        char prevChar('\0');
-        while ((_c != '"') || (prevChar == '\\')) {
-            tokenString += _c;
-            prevChar = _c;
-            _getNextChar();
+        char prev_char('\0');
+        while (this->c_ != '"' || prev_char == '\\') {
+            token_string += this->c_;
+            prev_char = this->c_;
+            this->getNextChar();
         }
-        tokenString += _c; // add the closing quote
+        token_string += this->c_; // add the closing quote
 
-        token->setText(tokenString);
+        token->setText(token_string);
 
     } else {
         //
         // terminal symbol or unidentified character
         //
-        tokenString += _c;
+        token_string += this->c_;
 
-        token->setText(tokenString);
+        token->setText(token_string);
 
-        _identifyTerminalSymbol(*token);
+        this->identifyTerminalSymbol(*token);
     }
 
-    token->setLine(_line);
-    _prevTokenType = token->getType();
+    token->setLine(this->line_);
+    token->setColumn(this->col_);
+    this->prev_token_type_ = token->getType();
 
     return token;
 }
 
-size_t Vrml97Scanner::line() const
+inline void Vrml97Scanner::getNextChar()
 {
-    return _line;
-}
-
-size_t Vrml97Scanner::col() const
-{
-    return _col;
-}
-
-void Vrml97Scanner::_getNextChar() {
-    _prevChar = _c;
-    _c = _istm.get();
-    ++_col; // Increment the column count;
+    this->prev_char_ = this->c_;
+    this->c_ = this->in_.get();
+    ++this->col_; // Increment the column count;
 
     //
     // Increment the line count (and reset the column count to zero) if the
     // current character is a newline character EXCEPT if the current character
     // is a linefeed AND the previous character is a carriage return.
     //
-    if (isNewlineChar(_c)) {
-        if (!((_c == 0x0a) && (_prevChar == 0x0d))) {
-            ++_line;
-            _col = 0;
+    if (isNewlineChar(this->c_)) {
+        if (!((this->c_ == 0x0a) && (this->prev_char_ == 0x0d))) {
+            ++this->line_;
+            this->col_ = 0;
         }
     }
 }
 
-void Vrml97Scanner::_identifyKeyword(antlr::Token & token)
+inline void Vrml97Scanner::identifyKeyword(antlr::Token & token)
 {
-    std::string const tokenText(token.getText());
-
-    if      (tokenText == "DEF")            { token.setType(KEYWORD_DEF); }
-    else if (tokenText == "eventIn")        { _expectingFieldType = true;
-                                              token.setType(KEYWORD_EVENTIN); }
-    else if (tokenText == "eventOut")       { _expectingFieldType = true;
-                                              token.setType(KEYWORD_EVENTOUT); }
-    else if (tokenText == "exposedField")   { _expectingFieldType = true;
-                                              token.setType(KEYWORD_EXPOSEDFIELD); }
-    else if (tokenText == "EXTERNPROTO")    { token.setType(KEYWORD_EXTERNPROTO); }
-    else if (tokenText == "FALSE")          { token.setType(KEYWORD_FALSE); }
-    else if (tokenText == "field")          { _expectingFieldType = true;
-                                              token.setType(KEYWORD_FIELD); }
-    else if (tokenText == "IS")             { token.setType(KEYWORD_IS); }
-    else if (tokenText == "NULL")           { token.setType(KEYWORD_NULL); }
-    else if (tokenText == "PROTO")          { token.setType(KEYWORD_PROTO); }
-    else if (tokenText == "ROUTE")          { token.setType(KEYWORD_ROUTE); }
-    else if (tokenText == "TO")             { token.setType(KEYWORD_TO); }
-    else if (tokenText == "TRUE")           { token.setType(KEYWORD_TRUE); }
-    else if (tokenText == "USE")            { token.setType(KEYWORD_USE); }
+    std::string const token_text(token.getText());
+    if      (token_text == "DEF")          { token.setType(KEYWORD_DEF); }
+    else if (token_text == "eventIn")      { expecting_field_type_ = true;
+                                             token.setType(KEYWORD_EVENTIN); }
+    else if (token_text == "eventOut")     { expecting_field_type_ = true;
+                                             token.setType(KEYWORD_EVENTOUT); }
+    else if (token_text == "exposedField") { expecting_field_type_ = true;
+                                             token.setType(KEYWORD_EXPOSEDFIELD); }
+    else if (token_text == "EXTERNPROTO")  { token.setType(KEYWORD_EXTERNPROTO); }
+    else if (token_text == "FALSE")        { token.setType(KEYWORD_FALSE); }
+    else if (token_text == "field")        { expecting_field_type_ = true;
+                                             token.setType(KEYWORD_FIELD); }
+    else if (token_text == "IS")           { token.setType(KEYWORD_IS); }
+    else if (token_text == "NULL")         { token.setType(KEYWORD_NULL); }
+    else if (token_text == "PROTO")        { token.setType(KEYWORD_PROTO); }
+    else if (token_text == "ROUTE")        { token.setType(KEYWORD_ROUTE); }
+    else if (token_text == "TO")           { token.setType(KEYWORD_TO); }
+    else if (token_text == "TRUE")         { token.setType(KEYWORD_TRUE); }
+    else if (token_text == "USE")          { token.setType(KEYWORD_USE); }
 }
 
-void Vrml97Scanner::_identifyFieldType(antlr::Token & token)
+inline void Vrml97Scanner::identifyFieldType(antlr::Token & token)
 {
-    assert(_expectingFieldType);
-
-    std::string const tokenText(token.getText());
-
-    if      (tokenText == "SFBool")     { token.setType(FIELDTYPE_SFBOOL); }
-    else if (tokenText == "SFColor")    { token.setType(FIELDTYPE_SFCOLOR); }
-    else if (tokenText == "SFFloat")    { token.setType(FIELDTYPE_SFFLOAT); }
-    else if (tokenText == "SFImage")    { token.setType(FIELDTYPE_SFIMAGE); }
-    else if (tokenText == "SFInt32")    { token.setType(FIELDTYPE_SFINT32); }
-    else if (tokenText == "SFNode")     { token.setType(FIELDTYPE_SFNODE); }
-    else if (tokenText == "SFRotation") { token.setType(FIELDTYPE_SFROTATION); }
-    else if (tokenText == "SFString")   { token.setType(FIELDTYPE_SFSTRING); }
-    else if (tokenText == "SFTime")     { token.setType(FIELDTYPE_SFTIME); }
-    else if (tokenText == "SFVec2f")    { token.setType(FIELDTYPE_SFVEC2F); }
-    else if (tokenText == "SFVec3f")    { token.setType(FIELDTYPE_SFVEC3F); }
-    else if (tokenText == "MFColor")    { token.setType(FIELDTYPE_MFCOLOR); }
-    else if (tokenText == "MFFloat")    { token.setType(FIELDTYPE_MFFLOAT); }
-    else if (tokenText == "MFInt32")    { token.setType(FIELDTYPE_MFINT32); }
-    else if (tokenText == "MFNode")     { token.setType(FIELDTYPE_MFNODE); }
-    else if (tokenText == "MFRotation") { token.setType(FIELDTYPE_MFROTATION); }
-    else if (tokenText == "MFString")   { token.setType(FIELDTYPE_MFSTRING); }
-    else if (tokenText == "MFTime")     { token.setType(FIELDTYPE_MFTIME); }
-    else if (tokenText == "MFVec2f")    { token.setType(FIELDTYPE_MFVEC2F); }
-    else if (tokenText == "MFVec3f")    { token.setType(FIELDTYPE_MFVEC3F); }
+    assert(this->expecting_field_type_);
+    std::string const token_text(token.getText());
+    if      (token_text == "SFBool")     { token.setType(FIELDTYPE_SFBOOL); }
+    else if (token_text == "SFColor")    { token.setType(FIELDTYPE_SFCOLOR); }
+    else if (token_text == "SFFloat")    { token.setType(FIELDTYPE_SFFLOAT); }
+    else if (token_text == "SFImage")    { token.setType(FIELDTYPE_SFIMAGE); }
+    else if (token_text == "SFInt32")    { token.setType(FIELDTYPE_SFINT32); }
+    else if (token_text == "SFNode")     { token.setType(FIELDTYPE_SFNODE); }
+    else if (token_text == "SFRotation") { token.setType(FIELDTYPE_SFROTATION); }
+    else if (token_text == "SFString")   { token.setType(FIELDTYPE_SFSTRING); }
+    else if (token_text == "SFTime")     { token.setType(FIELDTYPE_SFTIME); }
+    else if (token_text == "SFVec2f")    { token.setType(FIELDTYPE_SFVEC2F); }
+    else if (token_text == "SFVec3f")    { token.setType(FIELDTYPE_SFVEC3F); }
+    else if (token_text == "MFColor")    { token.setType(FIELDTYPE_MFCOLOR); }
+    else if (token_text == "MFFloat")    { token.setType(FIELDTYPE_MFFLOAT); }
+    else if (token_text == "MFInt32")    { token.setType(FIELDTYPE_MFINT32); }
+    else if (token_text == "MFNode")     { token.setType(FIELDTYPE_MFNODE); }
+    else if (token_text == "MFRotation") { token.setType(FIELDTYPE_MFROTATION); }
+    else if (token_text == "MFString")   { token.setType(FIELDTYPE_MFSTRING); }
+    else if (token_text == "MFTime")     { token.setType(FIELDTYPE_MFTIME); }
+    else if (token_text == "MFVec2f")    { token.setType(FIELDTYPE_MFVEC2F); }
+    else if (token_text == "MFVec3f")    { token.setType(FIELDTYPE_MFVEC3F); }
 }
 
-void Vrml97Scanner::_identifyTerminalSymbol(antlr::Token & token)
+inline void Vrml97Scanner::identifyTerminalSymbol(antlr::Token & token)
 {
-    std::string const tokenText(token.getText());
-
-    if      (tokenText == "[")  { token.setType(LBRACKET); }
-    else if (tokenText == "]")  { token.setType(RBRACKET); }
-    else if (tokenText == "{")  { token.setType(LBRACE); }
-    else if (tokenText == "}")  { token.setType(RBRACE); }
+    std::string const token_text(token.getText());
+    if      (token_text == "[") { token.setType(LBRACKET); }
+    else if (token_text == "]") { token.setType(RBRACKET); }
+    else if (token_text == "{") { token.setType(LBRACE); }
+    else if (token_text == "}") { token.setType(RBRACE); }
 }
 
-bool isValidIdFirstChar(char c) {
+inline bool isValidIdFirstChar(const char c)
+{
     if (((c >= 0x30) && (c <= 0x39))
-        || (c == 0x2b)
-        || (c == 0x2d)
-        || !isValidIdRestChars(c)) {
-
+            || (c == 0x2b)
+            || (c == 0x2d)
+            || !isValidIdRestChars(c)) {
         return false;
     }
-
     return true;
 }
 
-bool isValidIdRestChars(char c) {
-    if (   (c <= 0x20)
-        || (c == 0x22)
-        || (c == 0x23)
-        || (c == 0x27)
-        || (c == 0x2c)
-        || (c == 0x2e)
-        || (c == 0x5b)
-        || (c == 0x5c)
-        || (c == 0x5d)
-        || (c == 0x7b)
-        || (c == 0x7d)
-        || (c == 0x7f)) {
-
+inline bool isValidIdRestChars(const char c)
+{
+    if (       c <= 0x20
+            || c == 0x22
+            || c == 0x23
+            || c == 0x27
+            || c == 0x2c
+            || c == 0x2e
+            || c == 0x5b
+            || c == 0x5c
+            || c == 0x5d
+            || c == 0x7b
+            || c == 0x7d
+            || c == 0x7f) {
         return false;
     }
-
     return true;
 }
 
-bool isWhitespaceChar(char c) {
-    if (   (c == 0x0d)      // carriage return
-        || (c == 0x0a)      // linefeed
-        || (c == 0x20)      // space
-        || (c == 0x09)      // tab
-        || (c == 0x2c)) {   // comma
-
+inline bool isWhitespaceChar(const char c)
+{
+    if (       c == 0x0d      // carriage return
+            || c == 0x0a      // linefeed
+            || c == 0x20      // space
+            || c == 0x09      // tab
+            || c == 0x2c) {   // comma
         return true;
     }
-
     return false;
 }
 
-bool isNewlineChar(char c) {
+inline bool isNewlineChar(const char c)
+{
     return ((c == 0x0a) || (c == 0x0d));
 }
 
-bool isHexDigit(char c) {
+inline bool isHexDigit(const char c)
+{
     if (          isdigit(c)
-        || (c == 'A') || (c == 'a')
-        || (c == 'B') || (c == 'b')
-        || (c == 'C') || (c == 'c')
-        || (c == 'D') || (c == 'd')
-        || (c == 'E') || (c == 'e')
-        || (c == 'F') || (c == 'f')) {
-
+            || c == 'A' || c == 'a'
+            || c == 'B' || c == 'b'
+            || c == 'C' || c == 'c'
+            || c == 'D' || c == 'd'
+            || c == 'E' || c == 'e'
+            || c == 'F' || c == 'f') {
         return true;
     }
-
     return false;
 }
 
-struct InterfaceIdEquals_ : std::unary_function<OpenVRML::NodeInterface, bool> {
-    explicit InterfaceIdEquals_(const std::string & interfaceId):
-        interfaceId(&interfaceId)
+struct interface_id_equals_ :
+        std::unary_function<OpenVRML::NodeInterface, bool> {
+    explicit interface_id_equals_(const std::string & interface_id):
+        interface_id(&interface_id)
     {}
 
     bool operator()(const OpenVRML::NodeInterface & interface) const
     {
-        return interface.id == *this->interfaceId;
+        return interface.id == *this->interface_id;
     }
 
 private:
-    const std::string * interfaceId;
+    const std::string * interface_id;
 };
 
 } // namespace
@@ -608,9 +602,7 @@ public:
     Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
         antlr::LLkParser(lexer, 1),
         uri(uri)
-    {
-        setTokenNames(_tokenNames);
-    }
+    {}
 
 private:
     const std::string uri;
@@ -648,12 +640,14 @@ options { defaultErrorHandler=false; }
     :   KEYWORD_DEF id0:ID n=node[browser, scope, id0->getText()]
     |   KEYWORD_USE id1:ID
         {
+            using antlr::SemanticException;
             assert(scope);
             n.reset(scope->findNode(id1->getText()));
             if (!n) {
-                throw antlr::SemanticException("Node \"" + id1->getText()
-                                    + "\" has not been defined in this scope.",
-                                    this->uri, LT(0)->getLine());
+                throw SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.",
+                                        this->uri,
+                                        id1->getLine(),
+                                        id1->getColumn());
             }
         }
     |   n=node[browser, scope, std::string()]
@@ -750,7 +744,10 @@ protoInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                     assert(false);
                 }
             } catch (std::invalid_argument & ex) {
-                throw SemanticException(ex.what(), this->uri, LT(0)->getLine());
+                throw SemanticException(ex.what(),
+                                        this->uri,
+                                        id0->getLine(),
+                                        id0->getColumn());
             }
         }
     | it=fieldInterfaceType ft=fieldType id1:ID
@@ -770,7 +767,10 @@ protoInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                     assert(false);
                 }
             } catch (std::invalid_argument & ex) {
-                throw SemanticException(ex.what(), this->uri, LT(0)->getLine());
+                throw SemanticException(ex.what(),
+                                        this->uri,
+                                        id1->getLine(),
+                                        id1->getColumn());
             }
         }
     ;
@@ -816,9 +816,10 @@ options { defaultErrorHandler=false; }
     | KEYWORD_USE id1:ID {
             n.reset(scope->findNode(id1->getText()));
             if (!n) {
-                throw SemanticException("Node \"" + id1->getText()
-                                    + "\" has not been defined in this scope.",
-                                    this->uri, LT(0)->getLine());
+                throw SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.",
+                                        this->uri,
+                                        id1->getLine(),
+                                        id1->getColumn());
             }
         }
     | n=protoNode[proto, scope, std::string()]
@@ -867,7 +868,10 @@ externInterfaceDeclaration[OpenVRML::NodeInterfaceSet & interfaces]
             try {
                 interfaces.add(interface);
             } catch (std::invalid_argument & ex) {
-            	throw SemanticException(ex.what(), this->uri, LT(0)->getLine());
+            	throw SemanticException(ex.what(),
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
             }
         }
     ;
@@ -900,23 +904,28 @@ routeStatement[const OpenVRML::Scope & scope]
 
             Node * const fromNode = scope.findNode(fromNodeId->getText());
             if (!fromNode) {
-                throw SemanticException("Node \"" + fromNodeId->getText()
-                                    + "\" has not been defined in this scope.",
-                                    this->uri, LT(0)->getLine());
+                throw SemanticException("Node \"" + fromNodeId->getText() + "\" has not been defined in this scope.",
+                                        this->uri,
+                                        fromNodeId->getLine(),
+                                        fromNodeId->getColumn());
             }
 
             Node * const toNode = scope.findNode(toNodeId->getText());
             if (!toNode) {
-                throw SemanticException("Node \"" + toNodeId->getText()
-                        + "\" has not been defined in this scope.",
-                        this->uri, LT(0)->getLine());
+                throw SemanticException("Node \"" + toNodeId->getText() + "\" has not been defined in this scope.",
+                                        this->uri,
+                                        toNodeId->getLine(),
+                                        toNodeId->getColumn());
             }
 
             try {
                 fromNode->addRoute(fromInterfaceId->getText(),
        	                           NodePtr(toNode), toInterfaceId->getText());
             } catch (std::runtime_error & ex) {
-                throw SemanticException(ex.what(), this->uri, LT(0)->getLine());
+                throw SemanticException(ex.what(),
+                                        this->uri,
+                                        toInterfaceId->getLine(),
+                                        toInterfaceId->getColumn());
             }
         }
     ;
@@ -948,9 +957,10 @@ options { defaultErrorHandler = false; }
     | nodeTypeId:ID {
             nodeType = scope->findType(nodeTypeId->getText());
             if (!nodeType) {
-                throw SemanticException("Unknown node type \""
-                                        + nodeTypeId->getText() + "\".",
-                                        this->uri, LT(0)->getLine());
+                throw SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".",
+                                        this->uri,
+                                        nodeTypeId->getLine(),
+                                        nodeTypeId->getColumn());
             }
 
             n = NodePtr(nodeType->createNode(scope));
@@ -972,10 +982,10 @@ nodeBodyElement[const OpenVRML::ScopePtr & scope,
             if (ft == FieldValue::invalidType) {
                 ft = node.nodeType.hasExposedField(id->getText());
                 if (ft == FieldValue::invalidType) {
-                    throw SemanticException(node.nodeType.id
-                                    + " node has no field or exposedField \""
-                                    + id->getText() + "\"",
-                                    this->uri, LT(0)->getLine());
+                    throw SemanticException(node.nodeType.id + " node has no field or exposedField \"" + id->getText() + "\"",
+                                            this->uri,
+                                            id->getLine(),
+                                            id->getColumn());
                 }
             }
         }
@@ -1000,9 +1010,10 @@ scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
             const NodeInterfaceSet::const_iterator pos =
                     node.nodeType.getInterfaces().findInterface(id->getText());
             if (pos != node.nodeType.getInterfaces().end()) {
-                throw SemanticException("Interface \"" + id->getText()
-                                    + "\" already declared for Script node.",
-                                    this->uri, LT(0)->getLine());
+                throw SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.",
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
             }
             switch (it) {
             case NodeInterface::eventIn:
@@ -1035,9 +1046,10 @@ scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
             const NodeInterfaceSet::const_iterator pos =
                     interfaces.findInterface(id->getText());
             if (pos != interfaces.end()) {
-                throw SemanticException("Interface \"" + id->getText()
-                                    + "\" already declared for Script node.",
-                                    this->uri, LT(0)->getLine());
+                throw SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.",
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
             }
             node.addField(id->getText(), fv);
         }
@@ -1071,9 +1083,10 @@ options { defaultErrorHandler=false; }
     | nodeTypeId:ID {
             nodeType = scope->findType(nodeTypeId->getText());
             if (!nodeType) {
-                throw SemanticException("Unknown node type \""
-                                        + nodeTypeId->getText() + "\".",
-                                        this->uri, LT(0)->getLine());
+                throw SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".",
+                                        this->uri,
+                                        nodeTypeId->getLine(),
+                                        nodeTypeId->getColumn());
             }
             n = nodeType->createNode(scope);
             if (!nodeId.empty()) { n->setId(nodeId); }
@@ -1097,10 +1110,10 @@ protoNodeBodyElement[OpenVRML::ProtoNodeClass & proto,
             if (ft == FieldValue::invalidType) {
                 ft = node.nodeType.hasExposedField(id->getText());
                 if (ft == FieldValue::invalidType) {
-                    throw SemanticException(node.nodeType.id
-                                    + " node has no field or exposedField \""
-                                    + id->getText() + "\".",
-                                    this->uri, LT(0)->getLine());
+                    throw SemanticException(node.nodeType.id + " node has no field or exposedField \"" + id->getText() + "\".",
+                                            this->uri,
+                                            id->getLine(),
+                                            id->getColumn());
                 }
             }
         } (
@@ -1132,7 +1145,10 @@ isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::Node & node,
                 // ex should be UnsupportedInterface, NodeInterfaceTypeMismatch,
                 // or FieldValueTypeMismatch.
                 //
-                throw SemanticException(ex.what(), this->uri, LT(0)->getLine());
+                throw SemanticException(ex.what(),
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
             }
         }
     ;
@@ -1151,9 +1167,10 @@ protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
             const NodeInterfaceSet::const_iterator pos =
                     node.nodeType.getInterfaces().findInterface(id->getText());
             if (pos != node.nodeType.getInterfaces().end()) {
-                throw SemanticException("Interface \"" + id->getText()
-                                    + "\" already declared for Script node.",
-                                    this->uri, LT(0)->getLine());
+                throw SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.",
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
             }
             switch (it) {
             case NodeInterface::eventIn:
@@ -1189,11 +1206,12 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
             const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
             const NodeInterfaceSet::const_iterator pos =
                     find_if(interfaces.begin(), interfaces.end(),
-                            InterfaceIdEquals_(id->getText()));
+                            interface_id_equals_(id->getText()));
             if (pos != interfaces.end()) {
-                throw SemanticException("Interface \"" + id->getText()
-                                    + "\" already declared for Script node.",
-                                    this->uri, LT(0)->getLine());
+                throw SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.",
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
             }
         } (
             (
@@ -1211,10 +1229,10 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                     ProtoNodeClass::DefaultValueMap::const_iterator pos =
                             proto.defaultValueMap.find(protoFieldId->getText());
                     if (pos == proto.defaultValueMap.end()) {
-                        throw SemanticException("Proto has no field \""
-                                                + protoFieldId->getText()
-                                                + "\".", this->uri,
-                                                LT(0)->getLine());
+                        throw SemanticException("Proto has no field \"" + protoFieldId->getText() + "\".",
+                                                this->uri,
+                                                protoFieldId->getLine(),
+                                                protoFieldId->getColumn());
                     }
 
                     //
@@ -1236,8 +1254,10 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                         // ex should be UnsupportedInterface,
                         // NodeInterfaceTypeMismatch, or FieldValueTypeMismatch.
                         //
-                        throw SemanticException(ex.what(), this->uri,
-                                                LT(0)->getLine());
+                        throw SemanticException(ex.what(),
+                                                this->uri,
+                                                protoFieldId->getLine(),
+                                                protoFieldId->getColumn());
                     }
                 }
             )
@@ -1459,7 +1479,9 @@ options { defaultErrorHandler=false; }
             //
             if (pixelVector.size() != (w * h * com)) {
                 throw antlr::SemanticException("Wrong number of pixel values for SFImage.",
-                                               this->uri, LT(0)->getLine());
+                                               this->uri,
+                                               LT(1)->getLine(),
+                                               LT(1)->getColumn());
             }
             siv.reset(new SFImage(w, h, com, &pixelVector[0]));
         }

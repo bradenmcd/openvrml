@@ -3069,7 +3069,7 @@ void ProtoNode::addIS(Node & implNode,
     const NodeInterfaceSet & protoInterfaces = this->nodeType.getInterfaces();
     const NodeInterfaceSet::const_iterator protoInterface =
             find_if(protoInterfaces.begin(), protoInterfaces.end(),
-                    InterfaceIdEquals_(protoInterfaceId));
+                    interface_id_equals_(protoInterfaceId));
     if (protoInterface == protoInterfaces.end()) {
         throw UnsupportedInterface(this->nodeType, protoInterfaceId);
     }
