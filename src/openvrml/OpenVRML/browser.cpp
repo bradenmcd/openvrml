@@ -231,7 +231,7 @@ namespace OpenVRML {
 
 
     class ProtoNodeClass : public NodeClass {
-
+        friend class ProtoNode;
         friend class Vrml97Parser;
 
     public:
@@ -2982,10 +2982,24 @@ const FieldValue & ProtoNode::getFieldImpl(const std::string & id) const
     // node? Here, we just pick the first node in the IS-map and call getField
     // on it.
     //
-    ISMap::const_iterator pos = this->isMap.find(id);
+    const ISMap::const_iterator pos = this->isMap.find(id);
     if (pos == this->isMap.end()) {
-        throw UnsupportedInterface(this->nodeType.id + " node has no field \""
-                                   + id + "\".");
+        //
+        // The field may exist for the node, but not be IS'd to anything.
+        // What to do? If we saved the initial value of the field to return
+        // here, we'd end up carrying it around for the life of the PROTO
+        // instance. So just return a reference to the default value for
+        // the field.
+        //
+        ProtoNodeClass & nodeClass =
+                static_cast<ProtoNodeClass &>(this->nodeType.nodeClass);
+        const ProtoNodeClass::DefaultValueMap::const_iterator pos =
+                nodeClass.defaultValueMap.find(id);
+        if (pos == nodeClass.defaultValueMap.end()) {
+            throw UnsupportedInterface(this->nodeType.id
+                                       + " node has no field \"" + id + "\".");
+        }
+        return *pos->second;
     }
     return pos->second.node.getField(pos->second.interfaceId);
 }
