@@ -17,7 +17,6 @@ BuildRequires:  libjpeg-devel >= 6b
 BuildRequires:  fontconfig-devel >= 2.0
 BuildRequires:  freetype-devel >= 2.1.2
 BuildRequires:  mozilla-devel >= 1.6
-BuildRequires:  libgcj-devel >= 3.3
 BuildRequires:  xorg-x11-devel >= 6.7
 BuildRequires:  SDL-devel >= 1.2
 BuildRequires:  dejagnu >= 1.4
@@ -28,7 +27,6 @@ Requires:       libjpeg >= 6b
 Requires:       fontconfig >= 2.0
 Requires:       freetype >= 2.1.2
 Requires:       mozilla >= 1.6
-Requires:       libgcj >= 3.3
 
 %description
 OpenVRML is a VRML support library, including a runtime and facilities for
@@ -83,7 +81,7 @@ VRML browser plug-in for Mozilla-based browsers.
 %setup
 
 %build
-%configure CPPFLAGS="-DNDEBUG"
+%configure --disable-script-node-java CPPFLAGS="-DNDEBUG"
 make %{?_smp_mflags}
 
 %install
@@ -96,7 +94,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
 %{_libdir}/libopenvrml.so.*
-%{_datadir}/openvrml/java/script.jar
 
 %files devel
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
@@ -133,6 +130,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jan 26 2005  Braden McDaniel  <braden@endoframe.com>
+- configure with --disable-script-node-java.  The Script node Java binding
+  is not currently usable.
+
 * Fri Jan 07 2005  Braden McDaniel  <braden@endoframe.com>
 - Added %{_libexecdir}/openvrml-player to the openvrml-mozilla-plugin package.
 

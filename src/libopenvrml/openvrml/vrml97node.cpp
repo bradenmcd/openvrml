@@ -16475,9 +16475,10 @@ void text_node::update_ucs4() throw (std::bad_alloc)
         //
         vector<FcChar8> utf8String(element.begin(), element.end());
         int nchar = 0, wchar = 0;
-        FcUtf8Len(&utf8String[0], utf8String.size(), &nchar, &wchar);
-        ucs4Element.resize(nchar);
-        {
+        FcBool well_formed =
+            FcUtf8Len(&utf8String[0], utf8String.size(), &nchar, &wchar);
+        if (well_formed) {
+            ucs4Element.resize(nchar);
             vector<FcChar8>::iterator utf8interface = utf8String.begin();
             vector<FcChar32>::iterator ucs4interface = ucs4Element.begin();
             while (utf8interface != utf8String.end()) {

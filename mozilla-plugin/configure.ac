@@ -17,6 +17,10 @@ enable_shared=yes
 AC_PROG_LIBTOOL
 
 PKG_CHECK_MODULES([MOZILLA_XPCOM], [mozilla-xpcom], , [have_mozilla_xpcom=no])
+if test "X$PKG_CONFIG" != "Xno" -a -z "MOZILLA_XPCOM_PKG_ERRORS"; then
+  mozincludedir=`$PKG_CONFIG --variable=includedir mozilla-xpcom`
+  MOZILLA_XPCOM_CFLAGS="-I$mozincludedir $MOZILLA_XPCOM_CFLAGS"
+fi
 PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 1.6],
                   , [have_mozilla_plugin=no])
 mozversion=`$PKG_CONFIG --modversion mozilla-plugin`

@@ -1,3 +1,28 @@
+2005-01-27 Braden McDaniel  <braden@endoframe.com>
+
+	Merged changes from 0.15.6 release.
+
+	* NEWS:  Updated for 0.15.6 release.
+	* README:  Added note about memory requirements for building
+	OpenVRML.
+	* openvrml.spec.in:  configure with --disable-script-node-java.
+	The Script node Java binding is not currently usable.
+	* mozilla-plugin/configure.ac:  Mozilla pkg-config metadata
+	files do not reliably add the top-level Mozilla include
+	directory to the _CFLAGS variable.
+	* src/libopenvrml/Makefile.am:  Incremented library version to
+	5:3:0.
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp:  Don't set rotation
+	axis component-wise in the parser.
+	* src/libopenvrml/openvrml/Vrml97Parser.g:  Don't set rotation
+	axis component-wise in the parser.
+	* src/libopenvrml/openvrml/node.cpp (find_interface):  Fixed
+	find_interface to find a field "zzz" even if there is also an
+	eventIn "set_zzz" or an eventOut "zzz_changed".
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(text_node::update_ucs4):  Check whether the UTF-8 string is
+	well-formed before calling FcUtf8ToUcs4.
+
 2005-01-16 Braden McDaniel  <braden@endoframe.com>
 
 	Added mutexes for node and event_emitter.

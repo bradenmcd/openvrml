@@ -1,3 +1,17 @@
+Changes new in version 0.15.6, 26 January, 2005
+===============================================
+
+- Fixed build to more reliably find Mozilla headers.
+
+- Fixed behavior of openvrml::find_interface function, which has the
+  side effect of fixing a problem parsing a field "zzz" in a node that
+  also has an eventIn "set_zzz" or an eventOut "zzz_changed".
+
+- Fixed crash on malformed UTF-8 in the Text node.
+
+- Fixed problem parsing rotation values.
+
+
 Changes new in version 0.15.5, 10 January, 2005
 ===============================================
 
