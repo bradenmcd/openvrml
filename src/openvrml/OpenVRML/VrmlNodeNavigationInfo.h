@@ -56,7 +56,7 @@ public:
   
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  float *avatarSize()		{ return d_avatarSize.get(); }
+  const float * avatarSize()		{ return d_avatarSize.get(); }
   bool headlightOn()		{ return d_headlight.get(); }
   float speed()			{ return d_speed.get(); }
   float visibilityLimit()	{ return d_visibilityLimit.get(); }

@@ -1007,7 +1007,7 @@ VrmlMFFloat::VrmlMFFloat() : d_data(new FData(0))
 VrmlMFFloat::VrmlMFFloat(float value) : d_data(new FData(1)) 
 { d_data->d_v[0] = value; }
 
-VrmlMFFloat::VrmlMFFloat(int n, float const * v) : d_data(new FData(n))
+VrmlMFFloat::VrmlMFFloat(size_t n, float const * v) : d_data(new FData(n))
 {
   if (v) memcpy(d_data->d_v, v, n*sizeof(float));
 }
@@ -1016,7 +1016,7 @@ VrmlMFFloat::VrmlMFFloat(const VrmlMFFloat &src) : d_data(src.d_data->ref()) {}
 
 VrmlMFFloat::~VrmlMFFloat() { d_data->deref(); }
 
-void VrmlMFFloat::set(int n, float *v)
+void VrmlMFFloat::set(size_t n, const float * v)
 {
   d_data->deref();
   d_data = new FData(n);

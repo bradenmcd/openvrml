@@ -52,7 +52,7 @@ public:
 
   VrmlMFFloat();
   VrmlMFFloat(float value);
-  VrmlMFFloat(int n, float const * v);
+  VrmlMFFloat(size_t n, float const * v);
   VrmlMFFloat(const VrmlMFFloat &src);
 
   ~VrmlMFFloat();
@@ -60,7 +60,7 @@ public:
   virtual ostream& print(ostream& os) const;
 
   // Assignment.
-  void set(int n, float *v);
+  void set(size_t n, const float * v);
   VrmlMFFloat& operator=(const VrmlMFFloat& rhs);
 
   virtual VrmlField *clone() const;
@@ -69,9 +69,9 @@ public:
   virtual const VrmlMFFloat* toMFFloat() const;
   virtual VrmlMFFloat* toMFFloat();
 
-  int size() const			{ return d_data->d_n; }
-  float *get() const			{ return d_data->d_v; }
-  float &operator[](int i) const	{ return d_data->d_v[i]; }
+  size_t size() const			{ return d_data->d_n; }
+  const float * get() const			{ return d_data->d_v; }
+  const float & operator[](size_t i) const	{ return d_data->d_v[i]; }
 
 };
 
