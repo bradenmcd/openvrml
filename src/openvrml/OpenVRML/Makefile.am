@@ -54,9 +54,9 @@ vrml97scanner.o vrml97scanner.lo: vrml97scanner.cpp vrml97scanner.hpp
 Vrml97Parser.o Vrml97Parser.lo: Vrml97Parser.cpp Vrml97Parser.hpp VrmlField.h \
 doc2.hpp VrmlNamespace.h VrmlNodeType.h VrmlMFNode.h VrmlSFString.h VrmlNode.h \
 System.h VrmlNodeScript.h VrmlNodeChild.h VrmlMFString.h VrmlSFBool.h \
-VrmlSFColor.h VrmlSFFloat.h VrmlSFImage.h VrmlSFInt.h VrmlSFNode.h \
+VrmlSFColor.h VrmlSFFloat.h VrmlSFImage.h VrmlSFInt32.h VrmlSFNode.h \
 VrmlSFRotation.h VrmlSFTime.h VrmlSFVec2f.h VrmlSFVec3f.h VrmlMFColor.h \
-VrmlMFFloat.h VrmlMFInt.h VrmlMFNode.h VrmlMFRotation.h VrmlMFString.h \
+VrmlMFFloat.h VrmlMFInt32.h VrmlMFNode.h VrmlMFRotation.h VrmlMFString.h \
 VrmlMFTime.h VrmlMFVec2f.h VrmlMFVec3f.h
 	$(LTCXXCOMPILE) -c $<
 
