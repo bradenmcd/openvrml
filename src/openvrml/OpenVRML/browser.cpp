@@ -1124,9 +1124,9 @@ bool Browser::headlightOn() {
 /**
  * @brief Draw this browser into the specified viewer
  */
-void Browser::render(Viewer * viewer) {
+void Browser::render(Viewer & viewer) {
     if (d_newView) {
-        viewer->resetUserNavigation();
+        viewer.resetUserNavigation();
         d_newView = false;
     }
 
@@ -1158,32 +1158,32 @@ void Browser::render(Viewer * viewer) {
         float xyz[3] = { 0.0, 0.0, -1.0 };
         float ambient = 0.3;
 
-        viewer->insertDirLight(ambient, 1.0, rgb, xyz);
+        viewer.insertDirLight(ambient, 1.0, rgb, xyz);
     }
 
     // sets the viewpoint transformation
     //
-    viewer->setViewpoint(position, orientation, field, avatarSize, visibilityLimit);
+    viewer.setViewpoint(position, orientation, field, avatarSize, visibilityLimit);
 
     // Set background.
 
     Vrml97Node::Background * bg = bindableBackgroundTop();
     if (bg) {
         // Should be transformed by the accumulated rotations above ...
-        bg->renderBindable(viewer);
+        bg->renderBindable(&viewer);
     } else {
-        viewer->insertBackground(); // Default background
+        viewer.insertBackground(); // Default background
     }
 
     // Fog
     Vrml97Node::Fog * f = bindableFogTop();
     if (f) {
-        viewer->setFog(f->getColor(), f->getVisibilityRange(), f->getFogType().c_str());
+        viewer.setFog(f->getColor(), f->getVisibilityRange(), f->getFogType().c_str());
     }
 
     // Top level object
 
-    viewer->beginObject(0);
+    viewer.beginObject(0);
     //
     // Hack alert: Right now the rendering code uses the old-style
     // set/unset Transform code, but the culling code accumulates the
@@ -1198,9 +1198,9 @@ void Browser::render(Viewer * viewer) {
     if (vp) {
         VrmlMatrix IM,NMAT;
         vp->inverseTransform(IM);   // put back nested viewpoint. skb
-        viewer->MatrixMultiply(IM.get());
+        viewer.MatrixMultiply(IM.get());
         vp->getInverseMatrix(MV);
-        viewer->getUserNavigation(NMAT);
+        viewer.getUserNavigation(NMAT);
         MV = MV.multLeft(NMAT);
         MV = MV.multLeft(IM);
     } else {
@@ -1210,7 +1210,7 @@ void Browser::render(Viewer * viewer) {
         float t[3] = { 0.0f, 0.0f, -10.0f };
         VrmlMatrix NMAT;
         MV.setTranslate(t);
-        viewer->getUserNavigation(NMAT);
+        viewer.getUserNavigation(NMAT);
         MV = MV.multLeft(NMAT);
     }
 
@@ -1221,17 +1221,17 @@ void Browser::render(Viewer * viewer) {
     std::list<Node *>::iterator li, end = this->d_scopedLights.end();
     for (li = this->d_scopedLights.begin(); li != end; ++li) {
         Vrml97Node::AbstractLight * x = (*li)->toLight();
-        if (x) { x->renderScoped(viewer); }
+        if (x) { x->renderScoped(&viewer); }
     }
 
     // Render the nodes
     assert(this->scene);
-    this->scene->render(*viewer, rc);
+    this->scene->render(viewer, rc);
 
-    viewer->endObject();
+    viewer.endObject();
 
     // This is actually one frame late...
-    d_frameRate = viewer->getFrameRate();
+    d_frameRate = viewer.getFrameRate();
 
     clearModified();
 

@@ -3043,7 +3043,7 @@ void ViewerOpenGL::redraw()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  this->browser.render(this);
+  this->browser.render(*this);
 
   if (d_reportFPS)
     {
@@ -3451,7 +3451,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    this->browser.render(this);
+    this->browser.render(*this);
 
     this->d_selectMode = false;
 

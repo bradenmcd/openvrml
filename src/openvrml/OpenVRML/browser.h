@@ -137,7 +137,7 @@ namespace OpenVRML {
 
         bool update(double currentTime = -1.0);
 
-        void render(Viewer *);
+        void render(Viewer & viewer);
 
         void setModified();
         void clearModified();

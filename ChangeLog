@@ -1,3 +1,10 @@
+2002-10-07  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/browser.h,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Changed
+          Browser::render to take a Viewer & instead of a Viewer *.
+
 2002-09-30  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Viewer.h,
