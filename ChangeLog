@@ -1,5 +1,12 @@
 2004-03-07 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp (proto_node::proto_node):
+	When adding event listeners and emitters for an exposedField,
+	the "set_" prefix and "_changed" suffix, respectively, need to
+	be added to the identifiers.
+
+2004-03-07 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp (scene::scene):  Fixed
 	URI string given to Vrml97Parser constructor. scene::url should
 	not be used at this point, since scene::url_ has not been

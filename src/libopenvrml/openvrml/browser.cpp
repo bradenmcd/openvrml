@@ -1894,10 +1894,12 @@ proto_node::proto_node(const node_type & type,
                 }
             }
             succeeded = this->eventin_map
-                .insert(make_pair(interface->id, interface_eventin)).second;
+                .insert(make_pair("set_" + interface->id,
+                                  interface_eventin)).second;
             assert(succeeded);
             succeeded = this->eventout_map
-                .insert(make_pair(interface->id, interface_eventout)).second;
+                .insert(make_pair(interface->id + "_changed",
+                                  interface_eventout)).second;
             assert(succeeded);
             break;
         case node_interface::field_id:
