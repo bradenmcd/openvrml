@@ -102,7 +102,7 @@ SOURCE=..\..\..\..\src\lookat\lookat.cpp
 
 !ELSEIF  "$(CFG)" == "lookat - Win32 Debug"
 
-# ADD CPP /MDd /Ze /Gm /GR- /Od /I "..\..\..\..\src\openvrml" /D "OPENVRML_DLL_IMPORT"
+# ADD CPP /MDd /Ze /Gm /GR- /Od /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl" /D "OPENVRML_DLL_IMPORT"
 
 !ENDIF 
 

@@ -526,7 +526,7 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlMatrix.cpp
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I ".\\"
+# ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT"
 
 !ENDIF 
 
