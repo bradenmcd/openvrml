@@ -23,11 +23,11 @@
 #   include <config.h>
 # endif
 
-# ifdef _WIN32
-#   include <wtypes.h>
-#   include <winbase.h>
-#   include <windef.h>
-#   include <wingdi.h>
+# if HAVE_WINDOWS_H && defined(_WIN32)
+#   include <windows.h>
+# endif
+# ifdef interface
+#   undef interface
 # endif
 
 # if HAVE_APPLE_OPENGL_FRAMEWORK

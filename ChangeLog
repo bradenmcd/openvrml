@@ -1,5 +1,14 @@
 2003-07-25  Braden McDaniel  <braden@endoframe.com>
 
+	Modified OpenGL and GLUT detection macros to work with cl.
+
+	* m4/ax_check_gl.m4:  Find the right libraries when using cl.
+	* m4/ax_check_glut.m4:  Find the right library when using cl.
+	* src/openvrml-gl/OpenVRML/GL/viewer.cpp:  Reflects changes
+	to AX_CHECK_GL macro.
+
+2003-07-25  Braden McDaniel  <braden@endoframe.com>
+
 	Fixes to compile libantlr with cl.
 
 	* lib/antlr/antlr/config.hpp: Define ANTLR_REALLY_NO_STRCASECMP

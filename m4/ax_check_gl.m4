@@ -5,12 +5,12 @@ dnl succeeds, the required linker flags are included in the output variable
 dnl "GL_LIBS".  If the headers "GL/gl.h" and "GL/glu.h" are found, the symbols
 dnl HAVE_GL_GL_H and HAVE_GL_GLU_H are defined, respectively.  Otherwise, if
 dnl "OpenGL/gl.h" and "OpenGL/glu.h" are found, HAVE_OPENGL_GL_H and
-dnl HAVE_OPENGL_GLU_H are defined.  If neither OpenGL nor Mesa is found, "no_gl"
-dnl is set to "yes".
+dnl HAVE_OPENGL_GLU_H are defined.  If neither OpenGL nor Mesa is found,
+dnl "no_gl" is set to "yes".
 dnl
 dnl @copyright (C) 2003 Braden McDaniel
 dnl @license GNU GPL
-dnl @version $Id: ax_check_gl.m4,v 1.3 2003-03-27 04:17:29 braden Exp $
+dnl @version $Id: ax_check_gl.m4,v 1.4 2003-07-25 23:43:20 braden Exp $
 dnl @author Braden McDaniel <braden@endoframe.com>
 dnl
 AC_DEFUN([AX_CHECK_GL],
@@ -48,26 +48,33 @@ else
 
   AC_LANG_PUSH(C)
 
-  ax_save_CPPFLAGS="${CPPFLAGS}"
-  CPPFLAGS="${GL_CFLAGS} ${CPPFLAGS}"
+  AC_CHECK_HEADERS([windows.h])
 
   AC_CACHE_CHECK([for OpenGL library], [ax_cv_check_gl_libgl],
   [ax_cv_check_gl_libgl="no"
+  ax_save_CPPFLAGS="${CPPFLAGS}"
+  CPPFLAGS="${GL_CFLAGS} ${CPPFLAGS}"
   ax_save_LIBS="${LIBS}"
   LIBS=""
   ax_check_libs="-lopengl32 -lGL"
-  for ax_lib in ${ax_check_libs}; do
-    LIBS="${ax_lib} ${GL_LIBS} ${ax_save_LIBS}"
+    for ax_lib in ${ax_check_libs}; do
+    if test "X$CC" = "Xcl"; then
+      ax_try_lib=`echo $ax_lib | sed -e 's/^-l//' -e 's/$/.lib/'`
+    else
+      ax_try_lib="${ax_lib}"
+    fi
+    LIBS="${ax_try_lib} ${GL_LIBS} ${ax_save_LIBS}"
     AC_TRY_LINK([
-# ifdef _WIN32
+# if HAVE_WINDOWS_H && defined(_WIN32)
 #   include <windows.h>
 # endif
 # include <GL/gl.h>
 ],
     [glBegin(0)],
-    [ax_cv_check_gl_libgl="${ax_lib}"; break])
+    [ax_cv_check_gl_libgl="${ax_try_lib}"; break])
   done
-  LIBS=${ax_save_LIBS}])
+  LIBS=${ax_save_LIBS}
+  CPPFLAGS=${ax_save_CPPFLAGS}])
 
   if test "X${ax_cv_check_gl_libgl}" = "Xno"; then
     no_gl="yes"
@@ -76,30 +83,46 @@ else
 
     AC_CACHE_CHECK([for OpenGL Utility library], [ax_cv_check_gl_libglu],
     [ax_cv_check_gl_libglu="no"
+    ax_save_CPPFLAGS="${CPPFLAGS}"
+    CPPFLAGS="${GL_CFLAGS} ${CPPFLAGS}"
     ax_save_LIBS="${LIBS}"
     LIBS=""
     ax_check_libs="-lglu32 -lGLU"
     for ax_lib in ${ax_check_libs}; do
-      LIBS="${ax_lib} ${GL_LIBS} ${ax_save_LIBS}"
-      AC_LANG_PUSH([C++])
+      if test "X$CC" = "Xcl"; then
+        ax_try_lib=`echo $ax_lib | sed -e 's/^-l//' -e 's/$/.lib/'`
+      else
+        ax_try_lib="${ax_lib}"
+      fi
+      LIBS="${ax_try_lib} ${GL_LIBS} ${ax_save_LIBS}"
+      #
+      # libGLU typically links with libstdc++ on POSIX platforms. However, setting the
+      # language to C++ means that test program source is named "conftest.cc"; and
+      # Microsoft cl doesn't know what to do with such a file.
+      #
+      if test "X$CXX" != "Xcl"; then
+        AC_LANG_PUSH([C++])
+      fi
       AC_TRY_LINK([
-# ifdef _WIN32
+# if HAVE_WINDOWS_H && defined(_WIN32)
 #   include <windows.h>
 # endif
 # include <GL/glu.h>
 ],
       [gluBeginCurve(0)],
-      [ax_cv_check_gl_libglu="${ax_lib}"; break])
-      AC_LANG_POP([C++])
+      [ax_cv_check_gl_libglu="${ax_try_lib}"; break])
+      if test "X$CXX" != "Xcl"; then
+        AC_LANG_POP([C++])
+      fi
     done
-    LIBS=${ax_save_LIBS}])
+    LIBS=${ax_save_LIBS}
+    CPPFLAGS=${ax_save_CPPFLAGS}])
     if test "X${ax_cv_check_gl_libglu}" = "Xno"; then
       no_gl="yes"
     else
       GL_LIBS="${ax_cv_check_gl_libglu} ${GL_LIBS}"
     fi
   fi
-  CPPFLAGS="${ax_save_CPPFLAGS}"
   AC_LANG_POP(C)
 fi
 

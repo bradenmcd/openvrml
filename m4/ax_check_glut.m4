@@ -10,7 +10,7 @@ dnl set to "yes".
 dnl
 dnl @copyright (C) 2003 Braden McDaniel
 dnl @license GNU GPL
-dnl @version $Id: ax_check_glut.m4,v 1.3 2003-03-27 04:17:29 braden Exp $
+dnl @version $Id: ax_check_glut.m4,v 1.4 2003-07-25 23:43:20 braden Exp $
 dnl @author Braden McDaniel <braden@endoframe.com>
 dnl
 AC_DEFUN([AX_CHECK_GLUT],
@@ -42,15 +42,20 @@ else
   LIBS=""
   ax_check_libs="-lglut32 -lglut"
   for ax_lib in ${ax_check_libs}; do
-    LIBS="${ax_lib} ${GLUT_LIBS} ${ax_save_LIBS}"
+    if test "X$CC" = "Xcl"; then
+      ax_try_lib=`echo $ax_lib | sed -e 's/^-l//' -e 's/$/.lib/'`
+    else
+      ax_try_lib="${ax_lib}"
+    fi
+    LIBS="${ax_try_lib} ${GLUT_LIBS} ${ax_save_LIBS}"
     AC_TRY_LINK([
-# ifdef _WIN32
+# if HAVE_WINDOWS_H && defined(_WIN32)
 #   include <windows.h>
 # endif
 # include <GL/glut.h>
   ],
     [glutMainLoop()],
-    [ax_cv_check_glut_libglut="${ax_lib}"; break])
+    [ax_cv_check_glut_libglut="${ax_try_lib}"; break])
 
   done
   LIBS=${ax_save_LIBS}
