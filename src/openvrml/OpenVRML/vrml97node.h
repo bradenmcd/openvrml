@@ -2286,6 +2286,7 @@ namespace OpenVRML {
 
         private:
             virtual void do_initialize(double timestamp) throw (std::bad_alloc);
+            virtual void do_shutdown(double timestamp) throw ();
 
             //
             // eventIn handlers

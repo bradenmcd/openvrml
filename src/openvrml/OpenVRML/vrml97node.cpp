@@ -13008,14 +13008,7 @@ Text::Text(const NodeType & nodeType,
  * @brief Destructor.
  */
 Text::~Text() throw ()
-{
-# if OPENVRML_ENABLE_TEXT_NODE
-    if (this->face) {
-        FT_Error ftError = FT_Done_Face(this->face);
-        assert(ftError == FT_Err_Ok); // Surely this can't fail.
-    }
-# endif // OPENVRML_ENABLE_TEXT_NODE
-}
+{}
 
 /**
  * @brief Determine whether the node has been modified.
@@ -13083,6 +13076,21 @@ void Text::do_initialize(const double timestamp) throw (std::bad_alloc)
     this->updateUcs4();
     this->updateFace();
     this->updateGeometry();
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void Text::do_shutdown(const double timestamp) throw ()
+{
+# if OPENVRML_ENABLE_TEXT_NODE
+    if (this->face) {
+        FT_Error ftError = FT_Done_Face(this->face);
+        assert(ftError == FT_Err_Ok); // Surely this can't fail.
+    }
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
