@@ -1,5 +1,9 @@
 2003-07-23  Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-gl/OpenVRML/GL/viewer.cpp:  Oops.
+
+2003-07-23  Braden McDaniel  <braden@endoframe.com>
+
 	Naming convention changes and Doxygen doc improvements.
 
 	* doc/Doxyfile:  Set HIDE_SCOPE_NAMES to NO.

@@ -3360,7 +3360,7 @@ void viewer::insert_texture_reference(const texture_object_t ref, const int nc)
     // Enable blending if needed
     if (this->blend && (nc == 2 || nc == 4)) { glEnable(GL_BLEND); }
 
-    glBindTexture(GL_TEXTURE_2D, GLuint(t));
+    glBindTexture(GL_TEXTURE_2D, GLuint(ref));
 #endif
 }
 
