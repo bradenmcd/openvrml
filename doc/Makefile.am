@@ -12,8 +12,10 @@ manual: html
 html: Doxyfile
 	$(DOXYGEN)
 
-install-data-local:
+installdirs-local:
 	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual
+
+install-data-local:
 	$(INSTALL_DATA) $(srcdir)/manual/* $(DESTDIR)$(docdir)/manual
 
 uninstall-local:

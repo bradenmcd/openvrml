@@ -1,5 +1,10 @@
 2004-11-11 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Makefile.am:  Make documentation directory in
+	installdirs-local.
+
+2004-11-11 Braden McDaniel  <braden@endoframe.com>
+
 	Refactored code into different files. Moved field_value
 	hierarchy into field_value.h; moved event_listener and
 	event_emitter hierarchies into event.h; moved exposedfield
