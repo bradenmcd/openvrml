@@ -4,8 +4,8 @@
 //
 //  VrmlNodeImageTexture.h
 
-#ifndef VRMLNODEIMAGETEXTURE_H
-#define VRMLNODEIMAGETEXTURE_H
+#ifndef  _VRMLNODEIMAGETEXTURE_
+#define  _VRMLNODEIMAGETEXTURE_
 
 #include "VrmlNodeTexture.h"
 #include "VrmlMFString.h"
@@ -29,7 +29,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
@@ -66,4 +66,5 @@ private:
 
 };
 
-#endif
+#endif // _VRMLNODEIMAGETEXTURE_
+

@@ -4,8 +4,8 @@
 //
 //  VrmlNodeDirLight.h
 
-#ifndef VRMLNODEDIRLIGHT_H
-#define VRMLNODEDIRLIGHT_H
+#ifndef  _VRMLNODEDIRLIGHT_
+#define  _VRMLNODEDIRLIGHT_
 
 #include "VrmlNodeLight.h"
 #include "VrmlSFVec3f.h"
@@ -26,7 +26,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName,
@@ -41,4 +41,5 @@ protected:
 
 };
 
-#endif
+#endif _VRMLNODEDIRLIGHT_
+

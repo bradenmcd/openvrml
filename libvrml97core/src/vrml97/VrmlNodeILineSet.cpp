@@ -63,7 +63,7 @@ void VrmlNodeILineSet::cloneChildren(VrmlNamespace* ns)
 
 // TO DO colors
 
-Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer)
+Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
   if (d_coord.get() && d_coordIndex.size() > 0)

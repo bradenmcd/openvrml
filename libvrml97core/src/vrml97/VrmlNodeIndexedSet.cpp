@@ -43,6 +43,15 @@ bool VrmlNodeIndexedSet::isModified() const
 	   (d_coord.get() && d_coord.get()->isModified()) );
 }
 
+void VrmlNodeIndexedSet::updateModified(VrmlNodePath& path)
+{
+  if (this->isModified()) markPathModified(path, true);
+  path.push_front(this);
+  if (d_color.get()) d_color.get()->updateModified(path);
+  if (d_coord.get()) d_coord.get()->updateModified(path);
+  path.pop_front();
+}
+
 void VrmlNodeIndexedSet::clearFlags()
 {
   VrmlNode::clearFlags();

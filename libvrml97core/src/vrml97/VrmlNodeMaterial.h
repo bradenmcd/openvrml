@@ -4,8 +4,8 @@
 //
 //  VrmlNodeMaterial.h
 
-#ifndef VRMLNODEMATERIAL_H
-#define VRMLNODEMATERIAL_H
+#ifndef  _VRMLNODEMATERIAL_
+#define  _VRMLNODEMATERIAL_
 
 #include "VrmlNode.h"
 #include "VrmlSFColor.h"
@@ -28,7 +28,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
@@ -51,4 +51,5 @@ private:
 
 };
 
-#endif
+#endif _VRMLNODEMATERIAL_
+

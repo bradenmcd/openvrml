@@ -4,8 +4,8 @@
 //  VrmlNodeElevationGrid.h
 //
 
-#ifndef VRMLNODEELEVATIONGRID_H
-#define VRMLNODEELEVATIONGRID_H
+#ifndef  _VRMLNODEELEVATIONGRID_
+#define  _VRMLNODEELEVATIONGRID_
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFBool.h"
@@ -29,6 +29,7 @@ public:
   virtual void cloneChildren(VrmlNamespace *);
 
   virtual bool isModified() const;
+  virtual void updateModified(VrmlNodePath& path);
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
@@ -37,7 +38,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual Viewer::Object insertGeometry(Viewer *);
+  virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
@@ -78,4 +79,4 @@ protected:
 
 };
 
-#endif
+#endif _VRMLNODEELEVATIONGRID_

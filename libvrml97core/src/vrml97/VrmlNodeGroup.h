@@ -4,16 +4,20 @@
 //
 //  VrmlNodeGroup.h
 
-#ifndef VRMLNODEGROUP_H
-#define VRMLNODEGROUP_H
+#ifndef  _VRMLNODEGROUP_
+#define  _VRMLNODEGROUP_
 
 #include "VrmlMFNode.h"
 #include "VrmlSFString.h"
 #include "VrmlSFVec3f.h"
+#include "VrmlBSphere.h"
+
 #include "VrmlNodeChild.h"
 #include "Viewer.h"
 
-
+/**
+ * VrmlNodeGroup
+ */
 class VrmlNodeGroup : public VrmlNodeChild {
 
 public:
@@ -31,6 +35,7 @@ public:
   virtual VrmlNodeGroup* toGroup() const;
 
   virtual bool isModified() const;
+  virtual void updateModified(VrmlNodePath& path, int flags);
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relativeUrl );
@@ -39,7 +44,8 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
+  virtual void renderNoCull(Viewer *, VrmlRenderContext rc);
 
   virtual void accumulateTransform(VrmlNode*);
 
@@ -64,6 +70,8 @@ public:
   // LarryD Feb 11/99
   VrmlMFNode *getNodes()  { return &d_children;}
 
+  const VrmlBVolume* getBVolume() const;
+
 protected:
 
   VrmlSFVec3f d_bboxCenter;
@@ -73,6 +81,19 @@ protected:
   VrmlSFString d_relative;
   VrmlNode *d_parentTransform;
   Viewer::Object d_viewerObject;
+
+  /**
+   * Cached copy of the bsphere enclosing this node's children.
+   */
+  VrmlBSphere d_bsphere;
+
+  /**
+   * Construct a bounding sphere around this node's children. Store it
+   * in d_bsphere.
+   */
+  virtual void recalcBSphere();
+
 };
 
-#endif
+#endif _VRMLNODEGROUP_
+

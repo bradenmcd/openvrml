@@ -4,8 +4,8 @@
 //
 //  VrmlNodeMovieTexture.h
 
-#ifndef VRMLNODEMOVIETEXTURE_H
-#define VRMLNODEMOVIETEXTURE_H
+#ifndef  _VRMLNODEMOVIETEXTURE_
+#define  _VRMLNODEMOVIETEXTURE_
 
 #include "VrmlNodeTexture.h"
 #include "VrmlMFString.h"
@@ -37,7 +37,7 @@ public:
 
   void update( VrmlSFTime &now );
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual void eventIn(double timeStamp,
 		       const char *eventName,
@@ -74,4 +74,5 @@ private:
 
 };
 
-#endif
+#endif // _VRMLNODEMOVIETEXTURE_
+

@@ -234,7 +234,7 @@ void VrmlNodeMovieTexture::eventIn(double timeStamp,
 
 // Render a frame if there is one available.
 
-void VrmlNodeMovieTexture::render(Viewer *viewer)
+void VrmlNodeMovieTexture::render(Viewer *viewer, VrmlRenderContext rc)
 {
   //theSystem->debug("MovieTexture.%s::render frame %d\n", name(), d_frame);
 

@@ -17,7 +17,7 @@
 #include "MathUtils.h"
 #include "VrmlScene.h"
 
-static VrmlNode * creator(VrmlScene * scene) 
+static VrmlNode *creator( VrmlScene *scene ) 
 {
   return new VrmlNodeInline(scene);
 }
@@ -25,7 +25,7 @@ static VrmlNode * creator(VrmlScene * scene)
 
 // Define the built in VrmlNodeType:: "Inline" fields
 
-VrmlNodeType * VrmlNodeInline::defineType(VrmlNodeType * t)
+VrmlNodeType *VrmlNodeInline::defineType(VrmlNodeType *t)
 {
   static VrmlNodeType *st = 0;
   if (! t)
@@ -54,6 +54,7 @@ VrmlNodeInline::VrmlNodeInline(VrmlScene *scene) :
   d_namespace(0),
   d_hasLoaded(false)
 {
+  this->setBVolumeDirty(true);
 }
 
 VrmlNodeInline::~VrmlNodeInline()
@@ -127,6 +128,7 @@ void VrmlNodeInline::load(const char *relativeUrl)
   if (d_hasLoaded) return;
 
   d_hasLoaded = true;		// although perhaps not successfully
+  this->setBVolumeDirty(true);
 
   if (d_url.size() > 0)
     {

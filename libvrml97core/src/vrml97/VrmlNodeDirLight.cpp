@@ -67,7 +67,7 @@ ostream& VrmlNodeDirLight::printFields(ostream& os, int indent)
 
 // This should be called before rendering any sibling nodes.
 
-void VrmlNodeDirLight::render(Viewer *viewer)
+void VrmlNodeDirLight::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if ( d_on.get() )
     viewer->insertDirLight( d_ambientIntensity.get(),

@@ -35,8 +35,9 @@ VrmlNodeColor *VrmlNodeGeometry::color() { return 0; }
 
 // Geometry nodes need only define insertGeometry(), not render().
 
-void VrmlNodeGeometry::render(Viewer *v)
+void VrmlNodeGeometry::render(Viewer *v, VrmlRenderContext rc) 
 {
+  //cout << "VrmlModeGeometry::render()" << endl;
   if ( d_viewerObject && isModified() )
     {
       v->removeObject(d_viewerObject);
@@ -47,7 +48,7 @@ void VrmlNodeGeometry::render(Viewer *v)
     v->insertReference(d_viewerObject);
   else
     {
-      d_viewerObject = insertGeometry(v);
+      d_viewerObject = insertGeometry(v, rc);
       clearModified();
     }
 }

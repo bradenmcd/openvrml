@@ -53,6 +53,7 @@ VrmlNodeGroup::VrmlNodeGroup(VrmlScene *scene) :
   d_parentTransform(0),
   d_viewerObject(0)
 {
+  this->setBVolumeDirty(true);
 }
 
 VrmlNodeGroup::~VrmlNodeGroup()
@@ -78,6 +79,7 @@ void VrmlNodeGroup::cloneChildren(VrmlNamespace *ns)
       kids[i]->dereference();
       kids[i] = newKid;
     }
+  this->setBVolumeDirty(true);
 }
 
 
@@ -99,12 +101,30 @@ bool VrmlNodeGroup::isModified() const
 }
 
 
+void
+VrmlNodeGroup::updateModified(VrmlNodePath& path, int flags)
+{
+  // if the mark_modifed short circuit doesn't
+  // pan out, we should be a little smarter here...
+  //cout << "VrmlNodeGroup[" << this << "]::updateModified()" << endl;
+  if (this->isModified()) markPathModified(path, true, flags);
+  path.push_front(this);
+  int n = d_children.size();
+  //cout << "VrmlNodeGroup[" << this << "]::updateModified():n=" << n << endl;
+  for (int i=0; i<n; ++i) {
+    //cout << "VrmlNodeGroup[" << this << "]::updateModified():" << d_children[i] << endl;
+    d_children[i]->updateModified(path, flags);
+  }
+  path.pop_front();
+}
+
+
+
 void VrmlNodeGroup::clearFlags()
 {
   VrmlNode::clearFlags();
-  
   int n = d_children.size();
-  for (int i = 0; i<n; ++i)
+  for (int i=0; i<n; ++i)
     d_children[i]->clearFlags();
 }
 
@@ -112,6 +132,9 @@ void VrmlNodeGroup::clearFlags()
 void VrmlNodeGroup::addToScene(VrmlScene *s, const char *relativeUrl)
 {
   d_scene = s;
+
+  theSystem->debug("VrmlNodeGroup::addToScene( %s )\n",
+		   relativeUrl ? relativeUrl : "<null>");
 
   const char *currentRel = d_relative.get();
   if ( ! currentRel || ! relativeUrl || strcmp(currentRel, relativeUrl) != 0)
@@ -159,60 +182,87 @@ ostream& VrmlNodeGroup::printFields(ostream& os, int indent)
 
 // Render each of the children
 
-void VrmlNodeGroup::render(Viewer *viewer)
+void VrmlNodeGroup::render(Viewer *viewer, VrmlRenderContext rc)
 {
-    if ( d_viewerObject && isModified() ) {
-        viewer->removeObject(d_viewerObject);
-        d_viewerObject = 0;
+  //cout << "VrmlNodeGroup::render()" << endl;
+
+  if (rc.getCullFlag() != VrmlBVolume::BV_INSIDE) {
+
+    const VrmlBSphere* bs = (const VrmlBSphere*)this->getBVolume();
+    VrmlBSphere bv_copy(*bs);
+    bv_copy.transform((double[4][4])rc.getMatrix());
+    int r = viewer->isectViewVolume(bv_copy);
+    if (rc.getDrawBSpheres())
+      viewer->drawBSphere(*bs, r);
+    //bs->dump(cout);
+
+    if (r == VrmlBVolume::BV_OUTSIDE)
+      return;
+    if (r == VrmlBVolume::BV_INSIDE)
+      rc.setCullFlag(VrmlBVolume::BV_INSIDE);
+
+    //rc.setCullFlag(VrmlBVolume::BV_PARTIAL);
+  }
+
+  renderNoCull(viewer, rc);
+}
+
+
+// because children will already have done the culling, we don't need
+// to repeat it here.
+//
+void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
+{
+  //cout << "VrmlNodeGroup::renderNoCull()" << endl;
+
+  if ( d_viewerObject && isModified() )
+    {
+      viewer->removeObject(d_viewerObject);
+      d_viewerObject = 0;
     }
-    
-    if (d_viewerObject) {
-        
-        viewer->insertReference(d_viewerObject);
-        
-    } else if (d_children.size() > 0) {
-        size_t i, n = d_children.size();
-        size_t nSensors = 0;
-        
-        d_viewerObject = viewer->beginObject(name());
-        
-        // Draw nodes that impact their siblings (DirectionalLights,
-        // TouchSensors, any others? ...)
-        for (i = 0; i < n; ++i) {
-	    VrmlNode * const kid = d_children[i];
-            
-            if (kid) {
-	        if ( kid->toLight() && ! (kid->toPointLight() || kid->toSpotLight()) ) {
-	            kid->render(viewer);
-                } else if (( kid->toTouchSensor() && kid->toTouchSensor()->isEnabled() ) ||
-                           ( kid->toPlaneSensor() && kid->toPlaneSensor()->isEnabled() )) {
-                    if (++nSensors == 1) {
-                        viewer->setSensitive( this );
-                    }
-                }
-            }
-        }     
-        
-        // Do the rest of the children (except the scene-level lights)
-        for (i = 0; i < n; ++i) {
-            if (d_children[i]
-                && !(   d_children[i]->toLight()
-                     || d_children[i]->toPlaneSensor()
-                     || d_children[i]->toTouchSensor()) ) {
-                d_children[i]->render(viewer);
-            }
-        }
-        
-        // Turn off sensitivity
-        if (nSensors > 0) {
-            viewer->setSensitive( 0 );
-        }
-        
-        viewer->endObject();
-        
+
+  if (d_viewerObject)
+    viewer->insertReference(d_viewerObject);
+
+  else if (d_children.size() > 0)
+    {
+      int i, n = d_children.size();
+      int nSensors = 0;
+
+      d_viewerObject = viewer->beginObject(name());
+
+      // Draw nodes that impact their siblings (DirectionalLights,
+      // TouchSensors, any others? ...)
+      for (i = 0; i<n; ++i)
+	{
+	  VrmlNode *kid = d_children[i];
+
+	  if ( kid->toLight() && ! (kid->toPointLight() || kid->toSpotLight()) )
+	    kid->render(viewer, rc);
+	  else if (( kid->toTouchSensor() && kid->toTouchSensor()->isEnabled() ) ||
+		   ( kid->toPlaneSensor() && kid->toPlaneSensor()->isEnabled() ))
+	    {
+	      if (++nSensors == 1)
+		viewer->setSensitive( this );
+	    }
+	}	      
+
+      // Do the rest of the children (except the scene-level lights)
+      for (i = 0; i<n; ++i)
+	if (! (d_children[i]->toLight() ||
+	       d_children[i]->toPlaneSensor() ||
+	       d_children[i]->toTouchSensor()) )
+	  d_children[i]->render(viewer, rc);
+
+      // Turn off sensitivity
+      if (nSensors > 0)
+	viewer->setSensitive( 0 );
+
+      viewer->endObject();
+
     }
-    
-    clearModified();
+
+  clearModified();
 }
 
 
@@ -293,6 +343,7 @@ void VrmlNodeGroup::addChildren( const VrmlMFNode &children )
     {
       //??eventOut( d_scene->timeNow(), "children_changed", d_children );
       setModified();
+      this->setBVolumeDirty(true);
     }
 
 }
@@ -309,6 +360,7 @@ void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
     {
       //??eventOut( d_scene->timeNow(), "children_changed", d_children );
       setModified();
+      this->setBVolumeDirty(true);
     }
 
 }
@@ -321,6 +373,7 @@ void VrmlNodeGroup::removeChildren()
     d_children.removeNode( d_children[i-1] );
 
   setModified();
+  this->setBVolumeDirty(true);
 }
 
 
@@ -373,6 +426,7 @@ void VrmlNodeGroup::setField(const char *fieldName,
   else if TRY_FIELD(children, MFNode)
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
+  this->setBVolumeDirty(true); // overly conservative?
 }
 
 int VrmlNodeGroup::size()
@@ -388,3 +442,32 @@ VrmlNode *VrmlNodeGroup::child(int index)
   return 0;
 }
 
+
+
+const VrmlBVolume* VrmlNodeGroup::getBVolume() const
+{
+  //cout << "VrmlNodeGroup[" << this << "]::getBVolume() {" << endl;
+  if (this->isBVolumeDirty())
+    ((VrmlNodeGroup*)this)->recalcBSphere();
+  //cout << "}:";
+  //d_bsphere.dump(cout) << endl;
+  return &d_bsphere;
+}
+
+
+
+void
+VrmlNodeGroup::recalcBSphere()
+{
+  //cout << "VrmlNodeGroup[" << this << "]::recalcBSphere()" << endl;
+  d_bsphere.reset();
+  for (int i = 0; i<d_children.size(); ++i) {
+    VrmlNode* ci = d_children[i];
+    const VrmlBVolume* ci_bv = ci->getBVolume();
+    if (ci_bv)
+      d_bsphere.extend(*ci_bv);
+  }
+  //cout << "VrmlNodeGroup[" << this << "]::recalcBSphere()";
+  //d_bsphere.dump(cout) << endl;
+  this->setBVolumeDirty(false);
+}

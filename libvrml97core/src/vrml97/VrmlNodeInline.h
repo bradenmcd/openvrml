@@ -4,8 +4,8 @@
 //
 //  VrmlNodeInline.h
 
-#ifndef VRMLNODEINLINE_H
-#define VRMLNODEINLINE_H
+#ifndef  _VRMLNODEINLINE_
+#define  _VRMLNODEINLINE_
 
 #include "VrmlNodeGroup.h"
 #include "VrmlMFString.h"
@@ -49,4 +49,5 @@ protected:
 
 };
 
-#endif
+#endif // _VRMLNODEINLINE_
+

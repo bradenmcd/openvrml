@@ -58,6 +58,7 @@ VrmlNodeIFaceSet::VrmlNodeIFaceSet(VrmlScene *scene) :
   d_normalPerVertex(true),
   d_solid(true)
 {
+  this->setBVolumeDirty(true);
 }
 
 VrmlNodeIFaceSet::~VrmlNodeIFaceSet()
@@ -90,6 +91,18 @@ bool VrmlNodeIFaceSet::isModified() const
 	   (d_coord.get() && d_coord.get()->isModified()) ||
 	   (d_normal.get() && d_normal.get()->isModified()) ||
 	   (d_texCoord.get() && d_texCoord.get()->isModified()) );
+}
+
+void VrmlNodeIFaceSet::updateModified(VrmlNodePath& path, int flags)
+{
+  //cout << "VrmlNodeIFaceSet::updateModified()" << endl;
+  if (this->isModified()) markPathModified(path, true, flags);
+  path.push_front(this);
+  if (d_color.get()) d_color.get()->updateModified(path, flags);
+  if (d_coord.get()) d_coord.get()->updateModified(path, flags);
+  if (d_normal.get()) d_normal.get()->updateModified(path, flags);
+  if (d_texCoord.get()) d_texCoord.get()->updateModified(path, flags);
+  path.pop_front();
 }
 
 void VrmlNodeIFaceSet::clearFlags()
@@ -141,9 +154,14 @@ ostream& VrmlNodeIFaceSet::printFields(ostream& os, int indent)
 
 // TO DO: stripify, crease angle, generate normals ...
 
-Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer)
+Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
+
+  if (rc.getDrawBSpheres()) {
+    const VrmlBSphere* bs = (VrmlBSphere*)this->getBVolume();
+    viewer->drawBSphere(*bs, 4);
+  }
 
   if (d_coord.get() && d_coordIndex.size() > 0)
     {
@@ -246,6 +264,13 @@ void VrmlNodeIFaceSet::setField(const char *fieldName,
   else if TRY_FIELD(texCoordIndex, MFInt)
   else
     VrmlNodeIndexedSet::setField(fieldName, fieldValue);
+
+  // overly conservative: changing the creaseAngle doesn't really
+  // change the bvolume, but the TRY_FIELD macro makes it hard to
+  // case things out. sigh. "clarity over optimization", but it
+  // still rankles...
+  //
+  this->setBVolumeDirty(true);
 }
 
 
@@ -263,3 +288,38 @@ const VrmlMFInt& VrmlNodeIFaceSet::getTexCoordIndex() const
 
 VrmlNodeIFaceSet* VrmlNodeIFaceSet::toIFaceSet() const
 { return (VrmlNodeIFaceSet*) this; }
+
+
+
+void VrmlNodeIFaceSet::recalcBSphere()
+{
+  //cout << "VrmlNodeIFaceSet::recalcBSphere()" << endl;
+
+  // take the bvolume of all the points. technically, we should figure
+  // out just which points are used by the index and just use those,
+  // but for a first pass this is fine (also: if we do it this way
+  // then we don't have to update the bvolume when the index
+  // changes). motto: always do it the simple way first...
+  //
+  VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
+  float* p = coord.get();
+  int n = coord.size();
+  d_bsphere.reset();
+  d_bsphere.enclose(p, n);
+  //int nvert = coord.size();
+  //for(int i=0; i<nvert; i++) {
+  //float* vi = coord[i]; // vi[3]
+  //d_bsphere.extend(vi);
+  //}
+  //d_bsphere.dump(cout);
+  this->setBVolumeDirty(false);
+}
+
+
+const VrmlBVolume* VrmlNodeIFaceSet::getBVolume() const
+{
+  //cout << "VrmlNodeIFaceSet::getBVolume():" << this->isBVolumeDirty() << endl;
+  if (this->isBVolumeDirty())
+    recalcBSphere();
+  return &d_bsphere; // hmmm, const?
+}

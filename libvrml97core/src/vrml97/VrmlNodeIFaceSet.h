@@ -4,14 +4,15 @@
 //
 //  VrmlNodeIFaceSet.h
 
-#ifndef VRMLNODEIFACESET_H
-#define VRMLNODEIFACESET_H
+#ifndef  _VRMLNODEIFACESET_
+#define  _VRMLNODEIFACESET_
 
 #include "VrmlNodeIndexedSet.h"
 #include "VrmlSFBool.h"
 #include "VrmlSFFloat.h"
 #include "VrmlSFNode.h"
 #include "VrmlMFInt.h"
+#include "VrmlBSphere.h"
 
 class VrmlNodeIFaceSet : public VrmlNodeIndexedSet {
 
@@ -28,7 +29,7 @@ public:
   virtual void cloneChildren(VrmlNamespace *);
 
   virtual bool isModified() const;
-
+  virtual void updateModified(VrmlNodePath& path, int flags);
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
@@ -37,7 +38,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual Viewer::Object insertGeometry(Viewer *v);
+  virtual Viewer::Object insertGeometry(Viewer *v, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
@@ -56,6 +57,8 @@ public:
   virtual bool getNormalPerVertex(){ return d_normalPerVertex.get();} // LarryD  Feb18/99
   virtual bool getSolid(){ return d_solid.get();} // LarryD  Feb18/99
 
+  const VrmlBVolume* getBVolume() const;
+
 protected:
 
   VrmlSFBool d_ccw;
@@ -67,7 +70,11 @@ protected:
   VrmlSFBool d_solid;
   VrmlSFNode d_texCoord;
   VrmlMFInt d_texCoordIndex;
+
+  VrmlBSphere d_bsphere;
+  void recalcBSphere();
   
 };
 
-#endif
+#endif // _VRMLNODEIFACESET_
+

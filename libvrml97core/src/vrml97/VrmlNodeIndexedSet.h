@@ -4,8 +4,8 @@
 //
 //  VrmlNodeIndexedSet.h
 
-#ifndef VRMLNODEINDEXEDSET_H
-#define VRMLNODEINDEXEDSET_H
+#ifndef  _VRMLNODEINDEXEDSET_
+#define  _VRMLNODEINDEXEDSET_
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFBool.h"
@@ -24,7 +24,7 @@ public:
   virtual ~VrmlNodeIndexedSet();
 
   virtual bool isModified() const;
-
+  virtual void updateModified(VrmlNodePath& path);
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
@@ -54,4 +54,4 @@ protected:
 
 };
 
-#endif
+#endif _VRMLNODEINDEXEDSET_

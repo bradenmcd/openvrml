@@ -5,8 +5,8 @@
 //  %W% %G%
 //  VrmlNodeILineSet.h
 
-#ifndef VRMLNODEILINESET_H
-#define VRMLNODEILINESET_H
+#ifndef  _VRMLNODEILINESET_
+#define  _VRMLNODEILINESET_
 
 #include "VrmlNodeIndexedSet.h"
 #include "VrmlSFBool.h"
@@ -27,11 +27,11 @@ public:
   virtual VrmlNode *cloneMe() const;
   virtual void cloneChildren(VrmlNamespace*);
 
-  virtual Viewer::Object insertGeometry(Viewer *v);
+  virtual Viewer::Object insertGeometry(Viewer *v, VrmlRenderContext rc);
 
 protected:
 
   // All fields are defined in VrmlNodeIndexedSet
 };
 
-#endif
+#endif // _VRMLNODEILINESET_

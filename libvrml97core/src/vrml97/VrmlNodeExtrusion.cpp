@@ -98,7 +98,7 @@ ostream& VrmlNodeExtrusion::printFields(ostream& os, int indent)
 }
 
 
-Viewer::Object VrmlNodeExtrusion::insertGeometry(Viewer *viewer)
+Viewer::Object VrmlNodeExtrusion::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
   if ( d_crossSection.size() > 0 &&

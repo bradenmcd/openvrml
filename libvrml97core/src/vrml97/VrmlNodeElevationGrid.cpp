@@ -92,6 +92,17 @@ bool VrmlNodeElevationGrid::isModified() const
 	   (d_texCoord.get() && d_texCoord.get()->isModified()) );
 }
 
+void VrmlNodeElevationGrid::updateModified(VrmlNodePath& path)
+{
+  if (this->isModified()) markPathModified(path, true);
+  path.push_front(this);
+  if (d_color.get()) d_color.get()->updateModified(path);
+  if (d_normal.get()) d_normal.get()->updateModified(path);
+  if (d_texCoord.get()) d_texCoord.get()->updateModified(path);
+  path.pop_front();
+}
+
+
 void VrmlNodeElevationGrid::clearFlags()
 {
   VrmlNode::clearFlags();
@@ -145,7 +156,7 @@ VrmlNodeColor *VrmlNodeElevationGrid::color()
 }
 
 
-Viewer::Object VrmlNodeElevationGrid::insertGeometry(Viewer *viewer)
+Viewer::Object VrmlNodeElevationGrid::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
 

@@ -4,8 +4,8 @@
 //
 //  VrmlNodeGeometry.h
 
-#ifndef VRMLNODEGEOMETRY_H
-#define VRMLNODEGEOMETRY_H
+#ifndef  _VRMLNODEGEOMETRY_
+#define  _VRMLNODEGEOMETRY_
 
 #include "VrmlNode.h"
 #include "Viewer.h"
@@ -25,9 +25,9 @@ public:
   virtual VrmlNodeGeometry* toGeometry() const;
 
   // Specific geometry nodes need only define insertGeometry(), not render().
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
-  virtual Viewer::Object insertGeometry(Viewer *) = 0;
+  virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc) = 0;
 
   virtual VrmlNodeColor *color();
 
@@ -37,4 +37,5 @@ protected:
 
 };
 
-#endif
+#endif // _VRMLNODEGEOMETRY_
+

@@ -96,7 +96,7 @@ ostream& VrmlNodeMaterial::printFields(ostream& os, int indent)
 
 // This currently isn't used - see VrmlNodeAppearance.cpp.
 
-void VrmlNodeMaterial::render(Viewer *viewer)
+void VrmlNodeMaterial::render(Viewer *viewer, VrmlRenderContext rc)
 {
   viewer->setMaterial(d_ambientIntensity.get(),
 		      d_diffuseColor.get(),

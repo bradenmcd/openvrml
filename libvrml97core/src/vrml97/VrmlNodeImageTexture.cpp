@@ -77,7 +77,7 @@ ostream& VrmlNodeImageTexture::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeImageTexture::render(Viewer *viewer)
+void VrmlNodeImageTexture::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if ( isModified() )
     {

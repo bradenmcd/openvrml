@@ -3,8 +3,8 @@
 //  Copyright (C) 1998 Chris Morley
 //  VrmlNodeExtrusion.h
 
-#ifndef VRMLNODEEXTRUSION_H
-#define VRMLNODEEXTRUSION_H
+#ifndef  _VRMLNODEEXTRUSION_
+#define  _VRMLNODEEXTRUSION_
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFBool.h"
@@ -28,7 +28,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual Viewer::Object insertGeometry(Viewer *);
+  virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
@@ -60,4 +60,5 @@ protected:
 
 };
 
-# endif
+#endif _VRMLNODEEXTRUSION_
+

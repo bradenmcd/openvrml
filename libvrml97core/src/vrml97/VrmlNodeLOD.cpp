@@ -43,6 +43,7 @@ VrmlNodeType & VrmlNodeLOD::nodeType() const
 VrmlNodeLOD::VrmlNodeLOD(VrmlScene *scene) :
   VrmlNodeChild(scene)
 {
+  setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 VrmlNodeLOD::~VrmlNodeLOD()
@@ -82,6 +83,19 @@ bool VrmlNodeLOD::isModified() const
   return false;
 }
 
+// what happens if one of the other children suddenly becomes the one
+// selected? to be safe: check them all. this potentially means some
+// extra work, but it's a lot easier to reason about.
+//
+void VrmlNodeLOD::updateModified(VrmlNodePath& path)
+{
+  if (this->isModified()) markPathModified(path, true);
+  path.push_front(this);
+ int n = d_level.size();
+  for (int i = 0; i<n; ++i)
+    d_level[i]->updateModified(path);
+  path.pop_front();
+}
 
 void VrmlNodeLOD::clearFlags()
 {
@@ -127,7 +141,7 @@ ostream& VrmlNodeLOD::printFields(ostream& os, int indent)
 
 // Render one of the children
 
-void VrmlNodeLOD::render(Viewer *viewer)
+void VrmlNodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
 {
   clearModified();
   if (d_level.size() <= 0) return;
@@ -153,7 +167,7 @@ void VrmlNodeLOD::render(Viewer *viewer)
 
   //printf("LOD d2 %g level %d\n", d2, i);
 
-  d_level[i]->render(viewer);
+  d_level[i]->render(viewer, rc);
 
   // Don't re-render on their accounts
   n = d_level.size();
@@ -179,6 +193,7 @@ void VrmlNodeLOD::setField(const char *fieldName,
   else if TRY_FIELD(range, MFFloat)
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
+  setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 VrmlNodeLOD* VrmlNodeLOD::toLOD() const 
@@ -189,3 +204,39 @@ const VrmlMFFloat& VrmlNodeLOD::getRange() const
 
 const VrmlSFVec3f& VrmlNodeLOD::getCenter() const   
 {  return d_center; }
+
+
+const VrmlBVolume* VrmlNodeLOD::getBVolume() const
+{
+  //cout << "VrmlNodeLOD[" << this << "]::getBVolume()" << endl;
+  if (this->isBVolumeDirty())
+    ((VrmlNodeLOD*)this)->recalcBSphere();
+  return &d_bsphere;
+}
+
+
+void
+VrmlNodeLOD::recalcBSphere()
+{
+  cout << "VrmlNodeLOD[" << this << "]::recalcBSphere()" << endl;
+  d_bsphere.reset();
+  
+  // let's say our bsphere is the union of the bspheres of all the
+  // levels. we could have said it was just the bsphere of the current
+  // level, but the current level depends on the viewer position, and
+  // we'd like to make the calculation idependent of that. we could do
+  // some sort of trick where we reset the bsphere during render, but
+  // that seems like overkill unless this simpler method proves to be
+  // a bottleneck.
+  // 
+  // hmm: just thought of a problem: one of the uses of the lod is to
+  // switch in delayed-load inlines. this would necessarily switch
+  // them in all at once. live with it for now.
+  //
+  for(int i=0; i<d_level.size(); i++) {
+    const VrmlBVolume* ci_bv = d_level[i]->getBVolume();
+    d_bsphere.extend(*ci_bv);
+
+  }
+  this->setBVolumeDirty(false);
+}
