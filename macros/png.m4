@@ -64,7 +64,7 @@ AC_DEFUN(OV_PATH_LIBPNG,
       AC_TRY_LINK_FUNC(png_read_info,
         [
           ov_save_CPPFLAGS="${CPPFLAGS}"
-          CPPFLAGS="${CPPFLAGS} ${libpng__Idir}"
+          CPPFLAGS="${CPPFLAGS} ${libpng__Idir} ${Z_CFLAGS}"
           AC_TRY_CPP(
             [ #include<png.h> ],
             [
