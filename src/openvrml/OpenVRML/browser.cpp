@@ -1835,6 +1835,15 @@ UnreachableURI::~UnreachableURI() throw () {}
 
 namespace {
 
+# ifdef _WIN32
+    struct IsBackslash : std::unary_function<char, bool> {
+        bool operator()(const char c) const throw ()
+        {
+            return c == '\\';
+        }
+    };
+# endif
+
     const URI createFileURL(const URI & uri) throw ()
     {
         assert(uri.getScheme().empty());
@@ -1844,19 +1853,34 @@ namespace {
         string result = "file://";
         
 # ifdef _WIN32
-        char buffer[_MAX_PATH];
-        const char * resolvedPath =
-                _fullpath(buffer, uri.getPath().c_str(), _MAX_PATH);
-# else
-        char buffer[PATH_MAX];
-        const char * resolvedPath = realpath(uri.getPath().c_str(), buffer);
-# endif
+        //
+        // _fullpath returns a string starting with the drive letter; for the
+        // URL, the path must begin with a '/'. So we simply put one at the
+        // beginning of the buffer.
+        //
+        char buffer[_MAX_PATH] = { '/' };
+        char * resolvedPath =
+                _fullpath(buffer + 1, uri.getPath().c_str(), _MAX_PATH);
         if (!resolvedPath) {
             //
             // XXX Failed; need to check errno to see what we should throw.
             //
             return result;
         }
+        std::replace_if(resolvedPath, resolvedPath + strlen(resolvedPath) + 1,
+                        IsBackslash(), '/');
+        --resolvedPath;
+        assert(resolvedPath == buffer);
+# else
+        char buffer[PATH_MAX];
+        const char * resolvedPath = realpath(uri.getPath().c_str(), buffer);
+        if (!resolvedPath) {
+            //
+            // XXX Failed; need to check errno to see what we should throw.
+            //
+            return result;
+        }
+# endif
         
         result += resolvedPath;
         

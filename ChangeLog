@@ -1,3 +1,8 @@
+2003-01-24  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp:  Convert backslashes in
+          output of _fullpath to slashes.
+
 2003-01-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/VrmlMatrix.h,
