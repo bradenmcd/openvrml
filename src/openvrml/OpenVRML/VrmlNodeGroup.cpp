@@ -84,18 +84,16 @@ VrmlNode *VrmlNodeGroup::cloneMe() const
   return new VrmlNodeGroup(*this);
 }
 
-void VrmlNodeGroup::cloneChildren(VrmlNamespace *ns)
-{
-  int n = d_children.getLength();
-  VrmlNode **kids = d_children.get();
-  for (int i = 0; i<n; ++i)
-    {
-      if (! kids[i]) continue;
-      VrmlNode *newKid = kids[i]->clone(ns)->reference();
-      kids[i]->dereference();
-      kids[i] = newKid;
+void VrmlNodeGroup::cloneChildren(VrmlNamespace * ns) {
+    for (size_t i = 0; i < this->d_children.getLength(); ++i) {
+        if (! this->d_children[i]) {
+            continue;
+        }
+        VrmlNode * const newKid = this->d_children[i]->clone(ns)->reference();
+        this->d_children[i]->dereference();
+        this->d_children[i] = newKid;
     }
-  this->setBVolumeDirty(true);
+    this->setBVolumeDirty(true);
 }
 
 
@@ -340,42 +338,40 @@ void VrmlNodeGroup::activate( double time,
 
 }
 
-
-void VrmlNodeGroup::addChildren( const VrmlMFNode &children )
-{
-  int nNow = d_children.getLength();
-  int n = children.getLength();
-
-  for (int i=0; i<n; ++i)
-    {
-      VrmlNode *child = children[i];
-      VrmlNodeProto *p = 0;
-
-      // Add legal children and un-instantiated EXTERNPROTOs
-      // Is it legal to add null children nodes?
-      if ( child == 0 || child->toChild() ||
-	   ((p = child->toProto()) != 0 && p->size() == 0) )
-	{
-	  d_children.addNode(child);
-	  if (child)
-	    {
-	      child->addToScene( d_scene, d_relative.get() );
-	      child->accumulateTransform( d_parentTransform );
-	    }
-	}
-      else
-	theSystem->error
-	  ("Error: Attempt to add a %s node as a child of a %s node.\n",
-	      child->nodeType().getName(), nodeType().getName());
+/**
+ * @brief Add children from another MFNode.
+ *
+ * Add legal children and un-instantiated EXTERNPROTOs. Children only
+ * get added if they do not already exist in this Group. NULLs in the
+ * argument MFNode are <strong>not</strong> added.
+ *
+ * @param children a MFNode containing the nodes to add to this Group
+ */
+void VrmlNodeGroup::addChildren(const VrmlMFNode & children) {
+    size_t nNow = d_children.getLength();
+    size_t n = children.getLength();
+    
+    for (size_t i = 0; i < n; ++i) {
+        VrmlNode * child = children[i];
+        VrmlNodeProto *p = 0;
+        
+        if (child && (child->toChild() ||
+	        ((p = child->toProto()) != 0 && p->size() == 0))) {
+	    d_children.addNode(child);
+	    child->addToScene( d_scene, d_relative.get() );
+	    child->accumulateTransform( d_parentTransform );
+	} else {
+	    theSystem->error(
+                "Error: Attempt to add a %s node as a child of a %s node.\n",
+	        child->nodeType().getName(), nodeType().getName());
+        }
     }
-
-  if (nNow != (int) d_children.getLength())
-    {
-      //??eventOut( d_scene->timeNow(), "children_changed", d_children );
-      setModified();
-      this->setBVolumeDirty(true);
+    
+    if (nNow != d_children.getLength()) {
+        //??eventOut( d_scene->timeNow(), "children_changed", d_children );
+        setModified();
+        this->setBVolumeDirty(true);
     }
-
 }
 
 void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )

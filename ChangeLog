@@ -1,3 +1,17 @@
+2000-12-30  Braden McDaniel  <braden@endoframe.com>
+
+        * API improvements to VrmlMFNode: added const version of
+          operator[] and a non-const version that can be used as an
+          l-value; added setLength method; made addNode and removeNode
+          return bool to indicate the success or failure of the
+          operation.
+
+        * Changed semantics for VrmlMFNode::addNode() and
+          ::removeNode(). These methods nolonger add or remove NULLs.
+          This trickles up to the addChildren and removeChildren
+          operation on grouping nodes, which will nolonger add or remove
+          NULLs as well.
+
 2000-12-18  Braden McDaniel  <braden@endoframe.com>
 
         * Const-correctness changes to Viewer and ViewerOpenGL.

@@ -17,36 +17,17 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
-//  VrmlNodeProto handles instances of nodes defined via PROTO 
-//  statements.
-//
-//  Instances of PROTOs clone the implementation nodes stored
-//  in a VrmlNodeType object. The only tricky parts are to
-//  make sure ROUTEs are properly copied (the DEF name map is
-//  not available) and that fields are copied properly (the
-//  MF* guys currently share data & need to be made copy-on-
-//  write for this to be correct). Flags are set as each node
-//  is cloned so that USEd nodes are referenced rather than
-//  duplicated.
-//
-//  ROUTEs: Build a temp namespace as each (named) implementation
-//  node is cloned, then traverse the implementation nodes again,
-//  reproducing the routes in the cloned nodes using the temp ns.
-//  I think that the addToScene() method is the right place to
-//  download EXTERNPROTO implementations. Should also check that
-//  the first node matches the expected type (need to store the
-//  expected type if first node is null when one of the type
-//  tests is run).
-//  
-//  Events between nodes in the PROTO implementation are handled
-//  by the ROUTE copying described above. For eventIns coming into
-//  the proto, when the implementation nodes are copied, a list
-//  of eventIns/exposedFields along with their IS mappings should
-//  be constructed.
-//  EventOuts from an implementation node to a node outside the
-//  PROTO can be directly replaced at copy time.
-//
 
+
+/**
+ * @class VrmlNodeProto
+ *
+ * @brief A VrmlNodeProto object represents an instance of a PROTOd node.
+ *
+ * The definition of the PROTO is stored in a VrmlNodeType object;
+ * the VrmlNodeProto object stores a local copy of the implementation
+ * nodes.
+ */
 #include "VrmlNodeProto.h"
 #include "VrmlNamespace.h"
 #include "VrmlMFNode.h"
@@ -61,6 +42,34 @@
 #ifdef macintosh
 extern char* strdup( const char* );
 #endif
+
+//
+// Instances of PROTOs clone the implementation nodes stored
+// in a VrmlNodeType object. The only tricky parts are to
+// make sure ROUTEs are properly copied (the DEF name map is
+// not available) and that fields are copied properly (the
+// MF* guys currently share data & need to be made copy-on-
+// write for this to be correct). Flags are set as each node
+// is cloned so that USEd nodes are referenced rather than
+// duplicated.
+//
+// ROUTEs: Build a temp namespace as each (named) implementation
+// node is cloned, then traverse the implementation nodes again,
+// reproducing the routes in the cloned nodes using the temp ns.
+// I think that the addToScene() method is the right place to
+// download EXTERNPROTO implementations. Should also check that
+// the first node matches the expected type (need to store the
+// expected type if first node is null when one of the type
+// tests is run).
+//
+// Events between nodes in the PROTO implementation are handled
+// by the ROUTE copying described above. For eventIns coming into
+// the proto, when the implementation nodes are copied, a list
+// of eventIns/exposedFields along with their IS mappings should
+// be constructed.
+// EventOuts from an implementation node to a node outside the
+// PROTO can be directly replaced at copy time.
+//
 
 VrmlNodeType & VrmlNodeProto::nodeType() const
 {
@@ -165,18 +174,18 @@ void VrmlNodeProto::instantiate()
       // indicates a USEd node, which should be referenced rather
       // than cloned.
       for (i=0; i<nNodes; ++i)
-	protoNodes->get(i)->clearFlags();
+	(*protoNodes)[i]->clearFlags();
 
       // Clone nodes
       // Those squeamish about broken encapsulations shouldn't look...
-      d_nodes = new VrmlMFNode(nNodes, 0);
-      VrmlNode **clone = d_nodes->get();
+      d_nodes = new VrmlMFNode(nNodes);
+//      VrmlNode **clone = d_nodes->get();
       for (i=0; i<nNodes; ++i)
-	clone[i] = protoNodes->get(i)->clone( d_scope )->reference();
+	(*this->d_nodes)[i] = (*protoNodes)[i]->clone(d_scope)->reference();
 
       // Copy internal (to the PROTO implementation) ROUTEs.
       for (i=0; i<nNodes; ++i)
-	protoNodes->get(i)->copyRoutes( d_scope );
+	(*protoNodes)[i]->copyRoutes( d_scope );
 
       // Collect eventIns coming from outside the PROTO.
       // A list of eventIns along with their maps to local
@@ -275,7 +284,7 @@ void VrmlNodeProto::addToScene(VrmlScene *s, const char *relUrl)
       const char *rel = d_nodeType->url();
       int j, n = d_nodes->getLength();
       for (j=0; j<n; ++j)
-	d_nodes->get(j)->addToScene(s, rel ? rel : relUrl);
+	(*d_nodes)[j]->addToScene(s, rel ? rel : relUrl);
     }
 }
 
@@ -294,7 +303,7 @@ void VrmlNodeProto::accumulateTransform( VrmlNode *n )
     {
       int i, j = d_nodes->getLength();
       for (i=0; i<j; ++i)
-	d_nodes->get(i)->accumulateTransform(n);
+	(*d_nodes)[i]->accumulateTransform(n);
     }
 }
 
@@ -324,7 +333,7 @@ ostream& VrmlNodeProto::printFields(ostream& os, int )
 VrmlNode *VrmlNodeProto::firstNode() const 
 {
   return ((d_nodes && d_nodes->getLength())
-	  ? d_nodes->get(0)
+	  ? (*d_nodes)[0]
 	  : d_nodeType->firstNode());
 }
 
@@ -481,7 +490,7 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
       // render the nodes with the new values
       int n = d_nodes->getLength();
       for (int j = 0; j<n; ++j)
-	d_nodes->get(j)->render(viewer, rc);
+	(*d_nodes)[j]->render(viewer, rc);
 
       viewer->endObject();
     }

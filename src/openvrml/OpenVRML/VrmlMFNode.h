@@ -17,9 +17,9 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
+
 # ifndef VRMLMFNODE_H
 #   define VRMLMFNODE_H
-
 #   include "VrmlField.h"
 #   include <stddef.h>
 
@@ -27,45 +27,37 @@ class VrmlNode;
 
 class VrmlMFNode : public VrmlField {
 public:
+    explicit VrmlMFNode(VrmlNode * node);
+    explicit VrmlMFNode(size_t length = 0, VrmlNode * const * nodes = 0);
+    VrmlMFNode(VrmlMFNode const & mfnode);
 
-  VrmlMFNode();
-  VrmlMFNode(VrmlNode *);
-  VrmlMFNode(size_t n, VrmlNode * const * v);
-  VrmlMFNode(VrmlMFNode const &);
+    ~VrmlMFNode();
 
-  ~VrmlMFNode();
+    VrmlMFNode& operator=(const VrmlMFNode & mfnode);
 
-  virtual ostream& print(ostream& os) const;
+    VrmlNode * operator[](size_t index) const;
+    VrmlNode * & operator[](size_t index);
 
-  // Assignment. Since the nodes themselves are ref counted,
-  // I don't bother trying to share the NodeLists.
-  VrmlMFNode& operator=(const VrmlMFNode& rhs);
+    size_t getLength() const;
+    void setLength(size_t length);
 
-  virtual VrmlField *clone() const;
+    bool exists(const VrmlNode & node) const;
 
-  virtual VrmlFieldType fieldType() const;
-  virtual const VrmlMFNode* toMFNode() const;
-  virtual VrmlMFNode* toMFNode();
+    bool addNode(VrmlNode * node);
+    bool removeNode(VrmlNode * node);
 
-  size_t getLength() const			{ return d_size; }
-  VrmlNode ** get()			{ return d_v; }
-  VrmlNode* get(size_t index) const		{ return d_v[index]; }
-
-  // can't use this as lhs for now.
-  VrmlNode* operator[](size_t index) const	{ return d_v[index]; }
-
-  bool exists(VrmlNode const * n);
-
-  void addNode(VrmlNode * n);
-  void removeNode(VrmlNode * n);
-
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlMFNode* toMFNode() const;
+    virtual VrmlMFNode* toMFNode();
 
 private:
-
-  VrmlNode **d_v;
-  size_t d_allocated;
-  size_t d_size;
-
+    void realloc(size_t newSize);
+    
+    VrmlNode * * d_v;
+    size_t d_allocated;
+    size_t d_size;
 };
 
 # endif

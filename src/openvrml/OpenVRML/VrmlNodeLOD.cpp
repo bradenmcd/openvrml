@@ -71,16 +71,14 @@ VrmlNode *VrmlNodeLOD::cloneMe() const
   return new VrmlNodeLOD(*this);
 }
 
-void VrmlNodeLOD::cloneChildren(VrmlNamespace *ns)
-{
-  int n = d_level.getLength();
-  VrmlNode **kids = d_level.get();
-  for (int i = 0; i<n; ++i)
-    {
-      if (! kids[i]) continue;
-      VrmlNode *newKid = kids[i]->clone(ns)->reference();
-      kids[i]->dereference();
-      kids[i] = newKid;
+void VrmlNodeLOD::cloneChildren(VrmlNamespace * ns) {
+    for (size_t i = 0; i < this->d_level.getLength(); ++i) {
+        if (! this->d_level[i]) {
+            continue;
+        }
+        VrmlNode * const newKid = this->d_level[i]->clone(ns)->reference();
+        this->d_level[i]->dereference();
+        this->d_level[i] = newKid;
     }
 }
 

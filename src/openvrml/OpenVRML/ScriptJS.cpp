@@ -542,7 +542,7 @@ SFNodeCons(JSContext *cx, JSObject *obj,
       // If there are multiple top-level nodes, wrap them in a Group. SPEC?
       VrmlNode *n;
       if (nodes->getLength() == 1)
-	n = nodes->get()[0];
+	n = (*nodes)[0];
       else
 	{
 	  VrmlNodeGroup *g = new VrmlNodeGroup();
@@ -2147,17 +2147,16 @@ static VrmlField *jsvalToVrmlField( JSContext *cx,
     {
       jsuint len;
       JS_GetArrayLength( cx, JSVAL_TO_OBJECT(v), &len );
-      VrmlMFNode *f = new VrmlMFNode( (int) len, 0 );
-      VrmlNode ** nodes = f->get();
-      for (int i=0; i<(int)len; ++i)
+      VrmlMFNode *f = new VrmlMFNode(len);
+      for (size_t i = 0; i < len; ++i)
 	{
 	  jsval elt;
-	  JS_GetElement( cx, JSVAL_TO_OBJECT(v), (jsint) i, &elt );
+	  JS_GetElement(cx, JSVAL_TO_OBJECT(v), static_cast<jsint>(i), &elt);
 	  VrmlSFNode *child = 0;
 	  if (JSVAL_IS_OBJECT(elt) &&
 	      &SFNodeClass == JS_GetClass( JSVAL_TO_OBJECT(elt) ))
-	    child = (VrmlSFNode *)JS_GetPrivate( cx, JSVAL_TO_OBJECT(elt) );
-	  nodes[i] = child ? child->get()->reference() : 0;
+	    child = static_cast<VrmlSFNode *>(JS_GetPrivate(cx, JSVAL_TO_OBJECT(elt)));
+	  (*f)[i] = child ? child->get()->reference() : 0;
 	}
       return f;
     }
@@ -2549,14 +2548,13 @@ static JSBool createVrmlFromString(JSContext *cx, JSObject* bobj,
       // should store the namespace as well...
       int i, n = kids->getLength();
       jsval *jsvec = new jsval[n];
-      VrmlNode * const * k = kids->get();
 
       for (i=0; i<n; ++i)
 	{
 	  JSObject *obj = JS_NewObject( cx, &SFNodeClass, 0, bobj );
 	  if (! obj) return JS_FALSE;
 	  //uwe JS_SetPrivate( cx, obj, k[i] ? k[i]->reference() : 0);
-	  JS_SetPrivate( cx, obj, new VrmlSFNode(k[i] ? k[i]->reference() : 0));
+	  JS_SetPrivate( cx, obj, new VrmlSFNode((*kids)[i] ? (*kids)[i]->reference() : 0));
 	  jsvec[i] = OBJECT_TO_JSVAL(obj);
 	}
       *rval = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, (jsint)n, jsvec));

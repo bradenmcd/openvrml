@@ -149,36 +149,34 @@ VrmlNode *VrmlNodeScript::cloneMe() const
 // Any SFNode or MFNode fields need to be cloned as well.
 //
 
-void VrmlNodeScript::cloneChildren( VrmlNamespace* ns ) 
-{
-  FieldList::iterator i;
-  for (i = d_fields.begin(); i != d_fields.end(); ++i)
-    if ((*i)->value)
-      {
-	if ( (*i)->type == VrmlField::SFNODE )
-	  {
-	    const VrmlSFNode *sfn = (*i)->value->toSFNode();
-	    if (sfn && sfn->get())
-	      {
-		(*i)->value = new VrmlSFNode( sfn->get()->clone(ns) );
-		delete sfn;
-	      }
-	  }
-
-	else if ( (*i)->type == VrmlField::MFNODE &&
-		  (*i)->value->toMFNode() )
-	  {
-	    int nk = (*i)->value->toMFNode()->getLength();
-	    VrmlNode **kids = (*i)->value->toMFNode()->get();
-	    for (int k=0; k<nk; ++k)
-	      if (kids[k])
-		{
-		  VrmlNode *tmp = kids[k];
-		  kids[k] = tmp->clone(ns);
-		  tmp->dereference();
-		}
-	  }
-      }
+void VrmlNodeScript::cloneChildren(VrmlNamespace * ns) {
+    for (FieldList::iterator itr = this->d_fields.begin();
+            itr != this->d_fields.end(); ++itr) {
+        if ((*itr)->value) {
+            if ((*itr)->type == VrmlField::SFNODE) {
+                assert(dynamic_cast<VrmlSFNode *>((*itr)->value));
+                const VrmlSFNode * const sfn =
+                        static_cast<VrmlSFNode *>((*itr)->value);
+                if (sfn->get()) {
+                    (*itr)->value = new VrmlSFNode(sfn->get()->clone(ns));
+                    delete sfn;
+                }
+            } else if ((*itr)->type == VrmlField::MFNODE) {
+                assert(dynamic_cast<VrmlMFNode *>((*itr)->value));
+                VrmlMFNode * const mfn =
+                        static_cast<VrmlMFNode *>((*itr)->value);
+                for (size_t index = 0;
+                        index < static_cast<VrmlMFNode *>((*itr)->value)->getLength();
+                        ++index) {
+                    if ((*mfn)[index]) {
+                        VrmlNode * const tmp = (*mfn)[index];
+                        (*mfn)[index] = tmp->clone(ns);
+                        tmp->dereference();
+                    }
+                }
+            }
+        }
+    }
 }
 
 

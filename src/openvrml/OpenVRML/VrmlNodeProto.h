@@ -17,15 +17,9 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
+
 #ifndef VRMLNODEPROTO_H
 #define VRMLNODEPROTO_H
-
-//
-// A VrmlNodeProto object represents an instance of a PROTOd node.
-// The definition of the PROTO is stored in a VrmlNodeType object;
-// the VrmlNodeProto object stores a local copy of the implementation
-// nodes.
-//
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

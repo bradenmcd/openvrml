@@ -71,16 +71,14 @@ VrmlNode *VrmlNodeSwitch::cloneMe() const
   return new VrmlNodeSwitch(*this);
 }
 
-void VrmlNodeSwitch::cloneChildren(VrmlNamespace *ns)
-{
-  int n = d_choice.getLength();
-  VrmlNode **kids = d_choice.get();
-  for (int i = 0; i<n; ++i)
-    {
-      if (! kids[i]) continue;
-      VrmlNode *newKid = kids[i]->clone(ns)->reference();
-      kids[i]->dereference();
-      kids[i] = newKid;
+void VrmlNodeSwitch::cloneChildren(VrmlNamespace * ns) {
+    for (size_t i = 0; i < this->d_choice.getLength(); ++i) {
+        if (! this->d_choice[i]) {
+            continue;
+        }
+        VrmlNode * const newKid = this->d_choice[i]->clone(ns)->reference();
+        this->d_choice[i]->dereference();
+        this->d_choice[i] = newKid;
     }
 }
 
