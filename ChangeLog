@@ -1,3 +1,8 @@
+2002-09-27  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Remove the directory regex. This library is under GPL whereas
+          OpenVRML is under LGPL.
+
 2002-09-26  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Create a directory under "lib" by name "regex" to put
