@@ -22,6 +22,8 @@ static void buildViewpointMenu();
 VrmlScene *vrmlScene = 0;
 ViewerGlut   *viewer = 0;
 
+static bool setTitleUrl = true;
+
 
 int
 main(int argc, char **argv)
@@ -45,6 +47,8 @@ main(int argc, char **argv)
 	{
 	  if (strcmp(argv[i], "-url") == 0)
 	    inputUrl = argv[++i];
+	  else if (strcmp(argv[i], "-notitle") == 0)
+	    setTitleUrl = false;
 	  else
 	    {
 	      cerr << "Error: unrecognized option " << argv[i] << '\n';
@@ -115,7 +119,7 @@ static void worldChangedCB(int reason)
 
     case VrmlScene::REPLACE_WORLD:
       Doc *urlDoc = vrmlScene->urlDoc();
-      if (urlDoc)
+      if (urlDoc && setTitleUrl)
 	{
 	  const char *title = urlDoc->urlBase();
 	  if (title && *title) glutSetWindowTitle(title);
