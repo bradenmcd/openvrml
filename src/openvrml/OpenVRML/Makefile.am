@@ -260,5 +260,5 @@ OpenVRMLinclude_HEADERS = \
 noinst_HEADERS = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp ScriptJS.h \
 gifread.h jpgread.h mpgread.h pngread.h sound.h Vrml97Scanner.h
 
-EXTRA_DIST = vrml97scanner.cpp Vrml97TokenTypes.txt Vrml97Parser.cpp \
+EXTRA_DIST = Vrml97Scanner.cpp Vrml97TokenTypes.txt Vrml97Parser.cpp \
 Vrml97Parser.hpp Vrml97ParserTokenTypes.txt Vrml97Parser.g ScriptJS.cpp
