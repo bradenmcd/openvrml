@@ -190,7 +190,7 @@ void VrmlNodeGroup::render(Viewer *viewer, VrmlRenderContext rc)
 
     const VrmlBSphere* bs = (const VrmlBSphere*)this->getBVolume();
     VrmlBSphere bv_copy(*bs);
-    bv_copy.transform((double[4][4])rc.getMatrix());
+    bv_copy.transform(rc.getMatrix());
     int r = viewer->isectViewVolume(bv_copy);
     if (rc.getDrawBSpheres())
       viewer->drawBSphere(*bs, r);
