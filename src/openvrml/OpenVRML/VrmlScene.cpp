@@ -66,7 +66,9 @@ VrmlScene::VrmlScene(const std::string & sceneUrl,
         d_modified(false), d_newView(false), d_deltaTime(DEFAULT_DELTA),
         d_pendingUrl(0), d_pendingParameters(0), d_pendingNodes(0),
         d_pendingScope(0), d_frameRate(0.0), d_firstEvent(0), d_lastEvent(0) {
-    d_nodes.addToScene(this, sceneUrl);
+    for (size_t i = 0; i < this->nodes.getLength(); ++i) {
+        this->nodes.getElement(i)->addToScene(this, sceneUrl);
+    }
     d_backgrounds = new VrmlNodeList;
     d_backgroundStack = new VrmlNodeList;
     d_fogs = new VrmlNodeList;

@@ -210,9 +210,6 @@ protected:
     Doc2 * d_url;
     Doc2 * d_urlLocal;
 
-    // Scene graph
-    VrmlNodeGroup d_nodes;
-
     // Nodes and node types defined in this scope
     VrmlNamespace *d_namespace;
 
