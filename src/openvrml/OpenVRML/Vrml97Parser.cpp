@@ -191,7 +191,7 @@ void Vrml97Parser::statement(
 #line 168 "Vrml97Parser.g"
 			
 			assert(node);
-			mfNode.addNode(node);
+			mfNode.addNode(*node);
 			
 #line 197 "Vrml97Parser.cpp"
 			break;
@@ -2945,7 +2945,7 @@ VrmlMFNode *  Vrml97Parser::mfNodeValue(
 					n=nodeStatement(vrmlNamespace, doc);
 #line 1040 "Vrml97Parser.g"
 					
-					mnv->addNode(n);
+					mnv->addNode(*n);
 					
 #line 2951 "Vrml97Parser.cpp"
 				}
@@ -3053,7 +3053,7 @@ VrmlMFNode *  Vrml97Parser::protoMfNodeValue(
 					n=protoNodeStatement(doc, protoNodeType);
 #line 1058 "Vrml97Parser.g"
 					
-					mnv->addNode(n);
+					mnv->addNode(*n);
 					
 #line 3059 "Vrml97Parser.cpp"
 				}

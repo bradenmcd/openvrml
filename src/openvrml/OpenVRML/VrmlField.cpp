@@ -2339,13 +2339,13 @@ bool VrmlMFNode::exists(const VrmlNode & node) const {
  * @return <code>true</code> if a node was added, <code>false</code>
  *         otherwise
  */
-bool VrmlMFNode::addNode(VrmlNode * node) {
-    if (node && !exists(*node)) {
+bool VrmlMFNode::addNode(VrmlNode & node) {
+    if (!exists(node)) {
         if (this->d_allocated < d_size + 1) {
             this->realloc(this->d_allocated + 10);
         }
         
-        this->d_v[this->d_size++] = node->reference();
+        this->d_v[this->d_size++] = node.reference();
         
         return true;
     }
@@ -2363,17 +2363,15 @@ bool VrmlMFNode::addNode(VrmlNode * node) {
  * @return <code>true</code> if a node was removed, <code>false</code>
  *         otherwise
  */
-bool VrmlMFNode::removeNode(VrmlNode * node) {
-    if (node) {
-        for (size_t i = 0; i < this->d_size; ++i) {
-            if (this->d_v[i] == node) {
-	        d_v[i]->dereference();
-                for (size_t j = i; j < this->d_size - 1; ++j) {
-                    this->d_v[j] = this->d_v[j + 1];
-                }
-	        --this->d_size;
-	        return true;
+bool VrmlMFNode::removeNode(const VrmlNode & node) {
+    for (size_t i = 0; i < this->d_size; ++i) {
+        if (this->d_v[i] == &node) {
+	    d_v[i]->dereference();
+            for (size_t j = i; j < this->d_size - 1; ++j) {
+                this->d_v[j] = this->d_v[j + 1];
             }
+	    --this->d_size;
+	    return true;
         }
     }
     return false;

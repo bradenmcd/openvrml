@@ -6,6 +6,9 @@
         * Fixed VrmlNodeGroup::recalcBSphere() to account for nulls in
           the MFNode array.
 
+        * Changed VrmlMFNode::addNode() and ::removeNode() to take
+          VrmlNode references (rather than pointers).
+
 2001-02-05  Braden McDaniel  <braden@endoframe.com>
 
         * Removed dynamic_cast in assertions in VrmlNodeAppearance's,

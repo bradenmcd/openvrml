@@ -167,7 +167,7 @@ statement[VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc]
     :   node=nodeStatement[vrmlNamespace, doc]
         {
             assert(node);
-            mfNode.addNode(node);
+            mfNode.addNode(*node);
         }
     |   protoStatement[vrmlNamespace, doc]
     |   routeStatement[vrmlNamespace]
@@ -1038,7 +1038,7 @@ mfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlMFNode
         (
             n=nodeStatement[vrmlNamespace, doc]
             {
-                mnv->addNode(n);
+                mnv->addNode(*n);
             }
         )* RBRACKET
     ;
@@ -1056,7 +1056,7 @@ protoMfNodeValue[Doc2 const * doc, VrmlNodeType & protoNodeType] returns [VrmlMF
         (
             n=protoNodeStatement[doc, protoNodeType]
             {
-                mnv->addNode(n);
+                mnv->addNode(*n);
             }
         )* RBRACKET
     ;

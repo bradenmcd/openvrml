@@ -42,8 +42,8 @@ public:
 
     bool exists(const VrmlNode & node) const;
 
-    bool addNode(VrmlNode * node);
-    bool removeNode(VrmlNode * node);
+    bool addNode(VrmlNode & node);
+    bool removeNode(const VrmlNode & node);
 
     virtual ostream& print(ostream& os) const;
     virtual VrmlField *clone() const;
