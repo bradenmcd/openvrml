@@ -15,7 +15,7 @@ AC_DEFUN(AM_PATH_VRML,
     dnl
     dnl Test for libvrml97
     dnl
-    AC_MSG_CHECKING([for LibVRML97])
+    AC_MSG_CHECKING([for libvrml97])
     ac_save_CPPFLAGS="${CPPFLAGS}"
     CPPFLAGS="${CPPFLAGS} ${vrml__Idir}"
     ac_save_LIBS="${LIBS}"
