@@ -286,6 +286,8 @@ public:
 
   // Delete a ROUTE from a field in this node
   void deleteRoute(const char *fromField, VrmlNode *toNode, const char *toField);
+  
+  Route * getRoutes();
 
   // Pass a named event to this node. This method needs to be overridden
   // to support any node-specific eventIns behaviors, but exposedFields

@@ -1,3 +1,8 @@
+2001-01-20  Braden McDaniel  <braden@endoframe.com>
+
+        * Added getRoutes() method to VrmlNode, per patch from Joe
+          HerdMan.
+
 2001-01-19  Braden McDaniel  <braden@endoframe.com>
 
         * Fixed misidentified token ID constant in `Vrml97Scanner.cpp'.

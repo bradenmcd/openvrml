@@ -307,6 +307,14 @@ void VrmlNode::deleteRoute(const char *fromEventOut,
     }
 }
 
+/**
+ * @brief Get the routes from this node.
+ *
+ * @return a pointer to the first Route in the list.
+ */
+Route * VrmlNode::getRoutes() {
+    return this->d_routes;
+}
 
 // Dirty bit - indicates node needs to be revisited for rendering.
 
