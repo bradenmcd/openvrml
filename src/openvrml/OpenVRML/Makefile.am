@@ -69,7 +69,6 @@ OpenVRMLinclude_HEADERS = \
         nodeclassptr.h \
         bvolume.h \
         script.h \
-        ScriptJDK.h \
         browser.h \
         Viewer.h \
         font.h \
@@ -77,7 +76,12 @@ OpenVRMLinclude_HEADERS = \
         VrmlFrustum.h \
         vrml97node.h
 
-noinst_HEADERS = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp private.h sound.h
+noinst_HEADERS = \
+        Vrml97Parser.hpp \
+        Vrml97ParserTokenTypes.hpp \
+        private.h \
+        sound.h \
+        ScriptJDK.h
 
 EXTRA_DIST = Vrml97TokenTypes.txt Vrml97Parser.cpp Vrml97Parser.hpp \
 Vrml97ParserTokenTypes.txt Vrml97Parser.g
