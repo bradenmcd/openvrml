@@ -1,3 +1,23 @@
+2004-04-09 Braden McDaniel  <braden@endoframe.com>
+
+	Fixes for self-referential Script nodes.  This usage was broken
+	when initialization was folded into node construction.  Since
+	fields are parsed before the node instance exists, there is no
+	reference to use when the self-reference is encountered during
+	parsing.  To resolve this, a special value is reserved for
+	node_ptr.  When the script_node constructor sees this value, it
+	is replaced with a self-reference.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node_ptr.cpp
+	* src/libopenvrml/openvrml/node_ptr.h
+	* src/libopenvrml/openvrml/script.cpp
+	* test/parse/testsuite/parse.good/self-referential-script-in-proto.wrl
+	* test/parse/testsuite/parse.good/self-referential-script.wrl
+
 2004-04-08 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp (browser::browser):  Call
