@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  ViewerOpenGL.h
 //  Abstract class for display of VRML models using OpenGL/Mesa.
 //  A window-system specific subclass needs to redefine the pure
@@ -53,6 +52,9 @@ public:
   // Queries
   virtual void getPosition( float *x, float *y, float *z );
   virtual void getOrientation( float *orientation );
+
+  // S. K. Bose March 02/2000
+  virtual void getBillboardTransformMatrix(float [4][4], float *);
 
   virtual RenderMode getRenderMode();
   virtual double getFrameRate();
