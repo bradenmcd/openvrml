@@ -1646,7 +1646,7 @@ namespace {
                 using std::string;
                 using boost::lexical_cast;
 
-                const char * exec_path = g_getenv("OPENVRML_PLAYER");
+                const char * exec_path = getenv("OPENVRML_PLAYER");
                 if (!exec_path) {
                     exec_path = OPENVRML_LIBEXECDIR_ "/openvrml-player";
                 }
