@@ -4,6 +4,9 @@
           src/openvrml/OpenVRML/field.h:  Added operator==, operator!=
           for FieldValue classes.
 
+        * src/openvrml/OpenVRML/field.cpp:  Fixed const-correctness
+          problem caught by gcc 3.2.1.
+
 2003-01-15  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp:  Removed obsolete code.

@@ -3025,8 +3025,8 @@ namespace {
 
     template <typename ElementType, size_t ArraySize>
     struct array_equal {
-        bool operator()(ElementType (&lhs)[ArraySize],
-                        ElementType (&rhs)[ArraySize]) const
+        bool operator()(const ElementType (&lhs)[ArraySize],
+                        const ElementType (&rhs)[ArraySize]) const
         {
             return std::equal(lhs, lhs + ArraySize, rhs);
         }
