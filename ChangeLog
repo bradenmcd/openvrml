@@ -1,3 +1,9 @@
+2003-01-23  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/VrmlMatrix.h,
+          src/openvrml/OpenVRML/field.h:  Removed unnecessary
+          applications of OPENVRML_SCOPE.
+
 2003-01-19  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp,

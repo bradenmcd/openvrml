@@ -35,8 +35,6 @@ namespace OpenVRML {
                                              const VrmlMatrix & mat);
     bool OPENVRML_SCOPE operator==(const VrmlMatrix & lhs,
                                    const VrmlMatrix & rhs) throw ();
-    bool OPENVRML_SCOPE operator!=(const VrmlMatrix & lhs,
-                                   const VrmlMatrix & rhs) throw ();
 
     class SFVec3f;
     class SFRotation;

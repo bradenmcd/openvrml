@@ -1060,8 +1060,8 @@ namespace OpenVRML {
         throw ();
 
     class OPENVRML_SCOPE MFVec2f : public FieldValue {
-        friend bool OPENVRML_SCOPE operator==(const MFVec2f & lhs,
-                                              const MFVec2f & rhs) throw ();
+        friend bool operator==(const MFVec2f & lhs, const MFVec2f & rhs)
+            throw ();
 
         void * values;
 
@@ -1106,8 +1106,8 @@ namespace OpenVRML {
         throw ();
 
     class OPENVRML_SCOPE MFVec3f : public FieldValue {
-        friend bool OPENVRML_SCOPE operator==(const MFVec3f & lhs,
-                                              const MFVec3f & rhs) throw ();
+        friend bool operator==(const MFVec3f & lhs, const MFVec3f & rhs)
+            throw ();
 
         void * values;
 
