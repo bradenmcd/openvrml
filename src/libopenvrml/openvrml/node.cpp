@@ -786,166 +786,6 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @internal
  *
- * @var node::exposedfield<sfbool>
- *
- * @brief sfbool exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<sfcolor>
- *
- * @brief sfcolor exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<sffloat>
- *
- * @brief sffloat exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<sfimage>
- *
- * @brief sfimage exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<sfint32>
- *
- * @brief sfint32 exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<sfnode>
- *
- * @brief sfnode exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<sfrotation>
- *
- * @brief sfrotation exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<sfstring>
- *
- * @brief sfstring exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<sftime>
- *
- * @brief sftime exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<sfvec2f>
- *
- * @brief sfvec2f exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<sfvec3f>
- *
- * @brief sfvec3f exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<mfcolor>
- *
- * @brief mfcolor exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<mffloat>
- *
- * @brief mffloat exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<mfint32>
- *
- * @brief mfint32 exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<mfnode>
- *
- * @brief mfnode exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<mfrotation>
- *
- * @brief mfrotation exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<mfstring>
- *
- * @brief mfstring exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<mftime>
- *
- * @brief mftime exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<mfvec2f>
- *
- * @brief mfvec2f exposedfield.
- */
-
-/**
- * @internal
- *
- * @var node::exposedfield<mfvec3f>
- *
- * @brief mfvec3f exposedfield.
- */
-
-/**
- * @internal
- *
  * @var scope_ptr node::scope_
  *
  * @brief The scope to which the node belongs.
@@ -1249,6 +1089,8 @@ void node::shutdown(const double timestamp) throw ()
  */
 
 /**
+ * @internal
+ *
  * @brief Cast to a script_node.
  *
  * Default implementation returns 0.
@@ -1261,6 +1103,8 @@ script_node * node::to_script() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to an appearance_node.
  *
  * Default implementation returns 0.
@@ -1273,6 +1117,8 @@ appearance_node * node::to_appearance() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a child_node.
  *
  * Default implementation returns 0.
@@ -1285,6 +1131,8 @@ child_node * node::to_child() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a color_node.
  *
  * Default implementation returns 0.
@@ -1297,6 +1145,8 @@ color_node * node::to_color() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a coordinate_node.
  *
  * Default implementation returns 0.
@@ -1309,6 +1159,8 @@ coordinate_node * node::to_coordinate() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a font_style_node.
  *
  * Default implementation returns 0.
@@ -1321,6 +1173,8 @@ font_style_node * node::to_font_style() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a geometry_node.
  *
  * Default implementation returns 0.
@@ -1333,6 +1187,8 @@ geometry_node * node::to_geometry() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a grouping_node.
  *
  * Default implementation returns 0.
@@ -1345,6 +1201,8 @@ grouping_node * node::to_grouping() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a material_node.
  *
  * Default implementation returns 0.
@@ -1357,6 +1215,8 @@ material_node * node::to_material() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a normal_node.
  *
  * Default implementation returns 0.
@@ -1369,6 +1229,8 @@ normal_node * node::to_normal() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a sound_source_node.
  *
  * Default implementation returns 0.
@@ -1381,6 +1243,8 @@ sound_source_node * node::to_sound_source() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a texture_node.
  *
  * Default implementation returns 0.
@@ -1393,6 +1257,8 @@ texture_node * node::to_texture() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a texture_coordinate_node.
  *
  * Default implementation returns 0.
@@ -1405,6 +1271,8 @@ texture_coordinate_node * node::to_texture_coordinate() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a texture_transform_node.
  *
  * Default implementation returns 0.
@@ -1417,6 +1285,8 @@ texture_transform_node * node::to_texture_transform() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a transform_node.
  *
  * Default implementation returns 0.
@@ -1429,6 +1299,8 @@ transform_node * node::to_transform() throw ()
 }
 
 /**
+ * @internal
+ *
  * @brief Cast to a viewpoint_node.
  *
  * Default implementation returns 0.
@@ -3528,5 +3400,69 @@ void node_traverser::on_entering(node & n)
  */
 void node_traverser::on_leaving(node & n)
 {}
+
+/**
+ * @class exposedfield
+ *
+ * @brief Class template to simplify implementation of exposedFields.
+ *
+ * <code>exposedfield</code> conveniently implements an
+ * <code>event_listener</code> and an <code>event_emitter</code>. Trivial
+ * exposedFields can be implemented simply by instantiating this template with
+ * a FieldValue. For the purposes of OpenVRML, <em>trivial exposedField</em> is
+ * one that has <strong>no</strong> side-effects. That is, it simply receives
+ * an event, updates an internal value, and fires an eventOut. Nontrivial
+ * exposedFields (i.e., those with side-effects) can generally be implemented
+ * by inheriting an instance of this class template and overriding
+ * <code>exposedfield<FieldValue>::do_process_event</code>.
+ */
+
+/**
+ * @fn exposedfield::exposedfield(openvrml::node & node, const typename FieldValue::value_type & value)
+ *
+ * @brief Construct.
+ *
+ * @param node  a reference to the node to which the exposedField belongs.
+ * @param value default value.
+ */
+
+/**
+ * @fn exposedfield::~exposedfield() throw ()
+ *
+ * @brief Destroy.
+ */
+
+/**
+ * @fn void exposedfield::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ *
+ * @brief Process an event.
+ *
+ * This function performs the following steps:
+ *
+ * -# set the exposedField value.
+ * -# call exposedfield<FieldValue>::do_process_event.
+ * -# set the modified flag.
+ * -# emit the event.
+ *
+ * @param value     new value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+
+/**
+ * @fn void exposedfield::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ *
+ * @brief Called by exposedfield<FieldValue>::process_event.
+ *
+ * Subclasses should override this method to implement event handling
+ * functionality specific to a particular exposedField. The default
+ * implementation of this function does nothing.
+ *
+ * @param value     new value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
 
 } // namespace openvrml

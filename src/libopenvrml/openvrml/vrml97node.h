@@ -234,9 +234,10 @@ namespace openvrml {
             explicit anchor_class(openvrml::browser & browser);
             virtual ~anchor_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+            virtual const node_type_ptr
+            create_type(const std::string & id,
+                        const node_interface_set & interfaces)
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class anchor_node : public group_node {
@@ -269,8 +270,8 @@ namespace openvrml {
             virtual ~appearance_class() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+                                                    const node_interface_set &)
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class appearance_node : public abstract_base,
@@ -282,8 +283,7 @@ namespace openvrml {
             exposedfield<sfnode> texture_transform_;
 
         public:
-            appearance_node(const node_type & type,
-                            const scope_ptr & scope);
+            appearance_node(const node_type & type, const scope_ptr & scope);
             virtual ~appearance_node() throw ();
 
             virtual bool modified() const;

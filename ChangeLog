@@ -1,5 +1,16 @@
 2004-09-21 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment improvements.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/field.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
+2004-09-21 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/basetypes.h:  Removed spurious
 	"return" in function returning "void".
 

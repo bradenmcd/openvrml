@@ -89,6 +89,16 @@ namespace {
     class proto_node;
     class proto_impl_cloner;
 
+    /**
+     * @internal
+     *
+     * @brief <code>node_class</code> for <code>PROTO</code>s.
+     *
+     * The proto_node_class is OpenVRML's in-memory representation of a
+     * <code>PROTO</code> (as opposed to a <code>PROTO</code> instance).
+     * Through the <code>proto_node::proto_node_type</code> intermediary, it
+     * facilitates spawning any number of <code>proto_node</code> instances.
+     */
     class proto_node_class : public node_class {
         friend class proto_node;
         friend class proto_impl_cloner;
@@ -163,6 +173,42 @@ namespace {
             throw (unsupported_interface, std::bad_alloc);
     };
 
+
+    /**
+     * @internal
+     *
+     * @brief A <code>PROTO</code> instance node.
+     *
+     * Like a typical node implementation, <code>proto_node</code>s have a
+     * many-to-one relationship with the
+     * <code>proto_node::proto_node_type</code> instance that creates them. And
+     * <code>proto_node::proto_node_type</code> has, in turn, a many-to-one
+     * relationship with the <code>proto_node_class</code> instance that
+     * creates them. Unlike a typical node implementation, there will very
+     * likely be more than one <code>proto_node_class</code> instance known to
+     * the <code>browser</code> instance; there will be one for each
+     * <code>PROTO</code> known to the <code>browser</code>.
+     *
+     * As the <code>proto_node_class</code> encodes the data in a
+     * <code>PROTO</code>, the <code>proto_node::proto_node_type</code> can
+     * be seen as modeling <code>EXTERNPROTO</code>. Each
+     * <code>EXTERNPROTO</code> will spawn a new
+     * <code>proto_node::proto_node_type</code> from the
+     * <code>proto_node_class</code> that corresponds to the <code>PROTO</code>
+     * to which the <code>EXTERNPROTO</code> refers. Recall that an
+     * <code>EXTERNPROTO</code> provides a subset of the interfaces defined
+     * for a <code>PROTO</code>; thus, for a <code>PROTO</code> with
+     * <var>n</var> interfaces, there are <var>n</var>! possible unique
+     * <code>EXTERNPROTO</code>s (and thus unique
+     * <code>proto_node::proto_node_type</code> instances).
+     *
+     * Structurally, the implementation of <code>proto_node</code> is very
+     * similar to that of <code>proto_node_class</code>. The difference is that
+     * event pathways for <code>ROUTE</code>s and <code>IS</code> mappings are
+     * actually created in the <code>proto_node</code>. The
+     * <code>proto_node_class</code>, on the other hand, includes metadata
+     * about how these event pathways @e should be created.
+     */
     class proto_node : public node {
         template <typename FieldValue>
         class proto_eventin : public field_value_listener<FieldValue> {
@@ -865,6 +911,8 @@ namespace {
     }
 
     /**
+     * @internal
+     *
      * @class proto_node::proto_eventin
      *
      * @brief PROTO eventIn handler class template.
@@ -1194,12 +1242,16 @@ namespace {
     }
 
     /**
+     * @internal
+     *
      * @class proto_node::proto_eventout
      *
      * @brief PROTO eventOut handler class template.
      */
 
     /**
+     * @internal
+     *
      * @class proto_node::proto_eventout::listener_t
      *
      * @brief Listens for events emitted from nodes in the PROTO implementation
@@ -1591,6 +1643,8 @@ namespace {
     }
 
     /**
+     * @internal
+     *
      * @class proto_node::proto_exposedfield
      *
      * @brief PROTO exposedField handler class template.
@@ -2697,7 +2751,7 @@ viewer_in_use::~viewer_in_use() throw ()
  */
 
 /**
- * @var node_ptr browser::default_viewpoint
+ * @var node_ptr browser::default_viewpoint_
  *
  * @brief The "default" viewpoint_node used when no viewpoint_node in the scene
  *        is bound.

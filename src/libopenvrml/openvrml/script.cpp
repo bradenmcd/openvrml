@@ -446,19 +446,21 @@ create_node(const scope_ptr & scope,
 }
 
 /**
+ * @internal
+ *
  * @class script_node::script_event_listener
  *
  * @brief Event listener.
  */
 
 /**
- * @var template <typename FieldValue> const std::string script_node::script_event_listener<FieldValue>::id
+ * @var const std::string script_node::script_event_listener::id
  *
  * @brief eventIn identifier.
  */
 
 /**
- * @fn template <typename FieldValue> script_node::script_event_listener<FieldValue>::script_event_listener(const std::string & id, script_node & node)
+ * @fn script_node::script_event_listener::script_event_listener(const std::string & id, script_node & node)
  *
  * @brief Construct.
  *
@@ -467,13 +469,13 @@ create_node(const scope_ptr & scope,
  */
 
 /**
- * @fn template <typename FieldValue> script_node::script_event_listener<FieldValue>::~script_event_listener() throw ()
+ * @fn script_node::script_event_listener::~script_event_listener() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn template <typename FieldValue> script_node::script_event_listener<FieldValue>::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn script_node::script_event_listener::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Process an event.
  *

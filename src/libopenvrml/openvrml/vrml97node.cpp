@@ -45,36 +45,24 @@ extern "C" {
 # include "browser.h"
 # include "private.h"
 
-namespace openvrml {
-
-/**
- * @brief Implementations of the VRML97 nodes.
- *
- * It is a legacy of OpenVRML's initial architecture that these classes are
- * exposed as part of the public API. Once all the dependencies on members of
- * this namespace have been factored out of other parts of OpenVRML, all of
- * these classes will be moving into the library's implementation.
- */
-namespace vrml97_node {
-
 namespace {
 
     /**
      * @internal
      */
-    class vrml97_node_type : public node_type {
+    class vrml97_node_type : public openvrml::node_type {
     public:
         virtual ~vrml97_node_type() throw () = 0;
         virtual const openvrml::field_value &
         field_value(const openvrml::node & node,
                     const std::string & id) const
-            throw (unsupported_interface) = 0;
+            throw (openvrml::unsupported_interface) = 0;
         virtual openvrml::event_listener &
         event_listener(openvrml::node & node, const std::string & id) const
-            throw (unsupported_interface) = 0;
+            throw (openvrml::unsupported_interface) = 0;
         virtual openvrml::event_emitter &
         event_emitter(openvrml::node & node, const std::string & id) const
-            throw (unsupported_interface) = 0;
+            throw (openvrml::unsupported_interface) = 0;
 
     protected:
         vrml97_node_type(openvrml::node_class & node_class,
@@ -94,8 +82,9 @@ namespace {
     class node_field_ptr {
     public:
         virtual ~node_field_ptr() = 0;
-        virtual field_value & dereference(NodeT & obj) = 0;
-        virtual const field_value & dereference(const NodeT & obj) = 0;
+        virtual openvrml::field_value & dereference(NodeT & obj) = 0;
+        virtual const openvrml::field_value &
+        dereference(const NodeT & obj) = 0;
     };
 
     template <typename NodeT>
@@ -114,8 +103,8 @@ namespace {
 
         virtual ~node_field_ptr_impl();
 
-        virtual field_value & dereference(NodeT &);
-        virtual const field_value & dereference(const NodeT &);
+        virtual openvrml::field_value & dereference(NodeT &);
+        virtual const openvrml::field_value & dereference(const NodeT &);
     };
 
     template <typename NodeT, typename ConcreteFieldValue>
@@ -123,14 +112,14 @@ namespace {
     {}
 
     template <typename NodeT, typename ConcreteFieldValue>
-    field_value &
+    openvrml::field_value &
     node_field_ptr_impl<NodeT, ConcreteFieldValue>::dereference(NodeT & obj)
     {
         return obj.*itsPtr;
     }
 
     template <typename NodeT, typename ConcreteFieldValue>
-    const field_value &
+    const openvrml::field_value &
     node_field_ptr_impl<NodeT, ConcreteFieldValue>::dereference(
         const NodeT & obj)
     {
@@ -142,7 +131,8 @@ namespace {
     class event_listener_ptr {
     public:
         virtual ~event_listener_ptr() throw () = 0;
-        virtual event_listener & dereference(Node & obj) throw () = 0;
+        virtual openvrml::event_listener &
+        dereference(Node & obj) throw () = 0;
     };
 
     template <typename Node>
@@ -161,7 +151,7 @@ namespace {
 
         virtual ~event_listener_ptr_impl() throw ();
 
-        virtual event_listener & dereference(Node &) throw ();
+        virtual openvrml::event_listener & dereference(Node &) throw ();
     };
 
     template <typename Node, typename ConcreteEventListener>
@@ -170,7 +160,7 @@ namespace {
     {}
 
     template <typename Node, typename ConcreteEventListener>
-    inline event_listener &
+    inline openvrml::event_listener &
     event_listener_ptr_impl<Node, ConcreteEventListener>::
     dereference(Node & obj) throw ()
     {
@@ -182,7 +172,7 @@ namespace {
     class event_emitter_ptr {
     public:
         virtual ~event_emitter_ptr() throw () = 0;
-        virtual event_emitter & dereference(Node & obj) throw () = 0;
+        virtual openvrml::event_emitter & dereference(Node & obj) throw () = 0;
     };
 
     template <typename Node>
@@ -198,7 +188,7 @@ namespace {
         event_emitter_ptr_impl(ConcreteEventEmitter Node::* ptr) throw ();
         virtual ~event_emitter_ptr_impl() throw ();
 
-        virtual event_emitter & dereference(Node &) throw ();
+        virtual openvrml::event_emitter & dereference(Node &) throw ();
     };
 
     template <typename Node, typename ConcreteEventEmitter>
@@ -214,7 +204,7 @@ namespace {
     {}
 
     template <typename Node, typename ConcreteEventEmitter>
-    inline event_emitter &
+    inline openvrml::event_emitter &
     event_emitter_ptr_impl<Node, ConcreteEventEmitter>::
     dereference(Node & obj)
         throw ()
@@ -272,7 +262,7 @@ namespace {
         };
 
     private:
-        node_interface_set interfaces_;
+        openvrml::node_interface_set interfaces_;
         typedef std::map<std::string, field_ptr_ptr> field_value_map_t;
         typedef std::map<std::string, event_listener_ptr_ptr>
             event_listener_map_t;
@@ -287,48 +277,53 @@ namespace {
                               const std::string & id);
         virtual ~vrml97_node_type_impl() throw ();
 
-        void add_eventin(field_value::type_id, const std::string & id,
+        void add_eventin(openvrml::field_value::type_id,
+                         const std::string & id,
                          const event_listener_ptr_ptr & event_listener)
             throw (std::invalid_argument, std::bad_alloc);
-        void add_eventout(field_value::type_id, const std::string & id,
+        void add_eventout(openvrml::field_value::type_id,
+                          const std::string & id,
                           const event_emitter_ptr_ptr & event_emitter)
             throw (std::invalid_argument, std::bad_alloc);
-        void add_exposedfield(field_value::type_id, const std::string & id,
+        void add_exposedfield(openvrml::field_value::type_id,
+                              const std::string & id,
                               const event_listener_ptr_ptr & event_listener,
                               const field_ptr_ptr & field,
                               const event_emitter_ptr_ptr & event_emitter)
             throw (std::invalid_argument, std::bad_alloc);
-        void add_field(field_value::type_id, const std::string & id,
+        void add_field(openvrml::field_value::type_id, const std::string & id,
                        const field_ptr_ptr & fieldPtrPtr)
             throw (std::invalid_argument, std::bad_alloc);
 
         virtual const openvrml::field_value &
         field_value(const openvrml::node & node, const std::string & id) const
-            throw (unsupported_interface);
+            throw (openvrml::unsupported_interface);
         virtual openvrml::event_listener &
         event_listener(openvrml::node & node, const std::string & id) const
-            throw (unsupported_interface);
+            throw (openvrml::unsupported_interface);
         virtual openvrml::event_emitter &
         event_emitter(openvrml::node & node, const std::string & id) const
-            throw (unsupported_interface);
+            throw (openvrml::unsupported_interface);
 
-        virtual const node_interface_set & interfaces() const throw ();
-        virtual const node_ptr
-        create_node(const scope_ptr & scope,
-                    const initial_value_map & initial_values) const
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+        virtual const openvrml::node_interface_set &
+        interfaces() const throw ();
+        virtual const openvrml::node_ptr
+        create_node(const openvrml::scope_ptr & scope,
+                    const openvrml::initial_value_map & initial_values) const
+            throw (openvrml::unsupported_interface, std::bad_cast,
+                   std::bad_alloc);
 
     private:
         const openvrml::field_value &
         do_field_value(const NodeT & node,
                        const std::string & id) const
-            throw (unsupported_interface);
+            throw (openvrml::unsupported_interface);
         openvrml::event_listener &
         do_event_listener(NodeT & node, const std::string & id) const
-            throw (unsupported_interface);
+            throw (openvrml::unsupported_interface);
         openvrml::event_emitter &
         do_event_emitter(NodeT & node, const std::string & id) const
-            throw (unsupported_interface);
+            throw (openvrml::unsupported_interface);
     };
 
     template <typename NodeT>
@@ -371,11 +366,13 @@ namespace {
 
     template <typename NodeT>
     void vrml97_node_type_impl<NodeT>::
-    add_eventin(const field_value::type_id type,
+    add_eventin(const openvrml::field_value::type_id type,
                 const std::string & id,
                 const event_listener_ptr_ptr & event_listener)
         throw (std::invalid_argument, std::bad_alloc)
     {
+        using openvrml::node_interface;
+
         const node_interface interface(node_interface::eventin_id, type, id);
         bool succeeded = this->interfaces_.insert(interface).second;
         if (!succeeded) {
@@ -390,11 +387,13 @@ namespace {
 
     template <typename NodeT>
     void vrml97_node_type_impl<NodeT>::
-    add_eventout(const field_value::type_id type,
+    add_eventout(const openvrml::field_value::type_id type,
                  const std::string & id,
                  const event_emitter_ptr_ptr & event_emitter)
         throw (std::invalid_argument, std::bad_alloc)
     {
+        using openvrml::node_interface;
+
         const node_interface interface(node_interface::eventout_id, type, id);
         bool succeeded = this->interfaces_.insert(interface).second;
         if (!succeeded) {
@@ -409,13 +408,15 @@ namespace {
 
     template <typename NodeT>
     void vrml97_node_type_impl<NodeT>::add_exposedfield(
-            const field_value::type_id type,
+            const openvrml::field_value::type_id type,
             const std::string & id,
             const event_listener_ptr_ptr & event_listener,
             const field_ptr_ptr & field,
             const event_emitter_ptr_ptr & event_emitter)
         throw (std::invalid_argument, std::bad_alloc)
     {
+        using openvrml::node_interface;
+
         const node_interface interface(node_interface::exposedfield_id,
                                        type,
                                        id);
@@ -445,11 +446,13 @@ namespace {
 
     template <typename NodeT>
     void vrml97_node_type_impl<NodeT>::add_field(
-            const field_value::type_id type,
+            const openvrml::field_value::type_id type,
             const std::string & id,
             const field_ptr_ptr & nodeFieldPtrPtr)
         throw (std::invalid_argument, std::bad_alloc)
     {
+        using openvrml::node_interface;
+
         const node_interface interface(node_interface::field_id, type, id);
         bool succeeded = this->interfaces_.insert(interface).second;
         if (!succeeded) {
@@ -463,20 +466,20 @@ namespace {
     }
 
     template <typename NodeT>
-    const field_value &
+    const openvrml::field_value &
     vrml97_node_type_impl<NodeT>::field_value(const openvrml::node & node,
                                               const std::string & id) const
-        throw (unsupported_interface)
+        throw (openvrml::unsupported_interface)
     {
         assert(dynamic_cast<const NodeT *>(&node));
         return this->do_field_value(dynamic_cast<const NodeT &>(node), id);
     }
 
     template <typename NodeT>
-    event_listener &
+    openvrml::event_listener &
     vrml97_node_type_impl<NodeT>::event_listener(openvrml::node & node,
                                                  const std::string & id) const
-        throw (unsupported_interface)
+        throw (openvrml::unsupported_interface)
     {
         assert(dynamic_cast<NodeT *>(&node));
         return this->do_event_listener(dynamic_cast<NodeT &>(node), id);
@@ -486,26 +489,29 @@ namespace {
     openvrml::event_emitter &
     vrml97_node_type_impl<NodeT>::event_emitter(openvrml::node & node,
                                                 const std::string & id) const
-        throw (unsupported_interface)
+        throw (openvrml::unsupported_interface)
     {
         assert(dynamic_cast<NodeT *>(&node));
         return this->do_event_emitter(dynamic_cast<NodeT &>(node), id);
     }
 
     template <typename NodeT>
-    const node_interface_set & vrml97_node_type_impl<NodeT>::interfaces() const
+    const openvrml::node_interface_set &
+    vrml97_node_type_impl<NodeT>::interfaces() const
         throw ()
     {
         return this->interfaces_;
     }
 
     template <typename NodeT>
-    const node_ptr
+    const openvrml::node_ptr
     vrml97_node_type_impl<NodeT>::
-    create_node(const scope_ptr & scope,
-                const initial_value_map & initial_values) const
-        throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+    create_node(const openvrml::scope_ptr & scope,
+                const openvrml::initial_value_map & initial_values) const
+        throw (openvrml::unsupported_interface, std::bad_cast, std::bad_alloc)
     {
+        using namespace openvrml;
+
         NodeT * const concrete_node_ptr = new NodeT(*this, scope);
         const node_ptr result(concrete_node_ptr);
         for (initial_value_map::const_iterator initial_value =
@@ -526,11 +532,13 @@ namespace {
     }
 
     template <typename NodeT>
-    const field_value &
+    const openvrml::field_value &
     vrml97_node_type_impl<NodeT>::do_field_value(const NodeT & node,
                                                  const std::string & id) const
-        throw (unsupported_interface)
+        throw (openvrml::unsupported_interface)
     {
+        using namespace openvrml;
+
         const typename field_value_map_t::const_iterator itr =
                 this->field_value_map.find(id);
         if (itr == this->field_value_map.end()) {
@@ -542,12 +550,14 @@ namespace {
     }
 
     template <typename NodeT>
-    event_listener &
+    openvrml::event_listener &
     vrml97_node_type_impl<NodeT>::
     do_event_listener(NodeT & node,
                       const std::string & id) const
-        throw (unsupported_interface)
+        throw (openvrml::unsupported_interface)
     {
+        using namespace openvrml;
+
         const typename event_listener_map_t::const_iterator end =
             this->event_listener_map.end();
         typename event_listener_map_t::const_iterator pos =
@@ -562,12 +572,14 @@ namespace {
     }
 
     template <typename NodeT>
-    event_emitter &
+    openvrml::event_emitter &
     vrml97_node_type_impl<NodeT>::
     do_event_emitter(NodeT & node,
                      const std::string & id) const
-        throw (unsupported_interface)
+        throw (openvrml::unsupported_interface)
     {
+        using namespace openvrml;
+
         const typename event_emitter_map_t::const_iterator end =
             this->event_emitter_map.end();
         typename event_emitter_map_t::const_iterator pos =
@@ -583,6 +595,18 @@ namespace {
         return pos->second->deref(node);
     }
 }
+
+namespace openvrml {
+
+/**
+ * @brief Implementations of the VRML97 nodes.
+ *
+ * It is a legacy of OpenVRML's initial architecture that these classes are
+ * exposed as part of the public API. Once all the dependencies on members of
+ * this namespace have been factored out of other parts of OpenVRML, all of
+ * these classes will be moving into the library's implementation.
+ */
+namespace vrml97_node {
 
 /**
  * @class abstract_base
@@ -670,6 +694,8 @@ event_emitter & abstract_base::do_event_emitter(const std::string & id)
  */
 
 /**
+ * @internal
+ *
  * @class abstract_indexed_set_node::set_color_index_listener
  *
  * @brief set_colorIndex event handler.
@@ -718,6 +744,8 @@ process_event(const mfint32 & color_index,
 }
 
 /**
+ * @internal
+ *
  * @class abstract_indexed_set_node::set_coord_index_listener
  *
  * @brief set_coordIndex event handler.
@@ -1326,10 +1354,11 @@ appearance_class::~appearance_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Appearance nodes.
+ * @return a node_type_ptr to a node_type capable of creating Appearance
+ *         nodes.
  *
- * @exception unsupported_interface if @p interfaces includes an interface not
- *                                  supported by appearance_class.
+ * @exception unsupported_interface if @p interfaces includes an interface
+ *                                  not supported by appearance_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
@@ -1430,7 +1459,7 @@ appearance_class::create_type(const std::string & id,
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 appearance_node::appearance_node(const node_type & type,
                                  const scope_ptr & scope):
@@ -1452,7 +1481,7 @@ appearance_node::~appearance_node() throw ()
  * @brief Determine whether the node has been modified.
  *
  * @return @c true if the node or one of its children has been modified,
- *      @c false otherwise.
+ *         @c false otherwise.
  */
 bool appearance_node::modified() const
 {
@@ -1499,7 +1528,6 @@ const node_ptr & appearance_node::texture_transform() const throw ()
 }
 
 namespace {
-
     void set_unlit_material(viewer & v)
     {
         static const float unlit_ambient_intensity(1);
@@ -2362,6 +2390,8 @@ background_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class background_node::set_bind_listener
  *
  * @brief set_bind eventIn listener.
@@ -2409,6 +2439,8 @@ void background_node::set_bind_listener::process_event(const sfbool & value,
 }
 
 /**
+ * @internal
+ *
  * @class background_node::back_url_exposedfield
  *
  * @brief backUrl exposedField implementation.
@@ -2452,6 +2484,8 @@ do_process_event(const mfstring & value,
 }
 
 /**
+ * @internal
+ *
  * @class background_node::bottom_url_exposedfield
  *
  * @brief bottomUrl exposedField implementation.
@@ -2495,6 +2529,8 @@ do_process_event(const mfstring & value,
 }
 
 /**
+ * @internal
+ *
  * @class background_node::front_url_exposedfield
  *
  * @brief frontUrl exposedField implementation.
@@ -2538,6 +2574,8 @@ do_process_event(const mfstring & value,
 }
 
 /**
+ * @internal
+ *
  * @class background_node::left_url_exposedfield
  *
  * @brief leftUrl exposedField implementation.
@@ -2581,6 +2619,8 @@ do_process_event(const mfstring & value,
 }
 
 /**
+ * @internal
+ *
  * @class background_node::right_url_exposedfield
  *
  * @brief rightUrl exposedField implementation.
@@ -2624,6 +2664,8 @@ do_process_event(const mfstring & value,
 }
 
 /**
+ * @internal
+ *
  * @class background_node::top_url_exposedfield
  *
  * @brief topUrl exposedField implementation.
@@ -3910,6 +3952,8 @@ color_interpolator_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class color_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction event handler.
@@ -4454,6 +4498,8 @@ coordinate_interpolator_class::create_type(
  */
 
 /**
+ * @internal
+ *
  * @class coordinate_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction event handler.
@@ -5640,6 +5686,8 @@ elevation_grid_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class elevation_grid_node::set_height_listener
  *
  * @brief set_height event handler.
@@ -6095,6 +6143,8 @@ extrusion_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class extrusion_node::set_cross_section_listener
  *
  * @brief set_crossSection event handler.
@@ -6141,6 +6191,8 @@ process_event(const mfvec2f & cross_section, const double timestamp)
 }
 
 /**
+ * @internal
+ *
  * @class extrusion_node::set_orientation_listener
  *
  * @brief set_orientation event handler.
@@ -6187,6 +6239,8 @@ process_event(const mfrotation & orientation, const double timestamp)
 }
 
 /**
+ * @internal
+ *
  * @class extrusion_node::set_scale_listener
  *
  * @brief set_scale event handler.
@@ -6232,6 +6286,8 @@ extrusion_node::set_scale_listener::process_event(const mfvec2f & scale,
 }
 
 /**
+ * @internal
+ *
  * @class extrusion_node::set_spine_listener
  *
  * @brief set_spine event handler.
@@ -6720,6 +6776,8 @@ fog_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class fog_node::set_bind_listener
  *
  * @brief set_bind event handler.
@@ -7305,6 +7363,8 @@ group_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class group_node::add_children_listener
  *
  * @brief addChildren event listener.
@@ -7381,6 +7441,8 @@ void group_node::add_children_listener::process_event(const mfnode & value,
 }
 
 /**
+ * @internal
+ *
  * @class group_node::remove_children_listener
  *
  * @brief removeChildren event listener.
@@ -7431,6 +7493,8 @@ group_node::remove_children_listener::process_event(const mfnode & value,
 }
 
 /**
+ * @internal
+ *
  * @class group_node::children_exposedfield
  *
  * @brief children exposedField implementation.
@@ -7839,6 +7903,8 @@ image_texture_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class image_texture_node::url_exposedfield
  *
  * @brief url exposedField.
@@ -8259,6 +8325,8 @@ indexed_face_set_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class indexed_face_set_node::set_normal_index_listener
  *
  * @brief set_normalIndex event handler.
@@ -8307,6 +8375,8 @@ process_event(const mfint32 & normal_index,
 }
 
 /**
+ * @internal
+ *
  * @class indexed_face_set_node::set_tex_coord_index_listener
  *
  * @brief set_coordIndex event handler.
@@ -9789,6 +9859,8 @@ movie_texture_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class movie_texture_node::set_speed_listener
  *
  * @brief set_speed eventIn handler.
@@ -10359,6 +10431,8 @@ navigation_info_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class navigation_info_node::set_bind_listener
  *
  * @brief set_bind eventIn handler.
@@ -10816,6 +10890,8 @@ normal_interpolator_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class normal_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction eventIn handler.
@@ -11095,6 +11171,8 @@ create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class orientation_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction eventIn handler.
@@ -12452,6 +12530,8 @@ position_interpolator_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class position_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction eventIn handler.
@@ -13057,6 +13137,8 @@ scalar_interpolator_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class scalar_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction eventIn handler.
@@ -14697,6 +14779,8 @@ switch_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class switch_node::choice_exposedfield
  *
  * @brief choice exposedField implementation.
@@ -14745,6 +14829,8 @@ void switch_node::choice_exposedfield::do_process_event(const mfnode & choice,
 }
 
 /**
+ * @internal
+ *
  * @class switch_node::which_choice_exposedfield
  *
  * @brief choice exposedField implementation.
@@ -15095,6 +15181,8 @@ text_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class text_node::string_exposedfield
  *
  * @brief string exposedField implementation.
@@ -15137,6 +15225,8 @@ void text_node::string_exposedfield::do_process_event(const mfstring & string,
 }
 
 /**
+ * @internal
+ *
  * @class text_node::font_style_exposedfield
  *
  * @brief fontStyle exposedField implementation.
@@ -15180,6 +15270,8 @@ text_node::font_style_exposedfield::do_process_event(const sfnode & font_style,
 }
 
 /**
+ * @internal
+ *
  * @class text_node::length_exposedfield
  *
  * @brief length exposedField implementation.
@@ -15221,6 +15313,8 @@ void text_node::length_exposedfield::do_process_event(const mffloat & length,
 }
 
 /**
+ * @internal
+ *
  * @class text_node::max_extent_exposedfield
  *
  * @brief maxExtent exposedField implementation.
@@ -15288,6 +15382,8 @@ do_process_event(const sffloat & max_extent,
  */
 
 /**
+ * @internal
+ *
  * @struct text_node::glyph_geometry
  *
  * @brief Used to hold the geometry of individual glyphs.
@@ -15323,6 +15419,8 @@ do_process_event(const sffloat & max_extent,
 namespace {
 
     /**
+     * @internal
+     *
      * @brief Determine whether three vertices are ordered counter-clockwise.
      *
      * Does not throw.
@@ -15349,6 +15447,8 @@ namespace {
     }
 
     /**
+     * @internal
+     *
      * @brief Determine whether two line segments intersect.
      *
      * Does not throw.
@@ -15404,6 +15504,8 @@ namespace {
     }
 
     /**
+     * @internal
+     *
      * @brief Get the exterior vertext that should be used to connect to the
      *      interior contour.
      *
@@ -15693,6 +15795,8 @@ text_node::glyph_geometry::glyph_geometry(
 }
 
 /**
+ * @internal
+ *
  * @struct text_node::text_geometry
  *
  * @brief Holds the text geometry.
@@ -17182,6 +17286,8 @@ time_sensor_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class time_sensor_node::set_cycle_interval_listener
  *
  * @brief set_cycleInterval eventIn handler.
@@ -17231,6 +17337,8 @@ process_event(const sftime & cycle_interval, const double timestamp)
 }
 
 /**
+ * @internal
+ *
  * @class time_sensor_node::enabled_exposedfield
  *
  * @brief enabled exposedField implementation.
@@ -17306,6 +17414,8 @@ do_process_event(const sfbool & enabled, const double timestamp)
 }
 
 /**
+ * @internal
+ *
  * @class time_sensor_node::set_start_time_listener
  *
  * @brief set_startTime eventIn handler.
@@ -18143,6 +18253,8 @@ transform_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class transform_node::center_exposedfield
  *
  * @brief center exposedField implementation.
@@ -18187,6 +18299,8 @@ transform_node::center_exposedfield::do_process_event(const sfvec3f & center,
 }
 
 /**
+ * @internal
+ *
  * @class transform_node::rotation_exposedfield
  *
  * @brief rotation exposedField implementation.
@@ -18231,6 +18345,8 @@ do_process_event(const sfrotation & rotation, const double timestamp)
 }
 
 /**
+ * @internal
+ *
  * @class transform_node::scale_exposedfield
  *
  * @brief scale exposedField implementation.
@@ -18274,6 +18390,8 @@ transform_node::scale_exposedfield::do_process_event(const sfvec3f & scale,
 }
 
 /**
+ * @internal
+ *
  * @class transform_node::scale_orientation_exposedfield
  *
  * @brief scaleOrientation exposedField implementation.
@@ -18319,6 +18437,8 @@ do_process_event(const sfrotation & scale_orientation, const double timestamp)
 }
 
 /**
+ * @internal
+ *
  * @class transform_node::translation_exposedfield
  *
  * @brief translation exposedField implementation.
@@ -18876,6 +18996,8 @@ viewpoint_class::create_type(const std::string & id,
  */
 
 /**
+ * @internal
+ *
  * @class viewpoint_node::set_bind_listener
  *
  * @brief set_bind eventIn listener.
@@ -18923,6 +19045,8 @@ void viewpoint_node::set_bind_listener::process_event(const sfbool & value,
 }
 
 /**
+ * @internal
+ *
  * @class viewpoint_node::orientation_exposedfield
  *
  * @brief orientation exposedField implementation.
@@ -18966,6 +19090,8 @@ do_process_event(const sfrotation & orientation, const double timestamp)
 }
 
 /**
+ * @internal
+ *
  * @class viewpoint_node::position_exposedfield
  *
  * @brief position exposedField implementation.

@@ -3628,19 +3628,19 @@ const event_emitter::listener_set & event_emitter::listeners() const throw ()
  */
 
 /**
- * @fn field_value_emitter<FieldValue>::field_value_emitter(const FieldValue & value) throw ()
+ * @fn field_value_emitter::field_value_emitter(const FieldValue & value) throw ()
  *
  * @brief Construct.
  */
 
 /**
- * @fn field_value_emitter<FieldValue>::~field_value_emitter() throw ()
+ * @fn field_value_emitter::~field_value_emitter() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn void field_value_emitter<FieldValue>::emit_event(double timestamp) throw (std::bad_alloc)
+ * @fn void field_value_emitter::emit_event(double timestamp) throw (std::bad_alloc)
  *
  * @brief Emit an event.
  *
@@ -3650,7 +3650,7 @@ const event_emitter::listener_set & event_emitter::listeners() const throw ()
  */
 
 /**
- * @fn bool field_value_emitter<FieldValue>::add(field_value_listener<FieldValue> & listener) throw (std::bad_alloc)
+ * @fn bool field_value_emitter::add(field_value_listener<FieldValue> & listener) throw (std::bad_alloc)
  *
  * @brief Add an event listener.
  *
@@ -3663,7 +3663,7 @@ const event_emitter::listener_set & event_emitter::listeners() const throw ()
  */
 
 /**
- * @fn bool field_value_emitter<FieldValue>::remove(field_value_listener<FieldValue> & listener)
+ * @fn bool field_value_emitter::remove(field_value_listener<FieldValue> & listener)
  *
  * @brief Remove an event listener.
  *
@@ -3791,60 +3791,6 @@ const event_emitter::listener_set & event_emitter::listeners() const throw ()
  * @typedef mfvec3f_emitter
  *
  * @brief mfvec3f event emitter.
- */
-
-/**
- * @class exposedfield
- *
- * @brief Class template to simplify implementation of exposedFields.
- */
-
-/**
- * @fn template <typename FieldValue> exposedfield<FieldValue>::exposedfield(openvrml::node & node, const typename FieldValue::value_type & value)
- *
- * @brief Construct.
- *
- * @param node  a reference to the node to which the exposedField belongs.
- * @param value default value.
- */
-
-/**
- * @fn template <typename FieldValue> exposedfield<FieldValue>::~exposedfield() throw ()
- *
- * @brief Destroy.
- */
-
-/**
- * @fn template <typename FieldValue> void exposedfield<FieldValue>::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
- *
- * @brief Process an event.
- *
- * This function performs the following steps:
- *
- * -# set the exposedField value.
- * -# call exposedfield<FieldValue>::do_process_event.
- * -# set the modified flag.
- * -# emit the event.
- *
- * @param value     new value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-
-/**
- * @fn template <typename FieldValue> void exposedfield<FieldValue>::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
- *
- * @brief Called by exposedfield<FieldValue>::process_event.
- *
- * Subclasses should override this method to implement event handling
- * functionality specific to a particular exposedField. The default
- * implementation of this function does nothing.
- *
- * @param value     new value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
  */
 
 } // namespace openvrml
