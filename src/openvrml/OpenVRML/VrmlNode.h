@@ -125,7 +125,8 @@ public:
   virtual VrmlNodeAudioClip*	toAudioClip() const;
   virtual VrmlNodeBackground*	toBackground() const;
   virtual VrmlNodeBox*		toBox() const; //LarryD Mar 08/99
-  virtual VrmlNodeChild*	toChild() const;
+  virtual const VrmlNodeChild * toChild() const;
+  virtual VrmlNodeChild * toChild();
   virtual VrmlNodeColor*	toColor() const;
   virtual VrmlNodeCone* toCone() const; //LarryD Mar 08/99
   virtual VrmlNodeCoordinate*	toCoordinate() const;

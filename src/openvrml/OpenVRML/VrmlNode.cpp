@@ -241,7 +241,15 @@ VrmlNodeAppearance*	VrmlNode::toAppearance() const { return 0; }
 VrmlNodeAudioClip*	VrmlNode::toAudioClip() const { return 0; }
 VrmlNodeBackground*	VrmlNode::toBackground() const { return 0; }
 VrmlNodeBox*		VrmlNode::toBox() const { return 0; } //LarryD Mar 08/99
-VrmlNodeChild*		VrmlNode::toChild() const { return 0; }
+
+const VrmlNodeChild * VrmlNode::toChild() const {
+    return 0;
+}
+
+VrmlNodeChild * VrmlNode::toChild() {
+    return 0;
+}
+
 VrmlNodeColor*		VrmlNode::toColor() const { return 0; }
 VrmlNodeCone*		VrmlNode::toCone() const { return 0; } //LarryD Mar 08/99
 VrmlNodeCoordinate*	VrmlNode::toCoordinate() const { return 0; }
@@ -804,25 +812,6 @@ const VrmlField *VrmlNode::getEventOut(const char *fieldName) const
   else if ( nodeType().hasEventOut( fieldName ) )
     return getField( fieldName );
   return 0;
-}
-
-
-//
-//  VrmlNodeChild- should move to its own file
-//
-#include "VrmlNodeChild.h"
-
-// Define the fields of all built in child nodes
-VrmlNodeType *VrmlNodeChild::defineType(VrmlNodeType *t)
-{
-  return VrmlNode::defineType(t);
-}
-
-VrmlNodeChild::VrmlNodeChild(VrmlScene *scene) : VrmlNode(scene) {}
-
-VrmlNodeChild* VrmlNodeChild::toChild() const
-{
-  return (VrmlNodeChild*)this; // discards const...
 }
 
 

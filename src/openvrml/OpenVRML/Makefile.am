@@ -95,6 +95,7 @@ libopenvrml_la_SOURCES = \
 	VrmlNodeBackground.cpp \
 	VrmlNodeBillboard.cpp \
 	VrmlNodeBox.cpp \
+        VrmlNodeChild.cpp \
 	VrmlNodeCollision.cpp \
 	VrmlNodeColor.cpp \
 	VrmlNodeColorInt.cpp \

@@ -18,27 +18,26 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifndef VRMLNODECHILD_H
-#define VRMLNODECHILD_H
+/**
+ * @class VrmlNodeChild
+ *
+ * @brief Base class for all nodes that may be children of a group node.
+ */
+#include "VrmlNodeChild.h"
 
-#include "VrmlNode.h"
-class VrmlNodeScene;
+// Define the fields of all built in child nodes
+VrmlNodeType * VrmlNodeChild::defineType(VrmlNodeType * t) {
+    return VrmlNode::defineType(t);
+}
 
-class VrmlNodeChild : public VrmlNode {
+VrmlNodeChild::VrmlNodeChild(VrmlScene * scene): VrmlNode(scene) {}
 
-public:
+VrmlNodeChild::VrmlNodeChild(const VrmlNodeChild & node): VrmlNode(node) {}
 
-  // Define the fields of all built in child nodes
-  static VrmlNodeType *defineType(VrmlNodeType *t);
+const VrmlNodeChild * VrmlNodeChild::toChild() const {
+    return this;
+}
 
-  virtual const VrmlNodeChild * toChild() const;
-  virtual VrmlNodeChild * toChild();
-
-protected:
-  VrmlNodeChild(VrmlScene *);
-  VrmlNodeChild(const VrmlNodeChild & node);
-
-};
-
-#endif // VRMLNODECHILD_H
-
+VrmlNodeChild * VrmlNodeChild::toChild() {
+    return this;
+}

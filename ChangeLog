@@ -7,6 +7,11 @@
 
         * Added getter/setter methods to VrmlNodeAppearance.
 
+        * Moved VrmlNodeChild implementation into its own file (from
+          `VrmlNode.cpp'); added copy ctor.
+
+        * Broke VrmlNode::toChild() into const and non-const versions.
+
 2001-01-20  Braden McDaniel  <braden@endoframe.com>
 
         * Added getRoutes() method to VrmlNode, per patch from Joe
