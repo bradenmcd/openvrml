@@ -80,7 +80,7 @@ namespace {
         Vrml97Scanner(std::istream &);
 
         virtual antlr::RefToken nextToken();
-        
+
         size_t line() const;
         size_t col() const;
 

@@ -1343,11 +1343,45 @@ Vrml97Node::Viewpoint * Node::toViewpoint() const { return 0; }
  * @brief Add a route from an eventOut of this node to an eventIn of another
  *      node.
  *
- * @todo Check to make sure fromEventOut and toEventIn are valid names.
+ * If the route being added already exists, this method has no effect.
+ *
+ * @param fromEventOut  an eventOut of the node.
+ * @param toNode        a node.
+ * @param toEventIn     an eventIn of @p toNode.
+ *
+ * @exception UnsupportedInterface      if the node has no eventOut
+ *                                      @p fromEventOut; or if @p toNode has no
+ *                                      eventIn @p toEventIn.
+ * @exception FieldValueTypeMismatch    if @p fromEventOut and @p toEventIn
+ *                                      have different field value types.
+ *
+ * @pre @p toNode is not null.
  */
 void Node::addRoute(const std::string & fromEventOut,
                     const NodePtr & toNode,
-                    const std::string & toEventIn) {
+                    const std::string & toEventIn)
+    throw (UnsupportedInterface, FieldValueTypeMismatch)
+{
+    assert(toNode);
+
+    const FieldValue::Type fromInterfaceType =
+            this->nodeType.hasEventOut(fromEventOut);
+    if (fromInterfaceType == FieldValue::invalidType) {
+        throw UnsupportedInterface(this->nodeType, NodeInterface::eventOut,
+                                   fromEventOut);
+    }
+
+    const FieldValue::Type toInterfaceType =
+            toNode->nodeType.hasEventIn(toEventIn);
+    if (toInterfaceType == FieldValue::invalidType) {
+        throw UnsupportedInterface(toNode->nodeType, NodeInterface::eventIn,
+                                   toEventIn);
+    }
+
+    if (fromInterfaceType == toInterfaceType) {
+        throw FieldValueTypeMismatch();
+    }
+
     const Route route(fromEventOut, toNode, toEventIn);
 
     //
@@ -1366,10 +1400,17 @@ void Node::addRoute(const std::string & fromEventOut,
 /**
  * @brief Remove a route from an eventOut of this node to an eventIn of another
  *      node.
+ *
+ * If no such route exists, this method has no effect.
+ *
+ * @param fromEventOut  an eventOut of the node.
+ * @param toNode        a node.
+ * @param toEventIn     an eventIn of @p toNode.
  */
 void Node::deleteRoute(const std::string & fromEventOut,
                        const NodePtr & toNode,
-                       const std::string & toEventIn) {
+                       const std::string & toEventIn) throw ()
+{
     const RouteList::iterator pos =
             std::find(this->routes.begin(), this->routes.end(),
                       Route(fromEventOut, toNode, toEventIn));

@@ -243,7 +243,7 @@ const NodePtr
             static_cast<ScriptNodeClass &>(this->nodeClass);
     const NodePtr node(new ScriptNode(scriptNodeClass, scope));
     ScriptNode & scriptNode = dynamic_cast<ScriptNode &>(*node);
-    
+
     //
     // Copy the interfaces.
     //
@@ -784,7 +784,7 @@ const char javaExtension2[] = ".CLASS";
 
 int slen = this->url.getElement(i).length();
 
-if (slen > 6 
+if (slen > 6
         && (std::equal(javaExtension1, javaExtension1 + 6,
                        this->url.getElement(i).end() - 6)
             || std::equal(javaExtension2, javaExtension2 + 6,
@@ -2010,18 +2010,18 @@ void errorReporter(JSContext * const cx,
 {
     using std::endl;
     using std::string;
-    
+
     Script * const script =
             static_cast<Script *>(JS_GetContextPrivate(cx));
     assert(script);
-    
+
     OpenVRML::Browser & browser = script->getScriptNode().getScene()->browser;
-    
+
     string nodeId = script->getScriptNode().getId();
     if (!nodeId.empty()) {
         browser.err << nodeId << ": ";
     }
-    
+
     if (errorReport) {
         if (errorReport->filename) {
             browser.err << errorReport->filename << ": ";
@@ -2447,7 +2447,7 @@ JSBool createVrmlFromString(JSContext * const cx,
         assert(script->getScriptNode().getScene());
         OpenVRML::Browser & browser =
                 script->getScriptNode().getScene()->browser;
-        OpenVRML::MFNode nodes = 
+        OpenVRML::MFNode nodes =
                 browser.createVrmlFromStream(in);
 
         if (nodes.getLength() == 0) {
@@ -2572,8 +2572,14 @@ JSBool addRoute(JSContext * const cx, JSObject *,
         return JS_FALSE;
     }
     std::auto_ptr<OpenVRML::SFNode>
-            toNode(SFNode::createFromJSObject(cx,
-                                        JSVAL_TO_OBJECT(argv[2])));
+            toNode(SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[2])));
+    //
+    // Make sure the node is not null.
+    //
+    if (!toNode.get()) {
+        JS_ReportError(cx, "NULL destination node.");
+        return JS_FALSE;
+    }
 
     //
     // Makes sure our fourth argument (toEventIn) is a string.
@@ -2584,8 +2590,13 @@ JSBool addRoute(JSContext * const cx, JSObject *,
     const char * const toEventIn =
             JS_GetStringBytes(JSVAL_TO_STRING(argv[3]));
 
-    fromNode->get()->addRoute(fromEventOut,
-                              toNode->get(), toEventIn);
+    try {
+        fromNode->get()->addRoute(fromEventOut,
+                                  toNode->get(), toEventIn);
+    } catch (std::runtime_error & ex) {
+        JS_ReportError(cx, ex.what());
+        return JS_FALSE;
+    }
 
     *rval = JSVAL_VOID;
     return JS_TRUE;

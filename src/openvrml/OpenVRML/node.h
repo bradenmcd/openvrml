@@ -348,10 +348,14 @@ namespace OpenVRML {
         bool isFlagSet() { return d_flag; }
 
         // Add a ROUTE from a field in this node
-        void addRoute(const std::string & fromEventOut, const NodePtr & toNode, const std::string & toEventIn);
+        void addRoute(const std::string & fromEventOut,
+                      const NodePtr & toNode, const std::string & toEventIn)
+            throw (UnsupportedInterface, FieldValueTypeMismatch);
 
         // Delete a ROUTE from a field in this node
-        void deleteRoute(const std::string & fromEventOut, const NodePtr & toNode, const std::string & toEventIn);
+        void deleteRoute(const std::string & fromEventOut,
+                         const NodePtr & toNode, const std::string & toEventIn)
+            throw ();
 
         const RouteList & getRoutes() const;
 
