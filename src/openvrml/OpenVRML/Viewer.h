@@ -99,37 +99,38 @@ public:
   virtual void endObject() = 0;
 
   // Insert objects into the display list
-  virtual Object insertBackground(int = 0    /*nGroundAngles*/,
-				  float* = 0 /*groundAngle*/,
-				  float* = 0 /*groundColor*/,
-				  int = 0    /*nSkyAngles*/,
-				  float* = 0 /*skyAngle*/,
-				  float* = 0 /*skyColor*/,
-				  int* = 0, unsigned char ** = 0) = 0;
+  virtual Object insertBackground(size_t nGroundAngles = 0,
+				  const float * groundAngle = 0,
+				  const float * groundColor = 0,
+				  size_t nSkyAngles = 0,
+				  const float * skyAngle = 0,
+				  const float * skyColor = 0,
+				  int* whc = 0,
+                                  unsigned char ** pixels = 0) = 0;
 			     
   virtual Object insertBox(float, float, float ) = 0;
   virtual Object insertCone(float, float, bool, bool) = 0;
   virtual Object insertCylinder(float, float, bool, bool, bool) = 0;
 
-  virtual Object insertElevationGrid(unsigned int /*mask*/,
-				     int  /*nx*/,
-				     int  /*nz*/,
-				     float * /*height*/,
-				     float /*dx*/,
-				     float /*dz*/,
-				     float * /*tc*/,
-				     float * /*normals*/,
-				     float *colors ) = 0;
+  virtual Object insertElevationGrid(unsigned int mask,
+				     size_t nx,
+				     size_t nz,
+				     const float * height,
+				     float dx,
+				     float dz,
+				     const float * tc,
+				     const float * normals,
+				     const float * colors) = 0;
 
   virtual Object insertExtrusion(unsigned int,
-				 int  /*nOrientation*/,
-				 float * /*orientation*/,
-				 int  /*nScale*/,
-				 float * /*scale*/,
-				 int  /*nCrossSection*/,
-				 float * /*crossSection*/,
-				 int   /*nSpine*/,
-				 float * /*spine*/) = 0;
+				 size_t nOrientation,
+				 const float * orientation,
+				 size_t nScale,
+				 const float * scale,
+				 size_t nCrossSection,
+				 const float * crossSection,
+				 size_t nSpine,
+				 const float * spine) = 0;
 
   virtual Object insertLineSet(int nCoords, float *coord,
 			       size_t nCoordIndex, const long * coordIndex,

@@ -79,14 +79,14 @@ public:
   virtual void endObject();
 
   // Insert objects into the display list
-  virtual Object insertBackground(int nGroundAngles = 0,
-				  float* groundAngle = 0,
-				  float* groundColor = 0,
-				  int nSkyAngles = 0,
-				  float* skyAngle = 0,
-				  float* skyColor = 0,
+  virtual Object insertBackground(size_t nGroundAngles = 0,
+				  const float * groundAngle = 0,
+				  const float * groundColor = 0,
+				  size_t nSkyAngles = 0,
+				  const float * skyAngle = 0,
+				  const float * skyColor = 0,
 				  int* whc = 0,
-				  unsigned char** pixels = 0);
+                                  unsigned char ** pixels = 0);
 
 
   virtual Object insertBox(float x, float y, float z);
@@ -94,24 +94,24 @@ public:
   virtual Object insertCylinder(float h, float r, bool, bool, bool);
 
   virtual Object insertElevationGrid(unsigned int mask,
-				     int nx,
-				     int nz,
-				     float *height,
+				     size_t nx,
+				     size_t nz,
+				     const float * height,
 				     float dx,
 				     float dz,
-				     float *tc,
-				     float *normals,
-				     float *colors);
+				     const float * tc,
+				     const float * normals,
+				     const float * colors);
 
-  virtual Object insertExtrusion(unsigned int mask,
-				 int   nOrientation,
-				 float *orientation,
-				 int   nScale,
-				 float *scale,
-				 int   nCrossSection,
-				 float *crossSection,
-				 int   nSpine,
-				 float *spine );
+  virtual Object insertExtrusion(unsigned int,
+				 size_t nOrientation,
+				 const float * orientation,
+				 size_t nScale,
+				 const float * scale,
+				 size_t nCrossSection,
+				 const float * crossSection,
+				 size_t nSpine,
+				 const float * spine);
 
   virtual Object insertLineSet(int, float *, size_t, const long *,
 			       bool colorPerVertex,
@@ -345,8 +345,8 @@ protected:
 
   // Tessellation
   struct GLUtesselator *d_tess;
-  void insertExtrusionCaps( unsigned int mask, int nSpine, float *c,
-			    int nCrossSection, float *cs );
+  void insertExtrusionCaps(unsigned int mask, size_t nSpine, const float * c,
+			   size_t nCrossSection, const float * cs);
 
   // Check for pickable entity selection
   bool checkSensitive(int x, int y, EventType );

@@ -475,11 +475,11 @@ void ViewerOpenGL::getUserNavigation(double M[4][4])
 
 // Generate a normal from 3 indexed points.
 
-static void indexFaceNormal( int i1,
-			     int i2,
-			     int i3,
-			     float *p,
-			     float *N)
+static void indexFaceNormal(int i1,
+			    int i2,
+			    int i3,
+			    const float * p,
+			    float *N)
 {
   float V1[3], V2[3];
 
@@ -492,14 +492,14 @@ static void indexFaceNormal( int i1,
 //  Geometry insertion.
 //
 
-Viewer::Object ViewerOpenGL::insertBackground(int nGroundAngles,
-					      float* groundAngle,
-					      float* groundColor,
-					      int nSkyAngles,
-					      float* skyAngle,
-					      float* skyColor,
-					      int *whc,
-					      unsigned char **pixels) 
+Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
+				              const float * groundAngle,
+				              const float * groundColor,
+				              size_t nSkyAngles,
+				              const float * skyAngle,
+				              const float * skyColor,
+				              int* whc,
+                                              unsigned char ** pixels) 
 {
   float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
 
@@ -555,9 +555,9 @@ Viewer::Object ViewerOpenGL::insertBackground(int nGroundAngles,
       const double cd = 2.0 * M_PI / nCirc;
 
       double heightAngle0, heightAngle1 = 0.0;
-      float *c0, *c1 = skyColor;
+      const float *c0, *c1 = skyColor;
 
-      for (int nSky=0; nSky<nSkyAngles; ++nSky)
+      for (size_t nSky=0; nSky<nSkyAngles; ++nSky)
 	{
 	  heightAngle0 = heightAngle1;
 	  heightAngle1 = skyAngle[nSky];
@@ -594,7 +594,7 @@ Viewer::Object ViewerOpenGL::insertBackground(int nGroundAngles,
       heightAngle1 = M_PI;
       c1 = groundColor;
 
-      for (int nGround=0; nGround<nGroundAngles; ++nGround)
+      for (size_t nGround=0; nGround<nGroundAngles; ++nGround)
 	{
 	  heightAngle0 = heightAngle1;
 	  heightAngle1 = M_PI - groundAngle[nGround];
@@ -965,7 +965,7 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 static void elevationVertexNormal(int i, int j,
 				  int nx, int nz,
 				  float dx, float dz,
-				  float *height,
+				  const float * height,
 				  float N[])
 {
   float Vx[3], Vz[3];
@@ -1009,16 +1009,16 @@ static void elevationVertexNormal(int i, int j,
 
 
 Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
-						 int nx,
-						 int nz,
-						 float *height,
-						 float dx,
-						 float dz,
-						 float *texture_coords,
-						 float *normals,
-						 float *colors)
+				                 size_t nx,
+				                 size_t nz,
+				                 const float * height,
+				                 float dx,
+				                 float dz,
+				                 const float * texture_coords,
+				                 const float * normals,
+				                 const float * colors)
 {
-  int i, j;
+  size_t i, j;
   float x, z;
 
   GLuint glid = 0;
@@ -1154,8 +1154,8 @@ typedef GLvoid ( WINAPI *TessCB)();
 // Extrusion cap tessellation for non-convex shapes
 
 typedef struct {
-  float *c;			// coordinates array [nVerts * 3]
-  float *crossSection;		// crossSection coordinates [nCrossSection * 2]
+  const float * c;			// coordinates array [nVerts * 3]
+  const float * crossSection;		// crossSection coordinates [nCrossSection * 2]
   float tcDeltaU, tcDeltaV;
   float tcScaleU, tcScaleV;
   int vOffset;
@@ -1184,16 +1184,16 @@ static void WINAPI tessExtrusionVertex( void *vdata, void *pdata )
 
 
 void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
-					int nSpine,
-					float *c,
-					int nCrossSection,
-					float *cs )
+					size_t nSpine,
+					const float * c,
+					size_t nCrossSection,
+					const float * cs )
 {
   // Determine x,z ranges for top & bottom tex coords
   float xz[4] = { cs[0], cs[0], cs[1], cs[1] };
-  float *csp = cs;
+  const float * csp = cs;
 
-  for (int nn=1; nn<nCrossSection; ++nn, csp += 2)
+  for (size_t nn=1; nn<nCrossSection; ++nn, csp += 2)
     {
       if (csp[0] < xz[0])      xz[0] = csp[0];
       else if (csp[0] > xz[1]) xz[1] = csp[0];
@@ -1255,7 +1255,7 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 
 	  GLdouble v[3];
 	  // Mesa tesselator doesn;t like closed polys
-	  int j = equalEndpts ? 1 : 0;
+	  size_t j = equalEndpts ? 1 : 0;
 	  for ( ; j < nCrossSection; ++j)
 	    {
 	      v[0] = c[3*(j+n)];
@@ -1296,7 +1296,7 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 	  indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, N );
 	  glNormal3fv( N );
 
-	  for (int j = 0; j < nCrossSection; ++j)
+	  for (size_t j = 0; j < nCrossSection; ++j)
 	    {
 	      glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
 	      glVertex3fv( &c [3*(j+n)] );
@@ -1309,14 +1309,14 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 
 
 Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
-					     int  nOrientation,
-					     float *orientation,
-					     int  nScale,
-					     float *scale,
-					     int  nCrossSection,
-					     float *crossSection,
-					     int nSpine,
-					     float *spine )
+				             size_t nOrientation,
+				             const float * orientation,
+				             size_t nScale,
+				             const float * scale,
+				             size_t nCrossSection,
+				             const float * crossSection,
+				             size_t nSpine,
+				             const float * spine)
 {
   float *c  = new float[nCrossSection * nSpine * 3];
   float *tc = new float[nCrossSection * nSpine * 3];
@@ -1346,10 +1346,10 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
 
   // Handle creaseAngle, correct normals, ...
   int n = 0;
-  for (int i = 0; i < nSpine-1; ++i, n+=nCrossSection)
+  for (size_t i = 0; i < nSpine-1; ++i, n+=nCrossSection)
     {
       glBegin( GL_QUAD_STRIP );
-      for (int j = 0; j < nCrossSection; ++j)
+      for (size_t j = 0; j < nCrossSection; ++j)
 	{
 	  // Compute normals
 	  float v1[3], v2[3];
