@@ -171,6 +171,65 @@ namespace {
             return scope_guard_impl1<Function, Param>(function, param);
         }
 
+        template <typename Function,
+                  typename Param1,
+                  typename Param2,
+                  typename Param3>
+        class scope_guard_impl3 : public scope_guard_impl_base {
+            Function function;
+            const Param1 param1;
+            const Param2 param2;
+            const Param3 param3;
+
+        public:
+            scope_guard_impl3(const Function & function,
+                              const Param1 & param1,
+                              const Param2 & param2,
+                              const Param3 & param3);
+            ~scope_guard_impl3();
+        };
+
+        template <typename Function,
+                  typename Param1,
+                  typename Param2,
+                  typename Param3>
+        scope_guard_impl3<Function, Param1, Param2, Param3>::
+        scope_guard_impl3(const Function & function,
+                          const Param1 & param1,
+                          const Param2 & param2,
+                          const Param3 & param3):
+            function(function),
+            param1(param1),
+            param2(param2),
+            param3(param3)
+        {}
+
+        template <typename Function,
+                  typename Param1,
+                  typename Param2,
+                  typename Param3>
+        scope_guard_impl3<Function, Param1, Param2, Param3>::
+        ~scope_guard_impl3()
+        {
+            if (!this->dismissed) {
+                this->function(this->param1, this->param2, this->param3);
+            }
+        }
+
+        template <typename Function,
+                  typename Param1,
+                  typename Param2,
+                  typename Param3>
+        scope_guard_impl3<Function, Param1, Param2, Param3>
+        make_guard(const Function & function,
+                   const Param1 & param1,
+                   const Param2 & param2,
+                   const Param3 & param3)
+        {
+            return scope_guard_impl3<Function, Param1, Param2, Param3>(
+                function, param1, param2, param3);
+        }
+
         template <typename Object, typename MemberFunction>
         class obj_scope_guard_impl0 : public scope_guard_impl_base {
             Object & obj;

@@ -25,6 +25,7 @@
 
 # include <iostream>
 # include <fstream>
+# include <boost/algorithm/string/predicate.hpp>
 # include <SDL.h>
 # include <openvrml/browser.h>
 # include <openvrml/gl/viewer.h>
@@ -169,7 +170,33 @@ namespace {
 
             virtual const std::string type() const throw ()
             {
-                return "application/octet-stream";
+                //
+                // A real application should use OS facilities for this.  This
+                // is a crude hack because lookat uses std::filebuf in order to
+                // remain simple and portable.
+                //
+                using std::string;
+                using boost::algorithm::iequals;
+                string media_type = "application/octet-stream";
+                string::size_type dot_pos = this->url_.rfind('.');
+                if (dot_pos == string::npos
+                    || this->url_.size() < dot_pos + 1) {
+                    return media_type;
+                }
+                string ext = this->url_.substr(dot_pos + 1);
+                if (iequals(ext, "wrl")) {
+                    media_type = "model/vrml";
+                } else if (iequals(ext, "png")) {
+                    media_type = "image/png";
+                } else if (iequals(ext, "jpg") || iequals(ext, "jpeg")) {
+                    media_type = "image/jpeg";
+                }
+                return media_type;
+            }
+
+            virtual bool data_available() const throw ()
+            {
+                return !!(*this);
             }
         };
 

@@ -26,10 +26,17 @@
 #   include <config.h>
 # endif
 
+# ifdef OPENVRML_ENABLE_PNG_TEXTURES
+#   include <png.h>
+# endif
+# ifdef OPENVRML_ENABLE_JPEG_TEXTURES
+#   include <jpeglib.h>
+# endif
 # include <algorithm>
 # include <iostream>
 # include <iterator>
 # include <limits>
+# include <boost/algorithm/string/predicate.hpp>
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
@@ -594,6 +601,692 @@ namespace {
         }
         return pos->second->deref(node);
     }
+
+# ifdef OPENVRML_ENABLE_PNG_TEXTURES
+    extern "C" void openvrml_png_info_callback(png_structp png_ptr,
+                                               png_infop info_ptr);
+    extern "C" void openvrml_png_row_callback(png_structp png_ptr,
+                                              png_bytep new_row,
+                                              png_uint_32 row_num,
+                                              int pass);
+    extern "C" void openvrml_png_end_callback(png_structp png_ptr,
+                                              png_infop info_ptr);
+# endif
+
+# ifdef OPENVRML_ENABLE_JPEG_TEXTURES
+    extern "C" void openvrml_jpeg_init_source(j_decompress_ptr cinfo);
+    extern "C" boolean openvrml_jpeg_fill_input_buffer(j_decompress_ptr cinfo);
+    extern "C" void openvrml_jpeg_skip_input_data(j_decompress_ptr cinfo,
+                                                  long num_bytes);
+    extern "C" void openvrml_jpeg_term_source(j_decompress_ptr cinfo);
+# endif
+
+    class image_stream_listener : public openvrml::stream_listener {
+        boost::recursive_mutex & node_mutex_;
+        openvrml::image & image_;
+        openvrml::node & node_;
+
+        class image_reader {
+        public:
+            void read(const std::vector<unsigned char> & data);
+
+        private:
+            virtual void do_read(const std::vector<unsigned char> & data) = 0;
+        };
+
+# ifdef OPENVRML_ENABLE_PNG_TEXTURES
+        friend void openvrml_png_info_callback(png_structp png_ptr,
+                                               png_infop info_ptr);
+        friend void openvrml_png_row_callback(png_structp png_ptr,
+                                              png_bytep new_row,
+                                              png_uint_32 row_num,
+                                              int pass);
+        friend void openvrml_png_end_callback(png_structp png_ptr,
+                                              png_infop info_ptr);
+
+        class png_reader : public image_reader {
+            png_structp png_ptr_;
+            png_infop info_ptr_;
+
+        public:
+            image_stream_listener & stream_listener;
+            std::vector<png_byte> old_row;
+            bool gray_palette;
+
+            explicit png_reader(image_stream_listener & stream_listener);
+            virtual ~png_reader() throw ();
+
+        private:
+            virtual void do_read(const std::vector<unsigned char> & data);
+        };
+# endif
+
+# ifdef OPENVRML_ENABLE_JPEG_TEXTURES
+        friend void openvrml_jpeg_init_source(j_decompress_ptr cinfo);
+        friend boolean openvrml_jpeg_fill_input_buffer(j_decompress_ptr cinfo);
+        friend void openvrml_jpeg_skip_input_data(j_decompress_ptr cinfo,
+                                                  long num_bytes);
+        friend void openvrml_jpeg_term_source(j_decompress_ptr cinfo);
+
+        class jpeg_reader : public image_reader {
+        public:
+            struct source_mgr {
+                jpeg_source_mgr pub;
+                jpeg_reader * reader;
+            };
+
+        private:
+            jpeg_decompress_struct cinfo_;
+            struct error_mgr {
+                jpeg_error_mgr pub;
+                jmp_buf jmpbuf;
+            } error_mgr_;
+            source_mgr source_mgr_;
+
+        public:
+            image_stream_listener & stream_listener;
+            enum read_state_t {
+                reading_back = 0,
+                reading_new
+            } read_state;
+            size_t bytes_to_skip;
+            size_t backtrack_buffer_bytes_unread;
+            std::vector<JOCTET> buffer, backtrack_buffer;
+            enum decoder_state_t {
+                header,
+                start_decompress,
+                decompress_progressive,
+                decompress_sequential,
+                done,
+                sink_non_jpeg_trailer,
+                error
+            } decoder_state;
+            JSAMPARRAY scanlines;
+            bool progressive_scan_started;
+
+            explicit jpeg_reader(image_stream_listener & stream_listener);
+            virtual ~jpeg_reader() throw ();
+
+        private:
+            virtual void do_read(const std::vector<unsigned char> & data);
+
+            bool output_scanlines();
+        };
+# endif
+
+        boost::scoped_ptr<image_reader> image_reader_;
+
+    public:
+        image_stream_listener(openvrml::image & image,
+                              openvrml::node & node,
+                              boost::recursive_mutex & node_mutex);
+        virtual ~image_stream_listener() throw ();
+
+    private:
+        virtual void
+        do_stream_available(const std::string & uri,
+                            const std::string & media_type);
+
+        virtual void
+        do_data_available(const std::vector<unsigned char> & data);
+    };
+
+    void
+    image_stream_listener::image_reader::
+    read(const std::vector<unsigned char> & data)
+    {
+        this->do_read(data);
+    }
+
+# ifdef OPENVRML_ENABLE_PNG_TEXTURES
+    void openvrml_png_info_callback(png_structp png_ptr, png_infop info_ptr)
+    {
+        typedef image_stream_listener::png_reader png_reader_t;
+        png_reader_t & reader =
+            *static_cast<png_reader_t *>(png_get_progressive_ptr(png_ptr));
+
+        boost::recursive_mutex::scoped_lock
+            lock(reader.stream_listener.node_mutex_);
+
+        openvrml::image & image = reader.stream_listener.image_;
+
+        image.comp(png_get_channels(png_ptr, info_ptr));
+        const size_t width = png_get_image_width(png_ptr, info_ptr);
+        const size_t height = png_get_image_height(png_ptr, info_ptr);
+        image.resize(width, height);
+
+        //
+        // Strip 16 bit/color files to 8 bit/color.
+        //
+        png_set_strip_16(png_ptr);
+
+        //
+        // Extract multiple pixels with bit depths of 1, 2, and 4 from a
+        // single byte into separate bytes.  (Usefule for paletted and
+        // grayscale images.)
+        //
+        png_set_packing(png_ptr);
+
+        //
+        // Expand paletted colors into true RGB triplets.
+        //
+        const png_byte color_type = png_get_color_type(png_ptr, info_ptr);
+        if (color_type == PNG_COLOR_TYPE_PALETTE) {
+            png_set_expand(png_ptr);
+            image.comp(3);
+        }
+
+        //
+        // Expand grayscale images to the full 8 bits from 1, 2, or
+        // 4 bits/pixel.
+        //
+        const png_byte bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+        if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
+            png_set_expand(png_ptr);
+        }
+
+        //
+        // Expand paletted or RGB images with transparency to full alpha
+        // channels so the data will be available as RGBA quartets.
+        //
+        if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
+            png_set_expand(png_ptr);
+            image.comp(image.comp() + 1);
+        }
+
+        if (color_type == PNG_COLOR_TYPE_PALETTE) {
+            int num_palette;
+            png_colorp palette;
+            if (png_get_PLTE(png_ptr, info_ptr, &palette, &num_palette)) {
+                reader.gray_palette = true;
+                for (int i = 0; i < num_palette; ++i) {
+                    if (palette[i].red != palette[i].green
+                        || palette[i].blue != palette[i].green) {
+                        reader.gray_palette = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (reader.gray_palette) {
+            if (image.comp() == 3) {
+                image.comp(1);
+            } else if (image.comp() == 4) {
+                image.comp(2);
+            }
+        }
+
+        //
+        // Set gamma.
+        //
+        static const double screen_gamma = 2.2; // Display exponent.
+        static const double default_gamma = 0.45455;
+        double file_gamma;
+        png_set_gamma(png_ptr,
+                      screen_gamma,
+                      png_get_gAMA(png_ptr, info_ptr, &file_gamma)
+                      ? file_gamma
+                      : default_gamma);
+
+        png_set_interlace_handling(png_ptr);
+
+        png_read_update_info(png_ptr, info_ptr);
+
+        reader.old_row.resize(image.comp() * image.x());
+    }
+
+    void openvrml_png_row_callback(png_structp png_ptr,
+                                   png_bytep new_row,
+                                   png_uint_32 row_num,
+                                   int pass)
+    {
+        if (!new_row) { return; }
+
+        typedef image_stream_listener::png_reader png_reader_t;
+        png_reader_t & reader =
+            *static_cast<png_reader_t *>(png_get_progressive_ptr(png_ptr));
+
+        boost::recursive_mutex::scoped_lock
+            lock(reader.stream_listener.node_mutex_);
+
+        openvrml::image & image = reader.stream_listener.image_;
+
+        png_progressive_combine_row(png_ptr, &reader.old_row[0], new_row);
+
+        //
+        // openvrml::image pixels start at the bottom left.
+        //
+        const size_t image_row = (image.y() - 1) - row_num;
+        const size_t bytes_per_row = reader.old_row.size();
+        const size_t image_width = bytes_per_row / image.comp();
+        for (size_t pixel_index = 0, byte_index = 0; pixel_index < image_width;
+             ++pixel_index) {
+            using openvrml::int32;
+            int32 pixel = 0x00000000;
+            for (size_t component = image.comp();
+                 component > 0;
+                 --component) {
+                pixel |= int32(new_row[byte_index]) << (8 * (component - 1));
+                if (reader.gray_palette) {
+                    if (image.comp() == 1) {
+                        // We just want every third pixel element.
+                        byte_index += 3;
+                    } else if (image.comp() == 2) {
+                        // We just want the first and fourth pixel elements.
+                        byte_index += (byte_index % 4 == 0) ? 3 : 1;
+                    }
+                } else {
+                    ++byte_index;
+                }
+            }
+            image.pixel(image_row * image_width + pixel_index, pixel);
+        }
+
+        reader.stream_listener.node_.modified(true);
+
+        copy(new_row, new_row + bytes_per_row, reader.old_row.begin());
+    }
+
+    void openvrml_png_end_callback(png_structp png_ptr, png_infop info_ptr)
+    {
+    }
+
+    image_stream_listener::png_reader::
+    png_reader(image_stream_listener & stream_listener):
+        png_ptr_(0),
+        info_ptr_(0),
+        stream_listener(stream_listener),
+        gray_palette(false)
+    {
+        using openvrml_::scope_guard;
+        using openvrml_::make_guard;
+
+        this->png_ptr_ =
+            png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+        if (!this->png_ptr_) { throw std::bad_alloc(); }
+        scope_guard guard = make_guard(&png_destroy_read_struct,
+                                       &this->png_ptr_,
+                                       &this->info_ptr_,
+                                       png_infopp(0));
+
+        this->info_ptr_ = png_create_info_struct(this->png_ptr_);
+        if (!this->info_ptr_) { throw std::bad_alloc(); }
+
+        png_set_progressive_read_fn(this->png_ptr_,
+                                    this,
+                                    openvrml_png_info_callback,
+                                    openvrml_png_row_callback,
+                                    openvrml_png_end_callback);
+        guard.dismiss();
+    }
+
+    image_stream_listener::png_reader::~png_reader() throw ()
+    {
+        png_destroy_read_struct(&this->png_ptr_,
+                                &this->info_ptr_,
+                                png_infopp(0));
+    }
+
+    void
+    image_stream_listener::png_reader::
+    do_read(const std::vector<unsigned char> & data)
+    {
+        int jmpval = setjmp(png_jmpbuf(this->png_ptr_));
+        if (jmpval != 0) { return; }
+
+        png_process_data(this->png_ptr_,
+                         this->info_ptr_,
+                         const_cast<png_byte *>(&data[0]),
+                         data.size());
+    }
+# endif // defined OPENVRML_ENABLE_PNG_TEXTURES
+
+# ifdef OPENVRML_ENABLE_JPEG_TEXTURES
+    void openvrml_jpeg_init_source(j_decompress_ptr cinfo)
+    {
+    }
+
+    boolean openvrml_jpeg_fill_input_buffer(j_decompress_ptr cinfo)
+    {
+        typedef image_stream_listener::jpeg_reader::source_mgr source_mgr_t;
+        source_mgr_t & src =
+            *reinterpret_cast<source_mgr_t *>(cinfo->src);
+
+        jpeg_source_mgr & source_mgr = src.pub;
+        image_stream_listener::jpeg_reader & reader = *src.reader;
+
+        switch (reader.read_state) {
+        case image_stream_listener::jpeg_reader::reading_back:
+            if (reader.buffer.empty()) {
+                return false; // Suspend.
+            }
+            if (reader.bytes_to_skip > reader.buffer.size()) {
+                reader.bytes_to_skip -= reader.buffer.size();
+                reader.buffer.clear();
+                return false; // Suspend.
+            }
+
+            reader.backtrack_buffer_bytes_unread = source_mgr.bytes_in_buffer;
+            {
+                std::vector<JOCTET>::iterator pos = reader.buffer.begin();
+                advance(pos, reader.bytes_to_skip);
+                source_mgr.next_input_byte = &*pos;
+            }
+            source_mgr.bytes_in_buffer -= reader.bytes_to_skip;
+            reader.bytes_to_skip = 0;
+            reader.read_state =
+                image_stream_listener::jpeg_reader::reading_new;
+
+            return true;
+
+        case image_stream_listener::jpeg_reader::reading_new:
+            if (source_mgr.next_input_byte != (reader.buffer.empty()
+                                               ? 0 : &reader.buffer[0])) {
+                reader.backtrack_buffer_bytes_unread = 0;
+                reader.backtrack_buffer.resize(0);
+            }
+
+            {
+                const size_t old_backtrack_buffer_size =
+                    reader.backtrack_buffer.size();
+
+                reader.backtrack_buffer.resize(source_mgr.bytes_in_buffer
+                                               + old_backtrack_buffer_size);
+
+                copy(source_mgr.next_input_byte,
+                     source_mgr.next_input_byte + source_mgr.bytes_in_buffer,
+                     reader.backtrack_buffer.begin()
+                     + old_backtrack_buffer_size);
+
+                source_mgr.next_input_byte =
+                    &*(reader.backtrack_buffer.begin()
+                       + old_backtrack_buffer_size
+                       - reader.backtrack_buffer_bytes_unread);
+            }
+            source_mgr.bytes_in_buffer += reader.backtrack_buffer_bytes_unread;
+            reader.read_state =
+                image_stream_listener::jpeg_reader::reading_back;
+        }
+        return false;
+    }
+
+    void openvrml_jpeg_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
+    {
+        typedef image_stream_listener::jpeg_reader::source_mgr source_mgr_t;
+        source_mgr_t & src =
+            *reinterpret_cast<source_mgr_t *>(cinfo->src);
+
+        jpeg_source_mgr & source_mgr = src.pub;
+        image_stream_listener::jpeg_reader & reader = *src.reader;
+
+        if (num_bytes > source_mgr.bytes_in_buffer) {
+            reader.bytes_to_skip = num_bytes - source_mgr.bytes_in_buffer;
+            source_mgr.next_input_byte += source_mgr.bytes_in_buffer;
+            source_mgr.bytes_in_buffer = 0;
+        } else {
+            source_mgr.bytes_in_buffer -= num_bytes;
+            source_mgr.next_input_byte += num_bytes;
+        }
+    }
+
+    void openvrml_jpeg_term_source(j_decompress_ptr cinfo)
+    {
+    }
+
+    image_stream_listener::jpeg_reader::
+    jpeg_reader(image_stream_listener & stream_listener):
+        stream_listener(stream_listener),
+        read_state(reading_back),
+        bytes_to_skip(0),
+        backtrack_buffer_bytes_unread(0),
+        decoder_state(header),
+        scanlines(0),
+        progressive_scan_started(false)
+    {
+        //std::memset(&this->cinfo, 0, sizeof this->cinfo_);
+        //std::memset(&this->source_mgr_, 0, sizeof this->source_mgr_);
+
+        this->cinfo_.err = jpeg_std_error(&this->error_mgr_.pub);
+        int jmpval = setjmp(this->error_mgr_.jmpbuf);
+        if (jmpval != 0) { return; }
+        jpeg_create_decompress(&this->cinfo_);
+        this->source_mgr_.pub.next_input_byte = 0;
+        this->source_mgr_.pub.bytes_in_buffer = 0;
+        this->source_mgr_.pub.init_source = openvrml_jpeg_init_source;
+        this->source_mgr_.pub.fill_input_buffer =
+            openvrml_jpeg_fill_input_buffer;
+        this->source_mgr_.pub.skip_input_data = openvrml_jpeg_skip_input_data;
+        this->source_mgr_.pub.resync_to_restart = jpeg_resync_to_restart;
+        this->source_mgr_.pub.term_source = openvrml_jpeg_term_source;
+        this->source_mgr_.reader = this;
+
+        this->cinfo_.src =
+            reinterpret_cast<jpeg_source_mgr *>(&this->source_mgr_);
+    }
+
+    image_stream_listener::jpeg_reader::~jpeg_reader() throw ()
+    {
+        jpeg_destroy_decompress(&this->cinfo_);
+    }
+
+    void
+    image_stream_listener::jpeg_reader::
+    do_read(const std::vector<unsigned char> & data)
+    {
+        if (data.size() > this->buffer.size()) {
+            this->buffer.resize(data.size());
+        }
+        copy(data.begin(), data.end(), this->buffer.begin());
+
+        int jmpval = setjmp(this->error_mgr_.jmpbuf);
+        if (jmpval != 0) { return; }
+
+        switch (this->decoder_state) {
+        case jpeg_reader::header:
+        {
+            boost::recursive_mutex::scoped_lock
+                lock(this->stream_listener.node_mutex_);
+
+            static const bool require_image = true;
+            const int read_header_result = jpeg_read_header(&this->cinfo_,
+                                                            require_image);
+            if (read_header_result == JPEG_SUSPENDED) { return; }
+
+            switch (this->cinfo_.jpeg_color_space) {
+            case JCS_GRAYSCALE:
+            case JCS_RGB:
+            case JCS_YCbCr:
+                this->cinfo_.out_color_space = JCS_RGB;
+                break;
+            default:
+                this->decoder_state = jpeg_reader::error;
+                return;
+            }
+
+            this->cinfo_.buffered_image =
+                jpeg_has_multiple_scans(&this->cinfo_);
+
+            jpeg_calc_output_dimensions(&this->cinfo_);
+
+            openvrml::image & image = this->stream_listener.image_;
+            image.comp(this->cinfo_.num_components);
+            image.resize(this->cinfo_.image_width, this->cinfo_.image_height);
+
+            const JDIMENSION samples_per_row =
+                this->cinfo_.output_width * this->cinfo_.num_components;
+            static const JDIMENSION num_rows = 1;
+            this->scanlines =
+                (*this->cinfo_.mem->alloc_sarray)(
+                    reinterpret_cast<j_common_ptr>(&this->cinfo_),
+                    JPOOL_IMAGE,
+                    samples_per_row,
+                    num_rows);
+
+            this->decoder_state = jpeg_reader::start_decompress;
+        }
+        case jpeg_reader::start_decompress:
+        {
+            this->cinfo_.dct_method = JDCT_ISLOW;
+            this->cinfo_.dither_mode = JDITHER_FS;
+            this->cinfo_.do_fancy_upsampling = true;
+            this->cinfo_.enable_2pass_quant = false;
+            this->cinfo_.do_block_smoothing = true;
+
+            if (!jpeg_start_decompress(&this->cinfo_)) {
+                return; // Input suspended.
+            }
+
+            this->decoder_state = this->cinfo_.buffered_image
+                ? jpeg_reader::decompress_progressive
+                : jpeg_reader::decompress_sequential;
+        }
+        case jpeg_reader::decompress_sequential:
+            if (this->decoder_state == jpeg_reader::decompress_sequential) {
+                if (!this->output_scanlines()) {
+                    return; // Input suspended.
+                }
+                this->decoder_state = jpeg_reader::done;
+            }
+        case jpeg_reader::decompress_progressive:
+            if (this->decoder_state == jpeg_reader::decompress_progressive) {
+                int status;
+                do {
+                    status = jpeg_consume_input(&this->cinfo_);
+                } while (status != JPEG_SUSPENDED
+                         && status != JPEG_REACHED_EOI);
+
+                while (true) {
+                    if (this->cinfo_.output_scanline == 0
+                        && !this->progressive_scan_started) {
+                        int scan = this->cinfo_.input_scan_number;
+
+                        if (this->cinfo_.output_scan_number == 0
+                            && scan > 1
+                            && status != JPEG_REACHED_EOI) {
+                            --scan;
+                        }
+
+                        if (!jpeg_start_output(&this->cinfo_, scan)) {
+                            return; // Input suspended.
+                        }
+                        this->progressive_scan_started = true;
+                    }
+
+                    if (!this->output_scanlines()) {
+                        return; // Input suspended.
+                    }
+
+                    if (this->cinfo_.output_scanline
+                        == this->cinfo_.output_height) {
+                        if (!jpeg_finish_output(&this->cinfo_)) {
+                            return; // Input suspended.
+                        }
+                        if (jpeg_input_complete(&this->cinfo_)
+                            && (this->cinfo_.input_scan_number
+                                == this->cinfo_.output_scan_number)) {
+                            break;
+                        }
+                        this->cinfo_.output_scanline = 0;
+                        this->progressive_scan_started = false;
+                    }
+                }
+
+                this->decoder_state = jpeg_reader::done;
+            }
+        case jpeg_reader::done:
+            if (!jpeg_finish_decompress(&this->cinfo_)) {
+                return; // Input suspended.
+            }
+            this->decoder_state = jpeg_reader::sink_non_jpeg_trailer;
+            break;
+
+        case jpeg_reader::sink_non_jpeg_trailer:
+            break;
+
+        case jpeg_reader::error:
+            break;
+        }
+    }
+
+    bool image_stream_listener::jpeg_reader::output_scanlines()
+    {
+        boost::recursive_mutex::scoped_lock
+            lock(this->stream_listener.node_mutex_);
+
+        JDIMENSION top = this->cinfo_.output_scanline;
+        bool result = true;
+
+        openvrml::image & image = this->stream_listener.image_;
+        const size_t bytes_per_row = image.comp() * image.x();
+
+        while (this->cinfo_.output_scanline < this->cinfo_.output_height) {
+            JDIMENSION scanlines_completed =
+                jpeg_read_scanlines(&this->cinfo_, this->scanlines, 1);
+            if (scanlines_completed != 1) {
+                result = false; // Suspend.
+                break;
+            }
+
+            const size_t image_row = image.y() - this->cinfo_.output_scanline;
+            for (size_t pixel_index = 0, byte_index = 0;
+                 pixel_index < image.x();
+                 ++pixel_index) {
+                using openvrml::int32;
+                int32 pixel = 0x00000000;
+                for (size_t component = image.comp();
+                     component > 0;
+                     --component, ++byte_index) {
+                    const JSAMPLE sample = (*this->scanlines)[byte_index];
+                    pixel |= int32(sample) << (8 * (component - 1));
+                }
+                image.pixel(image_row * image.x() + pixel_index, pixel);
+            }
+        }
+
+        if (top != this->cinfo_.output_scanline) {
+            this->stream_listener.node_.modified(true);
+        }
+
+        return result;
+    }
+# endif // defined OPENVRML_ENABLE_JPEG_TEXTURES
+
+    image_stream_listener::
+    image_stream_listener(openvrml::image & image,
+                          openvrml::node & node,
+                          boost::recursive_mutex & node_mutex):
+        node_mutex_(node_mutex),
+        image_(image),
+        node_(node)
+    {}
+
+    image_stream_listener::~image_stream_listener() throw ()
+    {}
+
+    void
+    image_stream_listener::do_stream_available(const std::string & uri,
+                                               const std::string & media_type)
+    {
+        using boost::algorithm::iequals;
+        if (iequals(media_type, "image/png")
+            || iequals(media_type, "image/x-png")) {
+# ifdef OPENVRML_ENABLE_PNG_TEXTURES
+            this->image_reader_.reset(new png_reader(*this));
+# endif
+        } else if (iequals(media_type, "image/jpeg")) {
+# ifdef OPENVRML_ENABLE_JPEG_TEXTURES
+            this->image_reader_.reset(new jpeg_reader(*this));
+# endif
+        }
+    }
+
+    void
+    image_stream_listener::
+    do_data_available(const std::vector<unsigned char> & data)
+    {
+        if (this->image_reader_) { this->image_reader_->read(data); }
+    }
 }
 
 namespace openvrml {
@@ -623,7 +1316,8 @@ namespace vrml97_node {
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-abstract_base::abstract_base(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+abstract_base::abstract_base(const node_type & type,
+                             const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope)
 {}
 
@@ -2995,23 +3689,15 @@ void background_node::update_textures()
         if (this->front_url_.mfstring::value.empty()) {
             this->front = image();
         } else {
-            doc2 base(this->scene()->url());
-            img img_;
-            if (img_.try_urls(this->front_url_.mfstring::value, &base)) {
-                this->front = image(img_.w(),
-                                    img_.h(),
-                                    img_.nc(),
-                                    img_.pixels(),
-                                    img_.pixels()
-                                    + (img_.w() * img_.h() * img_.nc()));
-            } else {
-                using std::ostream;
-                using std::endl;
-
-                ostream & err = this->type().node_class().browser().err;
-                err << "Couldn't read texture from " << this->front_url_
-                    << endl;
-            }
+            using std::auto_ptr;
+            auto_ptr<resource_istream>
+                in(this->scene()
+                   ->get_resource(this->front_url_.mfstring::value));
+            auto_ptr<stream_listener>
+                listener(new image_stream_listener(this->front,
+                                                   *this,
+                                                   this->mutex()));
+            read_stream(in, listener);
         }
         this->front_needs_update = false;
     }
@@ -3019,22 +3705,15 @@ void background_node::update_textures()
         if (this->back_url_.mfstring::value.empty()) {
             this->back = image();
         } else {
-            doc2 base(this->scene()->url());
-            img img_;
-            if (img_.try_urls(this->back_url_.mfstring::value, &base)) {
-                this->back = image(img_.w(),
-                                   img_.h(),
-                                   img_.nc(),
-                                   img_.pixels(),
-                                   img_.pixels()
-                                   + (img_.w() * img_.h() * img_.nc()));
-            } else {
-                using std::ostream;
-                using std::endl;
-
-                ostream & err = this->type().node_class().browser().err;
-                err << "Couldn't read texture from " << this->back_url_ << endl;
-            }
+            using std::auto_ptr;
+            auto_ptr<resource_istream>
+                in(this->scene()
+                   ->get_resource(this->back_url_.mfstring::value));
+            auto_ptr<stream_listener>
+                listener(new image_stream_listener(this->back,
+                                                   *this,
+                                                   this->mutex()));
+            read_stream(in, listener);
         }
         this->back_needs_update = false;
     }
@@ -3042,22 +3721,15 @@ void background_node::update_textures()
         if (this->left_url_.mfstring::value.empty()) {
             this->left = image();
         } else {
-            doc2 base(this->scene()->url());
-            img img_;
-            if (img_.try_urls(this->left_url_.mfstring::value, &base)) {
-                this->left = image(img_.w(),
-                                   img_.h(),
-                                   img_.nc(),
-                                   img_.pixels(),
-                                   img_.pixels()
-                                   + (img_.w() * img_.h() * img_.nc()));
-            } else {
-                using std::ostream;
-                using std::endl;
-
-                ostream & err = this->type().node_class().browser().err;
-                err << "Couldn't read texture from " << this->left_url_ << endl;
-            }
+            using std::auto_ptr;
+            auto_ptr<resource_istream>
+                in(this->scene()
+                   ->get_resource(this->left_url_.mfstring::value));
+            auto_ptr<stream_listener>
+                listener(new image_stream_listener(this->left,
+                                                   *this,
+                                                   this->mutex()));
+            read_stream(in, listener);
         }
         this->left_needs_update = false;
     }
@@ -3065,23 +3737,15 @@ void background_node::update_textures()
         if (this->right_url_.mfstring::value.empty()) {
             this->right = image();
         } else {
-            doc2 base(this->scene()->url());
-            img img_;
-            if (img_.try_urls(this->right_url_.mfstring::value, &base)) {
-                this->right = image(img_.w(),
-                                    img_.h(),
-                                    img_.nc(),
-                                    img_.pixels(),
-                                    img_.pixels()
-                                    + (img_.w() * img_.h() * img_.nc()));
-            } else {
-                using std::ostream;
-                using std::endl;
-
-                ostream & err = this->type().node_class().browser().err;
-                err << "Couldn't read texture from " << this->right_url_
-                    << endl;
-            }
+            using std::auto_ptr;
+            auto_ptr<resource_istream>
+                in(this->scene()
+                   ->get_resource(this->right_url_.mfstring::value));
+            auto_ptr<stream_listener>
+                listener(new image_stream_listener(this->right,
+                                                   *this,
+                                                   this->mutex()));
+            read_stream(in, listener);
         }
         this->right_needs_update = false;
     }
@@ -3089,22 +3753,15 @@ void background_node::update_textures()
         if (this->top_url_.mfstring::value.empty()) {
             this->top = image();
         } else {
-            doc2 base(this->scene()->url());
-            img img_;
-            if (img_.try_urls(this->top_url_.mfstring::value, &base)) {
-                this->top = image(img_.w(),
-                                  img_.h(),
-                                  img_.nc(),
-                                  img_.pixels(),
-                                  img_.pixels()
-                                  + (img_.w() * img_.h() * img_.nc()));
-            } else {
-                using std::ostream;
-                using std::endl;
-
-                ostream & err = this->type().node_class().browser().err;
-                err << "Couldn't read texture from " << this->top_url_ << endl;
-            }
+            using std::auto_ptr;
+            auto_ptr<resource_istream>
+                in(this->scene()
+                   ->get_resource(this->top_url_.mfstring::value));
+            auto_ptr<stream_listener>
+                listener(new image_stream_listener(this->top,
+                                                   *this,
+                                                   this->mutex()));
+            read_stream(in, listener);
         }
         this->top_needs_update = false;
     }
@@ -3112,23 +3769,15 @@ void background_node::update_textures()
         if (this->bottom_url_.mfstring::value.empty()) {
             this->bottom = image();
         } else {
-            doc2 base(this->scene()->url());
-            img img_;
-            if (img_.try_urls(this->bottom_url_.mfstring::value, &base)) {
-                this->bottom = image(img_.w(),
-                                     img_.h(),
-                                     img_.nc(),
-                                     img_.pixels(),
-                                     img_.pixels()
-                                     + (img_.w() * img_.h() * img_.nc()));
-            } else {
-                using std::ostream;
-                using std::endl;
-
-                ostream & err = this->type().node_class().browser().err;
-                err << "Couldn't read texture from " << this->bottom_url_
-                    << endl;
-            }
+            using std::auto_ptr;
+            auto_ptr<resource_istream>
+                in(this->scene()
+                   ->get_resource(this->bottom_url_.mfstring::value));
+            auto_ptr<stream_listener>
+                listener(new image_stream_listener(this->bottom,
+                                                   *this,
+                                                   this->mutex()));
+            read_stream(in, listener);
         }
         this->bottom_needs_update = false;
     }
@@ -3170,7 +3819,7 @@ billboard_class::~billboard_class() throw ()
  */
 const node_type_ptr
 billboard_class::do_create_type(const std::string & id,
-                             const node_interface_set & interfaces) const
+                                const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -8015,13 +8664,14 @@ image_texture_class::~image_texture_class() throw () {}
  * @return a node_type_ptr to a node_type capable of creating ImageTexture
  *         nodes.
  *
- * @exception unsupported_interface  if @p interfaces includes an interface not
- *                              supported by image_texture_class.
+ * @exception unsupported_interface if @p interfaces includes an interface not
+ *                                  supported by image_texture_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-image_texture_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+image_texture_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -8165,8 +8815,9 @@ image_texture_node::url_exposedfield::event_side_effect(const mfstring & url,
  * @param type  the node_type associated with the node.
  * @param scope the scope to which the node belongs.
  */
-image_texture_node::image_texture_node(const node_type & type,
-                                       const boost::shared_ptr<openvrml::scope> & scope):
+image_texture_node::
+image_texture_node(const node_type & type,
+                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
     url_(*this),
@@ -8192,16 +8843,6 @@ const image & image_texture_node::image() const throw ()
 }
 
 /**
- * @brief The number of frames.
- *
- * @return 0.
- */
-size_t image_texture_node::frames() const throw ()
-{
-    return 0;
-}
-
-/**
  * @brief render_texture implementation.
  *
  * @param v viewer.
@@ -8224,20 +8865,14 @@ void image_texture_node::update_texture()
 {
     if (this->texture_needs_update) {
         if (!this->url_.mfstring::value.empty()) {
-            doc2 baseDoc(this->scene()->url());
-            img img_;
-            if (img_.try_urls(this->url_.mfstring::value, &baseDoc)) {
-                this->image_ =
-                    openvrml::image(img_.w(),
-                                    img_.h(),
-                                    img_.nc(),
-                                    img_.pixels(),
-                                    img_.pixels()
-                                    + (img_.w() * img_.h() * img_.nc()));
-            } else {
-                OPENVRML_PRINT_MESSAGE_("Couldn't read ImageTexture from URL "
-                                        + this->url_.mfstring::value[0]);
-            }
+            using std::auto_ptr;
+            auto_ptr<resource_istream>
+                in(this->scene()->get_resource(this->url_.mfstring::value));
+            auto_ptr<stream_listener>
+                listener(new image_stream_listener(this->image_,
+                                                   *this,
+                                                   this->mutex()));
+            read_stream(in, listener);
         }
         this->texture_needs_update = false;
     }
@@ -10225,12 +10860,6 @@ movie_texture_node::set_speed_listener::do_process_event(const sffloat & speed,
  */
 
 /**
- * @var img * movie_texture_node::img_
- *
- * @brief Movie data.
- */
-
-/**
  * @var image movie_texture_node::image_
  *
  * @brief Frame data.
@@ -10260,8 +10889,9 @@ movie_texture_node::set_speed_listener::do_process_event(const sffloat & speed,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-movie_texture_node::movie_texture_node(const node_type & type,
-                                       const boost::shared_ptr<openvrml::scope> & scope):
+movie_texture_node::
+movie_texture_node(const node_type & type,
+                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
     loop_(*this, false),
@@ -10272,20 +10902,14 @@ movie_texture_node::movie_texture_node(const node_type & type,
     stop_time_(*this),
     url_(*this),
     duration_changed_(this->duration_),
-    is_active_(this->active_),
-    img_(0),
-    frame(0),
-    lastFrame(-1),
-    lastFrameTime(-1.0)
+    is_active_(this->active_)
 {}
 
 /**
  * @brief Destroy.
  */
 movie_texture_node::~movie_texture_node() throw ()
-{
-    delete this->img_;
-}
+{}
 
 /**
  * @brief Cast to a movie_texture_node.
@@ -10302,6 +10926,7 @@ movie_texture_node* movie_texture_node::to_movie_texture() const
  */
 void movie_texture_node::update(const double time)
 {
+# if 0
     if (this->modified()) {
         if (this->img_) {
             const char * imageUrl = this->img_->url();
@@ -10432,6 +11057,7 @@ void movie_texture_node::update(const double time)
         double d = this->lastFrameTime + fabs(1 / this->speed_.value) - time;
         this->type().node_class().browser().delta(0.9 * d);
     }
+# endif
 }
 
 /**
@@ -10442,16 +11068,6 @@ void movie_texture_node::update(const double time)
 const image & movie_texture_node::image() const throw ()
 {
     return this->image_;
-}
-
-/**
- * @brief The number of frames.
- *
- * @return the number of frames.
- */
-size_t movie_texture_node::frames() const throw ()
-{
-    return this->img_ ? this->img_->nframes() : 0;
 }
 
 /**
@@ -10488,6 +11104,7 @@ void movie_texture_node::do_shutdown(const double timestamp) throw ()
  */
 viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
 {
+# if 0
     if (!this->img_ || this->frame < 0) { return 0; }
 
     viewer::texture_object_t texture_object = 0;
@@ -10503,6 +11120,8 @@ viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
 
     this->lastFrame = this->frame;
     return texture_object;
+# endif
+    return 0;
 }
 
 
@@ -11905,16 +12524,6 @@ pixel_texture_node::~pixel_texture_node() throw ()
 const image & pixel_texture_node::image() const throw ()
 {
     return this->image_.sfimage::value;
-}
-
-/**
- * @brief The number of frames.
- *
- * @return 0
- */
-size_t pixel_texture_node::frames() const throw ()
-{
-    return 0;
 }
 
 /**

@@ -4,7 +4,7 @@
 //
 // Copyright 1998  Chris Morley
 // Copyright 1999  Kumaran Santhanam
-// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,6 @@
 #   define OPENVRML_VRML97NODE_H
 
 #   include <openvrml/node.h>
-#   include <openvrml/img.h>
 #   include <openvrml/bounding_volume.h>
 #   include <openvrml/exposedfield.h>
 
@@ -43,7 +42,8 @@ namespace openvrml {
             virtual ~abstract_base() throw () = 0;
 
         protected:
-            abstract_base(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
+            abstract_base(const node_type & type,
+                          const boost::shared_ptr<openvrml::scope> & scope);
 
         private:
             virtual const field_value & do_field(const std::string & id) const
@@ -102,8 +102,9 @@ namespace openvrml {
             virtual const color_node * color() const throw ();
 
         protected:
-            abstract_indexed_set_node(const node_type & type,
-                                      const boost::shared_ptr<openvrml::scope> & scope);
+            abstract_indexed_set_node(
+                const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope);
         };
 
 
@@ -127,8 +128,9 @@ namespace openvrml {
             const openvrml::color & color() const throw ();
 
         protected:
-            abstract_light_node(const node_type & type,
-                                const boost::shared_ptr<openvrml::scope> & scope);
+            abstract_light_node(
+                const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope);
         };
 
 
@@ -148,8 +150,9 @@ namespace openvrml {
             virtual bool repeat_t() const throw ();
 
         protected:
-            abstract_texture_node(const node_type & type,
-                                  const boost::shared_ptr<openvrml::scope> & scope);
+            abstract_texture_node(
+                const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope);
         };
 
 
@@ -214,7 +217,8 @@ namespace openvrml {
             bounding_sphere bsphere;
 
         public:
-            group_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
+            group_node(const node_type & type,
+                       const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~group_node() throw ();
 
             virtual const openvrml::bounding_volume & bounding_volume() const;
@@ -1177,12 +1181,12 @@ namespace openvrml {
             bool texture_needs_update;
 
         public:
-            image_texture_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope);
+            image_texture_node(
+                const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~image_texture_node() throw ();
 
             virtual const openvrml::image & image() const throw ();
-            virtual size_t frames() const throw ();
 
         private:
             virtual viewer::texture_object_t do_render_texture(viewer & v);
@@ -1448,14 +1452,12 @@ namespace openvrml {
             sfbool active_;
             sfbool_emitter is_active_;
 
-            img * img_;
             openvrml::image image_;
-            int frame, lastFrame;
-            double lastFrameTime;
 
         public:
-            movie_texture_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope);
+            movie_texture_node(
+                const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~movie_texture_node() throw ();
 
             virtual movie_texture_node * to_movie_texture() const;
@@ -1463,7 +1465,6 @@ namespace openvrml {
             void update(double time);
 
             virtual const openvrml::image & image() const throw ();
-            virtual size_t frames() const throw ();
 
         private:
             virtual void do_initialize(double timestamp)
@@ -1684,7 +1685,6 @@ namespace openvrml {
             virtual ~pixel_texture_node() throw ();
 
             virtual const openvrml::image & image() const throw ();
-            virtual size_t frames() const throw ();
 
         private:
             virtual viewer::texture_object_t do_render_texture(viewer & v);

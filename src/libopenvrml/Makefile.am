@@ -3,8 +3,6 @@ lib_LTLIBRARIES = libopenvrml.la
 openvrml_includedir = $(pkgincludedir)/openvrml
 openvrml_include_HEADERS = \
         openvrml/basetypes.h \
-        openvrml/img.h \
-        openvrml/system.h \
         openvrml/field_value.h \
         openvrml/event.h \
 	openvrml/exposedfield.h \
@@ -52,8 +50,6 @@ AM_CXXFLAGS = \
 
 libopenvrml_la_SOURCES = \
         openvrml/basetypes.cpp \
-        openvrml/img.cpp \
-        openvrml/system.cpp \
         openvrml/field_value.cpp \
         openvrml/event.cpp \
 	openvrml/exposedfield.cpp \
@@ -73,7 +69,6 @@ libopenvrml_la_LDFLAGS = \
         -version-info $(LIBRARY_VERSION) \
         @JPEG_LIBS@ \
         @PNG_LIBS@ \
-        @Z_LIBS@ \
         @FONTCONFIG_LIBS@ \
         @FREETYPE_LIBS@ \
         @JS_LIBS@ \

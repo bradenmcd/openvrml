@@ -229,6 +229,9 @@ namespace {
     class plugin_streambuf : public std::streambuf {
         friend class command_istream_reader;
 
+        mutable boost::mutex mutex_;
+        bool initialized_;
+        mutable boost::condition streambuf_initialized_;
         const std::string url_;
         std::string type_;
         bounded_buffer<int_type, 64> buf_;
@@ -243,10 +246,12 @@ namespace {
         void init(const std::string & type);
         const std::string & url() const;
         const std::string & type() const;
+        bool data_available() const;
         void npstream_destroyed();
     };
 
     plugin_streambuf::plugin_streambuf(const std::string & url):
+        initialized_(false),
         url_(url),
         c_(traits_type::not_eof(this->c_)),
         npstream_destroyed_(false)
@@ -256,21 +261,41 @@ namespace {
 
     void plugin_streambuf::init(const std::string & type)
     {
+        boost::mutex::scoped_lock lock(this->mutex_);
         this->type_ = type;
+        this->initialized_ = true;
+        this->streambuf_initialized_.notify_all();
     }
 
     const std::string & plugin_streambuf::url() const
     {
+        //
+        // No need to lock or wait on init here; this->url_ is set in the
+        // constructor and cannot be changed.
+        //
         return this->url_;
     }
 
     const std::string & plugin_streambuf::type() const
     {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        while (!this->initialized_) {
+            this->streambuf_initialized_.wait(lock);
+        }
         return this->type_;
+    }
+
+    bool plugin_streambuf::data_available() const
+    {
+        return this->buf_.buffered() > 0;
     }
 
     plugin_streambuf::int_type plugin_streambuf::underflow()
     {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        while (!this->initialized_) {
+            this->streambuf_initialized_.wait(lock);
+        }
         if (this->c_ == traits_type::eof()) { return traits_type::eof(); }
         this->c_ = this->buf_.get();
         this->setg(&this->c_, &this->c_, &this->c_ + 1);
@@ -811,6 +836,11 @@ namespace {
             virtual const std::string type() const throw ()
             {
                 return this->streambuf_->type();
+            }
+
+            virtual bool data_available() const throw ()
+            {
+                return this->streambuf_->data_available();
             }
         };
         return std::auto_ptr<openvrml::resource_istream>(

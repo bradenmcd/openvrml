@@ -58,6 +58,11 @@ test_browser::do_get_resource(const std::string & uri)
         {
             return "application/octet-stream";
         }
+
+        virtual bool data_available() const throw ()
+        {
+            return !!(*this);
+        }
     };
 
     const string scheme = uri.substr(0, uri.find_first_of(':'));

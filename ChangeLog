@@ -1,3 +1,56 @@
+2005-03-21 Braden McDaniel  <braden@endoframe.com>
+
+	Asynchronously--and progressively--load PNG and JPEG textures.
+	Removed support for GIF textures as well as MPEG movie textures;
+	MPEG support will be added back in the future by depending on
+	an appropriate library.  These changes make obsolete
+	openvrml::doc, openvrml::doc2, openvrml::img, and
+	openvrml::system classes.
+
+	* README:  Removed reference to use of GIF decoding code by
+	David Koblas; this code has been removed.
+	* configure.ac:  Removed options --disable-gzip and
+	--disable-render-imagetexture-node.  Added options
+	--disable-png-textures and --disable-jpeg-textures.
+	* mozilla-plugin/src/openvrml-player/player.cpp:  Implemented
+	openvrml::resource_istream::data_available.
+	* src/libopenvrml/Makefile.am:  Removed references to
+	openvrml/img.cpp, openvrml/img.h, openvrml/system.cpp,
+	openvrml/system.h.
+	* src/libopenvrml/private.h:  Extended scope_guard suite to
+	support a cleanup function with three arguments.
+	* src/libopenvrml/openvrml/browser.cpp:  Added
+	implementation of openvrml::scene::get_resource function.  Added
+	implementations of openvrml::stream_listener class members.
+	Removed implementations of openvrml::doc and openvrml::doc2
+	members.
+	* src/libopenvrml/openvrml/browser.h:  Added pure virtual
+	function data_available to openvrml::resource_istream.  Added
+	abstract class openvrml::stream_listener.  Associated
+	openvrml::browser::modified_ with its own (nonrecursive) mutex.
+	Added get_resource function to openvrml::scene.  Removed classes
+	openvrml::doc, openvrml::doc2.
+	* src/libopenvrml/openvrml/img.cpp:  Removed file.
+	* src/libopenvrml/openvrml/img.h:  Removed file.
+	* src/libopenvrml/openvrml/node.h:  Removed
+	openvrml::texture_node::frames pure virtual member function.
+	* src/libopenvrml/openvrml/script.cpp:  Eliminated use of
+	openvrml::doc2 for trivial URI parsing.
+	* src/libopenvrml/openvrml/system.cpp:  Removed file.
+	* src/libopenvrml/openvrml/system.h:  Removed file.
+	* src/libopenvrml/openvrml/vrml97node.cpp:  Added
+	image_stream_listener class, which encapsulates asynchronous
+	progressive decoders for PNG and JPEG images; use this in
+	Background and ImageTexture node implementations. #if 0'd out
+	MovieTexture implementation for now.
+	* src/libopenvrml/openvrml/vrml97node.h
+	* src/lookat/lookat.cpp:  Added implementation of
+	openvrml::resource_istream::data_available; made
+	openvrml::resource_istream::type implementation do something
+	vaguely useful.
+	* test/test_browser.cpp:  Added implementation of
+	openvrml::resource_istream::data_available.
+
 2005-03-18 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements; moved vrml97_root_scope to be a

@@ -32,16 +32,6 @@ file "COPYING.LESSER".  Code used in these libararies under other terms
  * OpenVRML uses the ANTLR parser generator and C++ support library
    which are in the public domain.
 
- * OpenVRML includes GIF reading code by David Koblas:
-
-     Copyright 1990, David Koblas.
-     Permission to use, copy, modify, and distribute this software
-     and its documentation for any purpose and without fee is hereby
-     granted, provided that the above copyright notice appear in all
-     copies and that both that copyright notice and this permission
-     notice appear in supporting documentation.  This software is
-     provided "as is" without express or implied warranty.
-
  * OpenVRML's OpenGL renderer includes code from Silicon Graphics, Inc.:
 
      (c) Copyright 1993, 1994, Silicon Graphics, Inc.

@@ -1740,13 +1740,20 @@ script * script_node::create_script()
                                this->url_.value[i].end() - 6)
                     || std::equal(javaExtension2, javaExtension2 + 6,
                                   this->url_.value[i].end() - 6))) {
-            doc2 base(this->type.node_class().browser().world_url());
-            doc2 doc(this->url_.value[i], &base);
-            if (doc.local_name()) {
-                return new ScriptJDK(*this,
-                                     doc.url_base().c_str(),
-                                     doc.local_path());
-            }
+            using std::string;
+
+            const string & url = this->url_.value[i];
+            string::size_type last_slash_pos = url.rfind('/');
+            const string class_name =
+                this->url_.value[i].substr((last_slash_pos == string::npos)
+                                           ? 0
+                                           : last_slash_pos + 1);
+            const string scene_url = this->scene()->url();
+            last_slash_pos = scene_url.rfind('/');
+            const string class_dir = scene_url.substr(0, last_slash_pos);
+            return new ScriptJDK(*this,
+                                 class_name.c_str(),
+                                 class_dir.c_str());
         }
 #endif
     }

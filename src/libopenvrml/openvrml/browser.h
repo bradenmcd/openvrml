@@ -23,14 +23,11 @@
 # ifndef OPENVRML_BROWSER_H
 #   define OPENVRML_BROWSER_H
 
-#   include <cstddef>
-#   include <cstdio>
 #   include <iosfwd>
 #   include <list>
 #   include <map>
 #   include <string>
 #   include <boost/scoped_ptr.hpp>
-#   include <boost/utility.hpp>
 #   include <boost/thread/recursive_mutex.hpp>
 #   include <openvrml/script.h>
 
@@ -41,10 +38,31 @@ namespace openvrml {
         virtual ~resource_istream() = 0;
         virtual const std::string url() const throw () = 0;
         virtual const std::string type() const throw () = 0;
+        virtual bool data_available() const throw () = 0;
 
     protected:
         explicit resource_istream(std::streambuf * streambuf);
     };
+
+
+    class stream_listener {
+    public:
+        virtual ~stream_listener() throw () = 0;
+
+        void stream_available(const std::string & uri,
+                              const std::string & media_type);
+        void data_available(const std::vector<unsigned char> & data);
+
+    private:
+        virtual void
+        do_stream_available(const std::string & uri,
+                            const std::string & media_type) = 0;
+        virtual void
+        do_data_available(const std::vector<unsigned char> & data) = 0;
+    };
+
+    void read_stream(std::auto_ptr<resource_istream> in,
+                     std::auto_ptr<stream_listener> listener);
 
 
     class invalid_vrml : public std::runtime_error {
@@ -155,10 +173,12 @@ namespace openvrml {
         std::list<node *> timers;
         std::list<node *> audio_clips;
         std::list<node *> movies;
-        bool modified_;
         bool new_view;
         double delta_time;
         openvrml::viewer * viewer_;
+
+        bool modified_;
+        mutable boost::mutex modified_mutex_;
 
     protected:
         typedef std::list<scene_cb> scene_cb_list_t;
@@ -276,7 +296,7 @@ namespace openvrml {
         struct load_scene;
 
         mutable boost::recursive_mutex mutex_;
-        openvrml::browser & browser_;
+        openvrml::browser * browser_;
         scene * const parent_;
         std::vector<node_ptr> nodes_;
         std::string url_;
@@ -286,7 +306,7 @@ namespace openvrml {
             throw ();
         virtual ~scene() throw ();
 
-        openvrml::browser & browser() throw ();
+        openvrml::browser & browser() const throw ();
         scene * parent() const throw ();
         void load(const std::vector<std::string> & url) throw (std::bad_alloc);
         void initialize(double timestamp) throw (std::bad_alloc);
@@ -297,7 +317,9 @@ namespace openvrml {
         void render(openvrml::viewer & viewer, rendering_context context);
         void load_url(const std::vector<std::string> & url,
                       const std::vector<std::string> & parameter)
-                throw (std::bad_alloc);
+            throw (std::bad_alloc);
+        std::auto_ptr<resource_istream>
+        get_resource(const std::vector<std::string> & url) const;
         void shutdown(double timestamp) throw ();
 
     private:
@@ -308,74 +330,6 @@ namespace openvrml {
     {
         return this->nodes_;
     }
-
-
-    class doc2;
-
-    class doc : boost::noncopyable {
-        char * url_;
-        std::ostream * out_;
-        FILE * fp_;
-        char * tmpfile_; // Local copy of http: files
-
-    public:
-        explicit doc(const std::string & url = std::string(),
-                     const doc * relative = 0);
-        doc(const std::string & url, const doc2 * relative);
-        ~doc();
-
-        void seturl(const char * url, const doc * relative = 0);
-        void seturl(const char * url, const doc2 * relative = 0);
-
-        const char * url() const;          // "http://www.foo.com/dir/file.xyz#Viewpoint"
-        const char * url_base() const;      // "file" or ""
-        const char * url_ext() const;       // "xyz" or ""
-        const char * url_path() const;      // "http://www.foo.com/dir/" or ""
-        const char * url_protocol() const;  // "http"
-        const char * url_modifier() const;  // "#Viewpoint" or ""
-
-        const char * local_name();    // "/tmp/file.xyz" or NULL
-        const char * local_path();    // "/tmp/" or NULL
-
-
-        FILE * fopen(const char * mode);
-        void fclose();
-
-        std::ostream & output_stream();
-
-    private:
-        bool filename(char * fn, int nfn);
-    };
-
-    class doc2 : boost::noncopyable {
-        std::string url_;
-        char * tmpfile_;            // Local copy of http: files
-        std::istream * istm_;
-        std::ostream * ostm_;
-
-    public:
-        explicit doc2(const std::string & url = std::string(),
-                      const doc2 * relative = 0);
-        ~doc2();
-
-        void seturl(const std::string & url, const doc2 * relative = 0);
-
-        const std::string url() const;         // "http://www.foo.com/dir/file.xyz#Viewpoint"
-        const std::string url_base() const;     // "file" or ""
-        const std::string url_ext() const;      // "xyz" or ""
-        const std::string url_path() const;     // "http://www.foo.com/dir/" or ""
-        const std::string url_protocol() const; // "http"
-        const std::string url_modifier() const; // "#Viewpoint" or ""
-
-        const char * local_name();    // "/tmp/file.xyz" or NULL
-        const char * local_path();    // "/tmp/" or NULL
-
-        std::istream & input_stream();
-        std::ostream & output_stream();
-
-    private:
-        bool filename(char * fn, size_t nfn);
-    };
 }
 
 # endif // OPENVRML_BROWSER_H

@@ -24,14 +24,8 @@
 #   include <config.h>
 # endif
 
-# include <cstdlib>
-# include <cctype>
-# include <cstring>
 # include <algorithm>
-# include <fstream>
 # include <functional>
-# include <sstream>
-# include <stack>
 # ifdef _WIN32
 #   include <sys/timeb.h>
 #   include <time.h>
@@ -45,15 +39,11 @@
 # include <boost/spirit/phoenix.hpp>
 # include <boost/thread/thread.hpp>
 # include <boost/utility.hpp>
-# ifdef OPENVRML_ENABLE_GZIP
-#   include <zlib.h>
-# endif
 # include <private.h>
 # include "browser.h"
 # include "viewer.h"
 # include "scope.h"
 # include "script.h"
-# include "system.h"
 # include "vrml97node.h"
 
 namespace openvrml {
@@ -3286,196 +3276,6 @@ namespace {
 
         return result_uri;
     }
-
-
-# ifdef OPENVRML_ENABLE_GZIP
-    namespace z {
-
-        typedef int level;
-        const level no_compression      = Z_NO_COMPRESSION;
-        const level best_speed          = Z_BEST_SPEED;
-        const level best_compression    = Z_BEST_COMPRESSION;
-        const level default_compression = Z_DEFAULT_COMPRESSION;
-
-        enum strategy {
-            default_strategy    = Z_DEFAULT_STRATEGY,
-            filtered            = Z_FILTERED,
-            huffman_only        = Z_HUFFMAN_ONLY
-        };
-
-        class filebuf : public std::streambuf {
-            enum { buffer_size = 16384 };
-            char buffer[buffer_size];
-            gzFile file;
-
-        public:
-            filebuf();
-            virtual ~filebuf();
-
-            bool is_open() const;
-            filebuf * open(const char * path, int mode,
-                           level = default_compression,
-                           strategy = default_strategy);
-            filebuf * close();
-
-        protected:
-            virtual int underflow();
-            virtual int overflow(int = EOF);
-        };
-
-        class ifstream : public std::istream {
-            filebuf fbuf;
-
-        public:
-            ifstream();
-            explicit ifstream(const char * path, level = default_compression,
-                              strategy = default_strategy);
-            virtual ~ifstream();
-
-            filebuf * rdbuf() const;
-            bool is_open() const;
-            void open(const char * path, level = default_compression,
-                      strategy = default_strategy);
-            void close();
-        };
-
-        //
-        // filebuf
-        //
-
-        int const lookback(4);
-
-        filebuf::filebuf(): file(0) {
-            this->setg(this->buffer + lookback,  // beginning of putback area
-                       this->buffer + lookback,  // read position
-                       this->buffer + lookback); // end position
-        }
-
-        filebuf::~filebuf() {
-            this->close();
-        }
-
-        bool filebuf::is_open() const {
-            return (this->file != 0);
-        }
-
-        filebuf * filebuf::open(const char * path,
-                                const int mode,
-                                const level comp_level,
-                                const strategy comp_strategy) {
-            using std::ios;
-
-            if (this->file) { return 0; }
-
-            //
-            // zlib only supports the "rb" and "wb" modes, so we bail on anything
-            // else.
-            //
-            static const char read_mode_string[] = "rb";
-            static const char write_mode_string[] = "wb";
-            const char * mode_string = 0;
-            if (mode == (ios::binary | ios::in)) {
-                mode_string = read_mode_string;
-            } else if (   (mode == (ios::binary | ios::out))
-                       || (mode == (ios::binary | ios::out | ios::trunc))) {
-                mode_string = write_mode_string;
-            } else {
-                return 0;
-            }
-
-            this->file = gzopen(path, mode_string);
-            if (!this->file) { return 0; }
-
-            gzsetparams(this->file, comp_level, comp_strategy);
-            return this;
-        }
-
-        filebuf * filebuf::close() {
-            if (!this->file) { return 0; }
-            gzclose(this->file);
-            this->file = 0;
-            return this;
-        }
-
-        int filebuf::underflow() {
-            if (this->gptr() < this->egptr()) { return *this->gptr(); }
-
-            //
-            // Process the size of the putback area; use the number of characters read,
-            // but at most four.
-            //
-            int num_putback = this->gptr() - this->eback();
-            if (num_putback > lookback) { num_putback = lookback; }
-
-            std::copy(this->gptr() - num_putback, this->gptr(),
-                      this->buffer + (lookback - num_putback));
-
-            //
-            // Read new characters.
-            //
-            int num = gzread(this->file,
-                             this->buffer + lookback,
-                             filebuf::buffer_size - lookback);
-
-            if (num <= 0) { return EOF; } // Error condition or end of file.
-
-            //
-            // Reset the buffer pointers.
-            //
-            this->setg(buffer + (lookback - num_putback), // Beginning of putback area.
-                       buffer + lookback,                 // Read position.
-                       buffer + lookback + num);          // End of buffer.
-
-            //
-            // Return the next character.
-            //
-            return *this->gptr();
-        }
-
-        int filebuf::overflow(int c) {
-            //
-            // This probably ought to be buffered, but this will do for now.
-            //
-            if (c != EOF) {
-                if (gzputc(file, c) == -1) { return EOF; }
-            }
-            return c;
-        }
-
-
-        //
-        // ifstream
-        //
-
-        ifstream::ifstream(): std::basic_istream<char>(&fbuf) {}
-
-        ifstream::ifstream(const char * path, level lev, strategy strat):
-                std::basic_istream<char>(&fbuf) {
-            this->open(path, lev, strat);
-        }
-
-        ifstream::~ifstream() {}
-
-        filebuf * ifstream::rdbuf() const {
-            return const_cast<filebuf *>(&this->fbuf);
-        }
-
-        bool ifstream::is_open() const { return this->fbuf.is_open(); }
-
-        void ifstream::open(const char * path, level lev, strategy strat) {
-            using std::ios;
-            if (!this->fbuf.open(path, ios::binary | ios::in, lev, strat)) {
-#   ifdef _WIN32
-                this->clear(failbit);
-#   else
-                this->setstate(failbit);
-#   endif
-            }
-        }
-
-        void ifstream::close() { this->fbuf.close(); }
-    }
-# endif // OPENVRML_ENABLE_GZIP
 } // namespace
 
 //
@@ -3564,6 +3364,111 @@ resource_istream::~resource_istream()
  * @return the MIME content type associated with the stream.
  */
 
+
+/**
+ * @class stream_listener
+ *
+ * @brief An interface to simplify asynchronously reading a
+ *        <code>resource_istream</code>.
+ */
+
+/**
+ * @brief Destroy.
+ */
+stream_listener::~stream_listener() throw ()
+{}
+
+/**
+ * @brief Called once the stream is available for use.
+ *
+ * This function calls <code>stream_listener::do_stream_available</code>.
+ *
+ * @param uri           the URI associated with the stream.
+ * @param media_type    the MIME media type for the stream.
+ */
+void stream_listener::stream_available(const std::string & uri,
+                                       const std::string & media_type)
+{
+    this->do_stream_available(uri, media_type);
+}
+
+/**
+ * @fn void stream_listener::do_stream_available(const std::string & uri, const std::string & media_type)
+ *
+ * @brief Called by <code>stream_listener::stream_available</code>.
+ *
+ * Concrete <code>stream_listener</code>s must override this function.
+ *
+ * @param uri           the URI associated with the stream.
+ * @param media_type    the MIME media type for the stream.
+ */
+
+/**
+ * @brief Called when data is available.
+ *
+ * This function calls <code>stream_listener::do_data_available</code>.
+ *
+ * @param data  the data.
+ */
+void stream_listener::data_available(const std::vector<unsigned char> & data)
+{
+    this->do_data_available(data);
+}
+
+/**
+ * @fn void stream_listener::do_data_available(const std::vector<unsigned char> & data)
+ *
+ * @brief Called by <code>stream_listener::data_available</code>
+ *
+ * @param data  the data.
+ */
+
+namespace {
+
+    struct stream_reader {
+        stream_reader(std::auto_ptr<openvrml::resource_istream> in,
+                      std::auto_ptr<openvrml::stream_listener> listener):
+            in_(in),
+            listener_(listener)
+        {}
+
+        void operator()() const
+        {
+            this->listener_->stream_available(this->in_->url(),
+                                              this->in_->type());
+            while (*this->in_) {
+                std::vector<unsigned char> data;
+                while (this->in_->data_available()) {
+                    resource_istream::int_type c = this->in_->get();
+                    if (c != resource_istream::traits_type::eof()) {
+                        data.push_back(
+                            resource_istream::traits_type::to_char_type(c));
+                    }
+                }
+                this->listener_->data_available(data);
+            }
+        }
+
+    private:
+        boost::shared_ptr<openvrml::resource_istream> in_;
+        boost::shared_ptr<openvrml::stream_listener> listener_;
+    };
+}
+
+/**
+ * @brief Read a stream in a new thread.
+ *
+ * <code>read_stream</code> takes ownership of its arguments; the resources
+ * are released when reading the stream completes and the thread terminates.
+ *
+ * @param in        an input stream.
+ * @param listener  a stream listener.
+ */
+void read_stream(std::auto_ptr<resource_istream> in,
+                 std::auto_ptr<stream_listener> listener)
+{
+    boost::thread(stream_reader(in, listener));
+}
 
 /**
  * @class invalid_vrml
@@ -5111,7 +5016,7 @@ void browser::render()
  */
 void browser::modified(const bool value)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    boost::mutex::scoped_lock lock(this->modified_mutex_);
     this->modified_ = value;
 }
 
@@ -5122,7 +5027,7 @@ void browser::modified(const bool value)
  */
 bool browser::modified() const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    boost::mutex::scoped_lock lock(this->modified_mutex_);
     return this->modified_;
 }
 
@@ -5429,7 +5334,7 @@ no_alternative_url::~no_alternative_url() throw ()
  */
 
 /**
- * @var browser & scene::browser_
+ * @var browser * scene::browser_
  *
  * @brief A reference to the browser associated with the scene.
  */
@@ -5458,7 +5363,7 @@ no_alternative_url::~no_alternative_url() throw ()
 
 namespace {
 
-    const uri createFileURL(const uri & relative_uri) throw (std::bad_alloc)
+    const uri create_file_url(const uri & relative_uri) throw (std::bad_alloc)
     {
         assert(relative_uri.scheme().empty());
 
@@ -5525,7 +5430,7 @@ namespace {
  * @param parent    the parent scene.
  */
 scene::scene(openvrml::browser & browser, scene * parent) throw ():
-    browser_(browser),
+    browser_(&browser),
     parent_(parent)
 {}
 
@@ -5540,9 +5445,9 @@ scene::~scene() throw ()
  *
  * @return the associated <code>browser</code>.
  */
-openvrml::browser & scene::browser() throw ()
+openvrml::browser & scene::browser() const throw ()
 {
-    return this->browser_;
+    return *this->browser_;
 }
 
 /**
@@ -5593,7 +5498,7 @@ struct scene::load_scene {
                     // system:  convert the relative reference to a file
                     // URL.
                     //
-                    absolute_uri = createFileURL(test_uri);
+                    absolute_uri = create_file_url(test_uri);
                 } else {
                     //
                     // If we have a relative URI and parent is not null,
@@ -5807,7 +5712,7 @@ void scene::load_url(const std::vector<std::string> & url,
             // If the first element in uri is a Viewpoint name, bind the
             // Viewpoint.
             //
-            this->browser_.setViewpoint(uri[0].substr(1));
+            this->browser_->setViewpoint(uri[0].substr(1));
 # endif
         } else {
             std::vector<std::string> absoluteURIs(url.size());
@@ -5823,9 +5728,50 @@ void scene::load_url(const std::vector<std::string> & url,
                     OPENVRML_PRINT_EXCEPTION_(ex);
                 }
             }
-            this->browser_.load_url(absoluteURIs, parameter);
+            this->browser_->load_url(absoluteURIs, parameter);
         }
     }
+}
+
+/**
+ * @brief Get a resource using a list of alternative URIs.
+ *
+ * Relative URIs in @p url are resolved against the absolute URI of the
+ * <code>scene</code>.
+ *
+ * @param url   a list of alternative URIs.
+ *
+ * @return the resource.
+ */
+std::auto_ptr<resource_istream>
+scene::get_resource(const std::vector<std::string> & url) const
+{
+    using std::string;
+    using std::vector;
+
+    std::auto_ptr<resource_istream> in;
+
+    for (vector<string>::size_type i = 0; i < url.size(); ++i) {
+        try {
+            //
+            // Throw invalid_url if it isn't a valid URI.
+            //
+            uri test_uri(url[i]);
+
+            const bool absolute = !test_uri.scheme().empty();
+            const uri absolute_uri = absolute
+                                   ? test_uri
+                                   : test_uri.resolve_against(uri(this->url_));
+
+            in = this->browser().get_resource(absolute_uri);
+            if (!(*in)) { throw unreachable_url(); }
+            break;
+        } catch (bad_url & ex) {
+            this->browser().err << ex.what() << std::endl;
+            continue;
+        }
+    }
+    return in;
 }
 
 /**
@@ -7614,788 +7560,6 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
     assert(false);
     static const node_ptr node;
     return node;
-}
-
-
-/**
- * @class doc
- *
- * @brief A class to contain document references.
- *
- * This is just a shell until a real http protocol library is found...
- */
-
-/**
- * @var char * doc::url_
- *
- * @brief The URL.
- */
-
-/**
- * @var std::ostream * doc::out_
- *
- * @brief A pointer to a std::ostream used for writing the resource.
- */
-
-/**
- * @var FILE * doc::fp_
- *
- * @brief A file descriptor for reading the local copy of the resource.
- */
-
-/**
- * @var char * doc::tmpfile_
- *
- * @brief Name of the temporary file created for the local copy of the
- *        resource.
- */
-
-/**
- * @brief Constructor.
- *
- * @param url       an HTTP or file URL.
- * @param relative  the doc that @p url is relative to, or 0 if @p url is an
- *                  absolute URL.
- */
-doc::doc(const std::string & url, const doc * relative):
-    url_(0),
-    out_(0),
-    fp_(0),
-    tmpfile_(0)
-{
-    if (!url.empty()) { this->seturl(url.c_str(), relative); }
-}
-
-/**
- * @brief Constructor.
- *
- * @param url       an HTTP or file URL.
- * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
- *                  absolute URL.
- */
-doc::doc(const std::string & url, const doc2 * relative):
-    url_(0),
-    out_(0),
-    fp_(0),
-    tmpfile_(0)
-{
-    if (!url.empty()) { this->seturl(url.c_str(), relative); }
-}
-
-/**
- * @brief Destructor.
- */
-doc::~doc()
-{
-    delete [] this->url_;
-    delete this->out_;
-    if (this->tmpfile_) {
-        the_system->remove_file(this->tmpfile_);
-        delete [] this->tmpfile_;
-    }
-}
-
-namespace {
-    const char * stripProtocol(const char *url)
-    {
-      const char *s = url;
-
-#ifdef _WIN32
-      if (strncmp(s+1,":/",2) == 0) return url;
-#endif
-
-      // strip off protocol if any
-      while (*s && isalpha(*s)) ++s;
-
-      if (*s == ':')
-        return s + 1;
-
-      return url;
-    }
-
-    bool isAbsolute(const char *url)
-    {
-      const char *s = stripProtocol(url);
-      return ( *s == '/' || *(s+1) == ':' );
-    }
-}
-
-/**
-  * @brief Set the URL.
- *
- * @param url       the new URL.
- * @param relative  the doc that @p url is relative to, or 0 if @p url is an
- *                  absolute URL.
- */
-void doc::seturl(const char * const url, const doc * const relative)
-{
-  delete [] url_;
-  url_ = 0;
-
-  if (url)
-  {
-      const char *path = "";
-
-#ifdef _WIN32
-// Convert windows path stream to standard URL
-	  char *p = (char *)url;
-	  for(;*p != '\0';p++)
-		  if(*p == '\\')*p = '/';
-#endif
-
-      if ( relative && ! isAbsolute(url) )
-	    path = relative->url_path();
-
-      url_ = new char[strlen(path) + strlen(url) + 1];
-      strcpy(url_, path);
-
-      if (strlen(url)>2 && url[0] == '.' && url[1] == '/')
-        strcat(url_, url+2); // skip "./"
-      else
-        strcat(url_, url);
-  }
-}
-
-/**
- * @brief Set the URL.
- *
- * @param url       the new URL.
- * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
- *                  absolute URL.
- */
-void doc::seturl(const char * const url, const doc2 * const relative)
-{
-    delete [] this->url_;
-    this->url_ = 0;
-
-    if (url) {
-        std::string path;
-
-#ifdef _WIN32
-        // Convert windows path stream to standard URL
-        char *p = (char *)url;
-        for (; *p != '\0'; p++) { if (*p == '\\') { *p = '/'; } }
-#endif
-
-        if (relative && !isAbsolute(url)) { path = relative->url_path(); }
-
-        this->url_ = new char[path.length() + strlen(url) + 1];
-        strcpy(this->url_, path.c_str());
-
-        if (strlen(url) > 2 && url[0] == '.' && url[1] == '/') {
-            strcat(this->url_, url + 2); // skip "./"
-        } else {
-            strcat(this->url_, url);
-        }
-    }
-}
-
-/**
- * @brief Get the URL.
- *
- * @return the URL.
- */
-const char * doc::url() const { return url_; }
-
-/**
- * @brief Get the portion of the path likely to correspond to a file name
- *      without its extension.
- *
- * @return the portion of the last path element preceding the last '.' in the
- *      path, or an empty string if the last path element is empty.
- */
-const char * doc::url_base() const
-{
-  if (! url_) return "";
-
-  static char path[1024];
-  char *p, *s = path;
-  strncpy(path, url_, sizeof(path)-1);
-  path[sizeof(path)-1] = '\0';
-  if ((p = strrchr(s, '/')) != 0)
-    s = p+1;
-  else if ((p = strchr(s, ':')) != 0)
-    s = p+1;
-
-  if ((p = strrchr(s, '.')) != 0)
-    *p = '\0';
-
-  return s;
-}
-
-/**
- * @brief Get the portion of the path likely to correspond to a file name
- *      extension.
- *
- * @return the portion of the last path element succeeding the last '.' in the
- *      path, or an empty string if the last path element includes no '.'.
- */
-const char * doc::url_ext() const
-{
-  if (! url_) return "";
-
-  static char ext[20];
-  char *p;
-
-  if ((p = strrchr(url_, '.')) != 0)
-    {
-      strncpy(ext, p+1, sizeof(ext)-1);
-      ext[sizeof(ext)-1] = '\0';
-    }
-  else
-    ext[0] = '\0';
-
-  return &ext[0];
-}
-
-/**
- * @brief Get the URL without the last component of the path.
- *
- * In spite of its name, this method does not return the URL's path.
- *
- * @return the portion of the URL including the scheme, the authority, and all
- *      but the last component of the path.
- */
-const char * doc::url_path() const
-{
-  if (! url_) return "";
-
-  static char path[1024];
-
-  strcpy(path, url_);
-  char *slash;
-  if ((slash = strrchr(path, '/')) != 0)
-    *(slash+1) = '\0';
-  else
-    path[0] = '\0';
-  return &path[0];
-}
-
-/**
- * @brief Get the URL scheme.
- *
- * @return the URL scheme.
- */
-const char * doc::url_protocol() const
-{
-  if (url_)
-    {
-      static char protocol[12];
-      const char *s = url_;
-
-#ifdef _WIN32
-      if (strncmp(s+1,":/",2) == 0) return "file";
-#endif
-
-      for (unsigned int i=0; i<sizeof(protocol); ++i, ++s)
-	{
-	  if (*s == 0 || ! isalpha(*s))
-	    {
-	      protocol[i] = '\0';
-	      break;
-	    }
-	  protocol[i] = tolower(*s);
-	}
-      protocol[sizeof(protocol)-1] = '\0';
-      if (*s == ':')
-	return protocol;
-    }
-
-  return "file";
-}
-
-/**
- * @brief Get the fragment identifier.
- *
- * @return the fragment identifier, including the leading '#', or an empty
- *      string if there is no fragment identifier.
- */
-const char * doc::url_modifier() const
-{
-  char *mod = url_ ? strrchr(url_,'#') : 0;
-  return mod;
-}
-
-/**
- * @brief Get the fully qualified name of a local file that is the downloaded
- *      resource at @a url_.
- *
- * @return the fully qualified name of a local file that is the downloaded
- *      resource at @a url_.
- */
-const char * doc::local_name()
-{
-  static char buf[1024];
-  if (filename(buf, sizeof(buf)))
-    return &buf[0];
-  return 0;
-}
-
-/**
- * @brief Get the path of the local file that is the downloaded resource at
- *      @a url_.
- *
- * @return the path of the local file that is the downloaded resource at
- *      @a url_.
- */
-const char * doc::local_path()
-{
-  static char buf[1024];
-  if (filename(buf, sizeof(buf)))
-    {
-      char *s = strrchr(buf, '/');
-      if (s) *(s+1) = '\0';
-      return &buf[0];
-    }
-  return 0;
-}
-
-/**
- * @brief Converts a url into a local filename.
- *
- * @retval fn   a character buffer to hold the local filename.
- * @param nfn   the number of elements in the buffer @p fn points to.
- */
-bool doc::filename(char * fn, int nfn)
-{
-    using std::string;
-
-    fn[0] = '\0';
-
-    string s = stripProtocol(this->url_);
-    char * e = 0;
-
-    if ((e = strrchr(s.c_str(),'#')) != 0) { *e = '\0'; }
-
-    const char *protocol = url_protocol();
-
-    // Get a local copy of http files
-    if (strcmp(protocol, "http") == 0) {
-        if (tmpfile_) {
-            // Already fetched it
-            s = tmpfile_;
-        } else if (!(s = the_system->http_fetch(this->url_)).empty()) {
-            tmpfile_ = new char[s.length() + 1];
-            strcpy(tmpfile_, s.c_str());
-            s = tmpfile_;
-	}
-    }
-
-    // Unrecognized protocol (need ftp here...)
-    else if (strcmp(protocol, "file") != 0) {
-        s.clear();
-    }
-
-#ifdef _WIN32
-  // Does not like "//C:" skip "// "
-    if (!s.empty()) {
-        if(s.length() > 2 && s[0] == '/' && s[1] == '/') { s = s.substr(2); }
-    }
-#endif
-
-    if (!s.empty()) {
-        strncpy(fn, s.c_str(), nfn - 1);
-        fn[nfn - 1] = '\0';
-    }
-
-    if (e) { *e = '#'; }
-
-    return !s.empty();
-}
-
-/**
- * @brief Open a file.
- *
- * @return a pointer to a FILE struct for the opened file.
- *
- * Having both fopen and outputStream is dumb.
- */
-FILE *doc::fopen(const char *mode)
-{
-    if (this->fp_) {
-        OPENVRML_PRINT_MESSAGE_(std::string(this->url_ ? this->url_ : "")
-                                + "is already open.");
-    }
-
-    char fn[256];
-    if (filename(fn, sizeof(fn))) {
-        if (strcmp(fn, "-") == 0) {
-            if (*mode == 'r') {
-                fp_ = stdin;
-            } else if (*mode == 'w') {
-                fp_ = stdout;
-            }
-        } else {
-            fp_ = ::fopen( fn, mode );
-        }
-    }
-    return fp_;
-}
-
-/**
- * @brief Close a file.
- *
- * Closes the file opened with doc::fopen.
- */
-void doc::fclose()
-{
-  if (fp_ && (strcmp(url_, "-") != 0) && (strncmp(url_, "-#", 2) != 0))
-    ::fclose(fp_);
-
-  fp_ = 0;
-  if (tmpfile_)
-    {
-      the_system->remove_file(tmpfile_);
-      delete [] tmpfile_;
-      tmpfile_ = 0;
-    }
-}
-
-/**
- * @brief Get an output stream for writing to the resource.
- *
- * @return an output stream.
- */
-std::ostream & doc::output_stream()
-{
-    this->out_ = new std::ofstream(stripProtocol(url_), std::ios::out);
-    return *this->out_;
-}
-
-
-/**
- * @class doc2
- *
- * @brief A class to contain document references.
- *
- * doc2 is a hack of doc. When the ANTLR parser was added to OpenVRML, a doc
- * work-alike was needed that would read from a std::istream instead of a C
- * @c FILE @c *. doc2's purpose is to fill that need, and to remind us through
- * its ugliness just how badly both it and doc need to be replaced with an I/O
- * solution that doesn't suck.
- */
-
-/**
- * @var char * doc2::url_
- *
- * @brief The URL.
- */
-
-/**
- * @var char * doc2::tmpfile_
- *
- * @brief Name of the temporary file created for the local copy of the
- *        resource.
- */
-
-/**
- * @var std::istream * doc2::istm_
- *
- * @brief A file descriptor for reading the local copy of the resource.
- */
-
-/**
- * @var std::ostream * doc2::ostm_
- *
- * @brief A pointer to a std::ostream used for writing the resource.
- */
-
-/**
- * @brief Constructor.
- *
- * @param url       an HTTP or file URL.
- * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
- *                  absolute URL.
- */
-doc2::doc2(const std::string & url, const doc2 * relative):
-    tmpfile_(0),
-    istm_(0),
-    ostm_(0)
-{
-    if (!url.empty()) {
-        this->seturl(url, relative);
-    }
-}
-
-/**
- * @brief Destructor.
- */
-doc2::~doc2()
-{
-    delete istm_;
-    delete ostm_;
-    if (tmpfile_) {
-        the_system->remove_file(tmpfile_);
-        delete [] tmpfile_;
-    }
-}
-
-namespace {
-    const std::string stripProtocol(const std::string & url) {
-        using std::string;
-        const string::size_type colonPos = url.find_first_of(':');
-        return (colonPos != string::npos)
-                ? url.substr(colonPos + 1)
-                : url;
-    }
-
-    bool isAbsolute(const std::string & url) {
-        return stripProtocol(url)[0] == '/';
-    }
-}
-
-/**
- * @brief Set the URL.
- *
- * @param url       the new URL.
- * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
- *                  absolute URL.
- */
-void doc2::seturl(const std::string & url, const doc2 * relative) {
-    using std::string;
-
-    this->url_ = string();
-
-    if (!url.empty()) {
-
-        delete this->istm_;
-        this->istm_ = 0;
-        delete this->ostm_;
-        this->ostm_ = 0;
-
-        string path;
-
-        if (relative && !isAbsolute(url)) {
-            path = relative->url_path();
-        }
-
-        this->url_ = path;
-
-        if (url.length() > 2 && url[0] == '.' && url[1] == '/') {
-            this->url_ += url.substr(2);
-        } else {
-            this->url_ += url;
-        }
-    }
-}
-
-/**
- * @brief Get the URL.
- *
- * @return the URL.
- */
-const std::string doc2::url() const { return this->url_; }
-
-/**
- * @brief Get the portion of the path likely to correspond to a file name
- *      without its extension.
- *
- * @return the portion of the last path element preceding the last '.' in the
- *      path, or an empty string if the last path element is empty.
- */
-const std::string doc2::url_base() const {
-    using std::string;
-
-    string::size_type lastSlashPos = this->url_.find_last_of('/');
-    string::size_type lastDotPos = this->url_.find_last_of('.');
-
-    string::size_type beginPos = (lastSlashPos != string::npos)
-                               ? lastSlashPos + 1
-                               : 0;
-    string::size_type length = (lastDotPos != string::npos)
-                             ? lastDotPos - beginPos
-                             : this->url_.length() - 1 - beginPos;
-
-    return (beginPos < this->url_.length())
-            ? this->url_.substr(beginPos, length)
-            : "";
-}
-
-/**
- * @brief Get the portion of the path likely to correspond to a file name
- *      extension.
- *
- * @return the portion of the last path element succeeding the last '.' in the
- *      path, or an empty string if the last path element includes no '.'.
- */
-const std::string doc2::url_ext() const {
-    using std::string;
-    string::size_type lastDotPos = this->url_.find_last_of('.');
-    return (lastDotPos != string::npos)
-            ? this->url_.substr(lastDotPos + 1)
-            : "";
-}
-
-/**
- * @brief Get the URL without the last component of the path.
- *
- * In spite of its name, this method does not return the URL's path.
- *
- * @return the portion of the URL including the scheme, the authority, and all
- *      but the last component of the path.
- */
-const std::string doc2::url_path() const {
-    using std::string;
-
-    string::size_type lastSlashPos = this->url_.find_last_of('/');
-
-    return (lastSlashPos != string::npos)
-            ? this->url_.substr(0, lastSlashPos + 1)
-            : this->url_;
-}
-
-/**
- * @brief Get the URL scheme.
- *
- * @return the URL scheme.
- */
-const std::string doc2::url_protocol() const {
-    using std::string;
-
-    string::size_type firstColonPos = this->url_.find_first_of(':');
-    return (firstColonPos != string::npos)
-            ? this->url_.substr(0, firstColonPos)
-            : "file";
-}
-
-/**
- * @brief Get the fragment identifier.
- *
- * @return the fragment identifier, including the leading '#', or an empty
- *      string if there is no fragment identifier.
- */
-const std::string doc2::url_modifier() const {
-    using std::string;
-    string::size_type lastHashPos = this->url_.find_last_of('#');
-    return (lastHashPos != string::npos)
-            ? this->url_.substr(lastHashPos)
-            : "";
-}
-
-/**
- * @brief Get the fully qualified name of a local file that is the downloaded
- *      resource at @a url_.
- *
- * @return the fully qualified name of a local file that is the downloaded
- *      resource at @a url_.
- */
-const char * doc2::local_name() {
-    static char buf[1024];
-    if (filename(buf, sizeof(buf))) { return buf; }
-    return 0;
-}
-
-/**
- * @brief Get the path of the local file that is the downloaded resource at
- *      @a url_.
- *
- * @return the path of the local file that is the downloaded resource at
- *      @a url_.
- */
-const char * doc2::local_path() {
-    static char buf[1024];
-
-    if (filename(buf, sizeof(buf))) {
-
-        char * s = strrchr(buf, '/');
-        if (s) {
-            *(s+1) = '\0';
-        }
-
-        return buf;
-    }
-
-    return 0;
-}
-
-/**
- * @brief Get an input stream for the resource.
- *
- * @return an input stream for the resource.
- */
-std::istream & doc2::input_stream() {
-    if (!this->istm_) {
-
-        char fn[256];
-
-        this->filename(fn, sizeof(fn));
-        if (strcmp(fn, "-") == 0) {
-            this->istm_ = &std::cin;
-        } else {
-# ifdef OPENVRML_ENABLE_GZIP
-            this->istm_ = new z::ifstream(fn);
-# else
-            this->istm_ = new std::ifstream(fn);
-# endif
-        }
-    }
-
-    return *this->istm_;
-}
-
-/**
- * @brief Get an output stream for the resource.
- *
- * @return an output stream for the resource.
- */
-std::ostream & doc2::output_stream() {
-    if (!ostm_) {
-        ostm_ = new std::ofstream(stripProtocol(url_).c_str(), std::ios::out);
-    }
-    return *this->ostm_;
-}
-
-/**
- * @brief Converts a url into a local filename.
- *
- * @retval fn   a character buffer to hold the local filename.
- * @param nfn   the number of elements in the buffer @p fn points to.
- */
-bool doc2::filename(char * fn, const size_t nfn) {
-    using std::copy;
-    using std::string;
-
-    fn[0] = '\0';
-
-    string s;
-
-    const string protocol = this->url_protocol();
-
-    if (protocol == "file") {
-# ifdef _WIN32
-        string name = uri(this->url_).path().substr(1);
-# else
-        string name = uri(this->url_).path();
-# endif
-        size_t len = (name.length() < (nfn - 1))
-                   ? name.length()
-                   : nfn - 1;
-        copy(name.begin(), name.begin() + len, fn);
-        fn[len] = '\0';
-        return true;
-    } else if (protocol == "http") {
-        //
-        // Get a local copy of http files.
-        //
-        if (this->tmpfile_) {    // Already fetched it
-            s = this->tmpfile_;
-        } else if (!(s = the_system->http_fetch(this->url_.c_str())).empty()) {
-            tmpfile_ = new char[s.length() + 1];
-            strcpy(tmpfile_, s.c_str());
-            s = tmpfile_;
-        }
-    }
-    // Unrecognized protocol (need ftp here...)
-    else {
-        s.clear();
-    }
-
-    if (!s.empty()) {
-        strncpy(fn, s.c_str(), nfn - 1);
-        fn[nfn-1] = '\0';
-    }
-
-    return !s.empty();
 }
 
 } // namespace openvrml

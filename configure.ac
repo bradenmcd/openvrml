@@ -84,36 +84,33 @@ OV_CHECK_JNI
 AC_CHECK_HEADER([dejagnu.h], [have_dejagnu_h=yes], [have_dejagnu_h=no])
 
 #
-# gzipped file support
+# PNG texture support
 #
-AC_ARG_ENABLE([gzip],
-              [AC_HELP_STRING([--disable-gzip],
-                              [disable support for gzipped worlds])])
-if test "X$enable_gzip" = "Xno"; then
-  Z_LIBS=""
-else
-  Z_LIBS="-lz"
-  AC_DEFINE([OPENVRML_ENABLE_GZIP], [1],
-            [Defined if support for gzipped worlds is enabled.])
-fi
-AC_SUBST([Z_LIBS])
-
-#
-# ImageTexture node support
-#
-AC_ARG_ENABLE([render-imagetexture-node],
-              [AC_HELP_STRING([--disable-render-imagetexture-node],
-                              [disable support for rendering ImageTexture nodes])])
-if test "X$enable_render_imagetexture_node" = "Xno"; then
+AC_ARG_ENABLE([png-textures],
+              [AC_HELP_STRING([--disable-png-textures],
+                              [disable support for rendering PNG textures])])
+if test X$enable_png_textures = Xno; then
   PNG_LIBS=""
-  JPEG_LIBS=""
 else
   PNG_LIBS="-lpng -lz"
-  JPEG_LIBS="-ljpeg"
-  AC_DEFINE([OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE], [1],
-            [Defined if support for rendering ImageTexture nodes is enabled.])
+  AC_DEFINE([OPENVRML_ENABLE_PNG_TEXTURES], [1],
+            [Defined if support for rendering PNG textures is enabled.])
 fi
 AC_SUBST([PNG_LIBS])
+
+#
+# JPEG texture support
+#
+AC_ARG_ENABLE([jpeg-textures],
+              [AC_HELP_STRING([--disable-jpeg-textures],
+                              [disable support for rendering JPEG textures])])
+if test X$enable_jpeg_textures = Xno; then
+  JPEG_LIBS=""
+else
+  JPEG_LIBS="-ljpeg"
+  AC_DEFINE([OPENVRML_ENABLE_JPEG_TEXTURES], [1],
+            [Defined if support for rendering JPEG textures is enabled.])
+fi
 AC_SUBST([JPEG_LIBS])
 
 #
