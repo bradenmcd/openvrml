@@ -24,11 +24,11 @@ dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 AC_DEFUN([OV_WITH_ZLIB],
 [AC_ARG_WITH([zlib], [  --with-zlib             use zlib])
+Z_LIBS="-lz"
 AC_CACHE_CHECK([for zlib], [ov_cv_zlib],
 [if test "X$with_zlib" = "Xno"; then
   ov_cv_zlib=disabled
 else
-  Z_LIBS="-lz"
   AC_LANG_PUSH(C)
   ov_save_LIBS="${LIBS}"
   LIBS="${Z_LIBS} ${LIBS}"
@@ -43,6 +43,6 @@ if test "X$ov_cv_zlib" != "Xyes"; then
   Z_LIBS=""
 else
   AC_DEFINE([HAVE_ZLIB], , [Defined if zlib is available and should be used.])
-  AC_SUBST([Z_LIBS])
 fi
+AC_SUBST([Z_LIBS])
 ])

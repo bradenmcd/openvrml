@@ -25,11 +25,11 @@
 #
 AC_DEFUN([OV_WITH_LIBJPEG],
 [AC_ARG_WITH(libjpeg, [  --with-libjpeg          use libjpeg])
+JPEG_LIBS="-ljpeg"
 AC_CACHE_CHECK([for libjpeg], [ov_cv_libjpeg],
 [if test "X$with_libjpeg" = "Xno"; then
   ov_cv_libjpeg=disabled
 else
-  JPEG_LIBS="-ljpeg"
   AC_LANG_PUSH(C)
   ov_save_LIBS="${LIBS}"
   LIBS="${JPEG_LIBS} ${LIBS}"
@@ -47,6 +47,6 @@ if test "X$ov_cv_libjpeg" != "Xyes"; then
   JPEG_LIBS=""
 else
   AC_DEFINE([HAVE_LIBJPEG], , [Defined if libjpeg is available and should be used.])
-  AC_SUBST([JPEG_LIBS])
 fi
+AC_SUBST([JPEG_LIBS])
 ])

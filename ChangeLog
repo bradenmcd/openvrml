@@ -1,3 +1,8 @@
+2002-11-14  Braden McDaniel  <braden@endoframe.com>
+
+        * m4/jpeg.m4, m4/png.m4, m4/zlib.m4: Fixed problem with macros
+          when using config.cache.
+
 2002-11-11  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/ScriptJDK.cpp: Fix bugs in

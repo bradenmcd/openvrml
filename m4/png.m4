@@ -26,13 +26,13 @@
 AC_DEFUN([OV_WITH_LIBPNG],
 [AC_REQUIRE([OV_WITH_ZLIB])
 AC_ARG_WITH(libpng, [  --with-libpng           use libpng])
+PNG_LIBS="-lpng -lm ${Z_LIBS}"
 AC_CACHE_CHECK([for libpng], [ov_cv_libpng],
 [if test "X$with_libpng" = "Xno"; then
   ov_cv_libpng=disabled
 elif test "X$no_zlib" = "Xyes"; then
   ov_cv_libpng=no
 else
-  PNG_LIBS="-lpng -lm ${Z_LIBS}"
   AC_LANG_PUSH(C)
   ov_save_LIBS="${LIBS}"
   LIBS="${PNG_LIBS} ${LIBS}"
@@ -47,6 +47,6 @@ if test "X$ov_cv_libpng" != "Xyes"; then
   PNG_LIBS=""
 else
   AC_DEFINE([HAVE_LIBPNG], , [Defined if libpng is available and should be used.])
-  AC_SUBST(PNG_LIBS)
 fi
+AC_SUBST([PNG_LIBS])
 ])
