@@ -2147,7 +2147,7 @@ namespace {
 				        const uintN argc, jsval * const argv,
                                         jsval * const rval) throw () {
                 assert(argc >= 1);
-                
+
                 //
                 // Make sure our argument is a string.
                 //
@@ -3086,6 +3086,25 @@ namespace {
                                          eventInId);
 	        }
             }
+	    else if (expectType = nodePtr->type.hasField(eventInId)) {
+	        VrmlField * const fieldValue =
+		        createVrmlFieldFromJsval(cx, *vp, expectType);
+		if (!fieldValue) {
+		    return JS_FALSE;
+		}
+		// This should only happen if directOutput is set...
+
+		// the timestamp should be stored as a global property and
+		// looked up via obj somehow...
+		Script * const script = 
+		        static_cast<Script *>(JS_GetContextPrivate(cx));
+		assert(script);
+		if (script->getScriptNode().scene()) {
+		    script->getScriptNode().scene()
+		            ->queueEvent(s_timeStamp, fieldValue, nodePtr,
+					 eventInId);
+		}
+	    }
             
             checkEventOut(cx, obj, thisNode);
             return JS_TRUE;

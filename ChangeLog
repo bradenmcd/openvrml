@@ -1,3 +1,7 @@
+2001-10-09 Thomas Flynn <tflynn@users.sourceforge.net>
+
+	* Checkin fix for bug 210073.
+
 2001-10-05 Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Add java exception classes as specified in spec.
