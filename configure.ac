@@ -106,10 +106,18 @@ if test "X$with_spidermonkey" = "Xyes"; then
   fi
 fi
 
-AC_ARG_WITH(jni, [  --with-jni              use the Java Native Interface (Java support)], ,
+AC_ARG_WITH(jni, [  --with-jdk              use the Java Development Kit (Java support)], ,
              [# Use JNI by default.
-              with_jni=yes])
-if test "X$with_jni" = "Xyes"; then
+              with_java=yes])
+if test "X$with_java" = "Xyes"; then
+  AC_PATH_PROG(JAVAC, javac)
+  if test -z "${JAVAC}"; then
+    AC_MSG_ERROR([Java compiler not found.])
+  fi
+  AC_PATH_PROG(JAR, jar)
+  if test -z "${JAR}"; then
+    AC_MSG_ERROR([Java archive utility not found.])
+  fi
   OV_CHECK_JNI
   if test "X$no_jni" = "Xyes"; then
     AC_MSG_ERROR([Java Native Interface not found.])
@@ -129,24 +137,24 @@ AC_ARG_ENABLE(debug, [  --disable-debug         Turn off debugging],
                esac], [debug=true])
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
-AC_OUTPUT(Makefile \
-          doc/Makefile \
-          macros/Makefile \
-          models/Makefile \
-          models/audio/Makefile \
-          models/textures/Makefile \
-          lib/Makefile \
-          lib/antlr/Makefile \
-          src/Makefile \
-          src/openvrml/Makefile \
-          src/openvrml/OpenVRML/Makefile \
-          src/openvrml-gl/Makefile \
-          src/openvrml-gl/OpenVRML/Makefile \
-          src/openvrml-gl/OpenVRML/GL/Makefile \
-          src/lookat/Makefile \
-          java/Makefile \
-          java/vrml/Makefile \
-          java/vrml/node/Makefile \
-          java/vrml/field/Makefile \
-          Doxyfile \
-          openvrml.spec)
+AC_OUTPUT([Makefile \
+doc/Makefile \
+macros/Makefile \
+models/Makefile \
+models/audio/Makefile \
+models/textures/Makefile \
+lib/Makefile \
+lib/antlr/Makefile \
+src/Makefile \
+src/openvrml/Makefile \
+src/openvrml/OpenVRML/Makefile \
+src/openvrml-gl/Makefile \
+src/openvrml-gl/OpenVRML/Makefile \
+src/openvrml-gl/OpenVRML/GL/Makefile \
+src/lookat/Makefile \
+java/Makefile \
+java/vrml/Makefile \
+java/vrml/node/Makefile \
+java/vrml/field/Makefile \
+Doxyfile \
+openvrml.spec])

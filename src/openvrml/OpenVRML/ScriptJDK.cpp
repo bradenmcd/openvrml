@@ -95,19 +95,15 @@ ScriptJDK::ScriptJDK( VrmlNodeScript *node,
 		      << PATH_SEPARATOR << classDir
       		      << PATH_SEPARATOR << classPath 
 #ifndef _WIN32
-		      << PATH_SEPARATOR << "/usr/local/share/java/vrml.jar" 
+		      << PATH_SEPARATOR
+                      << OPENVRML_PKGDATADIR_ << "/java/script.jar" 
 #endif
 		      << ends;
-#ifdef _WIN32
-    appendedClassPath.rdbuf()->freeze(false);
-#else
-    appendedClassPath.freeze(false);
-#endif
 
     options[0].optionString = appendedClassPath.str();
     options[1].optionString = "-verbose:class";
     options[2].optionString = "-verbose:jni";
-    options[3].optionString = "-Djava.library.path=/usr/local/lib";
+    options[3].optionString = "-Djava.library.path=" OPENVRML_LIBDIR_;
 
     vm_args.version = JNI_VERSION_1_2;
     vm_args.options = options;
@@ -115,6 +111,7 @@ ScriptJDK::ScriptJDK( VrmlNodeScript *node,
     
     /* Create the Java VM */
     res = JNI_CreateJavaVM(&d_jvm, (void**) &d_env, &vm_args);
+    appendedClassPath.rdbuf()->freeze(false);
     
     if (res < 0)
       theSystem->error("Can't create Java VM");

@@ -20,7 +20,8 @@ else
 endif
 
 INCLUDES = -I$(top_srcdir)/lib
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
+AM_CPPFLAGS = $(DEBUG_CPPFLAGS) -DOPENVRML_LIBDIR_=\"$(libdir)\" \
+-DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\"
 AM_CXXFLAGS = $(JNI_CFLAGS) $(JS_CFLAGS)
 
 lib_LTLIBRARIES = libopenvrml.la 

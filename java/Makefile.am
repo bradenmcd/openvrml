@@ -1,8 +1,33 @@
 SUBDIRS = vrml
 
-noinst_HEADERS = \
-	vrml_Browser.h \
-	vrml_Event.h \
+javapkgdatadir = $(pkgdatadir)/java
+javapkgdata_DATA = script.jar
+
+script.jar: vrml/Browser.class vrml/Event.class vrml/Field.class \
+vrml/MField.class vrml/ConstField.class vrml/BaseNode.class \
+vrml/field/SFBool.class vrml/field/SFColor.class vrml/field/SFFloat.class \
+vrml/field/SFImage.class vrml/field/SFInt32.class vrml/field/SFNode.class \
+vrml/field/SFRotation.class vrml/field/SFString.class vrml/field/SFTime.class \
+vrml/field/SFVec2f.class vrml/field/SFVec3f.class vrml/field/MFColor.class \
+vrml/field/MFFloat.class vrml/field/MFInt32.class vrml/field/MFNode.class \
+vrml/field/MFRotation.class vrml/field/MFString.class vrml/field/MFTime.class \
+vrml/field/MFVec2f.class vrml/field/MFVec3f.class \
+vrml/field/ConstSFBool.class vrml/field/ConstSFColor.class \
+vrml/field/ConstSFFloat.class vrml/field/ConstSFImage.class \
+vrml/field/ConstSFInt32.class vrml/field/ConstSFNode.class \
+vrml/field/ConstSFRotation.class vrml/field/ConstSFString.class \
+vrml/field/ConstSFTime.class vrml/field/ConstSFVec2f.class \
+vrml/field/ConstSFVec3f.class vrml/field/ConstMFColor.class \
+vrml/field/ConstMFFloat.class vrml/field/ConstMFInt32.class \
+vrml/field/ConstMFNode.class vrml/field/ConstMFRotation.class \
+vrml/field/ConstMFString.class vrml/field/ConstMFTime.class \
+vrml/field/ConstMFVec2f.class vrml/field/ConstMFVec3f.class \
+vrml/node/Node.class vrml/node/Script.class
+	$(JAR) cvf $@ $^
+
+#JNI_HFILES = \
+        vrml_Browser.h \
+        vrml_Event.h \
         vrml_Field.h \
         vrml_MField.h \
         vrml_ConstField.h \
@@ -51,152 +76,152 @@ noinst_HEADERS = \
         vrml_node_Node.h \
         vrml_node_Script.h
 
-vrml_Browser.h: vrml/Browser.class
-	javah vrml.Browser
+#nodist_noinst_HEADERS = $(JNI_HFILES)
+CLEANFILES = script.jar
 
-vrml_Event.h: vrml/Event.class
-	javah vrml.Event
+#vrml_Browser.h: vrml/Browser.class
+#	javah -classpath . vrml.Browser
 
-vrml_Field.h: vrml/Field.class
-	javah vrml.Field
+#vrml_Event.h: vrml/Event.class
+#	javah -classpath . vrml.Event
 
-vrml_MField.h: vrml/MField.class
-	javah vrml.MField
+#vrml_Field.h: vrml/Field.class
+#	javah -classpath . vrml.Field
 
-vrml_ConstField.h: vrml/ConstField.class
-	javah vrml.ConstField
+#vrml_MField.h: vrml/MField.class
+#	javah -classpath . vrml.MField
 
-vrml_ConstMField.h: vrml/ConstMField.class
-	javah vrml.ConstMField
+#vrml_ConstField.h: vrml/ConstField.class
+#	javah -classpath . vrml.ConstField
 
-vrml_BaseNode.h: vrml/BaseNode.class
-	javah vrml.BaseNode
+#vrml_ConstMField.h: vrml/ConstMField.class
+#	javah -classpath . vrml.ConstMField
 
-vrml_field_SFBool.h: vrml/field/SFBool.class
-	javah vrml.field.SFBool
+#vrml_BaseNode.h: vrml/BaseNode.class
+#	javah -classpath . vrml.BaseNode
 
-vrml_field_SFColor.h: vrml/field/SFColor.class
-	javah vrml.field.SFColor
+#vrml_field_SFBool.h: vrml/field/SFBool.class
+#	javah -classpath . vrml.field.SFBool
 
-vrml_field_SFFloat.h: vrml/field/SFFloat.class
-	javah vrml.field.SFFloat
+#vrml_field_SFColor.h: vrml/field/SFColor.class
+#	javah -classpath . vrml.field.SFColor
 
-vrml_field_SFImage.h: vrml/field/SFImage.class
-	javah vrml.field.SFImage
+#vrml_field_SFFloat.h: vrml/field/SFFloat.class
+#	javah -classpath . vrml.field.SFFloat
 
-vrml_field_SFInt32.h: vrml/field/SFInt32.class
-	javah vrml.field.SFInt32
+#vrml_field_SFImage.h: vrml/field/SFImage.class
+#	javah -classpath . vrml.field.SFImage
 
-vrml_field_SFNode.h: vrml/field/SFNode.class
-	javah vrml.field.SFNode
+#vrml_field_SFInt32.h: vrml/field/SFInt32.class
+#	javah -classpath . vrml.field.SFInt32
 
-vrml_field_SFRotation.h: vrml/field/SFRotation.class
-	javah vrml.field.SFRotation
+#vrml_field_SFNode.h: vrml/field/SFNode.class
+#	javah -classpath . vrml.field.SFNode
 
-vrml_field_SFString.h: vrml/field/SFString.class
-	javah vrml.field.SFString
+#vrml_field_SFRotation.h: vrml/field/SFRotation.class
+#	javah -classpath . vrml.field.SFRotation
 
-vrml_field_SFTime.h: vrml/field/SFTime.class
-	javah vrml.field.SFTime
+#vrml_field_SFString.h: vrml/field/SFString.class
+#	javah -classpath . vrml.field.SFString
 
-vrml_field_SFVec2f.h: vrml/field/SFVec2f.class
-	javah vrml.field.SFVec2f
+#vrml_field_SFTime.h: vrml/field/SFTime.class
+#	javah -classpath . vrml.field.SFTime
 
-vrml_field_SFVec3f.h: vrml/field/SFVec3f.class
-	javah vrml.field.SFVec3f
+#vrml_field_SFVec2f.h: vrml/field/SFVec2f.class
+#	javah -classpath . vrml.field.SFVec2f
 
-vrml_field_MFColor.h: vrml/field/MFColor.class
-	javah vrml.field.MFColor
+#vrml_field_SFVec3f.h: vrml/field/SFVec3f.class
+#	javah -classpath . vrml.field.SFVec3f
 
-vrml_field_MFFloat.h: vrml/field/MFFloat.class
-	javah vrml.field.MFFloat
+#vrml_field_MFColor.h: vrml/field/MFColor.class
+#	javah -classpath . vrml.field.MFColor
 
-vrml_field_MFInt32.h: vrml/field/MFInt32.class
-	javah vrml.field.MFInt32
+#vrml_field_MFFloat.h: vrml/field/MFFloat.class
+#	javah -classpath . vrml.field.MFFloat
 
-vrml_field_MFNode.h: vrml/field/MFNode.class
-	javah vrml.field.MFNode
+#vrml_field_MFInt32.h: vrml/field/MFInt32.class
+#	javah -classpath . vrml.field.MFInt32
 
-vrml_field_MFRotation.h: vrml/field/MFRotation.class
-	javah vrml.field.MFRotation
+#vrml_field_MFNode.h: vrml/field/MFNode.class
+#	javah -classpath . vrml.field.MFNode
 
-vrml_field_MFString.h: vrml/field/MFString.class
-	javah vrml.field.MFString
+#vrml_field_MFRotation.h: vrml/field/MFRotation.class
+#	javah -classpath . vrml.field.MFRotation
 
-vrml_field_MFTime.h: vrml/field/MFTime.class
-	javah vrml.field.MFTime
+#vrml_field_MFString.h: vrml/field/MFString.class
+#	javah -classpath . vrml.field.MFString
 
-vrml_field_MFVec2f.h: vrml/field/MFVec2f.class
-	javah vrml.field.MFVec2f
+#vrml_field_MFTime.h: vrml/field/MFTime.class
+#	javah -classpath . vrml.field.MFTime
 
-vrml_field_MFVec3f.h: vrml/field/MFVec3f.class
-	javah vrml.field.MFVec3f
+#vrml_field_MFVec2f.h: vrml/field/MFVec2f.class
+#	javah -classpath . vrml.field.MFVec2f
 
-vrml_field_ConstSFBool.h: vrml/field/ConstSFBool.class
-	javah vrml.field.ConstSFBool
+#vrml_field_MFVec3f.h: vrml/field/MFVec3f.class
+#	javah -classpath . vrml.field.MFVec3f
 
-vrml_field_ConstSFColor.h: vrml/field/ConstSFColor.class
-	javah vrml.field.ConstSFColor
+#vrml_field_ConstSFBool.h: vrml/field/ConstSFBool.class
+#	javah -classpath . vrml.field.ConstSFBool
 
-vrml_field_ConstSFFloat.h: vrml/field/ConstSFFloat.class
-	javah vrml.field.ConstSFFloat
+#vrml_field_ConstSFColor.h: vrml/field/ConstSFColor.class
+#	javah -classpath . vrml.field.ConstSFColor
 
-vrml_field_ConstSFImage.h: vrml/field/ConstSFImage.class
-	javah vrml.field.ConstSFImage
+#vrml_field_ConstSFFloat.h: vrml/field/ConstSFFloat.class
+#	javah -classpath . vrml.field.ConstSFFloat
 
-vrml_field_ConstSFInt32.h: vrml/field/ConstSFInt32.class
-	javah vrml.field.ConstSFInt32
+#vrml_field_ConstSFImage.h: vrml/field/ConstSFImage.class
+#	javah -classpath . vrml.field.ConstSFImage
 
-vrml_field_ConstSFNode.h: vrml/field/ConstSFNode.class
-	javah vrml.field.ConstSFNode
+#vrml_field_ConstSFInt32.h: vrml/field/ConstSFInt32.class
+#	javah -classpath . vrml.field.ConstSFInt32
 
-vrml_field_ConstSFRotation.h: vrml/field/ConstSFRotation.class
-	javah vrml.field.ConstSFRotation
+#vrml_field_ConstSFNode.h: vrml/field/ConstSFNode.class
+#	javah -classpath . vrml.field.ConstSFNode
 
-vrml_field_ConstSFString.h: vrml/field/ConstSFString.class
-	javah vrml.field.ConstSFString
+#vrml_field_ConstSFRotation.h: vrml/field/ConstSFRotation.class
+#	javah -classpath . vrml.field.ConstSFRotation
 
-vrml_field_ConstSFTime.h: vrml/field/ConstSFTime.class
-	javah vrml.field.ConstSFTime
+#vrml_field_ConstSFString.h: vrml/field/ConstSFString.class
+#	javah -classpath . vrml.field.ConstSFString
 
-vrml_field_ConstSFVec2f.h: vrml/field/ConstSFVec2f.class
-	javah vrml.field.ConstSFVec2f
+#vrml_field_ConstSFTime.h: vrml/field/ConstSFTime.class
+#	javah -classpath . vrml.field.ConstSFTime
 
-vrml_field_ConstSFVec3f.h: vrml/field/ConstSFVec3f.class
-	javah vrml.field.ConstSFVec3f
+#vrml_field_ConstSFVec2f.h: vrml/field/ConstSFVec2f.class
+#	javah -classpath . vrml.field.ConstSFVec2f
 
-vrml_field_ConstMFColor.h: vrml/field/ConstMFColor.class
-	javah vrml.field.ConstMFColor
+#vrml_field_ConstSFVec3f.h: vrml/field/ConstSFVec3f.class
+#	javah -classpath . vrml.field.ConstSFVec3f
 
-vrml_field_ConstMFFloat.h: vrml/field/ConstMFFloat.class
-	javah vrml.field.ConstMFFloat
+#vrml_field_ConstMFColor.h: vrml/field/ConstMFColor.class
+#	javah -classpath . vrml.field.ConstMFColor
 
-vrml_field_ConstMFInt32.h: vrml/field/ConstMFInt32.class
-	javah vrml.field.ConstMFInt32
+#vrml_field_ConstMFFloat.h: vrml/field/ConstMFFloat.class
+#	javah -classpath . vrml.field.ConstMFFloat
 
-vrml_field_ConstMFNode.h: vrml/field/ConstMFNode.class
-	javah vrml.field.ConstMFNode
+#vrml_field_ConstMFInt32.h: vrml/field/ConstMFInt32.class
+#	javah -classpath . vrml.field.ConstMFInt32
 
-vrml_field_ConstMFRotation.h: vrml/field/ConstMFRotation.class
-	javah vrml.field.ConstMFRotation
+#vrml_field_ConstMFNode.h: vrml/field/ConstMFNode.class
+#	javah -classpath . vrml.field.ConstMFNode
 
-vrml_field_ConstMFString.h: vrml/field/ConstMFString.class
-	javah vrml.field.ConstMFString
+#vrml_field_ConstMFRotation.h: vrml/field/ConstMFRotation.class
+#	javah -classpath . vrml.field.ConstMFRotation
 
-vrml_field_ConstMFTime.h: vrml/field/ConstMFTime.class
-	javah vrml.field.ConstMFTime
+#vrml_field_ConstMFString.h: vrml/field/ConstMFString.class
+#	javah -classpath . vrml.field.ConstMFString
 
-vrml_field_ConstMFVec2f.h: vrml/field/ConstMFVec2f.class
-	javah vrml.field.ConstMFVec2f
+#vrml_field_ConstMFTime.h: vrml/field/ConstMFTime.class
+#	javah -classpath . vrml.field.ConstMFTime
 
-vrml_field_ConstMFVec3f.h: vrml/field/ConstMFVec3f.class
-	javah vrml.field.ConstMFVec3f
+#vrml_field_ConstMFVec2f.h: vrml/field/ConstMFVec2f.class
+#	javah -classpath . vrml.field.ConstMFVec2f
 
-vrml_node_Node.h: vrml/node/Node.class
-	javah vrml.node.Node
+#vrml_field_ConstMFVec3f.h: vrml/field/ConstMFVec3f.class
+#	javah -classpath . vrml.field.ConstMFVec3f
 
-vrml_node_Script.h: vrml/node/Script.class
-	javah vrml.node.Script
+#vrml_node_Node.h: vrml/node/Node.class
+#	javah -classpath . vrml.node.Node
 
-vrml97.jar: vrml
-	jar cvf vrml.jar vrml
+#vrml_node_Script.h: vrml/node/Script.class
+#	javah -classpath . vrml.node.Script

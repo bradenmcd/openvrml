@@ -1,3 +1,22 @@
+2001-10-17  Braden McDaniel  <braden@endoframe.com>
+
+        * Use variables resolved by configure to tell Java where .class
+          files and libraries are installed.
+
+        * Fixed memory leak involving inappropriate use of freeze() with
+          ostrstream in `ScriptJDK.cpp'.
+
+        * Java .class files are nolonger installed by `make install'.
+
+        * JNI headers are nolonger generated. (They aren't strictly
+          required, and automake 1.5 has problems with generated sources
+          that should be neither installed nor included in the
+          distribution.)
+
+        * Added checks for `javac' and `jar' to configure.
+
+        * Changed `--with-jni' option to `--with-jdk'. 
+
 2001-10-15  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Add accumulateTransform after adding all nodes to Scene in

@@ -2,9 +2,9 @@ javadir = $(datadir)/java/vrml/field
 
 JAVAROOT = $(top_builddir)/java
 
-java_JAVA = SFBool.java SFColor.java SFFloat.java SFImage.java SFInt32.java \
-SFNode.java SFRotation.java SFString.java SFTime.java SFVec2f.java \
-SFVec3f.java MFColor.java MFFloat.java MFInt32.java MFNode.java \
+dist_noinst_JAVA = SFBool.java SFColor.java SFFloat.java SFImage.java \
+SFInt32.java SFNode.java SFRotation.java SFString.java SFTime.java \
+SFVec2f.java SFVec3f.java MFColor.java MFFloat.java MFInt32.java MFNode.java \
 MFRotation.java MFString.java MFTime.java MFVec2f.java MFVec3f.java \
 ConstSFBool.java ConstSFColor.java ConstSFFloat.java ConstSFImage.java \
 ConstSFInt32.java ConstSFNode.java ConstSFRotation.java ConstSFString.java \
