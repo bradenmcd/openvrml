@@ -1,3 +1,7 @@
+2001-07-30  Braden McDaniel  <braden@endoframe.com>
+
+        * Removed obsolete #undef's in `acconfig.h'.
+
 2001-07-24  Braden McDaniel  <braden@endoframe.com>
 
         * Added Joerg Scheurich's warbird game to the sample worlds.
