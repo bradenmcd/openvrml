@@ -10,6 +10,8 @@
           src/openvrml/OpenVRML/nodeptr.cpp,
           src/openvrml/OpenVRML/vrml97node.cpp:  Doc-comment love.
 
+        * openvrml.spec.in:  Removed reference to doc/conformance.html.
+
 2002-12-17  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Take out all Makefile.vc6 from ide-projects/Windows/VisualC6/*

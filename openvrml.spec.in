@@ -81,7 +81,6 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %files 
 %doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
-%doc doc/conformance.html
 %{prefix}/lib/libopenvrml.so.*
 %{prefix}/lib/pkgconfig/openvrml.pc
 
@@ -112,6 +111,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Tue Dec 17 2002  Braden McDaniel  <braden@endoframe.com>
+- Removed conformance.html from %doc.  This doc now incorporated into doxygen
+  docs.
+
 * Tue Dec 10 2002  Braden McDaniel  <braden@endoframe.com>
 - Added BuildRequires for pkgconfig, fontconfig-devel, freetype-devel.
 - Added Requires for fontconfig, freetype.
