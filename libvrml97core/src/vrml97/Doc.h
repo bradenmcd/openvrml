@@ -48,7 +48,12 @@ protected:
 
   static const char *stripProtocol(const char *url);
   static bool isAbsolute(const char *url);
+#ifdef macintosh
+  bool filename( char *fn, int nfn );
+  char* convertCommonToMacPath( char *fn, int nfn );
+#else
   bool Doc::filename( char *fn, int nfn );
+#endif
 
   char *d_url;
   ostream *d_ostream;
