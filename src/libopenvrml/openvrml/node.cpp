@@ -959,16 +959,22 @@ node::node(const node_type & type, const scope_ptr & scope) throw ():
  * node is not copyable.
  */
 
-typedef std::map<std::string, node *> named_node_map;
+/**
+ * @internal
+ *
+ * @brief Map of node names to node instances.
+ */
+typedef std::map<std::string, node *> named_node_map_t;
 
 namespace {
 
-    struct node_is_ : std::unary_function<named_node_map::value_type, bool> {
-        node_is_(const node & n):
+    struct node_is_ : std::unary_function<named_node_map_t::value_type, bool> {
+        explicit node_is_(const node & n):
             n(&n)
         {}
 
-        bool operator()(const named_node_map::value_type & value) const
+        bool operator()(const named_node_map_t::value_type & value) const
+            throw ()
         {
             return value.second == this->n;
         }
@@ -986,14 +992,14 @@ namespace {
 node::~node() throw ()
 {
     //
-    // If this is the primordial node in a prototype definition, this->scope
+    // If this is the primordial node in a prototype definition, this->scope_
     // will be null.
     //
     if (this->scope_) {
         using std::find_if;
-        const named_node_map::iterator end =
+        const named_node_map_t::iterator end =
             this->scope_->named_node_map.end();
-        const named_node_map::iterator pos =
+        const named_node_map_t::iterator pos =
             find_if(this->scope_->named_node_map.begin(), end,
                     node_is_(*this));
         if (pos != end) { this->scope_->named_node_map.erase(pos); }
@@ -1014,11 +1020,13 @@ node::~node() throw ()
  * @brief Set the name of the node.
  *
  * @param node_id the name for the node.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void node::id(const std::string & node_id)
+void node::id(const std::string & node_id) throw (std::bad_alloc)
 {
     assert(this->scope_);
-    this->scope_->named_node_map[node_id] = this;
+    this->scope_->named_node_map[node_id] = this; // Throws std::bad_alloc.
 }
 
 /**
@@ -1026,14 +1034,18 @@ void node::id(const std::string & node_id)
  *
  * @return the node name.
  */
-const std::string node::id() const
+const std::string & node::id() const throw ()
 {
     using std::find_if;
+    using std::string;
+
     assert(this->scope_);
-    const named_node_map::iterator end = this->scope_->named_node_map.end();
-    const named_node_map::iterator pos =
+
+    const named_node_map_t::iterator end = this->scope_->named_node_map.end();
+    const named_node_map_t::iterator pos =
         find_if(this->scope_->named_node_map.begin(), end, node_is_(*this));
-    return (pos != end) ? pos->first : std::string();
+    static const string empty;
+    return (pos != end) ? pos->first : empty;
 }
 
 /**

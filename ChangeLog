@@ -1,5 +1,21 @@
 2003-09-18  Braden McDaniel  <braden@endoframe.com>
 
+	Changed node::id to return "const std::string &" instead of
+	"const std::string".
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+
+2003-09-18  Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment improvements.
+
+	* src/libopenvrml/openvrml/field.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2003-09-18  Braden McDaniel  <braden@endoframe.com>
+
 	* doc/doxygen-header:  Style sheet enhancements.
 
 2003-09-17  Braden McDaniel  <braden@endoframe.com>

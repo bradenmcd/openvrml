@@ -265,8 +265,8 @@ namespace openvrml {
 
         virtual ~node() throw () = 0;
 
-        const std::string id() const;
-        void id(const std::string & node_id);
+        const std::string & id() const throw ();
+        void id(const std::string & node_id) throw (std::bad_alloc);
 
         const scope_ptr & scope() const throw ();
 
