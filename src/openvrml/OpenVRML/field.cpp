@@ -2982,11 +2982,14 @@ void MFColor::addElement(SFColor::ConstArrayReference value)
  * @param value an RGB triplet.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p index is a valid index.
  */
 void MFColor::insertElement(const size_t index,
                             SFColor::ConstArrayReference value)
     throw (std::bad_alloc)
 {
+    assert(index < static_cast<ColorVec *>(this->values)->size());
     ColorVec & values = *static_cast<ColorVec *>(this->values);
     values.insert(values.begin() + index, value);
 }
@@ -2996,11 +2999,11 @@ void MFColor::insertElement(const size_t index,
  *
  * @param index the index of the value to remove.
  *
- * @todo Right now this fails silently if @p index is out of range. We should
- *      either fail with an assertion or throw std::out_of_range.
+ * @pre @p index is a valid index.
  */
-void MFColor::removeElement(size_t index) throw ()
+void MFColor::removeElement(const size_t index) throw ()
 {
+    assert(index < static_cast<ColorVec *>(this->values)->size());
     ColorVec & values = *static_cast<ColorVec *>(this->values);
     values.erase(values.begin() + index);
 }
@@ -3160,10 +3163,13 @@ void MFFloat::addElement(const float value)
  * @param value a float value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p index is a valid index.
  */
 void MFFloat::insertElement(const size_t index, const float value)
     throw (std::bad_alloc)
 {
+    assert(index < this->values.size());
     this->values.insert(this->values.begin() + index, value);
 }
 
@@ -3172,11 +3178,11 @@ void MFFloat::insertElement(const size_t index, const float value)
  *
  * @param index the index of the value to remove.
  *
- * @todo Right now this fails silently if @p index is out of range. We should
- *      either fail with an assertion or throw std::out_of_range.
+ * @pre @p index is a valid index.
  */
-void MFFloat::removeElement(size_t index) throw ()
+void MFFloat::removeElement(const size_t index) throw ()
 {
+    assert(index < this->values.size());
     this->values.erase(this->values.begin() + index);
 }
 
@@ -3332,10 +3338,13 @@ void MFInt32::addElement(const long value) throw (std::bad_alloc)
  * @param value an integer value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p index is a valid index.
  */
 void MFInt32::insertElement(const size_t index, const long value)
     throw (std::bad_alloc)
 {
+    assert(index < this->values.size());
     this->values.insert(this->values.begin() + index, value);
 }
 
@@ -3344,11 +3353,11 @@ void MFInt32::insertElement(const size_t index, const long value)
  *
  * @param index the index of the value to remove.
  *
- * @todo Right now this fails silently if @p index is out of range. We should
- *      either fail with an assertion or throw std::out_of_range.
+ * @pre @p index is a valid index.
  */
 void MFInt32::removeElement(const size_t index) throw ()
 {
+    assert(index < this->values.size());
     this->values.erase(this->values.begin() + index);
 }
 
@@ -3569,6 +3578,8 @@ void MFNode::addElement(const NodePtr & node) throw (std::bad_alloc)
  * @param node  a NodePtr.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p index is a valid index.
  */
 void MFNode::insertElement(size_t index, const NodePtr & node)
     throw (std::bad_alloc)
@@ -3582,8 +3593,7 @@ void MFNode::insertElement(size_t index, const NodePtr & node)
  *
  * @param index the index of the value to remove.
  *
- * @todo Right now this fails silently if @p index is out of range. We should
- *      either fail with an assertion or throw std::out_of_range.
+ * @pre @p index is a valid index.
  */
 void MFNode::removeElement(size_t index) throw ()
 {
@@ -3782,11 +3792,14 @@ void MFRotation::addElement(SFRotation::ConstArrayReference value)
  * @param value a rotation value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p index is a valid index.
  */
 void MFRotation::insertElement(size_t index,
                                SFRotation::ConstArrayReference value)
         throw (std::bad_alloc)
 {
+    assert(index < static_cast<RotationVec *>(this->values)->size());
     RotationVec & values = *static_cast<RotationVec *>(this->values);
     values.insert(values.begin() + index, value);
 }
@@ -3796,11 +3809,11 @@ void MFRotation::insertElement(size_t index,
  *
  * @param index the index of the value to remove.
  *
- * @todo Right now this fails silently if @p index is out of range. We should
- *      either fail with an assertion or throw std::out_of_range.
+ * @pre @p index is a valid index.
  */
 void MFRotation::removeElement(const size_t index) throw ()
 {
+    assert(index < static_cast<RotationVec *>(this->values)->size());
     RotationVec & values = *static_cast<RotationVec *>(this->values);
     values.erase(values.begin() + index);
 }
@@ -3986,6 +3999,8 @@ void MFString::addElement(const std::string & value) throw (std::bad_alloc)
  * @param value a string.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p index is a valid index.
  */
 void MFString::insertElement(const size_t index, const std::string & value)
     throw (std::bad_alloc)
@@ -3999,8 +4014,7 @@ void MFString::insertElement(const size_t index, const std::string & value)
  *
  * @param index the index of the value to remove.
  *
- * @todo Right now this fails silently if @p index is out of range. We should
- *      either fail with an assertion or throw std::out_of_range.
+ * @pre @p index is a valid index.
  */
 void MFString::removeElement(const size_t index) throw ()
 {
@@ -4158,10 +4172,13 @@ void MFTime::addElement(const double value) throw (std::bad_alloc)
  * @param value a time value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p index is a valid index.
  */
 void MFTime::insertElement(const size_t index, const double value)
     throw (std::bad_alloc)
 {
+    assert(index < this->values.size());
     this->values.insert(this->values.begin() + index, value);
 }
 
@@ -4170,11 +4187,11 @@ void MFTime::insertElement(const size_t index, const double value)
  *
  * @param index the index of the value to remove.
  *
- * @todo Right now this fails silently if @p index is out of range. We should
- *      either fail with an assertion or throw std::out_of_range.
+ * @pre @p index is a valid index.
  */
 void MFTime::removeElement(const size_t index) throw ()
 {
+    assert(index < this->values.size());
     this->values.erase(this->values.begin() + index);
 }
 
@@ -4364,10 +4381,13 @@ void MFVec2f::addElement(SFVec2f::ConstArrayReference value)
  * @param value a 2D vector.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p index is a valid index.
  */
 void MFVec2f::insertElement(size_t index, SFVec2f::ConstArrayReference value)
     throw (std::bad_alloc)
 {
+    assert(index < static_cast<Vec2fVec *>(this->values)->size());
     Vec2fVec & values = *static_cast<Vec2fVec *>(this->values);
     values.insert(values.begin() + index, value);
 }
@@ -4377,11 +4397,11 @@ void MFVec2f::insertElement(size_t index, SFVec2f::ConstArrayReference value)
  *
  * @param index the index of the value to remove.
  *
- * @todo Right now this fails silently if @p index is out of range. We should
- *      either fail with an assertion or throw std::out_of_range.
+ * @pre @p index is a valid index.
  */
 void MFVec2f::removeElement(size_t index) throw ()
 {
+    assert(index < static_cast<Vec2fVec *>(this->values)->size());
     Vec2fVec & values = *static_cast<Vec2fVec *>(this->values);
     values.erase(values.begin() + index);
 }
@@ -4573,10 +4593,13 @@ void MFVec3f::addElement(SFVec3f::ConstArrayReference value)
  * @param value a 3D vector.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p index is a valid index.
  */
 void MFVec3f::insertElement(size_t index, SFVec3f::ConstArrayReference value)
     throw (std::bad_alloc)
 {
+    assert(index < static_cast<Vec2fVec *>(this->values)->size());
     Vec3fVec & values = *static_cast<Vec3fVec *>(this->values);
     values.insert(values.begin() + index, value);
 }
@@ -4586,11 +4609,11 @@ void MFVec3f::insertElement(size_t index, SFVec3f::ConstArrayReference value)
  *
  * @param index the index of the value to remove.
  *
- * @todo Right now this fails silently if @p index is out of range. We should
- *      either fail with an assertion or throw std::out_of_range.
+ * @pre @p index is a valid index.
  */
 void MFVec3f::removeElement(size_t index) throw ()
 {
+    assert(index < static_cast<Vec2fVec *>(this->values)->size());
     Vec2fVec & values = *static_cast<Vec2fVec *>(this->values);
     values.erase(values.begin() + index);
 }

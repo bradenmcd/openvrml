@@ -30,6 +30,9 @@
           simplifies things for RPM--and probably users in general--so
           the API docs now get included in the RPM package.
 
+        * src/openvrml/OpenVRML/field.cpp:  Assert that indices must be
+          valid in insertElement, removeElement for MF* classes.
+
 2002-12-09  Braden McDaniel  <braden@endoframe.com>
 
         * README, configure.ac, java/Makefile.am, java/vrml/Makefile.am,
