@@ -857,13 +857,30 @@ script_node::add_eventin(const field_value::type_id type,
                          const std::string & id)
     throw (std::invalid_argument, std::bad_alloc)
 {
+    using openvrml_::unary_function_base;
+    typedef openvrml_::unary_function_wrapper<event_listener_map_t::iterator,
+                                              void>
+        erase_wrapper;
+
+    struct erase : unary_function_base<event_listener_map_t::iterator, void> {
+        explicit erase(event_listener_map_t & event_listener_map):
+            event_listener_map(&event_listener_map)
+        {}
+
+        void operator()(const event_listener_map_t::iterator & pos) const
+        {
+            this->event_listener_map->erase(pos);
+        }
+
+    private:
+        event_listener_map_t * event_listener_map;
+    };
+
     using std::auto_ptr;
     using std::pair;
     using std::invalid_argument;
     using openvrml_::scope_guard;
-    using openvrml_::make_obj_guard;
-    typedef void (event_listener_map_t::* erase_mem_fun_t)
-        (event_listener_map_t::iterator);
+    using openvrml_::make_guard;
 
     auto_ptr<openvrml::event_listener> listener =
         create_listener(type, id, *this);
@@ -872,10 +889,8 @@ script_node::add_eventin(const field_value::type_id type,
     pair<event_listener_map_t::iterator, bool> insert_result =
         this->event_listener_map.insert(value);
     scope_guard guard =
-        make_obj_guard(
-            this->event_listener_map,
-            static_cast<erase_mem_fun_t>(&event_listener_map_t::erase),
-            insert_result.first);
+        make_guard(erase_wrapper(erase(this->event_listener_map)),
+                   insert_result.first);
     if (!insert_result.second) {
         throw invalid_argument("Interface already defined.");
     }
@@ -900,19 +915,36 @@ script_node::add_eventout(const field_value::type_id type,
                           const std::string & id)
     throw (std::invalid_argument, std::bad_alloc)
 {
+    using openvrml_::unary_function_base;
+    typedef openvrml_::unary_function_wrapper<eventout_map_t::iterator,
+                                              void>
+        erase_wrapper;
+
+    struct erase : unary_function_base<eventout_map_t::iterator, void> {
+        explicit erase(eventout_map_t & eventout_map):
+            eventout_map(&eventout_map)
+        {}
+
+        void operator()(const eventout_map_t::iterator & pos) const
+        {
+            this->eventout_map->erase(pos);
+        }
+
+    private:
+        eventout_map_t * eventout_map;
+    };
+
     using std::pair;
     using std::invalid_argument;
     using openvrml_::scope_guard;
-    using openvrml_::make_obj_guard;
-    typedef void (eventout_map_t::* erase_mem_fun_t)(eventout_map_t::iterator);
+    using openvrml_::make_guard;
     const eventout_map_t::value_type
         value(id, eventout_ptr(new eventout(type, *this)));
     pair<eventout_map_t::iterator, bool> insert_result =
         this->eventout_map_.insert(value);
     scope_guard guard =
-        make_obj_guard(this->eventout_map_,
-                       static_cast<erase_mem_fun_t>(&eventout_map_t::erase),
-                       insert_result.first);
+        make_guard(erase_wrapper(erase(this->eventout_map_)),
+                   insert_result.first);
     if (!insert_result.second) {
         throw invalid_argument("Interface already defined.");
     }
@@ -937,12 +969,29 @@ script_node::add_field(const std::string & id,
                        const field_value_ptr & default_val)
     throw (std::invalid_argument, std::bad_alloc)
 {
+    using openvrml_::unary_function_base;
+    typedef openvrml_::unary_function_wrapper<field_value_map_t::iterator,
+                                              void>
+        erase_wrapper;
+
+    struct erase : unary_function_base<field_value_map_t::iterator, void> {
+        explicit erase(field_value_map_t & field_value_map):
+            field_value_map(&field_value_map)
+        {}
+
+        void operator()(const field_value_map_t::iterator & pos) const
+        {
+            this->field_value_map->erase(pos);
+        }
+
+    private:
+        field_value_map_t * field_value_map;
+    };
+
     using std::pair;
     using std::invalid_argument;
     using openvrml_::scope_guard;
-    using openvrml_::make_obj_guard;
-    typedef void (field_value_map_t::* erase_mem_fun_t)
-        (field_value_map_t::iterator);
+    using openvrml_::make_guard;
     //
     // field value.
     //
@@ -950,9 +999,8 @@ script_node::add_field(const std::string & id,
     pair<field_value_map_t::iterator, bool> insert_result =
         this->field_value_map_.insert(value);
     scope_guard guard =
-        make_obj_guard(this->field_value_map_,
-                       static_cast<erase_mem_fun_t>(&field_value_map_t::erase),
-                       insert_result.first);
+        make_guard(erase_wrapper(erase(this->field_value_map_)),
+                   insert_result.first);
 
     const node_interface interface(node_interface::field_id,
                                    default_val->type(),
