@@ -1,4 +1,10 @@
-2004-03-11 Braden McDaniel  <braden@endoframe.com>
+2004-03-13 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(anchor_node::do_render_child):  Fixed recursive call to
+	child_node::render_child.
+
+2004-03-13 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed "free" of stack memory.
 

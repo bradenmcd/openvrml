@@ -1280,7 +1280,7 @@ void anchor_node::do_render_child(openvrml::viewer & viewer,
     viewer.set_sensitive(this);
 
     // Render children
-    this->group_node::render_child(viewer, context);
+    this->group_node::do_render_child(viewer, context);
 
     viewer.set_sensitive(0);
 }
