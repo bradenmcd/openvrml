@@ -6901,14 +6901,13 @@ bool Image::setURL(const char * const url, const Doc2 * const relative)
 
 bool Image::tryURLs(const MFString & urls, const Doc2 * const relative) {
     size_t i(0);
-    for (; i < urls.getLength(); ++i) {
-        if ((urls.getElement(i).length() > 0)
-                && setURL(urls.getElement(i).c_str(), relative)) {
+    for (; i < urls.value.size(); ++i) {
+        if (!urls.value[i].empty() && setURL(urls.value[i].c_str(), relative)) {
             break;
         }
     }
 
-    return (i < urls.getLength());
+    return (i < urls.value.size());
 }
 
 const char *Image::url() { return d_url ? d_url->url() : 0; }

@@ -462,7 +462,7 @@ void ScriptNode::assignWithSelfRefCheck(const SFNode & inval,
                                         SFNode & retval) const
     throw ()
 {
-    const NodePtr & oldNode = static_cast<SFNode &>(retval).get();
+    const NodePtr & oldNode = retval.value;
 
     //
     // About to relinquish ownership of a SFNode value. If the
@@ -471,7 +471,8 @@ void ScriptNode::assignWithSelfRefCheck(const SFNode & inval,
     // *decremented* it to accommodate creating a cycle between
     // refcounted objects.
     //
-    if (oldNode && (dynamic_cast<ScriptNode *>(oldNode.countPtr->first) == this)) {
+    if (oldNode
+            && (dynamic_cast<ScriptNode *>(oldNode.countPtr->first) == this)) {
         ++oldNode.countPtr->second;
     }
 
@@ -486,7 +487,7 @@ void ScriptNode::assignWithSelfRefCheck(const SFNode & inval,
     // because the reference it held to itself would prevent the
     // refcount from ever dropping to zero.
     //
-    const NodePtr & newNode = static_cast<SFNode &>(retval).get();
+    const NodePtr & newNode = retval.value;
     if (dynamic_cast<ScriptNode *>(newNode.countPtr->first) == this) {
         --(newNode.countPtr->second);
     }
@@ -496,19 +497,21 @@ void ScriptNode::assignWithSelfRefCheck(const MFNode & inval,
                                         MFNode & retval) const
     throw ()
 {
-    size_t i;
-    for (i = 0; i < retval.getLength(); ++i) {
-        const NodePtr & oldNode = retval.getElement(i);
-        if (oldNode && (dynamic_cast<ScriptNode *>(oldNode.countPtr->first) == this)) {
+    std::vector<NodePtr>::size_type i;
+    for (i = 0; i < retval.value.size(); ++i) {
+        const NodePtr & oldNode = retval.value[i];
+        if (oldNode
+                && (dynamic_cast<ScriptNode *>(oldNode.countPtr->first) == this)) {
             ++oldNode.countPtr->second;
         }
     }
 
     retval = inval;
 
-    for (i = 0; i < retval.getLength(); ++i) {
-        const NodePtr & newNode = retval.getElement(i);
-        if (newNode && (dynamic_cast<ScriptNode *>(newNode.countPtr->first) == this)) {
+    for (i = 0; i < retval.value.size(); ++i) {
+        const NodePtr & newNode = retval.value[i];
+        if (newNode
+                && (dynamic_cast<ScriptNode *>(newNode.countPtr->first) == this)) {
             --(newNode.countPtr->second);
         }
     }
@@ -749,47 +752,47 @@ private:
 namespace OpenVRML {
 
 Script * ScriptNode::createScript() {
-// Try each url until we find one we like
-for (size_t i = 0; i < this->url.getLength(); ++i) {
-if (this->url.getElement(i).length() == 0) continue;
+    // Try each url until we find one we like
+    for (size_t i = 0; i < this->url.value.size(); ++i) {
+        if (this->url.value[i].empty()) { continue; }
 
-// Get the protocol & mimetype...
+        // Get the protocol & mimetype...
 # if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
-// Need to handle external .js files too...
-const char * javascriptScheme = "javascript:";
-const char * vrmlscriptScheme = "vrmlscript:";
-if (std::equal(javascriptScheme, javascriptScheme + 11,
-               this->url.getElement(i).begin())
-        || std::equal(vrmlscriptScheme, vrmlscriptScheme + 11,
-                      this->url.getElement(i).begin())) {
-    return new JavaScript_::
-                    Script(*this, this->url.getElement(i).substr(11));
-}
+        // Need to handle external .js files too...
+        const char * javascriptScheme = "javascript:";
+        const char * vrmlscriptScheme = "vrmlscript:";
+        if (std::equal(javascriptScheme, javascriptScheme + 11,
+                       this->url.value[i].begin())
+                || std::equal(vrmlscriptScheme, vrmlscriptScheme + 11,
+                              this->url.value[i].begin())) {
+            return new JavaScript_::Script(*this,
+                                           this->url.value[i].substr(11));
+        }
 # endif
 
 #if OPENVRML_ENABLE_SCRIPT_NODE_JAVA
-const char javaExtension1[] = ".class";
-const char javaExtension2[] = ".CLASS";
+        const char javaExtension1[] = ".class";
+        const char javaExtension2[] = ".CLASS";
 
-int slen = this->url.getElement(i).length();
+        int slen = this->url.value[i].length();
 
-if (slen > 6
-        && (std::equal(javaExtension1, javaExtension1 + 6,
-                       this->url.getElement(i).end() - 6)
-            || std::equal(javaExtension2, javaExtension2 + 6,
-                          this->url.getElement(i).end() - 6))) {
-    Doc2 base(this->nodeType.nodeClass.browser.getWorldURI());
-    Doc2 doc(this->url.getElement(i), &base);
-    if (doc.localName()) {
-        return new ScriptJDK(*this,
-                             doc.urlBase().c_str(),
-                             doc.localPath());
-    }
-}
+        if (slen > 6
+                && (std::equal(javaExtension1, javaExtension1 + 6,
+                               this->url.value[i].end() - 6)
+                    || std::equal(javaExtension2, javaExtension2 + 6,
+                                  this->url.value[i].end() - 6))) {
+            Doc2 base(this->nodeType.nodeClass.browser.getWorldURI());
+            Doc2 doc(this->url.value[i], &base);
+            if (doc.localName()) {
+                return new ScriptJDK(*this,
+                                     doc.urlBase().c_str(),
+                                     doc.localPath());
+            }
+        }
 #endif
-}
+    }
 
-return 0;
+    return 0;
 }
 
 } // namespace OpenVRML
@@ -1652,7 +1655,7 @@ jsval Script::vrmlFieldToJSVal(const FieldValue & fieldValue) throw ()
         {
             const OpenVRML::SFBool & sfbool =
                     static_cast<const OpenVRML::SFBool &>(fieldValue);
-	    rval = BOOLEAN_TO_JSVAL(sfbool.get());
+	    rval = BOOLEAN_TO_JSVAL(sfbool.value);
         }
         break;
 
@@ -1671,7 +1674,7 @@ jsval Script::vrmlFieldToJSVal(const FieldValue & fieldValue) throw ()
         {
 	    const OpenVRML::SFFloat & sffloat =
                     static_cast<const OpenVRML::SFFloat &>(fieldValue);
-            if (!JS_NewDoubleValue(cx, sffloat.get(), &rval)) {
+            if (!JS_NewDoubleValue(cx, sffloat.value, &rval)) {
                 rval = JSVAL_NULL;
             }
         }
@@ -1691,7 +1694,7 @@ jsval Script::vrmlFieldToJSVal(const FieldValue & fieldValue) throw ()
         {
             const OpenVRML::SFInt32 & sfint32 =
                     static_cast<const OpenVRML::SFInt32 &>(fieldValue);
-            if (!JS_NewNumberValue(cx, jsdouble(sfint32.get()), &rval)) {
+            if (!JS_NewNumberValue(cx, jsdouble(sfint32.value), &rval)) {
                 rval = JSVAL_NULL;
             }
         }
@@ -1723,7 +1726,7 @@ jsval Script::vrmlFieldToJSVal(const FieldValue & fieldValue) throw ()
             const OpenVRML::SFString & sfstring =
                     static_cast<const OpenVRML::SFString &>(fieldValue);
             rval = STRING_TO_JSVAL(
-                        JS_NewStringCopyZ(cx, sfstring.get().c_str()));
+                        JS_NewStringCopyZ(cx, sfstring.value.c_str()));
         }
         break;
 
@@ -1731,7 +1734,7 @@ jsval Script::vrmlFieldToJSVal(const FieldValue & fieldValue) throw ()
         {
 	    const OpenVRML::SFTime & sftime =
                     static_cast<const OpenVRML::SFTime &>(fieldValue);
-            if (!JS_NewDoubleValue(cx, sftime.get(), &rval)) {
+            if (!JS_NewDoubleValue(cx, sftime.value, &rval)) {
                 rval = JSVAL_NULL;
             }
         }
@@ -2504,7 +2507,7 @@ JSBool createVrmlFromString(JSContext * const cx,
         OpenVRML::MFNode nodes =
                 browser.createVrmlFromStream(in);
 
-        if (nodes.getLength() == 0) {
+        if (nodes.value.empty()) {
             *rval = JSVAL_NULL;
         } else {
             if (!MFNode::toJsval(nodes, cx, obj, rval)) {
@@ -2644,8 +2647,7 @@ JSBool addRoute(JSContext * const cx, JSObject *,
             JS_GetStringBytes(JSVAL_TO_STRING(argv[3]));
 
     try {
-        fromNode->get()->addRoute(fromEventOut,
-                                  toNode->get(), toEventIn);
+        fromNode->value->addRoute(fromEventOut, toNode->value, toEventIn);
     } catch (std::runtime_error & ex) {
         JS_ReportError(cx, ex.what());
         return JS_FALSE;
@@ -2704,8 +2706,7 @@ JSBool deleteRoute(JSContext * const cx, JSObject *,
     const char * const toEventIn =
             JS_GetStringBytes(JSVAL_TO_STRING(argv[3]));
 
-    fromNode->get()->deleteRoute(fromEventOut,
-                                 toNode->get(), toEventIn);
+    fromNode->value->deleteRoute(fromEventOut, toNode->value, toEventIn);
 
     *rval = JSVAL_VOID;
     return JS_TRUE;
@@ -2882,7 +2883,7 @@ JSBool SFColor::initObject(JSContext * const cx, JSObject * const obj,
 
     try {
         std::auto_ptr<OpenVRML::SFColor>
-                sfcolor(new OpenVRML::SFColor(rgb[0], rgb[1], rgb[2]));
+                sfcolor(new OpenVRML::SFColor(color(rgb[0], rgb[1], rgb[2])));
         std::auto_ptr<SFData> sfdata(new SFData(sfcolor.get()));
         sfcolor.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -2910,7 +2911,7 @@ JSBool SFColor::getProperty(JSContext * const cx, JSObject * const obj,
 
     if (JSVAL_IS_INT(id)) {
         if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 2) { return JS_FALSE; }
-        if (!JS_NewDoubleValue(cx, thisColor[JSVAL_TO_INT(id)], rval)) {
+        if (!JS_NewDoubleValue(cx, thisColor.value[JSVAL_TO_INT(id)], rval)) {
             return JS_FALSE;
         }
     }
@@ -2935,7 +2936,22 @@ JSBool SFColor::setProperty(JSContext * const cx, JSObject * const obj,
     jsdouble d;
     if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
 
-    thisColor[JSVAL_TO_INT(id)] = d;
+    switch (JSVAL_TO_INT(id)) {
+    case 0:
+        thisColor.value.r(d);
+        break;
+
+    case 1:
+        thisColor.value.g(d);
+        break;
+
+    case 2:
+        thisColor.value.b(d);
+        break;
+
+    default:
+        assert(false);
+    }
     sfdata->changed = true;
     return JS_TRUE;
 }
@@ -2964,7 +2980,7 @@ JSBool SFColor::setHSV(JSContext * const cx, JSObject * const obj,
         return JS_FALSE;
     }
 
-    thisColor.setHSV(h, s, v);
+    thisColor.value.hsv(h, s, v);
     *rval = JSVAL_VOID;
     sfdata->changed = true;
     return JS_TRUE;
@@ -2978,12 +2994,11 @@ JSBool SFColor::getHSV(JSContext * const cx, JSObject * const obj,
             static_cast<SFData *>(JS_GetPrivate(cx, obj));
     assert(sfdata);
     assert(dynamic_cast<OpenVRML::SFColor *>(&sfdata->getFieldValue()));
-    OpenVRML::SFColor & thisColor =
+    const OpenVRML::SFColor & thisColor =
             static_cast<OpenVRML::SFColor &>(sfdata->getFieldValue());
 
     float hsv[3];
-
-    thisColor.getHSV(hsv); // XXX throws? nah...
+    thisColor.value.hsv(hsv);
 
     return floatsToJSArray(3, hsv, cx, rval);
 }
@@ -3334,11 +3349,11 @@ JSBool SFNode::initObject(JSContext * const cx, JSObject * const obj,
     //
     // Fail if the string does not produce exactly one node.
     //
-    if (nodes.getLength() != 1) { return JS_FALSE; }
+    if (nodes.value.size() != 1) { return JS_FALSE; }
 
     try {
         std::auto_ptr<OpenVRML::SFNode>
-            sfnode(new OpenVRML::SFNode(nodes.getElement(0)));
+                sfnode(new OpenVRML::SFNode(nodes.value[0]));
         std::auto_ptr<SFData> sfdata(new SFData(sfnode.get()));
         sfnode.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -3363,7 +3378,7 @@ JSBool SFNode::getProperty(JSContext * const cx, JSObject * const obj,
     const OpenVRML::SFNode & thisNode =
             static_cast<OpenVRML::SFNode &>(sfdata->getFieldValue());
 
-    if (!thisNode.get()) { return JS_TRUE; }
+    if (!thisNode.value) { return JS_TRUE; }
 
     Script * const script = static_cast<Script *>(JS_GetContextPrivate(cx));
     assert(script);
@@ -3372,7 +3387,7 @@ JSBool SFNode::getProperty(JSContext * const cx, JSObject * const obj,
         JSString * str = 0;
         if (JSVAL_IS_STRING(id) && ((str = JSVAL_TO_STRING(id)))) {
             const char * eventOut = JS_GetStringBytes(str);
-            const FieldValue & fieldVal = thisNode.get()->getEventOut(eventOut);
+            const FieldValue & fieldVal = thisNode.value->getEventOut(eventOut);
 
             // convert event out value to jsval...
             *vp = script->vrmlFieldToJSVal(fieldVal);
@@ -3397,7 +3412,7 @@ JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFNode & thisNode =
             static_cast<OpenVRML::SFNode &>(sfdata->getFieldValue());
 
-    NodePtr nodePtr = thisNode.get();
+    NodePtr nodePtr = thisNode.value;
 
     if (!nodePtr || !JSVAL_IS_STRING(id)) { return JS_FALSE; }
 
@@ -3592,21 +3607,22 @@ JSBool SFRotation::initObject(JSContext * const cx,
                             (static_cast<OpenVRML::SFVec3f &>
                                 (sfdata->getFieldValue()));
 
-                    OpenVRML::SFVec3f axisVec(argVec1.cross(argVec2));
+                    vec3f axisVec = argVec1.value * argVec2.value;
                     axisVec = axisVec.normalize();
-                    x = axisVec.getX();
-                    y = axisVec.getY();
-                    z = axisVec.getZ();
-                    angle = acos(argVec1.dot(argVec2)
-                            / (argVec1.length() * argVec2.length()));
+                    x = axisVec.x();
+                    y = axisVec.y();
+                    z = axisVec.z();
+                    angle = acos(argVec1.value.dot(argVec2.value)
+                            / (argVec1.value.length()
+                                * argVec2.value.length()));
 
                 } else if (JSVAL_IS_NUMBER(argv[1])) {
                     if (!JS_ValueToNumber(cx, argv[1], &angle)) {
                         return JS_FALSE;
                     }
-                    x = argVec1.getX();
-                    y = argVec1.getY();
-                    z = argVec1.getZ();
+                    x = argVec1.value.x();
+                    y = argVec1.value.y();
+                    z = argVec1.value.z();
 
                 } else {
                     return JS_FALSE;
@@ -3619,7 +3635,7 @@ JSBool SFRotation::initObject(JSContext * const cx,
 
     try {
         std::auto_ptr<OpenVRML::SFRotation>
-                sfrotation(new OpenVRML::SFRotation(x, y, z, angle));
+                sfrotation(new OpenVRML::SFRotation(rotation(x, y, z, angle)));
         std::auto_ptr<SFData> sfdata(new SFData(sfrotation.get()));
         sfrotation.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -3647,7 +3663,7 @@ JSBool SFRotation::getProperty(JSContext * const cx,
 
     if (JSVAL_IS_INT(id)) {
         if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 3) { return JS_FALSE; }
-        if (!JS_NewDoubleValue(cx, thisRot.get()[JSVAL_TO_INT(id)], rval)) {
+        if (!JS_NewDoubleValue(cx, thisRot.value[JSVAL_TO_INT(id)], rval)) {
             return JS_FALSE;
         }
     }
@@ -3674,19 +3690,19 @@ JSBool SFRotation::setProperty(JSContext * const cx,
 
     switch (JSVAL_TO_INT(id)) {
     case 0:
-        thisRot.setX(d);
+        thisRot.value.x(d);
         break;
 
     case 1:
-        thisRot.setY(d);
+        thisRot.value.y(d);
         break;
 
     case 2:
-        thisRot.setZ(d);
+        thisRot.value.z(d);
         break;
 
     case 3:
-        thisRot.setAngle(d);
+        thisRot.value.angle(d);
         break;
 
     default:
@@ -3717,7 +3733,7 @@ JSBool SFRotation::getAxis(JSContext * const cx, JSObject * const obj,
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
     try {
-        resultVec = thisRot.getAxis();
+        resultVec.value = thisRot.value.axis();
     } catch (std::exception & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
         return JS_FALSE;
@@ -3750,7 +3766,7 @@ JSBool SFRotation::inverse(JSContext * const cx, JSObject * const obj,
         static_cast<OpenVRML::SFRotation &>(sfdata->getFieldValue());
 
     try {
-        resultRot = thisRot.inverse();
+        resultRot.value = thisRot.value.inverse();
     } catch (std::exception & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
         return JS_FALSE;
@@ -3805,7 +3821,7 @@ JSBool SFRotation::multiply(JSContext * const cx, JSObject * const obj,
         static_cast<OpenVRML::SFRotation &>(sfdata->getFieldValue());
 
     try {
-        resultRot = thisRot.multiply(argRot);
+        resultRot.value = thisRot.value * argRot.value;
     } catch (std::exception & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
         return JS_FALSE;
@@ -3859,15 +3875,10 @@ JSBool SFRotation::multVec(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    try {
-        resultVec = thisRot.multVec(argVec);
-    } catch (std::exception & ex) {
-        OPENVRML_PRINT_EXCEPTION_(ex);
-        return JS_FALSE;
-    } catch (...) {
-        assert(false);
-        return JS_FALSE;
-    }
+    OpenVRML::VrmlMatrix rotMat;
+    rotMat.setRotate(thisRot.value);
+    rotMat.multVecMatrix(argVec.value, resultVec.value);
+
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
 }
@@ -3900,7 +3911,7 @@ JSBool SFRotation::setAxis(JSContext * const cx, JSObject * const obj,
     const OpenVRML::SFVec3f & argVec =
             static_cast<OpenVRML::SFVec3f &>(argSFData->getFieldValue());
 
-    thisRot.setAxis(argVec); // XXX Throws? Nah ...
+    thisRot.value.axis(argVec.value);
 
     sfdata->changed = true;
     *rval = JSVAL_VOID;
@@ -3958,15 +3969,8 @@ JSBool SFRotation::slerp(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFRotation & resultRot =
             static_cast<OpenVRML::SFRotation &>(sfdata->getFieldValue());
 
-    try {
-        resultRot = thisRot.slerp(argRot, factor);
-    } catch (std::exception & ex) {
-        OPENVRML_PRINT_EXCEPTION_(ex);
-        return JS_FALSE;
-    } catch (...) {
-        assert(false);
-        return JS_FALSE;
-    }
+    resultRot.value = thisRot.value.slerp(argRot.value, factor);
+
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
 }
@@ -4077,7 +4081,7 @@ JSBool SFVec2f::initObject(JSContext * const cx, JSObject * const obj,
 
     try {
         std::auto_ptr<OpenVRML::SFVec2f>
-                sfvec2f(new OpenVRML::SFVec2f(x, y));
+                sfvec2f(new OpenVRML::SFVec2f(vec2f(x, y)));
         std::auto_ptr<SFData> sfdata(new SFData(sfvec2f.get()));
         sfvec2f.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -4105,7 +4109,7 @@ JSBool SFVec2f::getProperty(JSContext * const cx, JSObject * const obj,
 
     if (JSVAL_IS_INT(id)) {
         if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 1) { return JS_FALSE; }
-        if (!JS_NewDoubleValue(cx, thisVec[JSVAL_TO_INT(id)], rval)) {
+        if (!JS_NewDoubleValue(cx, thisVec.value[JSVAL_TO_INT(id)], rval)) {
             return JS_FALSE;
         }
     }
@@ -4127,7 +4131,7 @@ JSBool SFVec2f::setProperty(JSContext * const cx, JSObject * const obj,
     jsdouble d;
     if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
 
-    thisVec[JSVAL_TO_INT(id)] = d;
+    thisVec.value[JSVAL_TO_INT(id)] = d;
     sfdata->changed = true;
     return JS_TRUE;
 }
@@ -4174,7 +4178,7 @@ JSBool SFVec2f::add(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec2f & resultVec =
             static_cast<OpenVRML::SFVec2f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.add(argVec); // XXX Throws? Nah ...
+    resultVec.value = thisVec.value + argVec.value;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4214,7 +4218,7 @@ JSBool SFVec2f::divide(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec2f & resultVec =
             static_cast<OpenVRML::SFVec2f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.divide(divisor); // XXX throws? nah...
+    resultVec.value = thisVec.value / divisor;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4249,7 +4253,7 @@ JSBool SFVec2f::dot(JSContext * const cx, JSObject * const obj,
             static_cast<OpenVRML::SFVec2f &>(sfdata->getFieldValue());
     sfdata = 0;
 
-    *rval = DOUBLE_TO_JSVAL(thisVec.dot(argVec));
+    *rval = DOUBLE_TO_JSVAL(thisVec.value.dot(argVec.value));
     return JS_TRUE;
 }
 
@@ -4263,7 +4267,9 @@ JSBool SFVec2f::length(JSContext * const cx, JSObject * const obj,
     const OpenVRML::SFVec2f & thisVec =
             static_cast<OpenVRML::SFVec2f &>(sfdata->getFieldValue());
 
-    if (!JS_NewDoubleValue(cx, thisVec.length(), rval)) { return JS_FALSE; }
+    if (!JS_NewDoubleValue(cx, thisVec.value.length(), rval)) {
+        return JS_FALSE;
+    }
     return JS_TRUE;
 }
 
@@ -4299,7 +4305,7 @@ JSBool SFVec2f::multiply(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec2f & resultVec =
             static_cast<OpenVRML::SFVec2f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.multiply(factor); // XXX throws? nah...
+    resultVec.value = thisVec.value * factor;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4329,7 +4335,7 @@ JSBool SFVec2f::negate(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec2f & resultVec =
             static_cast<OpenVRML::SFVec2f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.negate(); // XXX Throws? Nah ...
+    resultVec.value = -thisVec.value;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4359,7 +4365,7 @@ JSBool SFVec2f::normalize(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec2f & resultVec =
             static_cast<OpenVRML::SFVec2f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.normalize(); // XXX Throws? Nah ...
+    resultVec.value = thisVec.value.normalize();
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4407,7 +4413,7 @@ JSBool SFVec2f::subtract(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec2f & resultVec =
             static_cast<OpenVRML::SFVec2f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.subtract(argVec); // XXX Throws? Nah ...
+    resultVec.value = thisVec.value - argVec.value;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4513,7 +4519,7 @@ JSBool SFVec3f::initObject(JSContext * const cx, JSObject * obj,
 
     try {
         std::auto_ptr<OpenVRML::SFVec3f>
-                sfvec3f(new OpenVRML::SFVec3f(vec[0], vec[1], vec[2]));
+                sfvec3f(new OpenVRML::SFVec3f(vec3f(vec[0], vec[1], vec[2])));
         std::auto_ptr<SFData> sfdata(new SFData(sfvec3f.get()));
         sfvec3f.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -4540,7 +4546,7 @@ JSBool SFVec3f::getProperty(JSContext * const cx, JSObject * const obj,
 
     if (JSVAL_IS_INT(id)) {
         if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 2) { return JS_FALSE; }
-        if (!JS_NewDoubleValue(cx, thisVec[JSVAL_TO_INT(id)], vp)) {
+        if (!JS_NewDoubleValue(cx, thisVec.value[JSVAL_TO_INT(id)], vp)) {
             return JS_FALSE;
         }
     }
@@ -4560,7 +4566,7 @@ JSBool SFVec3f::setProperty(JSContext * const cx, JSObject * const obj,
 
     jsdouble d;
     if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
-    thisVec[JSVAL_TO_INT(id)] = d;
+    thisVec.value[JSVAL_TO_INT(id)] = d;
     sfdata->changed = true;
     return JS_TRUE;
 }
@@ -4607,7 +4613,7 @@ JSBool SFVec3f::add(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.add(argVec); // XXX Throws? Nah ...
+    resultVec.value = thisVec.value + argVec.value;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4655,7 +4661,7 @@ JSBool SFVec3f::cross(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.cross(argVec); // XXX Throws? Nah ...
+    resultVec.value = thisVec.value * argVec.value;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4696,7 +4702,7 @@ JSBool SFVec3f::divide(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.divide(divisor); // XXX Throws? Nah ...
+    resultVec.value = thisVec.value / divisor;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4730,7 +4736,7 @@ JSBool SFVec3f::dot(JSContext * const cx, JSObject * const obj,
     const OpenVRML::SFVec3f & argVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    *rval = DOUBLE_TO_JSVAL(thisVec.dot(argVec));
+    *rval = DOUBLE_TO_JSVAL(thisVec.value.dot(argVec.value));
     return JS_TRUE;
 }
 
@@ -4744,7 +4750,9 @@ JSBool SFVec3f::length(JSContext * const cx, JSObject * const obj,
     const OpenVRML::SFVec3f & thisVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    if (!JS_NewDoubleValue(cx, thisVec.length(), rval)) { return JS_FALSE; }
+    if (!JS_NewDoubleValue(cx, thisVec.value.length(), rval)) {
+        return JS_FALSE;
+    }
     return JS_TRUE;
 }
 
@@ -4783,7 +4791,7 @@ JSBool SFVec3f::multiply(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.multiply(factor); // XXX Throws? Nah ...
+    resultVec.value = thisVec.value * factor;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4813,7 +4821,7 @@ JSBool SFVec3f::negate(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.negate(); // Throws? Nah ...
+    resultVec.value = -thisVec.value;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4843,7 +4851,7 @@ JSBool SFVec3f::normalize(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.normalize(); // XXX Throws? Nah ...
+    resultVec.value = thisVec.value.normalize();
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -4891,7 +4899,7 @@ JSBool SFVec3f::subtract(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    resultVec = thisVec.subtract(argVec); // XXX Throws? Nah ...
+    resultVec.value = thisVec.value - argVec.value;
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -5464,7 +5472,7 @@ MFColor::createFromJSObject(JSContext * const cx, JSObject * const obj)
 
         const OpenVRML::SFColor & sfcolor =
                 static_cast<OpenVRML::SFColor &>(sfdata->getFieldValue());
-        mfcolor->setElement(i, sfcolor.get());
+        mfcolor->value[i] = sfcolor.value;
     }
     return mfcolor;
 }
@@ -5477,13 +5485,13 @@ JSBool MFColor::toJsval(const OpenVRML::MFColor & mfcolor,
     JSObject * const mfcolorObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfcolorObj) { return JS_FALSE; }
 
-    jsval length = INT_TO_JSVAL(mfcolor.getLength());
+    jsval length = INT_TO_JSVAL(mfcolor.value.size());
     if (!setLength(cx, mfcolorObj, 0, &length)) { return JS_FALSE; }
 
     MFData * const mfdata =
             static_cast<MFData *>(JS_GetPrivate(cx, mfcolorObj));
-    for (size_t i = 0; i < mfcolor.getLength(); ++i) {
-        const OpenVRML::SFColor sfcolor(mfcolor.getElement(i));
+    for (size_t i = 0; i < mfcolor.value.size(); ++i) {
+        const OpenVRML::SFColor sfcolor(mfcolor.value[i]);
         if (!SFColor::toJsval(sfcolor, cx, obj, &mfdata->array[i])) {
             return JS_FALSE;
         }
@@ -5511,13 +5519,13 @@ JSBool MFFloat::toJsval(const OpenVRML::MFFloat & mffloat,
     JSObject * const mffloatObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mffloatObj) { return JS_FALSE; }
 
-    jsval length = INT_TO_JSVAL(mffloat.getLength());
+    jsval length = INT_TO_JSVAL(mffloat.value.size());
     if (!setLength(cx, mffloatObj, 0, &length)) { return JS_FALSE; }
 
     MFData * const mfdata =
             static_cast<MFData *>(JS_GetPrivate(cx, mffloatObj));
-    for (size_t i = 0; i < mffloat.getLength(); ++i) {
-        if (!JS_NewDoubleValue(cx, mffloat.getElement(i), &mfdata->array[i])) {
+    for (size_t i = 0; i < mffloat.value.size(); ++i) {
+        if (!JS_NewDoubleValue(cx, mffloat.value[i], &mfdata->array[i])) {
             return JS_FALSE;
         }
     }
@@ -5542,7 +5550,7 @@ MFFloat::createFromJSObject(JSContext * const cx, JSObject * const obj)
             mffloat(new OpenVRML::MFFloat(mfdata->array.size()));
     for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
-        mffloat->setElement(i, *JSVAL_TO_DOUBLE(mfdata->array[i]));
+        mffloat->value[i] = *JSVAL_TO_DOUBLE(mfdata->array[i]);
     }
     return mffloat;
 }
@@ -5586,13 +5594,13 @@ JSBool MFInt32::toJsval(const OpenVRML::MFInt32 & mfint32,
     JSObject * const mfint32Obj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfint32Obj) { return JS_FALSE; }
 
-    jsval length = INT_TO_JSVAL(mfint32.getLength());
+    jsval length = INT_TO_JSVAL(mfint32.value.size());
     if (!setLength(cx, mfint32Obj, 0, &length)) { return JS_FALSE; }
 
     MFData * const mfdata =
             static_cast<MFData *>(JS_GetPrivate(cx, mfint32Obj));
-    for (size_t i = 0; i < mfint32.getLength(); ++i) {
-        mfdata->array[i] = INT_TO_JSVAL(mfint32.getElement(i));
+    for (size_t i = 0; i < mfint32.value.size(); ++i) {
+        mfdata->array[i] = INT_TO_JSVAL(mfint32.value[i]);
     }
     *rval = OBJECT_TO_JSVAL(mfint32Obj);
     return JS_TRUE;
@@ -5615,7 +5623,7 @@ MFInt32::createFromJSObject(JSContext * const cx, JSObject * const obj)
             mfint32(new OpenVRML::MFInt32(mfdata->array.size()));
     for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         assert(JSVAL_IS_INT(mfdata->array[i]));
-        mfint32->setElement(i, JSVAL_TO_INT(mfdata->array[i]));
+        mfint32->value[i] = JSVAL_TO_INT(mfdata->array[i]);
     }
     return mfint32;
 }
@@ -5822,12 +5830,12 @@ JSBool MFNode::toJsval(const OpenVRML::MFNode & mfnode,
     JSObject * const mfnodeObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfnodeObj) { return JS_FALSE; }
 
-    jsval length = INT_TO_JSVAL(mfnode.getLength());
+    jsval length = INT_TO_JSVAL(mfnode.value.size());
     if (!setLength(cx, mfnodeObj, 0, &length)) { return JS_FALSE; }
 
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, mfnodeObj));
-    for (size_t i = 0; i < mfnode.getLength(); ++i) {
-        const OpenVRML::SFNode sfnode(mfnode.getElement(i));
+    for (size_t i = 0; i < mfnode.value.size(); ++i) {
+        const OpenVRML::SFNode sfnode(mfnode.value[i]);
         if (!SFNode::toJsval(sfnode, cx, obj, &mfdata->array[i])) {
             return JS_FALSE;
         }
@@ -5862,7 +5870,7 @@ MFNode::createFromJSObject(JSContext * const cx, JSObject * const obj)
 
         const OpenVRML::SFNode & sfnode =
                 static_cast<OpenVRML::SFNode &>(sfdata->getFieldValue());
-        mfnode->setElement(i, sfnode.get());
+        mfnode->value[i] = sfnode.value;
     }
     return mfnode;
 }
@@ -6044,13 +6052,13 @@ JSBool MFRotation::toJsval(const OpenVRML::MFRotation & mfrotation,
     JSObject * const mfrotationObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfrotationObj) { return JS_FALSE; }
 
-    jsval length = INT_TO_JSVAL(mfrotation.getLength());
+    jsval length = INT_TO_JSVAL(mfrotation.value.size());
     if (!setLength(cx, mfrotationObj, 0, &length)) { return JS_FALSE; }
 
     MFData * const mfdata =
             static_cast<MFData *>(JS_GetPrivate(cx, mfrotationObj));
-    for (size_t i = 0; i < mfrotation.getLength(); ++i) {
-        const OpenVRML::SFRotation sfrotation(mfrotation.getElement(i));
+    for (size_t i = 0; i < mfrotation.value.size(); ++i) {
+        const OpenVRML::SFRotation sfrotation(mfrotation.value[i]);
         if (!SFRotation::toJsval(sfrotation, cx, obj, &mfdata->array[i])) {
             return JS_FALSE;
         }
@@ -6085,7 +6093,7 @@ MFRotation::createFromJSObject(JSContext * const cx, JSObject * const obj)
 
         const OpenVRML::SFRotation & sfrotation =
                 static_cast<OpenVRML::SFRotation &>(sfdata->getFieldValue());
-        mfrotation->setElement(i, sfrotation.get());
+        mfrotation->value[i] = sfrotation.value;
     }
     return mfrotation;
 }
@@ -6127,14 +6135,14 @@ JSBool MFString::toJsval(const OpenVRML::MFString & mfstring,
     JSObject * const mfstringObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfstringObj) { return JS_FALSE; }
 
-    jsval length = INT_TO_JSVAL(mfstring.getLength());
+    jsval length = INT_TO_JSVAL(mfstring.value.size());
     if (!setLength(cx, mfstringObj, 0, &length)) { return JS_FALSE; }
 
     MFData * const mfdata =
             static_cast<MFData *>(JS_GetPrivate(cx, mfstringObj));
-    for (size_t i = 0; i < mfstring.getLength(); ++i) {
+    for (size_t i = 0; i < mfstring.value.size(); ++i) {
         JSString * jsstring =
-                JS_NewStringCopyZ(cx, mfstring.getElement(i).c_str());
+                JS_NewStringCopyZ(cx, mfstring.value[i].c_str());
         if (!jsstring) { return JS_FALSE; }
         mfdata->array[i] = STRING_TO_JSVAL(jsstring);
     }
@@ -6161,7 +6169,7 @@ MFString::createFromJSObject(JSContext * const cx, JSObject * const obj)
         assert(JSVAL_IS_STRING(mfdata->array[i]));
         const char * const str =
                 JS_GetStringBytes(JSVAL_TO_STRING(mfdata->array[i]));
-        mfstring->setElement(i, str);
+        mfstring->value[i] = str;
     }
     return mfstring;
 }
@@ -6352,12 +6360,12 @@ JSBool MFTime::toJsval(const OpenVRML::MFTime & mftime,
     JSObject * const mftimeObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mftimeObj) { return JS_FALSE; }
 
-    jsval length = INT_TO_JSVAL(mftime.getLength());
+    jsval length = INT_TO_JSVAL(mftime.value.size());
     if (!setLength(cx, mftimeObj, 0, &length)) { return JS_FALSE; }
 
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, mftimeObj));
-    for (size_t i = 0; i < mftime.getLength(); ++i) {
-        if (!JS_NewDoubleValue(cx, mftime.getElement(i), &mfdata->array[i])) {
+    for (size_t i = 0; i < mftime.value.size(); ++i) {
+        if (!JS_NewDoubleValue(cx, mftime.value[i], &mfdata->array[i])) {
             return JS_FALSE;
         }
     }
@@ -6382,7 +6390,7 @@ MFTime::createFromJSObject(JSContext * const cx, JSObject * const obj)
             mftime(new OpenVRML::MFTime(mfdata->array.size()));
     for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
-        mftime->setElement(i, *JSVAL_TO_DOUBLE(mfdata->array[i]));
+        mftime->value[i] = *JSVAL_TO_DOUBLE(mfdata->array[i]);
     }
     return mftime;
 }
@@ -6404,13 +6412,13 @@ JSBool MFVec2f::toJsval(const OpenVRML::MFVec2f & mfvec2f,
     JSObject * const mfvec2fObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfvec2fObj) { return JS_FALSE; }
 
-    jsval length = INT_TO_JSVAL(mfvec2f.getLength());
+    jsval length = INT_TO_JSVAL(mfvec2f.value.size());
     if (!setLength(cx, mfvec2fObj, 0, &length)) { return JS_FALSE; }
 
     MFData * const mfdata =
             static_cast<MFData *>(JS_GetPrivate(cx, mfvec2fObj));
-    for (size_t i = 0; i < mfvec2f.getLength(); ++i) {
-        const OpenVRML::SFVec2f sfvec2f(mfvec2f.getElement(i));
+    for (size_t i = 0; i < mfvec2f.value.size(); ++i) {
+        const OpenVRML::SFVec2f sfvec2f(mfvec2f.value[i]);
         if (!SFVec2f::toJsval(sfvec2f, cx, obj, &mfdata->array[i])) {
             return JS_FALSE;
         }
@@ -6444,7 +6452,7 @@ MFVec2f::createFromJSObject(JSContext * const cx, JSObject * const obj)
 
         const OpenVRML::SFVec2f & sfvec2f =
                 static_cast<OpenVRML::SFVec2f &>(sfdata->getFieldValue());
-        mfvec2f->setElement(i, sfvec2f.get());
+        mfvec2f->value[i] = sfvec2f.value;
     }
     return mfvec2f;
 }
@@ -6467,13 +6475,13 @@ JSBool MFVec3f::toJsval(const OpenVRML::MFVec3f & mfvec3f,
             JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfvec3fObj) { return JS_FALSE; }
 
-    jsval length = INT_TO_JSVAL(mfvec3f.getLength());
+    jsval length = INT_TO_JSVAL(mfvec3f.value.size());
     if (!setLength(cx, mfvec3fObj, 0, &length)) { return JS_FALSE; }
 
     MFData * const mfdata =
             static_cast<MFData *>(JS_GetPrivate(cx, mfvec3fObj));
-    for (size_t i = 0; i < mfvec3f.getLength(); ++i) {
-        const OpenVRML::SFVec3f sfvec3f(mfvec3f.getElement(i));
+    for (size_t i = 0; i < mfvec3f.value.size(); ++i) {
+        const OpenVRML::SFVec3f sfvec3f(mfvec3f.value[i]);
         if (!SFVec3f::toJsval(sfvec3f, cx, obj, &mfdata->array[i])) {
             return JS_FALSE;
         }
@@ -6508,7 +6516,7 @@ MFVec3f::createFromJSObject(JSContext * const cx, JSObject * const obj)
 
         const OpenVRML::SFVec3f & sfvec3f =
                 static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
-        mfvec3f->setElement(i, sfvec3f.get());
+        mfvec3f->value[i] = sfvec3f.value;
     }
 
     return mfvec3f;
@@ -6711,17 +6719,17 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx, JSObject * const obj,
                                 jsval * const rval)
     throw ()
 {
+    assert(cx);
+    assert(obj);
+
     using OpenVRML::SFVec3f;
     using OpenVRML::SFRotation;
 
-    assert(cx);
-    assert(obj);
-    
-    SFVec3f translation(0.0, 0.0, 0.0);
-    SFRotation rotation(0.0, 0.0, 1.0, 0.0);
-    SFVec3f scale(1.0, 1.0, 1.0);
-    SFRotation scaleOrientation(0.0, 0.0, 1.0, 0.0);
-    SFVec3f center(0.0, 0.0, 0.0);
+    vec3f translation(0.0, 0.0, 0.0);
+    rotation rot(0.0, 0.0, 1.0, 0.0);
+    vec3f scale(1.0, 1.0, 1.0);
+    rotation scaleOrientation(0.0, 0.0, 1.0, 0.0);
+    vec3f center(0.0, 0.0, 0.0);
     
     for (uintN i = 0; i < argc; ++i) {
         const SField::SFData * sfdata = 0;
@@ -6736,7 +6744,7 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx, JSObject * const obj,
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
-            translation = static_cast<SFVec3f &>(sfdata->getFieldValue());
+            translation = static_cast<SFVec3f &>(sfdata->getFieldValue()).value;
             break;
 
         case 1:
@@ -6749,7 +6757,7 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx, JSObject * const obj,
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[1])));
             assert(sfdata);
             assert(dynamic_cast<SFRotation *>(&sfdata->getFieldValue()));
-            rotation = static_cast<SFRotation &>(sfdata->getFieldValue());
+            rot = static_cast<SFRotation &>(sfdata->getFieldValue()).value;
             break;
 
         case 2:
@@ -6762,7 +6770,7 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx, JSObject * const obj,
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[2])));
             assert(sfdata);
             assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
-            scale = static_cast<SFVec3f &>(sfdata->getFieldValue());
+            scale = static_cast<SFVec3f &>(sfdata->getFieldValue()).value;
             break;
 
         case 3:
@@ -6776,7 +6784,7 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx, JSObject * const obj,
             assert(sfdata);
             assert(dynamic_cast<SFRotation *>(&sfdata->getFieldValue()));
             scaleOrientation =
-                    static_cast<SFRotation &>(sfdata->getFieldValue());
+                    static_cast<SFRotation &>(sfdata->getFieldValue()).value;
             break;
 
         case 4:
@@ -6789,7 +6797,7 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx, JSObject * const obj,
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[4])));
             assert(sfdata);
             assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
-            center = static_cast<SFVec3f &>(sfdata->getFieldValue());
+            center = static_cast<SFVec3f &>(sfdata->getFieldValue()).value;
             break;
 
         default:
@@ -6802,7 +6810,7 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx, JSObject * const obj,
     assert(thisMat);
 
     thisMat->setTransform(translation,
-                          rotation,
+                          rot,
                           scale,
                           scaleOrientation,
                           center);
@@ -6821,16 +6829,16 @@ JSBool VrmlMatrix::getTransform(JSContext * const cx, JSObject * const obj,
     assert(cx);
     assert(obj);
     
-    SFVec3f translation;
-    SFRotation rotation;
-    SFVec3f scale;
+    vec3f translation;
+    rotation rot;
+    vec3f scale;
 
     const OpenVRML::VrmlMatrix * const thisMat =
             static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
     thisMat->getTransform(translation,
-                          rotation,
+                          rot,
                           scale);
     
     for (uintN i = 0; i < argc; ++i) {
@@ -6847,7 +6855,7 @@ JSBool VrmlMatrix::getTransform(JSContext * const cx, JSObject * const obj,
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
-            static_cast<SFVec3f &>(sfdata->getFieldValue()) = translation;
+            static_cast<SFVec3f &>(sfdata->getFieldValue()).value = translation;
             break;
 
         case 1:
@@ -6860,7 +6868,7 @@ JSBool VrmlMatrix::getTransform(JSContext * const cx, JSObject * const obj,
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[1])));
             assert(sfdata);
             assert(dynamic_cast<SFRotation *>(&sfdata->getFieldValue()));
-            static_cast<SFRotation &>(sfdata->getFieldValue()) = rotation;
+            static_cast<SFRotation &>(sfdata->getFieldValue()).value = rot;
             break;
 
         case 2:
@@ -6873,7 +6881,7 @@ JSBool VrmlMatrix::getTransform(JSContext * const cx, JSObject * const obj,
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[2])));
             assert(sfdata);
             assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
-            static_cast<SFVec3f &>(sfdata->getFieldValue()) = scale;
+            static_cast<SFVec3f &>(sfdata->getFieldValue()).value = scale;
             break;
 
         default:
@@ -7054,7 +7062,7 @@ JSBool VrmlMatrix::multVecMatrix(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
         static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    thisMat->multVecMatrix(argVec, resultVec);
+    thisMat->multVecMatrix(argVec.value, resultVec.value);
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
 }
@@ -7103,7 +7111,7 @@ JSBool VrmlMatrix::multMatrixVec(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
         static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    thisMat->multMatrixVec(argVec, resultVec);
+    thisMat->multMatrixVec(argVec.value, resultVec.value);
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
 }

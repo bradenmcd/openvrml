@@ -11,7 +11,7 @@ LIBRARY_VERSION = 4:0:0
 #          |           Set to zero if current is incremented
 #          +- Increment if interfaces have been added, removed or changed
 
-INCLUDES = -I$(top_srcdir)/src/openvrml
+AM_CPPFLAGS = -I$(top_srcdir)/src/openvrml -I$(top_srcdir)/src/openvrml-gl
 AM_CXXFLAGS = @GL_CFLAGS@
 
 if ENABLE_GL_RENDERER

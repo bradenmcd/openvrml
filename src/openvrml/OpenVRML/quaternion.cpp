@@ -19,8 +19,8 @@
 //
 
 # include "quaternion.h"
-# include "field.h"
 # include "private.h"
+# include "basetypes.h"
 
 namespace OpenVRML {
 
@@ -87,16 +87,16 @@ Quaternion::Quaternion(const float quat[4]) throw ()
  *
  * @param rot   a rotation.
  */
-Quaternion::Quaternion(const SFRotation & rot) throw ()
+Quaternion::Quaternion(const rotation & rot) throw ()
 {
     using OpenVRML_::fpequal;
-    assert(fpequal(rot.getAxis().length(), 1.0));
+    assert(fpequal(rot.axis().length(), 1.0));
 
-    const float sin_angle = sin(rot.getAngle() / 2.0);
-    this->quat[0] = rot.getX() * sin_angle;
-    this->quat[1] = rot.getY() * sin_angle;
-    this->quat[2] = rot.getZ() * sin_angle;
-    this->quat[3] = cos(rot.getAngle() / 2.0);
+    const float sin_angle = sin(rot.angle() / 2.0);
+    this->quat[0] = rot.x() * sin_angle;
+    this->quat[1] = rot.y() * sin_angle;
+    this->quat[2] = rot.z() * sin_angle;
+    this->quat[3] = cos(rot.angle() / 2.0);
 }
 
 /**

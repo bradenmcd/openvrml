@@ -25,11 +25,11 @@
 #   include <stddef.h>
 #   include <algorithm>
 #   include <iosfwd>
-#   include "common.h"
+#   include <OpenVRML/common.h>
 
 namespace OpenVRML {
 
-    class SFRotation;
+    class rotation;
 
     class OPENVRML_SCOPE Quaternion {
         float quat[4];
@@ -38,7 +38,7 @@ namespace OpenVRML {
         Quaternion() throw ();
         Quaternion(float x, float y, float z, float w) throw ();
         explicit Quaternion(const float quat[4]) throw ();
-        explicit Quaternion(const SFRotation & rot) throw ();
+        explicit Quaternion(const rotation & rot) throw ();
 
         // use compiler-defined operator= and copy constructor.
 

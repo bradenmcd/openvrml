@@ -23,14 +23,14 @@
 # ifndef OPENVRML_VRML97NODE_H
 #   define OPENVRML_VRML97NODE_H
 
-#   include "common.h"
-#   include "field.h"
-#   include "nodetypeptr.h"
-#   include "node.h"
-#   include "Viewer.h"
-#   include "Image.h"
-#   include "bvolume.h"
-#   include "VrmlMatrix.h"
+#   include <OpenVRML/common.h>
+#   include <OpenVRML/field.h>
+#   include <OpenVRML/nodetypeptr.h>
+#   include <OpenVRML/node.h>
+#   include <OpenVRML/Viewer.h>
+#   include <OpenVRML/Image.h>
+#   include <OpenVRML/bvolume.h>
+#   include <OpenVRML/VrmlMatrix.h>
 
 typedef unsigned int FT_UInt;
 typedef struct FT_LibraryRec_ * FT_Library;
@@ -140,10 +140,25 @@ namespace OpenVRML {
             virtual void renderScoped(Viewer & viewer);
             virtual AbstractLight * toLight() const;
 
-            float getAmbientIntensity() const { return this->ambientIntensity.get(); }
-            float getIntensity() const { return this->intensity.get(); }
-            bool getOn() const { return this->on.get(); }
-            SFColor::ConstArrayReference getColor() const { return this->color.get(); }
+            float getAmbientIntensity() const
+            {
+                return this->ambientIntensity.value;
+            }
+
+            float getIntensity() const
+            {
+                return this->intensity.value;
+            }
+
+            bool getOn() const
+            {
+                return this->on.value;
+            }
+
+            const OpenVRML::color & getColor() const
+            {
+                return this->color.value;
+            }
 
         protected:
             AbstractLight(const NodeType & nodeType, const ScopePtr & scope);
@@ -888,7 +903,7 @@ namespace OpenVRML {
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             void activate( double timeStamp, bool isActive, double *p );
 
-            bool isEnabled() { return this->enabled.get(); }
+            bool isEnabled() { return this->enabled.value; }
 
         private:
             //
@@ -1510,13 +1525,25 @@ namespace OpenVRML {
 
             const float * getAvatarSize()
             {
-                return this->avatarSize.getLength() > 0
-                        ? &this->avatarSize.getElement(0)
+                return !this->avatarSize.value.empty()
+                        ? &this->avatarSize.value[0]
                         : 0;
             }
-            bool getHeadlightOn() { return this->headlight.get(); }
-            float getSpeed() { return this->speed.get(); }
-            float getVisibilityLimit() { return this->visibilityLimit.get(); }
+
+            bool getHeadlightOn()
+            {
+                return this->headlight.value;
+            }
+
+            float getSpeed()
+            {
+                return this->speed.value;
+            }
+
+            float getVisibilityLimit()
+            {
+                return this->visibilityLimit.value;
+            }
 
         private:
             virtual void do_initialize(double timestamp) throw (std::bad_alloc);
@@ -1726,7 +1753,7 @@ namespace OpenVRML {
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             void activate( double timeStamp, bool isActive, double *p );
 
-            bool isEnabled() { return this->enabled.get(); }
+            bool isEnabled() { return this->enabled.value; }
 
         private:
             //

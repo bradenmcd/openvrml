@@ -22,7 +22,7 @@
 #   define OPENVRML_BVOLUME_H
 
 #   include <iosfwd>
-#   include "common.h"
+#   include <OpenVRML/basetypes.h>
 
 namespace OpenVRML {
 
@@ -41,7 +41,7 @@ namespace OpenVRML {
         virtual Intersection
         intersectFrustum(const VrmlFrustum & frustum) const = 0;
         virtual void extend(const BVolume & b) = 0;
-        virtual void extend(const float p[3]) = 0;
+        virtual void extend(const vec3f & p) = 0;
         virtual void extend(const AABox & b) = 0;
         virtual void extend(const BSphere & b) = 0;
         virtual void enclose(const float* p, int n) = 0;
@@ -50,15 +50,12 @@ namespace OpenVRML {
     };
 
 
-    class SFVec3f;
-
     class OPENVRML_SCOPE BSphere : public BVolume {
-        float c[3];
-        float r;
+        vec3f center;
+        float radius;
 
     public:
         BSphere();
-        BSphere(const BSphere & rhs);
         virtual ~BSphere();
 
         void reset();
@@ -67,7 +64,7 @@ namespace OpenVRML {
         intersectFrustum(const VrmlFrustum & frustum) const;
 
         virtual void extend(const BVolume & b);
-        virtual void extend(const float p[3]) ;
+        virtual void extend(const vec3f & p);
         virtual void extend(const AABox & b);
         virtual void extend(const BSphere & b);
         virtual void enclose(const float* p, int n);
@@ -78,10 +75,8 @@ namespace OpenVRML {
         virtual void orthoTransform(const VrmlMatrix & M);
         virtual void transform(const VrmlMatrix & M);
 
-        const float* getCenter() const;
-        void setCenter(const SFVec3f & c);
-        void setCenter(float x, float y, float z);
-        void setCenter(const float ac[3]);
+        const vec3f & getCenter() const;
+        void setCenter(const vec3f & c);
 
         float getRadius() const;
         void setRadius(float r);
@@ -94,7 +89,7 @@ namespace OpenVRML {
         virtual Intersection
         intersectFrustum(const VrmlFrustum & frustum) const;
         virtual void extend(const BVolume & b);
-        virtual void extend(const float p[3]);
+        virtual void extend(const vec3f & p);
         virtual void extend(const AABox & b);
         virtual void extend(const BSphere & b);
         virtual void enclose(const float* p, int n);

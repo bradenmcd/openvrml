@@ -65,8 +65,14 @@ namespace {
 
         inline bool fpzero(const float f) { return (fabs(f) <= fptolerance); }
 
-        inline bool fpequal(const float a, const float b) {
+        inline bool fpequal(const float a, const float b)
+        {
             return fpzero(a - b);
+        }
+
+        inline bool fpless(const float a, const float b)
+        {
+            return (b - a) > fptolerance;
         }
 
         inline double length(const float vec[3]) {

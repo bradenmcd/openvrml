@@ -116,6 +116,12 @@ namespace GL {
  */
 
 /**
+ * @struct ViewerOpenGL::EventInfo
+ *
+ * @brief Input event.
+ */
+
+/**
  * @class ViewerOpenGL::ModelviewMatrixStack
  *
  * @brief Encapsulates and extended modelview matrix stack.
@@ -192,6 +198,12 @@ void ViewerOpenGL::ModelviewMatrixStack::pop()
     }
     --this->size;
 }
+
+/**
+ * @struct ViewerOpenGL::LightInfo
+ *
+ * @brief Light information.
+ */
 
 namespace {
     //
@@ -274,7 +286,7 @@ namespace {
     // It is assumed that the arguments to this routine are in the range
     // (-1.0 ... 1.0)
     //
-    const SFRotation trackball(float p1x, float p1y, float p2x, float p2y)
+    const rotation trackball(float p1x, float p1y, float p2x, float p2y)
     {
         //
         // This size should really be based on the distance from the center of
@@ -285,7 +297,7 @@ namespace {
         //
         static const float trackballSize = 0.8;
 
-        SFRotation result;
+        rotation result;
         
         if (p1x == p2x && p1y == p2y) {
             /* Zero rotation */
@@ -296,19 +308,15 @@ namespace {
         // First, figure out z-coordinates for projection of P1 and P2 to
         // deformed sphere
         //
-        SFVec3f p1(p1x,
-                   p1y,
-                   tb_project_to_sphere(trackballSize, p1x, p1y));
-        SFVec3f p2(p2x,
-                   p2y,
-                   tb_project_to_sphere(trackballSize, p2x, p2y));
+        vec3f p1(p1x, p1y, tb_project_to_sphere(trackballSize, p1x, p1y));
+        vec3f p2(p2x, p2y, tb_project_to_sphere(trackballSize, p2x, p2y));
 
-        result.setAxis(p2.cross(p1).normalize());
+        result.axis((p2 * p1).normalize());
 
         //
         // Figure out how much to rotate around that axis.
         //
-        SFVec3f d = p1.subtract(p2);
+        vec3f d = p1 - p2;
         float t = d.length() / (2.0 * trackballSize);
 
         //
@@ -317,7 +325,7 @@ namespace {
         if (t > 1.0) { t = 1.0; }
         if (t < -1.0) { t = -1.0; }
 
-        result.setAngle(2.0 * asin(t));
+        result.angle(2.0 * asin(t));
 
         return result;
     }
@@ -1530,21 +1538,19 @@ namespace {
 
         // If the spine is a straight line, compute a constant SCP xform
         if (spineStraight) {
-            float V1[3] = { 0.0, 1.0, 0.0}, V2[3], V3[3];
+            vec3f V1(0.0, 1.0, 0.0), V2, V3;
             V2[0] = spine[3*(nSpine-1)+0] - spine[0];
             V2[1] = spine[3*(nSpine-1)+1] - spine[1];
             V2[2] = spine[3*(nSpine-1)+2] - spine[2];
-            Vcross( V3, V2, V1 );
-            double len = length(V3);
+            V3 = V2 * V1;
+            double len = V3.length();
             if (len != 0.0) {                // Not aligned with Y axis
-                Vscale(V3, 1.0/len);
+                V3 *= (1.0 / len);
 
-                float orient[4];                // Axis/angle
-                Vset(orient, V3);
-                orient[3] = acos(Vdot(V1,V2));
+                rotation orient(V3, acos(V1.dot(V2))); // Axis/angle
                 VrmlMatrix scp;                // xform matrix
                 scp.setRotate(orient);
-                for (int k=0; k<3; ++k) {
+                for (size_t k = 0; k < 3; ++k) {
                     Xscp[k] = scp[0][k];
                     Yscp[k] = scp[1][k];
                     Zscp[k] = scp[2][k];
@@ -1555,7 +1561,10 @@ namespace {
         // Orientation matrix
         VrmlMatrix om;
         if (nOrientation == 1 && ! fpzero(orientation[3])) {
-            om.setRotate(orientation);
+            om.setRotate(rotation(orientation[0],
+                                  orientation[1],
+                                  orientation[2],
+                                  orientation[3]));
         }
 
         // Compute coordinates, texture coordinates:
@@ -1635,7 +1644,10 @@ namespace {
             // Apply orientation
             if (!fpzero(orientation[3])) {
                 if (nOrientation > 1) {
-                    om.setRotate(orientation);
+                    om.setRotate(rotation(orientation[0],
+                                          orientation[1],
+                                          orientation[2],
+                                          orientation[3]));
                 }
 
                 for (j = 0; j < nCrossSection; ++j) {
@@ -1851,59 +1863,57 @@ Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
 
 namespace {
     
-    void computeBounds(size_t npoints, const float * points, float * bounds)
+    void computeBounds(size_t npoints, const float * points, float (&bounds)[6])
     {
-        bounds[0] = bounds[1] = points[0]; // xmin, xmax
-        bounds[2] = bounds[3] = points[1]; // ymin, ymax
-        bounds[4] = bounds[5] = points[2]; // zmin, zmax
+        if (npoints == 0) {
+            std::fill(bounds, bounds + 6, 0.0);
+        } else {
+            bounds[0] = bounds[1] = points[0]; // xmin, xmax
+            bounds[2] = bounds[3] = points[1]; // ymin, ymax
+            bounds[4] = bounds[5] = points[2]; // zmin, zmax
 
-        for (size_t i = 1; i<npoints; ++i) {
-            points += 3;
-            if (points[0] < bounds[0])      bounds[0] = points[0];
-            else if (points[0] > bounds[1]) bounds[1] = points[0];
-            if (points[1] < bounds[2])      bounds[2] = points[1];
-            else if (points[1] > bounds[3]) bounds[3] = points[1];
-            if (points[2] < bounds[4])      bounds[4] = points[2];
-            else if (points[2] > bounds[5]) bounds[5] = points[2];
-        }
-    }
-}
-
-void
-texGenParams( float bounds[],        // xmin,xmax, ymin,ymax, zmin,zmax
-              int axes[2],        // s, t
-              float params[4] ) // s0, 1/sSize, t0, 1/tSize
-{
-  axes[0] = 0;
-  axes[1] = 1;
-  params[0] = params[1] = params[2] = params[3] = 0.0;
-
-  for (int nb=0; nb<3; ++nb)
-    {
-      float db = bounds[2*nb+1]-bounds[2*nb];
-      if ( db > params[1] )
-        {
-          axes[1] = axes[0];
-          axes[0] = nb;
-          params[2] = params[0];
-          params[3] = params[1];
-          params[0] = bounds[2*nb];
-          params[1] = db;
-        }
-      else if ( db > params[3] )
-        {
-          axes[1] = nb;
-          params[2] = bounds[2*nb];
-          params[3] = db;
+            for (size_t i = 1; i < npoints; ++i) {
+                points += 3;
+                if (points[0] < bounds[0])      bounds[0] = points[0];
+                else if (points[0] > bounds[1]) bounds[1] = points[0];
+                if (points[1] < bounds[2])      bounds[2] = points[1];
+                else if (points[1] > bounds[3]) bounds[3] = points[1];
+                if (points[2] < bounds[4])      bounds[4] = points[2];
+                else if (points[2] > bounds[5]) bounds[5] = points[2];
+            }
         }
     }
 
-  // If two of the dimensions are zero, give up.
-  if ( fpzero( params[1] ) || fpzero( params[3] )) return;
+    void texGenParams(float bounds[],  // xmin,xmax, ymin,ymax, zmin,zmax
+                      int axes[2],     // s, t
+                      float params[4]) // s0, 1/sSize, t0, 1/tSize
+    {
+        axes[0] = 0;
+        axes[1] = 1;
+        params[0] = params[1] = params[2] = params[3] = 0.0;
 
-  params[1] = 1.0 / params[1];
-  params[3] = 1.0 / params[3];
-}
+        for (size_t nb = 0; nb < 3; ++nb) {
+            float db = bounds[2 * nb + 1] - bounds[2 * nb];
+            if (db > params[1]) {
+                axes[1] = axes[0];
+                axes[0] = nb;
+                params[2] = params[0];
+                params[3] = params[1];
+                params[0] = bounds[2 * nb];
+                params[1] = db;
+            } else if (db > params[3]) {
+                axes[1] = nb;
+                params[2] = bounds[2 * nb];
+                params[3] = db;
+            }
+        }
+
+        // If two of the dimensions are zero, give up.
+        if (fpzero(params[1]) || fpzero(params[3])) { return; }
+
+        params[1] = 1.0 / params[1];
+        params[3] = 1.0 / params[3];
+    }
 
 
 // Address of _ith entry of indexed triplet array _v. yummy
@@ -1912,8 +1922,6 @@ texGenParams( float bounds[],        // xmin,xmax, ymin,ymax, zmin,zmax
 
 #define INDEX_VTX_VAL(_v,_f,_i) \
  &((_v).v[ 3*(((_v).ni > 0) ? (_v).i[_i] : (_f)[_i]) ])
-
-namespace {
 
     struct IndexData {
         const float * v; // data values
@@ -2024,9 +2032,6 @@ namespace {
         if (s->faces[i] >= 0) glEnd();
       }
     }
-}
-
-namespace {
 
     void OPENVRML_GL_CALLBACK_ tessShellBegin(GLenum type, void * pdata)
     {
@@ -3001,14 +3006,14 @@ void ViewerOpenGL::input( EventInfo *e )
 
 void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
 {
-    const SFRotation rotation = trackball(x1, y1, x2, y2);
-    this->rotate(rotation);
+    const rotation rot = trackball(x1, y1, x2, y2);
+    this->rotate(rot);
 }
 
-void ViewerOpenGL::rotate(const SFRotation & rotation) throw ()
+void ViewerOpenGL::rotate(const rotation & rot) throw ()
 {
-    this->lastquat = Quaternion(rotation);
-    if (fpzero(rotation.getAngle())) { return; }
+    this->lastquat = Quaternion(rot);
+    if (fpzero(rot.angle())) { return; }
 
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
     const VrmlMatrix & viewpointTransformation =
@@ -3019,14 +3024,14 @@ void ViewerOpenGL::rotate(const SFRotation & rotation) throw ()
     VrmlMatrix oldCameraTransform =
             viewpointTransformation.multLeft(currentUserViewTransform);
 
-    SFVec3f currentTranslation, currentScale;
-    SFRotation currentRotation;
+    vec3f currentTranslation, currentScale;
+    rotation currentRotation;
     oldCameraTransform.getTransform(currentTranslation,
                                     currentRotation,
                                     currentScale);
 
     VrmlMatrix r;
-    r.setRotate(rotation);
+    r.setRotate(rot);
     
     VrmlMatrix prevOrientation;
     prevOrientation.setRotate(currentRotation);
@@ -3048,9 +3053,9 @@ void ViewerOpenGL::rotate(const SFRotation & rotation) throw ()
     rotationMatrix[3][1] = 0.0;
     rotationMatrix[3][2] = 0.0;
 
-    SFVec3f d;
-    rotationMatrix.multMatrixVec(rotation.getAxis(), d);
-    Quaternion q(SFRotation(d, rotation.getAngle()));
+    vec3f d;
+    rotationMatrix.multMatrixVec(rot.axis(), d);
+    Quaternion q(rotation(d, rot.angle()));
     this->curquat = q.multiply(this->curquat);
     this->d_rotationChanged = true;
 
@@ -3059,7 +3064,7 @@ void ViewerOpenGL::rotate(const SFRotation & rotation) throw ()
 
 void ViewerOpenGL::step(float x, float y, float z)
 {
-    const SFVec3f translation(x, y, z);
+    const vec3f translation(x, y, z);
     VrmlMatrix t;
     t.setTranslate(translation);
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
@@ -3101,7 +3106,7 @@ void ViewerOpenGL::zoom(float z)
     dx *= dist;
     dy *= dist;
     dz *= dist;
-    const SFVec3f translation(dx, dy, dz);
+    const vec3f translation(dx, dy, dz);
     VrmlMatrix t;
     t.setTranslate(translation);
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
@@ -3544,8 +3549,8 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
     GLUquadricObj * sph = 0;
     glMatrixMode(GL_MODELVIEW);
     this->modelviewMatrixStack.push();
-    const float * c = bs.getCenter();
-    glTranslatef(c[0], c[1], c[2]);
+    const vec3f & c = bs.getCenter();
+    glTranslatef(c.x(), c.y(), c.z());
     sph = gluNewQuadric();
     switch (intersection) {
     case BVolume::outside:

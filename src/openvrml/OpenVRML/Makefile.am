@@ -11,16 +11,24 @@ LIBRARY_VERSION = 3:0:0
 #          |           Set to zero if current is incremented
 #          +- Increment if interfaces have been added, removed or changed
 
-INCLUDES = -I$(top_srcdir)/lib -I$(top_builddir)/java
-AM_CPPFLAGS = -DOPENVRML_LIBDIR_=\"$(libdir)\" \
--DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\"
-AM_CXXFLAGS = @FONTCONFIG_CFLAGS@ @FREETYPE_CFLAGS@ @JNI_CFLAGS@ @JS_CFLAGS@
+AM_CPPFLAGS = \
+        -I$(top_srcdir)/lib \
+        -I$(top_builddir)/java \
+        -I$(top_srcdir)/src/openvrml \
+        -DOPENVRML_LIBDIR_=\"$(libdir)\" \
+        -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\"
+AM_CXXFLAGS = \
+        @FONTCONFIG_CFLAGS@ \
+        @FREETYPE_CFLAGS@ \
+        @JNI_CFLAGS@ \
+        @JS_CFLAGS@
 
 lib_LTLIBRARIES = libopenvrml.la 
 libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
 @PNG_LIBS@ @Z_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE_LIBS@ @JS_LIBS@ @JNI_LIBS@
 
 libopenvrml_la_SOURCES = \
+        basetypes.cpp \
         MathUtils.cpp \
         Doc.cpp \
         doc2.cpp \
@@ -52,6 +60,7 @@ libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
 OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = \
         common.h \
+        basetypes.h \
         MathUtils.h \
         Doc.h \
         doc2.hpp \

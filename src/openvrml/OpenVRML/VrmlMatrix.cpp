@@ -188,15 +188,10 @@ VrmlMatrix::VrmlMatrix(const float m[4][4]) throw ()
 /**
  * @brief Sets matrix to rotate by given rotation Graphics Gems p466
  *
- * @param axisAngle [X Y Z angle] should be in normalized form
+ * @param axisAngle the rotation object.
  */
-void VrmlMatrix::setRotate(const float axisAngle[4]) throw ()
+void VrmlMatrix::setRotate(const rotation & axisAngle) throw ()
 {
-    //
-    // Make sure axis is normalized.
-    //
-    assert(fpequal(length(axisAngle), 1.0));
-
     double s = sin(axisAngle[3]);
     double c = cos(axisAngle[3]);
     double t = 1.0 - c;
@@ -218,16 +213,6 @@ void VrmlMatrix::setRotate(const float axisAngle[4]) throw ()
     this->matrix[3][2] = 0.0;
     this->matrix[0][3] = this->matrix[1][3] = this->matrix[2][3] = 0.0;
     this->matrix[3][3] = 1.0;
-}
-
-/**
- * @brief Sets matrix to rotate by given rotation Graphics Gems p466
- *
- * @param axisAngle the SFRotation object.
- */
-void VrmlMatrix::setRotate(const SFRotation & axisAngle) throw ()
-{
-    this->setRotate(axisAngle.get());
 }
 
 /**
@@ -284,11 +269,11 @@ void VrmlMatrix::setScale(float s) throw ()
 }
 
 /**
- * @brief Sets matrix to scale by given vector in array[X Y Z]
+ * @brief Sets matrix to scale by given vec3f object
  *
- * @param s a vector.
+ * @param s a vector
  */
-void VrmlMatrix::setScale(const float s[3]) throw ()
+void VrmlMatrix::setScale(const vec3f & s) throw ()
 {
     this->matrix[0][0] = s[0];
     this->matrix[0][1] = 0.0;
@@ -309,21 +294,11 @@ void VrmlMatrix::setScale(const float s[3]) throw ()
 }
 
 /**
- * @brief Sets matrix to scale by given SFVec3f object
+ * @brief Sets matrix to translate by given vec3f object
  *
- * @param s a vector
+ * @param t is a given vector object
  */
-void VrmlMatrix::setScale(const SFVec3f & s) throw ()
-{
-    this->setScale(s.get());
-}
-
-/**
- * @brief Sets matrix to translate by given vector in array[X Y Z]
- *
- * @param t a translation vector.
- */
-void VrmlMatrix::setTranslate(const float t[3]) throw ()
+void VrmlMatrix::setTranslate(const vec3f & t) throw ()
 {
     matrix[0][0] = 1.0;
     matrix[0][1] = 0.0;
@@ -344,17 +319,7 @@ void VrmlMatrix::setTranslate(const float t[3]) throw ()
 }
 
 /**
- * @brief Sets matrix to translate by given SFVec3f object
- *
- * @param t is a given vector object
- */
-void VrmlMatrix::setTranslate(const SFVec3f & t) throw ()
-{
-    this->setTranslate(t.get());
-}
-
-/**
- * @brief Set the matrix from  translation, rotation, scale, scaleOrientation,
+ * @brief Set the matrix from translation, rotation, scale, scaleOrientation,
  *      and center.
  *
  * @param translation       the translation.
@@ -363,11 +328,11 @@ void VrmlMatrix::setTranslate(const SFVec3f & t) throw ()
  * @param scaleOrientation  the scale orientation.
  * @param center            the center.
  */
-void VrmlMatrix::setTransform(const SFVec3f & translation,
-                              const SFRotation & rotation,
-                              const SFVec3f & scale,
-                              const SFRotation & scaleOrientation,
-                              const SFVec3f & center)
+void VrmlMatrix::setTransform(const vec3f & translation,
+                              const rotation & rotation,
+                              const vec3f & scale,
+                              const rotation & scaleOrientation,
+                              const vec3f & center)
     throw ()
 {
     VrmlMatrix temp;
@@ -384,29 +349,29 @@ void VrmlMatrix::setTransform(const SFVec3f & translation,
         temp.setTranslate(center);
         *this = multLeft(temp);            // M = C * M   = C * T
     }
-    if(!((rotation.getX() == 0.0)
-            && (rotation.getY() == 0.0)
-            && (rotation.getZ() == 1.0)
-            && (rotation.getAngle() == 0.0))) {
+    if(!((rotation.x() == 0.0)
+            && (rotation.y() == 0.0)
+            && (rotation.z() == 1.0)
+            && (rotation.angle() == 0.0))) {
         temp.setRotate(rotation);
         *this = multLeft(temp);            // M = R * M    = R * C * T
     }
     if(!((scale[0] == 1.0)
             && (scale[1] == 1.0)
             && (scale[2] == 1.0))) {
-        if(!((scaleOrientation.getX() == 0.0)
-                && (scaleOrientation.getY() == 0.0)
-                && (scaleOrientation.getZ() == 1.0)
-                && (scaleOrientation.getAngle() == 0.0))) {
+        if(!((scaleOrientation.x() == 0.0)
+                && (scaleOrientation.y() == 0.0)
+                && (scaleOrientation.z() == 1.0)
+                && (scaleOrientation.angle() == 0.0))) {
             temp.setRotate(scaleOrientation);
             *this = multLeft(temp);            // M = SR * M    = SR * R * C * T
         }
         temp.setScale(scale);
         *this = multLeft(temp);            // M = S * M     = S * SR * R * C * T
-        if(!((scaleOrientation.getX() == 0.0)
-                && (scaleOrientation.getY() == 0.0)
-                && (scaleOrientation.getZ() == 1.0)
-                && (scaleOrientation.getAngle() == 0.0))) {
+        if(!((scaleOrientation.x() == 0.0)
+                && (scaleOrientation.y() == 0.0)
+                && (scaleOrientation.z() == 1.0)
+                && (scaleOrientation.angle() == 0.0))) {
             temp.setRotate(scaleOrientation.inverse());
             *this = multLeft(temp);            // M = -SR * M   = -SR * S * SR * R * C * T
         }
@@ -414,7 +379,7 @@ void VrmlMatrix::setTransform(const SFVec3f & translation,
     if(!((center[0] == 0.0)
             && (center[1] == 0.0)
             && (center[2] == 0.0))) {
-       temp.setTranslate(center.negate());
+       temp.setTranslate(-center);
        *this = multLeft(temp);            // M = -C * M    =  -C * -SR * S * SR * R * C * T
     }
 }
@@ -497,12 +462,12 @@ namespace {
  * Some portions are taken from Graphics Gems 2.
  *
  * @param translation   output translation.
- * @param rotation      output rotation.
+ * @param rot           output rotation.
  * @param scale         output scale.
  */
-void VrmlMatrix::getTransform(SFVec3f & translation,
-                              SFRotation & rotation,
-                              SFVec3f & scale) const
+void VrmlMatrix::getTransform(vec3f & translation,
+                              rotation & rot,
+                              vec3f & scale) const
     throw ()
 {
     float tmp_matrix[4][4];
@@ -531,13 +496,13 @@ void VrmlMatrix::getTransform(SFVec3f & translation,
             tmp_matrix[i][j] /= tmp_matrix[3][3];
         }
     }
-    translation.setX(tmp_matrix[3][0]);
-    translation.setY(tmp_matrix[3][1]);
-    translation.setZ(tmp_matrix[3][2]);
+    translation.x(tmp_matrix[3][0]);
+    translation.y(tmp_matrix[3][1]);
+    translation.z(tmp_matrix[3][2]);
     tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
-    SFVec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
-    SFVec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
-    SFVec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
+    vec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
+    vec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
+    vec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
 
     //
     // Compute X scale factor and normalize first row.
@@ -577,7 +542,7 @@ void VrmlMatrix::getTransform(SFVec3f & translation,
     //
     float axisAngle[4];
     quat_to_axis(quat,axisAngle);
-    rotation.set(axisAngle);
+    rot = rotation(axisAngle);
 }
 
 /**
@@ -592,14 +557,14 @@ void VrmlMatrix::getTransform(SFVec3f & translation,
  * Some portions are taken from Graphics Gems 2.
  *
  * @param translation   output translation.
- * @param rotation      output rotation.
+ * @param rot           output rotation.
  * @param scale         output scale.
  * @param shear         output shear.
  */
-void VrmlMatrix::getTransform(SFVec3f & translation,
-                              SFRotation & rotation,
-                              SFVec3f & scale,
-                              SFVec3f & shear) const
+void VrmlMatrix::getTransform(vec3f & translation,
+                              rotation & rot,
+                              vec3f & scale,
+                              vec3f & shear) const
     throw ()
 {
     float tmp_matrix[4][4];
@@ -628,13 +593,13 @@ void VrmlMatrix::getTransform(SFVec3f & translation,
             tmp_matrix[i][j] /= tmp_matrix[3][3];
         }
     }
-    translation.setX(tmp_matrix[3][0]);
-    translation.setY(tmp_matrix[3][1]);
-    translation.setZ(tmp_matrix[3][2]);
+    translation.x(tmp_matrix[3][0]);
+    translation.y(tmp_matrix[3][1]);
+    translation.z(tmp_matrix[3][2]);
     tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
-    SFVec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
-    SFVec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
-    SFVec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
+    vec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
+    vec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
+    vec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
 
     //
     // Compute X scale factor and normalize first row.
@@ -697,7 +662,7 @@ void VrmlMatrix::getTransform(SFVec3f & translation,
     //
     float axisAngle[4];
     quat_to_axis(quat,axisAngle);
-    rotation.set(axisAngle);
+    rot = rotation(axisAngle);
 }
 
 namespace {
@@ -904,7 +869,8 @@ const VrmlMatrix VrmlMatrix::multLeft(const VrmlMatrix & mat) const throw ()
  *
  * @retval dst  the result vector.
  */
-void VrmlMatrix::multMatrixVec(const float * src, float * dst) const throw ()
+void VrmlMatrix::multMatrixVec(const vec3f & src, vec3f & dst) const
+    throw ()
 {
     float x, y, z, w;
 
@@ -916,34 +882,20 @@ void VrmlMatrix::multMatrixVec(const float * src, float * dst) const throw ()
         + this->matrix[2][2] * src[2] + this->matrix[2][3];
     w = this->matrix[3][0] * src[0] + this->matrix[3][1] * src[1]
         + this->matrix[3][2] * src[2] + this->matrix[3][3];
-    dst[0] = x / w;
-    dst[1] = y / w;
-    dst[2] = z / w;
+    dst.x(x / w);
+    dst.y(y / w);
+    dst.z(z / w);
 }
 
 /**
- * @brief Postmultiplies matrix by a column vector on the right.
- *
- * @param src   a column vector.
- *
- * @retval dst  the result vector.
- */
-void VrmlMatrix::multMatrixVec(const SFVec3f & src, SFVec3f & dst) const
-    throw ()
-{
-    float dv[3];
-    this->multMatrixVec(src.get(), dv);
-    dst.set(dv);
-}
-
-/**
- * @brief Premultiplies matrix by a row vector on the left.
+ * @brief Premultiplies matrix by given row vector on left
  *
  * @param src   a row vector.
  *
  * @retval dst  the result vector.
  */
-void VrmlMatrix::multVecMatrix(const float * src, float * dst) const throw ()
+void VrmlMatrix::multVecMatrix(const vec3f & src, vec3f & dst) const
+    throw ()
 {
     float x, y, z, w;
 
@@ -955,24 +907,9 @@ void VrmlMatrix::multVecMatrix(const float * src, float * dst) const throw ()
         src[2]*matrix[2][2] + matrix[3][2];
     w = src[0]*matrix[0][3] + src[1]*matrix[1][3] +
         src[2]*matrix[2][3] + matrix[3][3];
-    dst[0] = x/w;
-    dst[1] = y/w;
-    dst[2] = z/w;
-}
-
-/**
- * @brief Premultiplies matrix by given row vector on left
- *
- * @param src   a row vector.
- *
- * @retval dst  the result vector.
- */
-void VrmlMatrix::multVecMatrix(const SFVec3f & src, SFVec3f & dst) const
-    throw ()
-{
-    float dv[3];
-    this->multVecMatrix(src.get(), dv);
-    dst.set(dv);
+    dst.x(x / w);
+    dst.y(y / w);
+    dst.z(z / w);
 }
 
 /**

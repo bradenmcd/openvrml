@@ -122,7 +122,7 @@ int main(int argc, char * argv[]) {
 
     browser = new Browser(cout, cerr);
 
-    MFString uri(1, &inputUrl);
+    MFString uri(1, inputUrl);
     MFString parameter;
     browser->loadURI(uri, parameter);
 
@@ -203,9 +203,10 @@ namespace {
         const ViewpointList & viewpoints = browser->getViewpoints();
         for (ViewpointList::const_iterator viewpoint(viewpoints.begin());
                 viewpoint != viewpoints.end(); ++viewpoint) {
-            const SFString & description = (*viewpoint)->getDescription();
-            if (!description.get().empty()) {
-                glutAddMenuEntry(description.get().c_str(),
+            const std::string & description =
+                    (*viewpoint)->getDescription().value;
+            if (!description.empty()) {
+                glutAddMenuEntry(description.c_str(),
                                  std::distance(viewpoints.begin(), viewpoint));
             }
         }

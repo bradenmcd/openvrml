@@ -177,10 +177,8 @@ bool Audio::setURL(const std::string & url, Doc *relative)
  */
 bool Audio::tryURLs(const MFString & urls, Doc * relative)
 {
-    for (size_t i = 0; i < urls.getLength(); ++i) {
-        if (this->setURL(urls.getElement(i), relative)) {
-            return true;
-        }
+    for (size_t i = 0; i < urls.value.size(); ++i) {
+        if (this->setURL(urls.value[i], relative)) { return true; }
     }
     return false;
 }

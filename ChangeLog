@@ -1,3 +1,35 @@
+2003-03-09  Braden McDaniel  <braden@endoframe.com>
+
+        * src/lookat/lookat.cpp, src/openvrml/OpenVRML/Audio.cpp,
+          src/openvrml/OpenVRML/Image.cpp,
+          src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml/OpenVRML/ScriptJDK.cpp,
+          src/openvrml/OpenVRML/Vrml97Parser.cpp,
+          src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.hpp,
+          src/openvrml/OpenVRML/VrmlMatrix.cpp,
+          src/openvrml/OpenVRML/VrmlMatrix.h,
+          src/openvrml/OpenVRML/basetypes.cpp,
+          src/openvrml/OpenVRML/basetypes.h,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/browser.h,
+          src/openvrml/OpenVRML/bvolume.cpp,
+          src/openvrml/OpenVRML/bvolume.h,
+          src/openvrml/OpenVRML/field.cpp,
+          src/openvrml/OpenVRML/field.h,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/private.h,
+          src/openvrml/OpenVRML/quaternion.cpp,
+          src/openvrml/OpenVRML/quaternion.h,
+          src/openvrml/OpenVRML/script.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h,
+          src/openvrml-gl/OpenVRML/GL/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Changed
+          FieldValue classes to expose their value in a public data
+          member.
+
 2003-03-05  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Fix for Javascript core dump

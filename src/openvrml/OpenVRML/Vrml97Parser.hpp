@@ -280,20 +280,20 @@ public:
 	);
 	public: bool  boolValue();
 	public: void colorValue(
-		float c[3]
+		color & c
 	);
 	public: float  colorComponent();
 	public: float  floatValue();
 	public: long  intValue();
 	public: void rotationValue(
-		float r[4]
+		rotation & r
 	);
 	public: double  doubleValue();
 	public: void vec2fValue(
-		float v[2]
+		vec2f & v
 	);
 	public: void vec3fValue(
-		float v[3]
+		vec3f & v
 	);
 private:
 	static const char* _tokenNames[];

@@ -741,8 +741,8 @@ AbstractIndexedSet::~AbstractIndexedSet() throw ()
 bool AbstractIndexedSet::isModified() const
 {
     return (this->d_modified
-            || (this->color.get() && this->color.get()->isModified())
-            || (this->coord.get() && this->coord.get()->isModified()));
+            || (this->color.value && this->color.value->isModified())
+            || (this->coord.value && this->coord.value->isModified()));
 }
 
 /**
@@ -756,15 +756,15 @@ void AbstractIndexedSet::updateModified(NodePath & path, int flags)
 {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
-    if (this->color.get()) { this->color.get()->updateModified(path); }
-    if (this->coord.get()) { this->coord.get()->updateModified(path); }
+    if (this->color.value) { this->color.value->updateModified(path); }
+    if (this->coord.value) { this->coord.value->updateModified(path); }
     path.pop_front();
 }
 
 const ColorNode * AbstractIndexedSet::getColor() const throw ()
 {
-    return this->color.get()
-            ? this->color.get()->toColor()
+    return this->color.value
+            ? this->color.value->toColor()
             : 0;
 }
 
@@ -855,7 +855,7 @@ AbstractLight::AbstractLight(const NodeType & nodeType, const ScopePtr & scope):
     Node(nodeType, scope),
     AbstractChild(nodeType, scope),
     ambientIntensity(0.0),
-    color(1.0, 1.0, 1.0),
+    color(OpenVRML::color(1.0, 1.0, 1.0)),
     intensity(1.0),
     on(true)
 {}
@@ -1403,10 +1403,10 @@ void Appearance::processSet_textureTransform(const FieldValue & sfnode,
 bool Appearance::isModified() const
 {
     return (this->d_modified
-          || (this->material.get() && this->material.get()->isModified())
-          || (this->texture.get() && this->texture.get()->isModified())
-          || (this->textureTransform.get()
-                && this->textureTransform.get()->isModified()));
+          || (this->material.value && this->material.value->isModified())
+          || (this->texture.value && this->texture.value->isModified())
+          || (this->textureTransform.value
+                && this->textureTransform.value->isModified()));
 }
 
 /**
@@ -1420,10 +1420,10 @@ void Appearance::updateModified(NodePath & path, int flags)
 {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
-    if (this->material.get()) { this->material.get()->updateModified(path); }
-    if (this->texture.get()) { this->texture.get()->updateModified(path); }
-    if (this->textureTransform.get()) {
-        this->textureTransform.get()->updateModified(path);
+    if (this->material.value) { this->material.value->updateModified(path); }
+    if (this->texture.value) { this->texture.value->updateModified(path); }
+    if (this->textureTransform.value) {
+        this->textureTransform.value->updateModified(path);
     }
     path.pop_front();
 }
@@ -1436,27 +1436,27 @@ void Appearance::updateModified(NodePath & path, int flags)
  */
 void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    MaterialNode * const material = this->material.get()
-                                  ? this->material.get()->toMaterial()
+    MaterialNode * const material = this->material.value
+                                  ? this->material.value->toMaterial()
                                   : 0;
-    TextureNode * const texture = this->texture.get()
-                                ? this->texture.get()->toTexture()
+    TextureNode * const texture = this->texture.value
+                                ? this->texture.value->toTexture()
                                 : 0;
 
     if (material) {
-        float trans = material->getTransparency().get();
-        const float (&diff)[3] = material->getDiffuseColor().get();
+        float trans = material->getTransparency().value;
+        const color & diff = material->getDiffuseColor().value;
         float diffuse[3] = { diff[0], diff[1], diff[2] };
         size_t nTexComponents = texture ? texture->nComponents() : 0;
         if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
         if (nTexComponents >= 3) { diffuse[0] = diffuse[1] = diffuse[2] = 1.0; }
 
         viewer.enableLighting(true);   // turn lighting on for this object
-        viewer.setMaterial(material->getAmbientIntensity().get(),
+        viewer.setMaterial(material->getAmbientIntensity().value,
                            diffuse,
-                           material->getEmissiveColor().get(),
-                           material->getShininess().get(),
-                           material->getSpecularColor().get(),
+                           &material->getEmissiveColor().value[0],
+                           material->getShininess().value,
+                           &material->getSpecularColor().value[0],
                            trans);
 
         material->clearModified();
@@ -1466,8 +1466,8 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
     }
 
     if (texture) {
-        if (this->textureTransform.get()) {
-            this->textureTransform.get()->render(viewer, context);
+        if (this->textureTransform.value) {
+            this->textureTransform.value->render(viewer, context);
         } else {
             viewer.setTextureTransform(0, 0, 0, 0);
         }
@@ -1672,12 +1672,12 @@ void AudioClip::update(const double currentTime)
 {
     // If the URL has been modified, update the audio object
     if (this->url_modified) {
-        Doc relDoc(this->relativeUrl.get(), static_cast<Doc const *>(0));
+        Doc relDoc(this->relativeUrl.value, static_cast<Doc const *>(0));
         delete this->audio;
         std::string emptyUrl;
         this->audio = new Audio(emptyUrl);
         if (this->audio->tryURLs(this->url, &relDoc)) {
-            this->duration.set(this->audio->duration());
+            this->duration.value = this->audio->duration();
             this->emitEvent("duration_changed", this->duration, currentTime);
         } else {
 #if HAVE_SOUND
@@ -1692,25 +1692,25 @@ void AudioClip::update(const double currentTime)
     }
 
     // If there's no audio or START <= 0, we don't play anything
-    if (this->audio == 0 || this->startTime.get() <= 0)
+    if (this->audio == 0 || this->startTime.value <= 0)
         return;
 
     // Determine if this clip should be playing right now
     bool audible = false;
 
     // If START < STOP  and  START <= NOW < STOP
-    if (this->stopTime.get() > this->startTime.get())
-        audible = (this->startTime.get() <= currentTime &&
-                   currentTime < this->stopTime.get());
+    if (this->stopTime.value > this->startTime.value)
+        audible = (this->startTime.value <= currentTime &&
+                   currentTime < this->stopTime.value);
 
     // If STOP < START  and  START <= NOW
     else
-        audible = (currentTime >= this->startTime.get());
+        audible = (currentTime >= this->startTime.value);
 
     // If the clip is not looping, it's not audible after
     // its duration has expired.
-    if (this->loop.get() == false) {
-        if (currentTime - this->startTime.get() > this->audio->duration()) {
+    if (!this->loop.value) {
+        if (currentTime - this->startTime.value > this->audio->duration()) {
             audible = false;
         }
     }
@@ -1729,9 +1729,10 @@ void AudioClip::update(const double currentTime)
             }
 
             this->audio_index =
-                this->audio->getByteIndex(currentTime - this->startTime.get());
+                this->audio->getByteIndex(currentTime
+                                          - this->startTime.value);
 
-            this->active.set(true);
+            this->active.value = true;
             this->emitEvent("isActive", this->active, currentTime);
         }
 
@@ -1740,7 +1741,7 @@ void AudioClip::update(const double currentTime)
                                              this->audio->samples(),
                                              this->audio->bitsPerSample(),
                                              this->audio_index,
-                                             this->loop.get(),
+                                             this->loop.value,
                                              this->audio_intensity,
                                              this->audio_fd);
     }
@@ -1749,7 +1750,7 @@ void AudioClip::update(const double currentTime)
     else {
         if (this->audio_fd >= 0) {
             this->audio_fd = closeSound(this->audio_fd);
-            this->active.set(false);
+            this->active.value = false;
             this->emitEvent("isActive", this->active, currentTime);
         }
     }
@@ -1961,7 +1962,7 @@ void BackgroundClass::bind(Background & background, const double timestamp)
     if (!this->boundNodes.empty()) {
         Background & current =
                 dynamic_cast<Background &>(*this->boundNodes.back());
-        current.bound.set(false);
+        current.bound.value = false;
         current.emitEvent("isBound", current.bound, timestamp);
     }
 
@@ -1969,7 +1970,7 @@ void BackgroundClass::bind(Background & background, const double timestamp)
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
     this->boundNodes.push_back(&background);
-    background.bound.set(true);
+    background.bound.value = true;
     background.emitEvent("isBound", background.bound, timestamp);
 }
 
@@ -1987,14 +1988,14 @@ void BackgroundClass::unbind(Background & background, const double timestamp)
     const BoundNodes::iterator pos =
         find(this->boundNodes.begin(), this->boundNodes.end(), &background);
     if (pos != this->boundNodes.end()) {
-        background.bound.set(false);
+        background.bound.value = false;
         background.emitEvent("isBound", background.bound, timestamp);
 
         if (pos == this->boundNodes.end() - 1
                 && this->boundNodes.size() > 1) {
             Background & newActive =
                     dynamic_cast<Background &>(**(this->boundNodes.end() - 2));
-            newActive.bound.set(true);
+            newActive.bound.value = true;
             newActive.emitEvent("isBound", newActive.bound, timestamp);
         }
         this->boundNodes.erase(pos);
@@ -2024,7 +2025,7 @@ namespace {
                        Image * tex, int thisIndex, Viewer & viewer)
     {
         // Check whether the url has already been loaded
-        int n = urls.getLength();
+        size_t n = urls.value.size();
         if (n > 0) {
             for (int index=thisIndex-1; index >= 0; --index) {
                 const char * currentTex = tex[index].url();
@@ -2035,8 +2036,8 @@ namespace {
 
                 if (currentTex) {
                     for (int i=0; i<n; ++i) {
-                        if (urls.getElement(i) == currentTex
-                                || urls.getElement(i)
+                        if (urls.value[i] == currentTex
+                                || urls.value[i]
                                     == (currentTex + relPathLen)) {
                             return &tex[index];
                         }
@@ -2137,19 +2138,19 @@ void BackgroundClass::render(Viewer & viewer) throw ()
             }
 
             background.viewerObject =
-                    viewer.insertBackground(background.groundAngle.getLength(),
-                                            (background.groundAngle.getLength() > 0)
-                                               ? &background.groundAngle.getElement(0)
+                    viewer.insertBackground(background.groundAngle.value.size(),
+                                            (background.groundAngle.value.size() > 0)
+                                               ? &background.groundAngle.value[0]
                                                : 0,
-                                            (background.groundColor.getLength() > 0)
-                                               ? background.groundColor.getElement(0)
+                                            (background.groundColor.value.size() > 0)
+                                               ? &background.groundColor.value[0][0]
                                                : 0,
-                                            background.skyAngle.getLength(),
-                                            (background.skyAngle.getLength() > 0)
-                                               ? &background.skyAngle.getElement(0)
+                                            background.skyAngle.value.size(),
+                                            (background.skyAngle.value.size() > 0)
+                                               ? &background.skyAngle.value[0]
                                                : 0,
-                                            (background.skyColor.getLength() > 0)
-                                               ? background.skyColor.getElement(0)
+                                            (background.skyColor.value.size() > 0)
+                                               ? &background.skyColor.value[0][0]
                                                : 0,
                                             whc,
                                             (nPix > 0) ? pixels : 0);
@@ -2355,11 +2356,11 @@ void Background::processSet_bind(const FieldValue & sfbool,
                                  const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    const SFBool & value = dynamic_cast<const SFBool &>(sfbool);
+    const SFBool & bind = dynamic_cast<const SFBool &>(sfbool);
     assert(dynamic_cast<BackgroundClass *>(&this->nodeType.nodeClass));
     BackgroundClass & nodeClass =
             static_cast<BackgroundClass &>(this->nodeType.nodeClass);
-    if (value.get()) {
+    if (bind.value) {
         nodeClass.bind(*this, timestamp);
     } else {
         nodeClass.unbind(*this, timestamp);
@@ -2657,7 +2658,7 @@ Billboard::Billboard(const NodeType & nodeType,
     ChildNode(nodeType, scope),
     GroupingNode(nodeType, scope),
     Group(nodeType, scope),
-    axisOfRotation(0.0, 1.0, 0.0),
+    axisOfRotation(vec3f(0.0, 1.0, 0.0)),
     xformObject(0)
 {}
 
@@ -2690,7 +2691,7 @@ void Billboard::render(Viewer & viewer, VrmlRenderContext context)
 
     if (this->xformObject) {
         viewer.insertReference(this->xformObject);
-    } else if (this->children.getLength() > 0) {
+    } else if (this->children.value.size() > 0) {
         this->xformObject = viewer.beginObject(this->getId().c_str());
 
         viewer.transform(LM);
@@ -2720,35 +2721,35 @@ void Billboard::billboard_to_matrix(const Billboard* t_arg,
     VrmlMatrix MV = L_MV.affine_inverse();
 
     // Viewer position in local coordinate system
-    SFVec3f VP(MV[3][0], MV[3][1], MV[3][2]);
-    SFVec3f NVP = VP.normalize();
+    vec3f VP(MV[3][0], MV[3][1], MV[3][2]);
+    vec3f NVP = VP.normalize();
 
     // Viewer-alignment
-    if ((t_arg->axisOfRotation[0] == 0)
-            && (t_arg->axisOfRotation[1] == 0)
-            && (t_arg->axisOfRotation[2] == 0)) {
+    if ((t_arg->axisOfRotation.value[0] == 0)
+            && (t_arg->axisOfRotation.value[1] == 0)
+            && (t_arg->axisOfRotation.value[2] == 0)) {
         //
         // Viewer's up vector
         //
-        SFVec3f Y(MV[1][0], MV[1][1], MV[1][2]);
-        SFVec3f NY = Y.normalize();
+        vec3f Y(MV[1][0], MV[1][1], MV[1][2]);
+        vec3f NY = Y.normalize();
 
         // get x-vector from the cross product of Viewer's
         // up vector and billboard-to-viewer vector.
-        SFVec3f X = NY.cross(NVP);
+        vec3f X = NY * NVP;
         M[0][0] = X[0]; M[0][1] = X[1]; M[0][2] = X[2]; M[0][3] = 0.0;
         M[1][0] = NY[0]; M[1][1] = NY[1]; M[1][2] = NY[2]; M[1][3] = 0.0;
         M[2][0] = NVP[0]; M[2][1] = NVP[1]; M[2][2] = NVP[2]; M[2][3] = 0.0,
         M[3][0] = M[3][1] = M[3][2] = 0.0; M[3][3] = 1.0;
     } else { // use axis of rotation
         // axis of rotation will be the y-axis vector
-        SFVec3f Y(t_arg->axisOfRotation);
+        vec3f Y(t_arg->axisOfRotation.value);
 
         // Plane defined by the axisOfRotation and billboard-to-viewer vector
-        SFVec3f X = Y.cross(VP).normalize();
+        vec3f X = (Y * VP).normalize();
 
         // Get Z axis vector from cross product of X and Y
-        SFVec3f Z = X.cross(Y);
+        vec3f Z = X * Y;
 
         // Transform Z axis vector of current coordinate system to new
         // coordinate system.
@@ -2759,7 +2760,7 @@ void Billboard::billboard_to_matrix(const Billboard* t_arg,
         // system has to be rotated around the Y axis to new coordinate system.
         float angle = acos(nz[2]);
         if(nz[0] > 0) { angle = -angle; }
-        SFRotation Rot(Y,angle);
+        rotation Rot(Y,angle);
         M.setRotate(Rot);
     }
 }
@@ -2854,7 +2855,7 @@ Box::Box(const NodeType & nodeType,
          const ScopePtr & scope):
     Node(nodeType, scope),
     AbstractGeometry(nodeType, scope),
-    size(2.0, 2.0, 2.0)
+    size(vec3f(2.0, 2.0, 2.0))
 {
     this->setBVolumeDirty(true); // lazy calc of bvolume
 }
@@ -2874,9 +2875,9 @@ Box::~Box() throw ()
 Viewer::Object Box::insertGeometry(Viewer & viewer,
                                    const VrmlRenderContext context)
 {
-    return viewer.insertBox(this->size.getX(),
-                            this->size.getY(),
-                            this->size.getZ());
+    return viewer.insertBox(this->size.value.x(),
+                            this->size.value.y(),
+                            this->size.value.z());
 }
 
 /**
@@ -2889,9 +2890,9 @@ const BVolume * Box::getBVolume() const
     using OpenVRML_::length;
 
     if (this->isBVolumeDirty()) {
-        const float corner[3] = { this->size.getX() / 2.0f,
-                                  this->size.getY() / 2.0f,
-                                  this->size.getZ() / 2.0f };
+        const float corner[3] = { this->size.value.x() / 2.0f,
+                                  this->size.value.y() / 2.0f,
+                                  this->size.value.z() / 2.0f };
         float r = length(corner);
         ((Box*)this)->bsphere.setRadius(r);
         ((Box*)this)->setBVolumeDirty(false); // logical const
@@ -3039,7 +3040,7 @@ Collision::~Collision() throw () {}
  *      @c false otherwise.
  */
 bool Collision::isModified() const {
-  return ((this->proxy.get() && this->proxy.get()->isModified())
+  return ((this->proxy.value && this->proxy.value->isModified())
           || this->Group::isModified());
 }
 
@@ -3275,26 +3276,26 @@ ColorInterpolator::~ColorInterpolator() throw () {}
 void ColorInterpolator::processSet_fraction(const FieldValue & sffloat,
                                             const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    float f = dynamic_cast<const SFFloat &>(sffloat).get();
+    float f = dynamic_cast<const SFFloat &>(sffloat).value;
 
-    int n = this->key.getLength() - 1;
-    if (f < this->key.getElement(0)) {
-        this->value.set(this->keyValue.getElement(0));
-    } else if (f > this->key.getElement(n)) {
-        this->value.set(this->keyValue.getElement(n));
+    int n = this->key.value.size() - 1;
+    if (f < this->key.value[0]) {
+        this->value.value = this->keyValue.value[0];
+    } else if (f > this->key.value[n]) {
+        this->value.value = this->keyValue.value[n];
     } else {
         // convert to HSV for the interpolation...
         for (int i = 0; i < n; ++i) {
-            if (this->key.getElement(i) <= f
-                    && f <= this->key.getElement(i + 1)) {
-                const float (&rgb1)[3] = this->keyValue.getElement(i);
-                const float (&rgb2)[3] = this->keyValue.getElement(i + 1);
+            if (this->key.value[i] <= f
+                    && f <= this->key.value[i + 1]) {
+                const color & rgb1 = this->keyValue.value[i];
+                const color & rgb2 = this->keyValue.value[i + 1];
 
-                f = (f - this->key.getElement(i))
-                    / (this->key.getElement(i + 1) - this->key.getElement(i));
+                f = (f - this->key.value[i])
+                    / (this->key.value[i + 1] - this->key.value[i]);
                 float hsv1[3], hsv2[3];
-                SFColor::RGBtoHSV(rgb1, hsv1);
-                SFColor::RGBtoHSV(rgb2, hsv2);
+                rgb1.hsv(hsv1);
+                rgb2.hsv(hsv2);
 
                 // Interpolate angles via the shortest direction
                 if (fabs(hsv2[0] - hsv1[0]) > 180.0) {
@@ -3304,17 +3305,15 @@ void ColorInterpolator::processSet_fraction(const FieldValue & sffloat,
                         hsv2[0] += 360.0;
                     }
                 }
-                float hsv[3] = { hsv1[0] + f * (hsv2[0] - hsv1[0]),
-                                 hsv1[1] + f * (hsv2[1] - hsv1[1]),
-                                 hsv1[2] + f * (hsv2[2] - hsv1[2]) };
-                if (hsv[0] >= 360.0) {
-                    hsv[0] -= 360.0;
-                } else if (hsv[0] < 0.0) {
-                    hsv[0] += 360.0;
+                float h = hsv1[0] + f * (hsv2[0] - hsv1[0]);
+                float s = hsv1[1] + f * (hsv2[1] - hsv1[1]);
+                float v = hsv1[2] + f * (hsv2[2] - hsv1[2]);
+                if (h >= 360.0) {
+                    h -= 360.0;
+                } else if (h < 0.0) {
+                    h += 360.0;
                 }
-                float rgb[3];
-                SFColor::HSVtoRGB(hsv, rgb);
-                this->value.set(rgb);
+                this->value.value.hsv(h, s, v);
                 break;
             }
         }
@@ -3468,10 +3467,10 @@ Cone::~Cone() throw () {}
 Viewer::Object Cone::insertGeometry(Viewer & viewer,
                                     const VrmlRenderContext context)
 {
-    return viewer.insertCone(this->height.get(),
-                             this->bottomRadius.get(),
-                             this->bottom.get(),
-                             this->side.get());
+    return viewer.insertCone(this->height.value,
+                             this->bottomRadius.value,
+                             this->bottom.value,
+                             this->side.value);
 }
 
 
@@ -3565,7 +3564,8 @@ Coordinate::~Coordinate() throw () {}
  */
 void Coordinate::processSet_point(const FieldValue & mfvec3f,
                                   const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->point = dynamic_cast<const MFVec3f &>(mfvec3f);
     this->setModified();
     this->emitEvent("point_changed", this->point, timestamp);
@@ -3692,44 +3692,40 @@ CoordinateInterpolator::~CoordinateInterpolator() throw () {}
  */
 void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
                                                  const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    float f = dynamic_cast<const SFFloat &>(sffloat).get();
+    throw (std::bad_cast, std::bad_alloc)
+{
+    float f = dynamic_cast<const SFFloat &>(sffloat).value;
 
-    size_t nCoords = this->keyValue.getLength() / this->key.getLength();
-    size_t n = this->key.getLength() - 1;
+    size_t nCoords = this->keyValue.value.size() / this->key.value.size();
+    size_t n = this->key.value.size() - 1;
 
-    if (f < this->key.getElement(0)) {
-        this->value = MFVec3f(nCoords,
-                              &static_cast<SFVec3f::ConstArrayReference>
-                              (this->keyValue.getElement(0)));
-    } else if (f > this->key.getElement(n)) {
-        this->value = MFVec3f(nCoords,
-                              &static_cast<SFVec3f::ConstArrayReference>
-                              (this->keyValue.getElement(n * nCoords)));
+    if (f < this->key.value[0]) {
+        this->value.value.assign(this->keyValue.value.begin(),
+                                 this->keyValue.value.begin() + nCoords);
+    } else if (f > this->key.value[n]) {
+        this->value.value
+                .assign(this->keyValue.value.begin() + n * nCoords,
+                        this->keyValue.value.begin() + (n + 1) * nCoords);
     } else {
         // Reserve enough space for the new value
-        this->value.setLength(nCoords);
+        this->value.value.resize(nCoords);
 
         for (size_t i = 0; i < n; ++i) {
-            if (this->key.getElement(i) <= f
-                    && f <= this->key.getElement(i + 1)) {
-                SFVec3f::ConstArrayPointer v1 =
-                        &static_cast<SFVec3f::ConstArrayReference>
-                        (this->keyValue.getElement(i * nCoords));
-                SFVec3f::ConstArrayPointer v2 =
-                        &static_cast<SFVec3f::ConstArrayReference>
-                        (this->keyValue.getElement((i + 1) * nCoords));
+            if (this->key.value[i] <= f
+                    && f <= this->key.value[i + 1]) {
+                std::vector<vec3f>::const_iterator v1 =
+                        this->keyValue.value.begin() + i * nCoords;
+                std::vector<vec3f>::const_iterator v2 =
+                        this->keyValue.value.begin() + (i + 1) * nCoords;
 
-                f = (f - this->key.getElement(i))
-                    / (this->key.getElement(i + 1) - this->key.getElement(i));
+                f = (f - this->key.value[i])
+                    / (this->key.value[i + 1] - this->key.value[i]);
 
                 for (size_t j = 0; j < nCoords; ++j) {
-                    const float vec[3] = {
-                        (*v1)[0] + f * ((*v2)[0] - (*v1)[0]),
-                        (*v1)[1] + f * ((*v2)[1] - (*v1)[1]),
-                        (*v1)[2] + f * ((*v2)[2] - (*v1)[2])
-                    };
-                    this->value.setElement(j, vec);
+                    const vec3f vec(v1->x() + f * (v2->x() - v1->x()),
+                                    v1->y() + f * (v2->y() - v1->y()),
+                                    v1->z() + f * (v2->z() - v1->z()));
+                    this->value.value[j] = vec;
                     ++v1;
                     ++v2;
                 }
@@ -3896,11 +3892,11 @@ Cylinder::~Cylinder() throw () {
 Viewer::Object Cylinder::insertGeometry(Viewer & viewer,
                                         const VrmlRenderContext context)
 {
-    return viewer.insertCylinder(this->height.get(),
-                                 this->radius.get(),
-                                 this->bottom.get(),
-                                 this->side.get(),
-                                 this->top.get());
+    return viewer.insertCylinder(this->height.value,
+                                 this->radius.value,
+                                 this->bottom.value,
+                                 this->side.value,
+                                 this->top.value);
 }
 
 
@@ -4075,43 +4071,44 @@ void CylinderSensor::render(Viewer & viewer, VrmlRenderContext context)
     this->modelview = context.getMatrix();
 }
 
-void CylinderSensor::activate(double timeStamp, bool isActive, double *p) {
+void CylinderSensor::activate(double timeStamp, bool isActive, double *p)
+{
     using OpenVRML_::fpequal;
 
     // Become active
-    if (isActive && !this->active.get()) {
-        this->active.set(isActive);
+    if (isActive && !this->active.value) {
+        this->active.value = isActive;
 
         // set activation point in local coords
-        float Vec[3] = { p[0], p[1], p[2] };
+        vec3f Vec(p[0], p[1], p[2]);
         this->activationMatrix = this->modelview.affine_inverse();
         this->activationMatrix.multVecMatrix(Vec,Vec);
-        this->activationPoint.set(Vec);
+        this->activationPoint.value = Vec;
         // Bearing vector in local coordinate system
         Vec[0] = this->activationMatrix[2][0];
         Vec[1] = this->activationMatrix[2][1];
         Vec[2] = this->activationMatrix[2][2];
-        SFVec3f BV(Vec);
-        SFVec3f Y(0,1,0);
+        vec3f BV(Vec);
+        vec3f Y(0,1,0);
         BV = BV.normalize();
         double ang = acos(BV.dot(Y));
         if (ang > pi_2) { ang = pi - ang; }
-        if (ang < this->diskAngle.get()) {
-            disk.set(true);
+        if (ang < this->diskAngle.value) {
+            disk.value = true;
         } else {
-            disk.set(false);
+            disk.value = false;
         }
         // send message
         this->emitEvent("isActive", this->active, timeStamp);
     }
 
     // Become inactive
-    else if (!isActive && this->active.get()) {
-        this->active.set(isActive);
+    else if (!isActive && this->active.value) {
+        this->active.value = isActive;
         this->emitEvent("isActive", this->active, timeStamp);
 
         // save auto offset of rotation
-        if (this->autoOffset.get() ) {
+        if (this->autoOffset.value) {
             this->offset = rotation_val;
             this->emitEvent("offset_changed", this->offset, timeStamp);
         }
@@ -4120,39 +4117,41 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p) {
         // Tracking
     else if (isActive) {
         // get local coord for touch point
-        float Vec[3] = { p[0], p[1], p[2] };
+        vec3f Vec(p[0], p[1], p[2]);
         this->activationMatrix.multVecMatrix(Vec , Vec);
-        this->trackPoint.set(Vec);
+        this->trackPoint.value = Vec;
         this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
-        float tempv[3], rot, radius;
-        SFVec3f dir1(Vec[0], 0, Vec[2]);
-        if (disk.get()) {
+        vec3f tempv;
+        float rot, radius;
+        vec3f dir1(Vec[0], 0, Vec[2]);
+        if (disk.value) {
             radius = 1.0;
         } else {
             radius = dir1.length();    // get the radius
         }
         dir1 = dir1.normalize();
-        SFVec3f dir2(this->activationPoint.getX(), 0,
-                     this->activationPoint.getZ());
+        vec3f dir2(this->activationPoint.value.x(),
+                   0,
+                   this->activationPoint.value.z());
         dir2 = dir2.normalize();
-        Vcross(tempv, dir2.get(), dir1.get());
-        SFVec3f cx(tempv);
+        tempv = dir2 * dir1;
+        vec3f cx(tempv);
         cx = cx.normalize();
         if (cx.length() == 0.0) { return; }
         rot = radius * acos(dir2.dot(dir1));
-        if (fpequal(cx.getY(),-1.0)) rot = -rot;
-        if (this->autoOffset.get()) {
-            rot = this->offset.get() + rot;
+        if (fpequal(cx.y(), -1.0)) { rot = -rot; }
+        if (this->autoOffset.value) {
+            rot = this->offset.value + rot;
         }
-        if (this->minAngle.get() < this->maxAngle.get()) {
-            if (rot < this->minAngle.get()) {
-                rot = this->minAngle.get();
-            } else if (rot > this->maxAngle.get()) {
-                rot = this->maxAngle.get();
+        if (this->minAngle.value < this->maxAngle.value) {
+            if (rot < this->minAngle.value) {
+                rot = this->minAngle.value;
+            } else if (rot > this->maxAngle.value) {
+                rot = this->maxAngle.value;
             }
         }
-        rotation_val.set(rot);
-        this->rotation = SFRotation(0, 1, 0, rot);
+        rotation_val.value = rot;
+        this->rotation.value = OpenVRML::rotation(0, 1, 0, rot);
 
         this->emitEvent("rotation_changed", this->rotation, timeStamp);
     }
@@ -4354,9 +4353,10 @@ const NodeTypePtr
  */
 DirectionalLight::DirectionalLight(const NodeType & nodeType,
                                    const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractLight(nodeType, scope),
-        direction(0.0, 0.0, -1.0) {}
+    Node(nodeType, scope),
+    AbstractLight(nodeType, scope),
+    direction(vec3f(0.0, 0.0, -1.0))
+{}
 
 /**
  * @brief Destructor.
@@ -4373,11 +4373,11 @@ DirectionalLight::~DirectionalLight() throw () {}
  */
 void DirectionalLight::render(Viewer & viewer, const VrmlRenderContext rc)
 {
-    if (this->on.get()) {
-        viewer.insertDirLight(this->ambientIntensity.get(),
-                              this->intensity.get(),
-                              this->color.get(),
-                              this->direction.get());
+    if (this->on.value) {
+        viewer.insertDirLight(this->ambientIntensity.value,
+                              this->intensity.value,
+                              &this->color.value[0],
+                              &this->direction.value[0]);
     }
     this->clearModified();
 }
@@ -4584,11 +4584,12 @@ ElevationGrid::~ElevationGrid() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool ElevationGrid::isModified() const {
+bool ElevationGrid::isModified() const
+{
     return (this->d_modified
-            || (this->color.get() && this->color.get()->isModified())
-            || (this->normal.get() && this->normal.get()->isModified())
-            || (this->texCoord.get() && this->texCoord.get()->isModified()));
+            || (this->color.value && this->color.value->isModified())
+            || (this->normal.value && this->normal.value->isModified())
+            || (this->texCoord.value && this->texCoord.value->isModified()));
 }
 
 /**
@@ -4598,12 +4599,13 @@ bool ElevationGrid::isModified() const {
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void ElevationGrid::updateModified(NodePath & path, int flags) {
+void ElevationGrid::updateModified(NodePath & path, int flags)
+{
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
-    if (this->color.get()) { this->color.get()->updateModified(path); }
-    if (this->normal.get()) { this->normal.get()->updateModified(path); }
-    if (this->texCoord.get()) { this->texCoord.get()->updateModified(path); }
+    if (this->color.value) { this->color.value->updateModified(path); }
+    if (this->normal.value) { this->normal.value->updateModified(path); }
+    if (this->texCoord.value) { this->texCoord.value->updateModified(path); }
     path.pop_front();
 }
 
@@ -4618,54 +4620,53 @@ Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
 {
     Viewer::Object obj = 0;
 
-    if (this->height.getLength() > 0) {
+    if (this->height.value.size() > 0) {
         const float * tc = 0;
         const float * normals = 0;
         const float * colors = 0;
 
-        if (this->texCoord.get()) {
-            tc = &this->texCoord.get()->toTextureCoordinate()->getPoint()
-                    .getElement(0)[0];
+        if (this->texCoord.value) {
+            tc = &this->texCoord.value->toTextureCoordinate()
+                    ->getPoint().value[0][0];
         }
 
-        if (this->normal.get()) {
-            normals = &this->normal.get()->toNormal()->getVector()
-                    .getElement(0)[0];
+        if (this->normal.value) {
+            normals = &this->normal.value->toNormal()->getVector().value[0][0];
         }
 
-        if (this->color.get()) {
-            colors = &this->color.get()->toColor()->getColor().getElement(0)[0];
+        if (this->color.value) {
+            colors = &this->color.value->toColor()->getColor().value[0][0];
         }
 
         // insert geometry
         unsigned int optMask = 0;
-        if (this->ccw.get()) {
+        if (this->ccw.value) {
             optMask |= Viewer::MASK_CCW;
         }
-        if (this->solid.get()) {
+        if (this->solid.value) {
             optMask |= Viewer::MASK_SOLID;
         }
-        if (this->colorPerVertex.get()) {
+        if (this->colorPerVertex.value) {
             optMask |= Viewer::MASK_COLOR_PER_VERTEX;
         }
-        if (this->normalPerVertex.get()) {
+        if (this->normalPerVertex.value) {
             optMask |= Viewer::MASK_NORMAL_PER_VERTEX;
         }
 
         obj = viewer.insertElevationGrid(optMask,
-                                         this->xDimension.get(),
-                                         this->zDimension.get(),
-                                         &this->height.getElement(0),
-                                         this->xSpacing.get(),
-                                         this->zSpacing.get(),
+                                         this->xDimension.value,
+                                         this->zDimension.value,
+                                         &this->height.value[0],
+                                         this->xSpacing.value,
+                                         this->zSpacing.value,
                                          tc,
                                          normals,
                                          colors);
     }
 
-    if (this->color.get()) { this->color.get()->clearModified(); }
-    if (this->normal.get()) { this->normal.get()->clearModified(); }
-    if (this->texCoord.get()) { this->texCoord.get()->clearModified(); }
+    if (this->color.value) { this->color.value->clearModified(); }
+    if (this->normal.value) { this->normal.value->clearModified(); }
+    if (this->texCoord.value) { this->texCoord.value->clearModified(); }
 
     return obj;
 }
@@ -4878,23 +4879,16 @@ const NodeTypePtr
 }
 
 namespace {
-    const float extrusionDefaultCrossSection_[][2] = {
-        { 1.0, 1.0 },
-        { 1.0, -1.0 },
-        { -1.0, -1.0 },
-        { -1.0, 1.0 },
-        { 1.0, 1.0 }
-    };
-    const float extrusionDefaultScale_[][2] = {
-        { 1.0, 1.0 }
-    };
-    const float extrusionDefaultSpine_[][3] = {
-        { 0.0, 0.0, 0.0 },
-        { 0.0, 1.0, 0.0 }
-    };
-    const float extrusionDefaultRotation_[][4] = {
-        { 0.0, 0.0, 1.0, 0.0 }
-    };
+    const vec2f extrusionDefaultCrossSection_[] = { vec2f(1.0, 1.0),
+                                                    vec2f(1.0, -1.0),
+                                                    vec2f(-1.0, -1.0),
+                                                    vec2f(-1.0, 1.0),
+                                                    vec2f(1.0, 1.0) };
+    const vec2f extrusionDefaultScale_[] = { vec2f(1.0, 1.0) };
+    const rotation extrusionDefaultOrientation_[] =
+            { rotation(0.0, 0.0, 1.0, 0.0) };
+    const vec3f extrusionDefaultSpine_[] = { vec3f(0.0, 0.0, 0.0),
+                                             vec3f(0.0, 1.0, 0.0) };
 }
 
 /**
@@ -4911,18 +4905,20 @@ namespace {
  */
 Extrusion::Extrusion(const NodeType & nodeType,
                      const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractGeometry(nodeType, scope),
-        beginCap(true),
-        ccw(true),
-        convex(true),
-        creaseAngle(0),
-        crossSection(5, extrusionDefaultCrossSection_),
-        endCap(true),
-        orientation(1, extrusionDefaultRotation_),
-        scale(1, extrusionDefaultScale_),
-        solid(true),
-        spine(2, extrusionDefaultSpine_) {}
+    Node(nodeType, scope),
+    AbstractGeometry(nodeType, scope),
+    beginCap(true),
+    ccw(true),
+    convex(true),
+    creaseAngle(0),
+    crossSection(extrusionDefaultCrossSection_,
+                 extrusionDefaultCrossSection_ + 5),
+    endCap(true),
+    orientation(extrusionDefaultOrientation_, extrusionDefaultOrientation_ + 1),
+    scale(extrusionDefaultScale_, extrusionDefaultScale_ + 1),
+    solid(true),
+    spine(extrusionDefaultSpine_, extrusionDefaultSpine_ + 2)
+{}
 
 /**
  * @brief Destructor.
@@ -4939,25 +4935,25 @@ Viewer::Object Extrusion::insertGeometry(Viewer & viewer,
                                          const VrmlRenderContext context)
 {
     Viewer::Object obj = 0;
-    if (this->crossSection.getLength() > 0
-            && this->spine.getLength() > 1) {
+    if (this->crossSection.value.size() > 0
+            && this->spine.value.size() > 1) {
 
         unsigned int optMask = 0;
-        if (this->ccw.get())        { optMask |= Viewer::MASK_CCW; }
-        if (this->convex.get())     { optMask |= Viewer::MASK_CONVEX; }
-        if (this->solid.get())      { optMask |= Viewer::MASK_SOLID; }
-        if (this->beginCap.get())   { optMask |= Viewer::MASK_BOTTOM; }
-        if (this->endCap.get())     { optMask |= Viewer::MASK_TOP; }
+        if (this->ccw.value)        { optMask |= Viewer::MASK_CCW; }
+        if (this->convex.value)     { optMask |= Viewer::MASK_CONVEX; }
+        if (this->solid.value)      { optMask |= Viewer::MASK_SOLID; }
+        if (this->beginCap.value)   { optMask |= Viewer::MASK_BOTTOM; }
+        if (this->endCap.value)     { optMask |= Viewer::MASK_TOP; }
 
         obj = viewer.insertExtrusion(optMask,
-                                     this->orientation.getLength(),
-                                     &this->orientation.getElement(0)[0],
-                                     this->scale.getLength(),
-                                     &this->scale.getElement(0)[0],
-                                     this->crossSection.getLength(),
-                                     &this->crossSection.getElement(0)[0],
-                                     this->spine.getLength(),
-                                     &this->spine.getElement(0)[0]);
+                                     this->orientation.value.size(),
+                                     &this->orientation.value[0][0],
+                                     this->scale.value.size(),
+                                     &this->scale.value[0][0],
+                                     this->crossSection.value.size(),
+                                     &this->crossSection.value[0][0],
+                                     this->spine.value.size(),
+                                     &this->spine.value[0][0]);
     }
 
     return obj;
@@ -5103,7 +5099,7 @@ void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
     //
     if (!this->boundNodes.empty()) {
         Fog & current = dynamic_cast<Fog &>(*this->boundNodes.back());
-        current.bound.set(false);
+        current.bound.value = false;
         current.emitEvent("isBound", current.bound, timestamp);
     }
 
@@ -5111,7 +5107,7 @@ void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
     this->boundNodes.push_back(&fog);
-    fog.bound.set(true);
+    fog.bound.value = true;
     fog.emitEvent("isBound", fog.bound, timestamp);
 }
 
@@ -5126,14 +5122,14 @@ void FogClass::unbind(Fog & fog, const double timestamp) throw ()
     const BoundNodes::iterator pos =
             std::find(this->boundNodes.begin(), this->boundNodes.end(), &fog);
     if (pos != this->boundNodes.end()) {
-        fog.bound.set(false);
+        fog.bound.value = false;
         fog.emitEvent("isBound", fog.bound, timestamp);
 
         if (pos == this->boundNodes.end() - 1
                 && this->boundNodes.size() > 1) {
             Fog & newActive =
                     dynamic_cast<Fog &>(**(this->boundNodes.end() - 2));
-            newActive.bound.set(true);
+            newActive.bound.value = true;
             newActive.emitEvent("isBound", newActive.bound, timestamp);
         }
         this->boundNodes.erase(pos);
@@ -5166,9 +5162,9 @@ void FogClass::render(Viewer & viewer) throw ()
 {
     if (!this->boundNodes.empty()) {
         Fog & fog = dynamic_cast<Fog &>(*this->boundNodes.back());
-        viewer.setFog(fog.color.get(),
-                      fog.visibilityRange.get(),
-                      fog.fogType.get().c_str());
+        viewer.setFog(&fog.color.value[0],
+                      fog.visibilityRange.value,
+                      fog.fogType.value.c_str());
     }
 }
 
@@ -5252,13 +5248,13 @@ const NodeTypePtr FogClass::createType(const std::string & id,
  */
 Fog::Fog(const NodeType & nodeType,
          const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        color(1.0, 1.0, 1.0),
-        fogType("LINEAR"),
-        visibilityRange(0.0),
-        bound(false) {
-}
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    color(OpenVRML::color(1.0, 1.0, 1.0)),
+    fogType("LINEAR"),
+    visibilityRange(0.0),
+    bound(false)
+{}
 
 /**
  * @brief Destructor.
@@ -5302,9 +5298,9 @@ void Fog::do_shutdown(const double timestamp) throw ()
 void Fog::processSet_bind(const FieldValue & sfbool, const double timestamp)
         throw (std::bad_cast, std::bad_alloc)
 {
-    const SFBool & value = dynamic_cast<const SFBool &>(sfbool);
+    const SFBool & bind = dynamic_cast<const SFBool &>(sfbool);
     FogClass & nodeClass = static_cast<FogClass &>(this->nodeType.nodeClass);
-    if (value.get()) {
+    if (bind.value) {
         nodeClass.bind(*this, timestamp);
     } else {
         nodeClass.unbind(*this, timestamp);
@@ -5492,9 +5488,9 @@ FontStyle::FontStyle(const NodeType & nodeType,
     Node(nodeType, scope),
     AbstractBase(nodeType, scope),
     FontStyleNode(nodeType, scope),
-    family(1, fontStyleInitFamily_),
+    family(fontStyleInitFamily_, fontStyleInitFamily_ + 1),
     horizontal(true),
-    justify(1, fontStyleInitJustify_),
+    justify(fontStyleInitJustify_, fontStyleInitJustify_ + 2),
     leftToRight(true),
     size(1.0),
     spacing(1.0),
@@ -5688,7 +5684,7 @@ Group::Group(const NodeType & nodeType,
     AbstractBase(nodeType, scope),
     ChildNode(nodeType, scope),
     GroupingNode(nodeType, scope),
-    bboxSize(-1.0, -1.0, -1.0),
+    bboxSize(vec3f(-1.0, -1.0, -1.0)),
     viewerObject(0)
 {
     this->setBVolumeDirty(true);
@@ -5715,13 +5711,12 @@ void Group::processAddChildren(const FieldValue & mfnode,
     throw (std::bad_cast, std::bad_alloc)
 {
     const MFNode & newChildren = dynamic_cast<const MFNode &>(mfnode);
-    size_t nNow = this->children.getLength();
-    size_t n = newChildren.getLength();
+    size_t nNow = this->children.value.size();
 
-    for (size_t i = 0; i < n; ++i) {
-        const NodePtr & child = newChildren.getElement(i);
+    for (size_t i = 0; i < newChildren.value.size(); ++i) {
+        const NodePtr & child = newChildren.value[i];
         if (child && child->toChild()) {
-            this->children.addNode(child);
+            this->children.value.push_back(child);
             child->relocate();
         } else {
             theSystem->error(
@@ -5730,7 +5725,7 @@ void Group::processAddChildren(const FieldValue & mfnode,
         }
     }
 
-    if (nNow != this->children.getLength()) {
+    if (nNow != this->children.value.size()) {
         setModified();
         this->setBVolumeDirty(true);
     }
@@ -5750,15 +5745,20 @@ void Group::processRemoveChildren(const FieldValue & mfnode,
     throw (std::bad_cast, std::bad_alloc)
 {
     const MFNode & childrenToRemove = dynamic_cast<const MFNode &>(mfnode);
-    const size_t oldLength = this->children.getLength();
+    const size_t oldLength = this->children.value.size();
 
-    for (size_t i = 0; i < childrenToRemove.getLength(); ++i) {
-        if (childrenToRemove.getElement(i)) {
-            this->children.removeNode(*childrenToRemove.getElement(i));
+    for (size_t i = 0; i < childrenToRemove.value.size(); ++i) {
+        const NodePtr & node = childrenToRemove.value[i];
+        if (node) {
+            using std::remove;
+            using std::vector;
+            const vector<NodePtr>::iterator begin(this->children.value.begin());
+            const vector<NodePtr>::iterator end(this->children.value.end());
+            this->children.value.erase(remove(begin, end, node), end);
         }
     }
 
-    if (oldLength != this->children.getLength()) {
+    if (oldLength != this->children.value.size()) {
         setModified();
         this->setBVolumeDirty(true);
     }
@@ -5778,9 +5778,9 @@ void Group::processSet_children(const FieldValue & mfnode,
         throw (std::bad_cast, std::bad_alloc) {
     this->children = dynamic_cast<const MFNode &>(mfnode);
 
-    for (size_t i = 0; i < this->children.getLength(); ++i) {
-        if (children.getElement(i)) {
-            children.getElement(i)->relocate();
+    for (size_t i = 0; i < this->children.value.size(); ++i) {
+        if (children.value[i]) {
+            children.value[i]->relocate();
         }
     }
 
@@ -5798,8 +5798,8 @@ void Group::processSet_children(const FieldValue & mfnode,
 bool Group::isModified() const {
     if (this->d_modified) { return true; }
 
-    for (size_t i = 0; i < this->children.getLength(); ++i) {
-        if (this->children.getElement(i)->isModified()) {
+    for (size_t i = 0; i < this->children.value.size(); ++i) {
+        if (this->children.value[i]->isModified()) {
             return true;
         }
     }
@@ -5818,8 +5818,8 @@ void Group::updateModified(NodePath & path, int flags) {
     // pan out, we should be a little smarter here...
     if (this->isModified()) { markPathModified(path, true, flags); }
     path.push_front(this);
-    for (size_t i = 0; i < this->children.getLength(); ++i) {
-        this->children.getElement(i)->updateModified(path, flags);
+    for (size_t i = 0; i < this->children.value.size(); ++i) {
+        this->children.value[i]->updateModified(path, flags);
     }
     path.pop_front();
 }
@@ -5859,8 +5859,8 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
 
     if (this->viewerObject) {
         viewer.insertReference(this->viewerObject);
-    } else if (this->children.getLength() > 0) {
-        int i, n = this->children.getLength();
+    } else if (this->children.value.size() > 0) {
+        int i, n = this->children.value.size();
         int nSensors = 0;
 
         this->viewerObject = viewer.beginObject(this->getId().c_str());
@@ -5868,7 +5868,7 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
         // Draw nodes that impact their siblings (DirectionalLights,
         // TouchSensors, any others? ...)
         for (i = 0; i < n; ++i) {
-          const NodePtr & kid = this->children.getElement(i);
+          const NodePtr & kid = this->children.value[i];
 
             if (kid->toLight()
                     && !(kid->toPointLight() || kid->toSpotLight())) {
@@ -5887,7 +5887,7 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
 
         // Do the rest of the children (except the scene-level lights)
         for (i = 0; i<n; ++i) {
-            const NodePtr & child = this->children.getElement(i);
+            const NodePtr & child = this->children.value[i];
             if (!(child->toLight()
 //                    || child->toPlaneSensor()
 //                    || child->toCylinderSensor()
@@ -5921,8 +5921,8 @@ const MFNode & Group::getChildren() const throw ()
  */
 void Group::activate(double time, bool isOver, bool isActive, double *p)
 {
-    for (size_t i = 0; i < this->children.getLength(); ++i) {
-        const NodePtr & node = this->children.getElement(i);
+    for (size_t i = 0; i < this->children.value.size(); ++i) {
+        const NodePtr & node = this->children.value[i];
         if (node) {
             if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
                 node->toTouchSensor()->activate(time, isOver, isActive, p);
@@ -5957,8 +5957,8 @@ const BVolume * Group::getBVolume() const
  */
 void Group::recalcBSphere() {
     this->bsphere.reset();
-    for (size_t i = 0; i < this->children.getLength(); ++i) {
-        const NodePtr & node = this->children.getElement(i);
+    for (size_t i = 0; i < this->children.value.size(); ++i) {
+        const NodePtr & node = this->children.value[i];
         if (node) {
             const BVolume * const ci_bv = node->getBVolume();
             if (ci_bv) { this->bsphere.extend(*ci_bv); }
@@ -6089,12 +6089,12 @@ void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
     // should cache on url so multiple references to the same file are
     // loaded just once... of course world authors should just DEF/USE
     // them...
-    if (!this->image && this->url.getLength() > 0) {
+    if (!this->image && this->url.value.size() > 0) {
         Doc2 baseDoc(this->getScene()->getURI());
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &baseDoc)) {
             theSystem->error("Couldn't read ImageTexture from URL %s\n",
-                             this->url.getElement(0).c_str());
+                             this->url.value[0].c_str());
         }
     }
 
@@ -6126,8 +6126,8 @@ void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
                 this->texObject = viewer.insertTexture(this->image->w(),
                                                        this->image->h(),
                                                        this->image->nc(),
-                                                       this->repeatS.get(),
-                                                       this->repeatT.get(),
+                                                       this->repeatS.value,
+                                                       this->repeatT.value,
                                                        pix,
                                                        true);
             }
@@ -6385,10 +6385,10 @@ IndexedFaceSet::~IndexedFaceSet() throw () {}
  */
 bool IndexedFaceSet::isModified() const {
     return (this->d_modified
-            || (this->color.get() && this->color.get()->isModified())
-            || (this->coord.get() && this->coord.get()->isModified())
-            || (this->normal.get() && this->normal.get()->isModified())
-            || (this->texCoord.get() && this->texCoord.get()->isModified()));
+            || (this->color.value && this->color.value->isModified())
+            || (this->coord.value && this->coord.value->isModified())
+            || (this->normal.value && this->normal.value->isModified())
+            || (this->texCoord.value && this->texCoord.value->isModified()));
 }
 
 /**
@@ -6401,10 +6401,10 @@ bool IndexedFaceSet::isModified() const {
 void IndexedFaceSet::updateModified(NodePath& path, int flags) {
     if (this->isModified()) { markPathModified(path, true, flags); }
     path.push_front(this);
-    if (this->color.get()) { this->color.get()->updateModified(path, flags); }
-    if (this->coord.get()) { this->coord.get()->updateModified(path, flags); }
-    if (this->normal.get()) { this->normal.get()->updateModified(path, flags); }
-    if (this->texCoord.get()) { this->texCoord.get()->updateModified(path, flags); }
+    if (this->color.value) { this->color.value->updateModified(path, flags); }
+    if (this->coord.value) { this->coord.value->updateModified(path, flags); }
+    if (this->normal.value) { this->normal.value->updateModified(path, flags); }
+    if (this->texCoord.value) { this->texCoord.value->updateModified(path, flags); }
     path.pop_front();
 }
 
@@ -6426,9 +6426,9 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
         viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
     }
 
-    if (this->coord.get() && this->coordIndex.getLength() > 0) {
-        const MFVec3f & coord = this->coord.get()->toCoordinate()->getPoint();
-        int nvert = coord.getLength();
+    if (this->coord.value && this->coordIndex.value.size() > 0) {
+        const MFVec3f & coord = this->coord.value->toCoordinate()->getPoint();
+        size_t nvert = coord.value.size();
         const float *tc = 0, *color = 0, *normal = 0;
         int ntc = 0;
         size_t ntci = 0; const long * tci = 0;    // texture coordinate indices
@@ -6436,73 +6436,73 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
         int nni = 0; const long * ni = 0;    // normal indices
 
         // Get texture coordinates and texCoordIndex
-        if (this->texCoord.get()) {
+        if (this->texCoord.value) {
             const MFVec2f & texcoord =
-                    this->texCoord.get()->toTextureCoordinate()->getPoint();
-            tc = &texcoord.getElement(0)[0];
-            ntc = texcoord.getLength();
-            ntci = this->texCoordIndex.getLength();
-            if (ntci) { tci = &this->texCoordIndex.getElement(0); }
+                    this->texCoord.value->toTextureCoordinate()->getPoint();
+            tc = &texcoord.value[0][0];
+            ntc = texcoord.value.size();
+            ntci = this->texCoordIndex.value.size();
+            if (ntci) { tci = &this->texCoordIndex.value[0]; }
         }
 
         // check #tc is consistent with #coords/max texCoordIndex...
-        if (tci && ntci < this->coordIndex.getLength()) {
+        if (tci && ntci < this->coordIndex.value.size()) {
             theSystem->error("IndexedFaceSet: not enough texCoordIndex values (there should be at least as many as coordIndex values).\n");
-            theSystem->error("IndexedFaceSet: #coord %d, #coordIndex %d, #texCoord %d, #texCoordIndex %d\n", nvert, this->coordIndex.getLength(), ntc, ntci);
+            theSystem->error("IndexedFaceSet: #coord %d, #coordIndex %d, #texCoord %d, #texCoordIndex %d\n", nvert, this->coordIndex.value.size(), ntc, ntci);
             tci = 0;
             ntci = 0;
         }
 
         // check #colors is consistent with colorPerVtx, colorIndex...
-        ColorNode * const colorNode = this->color.get()
-                                    ? this->color.get()->toColor()
+        ColorNode * const colorNode = this->color.value
+                                    ? this->color.value->toColor()
                                     : 0;
         if (colorNode) {
             const MFColor & c = colorNode->getColor();
 
-            color = &c.getElement(0)[0];
-            nci = this->colorIndex.getLength();
-            if (nci) { ci = &this->colorIndex.getElement(0); }
+            color = &c.value[0][0];
+            nci = this->colorIndex.value.size();
+            if (nci) { ci = &this->colorIndex.value[0]; }
         }
 
         // check #normals is consistent with normalPerVtx, normalIndex...
-        if (this->normal.get()) {
-            const MFVec3f & n = this->normal.get()->toNormal()->getVector();
-            normal = &n.getElement(0)[0];
-            nni = this->normalIndex.getLength();
-            if (nni) { ni = &this->normalIndex.getElement(0); }
+        if (this->normal.value) {
+            const MFVec3f & n = this->normal.value->toNormal()->getVector();
+            normal = &n.value[0][0];
+            nni = this->normalIndex.value.size();
+            if (nni) { ni = &this->normalIndex.value[0]; }
         }
 
         unsigned int optMask = 0;
-        if (this->ccw.get()) {
+        if (this->ccw.value) {
             optMask |= Viewer::MASK_CCW;
         }
-        if (this->convex.get()) {
+        if (this->convex.value) {
             optMask |= Viewer::MASK_CONVEX;
         }
-        if (this->solid.get()) {
+        if (this->solid.value) {
             optMask |= Viewer::MASK_SOLID;
         }
-        if (this->colorPerVertex.get()) {
+        if (this->colorPerVertex.value) {
             optMask |= Viewer::MASK_COLOR_PER_VERTEX;
         }
-        if (this->normalPerVertex.get()) {
+        if (this->normalPerVertex.value) {
             optMask |= Viewer::MASK_NORMAL_PER_VERTEX;
         }
 
         obj = viewer.insertShell(optMask,
-                                 nvert, &coord.getElement(0)[0],
-                                 this->coordIndex.getLength(),
-                                 &this->coordIndex.getElement(0),
+                                 nvert, &coord.value[0][0],
+                                 this->coordIndex.value.size(),
+                                 &this->coordIndex.value[0],
                                  tc, ntci, tci,
                                  normal, nni, ni,
                                  color, nci, ci);
     }
 
-    if (this->color.get())      { this->color.get()->clearModified(); }
-    if (this->coord.get())      { this->coord.get()->clearModified(); }
-    if (this->normal.get())     { this->normal.get()->clearModified(); }
-    if (this->texCoord.get())   { this->texCoord.get()->clearModified(); }
+    if (this->color.value)      { this->color.value->clearModified(); }
+    if (this->coord.value)      { this->coord.value->clearModified(); }
+    if (this->normal.value)     { this->normal.value->clearModified(); }
+    if (this->texCoord.value)   { this->texCoord.value->clearModified(); }
 
     return obj;
 }
@@ -6517,13 +6517,13 @@ void IndexedFaceSet::recalcBSphere() {
     // then we don't have to update the bvolume when the index
     // changes). motto: always do it the simple way first...
     //
-    CoordinateNode * const coordinateNode = this->coord.get()
-                                          ? this->coord.get()->toCoordinate()
+    CoordinateNode * const coordinateNode = this->coord.value
+                                          ? this->coord.value->toCoordinate()
                                           : 0;
     if (coordinateNode) {
         const MFVec3f & coord = coordinateNode->getPoint();
         this->bsphere.reset();
-        this->bsphere.enclose(&coord.getElement(0)[0], coord.getLength());
+        this->bsphere.enclose(&coord.value[0][0], coord.value.size());
     }
     this->setBVolumeDirty(false);
 }
@@ -6737,36 +6737,36 @@ Viewer::Object IndexedLineSet::insertGeometry(Viewer & viewer,
                                               const VrmlRenderContext context)
 {
     Viewer::Object obj = 0;
-    if (this->coord.get() && this->coordIndex.getLength() > 0) {
-        const MFVec3f & coord = this->coord.get()->toCoordinate()->getPoint();
-        int nvert = coord.getLength();
+    if (this->coord.value && this->coordIndex.value.size() > 0) {
+        const MFVec3f & coord = this->coord.value->toCoordinate()->getPoint();
+        int nvert = coord.value.size();
         const float * color = 0;
         int nci = 0; const long * ci = 0;
 
         // check #colors is consistent with colorPerVtx, colorIndex...
-        if (this->color.get()) {
-            const MFColor & c = this->color.get()->toColor()->getColor();
-            color = & c.getElement(0)[0];
-            nci = this->colorIndex.getLength();
-            if (nci) { ci = &this->colorIndex.getElement(0); }
+        if (this->color.value) {
+            const MFColor & c = this->color.value->toColor()->getColor();
+            color = & c.value[0][0];
+            nci = this->colorIndex.value.size();
+            if (nci) { ci = &this->colorIndex.value[0]; }
         }
 
         obj =  viewer.insertLineSet(nvert,
-                                    (coord.getLength() > 0)
-                                        ? &coord.getElement(0)[0]
+                                    (coord.value.size() > 0)
+                                        ? &coord.value[0][0]
                                         : 0,
-                                    this->coordIndex.getLength(),
-                                    (this->coordIndex.getLength() > 0)
-                                        ? &this->coordIndex.getElement(0)
+                                    this->coordIndex.value.size(),
+                                    (this->coordIndex.value.size() > 0)
+                                        ? &this->coordIndex.value[0]
                                         : 0,
-                                    this->colorPerVertex.get(),
+                                    this->colorPerVertex.value,
                                     color,
                                     nci, ci);
 
     }
 
-    if (this->color.get()) { this->color.get()->clearModified(); }
-    if (this->coord.get()) { this->coord.get()->clearModified(); }
+    if (this->color.value) { this->color.value->clearModified(); }
+    if (this->coord.value) { this->coord.value->clearModified(); }
 
     return obj;
 }
@@ -6906,8 +6906,8 @@ const MFNode & Inline::getChildren() const throw ()
 void Inline::activate(double time, bool isOver, bool isActive, double *p)
 {
     const MFNode & children = this->getChildren();
-    for (size_t i = 0; i < children.getLength(); ++i) {
-        const NodePtr & node = children.getElement(i);
+    for (size_t i = 0; i < children.value.size(); ++i) {
+        const NodePtr & node = children.value[i];
         if (node) {
             if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
                 node->toTouchSensor()->activate(time, isOver, isActive, p);
@@ -7078,8 +7078,8 @@ bool LOD::isModified() const {
     if (this->d_modified) { return true; }
 
     // This should really check which range is being rendered...
-    for (size_t i = 0; i < this->level.getLength(); ++i) {
-        if (this->level.getElement(i)->isModified()) { return true; }
+    for (size_t i = 0; i < this->level.value.size(); ++i) {
+        if (this->level.value[i]->isModified()) { return true; }
     }
     return false;
 }
@@ -7099,8 +7099,8 @@ void LOD::updateModified(NodePath & path, int flags) {
     //
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
-    for (size_t i = 0; i < this->level.getLength(); ++i) {
-        this->level.getElement(i)->updateModified(path);
+    for (size_t i = 0; i < this->level.value.size(); ++i) {
+        this->level.value[i]->updateModified(path);
     }
     path.pop_front();
 }
@@ -7116,36 +7116,36 @@ void LOD::updateModified(NodePath & path, int flags) {
 void LOD::render(Viewer & viewer, const VrmlRenderContext context)
 {
     this->clearModified();
-    if (this->level.getLength() <= 0) { return; }
+    if (this->level.value.size() <= 0) { return; }
 
     float x, y, z;
 
     VrmlMatrix MV = context.getMatrix();
     MV = MV.affine_inverse();
     x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
-    float dx = x - this->center.getX();
-    float dy = y - this->center.getY();
-    float dz = z - this->center.getZ();
+    float dx = x - this->center.value.x();
+    float dy = y - this->center.value.y();
+    float dz = z - this->center.value.z();
     float d2 = dx * dx + dy * dy + dz * dz;
 
     size_t i;
-    for (i = 0; i < this->range.getLength(); ++i) {
-        if (d2 < this->range.getElement(i) * this->range.getElement(i)) {
+    for (i = 0; i < this->range.value.size(); ++i) {
+        if (d2 < this->range.value[i] * this->range.value[i]) {
             break;
         }
     }
 
     // Should choose an "optimal" level...
-    if (this->range.getLength() == 0) { i = this->level.getLength() - 1; }
+    if (this->range.value.size() == 0) { i = this->level.value.size() - 1; }
 
     // Not enough levels...
-    if (i >= this->level.getLength()) { i = this->level.getLength() - 1; }
+    if (i >= this->level.value.size()) { i = this->level.value.size() - 1; }
 
-    this->level.getElement(i)->render(viewer, context);
+    this->level.value[i]->render(viewer, context);
 
     // Don't re-render on their accounts
-    for (i = 0; i < this->level.getLength(); ++i) {
-        this->level.getElement(i)->clearModified();
+    for (i = 0; i < this->level.value.size(); ++i) {
+        this->level.value[i]->clearModified();
     }
 }
 
@@ -7177,7 +7177,7 @@ const MFNode & LOD::getChildren() const throw ()
 void LOD::activate(double time, bool isOver, bool isActive, double *p)
 {
     const MFNode & children = this->getChildren();
-    const NodePtr & node = children.getElement(0);
+    const NodePtr & node = children.value[0];
     if (node) {
         if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
             node->toTouchSensor()->activate(time, isOver, isActive, p);
@@ -7212,8 +7212,8 @@ void LOD::recalcBSphere() {
     // switch in delayed-load inlines. this would necessarily switch
     // them in all at once. live with it for now.
     //
-    for (size_t i = 0; i < this->level.getLength(); i++) {
-        const NodePtr & node = this->level.getElement(i);
+    for (size_t i = 0; i < this->level.value.size(); i++) {
+        const NodePtr & node = this->level.value[i];
         if (node) {
             const BVolume * ci_bv = node->getBVolume();
             this->bsphere.extend(*ci_bv);
@@ -7349,15 +7349,16 @@ const NodeTypePtr MaterialClass::createType(const std::string & id,
  */
 Material::Material(const NodeType & nodeType,
                    const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        MaterialNode(nodeType, scope),
-        ambientIntensity(0.2),
-        diffuseColor(0.8, 0.8, 0.8),
-        emissiveColor(0.0, 0.0, 0.0),
-        shininess(0.2),
-        specularColor(0.0, 0.0, 0.0),
-        transparency(0.0) {}
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    MaterialNode(nodeType, scope),
+    ambientIntensity(0.2),
+    diffuseColor(color(0.8, 0.8, 0.8)),
+    emissiveColor(color(0.0, 0.0, 0.0)),
+    shininess(0.2),
+    specularColor(color(0.0, 0.0, 0.0)),
+    transparency(0.0)
+{}
 
 /**
  * @brief Destructor.
@@ -7669,18 +7670,19 @@ MovieTexture::~MovieTexture() throw ()
 MovieTexture* MovieTexture::toMovieTexture() const
 { return (MovieTexture*) this; }
 
-void MovieTexture::update(const double currentTime) {
+void MovieTexture::update(const double currentTime)
+{
     if (isModified()) {
         if (this->image) {
             const char * imageUrl = this->image->url();
             size_t imageLen = strlen(imageUrl);
-            size_t i, nUrls = this->url.getLength();
+            size_t i, nUrls = this->url.value.size();
             for (i = 0; i < nUrls; ++i) {
-                size_t len = this->url.getElement(i).length();
+                size_t len = this->url.value[i].length();
 
-                if (this->url.getElement(i) == imageUrl
+                if (this->url.value[i] == imageUrl
                         || (imageLen > len
-                            && this->url.getElement(i)
+                            && this->url.value[i]
                                 == (imageUrl + imageLen - len))) {
                     break;
                 }
@@ -7695,7 +7697,7 @@ void MovieTexture::update(const double currentTime) {
     }
 
     // Load the movie if needed (should check startTime...)
-    if (!this->image && this->url.getLength() > 0) {
+    if (!this->image && this->url.value.size() > 0) {
         Doc2 baseDoc(this->getScene()->getURI());
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &baseDoc)) {
@@ -7706,12 +7708,12 @@ void MovieTexture::update(const double currentTime) {
         int nFrames = this->image->nFrames();
         this->duration = SFTime((nFrames >= 0) ? double(nFrames) : double(-1));
         this->emitEvent("duration_changed", this->duration, currentTime);
-        this->frame = (this->speed.get() >= 0) ? 0 : nFrames-1;
+        this->frame = (this->speed.value >= 0) ? 0 : nFrames-1;
         // Set the last frame equal to the start time.
         // This is needed to properly handle the case where the startTime
         // and stopTime are set at runtime to the same value (spec says
         // that a single loop should occur in this case...)
-        this->lastFrameTime = this->startTime.get();
+        this->lastFrameTime = this->startTime.value;
     }
 
     // No pictures to show
@@ -7719,77 +7721,66 @@ void MovieTexture::update(const double currentTime) {
 
     // See section 4.6.9 of the VRML97 spec for a detailed explanation
     // of the logic here.
-    if (!this->active.get())
-    {
-      if (currentTime >= this->startTime.get())
-      {
-        if (currentTime >= this->stopTime.get())
-        {
-          if (this->startTime.get() >= this->stopTime.get())
-          {
-            if (this->loop.get())
-            {
-              this->active.set(true);
-              this->emitEvent("isActive", this->active, currentTime);
-              this->lastFrameTime = currentTime;
-              this->frame = (this->speed.get() >= 0) ? 0 :
-                               this->image->nFrames() - 1;
-              setModified();
-	    }
-            else if (this->startTime.get() > this->lastFrameTime)
-            {
-              this->active.set(true);
-              this->emitEvent("isActive", this->active, currentTime);
-              this->lastFrameTime = currentTime;
-              this->frame = (this->speed.get() >= 0) ? 0 :
-                               this->image->nFrames() - 1;
-              setModified();
-	    }
-	  }
+    if (!this->active.value) {
+        if (currentTime >= this->startTime.value) {
+            if (currentTime >= this->stopTime.value) {
+                if (this->startTime.value >= this->stopTime.value) {
+                    if (this->loop.value) {
+                        this->active.value = true;
+                        this->emitEvent("isActive", this->active, currentTime);
+                        this->lastFrameTime = currentTime;
+                        this->frame = (this->speed.value >= 0) ? 0 :
+                                         this->image->nFrames() - 1;
+                        setModified();
+	            } else if (this->startTime.value > this->lastFrameTime) {
+                        this->active.value = true;
+                        this->emitEvent("isActive", this->active, currentTime);
+                        this->lastFrameTime = currentTime;
+                        this->frame = (this->speed.value >= 0) ? 0 :
+                                         this->image->nFrames() - 1;
+                        setModified();
+	            }
+	        }
+            } else if (this->stopTime.value > currentTime) {
+                this->active.value = true;
+                this->emitEvent("isActive", this->active, currentTime);
+                this->lastFrameTime = currentTime;
+                this->frame = (this->speed.value >= 0) ? 0 :
+                                 this->image->nFrames() - 1;
+                setModified();
+            }
         }
-        else if (this->stopTime.get() > currentTime)
-        {
-          this->active.set(true);
-          this->emitEvent("isActive", this->active, currentTime);
-          this->lastFrameTime = currentTime;
-          this->frame = (this->speed.get() >= 0) ? 0 :
-                           this->image->nFrames() - 1;
-          setModified();
-        }
-      }
     }
-
     // Check whether stopTime has passed
-    else if (this->active.get()
-             && ((this->stopTime.get() > this->startTime.get()
-		  && this->stopTime.get() <= currentTime))
-             || ((this->frame < 0) && !this->loop.get())) {
-        this->active.set(false);
+    else if (this->active.value
+             && ((this->stopTime.value > this->startTime.value
+		  && this->stopTime.value <= currentTime))
+             || ((this->frame < 0) && !this->loop.value)) {
+        this->active.value = false;
         this->emitEvent("isActive", this->active, currentTime);
         setModified();
-    }
-    else if (this->frame < 0 && this->loop.get())
-    {
-      // Reset frame to 0 to begin loop again.
-      this->frame = 0;
+    } else if (this->frame < 0 && this->loop.value) {
+        // Reset frame to 0 to begin loop again.
+        this->frame = 0;
     }
 
     // Check whether the frame should be advanced
-    else if (this->active.get()
-             && this->lastFrameTime + fabs(1 / this->speed.get())
+    else if (this->active.value
+             && this->lastFrameTime + fabs(1 / this->speed.value)
                 <= currentTime) {
-        if (this->speed.get() < 0.0)
-          --this->frame;
-        else
-          ++this->frame;
+        if (this->speed.value < 0.0) {
+            --this->frame;
+        } else {
+            ++this->frame;
+        }
 
         this->lastFrameTime = currentTime;
         setModified();
     }
 
     // Tell the scene when the next update is needed.
-    if (this->active.get()) {
-        double d = this->lastFrameTime + fabs(1 / this->speed.get())
+    if (this->active.value) {
+        double d = this->lastFrameTime + fabs(1 / this->speed.value)
                     - currentTime;
         this->nodeType.nodeClass.browser.setDelta(0.9 * d);
     }
@@ -7839,10 +7830,10 @@ void MovieTexture::render(Viewer & viewer, const VrmlRenderContext context)
             this->texObject = viewer.insertTexture(this->image->w(),
                                                    this->image->h(),
                                                    this->image->nc(),
-                                                   this->repeatS.get(),
-                                                   this->repeatT.get(),
+                                                   this->repeatS.value,
+                                                   this->repeatT.value,
                                                    pix,
-                                                   !this->active.get());
+                                                   !this->active.value);
         }
     }
 
@@ -7924,7 +7915,7 @@ void MovieTexture::processSet_speed(const FieldValue & sffloat,
     //
     // set_speed is ignored if the MovieTexture is active.
     //
-    if (!this->active.get()) {
+    if (!this->active.value) {
         this->speed = dynamic_cast<const SFFloat &>(sffloat);
         this->setModified();
         this->emitEvent("speed_changed", this->speed, timestamp);
@@ -8102,14 +8093,15 @@ namespace {
  */
 NavigationInfo::NavigationInfo(const NodeType & nodeType,
                                const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        avatarSize(3, avatarSize_),
-        headlight(true),
-        speed(1.0),
-        type(2, type_),
-        visibilityLimit(0.0),
-        bound(false) {}
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    avatarSize(avatarSize_, avatarSize_ + 3),
+    headlight(true),
+    speed(1.0),
+    type(type_, type_ + 2),
+    visibilityLimit(0.0),
+    bound(false)
+{}
 
 /**
  * @brief Destructor.
@@ -8178,25 +8170,25 @@ void NavigationInfo::processSet_bind(const FieldValue & sfbool,
             this->nodeType.nodeClass.browser.bindableNavigationInfoTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
 
-    if (b.get()) {        // set_bind TRUE
+    if (b.value) {        // set_bind TRUE
         if (this != current) {
             if (current) {
-                current->bound.set(false);
+                current->bound.value = false;
                 current->emitEvent("isBound", current->bound, timestamp);
             }
             this->nodeType.nodeClass.browser.bindablePush(this);
-            this->bound.set(true);
+            this->bound.value = true;
             this->emitEvent("isBound", this->bound, timestamp);
         }
     } else {            // set_bind FALSE
         this->nodeType.nodeClass.browser.bindableRemove(this);
         if (this == current) {
-            this->bound.set(false);
+            this->bound.value = false;
             this->emitEvent("isBound", this->bound, timestamp);
             current = this->nodeType.nodeClass.browser
                         .bindableNavigationInfoTop();
             if (current) {
-                current->bound.set(true);
+                current->bound.value = true;
                 current->emitEvent("isBound", current->bound, timestamp);
             }
         }
@@ -8486,52 +8478,47 @@ NormalInterpolator::~NormalInterpolator() throw () {}
  */
 void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
                                              const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     using OpenVRML_::fptolerance;
 
-    float f = dynamic_cast<const SFFloat &>(sffloat).get();
+    float f = dynamic_cast<const SFFloat &>(sffloat).value;
 
-    int nNormals = this->keyValue.getLength() / this->key.getLength();
-    int n = this->key.getLength() - 1;
+    size_t nNormals = this->keyValue.value.size() / this->key.value.size();
+    size_t n = this->key.value.size() - 1;
 
-    if (f < this->key.getElement(0)) {
-        this->value = MFVec3f(nNormals,
-                              &static_cast<SFVec3f::ConstArrayReference>
-                              (this->keyValue.getElement(0)));
-    } else if (f > this->key.getElement(n)) {
-        this->value = MFVec3f(nNormals,
-                              &static_cast<SFVec3f::ConstArrayReference>
-                              (this->keyValue.getElement(n * nNormals)));
+    if (f < this->key.value[0]) {
+        this->value.value.assign(this->keyValue.value.begin(),
+                                 this->keyValue.value.begin() + nNormals);
+    } else if (f > this->key.value[n]) {
+        this->value.value
+                .assign(this->keyValue.value.begin() + n * nNormals,
+                        this->keyValue.value.begin() + (n + 1) * nNormals);
     } else {
         // Reserve enough space for the new value
-        this->value.setLength(nNormals);
+        this->value.value.resize(nNormals);
 
-        for (int i = 0; i < n; ++i) {
-            if (this->key.getElement(i) <= f
-                    && f <= this->key.getElement(i + 1)) {
-                SFVec3f::ConstArrayPointer v1 =
-                        &static_cast<SFVec3f::ConstArrayReference>
-                        (this->keyValue.getElement(i * nNormals));
-                SFVec3f::ConstArrayPointer v2 =
-                        &static_cast<SFVec3f::ConstArrayReference>
-                        (this->keyValue.getElement((i + 1) * nNormals));
+        for (size_t i = 0; i < n; ++i) {
+            if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
+                std::vector<vec3f>::const_iterator v1 =
+                        this->keyValue.value.begin() + i * nNormals;
+                std::vector<vec3f>::const_iterator v2 =
+                        this->keyValue.value.begin() + (i + 1) * nNormals;
 
-                f = (f - this->key.getElement(i))
-                    / (this->key.getElement(i + 1) - this->key.getElement(i));
+                f = (f - this->key.value[i])
+                    / (this->key.value[i + 1] - this->key.value[i]);
 
                 // Interpolate on the surface of unit sphere.
                 // Contributed by S. K. Bose. (bose@garuda.barc.ernet.in)
                 for (int j = 0; j < nNormals; ++j) {
                     float alpha, beta;
-                    float dotval = (*v1)[0] * (*v2)[0]
-                                    + (*v1)[1] * (*v2)[1]
-                                    + (*v1)[2] * (*v2)[2];
-                    if ((dotval+1.0) > fptolerance) { // Vectors are not opposite
+                    float dotval = v1->dot(*v2);
+                    if ((dotval + 1.0) > fptolerance) { // Vectors are not opposite
                         if ((1.0-dotval) > fptolerance) { // Vectors are not coincide
                             float omega = acos(dotval);
                             float sinomega = sin(omega);
-                            alpha = sin((1.0 - f) * omega)/sinomega;
-                            beta = sin(f*omega)/sinomega;
+                            alpha = sin((1.0 - f) * omega) / sinomega;
+                            beta = sin(f * omega) / sinomega;
                         } else {
                             // Do linear interpolation...
                             alpha = 1.0 - f;
@@ -8541,10 +8528,10 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
                         alpha = 1.0 -f;
                         beta = f;
                     }
-                    const float vec[3] = { alpha * (*v1)[0] + beta * (*v2)[0],
-                                           alpha * (*v1)[1] + beta * (*v2)[1],
-                                           alpha * (*v1)[2] + beta * (*v2)[2] };
-                    this->value.setElement(j, vec);
+                    const vec3f vec(alpha * v1->x() + beta * v2->x(),
+                                    alpha * v1->y() + beta * v2->y(),
+                                    alpha * v1->z() + beta * v2->z());
+                    this->value.value[j] = vec;
 
                     ++v1;
                     ++v2;
@@ -8704,26 +8691,24 @@ OrientationInterpolator::~OrientationInterpolator() throw () {}
  */
 void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
                                                   const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    float f = dynamic_cast<const SFFloat &>(sffloat).get();
+    throw (std::bad_cast, std::bad_alloc)
+{
+    float f = dynamic_cast<const SFFloat &>(sffloat).value;
 
-    int n = this->key.getLength() - 1;
-    if (f < this->key.getElement(0)) {
-        this->value.set(this->keyValue.getElement(0));
-    } else if (f > this->key.getElement(n)) {
-        this->value.set(this->keyValue.getElement(n));
+    int n = this->key.value.size() - 1;
+    if (f < this->key.value[0]) {
+        this->value.value = this->keyValue.value[0];
+    } else if (f > this->key.value[n]) {
+        this->value.value = this->keyValue.value[n];
     } else {
-        for (int i=0; i<n; ++i) {
-            if (this->key.getElement(i) <= f
-                    && f <= this->key.getElement(i + 1)) {
-                SFRotation::ConstArrayReference v1 =
-                        this->keyValue.getElement(i);
-                SFRotation::ConstArrayReference v2 =
-                        this->keyValue.getElement(i + 1);
+        for (size_t i = 0; i < n; ++i) {
+            if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
+                const rotation & v1 = this->keyValue.value[i];
+                const rotation & v2 = this->keyValue.value[i + 1];
 
                 // Interpolation factor
-                f = (f - this->key.getElement(i))
-                    / (this->key.getElement(i + 1) - this->key.getElement(i));
+                f = (f - this->key.value[i])
+                    / (this->key.value[i + 1] - this->key.value[i]);
 
                 float x, y, z, r1, r2;
                 r1 = v1[3];
@@ -8755,10 +8740,10 @@ void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
                 } else if (angle < 0.0) {
                     angle += 2.0 * pi;
                 }
-                SFVec3f Vec(x,y,z);
+                vec3f Vec(x,y,z);
                 Vec = Vec.normalize();
-                this->value.setAxis(Vec);
-                this->value.setAngle(angle);
+                this->value.value.axis(Vec);
+                this->value.value.angle(angle);
                 break;
             }
         }
@@ -8956,8 +8941,8 @@ void PixelTexture::render(Viewer & viewer, const VrmlRenderContext context)
                         viewer.insertTexture(this->image.getWidth(),
                                              this->image.getHeight(),
                                              this->image.getComponents(),
-                                             this->repeatS.get(),
-                                             this->repeatT.get(),
+                                             this->repeatS.value,
+                                             this->repeatT.value,
                                              this->image.getPixels(),
                                              true);
             }
@@ -9209,9 +9194,9 @@ PlaneSensor::PlaneSensor(const NodeType & nodeType,
     AbstractChild(nodeType, scope),
     autoOffset(true),
     enabled(true),
-    maxPosition(-1.0, -1.0),
-    minPosition(0.0, 0.0),
-    offset(0.0, 0.0, 0.0),
+    maxPosition(vec2f(-1.0, -1.0)),
+    minPosition(vec2f(0.0, 0.0)),
+    offset(vec3f(0.0, 0.0, 0.0)),
     active(false)
 {
     this->setModified();
@@ -9258,23 +9243,23 @@ void PlaneSensor::render(Viewer & viewer, const VrmlRenderContext context)
 void PlaneSensor::activate(double timeStamp, bool isActive, double * p)
 {
     // Become active
-    if (isActive && !this->active.get()) {
-        this->active.set(isActive);
+    if (isActive && !this->active.value) {
+        this->active.value = isActive;
 
-        float V[3] = { p[0], p[1], p[2] };
+        vec3f V(p[0], p[1], p[2]);
         this->activationMatrix = this->modelview.affine_inverse();
         this->activationMatrix.multVecMatrix(V,V);
-        this->activationPoint.set(V);
+        this->activationPoint.value = V;
         this->emitEvent("isActive", this->active, timeStamp);
     }
 
     // Become inactive
-    else if (!isActive && this->active.get()) {
-        this->active.set(isActive);
+    else if (!isActive && this->active.value) {
+        this->active.value = isActive;
         this->emitEvent("isActive", this->active, timeStamp);
 
         // auto offset
-        if (this->autoOffset.get()) {
+        if (this->autoOffset.value) {
             this->offset = this->translation;
             this->emitEvent("offset_changed", this->offset, timeStamp);
         }
@@ -9282,37 +9267,36 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p)
 
     // Tracking
     else if (isActive) {
-        float V[3] = { p[0], p[1], p[2] };
+        vec3f V(p[0], p[1], p[2]);
         this->activationMatrix.multVecMatrix(V,V);
-        this->trackPoint.set(V);
+        this->trackPoint.value = V;
         this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
 
-        float t[3];
-        t[0] = V[0] - this->activationPoint.getX() + this->offset.getX();
-        t[1] = V[1] - this->activationPoint.getY() + this->offset.getY();
-        t[2] = 0.0;
+        vec3f t(V[0] - this->activationPoint.value.x() + this->offset.value.x(),
+                V[1] - this->activationPoint.value.y() + this->offset.value.y(),
+                0.0);
 
-        if (this->minPosition.getX() == this->maxPosition.getX() ) {
-            t[0] = this->minPosition.getX();
-        } else if (this->minPosition.getX() < this->maxPosition.getX()) {
-            if (t[0] < this->minPosition.getX()) {
-                t[0] = this->minPosition.getX();
-            } else if (t[0] > this->maxPosition.getX()) {
-                t[0] = this->maxPosition.getX();
+        if (this->minPosition.value.x() == this->maxPosition.value.x() ) {
+            t.x(this->minPosition.value.x());
+        } else if (this->minPosition.value.x() < this->maxPosition.value.x()) {
+            if (t.x() < this->minPosition.value.x()) {
+                t.x(this->minPosition.value.x());
+            } else if (t.x() > this->maxPosition.value.x()) {
+                t.x(this->maxPosition.value.x());
             }
         }
 
-        if (this->minPosition.getY() == this->maxPosition.getY()) {
-            t[1] = this->minPosition.getY();
-        } else if (this->minPosition.getY() < this->maxPosition.getY()) {
-            if (t[1] < this->minPosition.getY()) {
-                t[1] = this->minPosition.getY();
-            } else if (t[1] > this->maxPosition.getY()) {
-                t[1] = this->maxPosition.getY();
+        if (this->minPosition.value.y() == this->maxPosition.value.y()) {
+            t.y(this->minPosition.value.y());
+        } else if (this->minPosition.value.y() < this->maxPosition.value.y()) {
+            if (t.y() < this->minPosition.value.y()) {
+                t.y(this->minPosition.value.y());
+            } else if (t.y() > this->maxPosition.value.y()) {
+                t.y(this->maxPosition.value.y());
             }
         }
 
-        this->translation.set(t);
+        this->translation.value = t;
         this->emitEvent("translation_changed", this->translation, timeStamp);
     }
 }
@@ -9545,8 +9529,8 @@ PointLight::PointLight(const NodeType & nodeType,
                        const ScopePtr & scope):
     Node(nodeType, scope),
     AbstractLight(nodeType, scope),
-    attenuation(1.0, 0.0, 0.0),
-    location(0.0, 0.0, 0.0),
+    attenuation(vec3f(1.0, 0.0, 0.0)),
+    location(vec3f(0.0, 0.0, 0.0)),
     radius(100)
 {}
 
@@ -9580,13 +9564,13 @@ PointLight* PointLight::toPointLight() const
  */
 void PointLight::renderScoped(Viewer & viewer)
 {
-    if (this->on.get() && this->radius.get() > 0.0) {
-        viewer.insertPointLight(this->ambientIntensity.get(),
-                                this->attenuation.get(),
-                                this->color.get(),
-                                this->intensity.get(),
-                                this->location.get(),
-                                this->radius.get());
+    if (this->on.value && this->radius.value > 0.0) {
+        viewer.insertPointLight(this->ambientIntensity.value,
+                                &this->attenuation.value[0],
+                                &this->color.value[0],
+                                this->intensity.value,
+                                &this->location.value[0],
+                                this->radius.value);
     }
     this->clearModified();
 }
@@ -9794,8 +9778,8 @@ PointSet::~PointSet() throw ()
 bool PointSet::isModified() const
 {
     return (d_modified
-            || (this->color.get() && this->color.get()->isModified())
-            || (this->coord.get() && this->coord.get()->isModified()));
+            || (this->color.value && this->color.value->isModified())
+            || (this->coord.value && this->coord.value->isModified()));
 }
 
 /**
@@ -9809,8 +9793,8 @@ void PointSet::updateModified(NodePath & path, int flags)
 {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
-    if (this->color.get()) { this->color.get()->updateModified(path); }
-    if (this->coord.get()) { this->coord.get()->updateModified(path); }
+    if (this->color.value) { this->color.value->updateModified(path); }
+    if (this->coord.value) { this->coord.value->updateModified(path); }
     path.pop_front();
 }
 
@@ -9830,26 +9814,26 @@ Viewer::Object PointSet::insertGeometry(Viewer & viewer,
         viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
     }
 
-    if (this->coord.get()) {
+    if (this->coord.value) {
         const float * color = 0;
-        if (this->color.get()) {
-            const MFColor & c = this->color.get()->toColor()->getColor();
-            color = (c.getLength() > 0)
-                  ? &c.getElement(0)[0]
+        if (this->color.value) {
+            const MFColor & c = this->color.value->toColor()->getColor();
+            color = (c.value.size() > 0)
+                  ? &c.value[0][0]
                   : 0;
         }
 
-        const MFVec3f & coord = this->coord.get()->toCoordinate()->getPoint();
+        const MFVec3f & coord = this->coord.value->toCoordinate()->getPoint();
 
-        obj = viewer.insertPointSet(coord.getLength(),
-                                    (coord.getLength() > 0)
-                                        ? &coord.getElement(0)[0]
+        obj = viewer.insertPointSet(coord.value.size(),
+                                    (coord.value.size() > 0)
+                                        ? &coord.value[0][0]
                                         : 0,
                                     color);
     }
 
-    if (this->color.get()) { this->color.get()->clearModified(); }
-    if (this->coord.get()) { this->coord.get()->clearModified(); }
+    if (this->color.value) { this->color.value->clearModified(); }
+    if (this->coord.value) { this->coord.value->clearModified(); }
 
     return obj;
 }
@@ -9860,13 +9844,13 @@ Viewer::Object PointSet::insertGeometry(Viewer & viewer,
 void PointSet::recalcBSphere()
 {
     this->bsphere.reset();
-    CoordinateNode * const coordinateNode = this->coord.get()
-                                          ? this->coord.get()->toCoordinate()
+    CoordinateNode * const coordinateNode = this->coord.value
+                                          ? this->coord.value->toCoordinate()
                                           : 0;
     if (coordinateNode) {
         const MFVec3f & coord = coordinateNode->getPoint();
-        for(size_t i = 0; i < coord.getLength(); i++) {
-            this->bsphere.extend(coord.getElement(i));
+        for(size_t i = 0; i < coord.value.size(); i++) {
+            this->bsphere.extend(coord.value[i]);
         }
     }
     this->setBVolumeDirty(false);
@@ -10067,27 +10051,26 @@ void PositionInterpolator::processSet_fraction(const FieldValue & sffloat,
                                                const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    float f = dynamic_cast<const SFFloat &>(sffloat).get();
+    float f = dynamic_cast<const SFFloat &>(sffloat).value;
 
-    int n = this->key.getLength() - 1;
-    if (f < this->key.getElement(0)) {
-        this->value.set(this->keyValue.getElement(0));
-    } else if (f > this->key.getElement(n)) {
-        this->value.set(this->keyValue.getElement(n));
+    int n = this->key.value.size() - 1;
+    if (f < this->key.value[0]) {
+        this->value.value = this->keyValue.value[0];
+    } else if (f > this->key.value[n]) {
+        this->value.value = this->keyValue.value[n];
     } else {
         // should cache the last index used...
         for (int i = 0; i < n; ++i) {
-            if (this->key.getElement(i) <= f
-                    && f <= this->key.getElement(i + 1)) {
-                const float * v1 = this->keyValue.getElement(i);
-                const float * v2 = this->keyValue.getElement(i + 1);
+            if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
+                const vec3f & v1 = this->keyValue.value[i];
+                const vec3f & v2 = this->keyValue.value[i + 1];
 
-                f = (f - this->key.getElement(i))
-                    / (this->key.getElement(i + 1) - this->key.getElement(i));
-                const float valueVec[3] = { v1[0] + f * (v2[0] - v1[0]),
-                                            v1[1] + f * (v2[1] - v1[1]),
-                                            v1[2] + f * (v2[2] - v1[2]) };
-                this->value.set(valueVec);
+                f = (f - this->key.value[i])
+                    / (this->key.value[i + 1] - this->key.value[i]);
+                const vec3f valueVec(v1.x() + f * (v2.x() - v1.x()),
+                                     v1.y() + f * (v2.y() - v1.y()),
+                                     v1.z() + f * (v2.z() - v1.z()));
+                this->value.value = valueVec;
                 break;
             }
         }
@@ -10315,11 +10298,11 @@ ProximitySensor::ProximitySensor(const NodeType & nodeType,
                                  const ScopePtr & scope):
     Node(nodeType, scope),
     AbstractChild(nodeType, scope),
-    center(0.0, 0.0, 0.0),
+    center(vec3f(0.0, 0.0, 0.0)),
     enabled(true),
-    size(0.0, 0.0, 0.0),
+    size(vec3f(0.0, 0.0, 0.0)),
     active(false),
-    position(0.0, 0.0, 0.0),
+    position(vec3f(0.0, 0.0, 0.0)),
     enterTime(0.0),
     exitTime(0.0)
 {
@@ -10359,10 +10342,10 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
 {
     using OpenVRML_::fpequal;
 
-    if (this->enabled.get()
-            && this->size.getX() > 0.0
-            && this->size.getY() > 0.0
-            && this->size.getZ() > 0.0
+    if (this->enabled.value
+            && this->size.value.x() > 0.0
+            && this->size.value.y() > 0.0
+            && this->size.value.z() > 0.0
             && viewer.getRenderMode() == Viewer::RENDER_MODE_DRAW) {
         SFTime timeNow(Browser::getCurrentTime());
         float x, y, z;
@@ -10371,50 +10354,47 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
         VrmlMatrix MV = context.getMatrix();
         MV = MV.affine_inverse();
         x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
-        bool inside = (fabs(x - this->center.getX()) <= 0.5 * this->size.getX()
-                        && fabs(y - this->center.getY()) <= 0.5 * this->size.getY()
-                        && fabs(z - this->center.getZ()) <= 0.5 * this->size.getZ());
-        bool wasIn = this->active.get();
+        bool inside = (fabs(x - this->center.value.x())
+                            <= 0.5 * this->size.value.x()
+                        && fabs(y - this->center.value.y())
+                            <= 0.5 * this->size.value.y()
+                        && fabs(z - this->center.value.z())
+                            <= 0.5 * this->size.value.z());
+        bool wasIn = this->active.value;
 
         // Check if viewer has entered the box
         if (inside && ! wasIn) {
-            this->active.set(true);
-            this->emitEvent("isActive", this->active, timeNow.get());
+            this->active.value = true;
+            this->emitEvent("isActive", this->active, timeNow.value);
 
             this->enterTime = timeNow;
-            this->emitEvent("enterTime", this->enterTime, timeNow.get());
+            this->emitEvent("enterTime", this->enterTime, timeNow.value);
         }
 
         // Check if viewer has left the box
         else if (wasIn && !inside) {
-            this->active.set(false);
-            this->emitEvent("isActive", this->active, timeNow.get());
+            this->active.value = false;
+            this->emitEvent("isActive", this->active, timeNow.value);
 
             this->exitTime = timeNow;
-            this->emitEvent("exitTime", this->exitTime, timeNow.get());
+            this->emitEvent("exitTime", this->exitTime, timeNow.value);
         }
 
         // Check for movement within the box
         if (wasIn || inside) {
-            if (!fpequal(this->position.getX(), x)
-                    || !fpequal(this->position.getY(), y)
-                    || !fpequal(this->position.getZ(), z)) {
-                const float positionVec[3] = { x, y, z };
-                this->position.set(positionVec);
+            if (position.value != vec3f(x, y, z)) {
+                this->position.value = vec3f(x, y, z);
                 this->emitEvent("position_changed", this->position,
-                                timeNow.get());
+                                timeNow.value);
             }
 
-            SFVec3f trans, scale, shear;
-            SFRotation orientation;
+            vec3f trans, scale, shear;
+            rotation orientation;
             MV.getTransform(trans, orientation, scale, shear);
-            if (!fpequal(this->orientation.getX(), orientation.getX())
-                    || !fpequal(this->orientation.getY(), orientation.getY())
-                    || !fpequal(this->orientation.getZ(), orientation.getZ())
-                    || !fpequal(this->orientation.getAngle(), orientation.getAngle())) {
-                this->orientation = orientation;
+            if (this->orientation.value != orientation) {
+                this->orientation.value = orientation;
                 this->emitEvent("orientation_changed", this->orientation,
-                                timeNow.get());
+                                timeNow.value);
             }
         }
     } else {
@@ -10618,22 +10598,22 @@ void ScalarInterpolator::processSet_fraction(const FieldValue & sffloat,
                                              const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    float f = dynamic_cast<const SFFloat &>(sffloat).get();
+    float f = dynamic_cast<const SFFloat &>(sffloat).value;
 
-    int n = this->key.getLength() - 1;
-    if (f < this->key.getElement(0)) {
-        this->value.set(this->keyValue.getElement(0));
-    } else if (f > this->key.getElement(n)) {
-        this->value.set(this->keyValue.getElement(n));
+    int n = this->key.value.size() - 1;
+    if (f < this->key.value[0]) {
+        this->value.value = this->keyValue.value[0];
+    } else if (f > this->key.value[n]) {
+        this->value.value = this->keyValue.value[n];
     } else {
         for (int i=0; i<n; ++i) {
-            if (this->key.getElement(i) <= f && f <= this->key.getElement(i + 1)) {
-                float v1 = this->keyValue.getElement(i);
-                float v2 = this->keyValue.getElement(i + 1);
+            if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
+                float v1 = this->keyValue.value[i];
+                float v2 = this->keyValue.value[i + 1];
 
-                f = (f - this->key.getElement(i)) / (this->key.getElement(i + 1)
-                        - this->key.getElement(i));
-                this->value.set(v1 + f * (v2 - v1));
+                f = (f - this->key.value[i]) / (this->key.value[i + 1]
+                        - this->key.value[i]);
+                this->value.value = v1 + f * (v2 - v1);
                 break;
             }
         }
@@ -10810,8 +10790,8 @@ Shape::~Shape() throw ()
 bool Shape::isModified() const
 {
     return (d_modified
-            || (this->geometry.get() && this->geometry.get()->isModified())
-            || (this->appearance.get() && this->appearance.get()->isModified()));
+            || (this->geometry.value && this->geometry.value->isModified())
+            || (this->appearance.value && this->appearance.value->isModified()));
 }
 
 /**
@@ -10825,11 +10805,11 @@ void Shape::updateModified(NodePath & path, int flags)
 {
     if (this->isModified()) { markPathModified(path, true, flags); }
     path.push_front(this);
-    if (this->appearance.get()) {
-        this->appearance.get()->updateModified(path, flags);
+    if (this->appearance.value) {
+        this->appearance.value->updateModified(path, flags);
     }
-    if (this->geometry.get()) {
-        this->geometry.get()->updateModified(path, flags);
+    if (this->geometry.value) {
+        this->geometry.value->updateModified(path, flags);
     }
     path.pop_front();
 }
@@ -10847,8 +10827,8 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
         this->viewerObject = 0;
     }
 
-    GeometryNode * g = this->geometry.get()
-                     ? this->geometry.get()->toGeometry()
+    GeometryNode * g = this->geometry.value
+                     ? this->geometry.value->toGeometry()
                      : 0;
 
     if (this->viewerObject) {
@@ -10861,14 +10841,14 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
         if (!picking) {
             int nTexComponents = 0;
 
-            if (!picking && this->appearance.get()
-                    && this->appearance.get()->toAppearance()) {
-                AppearanceNode * a = this->appearance.get()->toAppearance();
+            if (!picking && this->appearance.value
+                    && this->appearance.value->toAppearance()) {
+                AppearanceNode * a = this->appearance.value->toAppearance();
                 a->render(viewer, context);
 
-                if (a->getTexture().get()
-                        && a->getTexture().get()->toTexture()) {
-                    nTexComponents = a->getTexture().get()->toTexture()
+                if (a->getTexture().value
+                        && a->getTexture().value->toTexture()) {
+                    nTexComponents = a->getTexture().value->toTexture()
                                         ->nComponents();
                 }
             } else {
@@ -10883,8 +10863,8 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
         g->render(viewer, context);
 
         viewer.endObject();
-    } else if (this->appearance.get()) {
-        this->appearance.get()->clearModified();
+    } else if (this->appearance.value) {
+        this->appearance.value->clearModified();
     }
     this->clearModified();
 }
@@ -10900,7 +10880,7 @@ const BVolume* Shape::getBVolume() const
     // just pass off to the geometry's getbvolume() method
     //
     const BVolume * r = 0;
-    const NodePtr & geom = this->geometry.get();
+    const NodePtr & geom = this->geometry.value;
     if (geom) { r = geom->getBVolume(); }
     ((Shape*)this)->setBVolumeDirty(false);
     return r;
@@ -11156,7 +11136,7 @@ Sound::Sound(const NodeType & nodeType,
              const ScopePtr & scope):
     Node(nodeType, scope),
     AbstractChild(nodeType, scope),
-    direction(0, 0, 1),
+    direction(vec3f(0, 0, 1)),
     intensity(1),
     maxBack(10),
     maxFront(10),
@@ -11182,7 +11162,7 @@ void Sound::updateModified(NodePath & path, int flags)
 {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
-    if (this->source.get()) { this->source.get()->updateModified(path); }
+    if (this->source.value) { this->source.value->updateModified(path); }
     path.pop_front();
 }
 
@@ -11195,8 +11175,8 @@ void Sound::updateModified(NodePath & path, int flags)
 void Sound::render(Viewer & viewer, const VrmlRenderContext context)
 {
     // If this clip has been modified, update the internal data
-    if (this->source.get() && this->source.get()->isModified()) {
-        this->source.get()->render(viewer, context);
+    if (this->source.value && this->source.value->isModified()) {
+        this->source.value->render(viewer, context);
     }
 }
 
@@ -11465,7 +11445,7 @@ Sphere::~Sphere() throw ()
 Viewer::Object Sphere::insertGeometry(Viewer & viewer,
                                       const VrmlRenderContext context)
 {
-    return viewer.insertSphere(this->radius.get());
+    return viewer.insertSphere(this->radius.value);
 }
 
 /**
@@ -11476,7 +11456,7 @@ Viewer::Object Sphere::insertGeometry(Viewer & viewer,
 const BVolume * Sphere::getBVolume() const
 {
     if (this->isBVolumeDirty()) {
-        ((Sphere*)this)->bsphere.setRadius(this->radius.get());
+        ((Sphere*)this)->bsphere.setRadius(this->radius.value);
         ((Node*)this)->setBVolumeDirty(false); // logical const
     }
     return &this->bsphere;
@@ -11659,7 +11639,7 @@ SphereSensor::SphereSensor(const NodeType & nodeType,
     AbstractChild(nodeType, scope),
     autoOffset(true),
     enabled(true),
-    offset(0.0, 1.0, 0.0, 0.0),
+    offset(OpenVRML::rotation(0.0, 1.0, 0.0, 0.0)),
     active(false)
 {
     this->setModified();
@@ -11711,31 +11691,31 @@ void SphereSensor::render(Viewer & viewer, const VrmlRenderContext context)
 void SphereSensor::activate(double timeStamp, bool isActive, double * p)
 {
     // Become active
-    if (isActive && !this->active.get()) {
-        this->active.set(isActive);
+    if (isActive && !this->active.value) {
+        this->active.value = isActive;
 
         // set activation point in world coords
-        const float floatVec[3] = { p[0], p[1], p[2] };
-        this->activationPoint.set(floatVec);
+        const vec3f floatVec(p[0], p[1], p[2]);
+        this->activationPoint.value = floatVec;
 
-        if (this->autoOffset.get()) { this->rotation = this->offset; }
+        if (this->autoOffset.value) { this->rotation = this->offset; }
 
         // calculate the center of the object in world coords
-        float V[3] = { 0.0, 0.0, 0.0 };
+        vec3f V;
         VrmlMatrix M = this->modelview.affine_inverse();
         M.multVecMatrix(V , V);
-        this->centerPoint.set(V);
+        this->centerPoint.value = V;
 
         // send message
         this->emitEvent("isActive", this->active, timeStamp);
     }
     // Become inactive
-    else if (!isActive && this->active.get()) {
-        this->active.set(isActive);
+    else if (!isActive && this->active.value) {
+        this->active.value = isActive;
         this->emitEvent("isActive", this->active, timeStamp);
 
         // save auto offset of rotation
-        if (this->autoOffset.get()) {
+        if (this->autoOffset.value) {
             this->offset = this->rotation;
             this->emitEvent("offset_changed", this->offset, timeStamp);
         }
@@ -11743,31 +11723,30 @@ void SphereSensor::activate(double timeStamp, bool isActive, double * p)
     // Tracking
     else if (isActive) {
         // get local coord for touch point
-        float V[3] = { p[0], p[1], p[2] };
+        vec3f V(p[0], p[1], p[2]);
         VrmlMatrix M = this->modelview.affine_inverse();
         M.multVecMatrix( V , V );
-        this->trackPoint.set(V);
+        this->trackPoint.value = V;
         this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
 
-        float V2[3] = { p[0], p[1], p[2] };
-        float tempv[3];
-        Vdiff(tempv, V2, this->centerPoint.get());
-        SFVec3f dir1(tempv);
+        vec3f V2(p[0], p[1], p[2]);
+        vec3f tempv = V2 - this->centerPoint.value;
+        vec3f dir1(tempv);
         double dist = dir1.length();                // get the length of the pre-normalized vector
         dir1 = dir1.normalize();
-        Vdiff(tempv, this->activationPoint.get(), this->centerPoint.get());
-        SFVec3f dir2(tempv);
+        tempv = this->activationPoint.value - this->centerPoint.value;
+        vec3f dir2(tempv);
         dir2 = dir2.normalize();
 
-        Vcross(tempv, dir1.get(), dir2.get());
-        SFVec3f cx(tempv);
+        tempv = dir1 * dir2;
+        vec3f cx(tempv);
         cx = cx.normalize();
 
-        SFRotation newRot(cx, dist * acos(dir1.dot(dir2)));
-        if (this->autoOffset.get()) {
-            newRot = newRot.multiply(this->offset);
+        OpenVRML::rotation newRot(cx, dist * acos(dir1.dot(dir2)));
+        if (this->autoOffset.value) {
+            newRot = newRot * this->offset.value;
         }
-        this->rotation = newRot;
+        this->rotation.value = newRot;
 
         this->emitEvent("rotation_changed", this->rotation, timeStamp);
     }
@@ -11780,7 +11759,7 @@ void SphereSensor::activate(double timeStamp, bool isActive, double * p)
  */
 bool SphereSensor::isEnabled() const throw ()
 {
-    return this->enabled.get();
+    return this->enabled.value;
 }
 
 /**
@@ -12023,11 +12002,11 @@ SpotLight::SpotLight(const NodeType & nodeType,
                      const ScopePtr & scope):
     Node(nodeType, scope),
     AbstractLight(nodeType, scope),
-    attenuation(1.0, 0.0, 0.0),
+    attenuation(vec3f(1.0, 0.0, 0.0)),
     beamWidth(1.570796),
     cutOffAngle(0.785398),
-    direction(0.0, 0.0, -1.0),
-    location(0.0, 0.0, 0.0),
+    direction(vec3f(0.0, 0.0, -1.0)),
+    location(vec3f(0.0, 0.0, 0.0)),
     radius(100)
 {}
 
@@ -12061,16 +12040,16 @@ SpotLight * SpotLight::toSpotLight() const
  */
 void SpotLight::renderScoped(Viewer & viewer)
 {
-    if (this->on.get() && this->radius.get() > 0.0) {
-        viewer.insertSpotLight(this->ambientIntensity.get(),
-                               this->attenuation.get(),
-                               this->beamWidth.get(),
-                               this->color.get(),
-                               this->cutOffAngle.get(),
-                               this->direction.get(),
-                               this->intensity.get(),
-                               this->location.get(),
-                               this->radius.get());
+    if (this->on.value && this->radius.value > 0.0) {
+        viewer.insertSpotLight(this->ambientIntensity.value,
+                               &this->attenuation.value[0],
+                               this->beamWidth.value,
+                               &this->color.value[0],
+                               this->cutOffAngle.value,
+                               &this->direction.value[0],
+                               this->intensity.value,
+                               &this->location.value[0],
+                               this->radius.value);
     }
     this->clearModified();
 }
@@ -12337,10 +12316,10 @@ Switch::~Switch() throw () {}
 bool Switch::isModified() const {
     if (d_modified) { return true; }
 
-    long w = this->whichChoice.get();
+    long w = this->whichChoice.value;
 
-    return (w >= 0 && size_t(w) < this->choice.getLength()
-            && this->choice.getElement(w)->isModified());
+    return (w >= 0 && size_t(w) < this->choice.value.size()
+            && this->choice.value[w]->isModified());
 }
 
 /**
@@ -12359,8 +12338,8 @@ void Switch::updateModified(NodePath & path, int flags) {
     //
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
-    for (size_t i = 0; i < this->choice.getLength(); ++i) {
-        this->choice.getElement(i)->updateModified(path);
+    for (size_t i = 0; i < this->choice.value.size(); ++i) {
+        this->choice.value[i]->updateModified(path);
     }
     path.pop_front();
 }
@@ -12376,8 +12355,8 @@ void Switch::updateModified(NodePath & path, int flags) {
  */
 void Switch::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    if (this->children.getElement(0)) {
-        this->children.getElement(0)->render(viewer, context);
+    if (this->children.value[0]) {
+        this->children.value[0]->render(viewer, context);
     }
     this->clearModified();
 }
@@ -12410,7 +12389,7 @@ const MFNode & Switch::getChildren() const throw ()
 void Switch::activate(double time, bool isOver, bool isActive, double *p)
 {
     const MFNode & children = this->getChildren();
-    const NodePtr & node = children.getElement(0);
+    const NodePtr & node = children.value[0];
     if (node) {
         if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
             node->toTouchSensor()->activate(time, isOver, isActive, p);
@@ -12432,9 +12411,9 @@ void Switch::activate(double time, bool isOver, bool isActive, double *p)
  */
 void Switch::recalcBSphere() {
     this->bsphere.reset();
-    long w = this->whichChoice.get();
-    if (w >= 0 && size_t(w) < this->choice.getLength()) {
-        const NodePtr & node = this->choice.getElement(w);
+    long w = this->whichChoice.value;
+    if (w >= 0 && size_t(w) < this->choice.value.size()) {
+        const NodePtr & node = this->choice.value[w];
         if (node) {
             const BVolume * ci_bv = node->getBVolume();
             if (ci_bv) { this->bsphere.extend(*ci_bv); }
@@ -12457,10 +12436,10 @@ void Switch::processSet_choice(const FieldValue & mfnode,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->choice = dynamic_cast<const MFNode &>(mfnode);
-    const size_t whichChoice = size_t(this->whichChoice.get());
-    this->children.setElement(0, (whichChoice < this->choice.getLength())
-                                    ? this->choice.getElement(whichChoice)
-                                    : NodePtr(0));
+    const size_t whichChoice = size_t(this->whichChoice.value);
+    this->children.value[0] = (whichChoice < this->choice.value.size())
+                            ? this->choice.value[whichChoice]
+                            : NodePtr(0);
     this->setModified();
     this->emitEvent("choice_changed", this->choice, timestamp);
 }
@@ -12479,10 +12458,10 @@ void Switch::processSet_whichChoice(const FieldValue & sfint32,
     throw (std::bad_cast)
 {
     this->whichChoice = dynamic_cast<const SFInt32 &>(sfint32);
-    const size_t whichChoice = size_t(this->whichChoice.get());
-    this->children.setElement(0, (whichChoice < this->choice.getLength())
-                                    ? this->choice.getElement(whichChoice)
-                                    : NodePtr(0));
+    const size_t whichChoice = size_t(this->whichChoice.value);
+    this->children.value[0] = (whichChoice < this->choice.value.size())
+                            ? this->choice.value[whichChoice]
+                            : NodePtr(0);
     this->setModified();
     this->emitEvent("whichChoice_changed", this->whichChoice, timestamp);
 }
@@ -12666,16 +12645,17 @@ const NodeTypePtr TextClass::createType(const std::string & id,
 # ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
-    const float (* getClosestVertex_(const MFVec2f & contour,
-                                     const float (&point)[2]) throw ())[2]
+    const vec2f * getClosestVertex_(const MFVec2f & contour,
+                                    const vec2f & point)
+        throw ()
     {
-        assert(contour.getLength() > 1);
-        const float (*result)[2] = 0;
+        assert(contour.value.size() > 1);
+        const vec2f * result = 0;
         float shortestDistance = std::numeric_limits<float>::max();
-        for (size_t i = 0; i < contour.getLength(); ++i) {
-            const float (&element)[2] = contour.getElement(i);
-            const float x = point[0] - element[0];
-            const float y = point[1] - element[1];
+        for (size_t i = 0; i < contour.value.size(); ++i) {
+            const vec2f & element = contour.value[i];
+            const float x = point[0] - element.x();
+            const float y = point[1] - element.y();
             const float distance = sqrt(x * x + y * y);
             if (distance < shortestDistance) {
                 shortestDistance = distance;
@@ -12686,18 +12666,18 @@ namespace {
         return result;
     }
 
-    bool insideContour_(const MFVec2f & contour, const float (&point)[2])
+    bool insideContour_(const MFVec2f & contour, const vec2f & point)
         throw ()
     {
         bool result = false;
-        const size_t nvert = contour.getLength();
+        const size_t nvert = contour.value.size();
         for (size_t i = 0, j = nvert - 1; i < nvert; j = i++) {
-            const float (&vi)[2] = contour.getElement(i);
-            const float (&vj)[2] = contour.getElement(j);
-            if ((((vi[1] <= point[1]) && (point[1] < vj[1]))
-                        || ((vj[1] <= point[1]) && (point[1] < vi[1])))
-                    && (point[0] < (vj[0] - vi[0])
-                        * (point[1] - vi[1]) / (vj[1] - vi[1]) + vi[0])) {
+            const vec2f & vi = contour.value[i];
+            const vec2f & vj = contour.value[j];
+            if ((((vi.y() <= point.y()) && (point.y() < vj.y()))
+                        || ((vj.y() <= point.y()) && (point.y() < vi.y())))
+                    && (point.x() < (vj.x() - vi.x())
+                        * (point.y() - vi.y()) / (vj.y() - vi.y()) + vi.x())) {
                 result = !result;
             }
         }
@@ -12712,8 +12692,8 @@ namespace {
     {
         using std::vector;
 
-        assert(contour.getLength() > 0);
-        const float (&vertex)[2] = contour.getElement(0);
+        assert(contour.value.size() > 0);
+        const vec2f & vertex = contour.value[0];
 
         bool isInterior = false;
         for (vector<MFVec2f>::const_iterator testContour = contours.begin();
@@ -12737,12 +12717,12 @@ namespace {
         {
             assert(lhs);
             assert(rhs);
-            assert(lhs->getLength() > 0);
+            assert(!lhs->value.empty());
             //
             // Assume contours don't intersect. So if one point on lhs is
             // inside rhs, then assume all of lhs is inside rhs.
             //
-            return insideContour_(*rhs, lhs->getElement(0));
+            return insideContour_(*rhs, lhs->value[0]);
         }
     };
 
@@ -12781,9 +12761,8 @@ namespace {
             polygon.exterior = *exteriors.begin();
             Contours::iterator interior = interiors.begin();
             while (interior != interiors.end()) {
-                assert((*interior)->getLength() > 0);
-                if (insideContour_(*polygon.exterior,
-                                   (*interior)->getElement(0))) {
+                assert(!(*interior)->value.empty());
+                if (insideContour_(*polygon.exterior, (*interior)->value[0])) {
                     polygon.interiors.push_back(*interior);
                     Contours::iterator next = interior;
                     ++next;
@@ -12799,12 +12778,12 @@ namespace {
         return polygons;
     }
 
-    long getVertexIndex_(const MFVec2f & vertices, const float (&vertex)[2])
+    long getVertexIndex_(const MFVec2f & vertices, const vec2f & vertex)
         throw ()
     {
         using OpenVRML_::fpequal;
-        for (size_t i = 0; i < vertices.getLength(); ++i) {
-            const float (&element)[2] = vertices.getElement(i);
+        for (size_t i = 0; i < vertices.value.size(); ++i) {
+            const vec2f & element = vertices.value[i];
             if (fpequal(vertex[0], element[0])
                     && fpequal(vertex[1], element[1])) {
                 return i;
@@ -12845,7 +12824,7 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
         // contour, and maps to a pointer to the interior contour whose
         // first vertex is closest to the exterior vertex.
         //
-        typedef std::multimap<const float (*)[2], const MFVec2f *> ConnectionMap;
+        typedef std::multimap<const vec2f *, const MFVec2f *> ConnectionMap;
         ConnectionMap connectionMap;
 
         //
@@ -12858,10 +12837,10 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
                 interior != polygon->interiors.end();
                 ++interior) {
             assert(*interior);
-            assert((*interior)->getLength() > 0);
-            const float (* const exteriorVertex)[2] =
+            assert(!(*interior)->value.empty());
+            const vec2f * const exteriorVertex =
                     getClosestVertex_(*polygon->exterior,
-                                      (*interior)->getElement(0));
+                                      (*interior)->value[0]);
             assert(exteriorVertex);
             const ConnectionMap::value_type value(exteriorVertex, *interior);
             connectionMap.insert(value);
@@ -12870,41 +12849,40 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
         //
         // Finally, draw the polygon.
         //
-        assert(polygon->exterior->getLength() > 0);
-        for (size_t i = 0; i < polygon->exterior->getLength(); ++i) {
-            const float (&exteriorVertex)[2] = polygon->exterior->getElement(i);
+        assert(!polygon->exterior->value.empty());
+        for (size_t i = 0; i < polygon->exterior->value.size(); ++i) {
+            const vec2f & exteriorVertex = polygon->exterior->value[i];
             long exteriorIndex = getVertexIndex_(this->coord, exteriorVertex);
             if (exteriorIndex > -1) {
-                this->coordIndex.addElement(exteriorIndex);
+                this->coordIndex.value.push_back(exteriorIndex);
             } else {
-                this->coord.addElement(exteriorVertex);
-                assert(this->coord.getLength() > 0);
-                exteriorIndex = this->coord.getLength() - 1;
-                this->coordIndex.addElement(exteriorIndex);
+                this->coord.value.push_back(exteriorVertex);
+                assert(!this->coord.value.empty());
+                exteriorIndex = this->coord.value.size() - 1;
+                this->coordIndex.value.push_back(exteriorIndex);
             }
             ConnectionMap::iterator pos;
             while ((pos = connectionMap.find(&exteriorVertex))
                     != connectionMap.end()) {
-                for (int i = pos->second->getLength() - 1; i > -1; --i) {
-                    const float (&interiorVertex)[2] =
-                            pos->second->getElement(i);
+                for (int i = pos->second->value.size() - 1; i > -1; --i) {
+                    const vec2f & interiorVertex = pos->second->value[i];
                     const long interiorIndex = getVertexIndex_(this->coord,
                                                                interiorVertex);
                     if (interiorIndex > -1) {
-                        this->coordIndex.addElement(interiorIndex);
+                        this->coordIndex.value.push_back(interiorIndex);
                     } else {
-                        this->coord.addElement(interiorVertex);
-                        assert(this->coord.getLength() > 0);
+                        this->coord.value.push_back(interiorVertex);
+                        assert(!this->coord.value.empty());
                         this->coordIndex
-                            .addElement(this->coord.getLength() - 1);
+                            .value.push_back(this->coord.value.size() - 1);
                     }
                 }
-                this->coordIndex.addElement(exteriorIndex);
+                this->coordIndex.value.push_back(exteriorIndex);
                 connectionMap.erase(pos);
             }
         }
         assert(connectionMap.empty());
-        this->coordIndex.addElement(-1);
+        this->coordIndex.value.push_back(-1);
     }
 # endif // OPENVRML_ENABLE_TEXT_NODE
 }
@@ -13004,7 +12982,7 @@ Text::~Text() throw ()
  */
 bool Text::isModified() const {
     return (this->Node::isModified()
-            || (this->fontStyle.get() && this->fontStyle.get()->isModified()));
+            || (this->fontStyle.value && this->fontStyle.value->isModified()));
 }
 
 /**
@@ -13017,7 +12995,7 @@ bool Text::isModified() const {
 void Text::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
-    if (this->fontStyle.get()) { this->fontStyle.get()->updateModified(path); }
+    if (this->fontStyle.value) { this->fontStyle.value->updateModified(path); }
     path.pop_front();
 }
 
@@ -13032,21 +13010,21 @@ Viewer::Object Text::insertGeometry(Viewer & viewer,
 {
     const Viewer::Object retval =
             viewer.insertShell(Viewer::MASK_CCW,
-                               this->textGeometry.coord.getLength(),
-                               (this->textGeometry.coord.getLength() > 0)
-                                    ? &this->textGeometry.coord.getElement(0)[0]
+                               this->textGeometry.coord.value.size(),
+                               (this->textGeometry.coord.value.size() > 0)
+                                    ? &this->textGeometry.coord.value[0][0]
                                     : 0,
-                               this->textGeometry.coordIndex.getLength(),
-                               (this->textGeometry.coordIndex.getLength() > 0)
-                                    ? &this->textGeometry.coordIndex.getElement(0)
+                               this->textGeometry.coordIndex.value.size(),
+                               (this->textGeometry.coordIndex.value.size() > 0)
+                                    ? &this->textGeometry.coordIndex.value[0]
                                     : 0,
                                0, 0, 0,
-                               (this->textGeometry.normal.getLength() > 0)
-                                    ? &this->textGeometry.normal.getElement(0)[0]
+                               (this->textGeometry.normal.value.size() > 0)
+                                    ? &this->textGeometry.normal.value[0][0]
                                     : 0,
                                0, 0,
                                0, 0, 0);
-    if (this->fontStyle.get()) { this->fontStyle.get()->clearModified(); }
+    if (this->fontStyle.value) { this->fontStyle.value->clearModified(); }
     return retval;
 }
 
@@ -13165,13 +13143,13 @@ void Text::updateUcs4() throw (std::bad_alloc)
 {
 # ifdef OPENVRML_ENABLE_TEXT_NODE
     this->ucs4String.clear();
-    this->ucs4String.resize(this->string.getLength());
+    this->ucs4String.resize(this->string.value.size());
 
-    for (size_t i = 0; i < this->string.getLength(); ++i) {
+    for (size_t i = 0; i < this->string.value.size(); ++i) {
         using std::string;
         using std::vector;
 
-        const string & element = this->string.getElement(i);
+        const string & element = this->string.value[i];
 
         vector<FcChar32> & ucs4Element = this->ucs4String[i];
 
@@ -13241,19 +13219,19 @@ void Text::updateFace() throw (std::bad_alloc)
     FcChar8String language;
 
     MFString family;
-    family.addElement("SERIF");
+    family.value.push_back("SERIF");
 
     string style;
 
-    FontStyleNode * const fontStyle = this->fontStyle.get()
-                                    ? this->fontStyle.get()->toFontStyle()
+    FontStyleNode * const fontStyle = this->fontStyle.value
+                                    ? this->fontStyle.value->toFontStyle()
                                     : 0;
     if (fontStyle) {
-        if (fontStyle->getFamily().getLength() > 0) {
+        if (fontStyle->getFamily().value.size() > 0) {
             family = fontStyle->getFamily();
-            style = fontStyle->getStyle().get();
-            language.assign(fontStyle->getLanguage().get().begin(),
-                            fontStyle->getLanguage().get().end());
+            style = fontStyle->getStyle().value;
+            language.assign(fontStyle->getLanguage().value.begin(),
+                            fontStyle->getLanguage().value.end());
         }
     }
 
@@ -13268,8 +13246,8 @@ void Text::updateFace() throw (std::bad_alloc)
             //
             // Set the family.
             //
-            for (size_t i = 0; i < family.getLength(); ++i) {
-                const std::string & element = family.getElement(i);
+            for (size_t i = 0; i < family.value.size(); ++i) {
+                const std::string & element = family.value[i];
                 if (element == "SERIF") {
                     fontName += "serif";
                 } else if (element == "SANS") {
@@ -13279,7 +13257,7 @@ void Text::updateFace() throw (std::bad_alloc)
                 } else {
                     fontName += element;
                 }
-                if (i + 1 < family.getLength()) { fontName += ", "; }
+                if (i + 1 < family.value.size()) { fontName += ", "; }
             }
 
             //
@@ -13393,8 +13371,8 @@ namespace {
             OPENVRML_PRINT_EXCEPTION_(ex);
             return FT_Err_Out_Of_Memory;
         }
-        const float vertex[2] = { to->x * c.scale, to->y * c.scale };
-        c.contours.back().setElement(0, vertex);
+        const vec2f vertex(to->x * c.scale, to->y * c.scale);
+        c.contours.back().value[0] = vertex;
         return 0;
     }
 
@@ -13402,9 +13380,9 @@ namespace {
     {
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
-        const float vertex[2] = { to->x * c.scale, to->y * c.scale};
+        const vec2f vertex(to->x * c.scale, to->y * c.scale);
         try {
-            c.contours.back().addElement(vertex);
+            c.contours.back().value.push_back(vertex);
         } catch (std::bad_alloc & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
             return FT_Err_Out_Of_Memory;
@@ -13437,8 +13415,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void evaluateCurve_(float (*buffer)[2], const size_t npoints,
-                        MFVec2f & contour)
+    void evaluateCurve_(vec2f * buffer, const size_t npoints, MFVec2f & contour)
         throw (std::bad_alloc)
     {
         for (size_t i = 1; i <= (1 / stepSize_); i++){
@@ -13456,7 +13433,7 @@ namespace {
             //
             // Specify next vertex to be included on curve
             //
-            contour.addElement(buffer[(npoints - 1) * npoints]); // throws std::bad_alloc
+            contour.value.push_back(buffer[(npoints - 1) * npoints]); // throws std::bad_alloc
         }
     }
 
@@ -13471,15 +13448,14 @@ namespace {
 
         assert(!c.contours.empty());
         MFVec2f & contour = c.contours.back();
-        const float (&lastVertex)[2] =
-                contour.getElement(contour.getLength() - 1);
+        const vec2f & lastVertex = contour.value[contour.value.size() - 1];
 
-        assert(contour.getLength() > 0);
+        assert(!contour.value.empty());
         const size_t npoints = 3;
-        float buffer[npoints * npoints][2] = {
-            { lastVertex[0], lastVertex[1] },
-            { control->x * c.scale, control->y * c.scale },
-            { to->x * c.scale, to->y * c.scale }
+        vec2f buffer[npoints * npoints] = {
+            vec2f(lastVertex[0], lastVertex[1]),
+            vec2f(control->x * c.scale, control->y * c.scale),
+            vec2f(to->x * c.scale, to->y * c.scale)
         };
 
         try {
@@ -13503,16 +13479,15 @@ namespace {
 
         assert(!c.contours.empty());
         MFVec2f & contour = c.contours.back();
-        const float (&lastVertex)[2] =
-                contour.getElement(contour.getLength() - 1);
+        const vec2f & lastVertex = contour.value[contour.value.size() - 1];
 
-        assert(contour.getLength() > 0);
+        assert(!contour.value.empty());
         const size_t npoints = 4;
-        float buffer[npoints * npoints][2] = {
-            { lastVertex[0], lastVertex[1] },
-            { control1->x * c.scale, control1->y * c.scale },
-            { control2->x * c.scale, control2->y * c.scale },
-            { to->x * c.scale, to->y * c.scale }
+        vec2f buffer[npoints * npoints] = {
+            vec2f(lastVertex[0], lastVertex[1]),
+            vec2f(control1->x * c.scale, control1->y * c.scale),
+            vec2f(control2->x * c.scale, control2->y * c.scale),
+            vec2f(to->x * c.scale, to->y * c.scale)
         };
 
         try {
@@ -13545,19 +13520,19 @@ void Text::updateGeometry() throw (std::bad_alloc)
     float size = 1.0;
     float spacing = 1.0;
     FontStyleNode * fontStyle;
-    if (this->fontStyle.get()
-            && (fontStyle = this->fontStyle.get()->toFontStyle())) {
-        horizontal = fontStyle->getHorizontal().get();
-        if (fontStyle->getJustify().getLength() > 0) {
-            justify[0] = fontStyle->getJustify().getElement(0);
+    if (this->fontStyle.value
+            && (fontStyle = this->fontStyle.value->toFontStyle())) {
+        horizontal = fontStyle->getHorizontal().value;
+        if (fontStyle->getJustify().value.size() > 0) {
+            justify[0] = fontStyle->getJustify().value[0];
         }
-        if (fontStyle->getJustify().getLength() > 1) {
-            justify[1] = fontStyle->getJustify().getElement(1);
+        if (fontStyle->getJustify().value.size() > 1) {
+            justify[1] = fontStyle->getJustify().value[1];
         }
-        leftToRight = fontStyle->getLeftToRight().get();
-        topToBottom = fontStyle->getTopToBottom().get();
-        size = fontStyle->getSize().get();
-        spacing = fontStyle->getSpacing().get();
+        leftToRight = fontStyle->getLeftToRight().value;
+        topToBottom = fontStyle->getTopToBottom().value;
+        size = fontStyle->getSize().value;
+        spacing = fontStyle->getSpacing().value;
     }
 
     TextGeometry newGeometry;
@@ -13648,12 +13623,11 @@ void Text::updateGeometry() throw (std::bad_alloc)
                 glyphGeometry = &result.first->second;
             }
 
-            for (size_t i = 0; i < glyphGeometry->coord.getLength(); ++i) {
-                const float (&glyphVertex)[2] =
-                        glyphGeometry->coord.getElement(i);
-                const float textVertex[2] = { glyphVertex[0] + penPos[0],
-                                              glyphVertex[1] + penPos[1] };
-                lineGeometry.coord.addElement(textVertex);
+            for (size_t i = 0; i < glyphGeometry->coord.value.size(); ++i) {
+                const vec2f & glyphVertex = glyphGeometry->coord.value[i];
+                const vec2f textVertex(glyphVertex[0] + penPos[0],
+                                       glyphVertex[1] + penPos[1]);
+                lineGeometry.coord.value.push_back(textVertex);
                 lineGeometry.xMin = (lineGeometry.xMin < textVertex[0])
                                   ? lineGeometry.xMin
                                   : textVertex[0];
@@ -13668,14 +13642,14 @@ void Text::updateGeometry() throw (std::bad_alloc)
                                   : textVertex[1];
             }
 
-            for (size_t i = 0; i < glyphGeometry->coordIndex.getLength(); ++i) {
-                const long index = glyphGeometry->coordIndex.getElement(i);
+            for (size_t i = 0; i < glyphGeometry->coordIndex.value.size(); ++i) {
+                const long index = glyphGeometry->coordIndex.value[i];
                 if (index > -1) {
-                    const size_t offset = lineGeometry.coord.getLength()
-                                          - glyphGeometry->coord.getLength();
-                    lineGeometry.coordIndex.addElement(offset + index);
+                    const size_t offset = lineGeometry.coord.value.size()
+                                          - glyphGeometry->coord.value.size();
+                    lineGeometry.coordIndex.value.push_back(offset + index);
                 } else {
-                    lineGeometry.coordIndex.addElement(-1);
+                    lineGeometry.coordIndex.value.push_back(-1);
                     ++npolygons;
                 }
             }
@@ -13699,18 +13673,16 @@ void Text::updateGeometry() throw (std::bad_alloc)
         //
         // Scale to length.
         //
-        const float length = (line < this->length.getLength())
-                           ? this->length.getElement(line)
+        const float length = (line < this->length.value.size())
+                           ? this->length.value[line]
                            : 0.0;
         if (length > 0.0) {
             const float currentLength = lineGeometry.xMax - lineGeometry.xMin;
-            for (size_t i = 0; i < lineGeometry.coord.getLength(); ++i) {
-                const float (&vertex)[2] = lineGeometry.coord.getElement(i);
-                const float scaledVertex[2] = {
-                    vertex[0] / currentLength * length,
-                    vertex[1]
-                };
-                lineGeometry.coord.setElement(i, scaledVertex);
+            for (size_t i = 0; i < lineGeometry.coord.value.size(); ++i) {
+                const vec2f & vertex = lineGeometry.coord.value[i];
+                const vec2f scaledVertex(vertex[0] / currentLength * length,
+                                         vertex[1]);
+                lineGeometry.coord.value[i] = scaledVertex;
             }
         }
 
@@ -13735,31 +13707,30 @@ void Text::updateGeometry() throw (std::bad_alloc)
                 yOffset = lineGeometry.yMax - lineGeometry.yMin;
             }
         }
-        for (size_t i = 0; i < lineGeometry.coordIndex.getLength(); ++i) {
-            const long index = lineGeometry.coordIndex.getElement(i);
+        for (size_t i = 0; i < lineGeometry.coordIndex.value.size(); ++i) {
+            const long index = lineGeometry.coordIndex.value[i];
             if (index > -1) {
-                const float (&lineVertex)[2] =
-                        lineGeometry.coord.getElement(index);
-                const float textVertex[3] = { lineVertex[0] + xOffset,
-                                              lineVertex[1] + yOffset,
-                                              0.0f };
-                newGeometry.coord.addElement(textVertex);
+                const vec2f & lineVertex = lineGeometry.coord.value[index];
+                const vec3f textVertex(lineVertex.x() + xOffset,
+                                       lineVertex.y() + yOffset,
+                                       0.0f);
+                newGeometry.coord.value.push_back(textVertex);
                 newGeometry.coordIndex
-                        .addElement(newGeometry.coord.getLength() - 1);
-                geometryXMin = (geometryXMin < textVertex[0])
+                        .value.push_back(newGeometry.coord.value.size() - 1);
+                geometryXMin = (geometryXMin < textVertex.x())
                              ? geometryXMin
-                             : textVertex[0];
-                geometryXMax = (geometryXMax > textVertex[0])
+                             : textVertex.x();
+                geometryXMax = (geometryXMax > textVertex.x())
                              ? geometryXMax
-                             : textVertex[0];
-                geometryYMin = (geometryYMin < textVertex[1])
+                             : textVertex.x();
+                geometryYMin = (geometryYMin < textVertex.y())
                              ? geometryYMin
-                             : textVertex[1];
-                geometryYMax = (geometryYMax > textVertex[1])
+                             : textVertex.y();
+                geometryYMax = (geometryYMax > textVertex.y())
                              ? geometryYMax
-                             : textVertex[1];
+                             : textVertex.y();
             } else {
-                newGeometry.coordIndex.addElement(-1);
+                newGeometry.coordIndex.value.push_back(-1);
             }
         }
     }
@@ -13767,20 +13738,20 @@ void Text::updateGeometry() throw (std::bad_alloc)
     //
     // Scale to maxExtent.
     //
-    const float maxExtent = (this->maxExtent.get() > 0.0)
-                          ? this->maxExtent.get()
+    const float maxExtent = (this->maxExtent.value > 0.0)
+                          ? this->maxExtent.value
                           : 0.0;
     if (maxExtent > 0.0) {
         const float currentMaxExtent = geometryXMax - geometryXMin;
         if (currentMaxExtent > maxExtent) {
-            for (size_t i = 0; i < newGeometry.coord.getLength(); ++i) {
-                const float (&vertex)[3] = newGeometry.coord.getElement(i);
-                const float scaledVertex[3] = {
-                    vertex[0] / currentMaxExtent * maxExtent,
-                    vertex[1],
-                    vertex[2]
-                };
-                newGeometry.coord.setElement(i, scaledVertex);
+            for (size_t i = 0; i < newGeometry.coord.value.size(); ++i) {
+                const vec3f & vertex = newGeometry.coord.value[i];
+                const vec3f scaledVertex(
+                    vertex.x() / currentMaxExtent * maxExtent,
+                    vertex.y(),
+                    vertex.z()
+                );
+                newGeometry.coord.value[i] = scaledVertex;
             }
         }
     }
@@ -13798,34 +13769,34 @@ void Text::updateGeometry() throw (std::bad_alloc)
         }
     } else if (justify[1] == "MIDDLE") {
         if (horizontal) {
-            yOffset = ((size * spacing * this->string.getLength()) / 2.0f)
+            yOffset = ((size * spacing * this->string.value.size()) / 2.0f)
                       - (size * spacing);
         } else {
-            xOffset = ((size * spacing * this->string.getLength()) / 2.0f)
+            xOffset = ((size * spacing * this->string.value.size()) / 2.0f)
                       - (size * spacing);
         }
     } else if (justify[1] == "END") {
         if (horizontal) {
-            yOffset = size * spacing * (this->string.getLength() - 1);
+            yOffset = size * spacing * (this->string.value.size() - 1);
         } else {
-            xOffset = size * spacing * (this->string.getLength() - 1);
+            xOffset = size * spacing * (this->string.value.size() - 1);
         }
     }
-    for (size_t i = 0; i < newGeometry.coord.getLength(); ++i) {
-        const float (&vertex)[3] = newGeometry.coord.getElement(i);
-        const float adjustedVertex[3] = { vertex[0] + xOffset,
-                                          vertex[1] + yOffset,
-                                          vertex[2] };
-        newGeometry.coord.setElement(i, adjustedVertex);
+    for (size_t i = 0; i < newGeometry.coord.value.size(); ++i) {
+        const vec3f & vertex = newGeometry.coord.value[i];
+        const vec3f adjustedVertex(vertex.x() + xOffset,
+                                   vertex.y() + yOffset,
+                                   vertex.z());
+        newGeometry.coord.value[i] = adjustedVertex;
     }
 
     //
     // Create the normals.
     //
-    newGeometry.normal.setLength(npolygons);
-    for (size_t i = 0; i < newGeometry.normal.getLength(); ++i) {
-        static const float normal[3] = { 0.0, 0.0, 1.0 };
-        newGeometry.normal.setElement(i, normal);
+    newGeometry.normal.value.resize(npolygons);
+    for (size_t i = 0; i < newGeometry.normal.value.size(); ++i) {
+        static const vec3f normal(0.0, 0.0, 1.0);
+        newGeometry.normal.value[i] = normal;
     }
 
     this->textGeometry = newGeometry;
@@ -14086,10 +14057,10 @@ TextureTransform::TextureTransform(const NodeType & nodeType,
     Node(nodeType, scope),
     AbstractBase(nodeType, scope),
     TextureTransformNode(nodeType, scope),
-    center(0.0, 0.0),
+    center(vec2f(0.0, 0.0)),
     rotation(0.0),
-    scale(1.0, 1.0),
-    translation(0.0, 0.0)
+    scale(vec2f(1.0, 1.0)),
+    translation(vec2f(0.0, 0.0))
 {}
 
 /**
@@ -14106,10 +14077,10 @@ TextureTransform::~TextureTransform() throw ()
  */
 void TextureTransform::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    viewer.setTextureTransform(this->center.get(),
-                               this->rotation.get(),
-                               this->scale.get(),
-                               this->translation.get());
+    viewer.setTextureTransform(&this->center.value[0],
+                               this->rotation.value,
+                               &this->scale.value[0],
+                               &this->translation.value[0]);
     this->clearModified();
 }
 
@@ -14425,41 +14396,41 @@ void TimeSensor::update(const double currentTime)
 
     SFTime timeNow(currentTime);
 
-    if (this->enabled.get()) {
-        if (this->lastTime > timeNow.get()) { this->lastTime = timeNow.get(); }
+    if (this->enabled.value) {
+        if (this->lastTime > timeNow.value) { this->lastTime = timeNow.value; }
 
         // Become active at startTime if either the valid stopTime hasn't
         // passed or we are looping.
-        if (!this->active.get()
-                && this->startTime.get() <= timeNow.get()
-                && this->startTime.get() >= this->lastTime
-                && ((this->stopTime.get() < this->startTime.get()
-                    || this->stopTime.get() > timeNow.get())
-                    || this->loop.get())) {
-            this->active.set(true);
+        if (!this->active.value
+                && this->startTime.value <= timeNow.value
+                && this->startTime.value >= this->lastTime
+                && ((this->stopTime.value < this->startTime.value
+                    || this->stopTime.value > timeNow.value)
+                    || this->loop.value)) {
+            this->active.value = true;
 
             // Start at first tick >= startTime
-            this->emitEvent("isActive", this->active, timeNow.get());
-            this->emitEvent("time", timeNow, timeNow.get());
-            this->emitEvent("fraction_changed", SFFloat(0.0), timeNow.get());
-            this->emitEvent("cycleTime", timeNow, timeNow.get());
+            this->emitEvent("isActive", this->active, timeNow.value);
+            this->emitEvent("time", timeNow, timeNow.value);
+            this->emitEvent("fraction_changed", SFFloat(0.0), timeNow.value);
+            this->emitEvent("cycleTime", timeNow, timeNow.value);
         }
 
         // Running (active and enabled)
-        else if (this->active.get()) {
-            double f, cycleInt = this->cycleInterval.get();
+        else if (this->active.value) {
+            double f, cycleInt = this->cycleInterval.value;
             bool deactivate = false;
 
             // Are we done? Choose min of stopTime or start + single cycle.
-            if ((this->stopTime.get() > this->startTime.get()
-                        && this->stopTime.get() <= timeNow.get())
-                    || (!this->loop.get()
-                        && this->startTime.get() + cycleInt <= timeNow.get())) {
-                this->active.set(false);
+            if ((this->stopTime.value > this->startTime.value
+                        && this->stopTime.value <= timeNow.value)
+                    || (!this->loop.value
+                        && this->startTime.value + cycleInt <= timeNow.value)) {
+                this->active.value = false;
 
                 // Must respect stopTime/cycleInterval exactly
-                if (this->startTime.get() + cycleInt < this->stopTime.get()) {
-                    timeNow = SFTime(this->startTime.get() + cycleInt);
+                if (this->startTime.value + cycleInt < this->stopTime.value) {
+                    timeNow = SFTime(this->startTime.value + cycleInt);
                 } else {
                     timeNow = this->stopTime;
                 }
@@ -14467,33 +14438,33 @@ void TimeSensor::update(const double currentTime)
                 deactivate = true;
             }
 
-            if (cycleInt > 0.0 && timeNow.get() > this->startTime.get()) {
-                f = fmod(timeNow.get() - this->startTime.get(), cycleInt);
+            if (cycleInt > 0.0 && timeNow.value > this->startTime.value) {
+                f = fmod(timeNow.value - this->startTime.value, cycleInt);
             } else {
                 f = 0.0;
             }
 
             // Fraction of cycle message
             SFFloat fraction_changed(fpzero(f) ? 1.0 : (f / cycleInt));
-            this->emitEvent("fraction_changed", fraction_changed, timeNow.get());
+            this->emitEvent("fraction_changed", fraction_changed, timeNow.value);
 
             // Current time message
-            this->emitEvent("time", timeNow, timeNow.get());
+            this->emitEvent("time", timeNow, timeNow.value);
 
             // End of cycle message (this may miss cycles...)
-            if (fpequal(fraction_changed.get(), 1.0)) {
-                this->emitEvent("cycleTime", timeNow, timeNow.get());
+            if (fpequal(fraction_changed.value, 1.0)) {
+                this->emitEvent("cycleTime", timeNow, timeNow.value);
             }
 
             if (deactivate) {
-                this->emitEvent("isActive", this->active, timeNow.get());
+                this->emitEvent("isActive", this->active, timeNow.value);
             }
         }
 
         // Tell the scene this node needs quick updates while it is active.
         // Should check whether time, fraction_changed eventOuts are
         // being used, and set delta to cycleTime if not...
-        if (this->active.get()) {
+        if (this->active.value) {
 #ifdef macintosh
             this->nodeType.nodeClass.browser.setDelta(0.001); //0.0 is too fast(!)
 #else
@@ -14552,7 +14523,7 @@ void TimeSensor::processSet_cycleInterval(const FieldValue & sftime,
                                           const double timestamp)
     throw (std::bad_cast)
 {
-    if (!this->active.get()) {
+    if (!this->active.value) {
         this->cycleInterval = dynamic_cast<const SFTime &>(sftime);
         this->lastTime = timestamp;
         this->emitEvent("cycleInterval_changed", this->cycleInterval,
@@ -14575,29 +14546,29 @@ void TimeSensor::processSet_enabled(const FieldValue & sfbool,
     using OpenVRML_::fpzero;
 
     this->enabled = dynamic_cast<const SFBool &>(sfbool);
-    if (this->enabled.get() != this->active.get()) {
-        if (this->active.get()) {
+    if (this->enabled.value != this->active.value) {
+        if (this->active.value) {
             //
             // Was active; shutdown.
             //
-            double cycleInt = this->cycleInterval.get();
+            double cycleInt = this->cycleInterval.value;
             double f = (cycleInt > 0.0)
-                     ? fmod(this->time.get() - this->startTime.get(), cycleInt)
+                     ? fmod(this->time.value - this->startTime.value, cycleInt)
                      : 0.0;
 
             // Fraction of cycle message
-            this->fraction.set(fpzero(f) ? 1.0 : (f / cycleInt));
+            this->fraction.value = fpzero(f) ? 1.0 : (f / cycleInt);
         } else {
             //
             // Was inactive; startup.
             //
-            this->cycleTime.set(timestamp);
+            this->cycleTime.value = timestamp;
             this->emitEvent("cycleTime", this->cycleTime, timestamp);
 
             // Fraction of cycle message
-            this->fraction.set(0.0);
+            this->fraction.value = 0.0;
         }
-        this->time.set(timestamp);
+        this->time.value = timestamp;
         this->emitEvent("time", this->time, timestamp);
         this->emitEvent("fraction_changed", this->fraction, timestamp);
         this->active = this->enabled;
@@ -14634,7 +14605,7 @@ void TimeSensor::processSet_startTime(const FieldValue & sftime,
                                       const double timestamp)
     throw (std::bad_cast)
 {
-    if (!this->active.get()) {
+    if (!this->active.value) {
         this->startTime = dynamic_cast<const SFTime &>(sftime);
         this->lastTime = timestamp;
         this->emitEvent("startTime_changed", this->startTime, timestamp);
@@ -14855,18 +14826,18 @@ TouchSensor* TouchSensor::toTouchSensor() const
 void TouchSensor::activate(double timeStamp, bool isOver, bool isActive,
                            double *)
 {
-    if (isOver && !isActive && this->active.get()) {
-        this->touchTime.set(timeStamp);
+    if (isOver && !isActive && this->active.value) {
+        this->touchTime.value = timeStamp;
         this->emitEvent("touchTime", this->touchTime, timeStamp);
     }
 
-    if (isOver != this->over.get()) {
-        this->over.set(isOver);
+    if (isOver != this->over.value) {
+        this->over.value = isOver;
         this->emitEvent("isOver", this->over, timeStamp);
     }
 
-    if (isActive != this->active.get()) {
-        this->active.set(isActive);
+    if (isActive != this->active.value) {
+        this->active.value = isActive;
         this->emitEvent("isActive", this->active, timeStamp);
     }
     // if (isOver && any routes from eventOuts)
@@ -14880,7 +14851,7 @@ void TouchSensor::activate(double timeStamp, bool isOver, bool isActive,
  */
 bool TouchSensor::isEnabled() const
 {
-    return this->enabled.get();
+    return this->enabled.value;
 }
 
 /**
@@ -15106,11 +15077,11 @@ Transform::Transform(const NodeType & nodeType,
     GroupingNode(nodeType, scope),
     Group(nodeType, scope),
     TransformNode(nodeType, scope),
-    center(0.0, 0.0, 0.0),
-    rotation(0.0, 0.0, 1.0, 0.0),
-    scale(1.0, 1.0, 1.0),
-    scaleOrientation(0.0, 0.0, 1.0, 0.0),
-    translation(0.0, 0.0, 0.0),
+    center(vec3f(0.0, 0.0, 0.0)),
+    rotation(OpenVRML::rotation(0.0, 0.0, 1.0, 0.0)),
+    scale(vec3f(1.0, 1.0, 1.0)),
+    scaleOrientation(OpenVRML::rotation(0.0, 0.0, 1.0, 0.0)),
+    translation(vec3f(0.0, 0.0, 0.0)),
     transformDirty(true),
     xformObject(0)
 {
@@ -15169,7 +15140,7 @@ void Transform::render(Viewer & viewer, VrmlRenderContext context)
 
     if (this->xformObject) {
         viewer.insertReference(this->xformObject);
-    } else if (this->children.getLength() > 0) {
+    } else if (!this->children.value.empty()) {
         this->xformObject = viewer.beginObject(this->getId().c_str());
 
         // Apply transforms
@@ -15201,8 +15172,8 @@ const BVolume * Transform::getBVolume() const
 void Transform::recalcBSphere()
 {
     this->bsphere.reset();
-    for (size_t i = 0; i < this->children.getLength(); ++i) {
-        const NodePtr & node = this->children.getElement(i);
+    for (size_t i = 0; i < this->children.value.size(); ++i) {
+        const NodePtr & node = this->children.value[i];
         if (node) {
             const BVolume * ci_bv = node->getBVolume();
             if (ci_bv) { this->bsphere.extend(*ci_bv); }
@@ -15248,11 +15219,11 @@ Transform::recalcBSphere()
 void Transform::updateTransform() const throw ()
 {
     if (this->transformDirty) {
-        this->transform.setTransform(this->translation,
-                                     this->rotation,
-                                     this->scale,
-                                     this->scaleOrientation,
-                                     this->center);
+        this->transform.setTransform(this->translation.value,
+                                     this->rotation.value,
+                                     this->scale.value,
+                                     this->scaleOrientation.value,
+                                     this->center.value);
         this->transformDirty = false;
     }
 }
@@ -15432,7 +15403,7 @@ void ViewpointClass::bind(Viewpoint & viewpoint, const double timestamp)
     if (!this->boundNodes.empty()) {
         Viewpoint & current =
                 dynamic_cast<Viewpoint &>(*this->boundNodes.back());
-        current.bound.set(false);
+        current.bound.value = false;
         current.emitEvent("isBound", current.bound, timestamp);
     }
 
@@ -15440,7 +15411,7 @@ void ViewpointClass::bind(Viewpoint & viewpoint, const double timestamp)
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
     this->boundNodes.push_back(&viewpoint);
-    viewpoint.bound.set(true);
+    viewpoint.bound.value = true;
     viewpoint.emitEvent("isBound", viewpoint.bound, timestamp);
 
     this->browser.setActiveViewpoint(viewpoint);
@@ -15458,14 +15429,14 @@ void ViewpointClass::unbind(Viewpoint & viewpoint, const double timestamp)
     const BoundNodes::iterator pos =
         std::find(this->boundNodes.begin(), this->boundNodes.end(), &viewpoint);
     if (pos != this->boundNodes.end()) {
-        viewpoint.bound.set(false);
+        viewpoint.bound.value = false;
         viewpoint.emitEvent("isBound", viewpoint.bound, timestamp);
 
         if (pos == this->boundNodes.end() - 1
                 && this->boundNodes.size() > 1) {
             Viewpoint & newActive =
                     dynamic_cast<Viewpoint &>(**(this->boundNodes.end() - 2));
-            newActive.bound.set(true);
+            newActive.bound.value = true;
             newActive.emitEvent("isBound", newActive.bound, timestamp);
 
             this->browser.setActiveViewpoint(viewpoint);
@@ -15660,8 +15631,8 @@ Viewpoint::Viewpoint(const NodeType & nodeType,
     ViewpointNode(nodeType, scope),
     fieldOfView(DEFAULT_FIELD_OF_VIEW),
     jump(true),
-    orientation(0.0, 0.0, 1.0, 0.0),
-    position(0.0, 0.0, 10.0),
+    orientation(rotation(0.0, 0.0, 1.0, 0.0)),
+    position(vec3f(0.0, 0.0, 10.0)),
     bound(false),
     bindTime(0)
 {}
@@ -15848,7 +15819,7 @@ void Viewpoint::processSet_bind(const FieldValue & sfbool,
     assert(dynamic_cast<ViewpointClass *>(&this->nodeType.nodeClass));
     ViewpointClass & nodeClass =
             static_cast<ViewpointClass &>(this->nodeType.nodeClass);
-    if (value.get()) {
+    if (value.value) {
         nodeClass.bind(*this, timestamp);
     } else {
         nodeClass.unbind(*this, timestamp);
@@ -15932,12 +15903,12 @@ void Viewpoint::processSet_position(const FieldValue & sfvec3f,
 void Viewpoint::updateFinalTransformation() const throw ()
 {
     if (this->finalTransformationDirty) {
-        static const SFVec3f scale(1.0, 1.0, 1.0);
-        static const SFRotation scaleOrientation;
-        static const SFVec3f center;
+        static const vec3f scale(1.0, 1.0, 1.0);
+        static const rotation scaleOrientation;
+        static const vec3f center;
         VrmlMatrix t;
-        t.setTransform(this->position,
-                       this->orientation,
+        t.setTransform(this->position.value,
+                       this->orientation.value,
                        scale,
                        scaleOrientation,
                        center);
@@ -16104,9 +16075,9 @@ VisibilitySensor::VisibilitySensor(const NodeType & nodeType,
                                    const ScopePtr & scope):
     Node(nodeType, scope),
     AbstractChild(nodeType, scope),
-    center(0.0, 0.0, 0.0),
+    center(vec3f(0.0, 0.0, 0.0)),
     enabled(true),
-    size(0.0, 0.0, 0.0),
+    size(vec3f(0.0, 0.0, 0.0)),
     active(false),
     enterTime(0.0),
     exitTime(0.0)
@@ -16131,17 +16102,17 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
 {
     using OpenVRML_::fpzero;
 
-    if (this->enabled.get()) {
+    if (this->enabled.value) {
         SFTime timeNow(Browser::getCurrentTime());
         float xyz[2][3];
 
         // hack: enclose box in a sphere...
-        xyz[0][0] = this->center.getX();
-        xyz[0][1] = this->center.getY();
-        xyz[0][2] = this->center.getZ();
-        xyz[1][0] = this->center.getX() + this->size.getX();
-        xyz[1][1] = this->center.getY() + this->size.getY();
-        xyz[1][2] = this->center.getZ() + this->size.getZ();
+        xyz[0][0] = this->center.value.x();
+        xyz[0][1] = this->center.value.y();
+        xyz[0][2] = this->center.value.z();
+        xyz[1][0] = this->center.value.x() + this->size.value.x();
+        xyz[1][1] = this->center.value.y() + this->size.value.y();
+        xyz[1][2] = this->center.value.z() + this->size.value.z();
         viewer.transformPoints(2, &xyz[0][0]);
         float dx = xyz[1][0] - xyz[0][0];
         float dy = xyz[1][1] - xyz[0][1];
@@ -16152,7 +16123,7 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
         // Was the sphere visible last time through? How does this work
         // for USE'd nodes? I need a way for each USE to store whether
         // it was active.
-        bool wasIn = this->active.get();
+        bool wasIn = this->active.value;
 
         // Is the sphere visible? ...
         bool inside = xyz[0][2] < 0.0; // && z > - scene->visLimit()
@@ -16173,20 +16144,20 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
 
         // Just became visible
         if (inside && !wasIn) {
-            this->active.set(true);
-            this->emitEvent("isActive", this->active, timeNow.get());
+            this->active.value = true;
+            this->emitEvent("isActive", this->active, timeNow.value);
 
             this->enterTime = timeNow;
-            this->emitEvent("enterTime", this->enterTime, timeNow.get());
+            this->emitEvent("enterTime", this->enterTime, timeNow.value);
         }
 
         // Check if viewer has left the box
         else if (wasIn && !inside) {
-            this->active.set(false);
-            this->emitEvent("isActive", this->active, timeNow.get());
+            this->active.value = false;
+            this->emitEvent("isActive", this->active, timeNow.value);
 
             this->exitTime = timeNow;
-            this->emitEvent("exitTime", this->exitTime, timeNow.get());
+            this->emitEvent("exitTime", this->exitTime, timeNow.value);
         }
     } else {
         this->clearModified();

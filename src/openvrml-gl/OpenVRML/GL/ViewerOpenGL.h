@@ -28,7 +28,7 @@
 #   include <stack>
 #   include <OpenVRML/Viewer.h>
 #   include <OpenVRML/quaternion.h>
-#   include "common.h"
+#   include <OpenVRML/GL/common.h>
 
 // Use the stencil buffer to set the SHAPE mask.
 #   define USE_STENCIL_SHAPE 0
@@ -166,7 +166,7 @@ namespace OpenVRML {
             void step(float, float, float);
             void zoom(float);
             void rot_trackball(float x1, float y1, float x2, float y2);
-            void rotate(const SFRotation & rotation) throw ();
+            void rotate(const rotation & rotation) throw ();
 
 #ifndef macintosh
             void handleKey(int);

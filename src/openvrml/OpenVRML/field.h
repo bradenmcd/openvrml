@@ -24,12 +24,15 @@
 
 #   include <iosfwd>
 #   include <memory>
+#   include <stdexcept>
 #   include <string>
 #   include <typeinfo>
 #   include <vector>
-#   include "nodeptr.h"
+#   include <OpenVRML/basetypes.h>
+#   include <OpenVRML/nodeptr.h>
 
 namespace OpenVRML {
+
     class FieldValue;
 
     std::ostream & operator<<(std::ostream & out,
@@ -68,16 +71,13 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE SFBool : public FieldValue {
+    public:
         bool value;
 
-    public:
         explicit SFBool(bool value = false) throw ();
         virtual ~SFBool() throw ();
 
         // Use compiler-defined copy ctor and operator=.
-
-        bool get() const throw ();
-        void set(bool value) throw ();
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -88,19 +88,9 @@ namespace OpenVRML {
         virtual void print(std::ostream & out) const;
     };
 
-    inline bool SFBool::get() const throw ()
-    {
-        return this->value;
-    }
-
-    inline void SFBool::set(const bool value) throw ()
-    {
-        this->value = value;
-    }
-
     inline bool operator==(const SFBool & lhs, const SFBool & rhs) throw ()
     {
-        return lhs.get() == rhs.get();
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const SFBool & lhs, const SFBool & rhs) throw ()
@@ -110,35 +100,13 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE SFColor : public FieldValue {
-        float value[3];
-
     public:
-        typedef float (&ArrayReference)[3];
-        typedef const float (&ConstArrayReference)[3];
-        typedef float (*ArrayPointer)[3];
-        typedef const float (*ConstArrayPointer)[3];
-        
-        static void HSVtoRGB(ConstArrayReference hsv, ArrayReference rgb)
-                throw ();
-        static void RGBtoHSV(ConstArrayReference rgb, ArrayReference hsv)
-                throw ();
+        color value;
 
-        SFColor() throw ();
-        explicit SFColor(ConstArrayReference rgb) throw ();
-        SFColor(float r, float g, float b) throw ();
+        explicit SFColor(const color & value = color()) throw ();
         virtual ~SFColor() throw ();
 
         // Use compiler-defined copy ctor and operator=.
-
-        float operator[](size_t index) const throw ();
-        float & operator[](size_t index) throw ();
-        float getR() const throw ();
-        float getG() const throw ();
-        float getB() const throw ();
-        ConstArrayReference get() const throw ();
-        void set(ConstArrayReference rgb) throw ();
-        void setHSV(float h, float s, float v) throw ();
-        void getHSV(ArrayReference hsv) const throw ();
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -149,41 +117,9 @@ namespace OpenVRML {
         virtual void print(std::ostream & out) const;
     };
 
-    inline float SFColor::operator[](const size_t index) const throw ()
-    {
-        assert(index < 3);
-        return this->value[index];
-    }
-
-    inline float & SFColor::operator[](const size_t index) throw ()
-    {
-        assert(index < 3);
-        return this->value[index];
-    }
-
-    inline float SFColor::getR() const throw ()
-    {
-        return this->value[0];
-    }
-
-    inline float SFColor::getG() const throw ()
-    {
-        return this->value[1];
-    }
-
-    inline float SFColor::getB() const throw ()
-    {
-        return this->value[2];
-    }
-
-    inline SFColor::ConstArrayReference SFColor::get() const throw ()
-    {
-        return this->value;
-    }
-
     inline bool operator==(const SFColor & lhs, const SFColor & rhs) throw ()
     {
-        return std::equal(lhs.get(), lhs.get() + 3, rhs.get());
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const SFColor & lhs, const SFColor & rhs) throw ()
@@ -193,16 +129,13 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE SFFloat : public FieldValue {
+    public:
         float value;
 
-    public:
         explicit SFFloat(float value = 0.0) throw ();
         virtual ~SFFloat() throw ();
 
         // Use compiler-defined copy ctor and operator=.
-
-        float get() const throw ();
-        void set(float value) throw ();
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -213,19 +146,9 @@ namespace OpenVRML {
         virtual void print(std::ostream & out) const;
     };
 
-    inline float SFFloat::get() const throw ()
-    {
-        return this->value;
-    }
-
-    inline void SFFloat::set(const float value) throw ()
-    {
-        this->value = value;
-    }
-
     inline bool operator==(const SFFloat & lhs, const SFFloat & rhs) throw ()
     {
-        return lhs.get() == rhs.get();
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const SFFloat & lhs, const SFFloat & rhs) throw ()
@@ -265,16 +188,13 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE SFInt32 : public FieldValue {
+    public:
         long value;
 
-    public:
         explicit SFInt32(long value = 0) throw ();
         virtual ~SFInt32() throw ();
 
         // Use compiler-defined copy ctor and operator=.
-
-        long get() const throw ();
-        void set(long value) throw ();
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -285,19 +205,9 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
-    inline long SFInt32::get() const throw ()
-    {
-        return this->value;
-    }
-
-    inline void SFInt32::set(const long value) throw ()
-    {
-        this->value = value;
-    }
-
     inline bool operator==(const SFInt32 & lhs, const SFInt32 & rhs) throw ()
     {
-        return lhs.get() == rhs.get();
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const SFInt32 & lhs, const SFInt32 & rhs) throw ()
@@ -307,16 +217,13 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE SFNode : public FieldValue {
-        NodePtr node;
-
     public:
+        NodePtr value;
+
         explicit SFNode(const NodePtr & node = NodePtr(0)) throw ();
         virtual ~SFNode() throw ();
 
         // Use compiler-defined copy ctor and operator=.
-
-        const NodePtr & get() const throw ();
-        void set(const NodePtr & node) throw ();
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -327,19 +234,9 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
-    inline const NodePtr & SFNode::get() const throw ()
-    {
-        return this->node;
-    }
-
-    inline void SFNode::set(const NodePtr & node) throw ()
-    {
-        this->node = NodePtr(node);
-    }
-
     inline bool operator==(const SFNode & lhs, const SFNode & rhs) throw ()
     {
-        return lhs.get() == rhs.get();
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const SFNode & lhs, const SFNode & rhs) throw ()
@@ -348,45 +245,14 @@ namespace OpenVRML {
     }
 
 
-    class SFVec3f;
-    class Quaternion;
-    
     class OPENVRML_SCOPE SFRotation : public FieldValue {
-        float value[4];
-
     public:
-        typedef float (&ArrayReference)[4];
-        typedef const float (&ConstArrayReference)[4];
-        typedef float (*ArrayPointer)[4];
-        typedef const float (*ConstArrayPointer)[4];
-        
-        SFRotation() throw ();
-        explicit SFRotation(ConstArrayReference rot) throw ();
-        SFRotation(float x, float y, float z, float angle) throw ();
-        SFRotation(const SFVec3f & axis, float angle) throw ();
-        explicit SFRotation(const Quaternion & quat) throw ();
-        SFRotation(const SFVec3f & fromVec, const SFVec3f & toVec) throw ();
+        rotation value;
+
+        explicit SFRotation(const rotation & rot = rotation()) throw ();
         virtual ~SFRotation() throw ();
 
         // Use compiler-defined copy ctor and operator=.
-
-        ConstArrayReference get() const throw ();
-        void set(ConstArrayReference rot) throw ();
-        float getX() const throw ();
-        void setX(float value) throw ();
-        float getY() const throw ();
-        void setY(float value) throw ();
-        float getZ() const throw ();
-        void setZ(float value) throw ();
-        float getAngle() const throw ();
-        void setAngle(float value) throw ();
-        const SFVec3f getAxis() const throw ();
-        void setAxis(const SFVec3f & vec) throw ();
-        const SFRotation inverse() const throw ();
-        const SFRotation multiply(const SFRotation & rot) const throw ();
-        const SFVec3f multVec(const SFVec3f & vec) const;
-        const SFRotation slerp(const SFRotation & destRot, float t) const
-                throw ();  
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -397,40 +263,10 @@ namespace OpenVRML {
         virtual void print(std::ostream & os) const;
     };
 
-    inline SFRotation::ConstArrayReference SFRotation::get() const throw ()
-    {
-        return this->value;
-    }
-
-    inline float SFRotation::getX() const throw ()
-    {
-        return this->value[0];
-    }
-
-    inline float SFRotation::getY() const throw ()
-    {
-        return this->value[1];
-    }
-
-    inline float SFRotation::getZ() const throw ()
-    {
-        return this->value[2];
-    }
-
-    inline float SFRotation::getAngle() const throw ()
-    {
-        return this->value[3];
-    }
-
-    inline void SFRotation::setAngle(const float value) throw ()
-    {
-        this->value[3] = value;
-    }
-
     inline bool operator==(const SFRotation & lhs, const SFRotation & rhs)
         throw ()
     {
-        return std::equal(lhs.get(), lhs.get() + 4, rhs.get());
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const SFRotation & lhs, const SFRotation & rhs)
@@ -441,17 +277,14 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE SFString : public FieldValue {
+    public:
         std::string value;
 
-    public:
         explicit SFString(const std::string & value = std::string())
                 throw (std::bad_alloc);
         virtual ~SFString() throw ();
 
         // Use compiler-defined copy ctor and operator=.
-
-        const std::string & get() const throw ();
-        void set(const std::string & value) throw (std::bad_alloc);
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -462,19 +295,9 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
-    inline const std::string & SFString::get() const throw ()
-    {
-        return this->value;
-    }
-
-    inline void SFString::set(const std::string & value) throw (std::bad_alloc)
-    {
-        this->value = value;
-    }
-
     inline bool operator==(const SFString & lhs, const SFString & rhs) throw ()
     {
-        return lhs.get() == rhs.get();
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const SFString & lhs, const SFString & rhs) throw ()
@@ -484,16 +307,13 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE SFTime : public FieldValue {
+    public:
         double value;
 
-    public:
         explicit SFTime(double value = 0.0) throw ();
         virtual ~SFTime() throw ();
 
         // Use compiler-defined copy ctor and operator=.
-
-        double get() const throw ();
-        void set(double value) throw ();
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -504,19 +324,9 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
-    inline double SFTime::get() const throw ()
-    {
-        return this->value;
-    }
-
-    inline void SFTime::set(double value) throw ()
-    {
-        this->value = value;
-    }
-
     inline bool operator==(const SFTime & lhs, const SFTime & rhs) throw ()
     {
-        return lhs.get() == rhs.get();
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const SFTime & lhs, const SFTime & rhs) throw ()
@@ -526,37 +336,13 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE SFVec2f : public FieldValue {
-        float value[2];
-
     public:
-        typedef float (&ArrayReference)[2];
-        typedef const float (&ConstArrayReference)[2];
-        typedef float (*ArrayPointer)[2];
-        typedef const float (*ConstArrayPointer)[2];
-        
-        SFVec2f() throw ();
-        explicit SFVec2f(ConstArrayReference vec) throw ();
-        SFVec2f(float x, float y) throw ();
+        vec2f value;
+
+        explicit SFVec2f(const vec2f & vec = vec2f()) throw ();
         virtual ~SFVec2f() throw ();
 
         // Use compiler-defined copy ctor and operator=.
-
-        float operator[](size_t index) const throw ();
-        float & operator[](size_t index) throw ();
-        float getX() const throw ();
-        void setX(float) throw ();
-        float getY() const throw ();
-        void setY(float) throw ();
-        ConstArrayReference get() const throw ();
-        void set(ConstArrayReference vec) throw ();
-        const SFVec2f add(const SFVec2f & vec) const throw ();
-        const SFVec2f divide(float number) const throw ();
-        double dot(const SFVec2f & vec) const throw ();
-        double length() const throw ();
-        const SFVec2f multiply(float number) const throw ();
-        const SFVec2f negate() const throw ();
-        const SFVec2f normalize() const throw ();
-        const SFVec2f subtract(const SFVec2f & vec) const throw ();
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -567,52 +353,9 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
-    inline float SFVec2f::operator[](size_t index) const throw ()
-    {
-        assert(index < 2);
-        return this->value[index];
-    }
-
-    inline float & SFVec2f::operator[](size_t index) throw ()
-    {
-        assert(index < 2);
-        return this->value[index];
-    }
-
-    inline float SFVec2f::getX() const throw ()
-    {
-        return this->value[0];
-    }
-
-    inline void SFVec2f::setX(const float value) throw ()
-    {
-        this->value[0] = value;
-    }
-
-    inline float SFVec2f::getY() const throw ()
-    {
-        return this->value[1];
-    }
-
-    inline void SFVec2f::setY(const float value) throw ()
-    {
-        this->value[1] = value;
-    }
-
-    inline SFVec2f::ConstArrayReference SFVec2f::get() const throw ()
-    {
-        return this->value;
-    }
-
-    inline void SFVec2f::set(ConstArrayReference vec) throw ()
-    {
-        this->value[0] = vec[0];
-        this->value[1] = vec[1];
-    }
-
     inline bool operator==(const SFVec2f & lhs, const SFVec2f & rhs) throw ()
     {
-        return std::equal(lhs.get(), lhs.get() + 2, rhs.get());
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const SFVec2f & lhs, const SFVec2f & rhs) throw ()
@@ -622,40 +365,13 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE SFVec3f : public FieldValue {
-        float value[3];
-
     public:
-        typedef float (&ArrayReference)[3];
-        typedef const float (&ConstArrayReference)[3];
-        typedef float (*ArrayPointer)[3];
-        typedef const float (*ConstArrayPointer)[3];
-        
-        SFVec3f() throw ();
-        explicit SFVec3f(ConstArrayReference vec) throw ();
-        SFVec3f(float x, float y, float z) throw ();
+        vec3f value;
+
+        explicit SFVec3f(const vec3f & vec = vec3f()) throw ();
         virtual ~SFVec3f() throw ();
 
-        // Use compiler-defined copy ctor and operator=.
-
-        float operator[](size_t index) const throw ();
-        float & operator[](size_t index) throw ();
-        float getX() const throw ();
-        void setX(float) throw ();
-        float getY() const throw ();
-        void setY(float) throw ();
-        float getZ() const throw ();
-        void setZ(float) throw ();
-        ConstArrayReference get() const throw ();
-        void set(ConstArrayReference vec) throw ();
-        const SFVec3f add(const SFVec3f & vec) const throw ();
-        const SFVec3f cross(const SFVec3f & vec) const throw ();
-        const SFVec3f divide(float number) const throw ();
-        double dot(const SFVec3f & vec) const throw ();
-        double length() const throw ();
-        const SFVec3f multiply(float number) const throw ();
-        const SFVec3f negate() const throw ();
-        const SFVec3f normalize() const throw ();
-        const SFVec3f subtract(const SFVec3f & vec) const throw ();
+        // Use compiler-defined copy constructor and operator=.
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -666,63 +382,9 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
-    inline float SFVec3f::operator[](const size_t index) const throw ()
-    {
-        assert(index < 3);
-        return this->value[index];
-    }
-
-    inline float & SFVec3f::operator[](const size_t index) throw ()
-    {
-        assert(index < 3);
-        return this->value[index];
-    }
-
-    inline float SFVec3f::getX() const throw ()
-    {
-        return this->value[0];
-    }
-
-    inline void SFVec3f::setX(const float value) throw ()
-    {
-        this->value[0] = value;
-    }
-
-    inline float SFVec3f::getY() const throw ()
-    {
-        return this->value[1];
-    }
-
-    inline void SFVec3f::setY(const float value) throw ()
-    {
-        this->value[1] = value;
-    }
-
-    inline float SFVec3f::getZ() const throw ()
-    {
-        return this->value[2];
-    }
-
-    inline void SFVec3f::setZ(const float value) throw ()
-    {
-        this->value[2] = value;
-    }
-
-    inline SFVec3f::ConstArrayReference SFVec3f::get() const throw ()
-    {
-        return this->value;
-    }
-
-    inline void SFVec3f::set(ConstArrayReference vec) throw ()
-    {
-        this->value[0] = vec[0];
-        this->value[1] = vec[1];
-        this->value[2] = vec[2];
-    }
-
     inline bool operator==(const SFVec3f & lhs, const SFVec3f & rhs) throw ()
     {
-        return std::equal(lhs.get(), lhs.get() + 3, rhs.get());
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const SFVec3f & lhs, const SFVec3f & rhs) throw ()
@@ -731,36 +393,18 @@ namespace OpenVRML {
     }
 
 
-    class MFColor;
-
-    bool OPENVRML_SCOPE operator==(const MFColor & lhs, const MFColor & rhs)
-        throw ();
-
     class OPENVRML_SCOPE MFColor : public FieldValue {
-        friend bool operator==(const MFColor & lhs, const MFColor & rhs)
-            throw ();
-
-        void * values;
-
     public:
-        explicit MFColor(size_t length = 0,
-                         SFColor::ConstArrayPointer values = 0)
+        std::vector<color> value;
+
+        explicit MFColor(std::vector<color>::size_type n = 0,
+                         const color & value = color())
             throw (std::bad_alloc);
-        MFColor(const MFColor & mfcolor) throw (std::bad_alloc);
+        template <typename InputIterator>
+        MFColor(InputIterator first, InputIterator last);
         virtual ~MFColor() throw ();
 
-        MFColor & operator=(const MFColor & mfcolor) throw (std::bad_alloc);
-
-        SFColor::ConstArrayReference getElement(size_t index) const throw ();
-        void setElement(size_t index, SFColor::ConstArrayReference value)
-            throw ();
-        size_t getLength() const throw ();
-        void setLength(size_t length) throw (std::bad_alloc);
-        void addElement(SFColor::ConstArrayReference value)
-            throw (std::bad_alloc);
-        void insertElement(size_t index, SFColor::ConstArrayReference value)
-            throw (std::bad_alloc);
-        void removeElement(size_t index) throw ();
+        // Use compiler-defined copy constructor and operator=.
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -770,37 +414,35 @@ namespace OpenVRML {
     private:
         virtual void print(std::ostream &) const;
     };
+
+    template <typename InputIterator>
+    MFColor::MFColor(InputIterator first, InputIterator last):
+        value(first, last)
+    {}
+
+    inline bool operator==(const MFColor & lhs, const MFColor & rhs) throw ()
+    {
+        return lhs.value == rhs.value;
+    }
 
     inline bool operator!=(const MFColor & lhs, const MFColor & rhs) throw ()
     {
-        return !(lhs == rhs);
+        return lhs.value != rhs.value;
     }
 
 
-    class MFFloat;
-
-    bool operator==(const MFFloat & lhs, const MFFloat & rhs) throw ();
-
     class OPENVRML_SCOPE MFFloat : public FieldValue {
-        friend bool operator==(const MFFloat & lhs, const MFFloat & rhs)
-            throw ();
-
-        std::vector<float> values;
-
     public:
-        explicit MFFloat(size_t length = 0, float const * values = 0)
+        std::vector<float> value;
+
+        explicit MFFloat(std::vector<float>::size_type n = 0,
+                         float value = 0.0f)
             throw (std::bad_alloc);
+        template <typename InputIterator>
+        MFFloat(InputIterator first, InputIterator last);
         virtual ~MFFloat() throw ();
 
-        // Use compiler-generated copy constructor and operator=.
-        
-        const float & getElement(size_t index) const throw ();
-        void setElement(size_t index, float value) throw ();
-        size_t getLength() const throw ();
-        void setLength(size_t length) throw (std::bad_alloc);
-        void addElement(float value) throw (std::bad_alloc);
-        void insertElement(size_t index, float value) throw (std::bad_alloc);
-        void removeElement(size_t index) throw ();
+        // Use compiler-defined copy constructor and operator=.
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -811,41 +453,33 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    template <typename InputIterator>
+    MFFloat::MFFloat(InputIterator first, InputIterator last):
+        value(first, last)
+    {}
+
     inline bool operator==(const MFFloat & lhs, const MFFloat & rhs) throw ()
     {
-        return lhs.values == rhs.values;
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const MFFloat & lhs, const MFFloat & rhs) throw ()
     {
-        return !(lhs == rhs);
+        return lhs.value != rhs.value;
     }
 
 
-    class MFInt32;
-
-    bool operator==(const MFInt32 & lhs, const MFInt32 & rhs) throw ();
-
     class OPENVRML_SCOPE MFInt32 : public FieldValue {
-        friend bool operator==(const MFInt32 & lhs, const MFInt32 & rhs)
-            throw ();
-
-        std::vector<long> values;
-
     public:
-        explicit MFInt32(size_t length = 0, const long * numbers = 0)
+        std::vector<long> value;
+
+        explicit MFInt32(std::vector<long>::size_type n = 0, long value = 0)
             throw (std::bad_alloc);
+        template <typename InputIterator>
+        MFInt32(InputIterator first, InputIterator last);
         virtual ~MFInt32() throw ();
 
         // Use compiler-defined copy constructor and operator=.
-        
-        const long & getElement(size_t index) const throw ();
-        void setElement(size_t index, long value) throw ();
-        size_t getLength() const throw ();
-        void setLength(size_t length) throw (std::bad_alloc);
-        void addElement(long value) throw (std::bad_alloc);
-        void insertElement(size_t index, long value) throw (std::bad_alloc);
-        void removeElement(size_t index) throw ();
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -856,45 +490,34 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    template <typename InputIterator>
+    MFInt32::MFInt32(InputIterator first, InputIterator last):
+        value(first, last)
+    {}
+
     inline bool operator==(const MFInt32 & lhs, const MFInt32 & rhs) throw ()
     {
-        return lhs.values == rhs.values;
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const MFInt32 & lhs, const MFInt32 & rhs) throw ()
     {
-        return !(lhs == rhs);
+        return lhs.value != rhs.value;
     }
 
 
-    class MFNode;
-
-    bool operator==(const MFNode & lhs, const MFNode & rhs) throw ();
-
     class OPENVRML_SCOPE MFNode : public FieldValue {
-        friend bool operator==(const MFNode & lhs, const MFNode & rhs) throw ();
-
-        std::vector<NodePtr> nodes;
-
     public:
-        explicit MFNode(size_t length = 0, const NodePtr * nodes = 0)
+        std::vector<NodePtr> value;
+
+        explicit MFNode(std::vector<NodePtr>::size_type n = 0,
+                        const NodePtr & value = NodePtr())
             throw (std::bad_alloc);
+        template <typename InputIterator>
+        MFNode(InputIterator first, InputIterator last);
         virtual ~MFNode() throw ();
 
-        // Use compiler-defined copy ctor and operator=
-
-        const NodePtr & getElement(size_t index) const throw ();
-        void setElement(size_t index, const NodePtr & node) throw ();
-        size_t getLength() const throw ();
-        void setLength(size_t length) throw (std::bad_alloc);
-        bool exists(const Node & node) const;
-        bool addNode(const NodePtr & node);
-        bool removeNode(const Node & node);
-        void addElement(const NodePtr & node) throw (std::bad_alloc);
-        void insertElement(size_t index, const NodePtr & node)
-            throw (std::bad_alloc);
-        void removeElement(size_t index) throw ();
-        void clear() throw ();
+        // Use compiler-defined copy constructor and operator=.
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -905,48 +528,34 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    template <typename InputIterator>
+    MFNode::MFNode(InputIterator first, InputIterator last):
+        value(first, last)
+    {}
+
     inline bool operator==(const MFNode & lhs, const MFNode & rhs) throw ()
     {
-        return lhs.nodes == rhs.nodes;
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const MFNode & lhs, const MFNode & rhs) throw ()
     {
-        return !(lhs == rhs);
+        return lhs.value != rhs.value;
     }
 
 
-    class MFRotation;
-
-    bool OPENVRML_SCOPE operator==(const MFRotation & lhs,
-                                   const MFRotation & rhs) throw ();
-
     class OPENVRML_SCOPE MFRotation : public FieldValue {
-        friend bool operator==(const MFRotation & lhs, const MFRotation & rhs)
-            throw ();
-
-        void * values;
-
     public:
-        explicit MFRotation(size_t length = 0,
-                            SFRotation::ConstArrayPointer values = 0)
+        std::vector<rotation> value;
+
+        explicit MFRotation(std::vector<rotation>::size_type n = 0,
+                            const rotation & value = rotation())
             throw (std::bad_alloc);
-        MFRotation(const MFRotation & mfrotation) throw (std::bad_alloc);
+        template <typename InputIterator>
+        MFRotation(InputIterator first, InputIterator last);
         virtual ~MFRotation() throw ();
 
-        MFRotation & operator=(const MFRotation & mfrotation)
-            throw (std::bad_alloc);
-
-        SFRotation::ConstArrayReference getElement(size_t index) const throw ();
-        void setElement(size_t index, SFRotation::ConstArrayReference value)
-            throw ();
-        size_t getLength() const throw ();
-        void setLength(size_t length) throw (std::bad_alloc);
-        void addElement(SFRotation::ConstArrayReference value)
-            throw (std::bad_alloc);
-        void insertElement(size_t index, SFRotation::ConstArrayReference value)
-            throw (std::bad_alloc);
-        void removeElement(size_t index) throw ();
+        // Use compiler-defined copy constructor and operator=.
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -956,41 +565,37 @@ namespace OpenVRML {
     private:
         virtual void print(std::ostream &) const;
     };
+
+    template <typename InputIterator>
+    MFRotation::MFRotation(InputIterator first, InputIterator last):
+        value(first, last)
+    {}
+
+    inline bool operator==(const MFRotation & lhs, const MFRotation & rhs)
+        throw ()
+    {
+        return lhs.value == rhs.value;
+    }
 
     inline bool operator!=(const MFRotation & lhs, const MFRotation & rhs)
         throw ()
     {
-        return !(lhs == rhs);
+        return lhs.value != rhs.value;
     }
 
 
-    class MFString;
-
-    bool operator==(const MFString & lhs, const MFString & rhs) throw ();
-
     class OPENVRML_SCOPE MFString : public FieldValue {
-        friend bool operator==(const MFString & lhs, const MFString & rhs)
-            throw ();
-
-        std::vector<std::string> values;
-
     public:
-        explicit MFString(size_t length = 0, const std::string * values = 0)
-                throw (std::bad_alloc);
-        MFString(const MFString & mfstring) throw (std::bad_alloc);
+        std::vector<std::string> value;
+
+        explicit MFString(std::vector<std::string>::size_type n = 0,
+                          const std::string & value = std::string())
+            throw (std::bad_alloc);
+        template <typename InputIterator>
+        MFString(InputIterator first, InputIterator last);
         virtual ~MFString() throw ();
 
-        MFString & operator=(const MFString & mfstring) throw (std::bad_alloc);
-
-        const std::string & getElement(size_t index) const throw ();
-        void setElement(size_t index, const std::string & value)
-            throw (std::bad_alloc);
-        size_t getLength() const throw ();
-        void setLength(const size_t length) throw (std::bad_alloc);
-        void addElement(const std::string & value) throw (std::bad_alloc);
-        void insertElement(size_t index, const std::string & value)
-            throw (std::bad_alloc);
-        void removeElement(size_t index) throw ();
+        // Use compiler-defined copy constructor and operator=.
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -1001,40 +606,34 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    template <typename InputIterator>
+    MFString::MFString(InputIterator first, InputIterator last):
+        value(first, last)
+    {}
+
     inline bool operator==(const MFString & lhs, const MFString & rhs) throw ()
     {
-        return lhs.values == rhs.values;
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const MFString & lhs, const MFString & rhs) throw ()
     {
-        return !(lhs == rhs);
+        return lhs.value != rhs.value;
     }
 
 
-    class MFTime;
-
-    bool operator==(const MFTime & lhs, const MFTime & rhs) throw ();
-
     class OPENVRML_SCOPE MFTime : public FieldValue {
-        friend bool operator==(const MFTime & lhs, const MFTime & rhs) throw ();
-
-        std::vector<double> values;
-
     public:
-        explicit MFTime(size_t length = 0, const double * times = 0)
+        std::vector<double> value;
+
+        explicit MFTime(std::vector<double>::size_type n = 0,
+                        double value = 0.0)
             throw (std::bad_alloc);
+        template <typename InputIterator>
+        MFTime(InputIterator first, InputIterator last);
         virtual ~MFTime() throw ();
 
         // Use compiler-defined copy constructor and operator=.
-        
-        const double & getElement(size_t index) const throw ();
-        void setElement(size_t index, double value) throw ();
-        size_t getLength() const throw ();
-        void setLength(size_t length) throw (std::bad_alloc);
-        void addElement(double value) throw (std::bad_alloc);
-        void insertElement(size_t index, double value) throw (std::bad_alloc);
-        void removeElement(size_t index) throw ();
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -1045,47 +644,34 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    template <typename InputIterator>
+    MFTime::MFTime(InputIterator first, InputIterator last):
+        value(first, last)
+    {}
+
     inline bool operator==(const MFTime & lhs, const MFTime & rhs) throw ()
     {
-        return lhs.values == rhs.values;
+        return lhs.value == rhs.value;
     }
 
     inline bool operator!=(const MFTime & lhs, const MFTime & rhs) throw ()
     {
-        return !(lhs == rhs);
+        return lhs.value != rhs.value;
     }
 
 
-    class MFVec2f;
-
-    bool OPENVRML_SCOPE operator==(const MFVec2f & lhs, const MFVec2f & rhs)
-        throw ();
-
     class OPENVRML_SCOPE MFVec2f : public FieldValue {
-        friend bool operator==(const MFVec2f & lhs, const MFVec2f & rhs)
-            throw ();
-
-        void * values;
-
     public:
-        explicit MFVec2f(size_t length = 0,
-                         SFVec2f::ConstArrayPointer values = 0)
+        std::vector<vec2f> value;
+
+        explicit MFVec2f(std::vector<vec2f>::size_type n = 0,
+                         const vec2f & value = vec2f())
             throw (std::bad_alloc);
-        MFVec2f(const MFVec2f & mfvec2f) throw (std::bad_alloc);
+        template <typename InputIterator>
+        MFVec2f(InputIterator first, InputIterator last);
         virtual ~MFVec2f() throw ();
 
-        MFVec2f & operator=(const MFVec2f & mfvec2f) throw (std::bad_alloc);
-
-        SFVec2f::ConstArrayReference getElement(size_t index) const throw ();
-        void setElement(size_t index, SFVec2f::ConstArrayReference value)
-            throw ();
-        size_t getLength() const throw ();
-        void setLength(size_t length) throw (std::bad_alloc);
-        void addElement(SFVec2f::ConstArrayReference value)
-            throw (std::bad_alloc);
-        void insertElement(size_t index, SFVec2f::ConstArrayReference value)
-            throw (std::bad_alloc);
-        void removeElement(size_t index) throw ();
+        // Use compiler-defined copy constructor and operator=.
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -1095,43 +681,35 @@ namespace OpenVRML {
     private:
         virtual void print(std::ostream &) const;
     };
+
+    template <typename InputIterator>
+    MFVec2f::MFVec2f(InputIterator first, InputIterator last):
+        value(first, last)
+    {}
+
+    inline bool operator==(const MFVec2f & lhs, const MFVec2f & rhs) throw ()
+    {
+        return lhs.value == rhs.value;
+    }
 
     inline bool operator!=(const MFVec2f & lhs, const MFVec2f & rhs) throw ()
     {
-        return !(lhs == rhs);
+        return lhs.value != rhs.value;
     }
 
 
-    class MFVec3f;
-
-    bool OPENVRML_SCOPE operator==(const MFVec3f & lhs, const MFVec3f & rhs)
-        throw ();
-
     class OPENVRML_SCOPE MFVec3f : public FieldValue {
-        friend bool operator==(const MFVec3f & lhs, const MFVec3f & rhs)
-            throw ();
-
-        void * values;
-
     public:
-        explicit MFVec3f(size_t length = 0,
-                         SFVec3f::ConstArrayPointer values = 0)
+        std::vector<vec3f> value;
+
+        explicit MFVec3f(std::vector<vec3f>::size_type n = 0,
+                         const vec3f & value = vec3f())
             throw (std::bad_alloc);
-        MFVec3f(const MFVec3f & mfvec3f) throw (std::bad_alloc);
+        template <typename InputIterator>
+        MFVec3f(InputIterator first, InputIterator last);
         virtual ~MFVec3f() throw ();
 
-        MFVec3f & operator=(const MFVec3f & mfvec3f) throw (std::bad_alloc);
-
-        SFVec3f::ConstArrayReference getElement(size_t index) const throw ();
-        void setElement(size_t index, SFVec3f::ConstArrayReference value)
-            throw ();
-        size_t getLength() const throw ();
-        void setLength(size_t length) throw (std::bad_alloc);
-        void addElement(SFVec3f::ConstArrayReference value)
-            throw (std::bad_alloc);
-        void insertElement(size_t index, SFVec3f::ConstArrayReference value)
-            throw (std::bad_alloc);
-        void removeElement(size_t index) throw ();
+        // Use compiler-defined copy constructor and operator=.
 
         virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
@@ -1142,9 +720,76 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    template <typename InputIterator>
+    MFVec3f::MFVec3f(InputIterator first, InputIterator last):
+        value(first, last)
+    {}
+
+    inline bool operator==(const MFVec3f & lhs, const MFVec3f & rhs) throw ()
+    {
+        return lhs.value == rhs.value;
+    }
+
     inline bool operator!=(const MFVec3f & lhs, const MFVec3f & rhs) throw ()
     {
-        return !(lhs == rhs);
+        return lhs.value != rhs.value;
+    }
+}
+
+namespace std {
+
+    template <>
+    inline void swap(OpenVRML::MFColor & a, OpenVRML::MFColor & b)
+    {
+        a.value.swap(b.value);
+    }
+
+    template <>
+    inline void swap(OpenVRML::MFFloat & a, OpenVRML::MFFloat & b)
+    {
+        a.value.swap(b.value);
+    }
+
+    template <>
+    inline void swap(OpenVRML::MFInt32 & a, OpenVRML::MFInt32 & b)
+    {
+        a.value.swap(b.value);
+    }
+
+    template <>
+    inline void swap(OpenVRML::MFNode & a, OpenVRML::MFNode & b)
+    {
+        a.value.swap(b.value);
+    }
+
+    template <>
+    inline void swap(OpenVRML::MFRotation & a, OpenVRML::MFRotation & b)
+    {
+        a.value.swap(b.value);
+    }
+
+    template <>
+    inline void swap(OpenVRML::MFString & a, OpenVRML::MFString & b)
+    {
+        a.value.swap(b.value);
+    }
+
+    template <>
+    inline void swap(OpenVRML::MFTime & a, OpenVRML::MFTime & b)
+    {
+        a.value.swap(b.value);
+    }
+
+    template <>
+    inline void swap(OpenVRML::MFVec2f & a, OpenVRML::MFVec2f & b)
+    {
+        a.value.swap(b.value);
+    }
+
+    template <>
+    inline void swap(OpenVRML::MFVec3f & a, OpenVRML::MFVec3f & b)
+    {
+        a.value.swap(b.value);
     }
 }
 

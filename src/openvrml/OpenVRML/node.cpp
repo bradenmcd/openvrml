@@ -1036,17 +1036,17 @@ void Node::initialize(Scene & scene, const double timestamp)
                            (&this->getField(interface->id)));
                     const SFNode & sfnode = static_cast<const SFNode &>
                                             (this->getField(interface->id));
-                    if (sfnode.get()) {
-                        sfnode.get()->initialize(scene, timestamp);
+                    if (sfnode.value) {
+                        sfnode.value->initialize(scene, timestamp);
                     }
                 } else if (interface->fieldType == FieldValue::mfnode) {
                     assert(dynamic_cast<const MFNode *>
                            (&this->getField(interface->id)));
                     const MFNode & mfnode = static_cast<const MFNode &>
                                             (this->getField(interface->id));
-                    for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                        if (mfnode.getElement(i)) {
-                            mfnode.getElement(i)->initialize(scene, timestamp);
+                    for (size_t i = 0; i < mfnode.value.size(); ++i) {
+                        if (mfnode.value[i]) {
+                            mfnode.value[i]->initialize(scene, timestamp);
                         }
                     }
                 }
@@ -1174,17 +1174,17 @@ void Node::shutdown(const double timestamp) throw ()
                            (&this->getField(interface->id)));
                     const SFNode & sfnode = static_cast<const SFNode &>
                                             (this->getField(interface->id));
-                    if (sfnode.get()) {
-                        sfnode.get()->shutdown(timestamp);
+                    if (sfnode.value) {
+                        sfnode.value->shutdown(timestamp);
                     }
                 } else if (interface->fieldType == FieldValue::mfnode) {
                     assert(dynamic_cast<const MFNode *>
                            (&this->getField(interface->id)));
                     const MFNode & mfnode = static_cast<const MFNode &>
                                             (this->getField(interface->id));
-                    for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                        if (mfnode.getElement(i)) {
-                            mfnode.getElement(i)->shutdown(timestamp);
+                    for (size_t i = 0; i < mfnode.value.size(); ++i) {
+                        if (mfnode.value[i]) {
+                            mfnode.value[i]->shutdown(timestamp);
                         }
                     }
                 }
@@ -3100,10 +3100,10 @@ void NodeTraverser::traverse(const SFNode & node)
 {
     assert(this->traversedNodes.empty());
     try {
-        if (node.get()) {
-            if (this->traversedNodes.find(node.get().get())
+        if (node.value) {
+            if (this->traversedNodes.find(node.value.get())
                     == this->traversedNodes.end()) {
-                this->do_traversal(*node.get());
+                this->do_traversal(*node.value);
             }
         }
     } catch (...) {
@@ -3132,11 +3132,11 @@ void NodeTraverser::traverse(const MFNode & nodes)
 {
     assert(this->traversedNodes.empty());
     try {
-        for (size_t i = 0; i < nodes.getLength(); ++i) {
-            if (nodes.getElement(i)) {
-                if (this->traversedNodes.find(nodes.getElement(i).get())
+        for (size_t i = 0; i < nodes.value.size(); ++i) {
+            if (nodes.value[i]) {
+                if (this->traversedNodes.find(nodes.value[i].get())
                         == this->traversedNodes.end()) {
-                    this->do_traversal(*nodes.getElement(i));
+                    this->do_traversal(*nodes.value[i]);
                 }
             }
         }
@@ -3190,16 +3190,16 @@ void NodeTraverser::do_traversal(Node & node)
                     const SFNode & value =
                             static_cast<const SFNode &>
                                 (node.getField(interface->id));
-                    if (value.get()) {
-                        this->do_traversal(*value.get());
+                    if (value.value) {
+                        this->do_traversal(*value.value);
                     }
                 } else if (interface->fieldType == FieldValue::mfnode) {
                     const MFNode & children =
                             static_cast<const MFNode &>
                                 (node.getField(interface->id));
-                    for (size_t i = 0; i < children.getLength(); ++i) {
-                        if (children.getElement(i)) {
-                            this->do_traversal(*children.getElement(i));
+                    for (size_t i = 0; i < children.value.size(); ++i) {
+                        if (children.value[i]) {
+                            this->do_traversal(*children.value[i]);
                         }
                     }
                 }

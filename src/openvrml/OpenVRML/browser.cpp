@@ -971,8 +971,8 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     ViewpointNode * initialViewpoint = 0;
     const string viewpointNodeId = URI(this->scene->getURI()).getFragment();
     if (!viewpointNodeId.empty()) {
-        if (this->scene->getNodes().getLength() > 0) {
-            const NodePtr & node = this->scene->getNodes().getElement(0);
+        if (!this->scene->getNodes().value.empty()) {
+            const NodePtr & node = this->scene->getNodes().value[0];
             if (node) {
                 Node * const vp = node->getScope()->findNode(viewpointNodeId);
                 initialViewpoint = dynamic_cast<ViewpointNode *>(vp);
@@ -1400,12 +1400,12 @@ void Browser::render(Viewer & viewer)
     const VrmlMatrix t =
             this->activeViewpoint->getTransformation()
             .multLeft(this->activeViewpoint->getUserViewTransform());
-    SFVec3f position, scale;
-    SFRotation orientation;
+    vec3f position, scale;
+    rotation orientation;
     t.getTransform(position, orientation, scale);
-    viewer.setViewpoint(position.get(),
-                        orientation.get(),
-                        activeViewpoint->getFieldOfView().get(),
+    viewer.setViewpoint(&position[0],
+                        &orientation[0],
+                        activeViewpoint->getFieldOfView().value,
                         avatarSize,
                         visibilityLimit);
 
@@ -1929,12 +1929,12 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
     parent(parent)
 {
     std::string absoluteURI;
-    for (size_t i = 0; i < uri.getLength(); ++i) {
+    for (size_t i = 0; i < uri.value.size(); ++i) {
         try {
             //
             // Throw InvalidURI if it isn't a valid URI.
             //
-            URI testURI(uri.getElement(i));
+            URI testURI(uri.value[i]);
 
             const bool absolute = !testURI.getScheme().empty();
             if (absolute) {
@@ -1977,7 +1977,7 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
         // this->uri must be the absolute URI.
         //
         this->uri = parent
-                  ? uri.getElement(i)
+                  ? uri.value[i]
                   : absoluteURI;
         break;
     }
@@ -2006,10 +2006,10 @@ const std::string Scene::getURI() const throw (std::bad_alloc) {
  */
 void Scene::initialize(const double timestamp) throw (std::bad_alloc)
 {
-    for (size_t i = 0; i < this->nodes.getLength(); ++i) {
-        assert(this->nodes.getElement(i));
-        this->nodes.getElement(i)->initialize(*this, timestamp);
-        this->nodes.getElement(i)->relocate();
+    for (size_t i = 0; i < this->nodes.value.size(); ++i) {
+        assert(this->nodes.value[i]);
+        this->nodes.value[i]->initialize(*this, timestamp);
+        this->nodes.value[i]->relocate();
     }
 }
 
@@ -2020,8 +2020,8 @@ void Scene::initialize(const double timestamp) throw (std::bad_alloc)
  * @param context   a VrmlRenderContext.
  */
 void Scene::render(Viewer & viewer, VrmlRenderContext context) {
-    for (size_t i = 0; i < this->nodes.getLength(); ++i) {
-        this->nodes.getElement(i)->render(viewer, context);
+    for (size_t i = 0; i < this->nodes.value.size(); ++i) {
+        this->nodes.value[i]->render(viewer, context);
     }
 }
 
@@ -2056,25 +2056,25 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
 {
     using std::string;
 
-    if (uri.getLength() > 0) {
-        if (uri.getElement(0)[0] == '#') {
+    if (!uri.value.empty()) {
+        if (uri.value[0][0] == '#') {
 # if 0
             //
             // If the first element in uri is a Viewpoint name, bind the
             // Viewpoint.
             //
-            this->browser.setViewpoint(uri.getElement(0).substr(1));
+            this->browser.setViewpoint(uri.value[0].substr(1));
 # endif
         } else {
-            MFString absoluteURIs(uri.getLength());
-            for (size_t i = 0; i < absoluteURIs.getLength(); ++i) {
+            MFString absoluteURIs(uri.value.size());
+            for (size_t i = 0; i < absoluteURIs.value.size(); ++i) {
                 try {
-                    const URI uriElement(uri.getElement(i));
+                    const URI uriElement(uri.value[i]);
                     const string value =
                         uriElement.getScheme().empty()
                             ? uriElement.resolveAgainst(URI(this->getURI()))
                             : uriElement;
-                    absoluteURIs.setElement(i, value);
+                    absoluteURIs.value[i] = value;
                 } catch (InvalidURI & ex) {
                     OPENVRML_PRINT_EXCEPTION_(ex);
                 }
@@ -2093,11 +2093,9 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
  */
 void Scene::shutdown(const double timestamp) throw ()
 {
-    for (size_t i = 0; i < this->nodes.getLength(); ++i) {
-        const NodePtr & node = this->nodes.getElement(i);
-        if (node) {
-            node->shutdown(timestamp);
-        }
+    for (size_t i = 0; i < this->nodes.value.size(); ++i) {
+        const NodePtr & node = this->nodes.value[i];
+        if (node) { node->shutdown(timestamp); }
     }
 }
 
@@ -2256,8 +2254,8 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
                      const ProtoNode & node) throw (std::bad_alloc):
     Node(nodeType, scope)
 {
-    assert(node.implNodes.getLength() > 0);
-    assert(node.implNodes.getElement(0));
+    assert(!node.implNodes.value.empty());
+    assert(node.implNodes.value[0]);
 
     //
     // For each exposedField and eventOut in the prototype interface, add
@@ -2297,9 +2295,9 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
             this->protoDef = &protoDef;
             this->protoInstance = &protoInstance;
             const MFNode & protoDefImplNodes = protoDef.getImplNodes();
-            for (size_t i = 0; i < protoDefImplNodes.getLength(); ++i) {
+            for (size_t i = 0; i < protoDefImplNodes.value.size(); ++i) {
                 const NodePtr newNode =
-                        this->cloneNode(protoDefImplNodes.getElement(i),
+                        this->cloneNode(protoDefImplNodes.value[i],
                                         protoInstance.getScope());
                 assert(newNode);
                 protoInstance.addRootNode(newNode);
@@ -2314,17 +2312,16 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
                                      const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
-            return SFNode(this->cloneNode(node.get(), targetScope));
+            return SFNode(this->cloneNode(node.value, targetScope));
         }
 
         const MFNode cloneFieldValue(const MFNode & nodes,
                                      const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
-            MFNode result(nodes.getLength());
-            for (size_t i = 0; i < nodes.getLength(); ++i) {
-                result.setElement(i, this->cloneNode(nodes.getElement(i),
-                                                     targetScope));
+            MFNode result(nodes.value.size());
+            for (size_t i = 0; i < nodes.value.size(); ++i) {
+                result.value[i] = this->cloneNode(nodes.value[i], targetScope);
             }
             return result;
         }
@@ -2479,17 +2476,16 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
                                      const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
-            return SFNode(this->cloneNode(node.get(), targetScope));
+            return SFNode(this->cloneNode(node.value, targetScope));
         }
 
         const MFNode cloneFieldValue(const MFNode & nodes,
                                      const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
-            MFNode result(nodes.getLength());
-            for (size_t i = 0; i < nodes.getLength(); ++i) {
-                result.setElement(i, this->cloneNode(nodes.getElement(i),
-                                                     targetScope));
+            MFNode result(nodes.value.size());
+            for (size_t i = 0; i < nodes.value.size(); ++i) {
+                result.value[i] = this->cloneNode(nodes.value[i], targetScope);
             }
             return result;
         }
@@ -2557,7 +2553,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
     typedef ProtoNodeClass::DefaultValueMap DefaultValueMap;
     DefaultValueMap & defaultValueMap =
             static_cast<ProtoNodeClass &>(nodeType.nodeClass).defaultValueMap;
-    const ScopePtr & protoScope = this->implNodes.getElement(0)->getScope();
+    const ScopePtr & protoScope = this->implNodes.value[0]->getScope();
 
     for (DefaultValueMap::const_iterator i(defaultValueMap.begin());
             i != defaultValueMap.end(); ++i) {
@@ -2609,10 +2605,11 @@ ProtoNode::~ProtoNode() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a ScriptNode, or 0 otherwise.
  */
-const ScriptNode * ProtoNode::toScript() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toScript();
+const ScriptNode * ProtoNode::toScript() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toScript();
 }
 
 /**
@@ -2621,10 +2618,11 @@ const ScriptNode * ProtoNode::toScript() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a ScriptNode, or 0 otherwise.
  */
-ScriptNode * ProtoNode::toScript() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toScript();
+ScriptNode * ProtoNode::toScript() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toScript();
 }
 
 /**
@@ -2633,10 +2631,11 @@ ScriptNode * ProtoNode::toScript() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      an AppearanceNode, or 0 otherwise.
  */
-const AppearanceNode * ProtoNode::toAppearance() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toAppearance();
+const AppearanceNode * ProtoNode::toAppearance() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toAppearance();
 }
 
 /**
@@ -2645,10 +2644,11 @@ const AppearanceNode * ProtoNode::toAppearance() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      an AppearanceNode, or 0 otherwise.
  */
-AppearanceNode * ProtoNode::toAppearance() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toAppearance();
+AppearanceNode * ProtoNode::toAppearance() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toAppearance();
 }
 
 /**
@@ -2657,10 +2657,11 @@ AppearanceNode * ProtoNode::toAppearance() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a ChildNode, or 0 otherwise.
  */
-const ChildNode * ProtoNode::toChild() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toChild();
+const ChildNode * ProtoNode::toChild() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toChild();
 }
 
 /**
@@ -2669,10 +2670,11 @@ const ChildNode * ProtoNode::toChild() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a ChildNode, or 0 otherwise.
  */
-ChildNode * ProtoNode::toChild() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toChild();
+ChildNode * ProtoNode::toChild() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toChild();
 }
 
 /**
@@ -2681,10 +2683,11 @@ ChildNode * ProtoNode::toChild() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a ColorNode, or 0 otherwise.
  */
-const ColorNode * ProtoNode::toColor() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toColor();
+const ColorNode * ProtoNode::toColor() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toColor();
 }
 
 /**
@@ -2693,10 +2696,11 @@ const ColorNode * ProtoNode::toColor() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a ColorNode, or 0 otherwise.
  */
-ColorNode * ProtoNode::toColor() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toColor();
+ColorNode * ProtoNode::toColor() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toColor();
 }
 
 /**
@@ -2705,10 +2709,11 @@ ColorNode * ProtoNode::toColor() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a CoordinateNode, or 0 otherwise.
  */
-const CoordinateNode * ProtoNode::toCoordinate() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toCoordinate();
+const CoordinateNode * ProtoNode::toCoordinate() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toCoordinate();
 }
 
 /**
@@ -2717,10 +2722,11 @@ const CoordinateNode * ProtoNode::toCoordinate() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a CoordinateNode, or 0 otherwise.
  */
-CoordinateNode * ProtoNode::toCoordinate() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toCoordinate();
+CoordinateNode * ProtoNode::toCoordinate() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toCoordinate();
 }
 
 /**
@@ -2729,10 +2735,11 @@ CoordinateNode * ProtoNode::toCoordinate() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a FontStyleNode, or 0 otherwise.
  */
-const FontStyleNode * ProtoNode::toFontStyle() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toFontStyle();
+const FontStyleNode * ProtoNode::toFontStyle() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toFontStyle();
 }
 
 /**
@@ -2741,10 +2748,11 @@ const FontStyleNode * ProtoNode::toFontStyle() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a FontStyleNode, or 0 otherwise.
  */
-FontStyleNode * ProtoNode::toFontStyle() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toFontStyle();
+FontStyleNode * ProtoNode::toFontStyle() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toFontStyle();
 }
 
 /**
@@ -2753,10 +2761,11 @@ FontStyleNode * ProtoNode::toFontStyle() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a GeometryNode, or 0 otherwise.
  */
-const GeometryNode * ProtoNode::toGeometry() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toGeometry();
+const GeometryNode * ProtoNode::toGeometry() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toGeometry();
 }
 
 /**
@@ -2765,10 +2774,11 @@ const GeometryNode * ProtoNode::toGeometry() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a GeometryNode, or 0 otherwise.
  */
-GeometryNode * ProtoNode::toGeometry() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toGeometry();
+GeometryNode * ProtoNode::toGeometry() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toGeometry();
 }
 
 /**
@@ -2777,10 +2787,11 @@ GeometryNode * ProtoNode::toGeometry() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a MaterialNode, or 0 otherwise.
  */
-const MaterialNode * ProtoNode::toMaterial() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toMaterial();
+const MaterialNode * ProtoNode::toMaterial() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toMaterial();
 }
 
 /**
@@ -2789,10 +2800,11 @@ const MaterialNode * ProtoNode::toMaterial() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a MaterialNode, or 0 otherwise.
  */
-MaterialNode * ProtoNode::toMaterial() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toMaterial();
+MaterialNode * ProtoNode::toMaterial() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toMaterial();
 }
 
 /**
@@ -2801,10 +2813,11 @@ MaterialNode * ProtoNode::toMaterial() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a NormalNode, or 0 otherwise.
  */
-const NormalNode * ProtoNode::toNormal() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toNormal();
+const NormalNode * ProtoNode::toNormal() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toNormal();
 }
 
 /**
@@ -2813,10 +2826,11 @@ const NormalNode * ProtoNode::toNormal() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a NormalNode, or 0 otherwise.
  */
-NormalNode * ProtoNode::toNormal() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toNormal();
+NormalNode * ProtoNode::toNormal() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toNormal();
 }
 
 /**
@@ -2825,10 +2839,11 @@ NormalNode * ProtoNode::toNormal() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a SoundSourceNode, or 0 otherwise.
  */
-const SoundSourceNode * ProtoNode::toSoundSource() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toSoundSource();
+const SoundSourceNode * ProtoNode::toSoundSource() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toSoundSource();
 }
 
 /**
@@ -2837,10 +2852,11 @@ const SoundSourceNode * ProtoNode::toSoundSource() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a SoundSourceNode, or 0 otherwise.
  */
-SoundSourceNode * ProtoNode::toSoundSource() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toSoundSource();
+SoundSourceNode * ProtoNode::toSoundSource() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toSoundSource();
 }
 
 /**
@@ -2849,10 +2865,11 @@ SoundSourceNode * ProtoNode::toSoundSource() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a TextureNode, or 0 otherwise.
  */
-const TextureNode * ProtoNode::toTexture() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toTexture();
+const TextureNode * ProtoNode::toTexture() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toTexture();
 }
 
 /**
@@ -2861,10 +2878,11 @@ const TextureNode * ProtoNode::toTexture() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a TextureNode, or 0 otherwise.
  */
-TextureNode * ProtoNode::toTexture() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toTexture();
+TextureNode * ProtoNode::toTexture() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toTexture();
 }
 
 /**
@@ -2873,10 +2891,11 @@ TextureNode * ProtoNode::toTexture() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a TextureCoordinateNode, or 0 otherwise.
  */
-const TextureCoordinateNode * ProtoNode::toTextureCoordinate() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toTextureCoordinate();
+const TextureCoordinateNode * ProtoNode::toTextureCoordinate() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toTextureCoordinate();
 }
 
 /**
@@ -2885,10 +2904,11 @@ const TextureCoordinateNode * ProtoNode::toTextureCoordinate() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a TextureCoordinateNode, or 0 otherwise.
  */
-TextureCoordinateNode * ProtoNode::toTextureCoordinate() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toTextureCoordinate();
+TextureCoordinateNode * ProtoNode::toTextureCoordinate() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toTextureCoordinate();
 }
 
 /**
@@ -2897,10 +2917,11 @@ TextureCoordinateNode * ProtoNode::toTextureCoordinate() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a TextureTransformNode, or 0 otherwise.
  */
-const TextureTransformNode * ProtoNode::toTextureTransform() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toTextureTransform();
+const TextureTransformNode * ProtoNode::toTextureTransform() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toTextureTransform();
 }
 
 /**
@@ -2909,10 +2930,11 @@ const TextureTransformNode * ProtoNode::toTextureTransform() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a TextureTransformNode, or 0 otherwise.
  */
-TextureTransformNode * ProtoNode::toTextureTransform() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toTextureTransform();
+TextureTransformNode * ProtoNode::toTextureTransform() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toTextureTransform();
 }
 
 /**
@@ -2921,10 +2943,11 @@ TextureTransformNode * ProtoNode::toTextureTransform() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a TransformNode, or 0 otherwise.
  */
-const TransformNode * ProtoNode::toTransform() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toTransform();
+const TransformNode * ProtoNode::toTransform() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toTransform();
 }
 
 /**
@@ -2933,10 +2956,11 @@ const TransformNode * ProtoNode::toTransform() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a TransformNode, or 0 otherwise.
  */
-TransformNode * ProtoNode::toTransform() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toTransform();
+TransformNode * ProtoNode::toTransform() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toTransform();
 }
 
 /**
@@ -2945,10 +2969,11 @@ TransformNode * ProtoNode::toTransform() throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a ViewpointNode, or 0 otherwise.
  */
-const ViewpointNode * ProtoNode::toViewpoint() const throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toViewpoint();
+const ViewpointNode * ProtoNode::toViewpoint() const throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toViewpoint();
 }
 
 /**
@@ -2957,10 +2982,11 @@ const ViewpointNode * ProtoNode::toViewpoint() const throw () {
  * @return a pointer to the first node in the implementation if that node is
  *      a ViewpointNode, or 0 otherwise.
  */
-ViewpointNode * ProtoNode::toViewpoint() throw () {
-    assert(this->implNodes.getLength() != 0);
-    assert(this->implNodes.getElement(0).get());
-    return this->implNodes.getElement(0)->toViewpoint();
+ViewpointNode * ProtoNode::toViewpoint() throw ()
+{
+    assert(!this->implNodes.value.empty());
+    assert(this->implNodes.value[0]);
+    return this->implNodes.value[0]->toViewpoint();
 }
 
 /**
@@ -2976,9 +3002,10 @@ const MFNode & ProtoNode::getImplNodes() const throw ()
 /**
  * @brief Add a root node to the prototype definition.
  */
-void ProtoNode::addRootNode(const NodePtr & node) throw (std::bad_alloc) {
+void ProtoNode::addRootNode(const NodePtr & node) throw (std::bad_alloc)
+{
     assert(node);
-    this->implNodes.addNode(node);
+    this->implNodes.value.push_back(node);
 }
 
 /**
@@ -3092,9 +3119,9 @@ void ProtoNode::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
 
-    for (size_t i = 0; i < this->implNodes.getLength(); ++i) {
-        assert(this->implNodes.getElement(i));
-        this->implNodes.getElement(i)->initialize(*this->getScene(), timestamp);
+    for (size_t i = 0; i < this->implNodes.value.size(); ++i) {
+        assert(this->implNodes.value[i]);
+        this->implNodes.value[i]->initialize(*this->getScene(), timestamp);
     }
 
     this->getScene()->browser.addProto(*this);
@@ -3268,63 +3295,63 @@ void ProtoNode::do_shutdown(const double timestamp) throw ()
     assert(this->getScene());
     this->getScene()->browser.removeProto(*this);
 
-    for (size_t i = 0; i < this->implNodes.getLength(); ++i) {
-        assert(this->implNodes.getElement(i));
-        this->implNodes.getElement(i)->shutdown(timestamp);
+    for (size_t i = 0; i < this->implNodes.value.size(); ++i) {
+        assert(this->implNodes.value[i]);
+        this->implNodes.value[i]->shutdown(timestamp);
     }
 }
 
 Vrml97Node::Anchor * ProtoNode::toAnchor() const {
-    return this->implNodes.getElement(0)->toAnchor();
+    return this->implNodes.value[0]->toAnchor();
 }
 
 Vrml97Node::AudioClip * ProtoNode::toAudioClip() const {
-    return this->implNodes.getElement(0)->toAudioClip();
+    return this->implNodes.value[0]->toAudioClip();
 }
 
 Vrml97Node::CylinderSensor * ProtoNode::toCylinderSensor() const {
-    return this->implNodes.getElement(0)->toCylinderSensor();
+    return this->implNodes.value[0]->toCylinderSensor();
 }
 
 Vrml97Node::AbstractLight * ProtoNode::toLight() const {
-    return this->implNodes.getElement(0)->toLight();
+    return this->implNodes.value[0]->toLight();
 }
 
 Vrml97Node::MovieTexture * ProtoNode::toMovieTexture() const {
-    return this->implNodes.getElement(0)->toMovieTexture();
+    return this->implNodes.value[0]->toMovieTexture();
 }
 
 Vrml97Node::NavigationInfo * ProtoNode::toNavigationInfo() const {
-    return this->implNodes.getElement(0)->toNavigationInfo();
+    return this->implNodes.value[0]->toNavigationInfo();
 }
 
 Vrml97Node::PlaneSensor * ProtoNode::toPlaneSensor() const {
-    return this->implNodes.getElement(0)->toPlaneSensor();
+    return this->implNodes.value[0]->toPlaneSensor();
 }
 
 Vrml97Node::PointLight * ProtoNode::toPointLight() const {
-    return this->implNodes.getElement(0)->toPointLight();
+    return this->implNodes.value[0]->toPointLight();
 }
 
 Vrml97Node::SphereSensor * ProtoNode::toSphereSensor() const {
-    return this->implNodes.getElement(0)->toSphereSensor();
+    return this->implNodes.value[0]->toSphereSensor();
 }
 
 Vrml97Node::SpotLight * ProtoNode::toSpotLight() const {
-    return this->implNodes.getElement(0)->toSpotLight();
+    return this->implNodes.value[0]->toSpotLight();
 }
 
 Vrml97Node::TimeSensor * ProtoNode::toTimeSensor() const {
-    return this->implNodes.getElement(0)->toTimeSensor();
+    return this->implNodes.value[0]->toTimeSensor();
 }
 
 Vrml97Node::TouchSensor * ProtoNode::toTouchSensor() const {
-    return this->implNodes.getElement(0)->toTouchSensor();
+    return this->implNodes.value[0]->toTouchSensor();
 }
 
 void ProtoNode::render(Viewer & viewer, const VrmlRenderContext context) {
-    assert(this->implNodes.getElement(0));
-    this->implNodes.getElement(0)->render(viewer, context);
+    assert(this->implNodes.value[0]);
+    this->implNodes.value[0]->render(viewer, context);
 }
 
 
@@ -4738,11 +4765,11 @@ const VrmlMatrix & DefaultViewpoint::getTransformation() const throw ()
     public:
         DefaultTransformation() throw ()
         {
-            static const SFVec3f position(0.0, 0.0, 10.0);
-            static const SFRotation orientation;
-            static const SFVec3f scale(1.0, 1.0, 1.0);
-            static const SFRotation scaleOrientation;
-            static const SFVec3f center;
+            static const vec3f position(0.0, 0.0, 10.0);
+            static const rotation orientation;
+            static const vec3f scale(1.0, 1.0, 1.0);
+            static const rotation scaleOrientation;
+            static const vec3f center;
             this->setTransform(position,
                                orientation,
                                scale,

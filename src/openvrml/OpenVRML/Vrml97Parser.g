@@ -635,7 +635,7 @@ statement[OpenVRML::Browser & browser,
             // If we are unable to parse a node, node will be null.
             //
             if (node) {
-                mfNode.addNode(node);
+                mfNode.value.push_back(node);
             }
         }
     | protoStatement[browser, scope]
@@ -834,9 +834,9 @@ externproto[OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope]
     : KEYWORD_EXTERNPROTO id:ID LBRACKET
         (externInterfaceDeclaration[interfaces])* RBRACKET
         urlList=externprotoUrlList {
-            for (size_t i = 0; i < urlList.getLength(); ++i) {
+            for (size_t i = 0; i < urlList.value.size(); ++i) {
             	Browser::NodeClassMap::const_iterator pos =
-                        browser.nodeClassMap.find(urlList.getElement(i));
+                        browser.nodeClassMap.find(urlList.value[i]);
                 if (pos != browser.nodeClassMap.end()) {
                     nodeType = pos->second->createType(id->getText(),
                                                        interfaces);
@@ -880,17 +880,14 @@ returns [OpenVRML::NodeInterface::Type it = OpenVRML::NodeInterface::invalidType
     ;
 
 externprotoUrlList returns [OpenVRML::MFString urlList]
-        {
-            using std::string;
-            using std::vector;
-            using OpenVRML::MFString;
+{
+    using std::string;
+    using OpenVRML::MFString;
 
-            string s;
-        }
-    :   s=stringValue { urlList = MFString(1, &s); }
-    |   LBRACKET { vector<string> stringVector; }
-        ( s=stringValue { stringVector.push_back(s); } )* RBRACKET
-        { urlList = MFString(stringVector.size(), &stringVector[0]); }
+    string s;
+}
+    :   s=stringValue { urlList.value.push_back(s); }
+    |   LBRACKET ( s=stringValue { urlList.value.push_back(s); } )* RBRACKET
     ;
 
 routeStatement[const OpenVRML::Scope & scope]
@@ -1365,36 +1362,30 @@ options { defaultErrorHandler=false; }
 sfColorValue returns [OpenVRML::FieldValuePtr scv]
 options { defaultErrorHandler=false; }
 {
-    float c[3];
+    color c;
 }
-    : colorValue[c] { scv.reset(new SFColor(c[0], c[1], c[2])); }
+    : colorValue[c] { scv.reset(new SFColor(c)); }
     ;
 
 mfColorValue
 returns [OpenVRML::FieldValuePtr mcv = OpenVRML::FieldValuePtr(new MFColor)]
 options { defaultErrorHandler=false; }
 {
-    float c[3];
-    MFColor & mfcolor = static_cast<MFColor &>(*mcv);
+    color c;
+    MFColor & colors = static_cast<MFColor &>(*mcv);
 }
-    : colorValue[c] {
-    	    mfcolor.setLength(1);
-            mfcolor.setElement(0, c);
-        }
-    | LBRACKET (colorValue[c] {
-            mfcolor.setLength(mfcolor.getLength() + 1);
-            mfcolor.setElement(mfcolor.getLength() - 1, c);
-        })* RBRACKET
+    : colorValue[c] { colors.value.push_back(c); }
+    | LBRACKET (colorValue[c] { colors.value.push_back(c); })* RBRACKET
     ;
 
-colorValue[float c[3]]
+colorValue[color & c]
 options { defaultErrorHandler=false; }
 {
-    float r(0.0f), g(0.0f), b(0.0f);
+    float r, g, b;
 }
-    : r=colorComponent g=colorComponent b=colorComponent { c[0] = r;
-                                                           c[1] = g;
-                                                           c[2] = b; }
+    : r=colorComponent g=colorComponent b=colorComponent { c.r(r);
+                                                           c.g(g);
+                                                           c.b(b); }
     ;
 
 //
@@ -1405,6 +1396,11 @@ options { defaultErrorHandler=false; }
     : val=floatValue {
             if (val < 0.0 || val > 1.0) {
                 this->reportWarning("Color component values must be from 0 to 1.");
+                if (val < 0.0) {
+                    val = 0.0;
+                } else if (val > 1.0) {
+                    val = 1.0;
+                }
             }
         }
     ;
@@ -1412,26 +1408,26 @@ options { defaultErrorHandler=false; }
 sfFloatValue returns [OpenVRML::FieldValuePtr sfv]
 options { defaultErrorHandler=false; }
 {
-    float f(0.0f);
+    float f;
 }
     : f=floatValue { sfv.reset(new SFFloat(f)); }
     ;
 
-mfFloatValue returns [OpenVRML::FieldValuePtr mfv]
+mfFloatValue
+returns [OpenVRML::FieldValuePtr mfv = OpenVRML::FieldValuePtr(new MFFloat)]
 options { defaultErrorHandler=false; }
 {
-    float f(0.0f);
+    float f;
+    MFFloat & floats = static_cast<MFFloat &>(*mfv);
 }
-    : f=floatValue { mfv.reset(new MFFloat(1, &f)); }
-    | LBRACKET { std::vector<float> floatVector; }
-        (f=floatValue { floatVector.push_back(f); })* RBRACKET
-        { mfv.reset(new MFFloat(floatVector.size(), &floatVector[0])); }
+    : f=floatValue { floats.value.push_back(f); }
+    | LBRACKET (f=floatValue { floats.value.push_back(f); })* RBRACKET
     ;
 
-floatValue returns [float val = 0.0f]
+floatValue returns [float val]
 options { defaultErrorHandler=false; }
-    : f0:REAL     { val = atof(f0->getText().c_str()); }
-    | f1:INTEGER  { val = atof(f1->getText().c_str()); }
+    : f0:REAL     { std::istringstream(f0->getText()) >> val; }
+    | f1:INTEGER  { std::istringstream(f1->getText()) >> val; }
     ;
 
 sfImageValue returns [OpenVRML::FieldValuePtr siv]
@@ -1473,26 +1469,26 @@ options { defaultErrorHandler=false; }
 sfInt32Value returns [OpenVRML::FieldValuePtr siv]
 options { defaultErrorHandler=false; }
 {
-    long i(0L);
+    long i;
 }
     : i=intValue { siv.reset(new SFInt32(i)); }
     ;
 
-mfInt32Value returns [OpenVRML::FieldValuePtr miv]
+mfInt32Value
+returns [OpenVRML::FieldValuePtr miv = OpenVRML::FieldValuePtr(new MFInt32)]
 options { defaultErrorHandler=false; }
 {
-    long i(0L);
+    long i;
+    MFInt32 & int32s = static_cast<MFInt32 &>(*miv);
 }
-    : i=intValue { miv.reset(new MFInt32(1, &i)); }
-    | LBRACKET { std::vector<long> longVector; }
-        (i=intValue { longVector.push_back(i); })* RBRACKET
-        { miv.reset(new MFInt32(longVector.size(), &longVector[0])); }
+    : i=intValue { int32s.value.push_back(i); }
+    | LBRACKET (i=intValue { int32s.value.push_back(i); })* RBRACKET
     ;
 
-intValue returns [long val = 0]
+intValue returns [long val]
 options { defaultErrorHandler=false; }
-    :   i0:INTEGER      { val = atol(i0->getText().c_str()); }
-    |  	i1:HEX_INTEGER  { val = strtol(i1->getText().c_str(), 0, 16); }
+    :   i0:INTEGER      { std::istringstream(i0->getText()) >> val; }
+    |  	i1:HEX_INTEGER  { std::istringstream(i1->getText()) >> val; }
     ;
 
 sfNodeValue[OpenVRML::Browser & browser,
@@ -1517,75 +1513,73 @@ returns [OpenVRML::FieldValuePtr snv]
 
 mfNodeValue[OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope]
-returns [OpenVRML::FieldValuePtr mnv]
-    { OpenVRML::NodePtr n; }
-    : n=nodeStatement[browser, scope] {
-            if (n) { mnv.reset(new MFNode(1, &n)); }
-        }
-    | LBRACKET { mnv.reset(new MFNode); } (
+returns [OpenVRML::FieldValuePtr mnv = OpenVRML::FieldValuePtr(new MFNode)]
+{
+    OpenVRML::NodePtr n;
+    MFNode & nodes = static_cast<MFNode &>(*mnv);
+}
+    : n=nodeStatement[browser, scope] { if (n) { nodes.value.push_back(n); } }
+    | LBRACKET (
             n=nodeStatement[browser, scope] {
-                if (n) { static_cast<MFNode &>(*mnv).addNode(n); }
+                if (n) { nodes.value.push_back(n); }
             }
         )* RBRACKET
     ;
 
 protoMfNodeValue[OpenVRML::ProtoNodeClass & proto,
                  const OpenVRML::ScopePtr & scope]
-returns [OpenVRML::FieldValuePtr mnv]
-    { OpenVRML::NodePtr n; }
-    : n=protoNodeStatement[proto, scope] { mnv.reset(new MFNode(1, &n)); }
-    | LBRACKET { mnv.reset(new MFNode); } (
+returns [OpenVRML::FieldValuePtr mnv = OpenVRML::FieldValuePtr(new MFNode)]
+{
+    OpenVRML::NodePtr n;
+    MFNode & nodes = static_cast<MFNode &>(*mnv);
+}
+    : n=protoNodeStatement[proto, scope] {
+            if (n) { nodes.value.push_back(n); }
+        }
+    | LBRACKET (
             n=protoNodeStatement[proto, scope] {
-                static_cast<MFNode &>(*mnv).addNode(n);
+                if (n) { nodes.value.push_back(n); }
             }
         )* RBRACKET
     ;
 
 sfRotationValue returns [OpenVRML::FieldValuePtr srv]
-    { float r[4]; }
+    { rotation r; }
     : rotationValue[r] { srv.reset(new SFRotation(r)); }
     ;
 
 mfRotationValue
 returns [OpenVRML::FieldValuePtr mrv = OpenVRML::FieldValuePtr(new MFRotation)]
 {
-    float r[4];
-    MFRotation & mfrotation = static_cast<MFRotation &>(*mrv);
+    rotation r;
+    MFRotation & rotations = static_cast<MFRotation &>(*mrv);
 }
-    : rotationValue[r] {
-            mfrotation.setLength(1);
-            mfrotation.setElement(0, r);
-        }
-    | LBRACKET (rotationValue[r] {
-            mfrotation.setLength(mfrotation.getLength() + 1);
-            mfrotation.setElement(mfrotation.getLength() - 1, r);
-        })* RBRACKET
+    : rotationValue[r] { rotations.value.push_back(r); }
+    | LBRACKET (rotationValue[r] { rotations.value.push_back(r); })* RBRACKET
     ;
 
 //
 // Issue a warning here if the vector isn't normalized.
 //
-rotationValue[float r[4]]
+rotationValue[rotation & r]
 options { defaultErrorHandler=false; }
     {
-        using OpenVRML_::length;
         using OpenVRML_::fpequal;
-        using OpenVRML_::normalize;
-        float x(0.0f), y(0.0f), z(0.0f), rot(0.0f);
+        float x, y, z, angle;
     }
-    : x=floatValue y=floatValue z=floatValue rot=floatValue {
-            r[0] = x;
-            r[1] = y;
-            r[2] = z;
-            r[3] = rot;
+    : x=floatValue y=floatValue z=floatValue angle=floatValue {
+            r.x(x);
+            r.y(y);
+            r.z(z);
+            r.angle(angle);
 
-            const float axisLength = length(r);
+            const float axisLength = r.axis().length();
             if (!fpequal(axisLength, 1.0)) {
                 this->reportWarning("The axis component of a rotation must be a normalized vector.");
                 if (fpequal(axisLength, 0.0)) {
-                    r[2] = 1.0;
+                    r.z(1.0);
                 } else {
-                    normalize(r);
+                    r.axis(r.axis().normalize());
                 }
             }
         }
@@ -1597,13 +1591,15 @@ options { defaultErrorHandler=false; }
     : s=stringValue { ssv.reset(new SFString(s)); }
     ;
 
-mfStringValue returns [OpenVRML::FieldValuePtr msv]
+mfStringValue
+returns [OpenVRML::FieldValuePtr msv = OpenVRML::FieldValuePtr(new MFString)]
 options { defaultErrorHandler=false; }
-    { std::string s; }
-    : s=stringValue { msv.reset(new MFString(1, &s)); }
-    | LBRACKET { std::vector<std::string> stringVector; }
-        (s=stringValue { stringVector.push_back(s); })* RBRACKET
-        { msv.reset(new MFString(stringVector.size(), &stringVector[0])); }
+{
+    std::string s;
+    MFString & strings = static_cast<MFString &>(*msv);
+}
+    : s=stringValue { strings.value.push_back(s); }
+    | LBRACKET (s=stringValue { strings.value.push_back(s); })* RBRACKET
     ;
 
 stringValue returns [std::string str]
@@ -1626,84 +1622,74 @@ options { defaultErrorHandler=false; }
     : t=doubleValue { stv.reset(new SFTime(t)); }
     ;
 
-mfTimeValue returns [OpenVRML::FieldValuePtr mtv]
+mfTimeValue
+returns [OpenVRML::FieldValuePtr mtv = OpenVRML::FieldValuePtr(new MFTime)]
 options { defaultErrorHandler=false; }
-    { double t(0.0); }
-    : t=doubleValue { mtv.reset(new MFTime(1, &t)); }
-    | LBRACKET { std::vector<double> doubleVector; }
-        (t=doubleValue { doubleVector.push_back(t); })* RBRACKET
-        { mtv.reset(new MFTime(doubleVector.size(), &doubleVector[0])); }
+{
+    double t;
+    MFTime & times = static_cast<MFTime &>(*mtv);
+}
+    : t=doubleValue { times.value.push_back(t); }
+    | LBRACKET (t=doubleValue { times.value.push_back(t); })* RBRACKET
     ;
 
 doubleValue returns [double val = 0.0]
 options { defaultErrorHandler=false; }
-    :   d0:REAL     { val = atof(d0->getText().c_str()); }
-    |   d1:INTEGER  { val = atof(d1->getText().c_str()); }
+    : d0:REAL    { std::istringstream(d0->getText()) >> val; }
+    | d1:INTEGER { std::istringstream(d1->getText()) >> val; }
     ;
 
 sfVec2fValue returns [OpenVRML::FieldValuePtr svv]
 options { defaultErrorHandler=false; }
-    { float v[2]; }
-    : vec2fValue[v] { svv.reset(new SFVec2f(v[0], v[1])); }
+    { vec2f v; }
+    : vec2fValue[v] { svv.reset(new SFVec2f(v)); }
     ;
 
 mfVec2fValue
 returns [OpenVRML::FieldValuePtr mvv = OpenVRML::FieldValuePtr(new MFVec2f)]
 options { defaultErrorHandler=false; }
 {
-    float v[2];
-    MFVec2f & mfvec2f = static_cast<MFVec2f &>(*mvv);
+    vec2f v;
+    MFVec2f & vec2fs = static_cast<MFVec2f &>(*mvv);
 }
-    : vec2fValue[v] {
-            mfvec2f.setLength(1);
-            mfvec2f.setElement(0, v);
-        }
-    | LBRACKET (vec2fValue[v] {
-            mfvec2f.setLength(mfvec2f.getLength() + 1);
-            mfvec2f.setElement(mfvec2f.getLength() - 1, v);
-        })* RBRACKET
+    : vec2fValue[v] { vec2fs.value.push_back(v); }
+    | LBRACKET (vec2fValue[v] { vec2fs.value.push_back(v); })* RBRACKET
     ;
 
-vec2fValue[float v[2]]
+vec2fValue[vec2f & v]
 options { defaultErrorHandler=false; }
 {
-    float x(0.0f), y(0.0f);
+    float x, y;
 }
-    : x=floatValue y=floatValue { v[0] = x;
-                                  v[1] = y; }
+    : x=floatValue y=floatValue { v.x(x);
+                                  v.y(y); }
     ;
 
 sfVec3fValue returns [OpenVRML::FieldValuePtr svv]
 options { defaultErrorHandler=false; }
 {
-    float v[3];
+    vec3f v;
 }
-    : vec3fValue[v] { svv.reset(new SFVec3f(v[0], v[1], v[2])); }
+    : vec3fValue[v] { svv.reset(new SFVec3f(v)); }
     ;
 
 mfVec3fValue
 returns [OpenVRML::FieldValuePtr mvv = OpenVRML::FieldValuePtr(new MFVec3f)]
 options { defaultErrorHandler=false; }
 {
-    float v[3];
-    MFVec3f & mfvec3f = static_cast<MFVec3f &>(*mvv);
+    vec3f v;
+    MFVec3f & vec3fs = static_cast<MFVec3f &>(*mvv);
 }
-    : vec3fValue[v] {
-            mfvec3f.setLength(1);
-            mfvec3f.setElement(0, v);
-        }
-    | LBRACKET (vec3fValue[v] {
-            mfvec3f.setLength(mfvec3f.getLength() + 1);
-            mfvec3f.setElement(mfvec3f.getLength() - 1, v);
-        })* RBRACKET
+    : vec3fValue[v] { vec3fs.value.push_back(v); }
+    | LBRACKET (vec3fValue[v] { vec3fs.value.push_back(v); })* RBRACKET
     ;
 
-vec3fValue[float v[3]]
+vec3fValue[vec3f & v]
 options { defaultErrorHandler=false; }
 {
-    float x(0.0f), y(0.0f), z(0.0f);
+    float x, y, z;
 }
-    : x=floatValue y=floatValue z=floatValue { v[0] = x;
-                                               v[1] = y;
-                                               v[2] = z; }
+    : x=floatValue y=floatValue z=floatValue { v.x(x);
+                                               v.y(y);
+                                               v.z(z); }
     ;

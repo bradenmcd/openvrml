@@ -25,7 +25,7 @@
 #   include <stddef.h>
 #   include <iostream>
 #   include <iosfwd>
-#   include "common.h"
+#   include <OpenVRML/common.h>
 
 namespace OpenVRML {
 
@@ -36,8 +36,8 @@ namespace OpenVRML {
     bool OPENVRML_SCOPE operator==(const VrmlMatrix & lhs,
                                    const VrmlMatrix & rhs) throw ();
 
-    class SFVec3f;
-    class SFRotation;
+    class vec3f;
+    class rotation;
     class Quaternion;
 
     class OPENVRML_SCOPE VrmlMatrix {
@@ -58,27 +58,24 @@ namespace OpenVRML {
         const float (&operator[](size_t index) const throw ())[4];
         const float (&get() const throw ())[4][4];
 
-        void setRotate(const float axisAngle[4]) throw ();
-        void setRotate(const SFRotation & axisAngle) throw ();
+        void setRotate(const rotation & axisAngle) throw ();
         void setRotate(const Quaternion & quat) throw ();
         void setScale(float s) throw ();
-        void setScale(const float s[3]) throw ();
-        void setScale(const SFVec3f & s) throw ();
-        void setTranslate(const float t[3]) throw ();
-        void setTranslate(const SFVec3f & t) throw ();
+        void setScale(const vec3f & s) throw ();
+        void setTranslate(const vec3f & t) throw ();
 
-        void setTransform(const SFVec3f & translation,
-                          const SFRotation & rotation,
-                          const SFVec3f & scale,
-                          const SFRotation & scaleOrientation,
-                          const SFVec3f & center) throw ();
-        void getTransform(SFVec3f & translation,
-                          SFRotation & rotation,
-                          SFVec3f & scale) const throw ();
-        void getTransform(SFVec3f & translation,
-                          SFRotation & rotation,
-                          SFVec3f & scale,
-                          SFVec3f & shear) const throw ();
+        void setTransform(const vec3f & translation,
+                          const rotation & rotation,
+                          const vec3f & scale,
+                          const rotation & scaleOrientation,
+                          const vec3f & center) throw ();
+        void getTransform(vec3f & translation,
+                          rotation & rotation,
+                          vec3f & scale) const throw ();
+        void getTransform(vec3f & translation,
+                          rotation & rotation,
+                          vec3f & scale,
+                          vec3f & shear) const throw ();
 
         const VrmlMatrix affine_inverse() const throw ();
         const VrmlMatrix transpose() const throw ();
@@ -86,10 +83,8 @@ namespace OpenVRML {
         const VrmlMatrix multLeft(const VrmlMatrix & mat) const throw ();
         const VrmlMatrix multRight(const VrmlMatrix & mat) const throw ();
 
-        void multMatrixVec(const SFVec3f &src, SFVec3f &dst) const throw ();
-        void multMatrixVec(const float src[3], float dst[3]) const throw ();
-        void multVecMatrix(const SFVec3f &src, SFVec3f &dst) const throw ();
-        void multVecMatrix(const float src[3], float dst[3]) const throw ();
+        void multMatrixVec(const vec3f &src, vec3f &dst) const throw ();
+        void multVecMatrix(const vec3f &src, vec3f &dst) const throw ();
 
         float det3(int r1, int r2, int r3, int c1, int c2, int c3) const
             throw ();
