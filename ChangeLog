@@ -1,3 +1,7 @@
+2001-11-25  Braden McDaniel  <braden@endoframe.com>
+
+        * Moved NodeVisitor implementation to `node.h' and `node.cpp'.
+
 2001-11-24  Braden McDaniel  <braden@endoframe.com>
 
         * Placed libopenvrml members in OpenVRML namespace. Placed

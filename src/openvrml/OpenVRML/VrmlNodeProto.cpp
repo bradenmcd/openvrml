@@ -21,7 +21,6 @@
 # include <algorithm>
 # include "VrmlNodeProto.h"
 # include "VrmlNamespace.h"
-# include "VrmlNodeVisitor.h"
 # include "Route.h"
 # include "bvolume.h"
 

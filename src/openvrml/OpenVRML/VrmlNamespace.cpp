@@ -24,7 +24,6 @@
 
 # include <stack>
 # include "VrmlNamespace.h"
-# include "VrmlNodeVisitor.h"
 # include "node.h"
 # include "Route.h"
 # include "System.h"

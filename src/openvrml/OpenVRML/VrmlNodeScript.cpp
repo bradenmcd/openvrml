@@ -41,7 +41,6 @@
 # include "private.h"
 # include "script.h"
 # include "VrmlNodeScript.h"
-# include "VrmlNodeVisitor.h"
 # include "VrmlNamespace.h"
 # include "VrmlScene.h"
 # include "doc2.hpp"

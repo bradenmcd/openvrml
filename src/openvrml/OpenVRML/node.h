@@ -132,6 +132,7 @@ namespace OpenVRML {
     class Viewer;
     class NodeType;
     class FieldValue;
+    class VrmlMatrix;
     class NodeVisitor;
     class BVolume;
     class ScriptNode;
@@ -145,9 +146,12 @@ namespace OpenVRML {
     class NodeChild;
     class NodeCollision;
     class NodeColor;
+    class NodeColorInt;
     class NodeCone;
     class NodeCoordinate;
+    class NodeCoordinateInt;
     class NodeCylinder;
+    class NodeCylinderSensor;
     class NodeDirLight;
     class NodeElevationGrid;
     class NodeExtrusion;
@@ -156,22 +160,31 @@ namespace OpenVRML {
     class NodeGeometry;
     class NodeGroup;
     class NodeIFaceSet;
+    class NodeILineSet;
     class NodeInline;
+    class NodeImageTexture;
     class NodeLight;
+    class NodeLOD;
     class NodeMaterial;
     class NodeMovieTexture;
     class NodeNavigationInfo;
     class NodeNormal;
+    class NodeNormalInt;
+    class NodeOrientationInt;
+    class NodePixelTexture;
     class NodePlaneSensor;
     class NodePointLight;
     class NodePointSet;
+    class NodePositionInt;
+    class NodeProximitySensor;
+    class NodeScalarInt;
     class NodeShape;
     class NodeSphere;
     class NodeSphereSensor;
-    class NodeCylinderSensor;
     class NodeSound;
     class NodeSpotLight;
     class NodeSwitch;
+    class NodeText;
     class NodeTexture;
     class NodeTextureCoordinate;
     class NodeTextureTransform;
@@ -179,13 +192,8 @@ namespace OpenVRML {
     class NodeTouchSensor;
     class NodeTransform;
     class NodeViewpoint;
-    class NodeImageTexture;
-    class NodePixelTexture;
-    class NodeLOD;
-    class NodeScalarInt;
-    class NodeOrientationInt;
-    class NodePositionInt;
-    class VrmlMatrix;
+    class NodeVisibilitySensor;
+    class NodeWorldInfo;
 
     class OPENVRML_SCOPE Node {
         friend ostream & ::operator<<(ostream & os, const Node & f);
@@ -342,6 +350,68 @@ namespace OpenVRML {
 
         // Routes from this node (clean this up, add RouteList ...)
         RouteList d_routes;
+    };
+
+
+    class OPENVRML_SCOPE NodeVisitor {
+    public:
+        virtual ~NodeVisitor() = 0;
+
+        virtual void visit(ScriptNode & node) = 0;
+        virtual void visit(ProtoNode & node) = 0;
+        virtual void visit(NodeAnchor & node) = 0;
+        virtual void visit(NodeAppearance & node) = 0;
+        virtual void visit(NodeAudioClip & node) = 0;
+        virtual void visit(NodeBackground & node) = 0;
+        virtual void visit(NodeBillboard & node) = 0;
+        virtual void visit(NodeBox & node) = 0;
+        virtual void visit(NodeCollision & node) = 0;
+        virtual void visit(NodeColor & node) = 0;
+        virtual void visit(NodeColorInt & node) = 0;
+        virtual void visit(NodeCone & node) = 0;
+        virtual void visit(NodeCoordinate & node) = 0;
+        virtual void visit(NodeCoordinateInt & node) = 0;
+        virtual void visit(NodeCylinder & node) = 0;
+        virtual void visit(NodeCylinderSensor & node) = 0;
+        virtual void visit(NodeDirLight & node) = 0;
+        virtual void visit(NodeElevationGrid & node) = 0;
+        virtual void visit(NodeExtrusion & node) = 0;
+        virtual void visit(NodeFog & node) = 0;
+        virtual void visit(NodeFontStyle & node) = 0;
+        virtual void visit(NodeGroup & node) = 0;
+        virtual void visit(NodeIFaceSet & node) = 0;
+        virtual void visit(NodeILineSet & node) = 0;
+        virtual void visit(NodeImageTexture & node) = 0;
+        virtual void visit(NodeInline & node) = 0;
+        virtual void visit(NodeLOD & node) = 0;
+        virtual void visit(NodeMaterial & node) = 0;
+        virtual void visit(NodeMovieTexture & node) = 0;
+        virtual void visit(NodeNavigationInfo & node) = 0;
+        virtual void visit(NodeNormal & node) = 0;
+        virtual void visit(NodeNormalInt & node) = 0;
+        virtual void visit(NodeOrientationInt & node) = 0;
+        virtual void visit(NodePixelTexture & node) = 0;
+        virtual void visit(NodePlaneSensor & node) = 0;
+        virtual void visit(NodePointLight & node) = 0;
+        virtual void visit(NodePointSet & node) = 0;
+        virtual void visit(NodePositionInt & node) = 0;
+        virtual void visit(NodeProximitySensor & node) = 0;
+        virtual void visit(NodeScalarInt & node) = 0;
+        virtual void visit(NodeShape & node) = 0;
+        virtual void visit(NodeSound & node) = 0;
+        virtual void visit(NodeSphere & node) = 0;
+        virtual void visit(NodeSphereSensor & node) = 0;
+        virtual void visit(NodeSpotLight & node) = 0;
+        virtual void visit(NodeSwitch & node) = 0;
+        virtual void visit(NodeText & node) = 0;
+        virtual void visit(NodeTextureCoordinate & node) = 0;
+        virtual void visit(NodeTextureTransform & node) = 0;
+        virtual void visit(NodeTimeSensor & node) = 0;
+        virtual void visit(NodeTouchSensor & node) = 0;
+        virtual void visit(NodeTransform & node) = 0;
+        virtual void visit(NodeViewpoint & node) = 0;
+        virtual void visit(NodeVisibilitySensor & node) = 0;
+        virtual void visit(NodeWorldInfo & node) = 0;
     };
 }
 
