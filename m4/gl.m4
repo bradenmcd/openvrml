@@ -36,11 +36,13 @@ GL_LIBS="${PTHREAD_LIBS} -lm"
 # Use x_includes and x_libraries if they have been set (presumably by
 # AC_PATH_X).
 #
-if test -n "$x_includes"; then
-  GL_CFLAGS="-I${x_includes} ${GL_CFLAGS}"
-fi
-if test -n "$x_libraries"; then
-  GL_LIBS="-L${x_libraries} ${GL_LIBS}"
+if test "X$no_x" != "Xyes"; then
+  if test -n "$x_includes"; then
+    GL_CFLAGS="-I${x_includes} ${GL_CFLAGS}"
+  fi
+  if test -n "$x_libraries"; then
+    GL_LIBS="-L${x_libraries} ${GL_LIBS}"
+  fi
 fi
 
 AC_LANG_PUSH(C)
