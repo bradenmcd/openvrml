@@ -2485,30 +2485,33 @@ Viewer::Object ViewerOpenGL::insertText(FontFace & fface,
      glTranslatef(transx*scalex, transy*scaley, 0.0);
      glScalef(scalex,scaley,1.0);
      for (int j=0; j < slength; j++){
-     unsigned char ch = text[text_index];                   
-     const FontVectoriser *fVector = fface.getVectoriser(ch);
-     if(!fVector) return 0;
-     glFrontFace(fVector->getOrientation() ? GL_CW : GL_CCW );
-     ViewerOpenGL::TextData td = {cwidth,cheight};
-     glNormal3f(0.0,0.0,1.0);
-     this->insertTextTess(*fVector,td);
-     if(fface.getHorizontal()){
-       stepx = fVector->getHoriadvance();
+      unsigned char ch = text[text_index];                   
+      const FontVectoriser *fVector = fface.getVectoriser(ch);
+      if(fVector){
+       glFrontFace(fVector->getOrientation() ? GL_CW : GL_CCW );
+       ViewerOpenGL::TextData td = {cwidth,cheight};
+       glNormal3f(0.0,0.0,1.0);
+       this->insertTextTess(*fVector,td);
+       if(fface.getHorizontal())
+        stepx = fVector->getHoriadvance();
+       else
+        stepy = fVector->getVertadvance();
+       glTranslatef(stepx,stepy,0.0);
+       advx += stepx;
+       advy += stepy;
+      }
+      if(fface.getHorizontal()){
        if(fface.getLeftToRight())
          text_index++;
         else
          text_index--;
       }
       else{
-       stepy = fVector->getVertadvance();
        if(fface.getTopToBottom())
          text_index--;
        else
          text_index++;
       }
-      glTranslatef(stepx,stepy,0.0);
-      advx += stepx;
-      advy += stepy;
      }
      this->modelviewMatrixStack.pop();
      }
