@@ -236,14 +236,17 @@ AC_DEFUN(AM_PATH_VRMLGL,
     AC_MSG_CHECKING([for libvrml97gl])
     AC_LANG_SAVE
     AC_LANG_CPLUSPLUS
+    ac_save_CXXFLAGS="${CXXFLAGS}"
     ac_save_LIBS="$LIBS"
     LIBS="-lvrml97gl $VRML_LIBS $GLUT_LIBS $LIBS"
+    CXXFLAGS="${VRML_CXXFLAGS} ${CXXFLAGS}"
     AC_TRY_LINK(
       [ #include<vrml97gl/ViewerOpenGL.h> ],
       [ int x = ViewerOpenGL::MAX_LIGHTS; ],
       have_vrmlgl=yes,
       have_vrmlgl=no
     )
+    CXXFLAGS="${ac_save_CXXFLAGS}"
     LIBS="$ac_save_LIBS"
     AC_LANG_RESTORE
     
