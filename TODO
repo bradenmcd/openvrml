@@ -1,85 +1,81 @@
-TODO	Nov 3 1998
+Here are some things that need to be done to the library.  If you feel like 
+contributing to any of these let us know.
 
-Here are some things that need to be done to the library. Of course,
-there are also lots of things that could be done to enhance the
-various example applications to make them more useful. If you feel
-like contributing to any of these let me know.
+Priority items
+==============
 
-- Scripts. JavaScript is almost done (assigning to elements of MF*
-  objects doesn't trigger eventOuts, matrix class not done). Decide
-  on a Java strategy: netscape plugin, OJI w/ japhar, kaffe, embed
+- The SGI parser code needs to be replaced with code under an Open Source
+  license.
+
+- Sound.  It has been disabled in the current build because we need a cross-
+  platform architecture for sound support.
+
+- JavaScript needs to be pretty much completely reworked.  We want to be able to
+  dynamically link with the same library Mozilla uses.
+
+- Java strategy: netscape plugin, OJI w/ japhar, kaffe, embed
   JDK, JavaPlugin?
+  
+  Best solution would be if we could use an OJI plug-in *without* biting off the
+  whole XPCOM enchilada.  I'm not sure if this is possible.  If it's not, we can
+  either depend on Mozilla's Java support (tying our Java support to Mozilla),
+  or hard code use of a specific VM, tying our binaries (but hopefully not our
+  source) to a particular VM.  The latter option is probably the lesser evil.
 
-- EAI. The whole event handling needs to be reworked if it is to be
-  spec conforming. I just have a FIFO event queue, the spec demands
-  that the time stamps be respected (with lots of complications due
-  to the EAI).
 
-- PROTOs - move the node name map from VrmlNode to VrmlScene for top-
-  level names, VrmlNodeType for names within PROTOs. PROTOs don't print
-  yet. Need node cloning to instantiate PROTOs with internal state.
-  The combination of Scripts and PROTOs leads to lots of difficulties.
+Furthermore...
+==============
 
-- EXTERNPROTOs, URL handling. I have hacked in some basic HTTP/1.0, but
-  it really needs work. Use libwww? EXTERNPROTOs work to the extent
-  that PROTOs do (internal state).
+- EAI.  The whole event handling needs to be reworked if it is to be spec-
+  conforming.  I just have a FIFO event queue, the spec demands that the time
+  stamps be respected (with lots of complications due to the EAI).
 
-- Text/Fonts. Implement a builtin stroked font as a fallback, and allow
-  GLTT lib to be used if available. Currently uses GLUT.
+- Text/Fonts.  Implement a builtin stroked font as a fallback, and allow GLTT
+  lib (<URL:http://moonlight3D.org/gltt/>) to be used if available.  Currently
+  uses GLUT.
 
-- Viewpoints. Viewpoint binding/pushing/popping isn't spec-conforming.
+- Viewpoints.  Viewpoint binding/pushing/popping isn't spec-conforming.
 
 - Drag sensors.
 
-- Light scoping. DirectionalLight scoping is done, but positional lights
-  (PointLights and SpotLights) need to respect the radius field. The 
-  rendering code needs to be modified to enable and disable each light 
-  according to the distance of each piece of geometry.
-  Update: directional lights done, machinery for positional lights in place,
-  but the lights need to be put into a common coordinate system with the
-  geometry, and bounding boxes need to be available for the geometry at
-  the rendering level (or should this be moved up...)
+- Light scoping.  DirectionalLight scoping is done, but positional lights
+  (PointLights and SpotLights) need to respect the radius field.  The rendering
+  code needs to be modified to enable and disable each light according to the
+  distance of each piece of geometry.  Update:  directional lights done,
+  machinery for positional lights in place, but the lights need to be put into a
+  common coordinate system with the geometry, and bounding boxes need to be
+  available for the geometry at the rendering level (or should this be moved
+  up ...)
 
-- Geometry stuff: Per-vertex normals & creaseAngles.
+- Geometry stuff:  Per-vertex normals & creaseAngles.
 
 - Bounding box computation & visibility-based culling optimizations.
 
 - Navigation/Collisions.
 
-- Textures: add more MovieTexture formats (MPEG, QT?, AVI?), move the
-  scaling/dlist code up to the texture class.
-  Clean up Image class (remove fopen/stdio support?).
+- Textures:  add more MovieTexture formats (MPEG, QT?, AVI?), move the scaling/
+  dlist code up to the texture class.  Clean up Image class (remove fopen/stdio
+  support?).
 
-- MFNode field isn't ref counted yet. The reference counting in general
-  is problematic. Both the fields (VrmlMF*.h) and the nodes (VrmlNode.h) 
-  are reference counted, but are done in different ways. The fields 
-  nicely encapsulate the ref counting, but it isn't inherited, so each 
-  MF field reimplements it. The node reference counting functionality is
-  inherited, but not well encapsulated. Am I a C++ moron, or is 
-  inheritable reference counting impossible to do cleanly? (Both may be
-  true. Please answer in essay form.)
+- MFNode field isn't ref-counted yet.  The reference counting in general is
+  problematic.  Both the fields (VrmlMF*.h) and the nodes (VrmlNode.h) are
+  reference counted, but are done in different ways. The fields nicely
+  encapsulate the ref-counting, but it isn't inherited, so each MF field
+  reimplements it.  The node reference counting functionality is inherited, but
+  not well encapsulated.  Am I a C++ moron, or is inheritable reference counting
+  impossible to do cleanly?  (Both may be true. Please answer in essay form.)
 
-- Transparency: do 2 pass rendering (alpha test) to get depth right for
-  transparent objects. Do cheap poly stipple transparency as an option?
+- Transparency:  do 2 pass rendering (alpha test) to get depth right for
+  transparent objects.  Do cheap poly stipple transparency as an option?
 
-- sound? I don't have my kernel configured for sound card support, so
-  I'm not likely to do this anytime soon.
-
-- HOOPS and OpenGL have reversed conventions for v parameters in textures.
-  The code is inconsistent (depended upon which platform I was using when
-  I wrote each node). The HOOPS renderer is now fairly out of date.
-
-- Finish VrmlScene class. Methods to find nodes/types, accumulate xforms.
-  Scene and Viewer classes are too mutually dependent... Maybe make a
-  VrmlBrowser class that would consist of a Scene and a Viewer...
+- Finish VrmlScene class.  Methods to find nodes/types, accumulate xforms.
+  Scene and Viewer classes are too mutually dependent ... Maybe make a
+  VrmlBrowser class that would consist of a Scene and a Viewer ...
 
 - Finish all the other nodes and places commented with "..." in the code.
 
-- Get rid of the STL code in the parser & elsewhere. It is causing portability
-  problems and makes the compiled library huge. Also get rid of the strdup()s
-  and other C memory stuff that got pulled in with the parser code.
+- Resurrect the HOOPS renderer.  HOOPS and OpenGL have reversed conventions for
+  v parameters in textures.  The code is inconsistent (depended upon which
+  platform I was using when I wrote each node).
 
-- Example MFC application, Direct3D backend?
-
-
-
+- Direct3D renderer for Win32.
