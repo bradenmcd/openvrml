@@ -40,7 +40,7 @@
 
 # include <cmath>
 # include <limits>
-# include <boost/shared_ptr.hpp>
+# include <boost/scoped_ptr.hpp>
 # include <openvrml/browser.h>
 # include <openvrml/vrml97node.h>
 # include <openvrml/bounding_volume.h>
@@ -108,24 +108,22 @@ namespace {
     public:
         GLint max_modelview_stack_depth;
 
-        static boost::shared_ptr<const gl_capabilities> instance()
-            throw (std::bad_alloc);
+        static const gl_capabilities & instance() throw (std::bad_alloc);
 
     private:
-        static boost::shared_ptr<const gl_capabilities> instance_;
+        static boost::scoped_ptr<const gl_capabilities> instance_;
 
         gl_capabilities();
     };
 
-    boost::shared_ptr<const gl_capabilities> gl_capabilities::instance_;
+    boost::scoped_ptr<const gl_capabilities> gl_capabilities::instance_;
 
-    boost::shared_ptr<const gl_capabilities> gl_capabilities::instance()
-        throw (std::bad_alloc)
+    const gl_capabilities & gl_capabilities::instance() throw (std::bad_alloc)
     {
         if (!gl_capabilities::instance_) {
             gl_capabilities::instance_.reset(new gl_capabilities);
         }
-        return gl_capabilities::instance_;
+        return *gl_capabilities::instance_;
     }
 
     gl_capabilities::gl_capabilities()
@@ -331,7 +329,7 @@ void viewer::modelview_matrix_stack::push()
 # endif
     assert(matrixMode == GL_MODELVIEW);
     if (this->size
-        == size_t(gl_capabilities::instance()->max_modelview_stack_depth - 1))
+        == size_t(gl_capabilities::instance().max_modelview_stack_depth - 1))
     {
         mat4f mat;
         glGetFloatv(GL_MODELVIEW_MATRIX, &mat[0][0]);
