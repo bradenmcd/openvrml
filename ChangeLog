@@ -1,3 +1,12 @@
+2001-12-10  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * Checkin patch 488262 to fix(?) relative URL issues with Inline 
+          nodes. Fixes bug 225694.
+
+        * Update JSAI test world and class to test more classes/methods.
+
+        * Various updates/fixes to ScriptJDK.
+
 2001-11-27  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Fix compile problem with ScriptJDK.cpp and script.cpp for
