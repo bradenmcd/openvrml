@@ -683,7 +683,8 @@ bool Node::accept(NodeVisitor & visitor) {
  * Typically used by a visitor (a class that implements NodeVisitor)
  * after traversal is complete.
  */
-void Node::resetVisitedFlag() {
+void Node::resetVisitedFlag() throw ()
+{
     if (this->visited) {
         //
         // Set this node's visited flag to false.
@@ -696,16 +697,19 @@ void Node::resetVisitedFlag() {
         const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
         for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
                 interface != interfaces.end(); ++interface) {
-            if (interface->fieldType == FieldValue::sfnode) {
-                const SFNode & sfnode =
-                    static_cast<const SFNode &>(this->getField(interface->id));
-                if (sfnode.get()) { sfnode.get()->resetVisitedFlag(); }
-            } else if (interface->fieldType == FieldValue::mfnode) {
-                const MFNode & mfnode =
-                    static_cast<const MFNode &>(this->getField(interface->id));
-                for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                    if (mfnode.getElement(i)) {
-                        mfnode.getElement(i)->resetVisitedFlag();
+            if (interface->type == NodeInterface::exposedField
+                    || interface->type == NodeInterface::field) {
+                if (interface->fieldType == FieldValue::sfnode) {
+                    const SFNode & sfnode =
+                        static_cast<const SFNode &>(this->getField(interface->id));
+                    if (sfnode.get()) { sfnode.get()->resetVisitedFlag(); }
+                } else if (interface->fieldType == FieldValue::mfnode) {
+                    const MFNode & mfnode =
+                        static_cast<const MFNode &>(this->getField(interface->id));
+                    for (size_t i = 0; i < mfnode.getLength(); ++i) {
+                        if (mfnode.getElement(i)) {
+                            mfnode.getElement(i)->resetVisitedFlag();
+                        }
                     }
                 }
             }

@@ -233,7 +233,7 @@ namespace OpenVRML {
         std::ostream & print(std::ostream & out, size_t indent) const;
 
         bool accept(NodeVisitor & visitor);
-        void resetVisitedFlag();
+        void resetVisitedFlag() throw ();
         
         void addEventOutIS(const std::string & eventOut,
                            PolledEventOutValue * eventOutValue)
