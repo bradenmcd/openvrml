@@ -38,11 +38,15 @@
 
 #include <string.h>
 
+# ifndef NDEBUG
+#   define VRML_NODE_PROTO_DEBUG
+# endif
+
 #ifdef macintosh
 extern char* strdup( const char* );
 #endif
 
-VrmlNodeType *VrmlNodeProto::nodeType() const { return d_nodeType; }
+VrmlNodeType * VrmlNodeProto::nodeType() const { return d_nodeType; }
 
 
 VrmlNodeProto::VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene) :
@@ -206,7 +210,7 @@ void VrmlNodeProto::instantiate()
       for (ifld = d_fields.begin(); ifld != d_fields.end(); ++ifld)
 	{
 	  VrmlField *value = (*ifld)->value;
-#if DEBUG
+#if VRML_NODE_PROTO_DEBUG
 	  cerr << d_nodeType->getName() << "::" << name()
 	       << " setting IS field " << (*ifld)->name;
 	  if (value) cerr << " to " << *value << endl;
@@ -218,7 +222,7 @@ void VrmlNodeProto::instantiate()
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
 		  VrmlNode *n = d_scope->findNode((*j)->node->name());
-#if DEBUG
+#if VRML_NODE_PROTO_DEBUG
 		  cerr << " on " << n->name() << "::" << (*j)->fieldName << endl;
 #endif
 		  if (n) n->setField( (*j)->fieldName, *value );

@@ -196,11 +196,6 @@ idRestChar      ([^\x00-\x20\x22\x23\x27\x2c\x2e\x5b-\x5d\x7b\x7d])
 	/* just told us that we've read a field name */
 	/* and should expect a field value (or IS) */
   if (expectToken != 0) {
-#if DEBUG
-    extern int yy_flex_debug;
-    if (yy_flex_debug)
-      fprintf(stderr,"LEX--> Start State %d\n", expectToken);
-#endif
       
     /*
      * Annoying.  This big switch is necessary because

@@ -17,6 +17,9 @@
 
 #include <stdio.h>		// sprintf
 
+# ifndef NDEBUG
+#   define VRML_NODE_DEBUG
+# endif
 
 VrmlNodeType *VrmlNode::defineType(VrmlNodeType *t) { return t; }
 
@@ -235,10 +238,9 @@ void VrmlNode::addRoute(const char *fromEventOut,
 			VrmlNode *toNode,
 			const char *toEventIn)
 {
-#if DEBUG
+#ifdef VRML_NODE_DEBUG
   fprintf(stderr,"%s::%s 0x%x addRoute %s\n",
-	  nodeType()->getName(), name(),
-	  (unsigned) this, fromEventOut);
+	  nodeType()->getName(), name(), (unsigned) this, fromEventOut);
 #endif
 
 
@@ -346,7 +348,7 @@ void VrmlNode::eventIn(double timeStamp,
 		       const char *eventName,
 		       const VrmlField *fieldValue)
 {
-#if DEBUG
+#ifdef VRML_NODE_DEBUG
   cout << "eventIn "
        << nodeType()->getName()
        << "::"
@@ -394,7 +396,7 @@ void VrmlNode::eventOut(double timeStamp,
 			const char *eventOut,
 			const VrmlField &fieldValue)
 {
-#if DEBUG
+#if VRML_NODE_DEBUG
   fprintf(stderr,"%s::%s 0x%x eventOut %s\n",
 	  nodeType()->getName(), name(),
 	  (unsigned) this, eventOut);
@@ -406,7 +408,7 @@ void VrmlNode::eventOut(double timeStamp,
     {
       if (strcmp(eventOut, r->fromEventOut()) == 0)
 	{
-#if DEBUG
+#if VRML_NODE_DEBUG
 	  cerr << "  => "
 	       << r->toNode()->nodeType()->getName()
 	       << "::"

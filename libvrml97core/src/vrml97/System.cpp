@@ -19,6 +19,10 @@
 #include <string.h>
 #endif
 
+# ifndef NDEBUG
+#   define SYSTEM_DEBUG
+# endif
+
 
 // A default System object
 static System defaultSystem;
@@ -66,7 +70,7 @@ void System::inform(const char *fmt, ...)
     }
 }
 
-#if DEBUG
+#if SYSTEM_DEBUG
 void System::debug(const char *fmt, ...)
 {
   va_list ap;

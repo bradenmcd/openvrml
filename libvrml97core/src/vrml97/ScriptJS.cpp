@@ -59,6 +59,10 @@
 #define MAX_HEAP_BYTES 4L * 1024L * 1024L
 #define STACK_CHUNK_BYTES 4024L
 
+# ifndef NDEBUG
+#   define SCRIPTJS_DEBUG
+# endif
+
 JSRuntime  *ScriptJS::rt = 0;	// Javascript runtime singleton object
 int ScriptJS::nInstances = 0;	// Number of distinct script objects
 
@@ -586,7 +590,7 @@ node_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 
 	  VrmlField *f = jsvalToVrmlField( cx, *vp, expect );
 	  // This should only happen if directOutput is set...
-#if DEBUG
+#if SCRIPTJS_DEBUG
 	  cout << "ScriptJS::node_setProperty sending " << eventIn
 	       << " (" << (*f) << ") to "
 	       << n->nodeType()->getName() << "::"
@@ -2336,7 +2340,7 @@ void ScriptJS::defineFields()
   for (i=d_node->fields().begin(); i!=end; ++i)
     {
       jsval val = vrmlFieldToJSVal( (*i)->type, (*i)->value, false );
-#if DEBUG
+#if SCRIPTJS_DEBUG
       if ( (*i)->value )
 	cout << "field " << (*i)->name << " value "
 	     << *((*i)->value) << endl;

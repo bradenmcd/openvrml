@@ -15,6 +15,9 @@
 #include "VrmlScene.h"
 #include "Viewer.h"
 
+# ifndef NDEBUG
+#   define VRML_NODE_BACKGROUND_DEBUG
+# endif
 
 //  Background factory.
 
@@ -177,7 +180,7 @@ static Image* getTexture( VrmlMFString &urls,
 
 void VrmlNodeBackground::renderBindable(Viewer *viewer)
 {
-#if DEBUG
+#ifdef VRML_NODE_BACKGROUND_DEBUG
   cout << "renderBindable obj " << d_viewerObject
        << " mod " << isModified()
        << " skyColors " << d_skyColor
