@@ -9,7 +9,7 @@ else
   DEBUG_CFLAGS = -DNDEBUG
 endif
 
-CFLAGS = -Wall -O2 $(DEBUG_CFLAGS) @JSCFLAGS@
+CFLAGS = -Wall -O2 $(DEBUG_CFLAGS) -DXP_UNIX
 
 noinst_PROGRAMS = jscpucfg js
 

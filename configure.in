@@ -53,7 +53,9 @@ dnl
 VRMLGL_PATH_GLUT(, AC_MSG_ERROR([glut or one of its dependencies not found. See 'config.log' for details.]))
 
 
-
+dnl
+dnl I don't think we want this anymore. -- Braden, 1999-12-18
+dnl
 dnl VRML
 dnl
 dnl ok: this gets tricky: the idea is that we normally will want to
@@ -64,13 +66,13 @@ dnl set of libs.
 dnl go ahead an check for installed libvrml97 libraries whether we're
 dnl going to use them or not. it's not an error if we don't find them.
 dnl
-AC_LANG_CPLUSPLUS
-AC_MSG_CHECKING([libvrml97])
-ac_save_LIBS="$LIBS"
-LIBS="-lvrml97 -ljpeg -lpng -lz $LIBS"
-AC_TRY_LINK([#include<vrml97/VrmlScene.h>], [ VrmlScene::readWrl(0, 0);], INSTALLED_LIBVRML97=yes, INSTALLED_LIBVRML97=no)
-LIBS="$ac_save_LIBS"
-AC_LANG_C
+dnl AC_LANG_CPLUSPLUS
+dnl AC_MSG_CHECKING([libvrml97])
+dnl ac_save_LIBS="$LIBS"
+dnl LIBS="-lvrml97 -ljpeg -lpng -lz $LIBS"
+dnl AC_TRY_LINK([#include<vrml97/VrmlScene.h>], [ VrmlScene::readWrl(0, 0);], INSTALLED_LIBVRML97=yes, INSTALLED_LIBVRML97=no)
+dnl LIBS="$ac_save_LIBS"
+dnl AC_LANG_C
 
 dnl why doesn't the following this work right? it looks reasonable,
 dnl but configure complains. i suspect an autoconf bug. use the test 
@@ -86,10 +88,10 @@ dnl automake variable top_builddir. it's a little tricky getting it
 dnl from here to the Makefile without losing the "$", but putting a
 dnl slash in front of it seems to do the trick.
 dnl
-LIBVRML97GL_LIB_DIR="\$(top_builddir)/libvrml97gl/src/vrml97gl/"
-LIBVRML97CORE_LIB_DIR="\$(top_builddir)/libvrml97core/src/vrml97/"
-LIBVRML97GL_INC_DIR="\$(top_builddir)/libvrml97gl/src/"
-LIBVRML97CORE_INC_DIR="\$(top_builddir)/libvrml97core/src/"
+dnl LIBVRML97GL_LIB_DIR="\$(top_builddir)/libvrml97gl/src/vrml97gl/"
+dnl LIBVRML97CORE_LIB_DIR="\$(top_builddir)/libvrml97core/src/vrml97/"
+dnl LIBVRML97GL_INC_DIR="\$(top_builddir)/libvrml97gl/src/"
+dnl LIBVRML97CORE_INC_DIR="\$(top_builddir)/libvrml97core/src/"
 
 dnl ok, now we know where the internal libs are, and where any
 dnl installed libs are: which ones do we use?
@@ -98,21 +100,21 @@ dnl --with-libvrml97=path (this one isn't done yet!)
 dnl otherwise, do the normal thing and use the versions included
 dnl in the build tree
 dnl
-AC_ARG_WITH(libvrml97, [ xxx ])
-x_suffix="$X_LIBS $X_PRE_LIBS -lX11 -lXi -lXext -lXmu $X_EXTRA_LIBS -lm"
-if test "$with_libvrml97" = "installed"; then
-  if test "$INSTALLED_LIBVRML97" = "no"; then
-    AC_MSG_ERROR("libvrml97 not installed")
-  fi
-  AC_MSG_RESULT([use installed libvrml97])
-  VRMLGL_LIBS="-lvrml97 -lvrml97gl $GLUT_LIBS -lpng -ljpeg -lz"
-else
-  AC_MSG_RESULT([using normal libvrml97])
-  VRMLGL_LIBS="$LIBVRML97CORE_LIB_DIR/libvrml97.la $LIBVRML97GL_LIB_DIR/libvrml97gl.la $GLUT_LIBS -lpng -ljpeg -lz"
-  CPPFLAGS="$CPPFLAGS -I$LIBVRML97CORE_INC_DIR -I$LIBVRML97GL_INC_DIR"
-  AC_SUBST(CPPFLAGS)
-fi
-AC_SUBST(VRMLGL_LIBS)
+dnl AC_ARG_WITH(libvrml97, [ xxx ])
+dnl x_suffix="$X_LIBS $X_PRE_LIBS -lX11 -lXi -lXext -lXmu $X_EXTRA_LIBS -lm"
+dnl if test "$with_libvrml97" = "installed"; then
+dnl   if test "$INSTALLED_LIBVRML97" = "no"; then
+dnl     AC_MSG_ERROR("libvrml97 not installed")
+dnl   fi
+dnl   AC_MSG_RESULT([use installed libvrml97])
+dnl   VRMLGL_LIBS="-lvrml97 -lvrml97gl $GLUT_LIBS -lpng -ljpeg -lz"
+dnl else
+dnl   AC_MSG_RESULT([using normal libvrml97])
+dnl   VRMLGL_LIBS="$LIBVRML97CORE_LIB_DIR/libvrml97.la $LIBVRML97GL_LIB_DIR/libvrml97gl.la $GLUT_LIBS -lpng -ljpeg -lz"
+dnl   CPPFLAGS="$CPPFLAGS -I$LIBVRML97CORE_INC_DIR -I$LIBVRML97GL_INC_DIR"
+dnl   AC_SUBST(CPPFLAGS)
+dnl fi
+dnl AC_SUBST(VRMLGL_LIBS)
 
 
 dnl
@@ -267,17 +269,6 @@ dnl
 dnl
 dnl END OF NOTABLY COMPLEX COMPILER TESTS
 
-
-
-dnl Mozilla Javascript libraries
-dnl
-dnl someday we'll be able to use the standard ones, but for now it looks
-dnl like we're stuck with a customized version dues to dependencies on
-dnl certain js-internal headers. these mystery macros have to be defined
-dnl to make the compile work...
-dnl
-JSCFLAGS="-DXP_UNIX"
-AC_SUBST(JSCFLAGS)
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS(ftime getcwd gettimeofday mktime strdup strerror strstr)

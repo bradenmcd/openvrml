@@ -1,4 +1,13 @@
 #
+# Add any debug flags
+#
+if DEBUG
+  DEBUG_CFLAGS = -g
+else
+  DEBUG_CFLAGS = -DNDEBUG
+endif
+
+#
 # There are two options in making libm at fdlibm compile time:
 #       _IEEE_LIBM      --- IEEE libm; smaller, and somewhat faster
 #       _MULTI_LIBM     --- Support multi-standard at runtime by 
@@ -30,8 +39,7 @@
 # define _SCALB_INT in CFLAGS. The default prototype of scalb
 # is double scalb(double, double)
 #
-
-CFLAGS = @CFLAGS@ -D_IEEE_LIBM
+CFLAGS = $(DEBUG_CFLAGS) -D_IEEE_LIBM
 
 noinst_LTLIBRARIES = libfdm.la
 

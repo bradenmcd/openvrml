@@ -1,11 +1,19 @@
-CXXFLAGS = -O2 -Wall
-LDFLAGS = -O2
-INCLUDES = @GL_CFLAGS@
+#
+# Add any debug flags
+#
+if DEBUG
+  DEBUG_CXXFLAGS = -g
+else
+  DEBUG_CXXFLAGS = -DNDEBUG
+endif
 
-vrml97glincludedir = $(includedir)/vrml97gl
+INCLUDES = -I$(top_srcdir)/libvrml97core/src
+CXXFLAGS = -O2 -Wall $(DEBUG_CXXFLAGS) @GLUT_CFLAGS@
+LDFLAGS = @GLUT_LIBS@
 
 lib_LTLIBRARIES = libvrml97gl.la
 
+vrml97glincludedir = $(includedir)/vrml97gl
 vrml97glinclude_HEADERS = ViewerOpenGL.h
 
 noinst_HEADERS = OpenGLEvent.h
