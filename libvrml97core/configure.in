@@ -55,21 +55,40 @@ dnl Now begin Checking for various libraries
 dnl ==================================================================
 
 
-dnl Test for libjpeg 
-dnl ==================================================================
+dnl Test for libjpeg
 AC_CHECK_LIB(jpeg, jpeg_read_header, 
-    AC_CHECK_HEADER(jpeglib.h, 
-	have_jpeg=yes, have_jpeg=no
-    )
+  AC_CHECK_HEADER(jpeglib.h,
+    [
+      LIBS="$LIBS -ljpeg"
+      AC_DEFINE(HAVE_LIBJPEG)
+    ],
+    AC_MSG_ERROR([jpeglib.h not found. Check config.log for details.])
+  ),
+  AC_MSG_ERROR([libjpeg not found. Check config.log for details.])
 )
 
-dnl Test for libpng and zlib
-dnl ==================================================================
+dnl Test for zlib
+AC_CHECK_LIB(z, zlibVersion,
+  AC_CHECK_HEADER(zlib.h,
+    [
+      LIBS="$LIBS -lz"
+      AC_DEFINE(HAVE_ZLIB)
+    ],
+    AC_MSG_ERROR([zlib.h not found. Check config.log for details.])
+  ),
+  AC_MSG_ERROR([zlib not found. Check config.log for details.])
+)
+
+dnl Test for libpng
 AC_CHECK_LIB(png, png_read_info,
-    AC_CHECK_HEADER(zlib.h,
-	AC_CHECK_HEADER(png.h, 
-	    have_png=yes, have_png=no)
-    ), , -lz -lm
+  AC_CHECK_HEADER(png.h,
+    [
+      LIBS="$LIBS -lpng"
+      AC_DEFINE(HAVE_LIBPNG)
+    ],
+    AC_MSG_ERROR([png.h not found. Check config.log for details.])
+  ),
+  AC_MSG_ERROR([libpng not found. Check config.log for details.])
 )
 
 dnl Now test for a bunch of C++ compiler capabilities...
@@ -225,8 +244,8 @@ fi
 
 AC_SUBST(CFLAGS)
 AC_SUBST(JSCFLAGS)
-AC_SUBST(JPEG_LIBS)
-AC_SUBST(PNG_LIBS)
+dnl AC_SUBST(JPEG_LIBS)
+dnl AC_SUBST(PNG_LIBS)
 
 AC_OUTPUT(Makefile \
           m4/Makefile \
