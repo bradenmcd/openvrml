@@ -68,13 +68,14 @@ namespace {
             JSObject * d_browserObj;
 
         public:
-            Script(VrmlNodeScript & scriptNode, const char * source);
+            Script(VrmlNodeScript & scriptNode, const char * source)
+                throw (std::bad_alloc);
             virtual ~Script();
 
             virtual void activate(double timeStamp, const char * fname,
                                   size_t argc, const VrmlField * argv[]);
 
-            VrmlNodeScript & getScriptNode() { return this->scriptNode; }
+            VrmlNodeScript & getScriptNode();
 
             jsval vrmlFieldToJSVal(const VrmlField & f, bool protect);
 
@@ -635,10 +636,10 @@ namespace {
 
         // Construct from inline script
 
-        Script::Script(VrmlNodeScript & scriptNode, const char * source ):
-                ScriptObject(scriptNode), d_cx(0), d_globalObj(0), d_browserObj(0) {
-
-            using namespace JavaScript_;
+        Script::Script(VrmlNodeScript & scriptNode, const char * source)
+                throw (std::bad_alloc):
+                ScriptObject(scriptNode), d_cx(0), d_globalObj(0),
+                d_browserObj(0) {
 
             //
             // Initialize the runtime.
@@ -648,7 +649,6 @@ namespace {
                     throw std::bad_alloc();
                 }
             }
-            ++nInstances;
 
             //
             // Initialize the context for this Script object.
@@ -720,18 +720,17 @@ namespace {
             if (! JS_EvaluateScript( d_cx, d_globalObj, source, strlen(source),
 			             filename, lineno, &rval))
 	      theSystem->error("JS_EvaluateScript failed\n");
+            
+            ++nInstances;
         }
 
-
-        Script::~Script()
-        {
-          JS_DestroyContext(d_cx);
-          if (--nInstances == 0) {
-	          JS_Finish(rt);
-	          rt = 0;
-          }
+        Script::~Script() {
+            JS_DestroyContext(this->d_cx);
+            if (--nInstances == 0) {
+                JS_DestroyRuntime(rt);
+                rt = 0;
+            }
         }
-
 
         static double s_timeStamp;	// go away...
 
@@ -803,6 +802,9 @@ namespace {
             }
         }
 
+        VrmlNodeScript & Script::getScriptNode() {
+            return this->scriptNode;
+        }
 
         // Convert a VrmlField value to a jsval, optionally protect from gc.
 

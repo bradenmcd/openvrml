@@ -1,8 +1,11 @@
 2001-06-20  Braden McDaniel <braden@endoframe.com>
 
         * In the JavaScript API implementation, store the pointer to the
-          Script object as private data in the JSContext rather than as a
-          property of the global object.
+          Script object as private data in the JSContext rather than as
+          a property of the global object.
+
+        * Use JS_NewRuntime() and JS_DestroyRuntime() instead of the
+          deprecated JS_Init() and JS_Finish() functions.
 
 2001-06-20  S. K. Bose  <bose@pavan.barc.ernet.in>
 
