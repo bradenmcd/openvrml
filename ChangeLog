@@ -3,6 +3,10 @@
         * m4/gl.m4: AC_REQUIRE([AC_PATH_XTRA]) and add the X CFLAGS and
           LIBS to GL_CFLAGS and GL_LIBS.
 
+        * m4/glut.m4, src/lookat/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/Makefile.am: Add GL_CFLAGS and
+          GL_LIBS to GLUT_CFLAGS and GLUT_LIBS, respectively.
+
 2002-06-19  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.2.
