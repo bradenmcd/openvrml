@@ -120,8 +120,6 @@ namespace openvrml {
         const field_value_map_t & field_value_map() const throw ();
         const eventout_value_map_t & eventout_value_map() const throw ();
 
-        virtual script_node * to_script() throw ();
-
     private:
         script * create_script();
 
@@ -129,6 +127,8 @@ namespace openvrml {
             throw ();
         void assign_with_self_ref_check(const mfnode &, mfnode &) const
             throw ();
+
+        virtual script_node * to_script() throw ();
 
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
         virtual void do_field(const std::string & id,
