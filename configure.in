@@ -169,6 +169,9 @@ AM_CONDITIONAL(AIX4_3, test x$aix4_3 = xtrue)
 
 AC_OUTPUT(Makefile \
           m4/Makefile \
+          models/Makefile \
+          models/audio/Makefile \
+          models/textures/Makefile \
           libvrml97js/Makefile \
           libvrml97js/src/Makefile \
           libvrml97js/src/vrml97js/Makefile \
