@@ -31,8 +31,7 @@
 #include "MathUtils.h"    // Vcross(), Vnorm(), etc
 #include "VrmlFrustum.h"
 
-using namespace OpenVRML;
-using namespace OpenVRML_;
+namespace OpenVRML {
 
 /**
  * @class OpenVRML::VrmlFrustum
@@ -88,12 +87,11 @@ using namespace OpenVRML_;
  *
  * fovy, fovx, near and far all get set to -1.
  */
-VrmlFrustum::VrmlFrustum()
-{
-  fovy = -1;
-  fovx = -1;
-  z_near = -1;
-  z_far = -1;
+VrmlFrustum::VrmlFrustum() {
+    fovy = -1;
+    fovx = -1;
+    z_near = -1;
+    z_far = -1;
 }
 
 /**
@@ -111,16 +109,15 @@ VrmlFrustum::VrmlFrustum()
  * @param afar distance to far clip plane
  *
  */
-VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar)
-{
-  //cout << "VrmlFrustum::VrmlFrustum(" << afovy << "," << aaspect;
-  //cout << "," << anear << "," << afar << ")" << endl;
-  fovy = (afovy / 360.0) * 2.0 * PI;
-  float cy = (float)tan(fovy/2.0);
-  fovx = 2.0*atan(cy*aaspect);
-  z_near = anear;
-  z_far = afar;
-  update();
+VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar) {
+    using OpenVRML_::pi;
+    
+    fovy = (afovy / 360.0) * 2.0 * pi;
+    float cy = (float)tan(fovy/2.0);
+    fovx = 2.0*atan(cy*aaspect);
+    z_near = anear;
+    z_far = afar;
+    update();
 }
 
 /**
@@ -128,91 +125,91 @@ VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar)
  *
  * The plane equations are derived from the other members.
  */
-void
-VrmlFrustum::update()
-{
-  // figure out the corners of the near clipping plane, then use the
-  // vectors from the eyepoint to the four corners to figure out the
-  // plane equations. the diagram shows how to get the x and z
-  // coordinates, finding the y coordinates is analogous.
-  // 
-  //
-  //   -x
-  //    |        /
-  //    |       /
-  //    |      /
-  //    |     . <-- find this point
-  //    |    /:
-  //    |   / :
-  //    |  /  :
-  //    | /   :
-  //    |/ )--:----- angle is fovx/2
-  //    --------------------- -z
-  //    |<-n->|
-  //    |    
-  //   +x
-  //
-  // (finish the diagram later)
-  //
+void VrmlFrustum::update() {
+    // figure out the corners of the near clipping plane, then use the
+    // vectors from the eyepoint to the four corners to figure out the
+    // plane equations. the diagram shows how to get the x and z
+    // coordinates, finding the y coordinates is analogous.
+    // 
+    //
+    //   -x
+    //    |        /
+    //    |       /
+    //    |      /
+    //    |     . <-- find this point
+    //    |    /:
+    //    |   / :
+    //    |  /  :
+    //    | /   :
+    //    |/ )--:----- angle is fovx/2
+    //    --------------------- -z
+    //    |<-n->|
+    //    |    
+    //   +x
+    //
+    // (finish the diagram later)
+    //
 
-  float cy = (float)tan(fovy/2.0);
-  float cx = (float)tan(fovx/2.0);
+    float cy = (float)tan(fovy/2.0);
+    float cx = (float)tan(fovx/2.0);
 
-  float NL = -z_near*cx;
-  float NR = -NL;
-  float NT =  z_near*cy;
-  float NB = -NT;
+    float NL = -z_near*cx;
+    float NR = -NL;
+    float NT =  z_near*cy;
+    float NB = -NT;
 
-  float tmp0[3];
-  float tmp1[3];
+    float tmp0[3];
+    float tmp1[3];
 
-  tmp0[0] = NL;
-  tmp0[1] = NB;
-  tmp0[2] = -z_near;
+    tmp0[0] = NL;
+    tmp0[1] = NB;
+    tmp0[2] = -z_near;
 
-  tmp1[0] = NL;
-  tmp1[1] = NT;
-  tmp1[2] = -z_near;
+    tmp1[0] = NL;
+    tmp1[1] = NT;
+    tmp1[2] = -z_near;
 
-  Vcross(left_plane, tmp0, tmp1);
-  Vnorm(left_plane);
-  left_plane[3] = 0;
+    Vcross(left_plane, tmp0, tmp1);
+    Vnorm(left_plane);
+    left_plane[3] = 0;
 
-  right_plane[0] = -left_plane[0];
-  right_plane[1] = 0;
-  right_plane[2] = left_plane[2];
-  right_plane[3] = 0;
+    right_plane[0] = -left_plane[0];
+    right_plane[1] = 0;
+    right_plane[2] = left_plane[2];
+    right_plane[3] = 0;
 
-  tmp0[0] = NL;
-  tmp0[1] = NT;
-  tmp0[2] = -z_near;
+    tmp0[0] = NL;
+    tmp0[1] = NT;
+    tmp0[2] = -z_near;
 
-  tmp1[0] = NR;
-  tmp1[1] = NT;
-  tmp1[2] = -z_near;
-    
-  Vcross(top_plane, tmp0, tmp1);
-  Vnorm(top_plane);
-  top_plane[3] = 0;
+    tmp1[0] = NR;
+    tmp1[1] = NT;
+    tmp1[2] = -z_near;
 
-  bot_plane[0] = 0;
-  bot_plane[1] = -top_plane[1];
-  bot_plane[2] = top_plane[2];
-  bot_plane[3] = 0;
+    Vcross(top_plane, tmp0, tmp1);
+    Vnorm(top_plane);
+    top_plane[3] = 0;
+
+    bot_plane[0] = 0;
+    bot_plane[1] = -top_plane[1];
+    bot_plane[2] = top_plane[2];
+    bot_plane[3] = 0;
 }
 
 
 /**
  * @brief Dumps the frustum to the given stream. 
  */
-ostream&
-VrmlFrustum::dump(ostream& ostr) const
-{
-  ostr << "VrmlFrustum {" << endl;
-  ostr << z_near << endl;
-  ostr << z_far << endl;
-  ostr << fovx * (360.0 / (PI * 2.0)) << endl;
-  ostr << fovy * (360.0 / (PI * 2.0)) << endl;
-  ostr << "}";
-  return ostr;
+std::ostream & VrmlFrustum::dump(std::ostream & ostr) const {
+    using OpenVRML_::pi;
+    
+    ostr << "VrmlFrustum {" << endl;
+    ostr << z_near << endl;
+    ostr << z_far << endl;
+    ostr << fovx * (360.0 / (pi * 2.0)) << endl;
+    ostr << fovy * (360.0 / (pi * 2.0)) << endl;
+    ostr << "}";
+    return ostr;
 }
+
+} // namespace OpenVRML

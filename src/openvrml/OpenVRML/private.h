@@ -22,7 +22,7 @@
 #   define OPENVRML_PRIVATE_H
 
 #   ifndef NDEBUG
-#     include <iostream.h>
+#     include <iostream>
 #   endif
 
 #   ifdef NDEBUG
@@ -30,8 +30,8 @@
 #   else
 #     define OPENVRML_VERIFY_(condition_) \
             if (!condition_) { \
-                cerr << __FILE__ << ":" << __LINE__ << ": verification (" \
-                     << ##condition_ << ") failed" << endl; \
+                std::cerr << __FILE__ << ":" << __LINE__ << ": verification (" \
+                          << ##condition_ << ") failed" << endl; \
             }
 #   endif
 
@@ -39,7 +39,7 @@
 #     define OPENVRML_PRINT_EXCEPTION_(ex_)
 #   else
 #     define OPENVRML_PRINT_EXCEPTION_(ex_) \
-            cerr << __FILE__ << ":" << __LINE__ << ": " \
+            std::cerr << __FILE__ << ":" << __LINE__ << ": " \
                       << ex_.what() << endl
 #   endif
             
@@ -49,14 +49,14 @@
 namespace {
     namespace OpenVRML_ {
         
-        const double PI     = 3.14159265358979323846;
-        const double PI_2   = 1.57079632679489661923;
-        const double PI_4   = 0.78539816339744830962;
-        const double INV_PI = 0.31830988618379067154;
+        const double pi     = 3.14159265358979323846;
+        const double pi_2   = 1.57079632679489661923;
+        const double pi_4   = 0.78539816339744830962;
+        const double inv_pi = 0.31830988618379067154;
         
-        const float FPTOLERANCE(1.0e-6);
+        const float fptolerance = 1.0e-6;
 
-        inline bool fpzero(const float f) { return (fabs(f) <= FPTOLERANCE); }
+        inline bool fpzero(const float f) { return (fabs(f) <= fptolerance); }
 
         inline bool fpequal(const float a, const float b) {
             return fpzero(a - b);

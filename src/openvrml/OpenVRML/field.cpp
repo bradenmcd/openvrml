@@ -35,8 +35,6 @@
 
 namespace OpenVRML {
 
-using namespace OpenVRML_;
-
 ostream & operator<<(ostream & os, const FieldValue & f)
 { return f.print(os); }
 
@@ -1152,6 +1150,9 @@ SFRotation::SFRotation() {
  *      normalized vector.
  */
 SFRotation::SFRotation(const float rot[4]) {
+    using OpenVRML_::fpequal;
+    using OpenVRML_::length;
+    
     //
     // Make sure axis is normalized.
     //
@@ -1171,6 +1172,9 @@ SFRotation::SFRotation(const float rot[4]) {
  * @pre The first three arguments constitute a normalized vector.
  */
 SFRotation::SFRotation(float x, float y, float z, float angle) {
+    using OpenVRML_::fpequal;
+    using OpenVRML_::length;
+    
     this->d_x[0] = x;
     this->d_x[1] = y;
     this->d_x[2] = z;
@@ -1192,6 +1196,9 @@ SFRotation::SFRotation(float x, float y, float z, float angle) {
  * @pre The first argument is a normalized vector.
  */
 SFRotation::SFRotation(const SFVec3f & axis, float angle) {
+    using OpenVRML_::fpequal;
+    using OpenVRML_::length;
+    
     //
     // Make sure axis is normalized.
     //
@@ -1248,6 +1255,10 @@ float SFRotation::getX() const {
 
 namespace {
     void normalizeAxis_(float axis[3]) {
+        using OpenVRML_::length;
+        using OpenVRML_::fpequal;
+        using OpenVRML_::normalize;
+    
         const float axisLength = length(axis);
         if (fpequal(axisLength, 0.0)) {
             axis[2] = 1.0;
@@ -1341,6 +1352,9 @@ const float (&SFRotation::get() const)[4] {
  *      vector.
  */
 void SFRotation::set(const float rot[4]) {
+    using OpenVRML_::fpequal;
+    using OpenVRML_::length;
+    
     //
     // Make sure axis is normalized.
     //
@@ -1366,6 +1380,9 @@ const SFVec3f SFRotation::getAxis() const {
  * @pre <var>axis</var> is a normalized vector.
  */
 void SFRotation::setAxis(const SFVec3f & axis) {
+    using OpenVRML_::fpequal;
+    using OpenVRML_::length;
+    
     //
     // Make sure axis is normalized.
     //
@@ -1474,9 +1491,10 @@ const SFVec3f
  * @param destRotation the destination rotation
  * @param t the interval fraction
  */
-const SFRotation
-        SFRotation::slerp(const SFRotation & destRotation,
-                                    float t) const {
+const SFRotation SFRotation::slerp(const SFRotation & destRotation,
+                                   const float t) const {
+    using OpenVRML_::fptolerance;
+    
     float fromQuat[4], toQuat[4];
     this->toQuaternion(fromQuat);
     destRotation.toQuaternion(toQuat);
@@ -1504,7 +1522,7 @@ const SFRotation
     // Calculate coefficients.
     //
     double scale0, scale1;
-    if ((1.0 - cosom) > FPTOLERANCE) {
+    if ((1.0 - cosom) > fptolerance) {
         const double omega = acos(cosom);
         const double sinom = sin(omega);
         scale0 = sin((1.0 - t) * omega) / sinom;
@@ -1853,10 +1871,10 @@ const SFVec2f SFVec2f::negate() const {
  * @return a SFVec2f that is this vector normalized.
  */
 const SFVec2f SFVec2f::normalize() const {
+    using OpenVRML_::fpzero;
+    
     const double len = this->length();
-    if (fpzero(len)) {
-        return *this;
-    }
+    if (fpzero(len)) { return *this; }
     SFVec2f result(*this);
     result.d_x[0] /= len;
     result.d_x[1] /= len;
@@ -2082,6 +2100,8 @@ double SFVec3f::dot(const SFVec3f & vec) const {
  * @return the geometric length of the vector.
  */
 double SFVec3f::length() const {
+    using OpenVRML_::fpzero;
+    
     const double len = sqrt((d_x[0] * d_x[0])
                           + (d_x[1] * d_x[1])
                           + (d_x[2] * d_x[2]));
@@ -2122,6 +2142,8 @@ const SFVec3f SFVec3f::negate() const {
  * @return a copy of this vector normalized
  */
 const SFVec3f SFVec3f::normalize() const {
+    using OpenVRML_::fpzero;
+    
     const double len = this->length();
     SFVec3f result(*this);
     if (!fpzero(len)) {

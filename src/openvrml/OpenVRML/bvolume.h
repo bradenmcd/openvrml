@@ -21,7 +21,7 @@
 # ifndef OPENVRML_BVOLUME_H
 #   define OPENVRML_BVOLUME_H
 
-#   include <iostream.h>
+#   include <iostream>
 #   include "common.h"
 
 namespace OpenVRML {
@@ -46,7 +46,7 @@ namespace OpenVRML {
         virtual void enclose(const float* p, int n) = 0;
         virtual void orthoTransform(const VrmlMatrix & M) = 0;
         virtual void transform(const VrmlMatrix & M) = 0;
-        virtual ostream & dump(ostream & ostr) const = 0;
+        virtual std::ostream & dump(std::ostream & ostr) const = 0;
     };
 
 
@@ -85,7 +85,7 @@ namespace OpenVRML {
         float getRadius() const;
         void setRadius(float r);
 
-        virtual ostream & dump(ostream & ostr) const;
+        virtual std::ostream & dump(std::ostream & ostr) const;
     };
 
 
@@ -102,7 +102,7 @@ namespace OpenVRML {
         virtual void setMAX();
         virtual void orthoTransform(const VrmlMatrix & M);
         virtual void transform(const VrmlMatrix & M);
-        virtual ostream & dump(ostream & ostr) const;
+        virtual std::ostream & dump(std::ostream & ostr) const;
     };
 }
 

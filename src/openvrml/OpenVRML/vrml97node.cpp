@@ -2346,37 +2346,37 @@ void NodeCylinderSensor::render(Viewer* v, VrmlRenderContext rc)
 	setMVMatrix(rc.getMatrix());
 }
 
-void NodeCylinderSensor::activate( double timeStamp,
-                    bool isActive,
-                    double *p )
-{
-// Become active
-    if ( isActive && ! d_isActive.get() ) {
+void NodeCylinderSensor::activate(double timeStamp,
+                                  bool isActive,
+                                  double *p ) {
+    // Become active
+    if (isActive && !this->d_isActive.get()) {
         d_isActive.set(isActive);
-     
-// set activation point in local coords
-      float Vec[3] = { p[0], p[1], p[2] };
-      d_activationMatrix = getMVMatrix().affine_inverse();
-      d_activationMatrix.multVecMatrix(Vec,Vec);
-      d_activationPoint.set(Vec);
-// Bearing vector in local coordinate system
-      Vec[0] = d_activationMatrix[2][0];
-      Vec[1] = d_activationMatrix[2][1];
-      Vec[2] = d_activationMatrix[2][2];
-      SFVec3f BV(Vec);
-      SFVec3f Y(0,1,0);
-      BV = BV.normalize();
-      double ang = acos(BV.dot(Y));
-      if (ang > PI_2) ang = PI - ang;
-      if( ang < d_diskAngle.get())
-         disk.set(true);
-      else
-         disk.set(false);
-// send message
-      eventOut( timeStamp, "isActive", d_isActive );
+
+        // set activation point in local coords
+        float Vec[3] = { p[0], p[1], p[2] };
+        this->d_activationMatrix = getMVMatrix().affine_inverse();
+        this->d_activationMatrix.multVecMatrix(Vec,Vec);
+        this->d_activationPoint.set(Vec);
+        // Bearing vector in local coordinate system
+        Vec[0] = d_activationMatrix[2][0];
+        Vec[1] = d_activationMatrix[2][1];
+        Vec[2] = d_activationMatrix[2][2];
+        SFVec3f BV(Vec);
+        SFVec3f Y(0,1,0);
+        BV = BV.normalize();
+        double ang = acos(BV.dot(Y));
+        if (ang > pi_2) ang = pi - ang;
+        if(ang < d_diskAngle.get()) {
+            disk.set(true);
+        } else {
+            disk.set(false);
+        }
+        // send message
+        eventOut( timeStamp, "isActive", d_isActive );
     }
 
-// Become inactive
+    // Become inactive
     else if ( ! isActive && d_isActive.get() ) {
         d_isActive.set(isActive);
         eventOut( timeStamp, "isActive", d_isActive );
@@ -2397,52 +2397,49 @@ void NodeCylinderSensor::activate( double timeStamp,
         eventOut( timeStamp, "trackPoint_changed", d_trackPoint );
         float tempv[3],rot,radius;
         SFVec3f dir1(Vec[0],0,Vec[2]);
-        if (disk.get())
-         radius = 1.0;                
-        else
-         radius = dir1.length();    // get the radius 
+        if (disk.get()) {
+            radius = 1.0;
+        } else {
+            radius = dir1.length();    // get the radius 
+        }
         dir1 = dir1.normalize();
-        SFVec3f dir2(d_activationPoint.getX(),0,d_activationPoint.getZ());
+        SFVec3f dir2(d_activationPoint.getX(), 0, d_activationPoint.getZ());
         dir2 = dir2.normalize();
         Vcross(tempv, dir2.get(), dir1.get());
         SFVec3f cx(tempv);
         cx = cx.normalize();
-        if (cx.length() == 0.0) return; 
+        if (cx.length() == 0.0) { return; }
         rot = radius * acos(dir2.dot(dir1));
-        if (fpequal(cx.getY(),-1.0)) rot = -rot;
-        if ( d_autoOffset.get() )
-          rot = d_offset.get() + rot;
-        if ( d_minAngle.get() < d_maxAngle.get() ) {
-           if (rot < d_minAngle.get())
-            rot = d_minAngle.get();
-           else if (rot > d_maxAngle.get())
-            rot = d_maxAngle.get();
-          }
+        if (fpequal(cx.getY(),-1.0)) { rot = -rot; }
+        if (d_autoOffset.get()) { rot += d_offset.get(); }
+        if ( d_minAngle.get() < d_maxAngle.get()) {
+            if (rot < d_minAngle.get()) {
+                rot = d_minAngle.get();
+            } else if (rot > d_maxAngle.get()) {
+                rot = d_maxAngle.get();
+            }
+        }
         rotation_val.set(rot);
-        SFRotation newRot(0,1,0, rot );
-        d_rotation = newRot;         
+        d_rotation = SFRotation(0, 1, 0, rot);         
 
-        eventOut( timeStamp, "rotation_changed", d_rotation );
+        eventOut(timeStamp, "rotation_changed", d_rotation);
     }
 }
 
 /**
  * Get the modelview matrix (M). 
  *
- * @param return modelview matrix in VrmlMatrix format. 
-*/
-const VrmlMatrix & NodeCylinderSensor::getMVMatrix() const
-{
-return this->M;
-}
+ * @return modelview matrix in VrmlMatrix format. 
+ */
+const VrmlMatrix & NodeCylinderSensor::getMVMatrix() const { return this->M; }
 
 /**
- * Sets the modelview matrix (M). 
- * @param M_in a modelview matrix in VrmlMatrix format. 
-*/
-void NodeCylinderSensor::setMVMatrix(const VrmlMatrix & M_in)
-{
-this->M = M_in;
+ * Sets the modelview matrix (M).
+ *
+ * @param M_in  a modelview matrix in VrmlMatrix format. 
+ */
+void NodeCylinderSensor::setMVMatrix(const VrmlMatrix & M_in) {
+    this->M = M_in;
 }
 
 namespace {
@@ -5850,9 +5847,9 @@ void NodeNormalInt::eventIn(double timeStamp, const std::string & eventName,
           {
                     float alpha, beta;
                     float dotval = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
-                    if ((dotval+1.0) > FPTOLERANCE) // Vectors are not opposite
+                    if ((dotval+1.0) > fptolerance) // Vectors are not opposite
               {
-            if ((1.0-dotval) > FPTOLERANCE)  // Vectors are not coincide
+            if ((1.0-dotval) > fptolerance)  // Vectors are not coincide
               {
                 float omega = acos(dotval);
                 float sinomega = sin(omega);
@@ -6040,14 +6037,14 @@ void NodeOrientationInt::eventIn(double timeStamp,
           }
 
         // Interpolate angles via the shortest direction
-        if (fabs(r2 - r1) > PI)
+        if (fabs(r2 - r1) > pi)
           {
-            if (r2 > r1) r1 += 2.0 * PI;
-            else         r2 += 2.0 * PI;
+            if (r2 > r1) r1 += 2.0 * pi;
+            else         r2 += 2.0 * pi;
           }
         float angle = r1 + f * (r2 - r1);
-        if (angle >= 2.0 * PI) angle -= 2.0 * PI;
-        else if (angle < 0.0)    angle += 2.0 * PI;
+        if (angle >= 2.0 * pi) angle -= 2.0 * pi;
+        else if (angle < 0.0)    angle += 2.0 * pi;
         SFVec3f Vec(x,y,z);
         Vec = Vec.normalize();
         d_value.setAxis(Vec);
