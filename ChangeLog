@@ -1,3 +1,10 @@
+2004-12-30 Braden McDaniel  <braden@endoframe.com>
+
+	Unregister bindable nodes as "first" during shutdown.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	
 2004-12-29 Braden McDaniel  <braden@endoframe.com>
 
 	Merged changes from 0.15.4 release.

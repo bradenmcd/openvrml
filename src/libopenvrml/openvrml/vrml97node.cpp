@@ -1969,6 +1969,16 @@ void background_class::set_first(background_node & background) throw ()
 }
 
 /**
+ * @brief Reset the pointer to the first Background node in the world to null.
+ *
+ * This function is called by <code>background_node::do_shutdown</code>.
+ */
+void background_class::reset_first() throw ()
+{
+    this->first = 0;
+}
+
+/**
  * @brief Check to see if the first node has been set.
  *
  * This method is used by background_node::do_initialize.
@@ -1978,6 +1988,18 @@ void background_class::set_first(background_node & background) throw ()
 bool background_class::has_first() const throw ()
 {
     return this->first;
+}
+
+/**
+ * @brief Check to see if a node is registered as the "first" node.
+ *
+ * @param background    a background_node.
+ *
+ * @return @c true if @p background is the fist node; @c false otherwise.
+ */
+bool background_class::is_first(background_node & background) throw ()
+{
+    return &background == this->first;
 }
 
 /**
@@ -2874,8 +2896,9 @@ event_side_effect(const mfstring & value,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-background_node::background_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope):
+background_node::
+background_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -2931,10 +2954,12 @@ void background_node::do_initialize(const double timestamp) throw ()
  */
 void background_node::do_shutdown(const double timestamp) throw ()
 {
-    background_class & nodeClass =
+    background_class & node_class =
         const_cast<background_class &>(
             static_cast<const background_class &>(this->type().node_class()));
-    nodeClass.unbind(*this, timestamp);
+    node_class.unbind(*this, timestamp);
+
+    if (node_class.is_first(*this)) { node_class.reset_first(); }
 }
 
 /**
@@ -6553,6 +6578,16 @@ void fog_class::set_first(fog_node & fog) throw ()
 }
 
 /**
+ * @brief Reset the pointer to the first Fog node in the world to null.
+ *
+ * This function is called by <code>fog_node::do_shutdown</code>.
+ */
+void fog_class::reset_first() throw ()
+{
+    this->first = 0;
+}
+
+/**
  * @brief Check to see if the first node has been set.
  *
  * This method is used by fog_node::do_initialize.
@@ -6562,6 +6597,18 @@ void fog_class::set_first(fog_node & fog) throw ()
 bool fog_class::has_first() const throw ()
 {
     return this->first;
+}
+
+/**
+ * @brief Check to see if a node is registered as the "first" node.
+ *
+ * @param fog   a fog_node.
+ *
+ * @return @c true if @p fog is the fist node; @c false otherwise.
+ */
+bool fog_class::is_first(fog_node & fog) throw ()
+{
+    return &fog == this->first;
 }
 
 /**
@@ -6813,7 +6860,7 @@ fog_node::set_bind_listener::~set_bind_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void fog_node::set_bind_listener::do_process_event(const sfbool & bind,
-                                                const double timestamp)
+                                                   const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -6873,7 +6920,8 @@ void fog_node::set_bind_listener::do_process_event(const sfbool & bind,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-fog_node::fog_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+fog_node::fog_node(const node_type & type,
+                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -6912,10 +6960,12 @@ void fog_node::do_initialize(const double timestamp) throw ()
  */
 void fog_node::do_shutdown(const double timestamp) throw ()
 {
-    fog_class & nodeClass =
+    fog_class & node_class =
         const_cast<fog_class &>(
             static_cast<const fog_class &>(this->type().node_class()));
-    nodeClass.unbind(*this, timestamp);
+    node_class.unbind(*this, timestamp);
+
+    if (node_class.is_first(*this)) { node_class.reset_first(); }
 }
 
 
@@ -10313,6 +10363,17 @@ void navigation_info_class::set_first(navigation_info_node & nav_info) throw ()
 }
 
 /**
+ * @brief Reset the pointer to the first NavigationInfo node in the world to
+ *        null.
+ *
+ * This function is called by <code>navigation_info_node::do_shutdown</code>.
+ */
+void navigation_info_class::reset_first() throw ()
+{
+    this->first = 0;
+}
+
+/**
  * @brief Check to see if the first node has been set.
  *
  * This method is used by navigation_info_node::do_initialize.
@@ -10322,6 +10383,18 @@ void navigation_info_class::set_first(navigation_info_node & nav_info) throw ()
 bool navigation_info_class::has_first() const throw ()
 {
     return this->first;
+}
+
+/**
+ * @brief Check to see if a node is registered as the "first" node.
+ *
+ * @param nav_info  a navigation_info_node.
+ *
+ * @return @c true if @p nav_info is the fist node; @c false otherwise.
+ */
+bool navigation_info_class::is_first(navigation_info_node & nav_info) throw ()
+{
+    return &nav_info == this->first;
 }
 
 /**
@@ -10369,6 +10442,8 @@ void navigation_info_class::bind(navigation_info_node & nav_info,
     this->bound_nodes.push_back(&nav_info);
     nav_info.is_bound_.value = true;
     node::emit_event(nav_info.is_bound_emitter_, timestamp);
+
+    this->browser().active_navigation_info(nav_info);
 }
 
 /**
@@ -10396,6 +10471,10 @@ void navigation_info_class::unbind(navigation_info_node & nav_info,
                     **(this->bound_nodes.end() - 2));
             newActive.is_bound_.value = true;
             node::emit_event(newActive.is_bound_emitter_, timestamp);
+
+            this->browser().active_navigation_info(nav_info);
+        } else {
+            this->browser().reset_default_navigation_info();
         }
         this->bound_nodes.erase(pos);
     }
@@ -10724,6 +10803,7 @@ const std::vector<float> & navigation_info_node::avatar_size() const throw ()
  */
 bool navigation_info_node::headlight() const throw ()
 {
+    std::cout << "navigation_info_node::headlight" << std::endl;
     return this->headlight_.sfbool::value;
 }
 
@@ -10787,6 +10867,8 @@ void navigation_info_node::do_shutdown(const double timestamp) throw ()
             *polymorphic_downcast<const navigation_info_class *>(
                 &this->node::type().node_class()));
     node_class.unbind(*this, timestamp);
+
+    if (node_class.is_first(*this)) { node_class.reset_first(); }
 }
 
 
@@ -18854,13 +18936,24 @@ viewpoint_class::~viewpoint_class() throw ()
  * @brief Set the first Viewpoint node in the world.
  *
  * The first Viewpoint node in the world is used as the initial viewpoint.
- * This method is used by viewpoint_node::do_initialize.
+ * This function is used by <code>viewpoint_node::do_initialize</code>.
  *
  * @param viewpoint    a Viewpoint node.
  */
 void viewpoint_class::set_first(viewpoint_node & viewpoint) throw ()
 {
+    assert(!this->has_first());
     this->first = &viewpoint;
+}
+
+/**
+ * @brief Reset the pointer to the first Viewpoint node in the world to null.
+ *
+ * This function is called by <code>viewpoint_node::do_shutdown</code>.
+ */
+void viewpoint_class::reset_first() throw ()
+{
+    this->first = 0;
 }
 
 /**
@@ -18873,6 +18966,18 @@ void viewpoint_class::set_first(viewpoint_node & viewpoint) throw ()
 bool viewpoint_class::has_first() const throw ()
 {
     return this->first;
+}
+
+/**
+ * @brief Check to see if a node is registered as the "first" node.
+ *
+ * @param viewpoint a viewpoint_node.
+ *
+ * @return @c true if @p viewpoint is the fist node; @c false otherwise.
+ */
+bool viewpoint_class::is_first(viewpoint_node & viewpoint) throw ()
+{
+    return &viewpoint == this->first;
 }
 
 /**
@@ -18925,7 +19030,7 @@ void viewpoint_class::bind(viewpoint_node & viewpoint, const double timestamp)
  * @brief Remove a Viewpoint from the bound node stack.
  *
  * @param viewpoint    the node to unbind.
- * @param timestamp     the current time.
+ * @param timestamp    the current time.
  */
 void viewpoint_class::unbind(viewpoint_node & viewpoint,
                              const double timestamp)
@@ -19528,8 +19633,14 @@ void viewpoint_node::do_relocate() throw (std::bad_alloc)
  */
 void viewpoint_node::do_shutdown(const double timestamp) throw ()
 {
+    viewpoint_class & node_class =
+        const_cast<viewpoint_class &>(
+            static_cast<const viewpoint_class &>(this->type().node_class()));
+    node_class.unbind(*this, timestamp);
     assert(this->scene());
     this->scene()->browser.remove_viewpoint(*this);
+
+    if (node_class.is_first(*this)) { node_class.reset_first(); }
 }
 
 /**

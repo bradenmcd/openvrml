@@ -365,7 +365,9 @@ namespace openvrml {
             virtual ~background_class() throw ();
 
             void set_first(background_node & background) throw ();
+            void reset_first() throw ();
             bool has_first() const throw ();
+            bool is_first(background_node & background) throw ();
             void bind(background_node & background, double timestamp)
                 throw (std::bad_alloc);
             void unbind(background_node & background, double timestamp)
@@ -1049,7 +1051,9 @@ namespace openvrml {
             virtual ~fog_class() throw ();
 
             void set_first(fog_node & fog) throw ();
+            void reset_first() throw ();
             bool has_first() const throw ();
+            bool is_first(fog_node & fog) throw ();
             void bind(fog_node & fog, double timestamp) throw (std::bad_alloc);
             void unbind(fog_node & fog, double timestamp) throw ();
 
@@ -1483,7 +1487,9 @@ namespace openvrml {
             virtual ~navigation_info_class() throw ();
 
             void set_first(navigation_info_node & nav_info) throw ();
+            void reset_first() throw ();
             bool has_first() const throw ();
+            bool is_first(navigation_info_node & nav_info) throw ();
             void bind(navigation_info_node & nav_info, double timestamp)
                 throw (std::bad_alloc);
             void unbind(navigation_info_node & nav_info, double timestamp)
@@ -2604,7 +2610,9 @@ namespace openvrml {
             virtual ~viewpoint_class() throw ();
 
             void set_first(viewpoint_node & viewpoint) throw ();
+            void reset_first() throw ();
             bool has_first() const throw ();
+            bool is_first(viewpoint_node & viewpoint) throw ();
             void bind(viewpoint_node & viewpoint, double timestamp)
                 throw (std::bad_alloc);
             void unbind(viewpoint_node & viewpoint, double timestamp) throw ();
