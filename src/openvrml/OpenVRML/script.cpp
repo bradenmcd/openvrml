@@ -554,7 +554,7 @@ void ScriptNode::assignWithSelfRefCheck(const MFNode & inval,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ScriptNode::initializeImpl(const double timestamp) throw (std::bad_alloc)
+void ScriptNode::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addScript(*this);
@@ -571,7 +571,7 @@ void ScriptNode::initializeImpl(const double timestamp) throw (std::bad_alloc)
  * @exception std::bad_cast         if @p value is the wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-void ScriptNode::setFieldImpl(const std::string & id, const FieldValue & value)
+void ScriptNode::do_setField(const std::string & id, const FieldValue & value)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
     FieldValueMap::iterator itr;
@@ -609,7 +609,7 @@ void ScriptNode::setFieldImpl(const std::string & id, const FieldValue & value)
  *
  * @exception UnsupportedInterface  if the node has no field @p id.
  */
-const FieldValue & ScriptNode::getFieldImpl(const std::string & id) const
+const FieldValue & ScriptNode::do_getField(const std::string & id) const
     throw (UnsupportedInterface)
 {
     FieldValueMap::const_iterator itr;
@@ -626,9 +626,9 @@ const FieldValue & ScriptNode::getFieldImpl(const std::string & id) const
     throw UnsupportedInterface("Script node has no field \"" + id + "\".");
 }
 
-void ScriptNode::processEventImpl(const std::string & id,
-                                  const FieldValue & value,
-                                  const double timestamp)
+void ScriptNode::do_processEvent(const std::string & id,
+                                 const FieldValue & value,
+                                 const double timestamp)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
     if (!this->nodeType.hasEventIn(id)) {
@@ -692,7 +692,7 @@ void ScriptNode::setEventOut(const std::string & id, const FieldValue & value)
     itr->second.modified = true;
 }
 
-const FieldValue & ScriptNode::getEventOutImpl(const std::string & id) const
+const FieldValue & ScriptNode::do_getEventOut(const std::string & id) const
     throw (UnsupportedInterface)
 {
     FieldValueMap::const_iterator itr;

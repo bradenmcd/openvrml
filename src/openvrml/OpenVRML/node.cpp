@@ -1090,7 +1090,7 @@ void Node::initialize(Scene & scene, const double timestamp)
 {
     if (!this->scene) {
         this->scene = &scene;
-        this->initializeImpl(timestamp);
+        this->do_initialize(timestamp);
 
         const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
         for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
@@ -1137,7 +1137,7 @@ void Node::initialize(Scene & scene, const double timestamp)
 void Node::setField(const std::string & id, const FieldValue & value)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
-    this->setFieldImpl(id, value);
+    this->do_setField(id, value);
 }
 
 /**
@@ -1150,7 +1150,7 @@ void Node::setField(const std::string & id, const FieldValue & value)
 const FieldValue & Node::getField(const std::string & id) const
     throw (UnsupportedInterface)
 {
-    return this->getFieldImpl(id);
+    return this->do_getField(id);
 }
 
 /**
@@ -1171,7 +1171,7 @@ void Node::processEvent(const std::string & id,
                         const double timestamp)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
-    this->processEventImpl(id, value, timestamp);
+    this->do_processEvent(id, value, timestamp);
 }
 
 
@@ -1185,7 +1185,7 @@ void Node::processEvent(const std::string & id,
 const FieldValue & Node::getEventOut(const std::string & id) const
     throw (UnsupportedInterface)
 {
-    return this->getEventOutImpl(id);
+    return this->do_getEventOut(id);
 }
 
 /**
@@ -1967,7 +1967,7 @@ std::ostream & operator<<(std::ostream & out, const Node & node)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Node::initializeImpl(const double timestamp) throw (std::bad_alloc)
+void Node::do_initialize(const double timestamp) throw (std::bad_alloc)
 {}
 
 

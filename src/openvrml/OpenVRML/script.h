@@ -3,17 +3,17 @@
 //
 // Copyright (C) 1998  Chris Morley
 // Copyright (C) 2001  Braden McDaniel
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -50,24 +50,24 @@ namespace OpenVRML {
         Script(const Script &);
         Script & operator=(const Script &);
     };
-    
-    
+
+
     class OPENVRML_SCOPE ScriptNodeClass : public NodeClass {
     public:
         ScriptNodeClass(Browser & browser);
         virtual ~ScriptNodeClass() throw ();
-        
+
         virtual const NodeTypePtr createType(const std::string & id,
                                              const NodeInterfaceSet &)
                 throw ();
     };
-    
-    
+
+
     class OPENVRML_SCOPE ScriptNode : public ChildNode {
     public:
         typedef std::map<std::string, FieldValuePtr> FieldValueMap;
         typedef std::map<std::string, PolledEventOutValue> EventOutValueMap;
-    
+
     private:
         class ScriptNodeType : public NodeType {
             NodeInterfaceSet interfaces;
@@ -83,9 +83,9 @@ namespace OpenVRML {
             virtual const NodePtr createNode(const ScopePtr & scope) const
                     throw (std::bad_alloc);
         };
-        
+
         friend class ScriptNodeType;
-    
+
         ScriptNodeType scriptNodeType;
         SFBool directOutput;
         SFBool mustEvaluate;
@@ -94,15 +94,15 @@ namespace OpenVRML {
         EventOutValueMap eventOutValueMap;
         Script * script;
         int eventsReceived;
-    
+
     public:
         ScriptNode(ScriptNodeClass & nodeClass,
                    const ScopePtr & scope);
         virtual ~ScriptNode() throw ();
-        
+
         void setUrl(const MFString & value, double timestamp);
         const MFString & getUrl() const;
-        
+
         void addEventIn(FieldValue::Type type, const std::string & id)
                 throw (std::invalid_argument, std::bad_alloc);
         void addEventOut(FieldValue::Type type, const std::string & id)
@@ -110,49 +110,45 @@ namespace OpenVRML {
         void addField(const std::string & id,
                       const FieldValuePtr & defaultValue)
                 throw (std::invalid_argument, std::bad_alloc);
-        
+
         void initialize(double timestamp);
         void update(double timestamp);
         void shutdown(double timestamp);
-        
+
         void setEventOut(const std::string & id, const FieldValue & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        
+
         const FieldValueMap & getFieldValueMap() const throw ();
         const EventOutValueMap & getEventOutValueMap() const throw ();
-        
+
         virtual const ScriptNode * toScript() const throw ();
         virtual ScriptNode * toScript() throw ();
-    
+
     private:
         Script * createScript();
-        
+
         void assignWithSelfRefCheck(const SFNode &, SFNode &) const throw ();
         void assignWithSelfRefCheck(const MFNode &, MFNode &) const throw ();
-        
-        virtual void initializeImpl(double timestamp) throw (std::bad_alloc);
-        
-        virtual void setFieldImpl(const std::string & id,
-                                  const FieldValue & value)
+
+        virtual void do_initialize(double timestamp) throw (std::bad_alloc);
+        virtual void do_setField(const std::string & id,
+                                 const FieldValue & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        
-        virtual const FieldValue & getFieldImpl(const std::string & id) const
+        virtual const FieldValue & do_getField(const std::string & id) const
                 throw (UnsupportedInterface);
-        
-        virtual void processEventImpl(const std::string & id,
-                                      const FieldValue & value,
-                                      double timestamp)
+        virtual void do_processEvent(const std::string & id,
+                                     const FieldValue & value,
+                                     double timestamp)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        
-        virtual const FieldValue & getEventOutImpl(const std::string & id) const
+        virtual const FieldValue & do_getEventOut(const std::string & id) const
                 throw (UnsupportedInterface);
     };
-    
+
     inline const ScriptNode::FieldValueMap &
             ScriptNode::getFieldValueMap() const throw () {
         return this->fieldValueMap;
     }
-    
+
     inline const ScriptNode::EventOutValueMap &
             ScriptNode::getEventOutValueMap() const throw () {
         return this->eventOutValueMap;

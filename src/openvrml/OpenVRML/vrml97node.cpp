@@ -299,16 +299,16 @@ namespace {
             throw (std::bad_alloc);
 
     private:
-        void setFieldValueImpl(NodeT & node, const std::string & id,
-                               const FieldValue &) const
+        void do_setFieldValue(NodeT & node, const std::string & id,
+                              const FieldValue &) const
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        const FieldValue & getFieldValueImpl(const NodeT & node,
-                                             const std::string & id) const
+        const FieldValue & do_getFieldValue(const NodeT & node,
+                                            const std::string & id) const
             throw (UnsupportedInterface);
-        void dispatchEventInImpl(NodeT & node, const std::string & id,
+        void do_dispatchEventIn(NodeT & node, const std::string & id,
                                  const FieldValue &, double timestamp) const
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        const FieldValue & getEventOutValueImpl(const NodeT & node,
+        const FieldValue & do_getEventOutValue(const NodeT & node,
                                                 const std::string & id) const
             throw (UnsupportedInterface);
     };
@@ -405,7 +405,7 @@ namespace {
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
     {
         assert(dynamic_cast<NodeT *>(&node));
-        this->setFieldValueImpl(dynamic_cast<NodeT &>(node), id, newVal);
+        this->do_setFieldValue(dynamic_cast<NodeT &>(node), id, newVal);
     }
 
     template <typename NodeT>
@@ -415,7 +415,7 @@ namespace {
         throw (UnsupportedInterface)
     {
         assert(dynamic_cast<const NodeT *>(&node));
-        return this->getFieldValueImpl(dynamic_cast<const NodeT &>(node), id);
+        return this->do_getFieldValue(dynamic_cast<const NodeT &>(node), id);
     }
 
     template <typename NodeT>
@@ -427,8 +427,8 @@ namespace {
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
     {
         assert(dynamic_cast<NodeT *>(&node));
-        this->dispatchEventInImpl(dynamic_cast<NodeT &>(node), id, value,
-                                  timestamp);
+        this->do_dispatchEventIn(dynamic_cast<NodeT &>(node), id, value,
+                                 timestamp);
     }
 
     template <typename NodeT>
@@ -438,8 +438,7 @@ namespace {
         throw (UnsupportedInterface)
     {
         assert(dynamic_cast<const NodeT *>(&node));
-        return this->getEventOutValueImpl(dynamic_cast<const NodeT &>(node),
-                                          id);
+        return this->do_getEventOutValue(dynamic_cast<const NodeT &>(node), id);
     }
 
     template <typename NodeT>
@@ -458,7 +457,7 @@ namespace {
     }
 
     template <typename NodeT>
-    void Vrml97NodeTypeImpl<NodeT>::setFieldValueImpl(
+    void Vrml97NodeTypeImpl<NodeT>::do_setFieldValue(
             NodeT & node,
             const std::string & id,
             const FieldValue & newVal) const
@@ -473,8 +472,8 @@ namespace {
 
     template <typename NodeT>
     const FieldValue &
-    Vrml97NodeTypeImpl<NodeT>::getFieldValueImpl(const NodeT & node,
-                                                 const std::string & id) const
+    Vrml97NodeTypeImpl<NodeT>::do_getFieldValue(const NodeT & node,
+                                                const std::string & id) const
         throw (UnsupportedInterface)
     {
         const typename FieldValueMap::const_iterator itr =
@@ -486,7 +485,7 @@ namespace {
     }
 
     template <typename NodeT>
-    void Vrml97NodeTypeImpl<NodeT>::dispatchEventInImpl(
+    void Vrml97NodeTypeImpl<NodeT>::do_dispatchEventIn(
             NodeT & node,
             const std::string & id,
             const FieldValue & value,
@@ -508,7 +507,7 @@ namespace {
 
     template <typename NodeT>
     const FieldValue &
-    Vrml97NodeTypeImpl<NodeT>::getEventOutValueImpl(
+    Vrml97NodeTypeImpl<NodeT>::do_getEventOutValue(
             const NodeT & node,
             const std::string & id) const
         throw (UnsupportedInterface)
@@ -564,8 +563,8 @@ AbstractBase::~AbstractBase() throw ()
  *
  * @pre @p value must be of the correct type.
  */
-void AbstractBase::setFieldImpl(const std::string & id,
-                                const FieldValue & value)
+void AbstractBase::do_setField(const std::string & id,
+                               const FieldValue & value)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
@@ -580,7 +579,7 @@ void AbstractBase::setFieldImpl(const std::string & id,
  *
  * @exception UnsupportedInterface  if the node has no field @p id.
  */
-const FieldValue & AbstractBase::getFieldImpl(const std::string & id) const
+const FieldValue & AbstractBase::do_getField(const std::string & id) const
     throw (UnsupportedInterface)
 {
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
@@ -601,9 +600,9 @@ const FieldValue & AbstractBase::getFieldImpl(const std::string & id) const
  *
  * @pre @p value must be of the correct type.
  */
-void AbstractBase::processEventImpl(const std::string & id,
-                                    const FieldValue & value,
-                                    const double timestamp)
+void AbstractBase::do_processEvent(const std::string & id,
+                                   const FieldValue & value,
+                                   const double timestamp)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
@@ -618,7 +617,7 @@ void AbstractBase::processEventImpl(const std::string & id,
  *
  * @exception UnsupportedInterface  if the node has no eventOut @p id.
  */
-const FieldValue & AbstractBase::getEventOutImpl(const std::string & id) const
+const FieldValue & AbstractBase::do_getEventOut(const std::string & id) const
     throw (UnsupportedInterface)
 {
     assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
@@ -1760,7 +1759,7 @@ void AudioClip::update(const double currentTime)
  *
  * @param timestamp the current time.
  */
-void AudioClip::initializeImpl(const double timestamp) throw ()
+void AudioClip::do_initialize(const double timestamp) throw ()
 {
     assert(this->getScene());
     this->getScene()->browser.addAudioClip(*this);
@@ -1894,7 +1893,7 @@ BackgroundClass::~BackgroundClass() throw ()
  * @brief Set the first Background node in the world.
  *
  * The first Background node in the world is used as the initial background.
- * This method is used by Background::initializeImpl.
+ * This method is used by Background::do_initialize.
  *
  * @param background    a Background node.
  */
@@ -1906,7 +1905,7 @@ void BackgroundClass::setFirst(Background & background) throw ()
 /**
  * @brief Check to see if the first node has been set.
  *
- * This method is used by Background::initializeImpl.
+ * This method is used by Background::do_initialize.
  *
  * @return @c true if the first node has already been set; @c false otherwise.
  */
@@ -2304,7 +2303,7 @@ Background::~Background() throw ()
  *
  * @param timestamp the current time.
  */
-void Background::initializeImpl(const double timestamp) throw ()
+void Background::do_initialize(const double timestamp) throw ()
 {
     BackgroundClass & nodeClass =
             static_cast<BackgroundClass &>(this->nodeType.nodeClass);
@@ -5042,7 +5041,7 @@ FogClass::~FogClass() throw () {}
  * @brief Set the first Fog node in the world.
  *
  * The first Fog node in the world is used for the initial fog.
- * This method is used by Fog::initializeImpl.
+ * This method is used by Fog::do_initialize.
  *
  * @param fog   a Fog node.
  */
@@ -5054,7 +5053,7 @@ void FogClass::setFirst(Fog & fog) throw ()
 /**
  * @brief Check to see if the first node has been set.
  *
- * This method is used by Fog::initializeImpl.
+ * This method is used by Fog::do_initialize.
  *
  * @return @c true if the first node has already been set; @c false otherwise.
  */
@@ -5259,7 +5258,7 @@ Fog::~Fog() throw ()
  *
  * @param timestamp the current time.
  */
-void Fog::initializeImpl(const double timestamp) throw ()
+void Fog::do_initialize(const double timestamp) throw ()
 {
     FogClass & nodeClass = static_cast<FogClass &>(this->nodeType.nodeClass);
     if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
@@ -7864,7 +7863,7 @@ const unsigned char * MovieTexture::pixels() const throw () {
  *
  * @param timestamp the current time.
  */
-void MovieTexture::initializeImpl(const double timestamp) throw () {
+void MovieTexture::do_initialize(const double timestamp) throw () {
     assert(this->getScene());
     this->getScene()->browser.addMovie(*this);
 }
@@ -8103,7 +8102,7 @@ NavigationInfo* NavigationInfo::toNavigationInfo() const
  *
  * @param timestamp the current time.
  */
-void NavigationInfo::initializeImpl(const double timestamp) throw () {
+void NavigationInfo::do_initialize(const double timestamp) throw () {
     assert(this->getScene());
     this->getScene()->browser.addNavigationInfo(*this);
 }
@@ -9586,7 +9585,7 @@ void PointLight::renderScoped(Viewer & viewer)
  *
  * @param timestamp the current time.
  */
-void PointLight::initializeImpl(const double timestamp) throw ()
+void PointLight::do_initialize(const double timestamp) throw ()
 {
     assert(this->getScene());
     this->getScene()->browser.addScopedLight(*this);
@@ -12061,7 +12060,7 @@ void SpotLight::renderScoped(Viewer & viewer)
  *
  * @param timestamp the current time.
  */
-void SpotLight::initializeImpl(const double timestamp) throw ()
+void SpotLight::do_initialize(const double timestamp) throw ()
 {
     assert(this->getScene());
     this->getScene()->browser.addScopedLight(*this);
@@ -13029,7 +13028,7 @@ Viewer::Object Text::insertGeometry(Viewer & viewer,
  *
  * @param timestamp the current time.
  */
-void Text::initializeImpl(const double timestamp) throw ()
+void Text::do_initialize(const double timestamp) throw ()
 {
     this->updateUcs4();
     this->updateFace();
@@ -14482,7 +14481,7 @@ const BVolume * TimeSensor::getBVolume() const
  *
  * @param timestamp the current time.
  */
-void TimeSensor::initializeImpl(const double timestamp) throw ()
+void TimeSensor::do_initialize(const double timestamp) throw ()
 {
     assert(this->getScene());
     this->getScene()->browser.addTimeSensor(*this);
@@ -15666,7 +15665,7 @@ const SFString & Viewpoint::getDescription() const
  *
  * @param timestamp the current time.
  */
-void Viewpoint::initializeImpl(const double timestamp) throw ()
+void Viewpoint::do_initialize(const double timestamp) throw ()
 {
     assert(this->getScene());
     this->getScene()->browser.addViewpoint(*this);

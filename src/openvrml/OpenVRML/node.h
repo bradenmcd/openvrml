@@ -383,21 +383,17 @@ namespace OpenVRML {
         Node(const Node &);
         Node & operator=(const Node &);
 
-        virtual void initializeImpl(double timestamp) throw (std::bad_alloc);
-
-        virtual void setFieldImpl(const std::string & id,
-                                  const FieldValue & value)
+        virtual void do_initialize(double timestamp) throw (std::bad_alloc);
+        virtual void do_setField(const std::string & id,
+                                 const FieldValue & value)
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
-
-        virtual const FieldValue & getFieldImpl(const std::string & id) const
+        virtual const FieldValue & do_getField(const std::string & id) const
             throw (UnsupportedInterface) = 0;
-
-        virtual void processEventImpl(const std::string & id,
-                                      const FieldValue & value,
-                                      double timestamp)
+        virtual void do_processEvent(const std::string & id,
+                                     const FieldValue & value,
+                                     double timestamp)
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
-
-        virtual const FieldValue & getEventOutImpl(const std::string & id) const
+        virtual const FieldValue & do_getEventOut(const std::string & id) const
             throw (UnsupportedInterface) = 0;
     };
 

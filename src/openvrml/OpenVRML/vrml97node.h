@@ -51,21 +51,18 @@ namespace OpenVRML {
             AbstractBase(const NodeType & nodeType, const ScopePtr & scope);
 
         private:
-            virtual void setFieldImpl(const std::string & id,
-                                      const FieldValue & value)
+            virtual void do_setField(const std::string & id,
+                                     const FieldValue & value)
                     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-
             virtual const FieldValue &
-                    getFieldImpl(const std::string & id) const
+                    do_getField(const std::string & id) const
                     throw (UnsupportedInterface);
-
-            virtual void processEventImpl(const std::string & id,
+            virtual void do_processEvent(const std::string & id,
                                           const FieldValue & value,
                                           double timestamp)
                     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-
             virtual const FieldValue &
-                    getEventOutImpl(const std::string & id) const
+                    do_getEventOut(const std::string & id) const
                     throw (UnsupportedInterface);
         };
 
@@ -404,7 +401,7 @@ namespace OpenVRML {
             virtual AudioClip * toAudioClip() const;
 
         private:
-            virtual void initializeImpl(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw ();
 
             //
             // eventIn handlers
@@ -480,7 +477,7 @@ namespace OpenVRML {
             virtual ~Background() throw ();
 
         private:
-            virtual void initializeImpl(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw ();
 
             //
             // eventIn handlers
@@ -1090,7 +1087,7 @@ namespace OpenVRML {
             virtual ~Fog() throw ();
 
         private:
-            virtual void initializeImpl(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw ();
 
             //
             // eventIn handlers
@@ -1468,7 +1465,7 @@ namespace OpenVRML {
             virtual const unsigned char * pixels() const throw ();
 
         private:
-            virtual void initializeImpl(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw ();
 
             //
             // eventIn handlers
@@ -1524,7 +1521,7 @@ namespace OpenVRML {
             float getVisibilityLimit() { return this->visibilityLimit.get(); }
 
         private:
-            virtual void initializeImpl(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw ();
 
             //
             // eventIn handlers
@@ -1780,7 +1777,7 @@ namespace OpenVRML {
             virtual void renderScoped(Viewer & viewer);
 
         private:
-            virtual void initializeImpl(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw ();
 
             //
             // eventIn handlers
@@ -2158,7 +2155,7 @@ namespace OpenVRML {
             virtual void renderScoped(Viewer & viewer);
 
         private:
-            virtual void initializeImpl(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw ();
 
             //
             // eventIn handlers
@@ -2281,7 +2278,7 @@ namespace OpenVRML {
                                                   VrmlRenderContext context);
 
         private:
-            virtual void initializeImpl(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw ();
 
             //
             // eventIn handlers
@@ -2416,7 +2413,7 @@ namespace OpenVRML {
             void update(double time);
 
         private:
-            virtual void initializeImpl(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw ();
 
             //
             // eventIn handlers
@@ -2578,7 +2575,7 @@ namespace OpenVRML {
             void getFrustum(VrmlFrustum& frust) const; // get a copy
 
         private:
-            virtual void initializeImpl(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw ();
 
             //
             // eventIn handlers

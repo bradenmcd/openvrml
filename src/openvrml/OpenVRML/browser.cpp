@@ -68,7 +68,6 @@ namespace OpenVRML {
     class ProtoNode : public Node {
         friend class ProtoNodeClass;
         friend class Vrml97Parser;
-        friend class NodeVisitor;
 
         class NodeFieldCloneVisitor : public NodeVisitor {
             const ScopePtr & toScope;
@@ -218,21 +217,17 @@ namespace OpenVRML {
         ProtoNode(const ProtoNode &);
         ProtoNode & operator=(const ProtoNode &);
 
-        virtual void initializeImpl(double timestamp) throw ();
-
-        virtual void setFieldImpl(const std::string & id,
-                                  const FieldValue & value)
+        virtual void do_initialize(double timestamp) throw ();
+        virtual void do_setField(const std::string & id,
+                                 const FieldValue & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-
-        virtual const FieldValue & getFieldImpl(const std::string & id) const
+        virtual const FieldValue & do_getField(const std::string & id) const
                 throw (UnsupportedInterface);
-
-        virtual void processEventImpl(const std::string & id,
+        virtual void do_processEvent(const std::string & id,
                                       const FieldValue & value,
                                       double timestamp)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-
-        virtual const FieldValue & getEventOutImpl(const std::string & id) const
+        virtual const FieldValue & do_getEventOut(const std::string & id) const
                 throw (UnsupportedInterface);
     };
 
@@ -3156,7 +3151,7 @@ void ProtoNode::update(const double currentTime) {
  *
  * @param timestamp the current time.
  */
-void ProtoNode::initializeImpl(const double timestamp) throw ()
+void ProtoNode::do_initialize(const double timestamp) throw ()
 {
     assert(this->getScene());
     
@@ -3168,8 +3163,8 @@ void ProtoNode::initializeImpl(const double timestamp) throw ()
     this->getScene()->browser.addProto(*this);
 }
 
-void ProtoNode::setFieldImpl(const std::string & id,
-                             const FieldValue & value)
+void ProtoNode::do_setField(const std::string & id,
+                            const FieldValue & value)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
     const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
@@ -3208,7 +3203,7 @@ void ProtoNode::setFieldImpl(const std::string & id,
     }
 }
 
-const FieldValue & ProtoNode::getFieldImpl(const std::string & id) const
+const FieldValue & ProtoNode::do_getField(const std::string & id) const
     throw (UnsupportedInterface)
 {
     //
@@ -3273,9 +3268,9 @@ namespace {
     };
 }
 
-void ProtoNode::processEventImpl(const std::string & id,
-                                 const FieldValue & value,
-                                 const double timestamp)
+void ProtoNode::do_processEvent(const std::string & id,
+                                const FieldValue & value,
+                                const double timestamp)
     throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
 {
     const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
@@ -3298,7 +3293,7 @@ void ProtoNode::processEventImpl(const std::string & id,
     }
 }
 
-const FieldValue & ProtoNode::getEventOutImpl(const std::string & id) const
+const FieldValue & ProtoNode::do_getEventOut(const std::string & id) const
         throw (UnsupportedInterface) {
     //
     // If we have a real eventOut (not an exposedField) ...
