@@ -1,5 +1,10 @@
 2004-10-28 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/system.cpp:  Removed some debugging
+	output.
+
+2004-10-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/system.cpp:  Fixed HTTP request line
 	endings to be CRLF; added "Host" line.
 

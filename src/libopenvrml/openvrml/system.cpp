@@ -207,8 +207,6 @@ const std::string system::http_fetch(const char * url)
                     << "Accept: */*\r\n"
                     << "\r\n";
 
-            std::cout << request.str() << std::endl;
-
             const std::string request_string = request.str();
             const char * request_c_str = request_string.c_str();
             size_t nbytes = request_string.length();
