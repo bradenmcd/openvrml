@@ -2883,6 +2883,37 @@ void image::resize(const size_t x, const size_t y) throw (std::bad_alloc)
 /**
  * @relates image
  *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs are equal; @c false otherwise.
+ */
+bool operator==(const image & lhs, const image & rhs) throw ()
+{
+    return lhs.x() == rhs.x()
+        && lhs.y() == rhs.y()
+        && lhs.comp() == rhs.comp()
+        && lhs.array() == rhs.array();
+}
+
+/**
+ * @fn bool operator!=(const image & lhs, const image & rhs) throw ()
+ *
+ * @relates openvrml::image
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs are not equal; @c false otherwise.
+ */
+
+/**
+ * @relates image
+ *
  * @brief Stream output.
  *
  * @param out   output stream.

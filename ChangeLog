@@ -1,3 +1,8 @@
+2003-11-30 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.cpp:  Implemented
+	operator== for "openvrml::image".
+
 2003-11-25 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
