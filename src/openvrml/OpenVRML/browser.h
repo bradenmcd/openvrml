@@ -158,23 +158,23 @@ namespace OpenVRML {
         void delta(double d);
         double delta() const;
 
-        void add_navigation_info(Vrml97Node::navigation_info_node &);
-        void remove_navigation_info(Vrml97Node::navigation_info_node &);
-        Vrml97Node::navigation_info_node *bindable_navigation_info_top();
-        void bindable_push(Vrml97Node::navigation_info_node *);
-        void bindable_remove(Vrml97Node::navigation_info_node *);
+        void add_navigation_info(vrml97_node::navigation_info_node &);
+        void remove_navigation_info(vrml97_node::navigation_info_node &);
+        vrml97_node::navigation_info_node *bindable_navigation_info_top();
+        void bindable_push(vrml97_node::navigation_info_node *);
+        void bindable_remove(vrml97_node::navigation_info_node *);
 
-        void add_scoped_light(Vrml97Node::abstract_light_node &);
-        void remove_scoped_light(Vrml97Node::abstract_light_node &);
+        void add_scoped_light(vrml97_node::abstract_light_node &);
+        void remove_scoped_light(vrml97_node::abstract_light_node &);
 
-        void add_time_sensor(Vrml97Node::time_sensor_node &);
-        void remove_time_sensor(Vrml97Node::time_sensor_node &);
+        void add_time_sensor(vrml97_node::time_sensor_node &);
+        void remove_time_sensor(vrml97_node::time_sensor_node &);
 
-        void add_audio_clip(Vrml97Node::audio_clip_node &);
-        void remove_audio_clip(Vrml97Node::audio_clip_node &);
+        void add_audio_clip(vrml97_node::audio_clip_node &);
+        void remove_audio_clip(vrml97_node::audio_clip_node &);
 
-        void add_movie(Vrml97Node::movie_texture_node &);
-        void remove_movie(Vrml97Node::movie_texture_node &);
+        void add_movie(vrml97_node::movie_texture_node &);
+        void remove_movie(vrml97_node::movie_texture_node &);
 
         void add_proto(ProtoNode & node);
         void remove_proto(ProtoNode & node);

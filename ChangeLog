@@ -1,3 +1,22 @@
+2003-07-24  Braden McDaniel  <braden@endoframe.com>
+
+	Renamed Vrml97Node namespace to vrml97_node.
+
+	* src/openvrml/OpenVRML/browser.cpp:  Renamed Vrml97Node
+	namespace to vrml97_node.
+	* src/openvrml/OpenVRML/browser.h:  Renamed Vrml97Node namespace
+	to vrml97_node.
+	* src/openvrml/OpenVRML/node.cpp:  Renamed Vrml97Node namespace
+	to vrml97_node.
+	* src/openvrml/OpenVRML/node.h:  Renamed Vrml97Node namespace to
+	vrml97_node.
+	* src/openvrml/OpenVRML/vrml97node.cpp:  Renamed Vrml97Node
+	namespace to vrml97_node.
+	* src/openvrml/OpenVRML/vrml97node.h:  Renamed Vrml97Node
+	namespace to vrml97_node.
+	* src/openvrml-gl/OpenVRML/GL/viewer.cpp:  Renamed Vrml97Node
+	namespace to vrml97_node.
+
 2003-07-23  Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-gl/OpenVRML/GL/viewer.cpp:  Oops.

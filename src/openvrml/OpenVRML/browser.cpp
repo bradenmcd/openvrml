@@ -124,18 +124,18 @@ namespace OpenVRML {
         virtual const viewpoint_node * to_viewpoint() const throw ();
         virtual viewpoint_node * to_viewpoint() throw ();
 
-        virtual Vrml97Node::anchor_node * to_anchor() const;
-        virtual Vrml97Node::audio_clip_node * to_audio_clip() const;
-        virtual Vrml97Node::cylinder_sensor_node * to_cylinder_sensor() const;
-        virtual Vrml97Node::abstract_light_node * to_light() const;
-        virtual Vrml97Node::movie_texture_node * to_movie_texture() const;
-        virtual Vrml97Node::navigation_info_node * to_navigation_info() const;
-        virtual Vrml97Node::plane_sensor_node * to_plane_sensor() const;
-        virtual Vrml97Node::point_light_node * to_point_light() const;
-        virtual Vrml97Node::sphere_sensor_node * to_sphere_sensor() const;
-        virtual Vrml97Node::spot_light_node * to_spot_light() const;
-        virtual Vrml97Node::time_sensor_node * to_time_sensor() const;
-        virtual Vrml97Node::touch_sensor_node * to_touch_sensor() const;
+        virtual vrml97_node::anchor_node * to_anchor() const;
+        virtual vrml97_node::audio_clip_node * to_audio_clip() const;
+        virtual vrml97_node::cylinder_sensor_node * to_cylinder_sensor() const;
+        virtual vrml97_node::abstract_light_node * to_light() const;
+        virtual vrml97_node::movie_texture_node * to_movie_texture() const;
+        virtual vrml97_node::navigation_info_node * to_navigation_info() const;
+        virtual vrml97_node::plane_sensor_node * to_plane_sensor() const;
+        virtual vrml97_node::point_light_node * to_point_light() const;
+        virtual vrml97_node::sphere_sensor_node * to_sphere_sensor() const;
+        virtual vrml97_node::spot_light_node * to_spot_light() const;
+        virtual vrml97_node::time_sensor_node * to_time_sensor() const;
+        virtual vrml97_node::touch_sensor_node * to_touch_sensor() const;
 
         virtual void render(OpenVRML::viewer & viewer,
                             rendering_context context);
@@ -824,7 +824,7 @@ const char * browser::version() const throw ()
  */
 float browser::current_speed()
 {
-    Vrml97Node::navigation_info_node * const navInfo =
+    vrml97_node::navigation_info_node * const navInfo =
         bindable_navigation_info_top();
     if (navInfo) { return navInfo->speed(); }
     return 0.0f;
@@ -1055,7 +1055,7 @@ void browser::create_vrml_from_url(const std::vector<std::string> & url,
  *        implementations.
  */
 void browser::init_node_class_map() {
-    using namespace Vrml97Node;
+    using namespace vrml97_node;
     this->node_class_map["urn:X-openvrml:node:Anchor"] =
         node_class_ptr(new anchor_class(*this));
     this->node_class_map["urn:X-openvrml:node:Appearance"] =
@@ -1261,7 +1261,7 @@ void browser::sensitive_event(node * const n,
                               double * const point)
 {
     if (n) {
-        Vrml97Node::anchor_node * a = n->to_anchor();
+        vrml97_node::anchor_node * a = n->to_anchor();
         if (a) {
             //
             // This should really be (isOver && !isActive && n->wasActive)
@@ -1310,21 +1310,21 @@ bool browser::update(double current_time)
     // Update each of the timers.
     std::list<node *>::iterator i, end = this->timers.end();
     for (i = this->timers.begin(); i != end; ++i) {
-        Vrml97Node::time_sensor_node * t = (*i)->to_time_sensor();
+        vrml97_node::time_sensor_node * t = (*i)->to_time_sensor();
         if (t) { t->update(current_time); }
     }
 
     // Update each of the clips.
     end = this->audio_clips.end();
     for (i = this->audio_clips.begin(); i != end; ++i) {
-        Vrml97Node::audio_clip_node * c = (*i)->to_audio_clip();
+        vrml97_node::audio_clip_node * c = (*i)->to_audio_clip();
         if (c) { c->update(current_time); }
     }
 
     // Update each of the movies.
     end = this->movies.end();
     for (i = this->movies.begin(); i != end; ++i) {
-        Vrml97Node::movie_texture_node * m = (*i)->to_movie_texture();
+        vrml97_node::movie_texture_node * m = (*i)->to_movie_texture();
         if (m) { m->update(current_time); }
     }
 
@@ -1357,7 +1357,7 @@ bool browser::update(double current_time)
 
 bool browser::headlight_on()
 {
-    Vrml97Node::navigation_info_node * const navInfo =
+    vrml97_node::navigation_info_node * const navInfo =
         this->bindable_navigation_info_top();
     if (navInfo) { return navInfo->headlight(); }
     return true;
@@ -1392,7 +1392,7 @@ void browser::render(OpenVRML::viewer & viewer)
     }
     float avatarSize = 0.25;
     float visibilityLimit = 0.0;
-    Vrml97Node::navigation_info_node * ni =
+    vrml97_node::navigation_info_node * ni =
         this->bindable_navigation_info_top();
     if (ni) {
         avatarSize = ni->avatar_size()[0];
@@ -1439,7 +1439,7 @@ void browser::render(OpenVRML::viewer & viewer)
     // Do the browser-level lights (Points and Spots)
     std::list<node *>::iterator li, end = this->scoped_lights.end();
     for (li = this->scoped_lights.begin(); li != end; ++li) {
-        Vrml97Node::abstract_light_node * x = (*li)->to_light();
+        vrml97_node::abstract_light_node * x = (*li)->to_light();
         if (x) { x->renderScoped(viewer); }
     }
 
@@ -1546,7 +1546,7 @@ void browser::bindable_remove(bind_stack_t & stack, const node_ptr & node)
  *
  * @pre @p node is not in the list of NavigationInfo nodes for the browser.
  */
-void browser::add_navigation_info(Vrml97Node::navigation_info_node & node)
+void browser::add_navigation_info(vrml97_node::navigation_info_node & node)
 {
     assert(std::find(this->navigation_infos.begin(),
                      this->navigation_infos.end(), &node)
@@ -1562,7 +1562,7 @@ void browser::add_navigation_info(Vrml97Node::navigation_info_node & node)
  *
  * @pre @p n is in the list of NavigationInfo nodes for the browser.
  */
-void browser::remove_navigation_info(Vrml97Node::navigation_info_node & n)
+void browser::remove_navigation_info(vrml97_node::navigation_info_node & n)
 {
     assert(!this->navigation_infos.empty());
     const std::list<node *>::iterator end = this->navigation_infos.end();
@@ -1577,7 +1577,7 @@ void browser::remove_navigation_info(Vrml97Node::navigation_info_node & n)
  *
  * @return the active node on the bound NavigationInfo stack.
  */
-Vrml97Node::navigation_info_node * browser::bindable_navigation_info_top()
+vrml97_node::navigation_info_node * browser::bindable_navigation_info_top()
 {
     node * const n = this->bindable_top(this->navigation_info_stack).get();
     return n ? n->to_navigation_info() : 0;
@@ -1588,7 +1588,7 @@ Vrml97Node::navigation_info_node * browser::bindable_navigation_info_top()
  *
  * @param n a NavigationInfo node.
  */
-void browser::bindable_push(Vrml97Node::navigation_info_node * n)
+void browser::bindable_push(vrml97_node::navigation_info_node * n)
 {
     this->bindable_push(this->navigation_info_stack, node_ptr(n));
 }
@@ -1599,7 +1599,7 @@ void browser::bindable_push(Vrml97Node::navigation_info_node * n)
  *
  * @param n a NavigationInfo node.
  */
-void browser::bindable_remove(Vrml97Node::navigation_info_node * n)
+void browser::bindable_remove(vrml97_node::navigation_info_node * n)
 {
     this->bindable_remove(this->navigation_info_stack, node_ptr(n));
 }
@@ -1611,7 +1611,7 @@ void browser::bindable_remove(Vrml97Node::navigation_info_node * n)
  *
  * @pre @p light is not in the list of light nodes for the browser.
  */
-void browser::add_scoped_light(Vrml97Node::abstract_light_node & light) {
+void browser::add_scoped_light(vrml97_node::abstract_light_node & light) {
     assert(std::find(this->scoped_lights.begin(), this->scoped_lights.end(),
                      &light) == this->scoped_lights.end());
     this->scoped_lights.push_back(&light);
@@ -1624,7 +1624,7 @@ void browser::add_scoped_light(Vrml97Node::abstract_light_node & light) {
  *
  * @pre @p light is in the list of light nodes for the browser.
  */
-void browser::remove_scoped_light(Vrml97Node::abstract_light_node & light)
+void browser::remove_scoped_light(vrml97_node::abstract_light_node & light)
 {
     assert(!this->scoped_lights.empty());
     const std::list<node *>::iterator end = this->scoped_lights.end();
@@ -1641,7 +1641,7 @@ void browser::remove_scoped_light(Vrml97Node::abstract_light_node & light)
  *
  * @pre @p movie is not in the list of MovieTexture nodes for the browser.
  */
-void browser::add_movie(Vrml97Node::movie_texture_node & movie) {
+void browser::add_movie(vrml97_node::movie_texture_node & movie) {
     assert(std::find(this->movies.begin(), this->movies.end(), &movie)
             == this->movies.end());
     this->movies.push_back(&movie);
@@ -1654,7 +1654,7 @@ void browser::add_movie(Vrml97Node::movie_texture_node & movie) {
  *
  * @pre @p movie is in the list of movie_texture nodes for the browser.
  */
-void browser::remove_movie(Vrml97Node::movie_texture_node & movie)
+void browser::remove_movie(vrml97_node::movie_texture_node & movie)
 {
     assert(!this->movies.empty());
     const std::list<node *>::iterator end = this->movies.end();
@@ -1733,7 +1733,7 @@ void browser::remove_proto(ProtoNode & node) {
  *
  * @pre @p timer is not in the list of TimeSensor nodes for the browser.
  */
-void browser::add_time_sensor(Vrml97Node::time_sensor_node & timer)
+void browser::add_time_sensor(vrml97_node::time_sensor_node & timer)
 {
     assert(std::find(this->timers.begin(), this->timers.end(), &timer)
            == this->timers.end());
@@ -1747,7 +1747,7 @@ void browser::add_time_sensor(Vrml97Node::time_sensor_node & timer)
  *
  * @pre @p timer is in the list of time_sensor nodes for the browser.
  */
-void browser::remove_time_sensor(Vrml97Node::time_sensor_node & timer)
+void browser::remove_time_sensor(vrml97_node::time_sensor_node & timer)
 {
     assert(!this->timers.empty());
     const std::list<node *>::iterator end = this->timers.end();
@@ -1765,7 +1765,7 @@ void browser::remove_time_sensor(Vrml97Node::time_sensor_node & timer)
  *
  * @pre @p audio_clip is not in the list of audio_clip nodes for the browser.
  */
-void browser::add_audio_clip(Vrml97Node::audio_clip_node & audio_clip)
+void browser::add_audio_clip(vrml97_node::audio_clip_node & audio_clip)
 {
     assert(std::find(this->audio_clips.begin(), this->audio_clips.end(),
                      &audio_clip) == this->audio_clips.end());
@@ -1779,7 +1779,7 @@ void browser::add_audio_clip(Vrml97Node::audio_clip_node & audio_clip)
  *
  * @pre @p audio_clip is in the list of audio_clip nodes for the browser.
  */
-void browser::remove_audio_clip(Vrml97Node::audio_clip_node & audio_clip)
+void browser::remove_audio_clip(vrml97_node::audio_clip_node & audio_clip)
 {
     assert(!this->audio_clips.empty());
     const std::list<node *>::iterator end = this->audio_clips.end();
@@ -3379,62 +3379,62 @@ void ProtoNode::do_shutdown(const double timestamp) throw ()
     }
 }
 
-Vrml97Node::anchor_node * ProtoNode::to_anchor() const
+vrml97_node::anchor_node * ProtoNode::to_anchor() const
 {
     return this->implNodes[0]->to_anchor();
 }
 
-Vrml97Node::audio_clip_node * ProtoNode::to_audio_clip() const
+vrml97_node::audio_clip_node * ProtoNode::to_audio_clip() const
 {
     return this->implNodes[0]->to_audio_clip();
 }
 
-Vrml97Node::cylinder_sensor_node * ProtoNode::to_cylinder_sensor() const
+vrml97_node::cylinder_sensor_node * ProtoNode::to_cylinder_sensor() const
 {
     return this->implNodes[0]->to_cylinder_sensor();
 }
 
-Vrml97Node::abstract_light_node * ProtoNode::to_light() const
+vrml97_node::abstract_light_node * ProtoNode::to_light() const
 {
     return this->implNodes[0]->to_light();
 }
 
-Vrml97Node::movie_texture_node * ProtoNode::to_movie_texture() const
+vrml97_node::movie_texture_node * ProtoNode::to_movie_texture() const
 {
     return this->implNodes[0]->to_movie_texture();
 }
 
-Vrml97Node::navigation_info_node * ProtoNode::to_navigation_info() const
+vrml97_node::navigation_info_node * ProtoNode::to_navigation_info() const
 {
     return this->implNodes[0]->to_navigation_info();
 }
 
-Vrml97Node::plane_sensor_node * ProtoNode::to_plane_sensor() const
+vrml97_node::plane_sensor_node * ProtoNode::to_plane_sensor() const
 {
     return this->implNodes[0]->to_plane_sensor();
 }
 
-Vrml97Node::point_light_node * ProtoNode::to_point_light() const
+vrml97_node::point_light_node * ProtoNode::to_point_light() const
 {
     return this->implNodes[0]->to_point_light();
 }
 
-Vrml97Node::sphere_sensor_node * ProtoNode::to_sphere_sensor() const
+vrml97_node::sphere_sensor_node * ProtoNode::to_sphere_sensor() const
 {
     return this->implNodes[0]->to_sphere_sensor();
 }
 
-Vrml97Node::spot_light_node * ProtoNode::to_spot_light() const
+vrml97_node::spot_light_node * ProtoNode::to_spot_light() const
 {
     return this->implNodes[0]->to_spot_light();
 }
 
-Vrml97Node::time_sensor_node * ProtoNode::to_time_sensor() const
+vrml97_node::time_sensor_node * ProtoNode::to_time_sensor() const
 {
     return this->implNodes[0]->to_time_sensor();
 }
 
-Vrml97Node::touch_sensor_node * ProtoNode::to_touch_sensor() const
+vrml97_node::touch_sensor_node * ProtoNode::to_touch_sensor() const
 {
     return this->implNodes[0]->to_touch_sensor();
 }

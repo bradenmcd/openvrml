@@ -1602,62 +1602,62 @@ viewpoint_node * node::to_viewpoint() throw ()
 // Remember to also add new ones to NodeProto. Protos should
 // return their first implementation node (except toProto()).
 
-Vrml97Node::anchor_node * node::to_anchor() const
+vrml97_node::anchor_node * node::to_anchor() const
 {
     return 0;
 }
 
-Vrml97Node::audio_clip_node * node::to_audio_clip() const
+vrml97_node::audio_clip_node * node::to_audio_clip() const
 {
     return 0;
 }
 
-Vrml97Node::abstract_light_node * node::to_light() const
+vrml97_node::abstract_light_node * node::to_light() const
 {
     return 0;
 }
 
-Vrml97Node::movie_texture_node * node::to_movie_texture() const
+vrml97_node::movie_texture_node * node::to_movie_texture() const
 {
     return 0;
 }
 
-Vrml97Node::navigation_info_node * node::to_navigation_info() const
+vrml97_node::navigation_info_node * node::to_navigation_info() const
 {
     return 0;
 }
 
-Vrml97Node::plane_sensor_node * node::to_plane_sensor() const
+vrml97_node::plane_sensor_node * node::to_plane_sensor() const
 {
     return 0;
 }
 
-Vrml97Node::sphere_sensor_node * node::to_sphere_sensor() const
+vrml97_node::sphere_sensor_node * node::to_sphere_sensor() const
 {
     return 0;
 }
 
-Vrml97Node::cylinder_sensor_node * node::to_cylinder_sensor() const
+vrml97_node::cylinder_sensor_node * node::to_cylinder_sensor() const
 {
     return 0;
 }
 
-Vrml97Node::point_light_node * node::to_point_light() const
+vrml97_node::point_light_node * node::to_point_light() const
 {
     return 0;
 }
 
-Vrml97Node::spot_light_node * node::to_spot_light() const
+vrml97_node::spot_light_node * node::to_spot_light() const
 {
     return 0;
 }
 
-Vrml97Node::time_sensor_node * node::to_time_sensor() const
+vrml97_node::time_sensor_node * node::to_time_sensor() const
 {
     return 0;
 }
 
-Vrml97Node::touch_sensor_node * node::to_touch_sensor() const
+vrml97_node::touch_sensor_node * node::to_touch_sensor() const
 {
     return 0;
 }

@@ -36,7 +36,7 @@ typedef unsigned int FcChar32;
 
 namespace OpenVRML {
 
-    namespace Vrml97Node {
+    namespace vrml97_node {
 
         class OPENVRML_SCOPE abstract_base : public virtual node {
         public:

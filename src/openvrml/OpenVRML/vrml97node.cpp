@@ -160,7 +160,7 @@ namespace OpenVRML {
  * this namespace have been factored out of other parts of OpenVRML, all of
  * these classes will be moving into the library's implementation.
  */
-namespace Vrml97Node {
+namespace vrml97_node {
 
 namespace {
 

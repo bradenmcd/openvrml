@@ -3696,7 +3696,7 @@ void viewer::zoom(const float z)
     glGetIntegerv (GL_VIEWPORT, viewport);
     glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
-    Vrml97Node::navigation_info_node * const nav =
+    vrml97_node::navigation_info_node * const nav =
             this->browser.bindable_navigation_info_top();
     GLdouble x_c = this->win_width / 2;
     GLdouble y_c = this->win_height / 2;
