@@ -10,7 +10,12 @@
 #include "VrmlNodeAnchor.h"
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
+
+#ifdef macintosh
+#include "vrml97/doc2.hpp"
+#else
 #include "doc2.hpp"
+#endif
 
 static VrmlNode *creator( VrmlScene *scene ) 
 {
