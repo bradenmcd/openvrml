@@ -42,7 +42,7 @@ using the OpenVRML OpenGL renderer.
 Summary:        VRML viewer
 Group:          Applications/Multimedia
 Requires:       %{name}-gl
-%description
+%description -n lookat
 GLUT-based VRML viewer.
 
 
@@ -84,13 +84,13 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %{prefix}/lib/libvrml97gl.a
 %{prefix}/lib/libvrml97gl.so
 
-%files lookat
+%files -n lookat
 %{prefix}/bin/lookat
 
 
 %changelog
-* 24 October, 2000  Braden McDaniel  <braden@endoframe.com>
-- Received initial spec file from Clayton Cottingham <drfrog@smartt.com>.
-
-* 23 November, 2000  Braden McDaniel  <braden@endoframe.com>
+* Thu Nov 23 2000  Braden McDaniel  <braden@endoframe.com>
 - Gave much love. Checked into CVS. Still not guaranteed to work, though.
+
+* Tue Oct 24 2000  Braden McDaniel  <braden@endoframe.com>
+- Received initial spec file from Clayton Cottingham <drfrog@smartt.com>.
