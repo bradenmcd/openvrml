@@ -10,7 +10,7 @@ dnl "no_gl" is set to "yes".
 dnl
 dnl @copyright (C) 2003 Braden McDaniel
 dnl @license GNU GPL
-dnl @version $Id: ax_check_gl.m4,v 1.4 2003-07-25 23:43:20 braden Exp $
+dnl @version 1.4
 dnl @author Braden McDaniel <braden@endoframe.com>
 dnl
 AC_DEFUN([AX_CHECK_GL],
@@ -96,9 +96,10 @@ else
       fi
       LIBS="${ax_try_lib} ${GL_LIBS} ${ax_save_LIBS}"
       #
-      # libGLU typically links with libstdc++ on POSIX platforms. However, setting the
-      # language to C++ means that test program source is named "conftest.cc"; and
-      # Microsoft cl doesn't know what to do with such a file.
+      # libGLU typically links with libstdc++ on POSIX platforms. However,
+      # setting the language to C++ means that test program source is named
+      # "conftest.cc"; and Microsoft cl doesn't know what to do with such a
+      # file.
       #
       if test "X$CXX" != "Xcl"; then
         AC_LANG_PUSH([C++])

@@ -10,7 +10,7 @@ dnl set to "yes".
 dnl
 dnl @copyright (C) 2003 Braden McDaniel
 dnl @license GNU GPL
-dnl @version $Id: ax_check_glut.m4,v 1.4 2003-07-25 23:43:20 braden Exp $
+dnl @version 1.4
 dnl @author Braden McDaniel <braden@endoframe.com>
 dnl
 AC_DEFUN([AX_CHECK_GLUT],
