@@ -675,7 +675,7 @@ namespace OpenVRML {
     private:
         // Noncopyable.
         NodeTraverser(const NodeTraverser &);
-        NodeTraverser operator=(const NodeTraverser &);
+        NodeTraverser & operator=(const NodeTraverser &);
 
         virtual void onEntering(Node & node);
         virtual void onLeaving(Node & node);
