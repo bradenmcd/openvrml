@@ -74,6 +74,10 @@ jscpucfg_SOURCES = jscpucfg.c
 lib_LTLIBRARIES = @LIBJS@
 noinst_LTLIBRARIES = @NOINST_LIBJS@
 EXTRA_LTLIBRARIES = libjs.la
+libjs_la_LDFLAGS = @RPATH_LDFLAG@ -version-info $(LIBRARY_VERSION)
+$(libjs_la_OBJECTS): jsautocfg.h
+jsautocfg.h: jscpucfg
+	./jscpucfg > jsautocfg.h
 
 JS_PRIVATE_HFILES = jsarena.h jsarray.h jsatom.h jsbool.h jsbit.h jsclist.h \
 jsconfig.h jscntxt.h jscpucfg.h jsdate.h jsdbgapi.h jsdtoa.h jsemit.h jsexn.h \
@@ -93,42 +97,24 @@ noinst_HEADERS = $(JS_PRIVATE_HFILES) $(JS_PUBLIC_HFILES)
 endif
 
 if JS_PRELINK_FDLIBM
-
 libjs_la_SOURCES = jsapi.c jsarena.c jsarray.c jsatom.c jsbool.c jscntxt.c \
 jsdate.c jsdbgapi.c jsdtoa.c jsemit.c jsexn.c jsfun.c jsgc.c jshash.c \
 jsinterp.c jslock.c jslog2.c jslong.c jsnum.c jsobj.c jsopcode.c jsparse.c \
 jsprf.c jsregexp.c jsscan.c jsscope.c jsscript.c jsstr.c jsutil.c jsxdrapi.c \
 prmjtime.c
-
-jsmath.o jsmath.lo: jsmath.c
+libjs_la_LIBADD = jsmathprelinked.lo
+jsmath.lo: jsmath.c
 	$(LTCOMPILE) -c $<
-
 jsmathprelinked.lo: jsmath.lo fdlibm/libfdm.la
 	$(LINK) $<
-
-libjs_la_LIBADD = jsmathprelinked.lo
-libjs_la_DEPENDENCIES = jsautocfg.h jsmathprelinked.lo
-
 else
-
 libjs_la_SOURCES = jsapi.c jsarena.c jsarray.c jsatom.c jsbool.c jscntxt.c \
 jsdate.c jsdbgapi.c jsdtoa.c jsemit.c jsexn.c jsfun.c jsgc.c jshash.c \
 jsinterp.c jslock.c jslog2.c jslong.c jsnum.c jsobj.c jsopcode.c jsparse.c \
 jsprf.c jsregexp.c jsscan.c jsscope.c jsscript.c jsstr.c jsutil.c jsxdrapi.c \
 prmjtime.c jsmath.c
-
 libjs_la_LIBADD = fdlibm/libfdm.la
-libjs_la_DEPENDENCIES = jsautocfg.h fdlibm/libfdm.la
-
 endif
 
-libjs_la_LDFLAGS = @RPATH_LDFLAG@ -version-info $(LIBRARY_VERSION)
-
 EXTRA_DIST = jsmath.c
-
 CLEANFILES = jsautocfg.h
-
-$(libjs_la_OBJECTS): jsautocfg.h
-
-jsautocfg.h: jscpucfg
-	./jscpucfg > jsautocfg.h

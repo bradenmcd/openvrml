@@ -8,8 +8,6 @@
 #include <vrml97/ScriptObject.h>
 #include <vrml97/System.h>
 #include <vrml97/Viewer.h>
-#include <vrml97/Vrml97Parser.hpp>
-#include <vrml97/Vrml97ParserTokenTypes.hpp>
 #include <vrml97/VrmlAABox.h>
 #include <vrml97/VrmlBSphere.h>
 #include <vrml97/VrmlBVolume.h>
@@ -102,6 +100,5 @@
 #include <vrml97/VrmlSFVec3f.h>
 #include <vrml97/VrmlScene.h>
 #include <vrml97/doc2.hpp>
-#include <vrml97/vrml97scanner.hpp>
 
 #endif

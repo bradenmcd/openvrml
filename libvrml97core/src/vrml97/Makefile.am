@@ -154,8 +154,6 @@ vrml97include_HEADERS = \
 	ScriptObject.h \
 	System.h \
 	Viewer.h \
-        Vrml97Parser.hpp \
-        Vrml97ParserTokenTypes.hpp \
 	VrmlAABox.h \
 	VrmlBVolume.h \
 	VrmlBSphere.h \
@@ -247,10 +245,10 @@ vrml97include_HEADERS = \
         VrmlSFVec2f.h \
         VrmlSFVec3f.h \
         VrmlScene.h \
-	doc2.hpp \
-        vrml97scanner.hpp
+	doc2.hpp
 
-noinst_HEADERS = MathUtils.h gifread.h jpgread.h mpgread.h pngread.h sound.h
+noinst_HEADERS = MathUtils.h Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp \
+gifread.h jpgread.h mpgread.h pngread.h sound.h vrml97scanner.hpp
 
 EXTRA_DIST = vrml97scanner.cpp Vrml97TokenTypes.txt Vrml97Parser.cpp \
 Vrml97Parser.hpp Vrml97ParserTokenTypes.txt Vrml97Parser.g ScriptJS.cpp

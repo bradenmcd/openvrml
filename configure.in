@@ -21,6 +21,7 @@ AC_SUBST(NOINSTALL_LIBANTLR)
 AC_SUBST(LIBANTLR_RPATH_FLAG)
 ANTLR_INCLUDEDIR=/vrml97/antlr
 AC_SUBST(ANTLR_INCLUDEDIR)
+AM_CONDITIONAL(ANTLR_INSTALL_HFILES, test "apple" = "orange")
 
 dnl
 dnl Variables to build libjs as a convenience library
