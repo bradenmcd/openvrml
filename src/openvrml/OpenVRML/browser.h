@@ -212,21 +212,21 @@ namespace OpenVRML {
     class OPENVRML_SCOPE BadURI : public std::runtime_error {
     public:
         BadURI(const std::string & message);
-        virtual ~BadURI();
+        virtual ~BadURI() throw ();
     };
     
     
     class OPENVRML_SCOPE InvalidURI : public BadURI {
     public:
         InvalidURI();
-        virtual ~InvalidURI();
+        virtual ~InvalidURI() throw ();
     };
     
     
     class OPENVRML_SCOPE UnreachableURI : public BadURI {
     public:
         UnreachableURI();
-        virtual ~UnreachableURI();
+        virtual ~UnreachableURI() throw ();
     };
     
     

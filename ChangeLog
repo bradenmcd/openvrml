@@ -3,6 +3,10 @@
         * src/openvrml/OpenVRML/field.cpp: Workarounds for a bug in
           gcc 3.1.
 
+        * src/openvrml/OpenVRML/browser.h,
+          src/openvrml/OpenVRML/browser.cpp: BadURI exception destructor
+          must not throw.
+
 2002-08-04  Braden McDaniel  <braden@endoframe.com>
 
         * Refactored VrmlScene into Browser and Scene; Node now contains

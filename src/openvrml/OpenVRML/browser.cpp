@@ -1820,7 +1820,7 @@ BadURI::BadURI(const std::string & message): std::runtime_error(message) {}
 /**
  * @brief Destructor.
  */
-BadURI::~BadURI() {}
+BadURI::~BadURI() throw () {}
 
 
 /**
@@ -1837,7 +1837,7 @@ InvalidURI::InvalidURI(): BadURI("Invalid URI.") {}
 /**
  * @brief Destructor.
  */
-InvalidURI::~InvalidURI() {}
+InvalidURI::~InvalidURI() throw () {}
 
 
 /**
@@ -1854,7 +1854,7 @@ UnreachableURI::UnreachableURI(): BadURI("Unreachable URI.") {}
 /**
  * @brief Destructor.
  */
-UnreachableURI::~UnreachableURI() {}
+UnreachableURI::~UnreachableURI() throw () {}
 
 
 /**
