@@ -178,6 +178,7 @@ void VrmlNodeScript::addToScene(VrmlScene *s, const char *relUrl)
 
   d_relativeUrl.set(relUrl);
   if (d_scene == s) return;
+  d_scene = s;
   initialize( theSystem->time() );
   if ((d_scene = s) != 0) d_scene->addScript(this);
 }

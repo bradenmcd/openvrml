@@ -552,10 +552,15 @@ node_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
       if (fieldVal)
 	{
 	  *vp = script->vrmlFieldToJSVal(fieldVal->fieldType(), fieldVal, false);
-	  return JS_TRUE;
+	  //return JS_TRUE;
 	}
 
-      theSystem->error("unrecognized exposedField/eventOut: node.getProperty(%s)\n", JS_GetStringBytes(str));
+      // If JS_FALSE is returned, apparently the parent object is not searched for
+      // the property, so stuff like toString() will fail... don't know how to
+      // distinguish between a valid prop and an invalid eventOut...
+      // theSystem->error("unrecognized exposedField/eventOut:node.getProperty(%s)\n",
+      //                 JS_GetStringBytes(str));
+      return JS_TRUE;
     }
 
   return JS_FALSE;
