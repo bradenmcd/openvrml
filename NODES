@@ -1,4 +1,4 @@
-LibVRML97 0.8
+LibVRML97 0.8.3
 
 Details of the implemented VRML97 nodes, using the OpenGL renderer.
 All valid VRML97 files will read in.
@@ -48,7 +48,7 @@ Script - javascript: and vrmlscript: protocols only, SFImage not supported.
 Shape - Completed.
 Sound - Completed (see AudioClip).
 Sphere - Completed.
-SphereSensor - Not implemented.
+SphereSensor - Mostly working.
 SpotLight - Scoping is wrong (illuminates all objects), cutoff is wrong.
 Switch - Completed.
 Text - Only available if you compile with -DHAVE_GLUT (even with non-GLUT viewer).
@@ -61,3 +61,4 @@ Transform - Completed.
 Viewpoint - Completed.
 VisibilitySensor - USE'd sensors behave oddly - SPEC?
 WorldInfo - Completed.
+
