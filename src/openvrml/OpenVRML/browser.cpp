@@ -212,7 +212,6 @@ namespace OpenVRML {
         virtual Vrml97Node::Anchor * toAnchor() const;
         virtual Vrml97Node::AudioClip * toAudioClip() const;
         virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
-        virtual Vrml97Node::Fog * toFog() const;
         virtual Vrml97Node::Group * toGroup() const;
         virtual Vrml97Node::AbstractLight * toLight() const;
         virtual Vrml97Node::MovieTexture * toMovieTexture() const;
@@ -431,18 +430,6 @@ InvalidVrml::~InvalidVrml() throw ()
  */
 
 /**
- * @var Browser::BindStack Browser::d_backgroundStack
- *
- * @brief The stack of bound Background nodes.
- */
-
-/**
- * @var Browser::BindStack Browser::d_fogStack
- *
- * @brief The stack of bound Fog nodes.
- */
-
-/**
  * @var Browser::BindStack Browser::d_navigationInfoStack
  *
  * @brief The stack of bound NavigationInfo nodes.
@@ -452,18 +439,6 @@ InvalidVrml::~InvalidVrml() throw ()
  * @var Browser::BindStack Browser::d_viewpointStack
  *
  * @brief The stack of bound Viewpoint nodes.
- */
-
-/**
- * @var std::list<Node *> Browser::d_backgrounds
- *
- * @brief A list of all the Background nodes in the browser.
- */
-
-/**
- * @var std::list<Node *> Browser::d_fogs
- *
- * @brief A list of all the Fog nodes in the browser.
  */
 
 /**
@@ -742,10 +717,8 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     //
     delete this->scene;
     this->scene = 0;
-    this->d_fogStack.clear();
     this->d_navigationInfoStack.clear();
     this->d_viewpointStack.clear();
-    assert(this->d_fogs.empty());
     assert(this->d_navigationInfos.empty());
     assert(this->d_viewpoints.empty());
     this->nodeClassMap.clear();
@@ -765,11 +738,6 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     //
     // Send initial bind events to bindable nodes.
     //
-    if (!this->d_fogs.empty()) {
-        assert(this->d_fogs.front());
-        this->d_fogs.front()->processEvent("set_bind", SFBool(true), timeNow);
-    }
-
     if (!this->d_navigationInfos.empty()) {
         assert(this->d_navigationInfos.front());
         this->d_navigationInfos.front()
@@ -1198,12 +1166,6 @@ void Browser::render(Viewer & viewer) {
     std::for_each(this->nodeClassMap.begin(), this->nodeClassMap.end(),
                   RenderNodeClass(viewer));
 
-    // Fog
-    Vrml97Node::Fog * f = bindableFogTop();
-    if (f) {
-        viewer.setFog(f->getColor(), f->getVisibilityRange(), f->getFogType().c_str());
-    }
-
     // Top level object
 
     viewer.beginObject(0);
@@ -1328,63 +1290,6 @@ void Browser::bindableRemove(BindStack & stack, const NodePtr & node) {
         stack.erase(pos);
         this->setModified();
     }
-}
-
-/**
- * @brief Add a Fog node to the list of Fog nodes for the browser.
- *
- * @param node a Fog node.
- *
- * @pre @p node is not in the list of Fog nodes for the browser.
- */
-void Browser::addFog(Vrml97Node::Fog & node) {
-    assert(std::find(this->d_fogs.begin(), this->d_fogs.end(), &node)
-            == this->d_fogs.end());
-    this->d_fogs.push_back(&node);
-}
-
-/**
- * @brief Remove a Fog node from the list of Fog nodes for the browser.
- *
- * @param node  a Fog node.
- *
- * @pre @p node is in the list of Fog nodes for the browser.
- */
-void Browser::removeFog(Vrml97Node::Fog & node) {
-    assert(!this->d_fogs.empty());
-    const std::list<Node *>::iterator end = this->d_fogs.end();
-    const std::list<Node *>::iterator pos =
-            std::find(this->d_fogs.begin(), end, &node);
-    assert(pos != end);
-    this->d_fogs.erase(pos);
-}
-
-/**
- * @brief Get the active node on the bound Fog stack.
- *
- * @return the active node on the bound Fog stack.
- */
-Vrml97Node::Fog * Browser::bindableFogTop() {
-    Node * const f = bindableTop(d_fogStack).get();
-    return f ? f->toFog() : 0;
-}
-
-/**
- * @brief Push a Fog node onto the bound Fog node stack.
- *
- * @param n a Fog node.
- */
-void Browser::bindablePush(Vrml97Node::Fog * n) {
-    bindablePush(d_fogStack, NodePtr(n));
-}
-
-/**
- * @brief Remove a Fog node from the bound Fog node stack.
- *
- * @param n a Fog node.
- */
-void Browser::bindableRemove(Vrml97Node::Fog * n) {
-    bindableRemove(d_fogStack, NodePtr(n));
 }
 
 /**
@@ -3293,10 +3198,6 @@ Vrml97Node::AudioClip * ProtoNode::toAudioClip() const {
 
 Vrml97Node::CylinderSensor * ProtoNode::toCylinderSensor() const {
     return this->implNodes.getElement(0)->toCylinderSensor();
-}
-
-Vrml97Node::Fog * ProtoNode::toFog() const {
-    return this->implNodes.getElement(0)->toFog();
 }
 
 Vrml97Node::Group * ProtoNode::toGroup() const {

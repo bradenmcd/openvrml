@@ -3,6 +3,15 @@
         * src/openvrml/OpenVRML/script.cpp: Use
           JS_ConstructObjectWithArguments when doing so.
 
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/browser.h,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h: Refactored bound Fog node
+          stack to FogClass.
+          
+
 2002-10-15  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.cpp,

@@ -4860,12 +4860,135 @@ void Extrusion::processSet_spine(const FieldValue & mfvec3f,
  *
  * @param browser the Browser associated with this class object.
  */
-FogClass::FogClass(Browser & browser): NodeClass(browser) {}
+FogClass::FogClass(Browser & browser):
+    NodeClass(browser),
+    first(0)
+{}
 
 /**
  * @brief Destructor.
  */
 FogClass::~FogClass() throw () {}
+
+/**
+ * @brief Set the first Background node in the world.
+ *
+ * The first Background node in the world is used as the initial background.
+ * This method is used by Fog::initializeImpl.
+ *
+ * @param background    a Background node.
+ */
+void FogClass::setFirst(Fog & fog) throw ()
+{
+    this->first = &fog;
+}
+
+/**
+ * @brief Check to see if the first node has been set.
+ *
+ * This method is used by Fog::initializeImpl.
+ *
+ * @return @c true if the first node has already been set; @c false otherwise.
+ */
+bool FogClass::hasFirst() const throw ()
+{
+    return this->first;
+}
+
+/**
+ * @brief Push a Fog on the top of the bound node stack.
+ *
+ * @param fog   the node to bind.
+ */
+void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
+{
+    const NodePtr node(&fog);
+    
+    //
+    // If the node is already the active node, do nothing.
+    //
+    if (!this->boundNodes.empty() && node == this->boundNodes.back()) {
+        return;
+    }
+    
+    //
+    // If the node is already on the stack, remove it.
+    //
+    const std::vector<NodePtr>::iterator pos =
+            std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
+    if (pos != this->boundNodes.end()) { this->boundNodes.erase(pos); }
+    
+    //
+    // Send FALSE from the currently active node's isBound.
+    //
+    if (!this->boundNodes.empty()) {
+        Fog & current = dynamic_cast<Fog &>(*this->boundNodes.back());
+        current.bound.set(false);
+        current.emitEvent("isBound", current.bound, timestamp);
+    }
+    
+    //
+    // Push the node to the top of the stack, and have it send isBound TRUE.
+    //
+    this->boundNodes.push_back(node);
+    fog.bound.set(true);
+    fog.emitEvent("isBound", fog.bound, timestamp);
+}
+
+/**
+ * @brief Remove a Fog from the bound node stack.
+ *
+ * @param fog   the node to unbind.
+ */
+void FogClass::unbind(Fog & fog, const double timestamp) throw ()
+{
+    const NodePtr node(&fog);
+    
+    const std::vector<NodePtr>::iterator pos =
+            std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
+    if (pos != this->boundNodes.end()) {
+        fog.bound.set(false);
+        fog.emitEvent("isBound", fog.bound, timestamp);
+
+        if (pos == this->boundNodes.end() - 1
+                && this->boundNodes.size() > 1) {
+            Fog & newActive =
+                    dynamic_cast<Fog &>(**(this->boundNodes.end() - 2));
+            newActive.bound.set(true);
+            newActive.emitEvent("isBound", newActive.bound, timestamp);
+        }
+        this->boundNodes.erase(pos);
+    }
+}
+
+/**
+ * @brief NodeClass-specific initialization.
+ *
+ * @param timestamp the current time.
+ */
+void FogClass::initialize(const double timestamp) throw ()
+{
+    if (this->first) {
+        this->first->processEvent("set_bind", SFBool(true), timestamp);
+    }
+}
+
+/**
+ * @brief NodeClass-specific rendering.
+ *
+ * Render the active Fog node.
+ *
+ * @param viewer    a Viewer.
+ */
+void FogClass::render(Viewer & viewer) throw ()
+{
+    if (!this->boundNodes.empty()) {
+        Fog & fog = dynamic_cast<Fog &>(*this->boundNodes.back());
+        viewer.setFog(fog.color.get(),
+                      fog.visibilityRange.get(),
+                      fog.fogType.get().c_str());
+    }
+}
 
 /**
  * @brief Create a NodeType.
@@ -4958,20 +5081,18 @@ Fog::Fog(const NodeType & nodeType,
 /**
  * @brief Destructor.
  */
-Fog::~Fog() throw () {
-    if (this->getScene()) { this->getScene()->browser.removeFog(*this); }
-}
-
-Fog * Fog::toFog() const { return const_cast<Fog *>(this); }
+Fog::~Fog() throw ()
+{}
 
 /**
  * @brief Initialize.
  *
  * @param timestamp the current time.
  */
-void Fog::initializeImpl(const double timestamp) throw () {
-    assert(this->getScene());
-    this->getScene()->browser.addFog(*this);
+void Fog::initializeImpl(const double timestamp) throw ()
+{
+    FogClass & nodeClass = static_cast<FogClass &>(this->nodeType.nodeClass);
+    if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
 }
 
 /**
@@ -4984,31 +5105,14 @@ void Fog::initializeImpl(const double timestamp) throw () {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void Fog::processSet_bind(const FieldValue & sfbool, const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    Fog * current = this->nodeType.nodeClass.browser.bindableFogTop();
-    const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
-
-    if (b.get()) {        // set_bind TRUE
-        if (this != current) {
-            if (current) {
-                current->bound.set(false);
-                current->emitEvent("isBound", current->bound, timestamp);
-            }
-            this->nodeType.nodeClass.browser.bindablePush(this);
-            this->bound.set(true);
-            this->emitEvent("isBound", this->bound, timestamp);
-        }
-    } else {            // set_bind FALSE
-        this->nodeType.nodeClass.browser.bindableRemove(this);
-        if (this == current) {
-            this->bound.set(false);
-            this->emitEvent("isBound", this->bound, timestamp);
-            current = this->nodeType.nodeClass.browser.bindableFogTop();
-            if (current) {
-                current->bound.set(true);
-                current->emitEvent("isBound", current->bound, timestamp);
-            }
-        }
+        throw (std::bad_cast, std::bad_alloc)
+{
+    const SFBool & value = dynamic_cast<const SFBool &>(sfbool);
+    FogClass & nodeClass = static_cast<FogClass &>(this->nodeType.nodeClass);
+    if (value.get()) {
+        nodeClass.bind(*this, timestamp);
+    } else {
+        nodeClass.unbind(*this, timestamp);
     }
 }
 

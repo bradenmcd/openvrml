@@ -1133,8 +1133,6 @@ Vrml97Node::Anchor * Node::toAnchor() const { return 0; }
 
 Vrml97Node::AudioClip * Node::toAudioClip() const { return 0; }
 
-Vrml97Node::Fog * Node::toFog() const { return 0; }
-
 Vrml97Node::Group * Node::toGroup() const { return 0; }
 
 Vrml97Node::AbstractLight * Node::toLight() const { return 0; }

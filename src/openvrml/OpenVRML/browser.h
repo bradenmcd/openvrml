@@ -62,10 +62,8 @@ namespace OpenVRML {
         ScriptNodeClass scriptNodeClass;
         Scene * scene;
         typedef std::list<NodePtr> BindStack;
-        BindStack d_fogStack;
         BindStack d_navigationInfoStack;
         BindStack d_viewpointStack;
-        std::list<Node *> d_fogs;
         std::list<Node *> d_navigationInfos;
         std::list<Node *> d_viewpoints;
         std::list<Node *> d_scopedLights;
@@ -143,12 +141,6 @@ namespace OpenVRML {
 
         void setDelta(double d);
         double getDelta() const;
-
-        void addFog(Vrml97Node::Fog &);
-        void removeFog(Vrml97Node::Fog &);
-        Vrml97Node::Fog *bindableFogTop();
-        void bindablePush( Vrml97Node::Fog * );
-        void bindableRemove( Vrml97Node::Fog * );
 
         void addNavigationInfo(Vrml97Node::NavigationInfo &);
         void removeNavigationInfo(Vrml97Node::NavigationInfo &);

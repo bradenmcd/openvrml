@@ -168,7 +168,6 @@ namespace OpenVRML {
         class Anchor;
         class AudioClip;
         class CylinderSensor;
-        class Fog;
         class Group;
         class AbstractLight;
         class MovieTexture;
@@ -282,7 +281,6 @@ namespace OpenVRML {
         virtual Vrml97Node::Anchor * toAnchor() const;
         virtual Vrml97Node::AudioClip * toAudioClip() const;
         virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
-        virtual Vrml97Node::Fog * toFog() const;
         virtual Vrml97Node::Group * toGroup() const;
         virtual Vrml97Node::AbstractLight * toLight() const;
         virtual Vrml97Node::MovieTexture * toMovieTexture() const;

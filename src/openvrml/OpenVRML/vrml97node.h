@@ -1056,11 +1056,23 @@ namespace OpenVRML {
         };
 
 
+        class Fog;
+
         class OPENVRML_SCOPE FogClass : public NodeClass {
+            Fog * first;
+            std::vector<NodePtr> boundNodes;
+
         public:
             explicit FogClass(Browser & browser);
             virtual ~FogClass() throw ();
 
+            void setFirst(Fog & fog) throw ();
+            bool hasFirst() const throw ();
+            void bind(Fog & fog, double timestamp) throw (std::bad_alloc);
+            void unbind(Fog & fog, double timestamp) throw ();
+
+            virtual void initialize(double timestamp) throw ();
+            virtual void render(Viewer & viewer) throw ();
             virtual const NodeTypePtr createType(const std::string & id,
                                                  const NodeInterfaceSet &)
                     throw (UnsupportedInterface, std::bad_alloc);
@@ -1079,12 +1091,6 @@ namespace OpenVRML {
                 const ScopePtr & scope);
             virtual ~Fog() throw ();
 
-            virtual Fog * toFog() const;
-
-            SFColor::ConstArrayReference getColor() const { return this->color.get(); }
-            const std::string & getFogType() const { return this->fogType.get(); }
-            float getVisibilityRange() const { return this->visibilityRange.get(); }
-        
         private:
             virtual void initializeImpl(double timestamp) throw ();
             
