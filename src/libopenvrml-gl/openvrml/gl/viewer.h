@@ -281,11 +281,10 @@ namespace openvrml {
 
             virtual void set_sensitive(node * object);
 
-            virtual texture_object_t
-            insert_texture(size_t w, size_t h, size_t nc,
-                           bool repeat_s, bool repeat_t,
-                           const unsigned char *pixels,
-                           bool retainHint = false);
+            virtual texture_object_t insert_texture(const image & img,
+                                                    bool repeat_s,
+                                                    bool repeat_t,
+                                                    bool retainHint = false);
 
             // Reference/remove a texture object
             virtual void insert_texture_reference(texture_object_t ref,

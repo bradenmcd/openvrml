@@ -3317,22 +3317,16 @@ void viewer::set_sensitive(node * object)
 /**
  * @brief Create a texture object.
  *
- * @param w             width.
- * @param h             height.
- * @param nc            number of components.
+ * @param img           image.
  * @param repeat_s      repeat in the S direction.
  * @param repeat_t      repeat in the T direction.
- * @param pixels        pixel data.
  * @param retainHint    whether the texture is likely to be reused.
  *
  * @return a handle to the inserted texture.
  */
-viewer::texture_object_t viewer::insert_texture(size_t w,
-                                                size_t h,
-                                                const size_t nc,
+viewer::texture_object_t viewer::insert_texture(const image & img,
                                                 bool repeat_s,
                                                 bool repeat_t,
-                                                const unsigned char * pixels,
                                                 bool retainHint)
 {
     using std::vector;
@@ -3344,42 +3338,48 @@ viewer::texture_object_t viewer::insert_texture(size_t w,
         GL_RGBA             // 4 components
     };
 
+    if (img.array().empty()) { return 0; }
+
+    GLsizei width = img.x();
+    GLsizei height = img.y();
+    const GLubyte * pixels = &img.array()[0];
+
     //
     // Rescale the texture if necessary.
     //
     vector<GLubyte> rescaled_pixels;
-    const size_t size[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-    const size_t sizes = sizeof size / sizeof(size_t);
+    const GLsizei size[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
+    const size_t sizes = sizeof size / sizeof(GLsizei);
     size_t i, j;
-    for (i = 0; i < sizes; ++i) { if (w < size[i]) { break; } }
-    for (j = 0; j < sizes; ++j) { if (h < size[j]) { break; } }
+    for (i = 0; i < sizes; ++i) { if (width < size[i]) { break; } }
+    for (j = 0; j < sizes; ++j) { if (height < size[j]) { break; } }
 
     if (i > 0 && j > 0) {
-        if (w != size[i - 1] || h != size[j - 1]) {
-            const GLsizei new_w = size[i - 1];
-            const GLsizei new_h = size[j - 1];
+        if (width != size[i - 1] || height != size[j - 1]) {
+            const GLsizei new_width = size[i - 1];
+            const GLsizei new_height = size[j - 1];
 
             //
             // Throws std::bad_alloc.
             //
-            rescaled_pixels.resize(nc * new_w * new_h);
+            rescaled_pixels.resize(img.comp() * new_width * new_height);
 
             glPixelStorei(GL_PACK_ALIGNMENT, 1);
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-            const GLint result = gluScaleImage(fmt[nc - 1],
-                                               GLsizei(w),
-                                               GLsizei(h),
+            const GLint result = gluScaleImage(fmt[img.comp() - 1],
+                                               width,
+                                               height,
                                                GL_UNSIGNED_BYTE,
-                                               pixels,
-                                               new_w,
-                                               new_h,
+                                               &img.array()[0],
+                                               new_width,
+                                               new_height,
                                                GL_UNSIGNED_BYTE,
                                                &rescaled_pixels[0]);
             if (result == GL_NO_ERROR) {
                 assert(!rescaled_pixels.empty());
                 pixels = &rescaled_pixels[0];
-                w = new_w;
-                h = new_h;
+                width = new_width;
+                height = new_height;
             }
         }
     }
@@ -3392,7 +3392,9 @@ viewer::texture_object_t viewer::insert_texture(size_t w,
     if (this->select_mode) { return 0; }
 
     // Enable blending if needed
-    if (this->blend && (nc == 2 || nc == 4)) { glEnable(GL_BLEND); }
+    if (this->blend && (img.comp() == 2 || img.comp() == 4)) {
+        glEnable(GL_BLEND);
+    }
 
 #if USE_TEXTURE_DISPLAY_LISTS
     if (retainHint) { glGenTextures(1, &glid); }
@@ -3404,11 +3406,11 @@ viewer::texture_object_t viewer::insert_texture(size_t w,
 
     glTexImage2D(GL_TEXTURE_2D,
                  0,
-                 GLint(nc),
-                 GLsizei(w),
-                 GLsizei(h),
+                 img.comp(),
+                 width,
+                 height,
                  0,
-                 fmt[nc - 1],
+                 fmt[img.comp() - 1],
                  GL_UNSIGNED_BYTE,
                  pixels);
     OPENVRML_GL_PRINT_ERRORS_;

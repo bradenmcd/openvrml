@@ -1,3 +1,13 @@
+2003-11-22 Braden McDaniel  <braden@endoframe.com>
+
+	Modified "viewer::insert_texture" to accept an "image".
+
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/viewer.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+
 2003-11-21 Braden McDaniel  <braden@endoframe.com>
 
 	Replaced "w", "h", "components", and "pixels" members of

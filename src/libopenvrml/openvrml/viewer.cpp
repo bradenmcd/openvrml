@@ -442,16 +442,13 @@ viewer::~viewer() {}
  */
 
 /**
- * @fn viewer::texture_object_t viewer::insert_texture(size_t w, size_t h, size_t nc, bool repeat_s, bool repeat_t, const unsigned char * pixels, bool retainHint)
+ * @fn viewer::texture_object_t viewer::insert_texture(const image & img, bool repeat_s, bool repeat_t, bool retainHint)
  *
  * @brief Create a texture object.
  *
- * @param w             width.
- * @param h             height.
- * @param nc            number of components.
+ * @param img           image.
  * @param repeat_s      repeat in the S direction.
  * @param repeat_t      repeat in the T direction.
- * @param pixels        pixel data.
  * @param retainHint    whether the texture is likely to be reused.
  *
  * @return a handle to the inserted texture.

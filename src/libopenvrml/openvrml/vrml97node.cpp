@@ -7309,15 +7309,10 @@ viewer::texture_object_t
 image_texture_node::do_render_texture(viewer & v, rendering_context context)
 {
     this->update_texture();
-    return this->image_.array().empty()
-        ? 0
-        : v.insert_texture(this->image_.x(),
-                           this->image_.y(),
-                           this->image_.comp(),
-                           this->repeatS.value,
-                           this->repeatT.value,
-                           &this->image_.array()[0],
-                           true);
+    return v.insert_texture(this->image_,
+                            this->repeatS.value,
+                            this->repeatT.value,
+                            true);
 }
 
 void image_texture_node::update_texture()
@@ -9372,12 +9367,9 @@ movie_texture_node::do_render_texture(viewer & v, rendering_context context)
     if (!this->img_->pixels(this->frame)) {
         this->frame = -1;
     } else {
-        texture_object = v.insert_texture(this->image_.x(),
-                                          this->image_.y(),
-                                          this->image_.comp(),
+        texture_object = v.insert_texture(this->image_,
                                           this->repeatS.value,
                                           this->repeatT.value,
-                                          &this->image_.array()[0],
                                           !this->active.value);
     }
 
@@ -10650,15 +10642,10 @@ size_t pixel_texture_node::frames() const throw ()
 viewer::texture_object_t
 pixel_texture_node::do_render_texture(viewer & v, rendering_context context)
 {
-    return this->image_.value.array().empty()
-        ? 0
-        : v.insert_texture(this->image_.value.x(),
-                           this->image_.value.y(),
-                           this->image_.value.comp(),
-                           this->repeatS.value,
-                           this->repeatT.value,
-                           &this->image_.value.array()[0],
-                           true);
+    return v.insert_texture(this->image_.value,
+                            this->repeatS.value,
+                            this->repeatT.value,
+                            true);
 }
 
 /**
