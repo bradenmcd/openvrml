@@ -53,16 +53,8 @@ public:
   virtual void getPosition( float *x, float *y, float *z );
   virtual void getOrientation( float *orientation );
 
-  // S. K. Bose March. 02/2000
-  virtual bool IsBoxOutside(float *,float *);
-  virtual void getTransformMatrix(float [4][4] /*Matrix*/, 
-			    float * /*center*/,
-			    float * /*rotation*/,
-			    float * /*scale*/,
-			    float * /*scaleOrientation*/,
-			    float * /*translation*/);
 
-  // S. K. Bose March 02/2000
+  // get rid of this asap.
   virtual void getBillboardTransformMatrix(float [4][4], float *);
 
   virtual RenderMode getRenderMode();
@@ -70,6 +62,7 @@ public:
 
   //
   virtual void resetUserNavigation();
+  virtual void getUserNavigation(double M[4][4]);
 
   // Scope dirlights, open/close display lists
   virtual Object beginObject(const char *name, bool retain);
@@ -218,6 +211,9 @@ public:
   // The viewer knows the current viewpoint
   virtual void transformPoints(int nPoints, float *points);
 
+  virtual void drawBSphere(const VrmlBSphere& bs, int flag);
+
+
 
   //
   // Viewer callbacks (not for public consumption)
@@ -315,6 +311,7 @@ protected:
 
   // User interaction
   void step(float, float, float);
+  void rot(float x , float y, float z, float a);
 #ifndef macintosh
   void handleKey(int);
 #endif
@@ -367,7 +364,9 @@ protected:
   LightInfo d_lightInfo[MAX_LIGHTS];
 
   // View manipulation
-  float d_position[3], d_target[3];
+  float d_position[3];
+  float d_target[3];
+  float d_orientation[4];
 
   int d_beginx, d_beginy;
   float d_scale;
@@ -379,9 +378,12 @@ protected:
   float d_rotationMatrix[4][4];
 
   bool d_rotating, d_scaling, d_translating;
+  bool d_drawBSpheres;
+  bool d_cull;
 
   bool d_reportFPS;
-  double d_renderTime, d_renderTime1;
+  double d_renderTime;
+  double d_renderTime1;
 
 };
 
