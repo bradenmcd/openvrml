@@ -1526,11 +1526,13 @@ ViewerOpenGL::insertShellConvex( ShellData *s )
   float N[3];
   int i, nf = 0;			// Number of faces
 
-  for (i = 0; i<s->nfaces-1; ++i)
+  for (i = 0; i<s->nfaces; ++i)
     {
       if (i == 0 || s->faces[i] == -1)
 	{
 	  if (i > 0) glEnd();
+	  if (i == s->nfaces-1) break;
+
 	  glBegin(GL_POLYGON);
 
 	  // Per-face attributes
@@ -1597,7 +1599,9 @@ ViewerOpenGL::insertShellConvex( ShellData *s )
 	}
     }
 
-  glEnd();
+  // Watch out for no terminating -1 in face list
+  if (i > 1 && s->faces[i-1] >= 0) glEnd();
+
 }
 
 
@@ -1688,7 +1692,7 @@ ViewerOpenGL::insertShellTess(ShellData *s)
 		   (TessCB) glEnd );
 
   int i;
-  for (i = 0; i<s->nfaces-1; ++i)
+  for (i = 0; i<s->nfaces; ++i)
     {
       if (i == 0 || s->faces[i] == -1)
 	{
@@ -1698,7 +1702,7 @@ ViewerOpenGL::insertShellTess(ShellData *s)
 	      gluTessEndPolygon( d_tess );
 	      ++ s->nf;
 	    }
-
+	  if (i == s->nfaces-1) break;
 	  gluTessBeginPolygon( d_tess, s );
 	  gluTessBeginContour( d_tess );
 	  s->i = i;
@@ -1714,8 +1718,12 @@ ViewerOpenGL::insertShellTess(ShellData *s)
 	}
     }
 
-  gluTessEndContour( d_tess );
-  gluTessEndPolygon( d_tess );
+  // Watch out for no terminating -1 in face list
+  if (i > 1 && s->faces[i-1] >= 0)
+    {
+      gluTessEndContour( d_tess );
+      gluTessEndPolygon( d_tess );
+    }
 }
 
 #endif // GLU_VERSION_1_2
