@@ -49,7 +49,7 @@ namespace OpenVRML {
 
     void axis_aligned_bbox(float M[4][4], float *min, float *max);
     bool InvertMatrix3x3of4x4(const float In[16], float Out[9]);
-    void quat_to_axis(float quat[4], float axisAngle[4]);
+    void quat_to_axis(const float quat[4], float axisAngle[4]);
 }
 
 #endif

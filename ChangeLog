@@ -8,6 +8,10 @@
           src/openvrml/OpenVRML/vrml97node.cpp: Removed unnecessary
           methods from Image.
 
+        * src/openvrml/OpenVRML/MathUtils.cpp,
+          src/openvrml/OpenVRML/MathUtils.h: Made quat_to_axis const-
+          correct; normalize axis vector.
+
 2002-10-07  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,
