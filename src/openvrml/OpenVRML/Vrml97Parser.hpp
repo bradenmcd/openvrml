@@ -2,13 +2,15 @@
 #define INC_Vrml97Parser_hpp_
 
 #include "antlr/config.hpp"
-/* $ANTLR 2.7.0: "Vrml97Parser.g" -> "Vrml97Parser.hpp"$ */
+/* $ANTLR 2.7.1: "Vrml97Parser.g" -> "Vrml97Parser.hpp"$ */
 #include "antlr/TokenStream.hpp"
 #include "antlr/TokenBuffer.hpp"
 #include "Vrml97ParserTokenTypes.hpp"
 #include "antlr/LLkParser.hpp"
 
+#line 21 "Vrml97Parser.g"
 
+# include <memory>
 # include "field.h"
 # include "VrmlNodePtr.h"
 class VrmlNamespace;
@@ -19,13 +21,16 @@ class VrmlMFTime;
 class VrmlMFNode;
 class Doc2;
 
+#line 25 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
+#line 134 "Vrml97Parser.g"
 
     public:
         enum NodeInterfaceType {
             INVALID_NODE_INTERFACE_TYPE, EVENTIN, EVENTOUT, FIELD, EXPOSEDFIELD
         };
+#line 29 "Vrml97Parser.hpp"
 protected:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);
 public:

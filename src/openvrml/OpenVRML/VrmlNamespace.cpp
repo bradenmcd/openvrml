@@ -556,7 +556,8 @@ namespace {
         
         virtual void visit(VrmlNodeProto & node) {
             const VrmlNodePtr clonedNode(new VrmlNodeProto(node));
-            clonedNode->addToScene(node.scene(), clonedNode->nodeType().url());
+            clonedNode->addToScene(node.scene(),
+                                   clonedNode->nodeType().getActualUrl());
             this->rootNodeStack.push(clonedNode);
         }
         

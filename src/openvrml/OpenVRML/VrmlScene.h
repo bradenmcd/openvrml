@@ -62,7 +62,8 @@ public:
   static VrmlMFNode * readFunction(LoadCB cb, Doc *url, VrmlNamespace *ns);
 #endif
 
-  static VrmlNodeType * readPROTO(VrmlMFString * url, Doc2 const * relative = 0);
+  static VrmlNodeType * readPROTO(const VrmlMFString & url,
+                                  const Doc2 * relative = 0);
 
   //
   VrmlScene( const char *url = 0, const char *localCopy = 0);

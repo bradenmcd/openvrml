@@ -490,8 +490,8 @@ VrmlMFNode * VrmlScene::readFunction(LoadCB cb, Doc2 * url, VrmlNamespace * ns)
 // This should read only PROTOs and return when the first/specified PROTO
 // is read...
 
-VrmlNodeType * VrmlScene::readPROTO(VrmlMFString * urls, Doc2 const * relative)
-{
+VrmlNodeType * VrmlScene::readPROTO(const VrmlMFString & urls,
+                                    const Doc2 * relative) {
     // This is a problem. The nodeType of the EXTERNPROTO has a namespace
     // that refers back to this namespace (protos), which will be invalid
     // after we exit this function. I guess it needs to be allocated and
@@ -502,10 +502,10 @@ VrmlNodeType * VrmlScene::readPROTO(VrmlMFString * urls, Doc2 const * relative)
     VrmlNodeType * def = 0;
 //    int i, n = urls->size();
     
-    for (size_t i(0); i < urls->getLength(); ++i) {
+    for (size_t i(0); i < urls.getLength(); ++i) {
         theSystem->inform("Trying to read EXTERNPROTO from url '%s'\n",
-                          urls->get(i));
-        urlDoc.seturl( urls->get(i), relative );
+                          urls.get(i));
+        urlDoc.seturl(urls.get(i), relative);
         VrmlMFNode * kids = VrmlScene::readWrl(&urlDoc, protos);
         delete kids;
         
@@ -520,9 +520,10 @@ VrmlNodeType * VrmlScene::readPROTO(VrmlMFString * urls, Doc2 const * relative)
         if (def) {
             def->setActualUrl( urlDoc.url() );
             break;
-	} else if ((i < (urls->getLength() - 1)) && strncmp(urls->get(i),"urn:",4)) {
+	} else if ((i < (urls.getLength() - 1))
+                && strncmp(urls.get(i),"urn:",4)) {
             theSystem->warn("Couldn't read EXTERNPROTO url '%s': %s\n",
-                            urls->get(i), strerror( errno));
+                            urls.get(i), strerror( errno));
         }
     }
     

@@ -21,11 +21,6 @@
 #ifndef VRMLNODETYPE_H
 #define VRMLNODETYPE_H
 
-//
-// The VrmlNodeType class is responsible for storing information about node
-// or prototype types.
-//
-
 #include <list>
 
 #include "VrmlNodePtr.h"
@@ -33,121 +28,96 @@
 
 class Doc2;
 class VrmlNamespace;
-class VrmlNode;
 class VrmlScene;
 
 
 class VrmlNodeType {
 public:
-  // Constructor.  Takes name of new type (e.g. "Transform" or "Box")
-  // Copies the string given as name.
-  VrmlNodeType(const char *nm,
-	       VrmlNode* (*creator)(VrmlScene *scene) = 0);
-
-  // Deallocate storage for name and PROTO implementations
-  ~VrmlNodeType();
-
-  VrmlNodeType *reference() { ++d_refCount; return this; }
-  void dereference() { if (--d_refCount==0) delete this; }
-
-  // Create a node of this type in the specified scene
-  VrmlNode *newNode( VrmlScene* s = 0 ) const;
-
-  // Set/get scope of this type (namespace is NULL for builtins).
-  VrmlNamespace *scope() { return d_namespace; }
-  void setScope(VrmlNamespace &);
-
-  // Routines for adding/getting eventIns/Outs/fields to this type
-  void addEventIn(const char *name, VrmlField::VrmlFieldType type);
-  void addEventOut(const char *name, VrmlField::VrmlFieldType type);
-  void addField(const char *name, VrmlField::VrmlFieldType type,
-		VrmlField const * defaultVal = 0);
-  void addExposedField(const char *name, VrmlField::VrmlFieldType type,
-		       VrmlField const * defaultVal = 0);
-
-  void setFieldDefault(const char *name, VrmlField const * value);
-
-  VrmlField::VrmlFieldType hasEventIn(const char *name) const;
-  VrmlField::VrmlFieldType hasEventOut(const char *name) const;
-  VrmlField::VrmlFieldType hasField(const char *name) const;
-  VrmlField::VrmlFieldType hasExposedField(const char *name) const;
-  VrmlField::VrmlFieldType hasInterface(char const *) const;
-
-  VrmlField *fieldDefault(const char *name) const;
-
-  // Set the URL to retrieve an EXTERNPROTO implementation from.
-  void setUrl(VrmlMFString * url, Doc2 const * relative = 0);
-
-  void setActualUrl(const char *url);
-
-  // Retrieve the actual URL the PROTO was retrieved from.
-  const char *url() { return d_actualUrl ? d_actualUrl->get() : 0; }
-
-  // Add a node to a PROTO implementation
-  void addNode(VrmlNode & implNode);
-  
-  // Add an IS linkage to one of the PROTO interface fields/events.
-  void addIS(const char *isFieldName,
-	     VrmlNode & implNode,
-	     const char *implFieldName);
-
-  const char *getName() const { return d_name; }
-
-  const VrmlMFNode & getImplementationNodes();
-
-  const VrmlNodePtr firstNode() const;
-
-  struct NodeFieldRec {
-    VrmlNodePtr node;
-    char *fieldName;
-  };
-
-  typedef std::list<NodeFieldRec*> ISMap;
-
-  struct ProtoField {
-    char *name;
-    VrmlField::VrmlFieldType type;
-    VrmlField *defaultValue;
-    ISMap thisIS;
-  };
-
-  typedef std::list<ProtoField*> FieldList;
-
-  ISMap *getFieldISMap( const char *fieldName );
-
-  FieldList &eventIns() { return d_eventIns; }
-  FieldList &eventOuts() { return d_eventOuts; }
-
+    struct NodeFieldRec {
+        VrmlNodePtr node;
+        char * fieldName;
+    };
+    typedef std::list<NodeFieldRec *> ISMap;
+    struct ProtoField {
+        char * name;
+        VrmlField::VrmlFieldType type;
+        VrmlField * defaultValue;
+        ISMap thisIS;
+    };
+    typedef std::list<ProtoField *> FieldList;
 
 private:
+    int d_refCount;
+    char * d_name;
+    VrmlNamespace * d_namespace;
+    const VrmlMFString * d_url; // Where the EXTERNPROTO could be.
+    VrmlSFString * d_actualUrl;	// The URL actually used.
+    Doc2 *d_relative;
+    VrmlMFNode implNodes;
+    // Pointer to function to create instances
+    VrmlNode* (*d_creator)( VrmlScene* );	
+    // Fields defined for this node type
+    FieldList d_eventIns;
+    FieldList d_eventOuts;
+    FieldList d_fields;
+    bool d_fieldsInitialized;
 
-  // Grab the implementation of an EXTERNPROTO
-  void fetchImplementation();
+public:
+    VrmlNodeType(const char *nm,
+	         VrmlNode* (*creator)(VrmlScene *scene) = 0);
+    ~VrmlNodeType();
 
-  void add(FieldList &, const char *, VrmlField::VrmlFieldType);
-  VrmlField::VrmlFieldType has(const FieldList &, const char *) const;
+    VrmlNodeType * reference();
+    void dereference();
+    VrmlNode * newNode(VrmlScene * scene = 0) const;
 
-  int d_refCount;
+    VrmlNamespace * getScope() const;
+    void setScope(VrmlNamespace & scope);
 
-  char *d_name;
+    // Routines for adding/getting eventIns/Outs/fields to this type
+    void addEventIn(const char *name, VrmlField::VrmlFieldType type);
+    void addEventOut(const char *name, VrmlField::VrmlFieldType type);
+    void addField(const char *name, VrmlField::VrmlFieldType type,
+		  VrmlField const * defaultVal = 0);
+    void addExposedField(const char *name, VrmlField::VrmlFieldType type,
+		         VrmlField const * defaultVal = 0);
 
-  VrmlNamespace *d_namespace;
+    void setFieldDefault(const char *name, VrmlField const * value);
 
-  VrmlMFString *d_url;		// Where the EXTERNPROTO could be.
-  VrmlSFString *d_actualUrl;	// The URL actually used.
-  Doc2 *d_relative;
+    VrmlField::VrmlFieldType hasEventIn(const char *name) const;
+    VrmlField::VrmlFieldType hasEventOut(const char *name) const;
+    VrmlField::VrmlFieldType hasField(const char *name) const;
+    VrmlField::VrmlFieldType hasExposedField(const char *name) const;
+    VrmlField::VrmlFieldType hasInterface(char const *) const;
 
-  VrmlMFNode implNodes;
+    VrmlField *fieldDefault(const char *name) const;
 
-  // Pointer to function to create instances
-  VrmlNode* (*d_creator)( VrmlScene* );	
+    void setUrl(const VrmlMFString & url, const Doc2 * relative = 0);
+    void setActualUrl(const char *url);
+    const char * getActualUrl() const;
 
-  // Fields defined for this node type
-  FieldList d_eventIns;
-  FieldList d_eventOuts;
-  FieldList d_fields;
+    // Add a node to a PROTO implementation
+    void addNode(VrmlNode & implNode);
 
-  bool d_fieldsInitialized;
+    // Add an IS linkage to one of the PROTO interface fields/events.
+    void addIS(const char *isFieldName,
+	       VrmlNode & implNode,
+	       const char *implFieldName);
 
+    const char *getName() const { return d_name; }
+
+    const VrmlMFNode & getImplementationNodes();
+
+    const VrmlNodePtr firstNode() const;
+
+    ISMap *getFieldISMap( const char *fieldName );
+
+    FieldList &eventIns() { return d_eventIns; }
+    FieldList &eventOuts() { return d_eventOuts; }
+
+private:
+    void fetchImplementation();
+    VrmlField::VrmlFieldType has(const FieldList &, const char *) const;
 };
+
 #endif // VRMLNODETYPE_H

@@ -19,6 +19,7 @@
 // 
 
 header "post_include_hpp" {
+# include <memory>
 # include "field.h"
 # include "VrmlNodePtr.h"
 class VrmlNamespace;
@@ -31,7 +32,6 @@ class Doc2;
 }
 
 header "post_include_cpp" {
-# include <memory>
 # include <assert.h>
 # include "doc2.hpp"
 # include "VrmlNamespace.h"
@@ -255,7 +255,7 @@ protoBody[Doc2 const * doc, VrmlNodeType & nodeType]
         {
             VrmlNodePtr n;
         }
-    :   (protoStatement[*nodeType.scope(), doc])* n=protoNodeStatement[doc, nodeType]
+    :   (protoStatement[*nodeType.getScope(), doc])* n=protoNodeStatement[doc, nodeType]
         {
             assert(n);
             nodeType.addNode(*n);
@@ -272,8 +272,8 @@ protoBodyStatement[Doc2 const * doc, VrmlNodeType & nodeType]
             assert(n);
             nodeType.addNode(*n);
         }
-    |   protoStatement[*nodeType.scope(), doc]
-    |   routeStatement[*nodeType.scope()]
+    |   protoStatement[*nodeType.getScope(), doc]
+    |   routeStatement[*nodeType.getScope()]
     ;
 
 protoNodeStatement[Doc2 const * doc, VrmlNodeType & protoNodeType]
@@ -285,7 +285,7 @@ options {
     |   KEYWORD_DEF id0:ID n=protoNode[doc, protoNodeType, id0->getText()]
     |   KEYWORD_USE id1:ID
         {
-            n = protoNodeType.scope()->findNode(id1->getText().c_str());
+            n = protoNodeType.getScope()->findNode(id1->getText().c_str());
             if (!n) {
                 throw antlr::SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.");
             }
@@ -303,8 +303,8 @@ externproto[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
         }
         urlList=externprotoUrlList
         {
-            nodeType->setUrl(urlList, doc);
-            
+            nodeType->setUrl(*urlList, doc);
+            delete urlList;
             vrmlNamespace.addNodeType(nodeType);
         }
     ;
@@ -580,13 +580,13 @@ options {
 	{ !LT(1)->getText().compare("Script") }?
 	  scriptId:ID
         {
-            nodeType = protoNodeType.scope()->findType("Script");
+            nodeType = protoNodeType.getScope()->findType("Script");
             assert(nodeType);
             
             n.reset(nodeType->newNode());
             
             if (nodeId.size() > 0) {
-                n->setName(nodeId.c_str(), protoNodeType.scope());
+                n->setName(nodeId.c_str(), protoNodeType.getScope());
             }
             
             VrmlNodeScript * const scriptNode = n->toScript();
@@ -599,7 +599,7 @@ options {
 
     | 	  nodeTypeId:ID
         {
-            nodeType = protoNodeType.scope()->findType(nodeTypeId->getText().c_str());
+            nodeType = protoNodeType.getScope()->findType(nodeTypeId->getText().c_str());
             if (!nodeType) {
                 throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
             }
@@ -607,7 +607,7 @@ options {
             n = VrmlNodePtr(nodeType->newNode());
             
             if (nodeId.size() > 0) {
-                n->setName(nodeId.c_str(), protoNodeType.scope());
+                n->setName(nodeId.c_str(), protoNodeType.getScope());
             }
         }
         LBRACE (protoNodeBodyElement[doc, protoNodeType, *n])* RBRACE
@@ -645,8 +645,8 @@ protoNodeBodyElement[Doc2 const * doc,
             )
             | isStatement[protoNodeType, node, id->getText()]
         )
-    |   routeStatement[*protoNodeType.scope()]
-    |   protoStatement[*protoNodeType.scope(), doc]
+    |   routeStatement[*protoNodeType.getScope()]
+    |   protoStatement[*protoNodeType.getScope(), doc]
     ;
 
 //

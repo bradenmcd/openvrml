@@ -18,11 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-//
-// The VrmlNodeType class is responsible for storing information about node
-// or prototype types.
-//
-
 #include "VrmlNodeType.h"
 #include "VrmlNode.h"
 #include "VrmlNamespace.h"
@@ -38,33 +33,56 @@
 extern char* strdup( const char* );
 #endif
 
-VrmlNodeType::VrmlNodeType(const char *nm, VrmlNode* (*creator)(VrmlScene *)):
-        d_refCount(0), d_name(strdup(nm ? nm : "<unnamed type>")),
+/**
+ * @class VrmlNodeType
+ *
+ * @brief The VrmlNodeType class is responsible for storing information
+ *      about node or prototype types.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * Takes name of new type (e.g. "Transform" or "Box"). Copies the string
+ * given as name.
+ *
+ * @param name the name of the node.
+ * @param creator a factory function for creating nodes of this type.
+ */
+VrmlNodeType::VrmlNodeType(const char * name,
+                           VrmlNode * (*creator)(VrmlScene *)):
+        d_refCount(0), d_name(strdup(name ? name : "<unnamed type>")),
         d_namespace(0), d_url(0), d_actualUrl(0), d_relative(0),
         d_creator(creator), d_fieldsInitialized(false) {}
 
-void destructFieldList( VrmlNodeType::FieldList &f )
-{
-  VrmlNodeType::FieldList::iterator i;
-  for (i = f.begin(); i != f.end(); ++i) {
-    VrmlNodeType::ProtoField *r = *i;
-    free(r->name);
-    if (r->defaultValue) delete r->defaultValue;
+namespace {
+    void destructFieldList( VrmlNodeType::FieldList &f )
+    {
+      VrmlNodeType::FieldList::iterator i;
+      for (i = f.begin(); i != f.end(); ++i) {
+        VrmlNodeType::ProtoField *r = *i;
+        free(r->name);
+        if (r->defaultValue) delete r->defaultValue;
 
-    // free NodeFieldRec* s in r->thisIS;
-    VrmlNodeType::ISMap::const_iterator j;
-    for (j = r->thisIS.begin(); j != r->thisIS.end(); ++j)
-      {
-	VrmlNodeType::NodeFieldRec *nf = *j;
-	free(nf->fieldName);
-	delete nf;
+        // free NodeFieldRec* s in r->thisIS;
+        VrmlNodeType::ISMap::const_iterator j;
+        for (j = r->thisIS.begin(); j != r->thisIS.end(); ++j)
+          {
+	    VrmlNodeType::NodeFieldRec *nf = *j;
+	    free(nf->fieldName);
+	    delete nf;
+          }
+
+        delete r;
       }
-
-    delete r;
-  }
+    }
 }
 
-
+/**
+ * @brief Destructor.
+ *
+ * Deallocate storage for name and PROTO implementations.
+ */
 VrmlNodeType::~VrmlNodeType()
 {
   free(d_name);
@@ -80,83 +98,161 @@ VrmlNodeType::~VrmlNodeType()
   destructFieldList( d_fields );
 }
 
-void VrmlNodeType::setScope(VrmlNamespace & createdIn)
-{
-  d_namespace = new VrmlNamespace(&createdIn);
+/**
+ * @brief Add to the refcount.
+ *
+ * @return a pointer to this object.
+ */
+VrmlNodeType * VrmlNodeType::reference() {
+    ++this->d_refCount;
+    return this;
 }
 
-
-void VrmlNodeType::setUrl(VrmlMFString * url, Doc2 const * relative)
-{
-    if (this->implNodes.getLength() > 0) {
-        return; // Too late...
+/**
+ * @brief Subtract from the refcount;
+ */
+void VrmlNodeType::dereference() {
+    if (--this->d_refCount == 0) {
+        delete this;
     }
-    
-    delete d_url;
-    d_url = url;
-    
-    delete d_relative;
-    d_relative = relative ? new Doc2(relative) : 0;
 }
 
+/**
+ * @brief Create a new instance of a node of this type.
+ *
+ * Built in nodes have a creator function specified, while instances of
+ * PROTOs are constructed by VrmlNodeProto.
+ *
+ * @param scene the VrmlScene to which this new node will belong
+ *
+ * @return a new VrmlNode
+ */
+VrmlNode * VrmlNodeType::newNode(VrmlScene * scene) const
+{
+  if (d_creator)
+    return (*d_creator)( scene );
+
+  return new VrmlNodeProto( (VrmlNodeType *)this, scene );
+}
+
+/**
+ * @brief Get the scope of this type.
+ *
+ * @return a pointer to the VrmlNamespace corresponding to this node type's
+ *      scope, or 0 for built-in node types.
+ */
+VrmlNamespace * VrmlNodeType::getScope() const {
+    return this->d_namespace;
+}
+
+/**
+ * @brief Set the scope of this type.
+ *
+ * @param scope
+ */
+void VrmlNodeType::setScope(VrmlNamespace & scope)
+{
+  d_namespace = new VrmlNamespace(&scope);
+}
+
+/**
+ * @brief Set the URL from which an EXTERNPROTO's implementation was
+ *      successfully retrieved.
+ *
+ * @param url
+ */
 void VrmlNodeType::setActualUrl(const char *url)
 {
   if (d_actualUrl) delete d_actualUrl;
   d_actualUrl = url ? new VrmlSFString(url): 0;
 }
 
-void
-VrmlNodeType::addEventIn(const char *ename, VrmlField::VrmlFieldType type)
-{
-  add(d_eventIns, ename, type);
+/**
+ * @brief Retrieve the actual URL the PROTO was retrieved from.
+ */
+const char * VrmlNodeType::getActualUrl() const {
+    return d_actualUrl ? d_actualUrl->get() : 0;
 }
 
-void
-VrmlNodeType::addEventOut(const char *ename, VrmlField::VrmlFieldType type)
-{
-  add(d_eventOuts, ename, type);
+namespace {
+    //
+    // Helper method to add a field or event.
+    //
+    void add(VrmlNodeType::FieldList & recs, const char * id, VrmlField::VrmlFieldType type) {
+        VrmlNodeType::ProtoField * const protoField =
+                new VrmlNodeType::ProtoField;
+        protoField->name = strdup(id);
+        protoField->type = type;
+        protoField->defaultValue = 0;
+        recs.push_front(protoField);
+    }
 }
 
-void
-VrmlNodeType::addField(const char *ename,
-		       VrmlField::VrmlFieldType type,
-		       VrmlField const * defaultValue)
-{
-  add(d_fields, ename, type);
-  if (defaultValue)
-    setFieldDefault(ename, defaultValue);
+/**
+ * @brief Add an eventIn to this type.
+ *
+ * @param id
+ * @param type
+ */
+void VrmlNodeType::addEventIn(const char * id, VrmlField::VrmlFieldType type) {
+    add(d_eventIns, id, type);
 }
 
-void
-VrmlNodeType::addExposedField(const char *ename,
-			      VrmlField::VrmlFieldType type,
-			      VrmlField const * defaultValue)
-{
-  char tmp[1000];
-  add(d_fields, ename, type);
-  if (defaultValue)
-    setFieldDefault(ename, defaultValue);
-
-  sprintf(tmp, "set_%s", ename);
-  add(d_eventIns, tmp, type);
-  sprintf(tmp, "%s_changed", ename);
-  add(d_eventOuts, tmp, type);
+/**
+ * @brief Add an eventOut to this type.
+ *
+ * @param id
+ * @param type
+ */
+void VrmlNodeType::addEventOut(const char * id, VrmlField::VrmlFieldType type) {
+    add(d_eventOuts, id, type);
 }
 
-
-void
-VrmlNodeType::add(FieldList &recs, const char *ename, VrmlField::VrmlFieldType type)
-{
-  ProtoField *r = new ProtoField;
-  r->name = strdup(ename);
-  r->type = type;
-  r->defaultValue = 0;
-  recs.push_front(r);
+/**
+ * @brief Add a field to this type.
+ *
+ * @param id
+ * @param type
+ * @param defaultValue
+ */
+void VrmlNodeType::addField(const char * id, VrmlField::VrmlFieldType type,
+                            const VrmlField * defaultValue) {
+    add(d_fields, id, type);
+    if (defaultValue) {
+        this->setFieldDefault(id, defaultValue);
+    }
 }
 
-void
-VrmlNodeType::setFieldDefault(const char *fname, VrmlField const * defaultValue)
-{
+/**
+ * @brief Add an exposedField to this type.
+ *
+ * @param id
+ * @param type
+ * @param defaultValue
+ */
+void VrmlNodeType::addExposedField(const char * id,
+                                   VrmlField::VrmlFieldType type,
+                                   const VrmlField * defaultValue) {
+    char tmp[1000];
+    add(d_fields, id, type);
+    if (defaultValue) {
+        this->setFieldDefault(id, defaultValue);
+    }
+
+    sprintf(tmp, "set_%s", id);
+    add(d_eventIns, tmp, type);
+    sprintf(tmp, "%s_changed", id);
+    add(d_eventOuts, tmp, type);
+}
+
+/**
+ * @brief Set the default value for a field or exposedField.
+ *
+ * @param fname field name
+ * @param defaultValue default value
+ */
+void VrmlNodeType::setFieldDefault(const char * fname,
+                                   const VrmlField * defaultValue) {
   FieldList::const_iterator i;
 
   for (i = d_fields.begin(); i != d_fields.end(); ++i)
@@ -177,12 +273,14 @@ VrmlNodeType::setFieldDefault(const char *fname, VrmlField const * defaultValue)
 }
 
 
-// Download the EXTERNPROTO definition
-
+/**
+ * @brief Download the EXTERNPROTO definition.
+ */
 void VrmlNodeType::fetchImplementation()
 {
   // Get the PROTO def from the url (relative to original scene url).
-  VrmlNodeType * const proto = VrmlScene::readPROTO( d_url, d_relative );
+  VrmlNodeType * const proto =
+        VrmlScene::readPROTO(*this->d_url, this->d_relative);
   if (proto)
     {
       // check type of first node...
@@ -207,7 +305,7 @@ void VrmlNodeType::fetchImplementation()
       proto->d_fields.erase(proto->d_fields.begin(),
 			    proto->d_fields.end());
 
-      setActualUrl(proto->url());
+      setActualUrl(proto->getActualUrl());
 
       delete proto;
     }
@@ -217,7 +315,11 @@ void VrmlNodeType::fetchImplementation()
     }
 }
 
-
+/**
+ * @brief Get the implementation nodes; download them if necessary.
+ *
+ * @return the implementation nodes
+ */
 const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
   if ((this->implNodes.getLength() == 0) && d_url)
     fetchImplementation();
@@ -290,14 +392,16 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 }
 
 
-// This will NOT fetch the implementation of an EXTERNPROTO.
-// This method is used in VrmlNodeProto to check the type of
-// SFNode fields in toXXX() node downcasts. Type checking
-// of EXTERNPROTOs is deferred until the implementation is
-// actually downloaded. (not actually done yet...)
-
-const VrmlNodePtr VrmlNodeType::firstNode() const
-{
+/**
+ * @brief Get the first node in the implementation.
+ *
+ * This will NOT fetch the implementation of an EXTERNPROTO.
+ * This method is used in VrmlNodeProto to check the type of
+ * SFNode fields in toXXX() node downcasts. Type checking
+ * of EXTERNPROTOs is deferred until the implementation is
+ * actually downloaded. (not actually done yet...)
+ */
+const VrmlNodePtr VrmlNodeType::firstNode() const {
     return (this->implNodes.getLength() > 0)
             ? this->implNodes.getElement(0)
             : VrmlNodePtr(0);
@@ -382,6 +486,24 @@ VrmlNodeType::fieldDefault(const char *fname) const
   return 0;
 }
 
+/**
+ * @brief Set the URL to retrieve an EXTERNPROTO implementation from.
+ *
+ * @param url An MFString list of URIs at which the implementation may
+ *      reside.
+ * @param relative the resource to which the URIs in the first parameter
+ *      are relative.
+ */
+void VrmlNodeType::setUrl(const VrmlMFString & url, const Doc2 * relative) {
+    assert(this->implNodes.getLength() == 0);
+    
+    delete this->d_url;
+    this->d_url = new VrmlMFString(url);
+    
+    delete this->d_relative;
+    this->d_relative = relative ? new Doc2(relative) : 0;
+}
+
 void VrmlNodeType::addNode(VrmlNode & node) {
     // add node to list of implementation nodes
     this->implNodes.addNode(node);
@@ -449,18 +571,4 @@ VrmlNodeType::ISMap *VrmlNodeType::getFieldISMap( const char *fieldName )
     if (strcmp((*i)->name, fieldName) == 0)
       return & ((*i)->thisIS);
   return 0;
-}
-
-
-// VrmlNode factory: create a new instance of a node of this type.
-// Built in nodes have a creator function specified, while instances
-// of PROTOs are constructed by VrmlNodeProto.
-
-VrmlNode*
-VrmlNodeType::newNode( VrmlScene *scene ) const
-{
-  if (d_creator)
-    return (*d_creator)( scene );
-
-  return new VrmlNodeProto( (VrmlNodeType *)this, scene );
 }

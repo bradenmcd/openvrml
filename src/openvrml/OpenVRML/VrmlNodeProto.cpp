@@ -274,7 +274,7 @@ void VrmlNodeProto::addToScene(VrmlScene *s, const char *relUrl)
   // ... and add the implementation nodes to the scene.
   if (this->implNodes.getLength() > 0)
     {
-      const char *rel = d_nodeType->url();
+      const char * rel = d_nodeType->getActualUrl();
       int j, n = this->implNodes.getLength();
       for (j=0; j<n; ++j)
 	this->implNodes.getElement(j)->addToScene(s, rel ? rel : relUrl);
