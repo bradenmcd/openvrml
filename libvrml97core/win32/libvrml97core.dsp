@@ -47,6 +47,10 @@ BSC32=bscmake.exe
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
+# Begin Special Build Tool
+SOURCE=$(InputPath)
+PostBuild_Cmds=del unistd.h
+# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
@@ -502,15 +506,7 @@ SOURCE=..\src\vrml97\Audio.cpp
 # Begin Source File
 
 SOURCE=..\src\vrml97\Doc.cpp
-
-!IF  "$(CFG)" == "libvrml97core - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
-
 # ADD CPP /I "."
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -557,6 +553,8 @@ SOURCE=.\lexer.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
 
+# ADD CPP /I "." /I "..\src\vrml97" /D "YY_NEVER_INTERACTIVE"
+
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
 # ADD CPP /I "..\src\vrml97" /I "." /D "YY_NEVER_INTERACTIVE"
@@ -571,18 +569,32 @@ USERDEP__LEXER="parser.out"
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
 
+# Begin Custom Build
+InputPath=..\src\vrml97\lexer.lpp
+
+"lexer.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	set BISON_SIMPLE=d:\usr\bose\bison\bison.simple 
+	set BISON_HAIRY=d:\usr\bose\bison\bison.hairy 
+	d:\usr\bose\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
+	del parser.h 
+	ren parser.cpp.h parser.h 
+	d:\usr\bose\flex\flex -dLt ..\src\vrml97\lexer.lpp > lexer.cpp 
+	type NUL:  > unistd.h 
+	
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
 # Begin Custom Build
 InputPath=..\src\vrml97\lexer.lpp
 
 "lexer.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set BISON_SIMPLE=c:\bison\bison.simple 
-	set BISON_HAIRY=c:\bison\bison.hairy 
-	c:\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
+	set BISON_SIMPLE=d:\usr\bose\bison\bison.simple 
+	set BISON_HAIRY=d:\usr\bose\bison\bison.hairy 
+	d:\usr\bose\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
 	del parser.h 
 	ren parser.cpp.h parser.h 
-	c:\flex\flex -dLt ..\src\vrml97\lexer.lpp > lexer.cpp 
+	d:\usr\bose\flex\flex -dLt ..\src\vrml97\lexer.lpp > lexer.cpp 
 	type NUL:  > unistd.h 
 	
 # End Custom Build
@@ -609,6 +621,8 @@ SOURCE=.\parser.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
 
+# ADD CPP /I "..\src\vrml97"
+
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
 # ADD CPP /I "..\src\vrml97" /I "."
@@ -622,15 +636,25 @@ SOURCE=..\src\vrml97\parser.ypp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
 
+# Begin Custom Build
+InputPath=..\src\vrml97\parser.ypp
+
+"parser.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	set BISON_SIMPLE=d:\usr\bose\bison\bison.simple 
+	set BISON_HAIRY=d:\usr\bose\bison\bison.hairy 
+	d:\usr\bose\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
+	
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
 # Begin Custom Build
 InputPath=..\src\vrml97\parser.ypp
 
 "parser.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set BISON_SIMPLE=c:\bison\bison.simple 
-	set BISON_HAIRY=c:\bison\bison.hairy 
-	c:\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
+	set BISON_SIMPLE=d:\usr\bose\bison\bison.simple 
+	set BISON_HAIRY=d:\usr\bose\bison\bison.hairy 
+	d:\usr\bose\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
 	
 # End Custom Build
 
@@ -669,6 +693,8 @@ SOURCE=..\src\vrml97\ScriptJS.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
 
+# ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC" /D js_InitArrayClass=JS_InitArrayClass
+
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
 # ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC" /D js_InitArrayClass=JS_InitArrayClass
@@ -681,6 +707,8 @@ SOURCE=..\src\vrml97\ScriptJS.cpp
 SOURCE=..\src\vrml97\ScriptObject.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
+
+# ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC"
 
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
@@ -720,6 +748,8 @@ SOURCE=..\src\vrml97\System.cpp
 SOURCE=..\src\vrml97\Viewer.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
+
+# ADD CPP /I "."
 
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
@@ -1202,6 +1232,8 @@ SOURCE=..\src\vrml97\VrmlNodeOrientationInt.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
 
+# ADD CPP /I "."
+
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
 # ADD CPP /I "..\.." /I "."
@@ -1539,6 +1571,8 @@ SOURCE=..\src\vrml97\VrmlNodeWorldInfo.cpp
 SOURCE=..\src\vrml97\VrmlScene.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
+
+# ADD CPP /I "."
 
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
