@@ -310,12 +310,12 @@ ostream& operator<<(ostream& os, const VrmlField& f)
 
 /**
  * @class VrmlSFBool
- * Encapsulates an SFBool value.
+ * @brief Encapsulates an SFBool value.
  */
 #include "VrmlSFBool.h"
 
 /**
- * Construct a VrmlSFBool.
+ * @brief Constructor.
  * @param value initial value
  */
 VrmlSFBool::VrmlSFBool(bool value) : d_value(value) {}
@@ -330,7 +330,7 @@ VrmlField * VrmlSFBool::clone() const {
 VrmlField::VrmlFieldType VrmlSFBool::fieldType() const { return SFBOOL; }
 
 /**
- * Get the value.
+ * @brief Get the value.
  * @return the value of this SFBool
  */
 bool VrmlSFBool::get() const {
@@ -338,7 +338,7 @@ bool VrmlSFBool::get() const {
 }
 
 /**
- * Set the value.
+ * @brief Set the value.
  * @param value the new value
  */
 void VrmlSFBool::set(bool value) {
@@ -348,12 +348,12 @@ void VrmlSFBool::set(bool value) {
 
 /**
  * @class VrmlSFColor
- * Encapsulates an SFColor value.
+ * @brief Encapsulates an SFColor value.
  */
 #include "VrmlSFColor.h"
 
 /**
- * Construct a VrmlSFColor with the default value, (0, 0, 0).
+ * @brief Construct with the default value, (0, 0, 0).
  */
 VrmlSFColor::VrmlSFColor() {
     this->d_rgb[0] = 0.0f;
@@ -362,7 +362,7 @@ VrmlSFColor::VrmlSFColor() {
 }
 
 /**
- * Construct a VrmlSFColor.
+ * @brief Construct a VrmlSFColor.
  * @param rgb a 3-element array
  */
 VrmlSFColor::VrmlSFColor(const float rgb[3]) {
@@ -372,7 +372,7 @@ VrmlSFColor::VrmlSFColor(const float rgb[3]) {
 }
 
 /**
- * Construct a VrmlSFColor
+ * @brief Construct a VrmlSFColor
  * @param r red component
  * @param g green component
  * @param b blue component
@@ -389,7 +389,7 @@ VrmlField *VrmlSFColor::clone() const
 VrmlField::VrmlFieldType VrmlSFColor::fieldType() const { return SFCOLOR; }
 
 /**
- * Array element dereference operator (const version).
+ * @brief Array element dereference operator (const version).
  * @param index an index from 0 - 2
  */
 float VrmlSFColor::operator[](size_t index) const {
@@ -398,7 +398,7 @@ float VrmlSFColor::operator[](size_t index) const {
 }
 
 /**
- * Array element dereference operator (non-const version).
+ * @brief Array element dereference operator (non-const version).
  * @param index an index from 0 - 2
  */
 float & VrmlSFColor::operator[](size_t index) {
@@ -407,7 +407,7 @@ float & VrmlSFColor::operator[](size_t index) {
 }
 
 /**
- * Get the red component.
+ * @brief Get the red component.
  * @return the red component value
  */
 float VrmlSFColor::getR() const {
@@ -415,7 +415,7 @@ float VrmlSFColor::getR() const {
 }
 
 /**
- * Get the green component.
+ * @brief Get the green component.
  * @return the green component value
  */
 float VrmlSFColor::getG() const {
@@ -423,7 +423,7 @@ float VrmlSFColor::getG() const {
 }
 
 /**
- * Get the blue component.
+ * @brief Get the blue component.
  * @return the blue component value
  */
 float VrmlSFColor::getB() const {
@@ -431,7 +431,7 @@ float VrmlSFColor::getB() const {
 }
 
 /**
- * Get the value.
+ * @brief Get the value.
  * @return a pointer to a 3-element array comprising the RGB value
  */
 const float * VrmlSFColor::get() const {
@@ -439,7 +439,7 @@ const float * VrmlSFColor::get() const {
 }
 
 /**
- * Set the value.
+ * @brief Set the value.
  * @param rgb a 3-element vector comprising a RGB value
  */
 void VrmlSFColor::set(const float rgb[3]) {
@@ -452,8 +452,11 @@ void VrmlSFColor::set(const float rgb[3]) {
 // h in [0,360), s,v in [0,1]. From Foley, van Dam p615-616.
 
 /**
+ * @brief Convert a color from HSV to RGB.
+ *
  * Convert from HSV (with(with <var>h</var> in [0,360), <var>s</var>,
  * <var>v</var> in [0,1]) to RGB (with each component in [0,1]).
+ *
  * @param hsv a 3-element array comprising an HSV value
  * @retval rgb a 3-element array comprising an RGB value
  */
@@ -485,8 +488,11 @@ void VrmlSFColor::HSVtoRGB(const float hsv[3], float rgb[3])
 }
 
 /**
+ * @brief Convert a color from RGB to HSV.
+ *
  * Convert from RGB (with each component in [0,1]) to HSV (with <var>h</var> in
  * [0,360), <var>s</var>, <var>v</var> in [0,1]).
+ *
  * @param rgb a 3-element array comprising an RGB value
  * @retval hsv a 3-element array comprising an HSV value
  */
@@ -519,7 +525,7 @@ void VrmlSFColor::RGBtoHSV(const float rgb[3], float hsv[3]) {
 }
 
 /**
- * Set the value using HSV.
+ * @brief Set the value using HSV.
  * @param h the hue component
  * @param s the saturation component
  * @param v the value component
@@ -531,7 +537,7 @@ void VrmlSFColor::setHSV(float h, float s, float v)
 }
 
 /**
- * Get the value expressed in HSV.
+ * @brief Get the value expressed in HSV.
  * @retval hsv a 3-element array comprising the HSV value.
  */
 void VrmlSFColor::getHSV(float hsv[3]) const {
@@ -541,12 +547,12 @@ void VrmlSFColor::getHSV(float hsv[3]) const {
 
 /**
  * @class VrmlSFFloat
- * Encapsulates an SFFloat value.
+ * @brief Encapsulates an SFFloat value.
  */
 #include "VrmlSFFloat.h"
 
 /**
- * Constructor.
+ * @brief Constructor.
  * @param value initial value
  */
 VrmlSFFloat::VrmlSFFloat(float value) : d_value(value) {}
@@ -559,7 +565,7 @@ VrmlField *VrmlSFFloat::clone() const { return new VrmlSFFloat(d_value); }
 VrmlField::VrmlFieldType VrmlSFFloat::fieldType() const { return SFFLOAT; }
 
 /**
- * Get value.
+ * @brief Get value.
  * @return the SFFloat value
  */
 float VrmlSFFloat::get() const {
@@ -567,7 +573,7 @@ float VrmlSFFloat::get() const {
 }
 
 /**
- * Set value.
+ * @brief Set value.
  * @param value the new value
  */
 void VrmlSFFloat::set(float value) {
@@ -596,8 +602,8 @@ void VrmlSFFloat::set(float value) {
 VrmlSFImage::VrmlSFImage(): d_w(0), d_h(0), d_nc(0), d_pixels(0) {}
 
 /**
- * Create an SFImage.
- * <p>
+ * @brief Create an SFImage.
+ *
  * Note that the pixels read from lower left to upper right, which
  * is a reflection around the y-axis from the "normal" convention.
  * <p>
@@ -632,7 +638,7 @@ VrmlSFImage::VrmlSFImage(size_t width, size_t height, size_t components,
 }
 
 /**
- * Copy constructor.
+ * @brief Copy constructor.
  */
 VrmlSFImage::VrmlSFImage(const VrmlSFImage& rhs): d_w(0), d_h(0), d_nc(0),
         d_pixels(0) {
@@ -651,7 +657,7 @@ VrmlSFImage::VrmlSFImage(const VrmlSFImage& rhs): d_w(0), d_h(0), d_nc(0),
 }
 
 /**
- * Destructor.
+ * @brief Destructor.
  */
 VrmlSFImage::~VrmlSFImage()
 {
@@ -659,7 +665,7 @@ VrmlSFImage::~VrmlSFImage()
 }
 
 /**
- * Assignment.
+ * @brief Assignment.
  */
 VrmlSFImage & VrmlSFImage::operator=(const VrmlSFImage & rhs) {
     if (this != &rhs) {
@@ -705,7 +711,7 @@ VrmlField * VrmlSFImage::clone() const {
 VrmlField::VrmlFieldType VrmlSFImage::fieldType() const { return SFIMAGE; }
 
 /**
- * Get the image width.
+ * @brief Get the image width.
  * @return the image width
  */
 size_t VrmlSFImage::getWidth() const {
@@ -713,7 +719,7 @@ size_t VrmlSFImage::getWidth() const {
 }
 
 /**
- * Get the image height.
+ * @brief Get the image height.
  * @return the image height
  */
 size_t VrmlSFImage::getHeight() const {
@@ -721,7 +727,7 @@ size_t VrmlSFImage::getHeight() const {
 }
 
 /**
- * Get the number of components.
+ * @brief Get the number of components.
  * @return the number of components
  */
 size_t VrmlSFImage::getComponents() const {
@@ -729,7 +735,7 @@ size_t VrmlSFImage::getComponents() const {
 }
 
 /**
- * Get the pixel data.
+ * @brief Get the pixel data.
  * @return a pointer to the array of pixel data.
  */
 const unsigned char * VrmlSFImage::getPixels() const {
@@ -737,7 +743,7 @@ const unsigned char * VrmlSFImage::getPixels() const {
 }
 
 /**
- * Set the image.
+ * @brief Set the image.
  * @param width width in pixels
  * @param height height in pixels
  * @param components number of components
@@ -764,12 +770,12 @@ void VrmlSFImage::set(size_t width, size_t height, size_t components,
 
 /**
  * @class VrmlSFInt32
- * Encapsulates an SFInt32 value.
+ * @brief Encapsulates an SFInt32 value.
  */
 #include "VrmlSFInt32.h"
 
 /**
- * Constructor.
+ * @brief Constructor.
  * @param value initial value
  */
 VrmlSFInt32::VrmlSFInt32(long value): d_value(value) {}
@@ -782,7 +788,7 @@ VrmlField *VrmlSFInt32::clone() const { return new VrmlSFInt32(d_value); }
 VrmlField::VrmlFieldType VrmlSFInt32::fieldType() const { return SFINT32; }
 
 /**
- * Get value.
+ * @brief Get value.
  * @return the integer value
  */
 long VrmlSFInt32::get() const {
@@ -790,7 +796,7 @@ long VrmlSFInt32::get() const {
 }
 
 /**
- * Set value.
+ * @brief Set value.
  * @param value the new integer value
  */
 void VrmlSFInt32::set(long value) {
@@ -800,32 +806,32 @@ void VrmlSFInt32::set(long value) {
 
 /**
  * @class VrmlSFNode
- * Encapsulates an SFNode.
+ * @brief Encapsulates an SFNode.
  */
 #include "VrmlSFNode.h"
 #include "VrmlNode.h"
 
 /**
- * Constructor.
+ * @brief Constructor.
  * @param node a pointer to a VrmlNode
  */
 VrmlSFNode::VrmlSFNode(VrmlNode * node) : d_value(node)
 { if (d_value) d_value->reference(); }
 
 /**
- * Copy constructor.
+ * @brief Copy constructor.
  * @param rhs the VrmlSFNode to copy
  */
 VrmlSFNode::VrmlSFNode(const VrmlSFNode & rhs): d_value(rhs.d_value)
 { if (d_value) d_value->reference(); }
 
 /**
- * Destructor.
+ * @brief Destructor.
  */
 VrmlSFNode::~VrmlSFNode() { if (d_value) d_value->dereference(); }
 
 /**
- * Assignment operator.
+ * @brief Assignment operator.
  * @param rhs the VrmlSFNode to copy into this object
  */
 VrmlSFNode& VrmlSFNode::operator=(const VrmlSFNode& rhs)
@@ -845,7 +851,7 @@ VrmlField *VrmlSFNode::clone() const { return new VrmlSFNode(d_value); }
 VrmlField::VrmlFieldType VrmlSFNode::fieldType() const { return SFNODE; }
 
 /**
- * Get value.
+ * @brief Get value.
  * @return a pointer to this object's VrmlNode
  */
 VrmlNode * VrmlSFNode::get() const {
@@ -853,7 +859,7 @@ VrmlNode * VrmlSFNode::get() const {
 }
 
 /**
- * Set value.
+ * @brief Set value.
  * @param node a pointer to a VrmlNode, or 0 if setting this SFNode to
  *             <code>NULL</code>
  */
@@ -866,11 +872,13 @@ void VrmlSFNode::set(VrmlNode * node)
 
 /**
  * @class VrmlSFRotation
- * Encapsulates an SFRotation.
+ * @brief Encapsulates an SFRotation.
  */
 #include "VrmlSFRotation.h"
 
 /**
+ * @brief Default constructor.
+ *
  * Construct with the default value, (0, 0, 1, 0).
  */
 VrmlSFRotation::VrmlSFRotation() {
@@ -881,7 +889,7 @@ VrmlSFRotation::VrmlSFRotation() {
 }
 
 /**
- * Constructor.
+ * @brief Constructor.
  * @param rotation a 4-element array.
  */
 VrmlSFRotation::VrmlSFRotation(const float rotation[4]) {
@@ -889,7 +897,7 @@ VrmlSFRotation::VrmlSFRotation(const float rotation[4]) {
 }
 
 /**
- * Constructor.
+ * @brief Constructor.
  * @param x the <var>x</var>-component of the axis of rotation
  * @param y the <var>y</var>-component of the axis of rotation
  * @param z the <var>z</var>-component of the axis of rotation
@@ -903,7 +911,7 @@ VrmlSFRotation::VrmlSFRotation(float x, float y, float z, float angle) {
 }
 
 /**
- * Constructor.
+ * @brief Constructor.
  * @param axis the axis of rotation
  * @param angle the rotation angle
  */
@@ -913,8 +921,11 @@ VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & axis, float angle) {
 }
 
 /**
+ * @brief Construct a rotation between two vectors.
+ *
  * Construct a VrmlSFRotation equal to the rotation between two different
  * vectors.
+ *
  * @param fromVector the starting vector
  * @param toVector the ending vector
  */
@@ -926,7 +937,7 @@ VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & fromVector,
 }
 
 /**
- * Array element dereference operator (const version).
+ * @brief Array element dereference operator (const version).
  * @param index a value from 0 - 3. 0 corresponds to the
  *              <var>x</var>-component of the rotation axis, 1 corresponds to
  *              the <var>y</var>-component of the rotation axis, 2 corresponds
@@ -939,7 +950,7 @@ float VrmlSFRotation::operator[](size_t index) const {
 }
 
 /**
- * Array element dereference operator (non-const version).
+ * @brief Array element dereference operator (non-const version).
  * @param index a value from 0 - 3. 0 corresponds to the
  *              <var>x</var>-component of the rotation axis, 1 corresponds to
  *              the <var>y</var>-component of the rotation axis, 2 corresponds
@@ -961,7 +972,7 @@ VrmlField::VrmlFieldType VrmlSFRotation::fieldType() const
 { return SFROTATION; }
 
 /**
- * Get the <var>x</var>-component of the rotation axis.
+ * @brief Get the <var>x</var>-component of the rotation axis.
  * @return the <var>x</var>-component of the rotation axis.
  */
 float VrmlSFRotation::getX() const {
@@ -969,7 +980,7 @@ float VrmlSFRotation::getX() const {
 }
 
 /**
- * Set the <var>x</var>-component of the rotation axis.
+ * @brief Set the <var>x</var>-component of the rotation axis.
  * @param value
  */
 void VrmlSFRotation::setX(float value) {
@@ -977,7 +988,7 @@ void VrmlSFRotation::setX(float value) {
 }
 
 /**
- * Get the <var>y</var>-component of the rotation axis.
+ * @brief Get the <var>y</var>-component of the rotation axis.
  * @return the <var>y</var>-component of the rotation axis
  */
 float VrmlSFRotation::getY() const {
@@ -985,7 +996,7 @@ float VrmlSFRotation::getY() const {
 }
 
 /**
- * Set the <var>y</var>-component of the rotation axis.
+ * @brief Set the <var>y</var>-component of the rotation axis.
  * @param value
  */
 void VrmlSFRotation::setY(float value) {
@@ -993,7 +1004,7 @@ void VrmlSFRotation::setY(float value) {
 }
 
 /**
- * Get the <var>z</var>-component of the rotation axis.
+ * @brief Get the <var>z</var>-component of the rotation axis.
  * @return the <var>z</var>-component of the rotation axis
  */
 float VrmlSFRotation::getZ() const {
@@ -1001,7 +1012,7 @@ float VrmlSFRotation::getZ() const {
 }
 
 /**
- * Set the <var>z</var>-component of the rotation axis
+ * @brief Set the <var>z</var>-component of the rotation axis
  * @param value
  */
 void VrmlSFRotation::setZ(float value) {
@@ -1009,7 +1020,7 @@ void VrmlSFRotation::setZ(float value) {
 }
 
 /**
- * Get the rotation angle.
+ * @brief Get the rotation angle.
  * @return the rotation angle
  */
 float VrmlSFRotation::getAngle() const {
@@ -1017,7 +1028,7 @@ float VrmlSFRotation::getAngle() const {
 }
 
 /**
- * Set the rotation angle.
+ * @brief Set the rotation angle.
  * @param value
  */
 void VrmlSFRotation::setAngle(float value) {
@@ -1025,7 +1036,7 @@ void VrmlSFRotation::setAngle(float value) {
 }
 
 /**
- * Get the value of this rotation.
+ * @brief Get the value of this rotation.
  * @return a pointer to a 4-element array.
  */
 const float * VrmlSFRotation::get() const {
@@ -1033,7 +1044,7 @@ const float * VrmlSFRotation::get() const {
 }
 
 /**
- * Set the value of this rotation.
+ * @brief Set the value of this rotation.
  * @param rotation a 4-element array
  */
 void VrmlSFRotation::set(const float rotation[4]) {
@@ -1041,7 +1052,7 @@ void VrmlSFRotation::set(const float rotation[4]) {
 }
 
 /**
- * Get the axis of rotation as a VrmlSFVec3f.
+ * @brief Get the axis of rotation as a VrmlSFVec3f.
  * @return the axis of rotation
  */
 const VrmlSFVec3f VrmlSFRotation::getAxis() const {
@@ -1049,7 +1060,7 @@ const VrmlSFVec3f VrmlSFRotation::getAxis() const {
 }
 
 /**
- * Set the axis of rotation using a VrmlSFVec3f.
+ * @brief Set the axis of rotation using a VrmlSFVec3f.
  * @param axis the new rotation axis
  */
 void VrmlSFRotation::setAxis(const VrmlSFVec3f & axis) {
@@ -1057,7 +1068,7 @@ void VrmlSFRotation::setAxis(const VrmlSFVec3f & axis) {
 }
 
 /**
- * Get the inverse.
+ * @brief Get the inverse.
  * @return a VrmlSFRotation that is the inverse of this one
  */
 const VrmlSFRotation VrmlSFRotation::inverse() const {
@@ -1083,7 +1094,7 @@ namespace {
 }
 
 /**
- * Multiply two rotations.
+ * @brief Multiply two rotations.
  * @param rotation the rotation by which to multiply this one
  * @return the result rotation
  */
@@ -1135,8 +1146,10 @@ void VrmlSFRotation::fromQuaternion(const float theQuat[4]) {
 }
 
 /**
- * Multiply the matrix corresponding to this rotation by a vector.
+ * @brief Multiply the matrix corresponding to this rotation by a vector.
+ *
  * @todo IMPLEMENT ME!
+ *
  * @param vec vector by which to multiply this rotation
  * @return the result of multiplying this rotation by vec
  */
@@ -1145,7 +1158,8 @@ const VrmlSFVec3f VrmlSFRotation::multVec(const VrmlSFVec3f & vec) const {
 }
 
 /**
- * Perform a <b>S</b>pherical <b>L</b>inear Int<b>ERP</b>olation.
+ * @brief Perform a <b>S</b>pherical <b>L</b>inear Int<b>ERP</b>olation.
+ *
  * @param destRotation the destination rotation
  * @param t the interval fraction
  */
@@ -1210,12 +1224,12 @@ const VrmlSFRotation VrmlSFRotation::slerp(const VrmlSFRotation & destRotation,
 
 /**
  * @class VrmlSFString
- * Encapsulates an SFString.
+ * @brief Encapsulates an SFString.
  */
 #include "VrmlSFString.h"
 
 /**
- * Constructor
+ * @brief Constructor
  * @param s a C-style string
  */
 VrmlSFString::VrmlSFString(const char *s)
@@ -1752,25 +1766,25 @@ const VrmlSFVec3f VrmlSFVec3f::subtract(const VrmlSFVec3f & vec) const {
 
 /**
  * @class VrmlMFColor
- * Encapsulates a MFColor.
+ * @brief Encapsulates a MFColor.
  */
 #include "VrmlMFColor.h"
 
 class VrmlMFColor::FData {			// reference counted float data
 public:
-  FData(int n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
+  FData(size_t n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
   ~FData() { delete [] d_v; }
 
   FData *ref() { ++d_refs; return this; }
   void deref() { if (--d_refs == 0) delete this; }
 
-  int d_refs;			// number of objects using this data
-  int d_n;			// size (in floats) of d_v
+  size_t d_refs;			// number of objects using this data
+  size_t d_n;			// size (in floats) of d_v
   float *d_v;			// data vector
 };
 
 /**
- * Construct from a single color value.
+ * @brief Construct from a single color value.
  * @param r red component
  * @param g green component
  * @param b blue component
@@ -1779,7 +1793,7 @@ VrmlMFColor::VrmlMFColor(float r, float g, float b) : d_data(new FData(3))
 { d_data->d_v[0] = r; d_data->d_v[1] = g; d_data->d_v[2] = b; }
 
 /**
- * Construct from a float array.
+ * @brief Construct from a float array.
  * @param length the number of RGB triplets in the array
  * @param colors a float array comprising RGB triplets
  */
@@ -1791,19 +1805,19 @@ VrmlMFColor::VrmlMFColor(size_t length, float const * colors):
 }
 
 /**
- * Copy constructor.
+ * @brief Copy constructor.
  * @param mfColor the object to copy
  */
 VrmlMFColor::VrmlMFColor(const VrmlMFColor & mfColor):
         d_data(mfColor.d_data->ref()) {}
 
 /**
- * Destructor.
+ * @brief Destructor.
  */
 VrmlMFColor::~VrmlMFColor() { d_data->deref(); }
 
 /**
- * Assignment operator.
+ * @brief Assignment operator.
  * @param rhs value to assign to this object
  * @return a reference to this object
  */
@@ -1825,7 +1839,10 @@ const float * VrmlMFColor::get() const {
 }
 
 /**
- * Set value. Copies the contents of a <code>float</code> array.
+ * @brief Set value.
+ *
+ * Copies the contents of a <code>float</code> array.
+ *
  * @param length the number of RGB triplets in the array
  * @param colors an array comprising RGB triplets
  */
@@ -1840,7 +1857,7 @@ void VrmlMFColor::set(size_t length, const float * colors) {
 }
 
 /**
- * Get the length.
+ * @brief Get the length.
  * @return the number of color values (RGB triplets)
  */
 size_t VrmlMFColor::getLength() const {
@@ -1857,13 +1874,15 @@ size_t VrmlMFColor::getLength() const {
  * @param length new length
  */
 void VrmlMFColor::setLength(size_t length) {
-    FData * const newData = new FData(length * 3);
-    if (length > this->d_data->d_n) {
+    const size_t numFloats = length * 3;
+    FData * const newData = new FData(numFloats);
+    if (numFloats > this->d_data->d_n) {
         std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
-                  newData);
-        std::fill_n(newData + this->d_data->d_n, newData + (length * 3), 0.0);
+                  newData->d_v);
+        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + numFloats,
+                  0.0f);
     } else {
-        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData);
+        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
     }
     this->d_data->deref();
     this->d_data = newData;
