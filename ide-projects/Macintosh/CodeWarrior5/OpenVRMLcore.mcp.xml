@@ -879,9 +879,9 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>	τ€</VALUE></SETTING>
-                    <SETTING><VALUE>ΐ¶ψ</VALUE></SETTING>
-                    <SETTING><VALUE>Υ8</VALUE></SETTING>
+                    <SETTING><VALUE></VALUE></SETTING>
+                    <SETTING><VALUE>Διh</VALUE></SETTING>
+                    <SETTING><VALUE></VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -1645,15 +1645,6 @@
                 <FILE>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>:</ACCESSPATH>
-                    <PATH>:ImgReader.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::::libjpeg:</ACCESSPATH>
                     <PATH>:mac:jpeg.ppc.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
@@ -1686,15 +1677,6 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Library</FILEKIND>
                     <FILEFLAGS>Debug, WeakImport</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
-                    <PATH>:mpgread.cpp</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Text</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
                 </FILE>
                 <FILE>
                     <PATHTYPE>PathRelative</PATHTYPE>
@@ -2322,13 +2304,6 @@
                 <FILEREF>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>:</ACCESSPATH>
-                    <PATH>:ImgReader.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::::libjpeg:</ACCESSPATH>
                     <PATH>:mac:jpeg.ppc.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
@@ -2352,13 +2327,6 @@
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::::InternetConfig:</ACCESSPATH>
                     <PATH>:InternetConfigLib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
-                    <PATH>:mpgread.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
@@ -2493,14 +2461,6 @@
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
                     <PATH>:doc2.cpp</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
-                    <PATH>:mpgread.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
@@ -3153,16 +3113,6 @@
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>:</ACCESSPATH>
                     <PATH>:LibANTLR.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-            </GROUP>
-            <GROUP><NAME>Image Reader Library</NAME>
-                <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>:</ACCESSPATH>
-                    <PATH>:ImgReader.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
             </GROUP>
