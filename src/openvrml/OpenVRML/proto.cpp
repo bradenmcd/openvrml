@@ -20,7 +20,6 @@
 
 # include <algorithm>
 # include "proto.h"
-# include "Route.h"
 # include "bvolume.h"
 # include "VrmlScene.h"
 
@@ -242,11 +241,11 @@ void ProtoNode::RouteCopyVisitor::copyRoutes() {
 
 namespace {
     
-    struct AddRoute_ : std::unary_function<Route, void> {
+    struct AddRoute_ : std::unary_function<Node::Route, void> {
         AddRoute_(VrmlNamespace & scope, Node & fromNode):
                   scope(&scope), fromNode(&fromNode) {}
 
-        void operator()(const Route & route) const {
+        void operator()(const Node::Route & route) const {
             const std::string & toNodeId(route.toNode->getId());
             assert(this->scope->findNode(toNodeId));
             fromNode->addRoute(route.fromEventOut,

@@ -25,7 +25,6 @@
 # include <algorithm>
 # include <stdio.h>
 # include "node.h"
-# include "Route.h"
 # include "VrmlNamespace.h"
 # include "VrmlScene.h"
 # include "MathUtils.h"
@@ -432,6 +431,51 @@ FieldValue::Type NodeType::hasInterface(const std::string & id) const throw () {
  *
  * @brief A node in the scene graph.
  */
+
+/**
+ * @class Node::Route
+ *
+ * @brief A route from one node to another through which events propagate.
+ */
+
+/**
+ * @var const std::string Node::Route::fromEventOut
+ *
+ * @brief The name of the eventOut the route is coming from.
+ */
+
+/**
+ * @var const NodePtr Node::Route::toNode
+ *
+ * @brief The node the route is going to.
+ */
+
+/**
+ * @var const std::string Node::Route::toEventIn
+ *
+ * @brief The name of the eventIn on @a toNode that the route is going to.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param fromEventOut  the name of the eventOut the route is coming from.
+ * @param toNode        the node the route is going to.
+ * @param toEventIn     the name of an eventIn on @p toNode that the route is
+ *                      going to.
+ */
+Node::Route::Route(const std::string & fromEventOut,
+                   const NodePtr & toNode, const std::string & toEventIn):
+        fromEventOut(fromEventOut), toNode(toNode), 
+	toEventIn(toEventIn) {}
+
+/**
+ * @brief Copy constructor.
+ *
+ * @param route the Route to copy.
+ */
+Node::Route::Route(const Route & route): fromEventOut(route.fromEventOut), 
+	toNode(route.toNode), toEventIn(route.toEventIn) {}
 
 /**
  * @var Node::nodeType

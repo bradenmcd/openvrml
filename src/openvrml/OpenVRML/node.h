@@ -132,7 +132,6 @@ namespace OpenVRML {
 
 
     class VrmlNamespace;
-    class Route;
     class Viewer;
     class NodeType;
     class FieldValue;
@@ -177,6 +176,16 @@ namespace OpenVRML {
         friend ostream & operator<<(ostream & os, const Node & f);
     
     public:
+        struct Route {
+            const std::string fromEventOut;
+            const NodePtr toNode;
+            const std::string toEventIn;
+
+            Route(const std::string & fromEventOut, const NodePtr & toNode,
+                  const std::string & toEventIn);
+            Route(const Route & route);
+        };
+        
         typedef std::list<Route> RouteList;
         
         struct ProtoEventOutValue {

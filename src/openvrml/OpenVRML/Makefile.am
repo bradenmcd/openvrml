@@ -32,13 +32,13 @@ $(PNG_LIBS) $(Z_LIBS) $(JS_LIBS) $(JNI_LIBS)
 libopenvrml_la_SOURCES = Doc.cpp doc2.cpp MathUtils.cpp dummysound.cpp \
 Image.cpp Audio.cpp System.cpp Viewer.cpp bvolume.cpp VrmlFrustum.cpp \
 VrmlRenderContext.cpp field.cpp fieldvalueptr.cpp VrmlMatrix.cpp \
-VrmlNamespace.cpp Route.cpp node.cpp nodeptr.cpp nodetypeptr.cpp \
-nodeclassptr.cpp proto.cpp script.cpp ScriptJDK.cpp VrmlScene.cpp vrml97node.cpp
+VrmlNamespace.cpp node.cpp nodeptr.cpp nodetypeptr.cpp nodeclassptr.cpp \
+proto.cpp script.cpp ScriptJDK.cpp VrmlScene.cpp vrml97node.cpp
 
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
 
 OpenVRMLincludedir = $(includedir)/OpenVRML
-OpenVRMLinclude_HEADERS = common.h Audio.h Doc.h Image.h MathUtils.h Route.h \
+OpenVRMLinclude_HEADERS = common.h Audio.h Doc.h Image.h MathUtils.h \
 ScriptJDK.h script.h System.h Viewer.h bvolume.h VrmlFrustum.h field.h \
 fieldvalueptr.h VrmlMatrix.h VrmlNamespace.h proto.h node.h nodeptr.h \
 nodetypeptr.h nodeclassptr.h vrml97node.h VrmlRenderContext.h VrmlScene.h \
