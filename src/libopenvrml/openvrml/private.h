@@ -58,23 +58,45 @@
 #   include <cassert>
 #   include <cmath>
 #   include <cstddef>
+#   include <functional>
+#   include <limits>
 
 namespace {
     namespace openvrml_ {
 
-        const float fptolerance = 1.0e-6;
-
-        inline bool fpzero(const float f) { return (fabs(f) <= fptolerance); }
-
-        inline bool fpequal(const float a, const float b)
+        template <typename Float>
+        inline Float fabs(const Float f)
         {
-            return fpzero(a - b);
+            return f < 0.0 ? -f : f;
         }
+        
+        template <typename Float>
+        struct fequal : std::binary_function<Float, Float, bool> {
+            bool operator()(Float a, Float b) const
+            {
+                const Float diff = fabs(a - b);
+                if (diff == 0.0) { return true; }
+                const Float e = std::numeric_limits<Float>::epsilon();
+                return diff / fabs(a) <= e && diff / fabs(b) <= e;
+            }
+        };
+        
+        template <typename Float>
+        struct fless_equal : std::binary_function<Float, Float, bool> {
+            bool operator()(Float a, Float b) const
+            {
+                return a < b || fequal<Float>()(a, b);
+            }
+        };
 
-        inline bool fpless(const float a, const float b)
-        {
-            return (b - a) > fptolerance;
-        }
+        template <typename Float>
+        struct fgreater_equal : std::binary_function<Float, Float, bool> {
+            bool operator()(Float a, Float b) const
+            {
+                return a > b || fequal<Float>()(a, b);
+            }
+        };
+
 
         template <typename T>
         class SharedPtr {

@@ -4868,8 +4868,6 @@ void cylinder_sensor_node::activate(double timeStamp,
                                     bool isActive,
                                     double * p)
 {
-    using openvrml_::fpequal;
-
     // Become active
     if (isActive && !this->active.value) {
         this->active.value = isActive;
@@ -4906,6 +4904,8 @@ void cylinder_sensor_node::activate(double timeStamp,
 
         // Tracking
     else if (isActive) {
+        using openvrml_::fequal;
+
         // get local coord for touch point
         vec3f Vec(p[0], p[1], p[2]);
         Vec = Vec * this->activationMatrix;
@@ -4925,7 +4925,7 @@ void cylinder_sensor_node::activate(double timeStamp,
         cx = cx.normalize();
         if (cx.length() == 0.0) { return; }
         rot = radius * acos(dir2.dot(dir1));
-        if (fpequal(cx.y(), -1.0)) { rot = -rot; }
+        if (fequal<float>()(cx.y(), -1.0f)) { rot = -rot; }
         if (this->autoOffset.value) {
             rot = this->offset.value + rot;
         }
@@ -10241,8 +10241,6 @@ void normal_interpolator_node::process_set_fraction(const field_value & value,
                                                     const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    using openvrml_::fptolerance;
-
     float f = dynamic_cast<const sffloat &>(value).value;
 
     size_t nNormals = this->keyValue.value.size() / this->key.value.size();
@@ -10261,31 +10259,31 @@ void normal_interpolator_node::process_set_fraction(const field_value & value,
 
         for (size_t i = 0; i < n; ++i) {
             if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
-                std::vector<vec3f>::const_iterator v1 =
-                        this->keyValue.value.begin() + i * nNormals;
-                std::vector<vec3f>::const_iterator v2 =
-                        this->keyValue.value.begin() + (i + 1) * nNormals;
+                using std::vector;
+
+                vector<vec3f>::const_iterator v1 =
+                    this->keyValue.value.begin() + i * nNormals;
+                vector<vec3f>::const_iterator v2 =
+                    this->keyValue.value.begin() + (i + 1) * nNormals;
 
                 f = (f - this->key.value[i])
                     / (this->key.value[i + 1] - this->key.value[i]);
 
                 // Interpolate on the surface of unit sphere.
-                // Contributed by S. K. Bose. (bose@garuda.barc.ernet.in)
                 for (size_t j = 0; j < nNormals; ++j) {
+                    using openvrml_::fequal;
+
                     float alpha, beta;
-                    float dotval = v1->dot(*v2);
-                    if ((dotval + 1.0) > fptolerance) { // Vectors are not opposite
-                        if ((1.0-dotval) > fptolerance) { // Vectors are not coincide
-                            float omega = acos(dotval);
-                            float sinomega = sin(omega);
-                            alpha = sin((1.0 - f) * omega) / sinomega;
-                            beta = sin(f * omega) / sinomega;
-                        } else {
-                            // Do linear interpolation...
-                            alpha = 1.0 - f;
-                            beta = f;
-                        }
-                    } else { // Do linear interpolation...
+                    const float dot_product = v1->dot(*v2);
+                    if (!fequal<float>()(dot_product, 1.0f)
+                            && v1->normalize() != v2->normalize()) {
+                        // Vectors are not opposite and not coincident.
+                        const float omega = acos(dot_product);
+                        const float sinomega = sin(omega);
+                        alpha = sin((1.0 - f) * omega) / sinomega;
+                        beta = sin(f * omega) / sinomega;
+                    } else {
+                        // Do linear interpolation.
                         alpha = 1.0 -f;
                         beta = f;
                     }
@@ -12230,13 +12228,13 @@ proximity_sensor_node::~proximity_sensor_node() throw ()
 void proximity_sensor_node::render(openvrml::viewer & viewer,
                                    const rendering_context context)
 {
-    using openvrml_::fpequal;
-
     if (this->enabled.value
             && this->size.value.x() > 0.0
             && this->size.value.y() > 0.0
             && this->size.value.z() > 0.0
             && viewer.mode() == viewer::draw_mode) {
+        using openvrml_::fless_equal;
+
         sftime timeNow(browser::current_time());
         float x, y, z;
 
@@ -12244,12 +12242,12 @@ void proximity_sensor_node::render(openvrml::viewer & viewer,
         mat4f MV = context.matrix();
         MV = MV.inverse();
         x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
-        bool inside = (fabs(x - this->center.value.x())
-                            <= 0.5 * this->size.value.x()
-                        && fabs(y - this->center.value.y())
-                            <= 0.5 * this->size.value.y()
-                        && fabs(z - this->center.value.z())
-                            <= 0.5 * this->size.value.z());
+        bool inside = fless_equal<float>()(fabs(x - this->center.value.x()),
+                                           0.5 * this->size.value.x())
+                   && fless_equal<float>()(fabs(y - this->center.value.y()),
+                                           0.5 * this->size.value.y())
+                   && fless_equal<float>()(fabs(z - this->center.value.z()),
+                                           0.5 * this->size.value.z());
         bool wasIn = this->active.value;
 
         // Check if viewer has entered the box
@@ -12275,7 +12273,7 @@ void proximity_sensor_node::render(openvrml::viewer & viewer,
             if (position.value != vec3f(x, y, z)) {
                 this->position.value = vec3f(x, y, z);
                 this->emit_event("position_changed", this->position,
-                                timeNow.value);
+                                 timeNow.value);
             }
 
             vec3f trans, scale, shear;
@@ -12284,7 +12282,7 @@ void proximity_sensor_node::render(openvrml::viewer & viewer,
             if (this->orientation.value != orientation) {
                 this->orientation.value = orientation;
                 this->emit_event("orientation_changed", this->orientation,
-                                timeNow.value);
+                                 timeNow.value);
             }
         }
     } else {
@@ -16560,9 +16558,6 @@ time_sensor_node * time_sensor_node::to_time_sensor() const
  */
 void time_sensor_node::update(const double currentTime)
 {
-    using openvrml_::fpzero;
-    using openvrml_::fpequal;
-
     sftime timeNow(currentTime);
 
     if (this->enabled.value) {
@@ -16587,14 +16582,20 @@ void time_sensor_node::update(const double currentTime)
 
         // Running (active and enabled)
         else if (this->active.value) {
+            using openvrml_::fequal;
+            using openvrml_::fless_equal;
+
             double f, cycleInt = this->cycleInterval.value;
             bool deactivate = false;
 
             // Are we done? Choose min of stopTime or start + single cycle.
             if ((this->stopTime.value > this->startTime.value
-                        && this->stopTime.value <= timeNow.value)
+                        && fless_equal<float>()(this->stopTime.value,
+                                                timeNow.value))
                     || (!this->loop.value
-                        && this->startTime.value + cycleInt <= timeNow.value)) {
+                        && fless_equal<float>()(this->startTime.value
+                                                + cycleInt,
+                                                timeNow.value))) {
                 this->active.value = false;
 
                 // Must respect stopTime/cycleInterval exactly
@@ -16614,14 +16615,14 @@ void time_sensor_node::update(const double currentTime)
             }
 
             // Fraction of cycle message
-            sffloat fraction_changed(fpzero(f) ? 1.0 : (f / cycleInt));
+            sffloat fraction_changed(fequal<double>()(f, 0.0) ? 1.0 : (f / cycleInt));
             this->emit_event("fraction_changed", fraction_changed, timeNow.value);
 
             // Current time message
             this->emit_event("time", timeNow, timeNow.value);
 
             // End of cycle message (this may miss cycles...)
-            if (fpequal(fraction_changed.value, 1.0)) {
+            if (fequal<double>()(fraction_changed.value, 1.0)) {
                 this->emit_event("cycleTime", timeNow, timeNow.value);
             }
 
@@ -16697,11 +16698,11 @@ void time_sensor_node::process_set_enabled(const field_value & value,
                                            const double timestamp)
     throw (std::bad_cast)
 {
-    using openvrml_::fpzero;
-
     this->enabled = dynamic_cast<const sfbool &>(value);
     if (this->enabled.value != this->active.value) {
         if (this->active.value) {
+            using openvrml_::fequal;
+
             //
             // Was active; shutdown.
             //
@@ -16711,7 +16712,7 @@ void time_sensor_node::process_set_enabled(const field_value & value,
                      : 0.0;
 
             // Fraction of cycle message
-            this->fraction.value = fpzero(f) ? 1.0 : (f / cycleInt);
+            this->fraction.value = fequal<double>()(f, 0.0) ? 1.0 : (f / cycleInt);
         } else {
             //
             // Was inactive; startup.
@@ -18310,8 +18311,6 @@ visibility_sensor_node::~visibility_sensor_node() throw ()
 void visibility_sensor_node::render(openvrml::viewer & viewer,
                                     const rendering_context context)
 {
-    using openvrml_::fpzero;
-
     if (this->enabled.value) {
         sftime timeNow(browser::current_time());
         vec3f xyz[2] = { this->center.value,
@@ -18329,9 +18328,11 @@ void visibility_sensor_node::render(openvrml::viewer & viewer,
         // Is the sphere visible? ...
         bool inside = xyz[0].z() < 0.0; // && z > - scene->visLimit()
         if (inside) {
+            using openvrml_::fequal;
+
             navigation_info_node * ni =
                 this->type.node_class.browser.bindable_navigation_info_top();
-            if (ni && !fpzero(ni->visibility_limit())
+            if (ni && !fequal<float>()(ni->visibility_limit(), 0.0f)
                     && xyz[0][2] < -(ni->visibility_limit())) {
                 inside = false;
             }

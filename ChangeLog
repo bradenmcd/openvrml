@@ -1,5 +1,25 @@
 2003-09-01  Braden McDaniel  <braden@endoframe.com>
 
+	Calculate floating point error tolerance from
+	std::numeric_limits<T>::epsilon().
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp:  Tracks changes to
+	Vrml97Parser.g.
+	* src/libopenvrml/openvrml/Vrml97Parser.g:  Use fequal functor
+	instead of fpequal, fpzero functions.
+	* src/libopenvrml/openvrml/basetypes.cpp:  Use fequal functor
+	instead of fpequal, fpzero functions.
+	* src/libopenvrml/openvrml/bounding_volume.cpp:  Use fequal
+	functor instead of fpequal, fpzero functions.
+	* src/libopenvrml/openvrml/private.h:  Replaced fpequal, fpzero
+	functions with fequal functor.
+	* src/libopenvrml/openvrml/vrml97node.cpp:  Use fequal functor
+	instead of fpequal, fpzero functions.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Replaced fpequal,
+	fpzero functions with fequal functor.
+
+2003-09-01  Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/Makefile.am:  Removed reference
 	to obsolete file common.h.
 

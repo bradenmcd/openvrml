@@ -39,6 +39,7 @@
 # endif
 
 # include <cmath>
+# include <limits>
 
 # include <openvrml/browser.h>
 # include <openvrml/vrml97node.h>
@@ -61,15 +62,23 @@
 #   endif
 
 namespace {
-    const float FPTOLERANCE(1.0e-6);
 
-    inline bool fpzero(const float f) {
-        return (fabs(f) <= FPTOLERANCE);
+    template <typename Float>
+    inline Float fabs(const Float f)
+    {
+        return f < 0.0 ? -f : f;
     }
 
-    inline bool fpequal(const float a, const float b) {
-        return fpzero(a - b);
-    }
+    template <typename Float>
+    struct fequal : std::binary_function<Float, Float, bool> {
+        bool operator()(Float a, Float b) const
+        {
+            const Float diff = fabs(a - b);
+            if (diff == 0.0) { return true; }
+            const Float e = std::numeric_limits<Float>::epsilon();
+            return diff / fabs(a) <= e && diff / fabs(b) <= e;
+        }
+    };
 
     inline double length(const float vec[3]) {
         return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
@@ -77,7 +86,7 @@ namespace {
 
     inline void normalize(float vec[3]) {
         const float len = float(length(vec));
-        if (!fpzero(len)) {
+        if (!fequal<float>()(len, 0.0f)) {
             vec[0] /= len;
             vec[1] /= len;
             vec[2] /= len;
@@ -1828,8 +1837,8 @@ namespace {
 
         float dx = xz[1] - xz[0];
         float dz = xz[3] - xz[2];
-        if (!fpzero(dx)) { dx = 1.0 / dx; }
-        if (!fpzero(dz)) { dz = 1.0 / dz; }
+        if (!fequal<float>()(dx, 0.0f)) { dx = 1.0 / dx; }
+        if (!fequal<float>()(dz, 0.0f)) { dz = 1.0 / dz; }
 
         // If geometry is in dlists, should just always use the tesselator...
 
@@ -1958,7 +1967,7 @@ namespace {
         for (i = 1; i < spine.size() - 1; ++i) {
             const vec3f v = (spine[i - 1] - spine[i])
                             * (spine[i + 1] - spine[i]);
-            if (!fpzero(v.length())) {
+            if (!fequal<float>()(v.length(), 0.0f)) {
                 spineStraight = false;
                 lastZ = v.normalize();
                 break;
@@ -1971,7 +1980,7 @@ namespace {
             const vec3f v2 = spine.back() - spine.front();
             vec3f v3 = v2 * v1;
             double len = v3.length();
-            if (!fpzero(len)) {
+            if (!fequal<float>()(len, 0.0f)) {
                 //
                 // Not aligned with Y axis.
                 //
@@ -1989,7 +1998,8 @@ namespace {
 
         // Orientation matrix
         mat4f om;
-        if (orientation.size() == 1 && !fpzero(orientation.front().angle())) {
+        if (orientation.size() == 1
+                && !fequal<float>()(orientation.front().angle(), 0.0f)) {
             om = mat4f::rotation(orientation.front());
         }
 
@@ -2042,7 +2052,7 @@ namespace {
                 Zscp = (spine[s1i2] - spine[si1]) * (spine[s2i2] - spine[si1]);
 
                 float VlenZ = Zscp.length();
-                if (fpzero(VlenZ)) {
+                if (fequal<float>()(VlenZ, 0.0f)) {
                     Zscp = lastZ;
                 } else {
                     Zscp *= (1.0 / VlenZ);
@@ -2073,7 +2083,7 @@ namespace {
             //
             // Apply orientation.
             //
-            if (!fpzero(r->angle())) {
+            if (!fequal<float>()(r->angle(), 0.0f)) {
                 if (orientation.size() > 1) { om = mat4f::rotation(*r); }
 
                 for (j = 0; j < crossSection.size(); ++j) {
@@ -2387,7 +2397,10 @@ namespace {
         }
 
         // If two of the dimensions are zero, give up.
-        if (fpzero(params[1]) || fpzero(params[3])) { return; }
+        if (fequal<float>()(params[1], 0.0f)
+                || fequal<float>()(params[3], 0.0f)) {
+            return;
+        }
 
         params[1] = 1.0 / params[1];
         params[3] = 1.0 / params[3];
@@ -2706,7 +2719,10 @@ viewer::insert_shell(unsigned int mask,
 
         // do the bounds intersect the radius of any active positional lights.
         texGenParams(bounds, texAxes, texParams);
-        if (fpzero(texParams[1]) || fpzero(texParams[3])) { return 0; }
+        if (fequal<float>()(texParams[1], 0.0f)
+                || fequal<float>()(texParams[3], 0.0f)) {
+            return 0;
+        }
     }
 
     GLuint glid = 0;
@@ -3166,7 +3182,9 @@ void viewer::set_material(const float ambientIntensity,
                                 alpha };
 
     // XXX doesn't work right yet (need alpha render pass...)
-    if (this->blend && ! fpzero(transparency)) { glEnable(GL_BLEND); }
+    if (this->blend && !fequal<float>()(transparency, 0.0f)) {
+        glEnable(GL_BLEND);
+    }
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
@@ -3461,7 +3479,9 @@ void viewer::set_texture_transform(const vec2f & center,
 
     glTranslatef(-center.x(), -center.y(), 0.0);
     glScalef(scale.x(), scale.y(), 1.0);
-    if (!fpzero(rotation)) { glRotatef(rotation * 180.0 / pi, 0.0, 0.0, 1.0); }
+    if (!fequal<float>()(rotation, 0.0f)) {
+        glRotatef(rotation * 180.0 / pi, 0.0, 0.0, 1.0);
+    }
 
     glTranslatef(center.x(), center.y(), 0.0);
     glTranslatef(translation.x(), translation.y(), 0.0);
@@ -3679,7 +3699,7 @@ void viewer::input(event_info * e)
  */
 void viewer::rotate(const openvrml::rotation & rot) throw ()
 {
-    if (fpzero(rot.angle())) { return; }
+    if (fequal<float>()(rot.angle(), 0.0f)) { return; }
 
     viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
     const mat4f & viewpointTransformation = activeViewpoint.transformation();
@@ -3755,7 +3775,7 @@ void viewer::zoom(const float z)
     GLdouble z_c = 0.5;
     float visibilityLimit = 0.0;
     if (nav) { visibilityLimit = nav->visibility_limit(); }
-    if (fpzero(visibilityLimit)) { visibilityLimit = 30000.0; }
+    if (fequal<float>()(visibilityLimit, 0.0f)) { visibilityLimit = 30000.0; }
     GLdouble ox, oy, oz;
     gluUnProject(x_c, y_c, z_c,
                  modelview,
@@ -3778,7 +3798,7 @@ void viewer::zoom(const float z)
     float speed = 1.0;
     if (nav) { speed = nav->speed(); }
     dist = speed / dist;
-    if (fpzero(dist)) { return; }
+    if (fequal<float>()(dist, 0.0f)) { return; }
     dx *= dist;
     dy *= dist;
     dz *= dist;

@@ -219,10 +219,8 @@ void color::hsv(float h, const float s, const float v) throw ()
  */
 bool operator==(const color & lhs, const color & rhs) throw ()
 {
-    using openvrml_::fpequal;
-    return fpequal(lhs[0], rhs[0])
-        && fpequal(lhs[1], rhs[1])
-        && fpequal(lhs[2], rhs[2]);
+    using openvrml_::fequal;
+    return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal<float>());
 }
 
 /**
@@ -477,10 +475,10 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  */
 const vec2f vec2f::normalize() const throw ()
 {
-    using openvrml_::fpzero;
+    using openvrml_::fequal;
     const float len = this->length();
     vec2f result(*this);
-    if (fpzero(len)) { result /= len; }
+    if (fequal<float>()(len, 0.0)) { result /= len; }
     return result;
 }
 
@@ -497,9 +495,8 @@ const vec2f vec2f::normalize() const throw ()
  */
 bool operator==(const vec2f & lhs, const vec2f & rhs) throw ()
 {
-    using openvrml_::fpequal;
-    return fpequal(lhs[0], rhs[0])
-        && fpequal(lhs[1], rhs[1]);
+    using openvrml_::fequal;
+    return std::equal(&lhs[0], &lhs[0] + 2, &rhs[0], fequal<float>());
 }
 
 /**
@@ -853,10 +850,10 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  */
 const vec3f vec3f::normalize() const throw ()
 {
-    using openvrml_::fpzero;
+    using openvrml_::fequal;
     const float len = this->length();
     vec3f result(*this);
-    if (!fpzero(len)) { result /= len; }
+    if (!fequal<float>()(len, 0.0f)) { result /= len; }
     return result;
 }
 
@@ -872,10 +869,8 @@ const vec3f vec3f::normalize() const throw ()
  */
 bool operator==(const vec3f & lhs, const vec3f & rhs) throw ()
 {
-    using openvrml_::fpequal;
-    return fpequal(lhs[0], rhs[0])
-        && fpequal(lhs[1], rhs[1])
-        && fpequal(lhs[2], rhs[2]);
+    using openvrml_::fequal;
+    return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal<float>());
 }
 
 /**
@@ -947,12 +942,9 @@ std::ostream & operator<<(std::ostream & out, const vec3f & v)
  */
 rotation::rotation(const float (&rot)[4]) throw ()
 {
-    using openvrml_::fpequal;
-    assert(fpequal(vec3f(rot[0], rot[1], rot[2]).length(), 1.0));
-    this->rot[0] = rot[0];
-    this->rot[1] = rot[1];
-    this->rot[2] = rot[2];
-    this->rot[3] = rot[3];
+    using openvrml_::fequal;
+    assert(fequal<float>()(vec3f(rot[0], rot[1], rot[2]).length(), 1.0f));
+    std::copy(rot, rot + 4, this->rot);
 }
 
 /**
@@ -971,8 +963,8 @@ rotation::rotation(const float x,
                    const float angle)
     throw ()
 {
-    using openvrml_::fpequal;
-    assert(fpequal(vec3f(x, y, z).length(), 1.0));
+    using openvrml_::fequal;
+    assert(fequal<float>()(vec3f(x, y, z).length(), 1.0f));
     this->rot[0] = x;
     this->rot[1] = y;
     this->rot[2] = z;
@@ -991,8 +983,8 @@ rotation::rotation(const float x,
  */
 rotation::rotation(const vec3f & axis, const float angle) throw ()
 {
-    using openvrml_::fpequal;
-    assert(fpequal(axis.length(), 1.0));
+    using openvrml_::fequal;
+    assert(fequal<float>()(axis.length(), 1.0f));
     this->axis(axis);
     this->rot[3] = angle;
 }
@@ -1020,10 +1012,10 @@ rotation::rotation(const vec3f & from_vec, const vec3f & to_vec)
  */
 rotation::rotation(const quatf & quat) throw ()
 {
-    using openvrml_::fpzero;
+    using openvrml_::fequal;
 
     const float val = acos(quat.w());
-    if (fpzero(val)) {
+    if (fequal<float>()(val, 0.0f)) {
         this->rot[0] = 0.0;
         this->rot[1] = 0.0;
         this->rot[2] = 1.0;
@@ -1121,9 +1113,9 @@ namespace {
 
     inline void normalize_(float vec[3])
     {
-        using openvrml_::fpzero;
+        using openvrml_::fequal;
         const float len = float(length_(vec));
-        if (!fpzero(len)) {
+        if (!fequal<float>()(len, 0.0f)) {
             vec[0] /= len;
             vec[1] /= len;
             vec[2] /= len;
@@ -1132,9 +1124,9 @@ namespace {
 
     void normalize_axis_(float axis[3]) throw ()
     {
-        using openvrml_::fpequal;
+        using openvrml_::fequal;
         const float axis_length = length_(axis);
-        if (fpequal(axis_length, 0.0)) {
+        if (fequal<float>()(axis_length, 0.0)) {
             axis[2] = 1.0;
         } else {
             normalize_(axis);
@@ -1182,8 +1174,8 @@ void rotation::z(const float value) throw ()
  */
 void rotation::axis(const vec3f & axis) throw ()
 {
-    using openvrml_::fpequal;
-    assert(fpequal(axis.length(), 1.0));
+    using openvrml_::fequal;
+    assert(fequal<float>()(axis.length(), 1.0f));
     this->rot[0] = axis.x();
     this->rot[1] = axis.y();
     this->rot[2] = axis.z();
@@ -1218,7 +1210,7 @@ void rotation::axis(const vec3f & axis) throw ()
 const rotation rotation::slerp(const rotation & dest_rot, const float t) const
     throw ()
 {
-    using openvrml_::fptolerance;
+    using openvrml_::fequal;
 
     quatf from_quat(*this), to_quat(dest_rot);
 
@@ -1243,7 +1235,7 @@ const rotation rotation::slerp(const rotation & dest_rot, const float t) const
     // Calculate coefficients.
     //
     double scale0, scale1;
-    if ((1.0 - cosom) > fptolerance) {
+    if (!fequal<float>()(cosom, 0.0f)) {
         const double omega = acos(cosom);
         const double sinom = sin(omega);
         scale0 = sin((1.0 - t) * omega) / sinom;
@@ -1276,11 +1268,8 @@ const rotation rotation::slerp(const rotation & dest_rot, const float t) const
  */
 bool operator==(const rotation & lhs, const rotation & rhs) throw ()
 {
-    using openvrml_::fpequal;
-    return fpequal(lhs.x(), rhs.x())
-        && fpequal(lhs.y(), rhs.y())
-        && fpequal(lhs.z(), rhs.z())
-        && fpequal(lhs.angle(), rhs.angle());
+    using openvrml_::fequal;
+    return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
 }
 
 /**
@@ -1448,7 +1437,7 @@ const mat4f mat4f::transformation(const vec3f & t,
                                   const vec3f & c)
     throw ()
 {
-    using openvrml_::fpzero;
+    using openvrml_::fequal;
 
     mat4f mat;
     if (t != vec3f(0.0, 0.0, 0.0)) {
@@ -1457,15 +1446,15 @@ const mat4f mat4f::transformation(const vec3f & t,
     if (c != vec3f(0.0, 0.0, 0.0)) {
         mat = translation(c) * mat; // M = C * M   = C * T
     }
-    if (!fpzero(r.angle())) {
+    if (!fequal<float>()(r.angle(), 0.0f)) {
         mat = rotation(r) * mat; // M = R * M    = R * C * T
     }
     if (s != vec3f(1.0, 1.0, 1.0)) {
-        if (!fpzero(sr.angle())) {
+        if (!fequal<float>()(sr.angle(), 0.0f)) {
             mat = rotation(sr) * mat; // M = SR * M    = SR * R * C * T
         }
         mat = scale(s) * mat; // M = S * M     = S * SR * R * C * T
-        if (!fpzero(sr.angle())) {
+        if (!fequal<float>()(sr.angle(), 0.0f)) {
             // M = -SR * M   = -SR * S * SR * R * C * T
             mat = rotation(sr.inverse()) * mat;
         }
@@ -1712,13 +1701,13 @@ void mat4f::transformation(vec3f & t, openvrml::rotation & r, vec3f & s) const
     //
     // Some portions are taken from Graphics Gems 2.
     //
-    using openvrml_::fpzero;
+    using openvrml_::fequal;
 
     //
     // Check if it is singular.
     //
-    assert(!fpzero(this->mat[3][3]));
-    if(fpzero(det3(*this, 0, 1, 2, 0, 1, 2))){
+    assert(!fequal<float>()(this->mat[3][3], 0.0f));
+    if (fequal<float>()(det3(*this, 0, 1, 2, 0, 1, 2), 0.0f)){
        OPENVRML_PRINT_MESSAGE_("Warning: matrix is singular.");
        return;
     }
@@ -1808,13 +1797,13 @@ void mat4f::transformation(vec3f & t,
     //
     // Some portions are taken from Graphics Gems 2.
     //
-    using openvrml_::fpzero;
+    using openvrml_::fequal;
 
     //
     // Check if it is singular.
     //
-    assert(!fpzero(this->mat[3][3]));
-    if(fpzero(det3(*this, 0, 1, 2, 0, 1, 2))){
+    assert(!fequal<float>()(this->mat[3][3], 0.0f));
+    if (fequal<float>()(det3(*this, 0, 1, 2, 0, 1, 2), 0.0f)){
         OPENVRML_PRINT_MESSAGE_("Warning: matrix is singular.");
         return;
     }
@@ -2101,8 +2090,8 @@ std::ostream & operator<<(std::ostream & out, const mat4f & mat)
  */
 bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
 {
-    using openvrml_::fpequal;
-    return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0], fpequal);
+    using openvrml_::fequal;
+    return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0], fequal<float>());
 }
 
 /**
@@ -2219,8 +2208,8 @@ quatf::quatf(const mat4f & mat) throw ()
  */
 quatf::quatf(const rotation & rot) throw ()
 {
-    using openvrml_::fpequal;
-    assert(fpequal(rot.axis().length(), 1.0));
+    using openvrml_::fequal;
+    assert(fequal<float>()(rot.axis().length(), 1.0));
 
     const float sin_angle = sin(rot.angle() / 2.0);
     this->quat[0] = rot.x() * sin_angle;
@@ -2573,11 +2562,8 @@ std::ostream & operator<<(std::ostream & out, const quatf & quat)
  */
 bool operator==(const quatf & lhs, const quatf & rhs) throw ()
 {
-    using openvrml_::fpequal;
-    return fpequal(lhs.x(), rhs.x())
-        && fpequal(lhs.y(), rhs.y())
-        && fpequal(lhs.z(), rhs.z())
-        && fpequal(lhs.w(), rhs.w());
+    using openvrml_::fequal;
+    return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
 }
 
 /**

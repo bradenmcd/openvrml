@@ -1621,7 +1621,7 @@ returns [openvrml::field_value_ptr mrv =
 rotationValue[rotation & r]
 options { defaultErrorHandler=false; }
     {
-        using openvrml_::fpequal;
+        using openvrml_::fequal;
         float x, y, z, angle;
     }
     : x=floatValue y=floatValue z=floatValue angle=floatValue {
@@ -1631,10 +1631,10 @@ options { defaultErrorHandler=false; }
             r.angle(angle);
 
             const float axisLength = r.axis().length();
-            if (!fpequal(axisLength, 1.0)) {
+            if (!fequal<float>()(axisLength, 1.0f)) {
                 this->reportWarning("The axis component of a rotation must be "
                                     "a normalized vector.");
-                if (fpequal(axisLength, 0.0)) {
+                if (fequal<float>()(axisLength, 0.0f)) {
                     r.z(1.0);
                 } else {
                     r.axis(r.axis().normalize());
