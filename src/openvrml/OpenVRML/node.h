@@ -26,6 +26,7 @@
 #   include <list>
 #   include <set>
 #   include <stdexcept>
+#   include <utility>
 #   include "field.h"
 #   include "fieldvalueptr.h"
 #   include "nodetypeptr.h"
@@ -34,13 +35,6 @@
 
 namespace OpenVRML {
 
-    class UnsupportedInterface : public std::invalid_argument {
-    public:
-        UnsupportedInterface(const std::string & message);
-        virtual ~UnsupportedInterface() throw ();
-    };
-    
-    
     struct OPENVRML_SCOPE NodeInterface {
         enum Type { invalidType, eventIn, eventOut, exposedField, field };
 
@@ -51,6 +45,9 @@ namespace OpenVRML {
         NodeInterface(Type type, FieldValue::Type fieldType,
                       const std::string & id);
     };
+    
+    std::ostream & operator<<(std::ostream & out, NodeInterface::Type type);
+    std::istream & operator>>(std::istream & in, NodeInterface::Type & type);
     
     inline bool operator==(const NodeInterface & lhs, const NodeInterface & rhs)
         throw ()
@@ -65,6 +62,19 @@ namespace OpenVRML {
     {
         return !(lhs == rhs);
     }
+
+    class NodeType;
+
+    class UnsupportedInterface : public std::runtime_error {
+    public:
+        explicit UnsupportedInterface(const std::string & message);
+        UnsupportedInterface(const NodeType & nodeType,
+                             const std::string & interfaceId);
+        UnsupportedInterface(const NodeType & nodeType,
+                             NodeInterface::Type interfaceType,
+                             const std::string & interfaceId);
+        virtual ~UnsupportedInterface() throw ();
+    };
     
     
     class OPENVRML_SCOPE NodeInterfaceSet {
@@ -85,6 +95,7 @@ namespace OpenVRML {
                 throw (std::invalid_argument, std::bad_alloc);
         const_iterator begin() const throw ();
         const_iterator end() const throw ();
+        const_iterator findInterface(const std::string & id) const throw ();
     };
     
     inline NodeInterfaceSet::const_iterator
@@ -128,7 +139,6 @@ namespace OpenVRML {
         FieldValue::Type hasEventOut(const std::string & id) const throw ();
         FieldValue::Type hasField(const std::string & id) const throw ();
         FieldValue::Type hasExposedField(const std::string & id) const throw ();
-        FieldValue::Type hasInterface(const std::string & id) const throw ();
         
         virtual const NodeInterfaceSet & getInterfaces() const throw () = 0;
         virtual const NodePtr createNode(const ScopePtr & scope) const
@@ -140,9 +150,14 @@ namespace OpenVRML {
     };
 
 
+    class OPENVRML_SCOPE FieldValueTypeMismatch : public std::runtime_error {
+    public:
+        FieldValueTypeMismatch();
+        virtual ~FieldValueTypeMismatch() throw ();
+    };
+
+
     class Scope;
-    class NodeType;
-    class FieldValue;
     class VrmlMatrix;
     class NodeVisitor;
     class BVolume;

@@ -23,6 +23,7 @@
 # endif
 
 # include <algorithm>
+# include <sstream>
 # include "node.h"
 # include "scope.h"
 # include "browser.h"
@@ -51,12 +52,38 @@ namespace OpenVRML {
  * @param message   An informative error message.
  */
 UnsupportedInterface::UnsupportedInterface(const std::string & message):
-        std::invalid_argument(message) {}
+    std::runtime_error(message)
+{}
+
+/**
+ * @brief Constructor.
+ *
+ * @param message   An informative error message.
+ */
+UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
+                                           const std::string & interfaceId):
+    std::runtime_error(nodeType.id + " has no interface \"" + interfaceId + '"')
+{}
+
+/**
+ * @brief Constructor.
+ *
+ * @param message   An informative error message.
+ */
+UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
+                                           const NodeInterface::Type interfaceType,
+                                           const std::string & interfaceId):
+    std::runtime_error(nodeType.id + " has no "
+                       + static_cast<std::ostringstream &>
+                         (std::ostringstream() << interfaceType).str()
+                       + " \"" + interfaceId + '"')
+{}
 
 /**
  * @brief Destructor.
  */
-UnsupportedInterface::~UnsupportedInterface() throw () {}
+UnsupportedInterface::~UnsupportedInterface() throw ()
+{}
 
 
 /**
@@ -70,6 +97,70 @@ UnsupportedInterface::~UnsupportedInterface() throw () {}
  *
  * @brief Identify the type of interface.
  */
+
+namespace {
+    const char * const nodeInterfaceTypeId_[] = {
+        "<invalid interface type>",
+        "eventIn",
+        "eventOut",
+        "exposedField",
+        "field"
+    };
+}
+
+/**
+ * @brief Stream inserter.
+ *
+ * @relates NodeInterface
+ *
+ * If @p type is NodeInterface::invalidType, @c failbit is set on @p out.
+ *
+ * @param out   an output stream.
+ * @param type  a node interface type.
+ *
+ * @return @p out.
+ */
+std::ostream & operator<<(std::ostream & out, const NodeInterface::Type type)
+{
+    if (type == NodeInterface::invalidType) {
+        out.setstate(std::ios_base::failbit);
+    } else {
+        out << nodeInterfaceTypeId_[type];
+    }
+    return out;
+}
+
+/**
+ * @brief Stream extractor.
+ *
+ * @relates NodeInterface
+ *
+ * @param in    an input stream.
+ * @param type  a node interface type.
+ *
+ * @return @p in.
+ */
+std::istream & operator>>(std::istream & in, NodeInterface::Type & type)
+{
+    using std::find;
+    using std::string;
+
+    string interfaceTypeId;
+    in >> interfaceTypeId;
+    
+    static const char * const * const begin =
+            nodeInterfaceTypeId_ + NodeInterface::eventIn;
+    static const char * const * const end =
+            nodeInterfaceTypeId_ + NodeInterface::field + 1;
+    const char * const * const pos = find(begin, end, interfaceTypeId);
+    if (pos != end) {
+        type = NodeInterface::Type(pos - begin);
+    } else {
+        in.setstate(std::ios_base::failbit);
+    }
+    return in;
+}
+
 
 /**
  * @var NodeInterface::type
@@ -196,6 +287,50 @@ void NodeInterfaceSet::add(const NodeInterface & nodeInterface)
  * @return a const_iterator pointing to one increment past the last
  *       NodeInterface in the set.
  */
+
+namespace {
+    struct InterfaceIdMatches_ :
+            std::unary_function<OpenVRML::NodeInterface, bool> {
+        explicit InterfaceIdMatches_(const std::string & interfaceId):
+            interfaceId(&interfaceId)
+        {}
+
+        bool operator()(const OpenVRML::NodeInterface & interface) const
+        {
+            static const char eventInPrefix[] = "set_";
+            static const char eventOutSuffix[] = "_changed";
+            
+            return interface.id == *this->interfaceId
+                || (interface.type == NodeInterface::exposedField
+                    && (eventInPrefix + interface.id == *this->interfaceId
+                        || (interface.id + eventOutSuffix == *this->interfaceId)))
+                || (interface.type == NodeInterface::eventIn
+                    && interface.id == eventInPrefix + *this->interfaceId)
+                || (interface.type == NodeInterface::eventOut
+                    && interface.id == *this->interfaceId + eventOutSuffix);
+        }
+
+    private:
+        const std::string * interfaceId;
+    };
+}
+
+/**
+ * @brief Find an interface matching @a interfaceId @p id.
+ *
+ * If no interface is found with an @a interfaceId that is an exact match for
+ * @p id, this method will look for @c set_ and @c _changed variants.
+ *
+ * @param id    the interface id to look for.
+ *
+ * @return a const_iterator to the interface, or NodeInterfaceSet::end if no
+ *      interface is found.
+ */
+NodeInterfaceSet::const_iterator
+NodeInterfaceSet::findInterface(const std::string & id) const throw ()
+{
+    return std::find_if(this->begin(), this->end(), InterfaceIdMatches_(id));
+}
 
 
 /**
@@ -465,25 +600,6 @@ FieldValue::Type NodeType::hasField(const std::string & id) const throw () {
 }
 
 /**
- * @brief Determine if the node type has an interface.
- *
- * If the node type has an interface named @p id, this method will return the
- * type identifier corresponding to the data type accepted by the interface.
- *
- * @param id    the name of the interface.
- *
- * @return the data type of the interface, or FieldValue::invalidType if no
- *      such interface exists.
- */
-FieldValue::Type NodeType::hasInterface(const std::string & id) const throw () {
-    FieldValue::Type retval;
-    if ((retval = this->hasEventIn(id)))      { return retval; }
-    if ((retval = this->hasEventOut(id)))     { return retval; }
-    if ((retval = this->hasExposedField(id))) { return retval; }
-    return (retval = this->hasField(id));
-}
-
-/**
  * @fn const NodeInterfaceSet & NodeType::getInterfaces() const throw ()
  *
  * @brief Get the set of interfaces for the NodeType.
@@ -502,6 +618,27 @@ FieldValue::Type NodeType::hasInterface(const std::string & id) const throw () {
  *
  * @excpetion std::bad_alloc    if memory allocation fails.
  */
+
+
+/**
+ * @class FieldValueTypeMismatch
+ *
+ * @brief Thrown when field value types do not match, generally in a @c ROUTE
+ *      or @c IS.
+ */
+
+/**
+ * @brief Constructor.
+ */
+FieldValueTypeMismatch::FieldValueTypeMismatch():
+    std::runtime_error("Field value types do not match.")
+{}
+
+/**
+ * @brief Destructor.
+ */
+FieldValueTypeMismatch::~FieldValueTypeMismatch() throw ()
+{}
 
 
 /**
@@ -766,8 +903,9 @@ void Node::addEventOutIS(const std::string & eventOutId,
                          PolledEventOutValue * const eventOutValue)
         throw (UnsupportedInterface, std::bad_alloc) {
     if (!this->nodeType.hasEventOut(eventOutId)) {
-        throw UnsupportedInterface(this->nodeType.id + " node has no eventOut "
-                                   + eventOutId);
+        throw UnsupportedInterface(this->nodeType.id
+                                   + " node has no eventOut \"" + eventOutId
+                                   + "\"");
     }
     const EventOutISMap::value_type value(eventOutId, eventOutValue);
     this->eventOutISMap.insert(value);

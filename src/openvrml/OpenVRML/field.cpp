@@ -232,7 +232,7 @@ FieldValue::~FieldValue() throw ()
  */
 
 namespace {
-    const char * ftn[] = {
+    const char * const fieldValueTypeId_[] = {
         "<invalid field type>",
         "SFBool",
         "SFColor",
@@ -262,6 +262,8 @@ namespace {
  *
  * @relates FieldValue
  *
+ * If @p type is FieldValue::invalidType, @c failbit is set on @p out.
+ *
  * @param out   an output stream.
  * @param type  a FieldValue type identifier.
  *
@@ -269,7 +271,12 @@ namespace {
  */
 std::ostream & operator<<(std::ostream & out, const FieldValue::Type type)
 {
-    return out << ftn[type];
+    if (type == FieldValue::invalidType) {
+        out.setstate(std::ios_base::failbit);
+    } else {
+        out << fieldValueTypeId_[type];
+    }
+    return out;
 }
 
 /**
@@ -286,12 +293,16 @@ std::istream & operator>>(std::istream & in, FieldValue::Type & type)
 {
     std::string str;
     in >> str;
-    const char * const * const begin = ftn + FieldValue::sfbool;
-    const char * const * const end = ftn + FieldValue::mfvec3f + 1;
-    const char * const * pos = std::find(begin, end, str);
-    type = (pos == end)
-         ? FieldValue::invalidType
-         : FieldValue::Type(FieldValue::invalidType + (pos - begin));
+    static const char * const * const begin =
+            fieldValueTypeId_ + FieldValue::sfbool;
+    static const char * const * const end =
+            fieldValueTypeId_ + FieldValue::mfvec3f + 1;
+    const char * const * const pos = std::find(begin, end, str);
+    if (pos != end) {
+        type = FieldValue::Type(pos - begin);
+    } else {
+        in.setstate(std::ios_base::failbit);
+    }
     return in;
 }
 

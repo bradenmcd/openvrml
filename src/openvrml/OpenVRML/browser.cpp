@@ -23,6 +23,7 @@
 # endif
 
 # include <algorithm>
+# include <sstream>
 # include <stack>
 # include <regex.h>
 # include "private.h"
@@ -53,6 +54,13 @@
  */
 
 namespace OpenVRML {
+
+    class NodeInterfaceTypeMismatch : public std::runtime_error {
+    public:
+        NodeInterfaceTypeMismatch(NodeInterface::Type lhs,
+                                  NodeInterface::Type rhs);
+        virtual ~NodeInterfaceTypeMismatch() throw ();
+    };
 
     namespace Vrml97Node {
         class Anchor;
@@ -172,7 +180,8 @@ namespace OpenVRML {
         void addIS(Node & implNode,
                    const std::string & implNodeInterfaceId,
                    const std::string & protoInterfaceId)
-                throw (std::invalid_argument, std::bad_alloc);
+            throw (UnsupportedInterface, NodeInterfaceTypeMismatch,
+                   FieldValueTypeMismatch, std::bad_alloc);
 
         void update(double time);
 
@@ -256,15 +265,15 @@ namespace OpenVRML {
 
         public:
             ProtoNodeType(ProtoNodeClass & nodeClass, const std::string & id)
-                    throw (UnsupportedInterface, std::bad_alloc);
+                throw (UnsupportedInterface, std::bad_alloc);
             virtual ~ProtoNodeType() throw ();
 
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
             virtual const NodePtr createNode(const ScopePtr & scope) const
-                    throw (std::bad_alloc);
+                throw (std::bad_alloc);
             
             void addInterface(const NodeInterface & interface)
-                    throw (std::invalid_argument, std::bad_alloc);
+                throw (std::invalid_argument, std::bad_alloc);
         };
 
         friend class ProtoNodeType;
@@ -281,24 +290,25 @@ namespace OpenVRML {
         virtual ~ProtoNodeClass() throw ();
 
         void addEventIn(FieldValue::Type, const std::string & id)
-                throw (std::invalid_argument, std::bad_alloc);
+            throw (std::invalid_argument, std::bad_alloc);
         void addEventOut(FieldValue::Type, const std::string & id)
-                throw (std::invalid_argument, std::bad_alloc);
+            throw (std::invalid_argument, std::bad_alloc);
         void addExposedField(const std::string & id,
                              const FieldValuePtr & defaultValue)
-                throw (std::invalid_argument, std::bad_alloc);
+            throw (std::invalid_argument, std::bad_alloc);
         void addField(const std::string & id,
                       const FieldValuePtr & defaultValue)
-                throw (std::invalid_argument, std::bad_alloc);
+            throw (std::invalid_argument, std::bad_alloc);
         void addRootNode(const NodePtr & node) throw (std::bad_alloc);
         void addIS(Node & implNode,
                    const std::string & implNodeInterfaceId,
                    const std::string & protoInterfaceId)
-                throw (std::invalid_argument, std::bad_alloc);
+            throw (UnsupportedInterface, NodeInterfaceTypeMismatch,
+                   FieldValueTypeMismatch, std::bad_alloc);
 
         virtual const NodeTypePtr createType(const std::string & id,
                                              const NodeInterfaceSet &)
-                throw (UnsupportedInterface, std::bad_alloc);
+            throw (UnsupportedInterface, std::bad_alloc);
     };
     
     class Vrml97RootScope : public Scope {
@@ -2025,6 +2035,18 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
 }
 
 
+NodeInterfaceTypeMismatch::NodeInterfaceTypeMismatch(
+        const NodeInterface::Type lhs, const NodeInterface::Type rhs):
+    std::runtime_error(
+        static_cast<std::ostringstream &>(std::ostringstream() << lhs).str()
+        + " cannot be mapped to "
+        + static_cast<std::ostringstream &>(std::ostringstream() << rhs).str())
+{}
+
+NodeInterfaceTypeMismatch::~NodeInterfaceTypeMismatch() throw ()
+{}
+
+
 /**
  * @internal
  *
@@ -3004,17 +3026,77 @@ void ProtoNode::addRootNode(const NodePtr & node) throw (std::bad_alloc) {
  * @param implNodeInterfaceId   an interface of @p implNode.
  * @param protoInterfaceId      an interface of the prototype.
  *
- * @exception std::invalid_argument
+ * @exception UnsupportedInterface      if @p implNode has no interface
+ *                                      @p implNodeInterfaceId, or if the
+ *                                      prototype has no interface
+ *                                      @p protoInterfaceId.
+ * @exception NodeInterfaceTypeMismatch if the two interface types are
+ *                                      incompatible.
+ * @exception FieldValueTypeMismatch    if the field types of the interfaces are
+ *                                      not identical.
+ * @exception std::bad_alloc            if memory allocation fails.
+ *
+ * @see http://www.web3d.org/technicalinfo/specifications/vrml97/part1/concepts.html#Table4.4
+ *
+ * @todo Rewrite this method. Check for interface type, field type, agreement
+ *      here and throw exceptions on failure.
  */
 void ProtoNode::addIS(Node & implNode,
                       const std::string & implNodeInterfaceId,
                       const std::string & protoInterfaceId)
-        throw (std::invalid_argument, std::bad_alloc) {
-    const ImplNodeInterface implNodeInterface(implNode, implNodeInterfaceId);
-    const ISMap::value_type value(protoInterfaceId, implNodeInterface);
+    throw (UnsupportedInterface, NodeInterfaceTypeMismatch,
+           FieldValueTypeMismatch, std::bad_alloc)
+{
+    using std::find_if;
+    using std::pair;
+
+    //
+    // Make sure the IS is legitimate. First, get the interface type of the
+    // implementation node's interface.
+    //
+    const NodeInterfaceSet::const_iterator implNodeInterface =
+        implNode.nodeType.getInterfaces().findInterface(implNodeInterfaceId);
+    if (implNodeInterface == implNode.nodeType.getInterfaces().end()) {
+        throw UnsupportedInterface(implNode.nodeType, implNodeInterfaceId);
+    }
+
+    //
+    // The rhs of the IS mapping must be an *exact* match for one of the
+    // PROTO's interfaces; so, we don't use NodeInterfaceSet::findInterface.
+    //
+    const NodeInterfaceSet & protoInterfaces = this->nodeType.getInterfaces();
+    const NodeInterfaceSet::const_iterator protoInterface =
+            find_if(protoInterfaces.begin(), protoInterfaces.end(),
+                    InterfaceIdEquals_(protoInterfaceId));
+    if (protoInterface == protoInterfaces.end()) {
+        throw UnsupportedInterface(this->nodeType, protoInterfaceId);
+    }
+    
+    //
+    // Make sure the interface types agree.
+    //
+    if (implNodeInterface->type != NodeInterface::exposedField
+            && implNodeInterface->type != protoInterface->type) {
+        throw NodeInterfaceTypeMismatch(implNodeInterface->type,
+                                        protoInterface->type);
+    }
+    
+    //
+    // Make sure the field value types agree.
+    //
+    if (implNodeInterface->fieldType != protoInterface->fieldType) {
+        throw FieldValueTypeMismatch();
+    }
+
+    //
+    // Add the IS.
+    //    
+    const ISMap::value_type
+            value(protoInterfaceId,
+                  ImplNodeInterface(implNode, implNodeInterfaceId));
     this->isMap.insert(value);
 
-    if (this->nodeType.hasEventOut(protoInterfaceId)) {
+    if (protoInterface->type == NodeInterface::eventOut) {
         EventOutValueMap::iterator pos =
                 this->eventOutValueMap.find(protoInterfaceId);
         if (pos == this->eventOutValueMap.end()) {
@@ -3476,12 +3558,22 @@ void ProtoNodeClass::addRootNode(const NodePtr & node) throw (std::bad_alloc) {
  * @param implNodeInterfaceId   an interface of @p implNode.
  * @param protoInterfaceId      an interface of the prototype.
  *
- * @exception std::invalid_argument
+ * @exception UnsupportedInterface      if @p implNode has no interface
+ *                                      @p implNodeInterfaceId, or if the
+ *                                      prototype has no interface
+ *                                      @p protoInterfaceId.
+ * @exception NodeInterfaceTypeMismatch if the two interface types are
+ *                                      incompatible.
+ * @exception FieldValueTypeMismatch    if the field types of the interfaces are
+ *                                      not identical.
+ * @exception std::bad_alloc            if memory allocation fails.
  */
 void ProtoNodeClass::addIS(Node & implNode,
                            const std::string & implNodeInterfaceId,
                            const std::string & protoInterfaceId)
-        throw (std::invalid_argument, std::bad_alloc) {
+    throw (UnsupportedInterface, NodeInterfaceTypeMismatch,
+           FieldValueTypeMismatch, std::bad_alloc)
+{
     this->protoNode.addIS(implNode, implNodeInterfaceId, protoInterfaceId);
 }
 

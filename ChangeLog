@@ -1,3 +1,13 @@
+2002-10-26  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Vrml97Parser.cpp,
+          src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.hpp,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/field.cpp,
+          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h:
+          Fixed crash when parsing IS mappings.
+
 2002-10-24  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, m4/Makefile.am, m4/cxxhash_map.m4,
