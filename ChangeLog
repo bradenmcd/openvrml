@@ -1,3 +1,10 @@
+2002-09-21  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/browser.cpp: Removed Node::toInline
+          method.
+
 2002-09-23  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * src/openvrml/OpenVRML/field.cpp: VC++6.0 complains about

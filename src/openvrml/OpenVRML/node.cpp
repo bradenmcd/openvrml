@@ -1114,8 +1114,6 @@ Vrml97Node::Fog * Node::toFog() const { return 0; }
 
 Vrml97Node::Group * Node::toGroup() const { return 0; }
 
-Vrml97Node::Inline * Node::toInline() const { return 0; }
-
 Vrml97Node::AbstractLight * Node::toLight() const { return 0; }
 
 Vrml97Node::MovieTexture * Node::toMovieTexture() const { return 0; }

@@ -170,7 +170,6 @@ namespace OpenVRML {
         class CylinderSensor;
         class Fog;
         class Group;
-        class Inline;
         class AbstractLight;
         class MovieTexture;
         class NavigationInfo;
@@ -286,7 +285,6 @@ namespace OpenVRML {
         virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
         virtual Vrml97Node::Fog * toFog() const;
         virtual Vrml97Node::Group * toGroup() const;
-        virtual Vrml97Node::Inline * toInline() const;
         virtual Vrml97Node::AbstractLight * toLight() const;
         virtual Vrml97Node::MovieTexture * toMovieTexture() const;
         virtual Vrml97Node::NavigationInfo * toNavigationInfo() const;
