@@ -308,7 +308,8 @@ namespace openvrml {
 
         openvrml::browser & browser() const throw ();
         scene * parent() const throw ();
-        void load(const std::vector<std::string> & url) throw (std::bad_alloc);
+        void load(const std::vector<std::string> & url)
+            throw (boost::thread_resource_error, std::bad_alloc);
         void initialize(double timestamp) throw (std::bad_alloc);
         const std::vector<node_ptr> & nodes() const throw ();
         void nodes(const std::vector<node_ptr> & n) throw (std::bad_alloc);
@@ -319,7 +320,8 @@ namespace openvrml {
                       const std::vector<std::string> & parameter)
             throw (std::bad_alloc);
         std::auto_ptr<resource_istream>
-        get_resource(const std::vector<std::string> & url) const;
+        get_resource(const std::vector<std::string> & url) const
+            throw (no_alternative_url, std::bad_alloc);
         void shutdown(double timestamp) throw ();
 
     private:

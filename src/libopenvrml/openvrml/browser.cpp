@@ -5469,78 +5469,40 @@ struct scene::load_scene {
         url_(&url)
     {}
         
-    void operator()() const
-    {
+    void operator()() const throw () try {
+        using std::auto_ptr;
         using std::string;
         using std::vector;
 
         openvrml::scene & scene = *this->scene_;
         const vector<string> & url = *this->url_;
 
-        string absolute_uri;
+        assert(scene.url().empty());
+
         vector<node_ptr> nodes;
-        for (vector<string>::size_type i = 0; i < url.size(); ++i) {
-            try {
-                using std::auto_ptr;
-
-                //
-                // Throw invalid_url if it isn't a valid URI.
-                //
-                uri test_uri(url[i]);
-
-                const bool absolute = !test_uri.scheme().empty();
-                if (absolute) {
-                    absolute_uri = test_uri;
-                } else if (!scene.parent()) {
-                    //
-                    // If we have a relative reference and the parent is
-                    // null, then assume the reference is to the local file
-                    // system:  convert the relative reference to a file
-                    // URL.
-                    //
-                    absolute_uri = create_file_url(test_uri);
-                } else {
-                    //
-                    // If we have a relative URI and parent is not null,
-                    // try to resolve the relative reference against the
-                    // parent's URI.
-                    //
-                    const uri parent_uri(scene.parent()->url());
-                    absolute_uri = test_uri.resolve_against(parent_uri);
-                }
-
-                auto_ptr<resource_istream>
-                    in(scene.browser().get_resource(absolute_uri));
-                if (!(*in)) { throw unreachable_url(); }
-                try {
-                    Vrml97Scanner scanner(*in);
-                    Vrml97Parser parser(scanner, absolute_uri);
-                    parser.vrmlScene(scene.browser(), nodes);
-                } catch (antlr::RecognitionException & ex) {
-                    throw invalid_vrml(ex.getFilename(),
-                                       ex.getLine(),
-                                       ex.getColumn(),
-                                       ex.getMessage());
-                } catch (antlr::ANTLRException & ex) {
-                    scene.browser().err << ex.getMessage() << std::endl;
-                } catch (std::bad_alloc &) {
-                    throw;
-                } catch (...) {
-                    throw unreachable_url();
-                }
-            } catch (bad_url & ex) {
-                scene.browser().err << ex.what() << std::endl;
-                continue;
-            }
-            //
-            // If this is the root scene (that is, the parent is null),
-            // then this->uri must be the absolute URI.
-            //
-            scene.url(scene.parent() ? url[i] : absolute_uri);
-            break;
+        try {
+            auto_ptr<resource_istream> in = scene.get_resource(url);
+            if (!(*in)) { throw unreachable_url(); }
+            Vrml97Scanner scanner(*in);
+            Vrml97Parser parser(scanner, in->url());
+            parser.vrmlScene(scene.browser(), nodes);
+        } catch (antlr::RecognitionException & ex) {
+            throw invalid_vrml(ex.getFilename(),
+                               ex.getLine(),
+                               ex.getColumn(),
+                               ex.getMessage());
+        } catch (antlr::ANTLRException & ex) {
+            scene.browser().err << ex.getMessage() << std::endl;
+        } catch (std::bad_alloc & ex) {
+            scene.browser().err << ex.what() << std::endl;
+            throw unreachable_url();
+        } catch (...) {
+            throw unreachable_url();
         }
         scene.nodes(nodes);
         scene.scene_loaded();
+    } catch (std::exception & ex) {
+        this->scene_->browser().err << ex.what() << std::endl;
     }
 
 private:
@@ -5564,15 +5526,14 @@ private:
  *              of alternative URIs.  The first one in the list to load
  *              successfully is used.
  *
- * @exception std::bad_alloc    if memory allocation fails.
+ * @exception boost::thread_resource_error  if a new thread of execution cannot
+ *                                          be started.
+ * @exception std::bad_alloc                if memory allocation fails.
  */
 void scene::load(const std::vector<std::string> & url)
-    throw (std::bad_alloc)
+    throw (boost::thread_resource_error, std::bad_alloc)
 {
-    using boost::scoped_ptr;
-    using boost::thread;
-    scoped_ptr<thread> scene_loading_thread(
-        new thread(load_scene(*this, url)));
+    boost::thread(load_scene(*this, url));
 }
 
 /**
@@ -5742,9 +5703,14 @@ void scene::load_url(const std::vector<std::string> & url,
  * @param url   a list of alternative URIs.
  *
  * @return the resource.
+ *
+ * @exception no_alternative_url    if none of the elements of @p url can be
+ *                                  resolved.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 std::auto_ptr<resource_istream>
 scene::get_resource(const std::vector<std::string> & url) const
+    throw (no_alternative_url, std::bad_alloc)
 {
     using std::string;
     using std::vector;
@@ -5758,10 +5724,18 @@ scene::get_resource(const std::vector<std::string> & url) const
             //
             uri test_uri(url[i]);
 
-            const bool absolute = !test_uri.scheme().empty();
-            const uri absolute_uri = absolute
+            //
+            // If we have a relative reference, resolve it against this->url();
+            // unless the parent is null and this->url() is empty, in which
+            // case we are loading the root scene.  In that case, construct an
+            // absolute file URL.
+            //
+            const uri absolute_uri = !test_uri.scheme().empty()
                                    ? test_uri
-                                   : test_uri.resolve_against(uri(this->url_));
+                                   : (this->parent() && !this->url().empty())
+                                        ? test_uri
+                                            .resolve_against(uri(this->url()))
+                                        : create_file_url(test_uri);
 
             in = this->browser().get_resource(absolute_uri);
             if (!(*in)) { throw unreachable_url(); }
@@ -5771,6 +5745,7 @@ scene::get_resource(const std::vector<std::string> & url) const
             continue;
         }
     }
+    if (!in.get()) { throw no_alternative_url(); }
     return in;
 }
 

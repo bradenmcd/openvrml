@@ -1,3 +1,11 @@
+2005-03-31 Braden McDaniel  <braden@endoframe.com>
+
+	Refactored openvrml::scene::load to use
+	openvrml::scene::get_resource.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+
 2005-03-30 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Makefile.am:  Updated dependency list.
