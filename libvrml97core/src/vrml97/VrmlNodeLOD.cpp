@@ -219,7 +219,7 @@ const VrmlBVolume* VrmlNodeLOD::getBVolume() const
 void
 VrmlNodeLOD::recalcBSphere()
 {
-  cout << "VrmlNodeLOD[" << this << "]::recalcBSphere()" << endl;
+  //cout << "VrmlNodeLOD[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
   
   // let's say our bsphere is the union of the bspheres of all the
