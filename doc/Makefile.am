@@ -1,11 +1,12 @@
 docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
 EXTRA_DIST = \
-        conformance.html \
         Doxyfile \
         openvrml.css \
         doxygen-header \
         doxygen-footer \
+        index.doc \
+        conformance.doc \
         manual
 
 install-data-local:

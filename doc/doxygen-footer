@@ -1,4 +1,4 @@
 </div>
-<address class="footer"><a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=7151&type=3" width="125" height="37" border="0" alt="SourceForge.net Logo" align="right"></a><a href="http://sourceforge.net/tracker/?func=add&group_id=7151&atid=107151">Report error</a><br>Generated $datetime by Doxygen $doxygenversion</address>
+<address class="footer"><a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=7151&amp;type=3" width="125" height="37" border="0" alt="SourceForge.net Logo" align="right"></a><a href="http://sourceforge.net/tracker/?func=add&amp;group_id=7151&amp;atid=107151">Report error</a><br>Generated $datetime by Doxygen $doxygenversion</address>
 </body>
 </html>

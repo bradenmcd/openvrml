@@ -4,13 +4,15 @@
 <html>
 <head>
 <title>$title</title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
 <link rel="stylesheet" href="openvrml.css">
 <link rel="icon" href="../vrml-16.png">
-<link rel="start" href="http://openvrml.org/index.php">
-<link rel="prev" href="http://openvrml.org/discussion.php">
-<link rel="next" href="http://openvrml.org/links.php">
-<link rel="contents" href="index.html">
-<link rel="index" href="functions.html">
+<link rel="start" href="http://openvrml.org/index.php" title="OpenVRML Home">
+<link rel="prev" href="http://openvrml.org/discussion.php" title="Discussion">
+<link rel="next" href="http://openvrml.org/links.php" title="Links">
+<link rel="contents" href="index.html" title="Documentation Main Page">
+<link rel="index" href="functions.html" title="OpenVRML Compound Members">
+<link rel="appendix" href="conformance.html" title="Conformance Test Results">
 </head>
 <body>
 <table class="sitenav">
