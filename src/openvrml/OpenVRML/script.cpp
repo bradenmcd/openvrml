@@ -5874,8 +5874,6 @@ JSBool MFNode::setLength(JSContext * const cx, JSObject * const obj,
     if (!JSVAL_IS_INT(*vp) || JSVAL_TO_INT(*vp) < 0) { return JS_FALSE; }
 
     try {
-        jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "Group {}"));
-
         JsvalArray newArray(JSVAL_TO_INT(*vp));
         AddRoots(cx, newArray); // Protect from gc.
 
@@ -5892,13 +5890,13 @@ JSBool MFNode::setLength(JSContext * const cx, JSObject * const obj,
         // Initialize the rest of the array with new values.
         //
         try {
+            jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "Group {}"));
+
             for (size_t i = length; i < newArray.size(); ++i) {
                 JSObject * const element =
-                    JS_NewObject(cx, &SFNode::jsclass, 0, 0);
+                    JS_ConstructObjectWithArguments(cx, &SFNode::jsclass, 0, 0,
+                                                    1, &arg);
                 if (!element) { throw std::bad_alloc(); }
-                if (!SFNode::initObject(cx, element, 1, &arg)) {
-                    throw std::bad_alloc();
-                }
                 newArray[i] = OBJECT_TO_JSVAL(element);
             }
         } catch (std::bad_alloc &) {
