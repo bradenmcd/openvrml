@@ -1,3 +1,8 @@
+2000-03-07  Braden McDaniel <braden@endoframe.com>
+        * Made Viewer's protected member functions computeCylinder,
+          computeExtrusion, computeSphere, and computeView all static, as there
+          seems no reason for them not to be.
+
 2000-01-23  Braden McDaniel <braden@endoframe.com>
 
         * Patch from Stuart Anderson <anderson@metrolink.com> applied to lookat

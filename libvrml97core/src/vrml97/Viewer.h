@@ -209,14 +209,14 @@ public:
 
 protected:
 
-  void computeCylinder(double height,
+  static void computeCylinder(double height,
 		       double radius,
 		       int numFacets,
 		       float c[][3],
 		       float tc[][3],
 		       int faces[]);
 
-  void computeExtrusion( int  /*nOrientation*/,
+  static void computeExtrusion( int  /*nOrientation*/,
 			 float * /*orientation*/,
 			 int  /*nScale*/,
 			 float * /*scale*/,
@@ -228,13 +228,13 @@ protected:
 			 float *tc,  // OUT: texture coords
 			 int *faces);    // OUT: face list
 
-  void computeSphere(double radius,
+  static void computeSphere(double radius,
 		     int numLatLong,
 		     float c[][3],
 		     float tc[][3],
 		     int faces[]);
 
-  void computeView(float position[3],
+  static void computeView(float position[3],
 		   float orientation[3],
 		   float distance,
 		   float target[3],
