@@ -20,7 +20,6 @@
 
 #include "MathUtils.h"
 #include "private.h"
-#include <string.h>		// memcpy
 
 using namespace OpenVRML;
 using namespace OpenVRML_;
