@@ -69,31 +69,31 @@ bool Image::setURL(const char *url, Doc *relative)
   FILE *fp = d_url->fopen("rb");
 
   if (fp)
-    {
+  {
       switch (imageFileType(url, fp))
-	{
-	case ImageFile_GIF:
-	  d_pixels = gifread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
-	  break;
+	    {
+	      case ImageFile_GIF:
+	        d_pixels = gifread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
+	        break;
 
-	case ImageFile_JPG:
-	  d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
-	  break;
+	      case ImageFile_JPG:
+	        d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
+	        break;
           
-	case ImageFile_PNG:
-	  d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
-	  break;
+	      case ImageFile_PNG:
+	        d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
+	        break;
 
-	default:
-	  fprintf(stderr,"Error: unrecognized image file format (%s).\n", url);
-	  break;
+	      default:
+	        theSystem->error("Error: unrecognized image file format (%s).\n", url);
+	        break;
 	}
 
-      if (! d_pixels)
-	fprintf(stderr,"Error: unable to read image file (%s).\n", url);
+  if (! d_pixels)
+	  theSystem->error("Error: unable to read image file (%s).\n", url);
 	
-      d_url->fclose();
-    }
+  d_url->fclose();
+  }
 
   return (d_pixels != 0);
 }
