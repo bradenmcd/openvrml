@@ -65,10 +65,6 @@ PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
 AC_PATH_PROG([FREETYPE_CONFIG], [freetype-config])
 
 PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
-if test "X$PKG_CONFIG" != "Xno" -a -z "$JS_PKG_ERRORS"; then
-  mozincludedir=`$PKG_CONFIG --variable=includedir mozilla-js`
-  JS_CFLAGS="-I$mozincludedir $JS_CFLAGS"
-fi
 
 AX_CHECK_GLU
 
