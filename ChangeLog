@@ -1,3 +1,9 @@
+2003-03-21  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/System.cpp,
+          src/openvrml/OpenVRML/System.h:  Fixes to compile with cl
+          (POSIXy functions start with an underscore).
+
 2003-03-12  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/lookat.cpp, src/openvrml/OpenVRML/ScriptJDK.cpp,
