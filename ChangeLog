@@ -1,3 +1,71 @@
+2004-12-25 Braden McDaniel  <braden@endoframe.com>
+
+	Merged changes from 0.15.3 release.
+
+	* NEWS
+	* INSTALL:  Updated to the one included with Automake 1.9.2.
+	* README:  Removed references to GtkGLExt dependency; fixed
+	mailing list addresses; eliminated ambiguity regarding required
+	vs. optional dependencies (i.e., make it clear that Boost is
+	required).
+	* configure.ac
+	* openvrml.spec.in
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC7_1/OpenVRML/antlr/antlr.vcproj:
+	Define NDEBUG for Release configuration in the Visual C++ 7.1
+	project.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
+	Define NDEBUG for Release configuration in the Visual C++ 7.1
+	project.
+	* mozilla-plugin/Makefile.am
+	* mozilla-plugin/configure.ac:  Don't fail when xpidl isn't
+	found when configured with --disable-mozilla-plugin.
+	* mozilla-plugin/lib/Makefile.am
+	* mozilla-plugin/lib/gtkglext/Makefile.am:  Removed
+	gtkglext.spec from the distribution (it confuses rpm); don't
+	install pkgconfig metadata.
+	* mozilla-plugin/lib/gtkglext/configure.in:  Disable building
+	shared libraries; don't use AM_MAINTAINER_MODE.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/Makefile.am:
+	Don't add documentation to the distribution.
+	* mozilla-plugin/lib/gtkglext/gdk/Makefile.am:  Don't install
+	libgdkglext;  create gdkglenumtypes.h, gdkglenumtypes.c in the
+	build directory rather than the source directory; moved
+	$(gdk_built_sources) from MAINTAINERCLEANFILES to
+	DISTCLEANFILES.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglconfig.c:  Use
+	g_type_from_name to first check if the type has already been
+	registered.  This would be the case if the shared object had
+	previously been loaded and then unloaded.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/Makefile.am:  Don't
+	install gdkglext headers.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/Makefile.am:  Don't
+	install gdkglext headers.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/Makefile.am:  Don't
+	install gdkglext headers.
+	* mozilla-plugin/lib/gtkglext/gtk/Makefile.am:  Don't install
+	libgtkglext.
+	* mozilla-plugin/lib/gtkglext/m4macros/Makefile.am:  Don't
+	install GtkGLExt macro.
+	* mozilla-plugin/src/Makefile.am:  Use GtkGLExt in the
+	distribution; added MOZILLA_PLUGIN_LIBS to LDFLAGS.
+	* mozilla-plugin/src/openvrml.cpp:  Copied the URI parser from
+	openvrml::browser.  Get the URI for the Web page hosting the
+	plug-in, and then resolve the relative URI for the plug-in
+	against it.
+	* src/libopenvrml/Makefile.am:  Updated library version to
+	5:1:0.
+	* src/libopenvrml/openvrml/browser.cpp:  Improved relative URI
+	handling.
+	* src/libopenvrml/openvrml/system.cpp:  Added missing <iostream>
+	inclusion.
+	* src/libopenvrml-gl/Makefile.am:  Updated library version to
+	6:1:0.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(viewer::transform_points):  Fixed math to correctly transform
+	by the modelview matrix.  This fixes a problem with the
+	VisibilitySensor node.
+
 2004-12-13 Braden McDaniel  <braden@endoframe.com>
 
 	Moved private.h from src/libopenvrml/openvrml to

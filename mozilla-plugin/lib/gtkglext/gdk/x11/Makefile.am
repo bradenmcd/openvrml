@@ -49,7 +49,7 @@ gdkglext_x11_sources = \
 	$(gdkglext_x11_c_sources)
 
 gdkglextx11includedir = $(includedir)/gtkglext-@GTKGLEXT_API_VERSION@/gdk/x11
-gdkglextx11include_HEADERS = $(gdkglext_x11_headers)
+noinst_HEADERS = $(gdkglext_x11_headers)
 
 noinst_LTLIBRARIES = libgdkglext-x11.la
 

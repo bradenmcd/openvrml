@@ -27,7 +27,7 @@ noinst_HEADERS = \
         openvrml/Vrml97ParserTokenTypes.hpp \
         openvrml/ScriptJDK.h
 
-LIBRARY_VERSION = 5:0:0
+LIBRARY_VERSION = 5:1:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |

@@ -41,6 +41,7 @@
 # include <boost/cast.hpp>
 # include <boost/shared_ptr.hpp>
 # include <boost/spirit.hpp>
+# include <boost/spirit/phoenix.hpp>
 # include <boost/utility.hpp>
 # ifdef OPENVRML_ENABLE_GZIP
 #   include <zlib.h>
@@ -2560,42 +2561,36 @@ namespace {
         return *static_cast<openvrml::event_emitter *>(0);
     }
 
-
     class uri {
         struct grammar : public boost::spirit::grammar<grammar> {
-            class assign_iterators_actor {
-                std::string::const_iterator * begin;
-                std::string::const_iterator * end;
-
-            public:
-                assign_iterators_actor(std::string::const_iterator & begin,
-                                       std::string::const_iterator & end):
-                    begin(&begin),
-                    end(&end)
-                {}
-
-                template <typename IteratorT>
-                void operator()(const IteratorT & first,
-                                const IteratorT & last) const
-                {
-                    *this->begin = first;
-                    *this->end = last;
-                }
+            struct absolute_uri_closure :
+                boost::spirit::closure<absolute_uri_closure,
+                                       std::string::const_iterator,
+                                       std::string::const_iterator> {
+                member1 scheme_begin;
+                member2 scheme_end;
             };
 
-            static const assign_iterators_actor
-            assign_iterators_a(std::string::const_iterator & begin,
-                               std::string::const_iterator & end)
-            {
-                return assign_iterators_actor(begin, end);
-            }
+            struct server_closure :
+                boost::spirit::closure<server_closure,
+                                       std::string::const_iterator,
+                                       std::string::const_iterator> {
+                member1 userinfo_begin;
+                member2 userinfo_end;
+            };
 
             template <typename ScannerT>
             struct definition {
                 typedef boost::spirit::rule<ScannerT> rule_type;
+                typedef boost::spirit::rule<ScannerT,
+                                            absolute_uri_closure::context_t>
+                    absolute_uri_rule_type;
+                typedef boost::spirit::rule<ScannerT,
+                                            server_closure::context_t>
+                    server_rule_type;
 
                 rule_type uri_reference;
-                rule_type absolute_uri;
+                absolute_uri_rule_type absolute_uri;
                 rule_type relative_uri;
                 rule_type hier_part;
                 rule_type opaque_part;
@@ -2607,7 +2602,7 @@ namespace {
                 rule_type scheme;
                 rule_type authority;
                 rule_type reg_name;
-                rule_type server;
+                server_rule_type server;
                 rule_type userinfo;
                 rule_type hostport;
                 rule_type host;
@@ -2679,6 +2674,7 @@ namespace {
     uri::grammar::definition<ScannerT>::definition(const grammar & self)
     {
         using namespace boost::spirit;
+        using namespace phoenix;
 
         BOOST_SPIRIT_DEBUG_NODE(uri_reference);
         BOOST_SPIRIT_DEBUG_NODE(absolute_uri);
@@ -2721,9 +2717,15 @@ namespace {
             ;
 
         absolute_uri
-            =   scheme >> ':' >> (hier_part | opaque_part)[
-                    assign_iterators_a(uri_ref.scheme_specific_part_begin,
-                                       uri_ref.scheme_specific_part_end)
+            =   (scheme[
+                    absolute_uri.scheme_begin = arg1,
+                    absolute_uri.scheme_end = arg2
+                ] >> ':')[
+                    var(uri_ref.scheme_begin) = absolute_uri.scheme_begin,
+                    var(uri_ref.scheme_end) = absolute_uri.scheme_end
+                ] >> (hier_part | opaque_part)[
+                    var(uri_ref.scheme_specific_part_begin) = arg1,
+                    var(uri_ref.scheme_specific_part_end) = arg2
                 ]
             ;
 
@@ -2759,14 +2761,15 @@ namespace {
 
         abs_path
             =   ('/' >> path_segments)[
-                    assign_iterators_a(uri_ref.path_begin,
-                                       uri_ref.path_end)
+                    var(uri_ref.path_begin) = arg1,
+                    var(uri_ref.path_end) = arg2
                 ]
             ;
 
         rel_path
             =   (rel_segment >> !abs_path)[
-                    assign_iterators_a(uri_ref.path_begin, uri_ref.path_end)
+                    var(uri_ref.path_begin) = arg1,
+                    var(uri_ref.path_end) = arg2
                 ]
             ;
 
@@ -2784,15 +2787,13 @@ namespace {
             ;
 
         scheme
-            =   (alpha_p >> *(alpha_p | digit_p | '+' | '-' | '.'))[
-                    assign_iterators_a(uri_ref.scheme_begin, uri_ref.scheme_end)
-                ]
+            =   (alpha_p >> *(alpha_p | digit_p | '+' | '-' | '.'))
             ;
 
         authority
             =   (server | reg_name)[
-                    assign_iterators_a(uri_ref.authority_begin,
-                                       uri_ref.authority_end)
+                    var(uri_ref.authority_begin) = arg1,
+                    var(uri_ref.authority_end) = arg2
                 ]
             ;
 
@@ -2811,21 +2812,29 @@ namespace {
             ;
 
         server
-            =  !(!(userinfo >> '@') >> hostport)
+            =  !(
+                    !(userinfo[
+                        server.userinfo_begin = arg1,
+                        server.userinfo_end = arg2
+                    ] >> '@')[
+                        var(uri_ref.userinfo_begin) = server.userinfo_begin,
+                        var(uri_ref.userinfo_end) = server.userinfo_end
+                    ]
+                    >> hostport
+                )
             ;
 
         userinfo
-            =  (*(   unreserved
-                 |   escaped
-                 |   ';'
-                 |   ':'
-                 |   '&'
-                 |   '='
-                 |   '+'
-                 |   '$'
-                 |   ','
-                 ))[assign_iterators_a(uri_ref.userinfo_begin,
-                                       uri_ref.userinfo_end)]
+            =  *(   unreserved
+                |   escaped
+                |   ';'
+                |   ':'
+                |   '&'
+                |   '='
+                |   '+'
+                |   '$'
+                |   ','
+                )
             ;
 
         hostport
@@ -2833,8 +2842,10 @@ namespace {
             ;
 
         host
-            =   (hostname | ipv4address)[assign_iterators_a(uri_ref.host_begin,
-                                                            uri_ref.host_end)]
+            =   (hostname | ipv4address)[
+                    var(uri_ref.host_begin) = arg1,
+                    var(uri_ref.host_end) = arg2
+                ]
             ;
 
         hostname
@@ -2855,8 +2866,10 @@ namespace {
             ;
 
         port
-            =   (*digit_p)[assign_iterators_a(uri_ref.port_begin,
-                                              uri_ref.port_end)]
+            =   (*digit_p)[
+                    var(uri_ref.port_begin) = arg1,
+                    var(uri_ref.port_end) = arg2
+                ]
             ;
 
         path_segments
@@ -2885,14 +2898,15 @@ namespace {
 
         query
             =   (*uric)[
-                    assign_iterators_a(uri_ref.query_begin, uri_ref.query_end)
+                    var(uri_ref.query_begin) = arg1,
+                    var(uri_ref.query_end) = arg2
                 ]
             ;
 
         fragment
             =   (*uric)[
-                    assign_iterators_a(uri_ref.fragment_begin,
-                                       uri_ref.fragment_end)
+                    var(uri_ref.fragment_begin) = arg1,
+                    var(uri_ref.fragment_end) = arg2
                 ]
             ;
 
@@ -2903,7 +2917,7 @@ namespace {
             ;
 
         reserved
-            =   ch_p('#')
+            =   ch_p(';')
             |   '/'
             |   '?'
             |   ':'
@@ -3110,6 +3124,7 @@ namespace {
 
         return result_uri;
     }
+
 
 # ifdef OPENVRML_ENABLE_GZIP
     namespace z {

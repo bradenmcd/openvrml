@@ -10,9 +10,7 @@ gtkglext-$(API_VER).m4: $(srcdir)/gtkglext.m4
 	rm -f $@ && cp $< $@
 
 m4datadir = $(datadir)/aclocal
-m4data_DATA = gtkglext-$(API_VER).m4
-
-$(m4data_DATA): $(top_builddir)/config.status
+noinst_DATA = gtkglext-$(API_VER).m4
 
 DISTCLEANFILES = gtkglext-$(API_VER).m4
 

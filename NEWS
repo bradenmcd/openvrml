@@ -1,5 +1,21 @@
+Changes new in version 0.15.3, 25 December, 2004
+================================================
+
+- GtkGLExt is now incorporated into the OpenVRML distribution.
+
+- Problems reloading the Mozilla plug-in have been fixed.
+
+- The Mozilla plug-in now handles relative URIs in Web pages.
+
+- Fixed crash when built with Microsoft Visual C++ 7.1 in the Release
+  configuration.
+
+- Minor bug fixes.
+
+
 Changes new in version 0.15.2, 3 December, 2004
 ===============================================
+
 - Made building the tests optional.
 
 - Minor bug fixes.

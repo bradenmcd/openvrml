@@ -83,14 +83,23 @@ are available under the terms of the GNU General Public License (GPL),
 version 2.  The full text of the GPL can be found in the file "COPYING".
 
 
-Dependencies
-============
+Required dependencies
+=====================
 
-   If your system is missing any of OpenVRML's dependencies, first
-check to see if they are provided by your operating system vendor.
-If not, consult the URIs below.
+   OpenVRML requires the Boost C++ libraries to build.  Boost is
+packaged for many systems; so you should consult your operating system
+vendor if Boost is not already installed on your system.  Otherwise, you
+can obtain Boost from <http://boost.org>.
 
-     Boost                  <http://boost.org>
+
+Optional dependencies
+=====================
+
+   OpenVRML has several optional dependencies.  If your system is
+missing any of these dependencies, first check to see if they are
+provided by your operating system vendor.  If not, consult the URIs
+below.
+
      zlib                   <http://www.gzip.org/zlib/index.html>
      libpng                 <http://www.libpng.org/pub/png/libpng.html>
      libjpeg                <http://www.ijg.org>
@@ -100,20 +109,13 @@ If not, consult the URIs below.
      Java Development Kit   <http://java.sun.com/j2se/>
      OpenGL/Mesa            <http://mesa3d.org>
      GTK+                   <http://gtk.org>
-     GtkGLExt               <http://gtkglext.sourceforge.net>
      SDL                    <http://libsdl.org>
      DejaGnu                <http://www.gnu.org/software/dejagnu/>
      Doxygen                <http://doxygen.org>
 
-   OpenVRML can be built with reduced functionality to avoid many of
+   OpenVRML can be built with reduced functionality which can avoid
 these dependencies.  See the following section, "'configure' options",
 for details.
-
-   Most of OpenVRML's dependencies are either commonplace or easy to
-obtain for POSIX systems.  Windows users may encounter additional
-difficulty compiling some of these dependencies, so compiled versions
-are provided for convenience:
-     <http://openvrml.org/dist/win32_required_libs_and_includes.zip>
 
 
 "configure" options
@@ -161,7 +163,7 @@ depends on.
 
  --disable-mozilla-plugin
      Do not build the Mozilla plug-in.  The Mozilla plug-in depends on
-     GTK+, GtkGLExt, and, of course, Mozilla.
+     GTK+ and, of course, Mozilla.
 
 --disable-tests
      Do not build the test programs.  The test programs depend on
@@ -243,16 +245,18 @@ Mailing lists
 
    Two mailing lists are maintained:
 
- * <openvrml-announce@sourceforge.net> is a low-traffic list for
+ * <openvrml-announce@lists.sourceforge.net> is a low-traffic list for
    announcments, typically regarding new releases.  Subscription
    instructions are at
      <http://lists.sf.net/mailman/listinfo/openvrml-announce>
 
- * <openvrml-develop@sourceforge.net> is a forum for developers using
+ * <openvrml-develop@lists.sourceforge.net> is a forum for developers using
    and working on the libraries.  User feedback is welcome in this
    channel.  Subscription instructions are at
      <http://lists.sf.net/mailman/listinfo/openvrml-develop>
 
+      In order to curb unsolicited commercial e-mail, openvrml-develop
+   permits posting only by subscribers.
 
 Get involved
 ============
