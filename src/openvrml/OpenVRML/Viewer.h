@@ -223,23 +223,6 @@ namespace OpenVRML {
                                  BVolume::Intersection intersection) = 0;
 
     protected:
-        static void computeCylinder(double height, double radius, int numFacets,
-		                    float c[][3], float tc[][3], int faces[]);
-
-        static void computeExtrusion(int nOrientation, const float * orientation,
-                                     int nScale, const float * scale,
-                                     int nCrossSection, const float * crossSection,
-                                     int nSpine, const float * spine,
-                                     float * c,   // OUT: coordinates
-                                     float * tc,  // OUT: texture coords
-                                     int * faces);    // OUT: face list
-
-        static void computeSphere(double radius, int numLatLong,
-                                  float c[][3], float tc[][3], int faces[]);
-
-        static void computeView(const float position[3], float orientation[3],
-                                float distance, float target[3], float up[3]);
-        
         explicit Viewer(Browser & browser);
 
     private:

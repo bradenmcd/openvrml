@@ -106,8 +106,6 @@ VrmlFrustum::VrmlFrustum() {
  *
  */
 VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar) {
-    using OpenVRML_::pi;
-
     fovy = (afovy / 360.0) * 2.0 * pi;
     float cy = (float)tan(fovy/2.0);
     fovx = 2.0*atan(cy*aaspect);
@@ -197,8 +195,6 @@ void VrmlFrustum::update() {
  * @brief Dumps the frustum to the given stream.
  */
 std::ostream & VrmlFrustum::dump(std::ostream & ostr) const {
-    using OpenVRML_::pi;
-
     ostr << "VrmlFrustum {" << endl;
     ostr << z_near << endl;
     ostr << z_far << endl;

@@ -3818,8 +3818,6 @@ void CylinderSensor::render(Viewer* v, VrmlRenderContext rc) {
 }
 
 void CylinderSensor::activate(double timeStamp, bool isActive, double *p) {
-    using OpenVRML_::pi;
-    using OpenVRML_::pi_2;
     using OpenVRML_::fpequal;
 
     // Become active
@@ -8095,8 +8093,6 @@ OrientationInterpolator::~OrientationInterpolator() throw () {}
 void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
                                                   const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    using OpenVRML_::pi;
-
     float f = dynamic_cast<const SFFloat &>(sffloat).get();
 
     int n = this->key.getLength() - 1;

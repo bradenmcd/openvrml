@@ -32,4 +32,12 @@
 #     define OPENVRML_SCOPE
 #   endif
 
+namespace OpenVRML {
+
+    const double pi     = 3.14159265358979323846;
+    const double pi_2   = 1.57079632679489661923;
+    const double pi_4   = 0.78539816339744830962;
+    const double inv_pi = 0.31830988618379067154;
+}
+
 # endif

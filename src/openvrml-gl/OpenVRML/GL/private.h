@@ -22,11 +22,6 @@ namespace {
     namespace OpenVRML_ {
         namespace GL_ {
 
-            const double PI     = 3.14159265358979323846;
-            const double PI_2   = 1.57079632679489661923;
-            const double PI_4   = 0.78539816339744830962;
-            const double INV_PI = 0.31830988618379067154;
-
             const float FPTOLERANCE(1.0e-6);
 
             inline bool fpzero(const float f) {

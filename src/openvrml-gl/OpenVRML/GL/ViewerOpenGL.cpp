@@ -363,7 +363,7 @@ void ViewerOpenGL::getBillboardTransformMatrix(float M[4][4],
      nz[0] = x[2]; nz[1] = y[2]; nz[2] = z[2];
 // calculate the angle by which the Z axis vector of current coordinate system
 // has to be rotated around the Y axis to new coordinate system.
-     float angle = acos(nz[2]) * 180 / PI;
+     float angle = acos(nz[2]) * 180 / pi;
      if(nz[0] > 0) angle = -angle;
      glPushMatrix();
      glLoadIdentity();
@@ -496,7 +496,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 
       // Sphere constants
       const int nCirc = 8;		// number of circumferential slices
-      const double cd = 2.0 * PI / nCirc;
+      const double cd = 2.0 * pi / nCirc;
 
       double heightAngle0, heightAngle1 = 0.0;
       const float *c0, *c1 = skyColor;
@@ -535,13 +535,13 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 	}
 
       // Ground
-      heightAngle1 = PI;
+      heightAngle1 = pi;
       c1 = groundColor;
 
       for (size_t nGround=0; nGround<nGroundAngles; ++nGround)
 	{
 	  heightAngle0 = heightAngle1;
-	  heightAngle1 = PI - groundAngle[nGround];
+	  heightAngle1 = pi - groundAngle[nGround];
 	  c0 = c1;
 	  c1 += 3;
 
@@ -804,7 +804,66 @@ Viewer::Object ViewerOpenGL::insertBox(float x, float y, float z)
   return (Object) glid;
 }
 
+namespace {
 
+    /**
+     * @brief Build a cylinder object.
+     *
+     * @param height    the height for the cylinder.
+     * @param radius    the radius for the cylinder.
+     * @param numFacets the number of facets for the sides of the cylinder.
+     * @retval c        the coordinates.
+     * @retval tc       the texture coordinates.
+     * @retval faces    the faces.
+     *
+     * It might be smarter to do just one, and reference it with scaling (but the
+     * world creator could just as easily do that with DEF/USE ...).
+     */
+    void computeCylinder(const double height, const double radius,
+                         const int numFacets, float c[][3],
+                         float tc[][3], int faces[])
+    {
+        using OpenVRML::pi;
+
+        double angle, x, y;
+        int i, polyIndex;
+
+        // Compute coordinates, texture coordinates:
+        for (i = 0; i < numFacets; ++i) {
+            angle = i * 2 * pi / numFacets;
+            x = cos(angle);
+            y = sin(angle);
+            c[i][0] = radius * x;
+            c[i][1] = 0.5 * height;
+            c[i][2] = radius * y;
+            c[numFacets+i][0] = radius * x;
+            c[numFacets+i][1] = -0.5 * height;
+            c[numFacets+i][2] = radius * y;
+
+            if (tc) {
+                double u = 0.75 - ((float) i) / numFacets;
+                //double u = ((float) i) / numFacets + 0.25;
+                //if ( u > 1.0 ) u -= 1.0;
+                tc[i][0] = u; // ((float) i) / numFacets;
+                tc[i][1] = 1.0;
+                tc[i][2] = 0.0;
+                tc[numFacets+i][0] = u; //((float) i) / numFacets;
+                tc[numFacets+i][1] = 0.0;
+                tc[numFacets+i][2] = 0.0;
+            }
+        }
+
+        // And compute indices:
+        for (i = 0; i < numFacets; ++i) {
+            polyIndex = 5*i;
+            faces[polyIndex + 0] = i;
+            faces[polyIndex + 1] = (i+1) % numFacets;
+            faces[polyIndex + 2] = (i+1) % numFacets + numFacets;
+            faces[polyIndex + 3] = i + numFacets;
+            faces[polyIndex + 4] = -1;
+        }
+    }
+}
 
 Viewer::Object ViewerOpenGL::insertCone(float h,
 					float r,
@@ -868,8 +927,8 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
 
-	  float angle = 0.5 * PI; // First v is at max x
-	  float aincr = 2.0 * PI / (float) nfacets;
+	  float angle = 0.5 * pi; // First v is at max x
+	  float aincr = 2.0 * pi / (float) nfacets;
 	  for (int i = 0; i < nfacets; ++i, angle+=aincr )
 	    {
 	      glTexCoord2f( 0.5*(1.0+sin( angle )),
@@ -948,8 +1007,8 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
 
-	  float angle = 0.5 * PI; // First v is at max x
-	  float aincr = 2.0 * PI / (float) nfacets;
+	  float angle = 0.5 * pi; // First v is at max x
+	  float aincr = 2.0 * pi / (float) nfacets;
 	  for (int i = 0; i < nfacets; ++i, angle+=aincr)
 	    {
 	      glTexCoord2f( 0.5*(1.+sin( angle )),
@@ -969,8 +1028,8 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, 0.5 * h, 0.0 );
 
-	  float angle = 0.75 * PI;
-	  float aincr = 2.0 * PI / (float) nfacets;
+	  float angle = 0.75 * pi;
+	  float aincr = 2.0 * pi / (float) nfacets;
 	  for (int i = nfacets-1; i >= 0; --i, angle+=aincr)
 	    {
 	      glTexCoord2f( 0.5*(1.+sin( angle )),
@@ -1333,7 +1392,211 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
     }
 }
 
+namespace {
 
+    /**
+     * @brief Build an extrusion.
+     */
+    void computeExtrusion(int nOrientation,
+                          const float *orientation,
+                          int nScale,
+                          const float *scale,
+                          int nCrossSection,
+                          const float *crossSection,
+                          int nSpine,
+                          const float *spine,
+                          float *c,   // OUT: coordinates
+                          float *tc,  // OUT: texture coords
+                          int *faces)   // OUT: face list
+    {
+        using OpenVRML_::GL_::fpzero;
+
+        int i, j, ci;
+
+        // Xscp, Yscp, Zscp- columns of xform matrix to align cross section
+        // with spine segments.
+        float Xscp[3] = { 1.0, 0.0, 0.0};
+        float Yscp[3] = { 0.0, 1.0, 0.0};
+        float Zscp[3] = { 0.0, 0.0, 1.0};
+        float lastZ[3];
+
+        // Is the spine a closed curve (last pt == first pt)?
+        bool spineClosed = (fpzero(spine[ 3*(nSpine-1)+0 ] - spine[0])
+                            && fpzero(spine[ 3*(nSpine-1)+1 ] - spine[1])
+                            && fpzero(spine[ 3*(nSpine-1)+2 ] - spine[2]));
+
+        // Is the spine a straight line?
+        bool spineStraight = true;
+        for (i = 1; i < nSpine-1; ++i) {
+            float v1[3], v2[3];
+            v1[0] = spine[3*(i-1)+0] - spine[3*(i)+0];
+            v1[1] = spine[3*(i-1)+1] - spine[3*(i)+1];
+            v1[2] = spine[3*(i-1)+2] - spine[3*(i)+2];
+            v2[0] = spine[3*(i+1)+0] - spine[3*(i)+0];
+            v2[1] = spine[3*(i+1)+1] - spine[3*(i)+1];
+            v2[2] = spine[3*(i+1)+2] - spine[3*(i)+2];
+            Vcross(v1, v2, v1);
+            if (Vlength(v1) != 0.0) {
+                spineStraight = false;
+                Vnorm(v1);
+                Vset(lastZ, v1);
+                break;
+            }
+        }
+
+        // If the spine is a straight line, compute a constant SCP xform
+        if (spineStraight) {
+            float V1[3] = { 0.0, 1.0, 0.0}, V2[3], V3[3];
+            V2[0] = spine[3*(nSpine-1)+0] - spine[0];
+            V2[1] = spine[3*(nSpine-1)+1] - spine[1];
+            V2[2] = spine[3*(nSpine-1)+2] - spine[2];
+            Vcross( V3, V2, V1 );
+            double len = Vlength(V3);
+            if (len != 0.0) {                // Not aligned with Y axis
+                Vscale(V3, 1.0/len);
+
+                float orient[4];                // Axis/angle
+                Vset(orient, V3);
+                orient[3] = acos(Vdot(V1,V2));
+                VrmlMatrix scp;                // xform matrix
+                scp.setRotate(orient);
+                for (int k=0; k<3; ++k) {
+                    Xscp[k] = scp[0][k];
+                    Yscp[k] = scp[1][k];
+                    Zscp[k] = scp[2][k];
+                }
+            }
+        }
+
+        // Orientation matrix
+        VrmlMatrix om;
+        if (nOrientation == 1 && ! fpzero(orientation[3])) {
+            om.setRotate(orientation);
+        }
+
+        // Compute coordinates, texture coordinates:
+        for (i = 0, ci = 0; i < nSpine; ++i, ci+=nCrossSection) {
+
+            // Scale cross section
+            for (j = 0; j < nCrossSection; ++j) {
+                c[3*(ci+j)+0] = scale[0] * crossSection[ 2*j ];
+                c[3*(ci+j)+1] = 0.0;
+                c[3*(ci+j)+2] = scale[1] * crossSection[ 2*j+1 ];
+            }
+
+            // Compute Spine-aligned Cross-section Plane (SCP)
+            if (!spineStraight) {
+                float S1[3], S2[3];        // Spine vectors [i,i-1] and [i,i+1]
+                int yi1, yi2, si1, s1i2, s2i2;
+
+                if (spineClosed && (i == 0 || i == nSpine-1)) {
+                    yi1 = 3*(nSpine-2);
+                    yi2 = 3;
+                    si1 = 0;
+                    s1i2 = 3*(nSpine-2);
+                    s2i2 = 3;
+                } else if (i == 0) {
+                    yi1 = 0;
+                    yi2 = 3;
+                    si1 = 3;
+                    s1i2 = 0;
+                    s2i2 = 6;
+                } else if (i == nSpine-1) {
+                    yi1 = 3*(nSpine-2);
+                    yi2 = 3*(nSpine-1);
+                    si1 = 3*(nSpine-2);
+                    s1i2 = 3*(nSpine-3);
+                    s2i2 = 3*(nSpine-1);
+                } else {
+                    yi1 = 3*(i-1);
+                    yi2 = 3*(i+1);
+                    si1 = 3*i;
+                    s1i2 = 3*(i-1);
+                    s2i2 = 3*(i+1);
+                }
+
+                Vdiff(Yscp, &spine[yi2], &spine[yi1]);
+                Vdiff(S1, &spine[s1i2], &spine[si1]);
+                Vdiff(S2, &spine[s2i2], &spine[si1]);
+
+                Vnorm(Yscp);
+                Vset(lastZ, Zscp);        // Save last Zscp
+                Vcross(Zscp, S2, S1);
+
+                float VlenZ = Vlength(Zscp);
+                if (VlenZ == 0.0) {
+                    Vset(Zscp, lastZ);
+                } else {
+                    Vscale(Zscp, 1.0 / VlenZ);
+                }
+
+                if ((i > 0) && (Vdot( Zscp, lastZ ) < 0.0)) {
+                    Vscale( Zscp, -1.0 );
+                }
+
+                Vcross(Xscp, Yscp, Zscp);
+            }
+
+            // Rotate cross section into SCP
+            for (j = 0; j < nCrossSection; ++j) {
+                float cx, cy, cz;
+                cx = c[3*(ci+j)+0]*Xscp[0]+c[3*(ci+j)+1]*Yscp[0]+c[3*(ci+j)+2]*Zscp[0];
+                cy = c[3*(ci+j)+0]*Xscp[1]+c[3*(ci+j)+1]*Yscp[1]+c[3*(ci+j)+2]*Zscp[1];
+                cz = c[3*(ci+j)+0]*Xscp[2]+c[3*(ci+j)+1]*Yscp[2]+c[3*(ci+j)+2]*Zscp[2];
+                c[3*(ci+j)+0] = cx;
+                c[3*(ci+j)+1] = cy;
+                c[3*(ci+j)+2] = cz;
+            }
+
+            // Apply orientation
+            if (!fpzero(orientation[3])) {
+                if (nOrientation > 1) {
+                    om.setRotate(orientation);
+                }
+
+                for (j = 0; j < nCrossSection; ++j) {
+                    float cx, cy, cz;
+                    cx = c[3*(ci+j)+0]*om[0][0]+c[3*(ci+j)+1]*om[1][0]+c[3*(ci+j)+2]*om[2][0];
+                    cy = c[3*(ci+j)+0]*om[0][1]+c[3*(ci+j)+1]*om[1][1]+c[3*(ci+j)+2]*om[2][1];
+                    cz = c[3*(ci+j)+0]*om[0][2]+c[3*(ci+j)+1]*om[1][2]+c[3*(ci+j)+2]*om[2][2];
+                    c[3*(ci+j)+0] = cx;
+                    c[3*(ci+j)+1] = cy;
+                    c[3*(ci+j)+2] = cz;
+                }
+            }
+
+            // Translate cross section
+            for (j = 0; j < nCrossSection; ++j) {
+                c[3*(ci+j)+0] += spine[3*i+0];
+                c[3*(ci+j)+1] += spine[3*i+1];
+                c[3*(ci+j)+2] += spine[3*i+2];
+
+                // Texture coords
+                tc[3*(ci+j)+0] = ((float) j) / (nCrossSection-1);
+                tc[3*(ci+j)+1] = ((float) i) / (nSpine-1);
+                tc[3*(ci+j)+2] = 0.0;
+            }
+
+            if (nScale > 1) { scale += 2; }
+            if (nOrientation > 1) { orientation += 4; }
+        }
+
+        // And compute face indices:
+        if (faces) {
+            int polyIndex = 0;
+            for (i = 0, ci = 0; i < nSpine-1; ++i, ci+=nCrossSection) {
+                for (j = 0; j < nCrossSection-1; ++j) {
+                    faces[polyIndex + 0] = ci+j;
+                    faces[polyIndex + 1] = ci+j+1;
+                    faces[polyIndex + 2] = ci+j+1 + nCrossSection;
+                    faces[polyIndex + 3] = ci+j + nCrossSection;
+                    faces[polyIndex + 4] = -1;
+                    polyIndex += 5;
+                }
+            }
+        }
+    }
+}
 
 Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
                                              size_t nOrientation,
@@ -1878,6 +2141,53 @@ ViewerOpenGL::insertShell(unsigned int mask,
   return (Object) glid;
 }
 
+namespace {
+
+    void computeSphere(const double radius, const int numLatLong,
+                       float c[][3], float tc[][3], int *faces)
+    {
+        using OpenVRML::pi;
+        using OpenVRML::pi_2;
+
+        double r, angle, x, y, z;
+        int i, j, polyIndex;
+
+        // Compute coordinates, texture coordinates:
+        for (i = 0; i < numLatLong; ++i) {
+            /*y = 2.0 * ( ((double)i) / (numLatLong-1) ) - 1.0;*/
+            angle = ( i * pi / (numLatLong-1) ) - pi_2;
+            y = sin( angle );
+            r = sqrt( 1.0 - y*y );
+            for (j = 0; j < numLatLong; ++j) {
+                angle = 2 * pi * ((double)j) / numLatLong;
+                x = - sin(angle)*r;
+                z = - cos(angle)*r;
+                c[i * numLatLong + j][0] = radius * x;
+                c[i * numLatLong + j][1] = radius * y;
+                c[i * numLatLong + j][2] = radius * z;
+                if (tc) {
+                    tc[i * numLatLong + j][0] = ((float) j)/(numLatLong);
+                    tc[i * numLatLong + j][1] = ((float) i)/(numLatLong);
+                    tc[i * numLatLong + j][2] = 0.0;
+                }
+            }
+        }
+
+        // And compute indices:
+        if (faces) {
+            for (i = 0; i < numLatLong-1; ++i) {
+                for (j = 0; j < numLatLong; ++j) {
+                    polyIndex = 5 * (i * numLatLong + j);
+                    faces[polyIndex + 0] = i * numLatLong + j;
+                    faces[polyIndex + 1] = i * numLatLong + (j + 1) % numLatLong;
+                    faces[polyIndex + 2] = (i + 1) * numLatLong + (j + 1) % numLatLong;
+                    faces[polyIndex + 3] = (i + 1) * numLatLong + j;
+                    faces[polyIndex + 4] = -1;  // quad
+                }
+            }
+        }
+    }
+}
 
 Viewer::Object ViewerOpenGL::insertSphere(float radius)
 {
@@ -2116,7 +2426,7 @@ OpenVRML::Viewer::Object
   glLightf(light, GL_QUADRATIC_ATTENUATION, attenuation[2]);
 
   glLightfv(light, GL_SPOT_DIRECTION, direction);
-  glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / PI);
+  glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / pi);
   // The exponential dropoff is not right/spec compliant...
   glLightf(light, GL_SPOT_EXPONENT, beamWidth < cutOffAngle ? 1.0 : 0.0);
 
@@ -2433,7 +2743,7 @@ void ViewerOpenGL::setTextureTransform(const float center[2],
   if (center) glTranslatef(-center[0], -center[1], 0.0);
   if (scale) glScalef(scale[0], scale[1], 1.0);
   if (rotation != 0.0)
-    glRotatef(rotation * 180.0 / PI, 0.0, 0.0, 1.0);
+    glRotatef(rotation * 180.0 / pi, 0.0, 0.0, 1.0);
 
   if (center) glTranslatef(center[0], center[1], 0.0);
   if (translation) glTranslatef(translation[0], translation[1], 0.0);
@@ -2454,7 +2764,7 @@ void ViewerOpenGL::setTransform(const float center[3],
   glTranslatef(center[0], center[1], center[2]);
 
   if (! fpzero(rotation[3]) )
-    glRotatef(rotation[3] * 180.0 / PI,
+    glRotatef(rotation[3] * 180.0 / pi,
 	      rotation[0],
 	      rotation[1],
 	      rotation[2]);
@@ -2464,7 +2774,7 @@ void ViewerOpenGL::setTransform(const float center[3],
       ! fpequal(scale[2], 1.0) )
     {
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(scaleOrientation[3] * 180.0 / PI,
+	glRotatef(scaleOrientation[3] * 180.0 / pi,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
@@ -2472,7 +2782,7 @@ void ViewerOpenGL::setTransform(const float center[3],
       glScalef(scale[0], scale[1], scale[2]);
 
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(-scaleOrientation[3] * 180.0 / PI,
+	glRotatef(-scaleOrientation[3] * 180.0 / pi,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
@@ -2500,7 +2810,7 @@ void ViewerOpenGL::unsetTransform(const float center[3],
       ! fpequal(scale[2], 1.0) )
     {
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(scaleOrientation[3] * 180.0 / PI,
+	glRotatef(scaleOrientation[3] * 180.0 / pi,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
@@ -2508,14 +2818,14 @@ void ViewerOpenGL::unsetTransform(const float center[3],
       glScalef(1.0/scale[0], 1.0/scale[1], 1.0/scale[2]);
 
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(-scaleOrientation[3] * 180.0 / PI,
+	glRotatef(-scaleOrientation[3] * 180.0 / pi,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
     }
 
   if (! fpzero(rotation[3]) )
-    glRotatef(- rotation[3] * 180.0 / PI,
+    glRotatef(- rotation[3] * 180.0 / pi,
 	      rotation[0],
 	      rotation[1],
 	      rotation[2]);
@@ -2547,6 +2857,48 @@ void ViewerOpenGL::unsetBillboardTransform(const float axisOfRotation[3])
   glPopMatrix();
 }
 
+namespace {
+
+    /**
+     * Compute a target and up vector from position/orientation/distance.
+     */
+    void computeView(const float position[3],
+                     float orientation[3],
+                     float distance,
+                     float target[3],
+                     float up[3])
+    {
+        // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
+        double len = sqrt(orientation[0] * orientation[0]
+                            + orientation[1] * orientation[1]
+                            + orientation[2] * orientation[2]);
+        if (len > 0.0) {
+            orientation[0] /= len;
+            orientation[1] /= len;
+            orientation[2] /= len;
+        }
+
+        double s = sin(orientation[3]);
+        double c = cos(orientation[3]);
+        double t = 1.0 - c;
+
+        // Transform [0,0,1] by the orientation to determine sight line
+        target[0] = t * orientation[0] * orientation[2] + s * orientation[1];
+        target[1] = t * orientation[1] * orientation[2] - s * orientation[0];
+        target[2] = t * orientation[2] * orientation[2] + c;
+
+        // Move along that vector the specified distance away from position[]
+        target[0] = -distance*target[0] + position[0];
+        target[1] = -distance*target[1] + position[1];
+        target[2] = -distance*target[2] + position[2];
+
+        // Transform [0,1,0] by the orientation to determine up vector
+        up[0] = t * orientation[0] * orientation[1] - s * orientation[2];
+        up[1] = t * orientation[1] * orientation[1] + c;
+        up[2] = t * orientation[1] * orientation[2] + s * orientation[0];
+    }
+}
+
 void ViewerOpenGL::setViewpoint(const float *position,
 				float *orientation,
 				float fieldOfView,
@@ -2556,7 +2908,7 @@ void ViewerOpenGL::setViewpoint(const float *position,
   glMatrixMode( GL_PROJECTION );
   if (! d_selectMode) glLoadIdentity();
 
-  float field_of_view = fieldOfView * 180.0 / PI;
+  float field_of_view = fieldOfView * 180.0 / pi;
   float aspect = ((float) d_winWidth) / d_winHeight;
   float znear = (avatarSize > 0.0) ? (0.5 * avatarSize) : 0.01;
   float zfar = (visibilityLimit > 0.0) ? visibilityLimit : 30000.0;
