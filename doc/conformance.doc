@@ -198,7 +198,7 @@ following the primary result table.
 
 <table>
   <tr>
-    <th>Node Group<th>Node<th>Test<br>Number<th>Result<th>Comments
+    <th>Node Group<th>Node<th>Test<br>Number<th>Result<th>Related Tasks<th>Related Bugs
   <tr>
     <td rowspan="186"><B>Appearance</B><td rowspan="12">Appearance<td>1<td class="pass">+
   <tr>
@@ -218,23 +218,53 @@ following the primary result table.
   <tr>
     <td>9<td class="pass">+
   <tr>
-    <td>10<td class="fail">-<td>Failed! The leftmost object is incorrectly colored blue. This is a test of preference of texture color over a geometry Color node in unlit geometry. This test passed in 0.10.1!
+    <td>10<td class="fail">-<td><td><a href="http://sourceforge.net/tracker/index.php?func=detail&aid=464211&group_id=7151&atid=107151">464211</a>
   <tr>
     <td>11<td class="pass">+
   <tr>
     <td>12<td class="pass">+
   <tr>
-    <td rowspan="7">FontStyle<td>1<td class="fail">-<td>Failed! Fonts are fine but the green line for the axis appears white instead.
+    <td rowspan="7">FontStyle
+    <td>1
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
   <tr>
-    <td>2<td class="fail">-<td>Failed! See previous.
+    <td>2<td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
   <tr>
-    <td>3<td class="fail">-<td>Failed! See previous.
+    <td>3
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
   <tr>
-    <td>4<td class="fail">-<td>Failed! See previous.
+    <td>4
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
   <tr>
-    <td>5<td class="fail">-<td>Failed! See previous.
+    <td>5
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
   <tr>
-    <td>6<td class="fail">-<td>Failed! Partially funtioning, vertical text doesn't seem to work properly and green line doesn't appear for axis.
+    <td>6
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
   <tr>
     <td>7<td class="invalid">x<a href="#note1"><sup>1</sup></a>
   <tr>
@@ -262,7 +292,7 @@ following the primary result table.
   <tr>
     <td>12<td class="pass">+
   <tr>
-    <td>13<td class="fail">-<td>Failed! Texture mapping is incorrect.
+    <td>13<td class="fail">-
   <tr>
     <td>14<td class="pass">+
   <tr>
@@ -276,15 +306,15 @@ following the primary result table.
   <tr>
     <td>19<td class="pass">+
   <tr>
-    <td>20<td class="fail">-<td>Failed! Texture mapping is incorrect.
+    <td>20<td class="fail">-
   <tr>
     <td>21<td class="pass">+
   <tr>
-    <td>22<td class="fail">-<td>Failed! Texture mapping on extrusions faulty.
+    <td>22<td class="fail">-
   <tr>
     <td>23<td class="pass">+
   <tr>
-    <td>24<td class="fail">-<td>Failed! Texture mapping on extrusions faulty.
+    <td>24<td class="fail">-
   <tr>
     <td>25<td class="pass">+
   <tr>
@@ -326,9 +356,17 @@ following the primary result table.
   <tr>
     <td>10<td class="pass">+
   <tr>
-    <td>11<td class="fail">-<td>Failed! ElevationGrid is incorrectly colored blue.
+    <td>11
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=464265" title="ElevationGrid color precedence problem">464265</a>
   <tr>
-    <td>12<td class="fail">-<td>Failed! ElevationGrid is incorrectly colored red.
+    <td>12
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=464265" title="ElevationGrid color precedence problem">464265</a>
   <tr>
     <td>13<td class="pass">+
   <tr>
@@ -338,15 +376,29 @@ following the primary result table.
   <tr>
     <td>16<td class="pass">+
   <tr>
-    <td>17<td class="fail">-<td>Failed! Colored white when should be red.
+    <td>17
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
   <tr>
     <td>18<td class="pass">+
   <tr>
     <td>19<td class="pass">+
   <tr>
-    <td>20<td class="fail">-<td>Failed! Text not visible behind nodes.
+    <td>20
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=18753&group_id=7151&group_project_id=2579" title="Transparency">18753</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=213951" title="Transparency problems">213951</a>
   <tr>
-    <td>21<td class="fail">-<td>Failed! See above.
+    <td>21
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=18753&group_id=7151&group_project_id=2579" title="Transparency">18753</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=213951" title="Transparency problems">213951</a>
   <tr>
     <td>22<td class="pass">+
   <tr>
@@ -360,15 +412,25 @@ following the primary result table.
   <tr>
     <td>27<td class="pass">+
   <tr>
-    <td>28<td class="fail">-<td>Failed! Transparency doesn't seem to be working.
+    <td>28
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=18753&group_id=7151&group_project_id=2579" title="Transparency">18753</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=213951" title="Transparency problems">213951</a>
   <tr>
-    <td>29<td class="fail">-<td>Failed! See above.
+    <td>29
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=18753&group_id=7151&group_project_id=2579" title="Transparency">18753</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=213951" title="Transparency problems">213951</a>
   <tr>
     <td rowspan="39">MovieTexture <td>1<td class="pass">+
   <tr>
-    <td>2<td class="fail">-<td>Failed! MPEG audio not supported yet.
+    <td>2<td class="fail">-
   <tr>
-    <td>3<td class="fail">-<td>Failed! MPEG audio not supported yet.
+    <td>3<td class="fail">-
   <tr>
     <td>4<td class="pass">+
   <tr>
@@ -384,7 +446,7 @@ following the primary result table.
   <tr>
     <td>10<td class="pass">+
   <tr>
-    <td>11<td class="fail">-<td>Failed! MovieTexture doesn't extend across three sides.
+    <td>11<td class="fail">-
   <tr>
     <td>12<td class="pass">+
   <tr>
@@ -392,7 +454,7 @@ following the primary result table.
   <tr>
     <td>14<td class="pass">+
   <tr>
-    <td>15<td class="fail">-<td>Failed! Texture mapping is incorrect.
+    <td>15<td class="fail">-
   <tr>
     <td>16<td class="pass">+
   <tr>
@@ -448,27 +510,42 @@ following the primary result table.
   <tr>
     <td>3<td class="pass">+
   <tr>
-    <td>4<td class="fail">-<td>Failed! All shapes are colored aqua when should be checkered red and black.
+    <td>4
+    <td class="fail">-
+    <td>
+    <td><a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466479" title="Test of 4-component pix. tex. fails">466479</a>
   <tr>
     <td>5<td class="pass">+
   <tr>
-    <td>6<td class="fail">-<td>Failed! Squares are incorrect size (not really close to expected) on the IndexedFaceSet.
+    <td>6
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
-    <td>7<td class="fail">-<td>Failed! Colors are reverse of expected on top of shape.
+    <td>7<td class="fail">-
   <tr>
-    <td>8<td class="fail">-<td>Failed! Front should be a solid color but instead is split into two colors.
+    <td>8
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
-    <td>9<td class="fail">-<td>Failed! Colors reverse of expected on front of model.
+    <td>9
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
     <td>10<td class="pass">+
   <tr>
     <td>11<td class="pass">+
   <tr>
-    <td>12<td class="fail">-<td>Failed! Textures mapping is incorrect.
+    <td>12<td class="fail">-
   <tr>
     <td>13<td class="pass">+
   <tr>
-    <td>14<td class="fail">-<td>Failed! Top view is messed up. Displays grainy(display driver problem?) and colors are backward.
+    <td>14<td class="fail">-
   <tr>
     <td>15<td class="pass">+
   <tr>
@@ -500,9 +577,9 @@ following the primary result table.
   <tr>
     <td>12<td class="pass">+
   <tr>
-    <td>13<td class="fail">-<td>Failed! Second and fourth columns are reverse of expected.
+    <td>13<td class="fail">-
   <tr>
-    <td>14<td class="fail">-<td>Failed! See previous.
+    <td>14<td class="fail">-
   <tr>
     <td>15<td class="pass">+
   <tr>
@@ -532,13 +609,13 @@ following the primary result table.
   <tr>
     <td>28<td class="pass">+
   <tr>
-    <td>29<td class="fail">-<td>Failed! Textures are transformed the reverse of expected. For example, row 1 is what should be in row 5.
+    <td>29<td class="fail">-
   <tr>
-    <td>30<td class="fail">-<td>Failed! Same problem as previous test.
+    <td>30<td class="fail">-
   <tr>
     <td>31<td class="pass">+
   <tr>
-    <td>32<td class="fail">-<td>Failed! Top and bottom are reverse of expected on center shape.
+    <td>32<td class="fail">-
   <tr>
     <td>33<td class="pass">+
   <tr>
@@ -546,13 +623,25 @@ following the primary result table.
   <tr>
     <td>35<td class="pass">+
   <tr>
-    <td>36<td class="fail">-<td>Failed! Top view and Right view aren't correct.
+    <td>36
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
-    <td>37<td class="fail">-<td>Failed! The center geometry should appear all blue but one quarter of it appears yellow on the cone and cylinder.
+    <td>37
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
     <td>38<td class="pass">+
   <tr>
-    <td>39<td class="fail">-<td>Failed! PixelTexture mapped incorrectly on rear quarter of the center row of shapes.
+    <td>39
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
     <td>40<td class="pass">+
   <tr>
@@ -564,13 +653,29 @@ following the primary result table.
   <tr>
     <td>44<td class="pass">+<a href="#note6"><sup>6</sup></a>
   <tr>
-    <td>45<td class="fail">-<td>Failed! Second and fourth row of shapes has the colors reversed.
+    <td>45
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
-    <td>46<td class="fail">-<td>Failed! Colors incorrect on second and fourth row of shapes.
+    <td>46
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
-    <td>47<td class="fail">-<td>Failed! Colors incorrect.
+    <td>47
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
-    <td>48<td class="fail">-<td>Failed! Incorrect coloring.
+    <td>48
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
     <td rowspan="93"><B>Bindable Nodes</B><td rowspan="23">Background<td>1<td class="pass">+
   <tr>
@@ -586,19 +691,47 @@ following the primary result table.
   <tr>
     <td>7<td class="pass">+
   <tr>
-    <td>8<td class="fail">-<td>Failed! Console shows images are being downloaded but background does not get updated.
+    <td>8
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
-    <td>9<td class="fail">-<td>Failed! Nothing displays in lookat except text. See above.
+    <td>9
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
-    <td>10<td class="fail">-<td>Failed! Nothing displays in lookat except text. See above.
+    <td>10
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
-    <td>11<td class="fail">-<td>Failed! Nothing displays in lookat except text.
+    <td>11
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
-    <td>12<td class="fail">-<td>Failed! Nothing displays in lookat except text.
+    <td>12
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
-    <td>13<td class="fail">-<td>Failed! Nothing displays in lookat except text.
+    <td>13
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
-    <td>14<td class="fail">-<td>Failed! Panorama works great except that there is a black panel instead of the second image.
+    <td>14
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
     <td>15<td class="invalid">x<a href="#note8"><sup>8</sup></a>
   <tr>
@@ -660,7 +793,13 @@ following the primary result table.
   <tr>
     <td>21<td class="pass">+
   <tr>
-    <td rowspan="26">NavigationInfo<td>1<td class="fail">-<td>Failed! Box does not turn red upon collision as it should.
+    <td rowspan="26">NavigationInfo
+    <td>1
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=18156&group_id=7151&group_project_id=2579" title="Collision node support">18156</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=211327" title="Collision detection fails">211327</a>
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -670,7 +809,7 @@ following the primary result table.
   <tr>
     <td>5<td class="pass">+
   <tr>
-    <td>6<td class="fail">-<td>Failed! Text does not display.
+    <td>6<td class="fail">-
   <tr>
     <td>7<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
@@ -678,27 +817,51 @@ following the primary result table.
   <tr>
     <td>9<td class="invalid">x<a href="#note9"><sup>9</sup></a>
   <tr>
-    <td>10<td class="fail">-<td>Failed! Current speed doesn't get updated.
+    <td>10<td class="fail">-
   <tr>
-    <td>11<td class="fail">-<td>Failed! Current speed doesn't get updated.
+    <td>11<td class="fail">-
   <tr>
-    <td>12<td class="fail">-<td>Failed! Cube doesn't turn red on collision.
+    <td>12
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=18156&group_id=7151&group_project_id=2579" title="Collision node support">18156</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=211327" title="Collision detection fails">211327</a>
   <tr>
-    <td>13<td class="fail">-<td>Failed! Cube doesn't turn red on collision.
+    <td>13
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=18156&group_id=7151&group_project_id=2579" title="Collision node support">18156</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=211327" title="Collision detection fails">211327</a>
   <tr>
-    <td>14<td class="fail">-<td>Failed! Cube doesn't turn red on collision.
+    <td>14
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=18156&group_id=7151&group_project_id=2579" title="Collision node support">18156</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=211327" title="Collision detection fails">211327</a>
   <tr>
     <td>15<td class="pass">+
   <tr>
     <td>16<td class="pass">+<a href="#note10"><sup>10</sup></a>
   <tr>
-    <td>17<td class="fail">-<td>Failed! Cube doesn't turn red on collision.
+    <td>17
+    <td class="fail">-
+    <td>
+      <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=18156&group_id=7151&group_project_id=2579" title="Collision node support">18156</a>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=211327" title="Collision detection fails">211327</a>
   <tr>
     <td>18<td class="invalid">x<a href="#note11"><sup>11</sup></a>
   <tr>
-    <td>19<td class="fail">-<td>Failed! Cannot click on box. See SourceForge bug 626197.
+    <td>19
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=626197" title="TouchSensor problems w/ nested children">626197</a>
   <tr>
-    <td>20<td class="fail">-<td>Failed! Text doesn't appear when pushing itemss onto the stack. Appears fine when popping items off of the stack though.
+    <td>20<td class="fail">-
   <tr>
     <td>21<td class="pass">+
   <tr>
@@ -714,11 +877,11 @@ following the primary result table.
   <tr>
     <td rowspan="23">Viewpoint<td>1<td class="pass">+
   <tr>
-    <td>2<td class="fail">-<a href="#note12"><sup>12</sup></a><td>Failed! Current position does not display correctly. X-coord is not quite 0.
+    <td>2<td class="fail">-<a href="#note12"><sup>12</sup></a>
   <tr>
-    <td>3<td class="fail">-<td>Failed! Current position does not display correctly. Z-coord is not quite 0.
+    <td>3<td class="fail">-
   <tr>
-    <td>4<td class="fail">-<td>Failed! See above.
+    <td>4<td class="fail">-
   <tr>
     <td>5<td class="pass">+
   <tr>
@@ -730,19 +893,19 @@ following the primary result table.
   <tr>
     <td>9<td class="invalid">x<a href="#note13"><sup>13</sup></a>
   <tr>
-    <td>10<td class="fail">-<td>Failed! Lookat fails to load the URL of the Viewpoint. URL is defined as "http://xsun.sdct.itl.nist.gov/~mkass/vts/Bindable_Nodes/Viewpoint/jumpcut_loadworld.wrl#RearView" but lookat strips out the # and cannot load the URL.
+    <td>10<td class="fail">-
   <tr>
-    <td>11<td class="fail">-<td>Failed! See above.
+    <td>11<td class="fail">-
   <tr>
-    <td>12<td class="fail">-<td>Failed! Current position does not display correctly. X-coord is not quite 0.
+    <td>12<td class="fail">-
   <tr>
-    <td>13<td class="fail">-<td>Failed! Current position does not display correctly. Z-coord is not quite 0.
+    <td>13<td class="fail">-
   <tr>
-    <td>14<td class="fail">-<a href="#note14"><sup>14</sup></a><td>Failed! See above. Indicating the box should not cause a jump to right viewpoint.
+    <td>14<td class="fail">-<a href="#note14"><sup>14</sup></a>
   <tr>
-    <td>15<td class="fail">-<td>Failed! Nothing happens when pointing at the red box.
+    <td>15<td class="fail">-
   <tr>
-    <td>16<td class="fail">-<td>Failed! See previous.
+    <td>16<td class="fail">-
   <tr>
     <td>17<td class="pass">+
   <tr>
@@ -764,13 +927,13 @@ following the primary result table.
   <tr>
     <td>3<td class="pass">+
   <tr>
-    <td>4<td class="fail">-<td>Failed! Colored grey instead of red on ElevationGrid.
+    <td>4<td class="fail">-
   <tr>
     <td>5<td class="pass">+
   <tr>
     <td>6<td class="pass">+
   <tr>
-    <td>7<td class="fail">-<td>Failed! Colored grey instead of blue on ElevationGrid.
+    <td>7<td class="fail">-
   <tr>
     <td>8<td class="pass">+
   <tr>
@@ -778,13 +941,13 @@ following the primary result table.
   <tr>
     <td>10<td class="pass">+
   <tr>
-    <td>11<td class="fail">-<td>Failed! No colors on ElevationGrid.
+    <td>11<td class="fail">-
   <tr>
     <td>12<td class="pass">+
   <tr>
     <td>13<td class="pass">+
   <tr>
-    <td>14<td class="fail">-<td>Failed! No colors on ElevationGrid.
+    <td>14<td class="fail">-
   <tr>
     <td>15<td class="pass">+
   <tr>
@@ -792,13 +955,13 @@ following the primary result table.
   <tr>
     <td>17<td class="pass">+
   <tr>
-    <td>18<td class="fail">-<td>Failed! No colors on ElevationGrid.
+    <td>18<td class="fail">-
   <tr>
     <td>19<td class="pass">+
   <tr>
     <td>20<td class="pass">+
   <tr>
-    <td>21<td class="fail">-<td>Failed! No colors display.
+    <td>21<td class="fail">-
   <tr>
     <td rowspan="5">Coordinate<td>1<td class="pass">+
   <tr>
@@ -812,7 +975,7 @@ following the primary result table.
   <tr>
     <td rowspan="9">Normal<td>1<td class="pass">+
   <tr>
-    <td>2<td class="fail">-<td>Failed! Front left edge is colored differently than the rest of the shape.
+    <td>2<td class="fail">-
   <tr>
     <td>3<td class="pass">+
   <tr>
@@ -820,7 +983,7 @@ following the primary result table.
   <tr>
     <td>5<td class="pass">+
   <tr>
-    <td>6<td class="fail">-<td>Failed! Not a straight line separating the two halves.
+    <td>6<td class="fail">-
   <tr>
     <td>7<td class="pass">+
   <tr>
@@ -840,11 +1003,11 @@ following the primary result table.
   <tr>
     <td>6<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
-    <td>7<td class="pass">+<td>Failed! Displays in blue when it should be yellow.
+    <td>7<td class="pass">+
   <tr>
-    <td>8<td class="pass">+<td>Failed! Only one of the four quarters is correctly colored.
+    <td>8<td class="fail">-
   <tr>
-    <td>9<td class="pass">+<td>Failed! Incorrectly colored.
+    <td>9<td class="fail">-
   <tr>
     <td>10<td class="pass">+
   <tr>
@@ -858,13 +1021,13 @@ following the primary result table.
   <tr>
     <td>15<td class="pass">+
   <tr>
-    <td>16<td class="fail">-<td>Failed! Display in blue when it should be yellow.
+    <td>16<td class="fail">-
   <tr>
-    <td>17<td class="fail">-<td>Failed! Only one of the four quarters is colored correctly.
+    <td>17<td class="fail">-
   <tr>
-    <td>18<td class="fail">-<td>Failed! Colored incorrectly.
+    <td>18<td class="fail">-
   <tr>
-    <td rowspan="113"><B>Geometry</B><td rowspan="6"><td>Box<td>1<td class="pass">+
+    <td rowspan="113"><B>Geometry</B><td rowspan="6">Box<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -918,13 +1081,13 @@ following the primary result table.
   <tr>
     <td>4<td class="pass">+
   <tr>
-    <td>5<td class="fail">-<td>Failed! ElevationGrid is not colored as expected.
+    <td>5<td class="fail">-
   <tr>
-    <td>6<td class="fail">-<td>Failed! ElevationGrid is not colored as expected.
+    <td>6<td class="fail">-
   <tr>
-    <td>7<td class="fail">-<td>Failed! ElevationGrid is not colored as expected.
+    <td>7<td class="fail">-
   <tr>
-    <td>8<td class="fail">-<td>Failed! ElevationGrid is not colored as expected.
+    <td>8<td class="fail">-
   <tr>
     <td>9<td class="pass">+
   <tr>
@@ -932,7 +1095,7 @@ following the primary result table.
   <tr>
     <td>11<td class="pass">+
   <tr>
-    <td>12<td class="pass">+<td>Failed! ElevationGrid is not colored as expected.
+    <td>12<td class="pass">+
   <tr>
     <td>13<td class="pass">+
   <tr>
@@ -950,7 +1113,7 @@ following the primary result table.
   <tr>
     <td>6<td class="pass">+
   <tr>
-    <td>7<td class="fail">-<td>Failed! Majority of the model was fine, problem with just one little part.
+    <td>7<td class="fail">-
   <tr>
     <td>8<td class="pass">+
   <tr>
@@ -962,11 +1125,11 @@ following the primary result table.
   <tr>
     <td>12<td class="pass">+
   <tr>
-    <td>13<td class="fail">-<td>Failed! Line through one of the Extrusion's for no apparent reason.
+    <td>13<td class="fail">-
   <tr>
-    <td>14<td class="fail">-<td>Failed! Something is wrong on the right hand side of the top and bottom of the shape.
+    <td>14<td class="fail">-
   <tr>
-    <td>15<td class="fail">-<td>Failed! The lighting should be the same on both shapes.
+    <td>15<td class="fail">-
   <tr>
     <td>16<td class="pass">+
   <tr>
@@ -998,7 +1161,7 @@ following the primary result table.
   <tr>
     <td>13<td class="pass">+
   <tr>
-    <td>14<td class="fail">-<td>Failed! Texture should be mapped over top of shape.
+    <td>14<td class="fail">-
   <tr>
     <td>15<td class="pass">+
   <tr>
@@ -1016,7 +1179,7 @@ following the primary result table.
   <tr>
     <td rowspan="10">IndexedLineSet<td>1<td class="pass">+
   <tr>
-    <td>2<td class="fail">-<td>Failed! Should be colored red.
+    <td>2<td class="fail">-
   <tr>
     <td>3<td class="pass">+
   <tr>
@@ -1042,7 +1205,7 @@ following the primary result table.
   <tr>
     <td>4<td class="pass">+
   <tr>
-    <td>5<td class="fail">-<td>Failed! PointSet should be colored red, not white.
+    <td>5<td class="fail">-
   <tr>
     <td rowspan="5">Shape<td>1<td class="pass">+
   <tr>
@@ -1052,7 +1215,7 @@ following the primary result table.
   <tr>
     <td>4<td class="pass">+
   <tr>
-    <td>5<td class="fail">-<td>Failed! Line should be colored red, not white.
+    <td>5<td class="fail">-
   <tr>
     <td rowspan="6">Sphere<td>1<td class="pass">+
   <tr>
@@ -1080,7 +1243,7 @@ following the primary result table.
   <tr>
     <td>7<td class="pass">+
   <tr>
-    <td>8<td class="fail">-<a href="#note2"><sup>2</sup></a><td>Failed! Rightmost strings are not compressed.
+    <td>8<td class="fail">-<a href="#note2"><sup>2</sup></a>
   <tr>
     <td>9<td class="pass">+
   <tr>
@@ -1088,13 +1251,13 @@ following the primary result table.
   <tr>
     <td>11<td class="pass">+
   <tr>
-    <td>12<td class="fail">-<td>Failed! Texture mapping is not correct.
+    <td>12<td class="fail">-
   <tr>
     <td rowspan="52"><B>Grouping Nodes</B><td rowspan="12">Anchor<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
-    <td>3<td class="fail">-<td>Failed! Lookat tries to load new viewpoint from URL http://xsun.sdct.itl.nist.gov/~mkass/vts/Grouping_Nodes/Anchor/test-viewanchor.wrlnewview
+    <td>3<td class="fail">-
   <tr>
     <td>4<td class="pass">+
   <tr>
@@ -1106,7 +1269,7 @@ following the primary result table.
   <tr>
     <td>8<td class="pass">+
   <tr>
-    <td>9<td class="fail">-<td>Failed! First URL in list is invalid so lookat should use the second valid one but doesn't and just fails with the first.
+    <td>9<td class="fail">-
   <tr>
     <td>10<td class="invalid">x<a href="#note20"><sup>20</sup></a>
   <tr>
@@ -1114,33 +1277,33 @@ following the primary result table.
   <tr>
     <td>12<td class="pass">+
   <tr>
-    <td rowspan="6">Billboard<td>1<td class="pass">+<td>Incredibly processor intensive if you try to rotate though.
+    <td rowspan="6">Billboard<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
     <td>3<td class="pass">+
   <tr>
-    <td>4<td class="fail">-<td>Failed! Initial view is incorrect.
+    <td>4<td class="fail">-
   <tr>
     <td>5<td class="pass">+
   <tr>
-    <td>6<td class="fail">-<td>Failed!
+    <td>6<td class="fail">-
   <tr>
-    <td rowspan="8">Collision<td>1<td class="fail">-<td>Failed! Can navigate right through the shapes.
+    <td rowspan="8">Collision<td>1<td class="fail">-
   <tr>
     <td>2<td class="pass">+
   <tr>
-    <td>3<td class="fail">-<td>Failed! Box does not change to red upon collision.
+    <td>3<td class="fail">-
   <tr>
-    <td>4<td class="fail">-<td>Failed! IndexedLineSet doesn't change color upon collision.
+    <td>4<td class="fail">-
   <tr>
-    <td>5<td class="fail">-<td>Failed! IndexedLineSet doesn't change color upon collision.
+    <td>5<td class="fail">-
   <tr>
-    <td>6<td class="fail">-<td>Failed! Box does not change to red upon collision.
+    <td>6<td class="fail">-
   <tr>
-    <td>7<td class="fail">-<td>Failed! None of the spheres turn red upon collision as they should.
+    <td>7<td class="fail">-
   <tr>
-    <td>8<td class="fail">-<td>Failed! No color change on collision.
+    <td>8<td class="fail">-
   <tr>
     <td rowspan="2">Group<td>1<td class="pass">+
   <tr>
@@ -1200,7 +1363,7 @@ following the primary result table.
   <tr>
     <td>3<td class="pass">+
   <tr>
-    <td>4<td class="fail">-<td>Failed! Sphere on right should turn blue when mouse is over it, not black.
+    <td>4<td class="fail">-
   <tr>
     <td>5<td class="pass">+
   <tr>
@@ -1210,7 +1373,7 @@ following the primary result table.
   <tr>
     <td>3<td class="pass">+
   <tr>
-    <td>4<td class="fail">-<td>Failed! Nothing happens when moving over leftmost box.
+    <td>4<td class="fail">-
   <tr>
     <td>5<td class="pass">+
   <tr>
@@ -1220,7 +1383,7 @@ following the primary result table.
   <tr>
     <td>3<td class="pass">+
   <tr>
-    <td>4<td class="fail">-<td>Failed! Nothing happens when moving over leftmost box.
+    <td>4<td class="fail">-
   <tr>
     <td>5<td class="pass">+
   <tr>
@@ -1230,7 +1393,7 @@ following the primary result table.
   <tr>
     <td>3<td class="pass">+
   <tr>
-    <td>4<td class="fail">-<td>Failed! Nothing happens when moving over leftmost box.
+    <td>4<td class="fail">-
   <tr>
     <td>5<td class="pass">+
   <tr>
@@ -1240,19 +1403,19 @@ following the primary result table.
   <tr>
     <td>3<td class="pass">+
   <tr>
-    <td>4<td class="fail">-<td>Failed! Nothing happens when indicating the leftmost shape.
+    <td>4<td class="fail">-
   <tr>
     <td>5<td class="pass">+
   <tr>
-    <td rowspan="5">ScalarInterpolator<td>1<td class="fail">-<td>Failed! Illumination doesn't change.
+    <td rowspan="5">ScalarInterpolator<td>1<td class="fail">-
   <tr>
-    <td>2<td class="fail">-<td>Failed! Illumination doesn't change.
+    <td>2<td class="fail">-
   <tr>
-    <td>3<td class="fail">-<td>Failed! Illumination doesn't change.
+    <td>3<td class="fail">-
   <tr>
-    <td>4<td class="fail">-<td>Failed! Nothing happens when indicating the leftmost shape.
+    <td>4<td class="fail">-
   <tr>
-    <td>5<td class="fail">-<td>Failed! Illumination doesn't change.
+    <td>5<td class="fail">-
   <tr>
     <td rowspan="92"><B>Lights</B><td rowspan="28">DirectionalLight<td>1<td class="pass">+
   <tr>
@@ -1266,7 +1429,7 @@ following the primary result table.
   <tr>
     <td>6<td class="pass">+
   <tr>
-    <td>7<td class="fail">-<td>Failed! Light travels from right to left when should move from left to right.
+    <td>7<td class="fail">-
   <tr>
     <td>8<td class="pass">+
   <tr>
@@ -1274,23 +1437,23 @@ following the primary result table.
   <tr>
     <td>10<td class="pass">+
   <tr>
-    <td>11<td class="fail">-<td>Failed! Light travels from rigth to left when should move from left to right.
+    <td>11<td class="fail">-
   <tr>
-    <td>12<td class="fail">-<td>Failed! Text doesn't appear.
+    <td>12<td class="fail">-
   <tr>
-    <td>13<td class="fail">-<td>Failed! Text doesn't appear.
+    <td>13<td class="fail">-
   <tr>
-    <td>14<td class="fail">-<td>Failed! Text doesn't appear. Colour starts on the wrong side.
+    <td>14<td class="fail">-
   <tr>
-    <td>15<td class="fail">-<td>Failed! Text doesn't appear. Colour starts on the wrong side.
+    <td>15<td class="fail">-
   <tr>
-    <td>16<td class="fail">-<td>Failed! Beginning color of shapes should be black not green!
+    <td>16<td class="fail">-
   <tr>
-    <td>17<td class="fail">-<td>Failed! Text incorrect, beginning color of shapes should be black not green.
+    <td>17<td class="fail">-
   <tr>
-    <td>18<td class="fail">-<td>Failed! Lighting moves from right to left instead of left to right.
+    <td>18<td class="fail">-
   <tr>
-    <td>19<td class="fail">-<td>Failed! Text not viewable, same color as BG? + Lighting moves from right to left instead of left to right..
+    <td>19<td class="fail">-
   <tr>
     <td>20<td class="pass">+
   <tr>
@@ -1314,7 +1477,7 @@ following the primary result table.
   <tr>
     <td>2<td class="pass">+
   <tr>
-    <td>3<td class="fail">-<td>Failed! Only leftmost sphere should be lighted.
+    <td>3<td class="fail">-
   <tr>
     <td>4<td class="pass">+
   <tr>
@@ -1336,9 +1499,9 @@ following the primary result table.
   <tr>
     <td>13<td class="pass">+
   <tr>
-    <td>14<td class="fail">-<td>Failed! Beginning color of shapes should be black not green!
+    <td>14<td class="fail">-
   <tr>
-    <td>15<td class="fail">-<td>Failed! Beginning color of shapes should be black not green.
+    <td>15<td class="fail">-
   <tr>
     <td>16<td class="pass">+
   <tr>
@@ -1364,15 +1527,15 @@ following the primary result table.
   <tr>
     <td>27<td class="pass">+
   <tr>
-    <td>28<td class="fail">-<td>Failed! Test is beyond minimum conformance requirements though.
+    <td>28<td class="fail">-
   <tr>
-    <td>29<td class="fail">-<td>Failed! Test is beyond minimum conformance requirements though.
+    <td>29<td class="fail">-
   <tr>
     <td rowspan="35">SpotLight<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
-    <td>3<td class="fail">-<td>Failed! The lighting is wrong (backwards)
+    <td>3<td class="fail">-
   <tr>
     <td>4<td class="pass">+
   <tr>
@@ -1398,9 +1561,9 @@ following the primary result table.
   <tr>
     <td>15<td class="pass">+
   <tr>
-    <td>16<td class="fail">-<td>Failed! Shapes should start colored black not green.
+    <td>16<td class="fail">-
   <tr>
-    <td>17<td class="fail">-<td>Failed! Shapes should start colored black not green.
+    <td>17<td class="fail">-
   <tr>
     <td>18<td class="pass">+
   <tr>
@@ -1426,53 +1589,53 @@ following the primary result table.
   <tr>
     <td>29<td class="pass">+
   <tr>
-    <td>30<td class="fail">-<td>Failed! Last figure of each set should not be illuminated. Test is beyond minimum conformance requirements though.
+    <td>30<td class="fail">-
   <tr>
-    <td>31<td class="fail">-<td>Failed! Last figure of each set should not be illuminated. Test is beyond minimum conformance requirements though.
+    <td>31<td class="fail">-
   <tr>
     <td>32<td class="pass">+
   <tr>
     <td>33<td class="pass">+
   <tr>
-    <td>34<td class="fail">-<td>Failed! Test is beyond minimum conformance requirements though.
+    <td>34<td class="fail">-
   <tr>
-    <td>35<td class="fail">-<td>Failed! Test is beyond minimum conformance requirements though.
+    <td>35<td class="fail">-
   <tr>
-    <td rowspan="52"><B>Misc</B><td rowspan="18">EXTERNPROTO<td>1<td class="fail">-<td>Failed! Assertion failure on console stating:<BR>lookat: ../../../../src/openvrml/OpenVRML/scope.cpp:71: void OpenVRML::Scope::addNodeType (const OpenVRML::NodeTypePtr &): Assertion `nodeType' failed.
+    <td rowspan="52"><B>Misc</B><td rowspan="18">EXTERNPROTO<td>1<td class="fail">-
   <tr>
-    <td>2<td class="fail">-<td>Failed! See above.
+    <td>2<td class="fail">-
   <tr>
-    <td>3<td class="fail">-<td>Failed! See above.
+    <td>3<td class="fail">-
   <tr>
-    <td>4<td class="fail">-<td>Failed! See above.
+    <td>4<td class="fail">-
   <tr>
-    <td>5<td class="fail">-<td>Failed! See above.
+    <td>5<td class="fail">-
   <tr>
-    <td>6<td class="fail">-<td>Failed! See above.
+    <td>6<td class="fail">-
   <tr>
-    <td>7<td class="fail">-<td>Failed! See above.
+    <td>7<td class="fail">-
   <tr>
-    <td>8<td class="fail">-<td>Failed! See above.
+    <td>8<td class="fail">-
   <tr>
-    <td>9<td class="fail">-<td>Failed! Cannot select sphere.
+    <td>9<td class="fail">-
   <tr>
-    <td>10<td class="fail">-<td>Failed! See above.
+    <td>10<td class="fail">-
   <tr>
-    <td>11<td class="fail">-<td>Failed! Clicking on green sphere doesn't cause red sphere to appear as well.
+    <td>11<td class="fail">-
   <tr>
-    <td>12<td class="fail">-<td>Failed! Clicking on green sphere doesn't cause red sphere to appear as well.
+    <td>12<td class="fail">-
   <tr>
-    <td>13<td class="fail">-<td>Failed! Assertion failure on console stating:<BR>lookat: ../../../../src/openvrml/OpenVRML/scope.cpp:71: void OpenVRML::Scope::addNodeType (const OpenVRML::NodeTypePtr &): Assertion `nodeType' failed.
+    <td>13<td class="fail">-
   <tr>
-    <td>14<td class="fail">-<td>Failed! See above.
+    <td>14<td class="fail">-
   <tr>
-    <td>15<td class="fail">-<td>Failed! See above.
+    <td>15<td class="fail">-
   <tr>
-    <td>16<td class="fail">-<td>Failed! See above.
+    <td>16<td class="fail">-
   <tr>
-    <td>17<td class="fail">-<td>Failed! See above.
+    <td>17<td class="fail">-
   <tr>
-    <td>18<td class="fail">-<td>Failed! See above.
+    <td>18<td class="fail">-
   <tr>
     <td rowspan="30">PROTO<td>1<td class="pass">+
   <tr>
@@ -1486,49 +1649,43 @@ following the primary result table.
   <tr>
     <td>6<td class="pass">+
   <tr>
-    <td>7A<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Aborted.
+    <td>7A<td class="fail">-<a href="#note21"><sup>21</sup></a>
   <tr>
-    <td>7B<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Background not blue, text doesn't change colors.
+    <td>7B<td class="fail">-<a href="#note21"><sup>21</sup></a>
   <tr>
-    <td>7C<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Cone does not move.
+    <td>7C<td class="fail">-<a href="#note21"><sup>21</sup></a>
   <tr>
-    <td>7D<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Nothing displays in lookat for this test. Some kind of lighting issue as if lighting is disable, the cylinder can be seen. Lookat seems to get into an infinite loop here as well...
+    <td>7D<td class="fail">-<a href="#note21"><sup>21</sup></a>
   <tr>
     <td>7E<td class="pass">+<a href="#note21"><sup>21</sup></a>
   <tr>
-    <td>7F<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Segmentation fault.
+    <td>7F<td class="fail">-<a href="#note21"><sup>21</sup></a>
   <tr>
     <td>7G<td class="pass">+<a href="#note21"><sup>21</sup></a>
   <tr>
     <td>7H<td class="pass">+<a href="#note21"><sup>21</sup></a>
   <tr>
-    <td>7I<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! For some reason, when the PointSet shape on the left comes into view, the IndexedLineSet on the right turns into a PointSet as well!
+    <td>7I<td class="fail">-<a href="#note21"><sup>21</sup></a>
   <tr>
-    <td>7J<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Nothing happens.
+    <td>7J<td class="fail">-<a href="#note21"><sup>21</sup></a>
   <tr>
-    <td>7K<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Light should move around the shape but nothing appears to happen in lookat.
+    <td>7K<td class="fail">-<a href="#note21"><sup>21</sup></a>
   <tr>
     <td>8<td class="pass">+
   <tr>
-    <td>9<td class="fail">-<td>Failed! Animation does not occur. Following messages are dumped to the console:
-<pre>
-line 226: eventIn cannot be mapped to field
-line 228: expecting "IS", found '{'
-line 232: expecting "IS", found '['
-line 236: expecting ], found '}'
-</pre>
+    <td>9<td class="fail">-
   <tr>
     <td>10<td class="pass">+
   <tr>
     <td>11<td class="pass">+
   <tr>
-    <td>12<td class="fail">-<td>Failed! Nothing happens when clicking on the rings.
+    <td>12<td class="fail">-
   <tr>
     <td>13<td class="pass">+
   <tr>
     <td>14<td class="pass">+
   <tr>
-    <td>15<td class="fail">-<td>Failed! Background does not change to indicated color.
+    <td>15<td class="fail">-
   <tr>
     <td>16<td class="pass">+
   <tr>
@@ -1536,13 +1693,13 @@ line 236: expecting ], found '}'
   <tr>
     <td>18<td class="pass">+
   <tr>
-    <td>19<td class="fail">-<td>Failed! Only top-left sphere changes color.
+    <td>19<td class="fail">-
   <tr>
-    <td>20<td class="fail">-<td>Failed! Rightmost set of spheres does not animate properly.
+    <td>20<td class="fail">-
   <tr>
-    <td>Script ECMAScript<td><td><td><td>No Tests Defined by NIST!
+    <td>Script ECMAScript
   <tr>
-    <td>Script Java<td><td><td><td>No Tests Defined by NIST!
+    <td>Script Java
   <tr>
     <td rowspan="2">WorldInfo<td>1<td class="pass">+
   <tr>
@@ -1552,7 +1709,7 @@ line 236: expecting ], found '}'
   <tr>
     <td>2<td class="pass">+
   <tr>
-    <td>3<td class="fail">-<td>Failed!
+    <td>3<td class="fail">-
   <tr>
     <td>4<td class="pass">+
   <tr>
@@ -1566,7 +1723,7 @@ line 236: expecting ], found '}'
   <tr>
     <td>9<td class="pass">+
   <tr>
-    <td>10<td class="fail">-<td>Failed! PointLight is not activated.
+    <td>10<td class="fail">-
   <tr>
     <td>11<td class="pass">+
   <tr>
@@ -1588,15 +1745,15 @@ line 236: expecting ], found '}'
   <tr>
     <td>9<td class="pass">+
   <tr>
-    <td>10<td class="fail">-<td>Failed! Red sphere should appear on top of the box, not behind it.
+    <td>10<td class="fail">-
   <tr>
-    <td>11<td class="fail">-<td>Failed! Cannot drag box.
+    <td>11<td class="fail">-
   <tr>
     <td>12<td class="pass">+
   <tr>
     <td>13<td class="pass">+
   <tr>
-    <td>14<td class="fail">-<td>Failed! Can still rotate box but not drag.
+    <td>14<td class="fail">-
   <tr>
     <td rowspan="10">ProximitySensor<td>1<td class="pass">+
   <tr>
@@ -1606,7 +1763,7 @@ line 236: expecting ], found '}'
   <tr>
     <td>4<td class="pass">+
   <tr>
-    <td>5<td class="fail">-<td>Failed! Something a little off here, sphere starts to change color but for some reason EXIT events are generated as fast as ENTER events.
+    <td>5<td class="fail">-
   <tr>
     <td>6<td class="pass">+
   <tr>
@@ -1620,13 +1777,13 @@ line 236: expecting ], found '}'
   <tr>
     <td rowspan="9">SphereSensor<td>1<td class="pass">+
   <tr>
-    <td>2<td class="fail">-<td>Failed! IndexedFaceSet should not rotate.
+    <td>2<td class="fail">-
   <tr>
-    <td>3<td class="fail">-<td>Failed! Aborted.
+    <td>3<td class="fail">-
   <tr>
-    <td>4<td class="fail">-<td>Failed! Aborted.
+    <td>4<td class="fail">-
   <tr>
-    <td>5<td class="fail">-<td>Failed! Aborted.
+    <td>5<td class="fail">-
   <tr>
     <td>6<td class="pass">+
   <tr>
@@ -1636,29 +1793,29 @@ line 236: expecting ], found '}'
   <tr>
     <td>9<td class="pass">+
   <tr>
-    <td rowspan="19">TimeSensor<td>1<td class="fail">-<td>Failed! Cannot click on sphere.
+    <td rowspan="19">TimeSensor<td>1<td class="fail">-
   <tr>
     <td>2<td class="pass">+
   <tr>
-    <td>3<td class="fail">-<td>Failed! Cannot click on sphere.
+    <td>3<td class="fail">-
   <tr>
     <td>4<td class="pass">+
   <tr>
-    <td>5<td class="fail">-<td>Failed! Nothing happens after clicking on sphere.
+    <td>5<td class="fail">-
   <tr>
-    <td>6<td class="fail">-<td>Failed! See above.
+    <td>6<td class="fail">-
   <tr>
     <td>7<td class="pass">+
   <tr>
-    <td>8<td class="fail">-<td>Failed! Cannot click on sphere.
+    <td>8<td class="fail">-
   <tr>
-    <td>9<td class="fail">-<td>Failed! See above.
+    <td>9<td class="fail">-
   <tr>
     <td>10<td class="pass">+
   <tr>
     <td>11<td class="pass">+
   <tr>
-    <td>12<td class="fail">-<td>Failed! Cycle doesn't continue indefinitely.
+    <td>12<td class="fail">-
   <tr>
     <td>13<td class="pass">+
   <tr>
@@ -1682,11 +1839,11 @@ line 236: expecting ], found '}'
   <tr>
     <td>4<td class="pass">+
   <tr>
-    <td>5<td class="fail">-<td>Failed! Smaller red sphere doesn't appear.
+    <td>5<td class="fail">-
   <tr>
-    <td>6<td class="fail">-<td>Failed! Lights do not come on.
+    <td>6<td class="fail">-
   <tr>
-    <td>7<td class="fail">-<td>Failed!
+    <td>7<td class="fail">-
   <tr>
     <td>8<td class="pass">+
   <tr>
@@ -1710,67 +1867,67 @@ line 236: expecting ], found '}'
   <tr>
     <td>9<td class="pass">+
   <tr>
-    <td rowspan="28"><B>Sounds</B><td rowspan="19">AudioClip<td>1<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td rowspan="28"><B>Sounds</B><td rowspan="19">AudioClip<td>1<td class="fail">-
   <tr>
-    <td>2<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>2<td class="fail">-
   <tr>
-    <td>3<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>3<td class="fail">-
   <tr>
-    <td>4<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>4<td class="fail">-
   <tr>
-    <td>5<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>5<td class="fail">-
   <tr>
-    <td>6<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>6<td class="fail">-
   <tr>
-    <td>7<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>7<td class="fail">-
   <tr>
-    <td>8<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>8<td class="fail">-
   <tr>
-    <td>9<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>9<td class="fail">-
   <tr>
-    <td>10<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>10<td class="fail">-
   <tr>
-    <td>11<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>11<td class="fail">-
   <tr>
-    <td>12<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>12<td class="fail">-
   <tr>
-    <td>13<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>13<td class="fail">-
   <tr>
-    <td>14<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>14<td class="fail">-
   <tr>
-    <td>15<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>15<td class="fail">-
   <tr>
-    <td>16<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>16<td class="fail">-
   <tr>
-    <td>17<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>17<td class="fail">-
   <tr>
-    <td>18<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>18<td class="fail">-
   <tr>
-    <td>19<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>19<td class="fail">-
   <tr>
-    <td rowspan="9">Sound<td>1<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td rowspan="9">Sound<td>1<td class="fail">-
   <tr>
-    <td>2<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>2<td class="fail">-
   <tr>
-    <td>3<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>3<td class="fail">-
   <tr>
-    <td>4<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>4<td class="fail">-
   <tr>
-    <td>5<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>5<td class="fail">-
   <tr>
-    <td>6<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>6<td class="fail">-
   <tr>
-    <td>7<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>7<td class="fail">-
   <tr>
-    <td>8<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>8<td class="fail">-
   <tr>
-    <td>9<td class="fail">-<td>Failed because sound support has been removed in the current build.
+    <td>9<td class="fail">-
   <tr>
     <td rowspan="18"><B>Special Groups</B><td rowspan="6">Inline<td>1<td class="pass">+
   <tr>
-    <td>2<td class="pass">+<td>Text is screwed up though.
+    <td>2<td class="pass">+
   <tr>
-    <td>3<td class="fail">-<td>Failed! OpenVRML should ignore the first invalid URL and use the second but instead only attempts to load the first.
+    <td>3<td class="fail">-
   <tr>
     <td>4<td class="invalid">x<a href="note22"><sup>22</sup></a>
   <tr>
