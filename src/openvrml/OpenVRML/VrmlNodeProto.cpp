@@ -27,7 +27,34 @@
  * The definition of the PROTO is stored in a VrmlNodeType object;
  * the VrmlNodeProto object stores a local copy of the implementation
  * nodes.
+ *
+ * Instances of PROTOs clone the implementation nodes stored
+ * in a VrmlNodeType object. The only tricky parts are to
+ * make sure ROUTEs are properly copied (the DEF name map is
+ * not available) and that fields are copied properly (the
+ * MF* guys currently share data & need to be made copy-on-
+ * write for this to be correct). Flags are set as each node
+ * is cloned so that USEd nodes are referenced rather than
+ * duplicated.
+ *
+ * ROUTEs: Build a temp namespace as each (named) implementation
+ * node is cloned, then traverse the implementation nodes again,
+ * reproducing the routes in the cloned nodes using the temp ns.
+ * I think that the addToScene() method is the right place to
+ * download EXTERNPROTO implementations. Should also check that
+ * the first node matches the expected type (need to store the
+ * expected type if first node is null when one of the type
+ * tests is run).
+ *
+ * Events between nodes in the PROTO implementation are handled
+ * by the ROUTE copying described above. For eventIns coming into
+ * the proto, when the implementation nodes are copied, a list
+ * of eventIns/exposedFields along with their IS mappings should
+ * be constructed.
+ * EventOuts from an implementation node to a node outside the
+ * PROTO can be directly replaced at copy time.
  */
+
 #include "VrmlNodeProto.h"
 #include "VrmlNamespace.h"
 #include "VrmlNodeVisitor.h"
@@ -38,39 +65,11 @@
 #define VRML_NODE_PROTO_DEBUG
 #endif
 
-//
-// Instances of PROTOs clone the implementation nodes stored
-// in a VrmlNodeType object. The only tricky parts are to
-// make sure ROUTEs are properly copied (the DEF name map is
-// not available) and that fields are copied properly (the
-// MF* guys currently share data & need to be made copy-on-
-// write for this to be correct). Flags are set as each node
-// is cloned so that USEd nodes are referenced rather than
-// duplicated.
-//
-// ROUTEs: Build a temp namespace as each (named) implementation
-// node is cloned, then traverse the implementation nodes again,
-// reproducing the routes in the cloned nodes using the temp ns.
-// I think that the addToScene() method is the right place to
-// download EXTERNPROTO implementations. Should also check that
-// the first node matches the expected type (need to store the
-// expected type if first node is null when one of the type
-// tests is run).
-//
-// Events between nodes in the PROTO implementation are handled
-// by the ROUTE copying described above. For eventIns coming into
-// the proto, when the implementation nodes are copied, a list
-// of eventIns/exposedFields along with their IS mappings should
-// be constructed.
-// EventOuts from an implementation node to a node outside the
-// PROTO can be directly replaced at copy time.
-//
-
-VrmlNodeType & VrmlNodeProto::nodeType() const
-{
-    return *d_nodeType;
-}
-
+// Field name/value pairs specified in PROTO instantiation
+struct VrmlNodeProto::NameValueRec {
+    std::string name;
+    VrmlField * value;
+};
 
 VrmlNodeProto::VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene) :
   VrmlNode(scene),
@@ -119,6 +118,10 @@ VrmlNodeProto::~VrmlNodeProto() {
     d_nodeType->dereference();
 }
 
+VrmlNodeType & VrmlNodeProto::nodeType() const
+{
+    return *d_nodeType;
+}
 
 bool VrmlNodeProto::accept(VrmlNodeVisitor & visitor) {
     if (!this->visited) {
@@ -139,6 +142,14 @@ void VrmlNodeProto::resetVisitedFlag() {
             }
         }
     }
+}
+
+/**
+ * @todo Implement me!
+ */
+const VrmlMFNode VrmlNodeProto::getChildren() const {
+    // XXX Implement me!
+    return VrmlMFNode();
 }
 
 VrmlNodeProto* VrmlNodeProto::toProto() const
@@ -326,17 +337,44 @@ VrmlNodeAppearance* VrmlNodeProto::toAppearance() const
 VrmlNodeAudioClip* VrmlNodeProto::toAudioClip() const
 { return firstNode() ? firstNode()->toAudioClip() : 0; }
 
-const VrmlNodeChild* VrmlNodeProto::toChild() const
+VrmlNodeChild* VrmlNodeProto::toChild() const
 { return firstNode() ? firstNode()->toChild() : 0; }
 
 VrmlNodeBackground* VrmlNodeProto::toBackground() const
 { return firstNode() ? firstNode()->toBackground() : 0; }
 
+VrmlNodeBillboard * VrmlNodeProto::toBillboard() const
+{ return firstNode() ? firstNode()->toBillboard() : 0; }
+
+VrmlNodeBox* VrmlNodeProto::toBox() const       
+{ return firstNode() ? firstNode()->toBox() : 0; }
+ 
+VrmlNodeCollision * VrmlNodeProto::toCollision() const
+{ return firstNode() ? firstNode()->toCollision() : 0; }
+
 VrmlNodeColor* VrmlNodeProto::toColor() const
 { return firstNode() ? firstNode()->toColor() : 0; }
 
+VrmlNodeCone* VrmlNodeProto::toCone() const       
+{ return firstNode() ? firstNode()->toCone() : 0; }
+
 VrmlNodeCoordinate* VrmlNodeProto::toCoordinate() const
 { return firstNode() ? firstNode()->toCoordinate() : 0; }
+
+VrmlNodeCylinder* VrmlNodeProto::toCylinder() const       
+{ return firstNode() ? firstNode()->toCylinder() : 0; }
+
+VrmlNodeCylinderSensor* VrmlNodeProto::toCylinderSensor() const
+{ return firstNode() ? firstNode()->toCylinderSensor() : 0; }
+
+VrmlNodeDirLight* VrmlNodeProto::toDirLight() const       
+{ return firstNode() ? firstNode()->toDirLight() : 0; }
+
+VrmlNodeElevationGrid* VrmlNodeProto::toElevationGrid() const       
+{ return firstNode() ? firstNode()->toElevationGrid() : 0; }
+
+VrmlNodeExtrusion* VrmlNodeProto::toExtrusion() const       
+{ return firstNode() ? firstNode()->toExtrusion() : 0; }
 
 VrmlNodeFog* VrmlNodeProto::toFog() const
 { return firstNode() ? firstNode()->toFog() : 0; }
@@ -344,11 +382,17 @@ VrmlNodeFog* VrmlNodeProto::toFog() const
 VrmlNodeFontStyle* VrmlNodeProto::toFontStyle() const
 { return firstNode() ? firstNode()->toFontStyle() : 0; }
 
-const VrmlNodeGeometry* VrmlNodeProto::toGeometry() const
+VrmlNodeGeometry* VrmlNodeProto::toGeometry() const
 { return firstNode() ? firstNode()->toGeometry() : 0; }
 
 VrmlNodeGroup* VrmlNodeProto::toGroup() const
 { return firstNode() ? firstNode()->toGroup() : 0; }
+
+VrmlNodeImageTexture* VrmlNodeProto::toImageTexture() const
+{ return firstNode() ? firstNode()->toImageTexture() : 0; }
+
+VrmlNodeIFaceSet* VrmlNodeProto::toIFaceSet() const  
+{ return firstNode() ? firstNode()->toIFaceSet() : 0; }
 
 VrmlNodeInline* VrmlNodeProto::toInline() const
 { return firstNode() ? firstNode()->toInline() : 0; }
@@ -371,12 +415,15 @@ VrmlNodeNormal* VrmlNodeProto::toNormal() const
 VrmlNodePlaneSensor* VrmlNodeProto::toPlaneSensor() const
 { return firstNode() ? firstNode()->toPlaneSensor() : 0; }
 
+VrmlNodeShape* VrmlNodeProto::toShape() const  
+{ return firstNode() ? firstNode()->toShape() : 0; }
+
 VrmlNodeSphereSensor* VrmlNodeProto::toSphereSensor() const
 { return firstNode() ? firstNode()->toSphereSensor() : 0; }
 
-VrmlNodeCylinderSensor* VrmlNodeProto::toCylinderSensor() const
-{ return firstNode() ? firstNode()->toCylinderSensor() : 0; }
-
+VrmlNodePixelTexture* VrmlNodeProto::toPixelTexture() const
+{ return firstNode() ? firstNode()->toPixelTexture() : 0; }
+ 
 VrmlNodePointLight* VrmlNodeProto::toPointLight() const
 { return firstNode() ? firstNode()->toPointLight() : 0; }
 
@@ -386,8 +433,14 @@ VrmlNodeScript* VrmlNodeProto::toScript() const
 VrmlNodeSound* VrmlNodeProto::toSound() const
 { return firstNode() ? firstNode()->toSound() : 0; }
 
+VrmlNodeSphere* VrmlNodeProto::toSphere() const       
+{ return firstNode() ? firstNode()->toSphere() : 0; }
+
 VrmlNodeSpotLight* VrmlNodeProto::toSpotLight() const
 { return firstNode() ? firstNode()->toSpotLight() : 0; }
+
+VrmlNodeSwitch* VrmlNodeProto::toSwitch() const       
+{ return firstNode() ? firstNode()->toSwitch() : 0; }
 
 VrmlNodeTexture* VrmlNodeProto::toTexture() const
 { return firstNode() ? firstNode()->toTexture() : 0; }
@@ -404,47 +457,11 @@ VrmlNodeTimeSensor* VrmlNodeProto::toTimeSensor() const
 VrmlNodeTouchSensor* VrmlNodeProto::toTouchSensor() const
 { return firstNode() ? firstNode()->toTouchSensor() : 0; }
 
-VrmlNodeViewpoint* VrmlNodeProto::toViewpoint() const
-{ return firstNode() ? firstNode()->toViewpoint() : 0; }
-
-// Larry
-VrmlNodeBox* VrmlNodeProto::toBox() const       
-{ return firstNode() ? firstNode()->toBox() : 0; }
- 
-VrmlNodeCone* VrmlNodeProto::toCone() const       
-{ return firstNode() ? firstNode()->toCone() : 0; }
-
-VrmlNodeCylinder* VrmlNodeProto::toCylinder() const       
-{ return firstNode() ? firstNode()->toCylinder() : 0; }
-
-VrmlNodeDirLight* VrmlNodeProto::toDirLight() const       
-{ return firstNode() ? firstNode()->toDirLight() : 0; }
-
-VrmlNodeElevationGrid* VrmlNodeProto::toElevationGrid() const       
-{ return firstNode() ? firstNode()->toElevationGrid() : 0; }
-VrmlNodeExtrusion* VrmlNodeProto::toExtrusion() const       
-{ return firstNode() ? firstNode()->toExtrusion() : 0; }
-
-VrmlNodeIFaceSet* VrmlNodeProto::toIFaceSet() const  
-{ return firstNode() ? firstNode()->toIFaceSet() : 0; }
-VrmlNodeShape* VrmlNodeProto::toShape() const  
-{ return firstNode() ? firstNode()->toShape() : 0; }
-
-VrmlNodeSphere* VrmlNodeProto::toSphere() const       
-{ return firstNode() ? firstNode()->toSphere() : 0; }
-
-VrmlNodeSwitch* VrmlNodeProto::toSwitch() const       
-{ return firstNode() ? firstNode()->toSwitch() : 0; }
-
 VrmlNodeTransform* VrmlNodeProto::toTransform() const       
 { return firstNode() ? firstNode()->toTransform() : 0; }
 
-VrmlNodeImageTexture* VrmlNodeProto::toImageTexture() const
-{ return firstNode() ? firstNode()->toImageTexture() : 0; }
-VrmlNodePixelTexture* VrmlNodeProto::toPixelTexture() const
-{ return firstNode() ? firstNode()->toPixelTexture() : 0; }
- 
-//
+VrmlNodeViewpoint* VrmlNodeProto::toViewpoint() const
+{ return firstNode() ? firstNode()->toViewpoint() : 0; }
 
 void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
 {

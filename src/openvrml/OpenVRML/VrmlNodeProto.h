@@ -32,127 +32,116 @@
 #include "field.h"
 
 class OPENVRML_SCOPE VrmlNodeProto : public VrmlNode {
-
 public:
-  // Field name/value pairs specified in PROTO instantiation
-  struct NameValueRec {
-    std::string name;
-    VrmlField * value;
-  };
+    class NameValueRec;
 
-  virtual VrmlNodeType & nodeType() const;
+    VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene);
+    VrmlNodeProto(const VrmlNodeProto&);
+    virtual ~VrmlNodeProto();
 
-  VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene);
-  VrmlNodeProto(const VrmlNodeProto&);
-  virtual ~VrmlNodeProto();
+    virtual VrmlNodeType & nodeType() const;
+    virtual bool accept(VrmlNodeVisitor & visitor);
+    virtual void resetVisitedFlag();
+    virtual const VrmlField * getField(const std::string & fieldName) const;
+    virtual void setField(const std::string & fieldName, const VrmlField &fieldValue);
+    virtual void eventIn(double timeStamp, const std::string & eventName,
+		         const VrmlField & fieldValue);
+    virtual const VrmlMFNode getChildren() const;
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
-  virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
-  virtual ostream & printFields(ostream & os, int indent);
+    virtual void addToScene(VrmlScene * scene, const std::string & relUrl);
+    virtual ostream & printFields(ostream & os, int indent);
 
-  virtual VrmlNodeProto* toProto() const;
+    virtual VrmlNodeAnchor * toAnchor() const;
+    virtual VrmlNodeAppearance * toAppearance() const;
+    virtual VrmlNodeAudioClip * toAudioClip() const;
+    virtual VrmlNodeBackground * toBackground() const;
+    virtual VrmlNodeBillboard * toBillboard() const;
+    virtual VrmlNodeBox * toBox() const;
+    virtual VrmlNodeChild * toChild() const;
+    virtual VrmlNodeCollision * toCollision() const;
+    virtual VrmlNodeColor * toColor() const;
+    virtual VrmlNodeCone * toCone() const;
+    virtual VrmlNodeCoordinate * toCoordinate() const;
+    virtual VrmlNodeCylinder * toCylinder() const;
+    virtual VrmlNodeDirLight * toDirLight() const;
+    virtual VrmlNodeElevationGrid * toElevationGrid() const;
+    virtual VrmlNodeExtrusion * toExtrusion() const;
+    virtual VrmlNodeFog * toFog() const;
+    virtual VrmlNodeFontStyle * toFontStyle() const;
+    virtual VrmlNodeGeometry * toGeometry() const;
+    virtual VrmlNodeGroup * toGroup() const;
+    virtual VrmlNodeIFaceSet * toIFaceSet() const;
+    virtual VrmlNodeImageTexture * toImageTexture() const;
+    virtual VrmlNodePixelTexture * toPixelTexture() const;
+    virtual VrmlNodeInline * toInline() const;
+    virtual VrmlNodeLOD * toLOD() const;
+    virtual VrmlNodeLight * toLight() const;
+    virtual VrmlNodeMaterial * toMaterial() const;
+    virtual VrmlNodeMovieTexture * toMovieTexture() const;
+    virtual VrmlNodeNavigationInfo * toNavigationInfo() const;
+    virtual VrmlNodeNormal * toNormal() const;
+    virtual VrmlNodeOrientationInt * toOrientationInt() const;
+    virtual VrmlNodePlaneSensor * toPlaneSensor() const;
+    virtual VrmlNodePositionInt * toPositionInt() const;
+    virtual VrmlNodeSphereSensor * toSphereSensor() const;
+    virtual VrmlNodeCylinderSensor * toCylinderSensor() const;
+    virtual VrmlNodePointLight * toPointLight() const;
+    virtual VrmlNodeScalarInt * toScalarInt() const;
+    virtual VrmlNodeScript * toScript() const;
+    virtual VrmlNodeShape * toShape() const;
+    virtual VrmlNodeSphere * toSphere() const;
+    virtual VrmlNodeSound * toSound() const;
+    virtual VrmlNodeSpotLight * toSpotLight() const;
+    virtual VrmlNodeSwitch * toSwitch() const;
+    virtual VrmlNodeTexture * toTexture() const;
+    virtual VrmlNodeTextureCoordinate * toTextureCoordinate() const;
+    virtual VrmlNodeTextureTransform * toTextureTransform() const;
+    virtual VrmlNodeTimeSensor * toTimeSensor() const;
+    virtual VrmlNodeTouchSensor * toTouchSensor() const;
+    virtual VrmlNodeTransform * toTransform() const;
+    virtual VrmlNodeViewpoint * toViewpoint() const;
+    virtual VrmlNodeProto * toProto() const;
 
-  // These are passed along to the first implementation node of the proto.
-  virtual VrmlNodeAnchor*	toAnchor() const;
-  virtual VrmlNodeAppearance*	toAppearance() const;
-  virtual VrmlNodeAudioClip*	toAudioClip() const;
-  virtual VrmlNodeBackground*	toBackground() const;
-  virtual const VrmlNodeChild*	toChild() const;
-  virtual VrmlNodeColor*	toColor() const;
-  virtual VrmlNodeCoordinate*	toCoordinate() const;
-  virtual VrmlNodeFog*		toFog() const;
-  virtual VrmlNodeFontStyle*	toFontStyle() const;
-  virtual const VrmlNodeGeometry*	toGeometry() const;
-  virtual VrmlNodeGroup*	toGroup() const;
-  virtual VrmlNodeInline*	toInline() const;
-  virtual VrmlNodeLight*	toLight() const;
-  virtual VrmlNodeMaterial*	toMaterial() const;
-  virtual VrmlNodeMovieTexture*	toMovieTexture() const;
-  virtual VrmlNodeNavigationInfo*	toNavigationInfo() const;
-  virtual VrmlNodeNormal*	toNormal() const;
-  virtual VrmlNodePlaneSensor*	toPlaneSensor() const;
-  virtual VrmlNodeSphereSensor*	toSphereSensor() const;
-  virtual VrmlNodeCylinderSensor*	toCylinderSensor() const;
-  virtual VrmlNodePointLight*	toPointLight() const;
-  virtual VrmlNodeScript*	toScript() const;
-  virtual VrmlNodeSound*	toSound() const;
-  virtual VrmlNodeSpotLight*	toSpotLight() const;
-  virtual VrmlNodeTexture*	toTexture() const;
-  virtual VrmlNodeTextureCoordinate*	toTextureCoordinate() const;
-  virtual VrmlNodeTextureTransform* toTextureTransform() const;
-  virtual VrmlNodeTimeSensor*	toTimeSensor() const;
-  virtual VrmlNodeTouchSensor*	toTouchSensor() const;
-  virtual VrmlNodeViewpoint*	toViewpoint() const;
+    virtual void render(Viewer *, VrmlRenderContext rc);
 
-  // Larry
-  virtual VrmlNodeBox*toBox() const; 
-  virtual VrmlNodeCone* toCone() const; 
-  virtual VrmlNodeCylinder* toCylinder() const; 
-  virtual VrmlNodeDirLight*toDirLight() const; 
-  virtual VrmlNodeElevationGrid* toElevationGrid() const; 
-  virtual VrmlNodeExtrusion* toExtrusion() const; 
-  virtual VrmlNodeIFaceSet*toIFaceSet() const;
-  virtual VrmlNodeShape*toShape() const;
-  virtual VrmlNodeSphere* toSphere() const; 
-  virtual VrmlNodeSwitch* toSwitch() const;  
-  virtual VrmlNodeTransform* toTransform() const;
-  virtual VrmlNodeImageTexture* toImageTexture() const;
-  virtual VrmlNodePixelTexture* toPixelTexture() const;
-  virtual VrmlNodeLOD* toLOD() const;
-  virtual VrmlNodeScalarInt* toScalarInt() const;
-  virtual VrmlNodeOrientationInt* toOrientationInt() const;
-  virtual VrmlNodePositionInt* toPositionInt() const;
+    virtual bool isModified() const;
+    virtual void updateModified(VrmlNodePath& path, int flags);
 
-  virtual void render(Viewer *, VrmlRenderContext rc);
+    virtual void accumulateTransform( VrmlNode* );
 
-  virtual void eventIn(double timeStamp, const std::string & eventName,
-		       const VrmlField & fieldValue);
+    const VrmlMFNode & getImplNodes() const;
 
-  virtual const VrmlField * getField(const std::string & fieldName) const;
-  virtual void setField(const std::string & fieldName, const VrmlField &fieldValue);
-
-  virtual bool isModified() const;
-  virtual void updateModified(VrmlNodePath& path, int flags);
-
-  virtual void accumulateTransform( VrmlNode* );
-
-  const VrmlMFNode & getImplNodes() const;
-
-  const VrmlBVolume* getBVolume() const;
+    const VrmlBVolume* getBVolume() const;
 
 private:
+    const VrmlNodePtr firstNode() const;
 
-  const VrmlNodePtr firstNode() const;
+    // Instantiate the proto by cloning the node type implementation nodes.
+    void instantiate();
 
-  // Instantiate the proto by cloning the node type implementation nodes.
-  void instantiate();
+    // Find a field by name
+    NameValueRec * findField(const std::string & fieldName) const;
 
-  // Find a field by name
-  NameValueRec * findField(const std::string & fieldName) const;
+    VrmlNodeType *d_nodeType;	// Definition
 
-  VrmlNodeType *d_nodeType;	// Definition
+    bool d_instantiated;
+    VrmlNamespace *d_scope;	// Node type and name bindings
 
-  bool d_instantiated;
-  VrmlNamespace *d_scope;	// Node type and name bindings
+    VrmlMFNode implNodes;		// Local copy of implementation nodes.
 
-  VrmlMFNode implNodes;		// Local copy of implementation nodes.
+    std::list<NameValueRec*> d_fields;	// Field values
 
-  std::list<NameValueRec*> d_fields;	// Field values
+    // Dispatch eventIns from outside the PROTO to internal eventIns
+    struct EventDispatch {
+      std::string name;
+      VrmlNodeType::ISMap ismap;
+    };
 
-  // Dispatch eventIns from outside the PROTO to internal eventIns
-  struct EventDispatch {
-    std::string name;
-    VrmlNodeType::ISMap ismap;
-  };
+    typedef std::list<EventDispatch*> EventDispatchList;
 
-  typedef std::list<EventDispatch*> EventDispatchList;
+    EventDispatchList d_eventDispatch;
 
-  EventDispatchList d_eventDispatch;
-  
-  Viewer::Object d_viewerObject; // move to VrmlNode.h ? ...
-
+    Viewer::Object d_viewerObject; // move to VrmlNode.h ? ...
 };
 
 #endif

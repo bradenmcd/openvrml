@@ -98,6 +98,7 @@ public:
     virtual void eventIn(double timeStamp,
 		         const std::string & eventName,
 		         const VrmlField & fieldValue);
+    virtual const VrmlMFNode getChildren() const;
     virtual void addToScene(VrmlScene * scene, const char * relUrl);
 
     virtual VrmlNodeScript* toScript() const;

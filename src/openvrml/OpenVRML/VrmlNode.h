@@ -27,37 +27,34 @@
 #include <string>
 #include <iostream.h>
 #include "common.h"
+#include "field.h"
 #include "VrmlNodePtr.h"
 #include "System.h"		// error
+#include "VrmlRenderContext.h"
 
 class Route;
 class Viewer;
-
 class VrmlNamespace;
 class VrmlNodeType;
 class VrmlField;
 class VrmlScene;
 class VrmlNodeVisitor;
-
-#include "VrmlRenderContext.h"
 class VrmlBVolume;
-
-// For the safe downcasts
 class VrmlNodeAnchor;
 class VrmlNodeAppearance;
 class VrmlNodeAudioClip;
 class VrmlNodeBackground;
 class VrmlNodeBillboard;
-class VrmlNodeBox;   //LarryD Mar 08/99
+class VrmlNodeBox;
 class VrmlNodeChild;
 class VrmlNodeCollision;
 class VrmlNodeColor;
-class VrmlNodeCone;   //LarryD Mar 08/99
+class VrmlNodeCone;
 class VrmlNodeCoordinate;
-class VrmlNodeCylinder; //LarryD Mar 08/99
-class VrmlNodeDirLight; //LarryD Mar 08/99
-class VrmlNodeElevationGrid; //LarryD Mar 09/99
-class VrmlNodeExtrusion; //LarryD Mar 09/99
+class VrmlNodeCylinder;
+class VrmlNodeDirLight;
+class VrmlNodeElevationGrid;
+class VrmlNodeExtrusion;
 class VrmlNodeFog;
 class VrmlNodeFontStyle;
 class VrmlNodeGeometry;
@@ -92,12 +89,7 @@ class VrmlNodeLOD;
 class VrmlNodeScalarInt;
 class VrmlNodeOrientationInt;
 class VrmlNodePositionInt;
-
 class VrmlNodeProto;
-
-// Global output operator for nodes
-//class VrmlNode;
-//ostream& operator<<(ostream& os, const VrmlNode& f);
 
 class OPENVRML_SCOPE VrmlNode {
 
@@ -106,8 +98,6 @@ class OPENVRML_SCOPE VrmlNode {
     std::string name;
 
 public:
-    static VrmlNodeType * defineType(VrmlNodeType * type);
-
     VrmlNode(VrmlScene * scene);
     VrmlNode(const VrmlNode &);
     virtual ~VrmlNode() = 0;
@@ -124,70 +114,59 @@ public:
     virtual void eventIn(double timeStamp,
 		         const std::string & eventName,
 		         const VrmlField & fieldValue);
-
-    // Safe node downcasts. These avoid the dangerous casts of VrmlNode* (esp in
-    // presence of protos), but are ugly in that this class must know about all
-    // the subclasses. These return 0 if the typecast is invalid.
-    // Remember to also add new ones to VrmlNodeProto. Protos should
-    // return their first implementation node (except toProto()).
-    virtual VrmlNodeAnchor*	toAnchor() const;
-    virtual VrmlNodeAppearance*	toAppearance() const;
-    virtual VrmlNodeAudioClip*	toAudioClip() const;
-    virtual VrmlNodeBackground*	toBackground() const;
-    virtual const VrmlNodeBillboard * toBillboard() const;
-    virtual VrmlNodeBillboard * toBillboard();
-    virtual VrmlNodeBox*		toBox() const; //LarryD Mar 08/99
-    virtual const VrmlNodeChild * toChild() const;
-    virtual VrmlNodeChild * toChild();
-    virtual const VrmlNodeCollision * toCollision() const;
-    virtual VrmlNodeCollision * toCollision();
-    virtual VrmlNodeColor*	toColor() const;
-    virtual VrmlNodeCone* toCone() const; //LarryD Mar 08/99
-    virtual VrmlNodeCoordinate*	toCoordinate() const;
-    virtual VrmlNodeCylinder* toCylinder() const; //LarryD Mar 08/99
-    virtual VrmlNodeDirLight* toDirLight() const; //LarryD Mar 08/99
-    virtual VrmlNodeElevationGrid* toElevationGrid() const; //LarryD Mar 09/99
-    virtual VrmlNodeExtrusion*    toExtrusion() const; //LarryD Mar 09/99
-    virtual VrmlNodeFog*		toFog() const;
-    virtual VrmlNodeFontStyle*	toFontStyle() const;
-    virtual const VrmlNodeGeometry * toGeometry() const;
-    virtual VrmlNodeGeometry * toGeometry();
-    virtual VrmlNodeGroup*	toGroup() const;
-    virtual VrmlNodeIFaceSet*	toIFaceSet() const;
-    virtual VrmlNodeImageTexture* toImageTexture() const;
-    virtual VrmlNodePixelTexture* toPixelTexture() const;
-    virtual VrmlNodeInline*	toInline() const;
-    virtual VrmlNodeLight*	toLight() const;
-    virtual VrmlNodeMaterial*	toMaterial() const;
-    virtual VrmlNodeMovieTexture*	toMovieTexture() const;
-    virtual VrmlNodeNavigationInfo*	toNavigationInfo() const;
-    virtual VrmlNodeNormal*	toNormal() const;
-    virtual VrmlNodePlaneSensor*	toPlaneSensor() const;
-    virtual VrmlNodeSphereSensor*	toSphereSensor() const;
-    virtual VrmlNodeCylinderSensor* toCylinderSensor() const;
-    virtual VrmlNodePointLight*	toPointLight() const;
-    virtual VrmlNodeScript*	toScript() const;
-    virtual VrmlNodeShape*	toShape() const;
-    virtual VrmlNodeSphere* toSphere() const; //LarryD Mar 08/99
-    virtual VrmlNodeSound*	toSound() const;
-    virtual VrmlNodeSpotLight*	toSpotLight() const;
-    virtual VrmlNodeSwitch* toSwitch() const; //LarryD Mar 08/99
-    virtual VrmlNodeTexture*	toTexture() const;
-    virtual VrmlNodeTextureCoordinate*	toTextureCoordinate() const;
-    virtual VrmlNodeTextureTransform* toTextureTransform() const;
-    virtual VrmlNodeTimeSensor*	toTimeSensor() const;
-    virtual VrmlNodeTouchSensor*	toTouchSensor() const;
-    virtual VrmlNodeTransform* toTransform() const;     //LarryD Feb 24/99
-    virtual VrmlNodeViewpoint*	toViewpoint() const;
-
-    virtual VrmlNodeLOD* toLOD() const;
-    virtual VrmlNodeScalarInt* toScalarInt() const;
-    virtual VrmlNodeOrientationInt* toOrientationInt() const;
-    virtual VrmlNodePositionInt* toPositionInt() const;
-
-    virtual VrmlNodeProto*	toProto() const;
-
+    virtual const VrmlMFNode getChildren() const;
     virtual void addToScene(VrmlScene *, const std::string & relativeUrl);
+
+    virtual VrmlNodeAnchor * toAnchor() const;
+    virtual VrmlNodeAppearance * toAppearance() const;
+    virtual VrmlNodeAudioClip * toAudioClip() const;
+    virtual VrmlNodeBackground * toBackground() const;
+    virtual VrmlNodeBillboard * toBillboard() const;
+    virtual VrmlNodeBox * toBox() const;
+    virtual VrmlNodeChild * toChild() const;
+    virtual VrmlNodeCollision * toCollision() const;
+    virtual VrmlNodeColor * toColor() const;
+    virtual VrmlNodeCone * toCone() const;
+    virtual VrmlNodeCoordinate * toCoordinate() const;
+    virtual VrmlNodeCylinder * toCylinder() const;
+    virtual VrmlNodeDirLight * toDirLight() const;
+    virtual VrmlNodeElevationGrid * toElevationGrid() const;
+    virtual VrmlNodeExtrusion * toExtrusion() const;
+    virtual VrmlNodeFog * toFog() const;
+    virtual VrmlNodeFontStyle * toFontStyle() const;
+    virtual VrmlNodeGeometry * toGeometry() const;
+    virtual VrmlNodeGroup * toGroup() const;
+    virtual VrmlNodeIFaceSet * toIFaceSet() const;
+    virtual VrmlNodeImageTexture * toImageTexture() const;
+    virtual VrmlNodePixelTexture * toPixelTexture() const;
+    virtual VrmlNodeInline * toInline() const;
+    virtual VrmlNodeLOD * toLOD() const;
+    virtual VrmlNodeLight * toLight() const;
+    virtual VrmlNodeMaterial * toMaterial() const;
+    virtual VrmlNodeMovieTexture * toMovieTexture() const;
+    virtual VrmlNodeNavigationInfo * toNavigationInfo() const;
+    virtual VrmlNodeNormal * toNormal() const;
+    virtual VrmlNodeOrientationInt * toOrientationInt() const;
+    virtual VrmlNodePlaneSensor * toPlaneSensor() const;
+    virtual VrmlNodePositionInt * toPositionInt() const;
+    virtual VrmlNodeSphereSensor * toSphereSensor() const;
+    virtual VrmlNodeCylinderSensor * toCylinderSensor() const;
+    virtual VrmlNodePointLight * toPointLight() const;
+    virtual VrmlNodeScalarInt * toScalarInt() const;
+    virtual VrmlNodeScript * toScript() const;
+    virtual VrmlNodeShape * toShape() const;
+    virtual VrmlNodeSphere * toSphere() const;
+    virtual VrmlNodeSound * toSound() const;
+    virtual VrmlNodeSpotLight * toSpotLight() const;
+    virtual VrmlNodeSwitch * toSwitch() const;
+    virtual VrmlNodeTexture * toTexture() const;
+    virtual VrmlNodeTextureCoordinate * toTextureCoordinate() const;
+    virtual VrmlNodeTextureTransform * toTextureTransform() const;
+    virtual VrmlNodeTimeSensor * toTimeSensor() const;
+    virtual VrmlNodeTouchSensor * toTouchSensor() const;
+    virtual VrmlNodeTransform * toTransform() const;
+    virtual VrmlNodeViewpoint * toViewpoint() const;
+    virtual VrmlNodeProto * toProto() const;
 
     // Write self
     ostream& print(ostream& os, int indent) const;

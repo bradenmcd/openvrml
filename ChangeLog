@@ -1,3 +1,8 @@
+2001-08-19  Braden McDaniel  <braden@endoframe.com>
+
+        * Added getChilren() method to VrmlNode; implemented this for
+          everything except VrmlNodeProto.
+
 2001-08-16  Braden McDaniel  <braden@endoframe.com>
 
         * Changed reinterpret_casts in the JavaScript binding to

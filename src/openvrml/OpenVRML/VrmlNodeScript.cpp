@@ -81,7 +81,6 @@ VrmlNodeType *VrmlNodeScript::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("url", VrmlField::MFSTRING);
   t->addField("directOutput", VrmlField::SFBOOL);
   t->addField("mustEvaluate", VrmlField::SFBOOL);
@@ -182,6 +181,42 @@ void VrmlNodeScript::resetVisitedFlag() {
             }
         }
     }
+}
+
+namespace {
+    struct AccumulateNodes_ :
+            public std::unary_function<VrmlNodeScript::FieldList::value_type, void> {
+        explicit AccumulateNodes_(VrmlMFNode & children): children(children) {}
+        
+        result_type operator()(argument_type scriptField) {
+            if (scriptField->type == VrmlField::SFNODE) {
+                assert(dynamic_cast<VrmlSFNode *>(scriptField->value));
+                this->children.setLength(this->children.getLength() + 1);
+                this->children.setElement(this->children.getLength() - 1,
+                        static_cast<VrmlSFNode *>(scriptField->value)->get());
+            } else if (scriptField->type == VrmlField::MFNODE) {
+                assert(dynamic_cast<VrmlMFNode *>(scriptField->value));
+                VrmlMFNode &
+                        nodes(*static_cast<VrmlMFNode *>(scriptField->value));
+                this->children.setLength(children.getLength()
+                                            + nodes.getLength());
+                for (size_t i = 0; i < nodes.getLength(); ++i) {
+                    this->children.setElement(this->children.getLength() + i,
+                                              nodes.getElement(i));
+                }
+            }
+        }
+    
+    private:
+        VrmlMFNode & children;
+    };
+}
+
+const VrmlMFNode VrmlNodeScript::getChildren() const {
+    VrmlMFNode children;
+    std::for_each(this->d_fields.begin(), this->d_fields.end(),
+                  AccumulateNodes_(children));
+    return children;
 }
 
 VrmlNodeScript* VrmlNodeScript::toScript() const

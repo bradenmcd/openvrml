@@ -47,7 +47,7 @@
 #   define VRML_NODE_DEBUG
 # endif
 
-/**
+/*
  * Given a VrmlNodeType, add in the fields, exposedFields, eventIns
  * and eventOuts defined by the particular node implementation.
  * There's a great big method in VrmlNamespace that just calls
@@ -64,7 +64,6 @@
  *
  * @see VrmlNamespace::defineBuiltins()
  */
-VrmlNodeType *VrmlNode::defineType(VrmlNodeType *t) { return t; }
 
 VrmlNode::VrmlNode(VrmlScene * scene): d_scene(scene), d_modified(false),
         visited(false), d_routes(0) {
@@ -85,7 +84,7 @@ VrmlNode::VrmlNode(const VrmlNode & node): name(node.name), d_scene(0),
 VrmlNode::~VrmlNode() 
 {
   // Remove the node's name (if any) from the map...
-  if (this->name.length() > 0)
+  if (!this->name.empty())
     {
       if (d_scene && d_scene->scope())
 	d_scene->scope()->removeNodeName(*this);
@@ -182,97 +181,117 @@ void VrmlNode::addToScene(VrmlScene * scene, const std::string &) {
 }
 
 
-// Node type tests
+// Safe node downcasts. These avoid the dangerous casts of VrmlNode* (esp in
+// presence of protos), but are ugly in that this class must know about all
+// the subclasses. These return 0 if the typecast is invalid.
+// Remember to also add new ones to VrmlNodeProto. Protos should
+// return their first implementation node (except toProto()).
 
-VrmlNodeAnchor*		VrmlNode::toAnchor() const { return 0; }
-VrmlNodeAppearance*	VrmlNode::toAppearance() const { return 0; }
-VrmlNodeAudioClip*	VrmlNode::toAudioClip() const { return 0; }
-VrmlNodeBackground*	VrmlNode::toBackground() const { return 0; }
+VrmlNodeAnchor * VrmlNode::toAnchor() const { return 0; }
 
-const VrmlNodeBillboard * VrmlNode::toBillboard() const {
-    return 0;
-}
+VrmlNodeAppearance * VrmlNode::toAppearance() const { return 0; }
 
-VrmlNodeBillboard * VrmlNode::toBillboard() {
-    return 0;
-}
+VrmlNodeAudioClip * VrmlNode::toAudioClip() const { return 0; }
 
-VrmlNodeBox*		VrmlNode::toBox() const { return 0; } //LarryD Mar 08/99
+VrmlNodeBackground * VrmlNode::toBackground() const { return 0; }
 
-const VrmlNodeChild * VrmlNode::toChild() const {
-    return 0;
-}
+VrmlNodeBillboard * VrmlNode::toBillboard() const { return 0; }
 
-VrmlNodeChild * VrmlNode::toChild() {
-    return 0;
-}
+VrmlNodeBox * VrmlNode::toBox() const { return 0; }
 
-const VrmlNodeCollision * VrmlNode::toCollision() const {
-    return 0;
-}
+VrmlNodeChild * VrmlNode::toChild() const { return 0; }
 
-VrmlNodeCollision * VrmlNode::toCollision() {
-    return 0;
-}
+VrmlNodeCollision * VrmlNode::toCollision() const { return 0; }
 
-VrmlNodeColor*		VrmlNode::toColor() const { return 0; }
-VrmlNodeCone*		VrmlNode::toCone() const { return 0; } //LarryD Mar 08/99
-VrmlNodeCoordinate*	VrmlNode::toCoordinate() const { return 0; }
-VrmlNodeCylinder* VrmlNode::toCylinder() const { return 0; } //LarryD Mar 08/99
-VrmlNodeDirLight* VrmlNode::toDirLight() const { return 0; } //LarryD Mar 04/99
-VrmlNodeElevationGrid* VrmlNode::toElevationGrid() const { return 0; } //LarryD Mar 09/99
-VrmlNodeExtrusion*     VrmlNode::toExtrusion() const { return 0; } //LarryD Mar 09/99
-VrmlNodeFog*		VrmlNode::toFog() const { return 0; }
-VrmlNodeFontStyle*	VrmlNode::toFontStyle() const { return 0; }
+VrmlNodeColor * VrmlNode::toColor() const { return 0; }
 
-const VrmlNodeGeometry * VrmlNode::toGeometry() const {
-    return 0;
-}
+VrmlNodeCone * VrmlNode::toCone() const { return 0; }
 
-VrmlNodeGeometry * VrmlNode::toGeometry() {
-    return 0;
-}
+VrmlNodeCoordinate * VrmlNode::toCoordinate() const { return 0; }
 
-VrmlNodeGroup*		VrmlNode::toGroup() const { return 0; }
-VrmlNodeIFaceSet*	VrmlNode::toIFaceSet() const { return 0; }
-VrmlNodeInline*		VrmlNode::toInline() const { return 0; }
-VrmlNodeLight*		VrmlNode::toLight() const { return 0; }
-VrmlNodeMaterial*	VrmlNode::toMaterial() const { return 0; }
-VrmlNodeMovieTexture*	VrmlNode::toMovieTexture() const { return 0; }
-VrmlNodeNavigationInfo*	VrmlNode::toNavigationInfo() const { return 0; }
-VrmlNodeNormal*		VrmlNode::toNormal() const { return 0; }
-VrmlNodePlaneSensor*	VrmlNode::toPlaneSensor() const { return 0; }
-VrmlNodeSphereSensor*	VrmlNode::toSphereSensor() const { return 0; }
-VrmlNodeCylinderSensor*	VrmlNode::toCylinderSensor() const { return 0; }
-VrmlNodePointLight*	VrmlNode::toPointLight() const { return 0; }
-VrmlNodeScript*		VrmlNode::toScript() const { return 0; }
-VrmlNodeShape*		VrmlNode::toShape() const { return 0; }
-VrmlNodeSound*		VrmlNode::toSound() const { return 0; }
-VrmlNodeSphere* VrmlNode::toSphere() const { return 0; }      //LarryD Mar 08/99
-VrmlNodeSpotLight*	VrmlNode::toSpotLight() const { return 0; }
-VrmlNodeSwitch* VrmlNode::toSwitch() const { return 0; }      //LarryD Mar 08/99
-VrmlNodeTexture*	VrmlNode::toTexture() const { return 0; }
-VrmlNodeTextureCoordinate*	VrmlNode::toTextureCoordinate() const { return 0; }
-VrmlNodeTextureTransform* VrmlNode::toTextureTransform() const { return 0; }
-VrmlNodeTimeSensor*	VrmlNode::toTimeSensor() const { return 0; }
-VrmlNodeTouchSensor*	VrmlNode::toTouchSensor() const { return 0; }
-VrmlNodeTransform* VrmlNode::toTransform() const { return 0; } //LarryD Feb 24/99
-VrmlNodeViewpoint*	VrmlNode::toViewpoint() const { return 0; }
+VrmlNodeCylinder * VrmlNode::toCylinder() const { return 0; }
 
-VrmlNodeImageTexture* VrmlNode::toImageTexture() const { return 0; }
+VrmlNodeDirLight * VrmlNode::toDirLight() const { return 0; }
+
+VrmlNodeElevationGrid * VrmlNode::toElevationGrid() const { return 0; }
+
+VrmlNodeExtrusion * VrmlNode::toExtrusion() const { return 0; }
+
+VrmlNodeFog * VrmlNode::toFog() const { return 0; }
+
+VrmlNodeFontStyle * VrmlNode::toFontStyle() const { return 0; }
+
+VrmlNodeGeometry * VrmlNode::toGeometry() const { return 0; }
+
+VrmlNodeGroup * VrmlNode::toGroup() const { return 0; }
+
+VrmlNodeIFaceSet * VrmlNode::toIFaceSet() const { return 0; }
+
+VrmlNodeImageTexture * VrmlNode::toImageTexture() const { return 0; }
+
+VrmlNodeInline * VrmlNode::toInline() const { return 0; }
+
+VrmlNodeLight * VrmlNode::toLight() const { return 0; }
+
+VrmlNodeLOD * VrmlNode::toLOD() const { return 0; }
+
+VrmlNodeMaterial * VrmlNode::toMaterial() const { return 0; }
+
+VrmlNodeMovieTexture * VrmlNode::toMovieTexture() const { return 0; }
+
+VrmlNodeNavigationInfo * VrmlNode::toNavigationInfo() const { return 0; }
+
+VrmlNodeNormal * VrmlNode::toNormal() const { return 0; }
+
+VrmlNodeOrientationInt * VrmlNode::toOrientationInt() const { return 0; }
+
+VrmlNodePlaneSensor * VrmlNode::toPlaneSensor() const { return 0; }
+
+VrmlNodePositionInt * VrmlNode::toPositionInt() const { return 0; }
+
+VrmlNodeSphereSensor * VrmlNode::toSphereSensor() const { return 0; }
+
+VrmlNodeCylinderSensor * VrmlNode::toCylinderSensor() const { return 0; }
+
 VrmlNodePixelTexture* VrmlNode::toPixelTexture() const { return 0; }
 
-VrmlNodeLOD* VrmlNode::toLOD() const { return 0; }
-VrmlNodeScalarInt* VrmlNode::toScalarInt() const { return 0; }
-VrmlNodeOrientationInt* VrmlNode::toOrientationInt() const { return 0; }
-VrmlNodePositionInt* VrmlNode::toPositionInt() const { return 0; }
+VrmlNodePointLight * VrmlNode::toPointLight() const { return 0; }
+
+VrmlNodeScalarInt * VrmlNode::toScalarInt() const { return 0; }
+
+VrmlNodeScript * VrmlNode::toScript() const { return 0; }
+
+VrmlNodeShape * VrmlNode::toShape() const { return 0; }
+
+VrmlNodeSound * VrmlNode::toSound() const { return 0; }
+
+VrmlNodeSphere * VrmlNode::toSphere() const { return 0; }
+
+VrmlNodeSpotLight * VrmlNode::toSpotLight() const { return 0; }
+
+VrmlNodeSwitch * VrmlNode::toSwitch() const { return 0; }
+
+VrmlNodeTexture * VrmlNode::toTexture() const { return 0; }
+
+VrmlNodeTextureCoordinate * VrmlNode::toTextureCoordinate() const { return 0; }
+
+VrmlNodeTextureTransform * VrmlNode::toTextureTransform() const { return 0; }
+
+VrmlNodeTimeSensor * VrmlNode::toTimeSensor() const { return 0; }
+
+VrmlNodeTouchSensor * VrmlNode::toTouchSensor() const { return 0; }
+
+VrmlNodeTransform * VrmlNode::toTransform() const { return 0; }
+
+VrmlNodeViewpoint * VrmlNode::toViewpoint() const { return 0; }
+
+VrmlNodeProto * VrmlNode::toProto() const { return 0; }
 
 
-VrmlNodeProto*		VrmlNode::toProto() const { return 0; }
-
-
-// Add a route from an eventOut of this node to an eventIn of another node.
-
+/**
+ * @brief Add a route from an eventOut of this node to an eventIn of another
+ *      node.
+ */
 void VrmlNode::addRoute(const std::string & fromEventOut,
 			const VrmlNodePtr & toNode,
 			const std::string & toEventIn) {
@@ -306,8 +325,10 @@ void VrmlNode::addRoute(const std::string & fromEventOut,
 }
 
 
-// Remove a route from an eventOut of this node to an eventIn of another node.
-
+/**
+ * @brief Remove a route from an eventOut of this node to an eventIn of another
+ *      node.
+ */
 void VrmlNode::deleteRoute(const std::string & fromEventOut,
 			   const VrmlNodePtr & toNode,
 			   const std::string & toEventIn)
@@ -648,9 +669,29 @@ void VrmlNode::eventIn(double timeStamp,
 		    << "::" << this->name << "." << eventName << endl;
 }
 
+/**
+ * @brief Get this node's child nodes as an MFNode.
+ *
+ * This method is intended to provide generalized access to a node's child
+ * nodes. The default implementation returns an empty MFNode. Node
+ * implementations that include child nodes should override this method to
+ * return an appropriate MFNode.
+ *
+ * <p>The returned MFNode should include <strong>all</strong> of the node's
+ * child nodes, from all of the node's SFNode or MFNode fields. Since fields
+ * do not have a defined order, no ordering is defined for the nodes that
+ * occur in the returned MFNode. Therefore, traversals that depend on any
+ * such ordering should not use this method.</p>
+ *
+ * @return an MFNode containing any children of this node.
+ */
+const VrmlMFNode VrmlNode::getChildren() const {
+    return VrmlMFNode();
+}
 
-// Send a named event from this node.
-
+/**
+ * @brief Send a named event from this node.
+ */
 void VrmlNode::eventOut(double timeStamp, const std::string & eventOut,
 			const VrmlField & fieldValue) {
 # ifdef VRML_NODE_DEBUG

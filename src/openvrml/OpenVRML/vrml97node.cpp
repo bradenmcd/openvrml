@@ -44,17 +44,6 @@
  */
 
 /**
- * @brief Define the fields of all built-in child nodes.
- * 
- * @param nodeType
- *
- * @return the type object
- */
-VrmlNodeType * VrmlNodeChild::defineType(VrmlNodeType * nodeType) {
-    return VrmlNode::defineType(nodeType);
-}
-
-/**
  * @brief Constructor.
  *
  * @param scene the VrmlScene to which this node belongs
@@ -67,17 +56,10 @@ VrmlNodeChild::VrmlNodeChild(VrmlScene * scene): VrmlNode(scene) {}
 VrmlNodeChild::VrmlNodeChild(const VrmlNodeChild & node): VrmlNode(node) {}
 
 /**
- * @brief Downcast method (const version).
+ * @brief Downcast method.
  */
-const VrmlNodeChild * VrmlNodeChild::toChild() const {
-    return this;
-}
-
-/**
- * @brief Downcast method (non-const version).
- */
-VrmlNodeChild * VrmlNodeChild::toChild() {
-    return this;
+VrmlNodeChild * VrmlNodeChild::toChild() const {
+    return const_cast<VrmlNodeChild *>(this);
 }
 
 
@@ -86,18 +68,6 @@ VrmlNodeChild * VrmlNodeChild::toChild() {
  *
  * @brief Base class for all geometry nodes.
  */
-
-/**
- * @brief Define the fields of all built-in geometry nodes.
- * 
- * @param nodeType
- *
- * @return the type object
- */
-VrmlNodeType *VrmlNodeGeometry::defineType(VrmlNodeType *t)
-{
-  return VrmlNode::defineType(t);
-}
 
 /**
  * @brief Constructor.
@@ -116,21 +86,12 @@ VrmlNodeGeometry::~VrmlNodeGeometry()
 }
 
 /**
- * @brief Downcast method (const version).
+ * @brief Downcast method.
  *
  * @return a pointer to this object
  */
-const VrmlNodeGeometry * VrmlNodeGeometry::toGeometry() const {
-    return this;
-}
-
-/**
- * @brief Downcast method (non-const version).
- *
- * @return a pointer to this object
- */
-VrmlNodeGeometry * VrmlNodeGeometry::toGeometry() {
-    return this;
+VrmlNodeGeometry * VrmlNodeGeometry::toGeometry() const {
+    return const_cast<VrmlNodeGeometry *>(this);
 }
 
 /**
@@ -179,7 +140,6 @@ void VrmlNodeGeometry::render(Viewer * viewer, VrmlRenderContext context)
  * @return the defined type object
  */
 VrmlNodeType * VrmlNodeLight::defineType(VrmlNodeType * nodeType) {
-    VrmlNodeChild::defineType(nodeType);
     nodeType->addExposedField("ambientIntensity", VrmlField::SFFLOAT);
     nodeType->addExposedField("color", VrmlField::SFCOLOR);
     nodeType->addExposedField("intensity", VrmlField::SFFLOAT);
@@ -196,6 +156,11 @@ VrmlNodeType * VrmlNodeLight::defineType(VrmlNodeType * nodeType) {
 VrmlNodeLight::VrmlNodeLight(VrmlScene * scene): VrmlNodeChild(scene),
         d_ambientIntensity(0.0), d_color(1.0, 1.0, 1.0), d_intensity(1.0),
         d_on(true) {}
+
+/**
+ * @brief Destructor.
+ */
+VrmlNodeLight::~VrmlNodeLight() {}
 
 /**
  * @brief Get the type object for this node.
@@ -452,7 +417,6 @@ VrmlNodeType *VrmlNodeAppearance::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNode::defineType(t);	// Parent class
   t->addExposedField("material", VrmlField::SFNODE);
   t->addExposedField("texture", VrmlField::SFNODE);
   t->addExposedField("textureTransform", VrmlField::SFNODE);
@@ -706,7 +670,6 @@ VrmlNodeType *VrmlNodeAudioClip::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNode::defineType(t);	// Parent class
   t->addExposedField("description", VrmlField::SFSTRING);
   t->addExposedField("loop", VrmlField::SFBOOL);
   t->addExposedField("pitch", VrmlField::SFFLOAT);
@@ -961,7 +924,6 @@ VrmlNodeType *VrmlNodeBackground::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("set_bind", VrmlField::SFBOOL);
 
   t->addExposedField("groundAngle", VrmlField::MFFLOAT);
@@ -1422,13 +1384,11 @@ void VrmlNodeBillboard::setField(const std::string & fieldId,
     VrmlNodeGroup::setField(fieldId, fieldValue);
 }
 
-const VrmlNodeBillboard * VrmlNodeBillboard::toBillboard() const {
-    return this;
+VrmlNodeBillboard * VrmlNodeBillboard::toBillboard() const {
+    return const_cast<VrmlNodeBillboard *>(this);
 }
 
-VrmlNodeBillboard * VrmlNodeBillboard::toBillboard() {
-    return this;
-}
+
 // Make a VrmlNodeBox
 
 static VrmlNode * createBox(VrmlScene * scene) {
@@ -1449,7 +1409,6 @@ VrmlNodeType *VrmlNodeBox::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeGeometry::defineType(t);	// Parent class
   t->addField("size", VrmlField::SFVEC3F);
 
   return t;
@@ -1597,6 +1556,13 @@ void VrmlNodeCollision::resetVisitedFlag() {
     }
 }
 
+const VrmlMFNode VrmlNodeCollision::getChildren() const {
+    VrmlMFNode children(this->d_children);
+    children.setLength(children.getLength() + 1);
+    children.setElement(children.getLength() - 1, this->d_proxy.get());
+    return children;
+}
+
 bool VrmlNodeCollision::isModified() const
 {
   return ( (d_proxy.get() && d_proxy.get()->isModified()) ||
@@ -1671,12 +1637,8 @@ void VrmlNodeCollision::setProxy(const VrmlSFNode & proxy) {
     this->d_proxy = proxy;
 }
 
-const VrmlNodeCollision * VrmlNodeCollision::toCollision() const {
-    return this;
-}
-
-VrmlNodeCollision * VrmlNodeCollision::toCollision() {
-    return this;
+VrmlNodeCollision * VrmlNodeCollision::toCollision() const {
+    return const_cast<VrmlNodeCollision *>(this);
 }
 
 static VrmlNode *createColor(VrmlScene * scene) {
@@ -1697,7 +1659,6 @@ VrmlNodeType *VrmlNodeColor::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNode::defineType(t);	// Parent class
   t->addExposedField("color", VrmlField::MFCOLOR);
 
   return t;
@@ -1779,7 +1740,6 @@ VrmlNodeType *VrmlNodeColorInt::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("set_fraction", VrmlField::SFFLOAT);
   t->addExposedField("key", VrmlField::MFFLOAT);
   t->addExposedField("keyValue", VrmlField::MFCOLOR);
@@ -1935,7 +1895,6 @@ VrmlNodeType *VrmlNodeCone::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeGeometry::defineType(t);	// Parent class
   t->addField("bottom", VrmlField::SFBOOL);
   t->addField("bottomRadius", VrmlField::SFFLOAT);
   t->addField("height", VrmlField::SFFLOAT);
@@ -2025,7 +1984,6 @@ VrmlNodeType *VrmlNodeCoordinate::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNode::defineType(t);	// Parent class
   t->addExposedField("point", VrmlField::MFVEC3F);
 
   return t;
@@ -2109,7 +2067,6 @@ VrmlNodeType *VrmlNodeCoordinateInt::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("set_fraction", VrmlField::SFFLOAT);
   t->addExposedField("key", VrmlField::MFFLOAT);
   t->addExposedField("keyValue", VrmlField::MFVEC3F);
@@ -2266,7 +2223,6 @@ VrmlNodeType * VrmlNodeCylinder::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeGeometry::defineType(t);	// Parent class
   t->addField("bottom", VrmlField::SFBOOL);
   t->addField("height", VrmlField::SFFLOAT);
   t->addField("radius", VrmlField::SFFLOAT);
@@ -2366,7 +2322,6 @@ VrmlNodeType *VrmlNodeCylinderSensor::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("autoOffset", VrmlField::SFBOOL);
   t->addExposedField("diskAngle", VrmlField::SFFLOAT);
   t->addExposedField("enabled", VrmlField::SFBOOL);
@@ -2596,8 +2551,6 @@ VrmlNodeType *VrmlNodeElevationGrid::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeGeometry::defineType(t);	// Parent class
-
   t->addEventIn("set_height", VrmlField::MFFLOAT);
   t->addExposedField("color", VrmlField::SFNODE);
   t->addExposedField("normal", VrmlField::SFNODE);
@@ -2662,6 +2615,12 @@ void VrmlNodeElevationGrid::resetVisitedFlag() {
             this->d_texCoord.get()->resetVisitedFlag();
         }
     }
+}
+
+const VrmlMFNode VrmlNodeElevationGrid::getChildren() const {
+    VrmlNodePtr children[] = { this->d_color.get(), this->d_normal.get(),
+                               this->d_texCoord.get() };
+    return VrmlMFNode(3, children);
 }
 
 bool VrmlNodeElevationGrid::isModified() const
@@ -3082,8 +3041,6 @@ VrmlNodeType *VrmlNodeExtrusion::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeGeometry::defineType(t);	// Parent class
-
   t->addEventIn("set_crossSection", VrmlField::MFVEC2F);
   t->addEventIn("set_orientation", VrmlField::MFROTATION);
   t->addEventIn("set_scale", VrmlField::MFVEC2F);
@@ -3226,7 +3183,6 @@ VrmlNodeType *VrmlNodeFog::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("set_bind", VrmlField::SFBOOL);
   t->addExposedField("color", VrmlField::SFCOLOR);
   t->addExposedField("fogType", VrmlField::SFSTRING);
@@ -3396,7 +3352,6 @@ VrmlNodeType *VrmlNodeFontStyle::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNode::defineType(t);	// Parent class
   t->addField("family", VrmlField::MFSTRING);
   t->addField("horizontal", VrmlField::SFBOOL);
   t->addField("justify", VrmlField::MFSTRING);
@@ -3503,7 +3458,6 @@ VrmlNodeType *VrmlNodeGroup::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("addChildren", VrmlField::MFNODE);
   t->addEventIn("removeChildren", VrmlField::MFNODE);
   t->addExposedField("children", VrmlField::MFNODE);
@@ -3792,7 +3746,7 @@ void VrmlNodeGroup::activate( double time,
  *
  * @return the Group's children
  */
-const VrmlMFNode & VrmlNodeGroup::getChildren() const {
+const VrmlMFNode VrmlNodeGroup::getChildren() const {
     return this->d_children;
 }
 
@@ -4054,6 +4008,12 @@ void VrmlNodeIFaceSet::resetVisitedFlag() {
             this->d_texCoord.get()->resetVisitedFlag();
         }
     }
+}
+
+const VrmlMFNode VrmlNodeIFaceSet::getChildren() const {
+    VrmlNodePtr children[] = { this->d_color.get(), this->d_coord.get(),
+                               this->d_normal.get(), this->d_texCoord.get() };
+    return VrmlMFNode(4, children);
 }
 
 bool VrmlNodeIFaceSet::isModified() const
@@ -4444,8 +4404,6 @@ VrmlNodeType *VrmlNodeImageTexture::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeTexture::defineType(t);	// Parent class
-
   t->addExposedField("url", VrmlField::MFSTRING);
   t->addField("repeatS", VrmlField::SFBOOL);
   t->addField("repeatT", VrmlField::SFBOOL);
@@ -4639,8 +4597,6 @@ bool VrmlNodeImageTexture::getRepeatT() const
 
 VrmlNodeType *VrmlNodeIndexedSet::defineType(VrmlNodeType *t)
 {
-  VrmlNodeGeometry::defineType(t);	// Parent class
-
   t->addEventIn("set_colorIndex", VrmlField::MFINT32);
   t->addEventIn("set_coordIndex", VrmlField::MFINT32);
   t->addExposedField("color", VrmlField::SFNODE);
@@ -4662,6 +4618,10 @@ VrmlNodeIndexedSet::~VrmlNodeIndexedSet()
 {
 }
 
+const VrmlMFNode VrmlNodeIndexedSet::getChildren() const {
+    VrmlNodePtr children[] = { this->d_color.get(), this->d_coord.get() };
+    return VrmlMFNode(2, children);
+}
 
 bool VrmlNodeIndexedSet::isModified() const
 {
@@ -4962,7 +4922,6 @@ VrmlNodeType *VrmlNodeLOD::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("level", VrmlField::MFNODE);
   t->addField("center", VrmlField::SFVEC3F);
   t->addField("range", VrmlField::MFFLOAT);
@@ -5006,6 +4965,10 @@ void VrmlNodeLOD::resetVisitedFlag() {
             }
         }
     }
+}
+
+const VrmlMFNode VrmlNodeLOD::getChildren() const {
+    return this->d_level;
 }
 
 bool VrmlNodeLOD::isModified() const
@@ -5203,7 +5166,6 @@ VrmlNodeType *VrmlNodeMaterial::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNode::defineType(t);	// Parent class
   t->addExposedField("ambientIntensity", VrmlField::SFFLOAT);
   t->addExposedField("diffuseColor", VrmlField::SFCOLOR);
   t->addExposedField("emissiveColor", VrmlField::SFCOLOR);
@@ -5344,8 +5306,6 @@ VrmlNodeType *VrmlNodeMovieTexture::defineType(VrmlNodeType *t)
       t = st = new VrmlNodeType("MovieTexture", createMovieTexture);
       t->reference();
     }
-
-  VrmlNodeTexture::defineType(t);	// Parent class
 
   t->addExposedField("loop", VrmlField::SFBOOL);
   t->addExposedField("speed", VrmlField::SFFLOAT);
@@ -5706,7 +5666,6 @@ VrmlNodeType *VrmlNodeNavigationInfo::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("set_bind", VrmlField::SFBOOL);
   t->addExposedField("avatarSize", VrmlField::MFFLOAT);
   t->addExposedField("headlight", VrmlField::SFBOOL);
@@ -5897,7 +5856,6 @@ VrmlNodeType *VrmlNodeNormal::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNode::defineType(t);	// Parent class
   t->addExposedField("vector", VrmlField::MFVEC3F);
 
   return t;
@@ -5980,7 +5938,6 @@ VrmlNodeType *VrmlNodeNormalInt::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("set_fraction", VrmlField::SFFLOAT);
   t->addExposedField("key", VrmlField::MFFLOAT);
   t->addExposedField("keyValue", VrmlField::MFVEC3F);
@@ -6163,7 +6120,6 @@ VrmlNodeType *VrmlNodeOrientationInt::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("set_fraction", VrmlField::SFFLOAT);
   t->addExposedField("key", VrmlField::MFFLOAT);
   t->addExposedField("keyValue", VrmlField::MFROTATION);
@@ -6357,8 +6313,6 @@ VrmlNodeType *VrmlNodePixelTexture::defineType(VrmlNodeType *t)
       t = st = new VrmlNodeType("PixelTexture", createPixelTexture);
       t->reference();
     }
-
-  VrmlNodeTexture::defineType(t);	// Parent class
 
   t->addExposedField("image", VrmlField::SFIMAGE);
   t->addField("repeatS", VrmlField::SFBOOL);
@@ -6571,7 +6525,6 @@ VrmlNodeType *VrmlNodePlaneSensor::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("autoOffset", VrmlField::SFBOOL);
   t->addExposedField("enabled", VrmlField::SFBOOL);
   t->addExposedField("maxPosition", VrmlField::SFVEC2F);
@@ -6933,7 +6886,6 @@ VrmlNodeType *VrmlNodePointSet::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeGeometry::defineType(t);	// Parent class
   t->addExposedField("color", VrmlField::SFNODE);
   t->addExposedField("coord", VrmlField::SFNODE);
 
@@ -6976,6 +6928,11 @@ void VrmlNodePointSet::resetVisitedFlag() {
             this->d_coord.get()->resetVisitedFlag();
         }
     }
+}
+
+const VrmlMFNode VrmlNodePointSet::getChildren() const {
+    VrmlNodePtr children[] = { this->d_color.get(), this->d_coord.get() };
+    return VrmlMFNode(2, children);
 }
 
 bool VrmlNodePointSet::isModified() const
@@ -7156,7 +7113,6 @@ VrmlNodeType *VrmlNodePositionInt::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("set_fraction", VrmlField::SFFLOAT);
   t->addExposedField("key", VrmlField::MFFLOAT);
   t->addExposedField("keyValue", VrmlField::MFVEC3F);
@@ -7307,7 +7263,6 @@ VrmlNodeType *VrmlNodeProximitySensor::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("center", VrmlField::SFVEC3F);
   t->addExposedField("enabled", VrmlField::SFBOOL);
   t->addExposedField("size", VrmlField::SFVEC3F);
@@ -7518,7 +7473,6 @@ VrmlNodeType *VrmlNodeScalarInt::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("set_fraction", VrmlField::SFFLOAT);
   t->addExposedField("key", VrmlField::MFFLOAT);
   t->addExposedField("keyValue", VrmlField::MFFLOAT);
@@ -7662,7 +7616,6 @@ VrmlNodeType *VrmlNodeShape::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("appearance", VrmlField::SFNODE);
   t->addExposedField("geometry", VrmlField::SFNODE);
 
@@ -7695,6 +7648,12 @@ bool VrmlNodeShape::accept(VrmlNodeVisitor & visitor) {
     }
     
     return false;
+}
+
+const VrmlMFNode VrmlNodeShape::getChildren() const {
+    VrmlNodePtr children[] = { this->d_appearance.get(),
+                               this->d_geometry.get() };
+    return VrmlMFNode(2, children);
 }
 
 void VrmlNodeShape::resetVisitedFlag() {
@@ -7911,7 +7870,6 @@ VrmlNodeType *VrmlNodeSound::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("direction", VrmlField::SFVEC3F);
   t->addExposedField("intensity", VrmlField::SFFLOAT);
   t->addExposedField("location", VrmlField::SFVEC3F);
@@ -7968,6 +7926,10 @@ void VrmlNodeSound::resetVisitedFlag() {
             this->d_source.get()->resetVisitedFlag();
         }
     }
+}
+
+const VrmlMFNode VrmlNodeSound::getChildren() const {
+    return VrmlMFNode(1, &this->d_source.get());
 }
 
 VrmlNodeSound* VrmlNodeSound::toSound() const
@@ -8100,7 +8062,6 @@ VrmlNodeType *VrmlNodeSphere::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeGeometry::defineType(t);	// Parent class
   t->addField("radius", VrmlField::SFFLOAT);
 
   return t;
@@ -8197,7 +8158,6 @@ VrmlNodeType *VrmlNodeSphereSensor::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("autoOffset", VrmlField::SFBOOL);
   t->addExposedField("enabled", VrmlField::SFBOOL);
   t->addExposedField("offset", VrmlField::SFROTATION);
@@ -8550,7 +8510,6 @@ VrmlNodeType *VrmlNodeSwitch::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("choice", VrmlField::MFNODE);
   t->addExposedField("whichChoice", VrmlField::SFINT32);
 
@@ -8593,6 +8552,10 @@ void VrmlNodeSwitch::resetVisitedFlag() {
             }
         }
     }
+}
+
+const VrmlMFNode VrmlNodeSwitch::getChildren() const {
+    return this->d_choice;
 }
 
 bool VrmlNodeSwitch::isModified() const
@@ -8764,7 +8727,6 @@ VrmlNodeType *VrmlNodeText::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeGeometry::defineType(t);	// Parent class
   t->addExposedField("string", VrmlField::MFSTRING);
   t->addExposedField("fontStyle", VrmlField::SFNODE);
   t->addExposedField("length", VrmlField::MFFLOAT);
@@ -8805,6 +8767,10 @@ void VrmlNodeText::resetVisitedFlag() {
             this->d_fontStyle.get()->resetVisitedFlag();
         }
     }
+}
+
+const VrmlMFNode VrmlNodeText::getChildren() const {
+    return VrmlMFNode(1, &this->d_fontStyle.get());
 }
 
 bool VrmlNodeText::isModified() const
@@ -8952,7 +8918,6 @@ VrmlNodeType *VrmlNodeTextureCoordinate::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNode::defineType(t);	// Parent class
   t->addExposedField("point", VrmlField::MFVEC2F);
 
   return t;
@@ -9031,7 +8996,6 @@ VrmlNodeType *VrmlNodeTextureTransform::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNode::defineType(t);	// Parent class
   t->addExposedField("center", VrmlField::SFVEC2F);
   t->addExposedField("rotation", VrmlField::SFFLOAT);
   t->addExposedField("scale", VrmlField::SFVEC2F);
@@ -9168,7 +9132,6 @@ VrmlNodeType *VrmlNodeTimeSensor::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("cycleInterval", VrmlField::SFTIME);
   t->addExposedField("enabled", VrmlField::SFBOOL);
   t->addExposedField("loop", VrmlField::SFBOOL);
@@ -9480,7 +9443,6 @@ VrmlNodeType *VrmlNodeTouchSensor::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("enabled", VrmlField::SFBOOL);
   t->addEventOut("hitNormal_changed", VrmlField::SFVEC3F);
   t->addEventOut("hitPoint_changed", VrmlField::SFVEC3F);
@@ -9600,6 +9562,28 @@ void VrmlNodeTouchSensor::setField(const std::string & fieldId,
     VrmlNodeChild::setField(fieldId, fieldValue);
 }
 
+
+/**
+ * @class VrmlNodeTransform
+ */
+
+/**
+ * @var VrmlNodeTransform::M
+ *
+ * Cached copy (in MathUtils format) of this node's transformation.
+ * Currently this is used only by the culling code, but eventually
+ * all the matrix manipulation needs to be moved from the Viewer
+ * side over into core.
+ */
+
+/**
+ * @var VrmlNodeTransform::M_dirty
+ *
+ * If true, we need to recalculate M. Is this the same as
+ * VrmlNode::d_modified? No, since it's entirely a core-side issue,
+ * and has nothing to do with the viewer being out of date wrt the
+ * core scene graph.
+ */
 
 static VrmlNode * createTransform(VrmlScene * scene) {
     return new VrmlNodeTransform(scene);
@@ -9952,10 +9936,16 @@ VrmlNodeTransform::recalcBSphere()
 }
 #endif
 
-
-// flag==0 is normal matrix
-// flag==1 is inverse matrix
-//
+/**
+ * Take the fields of this transform, and calculate the matching
+ * transformation matrix. Store a copy in M. Should this be
+ * protected?
+ *
+ * @param t a transformation node
+ * @param flag 0 means calculate transform, 1 means calculate
+ *               inverse transform
+ * @param M gets a copy of the resulting transform
+ */
 void
 VrmlNodeTransform::transform_to_matrix(const VrmlNodeTransform* t_arg, int flag, double M[4][4])
 {
@@ -10070,6 +10060,10 @@ VrmlNodeTransform::transform_to_matrix(const VrmlNodeTransform* t_arg, int flag,
 
 // P' = T × C × R × SR × S × -SR × -C × P
 //
+/**
+ * Resynchronize the cached matrix <code>M</code> with the node
+ * fields, but only if M_dirty is true. Think logical const.
+ */
 void
 VrmlNodeTransform::synch_cached_matrix()
 {
@@ -10080,7 +10074,12 @@ VrmlNodeTransform::synch_cached_matrix()
   }
 }
 
-
+/**
+ * Get a matrix representation (in MathUtils format) of the
+ * transformation stored in the node fields.
+ *
+ * @return a copy of the cached transformation matrix
+ */
 void
 VrmlNodeTransform::getMatrix(double M_out[4][4]) const
 {
@@ -10088,6 +10087,7 @@ VrmlNodeTransform::getMatrix(double M_out[4][4]) const
   ((VrmlNodeTransform*)this)->synch_cached_matrix();
   Mcopy(M_out, M);
 }
+
 
 //  Viewpoint factory.
 
@@ -10109,7 +10109,6 @@ VrmlNodeType *VrmlNodeViewpoint::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addEventIn("set_bind", VrmlField::SFBOOL);
   t->addExposedField("fieldOfView", VrmlField::SFFLOAT);
   t->addExposedField("jump", VrmlField::SFBOOL);
@@ -10302,6 +10301,16 @@ void VrmlNodeViewpoint::setField(const std::string & fieldId,
 }
 
 
+/**
+ * Determine the inverse of the transform represented by the
+ * viewpoint's position and orientation fields. Return the matrix in
+ * MathUtils format. Note that this method deals only with the
+ * viewpoint node's transform, not with any ancestor transforms.
+ *
+ * @param IM inverse of the position/orientation transform
+ *
+ * @see VrmlNode::inverseTransform
+ */
 void VrmlNodeViewpoint::getInverseMatrix(double IM[4][4]) const
 {
   //cout << "VrmlNodeViewpoint::getInverseMatrix()" << endl;
@@ -10377,7 +10386,6 @@ VrmlNodeType *VrmlNodeVisibilitySensor::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addExposedField("center", VrmlField::SFVEC3F);
   t->addExposedField("enabled", VrmlField::SFBOOL);
   t->addExposedField("size", VrmlField::SFVEC3F);
@@ -10574,7 +10582,6 @@ VrmlNodeType *VrmlNodeWorldInfo::defineType(VrmlNodeType *t)
       t->reference();
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
   t->addField("info", VrmlField::MFSTRING);
   t->addField("title", VrmlField::SFSTRING);
 
@@ -10624,9 +10631,6 @@ void VrmlNodeWorldInfo::setField(const std::string & fieldId,
   else
     VrmlNode::setField(fieldId, fieldValue);
 }
-
-VrmlNodeType *VrmlNodeTexture::defineType(VrmlNodeType *t)
-{ return VrmlNode::defineType(t); }
 
 VrmlNodeTexture::VrmlNodeTexture(VrmlScene *s) : VrmlNode(s) {}
 
