@@ -5333,12 +5333,10 @@ const BVolume * Group::getBVolume() const
 void Group::recalcBSphere() {
     this->bsphere.reset();
     for (size_t i = 0; i < this->children.getLength(); ++i) {
-        if (this->children.getElement(i)) {
-            const BVolume * const ci_bv =
-                    this->children.getElement(i)->getBVolume();
-            if (ci_bv) {
-                this->bsphere.extend(*ci_bv);
-            }
+        const NodePtr & node = this->children.getElement(i);
+        if (node) {
+            const BVolume * const ci_bv = node->getBVolume();
+            if (ci_bv) { this->bsphere.extend(*ci_bv); }
         }
     }
     this->setBVolumeDirty(false);
@@ -5863,9 +5861,14 @@ void IndexedFaceSet::recalcBSphere() {
     // then we don't have to update the bvolume when the index
     // changes). motto: always do it the simple way first...
     //
-    const MFVec3f & coord = this->coord.get()->toCoordinate()->getPoint();
-    this->bsphere.reset();
-    this->bsphere.enclose(coord.get(), coord.getLength());
+    CoordinateNode * const coordinateNode = this->coord.get()
+                                          ? this->coord.get()->toCoordinate()
+                                          : 0;
+    if (coordinateNode) {
+        const MFVec3f & coord = coordinateNode->getPoint();
+        this->bsphere.reset();
+        this->bsphere.enclose(coord.get(), coord.getLength());
+    }
     this->setBVolumeDirty(false);
 }
 
@@ -6466,9 +6469,12 @@ void LOD::recalcBSphere() {
     // switch in delayed-load inlines. this would necessarily switch
     // them in all at once. live with it for now.
     //
-    for(size_t i = 0; i< this->level.getLength(); i++) {
-        const BVolume * ci_bv = this->level.getElement(i)->getBVolume();
-        this->bsphere.extend(*ci_bv);
+    for (size_t i = 0; i < this->level.getLength(); i++) {
+        const NodePtr & node = this->level.getElement(i);
+        if (node) {
+            const BVolume * ci_bv = node->getBVolume();
+            this->bsphere.extend(*ci_bv);
+        }
     }
     this->setBVolumeDirty(false);
 }
@@ -8776,9 +8782,14 @@ Viewer::Object PointSet::insertGeometry(Viewer * const viewer,
 
 void PointSet::recalcBSphere() {
     this->bsphere.reset();
-    const MFVec3f & coord = this->coord.get()->toCoordinate()->getPoint();
-    for(size_t i = 0; i < coord.getLength(); i++) {
-        this->bsphere.extend(coord.getElement(i));
+    CoordinateNode * const coordinateNode = this->coord.get()
+                                          ? this->coord.get()->toCoordinate()
+                                          : 0;
+    if (coordinateNode) {
+        const MFVec3f & coord = coordinateNode->getPoint();
+        for(size_t i = 0; i < coord.getLength(); i++) {
+            this->bsphere.extend(coord.getElement(i));
+        }
     }
     this->setBVolumeDirty(false);
 }
@@ -10709,8 +10720,11 @@ void Switch::recalcBSphere() {
     this->bsphere.reset();
     long w = this->whichChoice.get();
     if (w >= 0 && size_t(w) < this->choice.getLength()) {
-        const BVolume * ci_bv = this->choice.getElement(w)->getBVolume();
-        if (ci_bv) { this->bsphere.extend(*ci_bv); }
+        const NodePtr & node = this->choice.getElement(w);
+        if (node) {
+            const BVolume * ci_bv = node->getBVolume();
+            if (ci_bv) { this->bsphere.extend(*ci_bv); }
+        }
     }
     this->setBVolumeDirty(false);
 }
@@ -12320,8 +12334,11 @@ const BVolume * Transform::getBVolume() const {
 void Transform::recalcBSphere() {
     this->bsphere.reset();
     for (size_t i = 0; i < this->children.getLength(); ++i) {
-        const BVolume * ci_bv = this->children.getElement(i)->getBVolume();
-        if (ci_bv) { this->bsphere.extend(*ci_bv); }
+        const NodePtr & node = this->children.getElement(i);
+        if (node) {
+            const BVolume * ci_bv = node->getBVolume();
+            if (ci_bv) { this->bsphere.extend(*ci_bv); }
+        }
     }
     synch_cached_matrix();
 
