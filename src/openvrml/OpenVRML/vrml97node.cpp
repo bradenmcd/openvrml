@@ -35,7 +35,8 @@
 # include "private.h"
 # include "MathUtils.h"
 
-using namespace OpenVRML;
+namespace OpenVRML {
+
 using namespace OpenVRML_;
 
 /**
@@ -242,14 +243,14 @@ const NodeTypePtr NodeAnchor::defineType() {
     }
     
     st.reset(new NodeType("Anchor", createAnchor));
-    st->addEventIn("addChildren", FieldValue::MFNODE);
-    st->addEventIn("removeChildren", FieldValue::MFNODE);
-    st->addExposedField("children", FieldValue::MFNODE);
-    st->addField("bboxCenter", FieldValue::SFVEC3F);
-    st->addField("bboxSize", FieldValue::SFVEC3F);
-    st->addExposedField("description", FieldValue::SFSTRING);
-    st->addExposedField("parameter", FieldValue::MFSTRING);
-    st->addExposedField("url", FieldValue::MFSTRING);
+    st->addEventIn("addChildren", FieldValue::mfnode);
+    st->addEventIn("removeChildren", FieldValue::mfnode);
+    st->addExposedField("children", FieldValue::mfnode);
+    st->addField("bboxCenter", FieldValue::sfvec3f);
+    st->addField("bboxSize", FieldValue::sfvec3f);
+    st->addExposedField("description", FieldValue::sfstring);
+    st->addExposedField("parameter", FieldValue::mfstring);
+    st->addExposedField("url", FieldValue::mfstring);
 
     return st;
 }
@@ -385,9 +386,9 @@ const NodeTypePtr NodeAppearance::defineType() {
     }
     
     st.reset(new NodeType("Appearance", createAppearance));
-    st->addExposedField("material", FieldValue::SFNODE);
-    st->addExposedField("texture", FieldValue::SFNODE);
-    st->addExposedField("textureTransform", FieldValue::SFNODE);
+    st->addExposedField("material", FieldValue::sfnode);
+    st->addExposedField("texture", FieldValue::sfnode);
+    st->addExposedField("textureTransform", FieldValue::sfnode);
 
     return st;
 }
@@ -628,15 +629,15 @@ const NodeTypePtr NodeAudioClip::defineType() {
     }
     
     st.reset(new NodeType("AudioClip", createAudioClip));
-    st->addExposedField("description", FieldValue::SFSTRING);
-    st->addExposedField("loop", FieldValue::SFBOOL);
-    st->addExposedField("pitch", FieldValue::SFFLOAT);
-    st->addExposedField("startTime", FieldValue::SFTIME);
-    st->addExposedField("stopTime", FieldValue::SFTIME);
-    st->addExposedField("url", FieldValue::MFSTRING);
+    st->addExposedField("description", FieldValue::sfstring);
+    st->addExposedField("loop", FieldValue::sfbool);
+    st->addExposedField("pitch", FieldValue::sffloat);
+    st->addExposedField("startTime", FieldValue::sftime);
+    st->addExposedField("stopTime", FieldValue::sftime);
+    st->addExposedField("url", FieldValue::mfstring);
 
-    st->addEventOut("duration_changed", FieldValue::SFTIME);
-    st->addEventOut("isActive", FieldValue::SFBOOL);
+    st->addEventOut("duration_changed", FieldValue::sftime);
+    st->addEventOut("isActive", FieldValue::sfbool);
 
     return st;
 }
@@ -875,22 +876,22 @@ const NodeTypePtr NodeBackground::defineType() {
     }
     
     st.reset(new NodeType("Background", createBackground));
-    st->addEventIn("set_bind", FieldValue::SFBOOL);
+    st->addEventIn("set_bind", FieldValue::sfbool);
 
-    st->addExposedField("groundAngle", FieldValue::MFFLOAT);
-    st->addExposedField("groundColor", FieldValue::MFCOLOR);
+    st->addExposedField("groundAngle", FieldValue::mffloat);
+    st->addExposedField("groundColor", FieldValue::mfcolor);
 
-    st->addExposedField("backUrl", FieldValue::MFSTRING);
-    st->addExposedField("bottomUrl", FieldValue::MFSTRING);
-    st->addExposedField("frontUrl", FieldValue::MFSTRING);
-    st->addExposedField("leftUrl", FieldValue::MFSTRING);
-    st->addExposedField("rightUrl", FieldValue::MFSTRING);
-    st->addExposedField("topUrl", FieldValue::MFSTRING);
+    st->addExposedField("backUrl", FieldValue::mfstring);
+    st->addExposedField("bottomUrl", FieldValue::mfstring);
+    st->addExposedField("frontUrl", FieldValue::mfstring);
+    st->addExposedField("leftUrl", FieldValue::mfstring);
+    st->addExposedField("rightUrl", FieldValue::mfstring);
+    st->addExposedField("topUrl", FieldValue::mfstring);
 
-    st->addExposedField("skyAngle", FieldValue::MFFLOAT);
-    st->addExposedField("skyColor", FieldValue::MFCOLOR);
+    st->addExposedField("skyAngle", FieldValue::mffloat);
+    st->addExposedField("skyColor", FieldValue::mfcolor);
 
-    st->addEventOut("isBound", FieldValue::SFBOOL);
+    st->addEventOut("isBound", FieldValue::sfbool);
 
     return st;
 }
@@ -1193,12 +1194,12 @@ const NodeTypePtr NodeBillboard::defineType() {
     }
     
     st.reset(new NodeType("Billboard", createBillboard));
-    st->addEventIn("addChildren", FieldValue::MFNODE);
-    st->addEventIn("removeChildren", FieldValue::MFNODE);
-    st->addExposedField("children", FieldValue::MFNODE);
-    st->addField("bboxCenter", FieldValue::SFVEC3F);
-    st->addField("bboxSize", FieldValue::SFVEC3F);
-    st->addExposedField("axisOfRotation", FieldValue::SFVEC3F);
+    st->addEventIn("addChildren", FieldValue::mfnode);
+    st->addEventIn("removeChildren", FieldValue::mfnode);
+    st->addExposedField("children", FieldValue::mfnode);
+    st->addField("bboxCenter", FieldValue::sfvec3f);
+    st->addField("bboxSize", FieldValue::sfvec3f);
+    st->addExposedField("axisOfRotation", FieldValue::sfvec3f);
 
     return st;
 }
@@ -1410,7 +1411,7 @@ const NodeTypePtr NodeBox::defineType() {
     }
     
     st.reset(new NodeType("Box", createBox));
-    st->addField("size", FieldValue::SFVEC3F);
+    st->addField("size", FieldValue::sfvec3f);
 
     return st;
 }
@@ -1494,14 +1495,14 @@ const NodeTypePtr NodeCollision::defineType() {
     }
     
     st.reset(new NodeType("Collision", createCollision));
-    st->addEventIn("addChildren", FieldValue::MFNODE);
-    st->addEventIn("removeChildren", FieldValue::MFNODE);
-    st->addExposedField("children", FieldValue::MFNODE);
-    st->addField("bboxCenter", FieldValue::SFVEC3F);
-    st->addField("bboxSize", FieldValue::SFVEC3F);
-    st->addExposedField("collide", FieldValue::SFBOOL);
-    st->addField("proxy", FieldValue::SFNODE);
-    st->addEventOut("collideTime", FieldValue::SFTIME);
+    st->addEventIn("addChildren", FieldValue::mfnode);
+    st->addEventIn("removeChildren", FieldValue::mfnode);
+    st->addExposedField("children", FieldValue::mfnode);
+    st->addField("bboxCenter", FieldValue::sfvec3f);
+    st->addField("bboxSize", FieldValue::sfvec3f);
+    st->addExposedField("collide", FieldValue::sfbool);
+    st->addField("proxy", FieldValue::sfnode);
+    st->addEventOut("collideTime", FieldValue::sftime);
 
     return st;
 }
@@ -1640,7 +1641,7 @@ const NodeTypePtr NodeColor::defineType() {
     }
 
     st.reset(new NodeType("Color", createColor));
-    st->addExposedField("color", FieldValue::MFCOLOR);
+    st->addExposedField("color", FieldValue::mfcolor);
 
     return st;
 }
@@ -1713,10 +1714,10 @@ const NodeTypePtr NodeColorInt::defineType() {
     }
 
     st.reset(new NodeType("ColorInterpolator", createColorInt));
-    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
-    st->addExposedField("key", FieldValue::MFFLOAT);
-    st->addExposedField("keyValue", FieldValue::MFCOLOR);
-    st->addEventOut("value_changed", FieldValue::SFCOLOR);
+    st->addEventIn("set_fraction", FieldValue::sffloat);
+    st->addExposedField("key", FieldValue::mffloat);
+    st->addExposedField("keyValue", FieldValue::mfcolor);
+    st->addEventOut("value_changed", FieldValue::sfcolor);
 
     return st;
 }
@@ -1859,10 +1860,10 @@ const NodeTypePtr NodeCone::defineType() {
         return st; // Only define type once.
     }
     st.reset(new NodeType("Cone", createCone));
-    st->addField("bottom", FieldValue::SFBOOL);
-    st->addField("bottomRadius", FieldValue::SFFLOAT);
-    st->addField("height", FieldValue::SFFLOAT);
-    st->addField("side", FieldValue::SFBOOL);
+    st->addField("bottom", FieldValue::sfbool);
+    st->addField("bottomRadius", FieldValue::sffloat);
+    st->addField("height", FieldValue::sffloat);
+    st->addField("side", FieldValue::sfbool);
 
     return st;
 }
@@ -1937,7 +1938,7 @@ const NodeTypePtr NodeCoordinate::defineType() {
     }
     
     st.reset(new NodeType("Coordinate", createCoordinate));
-    st->addExposedField("point", FieldValue::MFVEC3F);
+    st->addExposedField("point", FieldValue::mfvec3f);
 
     return st;
 }
@@ -2011,10 +2012,10 @@ const NodeTypePtr NodeCoordinateInt::defineType() {
     
     st.reset(new NodeType("CoordinateInterpolator",
                               createCoordinateInt));
-    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
-    st->addExposedField("key", FieldValue::MFFLOAT);
-    st->addExposedField("keyValue", FieldValue::MFVEC3F);
-    st->addEventOut("value_changed", FieldValue::MFVEC3F);
+    st->addEventIn("set_fraction", FieldValue::sffloat);
+    st->addExposedField("key", FieldValue::mffloat);
+    st->addExposedField("keyValue", FieldValue::mfvec3f);
+    st->addEventOut("value_changed", FieldValue::mfvec3f);
 
     return st;
 }
@@ -2158,11 +2159,11 @@ const NodeTypePtr NodeCylinder::defineType() {
     }
 
     st.reset(new NodeType("Cylinder", createCylinder));
-    st->addField("bottom", FieldValue::SFBOOL);
-    st->addField("height", FieldValue::SFFLOAT);
-    st->addField("radius", FieldValue::SFFLOAT);
-    st->addField("side", FieldValue::SFBOOL);
-    st->addField("top", FieldValue::SFBOOL);
+    st->addField("bottom", FieldValue::sfbool);
+    st->addField("height", FieldValue::sffloat);
+    st->addField("radius", FieldValue::sffloat);
+    st->addField("side", FieldValue::sfbool);
+    st->addField("top", FieldValue::sfbool);
 
     return st;
 }
@@ -2244,15 +2245,15 @@ const NodeTypePtr NodeCylinderSensor::defineType() {
     }
 
     st.reset(new NodeType("CylinderSensor", createCylinderSensor));
-    st->addExposedField("autoOffset", FieldValue::SFBOOL);
-    st->addExposedField("diskAngle", FieldValue::SFFLOAT);
-    st->addExposedField("enabled", FieldValue::SFBOOL);
-    st->addExposedField("maxAngle", FieldValue::SFFLOAT);
-    st->addExposedField("minAngle", FieldValue::SFFLOAT);
-    st->addExposedField("offset", FieldValue::SFFLOAT);
-    st->addEventOut("isActive", FieldValue::SFBOOL);
-    st->addEventOut("rotation_changed", FieldValue::SFROTATION);
-    st->addEventOut("trackPoint_changed", FieldValue::SFVEC3F);
+    st->addExposedField("autoOffset", FieldValue::sfbool);
+    st->addExposedField("diskAngle", FieldValue::sffloat);
+    st->addExposedField("enabled", FieldValue::sfbool);
+    st->addExposedField("maxAngle", FieldValue::sffloat);
+    st->addExposedField("minAngle", FieldValue::sffloat);
+    st->addExposedField("offset", FieldValue::sffloat);
+    st->addEventOut("isActive", FieldValue::sfbool);
+    st->addEventOut("rotation_changed", FieldValue::sfrotation);
+    st->addEventOut("trackPoint_changed", FieldValue::sfvec3f);
 
     return st;
 }
@@ -2461,11 +2462,11 @@ const NodeTypePtr NodeDirLight::defineType() {
     }
     
     st.reset(new NodeType("DirectionalLight", createDirLight));
-    st->addExposedField("ambientIntensity", FieldValue::SFFLOAT);
-    st->addExposedField("color", FieldValue::SFCOLOR);
-    st->addExposedField("intensity", FieldValue::SFFLOAT);
-    st->addExposedField("on", FieldValue::SFBOOL);
-    st->addExposedField("direction", FieldValue::SFVEC3F);
+    st->addExposedField("ambientIntensity", FieldValue::sffloat);
+    st->addExposedField("color", FieldValue::sfcolor);
+    st->addExposedField("intensity", FieldValue::sffloat);
+    st->addExposedField("on", FieldValue::sfbool);
+    st->addExposedField("direction", FieldValue::sfvec3f);
 
     return st;
 }
@@ -2553,20 +2554,20 @@ const NodeTypePtr NodeElevationGrid::defineType() {
     }
     
     st.reset(new NodeType("ElevationGrid", createElevationGrid));
-    st->addEventIn("set_height", FieldValue::MFFLOAT);
-    st->addExposedField("color", FieldValue::SFNODE);
-    st->addExposedField("normal", FieldValue::SFNODE);
-    st->addExposedField("texCoord", FieldValue::SFNODE);
-    st->addField("ccw", FieldValue::SFBOOL);
-    st->addField("colorPerVertex", FieldValue::SFBOOL);
-    st->addField("creaseAngle", FieldValue::SFFLOAT);
-    st->addField("height", FieldValue::MFFLOAT);
-    st->addField("normalPerVertex", FieldValue::SFBOOL);
-    st->addField("solid", FieldValue::SFBOOL);
-    st->addField("xDimension", FieldValue::SFINT32);
-    st->addField("xSpacing", FieldValue::SFFLOAT);
-    st->addField("zDimension", FieldValue::SFINT32);
-    st->addField("zSpacing", FieldValue::SFFLOAT);
+    st->addEventIn("set_height", FieldValue::mffloat);
+    st->addExposedField("color", FieldValue::sfnode);
+    st->addExposedField("normal", FieldValue::sfnode);
+    st->addExposedField("texCoord", FieldValue::sfnode);
+    st->addField("ccw", FieldValue::sfbool);
+    st->addField("colorPerVertex", FieldValue::sfbool);
+    st->addField("creaseAngle", FieldValue::sffloat);
+    st->addField("height", FieldValue::mffloat);
+    st->addField("normalPerVertex", FieldValue::sfbool);
+    st->addField("solid", FieldValue::sfbool);
+    st->addField("xDimension", FieldValue::sfint32);
+    st->addField("xSpacing", FieldValue::sffloat);
+    st->addField("zDimension", FieldValue::sfint32);
+    st->addField("zSpacing", FieldValue::sffloat);
 
     return st;
 }
@@ -3029,21 +3030,21 @@ const NodeTypePtr NodeExtrusion::defineType() {
     }
 
     st.reset(new NodeType("Extrusion", createExtrusion));
-    st->addEventIn("set_crossSection", FieldValue::MFVEC2F);
-    st->addEventIn("set_orientation", FieldValue::MFROTATION);
-    st->addEventIn("set_scale", FieldValue::MFVEC2F);
-    st->addEventIn("set_spine", FieldValue::MFVEC3F);
+    st->addEventIn("set_crossSection", FieldValue::mfvec2f);
+    st->addEventIn("set_orientation", FieldValue::mfrotation);
+    st->addEventIn("set_scale", FieldValue::mfvec2f);
+    st->addEventIn("set_spine", FieldValue::mfvec3f);
 
-    st->addField("beginCap", FieldValue::SFBOOL);
-    st->addField("ccw", FieldValue::SFBOOL);
-    st->addField("convex", FieldValue::SFBOOL);
-    st->addField("creaseAngle", FieldValue::SFFLOAT);
-    st->addField("crossSection", FieldValue::MFVEC2F);
-    st->addField("endCap", FieldValue::SFBOOL);
-    st->addField("orientation", FieldValue::MFROTATION);
-    st->addField("scale", FieldValue::MFVEC2F);
-    st->addField("solid", FieldValue::SFBOOL);
-    st->addField("spine", FieldValue::MFVEC3F);
+    st->addField("beginCap", FieldValue::sfbool);
+    st->addField("ccw", FieldValue::sfbool);
+    st->addField("convex", FieldValue::sfbool);
+    st->addField("creaseAngle", FieldValue::sffloat);
+    st->addField("crossSection", FieldValue::mfvec2f);
+    st->addField("endCap", FieldValue::sfbool);
+    st->addField("orientation", FieldValue::mfrotation);
+    st->addField("scale", FieldValue::mfvec2f);
+    st->addField("solid", FieldValue::sfbool);
+    st->addField("spine", FieldValue::mfvec3f);
 
     return st;
 }
@@ -3168,11 +3169,11 @@ const NodeTypePtr NodeFog::defineType() {
     }
 
     st.reset(new NodeType("Fog", createFog));
-    st->addEventIn("set_bind", FieldValue::SFBOOL);
-    st->addExposedField("color", FieldValue::SFCOLOR);
-    st->addExposedField("fogType", FieldValue::SFSTRING);
-    st->addExposedField("visibilityRange", FieldValue::SFFLOAT);
-    st->addEventOut("isBound", FieldValue::SFBOOL);
+    st->addEventIn("set_bind", FieldValue::sfbool);
+    st->addExposedField("color", FieldValue::sfcolor);
+    st->addExposedField("fogType", FieldValue::sfstring);
+    st->addExposedField("visibilityRange", FieldValue::sffloat);
+    st->addEventOut("isBound", FieldValue::sfbool);
 
     return st;
 }
@@ -3329,15 +3330,15 @@ const NodeTypePtr NodeFontStyle::defineType() {
     }
 
     st.reset(new NodeType("FontStyle", createFontStyle));
-    st->addField("family", FieldValue::MFSTRING);
-    st->addField("horizontal", FieldValue::SFBOOL);
-    st->addField("justify", FieldValue::MFSTRING);
-    st->addField("language", FieldValue::SFSTRING);
-    st->addField("leftToRight", FieldValue::SFBOOL);
-    st->addField("size", FieldValue::SFFLOAT);
-    st->addField("spacing", FieldValue::SFFLOAT);
-    st->addField("style", FieldValue::SFSTRING);
-    st->addField("topToBottom", FieldValue::SFBOOL);
+    st->addField("family", FieldValue::mfstring);
+    st->addField("horizontal", FieldValue::sfbool);
+    st->addField("justify", FieldValue::mfstring);
+    st->addField("language", FieldValue::sfstring);
+    st->addField("leftToRight", FieldValue::sfbool);
+    st->addField("size", FieldValue::sffloat);
+    st->addField("spacing", FieldValue::sffloat);
+    st->addField("style", FieldValue::sfstring);
+    st->addField("topToBottom", FieldValue::sfbool);
 
     return st;
 }
@@ -3430,11 +3431,11 @@ const NodeTypePtr NodeGroup::defineType() {
     }
     
     st.reset(new NodeType("Group", createGroup));
-    st->addEventIn("addChildren", FieldValue::MFNODE);
-    st->addEventIn("removeChildren", FieldValue::MFNODE);
-    st->addExposedField("children", FieldValue::MFNODE);
-    st->addField("bboxCenter", FieldValue::SFVEC3F);
-    st->addField("bboxSize", FieldValue::SFVEC3F);
+    st->addEventIn("addChildren", FieldValue::mfnode);
+    st->addEventIn("removeChildren", FieldValue::mfnode);
+    st->addExposedField("children", FieldValue::mfnode);
+    st->addField("bboxCenter", FieldValue::sfvec3f);
+    st->addField("bboxSize", FieldValue::sfvec3f);
 
     return st;
 }
@@ -3882,24 +3883,24 @@ const NodeTypePtr NodeIFaceSet::defineType() {
     }
     
     st.reset(new NodeType("IndexedFaceSet", createIFaceSet));
-    st->addEventIn("set_colorIndex", FieldValue::MFINT32);
-    st->addEventIn("set_coordIndex", FieldValue::MFINT32);
-    st->addExposedField("color", FieldValue::SFNODE);
-    st->addExposedField("coord", FieldValue::SFNODE);
-    st->addField("colorIndex", FieldValue::MFINT32);
-    st->addField("colorPerVertex", FieldValue::SFBOOL);
-    st->addField("coordIndex", FieldValue::MFINT32);
-    st->addEventIn("set_normalIndex", FieldValue::MFINT32);
-    st->addEventIn("set_texCoordIndex", FieldValue::MFINT32);
-    st->addExposedField("normal", FieldValue::SFNODE);
-    st->addExposedField("texCoord", FieldValue::SFNODE);
-    st->addField("ccw", FieldValue::SFBOOL);
-    st->addField("convex", FieldValue::SFBOOL);
-    st->addField("creaseAngle", FieldValue::SFFLOAT);
-    st->addField("normalIndex", FieldValue::MFINT32);
-    st->addField("normalPerVertex", FieldValue::SFBOOL);
-    st->addField("solid", FieldValue::SFBOOL);
-    st->addField("texCoordIndex", FieldValue::MFINT32);
+    st->addEventIn("set_colorIndex", FieldValue::mfint32);
+    st->addEventIn("set_coordIndex", FieldValue::mfint32);
+    st->addExposedField("color", FieldValue::sfnode);
+    st->addExposedField("coord", FieldValue::sfnode);
+    st->addField("colorIndex", FieldValue::mfint32);
+    st->addField("colorPerVertex", FieldValue::sfbool);
+    st->addField("coordIndex", FieldValue::mfint32);
+    st->addEventIn("set_normalIndex", FieldValue::mfint32);
+    st->addEventIn("set_texCoordIndex", FieldValue::mfint32);
+    st->addExposedField("normal", FieldValue::sfnode);
+    st->addExposedField("texCoord", FieldValue::sfnode);
+    st->addField("ccw", FieldValue::sfbool);
+    st->addField("convex", FieldValue::sfbool);
+    st->addField("creaseAngle", FieldValue::sffloat);
+    st->addField("normalIndex", FieldValue::mfint32);
+    st->addField("normalPerVertex", FieldValue::sfbool);
+    st->addField("solid", FieldValue::sfbool);
+    st->addField("texCoordIndex", FieldValue::mfint32);
 
     return st;
 }
@@ -4225,13 +4226,13 @@ const NodeTypePtr NodeILineSet::defineType() {
     }
 
     st.reset(new NodeType("IndexedLineSet", createILineSet));
-    st->addEventIn("set_colorIndex", FieldValue::MFINT32);
-    st->addEventIn("set_coordIndex", FieldValue::MFINT32);
-    st->addExposedField("color", FieldValue::SFNODE);
-    st->addExposedField("coord", FieldValue::SFNODE);
-    st->addField("colorIndex", FieldValue::MFINT32);
-    st->addField("colorPerVertex", FieldValue::SFBOOL);
-    st->addField("coordIndex", FieldValue::MFINT32);
+    st->addEventIn("set_colorIndex", FieldValue::mfint32);
+    st->addEventIn("set_coordIndex", FieldValue::mfint32);
+    st->addExposedField("color", FieldValue::sfnode);
+    st->addExposedField("coord", FieldValue::sfnode);
+    st->addField("colorIndex", FieldValue::mfint32);
+    st->addField("colorPerVertex", FieldValue::sfbool);
+    st->addField("coordIndex", FieldValue::mfint32);
 
     return st;
 }
@@ -4267,39 +4268,37 @@ void NodeILineSet::resetVisitedFlag() {
 
 // TO DO colors
 
-Viewer::Object NodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
-{
-  Viewer::Object obj = 0;
-  if (d_coord.get() && d_coordIndex.getLength() > 0)
-    {
-      MFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
-      int nvert = coord.getLength();
-      const float * color = 0;
-      int nci = 0; const long * ci = 0;
+Viewer::Object NodeILineSet::insertGeometry(Viewer * viewer,
+                                            VrmlRenderContext rc) {
+    Viewer::Object obj = 0;
+    if (this->d_coord.get() && this->d_coordIndex.getLength() > 0) {
+        MFVec3f & coord = this->d_coord.get()->toCoordinate()->coordinate();
+        int nvert = coord.getLength();
+        const float * color = 0;
+        int nci = 0; const long * ci = 0;
 
-      // check #colors is consistent with colorPerVtx, colorIndex...
-      if (d_color.get())
-    {
-      MFColor &c = d_color.get()->toColor()->color();
-      color = &c.getElement(0)[0];
-      nci = d_colorIndex.getLength();
-      if (nci) ci = d_colorIndex.get();
-    }
+        // check #colors is consistent with colorPerVtx, colorIndex...
+        if (this->d_color.get()) {
+            MFColor & c = this->d_color.get()->toColor()->color();
+            color = & c.getElement(0)[0];
+            nci = d_colorIndex.getLength();
+            if (nci) ci = d_colorIndex.get();
+        }
 
-      obj =  viewer->insertLineSet(nvert,
-                                   &coord.getElement(0)[0],
-                   d_coordIndex.getLength(),
-                   d_coordIndex.get(),
-                   d_colorPerVertex.get(),
-                   color,
-                   nci, ci);
+        obj =  viewer->insertLineSet(nvert,
+                                     &coord.getElement(0)[0],
+                                     this->d_coordIndex.getLength(),
+                                     this->d_coordIndex.get(),
+                                     this->d_colorPerVertex.get(),
+                                     color,
+                                     nci, ci);
 
     }
-  
-  if (d_color.get()) d_color.get()->clearModified();
-  if (d_coord.get()) d_coord.get()->clearModified();
 
-  return obj;
+    if (this->d_color.get()) { this->d_color.get()->clearModified(); }
+    if (this->d_coord.get()) { this->d_coord.get()->clearModified(); }
+
+    return obj;
 }
 
 
@@ -4326,9 +4325,9 @@ const NodeTypePtr NodeImageTexture::defineType() {
     }
 
     st.reset(new NodeType("ImageTexture", createImageTexture));
-    st->addExposedField("url", FieldValue::MFSTRING);
-    st->addField("repeatS", FieldValue::SFBOOL);
-    st->addField("repeatT", FieldValue::SFBOOL);
+    st->addExposedField("url", FieldValue::mfstring);
+    st->addField("repeatS", FieldValue::sfbool);
+    st->addField("repeatT", FieldValue::sfbool);
 
     return st;
 }
@@ -4656,9 +4655,9 @@ const NodeTypePtr NodeInline::defineType() {
     // Having Inline a subclass of Group is not right since
     // Groups have an exposedField "children" and eventIns
     // addChildren/deleteChildren that Inlines don't support...
-    st->addField("bboxCenter", FieldValue::SFVEC3F);
-    st->addField("bboxSize", FieldValue::SFVEC3F);
-    st->addExposedField("url", FieldValue::MFSTRING);
+    st->addField("bboxCenter", FieldValue::sfvec3f);
+    st->addField("bboxSize", FieldValue::sfvec3f);
+    st->addExposedField("url", FieldValue::mfstring);
 
     return st;
 }
@@ -4809,9 +4808,9 @@ const NodeTypePtr NodeLOD::defineType() {
     }
     
     st.reset(new NodeType("LOD", createLOD));
-    st->addExposedField("level", FieldValue::MFNODE);
-    st->addField("center", FieldValue::SFVEC3F);
-    st->addField("range", FieldValue::MFFLOAT);
+    st->addExposedField("level", FieldValue::mfnode);
+    st->addField("center", FieldValue::sfvec3f);
+    st->addField("range", FieldValue::mffloat);
 
     return st;
 }
@@ -5044,12 +5043,12 @@ const NodeTypePtr NodeMaterial::defineType() {
     }
     
     st.reset(new NodeType("Material", createMaterial));
-    st->addExposedField("ambientIntensity", FieldValue::SFFLOAT);
-    st->addExposedField("diffuseColor", FieldValue::SFCOLOR);
-    st->addExposedField("emissiveColor", FieldValue::SFCOLOR);
-    st->addExposedField("shininess", FieldValue::SFFLOAT);
-    st->addExposedField("specularColor", FieldValue::SFCOLOR);
-    st->addExposedField("transparency", FieldValue::SFFLOAT);
+    st->addExposedField("ambientIntensity", FieldValue::sffloat);
+    st->addExposedField("diffuseColor", FieldValue::sfcolor);
+    st->addExposedField("emissiveColor", FieldValue::sfcolor);
+    st->addExposedField("shininess", FieldValue::sffloat);
+    st->addExposedField("specularColor", FieldValue::sfcolor);
+    st->addExposedField("transparency", FieldValue::sffloat);
 
     return st;
 }
@@ -5174,15 +5173,15 @@ const NodeTypePtr NodeMovieTexture::defineType() {
     }
     
     st.reset(new NodeType("MovieTexture", createMovieTexture));
-    st->addExposedField("loop", FieldValue::SFBOOL);
-    st->addExposedField("speed", FieldValue::SFFLOAT);
-    st->addExposedField("startTime", FieldValue::SFTIME);
-    st->addExposedField("stopTime", FieldValue::SFTIME);
-    st->addExposedField("url", FieldValue::MFSTRING);
-    st->addField("repeatS", FieldValue::SFBOOL);
-    st->addField("repeatT", FieldValue::SFBOOL);
-    st->addEventOut("duration_changed", FieldValue::SFTIME);
-    st->addEventOut("isActive", FieldValue::SFBOOL);
+    st->addExposedField("loop", FieldValue::sfbool);
+    st->addExposedField("speed", FieldValue::sffloat);
+    st->addExposedField("startTime", FieldValue::sftime);
+    st->addExposedField("stopTime", FieldValue::sftime);
+    st->addExposedField("url", FieldValue::mfstring);
+    st->addField("repeatS", FieldValue::sfbool);
+    st->addField("repeatT", FieldValue::sfbool);
+    st->addEventOut("duration_changed", FieldValue::sftime);
+    st->addEventOut("isActive", FieldValue::sfbool);
 
     return st;
 }
@@ -5517,13 +5516,13 @@ const NodeTypePtr NodeNavigationInfo::defineType() {
     }
     
     st.reset(new NodeType("NavigationInfo", createNavigationInfo));
-    st->addEventIn("set_bind", FieldValue::SFBOOL);
-    st->addExposedField("avatarSize", FieldValue::MFFLOAT);
-    st->addExposedField("headlight", FieldValue::SFBOOL);
-    st->addExposedField("speed", FieldValue::SFFLOAT);
-    st->addExposedField("type", FieldValue::MFSTRING);
-    st->addExposedField("visibilityLimit", FieldValue::SFFLOAT);
-    st->addEventOut("isBound", FieldValue::SFBOOL);
+    st->addEventIn("set_bind", FieldValue::sfbool);
+    st->addExposedField("avatarSize", FieldValue::mffloat);
+    st->addExposedField("headlight", FieldValue::sfbool);
+    st->addExposedField("speed", FieldValue::sffloat);
+    st->addExposedField("type", FieldValue::mfstring);
+    st->addExposedField("visibilityLimit", FieldValue::sffloat);
+    st->addEventOut("isBound", FieldValue::sfbool);
 
     return st;
 }
@@ -5696,7 +5695,7 @@ const NodeTypePtr NodeNormal::defineType() {
     }
     
     st.reset(new NodeType("Normal", createNormal));
-    st->addExposedField("vector", FieldValue::MFVEC3F);
+    st->addExposedField("vector", FieldValue::mfvec3f);
 
     return st;
 }
@@ -5769,10 +5768,10 @@ const NodeTypePtr NodeNormalInt::defineType() {
     }
 
     st.reset(new NodeType("NormalInterpolator", createNormalInt));
-    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
-    st->addExposedField("key", FieldValue::MFFLOAT);
-    st->addExposedField("keyValue", FieldValue::MFVEC3F);
-    st->addEventOut("value_changed", FieldValue::MFVEC3F);
+    st->addEventIn("set_fraction", FieldValue::sffloat);
+    st->addExposedField("key", FieldValue::mffloat);
+    st->addExposedField("keyValue", FieldValue::mfvec3f);
+    st->addEventOut("value_changed", FieldValue::mfvec3f);
 
     return st;
 }
@@ -5942,10 +5941,10 @@ const NodeTypePtr NodeOrientationInt::defineType() {
     }
     
     st.reset(new NodeType("OrientationInterpolator", createOrientationInt));
-    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
-    st->addExposedField("key", FieldValue::MFFLOAT);
-    st->addExposedField("keyValue", FieldValue::MFROTATION);
-    st->addEventOut("value_changed", FieldValue::SFROTATION);
+    st->addEventIn("set_fraction", FieldValue::sffloat);
+    st->addExposedField("key", FieldValue::mffloat);
+    st->addExposedField("keyValue", FieldValue::mfrotation);
+    st->addEventOut("value_changed", FieldValue::sfrotation);
 
     return st;
 }
@@ -6126,9 +6125,9 @@ const NodeTypePtr NodePixelTexture::defineType() {
     }
     
     st.reset(new NodeType("PixelTexture", createPixelTexture));
-    st->addExposedField("image", FieldValue::SFIMAGE);
-    st->addField("repeatS", FieldValue::SFBOOL);
-    st->addField("repeatT", FieldValue::SFBOOL);
+    st->addExposedField("image", FieldValue::sfimage);
+    st->addField("repeatS", FieldValue::sfbool);
+    st->addField("repeatT", FieldValue::sfbool);
     
     return st;
 }
@@ -6327,14 +6326,14 @@ const NodeTypePtr NodePlaneSensor::defineType() {
     }
     
     st.reset(new NodeType("PlaneSensor", createPlaneSensor));
-    st->addExposedField("autoOffset", FieldValue::SFBOOL);
-    st->addExposedField("enabled", FieldValue::SFBOOL);
-    st->addExposedField("maxPosition", FieldValue::SFVEC2F);
-    st->addExposedField("minPosition", FieldValue::SFVEC2F);
-    st->addExposedField("offset", FieldValue::SFVEC3F);
-    st->addEventOut("isActive", FieldValue::SFBOOL);
-    st->addEventOut("translation_changed", FieldValue::SFVEC3F);
-    st->addEventOut("trackPoint_changed", FieldValue::SFVEC3F);
+    st->addExposedField("autoOffset", FieldValue::sfbool);
+    st->addExposedField("enabled", FieldValue::sfbool);
+    st->addExposedField("maxPosition", FieldValue::sfvec2f);
+    st->addExposedField("minPosition", FieldValue::sfvec2f);
+    st->addExposedField("offset", FieldValue::sfvec3f);
+    st->addEventOut("isActive", FieldValue::sfbool);
+    st->addEventOut("translation_changed", FieldValue::sfvec3f);
+    st->addEventOut("trackPoint_changed", FieldValue::sfvec3f);
 
     return st;
 }
@@ -6557,13 +6556,13 @@ const NodeTypePtr NodePointLight::defineType() {
     }
     
     st.reset(new NodeType("PointLight", createPointLight));
-    st->addExposedField("ambientIntensity", FieldValue::SFFLOAT);
-    st->addExposedField("color", FieldValue::SFCOLOR);
-    st->addExposedField("intensity", FieldValue::SFFLOAT);
-    st->addExposedField("on", FieldValue::SFBOOL);
-    st->addExposedField("attenuation", FieldValue::SFVEC3F);
-    st->addExposedField("location", FieldValue::SFVEC3F);
-    st->addExposedField("radius", FieldValue::SFFLOAT);
+    st->addExposedField("ambientIntensity", FieldValue::sffloat);
+    st->addExposedField("color", FieldValue::sfcolor);
+    st->addExposedField("intensity", FieldValue::sffloat);
+    st->addExposedField("on", FieldValue::sfbool);
+    st->addExposedField("attenuation", FieldValue::sfvec3f);
+    st->addExposedField("location", FieldValue::sfvec3f);
+    st->addExposedField("radius", FieldValue::sffloat);
 
     return st;
 }
@@ -6690,8 +6689,8 @@ const NodeTypePtr NodePointSet::defineType() {
     }
     
     st.reset(new NodeType("PointSet", createPointSet));
-    st->addExposedField("color", FieldValue::SFNODE);
-    st->addExposedField("coord", FieldValue::SFNODE);
+    st->addExposedField("color", FieldValue::sfnode);
+    st->addExposedField("coord", FieldValue::sfnode);
 
     return st;
 }
@@ -6909,10 +6908,10 @@ const NodeTypePtr NodePositionInt::defineType() {
     }
 
     st.reset(new NodeType("PositionInterpolator", createPositionInt));
-    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
-    st->addExposedField("key", FieldValue::MFFLOAT);
-    st->addExposedField("keyValue", FieldValue::MFVEC3F);
-    st->addEventOut("value_changed", FieldValue::SFVEC3F);
+    st->addEventIn("set_fraction", FieldValue::sffloat);
+    st->addExposedField("key", FieldValue::mffloat);
+    st->addExposedField("keyValue", FieldValue::mfvec3f);
+    st->addEventOut("value_changed", FieldValue::sfvec3f);
 
     return st;
 }
@@ -7050,14 +7049,14 @@ const NodeTypePtr NodeProximitySensor::defineType() {
     }
 
     st.reset(new NodeType("ProximitySensor", createProximitySensor));
-    st->addExposedField("center", FieldValue::SFVEC3F);
-    st->addExposedField("enabled", FieldValue::SFBOOL);
-    st->addExposedField("size", FieldValue::SFVEC3F);
-    st->addEventOut("enterTime", FieldValue::SFTIME);
-    st->addEventOut("exitTime", FieldValue::SFTIME);
-    st->addEventOut("isActive", FieldValue::SFBOOL);
-    st->addEventOut("orientation_changed", FieldValue::SFROTATION);
-    st->addEventOut("position_changed", FieldValue::SFVEC3F);
+    st->addExposedField("center", FieldValue::sfvec3f);
+    st->addExposedField("enabled", FieldValue::sfbool);
+    st->addExposedField("size", FieldValue::sfvec3f);
+    st->addEventOut("enterTime", FieldValue::sftime);
+    st->addEventOut("exitTime", FieldValue::sftime);
+    st->addEventOut("isActive", FieldValue::sfbool);
+    st->addEventOut("orientation_changed", FieldValue::sfrotation);
+    st->addEventOut("position_changed", FieldValue::sfvec3f);
 
     return st;
 }
@@ -7246,10 +7245,10 @@ const NodeTypePtr NodeScalarInt::defineType() {
     }
     
     st.reset(new NodeType("ScalarInterpolator", createScalarInt));
-    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
-    st->addExposedField("key", FieldValue::MFFLOAT);
-    st->addExposedField("keyValue", FieldValue::MFFLOAT);
-    st->addEventOut("value_changed", FieldValue::SFFLOAT);
+    st->addEventIn("set_fraction", FieldValue::sffloat);
+    st->addExposedField("key", FieldValue::mffloat);
+    st->addExposedField("keyValue", FieldValue::mffloat);
+    st->addEventOut("value_changed", FieldValue::sffloat);
 
     return st;
 }
@@ -7381,8 +7380,8 @@ const NodeTypePtr NodeShape::defineType() {
     }
     
     st.reset(new NodeType("Shape", createShape));
-    st->addExposedField("appearance", FieldValue::SFNODE);
-    st->addExposedField("geometry", FieldValue::SFNODE);
+    st->addExposedField("appearance", FieldValue::sfnode);
+    st->addExposedField("geometry", FieldValue::sfnode);
 
     return st;
 }
@@ -7621,16 +7620,16 @@ const NodeTypePtr NodeSound::defineType() {
     }
     
     st.reset(new NodeType("Sound", createSound));
-    st->addExposedField("direction", FieldValue::SFVEC3F);
-    st->addExposedField("intensity", FieldValue::SFFLOAT);
-    st->addExposedField("location", FieldValue::SFVEC3F);
-    st->addExposedField("maxBack", FieldValue::SFFLOAT);
-    st->addExposedField("maxFront", FieldValue::SFFLOAT);
-    st->addExposedField("minBack", FieldValue::SFFLOAT);
-    st->addExposedField("minFront", FieldValue::SFFLOAT);
-    st->addExposedField("priority", FieldValue::SFFLOAT);
-    st->addExposedField("source", FieldValue::SFNODE);
-    st->addField("spatialize", FieldValue::SFBOOL);
+    st->addExposedField("direction", FieldValue::sfvec3f);
+    st->addExposedField("intensity", FieldValue::sffloat);
+    st->addExposedField("location", FieldValue::sfvec3f);
+    st->addExposedField("maxBack", FieldValue::sffloat);
+    st->addExposedField("maxFront", FieldValue::sffloat);
+    st->addExposedField("minBack", FieldValue::sffloat);
+    st->addExposedField("minFront", FieldValue::sffloat);
+    st->addExposedField("priority", FieldValue::sffloat);
+    st->addExposedField("source", FieldValue::sfnode);
+    st->addField("spatialize", FieldValue::sfbool);
 
     return st;
 }
@@ -7798,7 +7797,7 @@ const NodeTypePtr NodeSphere::defineType() {
     }
 
     st.reset(new NodeType("Sphere", createSphere));
-    st->addField("radius", FieldValue::SFFLOAT);
+    st->addField("radius", FieldValue::sffloat);
 
     return st;
 }
@@ -7883,12 +7882,12 @@ const NodeTypePtr NodeSphereSensor::defineType() {
     }
     
     st.reset(new NodeType("SphereSensor", createSphereSensor));
-    st->addExposedField("autoOffset", FieldValue::SFBOOL);
-    st->addExposedField("enabled", FieldValue::SFBOOL);
-    st->addExposedField("offset", FieldValue::SFROTATION);
-    st->addEventOut("isActive", FieldValue::SFBOOL);
-    st->addEventOut("rotation_changed", FieldValue::SFROTATION);
-    st->addEventOut("trackPoint_changed", FieldValue::SFVEC3F);
+    st->addExposedField("autoOffset", FieldValue::sfbool);
+    st->addExposedField("enabled", FieldValue::sfbool);
+    st->addExposedField("offset", FieldValue::sfrotation);
+    st->addEventOut("isActive", FieldValue::sfbool);
+    st->addEventOut("rotation_changed", FieldValue::sfrotation);
+    st->addEventOut("trackPoint_changed", FieldValue::sfvec3f);
 
     return st;
 }
@@ -8080,16 +8079,16 @@ const NodeTypePtr NodeSpotLight::defineType() {
     }
     
     st.reset(new NodeType("SpotLight", createSpotLight));
-    st->addExposedField("ambientIntensity", FieldValue::SFFLOAT);
-    st->addExposedField("color", FieldValue::SFCOLOR);
-    st->addExposedField("intensity", FieldValue::SFFLOAT);
-    st->addExposedField("on", FieldValue::SFBOOL);
-    st->addExposedField("attenuation", FieldValue::SFVEC3F);
-    st->addExposedField("beamWidth", FieldValue::SFFLOAT);
-    st->addExposedField("cutOffAngle", FieldValue::SFFLOAT);
-    st->addExposedField("direction", FieldValue::SFVEC3F);
-    st->addExposedField("location", FieldValue::SFVEC3F);
-    st->addExposedField("radius", FieldValue::SFFLOAT);
+    st->addExposedField("ambientIntensity", FieldValue::sffloat);
+    st->addExposedField("color", FieldValue::sfcolor);
+    st->addExposedField("intensity", FieldValue::sffloat);
+    st->addExposedField("on", FieldValue::sfbool);
+    st->addExposedField("attenuation", FieldValue::sfvec3f);
+    st->addExposedField("beamWidth", FieldValue::sffloat);
+    st->addExposedField("cutOffAngle", FieldValue::sffloat);
+    st->addExposedField("direction", FieldValue::sfvec3f);
+    st->addExposedField("location", FieldValue::sfvec3f);
+    st->addExposedField("radius", FieldValue::sffloat);
 
     return st;
 }
@@ -8244,8 +8243,8 @@ const NodeTypePtr NodeSwitch::defineType() {
     }
     
     st.reset(new NodeType("Switch", createSwitch));
-    st->addExposedField("choice", FieldValue::MFNODE);
-    st->addExposedField("whichChoice", FieldValue::SFINT32);
+    st->addExposedField("choice", FieldValue::mfnode);
+    st->addExposedField("whichChoice", FieldValue::sfint32);
 
     return st;
 }
@@ -8452,10 +8451,10 @@ const NodeTypePtr NodeText::defineType() {
     }
     
     st.reset(new NodeType("Text", createText));
-    st->addExposedField("string", FieldValue::MFSTRING);
-    st->addExposedField("fontStyle", FieldValue::SFNODE);
-    st->addExposedField("length", FieldValue::MFFLOAT);
-    st->addExposedField("maxExtent", FieldValue::SFFLOAT);
+    st->addExposedField("string", FieldValue::mfstring);
+    st->addExposedField("fontStyle", FieldValue::sfnode);
+    st->addExposedField("length", FieldValue::mffloat);
+    st->addExposedField("maxExtent", FieldValue::sffloat);
 
     return st;
 }
@@ -8634,7 +8633,7 @@ const NodeTypePtr NodeTextureCoordinate::defineType() {
     }
 
     st.reset(new NodeType("TextureCoordinate", createTextureCoordinate));
-    st->addExposedField("point", FieldValue::MFVEC2F);
+    st->addExposedField("point", FieldValue::mfvec2f);
 
     return st;
 }
@@ -8704,10 +8703,10 @@ const NodeTypePtr NodeTextureTransform::defineType() {
     }
     
     st.reset(new NodeType("TextureTransform", createTextureTransform));
-    st->addExposedField("center", FieldValue::SFVEC2F);
-    st->addExposedField("rotation", FieldValue::SFFLOAT);
-    st->addExposedField("scale", FieldValue::SFVEC2F);
-    st->addExposedField("translation", FieldValue::SFVEC2F);
+    st->addExposedField("center", FieldValue::sfvec2f);
+    st->addExposedField("rotation", FieldValue::sffloat);
+    st->addExposedField("scale", FieldValue::sfvec2f);
+    st->addExposedField("translation", FieldValue::sfvec2f);
 
     return st;
 }
@@ -8828,15 +8827,15 @@ const NodeTypePtr NodeTimeSensor::defineType() {
     }
     
     st.reset(new NodeType("TimeSensor", createTimeSensor));
-    st->addExposedField("cycleInterval", FieldValue::SFTIME);
-    st->addExposedField("enabled", FieldValue::SFBOOL);
-    st->addExposedField("loop", FieldValue::SFBOOL);
-    st->addExposedField("startTime", FieldValue::SFTIME);
-    st->addExposedField("stopTime", FieldValue::SFTIME);
-    st->addEventOut("cycleTime", FieldValue::SFTIME);
-    st->addEventOut("fraction_changed", FieldValue::SFFLOAT);
-    st->addEventOut("isActive", FieldValue::SFBOOL);
-    st->addEventOut("time", FieldValue::SFTIME);
+    st->addExposedField("cycleInterval", FieldValue::sftime);
+    st->addExposedField("enabled", FieldValue::sfbool);
+    st->addExposedField("loop", FieldValue::sfbool);
+    st->addExposedField("startTime", FieldValue::sftime);
+    st->addExposedField("stopTime", FieldValue::sftime);
+    st->addEventOut("cycleTime", FieldValue::sftime);
+    st->addEventOut("fraction_changed", FieldValue::sffloat);
+    st->addEventOut("isActive", FieldValue::sfbool);
+    st->addEventOut("time", FieldValue::sftime);
 
     return st;
 }
@@ -9128,13 +9127,13 @@ const NodeTypePtr NodeTouchSensor::defineType() {
     }
     
     st.reset(new NodeType("TouchSensor", createTouchSensor));
-    st->addExposedField("enabled", FieldValue::SFBOOL);
-    st->addEventOut("hitNormal_changed", FieldValue::SFVEC3F);
-    st->addEventOut("hitPoint_changed", FieldValue::SFVEC3F);
-    st->addEventOut("hitTexCoord_changed", FieldValue::SFVEC2F);
-    st->addEventOut("isActive", FieldValue::SFBOOL);
-    st->addEventOut("isOver", FieldValue::SFBOOL);
-    st->addEventOut("touchTime", FieldValue::SFTIME);
+    st->addExposedField("enabled", FieldValue::sfbool);
+    st->addEventOut("hitNormal_changed", FieldValue::sfvec3f);
+    st->addEventOut("hitPoint_changed", FieldValue::sfvec3f);
+    st->addEventOut("hitTexCoord_changed", FieldValue::sfvec2f);
+    st->addEventOut("isActive", FieldValue::sfbool);
+    st->addEventOut("isOver", FieldValue::sfbool);
+    st->addEventOut("touchTime", FieldValue::sftime);
 
     return st;
 }
@@ -9276,16 +9275,16 @@ const NodeTypePtr NodeTransform::defineType() {
     }
     
     st.reset(new NodeType("Transform", createTransform));
-    st->addEventIn("addChildren", FieldValue::MFNODE);
-    st->addEventIn("removeChildren", FieldValue::MFNODE);
-    st->addExposedField("children", FieldValue::MFNODE);
-    st->addField("bboxCenter", FieldValue::SFVEC3F);
-    st->addField("bboxSize", FieldValue::SFVEC3F);
-    st->addExposedField("center", FieldValue::SFVEC3F);
-    st->addExposedField("rotation", FieldValue::SFROTATION);
-    st->addExposedField("scale", FieldValue::SFVEC3F);
-    st->addExposedField("scaleOrientation", FieldValue::SFROTATION);
-    st->addExposedField("translation", FieldValue::SFVEC3F);
+    st->addEventIn("addChildren", FieldValue::mfnode);
+    st->addEventIn("removeChildren", FieldValue::mfnode);
+    st->addExposedField("children", FieldValue::mfnode);
+    st->addField("bboxCenter", FieldValue::sfvec3f);
+    st->addField("bboxSize", FieldValue::sfvec3f);
+    st->addExposedField("center", FieldValue::sfvec3f);
+    st->addExposedField("rotation", FieldValue::sfrotation);
+    st->addExposedField("scale", FieldValue::sfvec3f);
+    st->addExposedField("scaleOrientation", FieldValue::sfrotation);
+    st->addExposedField("translation", FieldValue::sfvec3f);
 
     return st;
 }
@@ -9620,14 +9619,14 @@ const NodeTypePtr NodeViewpoint::defineType() {
     }
     st.reset(new NodeType("Viewpoint", createViewpoint));
 
-    st->addEventIn("set_bind", FieldValue::SFBOOL);
-    st->addExposedField("fieldOfView", FieldValue::SFFLOAT);
-    st->addExposedField("jump", FieldValue::SFBOOL);
-    st->addExposedField("orientation", FieldValue::SFROTATION);
-    st->addExposedField("position", FieldValue::SFVEC3F);
-    st->addField("description", FieldValue::SFSTRING);
-    st->addEventOut("bindTime", FieldValue::SFTIME);
-    st->addEventOut("isBound", FieldValue::SFBOOL);
+    st->addEventIn("set_bind", FieldValue::sfbool);
+    st->addExposedField("fieldOfView", FieldValue::sffloat);
+    st->addExposedField("jump", FieldValue::sfbool);
+    st->addExposedField("orientation", FieldValue::sfrotation);
+    st->addExposedField("position", FieldValue::sfvec3f);
+    st->addField("description", FieldValue::sfstring);
+    st->addEventOut("bindTime", FieldValue::sftime);
+    st->addEventOut("isBound", FieldValue::sfbool);
 
     return st;
 }
@@ -9886,12 +9885,12 @@ const NodeTypePtr NodeVisibilitySensor::defineType() {
     }
     
     st.reset(new NodeType("VisibilitySensor", createVisibilitySensor));
-    st->addExposedField("center", FieldValue::SFVEC3F);
-    st->addExposedField("enabled", FieldValue::SFBOOL);
-    st->addExposedField("size", FieldValue::SFVEC3F);
-    st->addEventOut("enterTime", FieldValue::SFTIME);
-    st->addEventOut("exitTime", FieldValue::SFTIME);
-    st->addEventOut("isActive", FieldValue::SFBOOL);
+    st->addExposedField("center", FieldValue::sfvec3f);
+    st->addExposedField("enabled", FieldValue::sfbool);
+    st->addExposedField("size", FieldValue::sfvec3f);
+    st->addEventOut("enterTime", FieldValue::sftime);
+    st->addEventOut("exitTime", FieldValue::sftime);
+    st->addEventOut("isActive", FieldValue::sfbool);
 
     return st;
 }
@@ -10070,8 +10069,8 @@ const NodeTypePtr NodeWorldInfo::defineType() {
     }
     
     st.reset(new NodeType("WorldInfo", createWorldInfo));
-    st->addField("info", FieldValue::MFSTRING);
-    st->addField("title", FieldValue::SFSTRING);
+    st->addField("info", FieldValue::mfstring);
+    st->addField("title", FieldValue::sfstring);
 
     return st;
 }
@@ -10112,8 +10111,7 @@ void NodeWorldInfo::setField(const std::string & fieldId,
     Node::setField(fieldId, fieldValue);
 }
 
-NodeTexture::NodeTexture(const NodeType & type,
-                                 VrmlScene * const scene):
+NodeTexture::NodeTexture(const NodeType & type, VrmlScene * const scene):
         Node(type, scene) {}
 
 NodeTexture::~NodeTexture() {}
@@ -10121,3 +10119,4 @@ NodeTexture::~NodeTexture() {}
 NodeTexture* NodeTexture::toTexture() const
 { return (NodeTexture*) this; }
 
+} // namespace OpenVRML

@@ -148,12 +148,12 @@ namespace {
             using OpenVRML::SFNode;
             using OpenVRML::MFNode;
             assert(protoFieldRec);
-            if (protoFieldRec->value->fieldType() == FieldValue::SFNODE) {
+            if (protoFieldRec->value->type() == FieldValue::sfnode) {
                 assert(dynamic_cast<SFNode *>(protoFieldRec->value));
                 this->children.setLength(this->children.getLength() + 1);
                 this->children.setElement(this->children.getLength() - 1,
                         static_cast<SFNode *>(protoFieldRec->value)->get());
-            } else if (protoFieldRec->value->fieldType() == FieldValue::MFNODE) {
+            } else if (protoFieldRec->value->type() == FieldValue::mfnode) {
                 assert(dynamic_cast<MFNode *>(protoFieldRec->value));
                 MFNode & nodes =
                         *static_cast<MFNode *>(protoFieldRec->value);

@@ -55,26 +55,26 @@ namespace ANTLR_LBRACE
         static const int KEYWORD_TO;
         static const int KEYWORD_TRUE;
         static const int KEYWORD_USE;
-        static const int FIELDTYPE_SFBOOL;
-        static const int FIELDTYPE_SFCOLOR;
-        static const int FIELDTYPE_SFFLOAT;
-        static const int FIELDTYPE_SFIMAGE;
-        static const int FIELDTYPE_SFINT32;
-        static const int FIELDTYPE_SFNODE;
-        static const int FIELDTYPE_SFROTATION;
-        static const int FIELDTYPE_SFSTRING;
-        static const int FIELDTYPE_SFTIME;
-        static const int FIELDTYPE_SFVEC2F;
-        static const int FIELDTYPE_SFVEC3F;
-        static const int FIELDTYPE_MFCOLOR;
-        static const int FIELDTYPE_MFFLOAT;
-        static const int FIELDTYPE_MFINT32;
-        static const int FIELDTYPE_MFNODE;
-        static const int FIELDTYPE_MFROTATION;
-        static const int FIELDTYPE_MFSTRING;
-        static const int FIELDTYPE_MFTIME;
-        static const int FIELDTYPE_MFVEC2F;
-        static const int FIELDTYPE_MFVEC3F;
+        static const int FIELDTYPE_sfbool;
+        static const int FIELDTYPE_sfcolor;
+        static const int FIELDTYPE_sffloat;
+        static const int FIELDTYPE_sfimage;
+        static const int FIELDTYPE_sfint32;
+        static const int FIELDTYPE_sfnode;
+        static const int FIELDTYPE_sfrotation;
+        static const int FIELDTYPE_sfstring;
+        static const int FIELDTYPE_sftime;
+        static const int FIELDTYPE_sfvec2f;
+        static const int FIELDTYPE_sfvec3f;
+        static const int FIELDTYPE_mfcolor;
+        static const int FIELDTYPE_mffloat;
+        static const int FIELDTYPE_mfint32;
+        static const int FIELDTYPE_mfnode;
+        static const int FIELDTYPE_mfrotation;
+        static const int FIELDTYPE_mfstring;
+        static const int FIELDTYPE_mftime;
+        static const int FIELDTYPE_mfvec2f;
+        static const int FIELDTYPE_mfvec3f;
 
         Vrml97Scanner(istream &);
 
@@ -155,11 +155,11 @@ public:
 		const OpenVRML::Doc2 * doc, OpenVRML::NodeType & nodeType
 	);
 	public: Vrml97Parser::NodeInterfaceType  eventInterfaceType();
-	public: OpenVRML::FieldValue::FieldType  fieldType();
+	public: OpenVRML::FieldValue::Type  fieldType();
 	public: Vrml97Parser::NodeInterfaceType  fieldInterfaceType();
 	public: OpenVRML::FieldValue *  fieldValue(
 		OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc,
-           OpenVRML::FieldValue::FieldType ft
+           OpenVRML::FieldValue::Type ft
 	);
 	public: OpenVRML::NodePtr  protoNodeStatement(
 		const OpenVRML::Doc2 * doc,
@@ -208,7 +208,7 @@ public:
 	);
 	public: OpenVRML::FieldValue *  protoFieldValue(
 		const OpenVRML::Doc2 * doc, OpenVRML::NodeType & protoNodeType,
-                OpenVRML::FieldValue::FieldType ft
+                OpenVRML::FieldValue::Type ft
 	);
 	public: void protoScriptFieldInterfaceDeclaration(
 		const OpenVRML::Doc2 * doc,
@@ -217,15 +217,15 @@ public:
 	);
 	public: OpenVRML::FieldValue *  nodeFieldValue(
 		OpenVRML::VrmlNamespace & vrmlNamespace,
-               const OpenVRML::Doc2 * doc, OpenVRML::FieldValue::FieldType ft
+               const OpenVRML::Doc2 * doc, OpenVRML::FieldValue::Type ft
 	);
 	public: OpenVRML::FieldValue *  nonNodeFieldValue(
-		OpenVRML::FieldValue::FieldType ft
+		OpenVRML::FieldValue::Type ft
 	);
 	public: OpenVRML::FieldValue *  protoNodeFieldValue(
 		const OpenVRML::Doc2 * doc,
                     OpenVRML::NodeType & protoNodeType,
-                    OpenVRML::FieldValue::FieldType ft
+                    OpenVRML::FieldValue::Type ft
 	);
 	public: OpenVRML::SFBool *  sfBoolValue();
 	public: OpenVRML::SFColor *  sfColorValue();

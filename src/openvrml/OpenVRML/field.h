@@ -60,21 +60,21 @@ namespace OpenVRML {
         friend ostream & ::operator<<(ostream &, const FieldValue &);
 
     public:
-        enum FieldType {
-            NO_FIELD, SFBOOL, SFCOLOR, SFFLOAT, SFIMAGE, SFINT32, SFNODE,
-            SFROTATION, SFSTRING, SFTIME, SFVEC2F, SFVEC3F, MFCOLOR, MFFLOAT,
-            MFINT32, MFNODE, MFROTATION, MFSTRING, MFTIME, MFVEC2F, MFVEC3F
+        enum Type {
+            invalidType, sfbool, sfcolor, sffloat, sfimage, sfint32, sfnode,
+            sfrotation, sfstring, sftime, sfvec2f, sfvec3f, mfcolor, mffloat,
+            mfint32, mfnode, mfrotation, mfstring, mftime, mfvec2f, mfvec3f
         };
 
-        static FieldType fieldType(const char * fieldTypeId);
-        static const char * getFieldName(const FieldType fieldType);
+        static Type type(const char * typeId);
+        static const char * getFieldName(const Type type);
 
-        const char * fieldTypeName() const;
+        const char * typeName() const;
 
         virtual ~FieldValue() = 0;
         virtual FieldValue * clone() const = 0;
         virtual ostream& print(ostream& os) const = 0;
-        virtual FieldType fieldType() const = 0;
+        virtual Type type() const = 0;
 
         // safe downcasts, const and non-const versions.
         // These avoid casts of VrmlField* but are ugly in that this class
@@ -134,7 +134,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFBool * toSFBool() const;
         virtual SFBool * toSFBool();
     };
@@ -166,7 +166,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFColor * toSFColor() const;
         virtual SFColor * toSFColor();
     };
@@ -186,7 +186,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFFloat * toSFFloat() const;
         virtual SFFloat * toSFFloat();
     };
@@ -213,7 +213,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFImage * toSFImage() const;
         virtual SFImage * toSFImage();
     };
@@ -233,7 +233,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFInt32 * toSFInt32() const;
         virtual SFInt32 * toSFInt32();
     };
@@ -253,7 +253,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFNode * toSFNode() const;
         virtual SFNode * toSFNode();
     };
@@ -293,7 +293,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFRotation * toSFRotation() const;
         virtual SFRotation * toSFRotation();
 
@@ -317,7 +317,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFString * toSFString() const;
         virtual SFString * toSFString();
     };
@@ -337,7 +337,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFTime * toSFTime() const;
         virtual SFTime * toSFTime();
     };
@@ -373,7 +373,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFVec2f * toSFVec2f() const;
         virtual SFVec2f * toSFVec2f();
     };
@@ -412,7 +412,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const SFVec3f * toSFVec3f() const;
         virtual SFVec3f * toSFVec3f();
     };
@@ -440,7 +440,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const MFColor * toMFColor() const;
         virtual MFColor * toMFColor();
     };
@@ -468,7 +468,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const MFFloat * toMFFloat() const;
         virtual MFFloat * toMFFloat();
     };
@@ -496,7 +496,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const MFInt32 * toMFInt32() const;
         virtual MFInt32 * toMFInt32();
     };
@@ -524,7 +524,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const MFNode* toMFNode() const;
         virtual MFNode* toMFNode();
     };
@@ -552,7 +552,7 @@ namespace OpenVRML {
 
         virtual ostream& print(ostream& os) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const MFRotation * toMFRotation() const;
         virtual MFRotation * toMFRotation();
     };
@@ -575,7 +575,7 @@ namespace OpenVRML {
         void removeElement(size_t index);
 
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual const MFString * toMFString() const;
         virtual MFString * toMFString();
         virtual ostream& print(ostream& os) const;
@@ -604,7 +604,7 @@ namespace OpenVRML {
 
         virtual ostream & print(ostream &) const;
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
     };
 
 
@@ -629,7 +629,7 @@ namespace OpenVRML {
         void removeElement(size_t index);
 
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual ostream& print(ostream& os) const;
         virtual const MFVec2f * toMFVec2f() const;
         virtual MFVec2f * toMFVec2f();
@@ -657,7 +657,7 @@ namespace OpenVRML {
         void removeElement(size_t index);
 
         virtual FieldValue * clone() const;
-        virtual FieldType fieldType() const;
+        virtual Type type() const;
         virtual ostream& print(ostream& os) const;
         virtual const MFVec3f * toMFVec3f() const;
         virtual MFVec3f * toMFVec3f();

@@ -64,26 +64,26 @@ namespace ANTLR_LBRACE
         static const int KEYWORD_TO;
         static const int KEYWORD_TRUE;
         static const int KEYWORD_USE;
-        static const int FIELDTYPE_SFBOOL;
-        static const int FIELDTYPE_SFCOLOR;
-        static const int FIELDTYPE_SFFLOAT;
-        static const int FIELDTYPE_SFIMAGE;
-        static const int FIELDTYPE_SFINT32;
-        static const int FIELDTYPE_SFNODE;
-        static const int FIELDTYPE_SFROTATION;
-        static const int FIELDTYPE_SFSTRING;
-        static const int FIELDTYPE_SFTIME;
-        static const int FIELDTYPE_SFVEC2F;
-        static const int FIELDTYPE_SFVEC3F;
-        static const int FIELDTYPE_MFCOLOR;
-        static const int FIELDTYPE_MFFLOAT;
-        static const int FIELDTYPE_MFINT32;
-        static const int FIELDTYPE_MFNODE;
-        static const int FIELDTYPE_MFROTATION;
-        static const int FIELDTYPE_MFSTRING;
-        static const int FIELDTYPE_MFTIME;
-        static const int FIELDTYPE_MFVEC2F;
-        static const int FIELDTYPE_MFVEC3F;
+        static const int FIELDTYPE_sfbool;
+        static const int FIELDTYPE_sfcolor;
+        static const int FIELDTYPE_sffloat;
+        static const int FIELDTYPE_sfimage;
+        static const int FIELDTYPE_sfint32;
+        static const int FIELDTYPE_sfnode;
+        static const int FIELDTYPE_sfrotation;
+        static const int FIELDTYPE_sfstring;
+        static const int FIELDTYPE_sftime;
+        static const int FIELDTYPE_sfvec2f;
+        static const int FIELDTYPE_sfvec3f;
+        static const int FIELDTYPE_mfcolor;
+        static const int FIELDTYPE_mffloat;
+        static const int FIELDTYPE_mfint32;
+        static const int FIELDTYPE_mfnode;
+        static const int FIELDTYPE_mfrotation;
+        static const int FIELDTYPE_mfstring;
+        static const int FIELDTYPE_mftime;
+        static const int FIELDTYPE_mfvec2f;
+        static const int FIELDTYPE_mfvec3f;
 
         Vrml97Scanner(istream &);
 
@@ -163,26 +163,26 @@ const int Vrml97Scanner::KEYWORD_ROUTE          (24);
 const int Vrml97Scanner::KEYWORD_TO             (25);
 const int Vrml97Scanner::KEYWORD_TRUE           (26);
 const int Vrml97Scanner::KEYWORD_USE            (27);
-const int Vrml97Scanner::FIELDTYPE_SFBOOL       (28);
-const int Vrml97Scanner::FIELDTYPE_SFCOLOR      (29);
-const int Vrml97Scanner::FIELDTYPE_SFFLOAT      (30);
-const int Vrml97Scanner::FIELDTYPE_SFIMAGE      (31);
-const int Vrml97Scanner::FIELDTYPE_SFINT32      (32);
-const int Vrml97Scanner::FIELDTYPE_SFNODE       (33);
-const int Vrml97Scanner::FIELDTYPE_SFROTATION   (34);
-const int Vrml97Scanner::FIELDTYPE_SFSTRING     (35);
-const int Vrml97Scanner::FIELDTYPE_SFTIME       (36);
-const int Vrml97Scanner::FIELDTYPE_SFVEC2F      (37);
-const int Vrml97Scanner::FIELDTYPE_SFVEC3F      (38);
-const int Vrml97Scanner::FIELDTYPE_MFCOLOR      (39);
-const int Vrml97Scanner::FIELDTYPE_MFFLOAT      (40);
-const int Vrml97Scanner::FIELDTYPE_MFINT32      (41);
-const int Vrml97Scanner::FIELDTYPE_MFNODE       (42);
-const int Vrml97Scanner::FIELDTYPE_MFROTATION   (43);
-const int Vrml97Scanner::FIELDTYPE_MFSTRING     (44);
-const int Vrml97Scanner::FIELDTYPE_MFTIME       (45);
-const int Vrml97Scanner::FIELDTYPE_MFVEC2F      (46);
-const int Vrml97Scanner::FIELDTYPE_MFVEC3F      (47);
+const int Vrml97Scanner::FIELDTYPE_sfbool       (28);
+const int Vrml97Scanner::FIELDTYPE_sfcolor      (29);
+const int Vrml97Scanner::FIELDTYPE_sffloat      (30);
+const int Vrml97Scanner::FIELDTYPE_sfimage      (31);
+const int Vrml97Scanner::FIELDTYPE_sfint32      (32);
+const int Vrml97Scanner::FIELDTYPE_sfnode       (33);
+const int Vrml97Scanner::FIELDTYPE_sfrotation   (34);
+const int Vrml97Scanner::FIELDTYPE_sfstring     (35);
+const int Vrml97Scanner::FIELDTYPE_sftime       (36);
+const int Vrml97Scanner::FIELDTYPE_sfvec2f      (37);
+const int Vrml97Scanner::FIELDTYPE_sfvec3f      (38);
+const int Vrml97Scanner::FIELDTYPE_mfcolor      (39);
+const int Vrml97Scanner::FIELDTYPE_mffloat      (40);
+const int Vrml97Scanner::FIELDTYPE_mfint32      (41);
+const int Vrml97Scanner::FIELDTYPE_mfnode       (42);
+const int Vrml97Scanner::FIELDTYPE_mfrotation   (43);
+const int Vrml97Scanner::FIELDTYPE_mfstring     (44);
+const int Vrml97Scanner::FIELDTYPE_mftime       (45);
+const int Vrml97Scanner::FIELDTYPE_mfvec2f      (46);
+const int Vrml97Scanner::FIELDTYPE_mfvec3f      (47);
 
 Vrml97Scanner::Vrml97Scanner(::istream & istm)
   : _istm(istm), _line(1), _col(0), _c(' '), _prevChar('\0'), _prevTokenType(0),
@@ -474,26 +474,26 @@ void Vrml97Scanner::_identifyFieldType(antlr::Token & token)
     
     std::string const tokenText(token.getText());
     
-    if      (tokenText == "SFBool")     { token.setType(FIELDTYPE_SFBOOL); }
-    else if (tokenText == "SFColor")    { token.setType(FIELDTYPE_SFCOLOR); }
-    else if (tokenText == "SFFloat")    { token.setType(FIELDTYPE_SFFLOAT); }
-    else if (tokenText == "SFImage")    { token.setType(FIELDTYPE_SFIMAGE); }
-    else if (tokenText == "SFInt32")    { token.setType(FIELDTYPE_SFINT32); }
-    else if (tokenText == "SFNode")     { token.setType(FIELDTYPE_SFNODE); }
-    else if (tokenText == "SFRotation") { token.setType(FIELDTYPE_SFROTATION); }
-    else if (tokenText == "SFString")   { token.setType(FIELDTYPE_SFSTRING); }
-    else if (tokenText == "SFTime")     { token.setType(FIELDTYPE_SFTIME); }
-    else if (tokenText == "SFVec2f")    { token.setType(FIELDTYPE_SFVEC2F); }
-    else if (tokenText == "SFVec3f")    { token.setType(FIELDTYPE_SFVEC3F); }
-    else if (tokenText == "MFColor")    { token.setType(FIELDTYPE_MFCOLOR); }
-    else if (tokenText == "MFFloat")    { token.setType(FIELDTYPE_MFFLOAT); }
-    else if (tokenText == "MFInt32")    { token.setType(FIELDTYPE_MFINT32); }
-    else if (tokenText == "MFNode")     { token.setType(FIELDTYPE_MFNODE); }
-    else if (tokenText == "MFRotation") { token.setType(FIELDTYPE_MFROTATION); }
-    else if (tokenText == "MFString")   { token.setType(FIELDTYPE_MFSTRING); }
-    else if (tokenText == "MFTime")     { token.setType(FIELDTYPE_MFTIME); }
-    else if (tokenText == "MFVec2f")    { token.setType(FIELDTYPE_MFVEC2F); }
-    else if (tokenText == "MFVec3f")    { token.setType(FIELDTYPE_MFVEC3F); }
+    if      (tokenText == "SFBool")     { token.setType(FIELDTYPE_sfbool); }
+    else if (tokenText == "SFColor")    { token.setType(FIELDTYPE_sfcolor); }
+    else if (tokenText == "SFFloat")    { token.setType(FIELDTYPE_sffloat); }
+    else if (tokenText == "SFImage")    { token.setType(FIELDTYPE_sfimage); }
+    else if (tokenText == "SFInt32")    { token.setType(FIELDTYPE_sfint32); }
+    else if (tokenText == "SFNode")     { token.setType(FIELDTYPE_sfnode); }
+    else if (tokenText == "SFRotation") { token.setType(FIELDTYPE_sfrotation); }
+    else if (tokenText == "SFString")   { token.setType(FIELDTYPE_sfstring); }
+    else if (tokenText == "SFTime")     { token.setType(FIELDTYPE_sftime); }
+    else if (tokenText == "SFVec2f")    { token.setType(FIELDTYPE_sfvec2f); }
+    else if (tokenText == "SFVec3f")    { token.setType(FIELDTYPE_sfvec3f); }
+    else if (tokenText == "MFColor")    { token.setType(FIELDTYPE_mfcolor); }
+    else if (tokenText == "MFFloat")    { token.setType(FIELDTYPE_mffloat); }
+    else if (tokenText == "MFInt32")    { token.setType(FIELDTYPE_mfint32); }
+    else if (tokenText == "MFNode")     { token.setType(FIELDTYPE_mfnode); }
+    else if (tokenText == "MFRotation") { token.setType(FIELDTYPE_mfrotation); }
+    else if (tokenText == "MFString")   { token.setType(FIELDTYPE_mfstring); }
+    else if (tokenText == "MFTime")     { token.setType(FIELDTYPE_mftime); }
+    else if (tokenText == "MFVec2f")    { token.setType(FIELDTYPE_mfvec2f); }
+    else if (tokenText == "MFVec3f")    { token.setType(FIELDTYPE_mfvec3f); }
 }
 
 void Vrml97Scanner::_identifyTerminalSymbol(antlr::Token & token)
@@ -654,11 +654,11 @@ protoInterfaceDeclaration[OpenVRML::VrmlNamespace & vrmlNamespace,
         {
             using OpenVRML::FieldValue;
             NodeInterfaceType it = INVALID_NODE_INTERFACE_TYPE;
-            FieldValue::FieldType ft = FieldValue::NO_FIELD;
+            FieldValue::Type ft = FieldValue::invalidType;
         }
     :   it=eventInterfaceType ft=fieldType id0:ID
         {
-            if (nodeType.hasInterface(id0->getText()) != FieldValue::NO_FIELD) {
+            if (nodeType.hasInterface(id0->getText()) != FieldValue::invalidType) {
                 throw antlr::SemanticException("Interface \"" + id0->getText()
                         + "\" already declared for " + nodeType.getId()
                         + " node type.");
@@ -685,7 +685,7 @@ protoInterfaceDeclaration[OpenVRML::VrmlNamespace & vrmlNamespace,
         {
             const std::auto_ptr<FieldValue> autofv(fv);
             
-            if (nodeType.hasInterface(id1->getText()) != FieldValue::NO_FIELD) {
+            if (nodeType.hasInterface(id1->getText()) != FieldValue::invalidType) {
                 throw antlr::SemanticException("Interface \"" + id1->getText()
                         + "\" already declared for " + nodeType.getId()
                         + " node type.");
@@ -780,7 +780,7 @@ externproto[OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc]
 externInterfaceDeclaration[OpenVRML::NodeType & nodeType]
         {
             NodeInterfaceType it(INVALID_NODE_INTERFACE_TYPE);
-            OpenVRML::FieldValue::FieldType ft = OpenVRML::FieldValue::NO_FIELD;
+            OpenVRML::FieldValue::Type ft = OpenVRML::FieldValue::invalidType;
         }
     :   it=interfaceType ft=fieldType id:ID
         {
@@ -863,17 +863,17 @@ routeStatement[const OpenVRML::VrmlNamespace & vrmlNamespace]
                         + "\" has not been defined in this scope.");
             }
             
-            FieldValue::FieldType fromInterfaceType = FieldValue::NO_FIELD;
+            FieldValue::Type fromInterfaceType = FieldValue::invalidType;
             
-            if (((fromInterfaceType = fromNode->type.hasEventOut(fromInterfaceId->getText())) == FieldValue::NO_FIELD)
-                && ((fromInterfaceType = fromNode->type.hasExposedField(fromInterfaceId->getText())) == FieldValue::NO_FIELD)) {
+            if (((fromInterfaceType = fromNode->type.hasEventOut(fromInterfaceId->getText())) == FieldValue::invalidType)
+                && ((fromInterfaceType = fromNode->type.hasExposedField(fromInterfaceId->getText())) == FieldValue::invalidType)) {
                 
                 ScriptNode * fromScriptNode = 0;
                 if ((fromScriptNode = fromNode->toScript())) {
                     fromInterfaceType = fromScriptNode->hasEventOut(fromInterfaceId->getText());
                 }
                 
-                if (fromInterfaceType == FieldValue::NO_FIELD) {
+                if (fromInterfaceType == FieldValue::invalidType) {
                     throw antlr::SemanticException(fromNode->type.getId() + " has no eventOut or exposedField \"" + fromInterfaceId->getText() + "\".");
                 }
             }
@@ -885,17 +885,17 @@ routeStatement[const OpenVRML::VrmlNamespace & vrmlNamespace]
                         + "\" has not been defined in this scope.");
             }
             
-            FieldValue::FieldType toInterfaceType = FieldValue::NO_FIELD;
+            FieldValue::Type toInterfaceType = FieldValue::invalidType;
             
-            if (((toInterfaceType = toNode->type.hasEventIn(toInterfaceId->getText())) == FieldValue::NO_FIELD)
-                && ((toInterfaceType = toNode->type.hasExposedField(toInterfaceId->getText())) == FieldValue::NO_FIELD)) {
+            if (((toInterfaceType = toNode->type.hasEventIn(toInterfaceId->getText())) == FieldValue::invalidType)
+                && ((toInterfaceType = toNode->type.hasExposedField(toInterfaceId->getText())) == FieldValue::invalidType)) {
                 
                 ScriptNode * toScriptNode = 0;
                 if ((toScriptNode = toNode->toScript())) {
                     toInterfaceType = toScriptNode->hasEventIn(toInterfaceId->getText());
                 }
                 
-                if (toInterfaceType == FieldValue::NO_FIELD) {
+                if (toInterfaceType == FieldValue::invalidType) {
                     throw antlr::SemanticException(toNode->type.getId()
                                         + " has no eventIn or exposedField \""
                                         + toInterfaceId->getText() + "\".");
@@ -968,12 +968,12 @@ nodeBodyElement[OpenVRML::VrmlNamespace & vrmlNamespace,
         {
             using OpenVRML::FieldValue;
             
-            FieldValue::FieldType ft(FieldValue::NO_FIELD);
+            FieldValue::Type ft(FieldValue::invalidType);
         }
     :   id:ID
         {
-            if (   ((ft = node.type.hasField(id->getText())) == FieldValue::NO_FIELD)
-                && ((ft = node.type.hasExposedField(id->getText())) == FieldValue::NO_FIELD)) {
+            if (   ((ft = node.type.hasField(id->getText())) == FieldValue::invalidType)
+                && ((ft = node.type.hasExposedField(id->getText())) == FieldValue::invalidType)) {
                 
                 throw antlr::SemanticException(node.type.getId()
                         + " node has no field or exposedField \""
@@ -999,12 +999,12 @@ scriptInterfaceDeclaration[OpenVRML::VrmlNamespace & vrmlNamespace,
             using OpenVRML::FieldValue;
             
             NodeInterfaceType it(INVALID_NODE_INTERFACE_TYPE);
-            FieldValue::FieldType ft(FieldValue::NO_FIELD);
+            FieldValue::Type ft(FieldValue::invalidType);
         }
     :   it=eventInterfaceType ft=fieldType id:ID
         {
-            if (   (node.hasInterface(id->getText()) != FieldValue::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != FieldValue::NO_FIELD)) {
+            if (   (node.hasInterface(id->getText()) != FieldValue::invalidType)
+                || (node.type.hasInterface(id->getText()) != FieldValue::invalidType)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
@@ -1029,7 +1029,7 @@ scriptFieldInterfaceDeclaration[OpenVRML::VrmlNamespace & vrmlNamespace,
         {
             using OpenVRML::FieldValue;
             
-            FieldValue::FieldType ft = FieldValue::NO_FIELD;
+            FieldValue::Type ft = FieldValue::invalidType;
             FieldValue * fv = 0;
         }
     :   KEYWORD_FIELD ft=fieldType id:ID fv=fieldValue[vrmlNamespace, doc, ft]
@@ -1038,8 +1038,8 @@ scriptFieldInterfaceDeclaration[OpenVRML::VrmlNamespace & vrmlNamespace,
             
             const std::auto_ptr<FieldValue> autofv(fv);
             
-            if (   (node.hasInterface(id->getText()) != FieldValue::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != FieldValue::NO_FIELD)) {
+            if (   (node.hasInterface(id->getText()) != FieldValue::invalidType)
+                || (node.type.hasInterface(id->getText()) != FieldValue::invalidType)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
@@ -1108,16 +1108,16 @@ protoNodeBodyElement[const OpenVRML::Doc2 * doc,
         {
             using OpenVRML::FieldValue;
             
-            FieldValue::FieldType ft(FieldValue::NO_FIELD);
+            FieldValue::Type ft(FieldValue::invalidType);
         }
-    :   { node.type.hasEventIn(LT(1)->getText()) != FieldValue::NO_FIELD ||
-	  node.type.hasEventOut(LT(1)->getText()) != FieldValue::NO_FIELD }?
+    :   { node.type.hasEventIn(LT(1)->getText()) != FieldValue::invalidType ||
+	  node.type.hasEventOut(LT(1)->getText()) != FieldValue::invalidType }?
       eventId:ID isStatement[protoNodeType, node, eventId->getText()]
 
     | id:ID 
         {
-            if (   ((ft = node.type.hasField(id->getText())) == FieldValue::NO_FIELD)
-                && ((ft = node.type.hasExposedField(id->getText())) == FieldValue::NO_FIELD)) {
+            if (   ((ft = node.type.hasField(id->getText())) == FieldValue::invalidType)
+                && ((ft = node.type.hasExposedField(id->getText())) == FieldValue::invalidType)) {
                 
                 throw antlr::SemanticException(node.type.getId()
                         + " node has no field or exposedField \""
@@ -1174,12 +1174,12 @@ protoScriptInterfaceDeclaration[const OpenVRML::Doc2 * doc,
             using OpenVRML::FieldValue;
             
             NodeInterfaceType it(INVALID_NODE_INTERFACE_TYPE);
-            FieldValue::FieldType ft(FieldValue::NO_FIELD);
+            FieldValue::Type ft(FieldValue::invalidType);
         }
     :   it=eventInterfaceType ft=fieldType id:ID
         {
-            if ((node.hasInterface(id->getText()) != FieldValue::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != FieldValue::NO_FIELD)) {
+            if ((node.hasInterface(id->getText()) != FieldValue::invalidType)
+                || (node.type.hasInterface(id->getText()) != FieldValue::invalidType)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
@@ -1205,13 +1205,13 @@ protoScriptFieldInterfaceDeclaration[const OpenVRML::Doc2 * doc,
         {
             using OpenVRML::FieldValue;
             
-            FieldValue::FieldType ft(FieldValue::NO_FIELD);
+            FieldValue::Type ft(FieldValue::invalidType);
             FieldValue * fv = 0;
         }
     :   KEYWORD_FIELD ft=fieldType id:ID
         {
-            if ((node.hasInterface(id->getText()) != FieldValue::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != FieldValue::NO_FIELD)) {
+            if ((node.hasInterface(id->getText()) != FieldValue::invalidType)
+                || (node.type.hasInterface(id->getText()) != FieldValue::invalidType)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
@@ -1235,51 +1235,51 @@ protoScriptFieldInterfaceDeclaration[const OpenVRML::Doc2 * doc,
     ;
 
 fieldType
-returns [OpenVRML::FieldValue::FieldType ft = OpenVRML::FieldValue::NO_FIELD]
+returns [OpenVRML::FieldValue::Type ft = OpenVRML::FieldValue::invalidType]
         {
             using OpenVRML::FieldValue;
         }
-    :   FIELDTYPE_MFCOLOR { ft = FieldValue::MFCOLOR; }
-    |   FIELDTYPE_MFFLOAT { ft = FieldValue::MFFLOAT; }
-    |   FIELDTYPE_MFINT32 { ft = FieldValue::MFINT32; }
-    |   FIELDTYPE_MFNODE { ft = FieldValue::MFNODE; }
-    |   FIELDTYPE_MFROTATION { ft = FieldValue::MFROTATION; }
-    |   FIELDTYPE_MFSTRING { ft = FieldValue::MFSTRING; }
-    |   FIELDTYPE_MFTIME { ft = FieldValue::MFTIME; }
-    |   FIELDTYPE_MFVEC2F { ft = FieldValue::MFVEC2F; }
-    |   FIELDTYPE_MFVEC3F { ft = FieldValue::MFVEC3F; }
-    |   FIELDTYPE_SFBOOL { ft = FieldValue::SFBOOL; }
-    |   FIELDTYPE_SFCOLOR { ft = FieldValue::SFCOLOR; }
-    |   FIELDTYPE_SFFLOAT { ft = FieldValue::SFFLOAT; }
-    |   FIELDTYPE_SFIMAGE { ft = FieldValue::SFIMAGE; }
-    |   FIELDTYPE_SFINT32 { ft = FieldValue::SFINT32; }
-    |   FIELDTYPE_SFNODE { ft = FieldValue::SFNODE; }
-    |   FIELDTYPE_SFROTATION { ft = FieldValue::SFROTATION; }
-    |   FIELDTYPE_SFSTRING { ft = FieldValue::SFSTRING; }
-    |   FIELDTYPE_SFTIME { ft = FieldValue::SFTIME; }
-    |   FIELDTYPE_SFVEC2F { ft = FieldValue::SFVEC2F; }
-    |   FIELDTYPE_SFVEC3F { ft = FieldValue::SFVEC3F; }
+    :   FIELDTYPE_mfcolor { ft = FieldValue::mfcolor; }
+    |   FIELDTYPE_mffloat { ft = FieldValue::mffloat; }
+    |   FIELDTYPE_mfint32 { ft = FieldValue::mfint32; }
+    |   FIELDTYPE_mfnode { ft = FieldValue::mfnode; }
+    |   FIELDTYPE_mfrotation { ft = FieldValue::mfrotation; }
+    |   FIELDTYPE_mfstring { ft = FieldValue::mfstring; }
+    |   FIELDTYPE_mftime { ft = FieldValue::mftime; }
+    |   FIELDTYPE_mfvec2f { ft = FieldValue::mfvec2f; }
+    |   FIELDTYPE_mfvec3f { ft = FieldValue::mfvec3f; }
+    |   FIELDTYPE_sfbool { ft = FieldValue::sfbool; }
+    |   FIELDTYPE_sfcolor { ft = FieldValue::sfcolor; }
+    |   FIELDTYPE_sffloat { ft = FieldValue::sffloat; }
+    |   FIELDTYPE_sfimage { ft = FieldValue::sfimage; }
+    |   FIELDTYPE_sfint32 { ft = FieldValue::sfint32; }
+    |   FIELDTYPE_sfnode { ft = FieldValue::sfnode; }
+    |   FIELDTYPE_sfrotation { ft = FieldValue::sfrotation; }
+    |   FIELDTYPE_sfstring { ft = FieldValue::sfstring; }
+    |   FIELDTYPE_sftime { ft = FieldValue::sftime; }
+    |   FIELDTYPE_sfvec2f { ft = FieldValue::sfvec2f; }
+    |   FIELDTYPE_sfvec3f { ft = FieldValue::sfvec3f; }
     ;
 
 fieldValue[OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc,
-           OpenVRML::FieldValue::FieldType ft]
+           OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValue * fv = 0]
         {
             using OpenVRML::FieldValue;
         }
-    :   {    (ft == FieldValue::SFNODE)
-          || (ft == FieldValue::MFNODE) }? fv=nodeFieldValue[vrmlNamespace, doc, ft]
+    :   {    (ft == FieldValue::sfnode)
+          || (ft == FieldValue::mfnode) }? fv=nodeFieldValue[vrmlNamespace, doc, ft]
     |   fv=nonNodeFieldValue[ft]
     ;
 
 protoFieldValue[const OpenVRML::Doc2 * doc, OpenVRML::NodeType & protoNodeType,
-                OpenVRML::FieldValue::FieldType ft]
+                OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValue * fv = 0]
         {
             using OpenVRML::FieldValue;
         }
-    :   {    (ft == FieldValue::SFNODE)
-          || (ft == FieldValue::MFNODE) }? fv=protoNodeFieldValue[doc, protoNodeType, ft]
+    :   {    (ft == FieldValue::sfnode)
+          || (ft == FieldValue::mfnode) }? fv=protoNodeFieldValue[doc, protoNodeType, ft]
         {
             assert(fv);
         }
@@ -1289,33 +1289,33 @@ returns [OpenVRML::FieldValue * fv = 0]
         }
     ;
 
-nonNodeFieldValue[OpenVRML::FieldValue::FieldType ft]
+nonNodeFieldValue[OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValue * fv = 0]
         {
             using OpenVRML::FieldValue;
         }
-    :   { ft == FieldValue::SFBOOL }? fv=sfBoolValue
-    |   { ft == FieldValue::SFCOLOR }? fv=sfColorValue
-    |   { ft == FieldValue::SFFLOAT }? fv=sfFloatValue
-    |   { ft == FieldValue::SFIMAGE }? fv=sfImageValue
-    |   { ft == FieldValue::SFINT32 }? fv=sfInt32Value
-    |   { ft == FieldValue::SFROTATION }? fv=sfRotationValue
-    |   { ft == FieldValue::SFSTRING }? fv=sfStringValue
-    |   { ft == FieldValue::SFTIME }? fv=sfTimeValue
-    |   { ft == FieldValue::SFVEC2F }? fv=sfVec2fValue
-    |   { ft == FieldValue::SFVEC3F }? fv=sfVec3fValue
-    |   { ft == FieldValue::MFCOLOR }? fv=mfColorValue
-    |   { ft == FieldValue::MFFLOAT }? fv=mfFloatValue
-    |   { ft == FieldValue::MFINT32 }? fv=mfInt32Value
-    |   { ft == FieldValue::MFROTATION }? fv=mfRotationValue
-    |   { ft == FieldValue::MFSTRING }? fv=mfStringValue
-    |   { ft == FieldValue::MFTIME }? fv=mfTimeValue
-    |   { ft == FieldValue::MFVEC2F }? fv=mfVec2fValue
+    :   { ft == FieldValue::sfbool }? fv=sfBoolValue
+    |   { ft == FieldValue::sfcolor }? fv=sfColorValue
+    |   { ft == FieldValue::sffloat }? fv=sfFloatValue
+    |   { ft == FieldValue::sfimage }? fv=sfImageValue
+    |   { ft == FieldValue::sfint32 }? fv=sfInt32Value
+    |   { ft == FieldValue::sfrotation }? fv=sfRotationValue
+    |   { ft == FieldValue::sfstring }? fv=sfStringValue
+    |   { ft == FieldValue::sftime }? fv=sfTimeValue
+    |   { ft == FieldValue::sfvec2f }? fv=sfVec2fValue
+    |   { ft == FieldValue::sfvec3f }? fv=sfVec3fValue
+    |   { ft == FieldValue::mfcolor }? fv=mfColorValue
+    |   { ft == FieldValue::mffloat }? fv=mfFloatValue
+    |   { ft == FieldValue::mfint32 }? fv=mfInt32Value
+    |   { ft == FieldValue::mfrotation }? fv=mfRotationValue
+    |   { ft == FieldValue::mfstring }? fv=mfStringValue
+    |   { ft == FieldValue::mftime }? fv=mfTimeValue
+    |   { ft == FieldValue::mfvec2f }? fv=mfVec2fValue
     |   fv=mfVec3fValue
     ;
 
 nodeFieldValue[OpenVRML::VrmlNamespace & vrmlNamespace,
-               const OpenVRML::Doc2 * doc, OpenVRML::FieldValue::FieldType ft]
+               const OpenVRML::Doc2 * doc, OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValue * fv = 0]
 options {
     defaultErrorHandler=false;
@@ -1323,18 +1323,18 @@ options {
         {
             using OpenVRML::FieldValue;
         }
-    :   { ft == FieldValue::SFNODE }? fv=sfNodeValue[vrmlNamespace, doc]
+    :   { ft == FieldValue::sfnode }? fv=sfNodeValue[vrmlNamespace, doc]
     |   fv=mfNodeValue[vrmlNamespace, doc]
     ;
 
 protoNodeFieldValue[const OpenVRML::Doc2 * doc,
                     OpenVRML::NodeType & protoNodeType,
-                    OpenVRML::FieldValue::FieldType ft]
+                    OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValue * fv = 0]
 options {
     defaultErrorHandler=false;
 }
-    :   { ft == OpenVRML::FieldValue::SFNODE }?
+    :   { ft == OpenVRML::FieldValue::sfnode }?
             fv=protoSfNodeValue[doc, protoNodeType]
         {
             assert(fv);

@@ -63,7 +63,7 @@ namespace OpenVRML {
         struct ScriptField {
             std::string name;
             FieldValue * value;
-            FieldValue::FieldType type;
+            FieldValue::Type type;
             bool modified;
         };
 
@@ -99,14 +99,14 @@ namespace OpenVRML {
         void initialize(double timeStamp);
         void update(const SFTime & now);
         void shutdown(double timeStamp);
-        void addEventIn(const std::string & name, FieldValue::FieldType type);
-        void addEventOut(const std::string & name, FieldValue::FieldType type);
-        void addField(const std::string & name, FieldValue::FieldType type,
+        void addEventIn(const std::string & name, FieldValue::Type type);
+        void addEventOut(const std::string & name, FieldValue::Type type);
+        void addField(const std::string & name, FieldValue::Type type,
 		      const FieldValue * defaultVal = 0);
-        FieldValue::FieldType hasEventIn(const std::string & id) const;
-        FieldValue::FieldType hasEventOut(const std::string & id) const;
-        FieldValue::FieldType hasField(const std::string & id) const;
-        FieldValue::FieldType hasInterface(const std::string & id) const;
+        FieldValue::Type hasEventIn(const std::string & id) const;
+        FieldValue::Type hasEventOut(const std::string & id) const;
+        FieldValue::Type hasField(const std::string & id) const;
+        FieldValue::Type hasInterface(const std::string & id) const;
         void setEventIn(const std::string &, const FieldValue &);
         void setEventOut(const std::string &, const FieldValue &);
         FieldList & eventIns();
@@ -133,7 +133,7 @@ namespace OpenVRML {
         Script * createScript();
 
         // Generic field/event test/value methods
-        FieldValue::FieldType has(const FieldList &, const std::string &) const;
+        FieldValue::Type has(const FieldList &, const std::string &) const;
         FieldValue * get(const FieldList &, const std::string &) const;
         void set(const FieldList &, const std::string &, const FieldValue &);
     };

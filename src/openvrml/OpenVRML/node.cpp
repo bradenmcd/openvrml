@@ -37,8 +37,13 @@
 #   define VRML_NODE_DEBUG
 # endif
 
+ostream & operator<<(ostream & os, const OpenVRML::Node & f)
+{ return f.print(os, 0); }
+
+namespace OpenVRML {
+
 /**
- * @class OpenVRML::NodeType
+ * @class NodeType
  *
  * @brief The NodeType class is responsible for storing information
  *      about node or prototype types.
@@ -53,14 +58,13 @@
  * @param name the name of the node.
  * @param creator a factory function for creating nodes of this type.
  */
-OpenVRML::NodeType::NodeType(const std::string & id,
-                             const NodePtr (*creator)(VrmlScene * const)):
+NodeType::NodeType(const std::string & id,
+                   const NodePtr (*creator)(VrmlScene * const)):
         id(id), d_namespace(0), d_url(0), d_relative(0), d_creator(creator),
         d_fieldsInitialized(false) {}
 
 namespace {
-    void destructFieldList(OpenVRML::NodeType::FieldList & f) {
-        using OpenVRML::NodeType;
+    void destructFieldList(NodeType::FieldList & f) {
         for (NodeType::FieldList::iterator i = f.begin(); i != f.end(); ++i) {
         
             if ((*i)->defaultValue) { delete (*i)->defaultValue; }
@@ -80,7 +84,7 @@ namespace {
  *
  * Deallocate storage for name and PROTO implementations.
  */
-OpenVRML::NodeType::~NodeType() {
+NodeType::~NodeType() {
     delete d_namespace;
     delete d_url;
     delete d_relative;
@@ -101,7 +105,7 @@ OpenVRML::NodeType::~NodeType() {
  *
  * @return a new Node
  */
-const OpenVRML::NodePtr OpenVRML::NodeType::newNode(VrmlScene * scene) const {
+const NodePtr NodeType::newNode(VrmlScene * scene) const {
     if (this->d_creator) {
         return (*this->d_creator)(scene);
     }
@@ -111,7 +115,7 @@ const OpenVRML::NodePtr OpenVRML::NodeType::newNode(VrmlScene * scene) const {
 /**
  * @brief Get the node name defined by this type.
  */
-const std::string & OpenVRML::NodeType::getId() const {
+const std::string & NodeType::getId() const {
     return this->id;
 }
 
@@ -121,16 +125,14 @@ const std::string & OpenVRML::NodeType::getId() const {
  * @return a pointer to the VrmlNamespace corresponding to this node type's
  *      scope, or 0 for built-in node types.
  */
-OpenVRML::VrmlNamespace * OpenVRML::NodeType::getScope() const {
-    return this->d_namespace;
-}
+VrmlNamespace * NodeType::getScope() const { return this->d_namespace; }
 
 /**
  * @brief Set the scope of this type.
  *
  * @param scope
  */
-void OpenVRML::NodeType::setScope(VrmlNamespace & scope) {
+void NodeType::setScope(VrmlNamespace & scope) {
     this->d_namespace = new VrmlNamespace(&scope);
 }
 
@@ -140,14 +142,14 @@ void OpenVRML::NodeType::setScope(VrmlNamespace & scope) {
  *
  * @param url
  */
-void OpenVRML::NodeType::setActualUrl(const std::string & url) {
+void NodeType::setActualUrl(const std::string & url) {
     this->actualUrl = url;
 }
 
 /**
  * @brief Retrieve the actual URL the PROTO was retrieved from.
  */
-const std::string & OpenVRML::NodeType::getActualUrl() const {
+const std::string & NodeType::getActualUrl() const {
     return this->actualUrl;
 }
 
@@ -155,9 +157,8 @@ namespace {
     //
     // Helper method to add a field or event.
     //
-    void add(OpenVRML::NodeType::FieldList & recs, const std::string & id,
-             OpenVRML::FieldValue::FieldType type) {
-        using OpenVRML::NodeType;
+    void add(NodeType::FieldList & recs, const std::string & id,
+             FieldValue::Type type) {
         NodeType::ProtoField * const protoField =
                 new NodeType::ProtoField;
         protoField->name = id;
@@ -173,8 +174,7 @@ namespace {
  * @param id
  * @param type
  */
-void OpenVRML::NodeType::addEventIn(const std::string & id,
-                                    FieldValue::FieldType type) {
+void NodeType::addEventIn(const std::string & id, FieldValue::Type type) {
     add(d_eventIns, id, type);
 }
 
@@ -184,8 +184,7 @@ void OpenVRML::NodeType::addEventIn(const std::string & id,
  * @param id
  * @param type
  */
-void OpenVRML::NodeType::addEventOut(const std::string & id,
-                                     FieldValue::FieldType type) {
+void NodeType::addEventOut(const std::string & id, FieldValue::Type type) {
     add(d_eventOuts, id, type);
 }
 
@@ -196,9 +195,8 @@ void OpenVRML::NodeType::addEventOut(const std::string & id,
  * @param type
  * @param defaultValue
  */
-void OpenVRML::NodeType::addField(const std::string & id,
-                                  const FieldValue::FieldType type,
-                                  const FieldValue * defaultValue) {
+void NodeType::addField(const std::string & id, const FieldValue::Type type,
+                        const FieldValue * defaultValue) {
     add(d_fields, id, type);
     if (defaultValue) {
         this->setFieldDefault(id, defaultValue);
@@ -212,9 +210,9 @@ void OpenVRML::NodeType::addField(const std::string & id,
  * @param type
  * @param defaultValue
  */
-void OpenVRML::NodeType::addExposedField(const std::string & id,
-                                         const FieldValue::FieldType type,
-                                         const FieldValue * const defaultValue) {
+void NodeType::addExposedField(const std::string & id,
+                               const FieldValue::Type type,
+                               const FieldValue * const defaultValue) {
     add(d_fields, id, type);
     if (defaultValue) {
         this->setFieldDefault(id, defaultValue);
@@ -230,8 +228,8 @@ void OpenVRML::NodeType::addExposedField(const std::string & id,
  * @param fname field name
  * @param defaultValue default value
  */
-void OpenVRML::NodeType::setFieldDefault(const std::string & fname,
-                                         const FieldValue * defaultValue) {
+void NodeType::setFieldDefault(const std::string & fname,
+                               const FieldValue * defaultValue) {
     for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
             ++i) {
         if (fname == (*i)->name) {
@@ -252,7 +250,7 @@ void OpenVRML::NodeType::setFieldDefault(const std::string & fname,
 /**
  * @brief Download the EXTERNPROTO definition.
  */
-void OpenVRML::NodeType::fetchImplementation() const {
+void NodeType::fetchImplementation() const {
   // Get the PROTO def from the url (relative to original scene url).
   const NodeTypePtr proto =
         VrmlScene::readPROTO(*this->d_url, this->d_relative);
@@ -294,7 +292,7 @@ void OpenVRML::NodeType::fetchImplementation() const {
  *
  * @return the implementation nodes
  */
-const OpenVRML::MFNode & OpenVRML::NodeType::getImplementationNodes() const {
+const MFNode & NodeType::getImplementationNodes() const {
   if ((this->implNodes.getLength() == 0) && d_url)
     fetchImplementation();
 
@@ -375,7 +373,7 @@ const OpenVRML::MFNode & OpenVRML::NodeType::getImplementationNodes() const {
  * of EXTERNPROTOs is deferred until the implementation is
  * actually downloaded. (not actually done yet...)
  */
-const OpenVRML::NodePtr OpenVRML::NodeType::firstNode() const {
+const NodePtr NodeType::firstNode() const {
     return (this->implNodes.getLength() > 0)
             ? this->implNodes.getElement(0)
             : NodePtr(0);
@@ -386,11 +384,10 @@ const OpenVRML::NodePtr OpenVRML::NodeType::firstNode() const {
  *
  * @param id the name of an eventIn to check for
  *
- * @return the FieldType of the eventIn if it exists, or
- *      FieldValue::NO_FIELD otherwise.
+ * @return the Type of the eventIn if it exists, or
+ *      FieldValue::invalidType otherwise.
  */
-OpenVRML::FieldValue::FieldType
-        OpenVRML::NodeType::hasEventIn(const std::string & id) const {
+FieldValue::Type NodeType::hasEventIn(const std::string & id) const {
     return has(this->d_eventIns, id);
 }
 
@@ -399,11 +396,10 @@ OpenVRML::FieldValue::FieldType
  *
  * @param id the name of an eventOut to check for
  *
- * @return the FieldType of the eventOut if it exists, or
- *      FieldValue::NO_FIELD otherwise
+ * @return the Type of the eventOut if it exists, or
+ *      FieldValue::invalidType otherwise
  */
-OpenVRML::FieldValue::FieldType
-        OpenVRML::NodeType::hasEventOut(const std::string & id) const {
+FieldValue::Type NodeType::hasEventOut(const std::string & id) const {
     return has(this->d_eventOuts, id);
 }
 
@@ -412,11 +408,10 @@ OpenVRML::FieldValue::FieldType
  *
  * @param id the name of an field to check for
  *
- * @return the FieldType of the field if it exists, or
- *      FieldValue::NO_FIELD otherwise.
+ * @return the Type of the field if it exists, or
+ *      FieldValue::invalidType otherwise.
  */
-OpenVRML::FieldValue::FieldType
-        OpenVRML::NodeType::hasField(const std::string & id) const {
+FieldValue::Type NodeType::hasField(const std::string & id) const {
     return has(this->d_fields, id);
 }
 
@@ -425,25 +420,24 @@ OpenVRML::FieldValue::FieldType
  *
  * @param id the name of an exposedField to check for
  *
- * @return the FieldType of the exposedField if it exists, or
- *      FieldValue::NO_FIELD otherwise.
+ * @return the Type of the exposedField if it exists, or
+ *      FieldValue::invalidType otherwise.
  */
-OpenVRML::FieldValue::FieldType
-        OpenVRML::NodeType::hasExposedField(const std::string & id) const {
+FieldValue::Type NodeType::hasExposedField(const std::string & id) const {
     // Must have field "name", eventIn "set_name", and eventOut
     // "name_changed", all with same type:
-    FieldValue::FieldType type;
+    FieldValue::Type type;
 
-    if ((type = this->has(this->d_fields, id)) == FieldValue::NO_FIELD) {
-        return FieldValue::NO_FIELD;
+    if ((type = this->has(this->d_fields, id)) == FieldValue::invalidType) {
+        return FieldValue::invalidType;
     }
 
     if (type != this->has(this->d_eventIns, "set_" + id)) {
-        return FieldValue::NO_FIELD;
+        return FieldValue::invalidType;
     }
 
     if (type != this->has(this->d_eventOuts, id + "_changed")) {
-        return FieldValue::NO_FIELD;
+        return FieldValue::invalidType;
     }
 
     return type;
@@ -457,41 +451,38 @@ OpenVRML::FieldValue::FieldType
  *
  * @param id the name of an interface to check for
  *
- * @return the FieldType of the interface if it exists, or
- *      FieldValue::NO_FIELD otherwise.
+ * @return the Type of the interface if it exists, or
+ *      FieldValue::invalidType otherwise.
  */
-OpenVRML::FieldValue::FieldType
-        OpenVRML::NodeType::hasInterface(const std::string & id) const {
-    FieldValue::FieldType fieldType = FieldValue::NO_FIELD;
+FieldValue::Type NodeType::hasInterface(const std::string & id) const {
+    FieldValue::Type fieldType = FieldValue::invalidType;
     
-    if ((fieldType = this->hasField(id)) != FieldValue::NO_FIELD) {
+    if ((fieldType = this->hasField(id)) != FieldValue::invalidType) {
         return fieldType;
     }
     
-    if ((fieldType = this->hasEventIn(id)) != FieldValue::NO_FIELD) {
+    if ((fieldType = this->hasEventIn(id)) != FieldValue::invalidType) {
         return fieldType;
     }
     
-    if ((fieldType = this->hasEventOut(id)) != FieldValue::NO_FIELD) {
+    if ((fieldType = this->hasEventOut(id)) != FieldValue::invalidType) {
         return fieldType;
     }
     
     return fieldType;
 }
 
-OpenVRML::FieldValue::FieldType
-        OpenVRML::NodeType::has(const FieldList & recs,
-                                const std::string & id) const {
+FieldValue::Type NodeType::has(const FieldList & recs,
+                               const std::string & id) const {
     for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
         if ((*i)->name == id) {
             return (*i)->type;
         }
     }
-    return FieldValue::NO_FIELD;
+    return FieldValue::invalidType;
 }
 
-const OpenVRML::FieldValue *
-        OpenVRML::NodeType::fieldDefault(const std::string & fname) const {
+const FieldValue * NodeType::fieldDefault(const std::string & fname) const {
     for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
             ++i) {
         if ((*i)->name == fname) {
@@ -509,7 +500,7 @@ const OpenVRML::FieldValue *
  * @param relative the resource to which the URIs in the first parameter
  *      are relative.
  */
-void OpenVRML::NodeType::setUrl(const MFString & url, const Doc2 * relative) {
+void NodeType::setUrl(const MFString & url, const Doc2 * relative) {
     assert(this->implNodes.getLength() == 0);
     
     delete this->d_url;
@@ -519,13 +510,13 @@ void OpenVRML::NodeType::setUrl(const MFString & url, const Doc2 * relative) {
     this->d_relative = relative ? new Doc2(relative) : 0;
 }
 
-void OpenVRML::NodeType::addNode(Node & node) {
+void NodeType::addNode(Node & node) {
     // add node to list of implementation nodes
     this->implNodes.addNode(node);
 }
 
-void OpenVRML::NodeType::addIS(const std::string & isFieldName, Node & implNode,
-                               const std::string & implFieldName) {
+void NodeType::addIS(const std::string & isFieldName, Node & implNode,
+                     const std::string & implFieldName) {
   FieldList::iterator i;
 
   // Fields
@@ -569,8 +560,8 @@ void OpenVRML::NodeType::addIS(const std::string & isFieldName, Node & implNode,
 }
 
 
-const OpenVRML::NodeType::ISMap *
-        OpenVRML::NodeType::getFieldISMap(const std::string & fieldName) const {
+const NodeType::ISMap *
+        NodeType::getFieldISMap(const std::string & fieldName) const {
     for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
             ++i) {
         if ((*i)->name == fieldName) {
@@ -581,7 +572,7 @@ const OpenVRML::NodeType::ISMap *
 }
 
 /**
- * @struct OpenVRML::NodeType::NodeFieldRec
+ * @struct NodeType::NodeFieldRec
  *
  * @brief A pointer to a node and the name of an interface of that node.
  *
@@ -590,7 +581,7 @@ const OpenVRML::NodeType::ISMap *
  */
 
 /**
- * @typedef OpenVRML::NodeType::ISMap
+ * @typedef NodeType::ISMap
  *
  * @brief An <code>IS</code> mapping.
  *
@@ -599,20 +590,20 @@ const OpenVRML::NodeType::ISMap *
  */
 
 /**
- * @struct OpenVRML::NodeType::ProtoField
+ * @struct NodeType::ProtoField
  *
  * @brief A field in a <code>PROTO</code>.
  */
 
 /**
- * @typedef OpenVRML::NodeType::FieldList
+ * @typedef NodeType::FieldList
  *
  * @brief A list of fields in a <code>PROTO</code>.
  */
 
 
 /**
- * @class OpenVRML::Node
+ * @class Node
  *
  * @brief A node in the scene graph.
  */
@@ -634,13 +625,13 @@ const OpenVRML::NodeType::ISMap *
  *
  * @see VrmlNamespace::defineBuiltins()
  */
-OpenVRML::Node::Node(const NodeType & type, VrmlScene * scene):
+Node::Node(const NodeType & type, VrmlScene * scene):
         type(type), d_scene(scene), d_modified(false),
         visited(false), d_routes(0) {
   this->setBVolumeDirty(true);
 }
 
-OpenVRML::Node::Node(const Node & node): type(node.type), id(node.id),
+Node::Node(const Node & node): type(node.type), id(node.id),
         d_scene(0), d_modified(true), d_routes(0) {
     this->setBVolumeDirty(true);
 }
@@ -651,21 +642,20 @@ OpenVRML::Node::Node(const Node & node): type(node.type), id(node.id),
  *
  * Free name (if any) and route info.
  */
-OpenVRML::Node::~Node() 
-{
-  // Remove the node's name (if any) from the map...
-  if (!this->id.empty())
-  {
-    if (d_scene && d_scene->scope())
-      d_scene->scope()->removeNodeName(*this);
-  }
+Node::~Node() {
+    // Remove the node's name (if any) from the map...
+    if (!this->id.empty()) {
+        if (this->d_scene && d_scene->scope()) {
+            this->d_scene->scope()->removeNodeName(*this);
+        }
+    }
 
-  // Remove all routes from this node
-  d_routes.resize(0);
+    // Remove all routes from this node
+    this->d_routes.resize(0);
 }
 
 /**
- * @fn void OpenVRML::Node::accept(NodeVisitor & visitor);
+ * @fn void Node::accept(NodeVisitor & visitor);
  *
  * @brief Accept a visitor.
  *
@@ -698,7 +688,7 @@ OpenVRML::Node::~Node()
  * after traversal is complete. The default implementation is only
  * appropriate for nodes with no child nodes.
  */
-void OpenVRML::Node::resetVisitedFlag() {
+void Node::resetVisitedFlag() {
     this->visited = false;
 }
 
@@ -712,8 +702,7 @@ void OpenVRML::Node::resetVisitedFlag() {
  * @param ns a pointer to the VrmlNamespace to which this node should
  *           belong
  */
-void OpenVRML::Node::setId(const std::string & nodeId,
-                           VrmlNamespace * const ns) {
+void Node::setId(const std::string & nodeId, VrmlNamespace * const ns) {
     this->id = nodeId;
     if (!nodeId.empty() && ns) {
         ns->addNodeName(*this);
@@ -725,9 +714,7 @@ void OpenVRML::Node::setId(const std::string & nodeId,
  *
  * @return the nodeId
  */
-const std::string & OpenVRML::Node::getId() const {
-    return this->id;
-}
+const std::string & Node::getId() const { return this->id; }
 
 /**
  * @brief Add to scene.
@@ -738,7 +725,7 @@ const std::string & OpenVRML::Node::getId() const {
  * @param scene
  * @param relativeUrl
  */
-void OpenVRML::Node::addToScene(VrmlScene * scene, const std::string &) {
+void Node::addToScene(VrmlScene * scene, const std::string &) {
     this->d_scene = scene;
 }
 
@@ -749,114 +736,114 @@ void OpenVRML::Node::addToScene(VrmlScene * scene, const std::string &) {
 // Remember to also add new ones to NodeProto. Protos should
 // return their first implementation node (except toProto()).
 
-OpenVRML::NodeAnchor * OpenVRML::Node::toAnchor() const { return 0; }
+NodeAnchor * Node::toAnchor() const { return 0; }
 
-OpenVRML::NodeAppearance * OpenVRML::Node::toAppearance() const { return 0; }
+NodeAppearance * Node::toAppearance() const { return 0; }
 
-OpenVRML::NodeAudioClip * OpenVRML::Node::toAudioClip() const { return 0; }
+NodeAudioClip * Node::toAudioClip() const { return 0; }
 
-OpenVRML::NodeBackground * OpenVRML::Node::toBackground() const { return 0; }
+NodeBackground * Node::toBackground() const { return 0; }
 
-OpenVRML::NodeBillboard * OpenVRML::Node::toBillboard() const { return 0; }
+NodeBillboard * Node::toBillboard() const { return 0; }
 
-OpenVRML::NodeBox * OpenVRML::Node::toBox() const { return 0; }
+NodeBox * Node::toBox() const { return 0; }
 
-OpenVRML::NodeChild * OpenVRML::Node::toChild() const { return 0; }
+NodeChild * Node::toChild() const { return 0; }
 
-OpenVRML::NodeCollision * OpenVRML::Node::toCollision() const { return 0; }
+NodeCollision * Node::toCollision() const { return 0; }
 
-OpenVRML::NodeColor * OpenVRML::Node::toColor() const { return 0; }
+NodeColor * Node::toColor() const { return 0; }
 
-OpenVRML::NodeCone * OpenVRML::Node::toCone() const { return 0; }
+NodeCone * Node::toCone() const { return 0; }
 
-OpenVRML::NodeCoordinate * OpenVRML::Node::toCoordinate() const { return 0; }
+NodeCoordinate * Node::toCoordinate() const { return 0; }
 
-OpenVRML::NodeCylinder * OpenVRML::Node::toCylinder() const { return 0; }
+NodeCylinder * Node::toCylinder() const { return 0; }
 
-OpenVRML::NodeDirLight * OpenVRML::Node::toDirLight() const { return 0; }
+NodeDirLight * Node::toDirLight() const { return 0; }
 
-OpenVRML::NodeElevationGrid * OpenVRML::Node::toElevationGrid() const { return 0; }
+NodeElevationGrid * Node::toElevationGrid() const { return 0; }
 
-OpenVRML::NodeExtrusion * OpenVRML::Node::toExtrusion() const { return 0; }
+NodeExtrusion * Node::toExtrusion() const { return 0; }
 
-OpenVRML::NodeFog * OpenVRML::Node::toFog() const { return 0; }
+NodeFog * Node::toFog() const { return 0; }
 
-OpenVRML::NodeFontStyle * OpenVRML::Node::toFontStyle() const { return 0; }
+NodeFontStyle * Node::toFontStyle() const { return 0; }
 
-OpenVRML::NodeGeometry * OpenVRML::Node::toGeometry() const { return 0; }
+NodeGeometry * Node::toGeometry() const { return 0; }
 
-OpenVRML::NodeGroup * OpenVRML::Node::toGroup() const { return 0; }
+NodeGroup * Node::toGroup() const { return 0; }
 
-OpenVRML::NodeIFaceSet * OpenVRML::Node::toIFaceSet() const { return 0; }
+NodeIFaceSet * Node::toIFaceSet() const { return 0; }
 
-OpenVRML::NodeImageTexture * OpenVRML::Node::toImageTexture() const { return 0; }
+NodeImageTexture * Node::toImageTexture() const { return 0; }
 
-OpenVRML::NodeInline * OpenVRML::Node::toInline() const { return 0; }
+NodeInline * Node::toInline() const { return 0; }
 
-OpenVRML::NodeLight * OpenVRML::Node::toLight() const { return 0; }
+NodeLight * Node::toLight() const { return 0; }
 
-OpenVRML::NodeLOD * OpenVRML::Node::toLOD() const { return 0; }
+NodeLOD * Node::toLOD() const { return 0; }
 
-OpenVRML::NodeMaterial * OpenVRML::Node::toMaterial() const { return 0; }
+NodeMaterial * Node::toMaterial() const { return 0; }
 
-OpenVRML::NodeMovieTexture * OpenVRML::Node::toMovieTexture() const { return 0; }
+NodeMovieTexture * Node::toMovieTexture() const { return 0; }
 
-OpenVRML::NodeNavigationInfo * OpenVRML::Node::toNavigationInfo() const { return 0; }
+NodeNavigationInfo * Node::toNavigationInfo() const { return 0; }
 
-OpenVRML::NodeNormal * OpenVRML::Node::toNormal() const { return 0; }
+NodeNormal * Node::toNormal() const { return 0; }
 
-OpenVRML::NodeOrientationInt * OpenVRML::Node::toOrientationInt() const { return 0; }
+NodeOrientationInt * Node::toOrientationInt() const { return 0; }
 
-OpenVRML::NodePlaneSensor * OpenVRML::Node::toPlaneSensor() const { return 0; }
+NodePlaneSensor * Node::toPlaneSensor() const { return 0; }
 
-OpenVRML::NodePositionInt * OpenVRML::Node::toPositionInt() const { return 0; }
+NodePositionInt * Node::toPositionInt() const { return 0; }
 
-OpenVRML::NodeSphereSensor * OpenVRML::Node::toSphereSensor() const { return 0; }
+NodeSphereSensor * Node::toSphereSensor() const { return 0; }
 
-OpenVRML::NodeCylinderSensor * OpenVRML::Node::toCylinderSensor() const { return 0; }
+NodeCylinderSensor * Node::toCylinderSensor() const { return 0; }
 
-OpenVRML::NodePixelTexture * OpenVRML::Node::toPixelTexture() const { return 0; }
+NodePixelTexture * Node::toPixelTexture() const { return 0; }
 
-OpenVRML::NodePointLight * OpenVRML::Node::toPointLight() const { return 0; }
+NodePointLight * Node::toPointLight() const { return 0; }
 
-OpenVRML::NodePointSet * OpenVRML::Node::toPointSet() const { return 0; }
+NodePointSet * Node::toPointSet() const { return 0; }
 
-OpenVRML::NodeScalarInt * OpenVRML::Node::toScalarInt() const { return 0; }
+NodeScalarInt * Node::toScalarInt() const { return 0; }
 
-OpenVRML::ScriptNode * OpenVRML::Node::toScript() const { return 0; }
+ScriptNode * Node::toScript() const { return 0; }
 
-OpenVRML::NodeShape * OpenVRML::Node::toShape() const { return 0; }
+NodeShape * Node::toShape() const { return 0; }
 
-OpenVRML::NodeSound * OpenVRML::Node::toSound() const { return 0; }
+NodeSound * Node::toSound() const { return 0; }
 
-OpenVRML::NodeSphere * OpenVRML::Node::toSphere() const { return 0; }
+NodeSphere * Node::toSphere() const { return 0; }
 
-OpenVRML::NodeSpotLight * OpenVRML::Node::toSpotLight() const { return 0; }
+NodeSpotLight * Node::toSpotLight() const { return 0; }
 
-OpenVRML::NodeSwitch * OpenVRML::Node::toSwitch() const { return 0; }
+NodeSwitch * Node::toSwitch() const { return 0; }
 
-OpenVRML::NodeTexture * OpenVRML::Node::toTexture() const { return 0; }
+NodeTexture * Node::toTexture() const { return 0; }
 
-OpenVRML::NodeTextureCoordinate * OpenVRML::Node::toTextureCoordinate() const { return 0; }
+NodeTextureCoordinate * Node::toTextureCoordinate() const { return 0; }
 
-OpenVRML::NodeTextureTransform * OpenVRML::Node::toTextureTransform() const { return 0; }
+NodeTextureTransform * Node::toTextureTransform() const { return 0; }
 
-OpenVRML::NodeTimeSensor * OpenVRML::Node::toTimeSensor() const { return 0; }
+NodeTimeSensor * Node::toTimeSensor() const { return 0; }
 
-OpenVRML::NodeTouchSensor * OpenVRML::Node::toTouchSensor() const { return 0; }
+NodeTouchSensor * Node::toTouchSensor() const { return 0; }
 
-OpenVRML::NodeTransform * OpenVRML::Node::toTransform() const { return 0; }
+NodeTransform * Node::toTransform() const { return 0; }
 
-OpenVRML::NodeViewpoint * OpenVRML::Node::toViewpoint() const { return 0; }
+NodeViewpoint * Node::toViewpoint() const { return 0; }
 
 
 /**
  * @brief Add a route from an eventOut of this node to an eventIn of another
  *      node.
  */
-void OpenVRML::Node::addRoute(const std::string & fromEventOut,
-                              const NodePtr & toNode,
-                              const std::string & toEventIn) {
+void Node::addRoute(const std::string & fromEventOut,
+                    const NodePtr & toNode,
+                    const std::string & toEventIn) {
   // Check to make sure fromEventOut and toEventIn are valid names...
   
   // Is this route already here?
@@ -881,9 +868,9 @@ void OpenVRML::Node::addRoute(const std::string & fromEventOut,
  * @brief Remove a route from an eventOut of this node to an eventIn of another
  *      node.
  */
-void OpenVRML::Node::deleteRoute(const std::string & fromEventOut,
-                                 const NodePtr & toNode,
-                                 const std::string & toEventIn) {
+void Node::deleteRoute(const std::string & fromEventOut,
+                       const NodePtr & toNode,
+                       const std::string & toEventIn) {
   RouteList::iterator i;
 
   for (i = d_routes.begin(); i != d_routes.end(); ++i)
@@ -902,19 +889,19 @@ void OpenVRML::Node::deleteRoute(const std::string & fromEventOut,
  *
  * @return an std::vector of Routes from this node.
  */
-std::list<OpenVRML::Route *> OpenVRML::Node::getRoutes() {
+std::list<Route *> Node::getRoutes() {
     return this->d_routes;
 }
 
 // Dirty bit - indicates node needs to be revisited for rendering.
 
-void OpenVRML::Node::setModified()
+void Node::setModified()
 {
   d_modified = true;
   if (d_scene) d_scene->setModified(); 
 }
 
-bool OpenVRML::Node::isModified() const
+bool Node::isModified() const
 {
   return d_modified; 
 }
@@ -929,7 +916,7 @@ bool OpenVRML::Node::isModified() const
  * @param mod
  * @param flags
  */
-void OpenVRML::Node::markPathModified(NodePath& path, bool mod, int flags) {
+void Node::markPathModified(NodePath& path, bool mod, int flags) {
   NodePath::iterator i;
   NodePath::iterator end = path.end();
   if (flags & 0x001) {
@@ -955,7 +942,7 @@ void OpenVRML::Node::markPathModified(NodePath& path, bool mod, int flags) {
 }
 
 
-void OpenVRML::Node::updateModified(NodePath& path, int flags) {
+void Node::updateModified(NodePath& path, int flags) {
   if (this->d_modified||this->d_bvol_dirty) markPathModified(path, true, flags);
 }
 
@@ -973,14 +960,14 @@ void OpenVRML::Node::updateModified(NodePath& path, int flags) {
  */
 // note not virtual
 //
-void OpenVRML::Node::updateModified(int flags)
+void Node::updateModified(int flags)
 {
   NodePath path;
   updateModified(path, flags);
 }
 
 
-void OpenVRML::Node::clearFlags()
+void Node::clearFlags()
 {
   d_flag = false;
 }
@@ -1019,7 +1006,7 @@ void OpenVRML::Node::clearFlags()
  *
  * @return this node's bounding volume
  */
-const OpenVRML::BVolume * OpenVRML::Node::getBVolume() const {
+const BVolume * Node::getBVolume() const {
   static BSphere * inf_bsphere = 0;
   if (!inf_bsphere) {
     inf_bsphere = new BSphere();
@@ -1035,7 +1022,7 @@ const OpenVRML::BVolume * OpenVRML::Node::getBVolume() const {
  *
  * @todo Implement me!
  */
-void OpenVRML::Node::setBVolume(const BVolume & v) {
+void Node::setBVolume(const BVolume & v) {
     // XXX Implement me!
 }
 
@@ -1045,7 +1032,7 @@ void OpenVRML::Node::setBVolume(const BVolume & v) {
  * all that node's ancestors are also invalid. Normally, the node
  * itself will determine when its bvolume needs updating.
  */
-void OpenVRML::Node::setBVolumeDirty(bool f)
+void Node::setBVolumeDirty(bool f)
 {
   this->d_bvol_dirty = f;
   if (f && this->d_scene) // only if dirtying, not clearing
@@ -1056,7 +1043,7 @@ void OpenVRML::Node::setBVolumeDirty(bool f)
  * Return true if the node's bounding volume needs to be
  * recalculated.
  */
-bool OpenVRML::Node::isBVolumeDirty() const
+bool Node::isBVolumeDirty() const
 {
   if (d_scene && d_scene->d_flags_need_updating) {
     d_scene->updateFlags();
@@ -1079,7 +1066,7 @@ bool OpenVRML::Node::isBVolumeDirty() const
  * @param rc generic context argument, holds things like the
  *          accumulated modelview transform.
  */
-void OpenVRML::Node::render(Viewer* v, VrmlRenderContext rc)
+void Node::render(Viewer* v, VrmlRenderContext rc)
 {
   //if (cull(v, c)) return;
   clearModified();
@@ -1098,7 +1085,7 @@ void OpenVRML::Node::render(Viewer* v, VrmlRenderContext rc)
  * @deprecated This routine will go away once parent pointers
  * are implemented.
  */
-void OpenVRML::Node::accumulateTransform(Node *)
+void Node::accumulateTransform(Node *)
 {
   ;
 }
@@ -1107,7 +1094,7 @@ void OpenVRML::Node::accumulateTransform(Node *)
  * Return the nearest ancestor node that affects the modelview
  * transform. Doesn't work for nodes with more than one parent.
  */
-OpenVRML::Node * OpenVRML::Node::getParentTransform() { return 0; }
+Node * Node::getParentTransform() { return 0; }
 
 /**
  * Compute the inverse of the transform above a viewpoint node. Just
@@ -1120,7 +1107,7 @@ OpenVRML::Node * OpenVRML::Node::getParentTransform() { return 0; }
  * @deprecated This method is (gradually) being replaces by
  * inverseTranform(double[4][4]) and should no longer be used.
  */
-void OpenVRML::Node::inverseTransform(Viewer *v)
+void Node::inverseTransform(Viewer *v)
 {
   Node *parentTransform = getParentTransform();
   if (parentTransform)
@@ -1137,7 +1124,7 @@ void OpenVRML::Node::inverseTransform(Viewer *v)
  * @see accumulateTransform
  * @see getParentTransform
  */
-void OpenVRML::Node::inverseTransform(VrmlMatrix & M)
+void Node::inverseTransform(VrmlMatrix & M)
 {
   Node *parentTransform = getParentTransform();
   if (parentTransform)
@@ -1152,8 +1139,8 @@ void OpenVRML::Node::inverseTransform(VrmlMatrix & M)
  * This method needs to be overridden to support any node-specific eventIns
  * behaviors, but exposedFields (should be) handled here...
  */
-void OpenVRML::Node::eventIn(double timeStamp, const std::string & eventName,
-                             const FieldValue & fieldValue) {
+void Node::eventIn(double timeStamp, const std::string & eventName,
+                   const FieldValue & fieldValue) {
     // Strip set_ prefix
     static const char * eventInPrefix = "set_";
     std::string basicEventName;
@@ -1182,7 +1169,7 @@ void OpenVRML::Node::eventIn(double timeStamp, const std::string & eventName,
 }
 
 /**
- * @fn const OpenVRML::MFNode OpenVRML::Node::getChildren() const
+ * @fn const MFNode Node::getChildren() const
  *
  * @brief Get this node's child nodes as an MFNode.
  *
@@ -1199,15 +1186,15 @@ void OpenVRML::Node::eventIn(double timeStamp, const std::string & eventName,
  *
  * @return an MFNode containing any children of this node.
  */
-const OpenVRML::MFNode OpenVRML::Node::getChildren() const {
+const MFNode Node::getChildren() const {
     return MFNode();
 }
 
 /**
  * @brief Send an event from this node.
  */
-void OpenVRML::Node::eventOut(double timeStamp, const std::string & id,
-                              const FieldValue & fieldValue) {
+void Node::eventOut(double timeStamp, const std::string & id,
+                    const FieldValue & fieldValue) {
 
   RouteList::const_iterator i;
 
@@ -1223,11 +1210,7 @@ void OpenVRML::Node::eventOut(double timeStamp, const std::string & id,
   }
 }
 
-ostream & ::operator<<(ostream & os, const OpenVRML::Node & f)
-{ return f.print(os, 0); }
-
-
-ostream & OpenVRML::Node::print(ostream & os, int indent) const {
+ostream & Node::print(ostream & os, int indent) const {
   for (int i=0; i<indent; ++i)
     os << ' ';
 
@@ -1252,15 +1235,15 @@ ostream & OpenVRML::Node::print(ostream & os, int indent) const {
 // default values in the addField(). The NodeType class would 
 // have to make the fields list public.
 
-ostream & OpenVRML::Node::printFields(ostream & os, int /*indent*/) {
+ostream & Node::printFields(ostream & os, int /*indent*/) {
   os << "# Error: " << this->type.getId().c_str()
      << "::printFields unimplemented.\n";
   return os; 
 }
 
 
-ostream & OpenVRML::Node::printField(ostream & os, int indent,
-                                     const char *name, const FieldValue & f) {
+ostream & Node::printField(ostream & os, int indent,
+                           const char *name, const FieldValue & f) {
   os << endl;
   for (int i=0; i<indent; ++i)
     os << ' ';
@@ -1278,7 +1261,7 @@ ostream & OpenVRML::Node::printField(ostream & os, int indent,
  *
  * @todo Make this method pure virtual.
  */
-void OpenVRML::Node::setField(const std::string & fieldId, const FieldValue &) {
+void Node::setField(const std::string & fieldId, const FieldValue &) {
     theSystem->error("%s::setField: no such field (%s)",
                      this->type.getId().c_str(), fieldId.c_str());
 }
@@ -1292,8 +1275,7 @@ void OpenVRML::Node::setField(const std::string & fieldId, const FieldValue &) {
  *
  * @todo Make this method pure virtual.
  */
-const OpenVRML::FieldValue *
-        OpenVRML::Node::getField(const std::string & fieldId) const {
+const FieldValue * Node::getField(const std::string & fieldId) const {
     theSystem->error("%s::getField: no such field (%s)\n",
                      this->type.getId().c_str(), fieldId.c_str());
     return 0;
@@ -1306,8 +1288,7 @@ const OpenVRML::FieldValue *
  * Used by the script node to access the node fields. This just strips
  * the _changed suffix and tries to access the field using getField.
  */
-const OpenVRML::FieldValue *
-        OpenVRML::Node::getEventOut(const std::string & fieldName) const {
+const FieldValue * Node::getEventOut(const std::string & fieldName) const {
     static const char * eventOutSuffix = "_changed";
     std::string basicFieldName;
     if (fieldName.length() > 8
@@ -1329,7 +1310,7 @@ const OpenVRML::FieldValue *
 
 
 /**
- * @class OpenVRML::NodeVisitor
+ * @class NodeVisitor
  *
  * @brief An interface to be implemented by visitors for nodes in a
  *        scene graph.
@@ -1338,10 +1319,10 @@ const OpenVRML::FieldValue *
 /**
  * @brief Destructor.
  */
-OpenVRML::NodeVisitor::~NodeVisitor() {}
+NodeVisitor::~NodeVisitor() {}
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeAnchor & node)
+ * @fn void NodeVisitor::visit(NodeAnchor & node)
  *
  * @brief Visit an Anchor node.
  *
@@ -1349,7 +1330,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeAppearance & node)
+ * @fn void NodeVisitor::visit(NodeAppearance & node)
  *
  * @brief Visit an Appearance node.
  *
@@ -1357,7 +1338,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeAudioClip & node)
+ * @fn void NodeVisitor::visit(NodeAudioClip & node)
  *
  * @brief Visit an AudioClip node.
  *
@@ -1365,7 +1346,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeBackground & node)
+ * @fn void NodeVisitor::visit(NodeBackground & node)
  *
  * @brief Visit a Background node.
  *
@@ -1373,7 +1354,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeBillboard & node)
+ * @fn void NodeVisitor::visit(NodeBillboard & node)
  *
  * @brief Visit a Billboard node.
  *
@@ -1381,7 +1362,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeBox & node)
+ * @fn void NodeVisitor::visit(NodeBox & node)
  *
  * @brief Visit a Box node.
  *
@@ -1389,7 +1370,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeCollision & node)
+ * @fn void NodeVisitor::visit(NodeCollision & node)
  *
  * @brief Visit a Collision node.
  *
@@ -1397,7 +1378,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeColor & node)
+ * @fn void NodeVisitor::visit(NodeColor & node)
  *
  * @brief Visit a Color node.
  *
@@ -1405,7 +1386,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeColorInt & node)
+ * @fn void NodeVisitor::visit(NodeColorInt & node)
  *
  * @brief Visit a ColorInterpolator node.
  *
@@ -1413,7 +1394,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeCone & node)
+ * @fn void NodeVisitor::visit(NodeCone & node)
  *
  * @brief Visit a Cone node.
  *
@@ -1421,7 +1402,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeCoordinate & node)
+ * @fn void NodeVisitor::visit(NodeCoordinate & node)
  *
  * @brief Visit a Coordinate node.
  *
@@ -1429,7 +1410,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeCoordinateInt & node)
+ * @fn void NodeVisitor::visit(NodeCoordinateInt & node)
  *
  * @brief Visit a CoordinateInterpolator node.
  *
@@ -1437,7 +1418,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeCylinder & node)
+ * @fn void NodeVisitor::visit(NodeCylinder & node)
  *
  * @brief Visit a Cylinder node.
  *
@@ -1445,7 +1426,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeCylinderSensor & node)
+ * @fn void NodeVisitor::visit(NodeCylinderSensor & node)
  *
  * @brief Visit a CylinderSensor node.
  *
@@ -1453,7 +1434,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeDirLight & node)
+ * @fn void NodeVisitor::visit(NodeDirLight & node)
  *
  * @brief Visit a DirectionalLight node.
  *
@@ -1461,7 +1442,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeElevationGrid & node)
+ * @fn void NodeVisitor::visit(NodeElevationGrid & node)
  *
  * @brief Visit an ElevationGrid node.
  *
@@ -1469,7 +1450,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeExtrusion & node)
+ * @fn void NodeVisitor::visit(NodeExtrusion & node)
  *
  * @brief Visit an Extrusion node.
  *
@@ -1477,7 +1458,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeFog & node)
+ * @fn void NodeVisitor::visit(NodeFog & node)
  *
  * @brief Visit a Fog node.
  *
@@ -1485,7 +1466,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeFontStyle & node)
+ * @fn void NodeVisitor::visit(NodeFontStyle & node)
  *
  * @brief Visit a FontStyle node.
  *
@@ -1493,7 +1474,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeGroup & node)
+ * @fn void NodeVisitor::visit(NodeGroup & node)
  *
  * @brief Visit a Group node.
  *
@@ -1501,7 +1482,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeIFaceSet & node)
+ * @fn void NodeVisitor::visit(NodeIFaceSet & node)
  *
  * @brief Visit an IndexedFaceSet node.
  *
@@ -1509,7 +1490,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeILineSet & node)
+ * @fn void NodeVisitor::visit(NodeILineSet & node)
  *
  * @brief Visit an IndexedLineSet node.
  *
@@ -1517,7 +1498,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeImageTexture & node)
+ * @fn void NodeVisitor::visit(NodeImageTexture & node)
  *
  * @brief Visit an ImageTexture node.
  *
@@ -1525,7 +1506,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeInline & node)
+ * @fn void NodeVisitor::visit(NodeInline & node)
  *
  * @brief Visit an Inline node.
  *
@@ -1533,7 +1514,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeLOD & node)
+ * @fn void NodeVisitor::visit(NodeLOD & node)
  *
  * @brief Visit a LOD node.
  *
@@ -1541,7 +1522,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeMaterial & node)
+ * @fn void NodeVisitor::visit(NodeMaterial & node)
  *
  * @brief Visit a Material node.
  *
@@ -1549,7 +1530,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeMovieTexture & node)
+ * @fn void NodeVisitor::visit(NodeMovieTexture & node)
  *
  * @brief Visit a MovieTexture node.
  *
@@ -1557,7 +1538,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeNavigationInfo & node)
+ * @fn void NodeVisitor::visit(NodeNavigationInfo & node)
  *
  * @brief Visit a NavigationInfo node.
  *
@@ -1565,7 +1546,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeNormal & node)
+ * @fn void NodeVisitor::visit(NodeNormal & node)
  *
  * @brief Visit a Normal node.
  *
@@ -1573,7 +1554,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeNormalInt & node)
+ * @fn void NodeVisitor::visit(NodeNormalInt & node)
  *
  * @brief Visit a NormalInterpolator node.
  *
@@ -1581,7 +1562,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeOrientationInt & node)
+ * @fn void NodeVisitor::visit(NodeOrientationInt & node)
  *
  * @brief Visit an OrientationInterpolator node.
  *
@@ -1589,7 +1570,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodePixelTexture & node)
+ * @fn void NodeVisitor::visit(NodePixelTexture & node)
  *
  * @brief Visit a PixelTexture node.
  *
@@ -1597,7 +1578,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodePlaneSensor & node)
+ * @fn void NodeVisitor::visit(NodePlaneSensor & node)
  *
  * @brief Visit a PlaneSensor node.
  *
@@ -1605,7 +1586,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodePointLight & node)
+ * @fn void NodeVisitor::visit(NodePointLight & node)
  *
  * @brief Visit a PointLight node.
  *
@@ -1613,7 +1594,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodePointSet & node)
+ * @fn void NodeVisitor::visit(NodePointSet & node)
  *
  * @brief Visit a PointSet node.
  *
@@ -1621,7 +1602,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodePositionInt & node)
+ * @fn void NodeVisitor::visit(NodePositionInt & node)
  *
  * @brief Visit a PositionInterpolator node.
  *
@@ -1629,7 +1610,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(ProtoNode & node)
+ * @fn void NodeVisitor::visit(ProtoNode & node)
  *
  * @brief Visit a PROTO instantiation node.
  *
@@ -1637,7 +1618,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeProximitySensor & node)
+ * @fn void NodeVisitor::visit(NodeProximitySensor & node)
  *
  * @brief Visit a ProximitySensor node.
  *
@@ -1645,7 +1626,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeScalarInt & node)
+ * @fn void NodeVisitor::visit(NodeScalarInt & node)
  *
  * @brief Visit a ScalarInterpolator node.
  *
@@ -1653,7 +1634,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(ScriptNode & node)
+ * @fn void NodeVisitor::visit(ScriptNode & node)
  *
  * @brief Visit a Script node.
  *
@@ -1661,7 +1642,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeShape & node)
+ * @fn void NodeVisitor::visit(NodeShape & node)
  *
  * @brief Visit a Shape node.
  *
@@ -1669,7 +1650,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeSound & node)
+ * @fn void NodeVisitor::visit(NodeSound & node)
  *
  * @brief Visit a Sound node.
  *
@@ -1677,7 +1658,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeSphere & node)
+ * @fn void NodeVisitor::visit(NodeSphere & node)
  *
  * @brief Visit a Sphere node.
  *
@@ -1685,7 +1666,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeSphereSensor & node)
+ * @fn void NodeVisitor::visit(NodeSphereSensor & node)
  *
  * @brief Visit a SphereSensor node.
  *
@@ -1693,7 +1674,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeSpotLight & node)
+ * @fn void NodeVisitor::visit(NodeSpotLight & node)
  *
  * @brief Visit a SpotLight node.
  *
@@ -1701,7 +1682,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeSwitch & node)
+ * @fn void NodeVisitor::visit(NodeSwitch & node)
  *
  * @brief Visit a Switch node.
  *
@@ -1709,7 +1690,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeText & node)
+ * @fn void NodeVisitor::visit(NodeText & node)
  *
  * @brief Visit a Text node.
  *
@@ -1717,7 +1698,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeTextureCoordinate & node)
+ * @fn void NodeVisitor::visit(NodeTextureCoordinate & node)
  *
  * @brief Visit a TextureCoordinate node.
  *
@@ -1725,7 +1706,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeTextureTransform & node)
+ * @fn void NodeVisitor::visit(NodeTextureTransform & node)
  *
  * @brief Visit a TextureTransform node.
  *
@@ -1733,7 +1714,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeTimeSensor & node)
+ * @fn void NodeVisitor::visit(NodeTimeSensor & node)
  *
  * @brief Visit a TimeSensor node.
  *
@@ -1741,7 +1722,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeTouchSensor & node)
+ * @fn void NodeVisitor::visit(NodeTouchSensor & node)
  *
  * @brief Visit a TouchSensor node.
  *
@@ -1749,7 +1730,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeTransform & node)
+ * @fn void NodeVisitor::visit(NodeTransform & node)
  *
  * @brief Visit a Transform node.
  *
@@ -1757,7 +1738,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeViewpoint & node)
+ * @fn void NodeVisitor::visit(NodeViewpoint & node)
  *
  * @brief Visit a Viewpoint node.
  *
@@ -1765,7 +1746,7 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeVisibilitySensor & node)
+ * @fn void NodeVisitor::visit(NodeVisibilitySensor & node)
  *
  * @brief Visit a VisibilitySensor node.
  *
@@ -1773,9 +1754,11 @@ OpenVRML::NodeVisitor::~NodeVisitor() {}
  */
 
 /**
- * @fn void OpenVRML::NodeVisitor::visit(NodeWorldInfo & node)
+ * @fn void NodeVisitor::visit(NodeWorldInfo & node)
  *
  * @brief Visit a WorldInfo node.
  *
  * @param node a WorldInfo node.
  */
+
+} // namespace OpenVRML

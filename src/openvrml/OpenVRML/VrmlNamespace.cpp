@@ -575,7 +575,7 @@ namespace {
                             ->fields().begin();
                     i != node.fields().end(); ++i, ++j) {
                 assert((*i)->value);
-                if ((*i)->type == FieldValue::SFNODE) {
+                if ((*i)->type == FieldValue::sfnode) {
                     assert(dynamic_cast<SFNode *>((*i)->value));
                     if (static_cast<SFNode *>((*i)->value)->get()) {
                         visitNode(*static_cast<SFNode *>((*i)->value)->get());
@@ -583,7 +583,7 @@ namespace {
                                 ->set(this->rootNodeStack.top());
                         this->rootNodeStack.pop();
                     }
-                } else if ((*i)->type == FieldValue::MFNODE) {
+                } else if ((*i)->type == FieldValue::mfnode) {
                     assert(dynamic_cast<MFNode *>((*i)->value));
                     static_cast<MFNode &>(*(*j)->value) =
                         visitChildren(static_cast<MFNode &>(*(*i)->value));
@@ -965,13 +965,13 @@ namespace {
             for (ScriptNode::FieldList::const_iterator
                     i = node.fields().begin(); i != node.fields().end(); ++i) {
                 assert((*i)->value);
-                if ((*i)->type == FieldValue::SFNODE) {
+                if ((*i)->type == FieldValue::sfnode) {
                     assert(dynamic_cast<SFNode *>((*i)->value));
                     if (static_cast<SFNode *>((*i)->value)->get()) {
                         static_cast<SFNode *>((*i)->value)->get()
                                 ->accept(*this);
                     }
-                } else if ((*i)->type == FieldValue::MFNODE) {
+                } else if ((*i)->type == FieldValue::mfnode) {
                     assert(dynamic_cast<MFNode *>((*i)->value));
                     this->visitChildren(static_cast<MFNode &>(*(*i)->value));
                 }

@@ -2,6 +2,11 @@
 
         * Updated documentation for configure options in README.
 
+        * Changed FieldValue::FieldType to FieldValue::Type.
+
+        * Changed FieldValue::Type enumerants to use interCaps rather
+          than UPPER_CASE.
+
 2002-01-14  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Implement CylinderSensor's activation method.

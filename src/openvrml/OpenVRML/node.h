@@ -49,7 +49,7 @@ namespace OpenVRML {
         typedef std::list<NodeFieldRec *> ISMap;
         struct ProtoField {
             std::string name;
-            FieldValue::FieldType type;
+            FieldValue::Type type;
             FieldValue * defaultValue;
             ISMap thisIS;
         };
@@ -82,22 +82,22 @@ namespace OpenVRML {
         void setScope(VrmlNamespace & scope);
 
         // Routines for adding/getting eventIns/Outs/fields to this type
-        void addEventIn(const std::string & name, FieldValue::FieldType type);
-        void addEventOut(const std::string & name, FieldValue::FieldType type);
-        void addField(const std::string & name, FieldValue::FieldType type,
+        void addEventIn(const std::string & name, FieldValue::Type type);
+        void addEventOut(const std::string & name, FieldValue::Type type);
+        void addField(const std::string & name, FieldValue::Type type,
 		      const FieldValue * defaultVal = 0);
         void addExposedField(const std::string & name,
-                             FieldValue::FieldType type,
+                             FieldValue::Type type,
 		             const FieldValue * defaultVal = 0);
 
         const FieldValue * fieldDefault(const std::string & name) const;
         void setFieldDefault(const std::string & name, const FieldValue * value);
 
-        FieldValue::FieldType hasEventIn(const std::string & id) const;
-        FieldValue::FieldType hasEventOut(const std::string & id) const;
-        FieldValue::FieldType hasField(const std::string & id) const;
-        FieldValue::FieldType hasExposedField(const std::string & id) const;
-        FieldValue::FieldType hasInterface(const std::string & id) const;
+        FieldValue::Type hasEventIn(const std::string & id) const;
+        FieldValue::Type hasEventOut(const std::string & id) const;
+        FieldValue::Type hasField(const std::string & id) const;
+        FieldValue::Type hasExposedField(const std::string & id) const;
+        FieldValue::Type hasInterface(const std::string & id) const;
 
         void setUrl(const MFString & url, const Doc2 * relative = 0);
         void setActualUrl(const std::string & url);
@@ -123,7 +123,7 @@ namespace OpenVRML {
 
     private:
         void fetchImplementation() const;
-        FieldValue::FieldType has(const FieldList &, const std::string & id) const;
+        FieldValue::Type has(const FieldList &, const std::string & id) const;
     };
 
 
@@ -425,7 +425,7 @@ namespace OpenVRML {
       d_##_f = (_t &)fieldValue;\
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
-	    fieldValue.fieldTypeName(), #_f, this->type.getId().c_str(), #_t);\
+	    fieldValue.typeName(), #_f, this->type.getId().c_str(), #_t);\
   }
 
 // For SFNode fields. Allow un-fetched EXTERNPROTOs to succeed...
@@ -438,7 +438,7 @@ namespace OpenVRML {
         d_##_f = (SFNode &)fieldValue; \
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
-	    fieldValue.fieldTypeName(), #_f, this->type.getId().c_str(), #_n);\
+	    fieldValue.typeName(), #_f, this->type.getId().c_str(), #_n);\
   }
 
 #define TRY_SFNODE_FIELD2(_f,_n1,_n2) \
@@ -450,7 +450,7 @@ namespace OpenVRML {
       d_##_f = (SFNode &)fieldValue; \
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s or %s).\n",\
-	    fieldValue.fieldTypeName(), #_f, this->type.getId().c_str(), #_n1, #_n2);\
+	    fieldValue.typeName(), #_f, this->type.getId().c_str(), #_n1, #_n2);\
   }
 
 # endif

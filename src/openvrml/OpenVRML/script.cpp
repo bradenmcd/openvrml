@@ -129,9 +129,9 @@ const OpenVRML::NodeTypePtr
         nodeType = st;
     }
 
-    nodeType->addExposedField("url", FieldValue::MFSTRING);
-    nodeType->addField("directOutput", FieldValue::SFBOOL);
-    nodeType->addField("mustEvaluate", FieldValue::SFBOOL);
+    nodeType->addExposedField("url", FieldValue::mfstring);
+    nodeType->addField("directOutput", FieldValue::sfbool);
+    nodeType->addField("mustEvaluate", FieldValue::sfbool);
 
     return nodeType;
 }
@@ -207,11 +207,11 @@ void OpenVRML::ScriptNode::resetVisitedFlag() {
         for (FieldList::const_iterator itr = this->d_fields.begin();
                 itr != this->d_fields.end(); ++itr) {
             assert((*itr)->value);
-            if ((*itr)->type == FieldValue::SFNODE) {
+            if ((*itr)->type == FieldValue::sfnode) {
                 assert(dynamic_cast<OpenVRML::SFNode *>((*itr)->value));
                 static_cast<OpenVRML::SFNode *>((*itr)->value)
                         ->get()->resetVisitedFlag();
-            } else if ((*itr)->type == FieldValue::MFNODE) {
+            } else if ((*itr)->type == FieldValue::mfnode) {
                 assert(dynamic_cast<OpenVRML::MFNode *>((*itr)->value));
                 OpenVRML::MFNode & mfnode =
                         static_cast<OpenVRML::MFNode &>(*(*itr)->value);
@@ -229,13 +229,13 @@ namespace {
         explicit AccumulateNodes_(MFNode & children): children(children) {}
         
         result_type operator()(argument_type scriptField) {
-            if (scriptField->type == FieldValue::SFNODE) {
+            if (scriptField->type == FieldValue::sfnode) {
                 assert(dynamic_cast<OpenVRML::SFNode *>(scriptField->value));
                 this->children.setLength(this->children.getLength() + 1);
                 this->children.setElement(this->children.getLength() - 1,
                         static_cast<OpenVRML::SFNode *>
                             (scriptField->value)->get());
-            } else if (scriptField->type == FieldValue::MFNODE) {
+            } else if (scriptField->type == FieldValue::mfnode) {
                 assert(dynamic_cast<OpenVRML::MFNode *>(scriptField->value));
                 OpenVRML::MFNode & nodes =
                         *static_cast<OpenVRML::MFNode *>(scriptField->value);
@@ -388,71 +388,71 @@ void OpenVRML::ScriptNode::eventIn(double timeStamp,
 
 namespace {
     void add(ScriptNode::FieldList & recs, const std::string & ename,
-             FieldValue::FieldType type) {
+             FieldValue::Type type) {
         ScriptNode::ScriptField * const scriptField =
                 new ScriptNode::ScriptField;
         scriptField->name = ename;
         scriptField->type = type;
         scriptField->modified = false;
         switch (type) {
-        case FieldValue::SFBOOL:
+        case FieldValue::sfbool:
             scriptField->value = new SFBool();
             break;
-        case FieldValue::SFCOLOR:
+        case FieldValue::sfcolor:
             scriptField->value = new SFColor();
             break;
-        case FieldValue::SFFLOAT:
+        case FieldValue::sffloat:
             scriptField->value = new SFFloat();
             break;
-        case FieldValue::SFIMAGE:
+        case FieldValue::sfimage:
             scriptField->value = new SFImage();
             break;
-        case FieldValue::SFINT32:
+        case FieldValue::sfint32:
             scriptField->value = new SFInt32();
             break;
-        case FieldValue::SFNODE:
+        case FieldValue::sfnode:
             scriptField->value = new SFNode();
             break;
-        case FieldValue::SFROTATION:
+        case FieldValue::sfrotation:
             scriptField->value = new SFRotation();
             break;
-        case FieldValue::SFSTRING:
+        case FieldValue::sfstring:
             scriptField->value = new SFString();
             break;
-        case FieldValue::SFTIME:
+        case FieldValue::sftime:
             scriptField->value = new SFTime();
             break;
-        case FieldValue::SFVEC2F:
+        case FieldValue::sfvec2f:
             scriptField->value = new SFVec2f();
             break;
-        case FieldValue::SFVEC3F:
+        case FieldValue::sfvec3f:
             scriptField->value = new SFVec3f();
             break;
-        case FieldValue::MFCOLOR:
+        case FieldValue::mfcolor:
             scriptField->value = new MFColor();
             break;
-        case FieldValue::MFFLOAT:
+        case FieldValue::mffloat:
             scriptField->value = new MFFloat();
             break;
-        case FieldValue::MFINT32:
+        case FieldValue::mfint32:
             scriptField->value = new MFInt32();
             break;
-        case FieldValue::MFNODE:
+        case FieldValue::mfnode:
             scriptField->value = new MFNode();
             break;
-        case FieldValue::MFROTATION:
+        case FieldValue::mfrotation:
             scriptField->value = new MFRotation();
             break;
-        case FieldValue::MFSTRING:
+        case FieldValue::mfstring:
             scriptField->value = new MFString();
             break;
-        case FieldValue::MFTIME:
+        case FieldValue::mftime:
             scriptField->value = new MFTime();
             break;
-        case FieldValue::MFVEC2F:
+        case FieldValue::mfvec2f:
             scriptField->value = new MFVec2f();
             break;
-        case FieldValue::MFVEC3F:
+        case FieldValue::mfvec3f:
             scriptField->value = new MFVec3f();
             break;
         default:
@@ -465,17 +465,17 @@ namespace {
 }
 
 void OpenVRML::ScriptNode::addEventIn(const std::string & ename,
-                                      FieldValue::FieldType t) {
+                                      FieldValue::Type t) {
     add(this->d_eventIns, ename, t);
 }
 
 void OpenVRML::ScriptNode::addEventOut(const std::string & ename,
-                                       FieldValue::FieldType t) {
+                                       FieldValue::Type t) {
     add(this->d_eventOuts, ename, t);
 }
 
 void OpenVRML::ScriptNode::addField(const std::string & ename,
-                                    FieldValue::FieldType t,
+                                    FieldValue::Type t,
 			            const FieldValue * val) {
     add(this->d_fields, ename, t);
     if (val) {
@@ -496,41 +496,41 @@ OpenVRML::FieldValue *
 
 // has
 
-OpenVRML::FieldValue::FieldType
+OpenVRML::FieldValue::Type
         OpenVRML::ScriptNode::hasEventIn(const std::string & id) const {
     return has(d_eventIns, id);
 }
 
-OpenVRML::FieldValue::FieldType
+OpenVRML::FieldValue::Type
         OpenVRML::ScriptNode::hasEventOut(const std::string & id) const {
     return has(d_eventOuts, id);
 }
 
-OpenVRML::FieldValue::FieldType
+OpenVRML::FieldValue::Type
         OpenVRML::ScriptNode::hasField(const std::string & id) const {
     return has(d_fields, id);
 }
 
-OpenVRML::FieldValue::FieldType
+OpenVRML::FieldValue::Type
         OpenVRML::ScriptNode::hasInterface(const std::string & id) const {
-    FieldValue::FieldType fieldType = FieldValue::NO_FIELD;
+    FieldValue::Type fieldType = FieldValue::invalidType;
     
-    if ((fieldType = this->hasField(id)) != FieldValue::NO_FIELD) {
+    if ((fieldType = this->hasField(id)) != FieldValue::invalidType) {
         return fieldType;
     }
     
-    if ((fieldType = this->hasEventIn(id)) != FieldValue::NO_FIELD) {
+    if ((fieldType = this->hasEventIn(id)) != FieldValue::invalidType) {
         return fieldType;
     }
     
-    if ((fieldType = this->hasEventOut(id)) != FieldValue::NO_FIELD) {
+    if ((fieldType = this->hasEventOut(id)) != FieldValue::invalidType) {
         return fieldType;
     }
     
     return fieldType;
 }
 
-OpenVRML::FieldValue::FieldType
+OpenVRML::FieldValue::Type
         OpenVRML::ScriptNode::has(const FieldList & recs,
                                   const std::string & id) const {
     for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
@@ -538,7 +538,7 @@ OpenVRML::FieldValue::FieldType
             return (*i)->type;
         }
     }
-    return FieldValue::NO_FIELD;
+    return FieldValue::invalidType;
 }
 
 // Get the value of a field or eventOut.
@@ -569,18 +569,18 @@ const OpenVRML::FieldValue *
 
 void OpenVRML::ScriptNode::setField(const std::string & fieldId,
                                     const FieldValue & fieldValue) {
-  FieldValue::FieldType ft;
+  FieldValue::Type ft;
 
   if TRY_FIELD(url, MFString)	// need to re-initialize() if url changes...
   else if TRY_FIELD(directOutput, SFBool)
   else if TRY_FIELD(mustEvaluate, SFBool)
   else if ( (ft = hasField(fieldId)) != 0 )
     {
-      if (ft == FieldValue::fieldType( fieldValue.fieldTypeName() ))
+      if (ft == FieldValue::type(fieldValue.typeName()))
 	set(d_fields, fieldId, fieldValue);
       else
 	theSystem->error("Invalid type (%s) for %s field of Script node.\n",
-                         fieldValue.fieldTypeName(), fieldId.c_str());
+                         fieldValue.typeName(), fieldId.c_str());
     }
   else
     this->NodeChild::setField(fieldId, fieldValue);
@@ -613,8 +613,8 @@ void OpenVRML::ScriptNode::set(const FieldList & recs,
             // refcount on any self-references for which we relinquish
             // ownership.
             //
-            const FieldValue::FieldType fieldType(value.fieldType());
-            if (fieldType == FieldValue::SFNODE) {
+            const FieldValue::Type fieldType(value.type());
+            if (fieldType == FieldValue::sfnode) {
                 const NodePtr & oldNode =
                         static_cast<SFNode *>((*itr)->value)->get();
                 //
@@ -645,7 +645,7 @@ void OpenVRML::ScriptNode::set(const FieldList & recs,
                 if (newNode && (newNode.countPtr->first == this)) {
                     --(newNode.countPtr->second);
                 }
-            } else if (fieldType == FieldValue::MFNODE) {
+            } else if (fieldType == FieldValue::mfnode) {
                 size_t i;
                 const MFNode & oldNodes =
                         static_cast<MFNode &>(*(*itr)->value);
@@ -778,7 +778,7 @@ namespace {
         JSBool floatsToJSArray(size_t numFloats, const float * floats,
                                JSContext * cx, jsval * rval);
         FieldValue * createFieldValueFromJsval(JSContext * cx, jsval val,
-				             FieldValue::FieldType fieldType);
+				             FieldValue::Type fieldType);
         char * objToEventOut(JSContext * cx, JSObject * obj);
         void checkEventOut(JSContext * cx, JSObject * obj,
                            const FieldValue & val);
@@ -1548,19 +1548,19 @@ namespace {
             JSObject * const globalObj = JS_GetGlobalObject(this->cx);
             assert(globalObj);
 
-            switch (f.fieldType()) {
-            case FieldValue::SFBOOL:
+            switch (f.type()) {
+            case FieldValue::sfbool:
 	        rval = BOOLEAN_TO_JSVAL(static_cast<const SFBool &>(f).get());
                 break;
 
-            case FieldValue::SFCOLOR:
+            case FieldValue::sfcolor:
                 if (!SFColor::toJsval(static_cast<const OpenVRML::SFColor &>(f),
                                       protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::SFFLOAT:
+            case FieldValue::sffloat:
                 {
 	            jsdouble * const d =
                             JS_NewDouble(cx, static_cast<const SFFloat &>(f).get());
@@ -1569,24 +1569,24 @@ namespace {
                     break;
                 }
 
-            case FieldValue::SFIMAGE:
+            case FieldValue::sfimage:
                 if (!SFImage::toJsval(static_cast<const OpenVRML::SFImage &>(f),
                                       protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::SFINT32:
+            case FieldValue::sfint32:
 	        return INT_TO_JSVAL(static_cast<const SFInt32 &>(f).get());
 
-            case FieldValue::SFNODE:
+            case FieldValue::sfnode:
                 if (!SFNode::toJsval(static_cast<const OpenVRML::SFNode &>(f),
                                      protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::SFROTATION:
+            case FieldValue::sfrotation:
                 if (!SFRotation
                         ::toJsval(static_cast<const OpenVRML::SFRotation &>(f),
                                   protect, this->cx, globalObj, &rval)) {
@@ -1594,7 +1594,7 @@ namespace {
                 }
                 break;
 
-            case FieldValue::SFSTRING:
+            case FieldValue::sfstring:
                 {
 	            JSString * s = JS_NewStringCopyZ(cx,
                             static_cast<const SFString &>(f).get().c_str());
@@ -1603,7 +1603,7 @@ namespace {
                     break;
                 }
 
-            case FieldValue::SFTIME:
+            case FieldValue::sftime:
                 {
 	            jsdouble *d = JS_NewDouble(cx,
                                     static_cast<const SFTime &>(f).get());
@@ -1612,49 +1612,49 @@ namespace {
                     break;
                 }
 
-            case FieldValue::SFVEC2F:
+            case FieldValue::sfvec2f:
                 if (!SFVec2f::toJsval(static_cast<const OpenVRML::SFVec2f &>(f),
                                       protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::SFVEC3F:
+            case FieldValue::sfvec3f:
                 if (!SFVec3f::toJsval(static_cast<const OpenVRML::SFVec3f &>(f),
                                       protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::MFCOLOR:
+            case FieldValue::mfcolor:
                 if (!MFColor::toJsval(static_cast<const OpenVRML::MFColor &>(f),
                                       protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::MFFLOAT:
+            case FieldValue::mffloat:
                 if (!MFFloat::toJsval(static_cast<const OpenVRML::MFFloat &>(f),
                                       protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::MFINT32:
+            case FieldValue::mfint32:
                 if (!MFInt32::toJsval(static_cast<const OpenVRML::MFInt32 &>(f),
                                       protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::MFNODE:
+            case FieldValue::mfnode:
                 if (!MFNode::toJsval(static_cast<const OpenVRML::MFNode &>(f),
                                      protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::MFROTATION:
+            case FieldValue::mfrotation:
                 if (!MFRotation
                         ::toJsval(static_cast<const OpenVRML::MFRotation &>(f),
                                   protect, this->cx, globalObj, &rval)) {
@@ -1662,7 +1662,7 @@ namespace {
                 }
                 break;
 
-            case FieldValue::MFSTRING:
+            case FieldValue::mfstring:
                 if (!MFString
                         ::toJsval(static_cast<const OpenVRML::MFString &>(f),
                                   protect, this->cx, globalObj, &rval)) {
@@ -1670,21 +1670,21 @@ namespace {
                 }
                 break;
 
-            case FieldValue::MFTIME:
+            case FieldValue::mftime:
                 if (!MFTime::toJsval(static_cast<const OpenVRML::MFTime &>(f),
                                      protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::MFVEC2F:
+            case FieldValue::mfvec2f:
                 if (!MFVec2f::toJsval(static_cast<const OpenVRML::MFVec2f &>(f),
                                       protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
-            case FieldValue::MFVEC3F:
+            case FieldValue::mfvec3f:
                 if (!MFVec3f::toJsval(static_cast<const OpenVRML::MFVec3f &>(f),
                                       protect, this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
@@ -1718,13 +1718,13 @@ namespace {
 
             ScriptNode & scriptNode = script->getScriptNode();
 
-            const FieldValue::FieldType fieldType =
+            const FieldValue::Type fieldType =
                     scriptNode.hasEventOut(eventName);
             //
             // If this assertion is false, the we accidentally gave an object
             // that doesn't correspond to an eventOut this setter!
             //
-            assert(fieldType != FieldValue::NO_FIELD);
+            assert(fieldType != FieldValue::invalidType);
 
             // Convert to a vrmlField and set the eventOut value
             try {
@@ -1934,19 +1934,19 @@ namespace {
          * @brief Convert a jsval to a (new) FieldValue.
          */
         FieldValue * createFieldValueFromJsval(JSContext * cx, jsval v,
-                                        FieldValue::FieldType expectType) {
+                                        FieldValue::Type expectType) {
             switch (expectType) {
-            case FieldValue::SFBOOL:
+            case FieldValue::sfbool:
                 {
                     assert(JSVAL_IS_BOOLEAN(v));
                     return new SFBool(JSVAL_TO_BOOLEAN(v));
                 }
                 
-            case FieldValue::SFCOLOR:
+            case FieldValue::sfcolor:
                 assert(JSVAL_IS_OBJECT(v));
                 return SFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
-            case FieldValue::SFFLOAT:
+            case FieldValue::sffloat:
                 {
                     assert(JSVAL_IS_NUMBER(v));
                     jsdouble sffloatDouble;
@@ -1954,25 +1954,25 @@ namespace {
                     return new SFFloat(sffloatDouble);
                 }
             
-            case FieldValue::SFINT32:
+            case FieldValue::sfint32:
                 {
                     assert(JSVAL_IS_INT(v));
                     return new SFInt32(JSVAL_TO_INT(v));
                 }
             
-            case FieldValue::SFIMAGE:
+            case FieldValue::sfimage:
                 assert(JSVAL_IS_OBJECT(v));
                 return SFImage::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
-            case FieldValue::SFNODE:
+            case FieldValue::sfnode:
                 assert(JSVAL_IS_OBJECT(v));
                 return SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
-            case FieldValue::SFROTATION:
+            case FieldValue::sfrotation:
                 assert(JSVAL_IS_OBJECT(v));
                 return SFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
-            case FieldValue::SFSTRING:
+            case FieldValue::sfstring:
                 {
                     assert(JSVAL_IS_STRING(v));
                     JSString * const jsstring = JSVAL_TO_STRING(v);
@@ -1985,7 +1985,7 @@ namespace {
                                             : "");
                 }
             
-            case FieldValue::SFTIME:
+            case FieldValue::sftime:
                 {
                     assert(JSVAL_IS_NUMBER(v));
                     jsdouble sftimeDouble;
@@ -1993,47 +1993,47 @@ namespace {
                     return new SFTime(sftimeDouble);
                 }
             
-            case FieldValue::SFVEC2F:
+            case FieldValue::sfvec2f:
                 assert(JSVAL_IS_OBJECT(v));
                 return SFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
-            case FieldValue::SFVEC3F:
+            case FieldValue::sfvec3f:
                 assert(JSVAL_IS_OBJECT(v));
                 return SFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
-            case FieldValue::MFCOLOR:
+            case FieldValue::mfcolor:
                 assert(JSVAL_IS_OBJECT(v));
                 return MFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
                 
-            case FieldValue::MFFLOAT:
+            case FieldValue::mffloat:
                 assert(JSVAL_IS_OBJECT(v));
                 return MFFloat::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
-            case FieldValue::MFINT32:
+            case FieldValue::mfint32:
                 assert(JSVAL_IS_OBJECT(v));
                 return MFInt32::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
-            case FieldValue::MFNODE:
+            case FieldValue::mfnode:
                 assert(JSVAL_IS_OBJECT(v));
                 return MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
 
-            case FieldValue::MFROTATION:
+            case FieldValue::mfrotation:
                 assert(JSVAL_IS_OBJECT(v));
                 return MFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
 
-            case FieldValue::MFSTRING:
+            case FieldValue::mfstring:
                 assert(JSVAL_IS_OBJECT(v));
                 return MFString::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
-            case FieldValue::MFTIME:
+            case FieldValue::mftime:
                 assert(JSVAL_IS_OBJECT(v));
                 return MFTime::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
-            case FieldValue::MFVEC2F:
+            case FieldValue::mfvec2f:
                 assert(JSVAL_IS_OBJECT(v));
                 return MFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
 
-            case FieldValue::MFVEC3F:
+            case FieldValue::mfvec3f:
                 assert(JSVAL_IS_OBJECT(v));
                 return MFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
 
@@ -3178,7 +3178,7 @@ namespace {
             }
             
 	    // convert vp to field, send eventIn to node
-            FieldValue::FieldType expectType;
+            FieldValue::Type expectType;
             if ((expectType = nodePtr->type.hasEventIn(eventInId))) {
                 FieldValue * const fieldValue =
                         createFieldValueFromJsval(cx, *vp, expectType);
