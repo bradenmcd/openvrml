@@ -1,3 +1,7 @@
+2002-02-04  Braden McDaniel  <braden@endoframe.com>
+
+        * Quell some Doxygen warningspew.
+
 2002-02-03  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * Fix bug 465024 dealing with MovieTexture nodes.

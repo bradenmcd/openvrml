@@ -72,7 +72,7 @@ namespace OpenVRML {
 
     public:
         NodeType(const std::string & id,
-	         const NodePtr (*creator)(VrmlScene *const scene) = 0);
+	         const NodePtr (*creator)(VrmlScene * const scene) = 0);
         ~NodeType();
 
         const NodePtr newNode(VrmlScene * scene = 0) const;

@@ -93,7 +93,7 @@ namespace OpenVRML {
 
 
         // Sets value with given 4x4 array of elements
-        void     set(const Matrix );
+        void     set(const Matrix m);
 
         // Returns 4x4 array of elements
         void     get(Matrix m) const;

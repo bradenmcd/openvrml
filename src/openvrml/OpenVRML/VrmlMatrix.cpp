@@ -22,7 +22,42 @@
 #include "VrmlMatrix.h"
 # include "private.h"
 
-using namespace OpenVRML;
+/**
+ * @brief Equality comparison operator.
+ *
+ * All componenents must match exactly.
+ *
+ * @param m1 is given VrmlMatrix object
+ * @param m2 is given VrmlMatrix object
+ */
+bool operator==(const OpenVRML::VrmlMatrix &m1,
+                const OpenVRML::VrmlMatrix &m2) {
+    return (
+            m1.matrix[0][0] == m2.matrix[0][0] &&
+            m1.matrix[0][1] == m2.matrix[0][1] &&
+            m1.matrix[0][2] == m2.matrix[0][2] &&
+            m1.matrix[0][3] == m2.matrix[0][3] &&
+
+            m1.matrix[1][0] == m2.matrix[1][0] &&
+            m1.matrix[1][1] == m2.matrix[1][1] &&
+            m1.matrix[1][2] == m2.matrix[1][2] &&
+            m1.matrix[1][3] == m2.matrix[1][3] &&
+
+            m1.matrix[2][0] == m2.matrix[2][0] &&
+            m1.matrix[2][1] == m2.matrix[2][1] &&
+            m1.matrix[2][2] == m2.matrix[2][2] &&
+            m1.matrix[2][3] == m2.matrix[2][3] &&
+
+            m1.matrix[3][0] == m2.matrix[3][0] &&
+            m1.matrix[3][1] == m2.matrix[3][1] &&
+            m1.matrix[3][2] == m2.matrix[3][2] &&
+            m1.matrix[3][3] == m2.matrix[3][3]
+           );
+}
+
+
+namespace OpenVRML {
+
 using namespace OpenVRML_;
 
 /**
@@ -654,39 +689,6 @@ const float
    return matrix[i]; 
 }
 
-/*
- * @brief Equality comparison operator. All componenents 
- * must match exactly.
- * @param m1 is given VrmlMatrix object
- * @param m2 is given VrmlMatrix object
- */
-
-bool ::operator==(const VrmlMatrix &m1, const VrmlMatrix &m2)
-{
-    return (
-            m1.matrix[0][0] == m2.matrix[0][0] &&
-            m1.matrix[0][1] == m2.matrix[0][1] &&
-            m1.matrix[0][2] == m2.matrix[0][2] &&
-            m1.matrix[0][3] == m2.matrix[0][3] &&
-
-            m1.matrix[1][0] == m2.matrix[1][0] &&
-            m1.matrix[1][1] == m2.matrix[1][1] &&
-            m1.matrix[1][2] == m2.matrix[1][2] &&
-            m1.matrix[1][3] == m2.matrix[1][3] &&
-
-            m1.matrix[2][0] == m2.matrix[2][0] &&
-            m1.matrix[2][1] == m2.matrix[2][1] &&
-            m1.matrix[2][2] == m2.matrix[2][2] &&
-            m1.matrix[2][3] == m2.matrix[2][3] &&
-
-            m1.matrix[3][0] == m2.matrix[3][0] &&
-            m1.matrix[3][1] == m2.matrix[3][1] &&
-            m1.matrix[3][2] == m2.matrix[3][2] &&
-            m1.matrix[3][3] == m2.matrix[3][3]
-           );
-}
-
-
 /**
  * @brief Set the matrix from  translation, rotation, scale,
  * scaleOrientation and center
@@ -968,3 +970,5 @@ VrmlMatrix::transpose() const
                      matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
                      matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]);
 }
+
+} // namespace OpenVRML

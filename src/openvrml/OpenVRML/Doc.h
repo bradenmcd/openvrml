@@ -35,7 +35,7 @@ namespace OpenVRML {
 
     class Doc2;
 
-    class OPENVRML_SCOPE  Doc {
+    class OPENVRML_SCOPE Doc {
         static const char *stripProtocol(const char *url);
         static bool isAbsolute(const char *url);
         bool filename( char *fn, int nfn );

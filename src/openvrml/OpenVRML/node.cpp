@@ -59,7 +59,7 @@ namespace OpenVRML {
  * @param creator a factory function for creating nodes of this type.
  */
 NodeType::NodeType(const std::string & id,
-                   const NodePtr (*creator)(VrmlScene * const)):
+                   const NodePtr (*creator)(VrmlScene * const scene)):
         id(id), d_namespace(0), d_url(0), d_relative(0), d_creator(creator),
         d_fieldsInitialized(false) {}
 

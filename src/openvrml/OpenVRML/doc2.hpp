@@ -36,17 +36,17 @@ namespace OpenVRML {
     public:
         explicit Doc2(const std::string & url = std::string(),
                       const Doc2 * relative = 0);
-        Doc2(const Doc2 *);
+        explicit Doc2(const Doc2 *);
         ~Doc2();
 
-        void seturl(const char *url, Doc2 const *relative = 0);
+        void seturl(const char *url, const Doc2 * relative = 0);
 
-        char const * url() const;         // "http://www.foo.com/dir/file.xyz#Viewpoint"
-        char const * urlBase() const;     // "file" or ""
-        char const * urlExt() const;      // "xyz" or ""
-        char const * urlPath() const;     // "http://www.foo.com/dir/" or ""
-        char const * urlProtocol() const; // "http"
-        char const * urlModifier() const; // "#Viewpoint" or ""
+        const char * url() const;         // "http://www.foo.com/dir/file.xyz#Viewpoint"
+        const char * urlBase() const;     // "file" or ""
+        const char * urlExt() const;      // "xyz" or ""
+        const char * urlPath() const;     // "http://www.foo.com/dir/" or ""
+        const char * urlProtocol() const; // "http"
+        const char * urlModifier() const; // "#Viewpoint" or ""
 
         const char *localName();    // "/tmp/file.xyz" or NULL
         const char *localPath();    // "/tmp/" or NULL
@@ -56,14 +56,13 @@ namespace OpenVRML {
 
     private:
         //
-        // Non-copyable; copy ctor and operator= are declared private and not
-        // defined.
+        // Non-copyable.
         //
-        Doc2(Doc2 const &);
-        Doc2 & operator=(Doc2 const &);
+        Doc2(const Doc2 &);
+        Doc2 & operator=(const Doc2 &);
 
-        static char const * stripProtocol(char const * url);
-        static bool isAbsolute(char const * url);
+        static const char * stripProtocol(const char * url);
+        static bool isAbsolute(const char * url);
 
         bool filename(char * fn, int nfn);
 

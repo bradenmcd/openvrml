@@ -225,7 +225,7 @@ FieldValue::~FieldValue() {}
  */
 
 /**
- * @fn FieldValue & FieldValue::assign(const FieldValue & value) const throw (std::bad_cast)
+ * @fn FieldValue & FieldValue::assign(const FieldValue & value) throw (std::bad_cast) = 0
  *
  * @brief Virtual assignment.
  *

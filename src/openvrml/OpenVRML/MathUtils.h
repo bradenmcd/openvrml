@@ -36,14 +36,14 @@
 
 namespace OpenVRML {
 
-    double Vlength( float V[3] );	                   // |V|
+    double Vlength(float V[3]); // |V|
 
-    void Vdiff( float V[3], const float A[3], const float B[3] );  // V <= A - B
-    void Vcross( float V[3], const float A[3], const float B[3] ); // V <= A x B
-    void Vnorm( float V[3] );	                   // V <= V / |V|
+    void Vdiff(float V[3], const float A[3], const float B[3]);  // V <= A - B
+    void Vcross(float V[3], const float A[3], const float B[3]); // V <= A x B
+    void Vnorm(float V[3]); // V <= V / |V|
 
     void axis_aligned_bbox(float M[4][4], float *min, float *max);
-    bool InvertMatrix3x3of4x4(float In[], float Out[]);
+    bool InvertMatrix3x3of4x4(const float In[16], float Out[9]);
     void quat_to_axis(float quat[4], float axisAngle[4]);
 }
 

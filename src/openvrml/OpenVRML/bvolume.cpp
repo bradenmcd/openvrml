@@ -26,10 +26,12 @@
 # include "VrmlFrustum.h"
 # include "MathUtils.h"
 
+namespace OpenVRML {
+
 using namespace OpenVRML_;
 
 /**
- * @class OpenVRML::BVolume
+ * @class BVolume
  *
  * @brief A bounding volume.
  *
@@ -39,27 +41,27 @@ using namespace OpenVRML_;
  * that are expected to be static. That probably means boxes for geometry and
  * spheres for grouping nodes.
  *
- * @see OpenVRML::Node::render
- * @see OpenVRML::BSphere
- * @see OpenVRML::AABox
+ * @see Node::render
+ * @see BSphere
+ * @see AABox
  */
 
 /**
- * @var OpenVRML::BVolume::BV_INSIDE
+ * @var BVolume::BV_INSIDE
  *
  * @brief Results of an intersection; indicates that the tested volume is
  *      entirely inside the target volume.
  */
 
 /**
- * @var OpenVRML::BVolume::BV_OUTSIDE
+ * @var BVolume::BV_OUTSIDE
  *
  * @brief Results of an intersection; indicates that the tested volume is
  *      entirely outside the target volume.
  */
 
 /**
- * @var OpenVRML::BVolume::BV_PARTIAL
+ * @var BVolume::BV_PARTIAL
  *
  * @brief Results of an intersection; indicates that the tested volume
  *      intersects with the target volume.
@@ -68,10 +70,10 @@ using namespace OpenVRML_;
 /**
  * @brief Destructor.
  */
-OpenVRML::BVolume::~BVolume() {}
+BVolume::~BVolume() {}
 
 /**
- * @fn bool OpenVRML::BVolume::isMAX() const
+ * @fn bool BVolume::isMAX() const
  *
  * @brief Gets the MAX flag.
  *
@@ -86,7 +88,7 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @fn void OpenVRML::BVolume::setMAX()
+ * @fn void BVolume::setMAX()
  *
  * @brief Sets the MAX flag.
  *
@@ -94,7 +96,7 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @fn int OpenVRML::isectFrustum(const VrmlFrustum & f) const
+ * @fn int BVolume::isectFrustum(const VrmlFrustum & f) const
  *
  * @brief Intersect this bvolume with a frustum.
  *
@@ -112,7 +114,7 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @fn void OpenVRML::BVolume::extend(const BVolume & b)
+ * @fn void BVolume::extend(const BVolume & b)
  *
  * @brief Extend this bvolume to enclose the given bvolume.
  *
@@ -135,7 +137,7 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @fn void OpenVRML::BVolume::extend(const float p[3])
+ * @fn void BVolume::extend(const float p[3])
  *
  * @brief Extend this bvolume to enclose the given point.
  *
@@ -143,7 +145,7 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @fn void OpenVRML::BVolume::extend(const AABox & b)
+ * @fn void BVolume::extend(const AABox & b)
  *
  * @brief Extend this bvolume to enclose the given box.
  *
@@ -151,7 +153,7 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @fn void OpenVRML::BVolume::extend(const BSphere & b)
+ * @fn void BVolume::extend(const BSphere & b)
  *
  * @brief Extend this bvolume to enclose the given sphere.
  *
@@ -159,7 +161,7 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @fn void OpenVRML::BVolume::enclose(const float * p, int n)
+ * @fn void BVolume::enclose(const float * p, int n)
  *
  * @brief Enclose the given set of points.
  *
@@ -170,7 +172,7 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @fn void OpenVRML::BVolume::orthoTransform(const VrmlMatrix & M)
+ * @fn void BVolume::orthoTransform(const VrmlMatrix & M)
  *
  * @brief Transform this bounding volume using an orthogonal transfom.
  *
@@ -188,7 +190,7 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @fn void OpenVRML::BVolume::transform(const VrmlMatrix & M)
+ * @fn void BVolume::transform(const VrmlMatrix & M)
  *
  * @brief Transform this bounding volume using an affine transfom.
  *
@@ -208,7 +210,7 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @fn ostream & OpenVRML::OpenVRML::BVolume::dump(ostream & ostr) const
+ * @fn ostream & BVolume::dump(ostream & ostr) const = 0
  *
  * @brief Print a text representation to a stream.
  *
@@ -222,7 +224,7 @@ OpenVRML::BVolume::~BVolume() {}
 
 
 /**
- * @class OpenVRML::BSphere
+ * @class BSphere
  *
  * @brief A bounding sphere.
  *
@@ -233,23 +235,23 @@ OpenVRML::BVolume::~BVolume() {}
  */
 
 /**
- * @var OpenVRML::BSphere::c
+ * @var BSphere::c
  *
  * @brief The center of the sphere.
  */
 
 /**
- * @var OpenVRML::BSphere::r
+ * @var BSphere::r
  *
  * @brief The radius of the sphere.
  */
 
-OpenVRML::BSphere::BSphere()
+BSphere::BSphere()
 {
   reset();
 }
 
-OpenVRML::BSphere::BSphere(const BSphere& rhs)
+BSphere::BSphere(const BSphere& rhs)
 {
   r = rhs.r;
   c[0] = rhs.c[0];
@@ -257,13 +259,13 @@ OpenVRML::BSphere::BSphere(const BSphere& rhs)
   c[2] = rhs.c[2];
 }
 
-OpenVRML::BSphere::~BSphere()
+BSphere::~BSphere()
 {
 }
 
 
 void
-OpenVRML::BSphere::reset()
+BSphere::reset()
 {
   r = -1.0f;
   c[0] = 0.0f;
@@ -273,7 +275,7 @@ OpenVRML::BSphere::reset()
 
 
 static float
-sphere_plane_distance(const OpenVRML::BSphere & bs, const float N[3], float D)
+sphere_plane_distance(const BSphere & bs, const float N[3], float D)
 {
   // r = Ax + By + Cz + D
   //
@@ -284,7 +286,7 @@ sphere_plane_distance(const OpenVRML::BSphere & bs, const float N[3], float D)
 
 
 int
-OpenVRML::BSphere::isectFrustum(const VrmlFrustum& frust) const
+BSphere::isectFrustum(const VrmlFrustum& frust) const
 {
   //cout << "BSphere::isectFrustum():WARNING:not implemented" << endl;
 
@@ -360,7 +362,7 @@ OpenVRML::BSphere::isectFrustum(const VrmlFrustum& frust) const
 }
 
 void
-OpenVRML::BSphere::extend(const BVolume & bv)
+BSphere::extend(const BVolume & bv)
 {
   const BSphere * bs = 0;
   const AABox * ab = 0;
@@ -379,7 +381,7 @@ OpenVRML::BSphere::extend(const BVolume & bv)
 
 
 void 
-OpenVRML::BSphere::extend(const float p[3]) 
+BSphere::extend(const float p[3]) 
 {
 
   if (this->isMAX())
@@ -435,13 +437,13 @@ OpenVRML::BSphere::extend(const float p[3])
 
 
 void
-OpenVRML::BSphere::extend(const AABox & b)
+BSphere::extend(const AABox & b)
 {
   cout << "BSphere::extend(VrmlAABox&):WARNING:not implemented" << endl;
 }
 
 void
-OpenVRML::BSphere::extend(const BSphere& b)
+BSphere::extend(const BSphere& b)
 {
   //cout << "BSphere::extend(BSphere&)" << endl;
   //b.dump(cout);
@@ -526,7 +528,7 @@ OpenVRML::BSphere::extend(const BSphere& b)
 
 
 void
-OpenVRML::BSphere::enclose(const float* p, int n)
+BSphere::enclose(const float* p, int n)
 {
   // doing an extend() for each point is ok, but there are
   // faster algorithms reference "An Efficient Bounding Sphere"
@@ -596,20 +598,20 @@ OpenVRML::BSphere::enclose(const float* p, int n)
 
 
 const float*
-OpenVRML::BSphere::getCenter() const
+BSphere::getCenter() const
 {
   return c;
 }
 
 void 
-OpenVRML::BSphere::setCenter(const SFVec3f & center)
+BSphere::setCenter(const SFVec3f & center)
 {
   const float * const centerVec = center.get();
   std::copy(centerVec, centerVec + 3, this->c);
 }
 
 void
-OpenVRML::BSphere::setCenter(float x, float y, float z)
+BSphere::setCenter(float x, float y, float z)
 {
   c[0] = x;
   c[1] = y;
@@ -617,7 +619,7 @@ OpenVRML::BSphere::setCenter(float x, float y, float z)
 }
 
 void
-OpenVRML::BSphere::setCenter(const float ac[3])
+BSphere::setCenter(const float ac[3])
 {
   c[0] = ac[0];
   c[1] = ac[1];
@@ -626,19 +628,19 @@ OpenVRML::BSphere::setCenter(const float ac[3])
 
 
 float
-OpenVRML::BSphere::getRadius() const
+BSphere::getRadius() const
 {
   return r;
 }
 
 void
-OpenVRML::BSphere::setRadius(float r)
+BSphere::setRadius(float r)
 {
   this->r = r;
 }
 
 void
-OpenVRML::BSphere::setMAX()
+BSphere::setMAX()
 {
   r = FLT_MAX;
   c[0] = 0.0;
@@ -647,7 +649,7 @@ OpenVRML::BSphere::setMAX()
 }
 
 bool
-OpenVRML::BSphere::isMAX() const
+BSphere::isMAX() const
 {
   if (r==FLT_MAX) 
     return true;
@@ -657,7 +659,7 @@ OpenVRML::BSphere::isMAX() const
 
 
 void
-OpenVRML::BSphere::orthoTransform(const VrmlMatrix & M) 
+BSphere::orthoTransform(const VrmlMatrix & M) 
 {
   if (this->isMAX())
     return;
@@ -684,7 +686,7 @@ OpenVRML::BSphere::orthoTransform(const VrmlMatrix & M)
 
 
 void
-OpenVRML::BSphere::transform(const VrmlMatrix & M)
+BSphere::transform(const VrmlMatrix & M)
 {
   if (this->isMAX())
     return;
@@ -722,7 +724,7 @@ OpenVRML::BSphere::transform(const VrmlMatrix & M)
 }
 
 ostream&
-OpenVRML::BSphere::dump(ostream& o) const
+BSphere::dump(ostream& o) const
 {
   return cout << "(" << c[0] << "," << c[1] << "," << c[2] << "):" << r;
 }
@@ -730,17 +732,17 @@ OpenVRML::BSphere::dump(ostream& o) const
 
 
 /**
- * @class OpenVRML::AABox
+ * @class AABox
  *
  * @brief An axis-aligned bounding box.
  *
  * This class is currently just a placeholder.
  */
 
-OpenVRML::AABox::~AABox() {}
+AABox::~AABox() {}
 
 int
-OpenVRML::AABox::isectFrustum(const VrmlFrustum& f) const
+AABox::isectFrustum(const VrmlFrustum& f) const
 {
   cout << "AABox::isectFrustum():WARNING:not implemented" << endl;
   return BVolume::BV_PARTIAL;
@@ -748,7 +750,7 @@ OpenVRML::AABox::isectFrustum(const VrmlFrustum& f) const
 
 
 void
-OpenVRML::AABox::extend(const BVolume & bv)
+AABox::extend(const BVolume & bv)
 {
   const BSphere * bs = 0;
   const AABox * ab = 0;
@@ -764,49 +766,51 @@ OpenVRML::AABox::extend(const BVolume & bv)
 
 
 void 
-OpenVRML::AABox::extend(const float p[3]) 
+AABox::extend(const float p[3]) 
 {
 }
 
 void
-OpenVRML::AABox::extend(const AABox& b)
+AABox::extend(const AABox& b)
 {
 }
 
 void
-OpenVRML::AABox::extend(const BSphere& b)
+AABox::extend(const BSphere& b)
 {
 }
 
 void
-OpenVRML::AABox::enclose(const float* p, int n)
+AABox::enclose(const float* p, int n)
 {
 }
 
 void
-OpenVRML::AABox::setMAX()
+AABox::setMAX()
 {
 }
 
 bool
-OpenVRML::AABox::isMAX() const
+AABox::isMAX() const
 {
   return true;
 }
 
 void
-OpenVRML::AABox::orthoTransform(const VrmlMatrix & M) 
+AABox::orthoTransform(const VrmlMatrix & M) 
 {
 }
 
 void
-OpenVRML::AABox::transform(const VrmlMatrix & M)
+AABox::transform(const VrmlMatrix & M)
 {
 }
 
 
 ostream&
-OpenVRML::AABox::dump(ostream& o) const
+AABox::dump(ostream& o) const
 {
   return cout << "<AABox:not implemented>" << endl;
 }
+
+} // namespace OpenVRML

@@ -152,15 +152,15 @@ namespace OpenVRML {
         virtual Object insertPointLight(float, const float [], const float [],
 				        float, const float [], float ) = 0;
 
-        virtual Object insertSpotLight( float /*ambientIntensity*/ ,
-				        const float /*attenuation*/ [],
-				        float /*beamWidth*/ ,
-				        const float /*color*/ [],
-				        float /*cutOffAngle*/ ,
-				        const float /*direction*/ [],
-				        float /*intensity*/ ,
-				        const float /*location*/ [],
-				        float /*radius*/ ) = 0;
+        virtual Object insertSpotLight(float ambientIntensity,
+				       const float attenuation[],
+				       float beamWidth,
+				       const float color[],
+				       float cutOffAngle,
+				       const float direction[],
+				       float intensity,
+				       const float location[],
+				       float radius) = 0;
 
         // Lightweight copy
         virtual Object insertReference(Object /*existingObject*/) = 0;
@@ -177,9 +177,12 @@ namespace OpenVRML {
 
         virtual void setColor(float r, float g, float b, float a = 1.0) = 0;
 
-        virtual void setMaterial(float, const float[], 
-			         const float[], float, 
-			         const float[], float) = 0;
+        virtual void setMaterial(float ambientIntensity,
+			         const float diffuseColor[3],
+			         const float emissiveColor[3],
+			         float shininess,
+			         const float specularColor[3],
+			         float transparency) = 0;
 
         virtual void setMaterialMode( int nTexComponents, bool geometryColor ) = 0;
 

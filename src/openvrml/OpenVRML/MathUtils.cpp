@@ -91,30 +91,29 @@ void OpenVRML::axis_aligned_bbox(float M[4][4], float *min, float *max)
 	 max[0] = newbox[4]; max[1] = newbox[5]; max[2] = newbox[6];
 }
 
-bool OpenVRML::InvertMatrix3x3of4x4(float In[16],float Out[9])
-{
-	float *Inp = &In[0];
-	float mat[] = {Inp[0], Inp[1], Inp[2],
-                       Inp[4], Inp[5], Inp[6],
-		       Inp[8], Inp[9], Inp[10]};
-	float a = mat[4] * mat[8];
-	float b = mat[5] * mat[7];
-	float c = mat[3] * mat[8];
-	float d = mat[5] * mat[6];
-	float e = mat[3] * mat[7];
-	float f = mat[4] * mat[6];
-	float det = mat[0] * (a - b) - mat[1] * (c - d) + mat[2] * (e - f);
-	if(det == 0) return false;
-	Out[0] = (a - b)/det;
-	Out[1] = (mat[2] * mat[7] - mat[1] * mat[8])/det;
-	Out[2] = (mat[1] * mat[5] - mat[2] * mat[4])/det;
-	Out[3] = (d - c)/det;
-	Out[4] = (mat[0] * mat[8] - mat[2] * mat[6])/det;
-	Out[5] = (mat[2] * mat[3] - mat[0] * mat[5])/det;
-	Out[6] = (e - f)/det;
-        Out[7] = (mat[1] * mat[6] - mat[0] * mat[7])/det;
-	Out[8] = (mat[0] * mat[4] - mat[1] * mat[3])/det;
-	return true;
+bool OpenVRML::InvertMatrix3x3of4x4(const float In[16], float Out[9]) {
+    const float * Inp = &In[0];
+    float mat[] = {Inp[0], Inp[1], Inp[2],
+                   Inp[4], Inp[5], Inp[6],
+		   Inp[8], Inp[9], Inp[10]};
+    float a = mat[4] * mat[8];
+    float b = mat[5] * mat[7];
+    float c = mat[3] * mat[8];
+    float d = mat[5] * mat[6];
+    float e = mat[3] * mat[7];
+    float f = mat[4] * mat[6];
+    float det = mat[0] * (a - b) - mat[1] * (c - d) + mat[2] * (e - f);
+    if(det == 0) return false;
+    Out[0] = (a - b)/det;
+    Out[1] = (mat[2] * mat[7] - mat[1] * mat[8])/det;
+    Out[2] = (mat[1] * mat[5] - mat[2] * mat[4])/det;
+    Out[3] = (d - c)/det;
+    Out[4] = (mat[0] * mat[8] - mat[2] * mat[6])/det;
+    Out[5] = (mat[2] * mat[3] - mat[0] * mat[5])/det;
+    Out[6] = (e - f)/det;
+    Out[7] = (mat[1] * mat[6] - mat[0] * mat[7])/det;
+    Out[8] = (mat[0] * mat[4] - mat[1] * mat[3])/det;
+    return true;
 }
 
 /*

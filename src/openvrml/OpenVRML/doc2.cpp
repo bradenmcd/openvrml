@@ -46,10 +46,10 @@ namespace {
     namespace z {
         
         typedef int level;
-        level const no_compression      = Z_NO_COMPRESSION;
-        level const best_speed          = Z_BEST_SPEED;
-        level const best_compression    = Z_BEST_COMPRESSION;
-        level const default_compression = Z_DEFAULT_COMPRESSION;
+        const level no_compression      = Z_NO_COMPRESSION;
+        const level best_speed          = Z_BEST_SPEED;
+        const level best_compression    = Z_BEST_COMPRESSION;
+        const level default_compression = Z_DEFAULT_COMPRESSION;
         
         enum strategy {
             default_strategy    = Z_DEFAULT_STRATEGY,
@@ -64,7 +64,7 @@ namespace {
                 ~filebuf();
                 
                 bool is_open() const;
-                filebuf * open(char const * path, int mode,
+                filebuf * open(const char * path, int mode,
                                level = default_compression,
                                strategy = default_strategy);
                 filebuf * close();
@@ -82,13 +82,13 @@ namespace {
         class ifstream : public ::istream {
             public:
                 ifstream();
-                explicit ifstream(char const * path, level = default_compression,
+                explicit ifstream(const char * path, level = default_compression,
                                   strategy = default_strategy);
                 ~ifstream();
                 
                 filebuf * rdbuf() const;
                 bool is_open() const;
-                void open(char const * path, level = default_compression,
+                void open(const char * path, level = default_compression,
                           strategy = default_strategy);
                 void close();
                 
@@ -98,7 +98,7 @@ namespace {
     }
 }
 
-using namespace OpenVRML;
+namespace OpenVRML {
 
 Doc2::Doc2(const std::string & url, const Doc2 * relative)
   : url_(0), tmpfile_(0), istm_(0), ostm_(0)
@@ -108,7 +108,7 @@ Doc2::Doc2(const std::string & url, const Doc2 * relative)
     }
 }
 
-Doc2::Doc2(Doc2 const * doc)
+Doc2::Doc2(const Doc2 * doc)
   : url_(0), tmpfile_(0), istm_(0), ostm_(0)
 {
     if (doc) {
@@ -133,8 +133,7 @@ Doc2::~Doc2()
     }
 }
 
-void Doc2::seturl(char const * url, Doc2 const * relative)
-{
+void Doc2::seturl(const char * url, const Doc2 * relative) {
     delete [] this->url_;
     this->url_ = 0;
     
@@ -145,7 +144,7 @@ void Doc2::seturl(char const * url, Doc2 const * relative)
         delete this->ostm_;
         this->ostm_ = 0;
         
-        char const * path = "";
+        const char * path = "";
 
 #ifdef _WIN32     
 // Convert windows path stream to standard URL
@@ -169,16 +168,10 @@ void Doc2::seturl(char const * url, Doc2 const * relative)
     }
 }
 
-char const * Doc2::url() const
-{
-    return this->url_;
-}
+const char * Doc2::url() const { return this->url_; }
 
-char const * Doc2::urlBase() const
-{
-    if (!url_) {
-        return "";
-    }
+const char * Doc2::urlBase() const {
+    if (!url_) { return ""; }
     
     static char path[1024];
     char * p, * s = path;
@@ -197,11 +190,8 @@ char const * Doc2::urlBase() const
     return s;
 }
 
-char const * Doc2::urlExt() const
-{
-    if (!url_) {
-        return "";
-    }
+const char * Doc2::urlExt() const {
+    if (!url_) { return ""; }
     
     static char ext[20];
     char * p;
@@ -216,9 +206,8 @@ char const * Doc2::urlExt() const
     return &ext[0];
 }
 
-char const * Doc2::urlPath() const
-{
-    if (!url_) return "";
+const char * Doc2::urlPath() const {
+    if (!url_) { return ""; }
     
     static char path[1024];
     
@@ -233,11 +222,10 @@ char const * Doc2::urlPath() const
     return &path[0]; 
 }
 
-char const * Doc2::urlProtocol() const
-{
+const char * Doc2::urlProtocol() const {
     if (url_) {
         static char protocol[12];
-        char const * s = url_;
+        const char * s = url_;
         
 # ifdef _WIN32
         if (strncmp(s+1,":/",2) == 0) {
@@ -260,25 +248,18 @@ char const * Doc2::urlProtocol() const
     return "file";
 }
 
-char const * Doc2::urlModifier() const
-{
-    char const * mod = url_ ? strrchr(url_, '#') : 0;
+const char * Doc2::urlModifier() const {
+    const char * mod = url_ ? strrchr(url_, '#') : 0;
     return mod ? mod : "";
 }
 
-char const * Doc2::localName()
-{
+const char * Doc2::localName() {
     static char buf[1024];
-    
-    if (filename(buf, sizeof(buf))) {
-        return buf;
-    }
-    
+    if (filename(buf, sizeof(buf))) { return buf; }
     return 0;
 }
 
-char const * Doc2::localPath()
-{
+const char * Doc2::localPath() {
     static char buf[1024];
     
     if (filename(buf, sizeof(buf))) {
@@ -294,8 +275,7 @@ char const * Doc2::localPath()
     return 0;
 }
 
-::istream & Doc2::inputStream()
-{
+::istream & Doc2::inputStream() {
     if (!this->istm_) {
         
         char fn[256];
@@ -317,18 +297,13 @@ char const * Doc2::localPath()
     return *this->istm_;
 }
 
-::ostream & Doc2::outputStream()
-{
-    if (!ostm_) {
-        ostm_ = new ::ofstream(stripProtocol(url_), ios::out);
-    }
-    
+::ostream & Doc2::outputStream() {
+    if (!ostm_) { ostm_ = new ::ofstream(stripProtocol(url_), ios::out); }
     return *this->ostm_;
 }
 
-char const * Doc2::stripProtocol(char const * url)
-{
-    char const * s = url;
+const char * Doc2::stripProtocol(const char * url) {
+    const char * s = url;
     
 # ifdef _WIN32
     if (strncmp(s+1,":/",2) == 0) {
@@ -348,26 +323,24 @@ char const * Doc2::stripProtocol(char const * url)
     return url;
 }
 
-bool Doc2::isAbsolute(const char *url)
-{
+bool Doc2::isAbsolute(const char * url) {
   const char *s = stripProtocol(url);
   return ( *s == '/' || *(s+1) == ':' );
 }
 
 // Converts a url into a local filename
 
-bool Doc2::filename(char * fn, int nfn)
-{
+bool Doc2::filename(char * fn, int nfn) {
     fn[0] = '\0';
     
     char * e = 0;
-    char const * s = stripProtocol(url_);
+    const char * s = stripProtocol(url_);
     
     if ((e = strrchr(s,'#')) != 0) {
         *e = '\0';
     }
     
-    char const * protocol = urlProtocol();
+    const char * protocol = urlProtocol();
     
     // Get a local copy of http files
     if (strcmp(protocol, "http") == 0) {
@@ -495,6 +468,8 @@ char* Doc2::convertCommonToMacPath( char *fn, int nfn )
 
 # endif /* macintosh */
 
+} // namespace OpenVRML
+
 namespace {
     
     //
@@ -532,9 +507,9 @@ namespace {
         // zlib only supports the "rb" and "wb" modes, so we bail on anything
         // else.
         //
-        static char const * const read_mode_string = "rb";
-        static char const * const write_mode_string = "wb";
-        char const * mode_string = 0;
+        static const char * const read_mode_string = "rb";
+        static const char * const write_mode_string = "wb";
+        const char * mode_string = 0;
         if (mode == (ios::binary | ios::in)) {
             mode_string = read_mode_string;
         } else if (   (mode == (ios::binary | ios::out))
@@ -633,7 +608,7 @@ namespace {
       : istream(&fbuf)
     {}
     
-    z::ifstream::ifstream(char const * path, level lev, strategy strat)
+    z::ifstream::ifstream(const char * path, level lev, strategy strat)
       : istream(&fbuf)
     {
         this->open(path, lev, strat);
@@ -651,7 +626,7 @@ namespace {
         return this->fbuf.is_open();
     }
     
-    void z::ifstream::open(char const * path, level lev, strategy strat)
+    void z::ifstream::open(const char * path, level lev, strategy strat)
     {
         if (!this->fbuf.open(path, ios::binary | ios::in, lev, strat)) {
 # ifdef _WIN32

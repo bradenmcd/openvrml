@@ -2189,10 +2189,10 @@ void ViewerOpenGL::setFog(const float * color,
 }
 
 void ViewerOpenGL::setMaterial(float ambientIntensity,
-			       const float diffuseColor[],
-			       const float emissiveColor[],
+			       const float diffuseColor[3],
+			       const float emissiveColor[3],
 			       float shininess,
-			       const float specularColor[],
+			       const float specularColor[3],
 			       float transparency)
 {
   float alpha = 1.0 - transparency;

@@ -42,9 +42,9 @@
 #include "doc2.hpp"
 #include "System.h"
 
-using namespace OpenVRML;
+namespace OpenVRML {
 
-Doc::Doc(const std::string & url, Doc const * relative): d_url(0), d_ostream(0),
+Doc::Doc(const std::string & url, const Doc * relative): d_url(0), d_ostream(0),
         d_fp(0), d_gz(0), d_tmpfile(0) {
     if (url.length() > 0) {
         this->seturl(url.c_str(), relative);
@@ -510,3 +510,5 @@ bool Doc::isAbsolute(const char *url)
   const char *s = stripProtocol(url);
   return ( *s == '/' || *(s+1) == ':' );
 }
+
+} // namespace OpenVRML
