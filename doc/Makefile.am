@@ -11,11 +11,9 @@ EXTRA_DIST = \
 doc:
 	cd $(srcdir) && $(DOXYGEN)
 
-dist-hook: doc
-
 install-data-local:
-	$(mkinstalldirs) $(docdir)/manual
-	$(INSTALL_DATA) $(srcdir)/manual/* $(docdir)/manual
+	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual
+	$(INSTALL_DATA) $(srcdir)/manual/* $(DESTDIR)$(docdir)/manual
 
 uninstall-local:
-	rm -rf $(docdir)/manual
+	rm -rf $(DESTDIR)$(docdir)/manual

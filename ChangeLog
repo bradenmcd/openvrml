@@ -1,5 +1,10 @@
 2003-09-28  Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Makefile.am:  Made install-data-local DESTDIR-aware;
+	removed doc from dist-hook.
+
+2003-09-28  Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac:  Added AC_COPYRIGHT.
 
 2003-09-25  Braden McDaniel  <braden@endoframe.com>
