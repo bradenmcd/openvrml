@@ -233,11 +233,11 @@ makefiles for use with nmake.
 environment variables are set appropriately.  This is generally
 accomplished by running the batch file `vcvars32.bat'.
 
-   In a console window, change to the `win32' subdirectory of the
-OpenVRML distribution. Run
-     nmake /F Makefile.win
+   In a console window, change to the `ide-projects\Windows\VisualC6' 
+subdirectory of the OpenVRML distribution. Run
+     nmake /F Makefile.vc6
 for help and options, or
-     nmake /F Makefile.win all
+     nmake /F Makefile.vc6 all
 to build the OpenVRML libraries and the Lookat program.
 
 2.2  Using DevStudio
@@ -245,39 +245,41 @@ to build the OpenVRML libraries and the Lookat program.
 
    The OpenVRML distribution includes a workspace file (*.dsw) and
 project files (*.dsp) for each library and the Lookat program. Simply
-open the workspace file--in the `win32' subdirectory of the
-distribution--in DevStudio.  This will load the libvrml97core,
-libvrml97gl, and lookat, which should be built in that order. Remember
-to set the include and library directories to point to where you've
-installed OpenVRML's dependencies (`README' for further information on
-obtaining these).  libvrml97core depends on libjpeg, libpng, and zlib.
-libvrml97gl depends on OpenGL. lookat depends on GLUT.
+open the workspace file--in the `ide-projects\Windows\VisualC6' 
+subdirectory of the distribution--in DevStudio.  This will load the 
+openvrmlcore, openvrmlgl, libantlr, libjs, openvrml and lookat project
+files, which should be built in that order, if you set active project to
+lookat. Remember to set the include and library directories to point 
+to where you've installed OpenVRML's dependencies (`README' for further
+information on obtaining these). openvrmlcore depends on libjpeg, 
+libpng, and zlib. openvrmlgl depends on OpenGL. lookat depends on GLUT.
+Set include directories and library directories GLUT, PNG, Zlib and JPEG 
+library by Tools->Options->Directories in MSVC++6.
 
-   The project file for libvrml97core is configured to use ANTLR to
-regenerate the parser source as needed, but you will probably need to
+   The project file for openvrmlcore is configured to use ANTLR to
+regenerate the parser source, but you will probably need to
 modify it slightly to point to your Java and ANTLR installations.
 Edit the Custom Build Step for antlr.g by selecting
-Project->Settings->libvrml97core->Source File in DevStudio.
+Project->Settings->openvrmlcore->Source File in DevStudio.
 Replace `c:\User\jdk1.2.2\bin' with the location of Java compiler.
 Replace `c:\User\antlr-2.7.0' with the directory where you have
 installed ANTLR, and include the ANTLR installation directory in
 your CLASSPATH.
 
-   For building only javascript dll library (libjavascript.lib and
-libjavascript.dll), workspace file `libvrml97js.dsw' is given in
-`libvrml97\libvrml97core\win32\javascript' directory.
+   Individual workspace file for openvrmlcore is kept in 
+'ide-projects\Windows\VisualC6\openvrml-core' and for openvrmlgl is 
+kept in 'ide-projects\Windows\VisualC6\openvrml-gl'.
+
+   For building only javascript dll library (libjs.lib and
+libjs.dll), workspace file `libjs.dsw' is given in
+`ide-projects\Windows\VisualC6\tplib\js' directory.
 
    For building only antlr library (libantlr.lib), workspace file
-`libantlr.dsw' is given in `libvrml97\libvrml97core\win32\antlr'.
+`libantlr.dsw' is given in `ide-projects\Windows\VisualC6\tplib\antlr'.
 
-   For building the Lookat program, you need to set include directories
-libvrml97core and libvrml97gl (for example,
-`c:\libvrml97\libvrml97core\src') and library directories for
-libvrml97core, libvrml97gl, GLUT, PNG, Zlib and JPEG library by
-Tools->Options->Directories in MSVC++6.
 
-   There are currently problems with undefined symbols when building
-Lookat in debug mode.  Release mode does not experience this.
+
+
 
 
 3  CodeWarrior 5.x Professional for Macintosh
