@@ -2493,7 +2493,7 @@ namespace {
     
     template <typename ElementType, size_t ArraySize>
     class array_vector {
-        static const size_t min_capacity = 1;
+        enum { min_capacity = 1 };
         size_t size_;
         size_t capacity_;
         ElementType (*data_)[ArraySize];

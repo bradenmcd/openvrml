@@ -1,3 +1,8 @@
+2002-12-10  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/field.cpp:  MSVC6 doesn't like in-class
+          initialization of static const integers.  Use enum instead.
+
 2002-12-09  Braden McDaniel  <braden@endoframe.com>
 
         * README, configure.ac, java/Makefile.am, java/vrml/Makefile.am,
