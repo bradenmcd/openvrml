@@ -1,3 +1,9 @@
+2004-01-14 Braden McDaniel  <braden@endoframe.com>
+
+	Use boost::lexical_cast.
+
+	* src/libopenvrml/openvrml/browser.cpp
+
 2004-01-07 Braden McDaniel  <braden@endoframe.com>
 
 	Removed unused member "openvrml::gl::viewer::rotation".

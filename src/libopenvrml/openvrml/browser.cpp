@@ -33,6 +33,7 @@
 # else
 #   include <sys/time.h>
 # endif
+# include <boost/lexical_cast.hpp>
 # include "private.h"
 # include "browser.h"
 # include "doc.h"
@@ -2244,18 +2245,12 @@ void scene::shutdown(const double timestamp) throw ()
 }
 
 
-namespace {
-    const std::string toString(const node_interface::type_id interfaceType)
-    {
-        std::ostringstream out;
-        out << interfaceType;
-        return out.str();
-    }
-}
-
-NodeInterfaceTypeMismatch::NodeInterfaceTypeMismatch(
-        const node_interface::type_id lhs, const node_interface::type_id rhs):
-    std::runtime_error(toString(lhs) + " cannot be mapped to " + toString(rhs))
+NodeInterfaceTypeMismatch::
+NodeInterfaceTypeMismatch(const node_interface::type_id lhs,
+                          const node_interface::type_id rhs):
+    std::runtime_error(boost::lexical_cast<std::string>(lhs)
+                       + " cannot be mapped to "
+                       + boost::lexical_cast<std::string>(rhs))
 {}
 
 NodeInterfaceTypeMismatch::~NodeInterfaceTypeMismatch() throw ()
