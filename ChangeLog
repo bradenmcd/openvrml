@@ -14,6 +14,9 @@
 
         * src/openvrml/OpenVRML/node.cpp:  Added doc-comments.
 
+        * src/openvrml/OpenVRML/vrml97node.cpp:  Prefer std::distance to
+          pointer/iterator arithmetic.
+
 2002-12-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp:  Use newer
