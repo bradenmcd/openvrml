@@ -5,12 +5,16 @@
 //  Program to exercise the VrmlScene and ViewerGlut classes.
 //
 
-#include <GL/glut.h>
-#include <vrml97/Doc.h>
-#include <vrml97/System.h>
-#include <vrml97/VrmlScene.h>
+# if defined(__FreeBSD__)
+#   include <floatingpoint.h>
+# endif
 
-#include "ViewerGlut.h"
+# include <GL/glut.h>
+# include <vrml97/Doc.h>
+# include <vrml97/System.h>
+# include <vrml97/VrmlScene.h>
+
+# include "ViewerGlut.h"
 
 static void worldChangedCB(int);
 VrmlScene *vrmlScene = 0;
@@ -20,6 +24,10 @@ ViewerGlut   *viewer = 0;
 int
 main(int argc, char **argv)
 {
+# if defined(__FreeBSD__)
+  fpsetmask(0);
+# endif;  
+  
   glutInitWindowSize(400, 320);
   glutInit( &argc, argv);
 

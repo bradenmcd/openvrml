@@ -6,14 +6,17 @@ else
 DEBUG_CFLAGS = -DNDEBUG
 endif
 
+if FREEBSD
+DEFS += -DFREEBSD
+endif
+
 CFLAGS = -Wall -Wno-format -O2 $(DEBUG_CFLAGS) -DXP_UNIX
+LDFLAGS = -version-info @LIBVRML97JS_SO_VERSION@
 
 noinst_PROGRAMS = jscpucfg
-
 jscpucfg_SOURCES = jscpucfg.c
 
 lib_LTLIBRARIES = libvrml97js.la
-
 libvrml97js_la_SOURCES = \
 	jsapi.c	 \
 	jsarena.c \

@@ -1,18 +1,3 @@
-dnl configure.in
-dnl
-dnl toplevel configure.in for libvrml97
-dnl
-dnl basic theory here was to run autoscan, then merge the
-dnl resulting output with the union of the configure.in's in
-dnl the libvrml97core, libvrml97gl and lookat directories.
-dnl should probably test for gtk libs and do gtklookat while
-dnl we're at it, but that can come later.
-dnl
-dnl cks Mon Dec  6 00:22:16 CST 1999
-dnl
-dnl
-dnl
-
 AC_INIT(libvrml97core/src/vrml97/VrmlScene.cpp)
 PACKAGE=libvrml97
 LIBVRML97_MAJOR_VERSION="0"
@@ -29,11 +14,13 @@ AC_DEFINE_UNQUOTED(LIBVRML97_MICRO_VERSION)
 dnl
 dnl libtool versions
 dnl
-LIBVRML97_SO_VERSION="0:0:0"
-LIBVRML97GL_SO_VERSION="0:0:0"
+LIBVRML97_SO_VERSION="1:0:0"
+LIBVRML97GL_SO_VERSION="0:1:0"
+LIBVRML97JS_SO_VERSION="0:0:0"
 
 AC_SUBST(LIBVRML97_SO_VERSION)
 AC_SUBST(LIBVRML97GL_SO_VERSION)
+AC_SUBST(LIBVRML97JS_SO_VERSION)
 
 dnl
 dnl Checks for Win32 stuff
@@ -68,147 +55,19 @@ dnl Check for X, GL/Mesa, glut
 dnl
 VRMLGL_PATH_GLUT(, AC_MSG_ERROR([glut or one of its dependencies not found. See 'config.log' for details.]))
 
-
-dnl
-dnl I don't think we want this anymore. -- Braden, 1999-12-18
-dnl
-dnl VRML
-dnl
-dnl ok: this gets tricky: the idea is that we normally will want to
-dnl link against the libraries in the local build dir, but we should
-dnl give the user a choice: local libs, installed libs, or some other
-dnl set of libs.
-
-dnl go ahead an check for installed libvrml97 libraries whether we're
-dnl going to use them or not. it's not an error if we don't find them.
-dnl
-dnl AC_LANG_CPLUSPLUS
-dnl AC_MSG_CHECKING([libvrml97])
-dnl ac_save_LIBS="$LIBS"
-dnl LIBS="-lvrml97 -ljpeg -lpng -lz $LIBS"
-dnl AC_TRY_LINK([#include<vrml97/VrmlScene.h>], [ VrmlScene::readWrl(0, 0);], INSTALLED_LIBVRML97=yes, INSTALLED_LIBVRML97=no)
-dnl LIBS="$ac_save_LIBS"
-dnl AC_LANG_C
-
-dnl why doesn't the following this work right? it looks reasonable,
-dnl but configure complains. i suspect an autoconf bug. use the test 
-dnl from libvrml97core/m4/vrml97.m4 instead.
-dnl
-dnl AC_CHECK_LIB(vrml97, VrmlScene::readWrl, AC_MSG_CHECKING([libvrml97]),
-dnl AC_MSG_RESULT([not found]), -lpng -ljpeg -lz)
-
-dnl now the internal dependencies. problem: we need to give the path
-dnl to the libraries, but they're going to be referenced from a
-dnl subdirectory. instead of using a brittle set of ".."'s, use the
-dnl automake variable top_builddir. it's a little tricky getting it
-dnl from here to the Makefile without losing the "$", but putting a
-dnl slash in front of it seems to do the trick.
-dnl
-dnl LIBVRML97GL_LIB_DIR="\$(top_builddir)/libvrml97gl/src/vrml97gl/"
-dnl LIBVRML97CORE_LIB_DIR="\$(top_builddir)/libvrml97core/src/vrml97/"
-dnl LIBVRML97GL_INC_DIR="\$(top_builddir)/libvrml97gl/src/"
-dnl LIBVRML97CORE_INC_DIR="\$(top_builddir)/libvrml97core/src/"
-
-dnl ok, now we know where the internal libs are, and where any
-dnl installed libs are: which ones do we use?
-dnl --with-libvrml97=installed
-dnl --with-libvrml97=path (this one isn't done yet!)
-dnl otherwise, do the normal thing and use the versions included
-dnl in the build tree
-dnl
-dnl AC_ARG_WITH(libvrml97, [ xxx ])
-dnl x_suffix="$X_LIBS $X_PRE_LIBS -lX11 -lXi -lXext -lXmu $X_EXTRA_LIBS -lm"
-dnl if test "$with_libvrml97" = "installed"; then
-dnl   if test "$INSTALLED_LIBVRML97" = "no"; then
-dnl     AC_MSG_ERROR("libvrml97 not installed")
-dnl   fi
-dnl   AC_MSG_RESULT([use installed libvrml97])
-dnl   VRMLGL_LIBS="-lvrml97 -lvrml97gl $GLUT_LIBS -lpng -ljpeg -lz"
-dnl else
-dnl   AC_MSG_RESULT([using normal libvrml97])
-dnl   VRMLGL_LIBS="$LIBVRML97CORE_LIB_DIR/libvrml97.la $LIBVRML97GL_LIB_DIR/libvrml97gl.la $GLUT_LIBS -lpng -ljpeg -lz"
-dnl   CPPFLAGS="$CPPFLAGS -I$LIBVRML97CORE_INC_DIR -I$LIBVRML97GL_INC_DIR"
-dnl   AC_SUBST(CPPFLAGS)
-dnl fi
-dnl AC_SUBST(VRMLGL_LIBS)
-
-
 dnl
 dnl Test for adequate namespace support in the C++ compiler
 dnl
-dnl VRML_CXX_NAMESPACE(
-dnl   ,
-dnl   AC_MSG_ERROR([Your C++ compiler does not have sufficient support for namespaces. See 'config.log' for details.])
-dnl )
+VRML_CXX_NAMESPACE(
+  ,
+  no_cxx_namespaces=true
+)
+AM_CONDITIONAL(NO_CXX_NAMESPACES, test x$no_cxx_namespaces = xtrue)
 
 VRML_CXX_BOOL(
   ,
   AC_MSG_ERROR([Your C++ compiler does not have the required support for the 'bool' keyword. See 'config.log' for details.])
 )
-
-dnl NOTABLY COMPLEX C++ COMPILER TESTS
-dnl
-dnl these are verbatim from libvrml97core. they could help avert
-dnl annoying support messages on the libvrml97 list from people
-dnl with ancient c++ compilers, but they add a great deal of 
-dnl complexity, and at best just tell a user they're out of luck.
-dnl the ones that are not absolutely necessary need to be removed.
-dnl
-dnl
-
-AC_LANG_CPLUSPLUS
-
-
-AC_MSG_CHECKING(if C++ compiler supports static data inside templates)
-AC_TRY_LINK(
-[
-template<class T>
-class foo { public: static T a; };
-template<class T>
-static T foo<T>::a=0;
-],[
-  foo<int> b;
-],[
-  ac_static_templates=yes
-],[
-dnl  AC_DEFINE(HAVE_NO_STATIC_TEMPLATES)
-  ac_static_templates=no
-])
-AC_MSG_RESULT([$ac_static_templates])
-
-
-
-AC_MSG_CHECKING(if C++ compiler supports templates well enough(required))
-AC_TRY_LINK(
-[
-class foo { public: int a(float,int,int,foo*,foo**) { return 0; } };
-template<class rettype, class T, class P1, class P2, class P3, class P4, class P5>
-class k {
-public:
-   rettype (T::*method)(P1,P2,P3,P4,P5);
-};
-],[
-  k<int,foo,float,int,int,foo*,foo**> a;
-],[
-],[
-  config_error=yes
-  AC_WARN(your C++ compiler does not support templates well enough)
-])
-AC_MSG_RESULT([yes])
-
-
-
-AC_MSG_CHECKING(if required compiler features are available)
-if test "x$config_error" = xyes ; then
-  AC_MSG_RESULT([no])
-  AC_MSG_ERROR(Your compiler is not powerful enough to compile libVrml97. If you think that that your compiler is powerful enough, then see config.log for more information about why things failed.)
-fi
-AC_MSG_RESULT([yes])
-
-
-dnl
-dnl
-dnl END OF NOTABLY COMPLEX COMPILER TESTS
 
 
 dnl Checks for library functions.
@@ -229,6 +88,21 @@ AC_ARG_ENABLE(debug,
   [ debug=false ]
 )
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
+
+dnl
+dnl Stuff for JavaScript
+dnl
+AC_DEFINE(XP_UNIX, ,[JavaScript requires this])
+
+dnl
+dnl JavaScript doesn't include config.h, so we have to use automake conditionals
+dnl
+case "$target" in
+  *-freebsd*)
+    freebsd=true
+    ;;
+esac
+AM_CONDITIONAL(FREEBSD, test x$freebsd = xtrue)
 
 AC_OUTPUT(Makefile \
           m4/Makefile \

@@ -9,7 +9,7 @@ endif
 
 INCLUDES = -I$(top_srcdir)/libvrml97core/src
 CXXFLAGS = -O2 -Wall $(DEBUG_CXXFLAGS) @GLUT_CFLAGS@
-LDFLAGS = -version-info $(LIBVRML97_SO_VERSION) @GLUT_LIBS@ -L$../../../libvrml97core/src/vrml97 -lvrml97
+LDFLAGS = -version-info @LIBVRML97GL_SO_VERSION@ @GLUT_LIBS@ -L$../../../libvrml97core/src/vrml97 -lvrml97
 
 lib_LTLIBRARIES = libvrml97gl.la
 

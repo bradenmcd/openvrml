@@ -1,4 +1,9 @@
-2000-01-34  Braden McDaniel <braden@endoframe.com>
+2000-01-23  Braden McDaniel <braden@endoframe.com>
+
+        * Patch from Stuart Anderson <anderson@metrolink.com> applied to lookat
+          to correct floating point handling on FreeBSD.
+
+2000-01-21  Braden McDaniel <braden@endoframe.com>
 
         * JavaScript 1.5 beta 1 has been added to the project and incorporated
           into the GNU build, replacing the Arbitrary CVS Snapshot that had been

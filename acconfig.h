@@ -45,6 +45,7 @@ static const char COLON = ':';
 #undef HAVE_LIBJPEG
 #undef HAVE_LIBPNG
 #undef HAVE_ZLIB
+#undef XP_UNIX
 
 @TOP@
 @BOTTOM@

@@ -1,4 +1,11 @@
 #
+# Blow off "std" if the compiler doesn't support namespaces
+#
+if NO_CXX_NAMESPACES
+  DEFS += -Dstd=""
+endif
+
+#
 # Add any debug flags
 #
 if DEBUG
@@ -7,14 +14,9 @@ else
   DEBUG_CXXFLAGS = -DNDEBUG
 endif
 
-#
-# Need this for JavaScript
-#
-JS_CFLAGS = -DXP_UNIX
-
 INCLUDES = -I$(top_srcdir)/libvrml97js/src
-CXXFLAGS = -Wall -O2 $(DEBUG_CXXFLAGS) $(JS_CFLAGS) @JPEG_CFLAGS@ @PNG_CFLAGS@
-LDFLAGS = -version-info $(LIBVRML97_SO_VERSION) @JPEG_LIBS@ @PNG_LIBS@ -L$../../../libvrml97js/src/vrml97js -lvrml97js
+CXXFLAGS = -Wall -O2 $(DEBUG_CXXFLAGS) @JPEG_CFLAGS@ @PNG_CFLAGS@
+LDFLAGS = -version-info @LIBVRML97_SO_VERSION@ @JPEG_LIBS@ @PNG_LIBS@ -L$../../../libvrml97js/src/vrml97js -lvrml97js
 LFLAGS = -Ls
 YFLAGS = -d
 
