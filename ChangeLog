@@ -2,6 +2,8 @@
 
         * Updated libopenvrml library version to 2:0:0.
 
+        * Updated libopenvrml-gl library version to 2:0:0.
+
 2002-06-14  Braden McDaniel  <braden@endoframe.com>
 
         * Require Automake 1.6.2.
