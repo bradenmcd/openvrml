@@ -2256,8 +2256,10 @@ void script::activate(const double timeStamp, const std::string & fname,
         for (i = 0; i < argc; ++i) {
             assert(argv[i]);
             jsargv[i] = vrmlFieldToJSVal(*argv[i]);
-            if (!JS_AddRoot(this->cx, &jsargv[i])) {
-                throw std::bad_alloc();
+            if (JSVAL_IS_GCTHING(jsargv[i])) {
+                if (!JS_AddRoot(this->cx, &jsargv[i])) {
+                    throw std::bad_alloc();
+                }
             }
         }
 
