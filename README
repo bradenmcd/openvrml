@@ -26,10 +26,6 @@ a whole according to the terms of the LGPL.  The full text of the LGPL
 can be found in the file `COPYING.LIB'.  Code used (and available for
 reuse) under other terms is as follows:
 
- * OpenVRML uses the Mozilla JavaScript engine, version 1.5, under the
-   Mozilla Public License (MPL), version 1.1.  The full text of the MPL
-   can be found in the file `MPL-1.1.txt'.
-
  * OpenVRML uses the ANTLR parser generator and C++ support library
    which are in the public domain.
 

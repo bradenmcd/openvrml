@@ -1,5 +1,14 @@
 2004-12-18  Braden McDaniel  <braden@endoframe.com>
 
+	SpiderMonkey is no longer distributed with OpenVRML; removed
+	references to MPL-1.1.txt.
+
+	* MPL-1.1.txt:  Removed file.
+	* Makefile.am
+	* README
+
+2004-12-18  Braden McDaniel  <braden@endoframe.com>
+
 	* src/lookat/ViewerGlut.cpp (ViewerGlut::ViewerGlut):  Set
 	ViewerGlut::d_window to the result of glutCreateWindow.  This
 	shouldn't be any different from the previously used method of
