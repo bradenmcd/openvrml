@@ -1,5 +1,10 @@
 2004-12-29 Braden McDaniel  <braden@endoframe.com>
 
+	* openvrml.spec.in:  Fixed name of xorg-x11-devel prerequisite
+	for the openvrml-gl-devel package.
+
+2004-12-29 Braden McDaniel  <braden@endoframe.com>
+
 	Refactored GtkGLExt usage to eliminate GtkVrmlBrowser widget.
 	Since OpenVRML is a C++ library, this widget would probably
 	never support a useful (C) API.  So it needlessly complicated

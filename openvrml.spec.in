@@ -55,7 +55,7 @@ OpenGL renderer for OpenVRML.
 Summary:        OpenVRML OpenGL renderer headers and static library.
 Group:          Development/Libraries
 Requires:       %{name}-gl = %{version}
-Requires:       xorg-X11-devel >= 6.7
+Requires:       xorg-x11-devel >= 6.7
 %description gl-devel
 Headers and static library that programmers will need to develop C++ programs
 using the OpenVRML OpenGL renderer.
@@ -132,6 +132,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Dec 29 2004  Braden McDaniel  <braden@endoframe.com>
+- Fixed name of xorg-x11-devel prerequisite for the openvrml-gl-devel package.
+
 * Fri Dec 24 2004  Braden McDaniel  <braden@endoframe.com>
 - Require mozilla >= 1.6.  The plug-in now must link with libxpcom.
 - Removed GtkGLExt dependency; added GTK+ 2.x dependency.  GtkGLExt is
