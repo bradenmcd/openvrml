@@ -1,5 +1,11 @@
 2003-10-10  Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(elevation_grid_node::insert_geometry):  Fixed errors accessing
+	sfnode fields that could attempt to dereference a null pointer.
+
+2003-10-10  Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(viewer::insert_cylinder):  Fixed crash introduced by careless
 	use of size_t in a for loop.  Increased the number of sides
