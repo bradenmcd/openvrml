@@ -24,15 +24,14 @@
 //  Document class
 //
 
-// Need to get rid of stdio (used by flex)...
-//struct FILE; gcc doesn't like this so #include <stdio.h> is necessary
 #include <stdio.h>
 #include <iostream.h>
+#include "common.h"
 
 class Doc2;
 typedef void * gzFile;
 
-class Doc {
+OPENVRML_SCOPE class Doc {
 
 public:
 
@@ -89,4 +88,5 @@ private:
     Doc & operator=(Doc const &);
 
 };
-#endif // DOC_H
+
+#endif

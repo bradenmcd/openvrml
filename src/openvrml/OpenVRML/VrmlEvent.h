@@ -21,10 +21,11 @@
 #ifndef VRMLEVENT_H
 #define VRMLEVENT_H
 
-#include "VrmlField.h"
 #include <string.h>
+#include "field.h"
+#include "VrmlField.h"
 
-class VrmlEvent {
+OPENVRML_SCOPE class VrmlEvent {
 
 public:
 

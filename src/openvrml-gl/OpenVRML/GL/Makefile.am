@@ -29,6 +29,4 @@ libopenvrml_gl_la_SOURCES = ViewerOpenGL.cpp OpenGLEvent.cpp
 libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @GLUT_LIBS@
 
 OpenVRMLGLincludedir = $(includedir)/OpenVRML/GL
-OpenVRMLGLinclude_HEADERS = ViewerOpenGL.h
-
-noinst_HEADERS = OpenGLEvent.h
+OpenVRMLGLinclude_HEADERS = common.h OpenGLEvent.h ViewerOpenGL.h

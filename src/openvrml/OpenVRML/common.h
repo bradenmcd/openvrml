@@ -1,7 +1,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
+// Copyright (C) 2001  Braden McDaniel
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,31 +16,20 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
+// 
 
-#ifndef SCRIPTOBJECT_H
-#define SCRIPTOBJECT_H
+# ifndef OPENVRML_COMMON_H
+#   define OPENVRML_COMMON_H
 
-#include <stddef.h>
-#include "common.h"
+#   if defined(_WIN32)
+#     if defined(DLL_EXPORT)
+#       define OPENVRML_SCOPE __declspec(dllexport)
+#     elif defined(OPENVRML_DLL_IMPORT)
+#       define OPENVRML_SCOPE __declspec(dllimport)
+#     endif
+#   endif
+#   if !defined(OPENVRML_SCOPE)
+#     define OPENVRML_SCOPE
+#   endif
 
-class VrmlField;
-class VrmlMFString;
-class VrmlNodeScript;
-
-OPENVRML_SCOPE class ScriptObject {
-public:
-    static ScriptObject * create(VrmlNodeScript & scriptNode,
-                                 const VrmlMFString & url);
-
-    virtual ~ScriptObject() = 0;
-    virtual void activate(double timeStamp, const char * fname,
-                          size_t argc, const VrmlField * argv[]) = 0;
-
-protected:
-    ScriptObject(VrmlNodeScript & scriptNode);
-
-    VrmlNodeScript & scriptNode;
-};
-
-#endif
+# endif

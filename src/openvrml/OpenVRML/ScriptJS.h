@@ -20,6 +20,7 @@
 #ifndef SCRIPTJS_H
 #define SCRIPTJS_H
 
+#include "common.h"
 #include "ScriptObject.h"
 #include "field.h"
 
@@ -28,7 +29,7 @@ class VrmlScene;
 
 typedef long jsval;
 
-class ScriptJS: public ScriptObject {
+OPENVRML_SCOPE class ScriptJS: public ScriptObject {
     static struct JSRuntime * rt;
     static size_t nInstances;
 

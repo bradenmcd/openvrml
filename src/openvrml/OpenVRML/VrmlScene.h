@@ -22,8 +22,7 @@
 #define VRMLSCENE_H
 
 #include <list>
-
-// The loaders fill in a Group node
+#include "common.h"
 #include "vrml97node.h"
 
 class VrmlNode;
@@ -41,7 +40,7 @@ class Viewer;
 class VrmlNamespace;
 class VrmlNodeType;
 
-class VrmlScene {
+OPENVRML_SCOPE class VrmlScene {
 
 public:
 

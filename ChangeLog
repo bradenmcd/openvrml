@@ -1,3 +1,7 @@
+2001-05-22  Braden McDaniel <braden@endoframe.com>
+
+        * Added macros to support building Win32 DLLs.
+
 2001-05-20  Braden McDaniel <braden@endoframe.com>
 
         * Fixed a crash when printing NULL SFNodes.

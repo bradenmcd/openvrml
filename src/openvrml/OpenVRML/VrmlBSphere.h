@@ -21,6 +21,7 @@
 #ifndef VRMLBSPHERE_H
 #define VRMLBSPHERE_H
 
+#include "common.h"
 #include "VrmlBVolume.h"
 class VrmlSFVec3f;
 
@@ -32,7 +33,7 @@ class VrmlSFVec3f;
  * chose the bounding sphere for their patients who chewed bounding
  * volumes.
  */
-class VrmlBSphere : public VrmlBVolume {
+OPENVRML_SCOPE class VrmlBSphere : public VrmlBVolume {
 
  protected:
 

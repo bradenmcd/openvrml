@@ -25,12 +25,13 @@
 //
 
 #include <list>
+#include "common.h"
 #include "field.h"
 
 class VrmlNode;
 class VrmlNodeType;
 
-class VrmlNamespace {
+OPENVRML_SCOPE class VrmlNamespace {
 public:
 
   VrmlNamespace( VrmlNamespace *parent = 0 );

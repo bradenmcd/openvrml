@@ -25,12 +25,13 @@
 #include <config.h>
 #endif
 
+#include "common.h"
 #include "VrmlNode.h"
 #include "VrmlNodeType.h"
 #include "Viewer.h"
 #include "field.h"
 
-class VrmlNodeProto : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeProto : public VrmlNode {
 
 public:
 

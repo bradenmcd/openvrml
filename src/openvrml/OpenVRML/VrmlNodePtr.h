@@ -22,12 +22,13 @@
 #   define OPENVRML_NODEPTR_H
 
 #   include <map>
+#   include "common.h"
 
 class VrmlNode;
 
 typedef std::map<VrmlNode *, size_t> CountMap;
 
-class VrmlNodePtr {
+OPENVRML_SCOPE class VrmlNodePtr {
 
     friend class VrmlNodeScript;
 

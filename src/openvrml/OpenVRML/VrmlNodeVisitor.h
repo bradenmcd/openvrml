@@ -21,6 +21,8 @@
 # ifndef VRMLNODEVISITOR_H
 #   define VRMLNODEVISITOR_H
 
+#   include "common.h"
+
 class VrmlNodeAnchor;
 class VrmlNodeAppearance;
 class VrmlNodeAudioClip;
@@ -77,7 +79,7 @@ class VrmlNodeViewpoint;
 class VrmlNodeVisibilitySensor;
 class VrmlNodeWorldInfo;
 
-class VrmlNodeVisitor {
+OPENVRML_SCOPE class VrmlNodeVisitor {
 public:
     virtual ~VrmlNodeVisitor() = 0;
     

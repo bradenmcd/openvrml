@@ -21,9 +21,8 @@
 #ifndef VRMLAABOX_H
 #define VRMLAABOX_H
 
+#include "common.h"
 #include "VrmlBVolume.h"
-
-
 
 /**
  * An axis-aligned bounding box.
@@ -32,7 +31,7 @@
  * placeholder.
  *
  */
-class VrmlAABox : public VrmlBVolume {
+OPENVRML_SCOPE class VrmlAABox : public VrmlBVolume {
 
  public:
 
@@ -56,6 +55,4 @@ class VrmlAABox : public VrmlBVolume {
   ostream& dump(ostream& ostr) const;
 };
 
-
-
-#endif // VRMLAABOX_H
+#endif

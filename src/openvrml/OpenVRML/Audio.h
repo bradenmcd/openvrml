@@ -26,17 +26,18 @@
 //
 #include <stdio.h>
 #include <math.h>
+#include "common.h"
 
 class  Doc;
 
-enum AudioEncoding
+OPENVRML_SCOPE enum AudioEncoding
 {
     AUDIO_LINEAR,
     AUDIO_ULAW
 };
 
 
-class Audio
+OPENVRML_SCOPE class Audio
 {
   public:
     Audio (const char *url = 0, Doc *relative = 0);

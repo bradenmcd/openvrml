@@ -26,7 +26,7 @@
 #endif
 
 #include <OpenVRML/Viewer.h>
-
+#include "common.h"
 
 // Use the stencil buffer to set the SHAPE mask.
 #define USE_STENCIL_SHAPE 0
@@ -47,7 +47,7 @@ extern "C" struct GLUtesselator;
  * A window-system specific subclass needs to redefine the pure
  * virtual methods.
  */
-class ViewerOpenGL : public Viewer {
+OPENVRML_GL_SCOPE class ViewerOpenGL : public Viewer {
 
 public:
 

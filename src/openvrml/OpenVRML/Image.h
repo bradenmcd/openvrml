@@ -22,6 +22,7 @@
 #   define IMAGE_H
 
 # include <stddef.h>
+# include "common.h"
 
 class Doc;
 class Doc2;
@@ -30,7 +31,7 @@ class VrmlMFString;
 /**
  * The Image class is a format-independent API for loading textures.
  */
-class Image {
+OPENVRML_SCOPE class Image {
 
 public:
 

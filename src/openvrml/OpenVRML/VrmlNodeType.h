@@ -22,16 +22,15 @@
 #define VRMLNODETYPE_H
 
 #include <list>
-
-#include "VrmlNodePtr.h"
+#include "common.h"
 #include "field.h"
+#include "VrmlNodePtr.h"
 
 class Doc2;
 class VrmlNamespace;
 class VrmlScene;
 
-
-class VrmlNodeType {
+OPENVRML_SCOPE class VrmlNodeType {
 public:
     struct NodeFieldRec {
         VrmlNodePtr node;

@@ -73,7 +73,7 @@ $(top_builddir)/lib/antlr/libantlr.la
 libopenvrml_la_LIBADD = antlr-prelinked.lo $(JAVASCRIPT_SUPPORT_LIBOBJ)
 
 OpenVRMLincludedir = $(includedir)/OpenVRML
-OpenVRMLinclude_HEADERS = Audio.h Doc.h Image.h MathUtils.h Route.h \
+OpenVRMLinclude_HEADERS = common.h Audio.h Doc.h Image.h MathUtils.h Route.h \
 ScriptObject.h System.h Viewer.h VrmlAABox.h VrmlBVolume.h VrmlBSphere.h \
 VrmlEvent.h VrmlFrustum.h field.h VrmlNamespace.h VrmlNodePtr.h VrmlNode.h \
 VrmlNodeScript.h VrmlNodeType.h vrml97node.h VrmlRenderContext.h VrmlScene.h \

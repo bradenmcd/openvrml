@@ -26,14 +26,14 @@
 #endif
 
 #include <list>
+#include "common.h"
 #include "vrml97node.h"
 
 class Doc;
 class ScriptObject;
 class VrmlScene;
 
-
-class VrmlNodeScript : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeScript : public VrmlNodeChild {
 
 public:
 

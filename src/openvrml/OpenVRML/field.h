@@ -23,6 +23,7 @@
 #   define OPENVRML_FIELD_H
 
 #   include <iostream.h>
+#   include "common.h"
 #   include "VrmlNodePtr.h"
 
 class VrmlSFBool;
@@ -45,7 +46,7 @@ class VrmlMFString;
 class VrmlMFVec2f;
 class VrmlMFVec3f;
 
-class VrmlField {
+OPENVRML_SCOPE class VrmlField {
     friend ostream & operator<<(ostream &, const VrmlField &);
 public:
     enum VrmlFieldType {
@@ -107,7 +108,7 @@ public:
 };
 
 
-class VrmlSFBool : public VrmlField {
+OPENVRML_SCOPE class VrmlSFBool : public VrmlField {
     bool d_value;
 public:
     explicit VrmlSFBool(bool value = false);
@@ -124,7 +125,7 @@ public:
 };
 
 
-class VrmlSFColor : public VrmlField {
+OPENVRML_SCOPE class VrmlSFColor : public VrmlField {
     float d_rgb[3];
 public:
     static void HSVtoRGB(const float hsv[3], float rgb[3]);
@@ -153,7 +154,7 @@ public:
 };
 
 
-class VrmlSFFloat : public VrmlField {
+OPENVRML_SCOPE class VrmlSFFloat : public VrmlField {
     float d_value;
 public:
     explicit VrmlSFFloat(float value = 0.0);
@@ -170,7 +171,7 @@ public:
 };
 
 
-class VrmlSFImage : public VrmlField {
+OPENVRML_SCOPE class VrmlSFImage : public VrmlField {
     size_t d_w, d_h, d_nc;
     unsigned char * d_pixels;	// nc bytes/pixel, lower left to upper right
 public:
@@ -196,7 +197,7 @@ public:
 };
 
 
-class VrmlSFInt32 : public VrmlField {
+OPENVRML_SCOPE class VrmlSFInt32 : public VrmlField {
     long d_value;
 public:
     explicit VrmlSFInt32(long = 0);
@@ -213,7 +214,7 @@ public:
 };
 
 
-class VrmlSFNode : public VrmlField {
+OPENVRML_SCOPE class VrmlSFNode : public VrmlField {
     VrmlNodePtr node;
 public:
     explicit VrmlSFNode(const VrmlNodePtr & node = VrmlNodePtr(0));
@@ -233,7 +234,7 @@ public:
 };
 
 
-class VrmlSFRotation : public VrmlField {
+OPENVRML_SCOPE class VrmlSFRotation : public VrmlField {
     float d_x[4];
 public:
     VrmlSFRotation();
@@ -276,7 +277,7 @@ private:
 };
 
 
-class VrmlSFString : public VrmlField {
+OPENVRML_SCOPE class VrmlSFString : public VrmlField {
     char * d_s;
 public:
     explicit VrmlSFString(const char *s = 0);
@@ -296,7 +297,7 @@ public:
 };
 
 
-class VrmlSFTime : public VrmlField {
+OPENVRML_SCOPE class VrmlSFTime : public VrmlField {
     double d_value;
 public:
     explicit VrmlSFTime(double value = 0.0);
@@ -313,7 +314,7 @@ public:
 };
 
 
-class VrmlSFVec2f : public VrmlField {
+OPENVRML_SCOPE class VrmlSFVec2f : public VrmlField {
     float d_x[2];
 public:
     VrmlSFVec2f();
@@ -346,7 +347,7 @@ public:
 };
 
 
-class VrmlSFVec3f : public VrmlField {
+OPENVRML_SCOPE class VrmlSFVec3f : public VrmlField {
     float d_x[3];
 public:
     VrmlSFVec3f();
@@ -382,7 +383,7 @@ public:
 };
 
 
-class VrmlMFColor : public VrmlField {
+OPENVRML_SCOPE class VrmlMFColor : public VrmlField {
     class FData;
     FData * d_data;
 public:
@@ -409,7 +410,7 @@ public:
 };
 
 
-class VrmlMFFloat : public VrmlField {
+OPENVRML_SCOPE class VrmlMFFloat : public VrmlField {
     class FData;
     FData * d_data;
 public:
@@ -436,7 +437,7 @@ public:
 };
 
 
-class VrmlMFInt32 : public VrmlField {
+OPENVRML_SCOPE class VrmlMFInt32 : public VrmlField {
     class IData;
     IData *d_data;
 public:
@@ -463,7 +464,7 @@ public:
 };
 
 
-class VrmlMFNode : public VrmlField {
+OPENVRML_SCOPE class VrmlMFNode : public VrmlField {
     VrmlNodePtr * nodes;
     size_t allocated;
     size_t size;
@@ -493,7 +494,7 @@ private:
 };
 
 
-class VrmlMFRotation : public VrmlField {
+OPENVRML_SCOPE class VrmlMFRotation : public VrmlField {
     class FData;
     FData *d_data;
 public:
@@ -517,7 +518,7 @@ public:
 };
 
 
-class VrmlMFString : public VrmlField {
+OPENVRML_SCOPE class VrmlMFString : public VrmlField {
     char * * d_v;
     size_t d_allocated;
     size_t d_size;
@@ -543,7 +544,7 @@ public:
 };
 
 
-class VrmlMFTime : public VrmlField {
+OPENVRML_SCOPE class VrmlMFTime : public VrmlField {
     class DData;
     DData * d_data;
 public:
@@ -569,7 +570,7 @@ public:
 };
 
 
-class VrmlMFVec2f : public VrmlField {
+OPENVRML_SCOPE class VrmlMFVec2f : public VrmlField {
     class FData;
     FData * d_data;
 public:
@@ -594,7 +595,7 @@ public:
 };
 
 
-class VrmlMFVec3f : public VrmlField {
+OPENVRML_SCOPE class VrmlMFVec3f : public VrmlField {
     class FData;
     FData * d_data;
 public:

@@ -22,8 +22,9 @@
 # define DOC2_HPP
 
 # include <iostream.h>
+# include "common.h"
 
-class Doc2 {
+OPENVRML_SCOPE class Doc2 {
     public:
         
         Doc2(const char *url = 0, Doc2 const *relative = 0);

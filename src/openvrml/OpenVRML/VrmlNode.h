@@ -24,6 +24,7 @@
 #include <string.h>
 #include <list>
 #include <iostream.h>
+#include "common.h"
 #include "VrmlNodePtr.h"
 #include "System.h"		// error
 
@@ -97,7 +98,7 @@ class VrmlNode;
 ostream& operator<<(ostream& os, const VrmlNode& f);
 
 
-class VrmlNode {
+OPENVRML_SCOPE class VrmlNode {
   friend ostream& operator<<(ostream& os, const VrmlNode& f);
 
 public:

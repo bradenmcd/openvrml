@@ -21,6 +21,8 @@
 #ifndef VRMLRENDERCONTEXT_H
 #define VRMLRENDERCONTEXT_H
 
+#include "common.h"
+
 /**
  * Information needed during a render traversal. The members could be
  * arguments to the <code>VrmlNode::render()</code> method, but there
@@ -56,7 +58,7 @@
  * @see VrmlNode::render
  * @see VrmlScene::render
  */
-class VrmlRenderContext {
+OPENVRML_SCOPE class VrmlRenderContext {
 
  public:
 

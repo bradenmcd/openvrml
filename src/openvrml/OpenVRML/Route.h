@@ -21,9 +21,10 @@
 # ifndef ROUTE_H
 #   define ROUTE_H
 
+#   include "common.h"
 #   include "VrmlNodePtr.h"
 
-class Route {
+OPENVRML_SCOPE class Route {
 public:
   Route(const char * fromEventOut, const VrmlNodePtr & toNode,
         const char * toEventIn);

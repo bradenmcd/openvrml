@@ -22,13 +22,14 @@
 # ifndef OPENVRML_VRML97NODE_H
 #   define OPENVRML_VRML97NODE_H
 
+#   include "common.h"
 #   include "field.h"
 #   include "VrmlNode.h"
 #   include "Viewer.h"
 #   include "Image.h"
 #   include "VrmlBSphere.h"
 
-class VrmlNodeChild : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeChild : public VrmlNode {
 public:
     static VrmlNodeType * defineType(VrmlNodeType *);
 
@@ -41,7 +42,7 @@ protected:
 };
 
 
-class VrmlNodeGeometry : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeGeometry : public VrmlNode {
 public:
     static VrmlNodeType *defineType(VrmlNodeType *t);
 
@@ -59,7 +60,7 @@ protected:
 };
 
 
-class VrmlNodeLight : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeLight : public VrmlNodeChild {
 public:
     static VrmlNodeType * defineType(VrmlNodeType * = 0);
 
@@ -85,7 +86,7 @@ protected:
 };
 
 
-class VrmlNodeGroup : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeGroup : public VrmlNodeChild {
 public:
     // Define the fields of all built in group nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -151,7 +152,7 @@ protected:
 };
 
 
-class VrmlNodeAnchor : public VrmlNodeGroup {
+OPENVRML_SCOPE class VrmlNodeAnchor : public VrmlNodeGroup {
 public:
     // Define the built in VrmlNodeType:: "Anchor"
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -188,7 +189,7 @@ protected:
 };
 
 
-class VrmlNodeAppearance : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeAppearance : public VrmlNode {
 public:
     // Define the built in VrmlNodeType:: "Appearance"
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -233,7 +234,7 @@ protected:
     VrmlSFNode d_textureTransform;
 };
 
-class VrmlNodeAudioClip : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeAudioClip : public VrmlNode {
     VrmlSFString d_description;
     VrmlSFBool d_loop;
     VrmlSFFloat d_pitch;
@@ -276,7 +277,7 @@ public:
 };
 
 
-class VrmlNodeBackground : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeBackground : public VrmlNodeChild {
     VrmlMFFloat d_groundAngle;
     VrmlMFColor d_groundColor;
     VrmlMFString d_backUrl;
@@ -334,7 +335,7 @@ public:
 };
 
 
-class VrmlNodeBillboard : public VrmlNodeGroup {
+OPENVRML_SCOPE class VrmlNodeBillboard : public VrmlNodeGroup {
     VrmlSFVec3f d_axisOfRotation;
     VrmlNode *d_parentTransform;
     Viewer::Object d_xformObject;
@@ -366,7 +367,7 @@ public:
 };
 
 
-class VrmlNodeBox : public VrmlNodeGeometry {
+OPENVRML_SCOPE class VrmlNodeBox : public VrmlNodeGeometry {
 public:
     // Define the fields of box nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -394,7 +395,7 @@ protected:
 };
 
 
-class VrmlNodeCollision : public VrmlNodeGroup {
+OPENVRML_SCOPE class VrmlNodeCollision : public VrmlNodeGroup {
     VrmlSFBool d_collide;
     VrmlSFNode d_proxy;
     VrmlSFTime d_collideTime;  // eventOut
@@ -428,7 +429,7 @@ public:
 };
 
 
-class VrmlNodeColor : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeColor : public VrmlNode {
     VrmlMFColor d_color;
 
 public:
@@ -452,7 +453,7 @@ public:
 };
 
 
-class VrmlNodeColorInt : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeColorInt : public VrmlNodeChild {
     // Fields
     VrmlMFFloat d_key;
     VrmlMFColor d_keyValue;
@@ -481,7 +482,7 @@ public:
 };
 
 
-class VrmlNodeCone : public VrmlNodeGeometry {
+OPENVRML_SCOPE class VrmlNodeCone : public VrmlNodeGeometry {
 public:
     // Define the fields of cone nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -512,7 +513,7 @@ protected:
 };
 
 
-class VrmlNodeCoordinate : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeCoordinate : public VrmlNode {
     VrmlMFVec3f d_point;
 
 public:
@@ -536,7 +537,7 @@ public:
 };
 
 
-class VrmlNodeCoordinateInt : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeCoordinateInt : public VrmlNodeChild {
     // Fields
     VrmlMFFloat d_key;
     VrmlMFVec3f d_keyValue;
@@ -565,7 +566,7 @@ public:
 };
 
 
-class VrmlNodeCylinder : public VrmlNodeGeometry {
+OPENVRML_SCOPE class VrmlNodeCylinder : public VrmlNodeGeometry {
 public:
     // Define the fields of cylinder nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -598,7 +599,7 @@ protected:
 };
 
 
-class VrmlNodeCylinderSensor : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeCylinderSensor : public VrmlNodeChild {
     // Fields
     VrmlSFBool d_autoOffset;
     VrmlSFFloat d_diskAngle;
@@ -634,7 +635,7 @@ public:
 };
 
 
-class VrmlNodeDirLight : public VrmlNodeLight {
+OPENVRML_SCOPE class VrmlNodeDirLight : public VrmlNodeLight {
 public:
     // Define the fields of dirLight nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -661,7 +662,7 @@ protected:
 };
 
 
-class VrmlNodeElevationGrid : public VrmlNodeGeometry {
+OPENVRML_SCOPE class VrmlNodeElevationGrid : public VrmlNodeGeometry {
 public:
     // Define the fields of elevationGrid nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -744,7 +745,7 @@ protected:
 };
 
 
-class VrmlNodeExtrusion : public VrmlNodeGeometry {
+OPENVRML_SCOPE class VrmlNodeExtrusion : public VrmlNodeGeometry {
 public:
     // Define the fields of extrusion nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -787,7 +788,7 @@ protected:
 };
 
 
-class VrmlNodeFog : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeFog : public VrmlNodeChild {
     VrmlSFColor d_color;
     VrmlSFString d_fogType;
     VrmlSFFloat d_visibilityRange;
@@ -824,7 +825,7 @@ public:
 };
 
 
-class VrmlNodeFontStyle : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeFontStyle : public VrmlNode {
     VrmlMFString d_family;
     VrmlSFBool d_horizontal;
     VrmlMFString d_justify;
@@ -856,7 +857,7 @@ public:
 };
 
 
-class VrmlNodeIndexedSet : public VrmlNodeGeometry {
+OPENVRML_SCOPE class VrmlNodeIndexedSet : public VrmlNodeGeometry {
 public:
     // Define the fields of indexed face set nodes
     static VrmlNodeType *defineType(VrmlNodeType *t);
@@ -897,7 +898,7 @@ protected:
 };
 
 
-class VrmlNodeIFaceSet : public VrmlNodeIndexedSet {
+OPENVRML_SCOPE class VrmlNodeIFaceSet : public VrmlNodeIndexedSet {
 public:
     // Define the fields of indexed face set nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -958,7 +959,7 @@ protected:
 };
 
 
-class VrmlNodeILineSet : public VrmlNodeIndexedSet {
+OPENVRML_SCOPE class VrmlNodeILineSet : public VrmlNodeIndexedSet {
 public:
     // Define the fields of indexed line set nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -974,7 +975,7 @@ public:
 };
 
 
-class VrmlNodeTexture : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeTexture : public VrmlNode {
 public:
     // Define the fields of Texture nodes
     static VrmlNodeType * defineType(VrmlNodeType *t);
@@ -1002,7 +1003,7 @@ protected:
 };
 
 
-class VrmlNodeImageTexture : public VrmlNodeTexture {
+OPENVRML_SCOPE class VrmlNodeImageTexture : public VrmlNodeTexture {
     VrmlMFString d_url;
     VrmlSFBool d_repeatS;
     VrmlSFBool d_repeatT;
@@ -1050,7 +1051,7 @@ public:
 };
 
 
-class VrmlNodeInline : public VrmlNodeGroup {
+OPENVRML_SCOPE class VrmlNodeInline : public VrmlNodeGroup {
 public:
     // Define the built in VrmlNodeType:: "Inline"
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -1080,7 +1081,7 @@ protected:
 };
 
 
-class VrmlNodeLOD : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeLOD : public VrmlNodeChild {
 public:
     // Define the fields of all built in LOD nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -1131,7 +1132,7 @@ protected:
 };
 
 
-class VrmlNodeMaterial : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeMaterial : public VrmlNode {
     VrmlSFFloat d_ambientIntensity;
     VrmlSFColor d_diffuseColor;
     VrmlSFColor d_emissiveColor;
@@ -1167,7 +1168,7 @@ public:
 };
 
 
-class VrmlNodeMovieTexture : public VrmlNodeTexture {
+OPENVRML_SCOPE class VrmlNodeMovieTexture : public VrmlNodeTexture {
     VrmlSFBool d_loop;
     VrmlSFFloat d_speed;
     VrmlSFTime d_startTime;
@@ -1220,7 +1221,7 @@ public:
 };
 
 
-class VrmlNodeNavigationInfo : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeNavigationInfo : public VrmlNodeChild {
     VrmlMFFloat d_avatarSize;
     VrmlSFBool d_headlight;
     VrmlSFFloat d_speed;
@@ -1262,7 +1263,7 @@ public:
 };
 
 
-class VrmlNodeNormal : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeNormal : public VrmlNode {
     VrmlMFVec3f d_vector;
 
 public:
@@ -1288,7 +1289,7 @@ public:
 
 class VrmlScene;
 
-class VrmlNodeNormalInt : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeNormalInt : public VrmlNodeChild {
     // Fields
     VrmlMFFloat d_key;
     VrmlMFVec3f d_keyValue;
@@ -1317,7 +1318,7 @@ public:
 };
 
 
-class VrmlNodeOrientationInt : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeOrientationInt : public VrmlNodeChild {
     // Fields
     VrmlMFFloat d_key;
     VrmlMFRotation d_keyValue;
@@ -1350,7 +1351,7 @@ public:
 };
 
 
-class VrmlNodePixelTexture : public VrmlNodeTexture {
+OPENVRML_SCOPE class VrmlNodePixelTexture : public VrmlNodeTexture {
     VrmlSFImage d_image;
     VrmlSFBool d_repeatS;
     VrmlSFBool d_repeatT;
@@ -1395,7 +1396,7 @@ public:
  * descendent geometry of its parent node to determine whether it is
  * liable to generate events
  */
-class VrmlNodePlaneSensor : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodePlaneSensor : public VrmlNodeChild {
 public:
     // Define the fields of PlaneSensor nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -1446,7 +1447,7 @@ protected:
 };
 
 
-class VrmlNodePointLight : public VrmlNodeLight {
+OPENVRML_SCOPE class VrmlNodePointLight : public VrmlNodeLight {
 public:
     // Define the fields of pointLight nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -1480,7 +1481,7 @@ protected:
 };
 
 
-class VrmlNodePointSet : public VrmlNodeGeometry {
+OPENVRML_SCOPE class VrmlNodePointSet : public VrmlNodeGeometry {
 public:
     // Define the fields of pointSet nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -1523,7 +1524,7 @@ protected:
 };
 
 
-class VrmlNodePositionInt : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodePositionInt : public VrmlNodeChild {
     // Fields
     VrmlMFFloat d_key;
     VrmlMFVec3f d_keyValue;
@@ -1556,7 +1557,7 @@ public:
 };
 
 
-class VrmlNodeProximitySensor : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeProximitySensor : public VrmlNodeChild {
     // Fields
     VrmlSFVec3f d_center;
     VrmlSFBool d_enabled;
@@ -1588,7 +1589,7 @@ public:
 };
 
 
-class VrmlNodeScalarInt : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeScalarInt : public VrmlNodeChild {
     // Fields
     VrmlMFFloat d_key;
     VrmlMFFloat d_keyValue;
@@ -1620,7 +1621,7 @@ public:
 };
 
 
-class VrmlNodeShape : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeShape : public VrmlNodeChild {
     VrmlSFNode d_appearance;
     VrmlSFNode d_geometry;
 
@@ -1661,7 +1662,7 @@ public:
 };
 
 
-class VrmlNodeSound : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeSound : public VrmlNodeChild {
     VrmlSFVec3f d_direction;
     VrmlSFFloat d_intensity;
     VrmlSFVec3f d_location;
@@ -1703,7 +1704,7 @@ public:
 };
 
 
-class VrmlNodeSphere : public VrmlNodeGeometry {
+OPENVRML_SCOPE class VrmlNodeSphere : public VrmlNodeGeometry {
 public:
     // Define the fields of sphere nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -1731,7 +1732,7 @@ protected:
 };
 
 
-class VrmlNodeSphereSensor : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeSphereSensor : public VrmlNodeChild {
     // Fields
     VrmlSFBool d_autoOffset;
     VrmlSFBool d_enabled;
@@ -1767,7 +1768,7 @@ public:
 };
 
 
-class VrmlNodeSpotLight : public VrmlNodeLight {
+OPENVRML_SCOPE class VrmlNodeSpotLight : public VrmlNodeLight {
 public:
     // Define the fields of spotLight nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -1806,7 +1807,7 @@ protected:
 };
 
 
-class VrmlNodeSwitch : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeSwitch : public VrmlNodeChild {
 public:
     // Define the fields of all built in switch nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -1858,7 +1859,7 @@ protected:
 };
 
 
-class VrmlNodeText : public VrmlNodeGeometry {
+OPENVRML_SCOPE class VrmlNodeText : public VrmlNodeGeometry {
 public:
     // Define the fields of text nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -1895,7 +1896,7 @@ protected:
 };
 
 
-class VrmlNodeTextureCoordinate : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeTextureCoordinate : public VrmlNode {
     VrmlMFVec2f d_point;
 
 public:
@@ -1919,7 +1920,7 @@ public:
 };
 
 
-class VrmlNodeTextureTransform : public VrmlNode {
+OPENVRML_SCOPE class VrmlNodeTextureTransform : public VrmlNode {
     VrmlSFVec2f d_center;
     VrmlSFFloat d_rotation;
     VrmlSFVec2f d_scale;
@@ -1951,7 +1952,7 @@ public:
 };
 
 
-class VrmlNodeTimeSensor : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeTimeSensor : public VrmlNodeChild {
     // Fields
     VrmlSFTime d_cycleInterval;
     VrmlSFBool d_enabled;
@@ -1996,7 +1997,7 @@ public:
 };
 
 
-class VrmlNodeTouchSensor : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeTouchSensor : public VrmlNodeChild {
     // Fields
     VrmlSFBool d_enabled;
 
@@ -2033,7 +2034,7 @@ public:
 /**
  * VrmlNodeTransform.
  */
-class VrmlNodeTransform : public VrmlNodeGroup {
+OPENVRML_SCOPE class VrmlNodeTransform : public VrmlNodeGroup {
 public:
     // Define the fields of Transform nodes
     static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -2120,7 +2121,7 @@ protected:
 };
 
 
-class VrmlNodeViewpoint : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeViewpoint : public VrmlNodeChild {
     VrmlSFFloat d_fieldOfView;
     VrmlSFBool d_jump;
     VrmlSFRotation d_orientation;
@@ -2185,7 +2186,7 @@ public:
 };
 
 
-class VrmlNodeVisibilitySensor : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeVisibilitySensor : public VrmlNodeChild {
     // Fields
     VrmlSFVec3f d_center;
     VrmlSFBool d_enabled;
@@ -2215,7 +2216,7 @@ public:
 };
 
 
-class VrmlNodeWorldInfo : public VrmlNodeChild {
+OPENVRML_SCOPE class VrmlNodeWorldInfo : public VrmlNodeChild {
     VrmlMFString d_info;
     VrmlSFString d_title;
 

@@ -25,8 +25,9 @@
 //
 
 #   include <stddef.h>
+#   include "common.h"
 
-class System {
+OPENVRML_SCOPE class System {
 
 public:
 

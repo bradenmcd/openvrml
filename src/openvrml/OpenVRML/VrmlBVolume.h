@@ -21,9 +21,9 @@
 #ifndef VRMLBVOLUME_H
 #define VRMLBVOLUME_H
 
-#ifndef macintosh
-class ostream;
-#endif
+#include <iostream.h>
+#include "common.h"
+
 class VrmlFrustum;
 class VrmlAABox;
 class VrmlBSphere;

@@ -22,7 +22,7 @@
 #define VRMLFRUSTUM_H
 
 #include <iostream.h>
-
+#include "common.h"
 
 
 /**
@@ -35,7 +35,7 @@
  * @see VrmlNode::render
  * @see Viewer
  */
-class VrmlFrustum {
+OPENVRML_SCOPE class VrmlFrustum {
 
  public:
 

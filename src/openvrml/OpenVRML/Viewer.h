@@ -25,20 +25,19 @@
 #define VIEWER_H
 
 #include <stddef.h>
+#include "common.h"
+#include "VrmlFrustum.h"
 
 class VrmlScene;
 class VrmlBVolume;
 class VrmlBSphere;
 class VrmlAABox;
 
-#include "VrmlFrustum.h"
-
-
 /**
  * Map the scene graph to the underlying graphics library.
  *
  */
-class Viewer {
+OPENVRML_SCOPE class Viewer {
 
 protected:
   // Explicitly instantiate a subclass object
