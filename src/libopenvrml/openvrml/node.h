@@ -137,12 +137,14 @@ namespace openvrml {
         }
     };
 
+
     struct node_interface_matches_field :
         std::binary_function<node_interface, std::string, bool> {
         result_type operator()(const first_argument_type & interface,
                                const second_argument_type & field_id) const
         {
-            return interface.type == node_interface::field_id
+            return (interface.type == node_interface::field_id
+                    || interface.type == node_interface::exposedfield_id)
                 && interface.id == field_id;
         }
     };

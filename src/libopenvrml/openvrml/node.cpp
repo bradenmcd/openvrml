@@ -452,19 +452,13 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  * @brief Determine if a node_interface matches an field identifier.
  *
  * A node_interface matches a field identifier if the node_interface's @a type
- * is node_interface::field_id and the node_interface's @a id is
- * lexicographically equal to the field identifier.
+ * is node_interface::field_id or node_interface::exposedfield_id and the
+ * node_interface's @a id is lexicographically equal to the field identifier.
  *
  * @param interface node_interface.
  * @param field_id  field identifier.
  *
  * @return @c true if @p interface matches @p field_id; @c false otherwise.
- *
- * @todo In order to be consistent with the behavior of
- *       node_interface_matches_eventin and node_interface_matches_eventout,
- *       this predicate really should return true for matching exposedFields
- *       as well as fields. Is that really desirable? Assess use cases for this
- *       predicate.
  */
 
 

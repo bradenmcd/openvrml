@@ -1,5 +1,16 @@
 2004-03-11 Braden McDaniel  <braden@endoframe.com>
 
+	Fixed node_initerface_matches_field function object semantics to
+	match exposedFields as well as fields.  This is consistent with
+	the way node_interface_matches_eventin and
+	node_interface_matches_eventout match exposedFields as well as
+	eventIns and eventOuts, respectively.
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+
+2004-03-11 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed comparator for node_interface_set to properly guard
 	against collisions between exposedField names and eventIn and
 	eventOut names.
