@@ -3,6 +3,10 @@
         * src/openvrml/OpenVRML/browser.cpp:  Only call Scene::shutdown
           if Browser::scene is nonzero.
 
+        * src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h:  Added do_shutdown
+          implementations to NavigationInfo, Viewpoint.
+
 2003-02-08  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,

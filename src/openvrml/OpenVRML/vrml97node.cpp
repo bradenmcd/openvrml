@@ -2314,6 +2314,8 @@ void Background::do_initialize(const double timestamp) throw ()
 /**
  * @brief Shut down.
  *
+ * Calls BackgroundClass::unbind to unbind the node if it is bound.
+ *
  * @param timestamp the current time.
  */
 void Background::do_shutdown(const double timestamp) throw ()
@@ -5278,6 +5280,8 @@ void Fog::do_initialize(const double timestamp) throw ()
 /**
  * @brief Shut down.
  *
+ * Calls FogClass::unbind to unbind the node if it is bound.
+ *
  * @param timestamp the current time.
  */
 void Fog::do_shutdown(const double timestamp) throw ()
@@ -8116,11 +8120,8 @@ NavigationInfo::NavigationInfo(const NodeType & nodeType,
 /**
  * @brief Destructor.
  */
-NavigationInfo::~NavigationInfo() throw () {
-    if (this->getScene()) {
-        this->getScene()->browser.removeNavigationInfo(*this);
-    }
-}
+NavigationInfo::~NavigationInfo() throw ()
+{}
 
 NavigationInfo* NavigationInfo::toNavigationInfo() const
 { return (NavigationInfo*) this; }
@@ -8137,6 +8138,17 @@ void NavigationInfo::do_initialize(const double timestamp)
 {
     assert(this->getScene());
     this->getScene()->browser.addNavigationInfo(*this);
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void NavigationInfo::do_shutdown(const double timestamp) throw ()
+{
+    assert(this->getScene());
+    this->getScene()->browser.removeNavigationInfo(*this);
 }
 
 /**
@@ -15711,6 +15723,17 @@ void Viewpoint::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addViewpoint(*this);
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void Viewpoint::do_shutdown(const double timestamp) throw ()
+{
+    assert(this->getScene());
+    this->getScene()->browser.removeViewpoint(*this);
 }
 
 /**
