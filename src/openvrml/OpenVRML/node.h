@@ -240,6 +240,7 @@ namespace OpenVRML {
         ScopePtr scope;
         Scene * scene;
         RouteList routes;
+        bool visited;
 
         typedef std::map<std::string, PolledEventOutValue *> EventOutISMap;
         EventOutISMap eventOutISMap;
@@ -372,10 +373,9 @@ namespace OpenVRML {
                        double timestamp)
             throw (std::bad_cast, std::bad_alloc);
 
-        // True if a field changed since last render
         bool d_modified;
         bool d_bvol_dirty;
-        bool visited;
+        bool relocated;
 
     private:
         // Not copyable.

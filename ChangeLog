@@ -1,3 +1,7 @@
+2002-12-26  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/node.h:  Made Node::visited private.
+
 2002-12-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp:  Use newer
