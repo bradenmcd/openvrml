@@ -1,5 +1,13 @@
+Changes new in version 0.14.3, 16 November, 2003
+================================================
+
+- Fixed crash in destruction of img.
+
+- Fixed problems building and running lookat on Mac OS X.
+
+
 Changes new in version 0.14.2, 19 October, 2003
-=================================================
+===============================================
 
 - Fixed a few crash-inducing bugs.
 

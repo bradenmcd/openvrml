@@ -1,5 +1,14 @@
 2003-11-16  Braden McDaniel  <braden@endoframe.com>
 
+	Updates for 0.14.3 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+
+2003-11-16  Braden McDaniel  <braden@endoframe.com>
+
 	* openvrml.spec.in:  Removed glut/glut-devel dependency from
 	openvrml-gl/openvrml-gl-devel packages.  Added glut dependency
 	to lookat package.  Changed openvrml-gl's XFree86 dependency to
