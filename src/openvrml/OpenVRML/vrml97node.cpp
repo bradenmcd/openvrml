@@ -5437,14 +5437,14 @@ Node * Group::getParentTransform() { return this->parentTransform; }
  * Render each of the children.
  */
 void Group::render(Viewer *viewer, VrmlRenderContext rc) {
-    if (rc.getCullFlag() != BVolume::BV_INSIDE) {
+    if (rc.getCullFlag() != BVolume::inside) {
         const BSphere * bs = static_cast<const BSphere *>(this->getBVolume());
         BSphere bv_copy(*bs);
         bv_copy.transform(rc.getMatrix());
-        int r = viewer->isectViewVolume(bv_copy);
+        BVolume::Intersection r = viewer->intersectViewVolume(bv_copy);
         if (rc.getDrawBSpheres()) { viewer->drawBSphere(*bs, r); }
-        if (r == BVolume::BV_OUTSIDE) { return; }
-        if (r == BVolume::BV_INSIDE) { rc.setCullFlag(BVolume::BV_INSIDE); }
+        if (r == BVolume::outside) { return; }
+        if (r == BVolume::inside) { rc.setCullFlag(BVolume::inside); }
     }
     renderNoCull(viewer, rc);
 }
@@ -6003,7 +6003,7 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
 
     if (rc.getDrawBSpheres()) {
         const BSphere* bs = (BSphere*)this->getBVolume();
-        viewer->drawBSphere(*bs, 4);
+        viewer->drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
     }
 
     if (this->coord.get() && this->coordIndex.getLength() > 0) {
@@ -9049,7 +9049,7 @@ Viewer::Object PointSet::insertGeometry(Viewer * const viewer,
 
     if (rc.getDrawBSpheres()) {
         const BSphere * bs = (const BSphere*)this->getBVolume();
-        viewer->drawBSphere(*bs, 4);
+        viewer->drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
     }
 
     if (this->coord.get()) {
@@ -12655,15 +12655,15 @@ Transform::~Transform() throw ()
  */
 void Transform::render(Viewer * const viewer, VrmlRenderContext rc)
 {
-    if (rc.getCullFlag() != BVolume::BV_INSIDE) {
+    if (rc.getCullFlag() != BVolume::inside) {
         const BSphere * bs = (BSphere*)this->getBVolume();
         BSphere bv_copy(*bs);
         bv_copy.transform(rc.getMatrix());
-        int r = viewer->isectViewVolume(bv_copy);
+        BVolume::Intersection r = viewer->intersectViewVolume(bv_copy);
         if (rc.getDrawBSpheres()) { viewer->drawBSphere(*bs, r); }
 
-        if (r == BVolume::BV_OUTSIDE) { return; }
-        if (r == BVolume::BV_INSIDE) { rc.setCullFlag(BVolume::BV_INSIDE); }
+        if (r == BVolume::outside) { return; }
+        if (r == BVolume::inside) { rc.setCullFlag(BVolume::inside); }
 
         //rc.setCullFlag(BVolume::BV_PARTIAL);
     }

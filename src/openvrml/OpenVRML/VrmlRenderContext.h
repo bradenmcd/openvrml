@@ -18,32 +18,33 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifndef VRMLRENDERCONTEXT_H
-#define VRMLRENDERCONTEXT_H
+# ifndef VRMLRENDERCONTEXT_H
+#   define VRMLRENDERCONTEXT_H
 
-#include "common.h"
-#include "VrmlMatrix.h"
+#   include "common.h"
+#   include "bvolume.h"
+#   include "VrmlMatrix.h"
 
 namespace OpenVRML {
 
     class OPENVRML_SCOPE VrmlRenderContext {
-        int cull_flag;
-        VrmlMatrix* M;
+        BVolume::Intersection cull_flag;
+        VrmlMatrix * modelview;
         bool draw_bspheres;
 
     public:
         VrmlRenderContext();
-        VrmlRenderContext(int acull_flag, VrmlMatrix & aM);
+        VrmlRenderContext(BVolume::Intersection acull_flag, VrmlMatrix & aM);
 
         // Use compiler-generated copy-ctor, dtor, operator=.
 
-        int getCullFlag() const;
-        void setCullFlag(int f);
+        BVolume::Intersection getCullFlag() const;
+        void setCullFlag(BVolume::Intersection intersection);
         const VrmlMatrix & getMatrix() const;
-        void setMatrix(VrmlMatrix & aM);
+        void setMatrix(VrmlMatrix & modelview);
         void setDrawBSpheres(bool f);
         bool getDrawBSpheres();
     };
 }
 
-#endif // VRMLRENDERCONTEXT_H
+# endif

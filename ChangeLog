@@ -1,3 +1,17 @@
+2002-09-27  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Viewer.cpp,
+          src/openvrml/OpenVRML/Viewer.h,
+          src/openvrml/OpenVRML/VrmlRenderContext.cpp,
+          src/openvrml/OpenVRML/VrmlRenderContext.h,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/bvolume.cpp,
+          src/openvrml/OpenVRML/bvolume.h,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Made intersection
+          enumeration in BVolume a named type.
+
 2002-09-27  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * ide-projects/Windows/VisualC6/winconfig.h: In MSVC project

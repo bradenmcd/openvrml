@@ -26,6 +26,7 @@
 
 #   include <stddef.h>
 #   include "common.h"
+#   include "bvolume.h"
 #   include "node.h"
 #   include "VrmlFrustum.h"
 
@@ -215,9 +216,11 @@ namespace OpenVRML {
         virtual const VrmlFrustum& getFrustum() const;
         virtual void setFrustum(const VrmlFrustum& afrust);
 
-        virtual int isectViewVolume(const BVolume & bv) const;
+        virtual BVolume::Intersection
+        intersectViewVolume(const BVolume & bvolume) const;
 
-        virtual void drawBSphere(const BSphere & bs, int flag) = 0;
+        virtual void drawBSphere(const BSphere & bs,
+                                 BVolume::Intersection intersection) = 0;
 
     protected:
         static void computeCylinder(double height, double radius, int numFacets,

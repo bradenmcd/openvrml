@@ -617,13 +617,14 @@ void Viewer::setColor(float, float, float, float) {}
  * non-standard view volumes. Most subclasses should be able to use
  * the default implementation provided here. If your view volume is
  * so strange that there's no way to cull to is, then reimplement to
- * always return BV_INSIDE
+ * always return BVolume::inside.
  *
- * @param bv the bounding volume to intersect with the view volume
+ * @param bvolume   the bounding volume to intersect with the view volume.
  *
- * @return BVolume::INSIDE, OUTSIDE, or PARTIAL
+ * @return BVolume::inside, BVolume::outside, or BVolume::partial.
  */
-int Viewer::isectViewVolume(const BVolume & bv) const {
+BVolume::Intersection Viewer::intersectViewVolume(const BVolume & bvolume) const
+{
     //
     // For normal VRML97 use, this won't need to be overridden, but for
     // systems with non-standard view volumes, this can be changed to
@@ -633,15 +634,7 @@ int Viewer::isectViewVolume(const BVolume & bv) const {
     // is enough. If it isn't, please express any concerns to the
     // OpenVRML developer's list, and it can be fixed...
     //
-    int r = BVolume::BV_PARTIAL;
-    const BSphere * bs = 0;
-    const AABox * ab = 0;
-    if ((bs = dynamic_cast<const BSphere *>(&bv))) {
-        r = bs->isectFrustum(this->d_frust);
-    } else if ((ab = dynamic_cast<const AABox *>(&bv))) {
-        r = ab->isectFrustum(this->d_frust);
-    }
-    return r;
+    return bvolume.intersectFrustum(this->d_frust);
 }
 
 /**

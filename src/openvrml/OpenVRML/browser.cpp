@@ -1214,7 +1214,7 @@ void Browser::render(Viewer * viewer) {
         MV = MV.multLeft(NMAT);
     }
 
-    VrmlRenderContext rc(BVolume::BV_PARTIAL, MV);
+    VrmlRenderContext rc(BVolume::partial, MV);
     rc.setDrawBSpheres(true);
 
     // Do the browser-level lights (Points and Spots)

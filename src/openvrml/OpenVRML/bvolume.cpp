@@ -47,21 +47,21 @@ using namespace OpenVRML_;
  */
 
 /**
- * @var BVolume::BV_INSIDE
+ * @var BVolume::inside
  *
  * @brief Results of an intersection; indicates that the tested volume is
  *      entirely inside the target volume.
  */
 
 /**
- * @var BVolume::BV_OUTSIDE
+ * @var BVolume::outside
  *
  * @brief Results of an intersection; indicates that the tested volume is
  *      entirely outside the target volume.
  */
 
 /**
- * @var BVolume::BV_PARTIAL
+ * @var BVolume::partial
  *
  * @brief Results of an intersection; indicates that the tested volume
  *      intersects with the target volume.
@@ -96,7 +96,7 @@ BVolume::~BVolume() {}
  */
 
 /**
- * @fn int BVolume::isectFrustum(const VrmlFrustum & f) const
+ * @fn BVolume::Intersection BVolume::intersectFrustum(const VrmlFrustum & frustum) const
  *
  * @brief Intersect this bvolume with a frustum.
  *
@@ -107,7 +107,9 @@ BVolume::~BVolume() {}
  * them into the projection space. Lots of tradeoffs involved, but transforming
  * the bvolume is probably the simplest approach overall.)
  *
- * @return one of BV_INSIDE, BV_OUTSIDE, or BV_PARTIAL
+ * @param frustum   the frustum.
+ *
+ * @return inside, outside, or partial.
  *
  * @see BVolume::transform
  * @see BVolume::orthoTransform
@@ -274,91 +276,72 @@ BSphere::reset()
 }
 
 
-static float
-sphere_plane_distance(const BSphere & bs, const float N[3], float D)
-{
-  // r = Ax + By + Cz + D
-  //
-  const float* c = bs.getCenter();
-  float d = N[0]*c[0] + N[1]*c[1] + N[2]*c[2] - D;
-  return d;
+namespace {
+    float sphere_plane_distance(const BSphere & bs, const float N[3], float D)
+    {
+        //
+        // r = Ax + By + Cz + D
+        //
+        const float* c = bs.getCenter();
+        float d = N[0]*c[0] + N[1]*c[1] + N[2]*c[2] - D;
+        return d;
+    }
 }
 
-
-int
-BSphere::isectFrustum(const VrmlFrustum& frust) const
+BVolume::Intersection
+BSphere::intersectFrustum(const VrmlFrustum & frustum) const
 {
-  //cout << "BSphere::isectFrustum():WARNING:not implemented" << endl;
+    if (this->isMAX()) { return BVolume::partial; }
+    if (this->r == -1.0f) { return BVolume::partial; } // ???
 
-  if (this->isMAX())
-    return BVolume::BV_PARTIAL;
+    BVolume::Intersection code = BVolume::inside;
 
-  if (this->r == -1.0f)
-    return BVolume::BV_PARTIAL; // ???
+    //
+    // Quick test against near/far planes since we know in the VRML97
+    // viewing case they are parallel to the xy-plane. (VRML97 restricts
+    // the view volume, but other systems might not; so be careful to
+    // confirm the assumption before reusing this code).
+    //
 
-  int code = BVolume::BV_INSIDE;
+    //
+    // Distance from the center of the sphere to the near plane.
+    //
+    float znear = -frustum.z_near;
+    float d = znear - c[2];
+    if (d < -r) { return BVolume::outside; }
+    if (d < r) { code = BVolume::partial; }
 
-  // quick test against near/far planes since we know in the vrml97
-  // viewing case they are parallel to the xy plane. (vrml97 restricts
-  // the view volume, but other systems might not, so be careful to
-  // confirm the assumption before reusing this code).
-  //
+    //
+    // Distance from the sphere center to the far plane. Same logic as
+    // above.
+    //
+    float zfar = -frustum.z_far;
+    d = c[2] - zfar;
+    if (d < -r) { return BVolume::outside; }
+    if (d < r) { code = BVolume::partial; }
 
-  // distance from the center of the sphere to the near plane.
-  //
-  float znear = -frust.z_near;
-  float d = znear - c[2];
-  if (d < -r)
-    return BVolume::BV_OUTSIDE;
-  if (d < r)
-    code = BVolume::BV_PARTIAL;
+    //
+    // Test against the top; the same logic will be used to test against
+    // the other sides. We still want to find the distanct to the plane; but
+    // unlike the near/far planes we have to use the dot product.
+    //
+    d = sphere_plane_distance(*this, frustum.top_plane, frustum.top_plane[3]);
+    if (d < -r) { return BVolume::outside; }
+    if (d < r) { code = BVolume::partial; }
 
+    d = sphere_plane_distance(*this, frustum.bot_plane, frustum.bot_plane[3]);
+    if (d < -r) { return BVolume::outside; }
+    if (d < r) { code = BVolume::partial; }
 
-  // distance from the sphere center to the far plane. same logic as
-  // above. this is all much easier with a diagram...
-  //
-  float zfar = -frust.z_far;
-  d = c[2] - zfar;
-  if (d < -r)
-    return BVolume::BV_OUTSIDE;
-  if (d < r)
-    code = BVolume::BV_PARTIAL;
+    d = sphere_plane_distance(*this, frustum.left_plane, frustum.left_plane[3]);
+    if (d < -r) { return BVolume::outside; }
+    if (d < r) { code = BVolume::partial; }
 
+    d = sphere_plane_distance(*this, frustum.right_plane, frustum.right_plane[3]);
+    if (d < -r) { return BVolume::outside; }
+    if (d < r) { code = BVolume::partial; }
 
-  // test against the top, the same logic will be used to test against
-  // the other sides. we still want to find the distanct to the plane, but
-  // unlike the near/far planes we have to use the dot product.
-  //
-  d = sphere_plane_distance(*this, frust.top_plane, frust.top_plane[3]);
-  if (d < -r)
-    return BVolume::BV_OUTSIDE;
-  if (d < r)
-    code = BVolume::BV_PARTIAL;
-
-
-  d = sphere_plane_distance(*this, frust.bot_plane, frust.bot_plane[3]);
-  if (d < -r)
-    return BVolume::BV_OUTSIDE;
-  if (d < r)
-    code = BVolume::BV_PARTIAL;
-
-
-  d = sphere_plane_distance(*this, frust.left_plane, frust.left_plane[3]);
-  if (d < -r)
-    return BVolume::BV_OUTSIDE;
-  if (d < r)
-    code = BVolume::BV_PARTIAL;
-
-
-  d = sphere_plane_distance(*this, frust.right_plane, frust.right_plane[3]);
-  if (d < -r)
-    return BVolume::BV_OUTSIDE;
-  if (d < r)
-    code = BVolume::BV_PARTIAL;
-
-
-  return code;
-
+    return code;
 }
 
 void
@@ -737,9 +720,12 @@ std::ostream & BSphere::dump(std::ostream & out) const {
 
 AABox::~AABox() {}
 
-int AABox::isectFrustum(const VrmlFrustum& f) const {
-    std::cout << "AABox::isectFrustum():WARNING:not implemented" << std::endl;
-    return BVolume::BV_PARTIAL;
+/**
+ * @todo Implement me!
+ */
+BVolume::Intersection
+AABox::intersectFrustum(const VrmlFrustum & frustum) const {
+    return BVolume::partial;
 }
 
 

@@ -33,12 +33,13 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE BVolume {
     public:
-        enum { BV_INSIDE = 1, BV_OUTSIDE = -1, BV_PARTIAL = 0 };
+        enum Intersection { inside = 1, outside = -1, partial = 0 };
 
         virtual ~BVolume() = 0;
         virtual bool isMAX() const = 0;
         virtual void setMAX() = 0;
-        virtual int isectFrustum(const VrmlFrustum & f) const = 0;
+        virtual Intersection
+        intersectFrustum(const VrmlFrustum & frustum) const = 0;
         virtual void extend(const BVolume & b) = 0;
         virtual void extend(const float p[3]) = 0;
         virtual void extend(const AABox & b) = 0;
@@ -63,7 +64,8 @@ namespace OpenVRML {
 
         void reset();
 
-        virtual int isectFrustum(const VrmlFrustum & f) const;
+        virtual Intersection
+        intersectFrustum(const VrmlFrustum & frustum) const;
 
         virtual void extend(const BVolume & b);
         virtual void extend(const float p[3]) ;
@@ -92,7 +94,8 @@ namespace OpenVRML {
     class OPENVRML_SCOPE AABox : public BVolume {
     public:
         virtual ~AABox();
-        virtual int isectFrustum(const VrmlFrustum & f) const;
+        virtual Intersection
+        intersectFrustum(const VrmlFrustum & frustum) const;
         virtual void extend(const BVolume & b);
         virtual void extend(const float p[3]);
         virtual void extend(const AABox & b);

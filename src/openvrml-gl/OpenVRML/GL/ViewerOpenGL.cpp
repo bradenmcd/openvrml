@@ -3342,54 +3342,61 @@ static GLfloat grey[] = {0.5f, 0.5f, 0.5f, 1.0f};
 #endif
 
 
-void ViewerOpenGL::drawBSphere(const BSphere & bs, int flag) {
-  if (!d_drawBSpheres) return;
-  if (bs.isMAX()) return;
-  if (bs.getRadius()==-1.0) return;
-  glEnable(GL_CULL_FACE);
-  glCullFace(GL_BACK);
-  //glEnable(GL_LIGHTING);
-  glShadeModel(GL_FLAT);
-  GLUquadricObj* sph = (GLUquadricObj*)0;
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  const float* c = bs.getCenter();
-  glTranslatef(c[0], c[1], c[2]);
-  sph = gluNewQuadric();
-  if (flag == BVolume::BV_OUTSIDE) {
-    //glDisable(GL_LIGHTING);
+void ViewerOpenGL::drawBSphere(const BSphere & bs,
+                               const BVolume::Intersection intersection)
+{
+    if (!this->d_drawBSpheres || bs.isMAX() || bs.getRadius() == -1.0) {
+        return;
+    }
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     //glEnable(GL_LIGHTING);
-    gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
-    //gluQuadricDrawStyle(sph, GLU_POINT);
-    glColor3f(0.5, 0.5, 0.5);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
-    gluSphere(sph, bs.getRadius(), 5, 5);
-  } else if (flag == BVolume::BV_PARTIAL) {
-    //glEnable(GL_LIGHTING);
-    gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
-    //gluQuadricDrawStyle(sph, GLU_FILL);
-    gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
-    glColor3f(0.25, 1.0, 0.25);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
-    gluSphere(sph, bs.getRadius(), 8, 8);
-  } else if (flag == BVolume::BV_INSIDE) {
-    //glEnable(GL_LIGHTING);
-    gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
-    //gluQuadricDrawStyle(sph, GLU_FILL);
-    gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
-    glColor3f(1.0, 0.5, 0.5);
-    gluSphere(sph, bs.getRadius(), 8, 8);
-  } else {
-    //glEnable(GL_LIGHTING);
-    gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
-    gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
-    glColor3f(0.5, 0.5, 0.5);
-    gluSphere(sph, bs.getRadius(), 8, 8);
-  }
-  gluDeleteQuadric(sph);
+    glShadeModel(GL_FLAT);
+    GLUquadricObj * sph = 0;
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    const float * c = bs.getCenter();
+    glTranslatef(c[0], c[1], c[2]);
+    sph = gluNewQuadric();
+    switch (intersection) {
+    case BVolume::outside:
+        //glDisable(GL_LIGHTING);
+        //glEnable(GL_LIGHTING);
+        gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+        //gluQuadricDrawStyle(sph, GLU_POINT);
+        glColor3f(0.5, 0.5, 0.5);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
+        gluSphere(sph, bs.getRadius(), 5, 5);
+        break;
+    
+    case BVolume::partial:
+        //glEnable(GL_LIGHTING);
+        gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
+        //gluQuadricDrawStyle(sph, GLU_FILL);
+        gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+        glColor3f(0.25, 1.0, 0.25);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
+        gluSphere(sph, bs.getRadius(), 8, 8);
+        break;
+    
+    case BVolume::inside:
+        //glEnable(GL_LIGHTING);
+        gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
+        //gluQuadricDrawStyle(sph, GLU_FILL);
+        gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
+        glColor3f(1.0, 0.5, 0.5);
+        gluSphere(sph, bs.getRadius(), 8, 8);
+        break;
 
-  glPopMatrix();
-  
+    default:
+        //glEnable(GL_LIGHTING);
+        gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
+        gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
+        glColor3f(0.5, 0.5, 0.5);
+        gluSphere(sph, bs.getRadius(), 8, 8);
+    }
+    gluDeleteQuadric(sph);
+    glPopMatrix();
 }
