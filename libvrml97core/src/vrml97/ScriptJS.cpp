@@ -340,7 +340,7 @@ toString(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
       os << (*f) << '\0';
       const char *ss = os.str();
       JSString *s = JS_NewStringCopyZ( cx, ss );
-      os.freeze(false);
+      os.rdbuf()->freeze(0);
       if (s) { *rval = STRING_TO_JSVAL(s); return JS_TRUE; }
     }
   return JS_FALSE;
