@@ -1184,7 +1184,7 @@ void Browser::render(Viewer & viewer) {
     if (vp) {
         VrmlMatrix IM,NMAT;
         vp->inverseTransform(IM);   // put back nested viewpoint. skb
-        viewer.MatrixMultiply(IM.get());
+        viewer.transform(IM);
         vp->getInverseMatrix(MV);
         viewer.getUserNavigation(NMAT);
         MV = MV.multLeft(NMAT);

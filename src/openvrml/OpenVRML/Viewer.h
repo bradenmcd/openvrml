@@ -184,10 +184,10 @@ namespace OpenVRML {
 			          float avatarSize,
 			          float visLimit) = 0;
 
+        virtual void transform(const VrmlMatrix & mat) = 0;
+
         // The viewer knows the current viewpoint
         virtual void transformPoints(int nPoints, float *points) = 0;
-
-        virtual void MatrixMultiply(const float M[4][4]) = 0;
 
         // still working on some navigation api issues, so don't depend on
         // thses yet. there's a default implementation in any case, so you

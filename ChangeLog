@@ -5,6 +5,14 @@
           src/openvrml/OpenVRML/script.h: Removed unnecessary inclusion
           of vrml97node.h.
 
+        * src/openvrml/OpenVRML/Viewer.h,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Replace
+          Viewer::MatrixMultiply with Viewer::transform; Viewer::transform
+          simply takes a VrmlMatrix instead of a float[4][4].
+
 2002-10-17  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,

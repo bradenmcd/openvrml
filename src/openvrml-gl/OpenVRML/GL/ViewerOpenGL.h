@@ -368,12 +368,7 @@ namespace OpenVRML {
                                       float avatarSize,
                                       float visLimit);
 
-            /**
-             * Multiply current ModelView Matrix with Given Matrix M
-             *
-             * @param M matrix in VrmlMatrix format
-             */
-            virtual void MatrixMultiply(const float M[4][4]);
+            virtual void transform(const VrmlMatrix & mat);
 
             // The viewer knows the current viewpoint
             virtual void transformPoints(int nPoints, float *points);

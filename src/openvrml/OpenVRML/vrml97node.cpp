@@ -2521,7 +2521,7 @@ void Billboard::render(Viewer * const viewer, VrmlRenderContext rc)
     } else if (this->children.getLength() > 0) {
         this->xformObject = viewer->beginObject(this->getId().c_str());
 
-        viewer->MatrixMultiply(LM.get());
+        viewer->transform(LM);
 
         // Render children
         this->Group::render(viewer, rc);
@@ -12873,7 +12873,7 @@ void Transform::render(Viewer * const viewer, VrmlRenderContext rc)
         // Apply transforms
         VrmlMatrix M;
         this->getMatrix(M);
-        viewer->MatrixMultiply(M.get());
+        viewer->transform(M);
         // Render children
         this->Group::renderNoCull(viewer, rc);
 

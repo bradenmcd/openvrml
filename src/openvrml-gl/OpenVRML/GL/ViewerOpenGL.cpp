@@ -2890,14 +2890,14 @@ void ViewerOpenGL::transformPoints(int np, float *p)
 
 }
 
-//   
-// Multiply current ModelView Matrix with Given Matrix M
-// @param M matrix in OpenGL format
-//
-// 
-void ViewerOpenGL::MatrixMultiply(const float M[4][4])
+/**
+ * @brief Multiply the current modelview matrix by @p mat.
+ *
+ * @param mat   a matrix.
+ */
+void ViewerOpenGL::transform(const VrmlMatrix & mat)
 {
-   glMultMatrixf(&M[0][0]);
+    glMultMatrixf(&mat[0][0]);
 }
 
 //
