@@ -1,0 +1,84 @@
+Read Me for Mac Developers
+==========================
+
+These project files are for Metroworks CodeWarrior Pro 5.
+
+
+To build LibVRML and Lookat
+===========================
+
+1) Make sure that you have the following installed:
+     * Apple's OpenGL SDK
+     * Internet Config 2.x programmers kit
+     * JPEG library and header files
+     * PNG library and header files
+     * Z compression library and header files
+     
+   (I'll see if we can make some of these available as downloads from the OVAL website).
+
+2) Compile JavaScript.mcp
+
+3) Compile ImageReader.mcp
+   -- you should ensure that the ImageReader.mcp project access paths include
+      your JPEG, PNG and Z compression library folders.
+
+4) Compile LibVRML97.mcp
+   -- you need to include InternetConfig, ZLIB, PNG, JPEG and OpenGL libraries
+      and header files in your access paths. The default location for all of these
+      except the OpenGL SDK is in the folder that contains the OVAL CVS root.
+      
+      e.g.
+      
+      LibVRML97
+        - InternetConfig
+        - libjpeg
+        - libpng
+        - zlib
+        - OpenVRML  <- CVS root
+          - libvrml97
+            - libvrml97core
+            - libvrml97gl
+            - lookat
+            - ...
+         
+   -- If you want to help develop support for Java in LibVRML97 then you need
+      to add access paths to JNILib and to the JNI header files (in Apple's
+      MRJ SDK) and enable HAVE_JDK in LibVRML97.prefix file.
+           
+5) Compile Lookat.mcp (in the libvrml97/lookat/macos folder)
+   -- you will need to update the access paths so that your compiler can find
+      your Apple OpenGL SDK GLUT files (header files, library, and the resource file).
+
+The result should be a libVRML97.Lib library and a simple GLUT-based viewer. You can
+enter URLs (file or http) into the dialog box that appears when you start Lookat to
+choose which VRML files to view.
+
+
+Note that I have included premade parser files in the macos folder, which the supplied
+LibVRML97.mcp project uses.  I have also included (and use in ImageReader.mcp) a PNG reader
+for an older version of the PNG library than the one supported by the one in the
+libvrml97core source. This is simply because I don't have a newer version of the
+PNG library for the Mac that works. If you manage to compile, link and test one then
+feel free to 'fix' this in future.
+
+Note that if you use LibVRML97 to create your own applications then VrmlScene can be
+initialised with either a URL or a filepath but if a filepath is passed then you need
+to provide the full path in a Unix-like style but starting with "///" instead of just
+"/". This is consistent with Mac file URLs of the form "file:///" that are used by other
+Mac Internet applications. This means that if you want to open local files using a
+Mac file dialog then you need to retrieve the full path of selected file, prepend ///
+and replace colons with slashes. MacLookat (see below) has code that does this that you
+can use.
+
+You will probably need to use your own application's creator code in System::loadUrl()
+in sysem.cpp in order to use InternetConfig to pass non-VRML anchors to your default
+helper application.
+
+I'm currently working on a Mac-friendly viewer called MacLookat. it uses a modified
+version of GLUT. Go to this URL for details:
+
+      <http://home.telia.no/mlouka/vr/mac/maclookat/>
+
+
+Michael louka (Michael.Louka@hrp.no)
+1 December 1999
