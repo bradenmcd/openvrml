@@ -16,11 +16,8 @@
 #include <config.h>
 #endif
 
-#ifdef macintosh
-#include <Viewer.h>
-#else
 #include <vrml97/Viewer.h>
-#endif
+
 
 // Use the stencil buffer to set the SHAPE mask.
 #define USE_STENCIL_SHAPE 0
