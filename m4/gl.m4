@@ -1,31 +1,34 @@
-# Autoconf macro to check for OpenGL/Mesa
-# Copyright (C) 2001, 2002  Braden McDaniel
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+dnl Autoconf macro to check for OpenGL/Mesa
+dnl Copyright (C) 2001, 2002  Braden McDaniel
+dnl
+dnl This program is free software; you can redistribute it and/or modify
+dnl it under the terms of the GNU General Public License as published by
+dnl the Free Software Foundation; either version 2 of the License, or
+dnl (at your option) any later version.
+dnl
+dnl This program is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
+dnl
+dnl You should have received a copy of the GNU General Public License
+dnl along with this program; if not, write to the Free Software
+dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#
-# OV_CHECK_GL
-# -----------
-# Check for OpenGL/Mesa. Succeeds if both GL and GLU are found.  If it
-# succeeds, the required linker flags are included in the output variable
-# "GL_LIBS".  If the headers "GL/gl.h" and "GL/glu.h" are found, the symbols
-# HAVE_GL_GL_H and HAVE_GL_GLU_H are defined, respectively.  Otherwise, if
-# "OpenGL/gl.h" and "OpenGL/glu.h" are found, HAVE_OPENGL_GL_H and
-# HAVE_OPENGL_GLU_H are defined.  If neither OpenGL nor Mesa is found, "no_gl"
-# is set to "yes".
-#
+dnl
+dnl @synopsis OV_CHECK_GL
+dnl
+dnl Check for OpenGL/Mesa. Succeeds if both GL and GLU are found.  If it
+dnl succeeds, the required linker flags are included in the output variable
+dnl "GL_LIBS".  If the headers "GL/gl.h" and "GL/glu.h" are found, the symbols
+dnl HAVE_GL_GL_H and HAVE_GL_GLU_H are defined, respectively.  Otherwise, if
+dnl "OpenGL/gl.h" and "OpenGL/glu.h" are found, HAVE_OPENGL_GL_H and
+dnl HAVE_OPENGL_GLU_H are defined.  If neither OpenGL nor Mesa is found, "no_gl"
+dnl is set to "yes".
+dnl
+dnl @version $Id: gl.m4,v 1.12 2003-01-06 04:09:42 braden Exp $
+dnl @author Braden McDaniel <braden@endoframe.com>
+dnl
 AC_DEFUN([OV_CHECK_GL],
 [AC_REQUIRE([AC_PATH_X])dnl
 AC_REQUIRE([ACX_PTHREAD])dnl
@@ -115,4 +118,4 @@ AC_LANG_POP(C)
 
 AC_SUBST([GL_CFLAGS])
 AC_SUBST([GL_LIBS])
-])
+])dnl

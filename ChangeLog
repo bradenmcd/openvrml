@@ -1,3 +1,7 @@
+2003-01-05  Braden McDaniel  <braden@endoframe.com>
+
+        * m4/gl.m4, m4/glut.m4:  Added ac-archive-style doc-comments.
+
 2003-01-03  Braden McDaniel  <braden@endoframe.com>
 
         * m4/glut.m4:  Include -lXi in GLUT_LIBS.
