@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeAnchor.h
 
 #ifndef VRMLNODEANCHOR_H
@@ -38,6 +37,9 @@ public:
 
   void activate();
 
+  // Get a field or eventOut by name.
+  virtual const VrmlField *getField(const char *fieldName) const;
+  
   virtual void setField(const char *fieldName,
 			const VrmlField &fieldValue);
 

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeTouchSensor.h
 
 #ifndef  _VRMLNODETOUCHSENSOR_
@@ -36,6 +35,7 @@ public:
 
   void activate( double timeStamp, bool isOver, bool isActive, double *p );
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   bool isEnabled() { return d_enabled.get(); }
@@ -46,9 +46,9 @@ private:
   VrmlSFBool d_enabled;
 
   // Internal state
-  VrmlSFVec3f d_hitNormal_changed;
-  VrmlSFVec3f d_hitPoint_changed;
-  VrmlSFVec2f d_hitTexCoord_changed;
+  VrmlSFVec3f d_hitNormal;
+  VrmlSFVec3f d_hitPoint;
+  VrmlSFVec2f d_hitTexCoord;
   VrmlSFBool d_isActive;
   VrmlSFBool d_isOver;
   VrmlSFTime d_touchTime;

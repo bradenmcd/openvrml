@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeAudioClip.cpp
 //    contributed by Kumaran Santhanam
 
@@ -207,6 +206,33 @@ void VrmlNodeAudioClip::update (VrmlSFTime &inTime)
             eventOut (inTime.get(), "isActive", d_isActive);
         }
     }
+}
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeAudioClip::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "description" ) == 0 )
+    return &d_description;
+  else if ( strcmp( fieldName, "loop" ) == 0 )
+    return &d_loop;
+  else if ( strcmp( fieldName, "pitch" ) == 0 )
+    return &d_pitch;
+  else if ( strcmp( fieldName, "startTime" ) == 0 )
+    return &d_startTime;
+  else if ( strcmp( fieldName, "stopTime" ) == 0 )
+    return &d_stopTime;
+  else if ( strcmp( fieldName, "url" ) == 0 )
+    return &d_url;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "duration" ) == 0 )
+    return &d_duration;
+  else if ( strcmp( fieldName, "isActive" ) == 0 )
+    return &d_isActive;
+  
+  return VrmlNode::getField(fieldName); // Parent class
 }
 
 

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeLight.cpp
 
 #include "VrmlNodeLight.h"
@@ -46,7 +45,7 @@ VrmlNodeLight* VrmlNodeLight::toLight() const
 { return (VrmlNodeLight*) this; }
 
 
-void VrmlNodeLight::renderScoped(Viewer *) 
+void VrmlNodeLight::renderScoped(Viewer *)
 {
 }
 
@@ -64,6 +63,23 @@ ostream& VrmlNodeLight::printFields(ostream& os, int indent)
   if (! d_on.get() ) PRINT_FIELD(on);
 
   return os;
+}
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeLight::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "ambientIntensity" ) == 0 )
+    return &d_ambientIntensity;
+  else if ( strcmp( fieldName, "color" ) == 0 )
+    return &d_color;
+  else if ( strcmp( fieldName, "intensity" ) == 0 )
+    return &d_intensity;
+  else if ( strcmp( fieldName, "on" ) == 0 )
+    return &d_on;
+
+  return VrmlNode::getField( fieldName );
 }
 
 

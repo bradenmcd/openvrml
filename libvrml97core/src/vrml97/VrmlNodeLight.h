@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeLight.h
 
 #ifndef  _VRMLNODELIGHT_
@@ -31,6 +30,7 @@ public:
 
   virtual void renderScoped(Viewer *);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName,
 			const VrmlField &fieldValue);
 

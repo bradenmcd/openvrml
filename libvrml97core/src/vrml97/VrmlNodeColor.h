@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeColor.h
 
 #ifndef VRMLNODECOLOR_H
@@ -30,6 +29,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   VrmlMFColor &color()	{ return d_color; }

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeSwitch.h
 
 #ifndef  _VRMLNODESWITCH_
@@ -41,6 +40,7 @@ public:
 
   virtual void render(Viewer *);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   VrmlMFNode *getChoiceNodes()  { return &d_choice;} 

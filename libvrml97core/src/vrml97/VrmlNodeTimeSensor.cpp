@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeTimeSensor.cpp
 
 #include "VrmlNodeTimeSensor.h"
@@ -253,6 +252,37 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
 
   // TimeSensors shouldn't generate redraws.
   clearModified();
+}
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeTimeSensor::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "cycleInterval" ) == 0 )
+    return &d_cycleInterval;
+  else if ( strcmp( fieldName, "enabled" ) == 0 )
+    return &d_enabled;
+  else if ( strcmp( fieldName, "loop" ) == 0 )
+    return &d_loop;
+  else if ( strcmp( fieldName, "startTime" ) == 0 )
+    return &d_startTime;
+  else if ( strcmp( fieldName, "stopTime" ) == 0 )
+    return &d_stopTime;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "isActive" ) == 0 )
+    return &d_isActive;
+#if 0				// not implemented yet...
+  else if ( strcmp( fieldName, "cycleTime" ) == 0 )
+    return &d_cycleTime;
+  else if ( strcmp( fieldName, "fraction" ) == 0 )
+    return &d_fraction;
+  else if ( strcmp( fieldName, "time" ) == 0 )
+    return &d_time;
+#endif
+
+  return VrmlNodeChild::getField(fieldName); // Parent class
 }
 
 // Set the value of one of the node fields.

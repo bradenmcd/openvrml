@@ -42,6 +42,7 @@ public:
 
   virtual Viewer::Object insertGeometry(Viewer *);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual VrmlNodeColor *color();

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeViewpoint.h
 
 #ifndef  _VRMLNODEVIEWPOINT_
@@ -14,6 +13,7 @@
 #include "VrmlSFFloat.h"
 #include "VrmlSFRotation.h"
 #include "VrmlSFString.h"
+#include "VrmlSFTime.h"
 #include "VrmlSFVec3f.h"
 
 class VrmlScene;
@@ -41,6 +41,7 @@ public:
 		       const char *eventName,
 		       const VrmlField *fieldValue);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual void accumulateTransform( VrmlNode* );
@@ -65,6 +66,10 @@ private:
   VrmlSFRotation d_orientation;
   VrmlSFVec3f d_position;
   VrmlSFString d_description;
+
+
+  VrmlSFBool d_isBound;
+  VrmlSFTime d_bindTime;
 
   VrmlNode *d_parentTransform;
 

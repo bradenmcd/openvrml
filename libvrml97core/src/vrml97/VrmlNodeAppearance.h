@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-// %W% %G%
 //
 
 #ifndef VRMLNODEAPPEARANCE_H
@@ -42,6 +41,9 @@ public:
 
   virtual void render(Viewer *);
 
+  // Get a field or eventOut by name.
+  virtual const VrmlField *getField(const char *fieldName) const;
+  
   virtual void setField(const char *fieldName,
 			const VrmlField &fieldValue);
 

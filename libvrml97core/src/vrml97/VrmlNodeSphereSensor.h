@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeSphereSensor.h
 
 #ifndef  _VRMLNODESPHERESENSOR_
@@ -31,6 +30,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   bool isEnabled() { return d_enabled.get(); }

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeSwitch.cpp
 
 #include "VrmlNodeSwitch.h"
@@ -126,6 +125,17 @@ void VrmlNodeSwitch::render(Viewer *viewer)
   clearModified();
 }
 
+
+// Get the value of one of the node fields.
+const VrmlField *VrmlNodeSwitch::getField(const char *fieldName) const
+{
+  if ( strcmp( fieldName, "choice" ) == 0 )
+    return &d_choice;
+  else if ( strcmp( fieldName, "whichChoice" ) == 0 )
+    return &d_whichChoice;
+
+  return VrmlNodeChild::getField( fieldName );
+}
 
 // Set the value of one of the node fields.
 void VrmlNodeSwitch::setField(const char *fieldName,

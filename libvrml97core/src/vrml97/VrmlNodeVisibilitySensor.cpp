@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeVisibilitySensor.cpp
 
 #ifdef HAVE_CONFIG_H
@@ -171,6 +170,29 @@ void VrmlNodeVisibilitySensor::render(Viewer *viewer)
 
   else
     clearModified();
+}
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeVisibilitySensor::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "center" ) == 0 )
+    return &d_center;
+  else if ( strcmp( fieldName, "enabled" ) == 0 )
+    return &d_enabled;
+  else if ( strcmp( fieldName, "size" ) == 0 )
+    return &d_size;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "isActive" ) == 0 )
+    return &d_isActive;  
+  else if ( strcmp( fieldName, "enterTime" ) == 0 )
+    return &d_enterTime;  
+  else if ( strcmp( fieldName, "exitTime" ) == 0 )
+    return &d_exitTime;  
+
+  return VrmlNodeChild::getField( fieldName );
 }
 
 

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeIFaceSet.cpp
 
 #include "VrmlNodeIFaceSet.h"
@@ -216,6 +215,19 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer)
   if (d_texCoord.get()) d_texCoord.get()->clearModified();
 
   return obj;
+}
+
+// Get the value of one of the exposedFields
+
+const VrmlField *VrmlNodeIFaceSet::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "normal" ) == 0 )
+    return &d_normal;
+  else if ( strcmp( fieldName, "texCoord" ) == 0 )
+    return &d_texCoord;
+  
+  return VrmlNodeIndexedSet::getField(fieldName); // Parent class
 }
 
 // Set the value of one of the node fields.

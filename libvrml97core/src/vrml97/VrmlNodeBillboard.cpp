@@ -132,6 +132,17 @@ void VrmlNodeBillboard::inverseTransform(double m[4][4])
 }
 
 
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeBillboard::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "axisOfRotation" ) == 0 )
+    return &d_axisOfRotation;
+
+  return VrmlNodeGroup::getField( fieldName );
+}
+
 // Set the value of one of the node fields.
 
 void VrmlNodeBillboard::setField(const char *fieldName,

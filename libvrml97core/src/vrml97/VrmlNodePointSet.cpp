@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodePointSet.cpp
 
 #include "VrmlNodePointSet.h"
@@ -123,6 +122,19 @@ Viewer::Object VrmlNodePointSet::insertGeometry(Viewer *viewer)
   if (d_coord.get()) d_coord.get()->clearModified();
 
   return obj;
+}
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodePointSet::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "color" ) == 0 )
+    return &d_color;
+  else if ( strcmp( fieldName, "coord" ) == 0 )
+    return &d_coord;
+
+  return VrmlNodeGeometry::getField( fieldName );
 }
 
 // Set the value of one of the node fields.

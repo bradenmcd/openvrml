@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeMaterial.h
 
 #ifndef  _VRMLNODEMATERIAL_
@@ -31,6 +30,7 @@ public:
 
   virtual void render(Viewer *);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   float  ambientIntensity() { return d_ambientIntensity.get(); }

@@ -128,6 +128,20 @@ Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer)
   return 0;
 }
 
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeText::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "string" ) == 0 )
+    return &d_string;
+  else if ( strcmp( fieldName, "fontStyle" ) == 0 )
+    return &d_fontStyle;
+  else if ( strcmp( fieldName, "length" ) == 0 )
+    return &d_maxExtent;
+  
+  return VrmlNodeGeometry::getField(fieldName); // Parent class
+}
 
 // Set the value of one of the node fields.
 

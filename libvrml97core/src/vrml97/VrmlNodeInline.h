@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeInline.h
 
 #ifndef  _VRMLNODEINLINE_
@@ -34,6 +33,7 @@ public:
 
   virtual void addToScene( VrmlScene *s, const char* relativeUrl );
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName,
 			const VrmlField &fieldValue);
 

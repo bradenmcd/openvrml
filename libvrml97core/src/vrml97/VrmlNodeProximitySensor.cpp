@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeProximitySensor.cpp
 
 
@@ -181,6 +180,30 @@ void VrmlNodeProximitySensor::render(Viewer *viewer)
     clearModified();
 }
 
+
+const VrmlField *VrmlNodeProximitySensor::getField(const char *fieldName) const
+{
+  if ( strcmp( fieldName, "center" ) == 0 )
+    return &d_center;
+  else if ( strcmp( fieldName, "enabled" ) == 0 )
+    return &d_enabled;
+  else if ( strcmp( fieldName, "size" ) == 0 )
+    return &d_size;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "isActive" ) == 0 )
+    return &d_isActive;
+  else if ( strcmp( fieldName, "position" ) == 0 )
+    return &d_position;
+  else if ( strcmp( fieldName, "orientation" ) == 0 )
+    return &d_orientation;
+  else if ( strcmp( fieldName, "enterTime" ) == 0 )
+    return &d_enterTime;
+  else if ( strcmp( fieldName, "exitTime" ) == 0 )
+    return &d_exitTime;
+  
+  return VrmlNodeChild::getField( fieldName );
+}
 
 // Set the value of one of the node fields.
 

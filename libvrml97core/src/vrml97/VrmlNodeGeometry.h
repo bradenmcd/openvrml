@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeGeometry.h
 
 #ifndef  _VRMLNODEGEOMETRY_
@@ -25,7 +24,7 @@ public:
 
   virtual VrmlNodeGeometry* toGeometry() const;
 
-  // Geometry nodes need only define insertGeometry(), not render().
+  // Specific geometry nodes need only define insertGeometry(), not render().
   virtual void render(Viewer *);
 
   virtual Viewer::Object insertGeometry(Viewer *) = 0;

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeIndexedSet.cpp
 
 #include "VrmlNodeIndexedSet.h"
@@ -91,6 +90,18 @@ const VrmlMFInt& VrmlNodeIndexedSet::getCoordIndex() const
 const VrmlMFInt& VrmlNodeIndexedSet::getColorIndex() const   // LarryD Feb 18/99
 {   return d_colorIndex; }
 
+// Get the value of one of the exposedFields
+
+const VrmlField *VrmlNodeIndexedSet::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "color" ) == 0 )
+    return &d_color;
+  else if ( strcmp( fieldName, "coord" ) == 0 )
+    return &d_coord;
+  
+  return VrmlNodeGeometry::getField(fieldName); // Parent class
+}
 
 // Set the value of one of the node fields.
 
@@ -105,3 +116,4 @@ void VrmlNodeIndexedSet::setField(const char *fieldName,
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
 }
+

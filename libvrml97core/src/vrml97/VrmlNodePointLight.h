@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodePointLight.h
 
 #ifndef  _VRMLNODEPOINTLIGHT_
@@ -35,6 +34,7 @@ public:
 
   virtual void renderScoped(Viewer *);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual const VrmlSFVec3f& getAttenuation() const;  //LarryD Mar 04/99

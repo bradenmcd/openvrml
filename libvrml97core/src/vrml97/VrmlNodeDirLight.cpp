@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeDirLight.cpp
 
 #include "VrmlNodeDirLight.h"
@@ -74,6 +73,15 @@ void VrmlNodeDirLight::render(Viewer *viewer)
 			    d_color.get(),
 			    d_direction.get() );
   clearModified();
+}
+
+// Get the value of one of the exposedFields
+
+const VrmlField *VrmlNodeDirLight::getField(const char *fieldName) const
+{
+  if ( strcmp( fieldName, "direction" ) == 0 )
+    return &d_direction;
+  return VrmlNodeLight::getField( fieldName );
 }
 
 // Set the value of one of the node fields.

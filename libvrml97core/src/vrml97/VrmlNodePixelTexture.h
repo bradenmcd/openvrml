@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodePixelTexture.h
 
 #ifndef  _VRMLNODEPIXELTEXTURE_
@@ -30,6 +29,7 @@ public:
 
   virtual void render(Viewer *);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual int nComponents();

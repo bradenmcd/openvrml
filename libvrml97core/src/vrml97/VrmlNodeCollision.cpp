@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeCollision.cpp
 
 #include "VrmlNodeCollision.h"
@@ -93,6 +92,21 @@ ostream& VrmlNodeCollision::printFields(ostream& os, int indent)
 
   VrmlNodeGroup::printFields(os, indent);
   return os;
+}
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeCollision::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "collide" ) == 0 )
+    return &d_collide;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "collideTime" ) == 0 )
+    return &d_collideTime;
+
+  return VrmlNodeGroup::getField( fieldName );
 }
 
 

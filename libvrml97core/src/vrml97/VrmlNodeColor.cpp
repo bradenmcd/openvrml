@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeColor.cpp
 
 #include "VrmlNodeColor.h"
@@ -60,6 +59,16 @@ ostream& VrmlNodeColor::printFields(ostream& os, int indent)
   return os;
 }
 
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeColor::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "color" ) == 0 )
+    return &d_color;
+  return VrmlNode::getField( fieldName );
+}
 
 // Set the value of one of the node fields.
 

@@ -320,6 +320,31 @@ unsigned char* VrmlNodeMovieTexture::pixels()
 
 
 
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeMovieTexture::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "loop" ) == 0 )
+    return &d_loop;
+  else if ( strcmp( fieldName, "speed" ) == 0 )
+    return &d_speed;
+  else if ( strcmp( fieldName, "startTime" ) == 0 )
+    return &d_startTime;
+  else if ( strcmp( fieldName, "stopTime" ) == 0 )
+    return &d_stopTime;
+  else if ( strcmp( fieldName, "url" ) == 0 )
+    return &d_url;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "duration" ) == 0 )
+    return &d_duration;
+  else if ( strcmp( fieldName, "isActive" ) == 0 )
+    return &d_isActive;
+  
+  return VrmlNode::getField(fieldName); // Parent class
+}
+
 // Set the value of one of the node fields.
 
 void VrmlNodeMovieTexture::setField(const char *fieldName,

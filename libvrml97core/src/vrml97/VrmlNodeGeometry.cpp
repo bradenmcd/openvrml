@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeGeometry.cpp
 
 #include "VrmlNodeGeometry.h"
@@ -36,7 +35,7 @@ VrmlNodeColor *VrmlNodeGeometry::color() { return 0; }
 
 // Geometry nodes need only define insertGeometry(), not render().
 
-void VrmlNodeGeometry::render(Viewer *v) 
+void VrmlNodeGeometry::render(Viewer *v)
 {
   if ( d_viewerObject && isModified() )
     {

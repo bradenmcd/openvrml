@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeTextureTransform.cpp
 
 #include "VrmlNodeTextureTransform.h"
@@ -93,6 +92,22 @@ void VrmlNodeTextureTransform::render(Viewer *viewer)
   clearModified();
 }
 
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeTextureTransform::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "center" ) == 0 )
+    return &d_center;
+  else if ( strcmp( fieldName, "rotation" ) == 0 )
+    return &d_rotation;
+  else if ( strcmp( fieldName, "scale" ) == 0 )
+    return &d_scale;
+  else if ( strcmp( fieldName, "translation" ) == 0 )
+    return &d_translation;
+  
+  return VrmlNode::getField(fieldName); // Parent class
+}
 
 // Set the value of one of the node fields.
 

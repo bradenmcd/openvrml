@@ -1,7 +1,6 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
-//  %W% %G%
 //  VrmlNodeExtrusion.h
 
 #ifndef  _VRMLNODEEXTRUSION_

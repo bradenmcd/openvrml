@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeOrientationInt.cpp
 
 #ifdef HAVE_CONFIG_H
@@ -165,6 +164,24 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
       // This node is not renderable, so don't re-render on changes to it.
       clearModified();
     }
+}
+
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeOrientationInt::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "key" ) == 0 )
+    return &d_key;
+  else if ( strcmp( fieldName, "keyValue" ) == 0 )
+    return &d_keyValue;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "value" ) == 0 )
+    return &d_value;
+
+  return VrmlNodeChild::getField( fieldName );
 }
 
 

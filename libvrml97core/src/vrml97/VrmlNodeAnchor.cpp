@@ -97,6 +97,21 @@ void VrmlNodeAnchor::activate()
 }
 
 
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeAnchor::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "description" ) == 0 )
+    return &d_description;
+  else if ( strcmp( fieldName, "parameter" ) == 0 )
+    return &d_parameter;
+  else if ( strcmp( fieldName, "url" ) == 0 )
+    return &d_url;
+  
+  return VrmlNodeGroup::getField(fieldName); // Parent class
+}
+
 // Set the value of one of the node fields.
 // Need to delete current values ...
 

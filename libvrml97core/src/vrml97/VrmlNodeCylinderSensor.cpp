@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeCylinderSensor.cpp
 
 #ifdef HAVE_CONFIG_H
@@ -90,6 +89,32 @@ ostream& VrmlNodeCylinderSensor::printFields(ostream& os, int indent)
   if (! FPZERO(d_offset.get())) PRINT_FIELD(offset);
 
   return os;
+}
+
+const VrmlField *VrmlNodeCylinderSensor::getField(const char *fieldName) const
+{
+  if ( strcmp( fieldName, "autoOffset" ) == 0 )
+    return &d_autoOffset;
+  else if ( strcmp( fieldName, "diskAngle" ) == 0 )
+    return &d_diskAngle;
+  else if ( strcmp( fieldName, "enabled" ) == 0 )
+    return &d_enabled;
+  else if ( strcmp( fieldName, "maxAngle" ) == 0 )
+    return &d_maxAngle;
+  else if ( strcmp( fieldName, "minAngle" ) == 0 )
+    return &d_minAngle;
+  else if ( strcmp( fieldName, "offset" ) == 0 )
+    return &d_offset;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "isActive" ) == 0 )
+    return &d_isActive;
+  else if ( strcmp( fieldName, "rotation" ) == 0 )
+    return &d_rotation;
+  else if ( strcmp( fieldName, "trackPoint" ) == 0 )
+    return &d_trackPoint;
+  
+  return VrmlNodeChild::getField( fieldName );
 }
 
 // Set the value of one of the node fields.

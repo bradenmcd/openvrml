@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeIFaceSet.h
 
 #ifndef  _VRMLNODEIFACESET_
@@ -40,6 +39,7 @@ public:
 
   virtual Viewer::Object insertGeometry(Viewer *v);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual VrmlNodeIFaceSet* toIFaceSet() const;

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeScript.cpp
 
 #include "VrmlNodeScript.h"
@@ -371,6 +370,24 @@ VrmlNodeScript::has(const FieldList &recs, const char *ename) const
       return (*i)->type;
   }
   return VrmlField::NO_FIELD;
+}
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeScript::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "url" ) == 0 )
+    return &d_url;
+
+  // look up 
+  else if ( hasField(fieldName) )
+    return get(d_fields, fieldName);
+
+  // look up event outs? ....
+
+
+  return VrmlNodeChild::getField( fieldName );
 }
 
 

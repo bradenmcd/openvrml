@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeSphereSensor.cpp
 
 #ifdef HAVE_CONFIG_H
@@ -87,6 +86,26 @@ ostream& VrmlNodeSphereSensor::printFields(ostream& os, int indent)
   return os;
 }
 
+const VrmlField *VrmlNodeSphereSensor::getField(const char *fieldName) const
+{
+  if ( strcmp( fieldName, "autoOffset" ) == 0 )
+    return &d_autoOffset;
+  else if ( strcmp( fieldName, "enabled" ) == 0 )
+    return &d_enabled;
+  else if ( strcmp( fieldName, "offset" ) == 0 )
+    return &d_offset;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "isActive" ) == 0 )
+    return &d_isActive;
+  else if ( strcmp( fieldName, "rotation" ) == 0 )
+    return &d_rotation;
+  else if ( strcmp( fieldName, "trackPoint" ) == 0 )
+    return &d_trackPoint;
+  
+  return VrmlNodeChild::getField( fieldName );
+}
+
 // Set the value of one of the node fields.
 
 void VrmlNodeSphereSensor::setField(const char *fieldName,
@@ -98,4 +117,3 @@ void VrmlNodeSphereSensor::setField(const char *fieldName,
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
-

@@ -62,6 +62,7 @@ VrmlNodeType *VrmlNodeBackground::nodeType() const { return defineType(0); }
 
 VrmlNodeBackground::VrmlNodeBackground(VrmlScene *scene)
   : VrmlNodeChild(scene),
+    d_isBound(false),
     d_viewerObject(0)
 {
   for (int i=0; i<6; ++i) d_texPtr[i] = 0;
@@ -232,6 +233,8 @@ void VrmlNodeBackground::renderBindable(Viewer *viewer)
 }
 
 
+// Note that this method is not maintaining isBound.
+
 void VrmlNodeBackground::eventIn(double timeStamp,
 				 const char *eventName,
 				 const VrmlField *fieldValue)
@@ -275,6 +278,46 @@ void VrmlNodeBackground::eventIn(double timeStamp,
     {
       VrmlNode::eventIn(timeStamp, eventName, fieldValue);
     }
+}
+
+// Get the value of a field or eventOut.
+// The isBound eventOut is only set when queried,
+// don't rely on it's value to be valid. This hoses
+// the const-ness of the method, of course :(
+
+const VrmlField *VrmlNodeBackground::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "groundAngle" ) == 0 )
+    return &d_groundAngle;
+  else if ( strcmp( fieldName, "groundColor" ) == 0 )
+    return &d_groundColor;
+  else if ( strcmp( fieldName, "backUrl" ) == 0 )
+    return &d_backUrl;
+  else if ( strcmp( fieldName, "bottomUrl" ) == 0 )
+    return &d_bottomUrl;
+  else if ( strcmp( fieldName, "frontUrl" ) == 0 )
+    return &d_frontUrl;
+  else if ( strcmp( fieldName, "leftUrl" ) == 0 )
+    return &d_leftUrl;
+  else if ( strcmp( fieldName, "rightUrl" ) == 0 )
+    return &d_rightUrl;
+  else if ( strcmp( fieldName, "topUrl" ) == 0 )
+    return &d_topUrl;
+  else if ( strcmp( fieldName, "skyAngle" ) == 0 )
+    return &d_skyAngle;
+  else if ( strcmp( fieldName, "skyColor" ) == 0 )
+    return &d_skyColor;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "isBound" ) == 0 )
+    {
+      VrmlSFBool* isBound = (VrmlSFBool*) &(this->d_isBound);
+      isBound->set( d_scene->bindableBackgroundTop() == this );
+      return isBound;
+    }
+
+  return VrmlNodeChild::getField(fieldName); // Parent class
 }
 
 // Set the value of one of the node fields.

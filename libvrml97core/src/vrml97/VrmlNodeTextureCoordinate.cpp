@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeTextureCoordinate.cpp
 
 #include "VrmlNodeTextureCoordinate.h"
@@ -60,6 +59,16 @@ ostream& VrmlNodeTextureCoordinate::printFields(ostream& os, int indent)
 {
   if (d_point.size() > 0) PRINT_FIELD(point);
   return os;
+}
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeTextureCoordinate::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "point" ) == 0 )
+    return &d_point;
+  return VrmlNode::getField(fieldName); // Parent class
 }
 
 // Set the value of one of the node fields.

@@ -123,6 +123,7 @@ Viewer::Object VrmlNodeExtrusion::insertGeometry(Viewer *viewer)
   return obj;
 }
 
+
 // Set the value of one of the node fields.
 
 void VrmlNodeExtrusion::setField(const char *fieldName,

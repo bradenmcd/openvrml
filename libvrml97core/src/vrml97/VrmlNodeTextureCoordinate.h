@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeTextureCoordinate.h
 
 #ifndef  _VRMLNODETEXTURECOORDINATE_
@@ -29,6 +28,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   VrmlMFVec2f &coordinate()	{ return d_point; }

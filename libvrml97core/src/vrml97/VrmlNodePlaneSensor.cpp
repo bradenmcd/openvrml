@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodePlaneSensor.cpp
 
 #ifdef HAVE_CONFIG_H
@@ -201,6 +200,33 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
       d_translation.set( t[0], t[1], t[2] );
       eventOut( timeStamp, "translation_changed", d_translation );
     }
+}
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodePlaneSensor::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "autoOffset" ) == 0 )
+    return &d_autoOffset;
+  else if ( strcmp( fieldName, "enabled" ) == 0 )
+    return &d_enabled;
+  else if ( strcmp( fieldName, "enabled" ) == 0 )
+    return &d_enabled;
+  else if ( strcmp( fieldName, "enabled" ) == 0 )
+    return &d_enabled;
+  else if ( strcmp( fieldName, "enabled" ) == 0 )
+    return &d_enabled;
+  
+  // eventOuts
+  else if ( strcmp( fieldName, "isActive" ) == 0 )
+    return &d_isActive;
+  else if ( strcmp( fieldName, "translation" ) == 0 )
+    return &d_translation;
+  else if ( strcmp( fieldName, "trackPoint" ) == 0 )
+    return &d_trackPoint;
+  
+  return VrmlNodeChild::getField(fieldName); // Parent class
 }
 
 // Set the value of one of the node fields.

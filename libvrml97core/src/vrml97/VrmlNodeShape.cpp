@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeShape.cpp
 
 #include "VrmlNodeShape.h"
@@ -162,6 +161,18 @@ void VrmlNodeShape::render(Viewer *viewer)
   clearModified();
 }
 
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeShape::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "appearance" ) == 0 )
+    return &d_appearance;
+  else if ( strcmp( fieldName, "geometry" ) == 0 )
+    return &d_geometry;
+  
+  return VrmlNodeChild::getField(fieldName); // Parent class
+}
 
 // Set the value of one of the node fields.
 

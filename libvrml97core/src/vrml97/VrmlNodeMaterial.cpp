@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeMaterial.cpp
 
 #include "VrmlNodeMaterial.h"
@@ -110,6 +109,27 @@ void VrmlNodeMaterial::render(Viewer *viewer)
   clearModified();
 }
 
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeMaterial::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "ambientIntensity" ) == 0 )
+    return &d_ambientIntensity;
+  else if ( strcmp( fieldName, "diffuseColor" ) == 0 )
+    return &d_diffuseColor;
+  else if ( strcmp( fieldName, "emissiveColor" ) == 0 )
+    return &d_emissiveColor;
+  else if ( strcmp( fieldName, "shininess" ) == 0 )
+    return &d_shininess;
+  else if ( strcmp( fieldName, "specularColor" ) == 0 )
+    return &d_specularColor;
+  else if ( strcmp( fieldName, "transparency" ) == 0 )
+    return &d_transparency;
+  
+  return VrmlNode::getField(fieldName); // Parent class
+}
 
 // Set the value of one of the node fields.
 

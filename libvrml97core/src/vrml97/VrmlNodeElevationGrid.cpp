@@ -197,6 +197,18 @@ Viewer::Object VrmlNodeElevationGrid::insertGeometry(Viewer *viewer)
   return obj;
 }
 
+// Get the value of one of the exposedFields or eventOuts.
+
+const VrmlField *VrmlNodeElevationGrid::getField(const char *fieldName) const
+{
+  if ( strcmp( fieldName, "color" ) == 0 )
+    return &d_color;
+  else if ( strcmp( fieldName, "normal" ) == 0 )
+    return &d_normal;
+  else if ( strcmp( fieldName, "texCoord" ) == 0 )
+    return &d_texCoord;
+  return VrmlNodeGeometry::getField( fieldName );
+}
 
 // Set the value of one of the node fields.
 

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeTextureTransform.h
 
 #ifndef  _VRMLNODETEXTURETRANSFORM_
@@ -33,6 +32,7 @@ public:
 
   virtual void render(Viewer *);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   float *center()	{ return d_center.get(); }

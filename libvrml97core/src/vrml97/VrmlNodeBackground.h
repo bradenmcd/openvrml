@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeBackground.h
 
 #ifndef VRMLNODEBACKGROUND_H
@@ -15,6 +14,7 @@
 #include "VrmlMFColor.h"
 #include "VrmlMFFloat.h"
 #include "VrmlMFString.h"
+#include "VrmlSFBool.h"
 #include "VrmlSFString.h"
 #include "Viewer.h"
 
@@ -48,6 +48,7 @@ public:
 		       const char *eventName,
 		       const VrmlField *fieldValue);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   int nGroundAngles()		{ return d_groundAngle.size(); }
@@ -72,6 +73,8 @@ private:
 
   VrmlMFFloat d_skyAngle;
   VrmlMFColor d_skyColor;
+
+  VrmlSFBool d_isBound;
 
   VrmlSFString d_relativeUrl;
 

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeLOD.cpp
 
 #include "VrmlNodeLOD.h"
@@ -161,6 +160,14 @@ void VrmlNodeLOD::render(Viewer *viewer)
     d_level[i]->clearModified();
 }
 
+// Get the value of one of the node fields.
+const VrmlField *VrmlNodeLOD::getField(const char *fieldName) const
+{
+  if ( strcmp( fieldName, "level" ) == 0 )
+    return &d_level;
+
+  return VrmlNodeChild::getField( fieldName );
+}
 
 // Set the value of one of the node fields.
 void VrmlNodeLOD::setField(const char *fieldName,

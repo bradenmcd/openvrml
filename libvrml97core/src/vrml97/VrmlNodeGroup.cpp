@@ -350,6 +350,16 @@ void VrmlNodeGroup::eventIn(double timeStamp,
     }
 }
 
+// Get the value of one of the exposedFields or eventOuts.
+
+const VrmlField *VrmlNodeGroup::getField(const char *fieldName) const
+{
+  if ( strcmp( fieldName, "children" ) == 0 )
+    return &d_children;
+
+  return VrmlNodeChild::getField( fieldName );
+}
+
 // Set the value of one of the node fields.
 void VrmlNodeGroup::setField(const char *fieldName,
 			     const VrmlField &fieldValue)

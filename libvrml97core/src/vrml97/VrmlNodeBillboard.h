@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeBillboard.h
 
 #ifndef VRMLNODEBILLBOARD_H
@@ -34,6 +33,7 @@ public:
   virtual void inverseTransform(Viewer *);
   virtual void inverseTransform(double [4][4]);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
 private:

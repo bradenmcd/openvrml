@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeCoordinate.cpp
 
 #include "VrmlNodeCoordinate.h"
@@ -58,6 +57,17 @@ ostream& VrmlNodeCoordinate::printFields(ostream& os, int indent)
   if (d_point.size() > 0) PRINT_FIELD(point);
 
   return os;
+}
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeCoordinate::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "point" ) == 0 )
+    return &d_point;
+
+  return VrmlNode::getField( fieldName );
 }
 
 

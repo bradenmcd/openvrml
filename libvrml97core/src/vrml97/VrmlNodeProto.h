@@ -1,7 +1,7 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
-//  %W% %G%
+//
 #ifndef VRMLNODEPROTO_H
 #define VRMLNODEPROTO_H
 
@@ -94,9 +94,9 @@ public:
 		       const char *eventName,
 		       const VrmlField *fieldValue);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  virtual const VrmlField *getField(const char *fieldName) const;
 
   virtual void accumulateTransform( VrmlNode* );
 

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeTouchSensor.cpp
 
 #ifdef HAVE_CONFIG_H
@@ -115,6 +114,30 @@ void VrmlNodeTouchSensor::activate( double timeStamp,
 
 }
 
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeTouchSensor::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "enabled" ) == 0 )
+    return &d_enabled;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "hitNormal" ) == 0 )
+    return &d_hitNormal;
+  else if ( strcmp( fieldName, "hitPoint" ) == 0 )
+    return &d_hitPoint;
+  else if ( strcmp( fieldName, "hitTexCoord" ) == 0 )
+    return &d_hitTexCoord;
+  else if ( strcmp( fieldName, "isActive" ) == 0 )
+    return &d_isActive;
+  else if ( strcmp( fieldName, "isOver" ) == 0 )
+    return &d_isOver;
+  else if ( strcmp( fieldName, "touchTime" ) == 0 )
+    return &d_touchTime;
+
+  return VrmlNodeChild::getField(fieldName); // Parent class
+}
 
 // Set the value of one of the node fields.
 

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodePlaneSensor.h
 
 #ifndef  _VRMLNODEPLANESENSOR_
@@ -36,6 +35,7 @@ public:
 
   void activate( double timeStamp, bool isActive, double *p );
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual void accumulateTransform( VrmlNode* );

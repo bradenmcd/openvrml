@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeInline.cpp
 //
 
@@ -99,6 +98,15 @@ ostream& VrmlNodeInline::printFields(ostream& os, int indent)
   return os;
 }
 
+// Set the value of one of the exposed fields.
+
+const VrmlField *VrmlNodeInline::getField(const char *fieldName) const
+{
+  if ( strcmp( fieldName, "url" ) == 0 )
+    return &d_url;
+
+  return VrmlNodeGroup::getField(fieldName);
+}
 
 // Set the value of one of the node fields.
 

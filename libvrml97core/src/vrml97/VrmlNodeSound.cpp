@@ -125,6 +125,36 @@ void VrmlNodeSound::render(Viewer *viewer)
         d_source.get()->render (viewer);
 }
 
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeSound::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "direction" ) == 0 )
+    return &d_direction;
+  else if ( strcmp( fieldName, "intensity" ) == 0 )
+    return &d_intensity;
+  else if ( strcmp( fieldName, "location" ) == 0 )
+    return &d_location;
+  else if ( strcmp( fieldName, "maxBack" ) == 0 )
+    return &d_maxBack;
+  else if ( strcmp( fieldName, "maxFront" ) == 0 )
+    return &d_maxFront;
+  else if ( strcmp( fieldName, "minBack" ) == 0 )
+    return &d_minBack;
+  else if ( strcmp( fieldName, "minFront" ) == 0 )
+    return &d_minFront;
+  else if ( strcmp( fieldName, "priority" ) == 0 )
+    return &d_priority;
+  else if ( strcmp( fieldName, "source" ) == 0 )
+    return &d_source;
+  else if ( strcmp( fieldName, "spatialize" ) == 0 )
+    return &d_spatialize;
+  
+  return VrmlNodeChild::getField(fieldName); // Parent class
+}
+
+
 
 // Set the value of one of the node fields/events.
 // setField is public so the parser can access it.

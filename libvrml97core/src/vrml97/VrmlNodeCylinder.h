@@ -2,7 +2,6 @@
 //  Vrml97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeCylinder.h
 
 #ifndef  _VRMLNODECYLINDER_

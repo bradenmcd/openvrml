@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodePixelTexture.cpp
 
 #include "VrmlNodePixelTexture.h"
@@ -157,6 +156,17 @@ unsigned char* VrmlNodePixelTexture::pixels()
   return d_image.pixels();
 }
 
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodePixelTexture::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "image" ) == 0 )
+    return &d_image;
+  
+  return VrmlNode::getField(fieldName); // Parent class
+}
 
 // Set the value of one of the node fields.
 

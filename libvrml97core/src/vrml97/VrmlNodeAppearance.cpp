@@ -166,6 +166,21 @@ void VrmlNodeAppearance::render(Viewer *viewer)
   clearModified();
 }
 
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeAppearance::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "material" ) == 0 )
+    return &d_material;
+  else if ( strcmp( fieldName, "texture" ) == 0 )
+    return &d_texture;
+  else if ( strcmp( fieldName, "textureTransform" ) == 0 )
+    return &d_textureTransform;
+  
+  return VrmlNode::getField(fieldName); // Parent class
+}
+
 // Set the value of one of the node fields.
 
 void VrmlNodeAppearance::setField(const char *fieldName,

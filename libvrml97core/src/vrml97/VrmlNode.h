@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNode.h
 
 #ifndef VRMLNODE_H
@@ -20,6 +19,7 @@ class VrmlNamespace;
 class VrmlNodeType;
 class VrmlField;
 class VrmlScene;
+
 
 // For the safe downcasts
 class VrmlNodeAnchor;
@@ -201,11 +201,15 @@ public:
   virtual void setField(const char *fieldName,
 			const VrmlField &fieldValue);
 
-  // Get a field or eventOut by name.
+  // Get a field or eventOut by name. getField is used by Script nodes
+  // to access exposedFields. It does not allow access to private fields
+  // (there tend to be specific access functions for each field for
+  // programmatic access).
   virtual const VrmlField *getField(const char *fieldName) const;
   
   // Return an eventOut/exposedField value. Used by the script node
-  // to access the node fields.
+  // to access the node fields. This just strips the _changed suffix
+  // and tries to access the field using getField.
   const VrmlField *getEventOut(const char *fieldName) const;
 
   // Do nothing. Renderable nodes need to redefine this.

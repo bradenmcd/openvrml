@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeViewpoint.cpp
 
 #include "VrmlNodeViewpoint.h"
@@ -56,6 +55,8 @@ VrmlNodeViewpoint::VrmlNodeViewpoint(VrmlScene *scene) :
   d_jump(true),
   d_orientation(0.0, 0.0, 1.0, 0.0),
   d_position(0.0, 0.0, 10.0),
+  d_isBound(false),
+  d_bindTime(0),
   d_parentTransform(0)
 {
   if (d_scene) d_scene->addViewpoint(this);
@@ -111,6 +112,7 @@ void VrmlNodeViewpoint::accumulateTransform( VrmlNode *parent )
 
 VrmlNode* VrmlNodeViewpoint::getParentTransform() { return d_parentTransform; }
 
+// Note that this method is not maintaining isBound.
 
 void VrmlNodeViewpoint::eventIn(double timeStamp,
 				const char *eventName,
@@ -157,6 +159,9 @@ void VrmlNodeViewpoint::eventIn(double timeStamp,
 		current->eventOut( timeStamp, "isBound", VrmlSFBool(true) );
 	    }
 	}
+
+      d_bindTime.set( timeStamp );
+      eventOut( timeStamp, "bindTime", d_bindTime );
     }
 
   else
@@ -165,6 +170,36 @@ void VrmlNodeViewpoint::eventIn(double timeStamp,
     }
 }
 
+
+// Get the value of a field or eventOut.
+// The isBound eventOut is only set when queried,
+// don't rely on it's value to be valid. This hoses
+// the const-ness of the method, of course :(
+
+const VrmlField *VrmlNodeViewpoint::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "fieldOfView" ) == 0 )
+    return &d_fieldOfView;
+  else if ( strcmp( fieldName, "jump" ) == 0 )
+    return &d_jump;
+  else if ( strcmp( fieldName, "orientation" ) == 0 )
+    return &d_orientation;
+  else if ( strcmp( fieldName, "position" ) == 0 )
+    return &d_position;
+
+  // eventOuts
+  else if ( strcmp( fieldName, "bindTime" ) == 0 )
+    return &d_bindTime;  
+  else if ( strcmp( fieldName, "isBound" ) == 0 )
+    {
+      VrmlSFBool* isBound = (VrmlSFBool*) &(this->d_isBound);
+      isBound->set( d_scene->bindableViewpointTop() == this );
+      return isBound;
+    }
+
+  return VrmlNodeChild::getField( fieldName );
+}
 
 // Set the value of one of the node fields.
 

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeShape.h
 
 #ifndef  _VRMLNODESHAPE_
@@ -41,6 +40,7 @@ public:
 
   virtual void render(Viewer *);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual VrmlNode* getAppearance()  { return d_appearance.get(); }

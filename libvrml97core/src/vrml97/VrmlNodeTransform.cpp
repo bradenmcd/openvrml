@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeTransform.cpp
 
 #include "VrmlNodeTransform.h"
@@ -145,6 +144,25 @@ void VrmlNodeTransform::render(Viewer *viewer)
   clearModified();
 }
 
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeTransform::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "center" ) == 0 )
+    return &d_center;
+  else if ( strcmp( fieldName, "rotation" ) == 0 )
+    return &d_rotation;
+  else if ( strcmp( fieldName, "scale" ) == 0 )
+    return &d_scale;
+  else if ( strcmp( fieldName, "scaleOrientation" ) == 0 )
+    return &d_scaleOrientation;
+  else if ( strcmp( fieldName, "translation" ) == 0 )
+    return &d_translation;
+
+  return VrmlNodeGroup::getField( fieldName );
+}
 
 // Set the value of one of the node fields.
 

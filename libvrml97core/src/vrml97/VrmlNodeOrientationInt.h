@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeOrientationInt.h
 
 #ifndef  _VRMLNODEORIENTATIONINT_
@@ -37,6 +36,7 @@ public:
 		       const char *eventName,
 		       const VrmlField *fieldValue);
 
+  virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual VrmlNodeOrientationInt* toOrientationInt() const;  

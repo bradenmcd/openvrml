@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodePointLight.cpp
 
 #include "VrmlNodePointLight.h"
@@ -103,6 +102,21 @@ void VrmlNodePointLight::renderScoped(Viewer *viewer)
   clearModified();
 }
 
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodePointLight::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "attenuation" ) == 0 )
+    return &d_attenuation;
+  else if ( strcmp( fieldName, "location" ) == 0 )
+    return &d_location;
+  else if ( strcmp( fieldName, "radius" ) == 0 )
+    return &d_radius;
+
+  return VrmlNodeLight::getField( fieldName );
+}
 
 // Set the value of one of the node fields.
 

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeNormal.cpp
 
 #include "VrmlNodeNormal.h"
@@ -59,6 +58,17 @@ ostream& VrmlNodeNormal::printFields(ostream& os, int indent)
   return os;
 }
 
+
+// Get the value of a field or eventOut.
+
+const VrmlField *VrmlNodeNormal::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "vector" ) == 0 )
+    return &d_vector;
+
+  return VrmlNode::getField( fieldName );
+}
 
 // Set the value of one of the node fields.
 
