@@ -60,7 +60,143 @@ namespace {
 
 /**
  * @class VrmlField
- * Abstract base class for the VRML field types.
+ *
+ * @brief Abstract base class for the VRML field types.
+ */
+
+/**
+ * @enum VrmlField::VrmlFieldType
+ *
+ * @brief Used to identify VrmlField types.
+ *
+ * These tags are typically used to designate an expected type or avoid a
+ * <code>dynamic_cast</code>.
+ */
+
+/**
+ * @var VrmlField::NO_FIELD
+ *
+ * @brief Zero value typically used to indicate failure.
+ */
+
+/**
+ * @var VrmlField::SFBOOL
+ *
+ * @brief Designates an SFBool.
+ */
+
+/**
+ * @var VrmlField::SFCOLOR
+ *
+ * @brief Designates an SFColor.
+ */
+
+/**
+ * @var VrmlField::SFFLOAT
+ *
+ * @brief Designates an SFFloat.
+ */
+
+/**
+ * @var VrmlField::SFIMAGE
+ *
+ * @brief Designates an SFImage.
+ */
+
+/**
+ * @var VrmlField::SFINT32
+ *
+ * @brief Designates an SFInt32.
+ */
+
+/**
+ * @var VrmlField::SFNODE
+ *
+ * @brief Designates an SFNode.
+ */
+
+/**
+ * @var VrmlField::SFROTATION
+ *
+ * @brief Designates an SFRotation.
+ */
+
+/**
+ * @var VrmlField::SFSTRING
+ *
+ * @brief Designates an SFString.
+ */
+
+/**
+ * @var VrmlField::SFTIME
+ *
+ * @brief Designates an SFTime.
+ */
+
+/**
+ * @var VrmlField::SFVEC2F
+ *
+ * @brief Designates an SFVec2f.
+ */
+
+/**
+ * @var VrmlField::SFVEC3F
+ *
+ * @brief Designates an SFVec3f.
+ */
+
+/**
+ * @var VrmlField::MFCOLOR
+ *
+ * @brief Designates an MFColor.
+ */
+
+/**
+ * @var VrmlField::MFFLOAT
+ *
+ * @brief Designates an MFFloat.
+ */
+
+/**
+ * @var VrmlField::MFINT32
+ *
+ * @brief Designates an MFInt32.
+ */
+
+/**
+ * @var VrmlField::MFNODE
+ *
+ * @brief Designates an MFNode.
+ */
+
+/**
+ * @var VrmlField::MFROTATION
+ *
+ * @brief Designates an MFRotation.
+ */
+
+/**
+ * @var VrmlField::MFSTRING
+ *
+ * @brief Designates an MFString.
+ */
+
+/**
+ * @var VrmlField::MFTIME
+ *
+ * @brief Designates an MFTime.
+ */
+
+/**
+ * @var VrmlField::MFVEC2F
+ *
+ * @brief Designates an MFVec2f.
+ */
+
+/**
+ * @var VrmlField::MFVEC3F
+ *
+ * @brief Designates an MFVec3f.
  */
 
 /**
@@ -3248,8 +3384,6 @@ namespace {
         return os;
     }
 }
-
-
 
 
 // Define the const and non-const generic and specific safe downcast methods
