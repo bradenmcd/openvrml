@@ -26,7 +26,7 @@
 
 #   include <OpenVRML/common.h>
 #   include <OpenVRML/node.h>
-#   include <OpenVRML/Image.h>
+#   include <OpenVRML/img.h>
 #   include <OpenVRML/bounding_volume.h>
 
 typedef unsigned int FT_UInt;
@@ -466,8 +466,8 @@ namespace OpenVRML {
             sfstring relativeUrl;
 
             // Texture caches
-            Image * texPtr[6];
-            Image tex[6];
+            img * texPtr[6];
+            img tex[6];
 
             // Display list object for background
             viewer::object_t viewerObject;
@@ -1166,7 +1166,7 @@ namespace OpenVRML {
 
             mfstring url;
 
-            Image * image;
+            img * image;
 
             viewer::texture_object_t texObject;
 
@@ -1443,7 +1443,7 @@ namespace OpenVRML {
             sftime duration;
             sfbool active;
 
-            Image * image;
+            img * image;
             int frame, lastFrame;
             double lastFrameTime;
 

@@ -1,3 +1,21 @@
+2003-06-06  Braden McDaniel  <braden@endoframe.com>
+
+	Applied naming convention changes:  Image -> img.  "img" is used
+	in anticipation of a new "image" class.
+
+	* src/openvrml/OpenVRML/img.cpp:  Added file.  Replaces
+	Image.cpp.
+	* src/openvrml/OpenVRML/img.h:  Added file.  Replaces Image.h.
+	* src/openvrml/OpenVRML/Image.cpp:  Removed file.
+	* src/openvrml/OpenVRML/Image.h:  Removed file.
+	* src/openvrml/OpenVRML/Makefile.am:  Replaced Image.cpp,
+	Image.h with img.cpp, img.h.
+	* src/openvrml/OpenVRML/vrml97node.cpp (getTexture,
+	Background::Background, ImageTexture::render,
+	MovieTexture::update, MovieTexture::render,
+	MovieTexture::nFrames):  Changes associated with naming
+	convention changes to img.
+
 2003-06-05  Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml/OpenVRML/Vrml97Parser.g:  Removed lingering Doc2

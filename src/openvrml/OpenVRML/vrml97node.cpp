@@ -1940,8 +1940,8 @@ namespace {
     /**
      * @brief Load and scale textures as needed.
      */
-    Image * getTexture(const mfstring & urls, doc2 & baseDoc,
-                       Image * tex, int thisIndex, OpenVRML::viewer & viewer)
+    img * getTexture(const mfstring & urls, doc2 & baseDoc,
+                       img * tex, int thisIndex, OpenVRML::viewer & viewer)
     {
         // Check whether the url has already been loaded
         size_t n = urls.value.size();
@@ -1965,7 +1965,7 @@ namespace {
             }
 
             // Have to load it
-            if (!tex[thisIndex].tryURLs(urls, &baseDoc)) {
+            if (!tex[thisIndex].try_urls(urls, &baseDoc)) {
                 std::cerr << "Error: couldn't read Background texture from URL "
                           << urls << std::endl;
             } else if ( tex[thisIndex].pixels() && tex[thisIndex].nc() ) {
@@ -1993,7 +1993,7 @@ namespace {
                         viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
                                              tex[thisIndex].nc(),
                                              tex[thisIndex].pixels());
-                        tex[thisIndex].setSize(sizes[i - 1], sizes[j - 1]);
+                        tex[thisIndex].resize(sizes[i - 1], sizes[j - 1]);
                     }
                 }
             }
@@ -2244,7 +2244,7 @@ Background::Background(const node_type & type,
     bound(false),
     viewerObject(0)
 {
-    std::fill(this->texPtr, this->texPtr + 6, static_cast<Image *>(0));
+    std::fill(this->texPtr, this->texPtr + 6, static_cast<img *>(0));
 }
 
 /**
@@ -6148,8 +6148,8 @@ void ImageTexture::render(OpenVRML::viewer & viewer, rendering_context context)
     // them...
     if (!this->image && this->url.value.size() > 0) {
         doc2 baseDoc(this->scene()->url());
-        this->image = new Image;
-        if (!this->image->tryURLs(this->url, &baseDoc)) {
+        this->image = new img;
+        if (!this->image->try_urls(this->url, &baseDoc)) {
             OPENVRML_PRINT_MESSAGE_("Couldn't read ImageTexture from URL "
                                     + this->url.value[0]);
         }
@@ -6177,7 +6177,7 @@ void ImageTexture::render(OpenVRML::viewer & viewer, rendering_context context)
                 if (w != sizes[i - 1] || h != sizes[j - 1]) {
                     viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
                                         this->image->nc(), pix);
-                    this->image->setSize(sizes[i - 1], sizes[j - 1]);
+                    this->image->resize(sizes[i - 1], sizes[j - 1]);
                 }
 
                 this->texObject = viewer.insert_texture(this->image->w(),
@@ -7804,13 +7804,13 @@ void MovieTexture::update(const double currentTime)
     // Load the movie if needed (should check startTime...)
     if (!this->image && this->url.value.size() > 0) {
         doc2 baseDoc(this->scene()->url());
-        this->image = new Image;
-        if (!this->image->tryURLs(this->url, &baseDoc)) {
+        this->image = new img;
+        if (!this->image->try_urls(this->url, &baseDoc)) {
             std::cerr << "Error: couldn't read MovieTexture from URL "
                       << this->url << std::endl;
         }
 
-        int nFrames = this->image->nFrames();
+        int nFrames = this->image->nframes();
         this->duration = sftime((nFrames >= 0) ? double(nFrames) : double(-1));
         this->emit_event("duration_changed", this->duration, currentTime);
         this->frame = (this->speed.value >= 0) ? 0 : nFrames-1;
@@ -7822,7 +7822,7 @@ void MovieTexture::update(const double currentTime)
     }
 
     // No pictures to show
-    if (!this->image || this->image->nFrames() == 0) { return; }
+    if (!this->image || this->image->nframes() == 0) { return; }
 
     // See section 4.6.9 of the VRML97 spec for a detailed explanation
     // of the logic here.
@@ -7835,14 +7835,14 @@ void MovieTexture::update(const double currentTime)
                         this->emit_event("isActive", this->active, currentTime);
                         this->lastFrameTime = currentTime;
                         this->frame = (this->speed.value >= 0) ? 0 :
-                                         this->image->nFrames() - 1;
+                                         this->image->nframes() - 1;
                         this->modified(true);
 	            } else if (this->startTime.value > this->lastFrameTime) {
                         this->active.value = true;
                         this->emit_event("isActive", this->active, currentTime);
                         this->lastFrameTime = currentTime;
                         this->frame = (this->speed.value >= 0) ? 0 :
-                                         this->image->nFrames() - 1;
+                                         this->image->nframes() - 1;
                         this->modified(true);
 	            }
 	        }
@@ -7851,7 +7851,7 @@ void MovieTexture::update(const double currentTime)
                 this->emit_event("isActive", this->active, currentTime);
                 this->lastFrameTime = currentTime;
                 this->frame = (this->speed.value >= 0) ? 0 :
-                                 this->image->nFrames() - 1;
+                                 this->image->nframes() - 1;
                 this->modified(true);
             }
         }
@@ -7899,7 +7899,8 @@ void MovieTexture::update(const double currentTime)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void MovieTexture::render(OpenVRML::viewer & viewer, const rendering_context context)
+void MovieTexture::render(OpenVRML::viewer & viewer,
+                          const rendering_context context)
 {
     if (!this->image || this->frame < 0) { return; }
 
@@ -7929,7 +7930,7 @@ void MovieTexture::render(OpenVRML::viewer & viewer, const rendering_context con
             if (w != sizes[i - 1] || h != sizes[j - 1]) {
                 viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
                                      this->image->nc(), pix);
-                this->image->setSize(sizes[i - 1], sizes[j - 1]);
+                this->image->resize(sizes[i - 1], sizes[j - 1]);
             }
 
             this->texObject = viewer.insert_texture(this->image->w(),
@@ -7959,7 +7960,7 @@ size_t MovieTexture::height() const throw () {
 }
 
 size_t MovieTexture::nFrames() const throw () {
-    return this->image ? this->image->nFrames() : 0;
+    return this->image ? this->image->nframes() : 0;
 }
 
 const unsigned char * MovieTexture::pixels() const throw () {

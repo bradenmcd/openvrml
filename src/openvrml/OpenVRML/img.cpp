@@ -34,7 +34,7 @@
 # include <algorithm>
 
 # include "private.h"
-# include "Image.h"
+# include "img.h"
 # include "doc.h"
 # include "system.h"
 # include "field.h"
@@ -6824,62 +6824,62 @@ typedef enum {
 static ImageFileType imageFileType(const char *, FILE *);
 
 
-Image::Image():
-    d_url(0),
-    d_w(0),
-    d_h(0),
-    d_nc(0),
-    d_pixels(0),
-    d_frame(0)
+img::img():
+    url_(0),
+    w_(0),
+    h_(0),
+    nc_(0),
+    pixels_(0),
+    frame_(0)
 {}
 
 
-Image::~Image()
+img::~img()
 {
-  delete d_url;
-  if (d_pixels) free(d_pixels); // assumes file readers use malloc...
-  if (d_frame) free(d_frame);
+  delete url_;
+  if (pixels_) free(pixels_); // assumes file readers use malloc...
+  if (frame_) free(frame_);
 }
 
-bool Image::setURL(const char * const url, const doc2 * const relative)
+bool img::set_url(const char * const url, const doc2 * const relative)
 {
-    if (this->d_url) {
-        delete this->d_url;
-        this->d_url = 0;
+    if (this->url_) {
+        delete this->url_;
+        this->url_ = 0;
     }
-    if (this->d_pixels) {
-        free(this->d_pixels); // Assumes file readers use malloc.
-        this->d_pixels = 0;
+    if (this->pixels_) {
+        free(this->pixels_); // Assumes file readers use malloc.
+        this->pixels_ = 0;
     }
-    if (this->d_frame) {
-        this->d_frame = 0;
-        free(this->d_frame);
+    if (this->frame_) {
+        this->frame_ = 0;
+        free(this->frame_);
     }
-    this->d_w = this->d_h = this->d_nc = this->d_nFrames = 0;
+    this->w_ = this->h_ = this->nc_ = this->nframes_ = 0;
     if (!url) { return true; }
 
-    this->d_url = new doc(url, relative);
+    this->url_ = new doc(url, relative);
 
-    FILE * const fp = this->d_url->fopen("rb");
+    FILE * const fp = this->url_->fopen("rb");
 
     if (fp) {
         switch (imageFileType(url, fp)) {
         case ImageFile_GIF:
-            this->d_pixels = gifread(fp, &this->d_w, &this->d_h, &this->d_nc,
-                                     &this->d_nFrames, &this->d_frame);
+            this->pixels_ = gifread(fp, &this->w_, &this->h_, &this->nc_,
+                                     &this->nframes_, &this->frame_);
             break;
 # if OPENVRML_ENABLE_IMAGETEXTURE_NODE
         case ImageFile_JPG:
-            this->d_pixels = jpgread(fp, &this->d_w, &this->d_h, &this->d_nc);
+            this->pixels_ = jpgread(fp, &this->w_, &this->h_, &this->nc_);
             break;
 # endif
         case ImageFile_MPG:
-            this->d_pixels = mpgread(fp, &this->d_w, &this->d_h, &this->d_nc,
-                                     &this->d_nFrames, &this->d_frame);
+            this->pixels_ = mpgread(fp, &this->w_, &this->h_, &this->nc_,
+                                     &this->nframes_, &this->frame_);
             break;
 # if OPENVRML_ENABLE_IMAGETEXTURE_NODE
         case ImageFile_PNG:
-            this->d_pixels = pngread(fp, &this->d_w, &this->d_h, &this->d_nc);
+            this->pixels_ = pngread(fp, &this->w_, &this->h_, &this->nc_);
             break;
 # endif
         default:
@@ -6888,22 +6888,22 @@ bool Image::setURL(const char * const url, const doc2 * const relative)
             break;
 	}
 
-        if (! d_pixels) {
+        if (! pixels_) {
             OPENVRML_PRINT_MESSAGE_("Unable to read image file ("
                                     + std::string(url) + ").");
         }
 
-        this->d_url->fclose();
+        this->url_->fclose();
     }
 
-    return (this->d_pixels != 0);
+    return (this->pixels_ != 0);
 }
 
-bool Image::tryURLs(const mfstring & urls, const doc2 * const relative) {
+bool img::try_urls(const mfstring & urls, const doc2 * const relative) {
     size_t i(0);
     for (; i < urls.value.size(); ++i) {
         if (!urls.value[i].empty()
-            && setURL(urls.value[i].c_str(), relative)) {
+            && this->set_url(urls.value[i].c_str(), relative)) {
             break;
         }
     }
@@ -6911,7 +6911,12 @@ bool Image::tryURLs(const mfstring & urls, const doc2 * const relative) {
     return (i < urls.value.size());
 }
 
-const char *Image::url() { return d_url ? d_url->url() : 0; }
+const char * img::url() const
+{
+    return this->url_
+        ? this->url_->url()
+        : 0;
+}
 
 
 // Could peek at file header...
@@ -6946,8 +6951,10 @@ static ImageFileType imageFileType(const char *url, FILE *)
 }
 
 
-unsigned char *Image::pixels(int frame)
+unsigned char * img::pixels(int frame) const
 {
-  return (frame < d_nFrames) ? d_frame[ frame ] : 0;
+  return (frame < this->nframes_)
+      ? this->frame_[frame]
+      : 0;
 }
 

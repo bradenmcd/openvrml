@@ -30,7 +30,7 @@ libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
 libopenvrml_la_SOURCES = \
         basetypes.cpp \
         doc.cpp \
-        Image.cpp \
+        img.cpp \
         system.cpp \
         field.cpp \
         field_value_ptr.cpp \
@@ -56,7 +56,7 @@ OpenVRMLinclude_HEADERS = \
         common.h \
         basetypes.h \
         doc.h \
-        Image.h \
+        img.h \
         system.h \
         field.h \
         field_value_ptr.h \
