@@ -107,6 +107,7 @@ namespace {
     class gl_capabilities {
     public:
         GLint max_modelview_stack_depth;
+        GLint max_texture_size;
 
         static const gl_capabilities & instance() throw (std::bad_alloc);
 
@@ -130,6 +131,8 @@ namespace {
     {
         glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,
                       &this->max_modelview_stack_depth);
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE,
+                      &this->max_texture_size);
     }
 }
 
@@ -3355,6 +3358,11 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
     //
     // Rescale the texture if necessary.
     //
+    const GLint max_texture_size =
+        gl_capabilities::instance().max_texture_size;
+    if (width > max_texture_size) { width = max_texture_size; }
+    if (height > max_texture_size) { height = max_texture_size; }
+
     while (!power_of_2(width)) { --width; }
     while (!power_of_2(height)) { --height; }
 
@@ -3377,10 +3385,9 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
                                            height,
                                            GL_UNSIGNED_BYTE,
                                            &rescaled_pixels[0]);
-        if (result == GL_NO_ERROR) {
-            assert(!rescaled_pixels.empty());
-            pixels = &rescaled_pixels[0];
-        }
+        pixels = (result == GL_NO_ERROR)
+               ? &rescaled_pixels[0]
+               : 0;
     }
 
     //
@@ -3388,40 +3395,42 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
     //
     GLuint glid = 0;
 
-    if (this->select_mode) { return 0; }
+    if (pixels) {
+        if (this->select_mode) { return 0; }
 
-    // Enable blending if needed
-    if (this->blend && (img.comp() == 2 || img.comp() == 4)) {
-        glEnable(GL_BLEND);
-    }
+        // Enable blending if needed
+        if (this->blend && (img.comp() == 2 || img.comp() == 4)) {
+            glEnable(GL_BLEND);
+        }
 
 #if USE_TEXTURE_DISPLAY_LISTS
-    if (retainHint) { glGenTextures(1, &glid); }
-    glBindTexture(GL_TEXTURE_2D, glid);
+        if (retainHint) { glGenTextures(1, &glid); }
+        glBindTexture(GL_TEXTURE_2D, glid);
 #endif
 
-    // Texturing is enabled in setMaterialMode
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        // Texturing is enabled in setMaterialMode
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 img.comp(),
-                 width,
-                 height,
-                 0,
-                 fmt[img.comp() - 1],
-                 GL_UNSIGNED_BYTE,
-                 pixels);
-    OPENVRML_GL_PRINT_ERRORS_;
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     img.comp(),
+                     width,
+                     height,
+                     0,
+                     fmt[img.comp() - 1],
+                     GL_UNSIGNED_BYTE,
+                     pixels);
+        OPENVRML_GL_PRINT_ERRORS_;
 
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_S,
-                    repeat_s ? GL_REPEAT : GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_T,
-                    repeat_t ? GL_REPEAT : GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,
+                        GL_TEXTURE_WRAP_S,
+                        repeat_s ? GL_REPEAT : GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D,
+                        GL_TEXTURE_WRAP_T,
+                        repeat_t ? GL_REPEAT : GL_CLAMP);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    }
 
     return texture_object_t(glid);
 }

@@ -1,3 +1,9 @@
+2003-11-25 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(viewer::insert_texture):  Check GL_MAX_TEXTURE_SIZE and rescale
+	the texture as needed.
+
 2003-11-24 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
