@@ -316,7 +316,7 @@ SDK, is in the folder that contains the OpenVRML CVS root folder, i.e.:
 so that CodeWarrior can locate your OpenGL SDK files.  If you do not
 have the libjpeg, libpng, zlib and InternetConfig files in the default
 file structure described above then you will need to adjust the access
-paths for those for steps 2 and 5, too.  `Lookat.mcp' in step 8 needs to
+paths for those for steps 2 and 5, too.  `Lookat.mcp' in step 7 needs to
 be able to locate the JavaScript library file.
 
    NOTE:  If you have problems with the project files then create new
