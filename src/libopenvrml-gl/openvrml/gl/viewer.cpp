@@ -2846,58 +2846,6 @@ viewer::insert_shell(unsigned int mask,
         mask &= ~mask_normal_per_vertex;
     }
 
-    vector<vertex_data> vertices(coord.size()); // Throws std::bad_alloc.
-    for (vector<vertex_data>::size_type i = 0; i < vertices.size(); ++i) {
-        vertices[i].coord[0] = coord[i].x();
-        vertices[i].coord[1] = coord[i].y();
-        vertices[i].coord[2] = coord[i].z();
-    }
-
-    if (mask & mask_color_per_vertex) {
-        if (color_index.empty()) {
-            for (vector<openvrml::color>::size_type i = 0;
-                 i < color.size();
-                 ++i) {
-                vertices[i].color = &color[i];
-            }
-        } else {
-            for (vector<int32>::size_type i = 0; i < color_index.size(); ++i) {
-                vertices[i].color = &color[color_index[i]];
-            }
-        }
-    }
-
-    if (mask & mask_normal_per_vertex) {
-        if (normal_index.empty()) {
-            for (vector<openvrml::vec3f>::size_type i = 0;
-                 i < normal.size();
-                 ++i) {
-                vertices[i].normal = &normal[i];
-            }
-        } else {
-            for (vector<int32>::size_type i = 0;
-                 i < normal_index.size();
-                 ++i) {
-                vertices[i].normal = &normal[normal_index[i]];
-            }
-        }
-    }
-
-    if (tex_coord_index.empty()) {
-        for (vector<openvrml::vec2f>::size_type i = 0;
-             i < tex_coord.size();
-             ++i) {
-            vertices[i].tex_coord = &tex_coord[i];
-        }
-    } else {
-        for (vector<int32>::size_type i = 0;
-             i < tex_coord_index.size();
-             ++i) {
-            vertices[tex_coord_index[i]].tex_coord =
-                &tex_coord[tex_coord_index[i]];
-        }
-    }
-
     // Handle non-convex polys
     if (mask & mask_convex) {
         ShellData s(mask,
@@ -2909,6 +2857,59 @@ viewer::insert_shell(unsigned int mask,
 
         insertShellConvex(&s);
     } else {
+        vector<vertex_data> vertices(coord.size()); // Throws std::bad_alloc.
+        for (vector<vertex_data>::size_type i = 0; i < vertices.size(); ++i) {
+            vertices[i].coord[0] = coord[i].x();
+            vertices[i].coord[1] = coord[i].y();
+            vertices[i].coord[2] = coord[i].z();
+        }
+
+        if (mask & mask_color_per_vertex) {
+            if (color_index.empty()) {
+                for (vector<openvrml::color>::size_type i = 0;
+                     i < color.size();
+                     ++i) {
+                    vertices[i].color = &color[i];
+                }
+            } else {
+                for (vector<int32>::size_type i = 0;
+                     i < color_index.size();
+                     ++i) {
+                    vertices[i].color = &color[color_index[i]];
+                }
+            }
+        }
+        if (mask & mask_normal_per_vertex) {
+            if (normal_index.empty()) {
+                for (vector<openvrml::vec3f>::size_type i = 0;
+                     i < normal.size();
+                     ++i) {
+                    vertices[i].normal = &normal[i];
+                }
+            } else {
+                for (vector<int32>::size_type i = 0;
+                     i < normal_index.size();
+                     ++i) {
+                    vertices[i].normal = &normal[normal_index[i]];
+                }
+            }
+        }
+
+        if (tex_coord_index.empty()) {
+            for (vector<openvrml::vec2f>::size_type i = 0;
+                 i < tex_coord.size();
+                 ++i) {
+                vertices[i].tex_coord = &tex_coord[i];
+            }
+        } else {
+            for (vector<int32>::size_type i = 0;
+                 i < tex_coord_index.size();
+                 ++i) {
+                vertices[tex_coord_index[i]].tex_coord =
+                    &tex_coord[tex_coord_index[i]];
+            }
+        }
+
         const bool color_per_face = !(mask & mask_color_per_vertex);
         const bool normal_per_face = !(mask & mask_color_per_vertex);
         insertShellTess(*this->tesselator,
