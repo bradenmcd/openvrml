@@ -110,10 +110,8 @@ namespace openvrml {
             field_value * base_ptr;
             static_cast<T *>(base_ptr); // Make sure T inherits field_value.
 
-            typename T::value_type v = fv.value;
+            typedef typename T::value_type value_type;
         }
-
-        T fv;
     };
 
 

@@ -1,3 +1,10 @@
+2004-02-19 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/field.h:  Replaced a variable
+	definition in "FieldValueConcept::constraints" with a typedef to
+	exercise the "value_type" typedef associated with the concept.
+	This quells a gcc warning about an unused variable.
+
 2004-02-09 Braden McDaniel  <braden@endoframe.com>
 
 	Cruft removal.
