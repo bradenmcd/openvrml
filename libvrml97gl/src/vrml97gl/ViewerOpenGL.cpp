@@ -1524,8 +1524,6 @@ texGenParams( float bounds[],	// xmin,xmax, ymin,ymax, zmin,zmax
   
   params[1] = 1.0 / params[1];
   params[3] = 1.0 / params[3];
-  printf(" texCoordParams axes[%d, %d], params %g, %g, %g, %g\n",
-	 axes[0], axes[1], params[0], params[1], params[2], params[3]);
 }
 
 
@@ -2949,9 +2947,9 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
   // Sanity check. This can happen when the world gets replaced
   // by clicking on an anchor - the current sensitive object goes
   // away, but these variables are not reset.
-  if ( d_activeSensitive >= d_nSensitive )
+  if ( d_activeSensitive > d_nSensitive )
     d_activeSensitive = 0;
-  if ( d_overSensitive >= d_nSensitive )
+  if ( d_overSensitive > d_nSensitive )
     d_overSensitive = 0;
 
   // An active sensitive object "grabs" the mouse until button released
