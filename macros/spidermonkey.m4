@@ -34,15 +34,7 @@ AC_SEARCH_LIBS(JS_GetVersion, js mozjs,
                [JS_LIBS="${LIBS}"
                 ov_save_CPPFLAGS="${CPPFLAGS}"
                 CPPFLAGS="${JS_CFLAGS} ${CPPFLAGS}"
-                AC_CHECK_HEADER(jsapi.h,
-                                [no_js=""
-                                 AC_DEFINE(OPENVRML_JSAPI_H, [<jsapi.h>],
-                                           [Include jsapi.h (primary header for SpiderMonkey)])],
-                                [AC_CHECK_HEADER(mozilla/jsapi.h,
-                                                [no_js=""
-                                                 AC_DEFINE(OPENVRML_JSAPI_H,
-                                                           [<mozilla/jsapi.h>],
-                                                           [Include mozilla/jsapi.h (primary header for SpiderMonkey)])])])
+                AC_CHECK_HEADER(jsapi.h, [no_js=""])
                 CPPFLAGS="${ov_save_CPPFLAGS}"])
 LIBS="${ov_save_LIBS}"
 AC_LANG_POP(C)

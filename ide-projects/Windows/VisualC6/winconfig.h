@@ -25,6 +25,4 @@
 #define OPENVRML_GLU_H  <GL/glu.h>
 #define OPENVRML_GLUT_H <GL/glut.h>
 
-#define OPENVRML_JSAPI_H <jsapi.h>
-
 #endif	/* WINCONFIG_H */

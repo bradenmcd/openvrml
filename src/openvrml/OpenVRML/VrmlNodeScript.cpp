@@ -629,7 +629,7 @@ void VrmlNodeScript::set(const FieldList & recs, const std::string & fieldId,
 }
 
 # ifdef OPENVRML_HAVE_SPIDERMONKEY
-#   include OPENVRML_JSAPI_H
+#   include <jsapi.h>
 namespace {
 
     namespace JavaScript_ {
