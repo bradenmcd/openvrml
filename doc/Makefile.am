@@ -1,6 +1,7 @@
 docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
 DOCUMENTATION_FILES = \
+        Doxyfile \
         doxygen-header \
         doxygen-footer \
         index.doc \
@@ -46,11 +47,11 @@ DOCUMENTED_SOURCE_FILES = \
         $(top_srcdir)/src/libopenvrml-gl/openvrml/gl/viewer.cpp \
         $(top_srcdir)/src/libopenvrml-gl/openvrml/gl/viewer.h
 
-EXTRA_DIST = Doxyfile.in $(DOCUMENTATION_FILES)
+EXTRA_DIST = $(DOCUMENTATION_FILES) manual
 
 DISTCLEANFILES = manual/*
 
-html: manual/index.html
+html-local: manual/index.html
 
 installdirs-local:
 	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual
@@ -61,8 +62,5 @@ install-data-local: html installdirs-local
 uninstall-local:
 	rm -rf $(DESTDIR)$(docdir)/manual
 
-manual/index.html: Doxyfile $(DOCUMENTATION_FILES) $(DOCUMENTED_SOURCE_FILES)
-	$(DOXYGEN)
-
-dist-hook: manual/index.html
-	cp -R $(srcdir)/manual $(distdir)
+manual/index.html: $(DOCUMENTATION_FILES) $(DOCUMENTED_SOURCE_FILES)
+	cd $(srcdir) && $(DOXYGEN)

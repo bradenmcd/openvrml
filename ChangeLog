@@ -1,5 +1,15 @@
 2004-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	Don't generate Doxyfile. Since the documentation is included in
+	the distribution, users shouldn't be prompted to regenerate it.
+
+	* configure.ac:  Removed reference to doc/Doxyfile.
+	* doc/Doxyfile:  Added file.
+	* doc/Doxyfile.in:  Removed file.
+	* doc/Makefile.am:  Distribute Doxyfile instead of Doxyfile.in.
+
+2004-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	Backed out incomplete change to remove conformance test results
 	table from the generated documentation (from 2004-07-06).
 
