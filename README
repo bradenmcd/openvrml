@@ -83,14 +83,23 @@ are available under the terms of the GNU General Public License (GPL),
 version 2.  The full text of the GPL can be found in the file "COPYING".
 
 
-Dependencies
-============
+Required dependencies
+=====================
 
-   If your system is missing any of OpenVRML's dependencies, first
-check to see if they are provided by your operating system vendor.
-If not, consult the URIs below.
+   OpenVRML requires the Boost C++ libraries to build.  Boost is
+packaged for many systems; so you should consult your operating system
+vendor if Boost is not already installed on your system.  Otherwise, you
+can obtain Boost from <http://boost.org>.
 
-     Boost                  <http://boost.org>
+
+Optional dependencies
+=====================
+
+   OpenVRML has several optional dependencies.  If your system is
+missing any of these dependencies, first check to see if they are
+provided by your operating system vendor.  If not, consult the URIs
+below.
+
      zlib                   <http://www.gzip.org/zlib/index.html>
      libpng                 <http://www.libpng.org/pub/png/libpng.html>
      libjpeg                <http://www.ijg.org>
@@ -105,15 +114,9 @@ If not, consult the URIs below.
      DejaGnu                <http://www.gnu.org/software/dejagnu/>
      Doxygen                <http://doxygen.org>
 
-   OpenVRML can be built with reduced functionality to avoid many of
+   OpenVRML can be built with reduced functionality which can avoid
 these dependencies.  See the following section, "'configure' options",
 for details.
-
-   Most of OpenVRML's dependencies are either commonplace or easy to
-obtain for POSIX systems.  Windows users may encounter additional
-difficulty compiling some of these dependencies, so compiled versions
-are provided for convenience:
-     <http://openvrml.org/dist/win32_required_libs_and_includes.zip>
 
 
 "configure" options
