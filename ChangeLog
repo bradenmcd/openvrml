@@ -1,3 +1,9 @@
+2002-07-11  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/vrml97node.cpp:  Fixed several places
+          in recalcBSphere methods where child nodes weren't checked for
+          being NULL.
+
 2002-07-10  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/ViewerGlut.cpp, src/lookat/lookat.cpp,
