@@ -31,11 +31,12 @@ AC_LANG_PUSH(C)
 ov_save_LIBS="${LIBS}"
 LIBS=""
 AC_SEARCH_LIBS(JS_GetVersion, js mozjs,
-               [JS_LIBS="${LIBS}"
+               [JS_LIBS="${LIBS} -lnspr4 -lplc4 -lplds4"
                 ov_save_CPPFLAGS="${CPPFLAGS}"
                 CPPFLAGS="${JS_CFLAGS} ${CPPFLAGS}"
                 AC_CHECK_HEADER(jsapi.h, [no_js=""])
-                CPPFLAGS="${ov_save_CPPFLAGS}"])
+                CPPFLAGS="${ov_save_CPPFLAGS}"], ,
+               [-lnspr4 -lplc4 -lplds4])
 LIBS="${ov_save_LIBS}"
 AC_LANG_POP(C)
 
