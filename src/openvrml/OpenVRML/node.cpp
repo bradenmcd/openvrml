@@ -97,7 +97,7 @@ UnsupportedInterface::~UnsupportedInterface() throw ()
 
 
 /**
- * @struct NodeInterface
+ * @class NodeInterface
  *
  * @brief Type information for an interface of a node.
  */
@@ -660,7 +660,7 @@ FieldValue::Type NodeType::hasField(const std::string & id) const throw () {
  *
  * @return a NodePtr to a new Node.
  *
- * @excpetion std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 
 
@@ -692,7 +692,7 @@ FieldValueTypeMismatch::~FieldValueTypeMismatch() throw ()
  */
 
 /**
- * @struct Node::Route
+ * @class Node::Route
  *
  * @brief A route from one node to another through which events propagate.
  */
@@ -950,15 +950,27 @@ const std::string Node::getId() const {
     return (pos != end) ? pos->first : std::string();
 }
 
+/**
+ * @brief Add a polled eventOut value.
+ *
+ * Used internally by the PROTO implementation.
+ *
+ * @param eventOutId    eventOut name.
+ * @param eventOutValue a PolledEventOutValue.
+ *
+ * @exception UnsupportedInterface  if the node has no eventOut @p eventOutId.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
 void Node::addEventOutIS(const std::string & eventOutId,
-                         PolledEventOutValue * const eventOutValue)
-        throw (UnsupportedInterface, std::bad_alloc) {
+                         PolledEventOutValue & eventOutValue)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     if (!this->nodeType.hasEventOut(eventOutId)) {
-        throw UnsupportedInterface(this->nodeType.id
-                                   + " node has no eventOut \"" + eventOutId
-                                   + "\"");
+        throw UnsupportedInterface(this->nodeType,
+                                   NodeInterface::eventOut,
+                                   eventOutId);
     }
-    const EventOutISMap::value_type value(eventOutId, eventOutValue);
+    const EventOutISMap::value_type value(eventOutId, &eventOutValue);
     this->eventOutISMap.insert(value);
 }
 
@@ -1441,8 +1453,16 @@ void Node::setModified() {
     this->nodeType.nodeClass.browser.setModified();
 }
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * The default implementation returns whether this node has been modified.
+ * Subclasses that can have child nodes should override this method and
+ * return @c true if any of their children have been modified.
+ *
+ * @return @c true if the node has been modified; @c false otherwise.
+ */
 bool Node::isModified() const { return this->d_modified; }
-
 
 /**
  * @brief Mark all the nodes in the path as (not) modified.

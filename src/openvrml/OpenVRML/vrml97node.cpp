@@ -745,6 +745,13 @@ bool AbstractIndexedSet::isModified() const
             || (this->coord.get() && this->coord.get()->isModified()));
 }
 
+/**
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
+ */
 void AbstractIndexedSet::updateModified(NodePath & path, int flags)
 {
     if (this->isModified()) { markPathModified(path, true); }
@@ -1221,6 +1228,8 @@ void Anchor::activate()
 
 /**
  * @brief Get the bounding volume.
+ *
+ * @return the bounding volume associated with the node.
  */
 const BVolume * Anchor::getBVolume() const
 {
@@ -1383,6 +1392,12 @@ void Appearance::processSet_textureTransform(const FieldValue & sfnode,
     this->emitEvent("textureTransform_changed", sfnode, timestamp);
 }
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * @return @c true if the node or one of its children has been modified,
+ *      @c false otherwise.
+ */
 bool Appearance::isModified() const
 {
     return (this->d_modified
@@ -1392,6 +1407,13 @@ bool Appearance::isModified() const
                 && this->textureTransform.get()->isModified()));
 }
 
+/**
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
+ */
 void Appearance::updateModified(NodePath & path, int flags)
 {
     if (this->isModified()) { markPathModified(path, true); }
@@ -2841,6 +2863,8 @@ Viewer::Object Box::insertGeometry(Viewer & viewer,
 
 /**
  * @brief Get the bounding volume.
+ *
+ * @return the bounding volume associated with the node.
  */
 const BVolume * Box::getBVolume() const
 {
@@ -2987,6 +3011,12 @@ Collision::Collision(const NodeType & nodeType,
  */
 Collision::~Collision() throw () {}
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * @return @c true if the node or one of its children has been modified,
+ *      @c false otherwise.
+ */
 bool Collision::isModified() const {
   return ((this->proxy.get() && this->proxy.get()->isModified())
           || this->Group::isModified());
@@ -4531,6 +4561,12 @@ ElevationGrid::ElevationGrid(const NodeType & nodeType,
  */
 ElevationGrid::~ElevationGrid() throw () {}
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * @return @c true if the node or one of its children has been modified,
+ *      @c false otherwise.
+ */
 bool ElevationGrid::isModified() const {
     return (this->d_modified
             || (this->color.get() && this->color.get()->isModified())
@@ -4538,6 +4574,13 @@ bool ElevationGrid::isModified() const {
             || (this->texCoord.get() && this->texCoord.get()->isModified()));
 }
 
+/**
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
+ */
 void ElevationGrid::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
@@ -5703,6 +5746,12 @@ void Group::processSet_children(const FieldValue & mfnode,
 
 Group * Group::toGroup() const { return const_cast<Group *>(this); }
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * @return @c true if the node or one of its children has been modified,
+ *      @c false otherwise.
+ */
 bool Group::isModified() const {
     if (this->d_modified) { return true; }
 
@@ -5714,6 +5763,13 @@ bool Group::isModified() const {
     return false;
 }
 
+/**
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
+ */
 void Group::updateModified(NodePath & path, int flags) {
     // if the mark_modifed short circuit doesn't
     // pan out, we should be a little smarter here...
@@ -5840,6 +5896,11 @@ void Group::activate(double time, bool isOver, bool isActive, double *p) {
     }
 }
 
+/**
+ * @brief Get the bounding volume.
+ *
+ * @return the bounding volume associated with the node.
+ */
 const BVolume * Group::getBVolume() const
 {
   if (this->isBVolumeDirty())
@@ -6262,6 +6323,12 @@ IndexedFaceSet::IndexedFaceSet(const NodeType & nodeType,
  */
 IndexedFaceSet::~IndexedFaceSet() throw () {}
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * @return @c true if the node or one of its children has been modified,
+ *      @c false otherwise.
+ */
 bool IndexedFaceSet::isModified() const {
     return (this->d_modified
             || (this->color.get() && this->color.get()->isModified())
@@ -6270,6 +6337,13 @@ bool IndexedFaceSet::isModified() const {
             || (this->texCoord.get() && this->texCoord.get()->isModified()));
 }
 
+/**
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
+ */
 void IndexedFaceSet::updateModified(NodePath& path, int flags) {
     if (this->isModified()) { markPathModified(path, true, flags); }
     path.push_front(this);
@@ -6392,6 +6466,11 @@ void IndexedFaceSet::recalcBSphere() {
     this->setBVolumeDirty(false);
 }
 
+/**
+ * @brief Get the bounding volume.
+ *
+ * @return the bounding volume associated with the node.
+ */
 const BVolume * IndexedFaceSet::getBVolume() const {
     if (this->isBVolumeDirty()) { ((IndexedFaceSet*)this)->recalcBSphere(); }
     return &this->bsphere; // hmmm, const?
@@ -6868,6 +6947,12 @@ LOD::LOD(const NodeType & nodeType,
  */
 LOD::~LOD() throw () {}
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * @return @c true if the node or one of its children has been modified,
+ *      @c false otherwise.
+ */
 bool LOD::isModified() const {
     if (this->d_modified) { return true; }
 
@@ -6879,11 +6964,18 @@ bool LOD::isModified() const {
 }
 
 /**
- * what happens if one of the other children suddenly becomes the one
- * selected? to be safe: check them all. this potentially means some
- * extra work, but it's a lot easier to reason about.
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
  */
 void LOD::updateModified(NodePath & path, int flags) {
+    //
+    // what happens if one of the other children suddenly becomes the one
+    // selected? to be safe: check them all. this potentially means some
+    // extra work, but it's a lot easier to reason about.
+    //
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     for (size_t i = 0; i < this->level.getLength(); ++i) {
@@ -6931,6 +7023,11 @@ void LOD::render(Viewer & viewer, const VrmlRenderContext context)
     }
 }
 
+/**
+ * @brief Get the bounding volume.
+ *
+ * @return the bounding volume associated with the node.
+ */
 const BVolume * LOD::getBVolume() const {
     if (this->isBVolumeDirty()) {
         ((LOD*)this)->recalcBSphere();
@@ -9349,12 +9446,25 @@ PointSet::PointSet(const NodeType & nodeType,
  */
 PointSet::~PointSet() throw () {}
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * @return @c true if the node or one of its children has been modified,
+ *      @c false otherwise.
+ */
 bool PointSet::isModified() const {
     return (d_modified
             || (this->color.get() && this->color.get()->isModified())
             || (this->coord.get() && this->coord.get()->isModified()));
 }
 
+/**
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
+ */
 void PointSet::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
@@ -9411,6 +9521,11 @@ void PointSet::recalcBSphere() {
     this->setBVolumeDirty(false);
 }
 
+/**
+ * @brief Get the bounding volume.
+ *
+ * @return the bounding volume associated with the node.
+ */
 const BVolume* PointSet::getBVolume() const {
     if (this->isBVolumeDirty()) {
         ((PointSet*)this)->recalcBSphere();
@@ -10167,12 +10282,25 @@ Shape::~Shape() throw () {
     // need viewer to free viewerObject ...
 }
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * @return @c true if the node or one of its children has been modified,
+ *      @c false otherwise.
+ */
 bool Shape::isModified() const {
     return (d_modified
             || (this->geometry.get() && this->geometry.get()->isModified())
             || (this->appearance.get() && this->appearance.get()->isModified()));
 }
 
+/**
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
+ */
 void Shape::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true, flags); }
     path.push_front(this);
@@ -10235,9 +10363,14 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
 }
 
 /**
- * just pass off to the geometry's getbvolume() method
+ * @brief Get the bounding volume.
+ *
+ * @return the bounding volume associated with the node.
  */
 const BVolume* Shape::getBVolume() const {
+    //
+    // just pass off to the geometry's getbvolume() method
+    //
     const BVolume * r = 0;
     const NodePtr & geom = this->geometry.get();
     if (geom) { r = geom->getBVolume(); }
@@ -10437,6 +10570,13 @@ Sound::Sound(const NodeType & nodeType,
  */
 Sound::~Sound() throw () {}
 
+/**
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
+ */
 void Sound::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
@@ -10673,6 +10813,11 @@ Viewer::Object Sphere::insertGeometry(Viewer & viewer,
     return viewer.insertSphere(this->radius.get());
 }
 
+/**
+ * @brief Get the bounding volume.
+ *
+ * @return the bounding volume associated with the node.
+ */
 const BVolume * Sphere::getBVolume() const {
     if (this->isBVolumeDirty()) {
         ((Sphere*)this)->bsphere.setRadius(this->radius.get());
@@ -11078,6 +11223,48 @@ const NodeTypePtr
  */
 
 /**
+ * @var SpotLight::SpotLightClass
+ *
+ * @brief Class object for SpotLight instances.
+ */
+
+/**
+ * @var SFVec3f SpotLight::attenuation
+ *
+ * @brief attenuation exposedField.
+ */
+
+/**
+ * @var SFFloat SpotLight::beamWidth
+ *
+ * @brief beamWidth exposedField.
+ */
+
+/**
+ * @var SFFloat SpotLight::cutOffAngle
+ *
+ * @brief cutOffAngle exposedField.
+ */
+
+/**
+ * @var SFVec3f SpotLight::direction
+ *
+ * @brief direction exposedField.
+ */
+
+/**
+ * @var SFVec3f SpotLight::location
+ *
+ * @brief location exposedField.
+ */
+
+/**
+ * @var SFFloat SpotLight::radius
+ *
+ * @brief radius exposedField.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node instance.
@@ -11306,6 +11493,24 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
  */
 
 /**
+ * @var Switch::SwitchClass
+ *
+ * @brief Class object for Switch instances.
+ */
+
+/**
+ * @var MFNode Switch::choice
+ *
+ * @brief choice exposedField.
+ */
+
+/**
+ * @var SFInt32 Switch::whichChoice
+ *
+ * @brief whichChoice exposedField.
+ */
+
+/**
  * @var BSphere Switch::bsphere
  *
  * @brief Cached copy of the bsphere enclosing this node's children.
@@ -11330,6 +11535,12 @@ Switch::Switch(const NodeType & nodeType,
  */
 Switch::~Switch() throw () {}
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * @return @c true if the node or one of its children has been modified,
+ *      @c false otherwise.
+ */
 bool Switch::isModified() const {
     if (d_modified) { return true; }
 
@@ -11339,12 +11550,20 @@ bool Switch::isModified() const {
             && this->choice.getElement(w)->isModified());
 }
 
-// ok: again we get this issue of whether to check _all_ the children
-// or just the current choice (ref LOD). again, chooise to test them
-// all. note that the original isModified() just tested the current
-// one. keep that in mind, and change it back when confirmed safe.
-//
+/**
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
+ */
 void Switch::updateModified(NodePath & path, int flags) {
+    //
+    // ok: again we get this issue of whether to check _all_ the children
+    // or just the current choice (ref LOD). again, chooise to test them
+    // all. note that the original isModified() just tested the current
+    // one. keep that in mind, and change it back when confirmed safe.
+    //
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     for (size_t i = 0; i < this->choice.getLength(); ++i) {
@@ -11365,6 +11584,11 @@ void Switch::render(Viewer & viewer, const VrmlRenderContext context)
     this->clearModified();
 }
 
+/**
+ * @brief Get the bounding volume.
+ *
+ * @return the bounding volume associated with the node.
+ */
 const BVolume* Switch::getBVolume() const {
     if (this->isBVolumeDirty()) {
         ((Switch*)this)->recalcBSphere();
@@ -11939,11 +12163,24 @@ Text::~Text() throw ()
 # endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
+/**
+ * @brief Determine whether the node has been modified.
+ *
+ * @return @c true if the node or one of its children has been modified,
+ *      @c false otherwise.
+ */
 bool Text::isModified() const {
     return (this->Node::isModified()
             || (this->fontStyle.get() && this->fontStyle.get()->isModified()));
 }
 
+/**
+ * @brief Propagate the bvolume dirty flag from children to parents.
+ *
+ * @param path  stack of ancestor nodes.
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both.
+ */
 void Text::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
@@ -13421,7 +13658,7 @@ void TimeSensor::update(const double currentTime)
 }
 
 /**
- * @brief Get the bounding volume associated with the node.
+ * @brief Get the bounding volume.
  *
  * @return the bounding volume associated with the node.
  */
@@ -14111,7 +14348,7 @@ void Transform::inverseTransform(VrmlMatrix & m)
 /**
  * @brief Get the bounding volume.
  *
- * @return a pointer to the BVolume for the Transform.
+ * @return the bounding volume associated with the node.
  */
 const BVolume * Transform::getBVolume() const
 {
@@ -14567,7 +14804,7 @@ void Viewpoint::getFrustum(VrmlFrustum& frust) const
 /**
  * @brief Get the bounding volume.
  *
- * @return a pointer to the BSphere associated with the node.
+ * @return the bounding volume associated with the node.
  */
 const BVolume * Viewpoint::getBVolume() const
 {

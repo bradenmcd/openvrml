@@ -5,6 +5,11 @@
           index.doc:  Documentation improvements.  Incorporated
           conformance test results into doxygen-generated docs.
 
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/nodeptr.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp:  Doc-comment love.
+
 2002-12-17  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Take out all Makefile.vc6 from ide-projects/Windows/VisualC6/*

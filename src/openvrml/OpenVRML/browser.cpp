@@ -37,22 +37,6 @@
 # include "script.h"
 # include "vrml97node.h"
 
-/**
- * @mainpage
- *
- * @section intro Introduction
- *
- * %OpenVRML comprises a runtime library for VRML97 along with an OpenGL
- * renderer.
- *
- * @section arch Architecture
- *
- * %OpenVRML is in the process of being rearchitected so that the node
- * implementations are separate from the core library. The goal is an
- * extensible framework to which a large class of new nodes can be added
- * without changing the core runtime at all.
- */
-
 namespace OpenVRML {
 
     class NodeInterfaceTypeMismatch : public std::runtime_error {
@@ -783,7 +767,17 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     this->d_newView = true;		// Force resetUserNav
 }
 
-void Browser::setDescription(const std::string & description) {
+/**
+ * @brief Send a string to the user interface.
+ *
+ * The default implementation of this method simply prints @p description to
+ * @a out.  Subclasses can override this method to direct messages to an
+ * application's UI; for instance, a status bar.
+ *
+ * @param description   a string.
+ */
+void Browser::setDescription(const std::string & description)
+{
     this->out << description << std::endl;
 }
 
@@ -1000,7 +994,7 @@ void Browser::queueEvent(double timeStamp, FieldValue * value,
 /**
  * @brief Check if any events are waiting to be distributed.
  *
- * @return @true if there are pending events, @c false otherwise.
+ * @return @c true if there are pending events, @c false otherwise.
  */
 bool Browser::eventsPending() {
     return this->d_firstEvent != this->d_lastEvent;
@@ -3135,7 +3129,7 @@ void ProtoNode::addIS(Node & implNode,
             pos = this->eventOutValueMap.find(protoInterfaceId + "_changed");
         }
         assert(pos != this->eventOutValueMap.end());
-        implNode.addEventOutIS(implNodeInterfaceId, &pos->second);
+        implNode.addEventOutIS(implNodeInterfaceId, pos->second);
     }
 }
 

@@ -215,7 +215,8 @@ namespace OpenVRML {
         friend std::ostream & operator<<(std::ostream & out, const Node & node);
 
     public:
-        struct Route {
+        class Route {
+        public:
             const std::string fromEventOut;
             const NodePtr toNode;
             const std::string toEventIn;
@@ -261,7 +262,7 @@ namespace OpenVRML {
         void resetVisitedFlag() throw ();
 
         void addEventOutIS(const std::string & eventOut,
-                           PolledEventOutValue * eventOutValue)
+                           PolledEventOutValue & eventOutValue)
             throw (UnsupportedInterface, std::bad_alloc);
 
         void initialize(Scene & scene, double timestamp) throw (std::bad_alloc);

@@ -29,6 +29,13 @@ namespace OpenVRML {
  * @brief A reference-counted smart pointer for @link Node Nodes@endlink.
  */
 
+/**
+ * @var NodePtr::ScriptNode
+ *
+ * @brief Script nodes can be self-referential, so NodePtr works some special
+ *      magic.
+ */
+
 namespace {
     typedef std::map<OpenVRML::Node *, size_t> CountMap;
     CountMap countMap;
