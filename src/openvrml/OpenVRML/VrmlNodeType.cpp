@@ -41,10 +41,18 @@
 extern char* strdup( const char* );
 #endif
 
-VrmlNodeType::VrmlNodeType(const char *nm, VrmlNode* (*creator)(VrmlScene *)):
-        d_refCount(0), d_name(strdup(nm ? nm : "<unnamed type>")),
-        d_namespace(0), d_url(0), d_actualUrl(0), d_relative(0),
-        d_creator(creator), d_fieldsInitialized(false) {}
+VrmlNodeType::VrmlNodeType(const char *nm, VrmlNode* (*creator)(VrmlScene *))
+{
+  d_refCount = 0;
+  d_name = strdup(nm ? nm : "<unnamed type>");
+  d_namespace = 0;
+  d_url = 0;
+  d_actualUrl = 0;
+  d_relative = 0;
+  d_creator = creator;
+  d_implementation = 0;
+  d_fieldsInitialized = false;
+}
 
 void destructFieldList( VrmlNodeType::FieldList &f )
 {
@@ -81,6 +89,8 @@ VrmlNodeType::~VrmlNodeType()
   destructFieldList( d_eventIns );
   destructFieldList( d_eventOuts );
   destructFieldList( d_fields );
+
+  delete d_implementation;
 }
 
 void VrmlNodeType::setScope(VrmlNamespace & createdIn)
@@ -91,7 +101,7 @@ void VrmlNodeType::setScope(VrmlNamespace & createdIn)
 
 void VrmlNodeType::setUrl(VrmlMFString * url, Doc2 const * relative)
 {
-    if (this->implNodes.getLength() > 0) {
+    if (d_implementation) {
         return; // Too late...
     }
     
@@ -185,12 +195,13 @@ VrmlNodeType::setFieldDefault(const char *fname, VrmlField const * defaultValue)
 void VrmlNodeType::fetchImplementation()
 {
   // Get the PROTO def from the url (relative to original scene url).
-  VrmlNodeType * const proto = VrmlScene::readPROTO( d_url, d_relative );
+  VrmlNodeType *proto = VrmlScene::readPROTO( d_url, d_relative );
   if (proto)
     {
       // check type of first node...
       // steal nodes without cloning
-      this->implNodes = proto->implNodes;
+      d_implementation = proto->d_implementation;
+      proto->d_implementation = 0;
 
       // Make sure we get all the IS maps by using the field
       // lists from the implementation rather than just the
@@ -221,8 +232,9 @@ void VrmlNodeType::fetchImplementation()
 }
 
 
-const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
-  if ((this->implNodes.getLength() == 0) && d_url)
+VrmlMFNode *VrmlNodeType::getImplementationNodes()
+{
+  if (! d_implementation && d_url)
     fetchImplementation();
 
   // Now that the nodes are here, initialize any IS'd fields
@@ -289,7 +301,7 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
       d_fieldsInitialized = true;
     }
     
-  return this->implNodes;
+  return d_implementation; 
 }
 
 
@@ -301,9 +313,7 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 
 VrmlNode *VrmlNodeType::firstNode()
 {
-    return (this->implNodes.getLength() > 0)
-            ? this->implNodes[0]
-            : 0;
+  return d_implementation ? (*d_implementation)[0] : 0;
 }
   
 VrmlField::VrmlFieldType
@@ -388,7 +398,11 @@ VrmlNodeType::fieldDefault(const char *fname) const
 void VrmlNodeType::addNode(VrmlNode * node)
 {
     // add node to list of implementation nodes
-    this->implNodes.addNode(node);
+    if (d_implementation) {
+        d_implementation->addNode(node);
+    } else {
+        d_implementation = new VrmlMFNode(1, &node);
+    }
 }
 
 void VrmlNodeType::addIS(const char *isFieldName,

@@ -24,7 +24,6 @@
 
 #include "VrmlNodeCylinderSensor.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "System.h"
 #include "Viewer.h"
@@ -89,15 +88,12 @@ VrmlNodeCylinderSensor::~VrmlNodeCylinderSensor()
 {
 }
 
-bool VrmlNodeCylinderSensor::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeCylinderSensor::cloneMe() const
+{
+  return new VrmlNodeCylinderSensor(*this);
 }
+
 
 VrmlNodeCylinderSensor* VrmlNodeCylinderSensor::toCylinderSensor() const	// mgiger 6/16/00
 {

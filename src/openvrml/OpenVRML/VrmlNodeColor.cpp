@@ -19,7 +19,7 @@
 // 
 
 #include "VrmlNodeColor.h"
-#include "VrmlNodeVisitor.h"
+
 #include "VrmlNodeType.h"
 
 
@@ -59,15 +59,12 @@ VrmlNodeColor::~VrmlNodeColor()
 {
 }
 
-bool VrmlNodeColor::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeColor::cloneMe() const
+{
+  return new VrmlNodeColor(*this);
 }
+
 
 VrmlNodeColor* VrmlNodeColor::toColor() const
 { return (VrmlNodeColor*) this; }

@@ -21,7 +21,6 @@
 #include "VrmlNodeNavigationInfo.h"
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 
 //  NavigationInfo factory.
@@ -86,15 +85,12 @@ VrmlNodeNavigationInfo::~VrmlNodeNavigationInfo()
   if (d_scene) d_scene->removeNavigationInfo(this);
 }
 
-bool VrmlNodeNavigationInfo::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeNavigationInfo::cloneMe() const
+{
+  return new VrmlNodeNavigationInfo(*this);
 }
+
 
 VrmlNodeNavigationInfo* VrmlNodeNavigationInfo::toNavigationInfo() const
 { return (VrmlNodeNavigationInfo*) this; }

@@ -17,15 +17,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
+//  VrmlNodeAppearance.cpp
+//
 
 #include "VrmlNodeAppearance.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 
 #include "Viewer.h"
 #include "VrmlNodeMaterial.h"
 #include "VrmlNodeTexture.h"
-#include "VrmlNodeTextureTransform.h"
 
 static VrmlNode *creator( VrmlScene *scene ) 
 { return new VrmlNodeAppearance(scene); }
@@ -67,30 +67,22 @@ VrmlNodeAppearance::~VrmlNodeAppearance()
 {
 }
 
-bool VrmlNodeAppearance::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+VrmlNode *VrmlNodeAppearance::cloneMe() const
+{
+  return new VrmlNodeAppearance(*this);
 }
 
-void VrmlNodeAppearance::resetVisitedFlag() {
-    if (this->visited) {
-        this->visited = false;
-        if (this->d_material.get()) {
-            this->d_material.get()->resetVisitedFlag();
-        }
-        if (this->d_texture.get()) {
-            this->d_texture.get()->resetVisitedFlag();
-        }
-        if (this->d_textureTransform.get()) {
-            this->d_textureTransform.get()->resetVisitedFlag();
-        }
-    }
+void VrmlNodeAppearance::cloneChildren(VrmlNamespace *ns)
+{
+  // Replace references with clones
+  if (d_material.get())
+    d_material.set(d_material.get()->clone(ns));
+  if (d_texture.get())
+    d_texture.set(d_texture.get()->clone(ns));
+  if (d_textureTransform.get())
+    d_textureTransform.set(d_textureTransform.get()->clone(ns));
 }
+
 
 VrmlNodeAppearance* VrmlNodeAppearance::toAppearance() const
 {
@@ -133,6 +125,20 @@ void VrmlNodeAppearance::addToScene( VrmlScene *s, const char *rel )
   if (d_textureTransform.get())
     d_textureTransform.get()->addToScene(s,rel);
 }
+
+// Copy the routes to nodes in the given namespace.
+
+void VrmlNodeAppearance::copyRoutes( VrmlNamespace *ns ) const
+{
+  VrmlNode::copyRoutes(ns);  // Copy my routes
+
+  // Copy subnode routes
+  if (d_material.get()) d_material.get()->copyRoutes(ns);
+  if (d_texture.get()) d_texture.get()->copyRoutes(ns);
+  if (d_textureTransform.get())
+    d_textureTransform.get()->copyRoutes(ns);
+}
+
 
 ostream& VrmlNodeAppearance::printFields(ostream& os, int indent)
 {
@@ -214,66 +220,4 @@ void VrmlNodeAppearance::setField(const char *fieldName,
   else if TRY_SFNODE_FIELD(textureTransform, TextureTransform)
   else
     VrmlNode::setField(fieldName, fieldValue);
-}
-
-/**
- * @brief Get the Material node.
- *
- * @returns an SFNode object containing the Material node associated with
- *          this Appearance.
- */
-const VrmlSFNode & VrmlNodeAppearance::getMaterial() const {
-    return this->d_material;
-}
-
-/**
- * @brief Set the Material node.
- *
- * @param material an SFNode object containing a Material node
- */
-void VrmlNodeAppearance::setMaterial(const VrmlSFNode & material) {
-    assert(!material.get() || dynamic_cast<VrmlNodeMaterial *>(material.get()));
-    this->d_material = material;
-}
-
-/**
- * @brief Get the texture node.
- *
- * @return an SFNode object containing the texture node associated with
- *         this Appearance.
- */
-const VrmlSFNode & VrmlNodeAppearance::getTexture() const {
-    return this->d_texture;
-}
-
-/**
- * @brief Set the texture node.
- *
- * @param texture an SFNode object containing a texture node.
- */
-void VrmlNodeAppearance::setTexture(const VrmlSFNode & texture) {
-    assert(!texture.get() || dynamic_cast<VrmlNodeTexture *>(texture.get()));
-    this->d_texture = texture;
-}
-
-/**
- * @brief Get the TextureTransform node.
- *
- * @return an SFNode object containing the TextureTransform node
- *         associated with this Appearance.
- */
-const VrmlSFNode & VrmlNodeAppearance::getTextureTransform() const {
-    return this->d_textureTransform;
-}
-
-/**
- * @brief Set the TextureTransform node.
- *
- * @param textureTransform an SFNode object containing a
- *                         TextureTransform node.
- */
-void VrmlNodeAppearance::setTextureTransform(const VrmlSFNode & textureTransform) {
-    assert(!textureTransform.get()
-            || dynamic_cast<VrmlNodeTextureTransform *>(textureTransform.get()));
-    this->d_textureTransform = textureTransform;
 }

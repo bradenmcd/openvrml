@@ -20,7 +20,6 @@
 
 #include "VrmlNodeExtrusion.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "Viewer.h"
 
 
@@ -98,15 +97,12 @@ VrmlNodeExtrusion::~VrmlNodeExtrusion()
 {
 }
 
-bool VrmlNodeExtrusion::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeExtrusion::cloneMe() const
+{
+  return new VrmlNodeExtrusion(*this);
 }
+
 
 ostream& VrmlNodeExtrusion::printFields(ostream& os, int indent)
 {

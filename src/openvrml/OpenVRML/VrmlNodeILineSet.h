@@ -37,9 +37,9 @@ public:
   VrmlNodeILineSet(VrmlScene *);
   virtual ~VrmlNodeILineSet();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
+  virtual VrmlNode *cloneMe() const;
+  virtual void cloneChildren(VrmlNamespace*);
+
   virtual Viewer::Object insertGeometry(Viewer *v, VrmlRenderContext rc);
 
 protected:

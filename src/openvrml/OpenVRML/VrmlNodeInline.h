@@ -39,8 +39,8 @@ public:
   VrmlNodeInline(VrmlScene*);
   virtual ~VrmlNodeInline();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  
+  virtual VrmlNode *cloneMe() const;
+
   virtual VrmlNodeInline* toInline() const;
 
   virtual ostream& printFields(ostream& os, int indent);

@@ -37,9 +37,9 @@ public:
   VrmlNodeSwitch(VrmlScene *);
   virtual ~VrmlNodeSwitch();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
+  virtual VrmlNode *cloneMe() const;
+  void cloneChildren(VrmlNamespace *);
+
   virtual VrmlNodeSwitch* toSwitch() const; //LarryD
 
   virtual bool isModified() const;
@@ -48,6 +48,8 @@ public:
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
 
+  virtual void copyRoutes( VrmlNamespace *ns ) const;
+
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void render(Viewer *, VrmlRenderContext rc);
@@ -55,11 +57,8 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  const VrmlMFNode & getChoice() const;
-  void setChoice(const VrmlMFNode & choice);
-  
-  const VrmlSFInt32 & getWhichChoice() const;
-  void setWhichChoice(const VrmlSFInt32 & choice);
+  VrmlMFNode *getChoiceNodes()  { return &d_choice;} 
+  virtual int getWhichChoice() { return d_whichChoice.get(); }  
 
   const VrmlBVolume* getBVolume() const;
 

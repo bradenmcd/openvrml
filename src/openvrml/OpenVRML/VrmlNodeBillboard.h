@@ -37,8 +37,8 @@ public:
   VrmlNodeBillboard(VrmlScene *);
   virtual ~VrmlNodeBillboard();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  
+  virtual VrmlNode *cloneMe() const;
+
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void render(Viewer *, VrmlRenderContext rc);

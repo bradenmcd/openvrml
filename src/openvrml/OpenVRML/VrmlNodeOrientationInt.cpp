@@ -28,7 +28,6 @@
 
 #include "VrmlNodeOrientationInt.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 #include <math.h>
 
@@ -77,15 +76,12 @@ VrmlNodeOrientationInt::~VrmlNodeOrientationInt()
 {
 }
 
-bool VrmlNodeOrientationInt::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeOrientationInt::cloneMe() const
+{
+  return new VrmlNodeOrientationInt(*this);
 }
+
 
 ostream& VrmlNodeOrientationInt::printFields(ostream& os, int indent)
 {

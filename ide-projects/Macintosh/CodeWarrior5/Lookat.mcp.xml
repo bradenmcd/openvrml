@@ -771,9 +771,10 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>	5°</VALUE></SETTING>
-                    <SETTING><VALUE>	%8</VALUE></SETTING>
-                    <SETTING><VALUE>9@</VALUE></SETTING>
+                    <SETTING><VALUE>op</VALUE></SETTING>
+                    <SETTING><VALUE>Ϋάψ</VALUE></SETTING>
+                    <SETTING><VALUE>
+π]π</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -898,6 +899,15 @@
                 <FILE>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:MacOS Support:Libraries:</ACCESSPATH>
+                    <PATH>:Runtime:Runtime PPC:MSL RuntimePPC.Lib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Library</FILEKIND>
+                    <FILEFLAGS></FILEFLAGS>
+                </FILE>
+                <FILE>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
                     <ACCESSPATH>:MacOS Support:Headers:</ACCESSPATH>
                     <PATH>::Universal:Libraries:StubLibraries:MathLib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
@@ -989,6 +999,15 @@
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>CodeWarrior</PATHROOT>
                     <ACCESSPATH>:MacOS Support:Headers:</ACCESSPATH>
+                    <PATH>::Universal:Libraries:StubLibraries:DriverServicesLib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Library</FILEKIND>
+                    <FILEFLAGS>Debug</FILEFLAGS>
+                </FILE>
+                <FILE>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:MacOS Support:Headers:</ACCESSPATH>
                     <PATH>::Universal:Libraries:StubLibraries:NavigationLib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Library</FILEKIND>
@@ -1044,15 +1063,6 @@
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>:</ACCESSPATH>
                     <PATH>:OpenVRML.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
-                    <FILEFLAGS></FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>CodeWarrior</PATHROOT>
-                    <ACCESSPATH>:MacOS Support:Libraries:</ACCESSPATH>
-                    <PATH>:Runtime:Runtime PPC:MSL RuntimePPC.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Library</FILEKIND>
                     <FILEFLAGS></FILEFLAGS>
@@ -1069,6 +1079,13 @@
                 <FILEREF>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:MacOS Support:Libraries:</ACCESSPATH>
+                    <PATH>:Runtime:Runtime PPC:MSL RuntimePPC.Lib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
                     <ACCESSPATH>:MacOS Support:Headers:</ACCESSPATH>
                     <PATH>::Universal:Libraries:StubLibraries:MathLib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
@@ -1140,6 +1157,13 @@
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>CodeWarrior</PATHROOT>
                     <ACCESSPATH>:MacOS Support:Headers:</ACCESSPATH>
+                    <PATH>::Universal:Libraries:StubLibraries:DriverServicesLib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:MacOS Support:Headers:</ACCESSPATH>
                     <PATH>::Universal:Libraries:StubLibraries:NavigationLib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
@@ -1183,13 +1207,6 @@
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>:</ACCESSPATH>
                     <PATH>:OpenVRML.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>CodeWarrior</PATHROOT>
-                    <ACCESSPATH>:MacOS Support:Libraries:</ACCESSPATH>
-                    <PATH>:Runtime:Runtime PPC:MSL RuntimePPC.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
             </LINKORDER>
@@ -1293,6 +1310,14 @@
                     <TARGETNAME>Lookat</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:MacOS Support:Headers:</ACCESSPATH>
+                    <PATH>::Universal:Libraries:StubLibraries:DriverServicesLib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <TARGETNAME>Lookat</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
                     <ACCESSPATH>:MacOS Support:OpenTransport:Open Tpt Client Developer:PPC Libraries:</ACCESSPATH>
                     <PATH>:OpenTptInetPPC.o</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
@@ -1337,14 +1362,6 @@
                     <TARGETNAME>Lookat</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>CodeWarrior</PATHROOT>
-                    <ACCESSPATH>:MacOS Support:Libraries:</ACCESSPATH>
-                    <PATH>:Runtime:Runtime PPC:MSL RuntimePPC.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <TARGETNAME>Lookat</TARGETNAME>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>CodeWarrior</PATHROOT>
                     <ACCESSPATH>:MSL:</ACCESSPATH>
                     <PATH>:MSL_C:MSL_MacOS:Lib:PPC:MSL C.PPC.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
@@ -1363,6 +1380,14 @@
                     <PATHROOT>CodeWarrior</PATHROOT>
                     <ACCESSPATH>:MSL:</ACCESSPATH>
                     <PATH>:MSL_C:MSL_MacOS:Lib:PPC:MSL SIOUX.PPC.Lib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <TARGETNAME>Lookat</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:MacOS Support:Libraries:</ACCESSPATH>
+                    <PATH>:Runtime:Runtime PPC:MSL RuntimePPC.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
             </GROUP>

@@ -37,10 +37,11 @@ public:
 
   VrmlNodeAppearance(VrmlScene *);
   virtual ~VrmlNodeAppearance();
-  
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
+
+  // Copy the node.
+  virtual VrmlNode *cloneMe() const;
+  virtual void cloneChildren( VrmlNamespace* );
+
   virtual VrmlNodeAppearance* toAppearance() const;
 
   virtual bool isModified() const;
@@ -48,6 +49,8 @@ public:
   virtual void clearFlags();	// Clear childrens flags too.
 
   virtual void addToScene( VrmlScene *s, const char *relativeUrl );
+
+  virtual void copyRoutes(VrmlNamespace *ns) const;
 
   virtual ostream& printFields(ostream& os, int indent);
 
@@ -59,14 +62,10 @@ public:
   virtual void setField(const char *fieldName,
 			const VrmlField &fieldValue);
 
-  const VrmlSFNode & getMaterial() const;
-  void setMaterial(const VrmlSFNode & material);
-  
-  const VrmlSFNode & getTexture() const;
-  void setTexture(const VrmlSFNode & texture);
-  
-  const VrmlSFNode & getTextureTransform() const;
-  void setTextureTransform(const VrmlSFNode & textureTransform);
+  VrmlNode *material()	{ return (VrmlNode *) d_material.get(); }
+  VrmlNode *texture()	{ return (VrmlNode *) d_texture.get(); }
+  VrmlNode *textureTransform()
+    { return (VrmlNode *) d_textureTransform.get(); }
 
 protected:
 

@@ -23,7 +23,6 @@
 #include "MathUtils.h"
 #include "System.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 #include "Viewer.h"
 #include "doc2.hpp"
@@ -90,15 +89,12 @@ VrmlNodeMovieTexture::~VrmlNodeMovieTexture()
   delete d_image;
 }
 
-bool VrmlNodeMovieTexture::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeMovieTexture::cloneMe() const
+{
+  return new VrmlNodeMovieTexture(*this);
 }
+
 
 VrmlNodeMovieTexture* VrmlNodeMovieTexture::toMovieTexture() const
 { return (VrmlNodeMovieTexture*) this; }

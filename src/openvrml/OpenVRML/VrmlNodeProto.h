@@ -28,7 +28,8 @@
 #include "VrmlNode.h"
 #include "VrmlNodeType.h"
 #include "Viewer.h"
-#include "VrmlMFNode.h"
+
+class VrmlMFNode;
 
 class VrmlNodeProto : public VrmlNode {
 
@@ -40,9 +41,8 @@ public:
   VrmlNodeProto(const VrmlNodeProto&);
   virtual ~VrmlNodeProto();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
+  virtual VrmlNode *cloneMe() const;
+
   virtual void addToScene( VrmlScene *, const char *relUrl );
   virtual ostream& printFields(ostream& os, int indent);
 
@@ -112,7 +112,13 @@ public:
 
   virtual void accumulateTransform( VrmlNode* );
 
-  const VrmlMFNode & getImplNodes() const;
+  // LarryD  Feb 11/99
+  int size();
+  // LarryD  Feb 11/99
+  VrmlNode *child(int index);
+
+  // LarryD Feb 11/99
+  VrmlMFNode *getNodes()  { return d_nodes;}
 
   // Field name/value pairs specified in PROTO instantiation
   typedef struct {
@@ -137,7 +143,7 @@ private:
   bool d_instantiated;
   VrmlNamespace *d_scope;	// Node type and name bindings
 
-  VrmlMFNode implNodes;		// Local copy of implementation nodes.
+  VrmlMFNode *d_nodes;		// Local copy of implementation nodes.
 
   std::list<NameValueRec*> d_fields;	// Field values
 

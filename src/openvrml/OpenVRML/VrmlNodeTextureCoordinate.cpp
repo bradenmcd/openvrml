@@ -20,7 +20,7 @@
 
 #include "VrmlNodeTextureCoordinate.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
+
 
 static VrmlNode *creator( VrmlScene *s ) {
   return new VrmlNodeTextureCoordinate(s);
@@ -61,15 +61,12 @@ VrmlNodeTextureCoordinate::~VrmlNodeTextureCoordinate()
 {
 }
 
-bool VrmlNodeTextureCoordinate::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeTextureCoordinate::cloneMe() const
+{
+  return new VrmlNodeTextureCoordinate(*this);
 }
+
 
 VrmlNodeTextureCoordinate* VrmlNodeTextureCoordinate::toTextureCoordinate() const
 { return (VrmlNodeTextureCoordinate*) this; }

@@ -20,7 +20,6 @@
 
 #include "VrmlNodePositionInt.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 
 // PositionInt factory.
@@ -68,15 +67,12 @@ VrmlNodePositionInt::~VrmlNodePositionInt()
 {
 }
 
-bool VrmlNodePositionInt::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodePositionInt::cloneMe() const
+{
+  return new VrmlNodePositionInt(*this);
 }
+
 
 ostream& VrmlNodePositionInt::printFields(ostream& os, int indent)
 {

@@ -25,7 +25,6 @@
 #include "doc2.hpp"
 #include "Image.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlSFBool.h"
 #include "VrmlScene.h"
 #include "Viewer.h"
@@ -95,14 +94,9 @@ VrmlNodeBackground::~VrmlNodeBackground()
   // remove d_viewerObject...
 }
 
-bool VrmlNodeBackground::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+VrmlNode *VrmlNodeBackground::cloneMe() const
+{
+  return new VrmlNodeBackground(*this);
 }
 
 VrmlNodeBackground* VrmlNodeBackground::toBackground() const

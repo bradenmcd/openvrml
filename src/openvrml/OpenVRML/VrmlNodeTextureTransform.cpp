@@ -20,7 +20,6 @@
 
 #include "VrmlNodeTextureTransform.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "Viewer.h"
 
@@ -70,15 +69,12 @@ VrmlNodeTextureTransform::~VrmlNodeTextureTransform()
 {
 }
 
-bool VrmlNodeTextureTransform::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeTextureTransform::cloneMe() const
+{
+  return new VrmlNodeTextureTransform(*this);
 }
+
 
 VrmlNodeTextureTransform* VrmlNodeTextureTransform::toTextureTransform() const 
 { return (VrmlNodeTextureTransform*) this; }

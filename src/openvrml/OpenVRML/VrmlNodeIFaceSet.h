@@ -39,14 +39,16 @@ public:
   VrmlNodeIFaceSet(VrmlScene *);
   virtual ~VrmlNodeIFaceSet();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
+  virtual VrmlNode *cloneMe() const;
+  virtual void cloneChildren(VrmlNamespace *);
+
   virtual bool isModified() const;
   virtual void updateModified(VrmlNodePath& path, int flags);
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
+
+  virtual void copyRoutes( VrmlNamespace *ns ) const;
 
   virtual ostream& printFields(ostream& os, int indent);
 
@@ -57,14 +59,10 @@ public:
 
   virtual VrmlNodeIFaceSet* toIFaceSet() const;
 
-  const VrmlSFNode & getNormal() const;
-  void setNormal(const VrmlSFNode & normal);
-  
+  virtual VrmlNode* getNormal();
   virtual const VrmlMFInt32 & getNormalIndex() const;
 
-  const VrmlSFNode & getTexCoord() const;
-  void setTexCoord(const VrmlSFNode & texCoord);
-  
+  virtual VrmlNode* getTexCoord();
   virtual const VrmlMFInt32 & getTexCoordIndex() const;
 
   virtual bool getCcw(){ return d_ccw.get(); }  // LarryD  Feb18/99

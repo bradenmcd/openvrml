@@ -1,70 +1,6 @@
-2001-01-29 Michael Louka  <michael.louka@hrp.no>
-
-        * For Mac OS only: Updated System.cpp to removed dependency on
-          DriverServices system library. Updated Lookat.mcp and
-          Lookat.mcp.xml to support this update.
-
-2001-01-28  Braden McDaniel  <braden@endoframe.com>
-
-        * Changed VrmlNodeType and VrmlNodeProto to hold their
-          implementation nodes as a VrmlMFNode object, rather than a
-          pointer to a VrmlMFNode. (Since a PROTO *must* have at least
-          one node in its implementation, we can tell whether the
-          implementation has been retrieved by the length of the
-          VrmlMFNode object.)
-
-        * Added a visitor class for the node hierarchy, VrmlNodeVisitor.
-
-        * Reimplemented node cloning using a visitor. This cleans up
-          the VrmlNode API a bit.
-
-2001-01-27  Braden McDaniel  <braden@endoframe.com>
-
-        * Changed VrmlNodeProto::getNodes() to return a VrmlMFNode
-          reference (instead of a pointer).
-
-        * Added accessors to VrmlNodeSwitch.
-
-        * Added accessors for source to VrmlNodeSound.
-
-        * Added accessors for fontStyle to VrmlNodeText.
-
-2001-01-24  Braden McDaniel  <braden@endoframe.com>
-
-        * Changed VrmlNodeScript copy ctor to call VrmlNodeChild copy
-          ctor.
-
 2001-01-23  Braden McDaniel  <braden@endoframe.com>
 
-        * Added getters/setters to VrmlNodeIndexedSet.
-
-        * Added getter/setter for level to VrmlNodeLOD.
-
-        * Added getters/setters to VrmlNodePointSet.
-
-2001-01-22  Braden McDaniel  <braden@endoframe.com>
-
-        * Added SFNode field getters/setters to VrmlNodeIFaceSet.
-
-2001-01-21  Braden McDaniel  <braden@endoframe.com>
-
-        * Moved definition of Route from VrmlNode.* to its own
-          implementation and header files.
-
-        * Moved VrmlNode Doxygen comments to implementation file.
-
-        * Added getter/setter methods to VrmlNodeAppearance.
-
-        * Moved VrmlNodeChild implementation into its own file (from
-          `VrmlNode.cpp'); added copy ctor.
-
-        * Broke VrmlNode::toChild() into const and non-const versions.
-
-        * Added getter/setter for proxy on VrmlNodeCollision.
-
-        * Added getters/setters for VrmlNodeElevationGrid.
-
-        * Added getter/setter for children on VrmlNodeGroup.
+        * Include <stddef.h> from `Viewer.h'.
 
 2001-01-20  Braden McDaniel  <braden@endoframe.com>
 
@@ -85,11 +21,7 @@
 
         * Fixed undefined symbol problems while making "lookat" in
           debug mode using microsoft DevStudio.
-
-2001-01-10  Michael Louka <Michael.Louka@hrp.no>
-
-        * Updated CodeWarrior 5.x files for Macintosh for new
-          OpenVRML structure.
+          
 
 2001-01-10  Braden McDaniel  <braden@endoframe.com>
 

@@ -37,15 +37,16 @@ public:
   VrmlNodePointSet(VrmlScene *);
   virtual ~VrmlNodePointSet();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
+  virtual VrmlNode *cloneMe() const;
+  virtual void cloneChildren(VrmlNamespace *);
   virtual void updateModified(VrmlNodePath& path);
   virtual bool isModified() const;
 
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
+
+  virtual void copyRoutes(VrmlNamespace *ns) const;
 
   virtual ostream& printFields(ostream& os, int indent);
 
@@ -54,12 +55,6 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  const VrmlSFNode & getColor() const;
-  void setColor(const VrmlSFNode & color);
-  
-  const VrmlSFNode & getCoord() const;
-  void setCoord(const VrmlSFNode & coord);
-  
   const VrmlBVolume* getBVolume() const;
 
 protected:

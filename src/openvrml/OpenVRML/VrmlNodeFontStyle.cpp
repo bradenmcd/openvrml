@@ -20,7 +20,6 @@
 
 #include "VrmlNodeFontStyle.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeFontStyle(s); }
@@ -71,15 +70,12 @@ VrmlNodeFontStyle::~VrmlNodeFontStyle()
 {
 }
 
-bool VrmlNodeFontStyle::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeFontStyle::cloneMe() const
+{
+  return new VrmlNodeFontStyle(*this);
 }
+
 
 VrmlNodeFontStyle* VrmlNodeFontStyle::toFontStyle() const
 { return (VrmlNodeFontStyle*) this; }

@@ -40,8 +40,8 @@ public:
   VrmlNodeTouchSensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeTouchSensor();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  
+  virtual VrmlNode *cloneMe() const;
+
   virtual VrmlNodeTouchSensor* toTouchSensor() const;
 
   virtual ostream& printFields(ostream& os, int indent);
