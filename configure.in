@@ -53,8 +53,8 @@ AC_PROG_CXXCPP
 dnl
 dnl Check for libjpeg, libpng, zlib
 dnl
-OV_PATH_JPEG(, AC_MSG_ERROR([libjpeg not found.]))
 OV_PATH_ZLIB(, AC_MSG_ERROR([zlib not found.]))
+OV_PATH_JPEG(, AC_MSG_WARN([Building without JPEG support.]))
 OV_PATH_PNG(, AC_MSG_WARN([Building without PNG support.]))
 
 dnl

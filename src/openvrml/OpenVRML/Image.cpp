@@ -979,10 +979,11 @@ namespace {
 //
 // JPEG reader
 //
-#include <setjmp.h>
+# ifdef HAVE_JPEG
+#   include <setjmp.h>
 
 extern "C" {
-#include <jpeglib.h>
+#   include <jpeglib.h>
 }
 namespace {
     
@@ -1022,7 +1023,7 @@ namespace {
       int bytes_per_line, i, row;
 
       /* Reading multiple lines at a time avoids some internal buffering */
-    #define BUFFER_HEIGHT 5
+#   define BUFFER_HEIGHT 5
 
       unsigned char *pixels, *buffer[BUFFER_HEIGHT];
 
@@ -1084,6 +1085,7 @@ namespace {
       return pixels;
     }
 }
+# endif
 
 /* Derived from mpeg_play v2 */
 /*
@@ -6801,9 +6803,11 @@ namespace {
 typedef enum {
   ImageFile_UNKNOWN,
 
-  ImageFile_GIF,
-  ImageFile_JPG,
-  ImageFile_MPG
+  ImageFile_GIF
+# ifdef HAVE_JPEG
+  , ImageFile_JPG
+# endif
+  , ImageFile_MPG
 # ifdef HAVE_PNG
   , ImageFile_PNG
 # endif
@@ -6854,11 +6858,11 @@ bool Image::setURL(const char *url, Doc *relative)
 	      case ImageFile_GIF:
 	        d_pixels = gifread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	        break;
-
+# ifdef HAVE_JPEG
 	      case ImageFile_JPG:
 	        d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
 	        break;
-          
+# endif
 	      case ImageFile_MPG:
 	        d_pixels = mpgread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	        break;
@@ -6905,11 +6909,11 @@ bool Image::setURL(const char *url, Doc2 *relative)
 	      case ImageFile_GIF:
 	        d_pixels = gifread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	        break;
-
+# ifdef HAVE_JPEG
 	      case ImageFile_JPG:
 	        d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
 	        break;
-          
+# endif
 	      case ImageFile_MPG:
 	        d_pixels = mpgread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	        break;
@@ -6980,13 +6984,13 @@ static ImageFileType imageFileType(const char *url, FILE *)
   if (strcmp(suffix,"gif") == 0 ||
       strcmp(suffix,"GIF") == 0)
     return ImageFile_GIF;
-
+# ifdef HAVE_JPEG
   else if (strcmp(suffix,"jpg") == 0 ||
 	   strcmp(suffix,"JPG") == 0 ||
 	   strcmp(suffix,"jpeg") == 0 ||
 	   strcmp(suffix,"JPEG") == 0)
     return ImageFile_JPG;
-
+# endif
   else if (strcmp(suffix,"mpg") == 0 ||
 	   strcmp(suffix,"MPG") == 0 ||
 	   strcmp(suffix,"mpeg") == 0 ||
