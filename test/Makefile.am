@@ -4,12 +4,14 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/libopenvrml
 AM_LDFLAGS = -rpath @OPENVRML_RPATH@
 LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
+if ENABLE_TESTS
 TESTS = browser_basic \
         browser-create_vrml_from_stream \
 	parse-anchor \
         node_interface_set
 
 noinst_PROGRAMS = $(TESTS)
+endif
 
 browser_basic_SOURCES = browser_basic.cpp
 

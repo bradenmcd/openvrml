@@ -1,20 +1,71 @@
-2004-11-27 Braden McDaniel  <braden@endoframe.com>
+2004-12-03 Braden McDaniel  <braden@endoframe.com>
 
-	Merged changes from 0.15.1 release.
+	Updated package version to 0.15.2.
 
-	* NEWS:  Updated for 0.15.1.
-	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
-	Project file updates.
-	* src/libopenvrml/openvrml/event.h:  event_emitter::last_time
-	accessor should be public.
-
-2004-11-27 Braden McDaniel  <braden@endoframe.com>
-
-	Updated package version to 0.15.99.
-
+	* NEWS
+	* README
 	* configure.ac
 	* doc/Doxyfile
 	* mozilla-plugin/configure.ac
+
+2004-12-03 Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.spec.in:  Use %makeinstall macro; install COPYING
+	(GPL) with lookat documentation rather than COPYING.LESSER
+	(LGPL).
+
+2004-12-03 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/Makefile.am:  Remove generated documentation as part of
+	maintainer-clean.
+
+2004-12-02 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
+	(gtk_vrml_browser_get_type):  First try to look up the type from
+	glib's type registry.
+
+2004-11-30 Braden McDaniel  <braden@endoframe.com>
+
+	Made building the tests optional (via configure).
+
+	* README:  Note dependency on DejaGnu.
+	* configure.ac:  Added --disable-test option for configure.
+	Check for dejagnu.h, and fail configuration if it is not found
+	and the tests are supposed to be built.
+	* openvrml.spec.in:  Added dejagnu as a build prerequisite.
+	* test/Makefile.am:  Made building the tests optional.
+	* test/parse/Makefile.am:  Made building the tests optional.
+
+2004-11-29 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(path_getter::get_path_from(const node_ptr &)):  Removed
+	spurious assert.
+
+2004-11-28 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
+	(GtkGLViewer::set_timer):  Don't invoke gtk_main_iteration.
+
+2004-11-27 Braden McDaniel  <braden@endoframe.com>
+
+	Updated version number for 0.15.1 release.
+
+	* NEWS:  Updated for 0.15.1.
+	* configure.ac:  Updated package version.
+	* doc/Doxyfile:  Updated package version.
+	* mozilla-plugin/configure.ac:  Updated package version.
+
+2004-11-27 Braden McDaniel  <braden@endoframe.com>
+
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
+	Project file updates.
+
+2004-11-27 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/event.h:  event_emitter::last_time
+	accessor should be public.
 
 2004-11-26 Braden McDaniel  <braden@endoframe.com>
 
