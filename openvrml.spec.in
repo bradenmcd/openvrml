@@ -85,9 +85,13 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %files -n lookat
 %{prefix}/bin/lookat
+%{prefix}/share/lookat.xpm
 
 
 %changelog
+* Fri Dec 15 2000  Braden McDaniel  <braden@endoframe.com>
+- Added lookat.xpm to files section for lookat.
+
 * Fri Dec 8 2000  Braden McDaniel  <braden@endoframe.com>
 - Changes to reflect library name and header location changes.
 

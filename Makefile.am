@@ -9,10 +9,14 @@ VISUALC_PROJECT_FILES = \
         win32/libvrml97.dsw \
         win32/winconfig.h
 
-EXTRA_DIST = vrml.m4 vrml-gl.m4 openvrml.spec.in \
+EXTRA_DIST = vrml.m4 vrml-gl.m4 openvrml.spec.in lookat.xpm \
 $(VISUALC_PROJECT_FILES)
+
 m4datadir = $(datadir)/aclocal
 m4data_DATA = vrml.m4 vrml-gl.m4
+
+pixmapdatadir = $(datadir)/pixmaps
+pixmapdata_DATA = lookat.xpm
 
 dist-hook: openvrml.spec
 	cp openvrml.spec $(distdir)
