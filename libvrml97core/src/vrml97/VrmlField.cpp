@@ -24,84 +24,57 @@
 namespace {
     ::ostream & mffprint(::ostream &, float const * c, int n, int eltsize);
     ::ostream & mfdprint(::ostream &, double const * c, int n, int eltsize);
+    
+    const char * ftn[] = {
+        "<invalid field type>",
+        "SFBool",
+        "SFColor",
+        "SFFloat",
+        "SFImage",
+        "SFInt32",
+        "SFNode",
+        "SFRotation",
+        "SFString",
+        "SFTime",
+        "SFVec2f",
+        "SFVec3f",
+        "MFColor",
+        "MFFloat",
+        "MFInt32",
+        "MFNode",
+        "MFRotation",
+        "MFString",
+        "MFTime",
+        "MFVec2f",
+        "MFVec3f"
+    };
 }
 
 VrmlField::VrmlField() {}
 
-// Even though it is a pure virtual function, the destructor needs a definition
-// since each destructor in the inheritance hierarchy is called when a derived
-// object is destroyed.
-
 VrmlField::~VrmlField() {}
 
 
-VrmlField::VrmlFieldType
-VrmlField::fieldType() const
-{
+/**
+ * A static method to convert a type name to an ID.
+ */
+VrmlField::VrmlFieldType VrmlField::fieldType(char const *type) {
+    for (size_t i(SFBOOL); i <= MFVEC3F; ++i) {
+        if (strcmp(type, ftn[i]) == 0) {
+            return static_cast<VrmlFieldType>(i);
+        }
+    }
+    
     return NO_FIELD;
 }
 
-
-// A static method to convert a type name to an ID.
-
-VrmlField::VrmlFieldType
-VrmlField::fieldType(char const *type)
-{
-  if (strcmp(type, "SFBool") == 0) return SFBOOL;
-  if (strcmp(type, "SFColor") == 0) return SFCOLOR;
-  if (strcmp(type, "SFFloat") == 0) return SFFLOAT;
-  if (strcmp(type, "SFImage") == 0) return SFIMAGE;
-  if (strcmp(type, "SFInt32") == 0) return SFINT32;
-  if (strcmp(type, "SFNode") == 0) return SFNODE;
-  if (strcmp(type, "SFRotation") == 0) return SFROTATION;
-  if (strcmp(type, "SFString") == 0) return SFSTRING;
-  if (strcmp(type, "SFTime") == 0) return SFTIME;
-  if (strcmp(type, "SFVec2f") == 0) return SFVEC2F;
-  if (strcmp(type, "SFVec3f") == 0) return SFVEC3F;
-  if (strcmp(type, "MFColor") == 0) return MFCOLOR;
-  if (strcmp(type, "MFFloat") == 0) return MFFLOAT;
-  if (strcmp(type, "MFInt32") == 0) return MFINT32;
-  if (strcmp(type, "MFNode") == 0) return MFNODE;
-  if (strcmp(type, "MFRotation") == 0) return MFROTATION;
-  if (strcmp(type, "MFString") == 0) return MFSTRING;
-  if (strcmp(type, "MFTime") == 0) return MFTIME;
-  if (strcmp(type, "MFVec2f") == 0) return MFVEC2F;
-  if (strcmp(type, "MFVec3f") == 0) return MFVEC3F;
-
-  return NO_FIELD;
-}
-
-static char *ftn[] = {
-  "SFBool",
-  "SFColor",
-  "SFFloat",
-  "SFImage",
-  "SFInt32",
-  "SFNode",
-  "SFRotation",
-  "SFString",
-  "SFTime",
-  "SFVec2f",
-  "SFVec3f",
-  "MFColor",
-  "MFFloat",
-  "MFInt32",
-  "MFNode"
-  "MFRotation",
-  "MFString",
-  "MFTime",
-  "MFVec2f",
-  "MFVec3f",
-};
-
-// Return the type name of a field  
-
-char const * VrmlField::fieldTypeName() const
-{
-  int ft = (int) this->fieldType();
-  if (ft > 0 && ft <= (int) VrmlField::MFNODE)
-    return ftn[ft-1];
-  return "<invalid field type>";
+/**
+ * Return the type name of a field
+ */
+char const * VrmlField::fieldTypeName() const {
+    assert((sizeof(ftn) / sizeof(char *)) >=
+            static_cast<size_t>((this->fieldType() + 1)));
+    return ftn[this->fieldType()];
 }
 
 

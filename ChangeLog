@@ -1,3 +1,10 @@
+2000-11-23  Braden McDaniel  <braden@endoframe.com>
+
+        * Corrected (and changed implementation of) VrmlField::fieldTypeName();
+          changed implemetation of VrmlField::fieldType(const char *). Thanks to
+          Jeff Dubrule <igor@pobox.com> for noting the problem with
+          VrmlField::fieldTypeName().
+
 2000-11-18  Braden McDaniel  <braden@endoframe.com>
 
         * Backported the patch to Mozilla bug 24892.  We should nolonger need

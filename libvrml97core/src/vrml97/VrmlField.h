@@ -83,7 +83,7 @@ public:
   virtual ostream& print(ostream& os) const = 0;
 
   // Field type
-  virtual VrmlFieldType fieldType() const;
+  virtual VrmlFieldType fieldType() const = 0;
 
   // Field type name
   const char *fieldTypeName() const;
