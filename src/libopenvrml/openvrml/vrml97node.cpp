@@ -45,111 +45,6 @@ extern "C" {
 # include "browser.h"
 # include "private.h"
 
-/**
- * @internal
- */
-namespace std {
-
-    /**
-     * @internal
-     */
-    template <>
-    struct char_traits<unsigned char> {
-
-        typedef unsigned char char_type;
-        typedef int int_type;
-        typedef streampos pos_type;
-        typedef streamoff off_type;
-        typedef mbstate_t state_type;
-
-        static void assign(char_type & c1, const char_type & c2)
-        {
-            c1 = c2;
-        }
-
-        static bool eq(const char_type & c1, const char_type & c2)
-        {
-            return c1 == c2;
-        }
-
-        static bool lt(const char_type & c1, const char_type & c2)
-        {
-            return c1 < c2;
-        }
-
-        static int compare(const char_type * s1,
-                           const char_type * s2,
-                           size_t n)
-        {
-            for (size_t i = 0; i < n; ++i) {
-                if (!eq(s1[i], s2[i])) { return lt(s1[i], s2[i]) ? -1 : 1; }
-            }
-            return 0;
-        }
-
-        static size_t length(const char_type * s)
-        {
-            const char_type * p = s;
-            while (*p) { ++p; }
-            return (p - s);
-        }
-
-        static const char_type * find(const char_type * s, size_t n,
-                                      const char_type & a)
-        {
-            for (const char_type * p = s; size_t(p - s) < n; ++p) {
-                if (*p == a) { return p; }
-            }
-            return 0;
-        }
-
-        static char_type * move(char_type * s1, const char_type * s2, size_t n)
-        {
-            return reinterpret_cast<char_type *>
-                        (memmove(s1, s2, n * sizeof(char_type)));
-        }
-
-        static char_type * copy(char_type * s1, const char_type * s2, size_t n)
-        {
-            return reinterpret_cast<char_type *>
-                        (memcpy(s1, s2, n * sizeof(char_type)));
-        }
-
-        static char_type * assign(char_type * s, size_t n, char_type a)
-        {
-            for (char_type * p = s; p < s + n; ++p) {
-                assign(*p, a);
-            }
-            return s;
-        }
-
-        static int_type eof()
-        {
-            return static_cast<int_type>(-1);
-        }
-
-        static int_type not_eof(const int_type & c)
-        {
-            return eq_int_type(c, eof()) ? int_type(0) : c;
-        }
-
-        static char_type to_char_type(const int_type & e)
-        {
-            return char_type(e);
-        }
-
-        static int_type to_int_type(const char_type & c)
-        {
-            return int_type(c);
-        }
-
-        static bool eq_int_type(const int_type & e1, const int_type & e2)
-        {
-            return e1 == e2;
-        }
-    };
-}
-
 namespace openvrml {
 
 /**
@@ -15263,6 +15158,132 @@ void text_node::update_ucs4() throw (std::bad_alloc)
 # endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
+# ifdef OPENVRML_ENABLE_TEXT_NODE
+namespace {
+
+    //
+    // FcChar8_traits is a model of the standard library Character Traits
+    // concept.
+    //
+    struct FcChar8_traits {
+        typedef unsigned char char_type;
+        typedef int int_type;
+        typedef std::streampos pos_type;
+        typedef std::streamoff off_type;
+        typedef mbstate_t state_type;
+
+        static void assign(char_type & c1, const char_type & c2);
+        static bool eq(const char_type & c1, const char_type & c2);
+        static bool lt(const char_type & c1, const char_type & c2);
+        static int compare(const char_type * s1, const char_type * s2,
+                           size_t n);
+        static size_t length(const char_type * s);
+        static const char_type * find(const char_type * s, size_t n,
+                                      const char_type & a);
+        static char_type * move(char_type * s1, const char_type * s2,
+                                size_t n);
+        static char_type * copy(char_type * s1, const char_type * s2,
+                                size_t n);
+        static char_type * assign(char_type * s, size_t n, char_type a);
+        static int_type eof();
+        static int_type not_eof(const int_type & c);
+        static char_type to_char_type(const int_type & e);
+        static int_type to_int_type(const char_type & c);
+        static bool eq_int_type(const int_type & e1, const int_type & e2);
+    };
+
+    inline void FcChar8_traits::assign(char_type & c1, const char_type & c2)
+    {
+        c1 = c2;
+    }
+
+    inline bool FcChar8_traits::eq(const char_type & c1, const char_type & c2)
+    {
+        return c1 == c2;
+    }
+
+    inline bool FcChar8_traits::lt(const char_type & c1, const char_type & c2)
+    {
+        return c1 < c2;
+    }
+
+    inline int FcChar8_traits::compare(const char_type * s1,
+                                       const char_type * s2,
+                                       size_t n)
+    {
+        for (size_t i = 0; i < n; ++i) {
+            if (!eq(s1[i], s2[i])) { return lt(s1[i], s2[i]) ? -1 : 1; }
+        }
+        return 0;
+    }
+
+    inline size_t FcChar8_traits::length(const char_type * s)
+    {
+        const char_type * p = s;
+        while (*p) { ++p; }
+        return (p - s);
+    }
+
+    inline FcChar8_traits::char_type *
+    FcChar8_traits::move(char_type * s1, const char_type * s2, size_t n)
+    {
+        return reinterpret_cast<char_type *>(
+            memmove(s1, s2, n * sizeof(char_type)));
+    }
+
+    inline const FcChar8_traits::char_type *
+    FcChar8_traits::find(const char_type * s, size_t n, const char_type & a)
+    {
+        for (const char_type * p = s; size_t(p - s) < n; ++p) {
+            if (*p == a) { return p; }
+        }
+        return 0;
+    }
+
+    inline FcChar8_traits::char_type *
+    FcChar8_traits::copy(char_type * s1, const char_type * s2, size_t n)
+    {
+        return reinterpret_cast<char_type *>(
+            memcpy(s1, s2, n * sizeof(char_type)));
+    }
+
+    inline FcChar8_traits::char_type *
+    FcChar8_traits::assign(char_type * s, size_t n, char_type a)
+    {
+        for (char_type * p = s; p < s + n; ++p) { assign(*p, a); }
+        return s;
+    }
+
+    inline FcChar8_traits::int_type FcChar8_traits::eof()
+    {
+        return static_cast<int_type>(-1);
+    }
+
+    inline FcChar8_traits::int_type FcChar8_traits::not_eof(const int_type & c)
+    {
+        return eq_int_type(c, eof()) ? int_type(0) : c;
+    }
+
+    inline FcChar8_traits::char_type
+    FcChar8_traits::to_char_type(const int_type & e)
+    {
+        return char_type(e);
+    }
+
+    inline FcChar8_traits::int_type
+    FcChar8_traits::to_int_type(const char_type & c)
+    {
+        return int_type(c);
+    }
+
+    inline bool FcChar8_traits::eq_int_type(const int_type & e1,
+                                            const int_type & e2)
+    {
+        return e1 == e2;
+    }
+}
+# endif // OPENVRML_ENABLE_TEXT_NODE
+
 /**
  * @brief Called when @a fontStyle changes to update the font face.
  *
@@ -15303,9 +15324,9 @@ void text_node::update_face() throw (std::bad_alloc)
     };
 
     using std::string;
-    typedef std::basic_string<FcChar8> FcChar8String;
+    typedef std::basic_string<FcChar8, FcChar8_traits> FcChar8_string;
 
-    FcChar8String language;
+    FcChar8_string language;
 
     std::vector<string> family;
     family.push_back("SERIF");
@@ -15369,8 +15390,8 @@ void text_node::update_face() throw (std::bad_alloc)
             fontName += ":outline=True";
 
             initialPattern =
-                FcNameParse(FcChar8String(fontName.begin(),
-                                          fontName.end()).c_str());
+                FcNameParse(FcChar8_string(fontName.begin(),
+                                           fontName.end()).c_str());
             if (!initialPattern) { throw std::bad_alloc(); }
 
             //

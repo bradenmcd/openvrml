@@ -1,5 +1,13 @@
 2003-08-16  Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.cpp:  Replaced
+	specialization of std::char_traits with a class supporting the
+	Character Traits concept. (Strictly, the specialization was not
+	legal, since standard library templates can only be specialized
+	for user-defined data types.)
+
+2003-08-16  Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/script.cpp:  JavaScript fixes and
 	error handling improvements.
 
