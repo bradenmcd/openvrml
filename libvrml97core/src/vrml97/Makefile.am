@@ -110,8 +110,20 @@ noinst_HEADERS = \
 	jpgread.h \
 	pngread.h
 
+BUILT_SOURCES = parser.cpp lexer.cpp
+
+LEX_OUTPUT_ROOT=lex.yy
+
+lexer.cpp : lexer.lpp
+	$(LEX) $(AM_LFLAGS) $(LFLAGS) $< && mv $(LEX_OUTPUT_ROOT).c $@
+parser.cpp : parser.ypp
+	$(YACC) $(AM_YFLAGS) $(YFLAGS) $< && mv y.tab.c $*.cpp
+	if test -f y.tab.h; then \
+	if cmp -s y.tab.h $*.h; then rm -f y.tab.h; else mv y.tab.h $*.h; fi; \
+	else :; fi
+
 libvrml97_la_SOURCES = \
-	parser.ypp lexer.lpp \
+	parser.cpp lexer.cpp \
 	MathUtils.cpp \
 	gifread.c \
 	jpgread.cpp \
