@@ -869,7 +869,7 @@ mfColorValue returns [VrmlMFColor * mcv = new VrmlMFColor()]
             }
         )* RBRACKET
         {
-            *mcv = VrmlMFColor(colorVector.size(), colorVector.data());
+            *mcv = VrmlMFColor(colorVector.size() / 3L, colorVector.data());
         }
     ;
 

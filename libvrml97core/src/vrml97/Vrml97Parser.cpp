@@ -2135,7 +2135,7 @@ VrmlMFColor *  Vrml97Parser::mfColorValue() {
 			}
 			match(RBRACKET);
 			
-			*mcv = VrmlMFColor(colorVector.size(), colorVector.data());
+			*mcv = VrmlMFColor(colorVector.size() / 3L, colorVector.data());
 			
 			break;
 		}
