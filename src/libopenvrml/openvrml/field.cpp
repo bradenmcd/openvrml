@@ -414,14 +414,83 @@ std::istream & operator>>(std::istream & in, field_value::type_id & type_id)
  * A Field Value is a concrete type that inherits field_value and holds a
  * value for a field of a node.
  *
- * @par Associated types
+ * @par Refinement of
+ * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ * DefaultConstructible</a>,
+ * <a href="http://www.boost.org/libs/utility/CopyConstructible.html">
+ * CopyConstructible</a>,
+ * <a href="http://www.sgi.com/tech/stl/Assignable.html">
+ * Assignable</a>,
+ * <a href="http://www.sgi.com/tech/stl/EqualityComparable.html">
+ * EqualityComparable</a>
  *
+ * @par Associated types
  * <table>
  *   <tr>
  *     <td>Value type</td>
- *     <td>The type of the Field Value's @a value member.
+ *     <td>T::value_type</td>
+ *     <td>The type of T's @a value member. The value type must be
+ *         <a href="http://www.sgi.com/tech/stl/Assignable.html">Assignable</a>
+ *         and <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
+ *         DefaultConstructible</a>.</td>
  *   </tr>
  * </table>
+ *
+ * @par Notation
+ * <table>
+ *   <tr>
+ *     <td><code>T</code></td>
+ *     <td>A type that is a model of Field Value</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>v</code></td>
+ *     <td>A reference of type <code>field_value&nbsp;@&</code></td>
+ *   </tr>
+ * </table>
+ *
+ * @par Definitions
+ *
+ * @par Valid expressions
+ * In addition to the expressions defined in
+ * <a href="http://www.sgi.com/tech/stl/Assignable.html">Assignable</a> and
+ * <a href="http://www.sgi.com/tech/stl/EqualityComparable.html">
+ * EqualityComparable</a>, the following expressions must be valid.
+ * <table>
+ *   <tr>
+ *     <th>Name</th>
+ *     <th>Expression</th>
+ *     <th>Type requirements</th>
+ *     <th>Return type</th>
+ *   </tr>
+ *   <tr>
+ *     <td>Downcast</td>
+ *     <td><code>static_cast@<T&nbsp;@&@>(v)</code></td>
+ *     <td></td>
+ *     <td>T&nbsp;@&</td>
+ *   </tr>
+ * </table>
+ *
+ * @par Models
+ * - sfbool
+ * - sfcolor
+ * - sffloat
+ * - sfimage
+ * - sfint32
+ * - sfnode
+ * - sfrotation
+ * - sfstring
+ * - sftime
+ * - sfvec2f
+ * - sfvec3f
+ * - mfcolor
+ * - mffloat
+ * - mfint32
+ * - mfnode
+ * - mfrotation
+ * - mfstring
+ * - mftime
+ * - mfvec2f
+ * - mfvec3f
  */
 
 /**
@@ -436,6 +505,9 @@ std::istream & operator>>(std::istream & in, field_value::type_id & type_id)
  * @ingroup fieldvalues
  *
  * @brief A boolean node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -550,6 +622,9 @@ bool operator!=(const sfbool & lhs, const sfbool & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A color node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -664,6 +739,9 @@ bool operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A single precision floating point node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -778,6 +856,9 @@ bool operator!=(const sffloat & lhs, const sffloat & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A pixmap.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -896,6 +977,9 @@ bool operator!=(const sfimage & lhs, const sfimage & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A 32-bit integer node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -1010,6 +1094,9 @@ bool operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A node field value to hold a single node reference.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -1142,6 +1229,9 @@ bool operator!=(const sfnode & lhs, const sfnode & rhs) throw ()
  *   could result).
  * - Assignment to individual components of the axis will result in the
  *   axis being re-normalized upon each assignment.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -1257,6 +1347,9 @@ bool operator!=(const sfrotation & lhs, const sfrotation & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A string node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -1375,6 +1468,9 @@ bool operator!=(const sfstring & lhs, const sfstring & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A double precision floating point node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -1490,6 +1586,9 @@ bool operator!=(const sftime & lhs, const sftime & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A 2-component vector node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -1604,6 +1703,9 @@ bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A 3-component vector node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -1718,6 +1820,9 @@ bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A color array node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -1876,6 +1981,9 @@ bool operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A float array node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -2034,6 +2142,9 @@ bool operator!=(const mffloat & lhs, const mffloat & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief An integer array node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -2192,6 +2303,9 @@ bool operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A node reference array node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -2354,6 +2468,9 @@ bool operator!=(const mfnode & lhs, const mfnode & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A rotation array node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -2514,6 +2631,9 @@ bool operator!=(const mfrotation & lhs, const mfrotation & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A string array node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -2675,6 +2795,9 @@ bool operator!=(const mfstring & lhs, const mfstring & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A double array node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -2834,6 +2957,9 @@ bool operator!=(const mftime & lhs, const mftime & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A 2-component vector array node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**
@@ -2993,6 +3119,9 @@ bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
  * @ingroup fieldvalues
  *
  * @brief A 3-component vector array node field value.
+ *
+ * @par Model of
+ * @link FieldValueConcept FieldValue@endlink
  */
 
 /**

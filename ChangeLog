@@ -1,3 +1,10 @@
+2004-02-23 Braden McDaniel  <braden@endoframe.com>
+
+	Improved FieldValueConcept documentation.
+
+	* src/libopenvrml/openvrml/field.cpp
+	* src/libopenvrml/openvrml/field.h
+
 2004-02-22 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements.

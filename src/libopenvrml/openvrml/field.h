@@ -111,7 +111,16 @@ namespace openvrml {
             field_value * base_ptr;
             static_cast<T *>(base_ptr); // Make sure T inherits field_value.
 
-            typedef typename T::value_type value_type;
+            //
+            // Make sure T::value_type is DefaultConstructible.
+            //
+            typename T::value_type v1;
+            typename T::value_type v2;
+
+            //
+            // Make sure T::value_type is Assignable.
+            //
+            v1 = v2;
         }
     };
 
