@@ -15,6 +15,8 @@
 # pragma warning( disable : 4305 )  
 // Disable warning messages about truncating names in debug info
 # pragma warning( disable : 4786 )  
+// Disable warning messages about forcing value to bool 'true' or 'false'
+# pragma warning( disable : 4800 )
 
 #define OPENVRML_HAVE_LIBJPEG
 #define OPENVRML_HAVE_LIBPNG

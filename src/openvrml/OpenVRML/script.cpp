@@ -45,11 +45,6 @@
 # include "doc2.hpp"
 # include "ScriptJDK.h"
 
-#if defined(WIN32)
-// Disable warning messages about forcing value to bool 'true' or 'false'
-#pragma warning (disable:4800)
-#endif
-
 /**
  * @class OpenVRML::Script
  *
