@@ -155,4 +155,4 @@ private:
 
 };
 
-#endif _VRMLNODEPROTO_
+#endif

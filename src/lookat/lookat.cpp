@@ -52,7 +52,7 @@ main(int argc, char **argv)
 {
 #if defined(__FreeBSD__)
   fpsetmask(0);
-#endif;
+#endif
  
 #ifdef macintosh
   SIOUXSettings.asktosaveonclose = 0;

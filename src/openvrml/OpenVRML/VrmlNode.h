@@ -315,5 +315,5 @@ private:
   }
 
 
-#endif VRMLNODE_H
+#endif
 

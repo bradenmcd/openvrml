@@ -129,5 +129,5 @@ private:
   int d_eventsReceived;
 };
 
-#endif VRMLNODESCRIPT_H
+#endif
 
