@@ -1,3 +1,7 @@
+2001-08-25  Thomas Flynn <tflynn@users.sourceforge.net>
+
+	* Add licensing information to java support files.
+
 2001-08-23  Braden McDaniel  <braden@endoframe.com>
 
         * Some minor cleanup of VrmlScene.
