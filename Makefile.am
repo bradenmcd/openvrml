@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign 
-SUBDIRS = macros models libvrml97core libvrml97gl lookat
+SUBDIRS = doc macros models libvrml97core libvrml97gl lookat
 
 ACLOCAL_AMFLAGS = -I macros
 

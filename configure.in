@@ -125,6 +125,7 @@ AM_CONDITIONAL(AIX4_3, test x$aix4_3 = xtrue)
 
 AC_OUTPUT(openvrml.spec \
           Makefile \
+          doc/Makefile \
           macros/Makefile \
           models/Makefile \
           models/audio/Makefile \
