@@ -13,12 +13,16 @@ import vrml.node.*;
  *
  * Fully tested classes
  *   ConstSFBool
+ *   ConstSFColor
  *   ConstSFFloat
  *   ConstSFInt32
+ *   ConstSFString
  *   Event
  *   SFBool
+ *   SFColor
  *   SFFloat
  *   SFInt32
+ *   SFString
  *
  * Partially tested classes with list of tested methods.
  *
@@ -31,20 +35,14 @@ import vrml.node.*;
  *   setDescription
  *   toString
  *
+ * ConstMFColor
+ *   ConstMFColor(float[][])
+ *   getSize
+ *
  * Script
  *   getBrowser
  *   getEventOut
  *   getField
- *
- * SFColor
- *   getBlue
- *   getGreen
- *   getRed
- *   setValue(float, float, float)
- *   toString
- *
- * SFString
- *   toString
  *
  * Methods known not to be not working
  *
@@ -121,6 +119,23 @@ class TestJSAI extends Script {
                        "[" + activeColor.getRed() + "][" +
                        activeColor.getGreen() + "][" + 
                        activeColor.getBlue() + "]");
+    ConstSFColor testConstSFColor = new ConstSFColor(1.0f, 0.0f, 1.0f);
+    float[] colorArray = new float[3];
+    testConstSFColor.getValue(colorArray);
+    System.out.println("ConstSFColor.getValue = [" + colorArray[0] +
+                       "][" + colorArray[1] + "][" + colorArray[2] + "]");
+    System.out.println("ConstSFColor = [" + testConstSFColor.getRed() +
+                       "][" + testConstSFColor.getGreen() + "][" +
+                       testConstSFColor.getBlue() + "]");
+    System.out.println("ConstSFColor = " + testConstSFColor);
+    SFColor testDefaultSFColor = new SFColor();
+    testDefaultSFColor.setValue(1.0f, 0.0f, 0.0f);
+    testDefaultSFColor.setValue(testConstSFColor);
+    SFColor testSFColor = new SFColor(1.0f, 1.0f, 0.0f);
+    testSFColor.getValue(colorArray);
+    System.out.println("SFColor.getValue = [" + colorArray[0] + "][" + 
+                       colorArray[1] + "][" + colorArray[2] + "]");
+    testDefaultSFColor.setValue(testSFColor);
 
     /* Test ConstSFFloat/SFFloat methods */
     SFFloat testFloat = (SFFloat) getField("testFloat");
@@ -162,9 +177,18 @@ class TestJSAI extends Script {
 
     /* Test ConstSFString/SFString methods */
     SFString testString = (SFString) getField("testString");
+    testString.setValue("testString2");
     System.out.println("testString = " + testString);
     Field invalidField = getField("blah2");
     if (invalidField != null) System.out.println("getField(1) failed");
+    SFString testSFString1 = new SFString();
+    SFString testSFString2 = new SFString("testing");
+    testString.setValue(testSFString1);
+    System.out.println("testSFString = " + testString.getValue());
+    ConstSFString testConstSFString = new ConstSFString("ConstSFString");
+    System.out.println("testConstSFString = " + testConstSFString);
+    System.out.println("testConstSFString = " + testConstSFString.getValue());
+    testString.setValue(testConstSFString);
 
     /* Test ConstSFTime/SFTime methods */
 
@@ -173,6 +197,14 @@ class TestJSAI extends Script {
     /* Test ConstSFVec3f/SFVec3f methods */
 
     /* Test ConstMFColor/MFColor methods */
+    float[] colorArray1 = {1.0f, 0.0f, 1.0f};
+    float[] colorArray2 = {0.0f, 0.0f, 1.0f};
+    float[] colorArray3 = {1.0f, 1.0f, 0.0f};
+    float[][] colorArrays = {colorArray1, colorArray2, colorArray3};
+    ConstMFColor testConstMFColor1= new ConstMFColor(colorArrays);
+    if (testConstMFColor1.getSize() != 3)
+      System.out.println("ConstMFColor.getSize() failed");
+
 
     /* Test ConstMFFloat/MFFloat methods */
 
