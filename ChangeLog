@@ -27,6 +27,12 @@
           values of methods that return array references. This
           circumvents a bug in Sun Forte 6 update 2.
 
+        * src/openvrml/OpenVRML/script.h,
+          src/openvrml/OpenVRML/script.cpp: Changed exception
+          specification for ScriptNodeClass::createType from nothrow to
+          match the exception specification for NodeClass::createType.
+          This circumvents a bug in Sun Forte 6 update 2.
+
 2002-06-17  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.1.
