@@ -12450,8 +12450,8 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
 
         //
         // Fill connectionMap. For each interior contour, find the exterior
-        // vertex that is closes to the first vertex in the interior
-        // contour, and the put the pair in the map.
+        // vertex that is closest to the first vertex in the interior contour,
+        // and the put the pair in the map.
         //
         for (vector<const MFVec2f *>::const_iterator interior =
                 polygon->interiors.begin();
@@ -12470,16 +12470,17 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
         //
         // Finally, draw the polygon.
         //
+        assert(polygon->exterior->getLength() > 0);
         for (size_t i = 0; i < polygon->exterior->getLength(); ++i) {
             const float (&exteriorVertex)[2] = polygon->exterior->getElement(i);
-            long index = getVertexIndex_(this->coord, exteriorVertex);
-            if (index > -1) {
-                this->coordIndex.addElement(index);
+            long exteriorIndex = getVertexIndex_(this->coord, exteriorVertex);
+            if (exteriorIndex > -1) {
+                this->coordIndex.addElement(exteriorIndex);
             } else {
                 this->coord.addElement(exteriorVertex);
                 assert(this->coord.getLength() > 0);
-                index = this->coord.getLength() - 1;
-                this->coordIndex.addElement(index);
+                exteriorIndex = this->coord.getLength() - 1;
+                this->coordIndex.addElement(exteriorIndex);
             }
             ConnectionMap::iterator pos;
             while ((pos = connectionMap.find(&exteriorVertex))
@@ -12487,10 +12488,10 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
                 for (int i = pos->second->getLength() - 1; i > -1; --i) {
                     const float (&interiorVertex)[2] =
                             pos->second->getElement(i);
-                    const long index = getVertexIndex_(this->coord,
-                                                       interiorVertex);
-                    if (index > -1) {
-                        this->coordIndex.addElement(index);
+                    const long interiorIndex = getVertexIndex_(this->coord,
+                                                               interiorVertex);
+                    if (interiorIndex > -1) {
+                        this->coordIndex.addElement(interiorIndex);
                     } else {
                         this->coord.addElement(interiorVertex);
                         assert(this->coord.getLength() > 0);
@@ -12498,7 +12499,7 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
                             .addElement(this->coord.getLength() - 1);
                     }
                 }
-                this->coordIndex.addElement(index);
+                this->coordIndex.addElement(exteriorIndex);
                 connectionMap.erase(pos);
             }
         }
@@ -13030,7 +13031,7 @@ namespace {
                         MFVec2f & contour)
         throw (std::bad_alloc)
     {
-        for (size_t i = 0; i <= (1 / stepSize_); i++){
+        for (size_t i = 1; i <= (1 / stepSize_); i++){
             const float t = i * stepSize_; // Parametric points 0 <= t <= 1
             for (size_t j = 1; j < npoints; j++) {
                 for (size_t k = 0; k < (npoints - j); k++) {

@@ -11,6 +11,9 @@
           src/openvrml/OpenVRML/vrml97node.cpp:  Fixed type for offset
           field of PlaneSensor.
 
+        * src/openvrml/OpenVRML/vrml97node.cpp:  Fixed problem with
+          evaluateCurve_ introducing redundant vertices for Text.
+
 2002-12-18  Braden McDaniel  <braden@endoframe.com>
 
         * m4/Makefile.am, m4/ftflib.m4:  Removed obsolete macro.
