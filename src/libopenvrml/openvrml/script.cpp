@@ -3463,6 +3463,9 @@ JSBool createVrmlFromString(JSContext * const cx,
         } else {
             if (!MFNode::toJsval(nodes, cx, obj, rval)) { return JS_FALSE; }
         }
+    } catch (std::exception & ex) {
+        JS_ReportError(cx, ex.what());
+        return JS_FALSE;
     } catch (...) {
         return JS_FALSE;
     }

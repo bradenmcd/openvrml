@@ -1,3 +1,8 @@
+2004-12-13 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/script.cpp:  Report error from
+	Browser.createVrmlFromString with bad syntax.
+
 2004-12-09 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp (MField::getElement):
