@@ -99,7 +99,7 @@ Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       obj =  viewer->insertLineSet(nvert,
 				   &coord[0][0],
 				   d_coordIndex.getLength(),
-				   &d_coordIndex[0],
+				   d_coordIndex.get(),
 				   d_colorPerVertex.get(),
 				   color,
 				   nci, ci);

@@ -2040,56 +2040,129 @@ VrmlField::VrmlFieldType VrmlMFFloat::fieldType() const { return MFFLOAT; }
  */
 #include "VrmlMFInt32.h"
 
-VrmlMFInt32::VrmlMFInt32() : d_data(new IData(0)) 
-{}
+class VrmlMFInt32::IData {			// reference counted int data
+public:
+  IData(long n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new long[n] : 0) {}
+  ~IData() { delete [] d_v; }
 
-VrmlMFInt32::VrmlMFInt32(long value): d_data(new IData(1)) {
-    d_data->d_v[0] = value;
+  IData *ref() { ++d_refs; return this; }
+  void deref() { if (--d_refs == 0) delete this; }
+
+  long d_refs;    // number of MFInt objects using this data
+  size_t d_n;     // size (in ints) of d_v
+  long * d_v;     // data vector
+};
+
+/**
+ * @brief Constructor.
+ * @param number a single initial value
+ */
+VrmlMFInt32::VrmlMFInt32(long number): d_data(new IData(1)) {
+    d_data->d_v[0] = number;
 }
 
-VrmlMFInt32::VrmlMFInt32(size_t n, const long * v): d_data(new IData(n)) {
-    if (v) {
-        memcpy(d_data->d_v, v, n*sizeof(long));
+/**
+ * @brief Construct from a long array.
+ * @param length the number of integer values
+ * @param numbers a pointer to a long array
+ */
+VrmlMFInt32::VrmlMFInt32(size_t length, const long * numbers):
+        d_data(new IData(length)) {
+    if (numbers) {
+        std::copy(numbers, numbers + length, this->d_data->d_v);
     }
 }
 
-VrmlMFInt32::VrmlMFInt32(const VrmlMFInt32 & src) : d_data(src.d_data->ref()) 
-{}
+/**
+ * @brief Copy constructor.
+ * @param mfInt32 the object to copy
+ */
+VrmlMFInt32::VrmlMFInt32(const VrmlMFInt32 & mfInt32):
+        d_data(mfInt32.d_data->ref()) {}
 
+/**
+ * @brief Destructor.
+ */
 VrmlMFInt32::~VrmlMFInt32() { d_data->deref(); }
 
-void VrmlMFInt32::set(size_t n, const long * v) {
+/**
+ * @brief Assignment operator.
+ * @param mfInt32 the object to copy into this one
+ * @return a reference to this object
+ */
+VrmlMFInt32 & VrmlMFInt32::operator=(const VrmlMFInt32 & mfInt32)
+{
+  if (this != &mfInt32) {
     d_data->deref();
-    d_data = new IData(n);
-    if (v) {
-        memcpy(d_data->d_v, v, n*sizeof(long));
+    d_data = mfInt32.d_data->ref();
+  }
+  return *this;
+}
+
+/**
+ * @brief Array element dereference operator.
+ * @param index an array index
+ * @return the integer value at the given index
+ */
+long VrmlMFInt32::operator[](size_t index) const {
+    return this->d_data->d_v[index];
+}
+
+/**
+ * @brief Get value.
+ * @return a pointer to the long array comprising the integer values owned by
+ *         this object
+ */
+const long * VrmlMFInt32::get() const {
+    return this->d_data->d_v;
+}
+
+/**
+ * @brief Set value.
+ * @param length the number of integer values
+ * @param numbers a pointer to a long array
+ */
+void VrmlMFInt32::set(size_t length, const long * numbers) {
+    d_data->deref();
+    d_data = new IData(length);
+    if (numbers) {
+        std::copy(numbers, numbers + length, this->d_data->d_v);
     }
 }
 
-VrmlMFInt32 & VrmlMFInt32::operator=(const VrmlMFInt32 & rhs)
-{
-  if (this != &rhs) {
-    d_data->deref();
-    d_data = rhs.d_data->ref();
-  }
-  return *this;
+/**
+ * @brief Get the length.
+ * @return the number of integer values
+ */
+size_t VrmlMFInt32::getLength() const {
+    return this->d_data->d_n;
+}
+
+/**
+ * @brief Set the length.
+ *
+ * If the new length is greater than the current length, the additional values
+ * are initialized to the default (0.0). If the new length is less
+ * than the current length, the array is truncated.
+ *
+ * @param length new length
+ */
+void VrmlMFInt32::setLength(size_t length) {
+    IData * const newData = new IData(length);
+    if (length > this->d_data->d_n) {
+        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
+                  newData->d_v);
+        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + length, 0L);
+    } else {
+        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
+    }
+    this->d_data->deref();
+    this->d_data = newData;
 }
 
 VrmlField * VrmlMFInt32::clone() const { return new VrmlMFInt32(*this); }
 
 VrmlField::VrmlFieldType VrmlMFInt32::fieldType() const { return MFINT32; }
-
-size_t VrmlMFInt32::getLength() const {
-    return this->d_data->d_n;
-}
-
-const long * VrmlMFInt32::get() const {
-    return this->d_data->d_v;
-}
-
-const long & VrmlMFInt32::operator[](size_t index) const {
-    return this->d_data->d_v[index];
-}
 
 ostream& VrmlMFInt32::print(ostream& os) const
 {

@@ -235,7 +235,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 
       obj = viewer->insertShell(optMask,
 				nvert, &coord[0][0],
-				d_coordIndex.getLength(), &d_coordIndex[0],
+				d_coordIndex.getLength(), d_coordIndex.get(),
 				tc, ntci, tci,
 				normal, nni, ni,
 				color, nci, ci);
