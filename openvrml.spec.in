@@ -6,7 +6,7 @@ Copyright:      LGPL
 Group:          System Environment/Libraries
 Packager:       The OpenVRML Development Team <openvrml-develop@sourceforge.net>
 Source:         http://download.sourceforge.net/openvrml/%{name}-%{version}.tar.gz
-URL:            http://www.openvrml.org
+URL:            http://openvrml.sourceforge.net
 Prefix:         /usr
 BuildRoot:      /var/tmp/%{name}-%{version}-root
 
@@ -93,6 +93,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 * Sun Nov 26 2000  Braden McDaniel  <braden@endoframe.com>
 - Added doc subdir to %doc.
 - Removed obsolete COPYING.ANTLR from %doc.
+- Changed URL to <http://openvrml.sourceforge.net>.
 
 * Thu Nov 23 2000  Braden McDaniel  <braden@endoframe.com>
 - Gave much love. Checked into CVS. Still not guaranteed to work, though.
