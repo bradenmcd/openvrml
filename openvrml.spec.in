@@ -20,6 +20,7 @@ BuildRequires:  libgcj-devel >= 3.3
 BuildRequires:  xorg-x11-devel >= 6.7
 BuildRequires:  SDL-devel >= 1.2
 BuildRequires:  gtkglext-devel >= 1.0.0
+BuildRequires:  dejagnu >= 1.4
 Requires:       zlib >= 1.1.3
 Requires:       libpng >= 1.0.12
 Requires:       libjpeg >= 6b
@@ -130,6 +131,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Nov 30 2004  Braden McDaniel  <braden@endoframe.com>
+- Added dejagnu >= 1.4 as a build prerequisite.
+
 * Fri Nov 26 2004  Braden McDaniel  <braden@endoframe.com>
 - Changed Mozilla plug-in RPM name to openvrml-mozilla-plugin.
 - Refer to the plug-in in comments as "for Mozilla-based browsers" rather than

@@ -1,3 +1,15 @@
+2004-11-30 Braden McDaniel  <braden@endoframe.com>
+
+	Made building the tests optional (via configure).
+
+	* README:  Note dependency on DejaGnu.
+	* configure.ac:  Added --disable-test option for configure.
+	Check for dejagnu.h, and fail configuration if it is not found
+	and the tests are supposed to be built.
+	* openvrml.spec.in:  Added dejagnu as a build prerequisite.
+	* test/Makefile.am:  Made building the tests optional.
+	* test/parse/Makefile.am:  Made building the tests optional.
+
 2004-11-29 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
