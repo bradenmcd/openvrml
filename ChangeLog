@@ -6,6 +6,8 @@
 
         * m4/gl.m4:  Added PTHREAD_CFLAGS to GL_CFLAGS.
 
+        * NEWS:  Updates for 0.13.0 release.
+
 2002-12-19  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,

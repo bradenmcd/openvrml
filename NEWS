@@ -1,3 +1,21 @@
+Changes new in version 0.13.0, 20 December, 2002
+================================================
+
+- Fixed shutdown order problems that were causing crashes-on-exit in
+  applications.
+
+- Fixed problems rendering Inline nodes with relative URIs.
+
+- OpenVRML now uses FreeType and Fontconfig for Text/FontStyle node
+  support.
+
+- VrmlScene has been replaced with Browser.
+
+- VrmlNamespace has been replaced with Scope.
+
+- Various other bug fixes.
+
+
 Changes new in version 0.12.5, 15 November, 2002
 ================================================
 
