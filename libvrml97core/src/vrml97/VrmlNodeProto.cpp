@@ -135,8 +135,8 @@ VrmlNodeProto* VrmlNodeProto::toProto() const
 
 void VrmlNodeProto::instantiate()
 {
-  theSystem->debug("%s::%s instantiate\n", d_nodeType->getName(),
-		   name());
+  //theSystem->debug("%s::%s instantiate\n", d_nodeType->getName(),
+  //name());
 
   if (! d_nodes)
     {
@@ -219,8 +219,10 @@ void VrmlNodeProto::instantiate()
 #ifdef VRML_NODE_PROTO_DEBUG
 	  cerr << d_nodeType->getName() << "::" << name()
 	       << " setting IS field " << (*ifld)->name;
-	  if (value) cerr << " to " << *value << endl;
-	  else cerr << " to null\n";
+	  // Too much stuff...
+	  //if (value) cerr << " to " << *value << endl;
+	  //else cerr << " to null\n";
+	  cerr << endl;
 #endif
 	  if (! value) continue;
 	  if ((ismap = d_nodeType->getFieldISMap( (*ifld)->name )) != 0)
@@ -244,13 +246,13 @@ void VrmlNodeProto::instantiate()
 
 void VrmlNodeProto::addToScene(VrmlScene *s, const char *relUrl)
 {
-  theSystem->debug("VrmlNodeProto::%s addToScene\n", name());
+  //theSystem->debug("VrmlNodeProto::%s addToScene\n", name());
   d_scene = s;
 
   // Make sure my nodes are here
   if (! d_instantiated) instantiate();
-  theSystem->debug("VrmlNodeProto::%s addToScene(%d nodes)\n",
-		   name(), d_nodes ? d_nodes->size() : 0);
+  //theSystem->debug("VrmlNodeProto::%s addToScene(%d nodes)\n",
+  //	   name(), d_nodes ? d_nodes->size() : 0);
 
   // ... and add the implementation nodes to the scene.
   if (d_nodes)
@@ -288,7 +290,7 @@ int VrmlNodeProto::size()
 
 VrmlNode *VrmlNodeProto::child(int index)
 {
-  if (d_nodes && index >= 0 && index < d_nodes->size())
+  if (d_nodes && index >= 0 && index < (int) d_nodes->size())
     return (*d_nodes)[index];
   return 0;
 }
