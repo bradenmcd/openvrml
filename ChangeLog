@@ -1,3 +1,8 @@
+2004-09-23 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc:  Updates for parity
+	with libopenvrml changes.
+
 2004-09-21 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements.

@@ -232,14 +232,12 @@ void gtk_vrml_browser_realize(GtkWidget * const widget)
 }
 
 GtkGLViewer::GtkGLViewer(GtkVrmlBrowser & vrml_browser):
-    openvrml::gl::viewer(
-        *static_cast<openvrml::browser *>(vrml_browser.browser)),
     vrml_browser(vrml_browser),
     timer(0),
     redrawNeeded(false)
 {}
 
-GtkGLViewer::~GtkGLViewer()
+GtkGLViewer::~GtkGLViewer() throw ()
 {
     if (this->timer) { g_source_remove(timer); }
 }
