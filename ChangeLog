@@ -1,3 +1,22 @@
+2001-09-12 Thomas Flynn <tflynn@users.sourceforge.net>
+
+	* Add getFieldType to field.h/.cpp from Henri Manson's patch.
+
+	* Implement insert/remove element methods in VrmlMFString
+	  and VrmlMFNode.
+
+	* Fix compile problem with VrmlEvent.h
+
+	* Add java support classes to the build.
+
+	* Add macro to enable/disable java in the script node support.
+
+	* Update makefiles to add java include and library paths.
+
+	* Update configure.in to check for java support.
+
+	* General updates/fixes for ScriptJDK.cpp
+
 2001-09-08 Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Applied most of patch #446376 from Henri Manson for Java
