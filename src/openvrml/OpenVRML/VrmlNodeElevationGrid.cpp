@@ -181,7 +181,7 @@ Viewer::Object VrmlNodeElevationGrid::insertGeometry(Viewer *viewer, VrmlRenderC
 
   if ( d_height.size() > 0 )
     {
-      float *tc = 0, *normals = 0, *colors = 0;
+      const float *tc = 0, *normals = 0, *colors = 0;
 
       if (d_texCoord.get())
 	{

@@ -80,7 +80,7 @@ VrmlNode *VrmlNodeColorInt::cloneMe() const
 ostream& VrmlNodeColorInt::printFields(ostream& os, int indent)
 {
   if (d_key.size() > 0) PRINT_FIELD(key);
-  if (d_keyValue.size() > 0) PRINT_FIELD(keyValue);
+  if (d_keyValue.getLength() > 0) PRINT_FIELD(keyValue);
 
   return os;
 }
@@ -112,8 +112,8 @@ void VrmlNodeColorInt::eventIn(double timeStamp,
 	  for (int i=0; i<n; ++i)
 	    if (d_key[i] <= f && f <= d_key[i+1])
 	      {
-		float *rgb1 = d_keyValue[i];
-		float *rgb2 = d_keyValue[i+1];
+		const float *rgb1 = d_keyValue[i];
+		const float *rgb2 = d_keyValue[i+1];
 
 		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
 		float hsv1[3], hsv2[3];

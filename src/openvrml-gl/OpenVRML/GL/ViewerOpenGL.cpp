@@ -1382,12 +1382,12 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
 }
 
 
-Viewer::Object ViewerOpenGL::insertLineSet(int npoints,
-					   float *points,
+Viewer::Object ViewerOpenGL::insertLineSet(size_t npoints,
+                                           const float * points,
 					   size_t nlines,
 					   const long * lines,
 					   bool colorPerVertex,
-					   float *color,
+                                           const float * color,
 					   size_t nci,
 					   const long * ci)
 {
@@ -1441,9 +1441,9 @@ Viewer::Object ViewerOpenGL::insertLineSet(int npoints,
   return (Object) glid;
 }
 
-Viewer::Object ViewerOpenGL::insertPointSet(int npoints,
-					    float *points,
-					    float *colors)
+Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
+					    const float * points,
+					    const float * colors)
 {
   GLuint glid = 0;
 
@@ -1463,7 +1463,7 @@ Viewer::Object ViewerOpenGL::insertPointSet(int npoints,
 
   glBegin( GL_POINTS );
 
-  for (int i = 0; i<npoints; ++i)
+  for (size_t i = 0; i<npoints; ++i)
     {
       if (colors)
 	{
@@ -1483,15 +1483,13 @@ Viewer::Object ViewerOpenGL::insertPointSet(int npoints,
 
 // 
 
-static void computeBounds( int npoints,
-			   float *points,
-			   float *bounds )
+static void computeBounds(size_t npoints, const float * points, float * bounds)
 {
   bounds[0] = bounds[1] = points[0]; // xmin, xmax
   bounds[2] = bounds[3] = points[1]; // ymin, ymax
   bounds[4] = bounds[5] = points[2]; // zmin, zmax
 
-  for (int i=1; i<npoints; ++i)
+  for (size_t i=1; i<npoints; ++i)
     {
       points += 3;
       if (points[0] < bounds[0])      bounds[0] = points[0];
@@ -1605,7 +1603,7 @@ ViewerOpenGL::insertShellConvex( ShellData *s )
 		; // Generate per-vertex normal here...
 	    }
 
-	  float *v = &s->points[3*s->faces[i]];
+	  const float * v = &s->points[3*s->faces[i]];
 	  if (s->texCoord.v)
 	    {
 	      int tcindex;
@@ -1692,7 +1690,7 @@ static void WINAPI tessShellVertex( void *vdata, void *pdata )
 	; // Generate per-vertex normal here...
     }
 
-  float *v = &s->points[3*s->faces[i]];
+  const float * v = &s->points[3*s->faces[i]];
   if (s->texCoord.v)
     {
       int tcindex;
@@ -1769,18 +1767,18 @@ ViewerOpenGL::insertShellTess(ShellData *s)
 
 Viewer::Object 
 ViewerOpenGL::insertShell(unsigned int mask,
-			  int npoints,
-			  float *points,
+			  size_t npoints,
+			  const float * points,
 			  size_t nfaces,
 			  const long * faces,    // face list (-1 ends each face)
-			  float *tc,     // texture coordinates
-			  int ntci,      // # of texture coordinate indices
+			  const float * tc,     // texture coordinates
+			  size_t ntci,      // # of texture coordinate indices
 			  const long * tci,      // texture coordinate indices
-			  float *normal, // normals
-			  int nni,       // # of normal indices
+			  const float * normal, // normals
+			  size_t nni,       // # of normal indices
 			  const long * ni,       // normal indices
-			  float *color,  // colors
-			  int nci,
+			  const float *color,  // colors
+			  size_t nci,
 			  const long * ci)
 {
   if (nfaces < 4) return 0;	// 3 pts and a trailing -1

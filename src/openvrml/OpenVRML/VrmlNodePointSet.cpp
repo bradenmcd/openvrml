@@ -138,7 +138,7 @@ Viewer::Object VrmlNodePointSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 
   if ( d_coord.get() )
     {
-      float *color = 0;
+      const float * color = 0;
       if ( d_color.get() )
 	{
 	  VrmlMFColor &c = d_color.get()->toColor()->color();

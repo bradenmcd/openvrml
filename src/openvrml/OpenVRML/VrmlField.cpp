@@ -976,7 +976,7 @@ VrmlMFColor::VrmlMFColor(const VrmlMFColor &source) : d_data(source.d_data->ref(
 
 VrmlMFColor::~VrmlMFColor() { d_data->deref(); }
 
-void VrmlMFColor::set(int n, float *v)
+void VrmlMFColor::set(size_t n, const float * v)
 {
   d_data->deref();
   d_data = new FData(3*n);
@@ -1669,7 +1669,7 @@ namespace {
 
 
 ostream& VrmlMFColor::print(ostream& os) const
-{ return mffprint(os, get(), size(), 3); }
+{ return mffprint(os, get(), getLength(), 3); }
 
 ostream& VrmlMFFloat::print(ostream& os) const
 { return mffprint(os, get(), size(), 1); }

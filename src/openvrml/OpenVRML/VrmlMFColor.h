@@ -60,7 +60,7 @@ public:
   virtual ostream& print(ostream& os) const;
 
   // Assignment.
-  void set(int n, float *v);
+  void set(size_t n, const float * v);
   VrmlMFColor& operator=(const VrmlMFColor& rhs);
 
   virtual VrmlField *clone() const;
@@ -69,9 +69,9 @@ public:
   virtual const VrmlMFColor* toMFColor() const;
   virtual VrmlMFColor* toMFColor();
 
-  int size() const		{ return d_data->d_n/3; } // Number of colors
-  float *get() const		{ return d_data->d_v; }
-  float *operator[](int i) const	{ return &d_data->d_v[3*i]; }
+  size_t getLength() const		{ return d_data->d_n/3; } // Number of colors
+  const float * get() const		{ return d_data->d_v; }
+  const float * operator[](size_t i) const	{ return &d_data->d_v[3*i]; }
 
 };
 

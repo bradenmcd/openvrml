@@ -84,7 +84,7 @@ Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContex
     {
       VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
       int nvert = coord.size();
-      float *color = 0;
+      const float * color = 0;
       int nci = 0; const long * ci = 0;
 
       // check #colors is consistent with colorPerVtx, colorIndex...

@@ -182,7 +182,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
     {
       VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
       int nvert = coord.size();
-      float *tc = 0, *color = 0, *normal = 0;
+      const float *tc = 0, *color = 0, *normal = 0;
       int ntc = 0;
       size_t ntci = 0; const long * tci = 0;	// texture coordinate indices
       int nci = 0; const long * ci = 0;	// color indices

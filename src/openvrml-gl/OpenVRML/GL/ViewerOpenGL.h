@@ -114,22 +114,22 @@ public:
 				 size_t nSpine,
 				 const float * spine);
 
-  virtual Object insertLineSet(int, float *, size_t, const long *,
+  virtual Object insertLineSet(size_t, const float *, size_t, const long *,
 			       bool colorPerVertex,
-			       float *color,
+                               const float * color,
 			       size_t nColorIndex,
 			       const long * colorIndex);
 
-  virtual Object insertPointSet(int npts, float *points, float *colors);
+  virtual Object insertPointSet(size_t npts, const float * points, const float * colors);
   virtual Object insertShell(unsigned int mask,
-			     int npoints, float *points,
+			     size_t npoints, const float * points,
 			     size_t nfaces, const long * faces,
-			     float *tc,
-			     int ntci, const long * tci,
-			     float *normal,
-			     int nni, const long * ni,
-			     float *color,
-			     int nci, const long * ci);
+			     const float * tc,
+			     size_t ntci, const long * tci,
+			     const float * normal,
+			     size_t nni, const long * ni,
+			     const float * color,
+			     size_t nci, const long * ci);
 
   virtual Object insertSphere(float radius);
 
@@ -274,9 +274,9 @@ public:
     size_t ni; const long * i;			// number of indices, index pointer
   } IndexData;
 
-  typedef struct ShellData {
+  struct ShellData {
     unsigned int mask;
-    float *points;
+    const float * points;
     size_t nfaces; const long * faces;		// face list
     IndexData texCoord;		// texture coordinates and indices
     IndexData normal;		// normals and indices
@@ -284,7 +284,7 @@ public:
     int *texAxes;
     float *texParams;
     size_t nf, i;
-  } ShellData;
+  };
 
 
 protected:

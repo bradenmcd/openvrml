@@ -112,9 +112,9 @@ void VrmlNodeBackground::addToScene(VrmlScene *s, const char *rel)
 ostream& VrmlNodeBackground::printFields(ostream& os, int indent)
 {
   if (d_groundAngle.size()) PRINT_FIELD(groundAngle);
-  if (d_groundColor.size()) PRINT_FIELD(groundColor);
+  if (d_groundColor.getLength()) PRINT_FIELD(groundColor);
   if (d_skyAngle.size()) PRINT_FIELD(skyAngle);
-  if (d_skyColor.size()) PRINT_FIELD(skyColor);
+  if (d_skyColor.getLength()) PRINT_FIELD(skyColor);
   if (d_backUrl.get()) PRINT_FIELD(backUrl);
   if (d_bottomUrl.get()) PRINT_FIELD(bottomUrl);
   if (d_frontUrl.get()) PRINT_FIELD(frontUrl);

@@ -72,7 +72,7 @@ VrmlNodeColor* VrmlNodeColor::toColor() const
 
 ostream& VrmlNodeColor::printFields(ostream& os, int indent)
 {
-  if (d_color.size() > 0) PRINT_FIELD(color);
+  if (d_color.getLength() > 0) PRINT_FIELD(color);
 
   return os;
 }
