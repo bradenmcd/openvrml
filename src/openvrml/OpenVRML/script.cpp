@@ -335,8 +335,8 @@ void ScriptNode::update(const SFTime & timeNow) {
 // ownership.
 //
 
-void ScriptNode::assignWithSelfRefCheck(const SFNode & inval, SFNode & retval)
-        throw () {
+void ScriptNode::assignWithSelfRefCheck(const SFNode & inval,
+                                        SFNode & retval) const throw () {
     const NodePtr & oldNode = static_cast<SFNode &>(retval).get();
 
     //
@@ -367,8 +367,8 @@ void ScriptNode::assignWithSelfRefCheck(const SFNode & inval, SFNode & retval)
     }
 }
 
-void ScriptNode::assignWithSelfRefCheck(const MFNode & inval, MFNode & retval)
-        throw () {
+void ScriptNode::assignWithSelfRefCheck(const MFNode & inval,
+                                        MFNode & retval) const throw () {
     size_t i;
     for (i = 0; i < retval.getLength(); ++i) {
         const NodePtr & oldNode = retval.getElement(i);
@@ -1352,6 +1352,9 @@ namespace {
  
         JSBool eventOut_setProperty(JSContext * cx, JSObject * obj,
                                     jsval id, jsval * val) throw ();
+        
+        JSBool field_setProperty(JSContext * cx, JSObject * obj,
+                                 jsval id, jsval * val) throw ();
 
         void ErrorReporter(JSContext *, const char *, JSErrorReport *);
 
@@ -1713,9 +1716,9 @@ namespace {
 
         JSBool eventOut_setProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const val) throw () {
-            JSString *str = JS_ValueToString(cx, id);
-            if (! str) return JS_FALSE;
-            const char *eventName = JS_GetStringBytes(str);
+            JSString * const str = JS_ValueToString(cx, id);
+            if (!str) { return JS_FALSE; }
+            const char * const eventId = JS_GetStringBytes(str);
 
             //
             // The Script object pointer is stored as private data in the
@@ -1727,19 +1730,20 @@ namespace {
 
             ScriptNode & scriptNode = script->getScriptNode();
 
-            const FieldValue::Type fieldType =
-                    scriptNode.hasEventOut(eventName);
+            const FieldValue::Type fieldType = scriptNode.hasEventOut(eventId);
             //
-            // If this assertion is false, the we accidentally gave an object
-            // that doesn't correspond to an eventOut this setter!
+            // If this assertion is false, then we accidentally gave this
+            // setter to an object that doesn't correspond to an eventOut!
             //
             assert(fieldType != FieldValue::invalidType);
 
-            // Convert to a vrmlField and set the eventOut value
+            //
+            // Convert to an OpenVRML::FieldValue and set the eventOut value.
+            //
             try {
                 std::auto_ptr<FieldValue>
                         fieldValue(createFieldValueFromJsval(cx, *val, fieldType));
-                scriptNode.setEventOut(eventName, *fieldValue);
+                scriptNode.setEventOut(eventId, *fieldValue);
             } catch (std::exception & ex) { // should be bad_alloc
                 OPENVRML_PRINT_EXCEPTION_(ex);
                 return JS_FALSE;
@@ -1748,15 +1752,46 @@ namespace {
                 return JS_FALSE;
             }
 
-/* Why is this code here if it's also in             
-            // Don't overwrite the property value.
-            if (JSVAL_IS_OBJECT(*val) &&
-                JSVAL_TO_OBJECT(*val) != 0 &&
-                ! JS_DefineProperty( cx, JSVAL_TO_OBJECT(*val), "_eventOut",
-			             PRIVATE_TO_JSVAL((long int)eventName),
-			             0, 0, JSPROP_READONLY | JSPROP_PERMANENT ))
-              theSystem->error("JS_DefineProp _eventOut failed\n");
-*/
+            return JS_TRUE;
+        }
+        
+        JSBool field_setProperty(JSContext * const cx, JSObject * const obj,
+                                 const jsval id, jsval * const val) throw () {
+            JSString * const str = JS_ValueToString(cx, id);
+            if (!str) { return JS_FALSE; }
+            const char * const fieldId = JS_GetStringBytes(str);
+
+            //
+            // The Script object pointer is stored as private data in the
+            // context.
+            //
+            Script * const script =
+                    static_cast<Script *>(JS_GetContextPrivate(cx));
+            assert(script);
+
+            ScriptNode & scriptNode = script->getScriptNode();
+
+            const FieldValue::Type fieldType = scriptNode.hasField(fieldId);
+            //
+            // If this assertion is false, then we accidentally gave this
+            // setter to an object that doesn't correspond to a field!
+            //
+            assert(fieldType != FieldValue::invalidType);
+
+            //
+            // Convert to an OpenVRML::FieldValue and set the eventOut value.
+            //
+            try {
+                std::auto_ptr<FieldValue>
+                        fieldValue(createFieldValueFromJsval(cx, *val, fieldType));
+                scriptNode.setField(fieldId, *fieldValue);
+            } catch (std::exception & ex) { // should be bad_alloc
+                OPENVRML_PRINT_EXCEPTION_(ex);
+                return JS_FALSE;
+            } catch (...) {
+                assert(false);
+                return JS_FALSE;
+            }
 
             return JS_TRUE;
         }
@@ -1838,8 +1873,12 @@ namespace {
                 }
                 if (!JS_DefineProperty(this->cx, globalObj,
                                        (*i)->name.c_str(), val,
-                                       0, 0, // getter, setter, ...
+                                       0, field_setProperty, // getter, setter
                                        JSPROP_PERMANENT)) {
+# ifndef NDEBUG
+                    cerr << "Attempt to define \"" << (*i)->name.c_str()
+                         << "\" on global object failed." << endl;
+# endif
                     return false;
                 }
             }
@@ -1858,7 +1897,7 @@ namespace {
                 
                 if (!JS_DefineProperty(this->cx, globalObj,
                                        (*i)->name.c_str(), val,
-			               0, eventOut_setProperty, //getter, setter
+			               0, eventOut_setProperty, // getter, setter
 			               JSPROP_PERMANENT)) {
 # ifndef NDEBUG
                     cerr << "Attempt to define \"" << (*i)->name.c_str()
@@ -2497,7 +2536,7 @@ namespace {
         
         FieldData::~FieldData() {}
         
-        bool FieldData::isScriptField() const {
+        inline bool FieldData::isScriptField() const {
             return this->scriptFieldId;
         }
         
@@ -3017,16 +3056,11 @@ namespace {
             // The SFNode constructor requires one arg (a vrmlstring),
             // so we can't use JS_ConstructObject here.
             //
-            JSObject * const sfnodeObj =
-                    JS_NewObject(cx, &jsclass, 0, obj);
-	    if (!sfnodeObj) {
-                return JS_FALSE;
-            }
+            JSObject * const sfnodeObj = JS_NewObject(cx, &jsclass, 0, obj);
+	    if (!sfnodeObj) { return JS_FALSE; }
 
 	    if (protect) {
-                if (!JS_AddRoot(cx, sfnodeObj)) {
-                    return JS_FALSE;
-                }
+                if (!JS_AddRoot(cx, sfnodeObj)) { return JS_FALSE; }
             }
             
             try {

@@ -114,9 +114,6 @@ namespace OpenVRML {
         FieldList & fields() { return d_fields; }
         VrmlScene * browser() { return d_scene; }
         
-        void assignWithSelfRefCheck(const SFNode &, SFNode &) throw ();
-        void assignWithSelfRefCheck(const MFNode &, MFNode &) throw ();
-        
         virtual bool accept(NodeVisitor & visitor);
         virtual void resetVisitedFlag();
         virtual const FieldValue * getField(const std::string & fieldId) const;
@@ -134,6 +131,9 @@ namespace OpenVRML {
 
     private:
         Script * createScript();
+        
+        void assignWithSelfRefCheck(const SFNode &, SFNode &) const throw ();
+        void assignWithSelfRefCheck(const MFNode &, MFNode &) const throw ();
 
         // Generic field/event test/value methods
         FieldValue::Type has(const FieldList &, const std::string &) const;
