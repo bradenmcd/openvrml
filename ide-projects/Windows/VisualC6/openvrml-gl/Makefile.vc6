@@ -29,7 +29,6 @@ GLLIBDIR = .\lib
 GLSOURCE = ..\..\..\..\src\openvrml-gl\OpenVRML\Gl
 CORESOURCE = ..\..\..\..\src\openvrml\OpenVRML
 INCLUDECORE = ..\..\..\..\src\openvrml
-JSSOURCE = ..\..\..\..\lib\js
 
 help:
 	more < <<
@@ -111,8 +110,9 @@ gl : PROMPT $(GLBINOUTDIR) $(GLLIBDIR) $(GLLIBDIR)\openvrmlgl.lib
 
 $(GLLIBDIR)\openvrmlgl.lib : $(OBJ)
 		       if exist $(GLLIBDIR)\openvrmlgl.lib del $(GLLIBDIR)\openvrmlgl.lib
-		       $(LIB32) /nologo /out:$(GLLIBDIR)\openvrmlgl.lib\
-			    $(OBJ)
+		       $(LIB32) $(GLUTLIB_DIR)/glut32.lib opengl32.lib glu32.lib\
+                   /nologo /out:$(GLLIBDIR)\openvrmlgl.lib \
+			 $(OBJ)
 
 $(GLBINOUTDIR)\OpenGLEvent.obj :  $(GLSOURCE)\OpenGLEvent.cpp\
 			                $(GLSOURCE)\OpenGLEvent.h

@@ -242,12 +242,8 @@ COMMONLIB = $(ZLIB_DIR)\zlib.lib\
  $(JPEGLIB_DIR)\libjpeg.lib\
 !ENDIF
    
-
-LINKFLAGS = $(GLUTLIB_DIR)\glut32.lib opengl32.lib glu32.lib \
- wsock32.lib kernel32.lib\
- user32.lib gdi32.lib winspool.lib comdlg32.lib\
- advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib\
- odbccp32.lib /nologo /subsystem:windows /dll /incremental:no\
+LINKFLAGS = $(GLUTLIB_DIR)\glut32.lib opengl32.lib glu32.lib wsock32.lib\
+ /nologo /subsystem:windows /dll /incremental:no\
  /pdb:"$(LIBDIR)/openvrmlcore.pdb" /machine:I386 /NODEFAULTLIB:LIBC
 
 
@@ -327,7 +323,6 @@ core-static:
   nmake /F Makefile.vc6 WITH_PNG=$(WITH_PNG) PNGLIB_DIR=$(PNGLIB_DIR)\
   WITH_JPEG=$(WITH_JPEG) JPEGLIB_DIR=$(JPEGLIB_DIR)\
   WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLALIB_DIR=$(MOZILLALIB_DIR)\
-  GLUTLIB_DIR=$(GLUTLIB_DIR)\
   ZLIB_DIR=$(ZLIB_DIR) LIBTYPE=STATIC\
   ANTLRLIB_DIR=$(ANTLRLIB_DIR) WITH_ANTLR=$(WITH_ANTLR) core
   cd $(MAKEDIR)
@@ -337,7 +332,6 @@ core-dynamic:
   nmake /F Makefile.vc6 PNGLIB_DIR=$(PNGLIB_DIR)\
   WITH_JPEG=$(WITH_JPEG) JPEGLIB_DIR=$(JPEGLIB_DIR)\
   WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLALIB_DIR=$(MOZILLALIB_DIR)\
-  GLUTLIB_DIR=$(GLUTLIB_DIR)\
   ZLIB_DIR=$(ZLIB_DIR)\
   ANTLRLIB_DIR=$(ANTLRLIB_DIR) WITH_ANTLR=$(WITH_ANTLR) core
   cd $(MAKEDIR)

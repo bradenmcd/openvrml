@@ -127,7 +127,7 @@ LINK32_DYNAMIC_FLAGS = $(VRML97LIB)\openvrml.lib $(GLUTLIB_DIR)\glut32.lib /nolo
    /nodefaultlib:LIBC 
 
 LINK32_STATIC_FLAGS = $(VRML97LIB)\openvrml.lib \
-  $(GLUTLIB_DIR)\glut32.lib opengl32.lib glu32.lib wsock32.lib\
+  $(GLUTLIB_DIR)\glut32.lib\
   /nologo \
    /subsystem:console /incremental:no /pdb:"$(BINOUTDIR)\lookat.pdb" /machine:I386 \
    /nodefaultlib:LIBC

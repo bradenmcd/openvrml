@@ -178,11 +178,6 @@ MOZILLALIB_DIR = c:\User\mozilla
 ZLIB_DIR = c:\User\zlib
 !ENDIF
 
-
-!IF "$(GLUTLIB_DIR)" == ""
-GLUTLIB_DIR = c:\User\glut
-!ENDIF
-
 !IF "$(WITH_ANTLR)" == ""
 WITH_ANTLR = NO
 !ENDIF
@@ -229,10 +224,7 @@ COMMONLIB = $(ZLIB_DIR)\zlib.lib\
 !ENDIF
 
 LINK32 = link.exe
-LINKFLAGS = wsock32.lib kernel32.lib\
- user32.lib gdi32.lib winspool.lib comdlg32.lib\
- advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib\
- odbccp32.lib /nologo /subsystem:windows /dll /incremental:no\
+LINKFLAGS = wsock32.lib /nologo /subsystem:windows /dll /incremental:no\
  /pdb:"$(LIBDIR)/openvrmlcore.pdb" /machine:I386 /NODEFAULTLIB:LIBC
 
 
@@ -276,7 +268,8 @@ core  : \
 
 $(LIBDIR)\openvrmlcore.lib : ant $(OBJ1)
                    if exist $(LIBDIR) del /Q $(LIBDIR)
-                   $(LIB32) /nologo /out:$(LIBDIR)\openvrmlcore.lib $(COMMONLIB)\
+                   $(LIB32) /nologo /out:$(LIBDIR)\openvrmlcore.lib\
+                   $(COMMONLIB) wsock32.lib\
 				   $(ANTLRLIBDIR)\lib\libantlr.lib $(OBJ1)
 
 $(LIBDIR)\openvrmlcore.dll :  ant $(OBJ1) 		       
