@@ -31,6 +31,7 @@
 #   include <boost/cast.hpp>
 #   include <boost/concept_check.hpp>
 #   include <boost/shared_ptr.hpp>
+#   include <boost/utility.hpp>
 #   include <openvrml/basetypes.h>
 #   include <openvrml/node_ptr.h>
 
@@ -750,7 +751,7 @@ namespace openvrml {
     bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ();
 
 
-    class event_listener {
+    class event_listener : boost::noncopyable {
     public:
         openvrml::node & node;
 
@@ -758,11 +759,6 @@ namespace openvrml {
 
     protected:
         explicit event_listener(openvrml::node & node) throw ();
-
-    private:
-        // Not copyable.
-        event_listener(const event_listener &);
-        event_listener & operator=(const event_listener &);
     };
 
 
@@ -812,7 +808,7 @@ namespace openvrml {
     typedef field_value_listener<mfvec3f> mfvec3f_listener;
 
 
-    class event_emitter {
+    class event_emitter : boost::noncopyable {
         friend class node;
 
     public:
@@ -834,10 +830,6 @@ namespace openvrml {
         explicit event_emitter(const field_value & value) throw ();
 
     private:
-        // Not copyable.
-        event_emitter(const event_emitter &);
-        event_emitter & operator=(const event_emitter &);
-
         virtual void emit_event(double timestamp) throw (std::bad_alloc) = 0;
     };
 
