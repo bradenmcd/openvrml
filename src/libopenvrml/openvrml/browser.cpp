@@ -3931,8 +3931,6 @@ browser::~browser() throw ()
     const double now = browser::current_time();
 
     if (this->scene_) { this->scene_->shutdown(now); }
-    delete this->scene_;
-    this->scene_ = 0;
     assert(this->viewpoint_list.empty());
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
@@ -4252,8 +4250,7 @@ void browser::load_url(const std::vector<std::string> & url,
     // Clear out the current scene.
     //
     if (this->scene_) { this->scene_->shutdown(now); }
-    delete this->scene_;
-    this->scene_ = 0;
+    this->scene_.reset();
     this->active_viewpoint_ =
         node_cast<viewpoint_node *>(this->default_viewpoint_.get());
     assert(this->viewpoint_list.empty());
@@ -4269,7 +4266,7 @@ void browser::load_url(const std::vector<std::string> & url,
     //
     this->init_node_class_map();
     try {
-        this->scene_ = new scene(*this, url);
+        this->scene_.reset(new scene(*this, url));
         this->scene_->initialize(now);
 
         //

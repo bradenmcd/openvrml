@@ -1,5 +1,12 @@
 2004-12-30 Braden McDaniel  <braden@endoframe.com>
 
+	Use boost::scoped_ptr for browser::scene_.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+
+2004-12-30 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp:  Removed erroneously
 	committed debugging output.
 

@@ -29,6 +29,7 @@
 #   include <list>
 #   include <map>
 #   include <string>
+#   include <boost/scoped_ptr.hpp>
 #   include <boost/utility.hpp>
 #   include <openvrml/common.h>
 #   include <openvrml/script.h>
@@ -78,7 +79,7 @@ namespace openvrml {
         typedef std::map<std::string, node_class_ptr> node_class_map_t;
         node_class_map_t node_class_map;
         script_node_class script_node_class_;
-        scene * scene_;
+        boost::scoped_ptr<scene> scene_;
         const node_ptr default_viewpoint_;
         viewpoint_node * active_viewpoint_;
         const node_ptr default_navigation_info_;
