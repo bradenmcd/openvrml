@@ -1,3 +1,13 @@
+2005-02-09 Braden McDaniel  <braden@endoframe.com>
+
+	Load the initial plug-in URL from Mozilla rather than using
+	OpenVRML's HTTP (or local file) fetch facility.  This change
+	includes some groundwork for general resource fetching using
+	the Mozilla plug-in API's facilities.
+
+	* mozilla-plugin/src/openvrml.cpp
+	* mozilla-plugin/src/openvrml-player/player.cpp
+
 2005-01-27 Braden McDaniel  <braden@endoframe.com>
 
 	Merged changes from 0.15.6 release.

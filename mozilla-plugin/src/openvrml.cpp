@@ -22,7 +22,9 @@
 # include <iostream>
 # include <list>
 # include <memory>
+# include <sstream>
 # include <stdexcept>
+# include <sys/socket.h>
 # include <sys/wait.h>
 # include <boost/lexical_cast.hpp>
 # include <boost/noncopyable.hpp>
@@ -49,24 +51,26 @@ namespace {
 
     void printerr(const char * str);
 
+    class ScriptablePeer;
+
     class PluginInstance : boost::noncopyable {
 	friend class ScriptablePeer;
 
-        std::string initialURL;
         GdkNativeWindow window;
         int x, y;
         int width, height;
         pid_t player_pid;
+        int filedes[2];
 	nsCOMPtr<VrmlBrowser> scriptablePeer;
 
     public:
-        explicit PluginInstance(const std::string & initialURL)
-            throw (std::bad_alloc);
+        PluginInstance() throw (std::bad_alloc);
         ~PluginInstance() throw ();
 
 	nsISupports * GetScriptablePeer() throw ();
         void SetWindow(NPWindow & window) throw (std::bad_alloc);
         void HandleEvent(void * event) throw ();
+        int out() const throw ();
     };
 
     class ScriptablePeer : public nsIClassInfo, public VrmlBrowser {
@@ -255,583 +259,6 @@ void NPP_Shutdown()
 {
 }
 
-namespace {
-
-    class invalid_uri : public std::runtime_error {
-    public:
-        invalid_uri():
-            std::runtime_error("Invalid URI")
-        {}
-
-        virtual ~invalid_uri() throw ()
-        {}
-    };
-
-    class uri {
-        struct grammar : public boost::spirit::grammar<grammar> {
-            struct absolute_uri_closure :
-                boost::spirit::closure<absolute_uri_closure,
-                                       std::string::const_iterator,
-                                       std::string::const_iterator> {
-                member1 scheme_begin;
-                member2 scheme_end;
-            };
-
-            struct server_closure :
-                boost::spirit::closure<server_closure,
-                                       std::string::const_iterator,
-                                       std::string::const_iterator> {
-                member1 userinfo_begin;
-                member2 userinfo_end;
-            };
-
-            template <typename ScannerT>
-            struct definition {
-                typedef boost::spirit::rule<ScannerT> rule_type;
-                typedef boost::spirit::rule<ScannerT,
-                                            absolute_uri_closure::context_t>
-                    absolute_uri_rule_type;
-                typedef boost::spirit::rule<ScannerT,
-                                            server_closure::context_t>
-                    server_rule_type;
-
-                rule_type uri_reference;
-                absolute_uri_rule_type absolute_uri;
-                rule_type relative_uri;
-                rule_type hier_part;
-                rule_type opaque_part;
-                rule_type uric_no_slash;
-                rule_type net_path;
-                rule_type abs_path;
-                rule_type rel_path;
-                rule_type rel_segment;
-                rule_type scheme;
-                rule_type authority;
-                rule_type reg_name;
-                server_rule_type server;
-                rule_type userinfo;
-                rule_type hostport;
-                rule_type host;
-                rule_type hostname;
-                rule_type domainlabel;
-                rule_type toplabel;
-                rule_type ipv4address;
-                rule_type port;
-                rule_type path_segments;
-                rule_type segment;
-                rule_type param;
-                rule_type pchar;
-                rule_type query;
-                rule_type fragment;
-                rule_type uric;
-                rule_type reserved;
-                rule_type unreserved;
-                rule_type mark;
-                rule_type escaped;
-
-                explicit definition(const grammar & self);
-
-                const boost::spirit::rule<ScannerT> & start() const;
-            };
-
-            mutable uri & uri_ref;
-
-            explicit grammar(uri & uri_ref) throw ();
-        };
-
-        std::string str_;
-        std::string::const_iterator scheme_begin, scheme_end;
-        std::string::const_iterator scheme_specific_part_begin,
-                                    scheme_specific_part_end;
-        std::string::const_iterator authority_begin, authority_end;
-        std::string::const_iterator userinfo_begin, userinfo_end;
-        std::string::const_iterator host_begin, host_end;
-        std::string::const_iterator port_begin, port_end;
-        std::string::const_iterator path_begin, path_end;
-        std::string::const_iterator query_begin, query_end;
-        std::string::const_iterator fragment_begin, fragment_end;
-
-    public:
-        uri() throw (std::bad_alloc);
-        explicit uri(const std::string & str)
-            throw (invalid_uri, std::bad_alloc);
-
-        operator std::string() const throw (std::bad_alloc);
-
-        const std::string scheme() const throw (std::bad_alloc);
-        const std::string scheme_specific_part() const throw (std::bad_alloc);
-        const std::string authority() const throw (std::bad_alloc);
-        const std::string userinfo() const throw (std::bad_alloc);
-        const std::string host() const throw (std::bad_alloc);
-        const std::string port() const throw (std::bad_alloc);
-        const std::string path() const throw (std::bad_alloc);
-        const std::string query() const throw (std::bad_alloc);
-        const std::string fragment() const throw (std::bad_alloc);
-
-        const uri resolve_against(const uri & absolute_uri) const
-            throw (std::bad_alloc);
-    };
-
-    uri::grammar::grammar(uri & uri_ref) throw ():
-        uri_ref(uri_ref)
-    {}
-
-    template <typename ScannerT>
-    uri::grammar::definition<ScannerT>::definition(const grammar & self)
-    {
-        using namespace boost::spirit;
-        using namespace phoenix;
-
-        BOOST_SPIRIT_DEBUG_NODE(uri_reference);
-        BOOST_SPIRIT_DEBUG_NODE(absolute_uri);
-        BOOST_SPIRIT_DEBUG_NODE(relative_uri);
-        BOOST_SPIRIT_DEBUG_NODE(hier_part);
-        BOOST_SPIRIT_DEBUG_NODE(opaque_part);
-        BOOST_SPIRIT_DEBUG_NODE(uric_no_slash);
-        BOOST_SPIRIT_DEBUG_NODE(net_path);
-        BOOST_SPIRIT_DEBUG_NODE(abs_path);
-        BOOST_SPIRIT_DEBUG_NODE(rel_path);
-        BOOST_SPIRIT_DEBUG_NODE(rel_segment);
-        BOOST_SPIRIT_DEBUG_NODE(scheme);
-        BOOST_SPIRIT_DEBUG_NODE(authority);
-        BOOST_SPIRIT_DEBUG_NODE(reg_name);
-        BOOST_SPIRIT_DEBUG_NODE(server);
-        BOOST_SPIRIT_DEBUG_NODE(userinfo);
-        BOOST_SPIRIT_DEBUG_NODE(hostport);
-        BOOST_SPIRIT_DEBUG_NODE(host);
-        BOOST_SPIRIT_DEBUG_NODE(hostname);
-        BOOST_SPIRIT_DEBUG_NODE(domainlabel);
-        BOOST_SPIRIT_DEBUG_NODE(toplabel);
-        BOOST_SPIRIT_DEBUG_NODE(ipv4address);
-        BOOST_SPIRIT_DEBUG_NODE(port);
-        BOOST_SPIRIT_DEBUG_NODE(path_segments);
-        BOOST_SPIRIT_DEBUG_NODE(segment);
-        BOOST_SPIRIT_DEBUG_NODE(param);
-        BOOST_SPIRIT_DEBUG_NODE(pchar);
-        BOOST_SPIRIT_DEBUG_NODE(query);
-        BOOST_SPIRIT_DEBUG_NODE(fragment);
-        BOOST_SPIRIT_DEBUG_NODE(uric);
-        BOOST_SPIRIT_DEBUG_NODE(reserved);
-        BOOST_SPIRIT_DEBUG_NODE(unreserved);
-        BOOST_SPIRIT_DEBUG_NODE(mark);
-        BOOST_SPIRIT_DEBUG_NODE(escaped);
-
-        uri & uri_ref = self.uri_ref;
-
-        uri_reference
-            =   !(absolute_uri | relative_uri) >> !('#' >> fragment)
-            ;
-
-        absolute_uri
-            =   (scheme[
-                    absolute_uri.scheme_begin = arg1,
-                    absolute_uri.scheme_end = arg2
-                ] >> ':')[
-                    var(uri_ref.scheme_begin) = absolute_uri.scheme_begin,
-                    var(uri_ref.scheme_end) = absolute_uri.scheme_end
-                ] >> (hier_part | opaque_part)[
-                    var(uri_ref.scheme_specific_part_begin) = arg1,
-                    var(uri_ref.scheme_specific_part_end) = arg2
-                ]
-            ;
-
-        relative_uri
-            =   (net_path | abs_path | rel_path) >> !('?' >> query)
-            ;
-
-        hier_part
-            =   (net_path | abs_path) >> !('?' >> query)
-            ;
-
-        opaque_part
-            =   uric_no_slash >> *uric
-            ;
-
-        uric_no_slash
-            =   unreserved
-            |   escaped
-            |   ';'
-            |   '?'
-            |   ':'
-            |   '@'
-            |   '&'
-            |   '='
-            |   '+'
-            |   '$'
-            |   ','
-            ;
-
-        net_path
-            =   "//" >> authority >> !abs_path
-            ;
-
-        abs_path
-            =   ('/' >> path_segments)[
-                    var(uri_ref.path_begin) = arg1,
-                    var(uri_ref.path_end) = arg2
-                ]
-            ;
-
-        rel_path
-            =   (rel_segment >> !abs_path)[
-                    var(uri_ref.path_begin) = arg1,
-                    var(uri_ref.path_end) = arg2
-                ]
-            ;
-
-        rel_segment
-            =  +(   unreserved
-                |   escaped
-                |   ';'
-                |   '@'
-                |   '&'
-                |   '='
-                |   '+'
-                |   '$'
-                |   ','
-                )
-            ;
-
-        scheme
-            =   (alpha_p >> *(alpha_p | digit_p | '+' | '-' | '.'))
-            ;
-
-        authority
-            =   (server | reg_name)[
-                    var(uri_ref.authority_begin) = arg1,
-                    var(uri_ref.authority_end) = arg2
-                ]
-            ;
-
-        reg_name
-            =  +(   unreserved
-                |   escaped
-                |   '$'
-                |   ','
-                |   ';'
-                |   ':'
-                |   '@'
-                |   '&'
-                |   '='
-                |   '+'
-                )
-            ;
-
-        server
-            =  !(
-                    !(userinfo[
-                        server.userinfo_begin = arg1,
-                        server.userinfo_end = arg2
-                    ] >> '@')[
-                        var(uri_ref.userinfo_begin) = server.userinfo_begin,
-                        var(uri_ref.userinfo_end) = server.userinfo_end
-                    ]
-                    >> hostport
-                )
-            ;
-
-        userinfo
-            =  *(   unreserved
-                |   escaped
-                |   ';'
-                |   ':'
-                |   '&'
-                |   '='
-                |   '+'
-                |   '$'
-                |   ','
-                )
-            ;
-
-        hostport
-            =   host >> !(':' >> port)
-            ;
-
-        host
-            =   (hostname | ipv4address)[
-                    var(uri_ref.host_begin) = arg1,
-                    var(uri_ref.host_end) = arg2
-                ]
-            ;
-
-        hostname
-            =   *(domainlabel >> '.') >> toplabel >> !ch_p('.')
-            ;
-
-        domainlabel
-            =   alnum_p >> *(*ch_p('-') >> alnum_p)
-            ;
-
-        toplabel
-            =   alpha_p >> *(*ch_p('-') >> alnum_p)
-            ;
-
-        ipv4address
-            =   +digit_p >> '.' >> +digit_p >> '.' >> +digit_p >> '.'
-                >> +digit_p
-            ;
-
-        port
-            =   (*digit_p)[
-                    var(uri_ref.port_begin) = arg1,
-                    var(uri_ref.port_end) = arg2
-                ]
-            ;
-
-        path_segments
-            =   segment >> *('/' >> segment)
-            ;
-
-        segment
-            =   *pchar >> *(';' >> param)
-            ;
-
-        param
-            =   *pchar
-            ;
-
-        pchar
-            =   unreserved
-            |   escaped
-            |   ':'
-            |   '@'
-            |   '&'
-            |   '='
-            |   '+'
-            |   '$'
-            |   ','
-            ;
-
-        query
-            =   (*uric)[
-                    var(uri_ref.query_begin) = arg1,
-                    var(uri_ref.query_end) = arg2
-                ]
-            ;
-
-        fragment
-            =   (*uric)[
-                    var(uri_ref.fragment_begin) = arg1,
-                    var(uri_ref.fragment_end) = arg2
-                ]
-            ;
-
-        uric
-            =   reserved
-            |   unreserved
-            |   escaped
-            ;
-
-        reserved
-            =   ch_p(';')
-            |   '/'
-            |   '?'
-            |   ':'
-            |   '@'
-            |   '&'
-            |   '='
-            |   '+'
-            |   '$'
-            |   ','
-            ;
-
-        unreserved
-            =   alnum_p
-            |   mark
-            ;
-
-        mark
-            =   ch_p('-')
-            |   '_'
-            |   '.'
-            |   '!'
-            |   '~'
-            |   '*'
-            |   '\''
-            |   '('
-            |   ')'
-            ;
-
-        escaped
-            =   '%' >> xdigit_p >> xdigit_p
-            ;
-    }
-
-    template <typename ScannerT>
-    const boost::spirit::rule<ScannerT> &
-    uri::grammar::definition<ScannerT>::start() const
-    {
-        return uri_reference;
-    }
-
-    uri::uri() throw (std::bad_alloc)
-    {}
-
-    uri::uri(const std::string & str)
-        throw (invalid_uri, std::bad_alloc):
-        str_(str)
-    {
-        using std::string;
-        using namespace boost::spirit;
-
-        grammar g(*this);
-
-        string::const_iterator begin = this->str_.begin();
-        string::const_iterator end = this->str_.end();
-
-        if (!parse(begin, end, g, space_p).full) {
-            throw invalid_uri();
-        }
-    }
-
-    uri::operator std::string() const throw (std::bad_alloc)
-    {
-        return this->str_;
-    }
-
-    const std::string uri::scheme() const throw (std::bad_alloc)
-    {
-        return std::string(this->scheme_begin, this->scheme_end);
-    }
-
-    const std::string uri::scheme_specific_part() const
-        throw (std::bad_alloc)
-    {
-        return std::string(this->scheme_specific_part_begin,
-                           this->scheme_specific_part_end);
-    }
-
-    const std::string uri::authority() const throw (std::bad_alloc)
-    {
-        return std::string(this->authority_begin, this->authority_end);
-    }
-
-    const std::string uri::userinfo() const throw (std::bad_alloc)
-    {
-        return std::string(this->userinfo_begin, this->userinfo_end);
-    }
-
-    const std::string uri::host() const throw (std::bad_alloc)
-    {
-        return std::string(this->host_begin, this->host_end);
-    }
-
-    const std::string uri::port() const throw (std::bad_alloc)
-    {
-        return std::string(this->port_begin, this->port_end);
-    }
-
-    const std::string uri::path() const throw (std::bad_alloc)
-    {
-        return std::string(this->path_begin, this->path_end);
-    }
-
-    const std::string uri::query() const throw (std::bad_alloc)
-    {
-        return std::string(this->query_begin, this->query_end);
-    }
-
-    const std::string uri::fragment() const throw (std::bad_alloc)
-    {
-        return std::string(this->fragment_begin, this->fragment_end);
-    }
-
-    const uri uri::resolve_against(const uri & absolute_uri) const
-        throw (std::bad_alloc)
-    {
-        using std::list;
-        using std::string;
-
-        assert(this->scheme().empty());
-        assert(!absolute_uri.scheme().empty());
-
-        string result = absolute_uri.scheme() + ':';
-
-        if (!this->authority().empty()) {
-            return uri(result + this->scheme_specific_part());
-        } else {
-            result += "//" + absolute_uri.authority();
-        }
-
-        string path = absolute_uri.path();
-        const string::size_type last_slash_index = path.find_last_of('/');
-
-        //
-        // Chop off the leading slash and the last path segment (typically a
-        // file name).
-        //
-        path = path.substr(1, last_slash_index);
-
-        //
-        // Append the relative path.
-        //
-        path += this->path();
-
-        //
-        // Put the path segments in a list to process them.
-        //
-        list<string> path_segments;
-        string::size_type slash_index = 0;
-        string::size_type segment_start_index = 0;
-        do {
-            slash_index = path.find('/', segment_start_index);
-            string segment = path.substr(segment_start_index,
-                                         slash_index - segment_start_index);
-            if (!segment.empty()) {
-                path_segments.push_back(segment);
-            }
-            segment_start_index = slash_index + 1;
-        } while (slash_index != string::npos);
-
-        //
-        // Remove any "." segments.
-        //
-        path_segments.remove(".");
-
-        //
-        // Remove any ".." segments along with the segment that precedes them.
-        //
-        const list<string>::iterator begin(path_segments.begin());
-        list<string>::iterator pos;
-        for (pos = begin; pos != path_segments.end(); ++pos) {
-            if (pos != begin && *pos == "..") {
-                --(pos = path_segments.erase(pos));
-                --(pos = path_segments.erase(pos));
-            }
-        }
-
-        //
-        // Reconstruct the path.
-        //
-        path = string();
-        for (pos = path_segments.begin(); pos != path_segments.end(); ++pos) {
-            path += '/' + *pos;
-        }
-
-        //
-        // End in a slash?
-        //
-        if (*(this->path().end() - 1) == '/') { path += '/'; }
-
-        result += path;
-
-        const string query = this->query();
-        if (!query.empty()) { result += '?' + query; }
-
-        const string fragment = this->fragment();
-        if (!fragment.empty()) { result += '#' + fragment; }
-
-        uri result_uri;
-        try {
-            result_uri = uri(result);
-        } catch (invalid_uri &) {
-            assert(false); // If we constructed a bad URI, something is wrong.
-        }
-
-        return result_uri;
-    }
-}
-
 /**
  * @internal
  *
@@ -886,60 +313,8 @@ NPError NPP_New(const NPMIMEType pluginType,
 {
     if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
 
-    const char * url = 0;
-    for (int16 i = 0; i < argc; ++i) {
-        //
-        // If the plug-in is loaded into the browser window (as opposed to
-        // embedded in a Web page), the URI of the world is passed in the
-        // "src" attribute.
-        //
-        static const std::string src("src");
-        if (argn[i] == src) {
-            url = argv[i];
-        }
-
-        //
-        // We prefer the "data" attribute to the "src" attribute; so even
-        // if we get a "src" attribute, keep looking for a "data" one.  If
-        // we find a "data" attribute, then we break.
-        //
-        static const std::string data("data");
-        if (argn[i] == data) {
-            url = argv[i];
-            break;
-        }
-    }
-
-    nsresult rv;
-
-    nsCOMPtr<nsIDOMWindow> domWindow;
-    NPError error =
-        NPN_GetValue(instance,
-                     NPNVDOMWindow,
-                     static_cast<nsIDOMWindow **>(getter_AddRefs(domWindow)));
-    if (error != NPERR_NO_ERROR) { return error; }
-    assert(domWindow);
-    nsCOMPtr<nsIDOMWindowInternal> windowInternal =
-        do_QueryInterface(domWindow);
-    if (!windowInternal) { return NPERR_GENERIC_ERROR; }
-    nsCOMPtr<nsIDOMLocation> location;
-    rv = windowInternal->GetLocation(getter_AddRefs(location));
-    if (NS_FAILED(rv)) { return NPERR_GENERIC_ERROR; }
-    assert(location);
-    nsAutoString href;
-    rv = location->GetHref(href);
-    if (NS_FAILED(rv)) { return NPERR_GENERIC_ERROR; }
-
-    uri plugin_data_uri(url);
-    bool relative = plugin_data_uri.scheme().empty();
-    if (relative) {
-        plugin_data_uri =
-            plugin_data_uri
-            .resolve_against(uri(NS_ConvertUTF16toUTF8(href).get()));
-    }
-
     try {
-        instance->pdata = new PluginInstance(plugin_data_uri);
+        instance->pdata = new PluginInstance;
     } catch (std::bad_alloc &) {
         return NPERR_OUT_OF_MEMORY_ERROR;
     }
@@ -1021,7 +396,22 @@ NPError NPP_NewStream(const NPP instance,
                       uint16 * const stype)
 {
     if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
-    *stype = NP_ASFILEONLY;
+    *stype = NP_NORMAL;
+
+    assert(instance->pdata);
+    PluginInstance & pluginInstance =
+        *static_cast<PluginInstance *>(instance->pdata);
+
+    std::ostringstream command;
+    command << "new-stream " << unsigned(stream) << ' ' << type << ' '
+            << stream->url << '\n';
+    ssize_t bytes_written = write(pluginInstance.out(),
+                                  command.str().data(),
+                                  command.str().length());
+    if (bytes_written < 0) {
+        printerr(strerror(errno));
+        return NPERR_GENERIC_ERROR;
+    }
     return NPERR_NO_ERROR;
 }
 
@@ -1033,6 +423,16 @@ NPError NPP_DestroyStream(const NPP instance,
 
     PluginInstance * const pluginInstance =
         static_cast<PluginInstance *>(instance->pdata);
+
+    std::ostringstream command;
+    command << "destroy-stream " << unsigned(stream) << '\n';
+    ssize_t bytes_written = write(pluginInstance->out(),
+                                  command.str().data(),
+                                  command.str().length());
+    if (bytes_written < 0) {
+        printerr(strerror(errno));
+        return NPERR_GENERIC_ERROR;
+    }
 
     return NPERR_NO_ERROR;
 }
@@ -1072,9 +472,23 @@ int32 NPP_Write(const NPP instance,
                 const int32 len,
                 void * const buffer)
 {
-    if (instance) {
-        PluginInstance * pluginInstance =
-            static_cast<PluginInstance *>(instance->pdata);
+    if (!instance || !instance->pdata) { return 0; }
+
+    PluginInstance * const pluginInstance =
+        static_cast<PluginInstance *>(instance->pdata);
+
+    std::ostringstream command;
+    command << "write " << unsigned(stream) << ' ' << offset << ' ' << len
+            << '\n';
+    for (int32 i = 0; i < len; ++i) {
+        command.put(static_cast<char *>(buffer)[i]);
+    }
+    ssize_t bytes_written = write(pluginInstance->out(),
+                                  command.str().data(),
+                                  command.str().length());
+    if (bytes_written < 0) {
+        printerr(strerror(errno));
+        return NPERR_GENERIC_ERROR;
     }
 
     return len; /* The number of bytes accepted */
@@ -1602,9 +1016,7 @@ namespace {
     }
 
 
-    PluginInstance::PluginInstance(const std::string & initialURL)
-        throw (std::bad_alloc):
-        initialURL(initialURL),
+    PluginInstance::PluginInstance() throw (std::bad_alloc):
         window(0),
         x(0),
         y(0),
@@ -1612,7 +1024,12 @@ namespace {
         height(0),
         player_pid(0),
 	scriptablePeer(new ScriptablePeer(*this))
-    {}
+    {
+        int result = pipe(this->filedes);
+        if (result != 0) {
+            printerr(strerror(errno));
+        }
+    }
 
     PluginInstance::~PluginInstance() throw ()
     {
@@ -1640,11 +1057,18 @@ namespace {
         } else {
             this->window = reinterpret_cast<GdkNativeWindow>(window.window);
 
+            fcntl(filedes[0], F_SETFD, 0);
+
             this->player_pid = fork();
             if (this->player_pid == 0) {
                 using std::vector;
                 using std::string;
                 using boost::lexical_cast;
+
+                int result = close(filedes[1]);
+                if (result != 0) {
+                    _exit(EXIT_FAILURE);
+                }
 
                 const char * exec_path = getenv("OPENVRML_PLAYER");
                 if (!exec_path) {
@@ -1660,20 +1084,27 @@ namespace {
                     socket_id_arg_c_str,
                     socket_id_arg_c_str + socket_id_arg.length() + 1);
 
-                const char * uri_arg_c_str = this->initialURL.c_str();
-                vector<char> uri_arg_vec(
-                    uri_arg_c_str,
-                    uri_arg_c_str + this->initialURL.length() + 1);
+                string read_fd_arg =
+                    "--read-fd=" + lexical_cast<string>(filedes[0]);
+                const char * read_fd_arg_c_str = read_fd_arg.c_str();
+                vector<char> read_fd_arg_vec(
+                    read_fd_arg_c_str,
+                    read_fd_arg_c_str + read_fd_arg.length() + 1);
 
                 char * argv[] = {
                     &exec_path_vec.front(),
                     &socket_id_arg_vec.front(),
-                    &uri_arg_vec.front(),
+                    &read_fd_arg_vec.front(),
                     0
                 };
 
-                int result = execv(argv[0], argv);
+                result = execv(argv[0], argv);
                 if (result < 0) {
+                    printerr(strerror(errno));
+                }
+            } else if (this->player_pid > 0) {
+                int result = close(filedes[0]);
+                if (result != 0) {
                     printerr(strerror(errno));
                 }
             } else if (this->player_pid < 0) {
@@ -1684,4 +1115,9 @@ namespace {
 
     void PluginInstance::HandleEvent(void * event) throw ()
     {}
+
+    int PluginInstance::out() const throw ()
+    {
+        return this->filedes[1];
+    }
 } // namespace
