@@ -133,7 +133,7 @@ Optional features
 
  * JPEG image support
    
-   libjpeg is required for JPEG support in OpenVRML.  If libpng is not
+   libjpeg is required for JPEG support in OpenVRML.  If libjpeg is not
    already installed on your system, you can find it at
    <http://www.ijg.org>.  The GNU build includes configuration options
    to either allow the build to locate libjpeg on your system, or build
