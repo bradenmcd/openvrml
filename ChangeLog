@@ -1,3 +1,10 @@
+2004-03-20 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Rewrote use of GLU
+	tesselator.  The previous code assumed that the GLU_TESS_VERTEX
+	callback was called synchronously with calls to gluTessVertex.
+	There is no such guarantee.
+
 2004-03-14 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp (browser::browser):

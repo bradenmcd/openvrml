@@ -72,6 +72,14 @@
             } while (false)
 #   endif
 
+# if defined(__CYGWIN__) || defined(__MINGW32__)
+#   define OPENVRML_GL_CALLBACK_ __attribute__ ((__stdcall__))
+# elif defined (_WIN32)
+#   define OPENVRML_GL_CALLBACK_ APIENTRY
+# else
+#   define OPENVRML_GL_CALLBACK_
+# endif
+
 namespace {
 
     template <typename Float>
@@ -134,7 +142,210 @@ namespace {
         glGetIntegerv(GL_MAX_TEXTURE_SIZE,
                       &this->max_texture_size);
     }
+
+
+    struct vertex_data {
+        GLdouble coord[3];
+        const openvrml::color * color;
+        const openvrml::vec3f * normal;
+        const openvrml::vec2f * tex_coord;
+
+        vertex_data();
+    };
+
+    vertex_data::vertex_data():
+        color(0),
+        normal(0),
+        tex_coord(0)
+    {}
+
+
+    struct combined_vertex_data {
+        openvrml::color color;
+        openvrml::vec3f normal;
+        openvrml::vec2f tex_coord;
+    };
+
+
+    struct shell_tess_user_data {
+        size_t face_index;
+        const std::vector<openvrml::color> * face_color;
+        const std::vector<openvrml::int32> * face_color_index;
+        const std::vector<openvrml::vec3f> * face_normal;
+        const std::vector<openvrml::int32> * face_normal_index;
+        std::list<vertex_data> combined_vertices;
+        std::list< ::combined_vertex_data> combined_vertex_data;
+
+        shell_tess_user_data();
+    };
+
+    shell_tess_user_data::shell_tess_user_data():
+        face_index(0),
+        face_color(0),
+        face_color_index(0),
+        face_normal(0),
+        face_normal_index(0)
+    {}
+
+
+    /**
+     * @internal
+     */
+    struct ShellData {
+        unsigned int mask;
+        const std::vector<openvrml::vec3f> & coord;
+        const std::vector<openvrml::int32> & coordIndex;
+        const std::vector<openvrml::color> & color;
+        const std::vector<openvrml::int32> & colorIndex;
+        const std::vector<openvrml::vec3f> & normal;
+        const std::vector<openvrml::int32> & normalIndex;
+        const std::vector<openvrml::vec2f> & texCoord;
+        const std::vector<openvrml::int32> & texCoordIndex;
+        int *texAxes;
+        float *texParams;
+        size_t nf, i;
+
+        ShellData(unsigned int mask,
+                  const std::vector<openvrml::vec3f> & coord,
+                  const std::vector<openvrml::int32> & coordIndex,
+                  const std::vector<openvrml::color> & color,
+                  const std::vector<openvrml::int32> & colorIndex,
+                  const std::vector<openvrml::vec3f> & normal,
+                  const std::vector<openvrml::int32> & normalIndex,
+                  const std::vector<openvrml::vec2f> & texCoord,
+                  const std::vector<openvrml::int32> & texCoordIndex,
+                  int * texAxes, float * texParams, size_t nf, size_t i);
+    };
+
+    ShellData::ShellData(unsigned int mask,
+                         const std::vector<openvrml::vec3f> & coord,
+                         const std::vector<openvrml::int32> & coordIndex,
+                         const std::vector<openvrml::color> & color,
+                         const std::vector<openvrml::int32> & colorIndex,
+                         const std::vector<openvrml::vec3f> & normal,
+                         const std::vector<openvrml::int32> & normalIndex,
+                         const std::vector<openvrml::vec2f> & texCoord,
+                         const std::vector<openvrml::int32> & texCoordIndex,
+                         int * texAxes,
+                         float * texParams,
+                         size_t nf,
+                         size_t i):
+        mask(mask),
+        coord(coord),
+        coordIndex(coordIndex),
+        color(color),
+        colorIndex(colorIndex),
+        normal(normal),
+        normalIndex(normalIndex),
+        texCoord(texCoord),
+        texCoordIndex(texCoordIndex),
+        texAxes(texAxes),
+        texParams(texParams),
+        nf(nf),
+        i(i)
+    {}
+
+    // Generate a normal from 3 indexed points.
+    const openvrml::vec3f
+    indexFaceNormal(const size_t i1,
+                    const size_t i2,
+                    const size_t i3,
+                    const std::vector<openvrml::vec3f> & points)
+    {
+        using openvrml::vec3f;
+        const vec3f v1 = points[i2] - points[i3];
+        const vec3f v2 = points[i2] - points[i1];
+        return v1 * v2;
+    }
 }
+
+extern "C" void OPENVRML_GL_CALLBACK_ shell_tess_begin(const GLenum type,
+                                                       void * const user_data)
+{
+    shell_tess_user_data & user_data_ =
+        *static_cast<shell_tess_user_data *>(user_data);
+
+    glBegin(type);
+
+    if (user_data_.face_color) {
+        const size_t color_index =
+            (user_data_.face_color_index
+             && user_data_.face_index < user_data_.face_color_index->size())
+            ? (*user_data_.face_color_index)[user_data_.face_index]
+            : user_data_.face_index;
+        if (color_index < user_data_.face_color->size()) {
+            glColor3fv(&(*user_data_.face_color)[color_index][0]);
+        }
+    }
+
+    if (user_data_.face_normal) {
+        const size_t normal_index =
+            (user_data_.face_normal_index
+             && user_data_.face_index < user_data_.face_normal_index->size())
+            ? (*user_data_.face_normal_index)[user_data_.face_index]
+            : user_data_.face_index;
+        if (normal_index < user_data_.face_normal->size()) {
+            glColor3fv(&(*user_data_.face_normal)[normal_index][0]);
+        }
+    }
+}
+
+extern "C" void OPENVRML_GL_CALLBACK_ shell_tess_vertex(void * vertex_data)
+{
+    ::vertex_data & vertex_data_ = *static_cast< ::vertex_data *>(vertex_data);
+
+    if (vertex_data_.color) {
+        glColor3fv(&(*vertex_data_.color)[0]);
+    }
+    if (vertex_data_.normal) {
+        glNormal3fv(&(*vertex_data_.normal)[0]);
+    }
+    if (vertex_data_.tex_coord) {
+        glTexCoord2fv(&(*vertex_data_.tex_coord)[0]);
+    }
+
+    glVertex3dv(vertex_data_.coord);
+}
+
+extern "C" void OPENVRML_GL_CALLBACK_
+shell_tess_combine(GLdouble coords[3],
+                   void * vertex_data[4],
+                   GLfloat weight[4],
+                   void ** outData,
+                   void * user_data)
+{
+    try {
+        using std::list;
+        assert(user_data);
+        shell_tess_user_data & user_data_ =
+            *static_cast<shell_tess_user_data *>(user_data);
+        user_data_.combined_vertices.push_back(::vertex_data());
+        ::vertex_data & new_vertex = user_data_.combined_vertices.back();
+        new_vertex.coord[0] = coords[0];
+        new_vertex.coord[1] = coords[1];
+        new_vertex.coord[2] = coords[2];
+        *outData = &new_vertex;
+    } catch (std::bad_alloc & ex) {
+        *outData = 0;
+    }
+}
+
+extern "C" void OPENVRML_GL_CALLBACK_ shell_tess_end(void * user_data)
+{
+    shell_tess_user_data & user_data_ =
+        *static_cast<shell_tess_user_data *>(user_data);
+    ++user_data_.face_index;
+    glEnd();
+}
+
+extern "C" void OPENVRML_GL_CALLBACK_ tess_error(const GLenum error_code)
+{
+    const GLubyte * const error_str = gluErrorString(error_code);
+    const GLubyte * end;
+    for (end = error_str; *end; ++end) {}
+    OPENVRML_GL_PRINT_MESSAGE_(std::string(error_str, end));
+}
+
 
 namespace openvrml {
 
@@ -931,19 +1142,6 @@ void viewer::reset_user_navigation()
 {
     this->browser.active_viewpoint().user_view_transform(mat4f());
     this->post_redraw();
-}
-
-namespace {
-    // Generate a normal from 3 indexed points.
-    const vec3f indexFaceNormal(const size_t i1,
-                                const size_t i2,
-                                const size_t i3,
-                                const std::vector<vec3f> & points)
-    {
-        const vec3f v1 = points[i2] - points[i3];
-        const vec3f v2 = points[i2] - points[i1];
-        return v1 * v2;
-    }
 }
 
 /**
@@ -1765,13 +1963,6 @@ namespace {
     {}
 }
 
-# if defined(__CYGWIN__) || defined(__MINGW32__)
-#   define OPENVRML_GL_CALLBACK_ __attribute__ ((__stdcall__))
-# elif defined (_WIN32)
-#   define OPENVRML_GL_CALLBACK_ APIENTRY
-# else
-#   define OPENVRML_GL_CALLBACK_
-# endif
 extern "C" {
     /**
      * @internal
@@ -2412,63 +2603,6 @@ namespace {
         params[3] = float(1.0 / params[3]);
     }
 
-    /**
-     * @internal
-     */
-    struct ShellData {
-        unsigned int mask;
-        const std::vector<vec3f> & coord;
-        const std::vector<int32> & coordIndex;
-        const std::vector<openvrml::color> & color;
-        const std::vector<int32> & colorIndex;
-        const std::vector<vec3f> & normal;
-        const std::vector<int32> & normalIndex;
-        const std::vector<vec2f> & texCoord;
-        const std::vector<int32> & texCoordIndex;
-        int *texAxes;
-        float *texParams;
-        size_t nf, i;
-
-        ShellData(unsigned int mask,
-                  const std::vector<vec3f> & coord,
-                  const std::vector<int32> & coordIndex,
-                  const std::vector<openvrml::color> & color,
-                  const std::vector<int32> & colorIndex,
-                  const std::vector<vec3f> & normal,
-                  const std::vector<int32> & normalIndex,
-                  const std::vector<vec2f> & texCoord,
-                  const std::vector<int32> & texCoordIndex,
-                  int * texAxes, float * texParams, size_t nf, size_t i);
-    };
-
-    ShellData::ShellData(unsigned int mask,
-                         const std::vector<vec3f> & coord,
-                         const std::vector<int32> & coordIndex,
-                         const std::vector<openvrml::color> & color,
-                         const std::vector<int32> & colorIndex,
-                         const std::vector<vec3f> & normal,
-                         const std::vector<int32> & normalIndex,
-                         const std::vector<vec2f> & texCoord,
-                         const std::vector<int32> & texCoordIndex,
-                         int * texAxes,
-                         float * texParams,
-                         size_t nf,
-                         size_t i):
-        mask(mask),
-        coord(coord),
-        coordIndex(coordIndex),
-        color(color),
-        colorIndex(colorIndex),
-        normal(normal),
-        normalIndex(normalIndex),
-        texCoord(texCoord),
-        texCoordIndex(texCoordIndex),
-        texAxes(texAxes),
-        texParams(texParams),
-        nf(nf),
-        i(i)
-    {}
-
     void insertShellConvex(ShellData * const s)
     {
         vec3f N;
@@ -2569,118 +2703,73 @@ namespace {
         }
     }
 
-    void OPENVRML_GL_CALLBACK_ tessShellBegin(GLenum type, void * pdata)
+    void insertShellTess(GLUtesselator & tessobj,
+                         const std::vector<vertex_data> & vertices,
+                         const std::vector<int32> & coord_index,
+                         const bool color_per_face,
+                         const std::vector<openvrml::color> & color,
+                         const std::vector<int32> & color_index,
+                         const bool normal_per_face,
+                         const std::vector<vec3f> & normal,
+                         const std::vector<int32> & normal_index)
     {
-        ShellData * s = static_cast<ShellData *>(pdata);
+        using std::vector;
+        gluTessCallback(&tessobj,
+                        GLU_TESS_BEGIN_DATA,
+                        reinterpret_cast<TessCB>(shell_tess_begin));
+        gluTessCallback(&tessobj,
+                        GLU_TESS_VERTEX,
+                        reinterpret_cast<TessCB>(shell_tess_vertex));
+        gluTessCallback(&tessobj,
+                        GLU_TESS_COMBINE_DATA,
+                        reinterpret_cast<TessCB>(shell_tess_combine));
+        gluTessCallback(&tessobj,
+                        GLU_TESS_END_DATA,
+                        reinterpret_cast<TessCB>(shell_tess_end));
+        gluTessCallback(&tessobj, GLU_TESS_ERROR,
+                        reinterpret_cast<TessCB>(tess_error));
 
-        glBegin(type);
-
-        // Per-face attributes
-        if (!s->color.empty() && !(s->mask & viewer::mask_color_per_vertex)) {
-            const size_t index = !s->colorIndex.empty()
-                               ? s->colorIndex[s->nf]
-                               : s->nf;
-            glColor3fv(&s->color[index][0]);
+        shell_tess_user_data user_data;
+        if (color_per_face) {
+            if (!color.empty()) {
+                user_data.face_color = &color;
+            }
+            if (!color_index.empty()) {
+                user_data.face_color_index = &color_index;
+            }
+        }
+        if (normal_per_face) {
+            if (!normal.empty()) {
+                user_data.face_normal = &normal;
+            }
+            if (!normal_index.empty()) {
+                user_data.face_normal_index = &normal_index;
+            }
         }
 
-        if (!(s->mask & viewer::mask_normal_per_vertex)) {
-            size_t i1 = (s->i == 0)
-                      ? 0
-                      : s->i - 1;
-            if (!s->normal.empty()) {
-                const size_t index = !s->normalIndex.empty()
-                                   ? s->normalIndex[s->nf]
-                                   : s->nf;
-                glNormal3fv(&s->normal[index][0]);
-            } else if (s->i < s->coordIndex.size() - 4
-                    && s->coordIndex[i1] >= 0
-                    && s->coordIndex[i1 + 1] >= 0
-                    && s->coordIndex[i1 + 2] >= 0) {
-                vec3f normal = indexFaceNormal(s->coordIndex[i1],
-                                               s->coordIndex[i1 + 1],
-                                               s->coordIndex[i1 + 2],
-                                               s->coord);
-                // Flip normal if primitiv-orientation is clockwise.
-                if (!(s->mask & viewer::mask_ccw)) { normal = -normal; }
-                glNormal3fv(&normal[0]);
-              }
-          }
-    }
-
-    void OPENVRML_GL_CALLBACK_ tessShellVertex(void * vdata, void * pdata)
-    {
-        const size_t i = *static_cast<size_t *>(vdata);
-        ShellData * s = static_cast<ShellData *>(pdata);
-
-        // Per-vertex attributes
-        if (!s->color.empty() && (s->mask & viewer::mask_color_per_vertex)) {
-            const size_t index = !s->colorIndex.empty()
-                               ? s->colorIndex[i]
-                               : s->coordIndex[i];
-            glColor3fv(&s->color[index][0]);
-        }
-
-        if (s->mask & viewer::mask_normal_per_vertex) {
-            if (!s->normal.empty()) {
-                const size_t index = !s->normalIndex.empty()
-                                   ? s->normalIndex[i]
-                                   : s->coordIndex[i];
-                glNormal3fv(&s->normal[index][0]);
+        gluTessBeginPolygon(&tessobj, &user_data);
+        gluTessBeginContour(&tessobj);
+        for (vector<int32>::size_type i = 0; i < coord_index.size(); ++i) {
+            if (coord_index[i] != -1) {
+                gluTessVertex(&tessobj,
+                              const_cast<GLdouble *>(
+                                  vertices[coord_index[i]].coord),
+                              &const_cast<vertex_data &>(
+                                  vertices[coord_index[i]]));
             } else {
-                ; // Generate per-vertex normal here...
-            }
-        }
-
-        const vec3f & v = s->coord[s->coordIndex[i]];
-        if (!s->texCoord.empty()) {
-            const size_t index = !s->texCoordIndex.empty()
-                               ? s->texCoordIndex[i]
-                               : s->coordIndex[i];
-            glTexCoord2fv(&s->texCoord[index][0]);
-        } else {
-            float c0, c1;
-            c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
-            c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
-            glTexCoord2f(c0, c1);
-        }
-
-        glVertex3fv(&v[0]);
-    }
-
-    void insertShellTess(GLUtesselator * tesselator, ShellData * s)
-    {
-        gluTessCallback(tesselator, GLU_TESS_BEGIN_DATA,
-                        reinterpret_cast<TessCB>(tessShellBegin));
-        gluTessCallback(tesselator, GLU_TESS_VERTEX_DATA,
-                        reinterpret_cast<TessCB>(tessShellVertex));
-        gluTessCallback(tesselator, GLU_TESS_END, glEnd);
-
-        size_t i;
-        for (i = 0; i < s->coordIndex.size(); ++i) {
-            if (i == 0 || s->coordIndex[i] == -1) {
-                if (i > 0) {
-                    gluTessEndContour(tesselator);
-                    gluTessEndPolygon(tesselator);
-                    ++s->nf;
+                gluTessEndContour(&tessobj);
+                gluTessEndPolygon(&tessobj);
+                if (i != coord_index.size() - 1) {
+                    gluTessBeginPolygon(&tessobj, &user_data);
+                    gluTessBeginContour(&tessobj);
                 }
-                if (i == s->coordIndex.size() - 1) { break; }
-                gluTessBeginPolygon(tesselator, s);
-                gluTessBeginContour(tesselator);
-                s->i = i;
-            }
-
-            if (s->coordIndex[i] >= 0) {
-                GLdouble v[3] = { s->coord[s->coordIndex[i]].x(),
-                                  s->coord[s->coordIndex[i]].y(),
-                                  s->coord[s->coordIndex[i]].z() };
-                gluTessVertex(tesselator, v, &i);
             }
         }
 
         // Watch out for no terminating -1 in face list
-        if (i > 1 && s->coordIndex[i - 1] >= 0) {
-            gluTessEndContour(tesselator);
-            gluTessEndPolygon(tesselator);
+        if (coord_index.back() != -1) {
+            gluTessEndContour(&tessobj);
+            gluTessEndPolygon(&tessobj);
         }
     }
 }
@@ -2690,36 +2779,37 @@ namespace {
  * @brief Insert a shell into a display list.
  *
  * @param mask
- * @param coord         coordinates.
- * @param coordIndex    coordinate indices.
- * @param color         colors.
- * @param colorIndex    color indices.
- * @param normal        normals.
- * @param normalIndex   normal indices.
- * @param texCoord      texture coordinates.
- * @param texCoordIndex texture coordinate indices.
+ * @param coord             coordinates.
+ * @param coord_index       coordinate indices.
+ * @param color             colors.
+ * @param color_index       color indices.
+ * @param normal            normals.
+ * @param normal_index      normal indices.
+ * @param tex_coord         texture coordinates.
+ * @param tex_coord_index   texture coordinate indices.
  *
  * @return display object identifier.
  */
 viewer::object_t
 viewer::insert_shell(unsigned int mask,
                      const std::vector<vec3f> & coord,
-                     const std::vector<int32> & coordIndex,
+                     const std::vector<int32> & coord_index,
                      const std::vector<color> & color,
-                     const std::vector<int32> & colorIndex,
+                     const std::vector<int32> & color_index,
                      const std::vector<vec3f> & normal,
-                     const std::vector<int32> & normalIndex,
-                     const std::vector<vec2f> & texCoord,
-                     const std::vector<int32> & texCoordIndex)
+                     const std::vector<int32> & normal_index,
+                     const std::vector<vec2f> & tex_coord,
+                     const std::vector<int32> & tex_coord_index)
 {
-    if (coordIndex.size() < 4) { return 0; } // 3 pts and a trailing -1
+    using std::vector;
+    if (coord_index.size() < 4) { return 0; } // 3 pts and a trailing -1
 
     // Texture coordinate generation parameters.
     int texAxes[2];                        // Map s,t to x,y,z
     float texParams[4];                // s0, 1/sSize, t0, 1/tSize
 
     // Compute bounding box for texture coord generation and lighting.
-    if (texCoord.empty()) { // || any positional lights are active...
+    if (tex_coord.empty()) { // || any positional lights are active...
         float bounds[6]; // xmin,xmax, ymin,ymax, zmin,zmax
         computeBounds(coord.size(), &coord[0][0], bounds);
 
@@ -2756,25 +2846,84 @@ viewer::insert_shell(unsigned int mask,
         mask &= ~mask_normal_per_vertex;
     }
 
-    // -------------------------------------------------------
-
-    // Should build tri strips (probably at the VrmlNode level)...
-
-    ShellData s(mask,
-                coord, coordIndex,
-                color, colorIndex,
-                normal, normalIndex,
-                texCoord, texCoordIndex,
-                texAxes, texParams, 0, 0);
-
-    // Handle non-convex polys
-    if (!(mask & mask_convex)) {
-        insertShellTess(this->tesselator, &s);
-    } else {
-        insertShellConvex(&s);
+    vector<vertex_data> vertices(coord.size()); // Throws std::bad_alloc.
+    for (vector<vertex_data>::size_type i = 0; i < vertices.size(); ++i) {
+        vertices[i].coord[0] = coord[i].x();
+        vertices[i].coord[1] = coord[i].y();
+        vertices[i].coord[2] = coord[i].z();
     }
 
-    end_geometry();
+    if (mask & mask_color_per_vertex) {
+        if (color_index.empty()) {
+            for (vector<openvrml::color>::size_type i = 0;
+                 i < color.size();
+                 ++i) {
+                vertices[i].color = &color[i];
+            }
+        } else {
+            for (vector<int32>::size_type i = 0; i < color_index.size(); ++i) {
+                vertices[i].color = &color[color_index[i]];
+            }
+        }
+    }
+
+    if (mask & mask_normal_per_vertex) {
+        if (normal_index.empty()) {
+            for (vector<openvrml::vec3f>::size_type i = 0;
+                 i < normal.size();
+                 ++i) {
+                vertices[i].normal = &normal[i];
+            }
+        } else {
+            for (vector<int32>::size_type i = 0;
+                 i < normal_index.size();
+                 ++i) {
+                vertices[i].normal = &normal[normal_index[i]];
+            }
+        }
+    }
+
+    if (tex_coord_index.empty()) {
+        for (vector<openvrml::vec2f>::size_type i = 0;
+             i < tex_coord.size();
+             ++i) {
+            vertices[i].tex_coord = &tex_coord[i];
+        }
+    } else {
+        for (vector<int32>::size_type i = 0;
+             i < tex_coord_index.size();
+             ++i) {
+            vertices[tex_coord_index[i]].tex_coord =
+                &tex_coord[tex_coord_index[i]];
+        }
+    }
+
+    // Handle non-convex polys
+    if (mask & mask_convex) {
+        ShellData s(mask,
+                    coord, coord_index,
+                    color, color_index,
+                    normal, normal_index,
+                    tex_coord, tex_coord_index,
+                    texAxes, texParams, 0, 0);
+
+        insertShellConvex(&s);
+    } else {
+        const bool color_per_face = !(mask & mask_color_per_vertex);
+        const bool normal_per_face = !(mask & mask_color_per_vertex);
+        insertShellTess(*this->tesselator,
+                        vertices,
+                        coord_index,
+                        color_per_face,
+                        color,
+                        color_index,
+                        normal_per_face,
+                        normal,
+                        normal_index);
+    }
+
+    this->end_geometry();
+
     if (glid) { glEndList(); }
 
     return object_t(glid);
