@@ -1,3 +1,14 @@
+2004-12-06 Braden McDaniel  <braden@endoframe.com>
+
+	Added event_listener::type to get a the type_id for the type
+	accepted by the listener. This required adding a static type
+	identifier to each field_value subclass.
+
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/event.h
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+
 2004-12-03 Braden McDaniel  <braden@endoframe.com>
 
 	Changed the names of the options to disable ImageTexture and

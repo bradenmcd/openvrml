@@ -517,6 +517,11 @@ std::istream & operator>>(std::istream & in, field_value::type_id & type_id)
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sfbool::field_value_type_id(sfbool_id);
+
+/**
  * @var sfbool::value
  *
  * @brief Boolean value.
@@ -632,6 +637,11 @@ bool operator!=(const sfbool & lhs, const sfbool & rhs) throw ()
  *
  * @brief Type of @a value.
  */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sfcolor::field_value_type_id(sfcolor_id);
 
 /**
  * @var sfcolor::value
@@ -751,6 +761,11 @@ bool operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ()
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sffloat::field_value_type_id(sffloat_id);
+
+/**
  * @var sffloat::value
  *
  * @brief Single precision floating point value.
@@ -866,6 +881,11 @@ bool operator!=(const sffloat & lhs, const sffloat & rhs) throw ()
  *
  * @brief Type of @a value.
  */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sfimage::field_value_type_id(sfimage_id);
 
 /**
  * @var image sfimage::value
@@ -989,6 +1009,11 @@ bool operator!=(const sfimage & lhs, const sfimage & rhs) throw ()
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sfint32::field_value_type_id(sfint32_id);
+
+/**
  * @var sfint32::value
  *
  * @brief Signed 32-bit integer value.
@@ -1104,6 +1129,11 @@ bool operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ()
  *
  * @brief Type of @a value.
  */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sfnode::field_value_type_id(sfnode_id);
 
 /**
  * @var sfnode::value
@@ -1241,6 +1271,11 @@ bool operator!=(const sfnode & lhs, const sfnode & rhs) throw ()
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sfrotation::field_value_type_id(sfrotation_id);
+
+/**
  * @var sfrotation::value
  *
  * @brief Rotation value.
@@ -1359,6 +1394,11 @@ bool operator!=(const sfrotation & lhs, const sfrotation & rhs) throw ()
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sfstring::field_value_type_id(sfstring_id);
+
+/**
  * @var sfstring::value
  *
  * @brief String value.
@@ -1472,6 +1512,11 @@ bool operator!=(const sfstring & lhs, const sfstring & rhs) throw ()
  * @par Model of
  * @link FieldValueConcept FieldValue@endlink
  */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sftime::field_value_type_id(sftime_id);
 
 /**
  * @typedef sftime::value_type
@@ -1598,6 +1643,11 @@ bool operator!=(const sftime & lhs, const sftime & rhs) throw ()
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sfvec2f::field_value_type_id(sfvec2f_id);
+
+/**
  * @var sfvec2f::value
  *
  * @brief 2-component vector value.
@@ -1707,6 +1757,11 @@ bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
  * @par Model of
  * @link FieldValueConcept FieldValue@endlink
  */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id sfvec3f::field_value_type_id(sfvec3f_id);
 
 /**
  * @typedef sfvec3f::value_type
@@ -1830,6 +1885,11 @@ bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
  *
  * @brief The type of @a value.
  */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id mfcolor::field_value_type_id(mfcolor_id);
 
 /**
  * @var std::vector<color> mfcolor::value
@@ -1993,6 +2053,11 @@ bool operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id mffloat::field_value_type_id(mffloat_id);
+
+/**
  * @var std::vector<float> mffloat::value
  *
  * @brief Single precision floating point values.
@@ -2154,6 +2219,11 @@ bool operator!=(const mffloat & lhs, const mffloat & rhs) throw ()
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id mfint32::field_value_type_id(mfint32_id);
+
+/**
  * @var std::vector<int32> mfint32::value
  *
  * @brief Signed 32-bit integer values.
@@ -2313,6 +2383,11 @@ bool operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ()
  *
  * @brief Type of @a value.
  */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id mfnode::field_value_type_id(mfnode_id);
 
 /**
  * @var std::vector<node_ptr> mfnode::value
@@ -2480,6 +2555,11 @@ bool operator!=(const mfnode & lhs, const mfnode & rhs) throw ()
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id mfrotation::field_value_type_id(mfrotation_id);
+
+/**
  * @var std::vector<rotation> mfrotation::value
  *
  * @brief Rotation values.
@@ -2641,6 +2721,11 @@ bool operator!=(const mfrotation & lhs, const mfrotation & rhs) throw ()
  *
  * @brief Type of @a value.
  */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id mfstring::field_value_type_id(mfstring_id);
 
 /**
  * @var std::vector<std::string> mfstring::value
@@ -2807,6 +2892,11 @@ bool operator!=(const mfstring & lhs, const mfstring & rhs) throw ()
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id mftime::field_value_type_id(mftime_id);
+
+/**
  * @var std::vector<double> mftime::value
  *
  * @brief Double precision floating point values.
@@ -2969,6 +3059,11 @@ bool operator!=(const mftime & lhs, const mftime & rhs) throw ()
  */
 
 /**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id mfvec2f::field_value_type_id(mfvec2f_id);
+
+/**
  * @var std::vector<vec2f> mfvec2f::value
  *
  * @brief 2-component vector values.
@@ -3129,6 +3224,11 @@ bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
  *
  * @brief Type of @a value.
  */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const field_value::type_id mfvec3f::field_value_type_id(mfvec3f_id);
 
 /**
  * @var std::vector<vec3f> mfvec3f::value

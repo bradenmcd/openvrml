@@ -34,14 +34,12 @@ namespace openvrml {
 
         openvrml::node & node() throw ();
 
+        virtual field_value::type_id type() const throw () = 0;
+
     protected:
         explicit event_listener(openvrml::node & node) throw ();
     };
 
-    inline node & event_listener::node() throw ()
-    {
-        return this->node_;
-    }
 
     template <typename FieldValue>
     class field_value_listener : public event_listener {
@@ -51,6 +49,8 @@ namespace openvrml {
         virtual ~field_value_listener() throw () = 0;
         void process_event(const FieldValue & value, double timestamp)
             throw (std::bad_alloc);
+
+        virtual field_value::type_id type() const throw ();
 
     protected:
         explicit field_value_listener(openvrml::node & node) throw ();
@@ -79,6 +79,13 @@ namespace openvrml {
         throw (std::bad_alloc)
     {
         this->do_process_event(value, timestamp);
+    }
+
+    template <typename FieldValue>
+    field_value::type_id field_value_listener<FieldValue>::type() const
+        throw ()
+    {
+        return FieldValue::field_value_type_id;
     }
 
     typedef field_value_listener<sfbool> sfbool_listener;

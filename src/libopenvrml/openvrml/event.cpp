@@ -34,7 +34,9 @@ namespace openvrml {
  */
 
 /**
- * @var node & event_listener::node
+ * @internal
+ *
+ * @var node & event_listener::node_
  *
  * @brief The node to which the event_listener belongs.
  */
@@ -53,6 +55,28 @@ event_listener::event_listener(openvrml::node & node) throw ():
  */
 event_listener::~event_listener() throw ()
 {}
+
+/**
+ * @brief The <code>node</code> to which the <code>event_listener</code>
+ *        belongs.
+ *
+ * @return the <code>node</code> to which the <code>event_listener</code>
+ *         belongs.
+ */
+node & event_listener::node() throw ()
+{
+    return this->node_;
+}
+
+/**
+ * @fn field_value::type_id event_listener::type() const throw ()
+ *
+ * @brief The <code>field_value::type_id</code> for the type accepted by the
+ *        event listener.
+ *
+ * @return The <code>field_value::type_id</code> for the type accepted by the
+ *         event listener.
+ */
 
 
 /**
@@ -73,6 +97,14 @@ event_listener::~event_listener() throw ()
  * @fn field_value_listener<FieldValue>::~field_value_listener() throw ()
  *
  * @brief Destroy.
+ */
+
+/**
+ * @fn field_value::type_id field_value_listener<FieldValue>::type() const throw ()
+ *
+ * @brief <code>FieldValue::field_value_type_id</code>.
+ *
+ * @return <code>FieldValue::field_value_type_id</code>.
  */
 
 /**
