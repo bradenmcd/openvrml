@@ -185,7 +185,7 @@ viewer::~viewer() {}
  */
 
 /**
- * @fn viewer::object_t viewer::insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, size_t * whc, const unsigned char ** pixels)
+ * @fn viewer::object_t viewer::insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, const image & front, const image & back, const image & left, const image & right, const image & top, const image & bottom)
  *
  * @brief Insert a background into a display list.
  *
@@ -193,8 +193,12 @@ viewer::~viewer() {}
  * @param ground_color  ground colors.
  * @param sky_angle     sky angles.
  * @param sky_color     sky colors.
- * @param whc           texture width, height, and number of components.
- * @param pixels        texture pixel data.
+ * @param front         front texture.
+ * @param back          back texture.
+ * @param left          left texture.
+ * @param right         right texture.
+ * @param top           top texture.
+ * @param bottom        bottom texture.
  *
  * @return display object identifier.
  */

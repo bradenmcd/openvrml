@@ -969,8 +969,12 @@ namespace {
  * @param groundColor   ground colors.
  * @param skyAngle      sky angles.
  * @param skyColor      sky colors.
- * @param whc           texture width, height, and number of components.
- * @param pixels        texture pixel data.
+ * @param front         front texture.
+ * @param back          back texture.
+ * @param left          left texture.
+ * @param right         right texture.
+ * @param top           top texture.
+ * @param bottom        bottom texture.
  *
  * @return display object identifier.
  */
@@ -979,9 +983,15 @@ viewer::insert_background(const std::vector<float> & groundAngle,
                           const std::vector<color> & groundColor,
                           const std::vector<float> & skyAngle,
                           const std::vector<color> & skyColor,
-                          size_t * whc,
-                          const unsigned char ** pixels)
+                          const image & front,
+                          const image & back,
+                          const image & left,
+                          const image & right,
+                          const image & top,
+                          const image & bottom)
 {
+    using std::vector;
+
     float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
 
     // Clear to last sky color
@@ -997,7 +1007,7 @@ viewer::insert_background(const std::vector<float> & groundAngle,
     // dlist doesn't have to get rebuilt for every mouse movement...
 # if 0
     // Don't bother with a dlist if we aren't drawing anything
-    if (!this->d_selectMode
+    if (!this->select_mode
             && (!skyAngle.empty() || !groundAngle.empty() || pixels)) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
@@ -1014,7 +1024,14 @@ viewer::insert_background(const std::vector<float> & groundAngle,
 
     // Draw the background as big spheres centered at the view position
     if (!this->select_mode
-            && (!skyAngle.empty() || !groundAngle.empty() || pixels)) {
+            && (!skyAngle.empty()
+                || !groundAngle.empty()
+                || !front.array().empty()
+                || !back.array().empty()
+                || !left.array().empty()
+                || !right.array().empty()
+                || !top.array().empty()
+                || !bottom.array().empty())) {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);
 
@@ -1023,15 +1040,17 @@ viewer::insert_background(const std::vector<float> & groundAngle,
         glScalef(1000.0, 1000.0, 1000.0);
 
         // Sphere constants
-        const size_t nCirc = 8; // number of circumferential slices
-        const double cd = 2.0 * pi / nCirc;
+        static const size_t nCirc = 8; // number of circumferential slices
+        static const double cd = 2.0 * pi / nCirc;
 
         double heightAngle0, heightAngle1 = 0.0;
-        std::vector<color>::const_iterator c0, c1 = skyColor.begin();
+        vector<color>::const_iterator c0, c1 = skyColor.begin();
 
-        for (size_t nSky = 0; nSky < skyAngle.size(); ++nSky) {
+        for (vector<float>::const_iterator angle = skyAngle.begin();
+             angle != skyAngle.end();
+             ++angle) {
             heightAngle0 = heightAngle1;
-            heightAngle1 = skyAngle[nSky];
+            heightAngle1 = *angle;
             c0 = c1;
             ++c1;
 
@@ -1065,16 +1084,18 @@ viewer::insert_background(const std::vector<float> & groundAngle,
                            GLfloat(cha0),
                            GLfloat(sha0 * sca0));
             }
-            glEnd();
+            glEnd(); // GL_QUADS
         }
 
         // Ground
         heightAngle1 = pi;
         c1 = groundColor.begin();
 
-        for (size_t nGround = 0; nGround < groundAngle.size(); ++nGround) {
+        for (vector<float>::const_iterator angle = groundAngle.begin();
+             angle != groundAngle.end();
+             ++angle) {
             heightAngle0 = heightAngle1;
-            heightAngle1 = pi - groundAngle[nGround];
+            heightAngle1 = pi - *angle;
             c0 = c1;
             ++c1;
 
@@ -1108,144 +1129,96 @@ viewer::insert_background(const std::vector<float> & groundAngle,
                            GLfloat(cha0),
                            GLfloat(sha0 * sca1));
             }
-            glEnd();
+            glEnd(); // GL_QUADS
         }
 
-        // Background textures are drawn on a transparent cube
-        if (pixels && this->texture && !this->wireframe) {
-            float v2[6][4][3] = {
-              {{1,-1,1}, {-1,-1,1}, {-1,1,1}, {1,1,1}},     // Back
-              {{-1,-1,1}, {1,-1,1}, {1,-1,-1}, {-1,-1,-1}}, // Bottom
-              {{-1,-1,-1}, {1,-1,-1}, {1,1,-1}, {-1,1,-1}}, // Front
-              {{-1,-1,1}, {-1,-1,-1}, {-1,1,-1}, {-1,1,1}}, // Left
-              {{1,-1,-1}, {1,-1,1}, {1,1,1}, {1,1,-1}},     // Right
-              {{-1,1,-1}, {1,1,-1}, {1,1,1}, {-1,1,1}}};    // Top
-
-            // Tile big textures into 256x256 (or 256xsmaller or smallerx256) pieces
-
-            float v3[6][4][3];
-            int number_tiles;
-            int number_vertices;
-            const size_t NUM_SPLITS = 4;
-            float v[NUM_SPLITS * NUM_SPLITS * 6][4][3];
-            int number_splits_x;
-            int number_splits_y;
-            number_splits_x = NUM_SPLITS;
-            number_splits_y = NUM_SPLITS;
-            number_tiles = number_splits_x * number_splits_y;
-            int i, j, k;
-            for (j = 0; j < 16 * 6; j++) {
-                for (k = 0; k < 4; k++) {
-                    for (i = 0; i < 3; i++) { v[j][k][i] = 0; }
-                }
-            }
-
-            for (j = 0; j < 6; j++) {
-                for (k = 0; k < 4; k++) {
-                    for (i = 0; i < 3; i++) {
-                        v3[j][k][i] = v2[j][k][i] - v2[j][0][i];
-                    }
-                }
-            }
-
-            for (j = 0; j < 6; j++) {
-                for (i = 0; i < 3; i++) {
-                    v[j * number_tiles][0][i] = v2[j][0][i];
-                    for (k = 0; k < 4; k++) {
-                        v[j * number_tiles][k][i] =
-                            v[j * number_tiles][0][i]
-                            + v3[j][k][i] / number_splits_y;
-                    }
-                }
-            }
-
-            for (j = 0; j < 6; j++) {
-                number_vertices = j * number_tiles + 1;
-                for (k = 0; k < number_splits_y; k++) {
-                    int num_line;
-                    num_line = number_vertices - 1;
-                    for (int l = 1; l < number_splits_x; l++) {
-                        for (i = 0; i < 3; i++) {
-                            v[number_vertices][0][i] =
-                                v[number_vertices-1][0][i]
-                                + v3[j][1][i] / number_splits_x;
-                            for (int m = 0; m < 4; m++) {
-                                v[number_vertices][m][i] =
-                                    v[number_vertices][0][i]
-                                    + v3[j][m][i] / number_splits_x;
-                            }
-                        }
-                        number_vertices++;
-                    }
-                    if (k == (number_splits_y - 1)) { break; }
-                    for (i = 0; i < 3; i++) {
-                        v[number_vertices][0][i] =
-                            v[num_line][0][i] + v3[j][3][i] / number_splits_y;
-                        for (size_t m = 0; m < 4; m++) {
-                            v[number_vertices][m][i] =
-                                v[number_vertices][0][i]
-                                + v3[j][m][i] / number_splits_y;
-                        }
-                    }
-                    number_vertices++;
-                }
-            }
-
+        if (this->texture && !this->wireframe) {
             glScalef(0.5, 0.5, 0.5);
 
             glEnable(GL_TEXTURE_2D);
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-            int vertices_number = 0;
-            int t, lastT = -1;
-            for (t = 0; t < 6; ++t, whc += 3) {
-                for (j = 0; j < number_splits_y; j++) {
-                    for (i = 0; i < number_splits_x; i++) {
-                        // Check for non-zero width, height, coords and pixel
-                        // data
-                        if (whc[0] && whc[1] && whc[2] && pixels[t]) {
-                            // Optimize for the case where the same texture is
-                            // used do not work here....
-                            // if (lastT == -1 || pixels[t] != pixels[lastT])
-                            insert_subtexture(i * whc[0] / number_splits_x,
-                                              j * whc[1] / number_splits_y,
-                                              whc[0] / number_splits_x,
-                                              whc[1] / number_splits_y,
-                                              whc[0],
-                                              whc[1],
-                                              whc[2],
-                                              false, false, pixels[t],
-                                              false); // Don't put the textures in dlists
+            static const bool repeat_s = false;
+            static const bool repeat_t = false;
+            static const bool retain = true;
 
-                            //
-                            // The commented out code suggests what might be
-                            // done to subdivide a texture with sides that are
-                            // a *multiple* of 2 into textures that have sides
-                            // that are a *power* of 2.
-                            //
-                            lastT = t;
-                            glBegin(GL_QUADS);
-                            // float len_x = 1.0 / number_splits_x;
-                            // float len_y = 1.0 / number_splits_y;
-                            // float x0 = i * len_x;
-                            // float y0 = j * len_y;
-                            // glTexCoord2f(x0, y0);
-                            glTexCoord2f(0, 0);
-                            glVertex3fv(v[vertices_number][0]);
-                            // glTexCoord2f(x0 + len_x, y0);
-                            glTexCoord2f(1, 0);
-                            glVertex3fv(v[vertices_number][1]);
-                            // glTexCoord2f(x0 + len_x, y0 + len_y);
-                            glTexCoord2f(1, 1);
-                            glVertex3fv(v[vertices_number][2]);
-                            // glTexCoord2f(x0, y0 + len_y);
-                            glTexCoord2f(0, 1);
-                            glVertex3fv(v[vertices_number][3]);
-                            glEnd();
-                            vertices_number++;
-                        }
-                    }
-                }
+            if (!front.array().empty()) {
+                this->insert_texture(front, repeat_s, repeat_t, retain);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0, 0);
+                glVertex3f(-1, -1, -1);
+                glTexCoord2f(1, 0);
+                glVertex3f(1, -1, -1);
+                glTexCoord2f(1, 1);
+                glVertex3f(1, 1, -1);
+                glTexCoord2f(0, 1);
+                glVertex3f(-1, 1, -1);
+                glEnd(); // GL_QUADS
+            }
+            if (!back.array().empty()) {
+                this->insert_texture(back, repeat_s, repeat_t, retain);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0, 0);
+                glVertex3f(1, -1, 1);
+                glTexCoord2f(1, 0);
+                glVertex3f(-1, -1, 1);
+                glTexCoord2f(1, 1);
+                glVertex3f(-1, 1, 1);
+                glTexCoord2f(0, 1);
+                glVertex3f(1, 1, 1);
+                glEnd(); // GL_QUADS
+            }
+            if (!left.array().empty()) {
+                this->insert_texture(left, repeat_s, repeat_t, retain);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0, 0);
+                glVertex3f(-1, -1, 1);
+                glTexCoord2f(1, 0);
+                glVertex3f(-1, -1, -1);
+                glTexCoord2f(1, 1);
+                glVertex3f(-1, 1, -1);
+                glTexCoord2f(0, 1);
+                glVertex3f(-1, 1, 1);
+                glEnd(); // GL_QUADS
+            }
+            if (!right.array().empty()) {
+                this->insert_texture(right, repeat_s, repeat_t, retain);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0, 0);
+                glVertex3f(1, -1, -1);
+                glTexCoord2f(1, 0);
+                glVertex3f(1, -1, 1);
+                glTexCoord2f(1, 1);
+                glVertex3f(1, 1, 1);
+                glTexCoord2f(0, 1);
+                glVertex3f(1, 1, -1);
+                glEnd(); // GL_QUADS
+            }
+            if (!top.array().empty()) {
+                this->insert_texture(top, repeat_s, repeat_t, retain);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0, 0);
+                glVertex3f(-1, 1, -1);
+                glTexCoord2f(1, 0);
+                glVertex3f(1, 1, -1);
+                glTexCoord2f(1, 1);
+                glVertex3f(1, 1, 1);
+                glTexCoord2f(0, 1);
+                glVertex3f(-1, 1, 1);
+                glEnd(); // GL_QUADS
+            }
+            if (!bottom.array().empty()) {
+                this->insert_texture(bottom, repeat_s, repeat_t, retain);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0, 0);
+                glVertex3f(-1, -1, 1);
+                glTexCoord2f(1, 0);
+                glVertex3f(1, -1, 1);
+                glTexCoord2f(1, 1);
+                glVertex3f(1, -1, -1);
+                glTexCoord2f(0, 1);
+                glVertex3f(-1, -1, -1);
+                glEnd(); // GL_QUADS
             }
             glDisable(GL_TEXTURE_2D);
         }
@@ -3404,23 +3377,14 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
         }
 
 #if USE_TEXTURE_DISPLAY_LISTS
-        if (retainHint) { glGenTextures(1, &glid); }
-        glBindTexture(GL_TEXTURE_2D, glid);
+        if (retainHint) {
+            glGenTextures(1, &glid);
+            glBindTexture(GL_TEXTURE_2D, glid);
+        }
 #endif
 
         // Texturing is enabled in setMaterialMode
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     img.comp(),
-                     width,
-                     height,
-                     0,
-                     fmt[img.comp() - 1],
-                     GL_UNSIGNED_BYTE,
-                     pixels);
-        OPENVRML_GL_PRINT_ERRORS_;
 
         glTexParameteri(GL_TEXTURE_2D,
                         GL_TEXTURE_WRAP_S,
@@ -3428,88 +3392,25 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
         glTexParameteri(GL_TEXTURE_2D,
                         GL_TEXTURE_WRAP_T,
                         repeat_t ? GL_REPEAT : GL_CLAMP);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        static const GLint level = 0;
+        static const GLint border = 0;
+        glTexImage2D(GL_TEXTURE_2D,
+                     level,
+                     img.comp(),
+                     width,
+                     height,
+                     border,
+                     fmt[img.comp() - 1],
+                     GL_UNSIGNED_BYTE,
+                     pixels);
+        OPENVRML_GL_PRINT_ERRORS_;
     }
 
     return texture_object_t(glid);
 }
-
-/**
- * @brief Insert a subcomponent of a texture as an OpenGL texture.
- *
- * Pixels are lower left to upper right by row.
- *
- * @param xoffset       x offset.
- * @param yoffset       y offset.
- * @param w             subtexture width.
- * @param h             subtexture height.
- * @param whole_w       texture width.
- * @param whole_h       texture height.
- * @param nc            number of components.
- * @param repeat_s      whether to repeat the texture in the S direction.
- * @param repeat_t      whether to repeat the texture in the T direction.
- * @param pixels        pixel data.
- * @param retainHint    whether the subtexture should be retained for reuse.
- *
- * @return texture object identifier for the inserted subtexture.
- */
-viewer::texture_object_t
-viewer::insert_subtexture(size_t xoffset, size_t yoffset,
-                          size_t w, size_t h,
-                          size_t whole_w,size_t whole_h,size_t nc,
-                          bool repeat_s,
-                          bool repeat_t,
-                          const unsigned char *pixels,
-                          bool retainHint)
-{
-    GLenum fmt[] = { GL_LUMINANCE,        // single component
-                     GL_LUMINANCE_ALPHA,        // 2 components
-                     GL_RGB,                // 3 components
-                     GL_RGBA                // 4 components
-    };
-
-    GLuint glid = 0;
-
-    if (this->select_mode) { return 0; }
-
-    // Enable blending if needed
-    if (this->blend && (nc == 2 || nc == 4)) { glEnable(GL_BLEND); }
-
-#if USE_TEXTURE_DISPLAY_LISTS
-    if (retainHint) { glGenTextures(1, &glid); }
-    glBindTexture(GL_TEXTURE_2D, glid);
-#endif
-
-    // Texturing is enabled in setMaterialMode
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    std::vector<GLubyte> texturepart(w * h * nc);
-    for (size_t i = 0; i < h; i++) {
-        std::copy(pixels + ((i + yoffset) * whole_w + xoffset) * nc,
-                  pixels + ((i + yoffset) * whole_w + xoffset + w) * nc,
-                  texturepart.begin() + (i * w * nc));
-    }
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GLint(nc),
-                 GLsizei(w),
-                 GLsizei(h),
-                 0,
-                 fmt[nc - 1],
-                 GL_UNSIGNED_BYTE,
-                 &texturepart[0]);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                    repeat_s ? GL_REPEAT : GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                    repeat_t ? GL_REPEAT : GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    return texture_object_t(glid);
-}
-
 
 /**
  * @brief Insert a texture into the display list from an existing handle.

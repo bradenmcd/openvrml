@@ -155,15 +155,6 @@ namespace openvrml {
             void handleButton(event_info * e);
             void handleMouseDrag(int, int);
 
-            texture_object_t
-            insert_subtexture(size_t xoffset, size_t yoffset,
-                              size_t w, size_t h,
-                              size_t whole_w, size_t whole_h,
-                              size_t nc, bool repeat_s,
-                              bool repeat_t,
-                              const unsigned char *pixels,
-                              bool retainHint = false);
-
             // Check for pickable entity selection
             bool checkSensitive(int x, int y, event_type event);
 
@@ -186,8 +177,12 @@ namespace openvrml {
                               const std::vector<color> & groundColor,
                               const std::vector<float> & skyAngle,
                               const std::vector<color> & skyColor,
-                              size_t * whc = 0,
-                              const unsigned char ** pixels = 0);
+                              const image & front,
+                              const image & back,
+                              const image & left,
+                              const image & right,
+                              const image & top,
+                              const image & bottom);
 
 
             virtual object_t insert_box(const vec3f & size);

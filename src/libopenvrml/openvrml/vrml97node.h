@@ -438,9 +438,18 @@ namespace openvrml {
             mfcolor skyColor;
             sfbool bound;
 
-            // Texture caches
-            img * texPtr[6];
-            img tex[6];
+            image front;
+            bool front_needs_update;
+            image back;
+            bool back_needs_update;
+            image left;
+            bool left_needs_update;
+            image right;
+            bool right_needs_update;
+            image top;
+            bool top_needs_update;
+            image bottom;
+            bool bottom_needs_update;
 
             // Display list object for background
             viewer::object_t viewerObject;
@@ -489,6 +498,8 @@ namespace openvrml {
             void process_set_skyColor(const field_value & value,
                                      double timestamp)
                     throw (std::bad_cast, std::bad_alloc);
+
+            void update_textures();
         };
 
 

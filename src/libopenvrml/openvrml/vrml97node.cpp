@@ -2120,146 +2120,71 @@ void background_class::initialize(openvrml::viewpoint_node * initialViewpoint,
     }
 }
 
-namespace {
-    /**
-     * @brief Load and scale textures as needed.
-     */
-    img * getTexture(const std::vector<std::string> & urls,
-                     doc2 & baseDoc,
-                     img * tex,
-                     int thisIndex,
-                     openvrml::viewer & viewer)
-    {
-        // Check whether the url has already been loaded
-        if (!urls.empty()) {
-            for (int index = thisIndex - 1; index >= 0; --index) {
-                using std::string;
-                const char * currentTex = tex[index].url();
-                const string relPath = baseDoc.url_path();
-                size_t currentLen = currentTex
-                                  ? strlen(currentTex)
-                                  : 0;
-                string::size_type relPathLen = relPath.length();
-                if (relPathLen >= currentLen) { relPathLen = 0; }
-
-                if (currentTex) {
-                    for (size_t i = 0; i < urls.size(); ++i) {
-                        if (urls[i] == currentTex
-                            || urls[i]  == (currentTex + relPathLen)) {
-                            return &tex[index];
-                        }
-                    }
-                }
-            }
-
-            // Have to load it
-            if (!tex[thisIndex].try_urls(urls, &baseDoc)) {
-                using std::cerr;
-                using std::endl;
-                cerr << "Error: couldn't read Background texture from URL "
-                     << mfstring(urls.begin(), urls.end()) << endl;
-            }
-        }
-
-        return &tex[thisIndex];
-    }
-}
-
 /**
  * @brief node_class-specific rendering.
  *
  * Render the active Background node.
  *
- * @param viewer    a Viewer.
+ * @param v viewer.
  */
-void background_class::render(openvrml::viewer & viewer) throw ()
+void background_class::render(viewer & v) throw ()
 {
-    if (!this->bound_nodes.empty()) {
-        assert(this->bound_nodes.back());
-        background_node & background = *this->bound_nodes.back();
-
-        // Background isn't selectable, so don't waste the time.
-        if (viewer.mode() == viewer::pick_mode) { return; }
-
-        if (background.viewerObject && background.modified()) {
-            viewer.remove_object(background.viewerObject);
-            background.viewerObject = 0;
-        }
-
-        if (background.viewerObject) {
-            viewer.insert_reference(background.viewerObject);
-        } else {
-            if (background.modified() || background.texPtr[0] == 0) {
-                doc2 baseDoc(background.scene()->url());
-                background.texPtr[0] = getTexture(background.backUrl.value,
-                                                  baseDoc,
-                                                  background.tex,
-                                                  0,
-                                                  viewer);
-                background.texPtr[1] = getTexture(background.bottomUrl.value,
-                                                  baseDoc,
-                                                  background.tex,
-                                                  1,
-                                                  viewer);
-                background.texPtr[2] = getTexture(background.frontUrl.value,
-                                                  baseDoc,
-                                                  background.tex,
-                                                  2,
-                                                  viewer);
-                background.texPtr[3] = getTexture(background.leftUrl.value,
-                                                  baseDoc,
-                                                  background.tex,
-                                                  3,
-                                                  viewer);
-                background.texPtr[4] = getTexture(background.rightUrl.value,
-                                                  baseDoc,
-                                                  background.tex,
-                                                  4,
-                                                  viewer);
-                background.texPtr[5] = getTexture(background.topUrl.value,
-                                                  baseDoc,
-                                                  background.tex,
-                                                  5,
-                                                  viewer);
-            }
-
-            size_t i, whc[18];    // Width, height, and nComponents for 6 tex
-            const unsigned char * pixels[6];
-            int nPix = 0;
-
-            for (i = 0; i < 6; ++i) {
-                whc[3 * i + 0] = background.texPtr[i]->w();
-                whc[3 * i + 1] = background.texPtr[i]->h();
-                whc[3 * i + 2] = background.texPtr[i]->nc();
-                pixels[i] = background.texPtr[i]->pixels();
-                if (whc[3 * i + 0] > 0
-                    && whc[3 * i + 1] > 0
-                    && whc[3 * i + 2] > 0
-                    && pixels[i]) {
-                    ++nPix;
-                }
-            }
-
-            background.viewerObject =
-                    viewer.insert_background(background.groundAngle.value,
-                                             background.groundColor.value,
-                                             background.skyAngle.value,
-                                             background.skyColor.value,
-                                             whc,
-                                             (nPix > 0) ? pixels : 0);
-
-            background.modified(false);
-        }
-    } else {
+    if (this->bound_nodes.empty()) {
         //
         // Default background.
         //
         using std::vector;
-        static const vector<float> groundAngle;
-        static const vector<color> groundColor;
-        static const vector<float> skyAngle;
-        static const vector<color> skyColor;
-        viewer.insert_background(groundAngle, groundColor, skyAngle, skyColor);
+        static const vector<float> ground_angle;
+        static const vector<color> ground_color;
+        static const vector<float> sky_angle;
+        static const vector<color> sky_color;
+        static const image front;
+        static const image back;
+        static const image left;
+        static const image right;
+        static const image top;
+        static const image bottom;
+        v.insert_background(ground_angle,
+                            ground_color,
+                            sky_angle,
+                            sky_color,
+                            front,
+                            back,
+                            left,
+                            right,
+                            top,
+                            bottom);
+    } else {
+        assert(this->bound_nodes.back());
+        background_node & background = *this->bound_nodes.back();
+
+        // Background isn't selectable, so don't waste the time.
+        if (v.mode() == viewer::pick_mode) { return; }
+
+        if (background.viewerObject && background.modified()) {
+            v.remove_object(background.viewerObject);
+            background.viewerObject = 0;
+        }
+
+        if (background.viewerObject) {
+            v.insert_reference(background.viewerObject);
+        } else {
+            background.update_textures();
+
+            background.viewerObject =
+                v.insert_background(background.groundAngle.value,
+                                    background.groundColor.value,
+                                    background.skyAngle.value,
+                                    background.skyColor.value,
+                                    background.front,
+                                    background.back,
+                                    background.left,
+                                    background.right,
+                                    background.top,
+                                    background.bottom);
+
+            background.modified(false);
+        }
     }
 }
 
@@ -2535,10 +2460,14 @@ background_node::background_node(const node_type & type,
     node(type, scope),
     abstract_child_node(type, scope),
     bound(false),
+    front_needs_update(true),
+    back_needs_update(true),
+    left_needs_update(true),
+    right_needs_update(true),
+    top_needs_update(true),
+    bottom_needs_update(true),
     viewerObject(0)
-{
-    std::fill(this->texPtr, this->texPtr + 6, static_cast<img *>(0));
-}
+{}
 
 /**
  * @brief Destroy.
@@ -2777,6 +2706,149 @@ void background_node::process_set_skyColor(const field_value & value,
     this->skyColor = dynamic_cast<const mfcolor &>(value);
     this->node::modified(true);
     this->emit_event("skyColor_changed", this->skyColor, timestamp);
+}
+
+void background_node::update_textures()
+{
+    if (this->front_needs_update) {
+        if (this->frontUrl.value.empty()) {
+            this->front = image();
+        } else {
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->frontUrl.value, &base)) {
+                this->front = image(img_.w(),
+                                    img_.h(),
+                                    img_.nc(),
+                                    img_.pixels(),
+                                    img_.pixels()
+                                    + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type.node_class.browser.err;
+                err << "Couldn't read texture from " << this->frontUrl << endl;
+            }
+        }
+        this->front_needs_update = false;
+    }
+    if (this->back_needs_update) {
+        if (this->backUrl.value.empty()) {
+            this->back = image();
+        } else {
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->backUrl.value, &base)) {
+                this->back = image(img_.w(),
+                                   img_.h(),
+                                   img_.nc(),
+                                   img_.pixels(),
+                                   img_.pixels()
+                                   + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type.node_class.browser.err;
+                err << "Couldn't read texture from " << this->backUrl << endl;
+            }
+        }
+        this->back_needs_update = false;
+    }
+    if (this->left_needs_update) {
+        if (this->leftUrl.value.empty()) {
+            this->left = image();
+        } else {
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->leftUrl.value, &base)) {
+                this->left = image(img_.w(),
+                                   img_.h(),
+                                   img_.nc(),
+                                   img_.pixels(),
+                                   img_.pixels()
+                                   + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type.node_class.browser.err;
+                err << "Couldn't read texture from " << this->leftUrl << endl;
+            }
+        }
+        this->left_needs_update = false;
+    }
+    if (this->right_needs_update) {
+        if (this->rightUrl.value.empty()) {
+            this->right = image();
+        } else {
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->rightUrl.value, &base)) {
+                this->right = image(img_.w(),
+                                    img_.h(),
+                                    img_.nc(),
+                                    img_.pixels(),
+                                    img_.pixels()
+                                    + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type.node_class.browser.err;
+                err << "Couldn't read texture from " << this->rightUrl << endl;
+            }
+        }
+        this->right_needs_update = false;
+    }
+    if (this->top_needs_update) {
+        if (this->topUrl.value.empty()) {
+            this->top = image();
+        } else {
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->topUrl.value, &base)) {
+                this->top = image(img_.w(),
+                                  img_.h(),
+                                  img_.nc(),
+                                  img_.pixels(),
+                                  img_.pixels()
+                                  + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type.node_class.browser.err;
+                err << "Couldn't read texture from " << this->topUrl << endl;
+            }
+        }
+        this->top_needs_update = false;
+    }
+    if (this->bottom_needs_update) {
+        if (this->bottomUrl.value.empty()) {
+            this->bottom = image();
+        } else {
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->bottomUrl.value, &base)) {
+                this->bottom = image(img_.w(),
+                                     img_.h(),
+                                     img_.nc(),
+                                     img_.pixels(),
+                                     img_.pixels()
+                                     + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type.node_class.browser.err;
+                err << "Couldn't read texture from " << this->bottomUrl
+                    << endl;
+            }
+        }
+        this->bottom_needs_update = false;
+    }
 }
 
 

@@ -74,8 +74,12 @@ namespace openvrml {
                           const std::vector<color> & ground_color,
                           const std::vector<float> & sky_angle,
                           const std::vector<color> & sky_color,
-                          size_t * whc = 0,
-                          const unsigned char ** pixels = 0) = 0;
+                          const image & front,
+                          const image & back,
+                          const image & left,
+                          const image & right,
+                          const image & top,
+                          const image & bottom) = 0;
 
         virtual object_t insert_box(const vec3f & size) = 0;
         virtual object_t insert_cone(float height, float radius, bool bottom,
