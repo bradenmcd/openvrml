@@ -41,7 +41,7 @@
 # include "System.h"
 # include "browser.h"
 
-# ifdef HAVE_ZLIB
+# ifdef OPENVRML_ENABLE_GZIP
 #   include <zlib.h>
 
 namespace {
@@ -232,7 +232,7 @@ namespace {
         void ifstream::close() { this->fbuf.close(); }
     }
 }
-# endif // HAVE_ZLIB
+# endif // OPENVRML_ENABLE_GZIP
 
 namespace OpenVRML {
 

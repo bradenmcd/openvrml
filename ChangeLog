@@ -7,6 +7,9 @@
           per-second in the renderer; but that's code that needs to be
           refactored anyway.
 
+        * src/openvrml/OpenVRML/doc2.cpp:  Changed HAVE_ZLIB to
+          OPENVRML_ENABLE_GZIP to match configure.ac changes.
+
 2002-12-13  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Viewer.h:  Tab elimination.
