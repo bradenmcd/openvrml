@@ -883,7 +883,7 @@ namespace OpenVRML {
             SFVec3f activationPoint;
             SFBool disk;
             VrmlMatrix activationMatrix;
-            VrmlMatrix M;
+            VrmlMatrix modelview;
 
         public:
             CylinderSensor(const NodeType & nodeType,
@@ -913,9 +913,6 @@ namespace OpenVRML {
                                      double timestamp) throw (std::bad_cast);
             void processSet_offset(const FieldValue & sffloat,
                                    double timestamp) throw (std::bad_cast);
-
-            void setMVMatrix(const VrmlMatrix & M_in);
-            const VrmlMatrix & getMVMatrix()const;
         };
 
 
@@ -1708,7 +1705,7 @@ namespace OpenVRML {
 
             Node * parentTransform;
             VrmlMatrix activationMatrix;
-            VrmlMatrix M;
+            VrmlMatrix modelview;
 
         public:
             PlaneSensor(const NodeType & nodeType,
@@ -1739,9 +1736,6 @@ namespace OpenVRML {
                                         double timestamp) throw (std::bad_cast);
             void processSet_offset(const FieldValue & sfvec3f, double timestamp)
                     throw (std::bad_cast);
-
-            void setMVMatrix(const VrmlMatrix & M_in);
-            const VrmlMatrix & getMVMatrix()const;
         };
 
 
@@ -2093,7 +2087,7 @@ namespace OpenVRML {
 
             SFVec3f activationPoint;
             SFVec3f centerPoint;
-            VrmlMatrix M;
+            VrmlMatrix modelview;
 
         public:
             SphereSensor(const NodeType & nodeType,
@@ -2117,9 +2111,6 @@ namespace OpenVRML {
                     throw (std::bad_cast);
             void processSet_offset(const FieldValue & sfrotation,
                                    double timestamp) throw (std::bad_cast);
-
-            void setMVMatrix(const VrmlMatrix & M_in);
-            const VrmlMatrix & getMVMatrix()const;
         };
 
 

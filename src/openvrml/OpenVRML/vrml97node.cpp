@@ -4060,7 +4060,7 @@ void CylinderSensor::render(Viewer & viewer, VrmlRenderContext context)
     // Store the ModelView matrix which is calculated at the time of rendering
     // in render-context. This matrix will be in use at the time of activation.
     //
-    this->setMVMatrix(context.getMatrix());
+    this->modelview = context.getMatrix();
 }
 
 void CylinderSensor::activate(double timeStamp, bool isActive, double *p) {
@@ -4072,7 +4072,7 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p) {
 
         // set activation point in local coords
         float Vec[3] = { p[0], p[1], p[2] };
-        this->activationMatrix = getMVMatrix().affine_inverse();
+        this->activationMatrix = this->modelview.affine_inverse();
         this->activationMatrix.multVecMatrix(Vec,Vec);
         this->activationPoint.set(Vec);
         // Bearing vector in local coordinate system
@@ -4234,22 +4234,6 @@ void CylinderSensor::processSet_offset(const FieldValue & sffloat,
         throw (std::bad_cast) {
     this->offset = dynamic_cast<const SFFloat &>(sffloat);
     this->emitEvent("offset_changed", this->offset, timestamp);
-}
-
-/**
- * Get the modelview matrix (M).
- *
- * @return modelview matrix.
- */
-const VrmlMatrix & CylinderSensor::getMVMatrix() const { return this->M; }
-
-/**
- * Sets the modelview matrix (M).
- *
- * @param M_in  a modelview matrix.
- */
-void CylinderSensor::setMVMatrix(const VrmlMatrix & M_in) {
-    this->M = M_in;
 }
 
 
@@ -9063,7 +9047,7 @@ void PlaneSensor::render(Viewer & viewer, const VrmlRenderContext context)
     // Store the ModelView matrix which is calculated at the time of rendering
     // in render-context. This matrix will be in use at the time of activation.
     //
-    this->setMVMatrix(context.getMatrix());
+    this->modelview = context.getMatrix();
 }
 
 /**
@@ -9077,7 +9061,7 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p) {
         this->active.set(isActive);
 
         float V[3] = { p[0], p[1], p[2] };
-        this->activationMatrix = getMVMatrix().affine_inverse();
+        this->activationMatrix = this->modelview.affine_inverse();
         this->activationMatrix.multVecMatrix(V,V);
         this->activationPoint.set(V);
         this->emitEvent("isActive", this->active, timeStamp);
@@ -9130,24 +9114,6 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p) {
         this->translation.set(t);
         this->emitEvent("translation_changed", this->translation, timeStamp);
     }
-}
-
-/**
- * @brief Get the modelview matrix.
- *
- * @return modelview matrix in VrmlMatrix format.
- */
-const VrmlMatrix & PlaneSensor::getMVMatrix() const {
-    return this->M;
-}
-
-/**
- * @brief Sets the modelview matrix.
- *
- * @param M_in a modelview matrix in VrmlMatrix format.
- */
-void PlaneSensor::setMVMatrix(const VrmlMatrix & M_in) {
-    this->M = M_in;
 }
 
 /**
@@ -11355,6 +11321,12 @@ const NodeTypePtr
  */
 
 /**
+ * @var VrmlMatrix SphereSensor::modelview
+ *
+ * @brief Modelview matrix.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node instance.
@@ -11400,7 +11372,7 @@ void SphereSensor::render(Viewer & viewer, const VrmlRenderContext context)
     // Store the ModelView matrix which is calculated at the time of rendering
     // in render-context. This matrix will be in use at the time of activation
     //
-    this->setMVMatrix(context.getMatrix());
+    this->modelview = context.getMatrix();
 }
 
 /**
@@ -11429,7 +11401,7 @@ void SphereSensor::activate(double timeStamp, bool isActive, double * p)
 
         // calculate the center of the object in world coords
         float V[3] = { 0.0, 0.0, 0.0 };
-        VrmlMatrix M = getMVMatrix().affine_inverse();
+        VrmlMatrix M = this->modelview.affine_inverse();
         M.multVecMatrix(V , V);
         this->centerPoint.set(V);
 
@@ -11451,7 +11423,7 @@ void SphereSensor::activate(double timeStamp, bool isActive, double * p)
     else if (isActive) {
         // get local coord for touch point
         float V[3] = { p[0], p[1], p[2] };
-        VrmlMatrix M = getMVMatrix().affine_inverse();
+        VrmlMatrix M = this->modelview.affine_inverse();
         M.multVecMatrix( V , V );
         this->trackPoint.set(V);
         this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
@@ -11489,20 +11461,6 @@ bool SphereSensor::isEnabled() const throw ()
 {
     return this->enabled.get();
 }
-
-/**
- * @brief Get the modelview matrix.
- *
- * @return modelview matrix in VrmlMatrix format.
- */
-const VrmlMatrix & SphereSensor::getMVMatrix() const { return this->M; }
-
-/**
- * @brief Sets the modelview matrix.
- *
- * @param M_in a modelview matrix in VrmlMatrix format.
- */
-void SphereSensor::setMVMatrix(const VrmlMatrix & M_in) { this->M = M_in; }
 
 /**
  * @brief set_autoOffset eventIn handler.
@@ -11753,16 +11711,30 @@ SpotLight::~SpotLight() throw () {
     }
 }
 
-SpotLight* SpotLight::toSpotLight() const
-{ return (SpotLight*) this; }
+/**
+ * @brief Cast to a SpotLight.
+ *
+ * @return a pointer to the node.
+ */
+SpotLight * SpotLight::toSpotLight() const
+{
+    return const_cast<SpotLight *>(this);
+}
 
-// This should be called before rendering any geometry in the scene.
-// Since this is called from Scene::render() before traversing the
-// scene graph, the proper transformation matrix hasn't been set up.
-// Somehow it needs to figure out the accumulated xforms of its
-// parents and apply them before rendering. This is not easy with
-// DEF/USEd nodes...
-void SpotLight::renderScoped(Viewer *viewer) {
+/**
+ * @brief Render the scoped light.
+ *
+ * This should be called before rendering any geometry in the scene.
+ * Since this is called from Scene::render before traversing the
+ * scene graph, the proper transformation matrix hasn't been set up.
+ * Somehow it needs to figure out the accumulated xforms of its
+ * parents and apply them before rendering. This is not easy with
+ * DEF/USEd nodes...
+ *
+ * @param viewer    a Viewer.
+ */
+void SpotLight::renderScoped(Viewer * viewer)
+{
     if (this->on.get() && this->radius.get() > 0.0) {
         viewer->insertSpotLight(this->ambientIntensity.get(),
                                 this->attenuation.get(),
