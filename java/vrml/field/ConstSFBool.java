@@ -23,7 +23,7 @@ package vrml.field;
 import vrml.ConstField;
 
 /**
- * Read-only SFBool field.
+ * Represents a read-only VRML SFBool field in Java.
  */
 public class ConstSFBool extends ConstField
 {
