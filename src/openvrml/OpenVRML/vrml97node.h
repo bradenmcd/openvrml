@@ -1351,6 +1351,7 @@ namespace OpenVRML {
         SFVec3f d_activationPoint;
 
         Node *d_parentTransform;
+        VrmlMatrix d_activationMatrix;
         VrmlMatrix M;
 
     public:
@@ -1380,7 +1381,6 @@ namespace OpenVRML {
     private:
         void setMVMatrix(const VrmlMatrix & M_in);
         const VrmlMatrix & getMVMatrix()const;
-
     };
 
 

@@ -23,7 +23,6 @@
 #define OPENVRML_HAVE_SPIDERMONKEY
 #define OPENVRML_HAVE_JNI
 
-#define OPENVRML_LIBDIR_ "./;c:/Winnt/system32"
 #define OPENVRML_GL_H   <GL/gl.h>
 #define OPENVRML_GLU_H  <GL/glu.h>
 #define OPENVRML_GLUT_H <GL/glut.h>

@@ -247,12 +247,7 @@ support all these selectively by undefined the corresponding macro in
 are, OPENVRML_HAVE_SPIDERMONKEY for javascript, OPENVRML_HAVE_JNI
 for java, OPENVRML_HAVE_LIBJPEG for JPEG image support and  
 OPENVRML_HAVE_LIBPNG for PNG image support.
-    For java support (JNI), you should define the location of openvrml 
-lib using the macro OPENVRML_LIBDIR_ in `<openvrml>\ide-projects\Windows
-\VisualC6\winconfig.h`. For example
-#define OPENVRML_LIBDIR_ "c:/openvrml/ide-projects/Windows/VisualC6/lib"
-By default it will look for in current working directory or system
-directory.
+
     Use Makefile.vc6 in '<openvrml>\java' to make all java support
 classes in jar format (script.jar).
 
@@ -278,13 +273,6 @@ directories and library directories for GLUT, Zlib, mozilla javascript
 (optional), java SDK (optional), PNG image support (optional) and JPEG 
 image support (optional) library by Tools->Options->Directories in 
 MSVC++6.
-
-    For java support (JNI), you should define the location of openvrml 
-library (openvrml.dll) using the macro OPENVRML_LIBDIR_ in 
-`<openvrml>\ide-projects\Windows\VisualC6\winconfig.h`. For example
-#define OPENVRML_LIBDIR_ "c:/openvrml/ide-projects/Windows/VisualC6/debug"
-By default it will look for in current working directory or system
-directory.
 
     Use Makefile.vc6 in '<openvrml>\java' to make all java support
 classes in jar format (script.jar) by

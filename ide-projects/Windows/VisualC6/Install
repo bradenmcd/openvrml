@@ -126,13 +126,6 @@ antlr 2.7.0
    the command
          nmake /F Makefile.vc6 WITH_JAVASCRIPT=NO all
 
-       For java support (JNI), you should define the location of 
-   openvrml library (openvrml.dll) using the macro OPENVRML_LIBDIR_ in 
-   `<openvrml>\ide-projects\Windows\VisualC6\winconfig.h`. For example
-   #define OPENVRML_LIBDIR_ "c:/openvrml/ide-projects/Windows/VisualC6/lib"
-   By default it will look for in current working directory or system
-   directory.
- 
        Use Makefile.vc6 in '<openvrml>\java' to make all java support
    classes in jar format (script.jar).
  
@@ -159,13 +152,6 @@ antlr 2.7.0
     mozilla javascript (optional), java SDK (optional), PNG image 
     support (optional) and JPEG image support (optional) library 
     by Tools->Options->Directories in MSVC++6.
-
-    For java support (JNI), you should define the location of openvrml 
-    library (openvrml.dll) using the macro OPENVRML_LIBDIR_ in 
-    `<openvrml>\ide-projects\Windows\VisualC6\winconfig.h`. For example
-    #define OPENVRML_LIBDIR_ "c:/openvrml/ide-projects/Windows/VisualC6/debug"
-    By default it will look for in current working directory or system
-    directory.
 
        Use Makefile.vc6 in '<openvrml>\java' to make all java support
     classes in jar format (script.jar) by

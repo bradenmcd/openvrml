@@ -1,3 +1,14 @@
+2001-12-13  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Remove java.library.path option while creating JavaVM
+          under windows. This will allow its own way to search 
+          openvrml.dll. For loading libraries, JDK uses same rule
+          as windows.
+
+        * Put back d_activationMatrix in PlaneSensor node to cache 
+          inverse transform above PlaneSensor. This removes jittery
+          response from rotation_toy.wrl
+        
 2001-12-12  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Checkin Makefiles to add java support classes under windows.

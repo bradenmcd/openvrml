@@ -96,12 +96,16 @@ ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
     options[0].optionString = appendedClassPath.str();
     options[1].optionString = "-verbose:class";
     options[2].optionString = "-verbose:jni";
+#ifndef _WIN32
     options[3].optionString = "-Djava.library.path=" OPENVRML_LIBDIR_;
-
+#endif
     vm_args.version = JNI_VERSION_1_2;
     vm_args.options = options;
+#ifdef _WIN32
+    vm_args.nOptions = 3;
+#else
     vm_args.nOptions = 4;
-    
+#endif   
     /* Create the Java VM */
     res = JNI_CreateJavaVM(&d_jvm, (void**) &d_env, &vm_args);
     appendedClassPath.rdbuf()->freeze(false);

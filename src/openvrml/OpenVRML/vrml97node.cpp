@@ -6356,8 +6356,8 @@ void NodePlaneSensor::activate( double timeStamp,
       d_isActive.set(isActive);
 
       float V[3] = { p[0], p[1], p[2] };
-	  VrmlMatrix M = getMVMatrix().affine_inverse();
-	  M.multVecMatrix(V,V);
+	  d_activationMatrix = getMVMatrix().affine_inverse();
+	  d_activationMatrix.multVecMatrix(V,V);
       d_activationPoint.set(V);
       eventOut( timeStamp, "isActive", d_isActive );
     }
@@ -6380,8 +6380,7 @@ void NodePlaneSensor::activate( double timeStamp,
   else if ( isActive )
     {
       float V[3] = { p[0], p[1], p[2] };
-  	  VrmlMatrix M = getMVMatrix().affine_inverse();
-	  M.multVecMatrix(V,V);
+      d_activationMatrix.multVecMatrix(V,V);
       d_trackPoint.set(V);
       eventOut( timeStamp, "trackPoint_changed", d_trackPoint );
 
