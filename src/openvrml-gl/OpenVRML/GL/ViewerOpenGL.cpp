@@ -664,12 +664,12 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
               for (int i=0;i<3;i++)
                  v[j][k][i]=0;
 
-          for (int j=0;j<6;j++)
+          for (j=0;j<6;j++)
             for (int k=0;k<4;k++)
               for (int i=0;i<3;i++)
                  v3[j][k][i]=v2[j][k][i]-v2[j][0][i];
 
-          for (int j=0;j<6;j++)
+          for (j=0;j<6;j++)
             for (int i=0;i<3;i++)
             {
               v[j*number_tiles][0][i]=v2[j][0][i];
@@ -677,7 +677,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
                 v[j*number_tiles][k][i]=v[j*number_tiles][0][i]+v3[j][k][i]/number_splits_y;
             }          
 
-          for (int j=0;j<6;j++)
+          for (j=0;j<6;j++)
           {
             number_vertices=j*number_tiles+1;
             for (int k=0;k<number_splits_y;k++)
