@@ -69,18 +69,21 @@ namespace {
         {
             return f < 0.0 ? -f : f;
         }
-        
+
         template <typename Float>
         struct fequal : std::binary_function<Float, Float, bool> {
             bool operator()(Float a, Float b) const
             {
                 const Float diff = fabs(a - b);
                 if (diff == 0.0) { return true; }
-                const Float e = std::numeric_limits<Float>::epsilon();
-                return diff / fabs(a) <= e && diff / fabs(b) <= e;
+                static const int rounding_errors = 10;
+                static const Float e = std::numeric_limits<Float>::epsilon();
+                static const Float tolerance = e * rounding_errors / 2;
+                return diff / fabs(a) <= tolerance
+                    && diff / fabs(b) <= tolerance;
             }
         };
-        
+
         template <typename Float>
         struct fless_equal : std::binary_function<Float, Float, bool> {
             bool operator()(Float a, Float b) const
