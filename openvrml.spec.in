@@ -1,5 +1,5 @@
 Name:           @PACKAGE_TARNAME@
-Version:        @VERSION@
+Version:        @PACKAGE_VERSION@
 Release:        1
 Summary:        VRML97 runtime library. 
 Copyright:      LGPL
@@ -12,7 +12,7 @@ BuildRoot:      %{_tmppath}/%{name}-root
 Requires:       zlib >= 1.1.3
 Requires:       libpng >= 1.0.12
 Requires:       libjpeg >= 6b
-Requires:       mozilla >= 0.9.9
+Requires:       mozilla = 1.0.0
 Prefix:         /usr
 
 %description 
@@ -60,7 +60,7 @@ GLUT-based VRML viewer.
 
 
 %build
-./configure $ARCH_FLAGS --prefix=%{prefix} --without-jdk CPPFLAGS="-I/usr/include/mozilla/js" CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
+./configure $ARCH_FLAGS --prefix=%{prefix} --without-jdk CPPFLAGS="-I/usr/include/mozilla-1.0.0/js" CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-L/usr/lib/mozilla-1.0.0"
 make
 
 
@@ -97,6 +97,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Sat Jun 15 2002  Braden McDaniel  <braden@endoframe.com>
+- Use CPPFLAGS and LDFLAGS for Mozilla 1.0.0 when running configure.
+- Require Mozilla 1.0.0.
+
 * Mon May 20 2002  Braden McDaniel  <braden@endoframe.com>
 - Fixed pkgconfig metafile names.
 - Updated dependencies to reflect RPMs shipping with Red Hat 7.3.
