@@ -225,7 +225,7 @@ FieldValue::~FieldValue() {}
  */
 
 /**
- * @fn FieldValue & FieldValue::assign(const FieldValue & value) throw (std::bad_cast) = 0
+ * @fn FieldValue & FieldValue::assign(const FieldValue & value) throw (std::bad_cast, std::bad_alloc)
  *
  * @brief Virtual assignment.
  *
@@ -496,7 +496,8 @@ FieldValue * SFBool::clone() const throw (std::bad_alloc) {
     return new SFBool(*this);
 }
 
-FieldValue & SFBool::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFBool::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFBool &>(value));
 }
 
@@ -571,7 +572,8 @@ FieldValue * SFColor::clone() const throw (std::bad_alloc) {
     return new SFColor(*this);
 }
 
-FieldValue & SFColor::assign(const FieldValue & value)  throw (std::bad_cast) {
+FieldValue & SFColor::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFColor &>(value));
 }
 
@@ -771,7 +773,8 @@ FieldValue * SFFloat::clone() const throw (std::bad_alloc) {
     return new SFFloat(*this);
 }
 
-FieldValue & SFFloat::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFFloat::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFFloat &>(value));
 }
 
@@ -924,7 +927,8 @@ FieldValue * SFImage::clone() const throw (std::bad_alloc) {
     return new SFImage(*this);
 }
 
-FieldValue & SFImage::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFImage::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFImage &>(value));
 }
 
@@ -1019,7 +1023,8 @@ FieldValue * SFInt32::clone() const throw (std::bad_alloc) {
     return new SFInt32(*this);
 }
 
-FieldValue & SFInt32::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFInt32::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFInt32 &>(value));
 }
 
@@ -1075,7 +1080,8 @@ FieldValue * SFNode::clone() const throw (std::bad_alloc) {
     return new SFNode(*this);
 }
 
-FieldValue & SFNode::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFNode::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFNode &>(value));
 }
 
@@ -1223,7 +1229,7 @@ FieldValue * SFRotation::clone() const throw (std::bad_alloc) {
 }
 
 FieldValue & SFRotation::assign(const FieldValue & value)
-        throw (std::bad_cast) {
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFRotation &>(value));
 }
 
@@ -1567,7 +1573,8 @@ FieldValue * SFString::clone() const throw (std::bad_alloc) {
     return new SFString(*this);
 }
 
-FieldValue & SFString::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFString::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFString &>(value));
 }
 
@@ -1601,7 +1608,8 @@ FieldValue * SFTime::clone() const throw (std::bad_alloc) {
     return new SFTime(*this);
 }
 
-FieldValue & SFTime::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFTime::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFTime &>(value));
 }
 
@@ -1701,7 +1709,8 @@ FieldValue * SFVec2f::clone() const throw (std::bad_alloc) {
     return new SFVec2f(*this);
 }
 
-FieldValue & SFVec2f::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFVec2f::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFVec2f &>(value));
 }
 
@@ -1934,7 +1943,8 @@ FieldValue * SFVec3f::clone() const throw (std::bad_alloc) {
     return new SFVec3f(*this);
 }
 
-FieldValue & SFVec3f::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & SFVec3f::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const SFVec3f &>(value));
 }
 
@@ -2307,7 +2317,8 @@ FieldValue * MFColor::clone() const throw (std::bad_alloc) {
     return new MFColor(*this);
 }
 
-FieldValue & MFColor::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & MFColor::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const MFColor &>(value));
 }
 
@@ -2480,7 +2491,8 @@ FieldValue * MFFloat::clone() const throw (std::bad_alloc) {
     return new MFFloat(*this);
 }
 
-FieldValue & MFFloat::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & MFFloat::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const MFFloat &>(value));
 }
 
@@ -2656,7 +2668,8 @@ FieldValue * MFInt32::clone() const throw (std::bad_alloc) {
     return new MFInt32(*this);
 }
 
-FieldValue & MFInt32::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & MFInt32::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const MFInt32 &>(value));
 }
 
@@ -2840,7 +2853,8 @@ FieldValue * MFNode::clone() const throw (std::bad_alloc) {
     return new MFNode(*this);
 }
 
-FieldValue & MFNode::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & MFNode::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const MFNode &>(value));
 }
 
@@ -3034,7 +3048,8 @@ FieldValue * MFRotation::clone() const throw (std::bad_alloc) {
     return new MFRotation(*this);
 }
 
-FieldValue & MFRotation::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & MFRotation::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const MFRotation &>(value));
 }
 
@@ -3130,7 +3145,8 @@ FieldValue * MFString::clone() const throw (std::bad_alloc) {
     return new MFString(*this);
 }
 
-FieldValue & MFString::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & MFString::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const MFString &>(value));
 }
 
@@ -3344,7 +3360,8 @@ FieldValue * MFTime::clone() const throw (std::bad_alloc) {
     return new MFTime(*this);
 }
 
-FieldValue & MFTime::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & MFTime::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const MFTime &>(value));
 }
 
@@ -3521,7 +3538,8 @@ FieldValue * MFVec2f::clone() const throw (std::bad_alloc) {
     return new MFVec2f(*this);
 }
 
-FieldValue & MFVec2f::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & MFVec2f::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const MFVec2f &>(value));
 }
 
@@ -3697,7 +3715,8 @@ FieldValue * MFVec3f::clone() const throw (std::bad_alloc) {
     return new MFVec3f(*this);
 }
 
-FieldValue & MFVec3f::assign(const FieldValue & value) throw (std::bad_cast) {
+FieldValue & MFVec3f::assign(const FieldValue & value)
+        throw (std::bad_cast, std::bad_alloc) {
     return (*this = dynamic_cast<const MFVec3f &>(value));
 }
 
