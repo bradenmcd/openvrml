@@ -1,13 +1,23 @@
 body {
-  font-family: "lucidux sans", "Lucida Sans", "Lucida", sans-serif;
+  background-color: black;
+  margin-left: 1em;
+  margin-right: 1em;
+  margin-bottom: 1em;
+}
+
+.body {
+  color: black;
+  background-color: white;
+  font-family: "Lucida", "Lucida Sans", sans-serif;
+  padding: 1em;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "lucidux serif", "Palatino", serif;
+  font-family: "LucidaBright", serif;
 }
 
 pre, code {
-  font-family: "lucidux mono", "Lucida Console", "lucidatypewriter", monospace;
+  font-family: "LucidaTypewriter", "Lucida Console", monospace;
 }
 
 :link {
@@ -37,6 +47,47 @@ hr {
   border-style: outset;
 }
 
+.sitenav {
+  font-family: "LucidaBright", serif;
+  font-size: larger;
+  font-weight: normal;
+  background-color: black;
+  color: white;
+  width: 100%;
+  border: 0;
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-bottom: 0;
+}
+
+.sitenav th {
+  background-color: white;
+  color: black;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.sitenav :link, .sitenav :visited {
+  background-color: black;
+  color: white;
+  display: block;
+  color: white;
+  margin: 0;
+  border: 0;
+  padding: 0.5em;
+}
+
+.sitenav :link:hover, .sitenav :visited:hover {
+  background-color: rgb(95%, 95%, 95%);
+  color: black;
+}
+
+.footer {
+  color: white;
+  margin-top: 1em;
+}
+
 td.md {
   background-color: rgb(95%, 95%, 95%);
 }
@@ -52,7 +103,12 @@ A.codeRef { font-weight: normal; color: #4444ee }
 */
 DL.el { margin-left: -1cm }
 DIV.fragment { width: 100%; border: none; background-color: #eeeeee }
-DIV.ah { background-color: black; margin-bottom: 3; margin-top: 3 }
+DIV.ah {
+  background-color: black;
+  color: white;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
 /*TD.md { background-color: #f2f2ff }*/
 DIV.groupHeader { margin-left: 16; margin-top: 12; margin-bottom: 6; font-weight: bold }
 DIV.groupText { margin-left: 16; font-style: italic; font-size: smaller }
