@@ -164,8 +164,12 @@ Audio::~Audio()
  ========================================================================*/
 bool Audio::setURL(const char *url, Doc *relative)
 {
+#if HAVE_SOUND
     if (url == 0)
         return false;
+#else
+    return false;
+#endif
 
     delete _doc;
     _doc = new Doc (url, relative);
