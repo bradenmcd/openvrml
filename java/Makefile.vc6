@@ -1,0 +1,136 @@
+#
+# OpenVRML
+#
+# Copyright (C) 2001  S. K. bose
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# 
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+.SILENT:
+# Makefile for all classes and jar file
+
+BINOUTDIR = .\ 
+VRMLDIR = .\vrml
+NODEDIR = .\vrml\node
+FIELDDIR = .\vrml\field
+
+help:
+	more < <<
+usage: nmake[.exe] /f Makefile.vc6 [options] [target]
+where: [target] may be any one of the following ...
+    (default)... shows this text
+    all                 ........ builds all classes and jar file
+    vrmlclasses         ........ builds vrml classes
+    nodeclasses         ......... builds node classes
+    fieldclasses        ........ builds field classes
+    clean        ....... deletes all intermediate files
+
+
+    ---- build options -----------------
+
+   JDK_DIR  .................... - required to be defined as the path
+               where your JAVA SDK is installed. Default 
+               path is C:\User\jdk1.2.2 however you may provide 
+               it as an environment variable by
+               doing something like this prior to execute nmake:
+
+			 set JDK_DIR=C:\jdk1.2.2
+  
+
+    ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
+         OpenVRML was originally written by Chris Morley
+	 (http://www.vermontel.net/~cmorley/. He has donated it 
+	 as a foundation for OVAL development and is currently 
+	 maintained at http://openvrml.sourceforge.net
+
+    This makefile suite built against jdk1.2.2 from sun and tested on
+    WindowsNT 4.0, Windows95, and Windows98.
+
+    ---- output directories as configured -------
+
+    Object Files . : $(BINOUTDIR)
+
+<<
+!IF "$(OS)" == "Windows_NT"
+NUL = NUL: 
+!ELSE
+NUL = nul
+!ENDIF
+
+!IF "$(JDK_DIR)" == ""
+JDK_DIR = c:\User\jdk1.2.2
+!ENDIF
+
+PROMPT :
+       set CLASSPATH=.\ 
+      -@echo Making jar file
+
+JAVAH = $(JDK_DIR)\bin\javah
+JFLAGS =
+
+JAR = $(JDK_DIR)\bin\jar
+
+clean:
+  -@echo Cleaning jar file
+  if exist script.jar del script.jar
+  cd .\vrml
+  nmake /F Makefile.vc6 clean
+  cd $(MAKEDIR)
+
+
+all : nodeclasses fieldclasses vrmlclasses jarfile
+
+nodeclasses: 
+  cd $(NODEDIR)
+  nmake /F Makefile.vc6 JDK_DIR=$(JDK_DIR) node
+  cd $(MAKEDIR)
+
+fieldclasses:
+  cd $(FIELDDIR)
+  nmake /F Makefile.vc6 JDK_DIR=$(JDK_DIR) field
+  cd $(MAKEDIR)
+
+vrmlclasses:
+  cd $(VRMLDIR)
+  nmake /F Makefile.vc6 JDK_DIR=$(JDK_DIR) vrml
+  cd $(MAKEDIR)
+
+jarfile : prompt script.jar
+
+script.jar: vrml/InvalidEventInException.class \
+vrml/InvalidEventOutException.class vrml/InvalidExposedFieldException.class \
+vrml/InvalidFieldChangeException.class vrml/InvalidFieldException.class \
+vrml/InvalidRouteException.class vrml/InvalidVRMLSyntaxException.class \
+vrml/Browser.class vrml/Event.class vrml/Field.class vrml/ConstMField.class \
+vrml/MField.class vrml/ConstField.class vrml/BaseNode.class \
+vrml/field/SFBool.class vrml/field/SFColor.class vrml/field/SFFloat.class \
+vrml/field/SFImage.class vrml/field/SFInt32.class vrml/field/SFNode.class \
+vrml/field/SFRotation.class vrml/field/SFString.class vrml/field/SFTime.class \
+vrml/field/SFVec2f.class vrml/field/SFVec3f.class vrml/field/MFColor.class \
+vrml/field/MFFloat.class vrml/field/MFInt32.class vrml/field/MFNode.class \
+vrml/field/MFRotation.class vrml/field/MFString.class vrml/field/MFTime.class \
+vrml/field/MFVec2f.class vrml/field/MFVec3f.class \
+vrml/field/ConstSFBool.class vrml/field/ConstSFColor.class \
+vrml/field/ConstSFFloat.class vrml/field/ConstSFImage.class \
+vrml/field/ConstSFInt32.class vrml/field/ConstSFNode.class \
+vrml/field/ConstSFRotation.class vrml/field/ConstSFString.class \
+vrml/field/ConstSFTime.class vrml/field/ConstSFVec2f.class \
+vrml/field/ConstSFVec3f.class vrml/field/ConstMFColor.class \
+vrml/field/ConstMFFloat.class vrml/field/ConstMFInt32.class \
+vrml/field/ConstMFNode.class vrml/field/ConstMFRotation.class \
+vrml/field/ConstMFString.class vrml/field/ConstMFTime.class \
+vrml/field/ConstMFVec2f.class vrml/field/ConstMFVec3f.class \
+vrml/node/Node.class vrml/node/Script.class
+	$(JAR) cvf $@ $?
+

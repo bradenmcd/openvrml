@@ -1,0 +1,230 @@
+#
+# OpenVRML
+#
+# Copyright (C) 2001  S. K. bose
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# 
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+.SILENT:
+# Makefile for field classes
+
+BINOUTDIR = .\ 
+SOURCE = .\ 
+
+help:
+	more < <<
+usage: nmake[.exe] /f Makefile.vc6 [options] [target]
+where: [target] may be any one of the following ...
+    (default)... shows this text
+    field        ........ builds field classes
+    clean        ....... deletes all intermediate files
+
+    ---- build options -----------------
+
+   JDK_DIR  .................... - required to be defined as the path
+               where your JAVA SDK is installed. Default 
+               path is C:\User\jdk1.2.2 however you may provide 
+               it as an environment variable by
+               doing something like this prior to execute nmake:
+
+                  set JDK_DIR=C:\jdk1.2.2
+  
+
+    ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
+         OpenVRML was originally written by Chris Morley
+	 (http://www.vermontel.net/~cmorley/. He has donated it 
+	 as a foundation for OVAL development and is currently 
+	 maintained at http://sourceforge.net/projects/openvrml
+
+    This makefile suite built against jdk1.2.2 from sun and tested on
+    WindowsNT 4.0, Windows95, and Windows98.
+
+    ---- output directories as configured -------
+
+    Object Files . : $(BINOUTDIR)
+
+<<
+!IF "$(OS)" == "Windows_NT"
+NUL = NUL: 
+!ELSE
+NUL = nul
+!ENDIF
+
+!IF "$(JDK_DIR)" == ""
+JDK_DIR = c:\User\jdk1.2.2
+!ENDIF
+
+
+PROMPT :
+       set CLASSPATH=..\..
+      -@echo Making field classes
+
+JAVA = $(JDK_DIR)\bin\javac
+JFLAGS =
+
+O=.class
+
+# variables
+
+OBJ = $(BINOUTDIR)\SFBool$(O) $(BINOUTDIR)\SFColor$(O) \
+      $(BINOUTDIR)\SFFloat$(O) $(BINOUTDIR)\SFImage$(O) \
+      $(BINOUTDIR)\SFInt32$(O) $(BINOUTDIR)\SFNode$(O) \
+      $(BINOUTDIR)\SFRotation$(O) $(BINOUTDIR)\SFString$(O) \
+      $(BINOUTDIR)\SFTime$(O) $(BINOUTDIR)\SFVec2f$(O) \
+      $(BINOUTDIR)\SFVec3f$(O) $(BINOUTDIR)\MFColor$(O) \
+      $(BINOUTDIR)\MFFloat$(O) $(BINOUTDIR)\MFInt32$(O) \
+      $(BINOUTDIR)\MFNode$(O) $(BINOUTDIR)\MFRotation$(O) \
+      $(BINOUTDIR)\MFString$(O) $(BINOUTDIR)\MFTime$(O) \
+      $(BINOUTDIR)\MFVec2f$(O) $(BINOUTDIR)\MFVec3f$(O) \
+      $(BINOUTDIR)\ConstSFBool$(O) $(BINOUTDIR)\ConstSFColor$(O) \
+      $(BINOUTDIR)\ConstSFFloat$(O) $(BINOUTDIR)\ConstSFImage$(O) \
+      $(BINOUTDIR)\ConstSFInt32$(O) $(BINOUTDIR)\ConstSFNode$(O) \
+      $(BINOUTDIR)\ConstSFRotation$(O) $(BINOUTDIR)\ConstSFString$(O) \
+      $(BINOUTDIR)\ConstSFTime$(O) $(BINOUTDIR)\ConstSFVec2f$(O) \
+      $(BINOUTDIR)\ConstSFVec3f$(O) $(BINOUTDIR)\ConstMFColor$(O) \
+      $(BINOUTDIR)\ConstMFFloat$(O) $(BINOUTDIR)\ConstMFInt32$(O) \
+      $(BINOUTDIR)\ConstMFNode$(O) $(BINOUTDIR)\ConstMFRotation$(O) \
+      $(BINOUTDIR)\ConstMFString$(O) $(BINOUTDIR)\ConstMFTime$(O) \
+      $(BINOUTDIR)\ConstMFVec2f$(O) $(BINOUTDIR)\ConstMFVec3f$(O) 
+
+clean:
+ -@echo Cleaning Field Classes 
+ if exist $(BINOUTDIR)\*.class del $(BINOUTDIR)\*.class
+   cd $(MAKEDIR)
+
+all : field
+
+field  : PROMPT $(OBJ)
+
+$(BINOUTDIR)\SFBool$(O) :  $(SOURCE)\SFBool.java 
+     			         $(JAVA) $(JFLAGS) $(SOURCE)\SFBool.java
+
+$(BINOUTDIR)\SFColor$(O) :  $(SOURCE)\SFColor.java 
+     			         $(JAVA) $(JFLAGS) $(SOURCE)\SFColor.java
+
+$(BINOUTDIR)\SFFloat$(O) :  $(SOURCE)\SFFloat.java
+     			         $(JAVA) $(JFLAGS) $(SOURCE)\SFFloat.java
+
+$(BINOUTDIR)\SFImage$(O) :  $(SOURCE)\SFImage.java
+     			         $(JAVA) $(JFLAGS) $(SOURCE)\SFImage.java
+
+$(BINOUTDIR)\SFInt32$(O) :  $(SOURCE)\SFInt32.java
+     			         $(JAVA) $(JFLAGS) $(SOURCE)\SFInt32.java
+
+$(BINOUTDIR)\SFNode$(O) :  $(SOURCE)\SFNode.java
+     			         $(JAVA) $(JFLAGS) $(SOURCE)\SFNode.java
+
+$(BINOUTDIR)\SFRotation$(O) :  $(SOURCE)\SFRotation.java
+     			             $(JAVA) $(JFLAGS) $(SOURCE)\SFRotation.java
+
+$(BINOUTDIR)\SFString$(O) :  $(SOURCE)\SFString.java
+     			           $(JAVA) $(JFLAGS) $(SOURCE)\SFString.java
+
+$(BINOUTDIR)\SFTime$(O) :  $(SOURCE)\SFTime.java
+     			         $(JAVA) $(JFLAGS) $(SOURCE)\SFTime.java
+
+$(BINOUTDIR)\SFVec2f$(O) :  $(SOURCE)\SFVec2f.java
+     			          $(JAVA) $(JFLAGS) $(SOURCE)\SFVec2f.java
+
+$(BINOUTDIR)\SFVec3f$(O) :  $(SOURCE)\SFVec3f.java
+     			          $(JAVA) $(JFLAGS) $(SOURCE)\SFVec3f.java
+
+$(BINOUTDIR)\MFColor$(O) :  $(SOURCE)\MFColor.java
+     			          $(JAVA) $(JFLAGS) $(SOURCE)\MFColor.java
+
+$(BINOUTDIR)\MFFloat$(O) :  $(SOURCE)\MFFloat.java
+     			          $(JAVA) $(JFLAGS) $(SOURCE)\MFFloat.java
+
+$(BINOUTDIR)\MFInt32$(O) :  $(SOURCE)\MFInt32.java
+     			          $(JAVA) $(JFLAGS) $(SOURCE)\MFInt32.java
+
+$(BINOUTDIR)\MFNode$(O) :  $(SOURCE)\MFNode.java
+     			         $(JAVA) $(JFLAGS) $(SOURCE)\MFNode.java
+
+$(BINOUTDIR)\MFRotation$(O) :  $(SOURCE)\MFRotation.java
+     			             $(JAVA) $(JFLAGS) $(SOURCE)\MFRotation.java
+
+$(BINOUTDIR)\MFString$(O) :  $(SOURCE)\MFString.java
+     			           $(JAVA) $(JFLAGS) $(SOURCE)\MFString.java
+
+$(BINOUTDIR)\MFTime$(O) :  $(SOURCE)\MFTime.java
+     			         $(JAVA) $(JFLAGS) $(SOURCE)\MFTime.java
+
+$(BINOUTDIR)\MFVec2f$(O) :  $(SOURCE)\MFVec2f.java
+     			          $(JAVA) $(JFLAGS) $(SOURCE)\MFVec2f.java
+
+$(BINOUTDIR)\MFVec3f$(O) :  $(SOURCE)\MFVec3f.java
+     			          $(JAVA) $(JFLAGS) $(SOURCE)\MFVec3f.java
+
+$(BINOUTDIR)\ConstSFBool$(O) :  $(SOURCE)\ConstSFBool.java
+     			              $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFBool.java
+
+$(BINOUTDIR)\ConstSFColor$(O) :  $(SOURCE)\ConstSFColor.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFColor.java
+
+$(BINOUTDIR)\ConstSFFloat$(O) :  $(SOURCE)\ConstSFFloat.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFFloat.java
+
+$(BINOUTDIR)\ConstSFImage$(O) :  $(SOURCE)\ConstSFImage.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFImage.java
+
+$(BINOUTDIR)\ConstSFInt32$(O) :  $(SOURCE)\ConstSFInt32.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFInt32.java
+
+$(BINOUTDIR)\ConstSFNode$(O) :  $(SOURCE)\ConstSFNode.java
+     			              $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFNode.java
+
+$(BINOUTDIR)\ConstSFRotation$(O) :  $(SOURCE)\ConstSFRotation.java
+     			                  $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFRotation.java
+
+$(BINOUTDIR)\ConstSFString$(O) :  $(SOURCE)\ConstSFString.java
+     			                $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFString.java
+
+$(BINOUTDIR)\ConstSFTime$(O) :  $(SOURCE)\ConstSFTime.java
+     			              $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFTime.java
+
+$(BINOUTDIR)\ConstSFVec2f$(O) :  $(SOURCE)\ConstSFVec2f.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFVec2f.java
+
+$(BINOUTDIR)\ConstSFVec3f$(O) :  $(SOURCE)\ConstSFVec3f.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstSFVec3f.java
+
+$(BINOUTDIR)\ConstMFColor$(O) :  $(SOURCE)\ConstMFColor.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstMFColor.java
+
+$(BINOUTDIR)\ConstMFFloat$(O) :  $(SOURCE)\ConstMFFloat.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstMFFloat.java
+
+$(BINOUTDIR)\ConstMFInt32$(O) :  $(SOURCE)\ConstMFInt32.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstMFInt32.java
+
+$(BINOUTDIR)\ConstMFNode$(O) :  $(SOURCE)\ConstMFNode.java
+     			              $(JAVA) $(JFLAGS) $(SOURCE)\ConstMFNode.java
+
+$(BINOUTDIR)\ConstMFRotation$(O) :  $(SOURCE)\ConstMFRotation.java
+     			                  $(JAVA) $(JFLAGS) $(SOURCE)\ConstMFRotation.java
+
+$(BINOUTDIR)\ConstMFString$(O) :  $(SOURCE)\ConstMFString.java
+     			                $(JAVA) $(JFLAGS) $(SOURCE)\ConstMFString.java
+
+$(BINOUTDIR)\ConstMFTime$(O) :  $(SOURCE)\ConstMFTime.java
+     			              $(JAVA) $(JFLAGS) $(SOURCE)\ConstMFTime.java
+
+$(BINOUTDIR)\ConstMFVec2f$(O) :  $(SOURCE)\ConstMFVec2f.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstMFVec2f.java
+
+$(BINOUTDIR)\ConstMFVec3f$(O) :  $(SOURCE)\ConstMFVec3f.java
+     			               $(JAVA) $(JFLAGS) $(SOURCE)\ConstMFVec3f.java
+
