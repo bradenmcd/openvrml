@@ -170,27 +170,27 @@ void VrmlNodeImageTexture::render(Viewer *viewer, VrmlRenderContext rc)
 }
 
 
-int VrmlNodeImageTexture::nComponents()
+size_t VrmlNodeImageTexture::nComponents()
 {
   return d_image ? d_image->nc() : 0;
 }
 
-int VrmlNodeImageTexture::width()
+size_t VrmlNodeImageTexture::width()
 {
   return d_image ? d_image->w() : 0;
 }
 
-int VrmlNodeImageTexture::height()
+size_t VrmlNodeImageTexture::height()
 {
   return d_image ? d_image->h() : 0;
 }
 
-int VrmlNodeImageTexture::nFrames()
+size_t VrmlNodeImageTexture::nFrames()
 {
   return 0;
 }
 
-unsigned char* VrmlNodeImageTexture::pixels()
+const unsigned char * VrmlNodeImageTexture::pixels()
 {
   return d_image ? d_image->pixels() : 0;
 }

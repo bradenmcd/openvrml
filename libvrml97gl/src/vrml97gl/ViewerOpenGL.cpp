@@ -2260,9 +2260,9 @@ void ViewerOpenGL::setSensitive(void *object)
 // Scale an image to make sizes powers of two. This puts the data back
 // into the memory pointed to by pixels, so there better be enough.
 
-void ViewerOpenGL::scaleTexture(int w, int h,
-				int newW, int newH,
-				int nc,
+void ViewerOpenGL::scaleTexture(size_t w, size_t h,
+				size_t newW, size_t newH,
+				size_t nc,
 				unsigned char* pixels)
 {
   GLenum fmt[] = { GL_LUMINANCE,	// single component
@@ -2288,10 +2288,10 @@ void ViewerOpenGL::scaleTexture(int w, int h,
 //
 
 Viewer::TextureObject
-ViewerOpenGL::insertTexture(int w, int h, int nc,
+ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
 			    bool repeat_s,
 			    bool repeat_t,
-			    unsigned char *pixels,
+			    const unsigned char * pixels,
 			    bool retainHint)
 {
   GLenum fmt[] = { GL_LUMINANCE,	// single component

@@ -18,8 +18,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifndef  _VRMLNODEMOVIETEXTURE_
-#define  _VRMLNODEMOVIETEXTURE_
+#ifndef VRMLNODEMOVIETEXTURE_H
+#define VRMLNODEMOVIETEXTURE_H
 
 #include "VrmlNodeTexture.h"
 #include "VrmlMFString.h"
@@ -60,11 +60,11 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  virtual int nComponents();
-  virtual int width();
-  virtual int height();
-  virtual int nFrames();
-  virtual unsigned char* pixels();
+  virtual size_t nComponents();
+  virtual size_t width();
+  virtual size_t height();
+  virtual size_t nFrames();
+  virtual const unsigned char * pixels();
 
 private:
 
@@ -88,5 +88,5 @@ private:
 
 };
 
-#endif // _VRMLNODEMOVIETEXTURE_
+#endif // VRMLNODEMOVIETEXTURE_H
 

@@ -309,27 +309,27 @@ void VrmlNodeMovieTexture::render(Viewer *viewer, VrmlRenderContext rc)
 }
 
 
-int VrmlNodeMovieTexture::nComponents()
+size_t VrmlNodeMovieTexture::nComponents()
 {
   return d_image ? d_image->nc() : 0;
 }
 
-int VrmlNodeMovieTexture::width()
+size_t VrmlNodeMovieTexture::width()
 {
   return d_image ? d_image->w() : 0;
 }
 
-int VrmlNodeMovieTexture::height()
+size_t VrmlNodeMovieTexture::height()
 {
   return d_image ? d_image->h() : 0;
 }
 
-int VrmlNodeMovieTexture::nFrames()
+size_t VrmlNodeMovieTexture::nFrames()
 {
   return d_image ? d_image->nFrames() : 0;
 }
 
-unsigned char* VrmlNodeMovieTexture::pixels()
+const unsigned char * VrmlNodeMovieTexture::pixels()
 {
   return d_image ? d_image->pixels() : 0;
 }

@@ -18,8 +18,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifndef  _VRMLNODEPIXELTEXTURE_
-#define  _VRMLNODEPIXELTEXTURE_
+#ifndef VRMLNODEPIXELTEXTURE_H
+#define VRMLNODEPIXELTEXTURE_H
 
 #include "VrmlNodeTexture.h"
 #include "VrmlSFImage.h"
@@ -46,16 +46,17 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  virtual int nComponents();
-  virtual int width();
-  virtual int height();
-  virtual int nFrames();
-  virtual unsigned char* pixels();
+  virtual size_t nComponents();
+  virtual size_t width();
+  virtual size_t height();
+  virtual size_t nFrames();
+  virtual const unsigned char * pixels();
 
   virtual VrmlNodePixelTexture*	toPixelTexture() const;
-
-  virtual bool getRepeatS(){ return d_repeatS.get(); }
-  virtual bool getRepeatT(){ return d_repeatT.get(); } 
+  
+  const VrmlSFImage & getImage() const;
+  const VrmlSFBool & getRepeatS() const;
+  const VrmlSFBool & getRepeatT() const;
 
 private:
 
@@ -66,5 +67,5 @@ private:
   Viewer::TextureObject d_texObject;
 };
 
-#endif // _VRMLNODEPIXELTEXTURE_
+#endif // VRMLNODEPIXELTEXTURE_H
 

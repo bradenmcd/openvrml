@@ -1,3 +1,11 @@
+2000-12-10  Braden McDaniel  <braden@endoframe.com>
+
+        * Const-correctness changes to VrmlSFImage. Broad ramifications.
+          Importantly, we now must copy the image before rescaling it in
+          the ViewerOpenGL. This is less efficient, but rescaling should
+          only happen once, so I doubt the copy will be too big of a
+          deal.
+
 2000-12-09  Braden McDaniel  <braden@endoframe.com>
 
         * Changed type used to represent SFInt32 and MFInt32 from int to

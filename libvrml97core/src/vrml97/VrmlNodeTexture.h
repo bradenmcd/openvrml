@@ -39,11 +39,11 @@ public:
 
   virtual VrmlNodeTexture* toTexture() const;
 
-  virtual int nComponents() = 0;
-  virtual int width() = 0;
-  virtual int height() = 0;
-  virtual int nFrames() = 0;
-  virtual unsigned char* pixels() = 0;
+  virtual size_t nComponents() = 0;
+  virtual size_t width() = 0;
+  virtual size_t height() = 0;
+  virtual size_t nFrames() = 0;
+  virtual const unsigned char * pixels() = 0;
 
   //similar to the VrmlNode calls, but placed here, cause they make more sense here.
   virtual VrmlNodePixelTexture*	toPixelTexture() const { return NULL; }

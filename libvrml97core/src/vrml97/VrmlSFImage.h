@@ -39,6 +39,7 @@
 class VrmlSFImage : public VrmlField {
 public:
 
+  VrmlSFImage();
   /**
    * Create an SFImage.
    * <p>
@@ -57,7 +58,7 @@ public:
    * @param pixels the caller owns the bytes, so this ctr makes a copy
    *
    */
-  VrmlSFImage(int w = 0, int h = 0, int nc = 0, unsigned char const * pixels = 0);
+  VrmlSFImage(size_t w, size_t h, size_t nc, const unsigned char * pixels = 0);
 
   VrmlSFImage(const VrmlSFImage&);
 
@@ -74,16 +75,17 @@ public:
   virtual const VrmlSFImage* toSFImage() const;
   virtual VrmlSFImage* toSFImage();
 
-  int width()				{ return d_w; }
-  int height()         			{ return d_h; }
-  int nComponents()			{ return d_nc; }
-  unsigned char *pixels()		{ return d_pixels; }
-
-  void setSize( int w, int h )		{ d_w = w; d_h = h; }
+  size_t getWidth() const;
+  size_t getHeight() const;
+  size_t getComponents() const;
+  const unsigned char * getPixels() const;
+  
+  void set(size_t width, size_t height, size_t components,
+           const unsigned char * pixels);
 
 private:
 
-  int d_w, d_h, d_nc;
+  size_t d_w, d_h, d_nc;
   unsigned char *d_pixels;	// nc bytes/pixel, lower left to upper right
 
 };

@@ -193,16 +193,16 @@ public:
 
   virtual void setSensitive(void *object) = 0;
 
-  virtual void scaleTexture(int /*w*/, int /*h*/,
-			    int /*newW*/, int /*newH*/,
-			    int /*nc*/,
+  virtual void scaleTexture(size_t /*w*/, size_t /*h*/,
+			    size_t /*newW*/, size_t /*newH*/,
+			    size_t /*nc*/,
 			    unsigned char* /*pixels*/) = 0;
 
   // Create a texture object
-  virtual TextureObject insertTexture(int /*w*/, int /*h*/, int /*nc*/,
+  virtual TextureObject insertTexture(size_t /*w*/, size_t /*h*/, size_t /*nc*/,
 				      bool /*repeat_s*/,
 				      bool /*repeat_t*/,
-				      unsigned char* /*pixels*/,
+				      const unsigned char * /*pixels*/,
 				      bool retainHint = false) = 0;
 
   // Reference/remove a texture object

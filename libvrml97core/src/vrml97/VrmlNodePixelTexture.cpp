@@ -81,95 +81,102 @@ ostream& VrmlNodePixelTexture::printFields(ostream& os, int indent)
 {
   if (! d_repeatS.get()) PRINT_FIELD(repeatS);
   if (! d_repeatT.get()) PRINT_FIELD(repeatT);
-  if (d_image.width() > 0 &&
-      d_image.height() > 0 &&
-      d_image.nComponents() > 0 &&
-      d_image.pixels() != 0)
+  if (d_image.getWidth() > 0 &&
+      d_image.getHeight() > 0 &&
+      d_image.getComponents() > 0 &&
+      d_image.getPixels() != 0)
     PRINT_FIELD(image);
   return os;
 }
 
       
-void VrmlNodePixelTexture::render(Viewer *viewer, VrmlRenderContext rc)
-{
-  unsigned char *pixels = d_image.pixels();
-
-  if ( isModified() )
-    {
-      if (d_texObject)
-	{
-	  viewer->removeTextureObject(d_texObject);
-	  d_texObject = 0;
-	}
+void VrmlNodePixelTexture::render(Viewer *viewer, VrmlRenderContext rc) {
+    if (isModified()) {
+        if (d_texObject) {
+            viewer->removeTextureObject(d_texObject);
+            d_texObject = 0;
+        }
     }
-
-  if (pixels)
-    {
-      if (d_texObject)
-	{
-	  viewer->insertTextureReference(d_texObject, d_image.nComponents());
-	}
-      else
-	{
-	  // Ensure the image dimensions are powers of two
-	  const int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-	  const int nSizes = sizeof(sizes) / sizeof(int);
-	  int w = d_image.width();
-	  int h = d_image.height();
-	  int i, j;
-	  for (i=0; i<nSizes; ++i)
-	    if (w < sizes[i]) break;
-	  for (j=0; j<nSizes; ++j)
-	    if (h < sizes[j]) break;
-
-	  if (i > 0 && j > 0)
-	    {
-	      // Always scale images down in size and reuse the same pixel memory.
-	      if (w != sizes[i-1] || h != sizes[j-1])
-		{
-		  viewer->scaleTexture( w, h, sizes[i-1], sizes[j-1],
-					d_image.nComponents(), pixels );
-		  d_image.setSize( sizes[i-1], sizes[j-1] );
+    
+    if (this->d_image.getPixels()) {
+        if (d_texObject) {
+            viewer->insertTextureReference(d_texObject,
+                                           d_image.getComponents());
+        } else {
+            // Ensure the image dimensions are powers of two
+            const int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
+            const int nSizes = sizeof(sizes) / sizeof(int);
+            int w = d_image.getWidth();
+            int h = d_image.getHeight();
+            int i, j;
+            for (i=0; i<nSizes; ++i) {
+                if (w < sizes[i]) break;
+            }
+            for (j=0; j<nSizes; ++j) {
+                if (h < sizes[j]) break;
+            }
+            
+            if (i > 0 && j > 0) {
+                // Always scale images down in size and reuse the same pixel memory.
+                
+                // What if we had multiple renderers serving the same scene, and
+                // the renderers had different requirements for rescaling the
+                // image? I think it would be better to keep the rescaled image
+                // in a cache in the renderer.
+                //   -- Braden McDaniel <braden@endoframe.com>, 9 Dec, 2000
+                if (w != sizes[i-1] || h != sizes[j-1]) {
+                    const size_t numBytes =
+                            this->d_image.getWidth() * this->d_image.getHeight()
+                                * this->d_image.getComponents();
+                    unsigned char pixels[numBytes];
+                    std::copy(this->d_image.getPixels(),
+                              this->d_image.getPixels() + numBytes,
+                              pixels);
+    
+                    viewer->scaleTexture(w, h, sizes[i-1], sizes[j-1],
+                                         d_image.getComponents(), pixels);
+                    d_image.set(sizes[i-1], sizes[j-1], d_image.getComponents(),
+                                pixels);
 		}
-
-	      d_texObject = viewer->insertTexture(d_image.width(),
-						  d_image.height(),
-						  d_image.nComponents(),
-						  d_repeatS.get(),
-						  d_repeatT.get(),
-						  pixels,
-						  true);
+                
+                d_texObject = viewer->insertTexture(d_image.getWidth(),
+                                                    d_image.getHeight(),
+                                                    d_image.getComponents(),
+                                                    d_repeatS.get(),
+                                                    d_repeatT.get(),
+                                                    d_image.getPixels(),
+                                                    true);
 	    }
 	}
     }
-
-  clearModified();
+    
+    clearModified();
 }
 
 
-int VrmlNodePixelTexture::nComponents()
+size_t VrmlNodePixelTexture::nComponents()
 {
-  return d_image.nComponents();
+  return d_image.getComponents();
 }
 
-int VrmlNodePixelTexture::width()
+size_t VrmlNodePixelTexture::width()
 {
-  return d_image.width();
+  return d_image.getWidth();
 }
 
-int VrmlNodePixelTexture::height()
+size_t VrmlNodePixelTexture::height()
 {
-  return d_image.height();
+  return d_image.getHeight();
 }
 
-int VrmlNodePixelTexture::nFrames()
+size_t VrmlNodePixelTexture::nFrames()
 {
   return 0;
 }
 
-unsigned char* VrmlNodePixelTexture::pixels()
+const unsigned char * VrmlNodePixelTexture::pixels()
 {
-  return d_image.pixels();
+  return d_image.getPixels();
 }
 
 
@@ -213,3 +220,14 @@ void VrmlNodePixelTexture::setField(const char *fieldName,
   //}
 }
 
+const VrmlSFImage & VrmlNodePixelTexture::getImage() const {
+    return this->d_image;
+}
+
+const VrmlSFBool & VrmlNodePixelTexture::getRepeatS() const {
+    return this->d_repeatS;
+}
+
+const VrmlSFBool & VrmlNodePixelTexture::getRepeatT() const {
+    return this->d_repeatT;
+}

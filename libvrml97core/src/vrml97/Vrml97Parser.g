@@ -930,13 +930,11 @@ floatValue returns [float val = 0.0f]
 
 sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
         {
-            long w(0L), h(0L), com(0L), pixel(0L);
-            //int cnt = 0;
+            unsigned long w(0L), h(0L), com(0L), pixel(0L);
         }
     :   w=intValue h=intValue com=intValue
         {
             SimpleVector<unsigned char> pixelVector;
-	    //cout << "sfImageValue {" << endl;
         }
         (
             pixel=intValue
@@ -945,19 +943,12 @@ sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
                 // looks kind of ugly but might in fact be ok. basically,
                 // we read the value as an integer, then strip off the
                 // bytes one by one.
-		for(int i=com-1; i>=0; i--) {
-                  unsigned char pix = (unsigned char)(pixel >> (8*i) & 0xff);
-  	          //cout << "sfImageValue:pixel:" << i << ":" << pixel << "/" << (int)pix << endl;
-                  pixelVector.add(pix);
-                  //cnt++;
+		for (int i = com - 1; i >= 0; i--) {
+                    pixelVector.add(static_cast<unsigned char>(pixel >> (8 * i) & 0xff));
                 }
             }
         )*
         {
-	    //cout << "w/h/nc=" << w << "," << h << "," << com << "," << cnt << endl;
-	    //cout << "w*h*com=" << w*h*com << endl;
-	    //cout << "pixelVector.size()=" << pixelVector.size() << endl;
-
             // if somebody gives us a really, really, really big
             // pixeltexture, then we will crash. in the age of dos
             // attacks, we have to assume that someone will feed us a
@@ -970,7 +961,6 @@ sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
                 throw antlr::SemanticException("Wrong number of pixel values for SFImage.");
             }
             *siv = VrmlSFImage(w, h, com, pixelVector.data()); // hmmmm...
-            //cout << "}" << endl;
         }
     ;
 
