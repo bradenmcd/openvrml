@@ -3,8 +3,7 @@ AC_INIT([OpenVRML Mozilla Plugin], [0.14.99],
         [openvrml-develop@lists.sourceforge.net])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
-                [src/Makefile]
-                [src/gtkvrml/Makefile])
+                [src/Makefile])
 AM_INIT_AUTOMAKE([1.7 foreign])
 
 AC_PROG_CXX

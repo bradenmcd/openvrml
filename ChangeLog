@@ -1,5 +1,10 @@
 2004-04-26 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/configure.ac:  Removed unused Makefile from
+	AC_OUTPUT.
+
+2004-04-26 Braden McDaniel  <braden@endoframe.com>
+
 	Added a Mozilla plug-in.
 
 	* Makefile.am
