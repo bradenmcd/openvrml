@@ -16,11 +16,11 @@ AM_CXXFLAGS = @GL_CFLAGS@
 
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES = libopenvrml-gl.la
-libopenvrml_gl_la_SOURCES = ViewerOpenGL.cpp OpenGLEvent.cpp
+libopenvrml_gl_la_SOURCES = ViewerOpenGL.cpp
 libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @GL_LIBS@
 
 OpenVRMLGLincludedir = $(includedir)/OpenVRML/GL
-OpenVRMLGLinclude_HEADERS = common.h OpenGLEvent.h ViewerOpenGL.h
+OpenVRMLGLinclude_HEADERS = common.h ViewerOpenGL.h
 endif
 
-EXTRA_DIST = ViewerOpenGL.cpp OpenGLEvent.cpp Makefile.vc6
+EXTRA_DIST = ViewerOpenGL.cpp Makefile.vc6

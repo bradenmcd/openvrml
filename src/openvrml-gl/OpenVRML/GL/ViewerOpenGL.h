@@ -27,6 +27,7 @@
 
 #   include <stack>
 #   include <OpenVRML/Viewer.h>
+#   include <OpenVRML/quaternion.h>
 #   include "common.h"
 
 // Use the stencil buffer to set the SHAPE mask.
@@ -145,9 +146,9 @@ namespace OpenVRML {
             float d_translatex, d_translatey, d_translatez;
 
             // quaternion representations of last, current rotation
-            float d_lastquat[4], d_curquat[4];
+            Quaternion lastquat, curquat;
             bool d_rotationChanged;
-            float d_rotationMatrix[4][4];
+            float rotationMatrix[16];
 
             bool d_rotating, d_scaling, d_translating;
             bool d_drawBSpheres;

@@ -52,7 +52,6 @@
 # include <OpenVRML/VrmlFrustum.h>
 
 # include "ViewerOpenGL.h"
-# include "OpenGLEvent.h"
 
 // Textures are now done using OGL1.1 bindTexture API rather than
 // display lists when this flag is set. Don't define this if you
@@ -213,6 +212,135 @@ void ViewerOpenGL::ModelviewMatrixStack::pop()
     --this->size;
 }
 
+namespace {
+    //
+    // The functions trackball and tb_project_to_sphere are derived from code
+    // by Silicon Graphics, Inc.
+    //
+    // (c) Copyright 1993, 1994, Silicon Graphics, Inc.
+    // ALL RIGHTS RESERVED
+    // Permission to use, copy, modify, and distribute this software for
+    // any purpose and without fee is hereby granted, provided that the above
+    // copyright notice appear in all copies and that both the copyright notice
+    // and this permission notice appear in supporting documentation, and that
+    // the name of Silicon Graphics, Inc. not be used in advertising
+    // or publicity pertaining to distribution of the software without specific,
+    // written prior permission.
+    //
+    // THE MATERIAL EMBODIED ON THIS SOFTWARE IS PROVIDED TO YOU "AS-IS"
+    // AND WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR OTHERWISE,
+    // INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY OR
+    // FITNESS FOR A PARTICULAR PURPOSE.  IN NO EVENT SHALL SILICON
+    // GRAPHICS, INC.  BE LIABLE TO YOU OR ANYONE ELSE FOR ANY DIRECT,
+    // SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY
+    // KIND, OR ANY DAMAGES WHATSOEVER, INCLUDING WITHOUT LIMITATION,
+    // LOSS OF PROFIT, LOSS OF USE, SAVINGS OR REVENUE, OR THE CLAIMS OF
+    // THIRD PARTIES, WHETHER OR NOT SILICON GRAPHICS, INC.  HAS BEEN
+    // ADVISED OF THE POSSIBILITY OF SUCH LOSS, HOWEVER CAUSED AND ON
+    // ANY THEORY OF LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE
+    // POSSESSION, USE OR PERFORMANCE OF THIS SOFTWARE.
+    //
+    // US Government Users Restricted Rights
+    // Use, duplication, or disclosure by the Government is subject to
+    // restrictions set forth in FAR 52.227.19(c)(2) or subparagraph
+    // (c)(1)(ii) of the Rights in Technical Data and Computer Software
+    // clause at DFARS 252.227-7013 and/or in similar or successor
+    // clauses in the FAR or the DOD or NASA FAR Supplement.
+    // Unpublished-- rights reserved under the copyright laws of the
+    // United States.  Contractor/manufacturer is Silicon Graphics,
+    // Inc., 2011 N.  Shoreline Blvd., Mountain View, CA 94039-7311.
+    //
+    // OpenGL(TM) is a trademark of Silicon Graphics, Inc.
+    //
+    //
+    // Trackball code:
+    //
+    // Implementation of a virtual trackball.
+    // Implemented by Gavin Bell, lots of ideas from Thant Tessman and
+    //   the August '88 issue of Siggraph's "Computer Graphics," pp. 121-129.
+    //
+
+    //
+    // Project an x, y pair onto a sphere of radius r OR a hyperbolic sheet
+    // if we are away from the center of the sphere.
+    //
+    float tb_project_to_sphere(float r, float x, float y)
+    {
+        static const float sqrt2 = sqrt(2.0);
+        static const float sqrt2_2 = sqrt2 / 2.0;
+        
+        float d, t, z;
+
+        d = sqrt(x * x + y * y);
+        if (d < r * sqrt2_2) { /* Inside sphere */
+            z = sqrt(r * r - d * d);
+        } else { /* On hyperbola */
+            t = r / sqrt2;
+            z = t * t / d;
+        }
+        return z;
+    }
+
+    //
+    // Ok, simulate a track-ball.  Project the points onto the virtual
+    // trackball, then figure out the axis of rotation, which is the cross
+    // product of P1 P2 and O P1 (O is the center of the ball, 0,0,0)
+    // Note:  This is a deformed trackball-- is a trackball in the center,
+    // but is deformed into a hyperbolic sheet of rotation away from the
+    // center.  This particular function was chosen after trying out
+    // several variations.
+    //
+    // It is assumed that the arguments to this routine are in the range
+    // (-1.0 ... 1.0)
+    //
+    const SFRotation trackball(float p1x, float p1y, float p2x, float p2y)
+    {
+        //
+        // This size should really be based on the distance from the center of
+        // rotation to the point on the object underneath the mouse.  That
+        // point would then track the mouse as closely as possible.  This is a
+        // simple example, though, so that is left as an Exercise for the
+        // Programmer.
+        //
+        static const float trackballSize = 0.8;
+
+        SFRotation result;
+        
+        if (p1x == p2x && p1y == p2y) {
+            /* Zero rotation */
+            return result;
+        }
+
+        //
+        // First, figure out z-coordinates for projection of P1 and P2 to
+        // deformed sphere
+        //
+        SFVec3f p1(p1x,
+                   p1y,
+                   tb_project_to_sphere(trackballSize, p1x, p1y));
+        SFVec3f p2(p2x,
+                   p2y,
+                   tb_project_to_sphere(trackballSize, p2x, p2y));
+
+        result.setAxis(p2.cross(p1).normalize());
+
+        //
+        // Figure out how much to rotate around that axis.
+        //
+        SFVec3f d = p1.subtract(p2);
+        float t = d.length() / (2.0 * trackballSize);
+
+        //
+        // Avoid problems with out-of-control values...
+        //
+        if (t > 1.0) { t = 1.0; }
+        if (t < -1.0) { t = -1.0; }
+
+        result.setAngle(2.0 * asin(t));
+
+        return result;
+    }
+}
 
 /**
  * @brief Construct a viewer for the specified Browser.
@@ -226,46 +354,46 @@ ViewerOpenGL::ViewerOpenGL(Browser & browser):
     d_activeSensitive(0),
     d_overSensitive(0),
     d_selectMode(false),
-    d_selectZ(0.0)
+    d_selectZ(0.0),
+    d_rotationChanged(false)
 {
-  d_GLinitialized = false;
-  d_blend = true;
-  d_lit = true;
-  d_texture = true;
-  d_wireframe = false;
+    d_GLinitialized = false;
+    d_blend = true;
+    d_lit = true;
+    d_texture = true;
+    d_wireframe = false;
 
-  // Don't make any GL calls here since the window probably doesn't exist.
-  d_nObjects = 0;
-  d_nestedObjects = 0;
+    // Don't make any GL calls here since the window probably doesn't exist.
+    d_nObjects = 0;
+    d_nestedObjects = 0;
 
-  d_background[0] = d_background[1] = d_background[2] = 0.0;
-  d_winWidth = 1;
-  d_winHeight = 1;
-  for (int i=0; i<MAX_LIGHTS; ++i)
-    d_lightInfo[i].lightType = LIGHT_UNUSED;
+    d_background[0] = d_background[1] = d_background[2] = 0.0;
+    d_winWidth = 1;
+    d_winHeight = 1;
+    for (int i=0; i<MAX_LIGHTS; ++i)
+      d_lightInfo[i].lightType = LIGHT_UNUSED;
 
-  d_scale = 1.0;
-  d_translatex = d_translatey = d_translatez = 0.0;
-  //d_rotationChanged = true;
-  d_rotating = false;
-  d_scaling = false;
-  d_translating = false;
-  trackball(d_curquat, 0.0, 0.0, 0.0, 0.0);
-  d_position[0] = d_position[1] = d_position[2] = 0.0;
-  d_zoom[0] = d_zoom[1] = d_zoom[2] = 0.0;
-  d_target[0] = d_target[1] = d_target[2] = 0.0;
+    d_scale = 1.0;
+    d_translatex = d_translatey = d_translatez = 0.0;
+    //d_rotationChanged = true;
+    d_rotating = false;
+    d_scaling = false;
+    d_translating = false;
+    this->curquat = Quaternion(trackball(0.0, 0.0, 0.0, 0.0));
+    d_position[0] = d_position[1] = d_position[2] = 0.0;
+    d_zoom[0] = d_zoom[1] = d_zoom[2] = 0.0;
+    d_target[0] = d_target[1] = d_target[2] = 0.0;
 
-  d_orientation[0] = 0;
-  d_orientation[1] = 1;
-  d_orientation[2] = 0;
-  d_orientation[3] = 0;
+    d_orientation[0] = 0;
+    d_orientation[1] = 1;
+    d_orientation[2] = 0;
+    d_orientation[3] = 0;
 
-  d_renderTime = 1.0;
-  d_renderTime1 = 1.0;
+    d_renderTime = 1.0;
+    d_renderTime1 = 1.0;
 
-  d_drawBSpheres = false;
-  d_cull = true;
-
+    d_drawBSpheres = false;
+    d_cull = true;
 }
 
 ViewerOpenGL::~ViewerOpenGL()
@@ -343,7 +471,7 @@ Viewer::Object ViewerOpenGL::beginObject(const char *,
         glTranslatef(this->d_zoom[0],
                      this->d_zoom[1],
                      this->d_zoom[2]); // M = M * T
-        glMultMatrixf(&this->d_rotationMatrix[0][0]); // M = M * R
+        glMultMatrixf(this->rotationMatrix); // M = M * R
         glTranslatef(this->d_translatex,
                      this->d_translatey,
                      this->d_translatez); // M = M * T
@@ -423,24 +551,22 @@ double ViewerOpenGL::getFrameRate()
   return 1.0 / d_renderTime;
 }
 
-//
-
 void ViewerOpenGL::resetUserNavigation()
 {
-  d_translatex = d_translatey = d_translatez = 0.0;
-  d_target[0] = d_target[1] = d_target[2] = 0.0;
-  d_zoom[0] = d_zoom[1] = d_zoom[2] = 0.0;
+    d_translatex = d_translatey = d_translatez = 0.0;
+    d_target[0] = d_target[1] = d_target[2] = 0.0;
+    d_zoom[0] = d_zoom[1] = d_zoom[2] = 0.0;
 
-  trackball(d_curquat, 0.0, 0.0, 0.0, 0.0);
-  //d_rotationChanged = true;
-  matrix_to_glmatrix(VrmlMatrix().get(), this->d_rotationMatrix[0]);
-  wsPostRedraw();
+    this->curquat = Quaternion(trackball(0.0, 0.0, 0.0, 0.0));
+    this->d_rotationChanged = true;
+    matrix_to_glmatrix(VrmlMatrix().get(), this->rotationMatrix);
+    wsPostRedraw();
 }
 
 void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
 {
   // The Matrix M should be a unit matrix
-  VrmlMatrix tmp,rot(d_rotationMatrix);
+  VrmlMatrix tmp,rot(this->rotationMatrix);
   float pos_vec[3];
   pos_vec[0] = d_zoom[0];
   pos_vec[1] = d_zoom[1];
@@ -523,7 +649,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
         this->modelviewMatrixStack.push();
 
         // Apply current view rotation
-        glMultMatrixf(&this->d_rotationMatrix[0][0]);
+        glMultMatrixf(this->rotationMatrix);
 
         glScalef(1000.0, 1000.0, 1000.0);
 
@@ -2780,50 +2906,45 @@ void ViewerOpenGL::setViewpoint(const float position[3],
                                 const float avatarSize,
                                 const float visibilityLimit)
 {
-  glMatrixMode( GL_PROJECTION );
-  if (! d_selectMode) glLoadIdentity();
+    glMatrixMode( GL_PROJECTION );
+    if (! d_selectMode) glLoadIdentity();
 
-  float field_of_view = fieldOfView * 180.0 / pi;
-  float aspect = ((float) d_winWidth) / d_winHeight;
-  float znear = (avatarSize > 0.0) ? (0.5 * avatarSize) : 0.01;
-  float zfar = (visibilityLimit > 0.0) ? visibilityLimit : 30000.0;
-  gluPerspective(field_of_view, aspect, znear, zfar);
+    float field_of_view = fieldOfView * 180.0 / pi;
+    float aspect = ((float) d_winWidth) / d_winHeight;
+    float znear = (avatarSize > 0.0) ? (0.5 * avatarSize) : 0.01;
+    float zfar = (visibilityLimit > 0.0) ? visibilityLimit : 30000.0;
+    gluPerspective(field_of_view, aspect, znear, zfar);
 
-  VrmlFrustum frust(field_of_view, aspect, znear, zfar);
-  this->setFrustum(frust);
+    VrmlFrustum frust(field_of_view, aspect, znear, zfar);
+    this->setFrustum(frust);
 
-  glMatrixMode(GL_MODELVIEW);
+    glMatrixMode(GL_MODELVIEW);
 
-  // Guess some distance along the sight line to use as a target...
-  float d = 10.0 * avatarSize;
-  if (d < znear || d > zfar) d = 0.2 * (avatarSize + zfar);
+    // Guess some distance along the sight line to use as a target...
+    float d = 10.0 * avatarSize;
+    if (d < znear || d > zfar) d = 0.2 * (avatarSize + zfar);
 
-  float target[3], up[3];
-  computeView(position, orientation, d, target, up);
+    float target[3], up[3];
+    computeView(position, orientation, d, target, up);
 
-  // Save position for use when drawing background
-  d_position[0] = position[0] + d_translatex;
-  d_position[1] = position[1] + d_translatey;
-  d_position[2] = position[2] + d_translatez;
+    // Save position for use when drawing background
+    d_position[0] = position[0] + d_translatex;
+    d_position[1] = position[1] + d_translatey;
+    d_position[2] = position[2] + d_translatez;
 
-  gluLookAt(position[0], position[1], position[2],
-            target[0]+d_target[0], target[1]+d_target[1], target[2]+d_target[2],
-            up[0], up[1], up[2]);
+    gluLookAt(position[0], position[1], position[2],
+              target[0]+d_target[0], target[1]+d_target[1], target[2]+d_target[2],
+              up[0], up[1], up[2]);
 
-#if 0
-  double MV[4][4];
-  this->getUserNavigation(MV);
-  float OGL_MV[16];
-  matrix_to_glmatrix(MV, OGL_MV);
-  glLoadMatrixf(OGL_MV);
-#endif
-
-  // View modifiers are applied in first beginObject
-  if (d_rotationChanged)
-  {
-    build_rotmatrix(d_rotationMatrix, d_curquat);
-    d_rotationChanged = false;
-  }
+    // View modifiers are applied in first beginObject
+    if (this->d_rotationChanged) {
+        VrmlMatrix newRotation;
+        newRotation.setRotate(this->curquat);
+        newRotation = newRotation.transpose();
+        std::copy(&newRotation[0][0], &newRotation[0][0] + 16,
+                  this->rotationMatrix);
+        this->d_rotationChanged = false;
+    }
 }
 
 
@@ -2952,11 +3073,11 @@ ViewerOpenGL::rot(float x, float y, float z, float a)
   SFRotation rotation(x, y, z, a * 0.01);
   rot_mat.setRotate(rotation);
 
-  VrmlMatrix curr_rot_mat(this->d_rotationMatrix);
-  curr_rot_mat = curr_rot_mat.transpose(); // d_rotationMatrix is column major.
+  VrmlMatrix curr_rot_mat(this->rotationMatrix);
+  curr_rot_mat = curr_rot_mat.transpose(); // this->rotationMatrix is column major.
 
   matrix_to_glmatrix(curr_rot_mat.multRight(rot_mat).get(),
-                     this->d_rotationMatrix[0]);
+                     this->rotationMatrix);
 
   wsPostRedraw();
 }
@@ -2985,19 +3106,23 @@ namespace {
 
 void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
 {
-   trackball(d_lastquat, x1, y1, x2, y2);
-   float vx[4];
-   VrmlMatrix rot_mat;
-   quat_to_axis(d_lastquat,vx);
-   if (fpzero(vx[3])) return;
-   glGetFloatv(GL_MODELVIEW_MATRIX, &rot_mat[0][0]);
-   rot_mat[3][0] = rot_mat[3][1] = rot_mat[3][2] = 0.0;
-   float d[3],q[4];
-   rot_mat.multMatrixVec(vx, d);
-   axis_to_quat(d,vx[3],q);
-   add_quats(q, d_curquat, d_curquat);
-   d_rotationChanged = true;
-   wsPostRedraw();
+    SFRotation rotation = trackball(x1, y1, x2, y2);
+    this->lastquat = Quaternion(rotation);
+    if (fpzero(rotation.getAngle())) { return; }
+
+    VrmlMatrix rotationMatrix;
+    glGetFloatv(GL_MODELVIEW_MATRIX, &rotationMatrix[0][0]);
+    rotationMatrix[3][0] = 0.0;
+    rotationMatrix[3][1] = 0.0;
+    rotationMatrix[3][2] = 0.0;
+
+    SFVec3f d;
+    rotationMatrix.multMatrixVec(rotation.getAxis(), d);
+    Quaternion q(SFRotation(d, rotation.getAngle()));
+    this->curquat = q.multiply(this->curquat);
+    this->d_rotationChanged = true;
+
+    wsPostRedraw();
 }
 
 void ViewerOpenGL::step(float x, float y, float z) {
@@ -3025,7 +3150,7 @@ void ViewerOpenGL::step(float x, float y, float z) {
     dx -= ox;
     dy -= oy;
     dz -= oz;
-    VrmlMatrix rot_mat(d_rotationMatrix);
+    VrmlMatrix rot_mat(this->rotationMatrix);
     float vx[3];
     vx[0] = dx;
     vx[1] = dy;
