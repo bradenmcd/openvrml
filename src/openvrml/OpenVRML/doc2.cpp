@@ -853,7 +853,7 @@ namespace {
         //
         // Remove any ".." segments along with the segment that precedes them.
         //
-        for (list<string>::iterator pos; pos != pathSegments.end(); ++pos) {
+        for (std::list<string>::iterator pos; pos != pathSegments.end(); ++pos) {
             if (pos != pathSegments.begin() && *pos == "..") {
                 --(pos = pathSegments.erase(pos));
                 --(pos = pathSegments.erase(pos));
@@ -864,8 +864,8 @@ namespace {
         // Reconstruct the path.
         //
         path = "";
-        for (list<string>::iterator pos; pos != pathSegments.end(); ++pos) {
-            path += '/' + *pos;
+        for (std::list<string>::iterator cpos; cpos != pathSegments.end(); ++cpos) {
+            path += '/' + *cpos;
         }
 
         //

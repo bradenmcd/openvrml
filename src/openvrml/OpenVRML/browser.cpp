@@ -163,7 +163,6 @@ namespace OpenVRML {
         typedef std::map<std::string, PolledEventOutValue> EventOutValueMap;
 
     private:
-        const bool inProtoDef;
         ISMap isMap;
         FieldValueMap unISdFieldValueMap;
         EventOutValueMap eventOutValueMap;
@@ -4853,8 +4852,8 @@ namespace {
         //
         // Remove any ".." segments along with the segment that precedes them.
         //
-        const list<string>::iterator begin(pathSegments.begin());
-        list<string>::iterator pos;
+        const std::list<string>::iterator begin(pathSegments.begin());
+        std::list<string>::iterator pos;
         for (pos = begin; pos != pathSegments.end(); ++pos) {
             if (pos != begin && *pos == "..") {
                 --(pos = pathSegments.erase(pos));
