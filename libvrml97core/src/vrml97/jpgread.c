@@ -2,9 +2,9 @@
  *  Read jfif/jpeg files.
  */
 
-#include "config.h"
-
-#if HAVE_LIBJPEG
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "jpgread.h"
 #include "jpeglib.h"
@@ -104,4 +104,3 @@ unsigned char *jpgread (FILE *fp, int *w, int *h, int *nc)
 
   return pixels;
 }
-#endif /* HAVE_LIBJPEG */

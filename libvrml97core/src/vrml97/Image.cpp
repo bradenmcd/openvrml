@@ -5,7 +5,10 @@
 //  %W% %G%
 //  Image.cpp
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "Image.h"
 #include "Doc.h"
 #include "System.h"
@@ -14,14 +17,10 @@
 #include <string.h>
 
 // gif support is builtin
-# include "gifread.h"
+#include "gifread.h"
 
-#if HAVE_LIBJPEG
 #include "jpgread.h"
-#endif
-#if HAVE_LIBPNG
 #include "pngread.h"
-#endif
 
 typedef enum {
   ImageFile_UNKNOWN,
@@ -77,16 +76,13 @@ bool Image::setURL(const char *url, Doc *relative)
 	  d_pixels = gifread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	  break;
 
-#if HAVE_LIBJPEG
 	case ImageFile_JPG:
 	  d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
 	  break;
-#endif
-#if HAVE_LIBPNG
+          
 	case ImageFile_PNG:
 	  d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
 	  break;
-#endif
 
 	default:
 	  fprintf(stderr,"Error: unrecognized image file format (%s).\n", url);

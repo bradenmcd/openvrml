@@ -5,7 +5,10 @@
 //  %W% %G%
 //  The VrmlNode class is the base node class.
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "VrmlNode.h"
 #include "VrmlNamespace.h"
 #include "VrmlNodeType.h"
@@ -13,7 +16,6 @@
 #include "MathUtils.h"
 
 #include <stdio.h>		// sprintf
-
 
 
 VrmlNodeType *VrmlNode::defineType(VrmlNodeType *t) { return t; }

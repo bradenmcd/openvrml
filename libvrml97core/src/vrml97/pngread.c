@@ -2,9 +2,9 @@
  *  Read png files.
  */
 
-#include "config.h"
-
-#if HAVE_LIBPNG
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "pngread.h"
 #include "png.h"
@@ -262,5 +262,3 @@ static double get_gamma_exp()
 
   return default_exponent;
 }
-
-#endif /* HAVE_LIBPNG */

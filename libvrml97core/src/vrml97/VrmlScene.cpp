@@ -5,7 +5,9 @@
 // VrmlScene.cpp
 //
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "VrmlScene.h"
 
@@ -355,17 +357,9 @@ extern VrmlNamespace *yyNodeTypes;
 extern VrmlMFNode *yyParsedNodes;
 extern Doc *yyDocument;
 
-#if HAVE_LIBPNG
-
 # include "zlib.h"
 # define YYIN yygz
 extern gzFile yygz;
-
-#else
-
-# define YYIN yyin
-
-#endif
 
 
 // Read a VRML file and return the (valid) nodes.
@@ -377,11 +371,7 @@ VrmlMFNode* VrmlScene::readWrl( Doc *tryUrl, VrmlNamespace *ns )
   theSystem->debug("readWRL %s\n", tryUrl->url());
 
   // Should verify MIME type...
-#if HAVE_LIBPNG
   if ((YYIN = tryUrl->gzopen("rb")) != 0)
-#else
-  if ((YYIN = tryUrl->fopen("rb")) != 0)
-#endif
     {
       // If the caller is not interested in PROTO defs, use a local namespace
       VrmlNamespace nodeDefs;
@@ -401,11 +391,7 @@ VrmlMFNode* VrmlScene::readWrl( Doc *tryUrl, VrmlNamespace *ns )
       result = yyParsedNodes;
       yyParsedNodes = 0;
 
-#if HAVE_LIBPNG
       tryUrl->gzclose();
-#else
-      tryUrl->fclose();
-#endif
     }
 
   return result;

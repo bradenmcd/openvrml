@@ -229,6 +229,7 @@ AC_SUBST(JPEG_LIBS)
 AC_SUBST(PNG_LIBS)
 
 AC_OUTPUT(Makefile \
+          m4/Makefile \
           src/Makefile \
           src/vrml97/Makefile \
           src/vrml97/libjs/Makefile

@@ -38,3 +38,10 @@
           good deal of reworking after the reorg I've done, and hopefully the
           use of automake means they are nolonger necessary. If anyone needs
           they can be found in an older tarball.
+
+
+1999-11-21  Braden McDaniel <braden@endoframe.com>
+
+        * Cleaned up some old #ifdefs in VrmlScene.cpp, Image.cpp, pngread.c,
+          and jpgread.c that would have prevented images and gzipped files from
+          working.
