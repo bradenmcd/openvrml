@@ -11,7 +11,7 @@
   ALINK="#FF0000"
  >
 
-  <H2>Results generated using OpenVRML 0.12.4</H2>
+  <H2>Results generated using OpenVRML 0.13.0</H2>
 
   <TABLE BORDER="1">
     <CAPTION>Libraries used in testing</CAPTION>
@@ -34,7 +34,7 @@
   <BR>
   <BR>
   <HR>
-  <H3>Last updated: August 24, 2002</H3>
+  <H3>Last updated: September 6, 2002</H3>
   <HR>
   <TABLE BORDER="1">
     <CAPTION>Results of OpenVRML Conformance Testing</CAPTION>
@@ -589,7 +589,7 @@
     <TR>
       <TD><TD><TD>7<TD><TD>*<TD>Failed! Dies with the following messages displayed on the console:<BR>line 1: Unknown node type "Viewpoint".<BR>line 1: Unknown node type "position".<BR>line 1: Unknown node type "orientation".<BR>line 1: Unknown node type "description".<BR>line 1: Unknown node type "View".<BR>lookat: ../../../../src/openvrml/OpenVRML/script.cpp:5865: OpenVRML::MFNode *{unnamed}::JavaScript_::MFNode::createFromJSObject (JSContext *, JSObject *): Assertion `obj' failed.<BR>Aborted.<BR> Pretty sure there is an error in the Javascript code of the NIST test though.
     <TR>
-      <TD><TD><TD>8<TD><TD>*<TD>Failed! Clicking on the Anchor causes the following message to be displayed on the console:<BR>Warning: Couldn't load URL Top_View
+      <TD><TD><TD>8<TD><TD><TD>INVALID TEST
     <TR>
       <TD><TD><TD>9<TD><TD>*<TD>Failed! Cannot click on box.
     <TR>
@@ -680,7 +680,7 @@
       <TD><TD>Normal
       <TD>1<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>2<TD><TD>*<TD>Failed! Segfault.
+      <TD><TD><TD>2<TD><TD>*<TD>Failed! Front left edge is colored differently than the rest of the shape.
     <TR>
       <TD><TD><TD>3<TD>*<TD><TD>
     <TR>
@@ -688,7 +688,7 @@
     <TR>
       <TD><TD><TD>5<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>6<TD>*<TD><TD>Failed! Segfault.
+      <TD><TD><TD>6<TD><TD>*<TD>Failed! Not a straight line separating the two halves.
     <TR>
       <TD><TD><TD>7<TD>*<TD><TD>
     <TR>
@@ -977,24 +977,25 @@
       <TD><TD>Anchor
       <TD>1<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>2<TD><TD>*<TD>Failed! Clicking on sphere causes the following error message: "Warning: Couldn't load URL test-anchorclick.wrl"
+      <TD><TD><TD>2<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>3<TD><TD>*<TD>Failed! Clicking on text causes the following error message to appear on console: "Warning: Couldn't load URL test-viewanchor.wrl#newview"
+      <TD><TD><TD>3<TD><TD>*<TD>Failed! Lookat tries to load new viewpoint from URL http://xsun.sdct.itl.nist.gov/~mkass/vts/Grouping_Nodes/Anchor/test-viewanchor.wrlnewview
     <TR>
-      <TD><TD><TD>4<TD><TD>*<TD>Failed! Clicking on sphere causes the following error message: "Warning: Couldn't load URL singleurl.wrl".
+      <TD><TD><TD>4<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>5<TD><TD>*<TD>Failed! Clicking on any sphere causes an error message to appear on console saying that world could not be loaded.
+      <TD><TD><TD>5<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>6<TD><TD>*<TD>Failed! Clicking on text causes following message to appear on console: "Warning: Couldn't load URL view2"
+      <TD><TD><TD>6<TD><TD><TD>INVALID TEST
     <TR>
-      <TD><TD><TD>7<TD><TD>*<TD>Failed! Clicking on text causes following message in console "Warning: Couldn't load URL view3".
-      <TD><TD><TD>8<TD><TD>*<TD>Failed! Clicking on sphere causes following message in console "Warning: Couldn't load URL new-world.wrl".
+      <TD><TD><TD>7<TD><TD><TD>INVALID TEST
     <TR>
-      <TD><TD><TD>9<TD><TD>*<TD>Failed! Clicking on sphere causes following message in console "Warning: Couldn't load URL non-existingfile.wrl".
+      <TD><TD><TD>8<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>10<TD><TD>*<TD>Failed! Clicking on sphere causes following message in console "Warning: Couldn't load URL http://autumn.ncsl.nist.gov/vts/Grouping_Nodes/Anchor/ref-absolute.wrl".
+      <TD><TD><TD>9<TD><TD>*<TD>Failed! First URL in list is invalid so lookat should use the second valid one but doesn't and just fails with the first.
     <TR>
-      <TD><TD><TD>11<TD><TD>*<TD>Failed! Clicking on sphere causes following message in console "Warning: Couldn't load URL ../../test_urls/test-anchor.wrl".
+      <TD><TD><TD>10<TD><TD><TD>INVALID TEST
+    <TR>
+      <TD><TD><TD>11<TD>*<TD><TD>
     <TR>
       <TD><TD><TD>12<TD>*<TD><TD>
     <TR>
@@ -1381,7 +1382,7 @@
       <TD><TD>PROTO
       <TD>1<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>2<TD><TD>*<TD>Failed! Sphere should be red but instead is grey.
+      <TD><TD><TD>2<TD>*<TD><TD>
     <TR>
       <TD><TD><TD>3<TD>*<TD><TD>
     <TR>
@@ -1389,19 +1390,19 @@
     <TR>
       <TD><TD><TD>5<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>6<TD><TD>*<TD>Failed! Top sphere should be red but instead is grey.
+      <TD><TD><TD>6<TD>*<TD><TD>
     <TR>
       <TD><TD><TD>7A<TD><TD>*<TD>Failed! Console message just says Aborted.
     <TR>
       <TD><TD><TD>7B<TD><TD>*<TD>Failed!
     <TR>
-      <TD><TD><TD>7C<TD><TD>*<TD>Failed! When trying to click on text for the next test, console displays the following warning:<BR>Warning: Couldn't load URL ../../html/write_list.cgi?cylinder+PROTO+Misc
+      <TD><TD><TD>7C<TD><TD>*<TD>Failed! Cone does not move.
     <TR>
       <TD><TD><TD>7D<TD><TD>*<TD>Failed! Nothing displays in lookat for this test.
     <TR>
       <TD><TD><TD>7E<TD><TD>*<TD>Failed! When attempting to click on next test, following message is dumped to the console:<BR>Warning: Couldn't load URL ../../html/write_list.cgi?indexedfaceset+PROTO+Misc
     <TR>
-      <TD><TD><TD>7F<TD><TD>*<TD>Failed! Lookat fails to load the world dumping the following message to the console:<BR>lookat: ../../../../src/openvrml/OpenVRML/field.cpp:4246: const float *OpenVRML::MFVec3f::getElement (unsigned int) const: Assertion `(index * 3) < this->d_data->d_n' failed.<BR>Aborted
+      <TD><TD><TD>7F<TD><TD>*<TD>Failed! Segmentation fault.
     <TR>
       <TD><TD><TD>7G<TD>*<TD><TD>
     <TR>
@@ -1415,11 +1416,11 @@
     <TR>
       <TD><TD><TD>8<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>9<TD><TD>*<TD>Failed! Lookat fails to load the world dumping the following message to the console:<BR>lookat: ../../../../src/openvrml/OpenVRML/field.cpp:3999: const float *OpenVRML::MFVec2f::getElement (unsigned int) const: Assertion `(index * 2) < this->d_data->d_n' failed.<BR>Aborted
+      <TD><TD><TD>9<TD><TD>*<TD>Failed! First part of the animation is fine but second and third parts do not occur.
     <TR>
       <TD><TD><TD>10<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>11<TD><TD>*<TD>Failed! Initial color of background should be black not purple.
+      <TD><TD><TD>11<TD>*<TD><TD>
     <TR>
       <TD><TD><TD>12<TD><TD>*<TD>Failed! Nothing happens when clicking on the rings.
     <TR>
@@ -1427,17 +1428,17 @@
     <TR>
       <TD><TD><TD>14<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>15<TD><TD>*<TD>Failed! Initial background color is yellow not black.
+      <TD><TD><TD>15<TD><TD>*<TD>Failed! Background does not change to indicated color.
     <TR>
-      <TD><TD><TD>16<TD><TD>*<TD>Failed! All spheres display as white.
+      <TD><TD><TD>16<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>17<TD><TD>*<TD>Failed! All spheres display as white.
+      <TD><TD><TD>17<TD>*<TD><TD>
     <TR>
       <TD><TD><TD>18<TD>*<TD><TD>
     <TR>
       <TD><TD><TD>19<TD><TD>*<TD>Failed! Only top-left sphere changes color.
     <TR>
-      <TD><TD><TD>20<TD><TD>*<TD>Failed! Rightmost set of spheres does not animate properly. Two middle sets of spheres are displayed incorrectly as white.
+      <TD><TD><TD>20<TD><TD>*<TD>Failed! Rightmost set of spheres does not animate properly.
     <TR>
       <TD><TD>Script ECMAScript<TD><TD><TD><TD>No Tests Defined by NIST!
     <TR>
@@ -1724,9 +1725,10 @@
   <H3>For a detailed description of the purpose of each test please see the <A HREF="http://xsun.sdct.itl.nist.gov/~mkass/vts/html/vrml.html">NIST Vrml Test Suite Home Page.</A></H3>
   <HR>
   <H3>Summary of Results</H3>
-  Total Number of Tests = 795<BR>
-  Total Passed = 505<BR>
-  Total Failed = 291<BR>
+  Total Number of Tests = 796<BR>
+  Total Passed = 515<BR>
+  Total Failed = 277<BR>
+  Total Invalid = 4<BR>
   <BR>
 
   <TABLE BORDER="1">
@@ -1735,6 +1737,7 @@
       <TH>Node Group
       <TH>Pass
       <TH>Fail
+      <TH>Invalid
     <TR>
       <TD>Appearance (186)
       <TD>133
@@ -1742,7 +1745,8 @@
     <TR>
       <TD>Bindable Nodes (93)
       <TD>29
-      <TD>64
+      <TD>63
+      <TD>1
     <TR>
       <TD>Geometric Properties (53)
       <TD>39
@@ -1753,8 +1757,9 @@
       <TD>19
     <TR>
       <TD>Grouping Nodes (52)
-      <TD>33
-      <TD>19
+      <TD>38
+      <TD>11
+      <TD>3
     <TR>
       <TD>Interpolators (30)
       <TD>20
@@ -1765,8 +1770,8 @@
       <TD>22
     <TR>
       <TD>Misc (50)
-      <TD>13
-      <TD>37
+      <TD>18
+      <TD>32
     <TR>
       <TD>Sensors (81)
       <TD>59
@@ -1788,10 +1793,12 @@
       <TH>Node
       <TH>Passed
       <TH>Failed
+      <TH>Invalid
     <TR>
       <TD>Anchor
+      <TD>7
       <TD>2
-      <TD>10
+      <TD>3
     <TR>
       <TD>Appearance
       <TD>11
@@ -1938,8 +1945,8 @@
       <TD>1
     <TR>
       <TD>PROTO
-      <TD>11
-      <TD>19
+      <TD>16
+      <TD>14
     <TR>
       <TD>ProximitySensor
       <TD>9
@@ -2007,7 +2014,8 @@
     <TR>
       <TD>Viewpoint
       <TD>1
-      <TD>22
+      <TD>21
+      <TD>1
     <TR>
       <TD>VisibilitySensor
       <TD>9
@@ -2019,6 +2027,7 @@
   </TABLE>
   <HR>
   <H4>Some Notes</H4>
+  For a complete list of reasons why tests have been declared invalid see <A HREF="nist-problems.html">my list</A><BR><BR>
   A fair number of tests failed due to a couple of common problems.
   <UL>
   <LI>There is no sound support currently so any test involving audio fails.
