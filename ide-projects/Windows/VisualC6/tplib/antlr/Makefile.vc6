@@ -1,3 +1,22 @@
+#
+# OpenVRML
+#
+# Copyright (C) 2001  S. K. bose
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# 
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
 .SILENT:
 # Makefile for libantlr
 # Microsoft Visual C++6.0 or later
@@ -11,7 +30,7 @@ ANTLRSOURCE = ..\..\..\..\..\lib\antlr
 
 help:
 	more < <<
-usage: nmake[.exe] /f nmake.mak [target]
+usage: nmake[.exe] /f Makefile.vc6 [target]
 where: [target] may be any one of the following ...
     (default)... shows this text
     antlr ........  builds ANTLR library 
@@ -22,7 +41,7 @@ where: [target] may be any one of the following ...
          OpenVRML was originally written by Chris Morley
 	 (http://www.vermontel.net/~cmorley/. He has donated it 
 	 as a foundation for OVAL development and is currently 
-	 maintained at OVAL (http://www.openvrml.org).
+	 maintained at OVAL (http://openvrml.sourceforge.net.).
 
     This makefile suite built against MS Visual C++ 6.0 and tested on
     WindowsNT 4.0, Windows95, and Windows98.
@@ -46,7 +65,7 @@ $(ANTLRLIBDFIR) :
 	   if not exist $(ANTLRLIBDFIR) mkdir $(ANTLRLIBDFIR)
 
 CPP = cl.exe
-CFLAGS = /nologo /MD /W3 /GX /O2 /D "WIN32" /D "_WINDOWS"\
+CFLAGS = /nologo /MD /W0 /GX /O2 /D "WIN32" /D "_WINDOWS"\
 	/Fp"$(INTDIR)\libantlr.pch" /YX /Fo"$(INTDIR)\\"\
 	/Fd"$(INTDIR)\\" /FD /c
 
@@ -79,37 +98,11 @@ OBJ = $(ANTLRBINOUTDIR)\ANTLRException$(O) $(ANTLRBINOUTDIR)\ASTFactory$(O)\
 
 clean :
     -@echo Cleaning Libantlr library
-	-@erase $(ANTLRBINOUTDIR)\ANTLRException.obj
-	-@erase $(ANTLRBINOUTDIR)\ASTFactory.obj
-      -@erase $(ANTLRBINOUTDIR)\ASTRefCount.obj
-	-@erase $(ANTLRBINOUTDIR)\BaseAST.obj
-	-@erase $(ANTLRBINOUTDIR)\BitSet.obj
-	-@erase $(ANTLRBINOUTDIR)\CharBuffer.obj
-      -@erase $(ANTLRBINOUTDIR)\CharScanner.obj
-	-@erase $(ANTLRBINOUTDIR)\CommonAST.obj
-	-@erase $(ANTLRBINOUTDIR)\CommonASTWithHiddenTokens.obj
-	-@erase $(ANTLRBINOUTDIR)\CommonHiddenStreamToken.obj
-	-@erase $(ANTLRBINOUTDIR)\CommonToken.obj
-	-@erase $(ANTLRBINOUTDIR)\InputBuffer.obj
-      -@erase $(ANTLRBINOUTDIR)\LexerSharedInputState.obj
-	-@erase $(ANTLRBINOUTDIR)\LLkParser.obj
-	-@erase $(ANTLRBINOUTDIR)\MismatchedCharException.obj
-	-@erase $(ANTLRBINOUTDIR)\MismatchedTokenException.obj
-      -@erase $(ANTLRBINOUTDIR)\NoViableAltException.obj
-      -@erase $(ANTLRBINOUTDIR)\NoViableAltForCharException.obj
-      -@erase $(ANTLRBINOUTDIR)\Parser.obj
-      -@erase $(ANTLRBINOUTDIR)\ParserSharedInputState.obj
-      -@erase $(ANTLRBINOUTDIR)\RecognitionException.obj
-      -@erase $(ANTLRBINOUTDIR)\String.obj
-      -@erase $(ANTLRBINOUTDIR)\Token.obj
-      -@erase $(ANTLRBINOUTDIR)\TokenBuffer.obj
-      -@erase $(ANTLRBINOUTDIR)\TokenStreamBasicFilter.obj
-      -@erase $(ANTLRBINOUTDIR)\TokenStreamHiddenTokenFilter.obj
-      -@erase $(ANTLRBINOUTDIR)\TokenStreamSelector.obj
-      -@erase $(ANTLRBINOUTDIR)\TreeParser.obj
-      -@erase $(ANTLRBINOUTDIR)\TreeParserSharedInputState.obj
-	-@erase $(ANTLRLIBDFIR)\libantlr.lib
-       cd $(MAKEDIR)
+     if exist $(ANTLRLIBDFIR) del /Q $(ANTLRLIBDFIR) 
+     if exist $(ANTLRLIBDFIR) rmdir $(ANTLRLIBDFIR)
+     if exist $(ANTLRBINOUTDIR) del /Q $(ANTLRBINOUTDIR) 
+     if exist $(ANTLRBINOUTDIR) rmdir $(ANTLRBINOUTDIR) 
+     cd $(MAKEDIR)
 all: antlr
 libraries : antlr
 

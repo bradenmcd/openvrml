@@ -86,6 +86,7 @@ LIB32=link.exe -lib
 # Begin Source File
 
 SOURCE="..\..\..\..\src\openvrml-gl\OpenVRML\Gl\OpenGLEvent.cpp"
+# ADD CPP /w /W0
 # End Source File
 # Begin Source File
 
@@ -93,12 +94,11 @@ SOURCE="..\..\..\..\src\openvrml-gl\OpenVRML\Gl\ViewerOpenGL.cpp"
 
 !IF  "$(CFG)" == "openvrmlgl - Win32 Release"
 
-# ADD CPP /I "..\..\..\..\src\openvrml" /I "..\\"
+# ADD CPP /w /W0 /I "..\..\..\..\src\openvrml" /I "..\\"
 
 !ELSEIF  "$(CFG)" == "openvrmlgl - Win32 Debug"
 
-# ADD CPP /I "..\..\..\..\src\openvrml" /I "..\\"
-# SUBTRACT CPP /I "..\..\..\..\src\openvrml\OpenVRML"
+# ADD CPP /w /W0 /I "..\\"
 
 !ENDIF 
 

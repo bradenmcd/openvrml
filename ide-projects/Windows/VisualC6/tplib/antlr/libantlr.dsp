@@ -269,9 +269,11 @@ SOURCE=..\..\..\..\..\lib\antlr\ANTLRException.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -279,7 +281,7 @@ SOURCE=..\..\..\..\..\lib\antlr\ANTLRException.cpp
 # Begin Source File
 
 SOURCE=..\..\..\..\..\lib\antlr\ASTFactory.cpp
-# ADD CPP /GR
+# ADD CPP /w /W0 /GR
 # End Source File
 # Begin Source File
 
@@ -287,9 +289,11 @@ SOURCE=..\..\..\..\..\lib\antlr\ASTRefCount.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR
+# ADD CPP /w /W0 /GR
 
 !ENDIF 
 
@@ -297,7 +301,7 @@ SOURCE=..\..\..\..\..\lib\antlr\ASTRefCount.cpp
 # Begin Source File
 
 SOURCE=..\..\..\..\..\lib\antlr\BaseAST.cpp
-# ADD CPP /GR
+# ADD CPP /w /W0 /GR
 # End Source File
 # Begin Source File
 
@@ -305,9 +309,11 @@ SOURCE=..\..\..\..\..\lib\antlr\BitSet.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -318,9 +324,11 @@ SOURCE=..\..\..\..\..\lib\antlr\CharBuffer.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -331,9 +339,11 @@ SOURCE=..\..\..\..\..\lib\antlr\CharScanner.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -341,7 +351,7 @@ SOURCE=..\..\..\..\..\lib\antlr\CharScanner.cpp
 # Begin Source File
 
 SOURCE=..\..\..\..\..\lib\antlr\CommonAST.cpp
-# ADD CPP /GR
+# ADD CPP /w /W0 /GR
 # End Source File
 # Begin Source File
 
@@ -349,9 +359,11 @@ SOURCE=..\..\..\..\..\lib\antlr\CommonASTWithHiddenTokens.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -362,9 +374,11 @@ SOURCE=..\..\..\..\..\lib\antlr\CommonHiddenStreamToken.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -375,9 +389,11 @@ SOURCE=..\..\..\..\..\lib\antlr\CommonToken.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -388,9 +404,11 @@ SOURCE=..\..\..\..\..\lib\antlr\InputBuffer.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -401,9 +419,11 @@ SOURCE=..\..\..\..\..\lib\antlr\LexerSharedInputState.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -411,7 +431,7 @@ SOURCE=..\..\..\..\..\lib\antlr\LexerSharedInputState.cpp
 # Begin Source File
 
 SOURCE=..\..\..\..\..\lib\antlr\LLkParser.cpp
-# ADD CPP /GR
+# ADD CPP /w /W0 /GR
 # End Source File
 # Begin Source File
 
@@ -419,9 +439,11 @@ SOURCE=..\..\..\..\..\lib\antlr\MismatchedCharException.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -429,12 +451,12 @@ SOURCE=..\..\..\..\..\lib\antlr\MismatchedCharException.cpp
 # Begin Source File
 
 SOURCE=..\..\..\..\..\lib\antlr\MismatchedTokenException.cpp
-# ADD CPP /GR
+# ADD CPP /w /W0 /GR
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\..\..\..\lib\antlr\NoViableAltException.cpp
-# ADD CPP /GR
+# ADD CPP /w /W0 /GR
 # End Source File
 # Begin Source File
 
@@ -442,9 +464,11 @@ SOURCE=..\..\..\..\..\lib\antlr\NoViableAltForCharException.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -452,7 +476,7 @@ SOURCE=..\..\..\..\..\lib\antlr\NoViableAltForCharException.cpp
 # Begin Source File
 
 SOURCE=..\..\..\..\..\lib\antlr\Parser.cpp
-# ADD CPP /GR
+# ADD CPP /w /W0 /GR
 # End Source File
 # Begin Source File
 
@@ -460,9 +484,11 @@ SOURCE=..\..\..\..\..\lib\antlr\ParserSharedInputState.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -473,9 +499,11 @@ SOURCE=..\..\..\..\..\lib\antlr\RecognitionException.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -486,9 +514,11 @@ SOURCE=..\..\..\..\..\lib\antlr\String.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -499,9 +529,11 @@ SOURCE=..\..\..\..\..\lib\antlr\Token.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -512,9 +544,11 @@ SOURCE=..\..\..\..\..\lib\antlr\TokenBuffer.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -525,9 +559,11 @@ SOURCE=..\..\..\..\..\lib\antlr\TokenStreamBasicFilter.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -538,9 +574,11 @@ SOURCE=..\..\..\..\..\lib\antlr\TokenStreamHiddenTokenFilter.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -551,9 +589,11 @@ SOURCE=..\..\..\..\..\lib\antlr\TokenStreamSelector.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 
@@ -561,7 +601,7 @@ SOURCE=..\..\..\..\..\lib\antlr\TokenStreamSelector.cpp
 # Begin Source File
 
 SOURCE=..\..\..\..\..\lib\antlr\TreeParser.cpp
-# ADD CPP /GR
+# ADD CPP /w /W0 /GR
 # End Source File
 # Begin Source File
 
@@ -569,9 +609,11 @@ SOURCE=..\..\..\..\..\lib\antlr\TreeParserSharedInputState.cpp
 
 !IF  "$(CFG)" == "libantlr - Win32 Release"
 
+# ADD CPP /w /W0
+
 !ELSEIF  "$(CFG)" == "libantlr - Win32 Debug"
 
-# ADD CPP /GR-
+# ADD CPP /w /W0 /GR-
 
 !ENDIF 
 

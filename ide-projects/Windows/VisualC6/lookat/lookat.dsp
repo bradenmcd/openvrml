@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
+# ADD CPP /nologo /MD /w /W0 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "OPENVRML_DLL_IMPORT" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 ../release/openvrml.lib opengl32.lib glu32.lib glut32.lib zlib.lib libpng.lib libjpeg.lib wsock32.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"LIBC"
+# ADD LINK32 ../release/openvrml.lib glut32.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"LIBC"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "lookat - Win32 Debug"
@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\..\src\openvrml-gl" /I "..\..\..\..\src\openvrml" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /YX /FD /c
+# ADD CPP /nologo /MDd /w /W0 /Gm /GX /ZI /Od /I "..\..\..\..\src\openvrml-gl" /I "..\..\..\..\src\openvrml" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ../debug/openvrml.lib opengl32.lib glu32.lib zlib.lib libjpeg.lib libpng.lib wsock32.lib glut32.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"LIBC.lib" /pdbtype:sept
+# ADD LINK32 ../debug/openvrml.lib glut32.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"LIBC.lib" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none /incremental:no
 
 !ENDIF 
@@ -98,11 +98,11 @@ SOURCE=..\..\..\..\src\lookat\lookat.cpp
 
 !IF  "$(CFG)" == "lookat - Win32 Release"
 
-# ADD CPP /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl"
+# ADD CPP /w /W0 /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl"
 
 !ELSEIF  "$(CFG)" == "lookat - Win32 Debug"
 
-# ADD CPP /MDd /Ze /Gm /GR- /Od /I "..\..\..\..\src\openvrml"
+# ADD CPP /MDd /Ze /Gm /GR- /Od /D "OPENVRML_DLL_IMPORT"
 
 !ENDIF 
 
@@ -113,9 +113,11 @@ SOURCE=..\..\..\..\src\lookat\ViewerGlut.cpp
 
 !IF  "$(CFG)" == "lookat - Win32 Release"
 
-# ADD CPP /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl"
+# ADD CPP /w /W0 /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl"
 
 !ELSEIF  "$(CFG)" == "lookat - Win32 Debug"
+
+# ADD CPP /D "OPENVRML_DLL_IMPORT"
 
 !ENDIF 
 

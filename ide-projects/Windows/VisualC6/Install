@@ -4,29 +4,36 @@ set up the compiler using vcvars32.bat script that came with it.
 
 1) For making OpenVRML What else do I need?
 
-  OpenVRML requires zlib, libpng, libjpeg, OpenGL/Mesa, GLUT and antlr(optional)
+  OpenVRML requires zlib, OpenGL/Mesa, GLUT, libpng (optional),
+  libjpeg (optional), mozilla javascript (optional) and antlr(optional)
   to build. 
  
     zlib:     <http://www.info-zip.org/pub/infozip/zlib/>
     libpng:   <http://www.libpng.org/pub/png/libpng.html>
     libjpeg:  <http://www.ijg.org>
+    js32:     <http://www.mozilla.org/js/spidermonkey/>
     Mesa:     <http://www.mesa3d.org>
     GLUT:     <http://reality.sgi.com/mjk_asd/glut3/> 
     antlr:    <http://www.ANTLR.org>  
  
+  If you want to have PNG image support (libpng.lib), JPEG image support
+  (libjpeg.lib) and javascript support (js32.lib and js32.dll), make sure
+  that all these libraries are installed in your system. By default 
+  OpenVRML library is configured with all these support.
+
+  If you use "nmake" utility to make this library, then you have options
+  to select all these support selectively.
+
   If you want to generate C++ code from antlr grammar(Vrml97Parser.g), 
   make sure you have java and antlr installed in your system. Otherwise generated
   code (Vrml97Parser.cpp) will be used for making the library and for this 
   purpose you don't need to download antlr and also you don't need to have
   java. The generated code "Vrml97Parser.cpp" is included with the 
-  CVS download.
+  distribution. By default generated code is used to make library.
  
   If you use "nmake" utility to make this library, then you have an option
   to generate C++ code from antlr grammar or to use generated code directly.
- 
-  If you use MSVC++6 Projects (*.dsp) and workspace file (*.dsw) to make this
-  library, this will always generate C++ code from the grammar. This means
-  you should have java and antlr installed in your system. 
+
 
 2) How to build other libraries?
 
@@ -45,6 +52,9 @@ set up the compiler using vcvars32.bat script that came with it.
 
  libjpeg.lib 
           Use the command  nmake /f makefile.vc
+
+ js32.lib and js32.dll
+          Use the command nmake /f js.mak
 
  OpenGL/Mesa
           I have not tested with Mesa but I have used Opengl32.lib and
@@ -92,39 +102,44 @@ antlr 2.7.0
       i) nmake /F Makefile.vc6 
                for Help and options
      ii) nmake /F Makefile.vc6 all 
-               for making all OpenVRML and lookat executable. 
+               to build the OpenVRML dll library and the Lookat program 
+         using OpenVRML dll.
+       By default it will make OpenVRML dynamic library with mozilla 
+   javascript, JPEG image and PNG image support. Options are there to 
+   support all these selectively by undefine the corresponding macro in
+   `ide-projects\Windows\VisualC6\winconfig.h`
+
+       For example if you don't want javascript support in OpenVRML 
+   library, then edit `winconfig.h` in `ide-projects\Windows\VisualC6`
+   by undefine the macro HAVE_MOZJS and give the command
+         nmake /F Makefile.vc6 WITH_JAVASCRIPT=NO all
 
   b) Using MSVC++6 Projects (*.dsp) and workspace files (*.dsw) 
 
     MSVC++6 Projects (*.dsp) and workspace files (*.dsw) are included for
     openvrml and lookat. Workspace file for all openvrml is kept in 
     'openvrml\ide-projects\Windows\VisualC6'. From here you can build 
-    whole openvrml (openvrmlcore,openvrmlgl,libjs and libantlr).
+    whole openvrml (openvrml.lib, openvrml.dll and libantlr).
     From here for building openvrml, you need to set Project->
     Set Active Project->openvrml and for lookat executable, you 
     set Project->Set Active Project->lookat.
 
-    For building openvrml library and lookat executable, you need to set 
-    include directories and library directories GLUT, PNG, Zlib and JPEG 
+    Remember to set the include and library directories to point to 
+    where you've installed OpenVRML's dependencies. You can have options
+    to support javascript, JPEG image and PNG image support selectively.
+    By default all these are supported. If you don't want to support all 
+    these selectively then edit the file `ide-projects\Windows\VisualC6
+    \winconfig.h` and undefine the corresponding macro. Macros for 
+    javascript is HAVE_MOZJS, for JPEG image support is HAVE_LIBJPEG and 
+    for PNG image support is HAVE_LIBPNG. Set include directories and 
+    library directories for GLUT, Zlib, mozilla javascript (optional), 
+    PNG image support (optional) and JPEG image support (optional) 
     library by Tools->Options->Directories in MSVC++6.
- 
+
     Individual workspace file for openvrmlcore is kept in 'openvrml\
     ide-projects\Windows\VisualC6\openvrml-core' and for openvrmlgl is 
     kept in 'openvrml\ide-projects\Windows\VisualC6\openvrml-gl'.
 
-    For building openvrmlcore you have to perform Custom Build Step for 
-    'antlr.g' by Project->Settings->openvrmlcore->Source File in 
-    MSVC++6. Replace 'c:\User\jdk1.2.2\bin' with the location of java 
-    compiler. Make sure to set the CLASSPATH to include the directory 
-    that antlr is installed in. Replace 'c:\User\antlr-2.7.0' with the 
-    location "antlr" directory. Otherwise you edit the file 
-    openvrmlcore.dsp in 'openvrml\ide-projects\Windows\VisualC6
-    \openvrml-core' and do the same. 
-
-    For building only javascript library (libjs.lib and libjs.dll),
-    workspace file libjs.dsw is given in 'openvrml\ide-projects\
-    Windows\VisualC6\tplib\js' directory.
-    
     For building only antlr library (libantlr.lib), workspace file libantlr.dsw is
     given in 'openvrml\ide-projects\Windows\VisualC6\tplib\antlr'.
 
@@ -136,8 +151,8 @@ antlr 2.7.0
        lookat ..\..\..\..\..\models\orbit3.wrl
 
    b) If you use Projects and workspace
-        cd openvrml\ide-projects\Windows\VisualC6\lookat\release (In release mode)
-        You may need to copy libjs.dll (In openvrml\ide-projects\Windows
-        \VisualC6\tplib\js\Release) and glut32.dll here or these files
+        cd openvrml\ide-projects\Windows\VisualC6\lookat\Release (In release mode)
+        You may need to copy openvrml.dll (openvrml\ide-projects\Windows\VisualC6\
+        \Release), js32.dll and glut32.dll here or these files
         may be copied into system area (for example c:\WINNT\SYSTEM32 for NT). 
         lookat ..\..\..\..\..\models\orbit3.wrl 

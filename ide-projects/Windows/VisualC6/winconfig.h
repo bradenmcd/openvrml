@@ -8,7 +8,7 @@
 */
 
 #define OPENVRML_MAJOR_VERSION	0
-#define OPENVRML_MINOR_VERSION	10
+#define OPENVRML_MINOR_VERSION	11
 #define OPENVRML_MICRO_VERSION	0
 
 
@@ -43,11 +43,14 @@ static const char COLON = ':';
 #endif
 
 
+#define HAVE_LIBJPEG
+#define HAVE_LIBPNG
+#define HAVE_MOZJS 
 
-#undef LIBVRML_VERSION
-#undef HAVE_LIBJPEG
-#undef HAVE_LIBPNG
-#undef HAVE_ZLIB
+/* #undef HAVE_LIBJPEG */
+/* #undef HAVE_LIBPNG  */
+/* #undef HAVE_MOZJS   */ 
+
 
 
 

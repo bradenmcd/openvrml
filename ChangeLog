@@ -1,3 +1,15 @@
+2001-06-20  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Update *.dsp and *.dsw to support OpenVRML WIN32 DLL and
+          remove libjs.dsp and libjs.dsw as these are no longer
+          needed. ANTLR parser generator is no longer needed as this 
+          will use the generated sources which come with the 
+          distribution.
+
+        * Update Makefiles for windows to support WIN32 DLLs and
+          made javascript support, PNG image support and JPEG image
+          support optional. 
+
 2001-06-12  Braden McDaniel <braden@endoframe.com>
 
         * Use `std::map<>::value_type *' instead of

@@ -1,3 +1,22 @@
+#
+# OpenVRML
+#
+# Copyright (C) 2001  S. K. bose
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# 
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
 .SILENT:
 # Makefile for lookat.exe
 # Microsoft Visual C++6.0 or later
@@ -12,7 +31,8 @@ CORESOURCE = ..\..\..\..\src\openvrml\OpenVRML
 COREINCLUDE = ..\..\..\..\src\openvrml
 GLINCLUDE = ..\..\..\..\src\openvrml-gl
 VRML97LIB = ..\lib
-JSLIB = ..\tplib\js\lib
+CORELIB = ..\lib
+
 
 help:
 	more < <<
@@ -20,35 +40,29 @@ usage: nmake[.exe] /f nmake.mak [options] [target]
 where: [target] may be any one of the following ...
 
 	(default)... shows this text
-	lookat ..... builds lookat program
+	lookat-static ..... builds lookat program with OpenVRML static-library
+	lookat-dynamic ..... builds lookat program with OpenVRML dynamic-library
 	clean....... deletes all intermediate files
 
     ---- build options -----------------
 
-   PNGLIB_DIR  .................... - required to be defined as 
-			the path where your PNGLIB is installed. 
-		   Default path is C:\User\lpng105, however you may provide 
+    WITH_JAVASCRIPT = YES .................... - If it is YES, 
+               then you must have js32.lib and js32.dll from mozilla in your 
+               system and in winconfig.h you must define HAVE_MOZJS. This is 
+               default. Otherwise build without JAVASCRIPT support (if you 
+               don't have SpiderMonkey or don't want JAVASCRIPT support),
+               by giving WITH_JAVASCRIPT = NO. You must undefine HAVE_MOZJS in 
+               winconfig.h for this option.
+
+
+   MOZILLALIB_DIR  .................... - required to be defined as the path
+		   where your MOZILLALIB is installed. 
+		   Default path is C:\User\mozilla, however you may provide
 		   it as an environment variable by doing something like 
 		   this prior to execute nmake:
 
-			 set PNGLIB_DIR=C:\lpng105
-
-   ZLIB_DIR  .................... - required to be defined as the path
-		   where your ZLIB is installed. Default path is C:\User\zlib,
-		   however you may provide it as an environment variable by
-		   doing something like this prior to execute nmake:
-
-			 set ZLIB_DIR=C:\zlib
-
-   JPEGLIB_DIR  .................... - required to be defined as the path
-		   where your JPEGLIB is installed. 
-		   Default path is C:\User\jpeg-6b, however you may provide
-		   it as an environment variable by doing something like 
-		   this prior to execute nmake:
-
-			 set JPEGLIB_DIR=C:\jpeg-6b
-
-
+			 set MOZILLALIB_DIR=C:\mozilla
+               However it is not needed, if you give option WITH_JAVASCRIPT=NO
 
    GLUTLIB_DIR  .................... - required to be defined as 
 			the path where your GLUTLIB is installed. 
@@ -57,6 +71,8 @@ where: [target] may be any one of the following ...
 		   this prior to execute nmake:
 
 			 set GLUTLIB_DIR=C:\glut
+
+   
 
 
     ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
@@ -74,22 +90,18 @@ where: [target] may be any one of the following ...
 
 <<
 
-!IF "$(PNGLIB_DIR)" == ""
-PNGLIB_DIR = c:\User\lpng105
-!ENDIF
-
-!IF "$(ZLIB_DIR)" == ""
-ZLIB_DIR = c:\User\zlib
-!ENDIF
-
-!IF "$(JPEGLIB_DIR)" == ""
-JPEGLIB_DIR = c:\User\jpeg-6b
-!ENDIF
 
 !IF "$(GLUTLIB_DIR)" == ""
 GLUTLIB_DIR = c:\User\glut
 !ENDIF
 
+!IF "$(WITH_JAVASCRIPT)" == ""
+WITH_JAVASCRIPT = YES
+!ENDIF
+
+!IF "$(MOZILLALIB_DIR)" == ""
+GLUTLIB_DIR = c:\User\mozilla
+!ENDIF
 
 PROMPT : 
         -@echo Making lookat.exe
@@ -100,76 +112,95 @@ $(BINOUTDIR) :
 
 
 CPP = cl.exe
-CFLAGS = /nologo /MD /W3 /GX /O2 /D "WIN32" /D "_WINDOWS"\
+STATIC_CFLAGS = /nologo /MD /W0 /GX /O2 /D "WIN32" /D "_WINDOWS" \
+	/Fp"$(INTDIR)\lookat.pch" /YX /Fo"$(INTDIR)\\"\
+	/Fd"$(INTDIR)\\" /FD /c
+
+DYNAMIC_CFLAGS = /nologo /MD /W0 /GX /O2 /D "WIN32" /D "_WINDOWS" /D "OPENVRML_DLL_IMPORT" \
 	/Fp"$(INTDIR)\lookat.pch" /YX /Fo"$(INTDIR)\\"\
 	/Fd"$(INTDIR)\\" /FD /c
 
 O=.obj
 LINK32 = link.exe 
-LINK32_FLAGS = $(VRML97LIB)\openvrml.lib \
-  opengl32.lib glu32.lib wsock32.lib $(GLUTLIB_DIR)\glut32.lib\
-  $(JPEGLIB_DIR)\libjpeg.lib $(ZLIB_DIR)\zlib.lib $(PNGLIB_DIR)\libpng.lib /nologo\
-   /subsystem:console /incremental:no /pdb:"$(BINOUTDIR)\lookat.pdb" /machine:I386 \
+LINK32_DYNAMIC_FLAGS = $(VRML97LIB)\openvrml.lib $(GLUTLIB_DIR)\glut32.lib /nologo \
+    /subsystem:console /incremental:no /pdb:"$(BINOUTDIR)\lookat.pdb" /machine:I386 \
    /nodefaultlib:LIBC 
 
-
+LINK32_STATIC_FLAGS = $(VRML97LIB)\openvrml.lib \
+  $(GLUTLIB_DIR)\glut32.lib opengl32.lib glu32.lib wsock32.lib\
+  /nologo \
+   /subsystem:console /incremental:no /pdb:"$(BINOUTDIR)\lookat.pdb" /machine:I386 \
+   /nodefaultlib:LIBC
 
 OBJ = $(BINOUTDIR)\lookat$(O) $(BINOUTDIR)\ViewerGlut$(O)
 
+STATIC_OBJ = static_lookat static_ViewerGlut
 
 clean :
-    -@echo Cleaning lookat.exe    
-	-@erase $(BINOUTDIR)\lookat.obj
-	-@erase $(BINOUTDIR)\ViewerGlut.obj
-	-@erase $(BINOUTDIR)\lookat.exe
-	if exist $(BINOUTDIR)\libjs.dll del $(BINOUTDIR)\libjs.dll
-	if exist $(BINOUTDIR)\glut32.dll del $(BINOUTDIR)\glut32.dll
-      cd $(MAKEDIR)
+    -@echo Cleaning lookat.exe 
+     if exist $(BINOUTDIR) del /Q $(BINOUTDIR)
+     if exist $(BINOUTDIR) rmdir $(BINOUTDIR)
+     cd $(MAKEDIR)
+
+copyvrmldll :
+	-@echo Copying openvrml.dll to $(MAKEDIR)\bin
+ if exist $(CORELIB)\openvrml.dll copy $(CORELIB)\openvrml.dll $(BINOUTDIR)
 
 copydll :
+!IF "$(WITH_JAVASCRIPT)" == "YES"
 	-@echo Copying libjs.dll to $(MAKEDIR)\bin
- if exist $(JSLIB)\libjs.dll copy $(JSLIB)\libjs.dll $(BINOUTDIR)
+ if exist $(MOZILLALIB_DIR)\js32.dll copy $(MOZILLALIB_DIR)\js32.dll $(BINOUTDIR)
+!ENDIF
 	-@echo Copying glut32.dll to $(MAKEDIR)\bin
  if exist $(GLUTLIB_DIR)\glut32.dll copy $(GLUTLIB_DIR)\glut32.dll $(BINOUTDIR)
 
-all: lookat
+all: lookat-dynamic
 
-lookat : PROMPT $(BINOUTDIR)  $(BINOUTDIR)\lookat.exe copydll
+lookat-dynamic : PROMPT $(BINOUTDIR)  lookat_dynamic copyvrmldll copydll
 
+lookat-static : PROMPT $(BINOUTDIR)  lookat_static copydll
 
-$(BINOUTDIR)\lookat.exe : $(OBJ)
-		       if exist $(BINOUTDIR)\lookat.exe del $(BINOUTDIR)\lookat.exe
-		       $(LINK32) $(LINK32_FLAGS) /out:$(BINOUTDIR)\lookat.exe $(OBJ)
+lookat_dynamic     : $(OBJ)
+	               if exist $(BINOUTDIR)\lookat.exe del $(BINOUTDIR)\lookat.exe
+		         $(LINK32) $(LINK32_DYNAMIC_FLAGS) /out:$(BINOUTDIR)\lookat.exe $(OBJ)
+
+lookat_static      :  $(STATIC_OBJ)
+	               if exist $(BINOUTDIR)\lookat.exe del $(BINOUTDIR)\lookat.exe
+		         $(LINK32) $(LINK32_STATIC_FLAGS) /out:$(BINOUTDIR)\lookat.exe $(OBJ)
 
 $(BINOUTDIR)\lookat.obj :   $(SOURCE)\lookat.cpp\
        		          $(SOURCE)\ViewerGlut.h\
-				    $(CORESOURCE)\Doc.h \
+				    $(CORESOURCE)\doc2.hpp \
 	       			$(CORESOURCE)\System.h \
-					$(CORESOURCE)\Viewer.h \
-					$(CORESOURCE)\VrmlField.h \
-					$(CORESOURCE)\VrmlMFNode.h \
-					$(CORESOURCE)\VrmlNode.h \
-					$(CORESOURCE)\VrmlNodeChild.h \
-					$(CORESOURCE)\VrmlNodeGroup.h \
-					$(CORESOURCE)\VrmlScene.h \
-					$(CORESOURCE)\VrmlSFString.h \
-					$(CORESOURCE)\VrmlSFVec3f.h \
-					$(GLSOURCE)\ViewerOpenGL.h 
-					$(CPP) $(CFLAGS) /I $(COREINCLUDE) /I $(GLUTLIB_DIR)\
-					/I $(ZLIB_DIR) /I $(GLINCLUDE) $(SOURCE)\lookat.cpp
+					$(CORESOURCE)\VrmlScene.h
+					$(CPP) $(DYNAMIC_CFLAGS) /I $(COREINCLUDE) /I $(GLUTLIB_DIR)\
+					/I $(GLINCLUDE) $(SOURCE)\lookat.cpp
             	
 
 $(BINOUTDIR)\ViewerGlut.obj :  $(SOURCE)\ViewerGlut.cpp\
 					   $(SOURCE)\ViewerGlut.h\
 					$(CORESOURCE)\System.h\
-					$(CORESOURCE)\Viewer.h\
-					$(GLSOURCE)\ViewerOpenGL.h\
 					$(GLSOURCE)\ViewerOpenGL.h
-            			$(CPP) $(CFLAGS) /I $(GLUTLIB_DIR) /I $(COREINCLUDE)\
+            			$(CPP) $(DYNAMIC_CFLAGS) /I $(GLUTLIB_DIR) /I $(COREINCLUDE)\
 					/I $(GLINCLUDE) $(SOURCE)\ViewerGlut.cpp
 
 
 
+static_lookat :             $(SOURCE)\lookat.cpp\
+       		          $(SOURCE)\ViewerGlut.h\
+				    $(CORESOURCE)\doc2.hpp \
+	       			$(CORESOURCE)\System.h \
+					$(CORESOURCE)\VrmlScene.h
+					$(CPP) $(STATIC_CFLAGS) /I $(COREINCLUDE) /I $(GLUTLIB_DIR)\
+					/I $(GLINCLUDE) $(SOURCE)\lookat.cpp
+            	
+
+static_ViewerGlut :           $(SOURCE)\ViewerGlut.cpp\
+					   $(SOURCE)\ViewerGlut.h\
+					$(CORESOURCE)\System.h\
+					$(GLSOURCE)\ViewerOpenGL.h
+            			$(CPP) $(STATIC_CFLAGS) /I $(GLUTLIB_DIR) /I $(COREINCLUDE)\
+					/I $(GLINCLUDE) $(SOURCE)\ViewerGlut.cpp
 
 
 
