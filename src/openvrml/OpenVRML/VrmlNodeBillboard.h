@@ -51,6 +51,9 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
+  virtual const VrmlNodeBillboard * toBillboard() const;
+  virtual VrmlNodeBillboard * toBillboard();
+
 private:
 
   VrmlSFVec3f d_axisOfRotation;

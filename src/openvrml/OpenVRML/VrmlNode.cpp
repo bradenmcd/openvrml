@@ -226,6 +226,15 @@ VrmlNodeAnchor*		VrmlNode::toAnchor() const { return 0; }
 VrmlNodeAppearance*	VrmlNode::toAppearance() const { return 0; }
 VrmlNodeAudioClip*	VrmlNode::toAudioClip() const { return 0; }
 VrmlNodeBackground*	VrmlNode::toBackground() const { return 0; }
+
+const VrmlNodeBillboard * VrmlNode::toBillboard() const {
+    return 0;
+}
+
+VrmlNodeBillboard * VrmlNode::toBillboard() {
+    return 0;
+}
+
 VrmlNodeBox*		VrmlNode::toBox() const { return 0; } //LarryD Mar 08/99
 
 const VrmlNodeChild * VrmlNode::toChild() const {
@@ -233,6 +242,14 @@ const VrmlNodeChild * VrmlNode::toChild() const {
 }
 
 VrmlNodeChild * VrmlNode::toChild() {
+    return 0;
+}
+
+const VrmlNodeCollision * VrmlNode::toCollision() const {
+    return 0;
+}
+
+VrmlNodeCollision * VrmlNode::toCollision() {
     return 0;
 }
 

@@ -54,6 +54,9 @@ public:
   const VrmlSFNode & getProxy() const;
   void setProxy(const VrmlSFNode & proxy);
 
+  virtual const VrmlNodeCollision * toCollision() const;
+  virtual VrmlNodeCollision * toCollision();
+
 private:
 
   VrmlSFBool d_collide;

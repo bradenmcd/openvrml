@@ -159,3 +159,11 @@ const VrmlSFNode & VrmlNodeCollision::getProxy() const {
 void VrmlNodeCollision::setProxy(const VrmlSFNode & proxy) {
     this->d_proxy = proxy;
 }
+
+const VrmlNodeCollision * VrmlNodeCollision::toCollision() const {
+    return this;
+}
+
+VrmlNodeCollision * VrmlNodeCollision::toCollision() {
+    return this;
+}

@@ -3,6 +3,11 @@
         * Removed dynamic_cast in assertions in VrmlNodeAppearance's
           setters in favor of toNode() methods.
 
+        * Fixed problem with VrmlNodeBillboard::accumulateTransform()
+          where a null pointer could potentially be dereferenced.
+
+        * Added VrmlNode::toBillboard() and ::toCollision() methods.
+
 2001-01-29 Michael Louka  <michael.louka@hrp.no>
 
         * For Mac OS only: Updated System.cpp to removed dependency on

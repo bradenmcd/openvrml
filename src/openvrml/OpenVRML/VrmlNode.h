@@ -43,8 +43,10 @@ class VrmlNodeAnchor;
 class VrmlNodeAppearance;
 class VrmlNodeAudioClip;
 class VrmlNodeBackground;
+class VrmlNodeBillboard;
 class VrmlNodeBox;   //LarryD Mar 08/99
 class VrmlNodeChild;
+class VrmlNodeCollision;
 class VrmlNodeColor;
 class VrmlNodeCone;   //LarryD Mar 08/99
 class VrmlNodeCoordinate;
@@ -122,9 +124,13 @@ public:
   virtual VrmlNodeAppearance*	toAppearance() const;
   virtual VrmlNodeAudioClip*	toAudioClip() const;
   virtual VrmlNodeBackground*	toBackground() const;
+  virtual const VrmlNodeBillboard * toBillboard() const;
+  virtual VrmlNodeBillboard * toBillboard();
   virtual VrmlNodeBox*		toBox() const; //LarryD Mar 08/99
   virtual const VrmlNodeChild * toChild() const;
   virtual VrmlNodeChild * toChild();
+  virtual const VrmlNodeCollision * toCollision() const;
+  virtual VrmlNodeCollision * toCollision();
   virtual VrmlNodeColor*	toColor() const;
   virtual VrmlNodeCone* toCone() const; //LarryD Mar 08/99
   virtual VrmlNodeCoordinate*	toCoordinate() const;
