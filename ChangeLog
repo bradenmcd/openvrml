@@ -1,3 +1,10 @@
+2001-11-26  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * Commit patch 485502 that fixes a problem with events being
+          sent at incorrect times.
+
+        * Update ScriptJDK.cpp to include nodeptr.h instead of VrmlNodePtr.h 
+
 2001-11-25  Braden McDaniel  <braden@endoframe.com>
 
         * Moved NodeVisitor implementation to `node.h' and `node.cpp'.
