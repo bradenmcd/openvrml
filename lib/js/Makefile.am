@@ -25,13 +25,13 @@ endif
 
 AM_CFLAGS = -Wall -Wno-format
 INCLUDES = -I.
-libvrml97js_la_LDFLAGS = -version-info @VRML97JS_LIBRARY_VERSION@
+libjs_la_LDFLAGS = -version-info @JS_LIBRARY_VERSION@
 
 noinst_PROGRAMS = jscpucfg
 jscpucfg_SOURCES = jscpucfg.c
 
-lib_LTLIBRARIES = libvrml97js.la
-libvrml97js_la_SOURCES = \
+lib_LTLIBRARIES = libjs.la
+libjs_la_SOURCES = \
 	jsapi.c	 \
 	jsarena.c \
 	jsarray.c \
@@ -129,10 +129,10 @@ EXTRA_DIST = jsmath.c
 jsmath.o jsmath.lo: jsmath.c
 	$(LTCOMPILE) -c $<
 
-jsmathprelinked.lo: jsmath.lo jsmath.o
-	$(LINK) $(reload_flag) $< ./fdlibm/libfdm.la
+jsmathprelinked.lo: jsmath.lo fdlibm/libfdm.la
+	$(LINK) $(reload_flag) $<
 
-libvrml97js_la_LIBADD = jsmathprelinked.lo
+libjs_la_LIBADD = jsmathprelinked.lo
 
 CLEANFILES = jsmath.o jsmath.lo
 DISTCLEANFILES = jsautocfg.h
