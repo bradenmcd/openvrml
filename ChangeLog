@@ -14,6 +14,8 @@
           src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Doc-comment
           fix-ups.
 
+        * doc/openvrml.css: Style sheet improvements.
+
 2002-11-14  Braden McDaniel  <braden@endoframe.com>
 
         * m4/jpeg.m4, m4/png.m4, m4/zlib.m4: Fixed problem with macros

@@ -99,15 +99,16 @@ hr {
   margin-top: 1em;
 }
 
-td.md {
+.md, td.md, .md td {
   background-color: rgb(95%, 95%, 95%);
 }
 
 H1 { text-align: center; }
+
+
 /*
 :link.qindex {}
 :link.qindexRef {}
-:link.el { text-decoration: none; font-weight: bold }
 A.elRef { font-weight: bold }
 A.code { text-decoration: none; font-weight: normal; color: #4444ee }
 A.codeRef { font-weight: normal; color: #4444ee }
@@ -120,7 +121,6 @@ DIV.ah {
   margin-bottom: 0.5em;
   margin-top: 0.5em;
 }
-/*TD.md { background-color: #f2f2ff }*/
 DIV.groupHeader { margin-left: 16; margin-top: 12; margin-bottom: 6; font-weight: bold }
 DIV.groupText { margin-left: 16; font-style: italic; font-size: smaller }
 FONT.keyword       { color: #008000 }
