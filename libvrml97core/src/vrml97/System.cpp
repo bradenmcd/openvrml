@@ -15,6 +15,9 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#ifdef _WIN32
+#include <string.h>
+#endif
 
 
 // A default System object
@@ -180,8 +183,13 @@ bool System::loadUrl(const char *url, int np, char **parameters )
 #endif // _WIN32
 }
 
-// This won't work under windows (and is not needed for mac os)...
-#ifndef _WIN32
+// added for working under windows (and is not needed for mac os)...
+#ifdef _WIN32
+#include <sys/types.h>
+#include <winsock2.h>
+#include <string.h>
+#include <ctype.h>
+#else
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -195,17 +203,31 @@ bool System::loadUrl(const char *url, int np, char **parameters )
 
 int System::connectSocket( const char *host, int port )
 {
-#ifdef _WIN32
-  return -1;
-#endif
+//#ifdef _WIN32
+//  return -1;
+//#endif
 #ifdef macintosh
   return -1;
 #else
   struct sockaddr_in sin;
   struct hostent *he;
 
+#ifdef _WIN32            
+  WSADATA wsaData;
+  WORD wVersionRequested;
+#endif
+
   int sockfd = -1;
 
+ #ifdef _WIN32   
+   wVersionRequested = MAKEWORD( 1, 0 );
+   if (WSAStartup(wVersionRequested,&wsaData) == SOCKET_ERROR)
+   {
+                theSystem->error("WSAStartup failed with error %d\n",WSAGetLastError());
+                WSACleanup();
+                return -1;
+        }
+#endif                            
   memset( &sin, 0, sizeof(sin) );
   sin.sin_family = AF_INET;
   sin.sin_port = htons(port);
@@ -230,7 +252,13 @@ int System::connectSocket( const char *host, int port )
       if (sockfd != -1)
 	if (connect( sockfd, (struct sockaddr *)&sin, sizeof(sin)) == -1)
 	  {
+#ifdef _WIN32                  
+                closesocket(sockfd);
+                WSACleanup();
+#else
+
 	    close( sockfd );
+#endif
 	    sockfd = -1;
 	  }
     }
@@ -243,6 +271,8 @@ int System::connectSocket( const char *host, int port )
 #include <fcntl.h>		// open() modes
 #ifndef _WIN32
 #include <unistd.h>
+#else
+#include <io.h>
 #endif
 #include <stdlib.h>
 #include <errno.h>
@@ -270,25 +300,32 @@ const char *System::httpHost( const char *url, int *port )
 
 const char *System::httpFetch( const char *url )
 {
-#ifdef _WIN32
-  return 0;
-#else
+// #ifdef _WIN32
+//  return 0;
+// #else
 
   int port = 80;
   const char *hostname = httpHost(url, &port);
 
   if (port == 80)
-    System::inform("Connecting to %s ...", hostname);
+    theSystem->inform("Connecting to %s ...", hostname);
   else
-    System::inform("Connecting to %s:%d ...", hostname, port);
+    theSystem->inform("Connecting to %s:%d ...", hostname, port);
 
   int sockfd;
   if ((sockfd = System::connectSocket( hostname, port )) != -1)
-    System::inform("connected.");
+    theSystem->inform("connected.");
   else
-    System::warn("Connect failed: %s (errno %d).\n",
+#ifdef _WIN32                          
+     {
+        theSystem->warn("Connect failed:  (errno %d)\n",
+        WSAGetLastError());
+        WSACleanup();
+     }
+#else
+  theSystem->warn("Connect failed: %s (errno %d).\n",
 		 strerror(errno), errno);
-
+#endif
   // Copy to a local temp file
   char *result = 0;
   if (sockfd != -1 && (result = tempnam(0, "VR")))
@@ -306,15 +343,32 @@ const char *System::httpFetch( const char *url )
 	  sprintf(request,"GET %s HTTP/1.0\nAccept: */*\n\r\n", abspath);
 
 	  int nbytes = strlen(request);
+#ifdef _WIN32                           
+          if(send(sockfd,request,nbytes,0) != nbytes)
+#else
+
 	  if (write(sockfd, request, nbytes) != nbytes)
-	    System::warn("http GET failed: %s (errno %d)\n",
+#endif
+#ifdef _WIN32                          
+          {
+                theSystem->warn("http GET failed:  (errno %d)\n",
+                WSAGetLastError());
+                WSACleanup();
+          }
+#else                                       
+
+	    theSystem->warn("http GET failed: %s (errno %d)\n",
 			 strerror(errno), errno);
+#endif
 	  else
 	    {
 	      int gothdr = 0, nread = 0, nwrote = 0, nmore;
 	      char *start;
-
+#ifdef _WIN32                                   
+          while((nmore = recv(sockfd,request,sizeof(request)-1,0)) > 0)
+#else            
 	      while ((nmore = read(sockfd, request, sizeof(request)-1)) > 0)
+#endif
 		{
 		  nread += nmore;
 
@@ -338,13 +392,13 @@ const char *System::httpFetch( const char *url )
 		  nmore -= (start - request);
 		  if (write(fd, start, nmore) != nmore)
 		    {
-		      System::warn("http: temp file write error\n");
+		      theSystem->warn("http: temp file write error\n");
 		      break;
 		    }
 		  nwrote += nmore;
 		}
 
-	      System::inform("Read %dk from %s", (nread+1023)/1024, url);
+	      theSystem->inform("Read %dk from %s", (nread+1023)/1024, url);
 	      //System::debug("Wrote %d bytes to %s\n", nread, result);
 	    }
 
@@ -352,9 +406,17 @@ const char *System::httpFetch( const char *url )
 	}
     }
 
-  if (sockfd != -1) close(sockfd);
-  return result;
+  if (sockfd != -1)
+#ifdef _WIN32   
+	{
+                closesocket(sockfd);
+                WSACleanup();
+	}
+#else
+  close(sockfd);
 #endif
+  return result;
+// #endif
 }
 
 #else // Mac code for using OpenTransport to retrieve a URL
