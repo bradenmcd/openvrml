@@ -61,7 +61,7 @@ public class ConstMFColor extends ConstMField
    */
   public ConstMFColor(float colors[])
   {
-    CreateObject(colors.length, colors);
+    CreateObject(colors.length / 3, colors);
   }
 
   /**
@@ -95,7 +95,7 @@ public class ConstMFColor extends ConstMField
    *
    * @param index Position of desired SFColor
    * @param colors RGB value of specified SFColor.
-   */	
+   */
   public native void get1Value(int index, float colors[]);
 
   /**
