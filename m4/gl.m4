@@ -27,7 +27,9 @@
 # `yes'.
 #
 AC_DEFUN(OV_CHECK_GL,
-[GL_LIBS="-lpthread -lm"
+[AC_REQUIRE([AC_PATH_XTRA])dnl
+GL_CFLAGS="${X_CFLAGS}"
+GL_LIBS="${X_PRE_LIBS} ${X_LIBS} ${X_EXTRA_LIBS}"
 AC_LANG_PUSH(C)
 ov_have_gl=no
 AC_CHECK_LIB(GL, glAccum,
@@ -63,8 +65,10 @@ if test "X${ov_have_gl}" = Xyes; then
   no_gl=""
 else
   no_gl=yes
+  GL_CFLAGS=""
   GL_LIBS=""
 fi
 
-AC_SUBST(GL_LIBS)
+AC_SUBST([GL_CFLAGS])
+AC_SUBST([GL_LIBS])
 ])
