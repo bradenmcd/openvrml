@@ -227,9 +227,13 @@ std::istream & operator>>(std::istream & in, NodeInterface::Type & type)
  * @param fieldType the field data type handled by the interface.
  * @param id        the name of the interface.
  */
-NodeInterface::NodeInterface(const Type type, const FieldValue::Type fieldType,
+NodeInterface::NodeInterface(const Type type,
+                             const FieldValue::Type fieldType,
                              const std::string & id):
-        type(type), fieldType(fieldType), id(id) {}
+    type(type),
+    fieldType(fieldType),
+    id(id)
+{}
 
 /**
  * @fn bool operator==(const NodeInterface & lhs, const NodeInterface & rhs) throw ()
@@ -305,7 +309,8 @@ NodeInterface::NodeInterface(const Type type, const FieldValue::Type fieldType,
  * @throw std::bad_alloc        if memory allocation fails.
  */
 void NodeInterfaceSet::add(const NodeInterface & nodeInterface)
-        throw (std::invalid_argument, std::bad_alloc) {
+    throw (std::invalid_argument, std::bad_alloc)
+{
     if (!this->nodeInterfaceSet.insert(nodeInterface).second) {
         throw std::invalid_argument("Interface conflicts with an interface already in this set.");
     }
@@ -403,12 +408,15 @@ NodeInterfaceSet::findInterface(const std::string & id) const throw ()
  *
  * @param browser   the Browser to be associated with the NodeClass.
  */
-NodeClass::NodeClass(Browser & browser) throw (): browser(browser) {}
+NodeClass::NodeClass(Browser & browser) throw ():
+    browser(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-NodeClass::~NodeClass() throw () {}
+NodeClass::~NodeClass() throw ()
+{}
 
 /**
  * @brief NodeClass-specific initialization.
@@ -482,12 +490,16 @@ void NodeClass::render(Viewer & viewer) throw ()
  * @throw std::bad_alloc    if memory allocation fails.
  */
 NodeType::NodeType(NodeClass & nodeClass, const std::string & id)
-        throw (std::bad_alloc): nodeClass(nodeClass), id(id) {}
+    throw (std::bad_alloc):
+    nodeClass(nodeClass),
+    id(id)
+{}
 
 /**
  * @brief Destructor.
  */
-NodeType::~NodeType() throw () {}
+NodeType::~NodeType() throw ()
+{}
 
 namespace {
     struct IsEventIn_ : public std::unary_function<NodeInterface, bool> {
@@ -497,7 +509,8 @@ namespace {
     public:
         IsEventIn_(const std::string & id): id(id) {}
 
-        bool operator()(const NodeInterface & nodeInterface) const {
+        bool operator()(const NodeInterface & nodeInterface) const
+        {
             return (nodeInterface.type == NodeInterface::eventIn
                         && (this->id == nodeInterface.id
                             || "set_" + this->id == nodeInterface.id))
@@ -521,7 +534,8 @@ namespace {
  * @return the data type of the eventIn, or FieldValue::invalidType if no such
  *      eventIn exists.
  */
-FieldValue::Type NodeType::hasEventIn(const std::string & id) const throw () {
+FieldValue::Type NodeType::hasEventIn(const std::string & id) const throw ()
+{
     const NodeInterfaceSet & interfaces = this->getInterfaces();
     const NodeInterfaceSet::const_iterator end = interfaces.end();
     const NodeInterfaceSet::const_iterator pos =
@@ -538,7 +552,8 @@ namespace {
     public:
         IsEventOut_(const std::string & id): id(id) {}
 
-        bool operator()(const NodeInterface & nodeInterface) const {
+        bool operator()(const NodeInterface & nodeInterface) const
+        {
             return (nodeInterface.type == NodeInterface::eventOut
                         && (this->id == nodeInterface.id
                             || this->id + "_changed" == nodeInterface.id))
@@ -562,7 +577,8 @@ namespace {
  * @return the data type of the eventOut, or FieldValue::invalidType if no such
  *      eventOut exists.
  */
-FieldValue::Type NodeType::hasEventOut(const std::string & id) const throw () {
+FieldValue::Type NodeType::hasEventOut(const std::string & id) const throw ()
+{
     const NodeInterfaceSet & interfaces = this->getInterfaces();
     const NodeInterfaceSet::const_iterator end = interfaces.end();
     const NodeInterfaceSet::const_iterator pos =
@@ -579,7 +595,8 @@ namespace {
     public:
         IsExposedField_(const std::string & id): id(id) {}
 
-        bool operator()(const NodeInterface & nodeInterface) const {
+        bool operator()(const NodeInterface & nodeInterface) const
+        {
             return nodeInterface.type == NodeInterface::exposedField
                     && this->id == nodeInterface.id;
         }
@@ -599,7 +616,8 @@ namespace {
  *      such exposedField exists.
  */
 FieldValue::Type NodeType::hasExposedField(const std::string & id) const
-        throw () {
+    throw ()
+{
     const NodeInterfaceSet & interfaces = this->getInterfaces();
     const NodeInterfaceSet::const_iterator end = interfaces.end();
     const NodeInterfaceSet::const_iterator pos =
@@ -616,7 +634,8 @@ namespace {
     public:
         IsField_(const std::string & id): id(id) {}
 
-        bool operator()(const NodeInterface & nodeInterface) const {
+        bool operator()(const NodeInterface & nodeInterface) const
+        {
             return nodeInterface.type == NodeInterface::field
                     && this->id == nodeInterface.id;
         }
@@ -634,7 +653,8 @@ namespace {
  * @return the data type of the field, or FieldValue::invalidType if no such
  *      field exists.
  */
-FieldValue::Type NodeType::hasField(const std::string & id) const throw () {
+FieldValue::Type NodeType::hasField(const std::string & id) const throw ()
+{
     const NodeInterfaceSet & interfaces = this->getInterfaces();
     const NodeInterfaceSet::const_iterator end = interfaces.end();
     const NodeInterfaceSet::const_iterator pos =
@@ -733,16 +753,21 @@ FieldValueTypeMismatch::~FieldValueTypeMismatch() throw ()
  */
 Node::Route::Route(const std::string & fromEventOut,
                    const NodePtr & toNode, const std::string & toEventIn):
-        fromEventOut(fromEventOut), toNode(toNode),
-	toEventIn(toEventIn) {}
+    fromEventOut(fromEventOut),
+    toNode(toNode),
+    toEventIn(toEventIn)
+{}
 
 /**
  * @brief Copy constructor.
  *
  * @param route the Route to copy.
  */
-Node::Route::Route(const Route & route): fromEventOut(route.fromEventOut),
-	toNode(route.toNode), toEventIn(route.toEventIn) {}
+Node::Route::Route(const Route & route):
+    fromEventOut(route.fromEventOut),
+    toNode(route.toNode),
+    toEventIn(route.toEventIn)
+{}
 
 /**
  * @fn bool operator==(const Node::Route & lhs, const Node::Route & rhs)
@@ -806,7 +831,35 @@ Node::PolledEventOutValue::PolledEventOutValue():
  */
 Node::PolledEventOutValue::PolledEventOutValue(const FieldValuePtr & value,
                                                const bool modified):
-        value(value), modified(modified) {}
+    value(value), modified(modified)
+{}
+
+/**
+ * @var ScopePtr Node::scope
+ *
+ * @brief The Scope to which the Node belongs.
+ */
+
+/**
+ * @var Scene * Node::scene
+ *
+ * @brief The Scene with which the Node is associated.
+ */
+
+/**
+ * @var Node::RouteList Node::routes
+ *
+ * @brief The list of routes from the Node.
+ */
+
+/**
+ * @var bool Node::visited
+ *
+ * @brief Flag used by a NodeVisitor to distinguish visited nodes.
+ *
+ * @see Node::accept
+ * @see Node::resetVisitedFlag
+ */
 
 /**
  * @var Node::nodeType
@@ -821,12 +874,21 @@ Node::PolledEventOutValue::PolledEventOutValue(const FieldValuePtr & value,
  * @param scope the Scope associated with the instance.
  */
 Node::Node(const NodeType & type, const ScopePtr & scope):
-        scope(scope),
-        scene(0),
-        nodeType(type),
-        d_modified(false),
-        d_bvol_dirty(false),
-        visited(false) {}
+    scope(scope),
+    scene(0),
+    nodeType(type),
+    d_modified(false),
+    d_bvol_dirty(false),
+    visited(false)
+{}
+
+/**
+ * @internal
+ *
+ * @fn Node::Node(const Node &)
+ *
+ * @brief Copy constructor. (Not implemented--non-copyable.)
+ */
 
 typedef std::map<std::string, Node *> NamedNodeMap;
 
@@ -835,7 +897,8 @@ namespace {
     struct NodeIs_ : std::unary_function<NamedNodeMap::value_type, bool> {
         NodeIs_(const Node & node): node(&node) {}
 
-        bool operator()(const NamedNodeMap::value_type & value) const {
+        bool operator()(const NamedNodeMap::value_type & value) const
+        {
             return value.second == this->node;
         }
 
@@ -849,7 +912,8 @@ namespace {
  *
  * Remove node name (if any) from the scope.
  */
-Node::~Node() throw () {
+Node::~Node() throw ()
+{
     //
     // If this is the primordial node in a prototype definition, this->scope
     // will be null.
@@ -864,11 +928,20 @@ Node::~Node() throw () {
 }
 
 /**
+ * @internal
+ *
+ * @fn Node & Node::operator=(const Node &)
+ *
+ * @brief Assignment operator. (Not implemented--non-copyable.)
+ */
+
+/**
  * @brief Set the nodeId of the node.
  *
  * @param nodeId   the ID for the node.
  */
-void Node::setId(const std::string & nodeId) {
+void Node::setId(const std::string & nodeId)
+{
     assert(this->scope);
     this->scope->namedNodeMap[nodeId] = this;
 }
@@ -878,7 +951,8 @@ void Node::setId(const std::string & nodeId) {
  *
  * @return the nodeId
  */
-const std::string Node::getId() const {
+const std::string Node::getId() const
+{
     using std::find_if;
     assert(this->scope);
     const NamedNodeMap::iterator end = this->scope->namedNodeMap.end();
@@ -893,6 +967,14 @@ const std::string Node::getId() const {
  * @brief Get the Scope to which the Node belongs.
  *
  * @return the Scope to which the Node belongs.
+ */
+
+/**
+ * @fn Scene * Node::getScene() const throw ()
+ *
+ * @brief Get the Scene with which the Node is associated.
+ *
+ * @return the Scene with which the Node is associated.
  */
 
 /**
@@ -916,7 +998,8 @@ const std::string Node::getId() const {
  *         @c false otherwise (the node <em>has</em> been
  *         visited during this traversal).
  */
-bool Node::accept(NodeVisitor & visitor) {
+bool Node::accept(NodeVisitor & visitor)
+{
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -1052,7 +1135,8 @@ void Node::initialize(Scene & scene, const double timestamp)
  * @pre @p value must be the appropriate type for the interface.
  */
 void Node::setField(const std::string & id, const FieldValue & value)
-        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+{
     this->setFieldImpl(id, value);
 }
 
@@ -1064,7 +1148,8 @@ void Node::setField(const std::string & id, const FieldValue & value)
  * @throw UnsupportedInterface  if the node has no field named @p id.
  */
 const FieldValue & Node::getField(const std::string & id) const
-        throw (UnsupportedInterface) {
+    throw (UnsupportedInterface)
+{
     return this->getFieldImpl(id);
 }
 
@@ -1081,9 +1166,11 @@ const FieldValue & Node::getField(const std::string & id) const
  *
  * @pre @p value must be the appropriate type for the interface.
  */
-void Node::processEvent(const std::string & id, const FieldValue & value,
+void Node::processEvent(const std::string & id,
+                        const FieldValue & value,
                         const double timestamp)
-        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+{
     this->processEventImpl(id, value, timestamp);
 }
 
@@ -1096,7 +1183,8 @@ void Node::processEvent(const std::string & id, const FieldValue & value,
  * @throw UnsupportedInterface  if the node has no eventOut named @p id.
  */
 const FieldValue & Node::getEventOut(const std::string & id) const
-        throw (UnsupportedInterface) {
+    throw (UnsupportedInterface)
+{
     return this->getEventOutImpl(id);
 }
 
@@ -1107,7 +1195,10 @@ const FieldValue & Node::getEventOut(const std::string & id) const
  *
  * @return 0
  */
-const ScriptNode * Node::toScript() const throw () { return 0; }
+const ScriptNode * Node::toScript() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a ScriptNode.
@@ -1116,7 +1207,10 @@ const ScriptNode * Node::toScript() const throw () { return 0; }
  *
  * @return 0
  */
-ScriptNode * Node::toScript() throw () { return 0; }
+ScriptNode * Node::toScript() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const AppearanceNode.
@@ -1125,7 +1219,10 @@ ScriptNode * Node::toScript() throw () { return 0; }
  *
  * @return 0
  */
-const AppearanceNode * Node::toAppearance() const throw () { return 0; }
+const AppearanceNode * Node::toAppearance() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to an AppearanceNode.
@@ -1134,7 +1231,10 @@ const AppearanceNode * Node::toAppearance() const throw () { return 0; }
  *
  * @return 0
  */
-AppearanceNode * Node::toAppearance() throw () { return 0; }
+AppearanceNode * Node::toAppearance() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const ChildNode.
@@ -1143,7 +1243,10 @@ AppearanceNode * Node::toAppearance() throw () { return 0; }
  *
  * @return 0
  */
-const ChildNode * Node::toChild() const throw () { return 0; }
+const ChildNode * Node::toChild() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a ChildNode.
@@ -1152,7 +1255,10 @@ const ChildNode * Node::toChild() const throw () { return 0; }
  *
  * @return 0
  */
-ChildNode * Node::toChild() throw () { return 0; }
+ChildNode * Node::toChild() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const ColorNode.
@@ -1161,7 +1267,10 @@ ChildNode * Node::toChild() throw () { return 0; }
  *
  * @return 0
  */
-const ColorNode * Node::toColor() const throw () { return 0; }
+const ColorNode * Node::toColor() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a ColorNode.
@@ -1170,7 +1279,10 @@ const ColorNode * Node::toColor() const throw () { return 0; }
  *
  * @return 0
  */
-ColorNode * Node::toColor() throw () { return 0; }
+ColorNode * Node::toColor() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const CoordinateNode.
@@ -1179,7 +1291,10 @@ ColorNode * Node::toColor() throw () { return 0; }
  *
  * @return 0
  */
-const CoordinateNode * Node::toCoordinate() const throw () { return 0; }
+const CoordinateNode * Node::toCoordinate() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a CoordinateNode.
@@ -1188,7 +1303,10 @@ const CoordinateNode * Node::toCoordinate() const throw () { return 0; }
  *
  * @return 0
  */
-CoordinateNode * Node::toCoordinate() throw () { return 0; }
+CoordinateNode * Node::toCoordinate() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const FontStyleNode.
@@ -1197,7 +1315,10 @@ CoordinateNode * Node::toCoordinate() throw () { return 0; }
  *
  * @return 0
  */
-const FontStyleNode * Node::toFontStyle() const throw () { return 0; }
+const FontStyleNode * Node::toFontStyle() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a FontStyleNode.
@@ -1206,7 +1327,10 @@ const FontStyleNode * Node::toFontStyle() const throw () { return 0; }
  *
  * @return 0
  */
-FontStyleNode * Node::toFontStyle() throw () { return 0; }
+FontStyleNode * Node::toFontStyle() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const GeometryNode.
@@ -1215,7 +1339,10 @@ FontStyleNode * Node::toFontStyle() throw () { return 0; }
  *
  * @return 0
  */
-const GeometryNode * Node::toGeometry() const throw () { return 0; }
+const GeometryNode * Node::toGeometry() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a GeometryNode.
@@ -1224,7 +1351,10 @@ const GeometryNode * Node::toGeometry() const throw () { return 0; }
  *
  * @return 0
  */
-GeometryNode * Node::toGeometry() throw () { return 0; }
+GeometryNode * Node::toGeometry() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const MaterialNode.
@@ -1233,7 +1363,10 @@ GeometryNode * Node::toGeometry() throw () { return 0; }
  *
  * @return 0
  */
-const MaterialNode * Node::toMaterial() const throw () { return 0; }
+const MaterialNode * Node::toMaterial() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a MaterialNode.
@@ -1242,7 +1375,10 @@ const MaterialNode * Node::toMaterial() const throw () { return 0; }
  *
  * @return 0
  */
-MaterialNode * Node::toMaterial() throw () { return 0; }
+MaterialNode * Node::toMaterial() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const NormalNode.
@@ -1251,7 +1387,10 @@ MaterialNode * Node::toMaterial() throw () { return 0; }
  *
  * @return 0
  */
-const NormalNode * Node::toNormal() const throw () { return 0; }
+const NormalNode * Node::toNormal() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a NormalNode.
@@ -1260,7 +1399,10 @@ const NormalNode * Node::toNormal() const throw () { return 0; }
  *
  * @return 0
  */
-NormalNode * Node::toNormal() throw () { return 0; }
+NormalNode * Node::toNormal() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const SoundSourceNode.
@@ -1269,7 +1411,10 @@ NormalNode * Node::toNormal() throw () { return 0; }
  *
  * @return 0
  */
-const SoundSourceNode * Node::toSoundSource() const throw () { return 0; }
+const SoundSourceNode * Node::toSoundSource() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a SoundSourceNode.
@@ -1278,7 +1423,10 @@ const SoundSourceNode * Node::toSoundSource() const throw () { return 0; }
  *
  * @return 0
  */
-SoundSourceNode * Node::toSoundSource() throw () { return 0; }
+SoundSourceNode * Node::toSoundSource() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const TextureNode.
@@ -1287,7 +1435,10 @@ SoundSourceNode * Node::toSoundSource() throw () { return 0; }
  *
  * @return 0
  */
-const TextureNode * Node::toTexture() const throw () { return 0; }
+const TextureNode * Node::toTexture() const throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a TextureNode.
@@ -1296,7 +1447,10 @@ const TextureNode * Node::toTexture() const throw () { return 0; }
  *
  * @return 0
  */
-TextureNode * Node::toTexture() throw () { return 0; }
+TextureNode * Node::toTexture() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const TextureCoordinateNode.
@@ -1305,7 +1459,8 @@ TextureNode * Node::toTexture() throw () { return 0; }
  *
  * @return 0
  */
-const TextureCoordinateNode * Node::toTextureCoordinate() const throw () {
+const TextureCoordinateNode * Node::toTextureCoordinate() const throw ()
+{
     return 0;
 }
 
@@ -1316,7 +1471,10 @@ const TextureCoordinateNode * Node::toTextureCoordinate() const throw () {
  *
  * @return 0
  */
-TextureCoordinateNode * Node::toTextureCoordinate() throw () { return 0; }
+TextureCoordinateNode * Node::toTextureCoordinate() throw ()
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a const TextureTransformNode.
@@ -1325,7 +1483,8 @@ TextureCoordinateNode * Node::toTextureCoordinate() throw () { return 0; }
  *
  * @return 0
  */
-const TextureTransformNode * Node::toTextureTransform() const throw () {
+const TextureTransformNode * Node::toTextureTransform() const throw ()
+{
     return 0;
 }
 
@@ -1336,7 +1495,10 @@ const TextureTransformNode * Node::toTextureTransform() const throw () {
  *
  * @return 0
  */
-TextureTransformNode * Node::toTextureTransform() throw () { return 0; }
+TextureTransformNode * Node::toTextureTransform() throw ()
+{
+    return 0;
+}
 
 
 // Safe node downcasts. These avoid the dangerous casts of Node* (esp in
@@ -1457,14 +1619,18 @@ void Node::deleteRoute(const std::string & fromEventOut,
  *
  * @return an std::vector of Routes from this node.
  */
-const Node::RouteList & Node::getRoutes() const {
+const Node::RouteList & Node::getRoutes() const
+{
     return this->routes;
 }
 
 /**
- * Dirty bit - indicates node needs to be revisited for rendering.
+ * @brief Set the modified flag.
+ *
+ * Indicates the Node needs to be revisited for rendering.
  */
-void Node::setModified() {
+void Node::setModified()
+{
     this->d_modified = true;
     this->nodeType.nodeClass.browser.setModified();
 }
@@ -1478,7 +1644,10 @@ void Node::setModified() {
  *
  * @return @c true if the node has been modified; @c false otherwise.
  */
-bool Node::isModified() const { return this->d_modified; }
+bool Node::isModified() const
+{
+    return this->d_modified;
+}
 
 /**
  * @brief Mark all the nodes in the path as (not) modified.
@@ -1490,29 +1659,25 @@ bool Node::isModified() const { return this->d_modified; }
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Node::markPathModified(NodePath& path, bool mod, int flags) {
-  NodePath::iterator i;
-  NodePath::iterator end = path.end();
-  if (flags & 0x001) {
-    for (i = path.begin(); i != end; ++i) {
-      Node *c = *i;
-      if (mod) {
-	// do the proof that our invarient shows that this short
-	// circuit is legal...
-	c->setModified();
-      } else
-	c->clearModified();
+void Node::markPathModified(NodePath& path, bool mod, int flags)
+{
+    const NodePath::iterator end = path.end();
+    if (flags & 0x001) {
+        for (NodePath::iterator i = path.begin(); i != end; ++i) {
+            if (mod) {
+                // do the proof that our invarient shows that this short
+                // circuit is legal...
+                (*i)->setModified();
+            } else {
+                (*i)->clearModified();
+            }
+        }
     }
-  }
-  if (flags & 0x002) {
-    for (i = path.begin(); i != end; ++i) {
-      Node *c = *i;
-      if (mod) {
-	c->setBVolumeDirty(true);
-      } else
-	c->setBVolumeDirty(false);
+    if (flags & 0x002) {
+        for (NodePath::iterator i = path.begin(); i != end; ++i) {
+            (*i)->setBVolumeDirty(mod);
+        }
     }
-  }
 }
 
 /**
@@ -1537,8 +1702,8 @@ void Node::updateModified(NodePath & path, int flags)
 //
 void Node::updateModified(int flags)
 {
-  NodePath path;
-  updateModified(path, flags);
+    NodePath path;
+    updateModified(path, flags);
 }
 
 // Render
@@ -1577,7 +1742,8 @@ void Node::updateModified(int flags)
  *
  * @todo Should this return a reference?
  */
-const BVolume * Node::getBVolume() const {
+const BVolume * Node::getBVolume() const
+{
     static BSphere infBSphere;
     static BSphere * infBSpherePtr = 0;
     if (!infBSpherePtr) {
@@ -1594,7 +1760,8 @@ const BVolume * Node::getBVolume() const {
  *
  * @todo Implement me!
  */
-void Node::setBVolume(const BVolume & v) {
+void Node::setBVolume(const BVolume & v)
+{
     // XXX Implement me!
 }
 
@@ -1604,7 +1771,8 @@ void Node::setBVolume(const BVolume & v) {
  * all that node's ancestors are also invalid. Normally, the node
  * itself will determine when its bvolume needs updating.
  */
-void Node::setBVolumeDirty(bool f) {
+void Node::setBVolumeDirty(bool f)
+{
     this->d_bvol_dirty = f;
     if (f) { // only if dirtying, not clearing
         this->nodeType.nodeClass.browser.d_flags_need_updating = true;
@@ -1615,7 +1783,8 @@ void Node::setBVolumeDirty(bool f) {
  * Return true if the node's bounding volume needs to be
  * recalculated.
  */
-bool Node::isBVolumeDirty() const {
+bool Node::isBVolumeDirty() const
+{
     if (this->nodeType.nodeClass.browser.d_flags_need_updating) {
         this->nodeType.nodeClass.browser.updateFlags();
         this->nodeType.nodeClass.browser.d_flags_need_updating = false;
@@ -1640,8 +1809,8 @@ bool Node::isBVolumeDirty() const {
  */
 void Node::render(Viewer & viewer, VrmlRenderContext context)
 {
-  //if (cull(v, c)) return;
-  clearModified();
+    //if (cull(v, c)) return;
+    clearModified();
 }
 
 /**
@@ -1653,7 +1822,8 @@ void Node::render(Viewer & viewer, VrmlRenderContext context)
  *
  * @param parent    the parent node.
  */
-void Node::accumulateTransform(Node * parent) {}
+void Node::accumulateTransform(Node * parent)
+{}
 
 /**
  * @brief Get the nearest ancestor node that affects the modelview transform.
@@ -1663,7 +1833,10 @@ void Node::accumulateTransform(Node * parent) {}
  * @return the nearest ancestor node that affects the modelview
  *      transform.
  */
-Node * Node::getParentTransform() { return 0; }
+Node * Node::getParentTransform()
+{
+    return 0;
+}
 
 /**
  * Compute the inverse of the transform stack above a Viewpoint
@@ -1675,7 +1848,8 @@ Node * Node::getParentTransform() { return 0; }
  * @see accumulateTransform
  * @see getParentTransform
  */
-void Node::inverseTransform(VrmlMatrix & M) {
+void Node::inverseTransform(VrmlMatrix & M)
+{
     Node * parentTransform = getParentTransform();
     if (parentTransform) {
         parentTransform->inverseTransform(M);
@@ -1687,9 +1861,11 @@ void Node::inverseTransform(VrmlMatrix & M) {
 /**
  * @brief Send an event from this node.
  */
-void Node::emitEvent(const std::string & id, const FieldValue & value,
+void Node::emitEvent(const std::string & id,
+                     const FieldValue & value,
                      const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     assert(this->getScene());
     EventOutISMap::const_iterator pos = this->eventOutISMap.find(id);
     if (pos != this->eventOutISMap.end()) {
@@ -1717,9 +1893,11 @@ namespace {
 
     public:
         PrintField_(const Node & node, std::ostream & out, const size_t indent):
-                node(node), out(out), indent(indent) {}
+            node(node), out(out), indent(indent)
+        {}
 
-        void operator()(const NodeInterface & interface) const {
+        void operator()(const NodeInterface & interface) const
+        {
             if (interface.type == NodeInterface::exposedField
                     || interface.type == NodeInterface::field) {
                 this->out << std::string(this->indent + indentIncrement_, ' ')
@@ -1729,7 +1907,8 @@ namespace {
     };
 }
 
-std::ostream & Node::print(std::ostream & out, const size_t indent) const {
+std::ostream & Node::print(std::ostream & out, const size_t indent) const
+{
     for (size_t i = 0; i < indent; ++i) { out << ' '; }
     std::string nodeId = this->getId();
     if (!nodeId.empty()) { out << "DEF " << nodeId << " "; }
@@ -1748,7 +1927,8 @@ std::ostream & Node::print(std::ostream & out, const size_t indent) const {
  *
  * @return @p out.
  */
-std::ostream & operator<<(std::ostream & out, const Node & node) {
+std::ostream & operator<<(std::ostream & out, const Node & node)
+{
     return node.print(out, 0);
 }
 
@@ -1783,19 +1963,22 @@ void Node::initializeImpl(const double timestamp) throw (std::bad_alloc)
  */
 AppearanceNode::AppearanceNode(const NodeType & nodeType,
                                const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-AppearanceNode::~AppearanceNode() throw () {}
+AppearanceNode::~AppearanceNode() throw ()
+{}
 
 /**
  * @brief Cast to an AppearanceNode.
  *
  * @return a pointer to this AppearanceNode.
  */
-const AppearanceNode * AppearanceNode::toAppearance() const throw () {
+const AppearanceNode * AppearanceNode::toAppearance() const throw ()
+{
     return this;
 }
 
@@ -1804,7 +1987,10 @@ const AppearanceNode * AppearanceNode::toAppearance() const throw () {
  *
  * @return a pointer to this AppearanceNode.
  */
-AppearanceNode * AppearanceNode::toAppearance() throw () { return this; }
+AppearanceNode * AppearanceNode::toAppearance() throw ()
+{
+    return this;
+}
 
 /**
  * @fn const SFNode & AppearanceNode::getMaterial() const throw ()
@@ -1844,26 +2030,34 @@ AppearanceNode * AppearanceNode::toAppearance() throw () { return this; }
  * @param scope     the Scope the node belongs to.
  */
 ChildNode::ChildNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-ChildNode::~ChildNode() throw () {}
+ChildNode::~ChildNode() throw ()
+{}
 
 /**
  * @brief Cast to a ChildNode.
  *
  * @return a pointer to this ChildNode.
  */
-const ChildNode * ChildNode::toChild() const throw () { return this; }
+const ChildNode * ChildNode::toChild() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a ChildNode.
  *
  * @return a pointer to this ChildNode.
  */
-ChildNode * ChildNode::toChild() throw () { return this; }
+ChildNode * ChildNode::toChild() throw ()
+{
+    return this;
+}
 
 
 /**
@@ -1879,26 +2073,34 @@ ChildNode * ChildNode::toChild() throw () { return this; }
  * @param scope     the Scope the node belongs to.
  */
 ColorNode::ColorNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-ColorNode::~ColorNode() throw () {}
+ColorNode::~ColorNode() throw ()
+{}
 
 /**
  * @brief Cast to a ColorNode.
  *
  * @return a pointer to this ColorNode.
  */
-const ColorNode * ColorNode::toColor() const throw () { return this; }
+const ColorNode * ColorNode::toColor() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a ColorNode.
  *
  * @return a pointer to this ColorNode.
  */
-ColorNode * ColorNode::toColor() throw () { return this; }
+ColorNode * ColorNode::toColor() throw ()
+{
+    return this;
+}
 
 /**
  * @fn const MFColor & ColorNode::getColor() const
@@ -1922,20 +2124,23 @@ ColorNode * ColorNode::toColor() throw () { return this; }
  * @param scope     the Scope the node belongs to.
  */
 CoordinateNode::CoordinateNode(const NodeType & nodeType,
-                               const ScopePtr & scope)
-        : Node(nodeType, scope) {}
+                               const ScopePtr & scope):
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-CoordinateNode::~CoordinateNode() throw () {}
+CoordinateNode::~CoordinateNode() throw ()
+{}
 
 /**
  * @brief Cast to a CoordinateNode.
  *
  * @return a pointer to this CoordinateNode.
  */
-const CoordinateNode * CoordinateNode::toCoordinate() const throw () {
+const CoordinateNode * CoordinateNode::toCoordinate() const throw ()
+{
     return this;
 }
 
@@ -1944,7 +2149,10 @@ const CoordinateNode * CoordinateNode::toCoordinate() const throw () {
  *
  * @return a pointer to this CoordinateNode.
  */
-CoordinateNode * CoordinateNode::toCoordinate() throw () { return this; }
+CoordinateNode * CoordinateNode::toCoordinate() throw ()
+{
+    return this;
+}
 
 /**
  * @fn const MFVec3f & CoordinateNode::getPoint() const
@@ -1968,19 +2176,22 @@ CoordinateNode * CoordinateNode::toCoordinate() throw () { return this; }
  * @param scope     the Scope the node belongs to.
  */
 FontStyleNode::FontStyleNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-FontStyleNode::~FontStyleNode() throw () {}
+FontStyleNode::~FontStyleNode() throw ()
+{}
 
 /**
  * @brief Cast to a FontStyleNode.
  *
  * @return a pointer to this FontStyleNode.
  */
-const FontStyleNode * FontStyleNode::toFontStyle() const throw () {
+const FontStyleNode * FontStyleNode::toFontStyle() const throw ()
+{
     return this;
 }
 
@@ -1989,7 +2200,10 @@ const FontStyleNode * FontStyleNode::toFontStyle() const throw () {
  *
  * @return a pointer to this FontStyleNode.
  */
-FontStyleNode * FontStyleNode::toFontStyle() throw () { return this; }
+FontStyleNode * FontStyleNode::toFontStyle() throw ()
+{
+    return this;
+}
 
 /**
  * @fn const MFString & FontStyleNode::getFamily() const throw ()
@@ -2085,26 +2299,34 @@ FontStyleNode * FontStyleNode::toFontStyle() throw () { return this; }
  * @param scope     the Scope the node belongs to.
  */
 GeometryNode::GeometryNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-GeometryNode::~GeometryNode() throw () {}
+GeometryNode::~GeometryNode() throw ()
+{}
 
 /**
  * @brief Cast to a GeometryNode.
  *
  * @return a pointer to this GeometryNode.
  */
-const GeometryNode * GeometryNode::toGeometry() const throw () { return this; }
+const GeometryNode * GeometryNode::toGeometry() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a GeometryNode.
  *
  * @return a pointer to this GeometryNode.
  */
-GeometryNode * GeometryNode::toGeometry() throw () { return this; }
+GeometryNode * GeometryNode::toGeometry() throw ()
+{
+    return this;
+}
 
 /**
  * @brief Get the color node (if any) associated with this geometry.
@@ -2115,7 +2337,10 @@ GeometryNode * GeometryNode::toGeometry() throw () { return this; }
  * @todo Reevaluate the way the renderer visits geometry nodes; potentially
  *      eliminate this method.
  */
-const ColorNode * GeometryNode::getColor() const throw () { return 0; }
+const ColorNode * GeometryNode::getColor() const throw ()
+{
+    return 0;
+}
 
 
 /**
@@ -2131,26 +2356,34 @@ const ColorNode * GeometryNode::getColor() const throw () { return 0; }
  * @param scope     the Scope the node belongs to.
  */
 MaterialNode::MaterialNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-MaterialNode::~MaterialNode() throw () {}
+MaterialNode::~MaterialNode() throw ()
+{}
 
 /**
  * @brief Cast to a MaterialNode.
  *
  * @return a pointer to this MaterialNode.
  */
-const MaterialNode * MaterialNode::toMaterial() const throw () { return this; }
+const MaterialNode * MaterialNode::toMaterial() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a MaterialNode.
  *
  * @return a pointer to this MaterialNode.
  */
-MaterialNode * MaterialNode::toMaterial() throw () { return this; }
+MaterialNode * MaterialNode::toMaterial() throw ()
+{
+    return this;
+}
 
 /**
  * @fn const SFFloat & MaterialNode::getAmbientIntensity() const throw ()
@@ -2214,26 +2447,34 @@ MaterialNode * MaterialNode::toMaterial() throw () { return this; }
  * @param scope     the Scope the node belongs to.
  */
 NormalNode::NormalNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-NormalNode::~NormalNode() throw () {}
+NormalNode::~NormalNode() throw ()
+{}
 
 /**
  * @brief Cast to a NormalNode.
  *
  * @return a pointer to this NormalNode.
  */
-const NormalNode * NormalNode::toNormal() const throw () { return this; }
+const NormalNode * NormalNode::toNormal() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a NormalNode.
  *
  * @return a pointer to this NormalNode.
  */
-NormalNode * NormalNode::toNormal() throw () { return this; }
+NormalNode * NormalNode::toNormal() throw ()
+{
+    return this;
+}
 
 /**
  * @fn const MFVec3f & NormalNode::getVector() const throw ()
@@ -2258,19 +2499,22 @@ NormalNode * NormalNode::toNormal() throw () { return this; }
  */
 SoundSourceNode::SoundSourceNode(const NodeType & nodeType,
                                  const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-SoundSourceNode::~SoundSourceNode() throw () {}
+SoundSourceNode::~SoundSourceNode() throw ()
+{}
 
 /**
  * @brief Cast to a SoundSourceNode.
  *
  * @return a pointer to this SoundSourceNode.
  */
-const SoundSourceNode * SoundSourceNode::toSoundSource() const throw () {
+const SoundSourceNode * SoundSourceNode::toSoundSource() const throw ()
+{
     return this;
 }
 
@@ -2279,7 +2523,10 @@ const SoundSourceNode * SoundSourceNode::toSoundSource() const throw () {
  *
  * @return a pointer to this SoundSourceNode.
  */
-SoundSourceNode * SoundSourceNode::toSoundSource() throw () { return this; }
+SoundSourceNode * SoundSourceNode::toSoundSource() throw ()
+{
+    return this;
+}
 
 
 /**
@@ -2298,26 +2545,34 @@ SoundSourceNode * SoundSourceNode::toSoundSource() throw () { return this; }
  * @param scope     the Scope the node belongs to.
  */
 TextureNode::TextureNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-TextureNode::~TextureNode() throw () {}
+TextureNode::~TextureNode() throw ()
+{}
 
 /**
  * @brief Cast to a TextureNode.
  *
  * @return a pointer to this TextureNode.
  */
-const TextureNode * TextureNode::toTexture() const throw () { return this; }
+const TextureNode * TextureNode::toTexture() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a TextureNode.
  *
  * @return a pointer to this TextureNode.
  */
-TextureNode * TextureNode::toTexture() throw () { return this; }
+TextureNode * TextureNode::toTexture() throw ()
+{
+    return this;
+}
 
 /**
  * @fn size_t TextureNode::nComponents() const throw ()
@@ -2397,12 +2652,14 @@ TextureNode * TextureNode::toTexture() throw () { return this; }
  */
 TextureCoordinateNode::TextureCoordinateNode(const NodeType & nodeType,
                                              const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-TextureCoordinateNode::~TextureCoordinateNode() throw () {}
+TextureCoordinateNode::~TextureCoordinateNode() throw ()
+{}
 
 /**
  * @brief Cast to a TextureCoordinateNode.
@@ -2410,7 +2667,8 @@ TextureCoordinateNode::~TextureCoordinateNode() throw () {}
  * @return a pointer to this TextureCoordinateNode.
  */
 const TextureCoordinateNode *
-        TextureCoordinateNode::toTextureCoordinate() const throw () {
+TextureCoordinateNode::toTextureCoordinate() const throw ()
+{
     return this;
 }
 
@@ -2419,7 +2677,8 @@ const TextureCoordinateNode *
  *
  * @return a pointer to this TextureCoordinateNode.
  */
-TextureCoordinateNode * TextureCoordinateNode::toTextureCoordinate() throw () {
+TextureCoordinateNode * TextureCoordinateNode::toTextureCoordinate() throw ()
+{
     return this;
 }
 
@@ -2438,12 +2697,13 @@ TextureCoordinateNode * TextureCoordinateNode::toTextureCoordinate() throw () {
  */
 TextureTransformNode::TextureTransformNode(const NodeType & nodeType,
                                            const ScopePtr & scope):
-        Node(nodeType, scope) {}
+    Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
  */
-TextureTransformNode::~TextureTransformNode() throw () {}
+TextureTransformNode::~TextureTransformNode() throw ()
+{}
 
 /**
  * @brief Cast to a TextureTransformNode.
@@ -2451,7 +2711,8 @@ TextureTransformNode::~TextureTransformNode() throw () {}
  * @return a pointer to this TextureTransformNode.
  */
 const TextureTransformNode *
-        TextureTransformNode::toTextureTransform() const throw () {
+TextureTransformNode::toTextureTransform() const throw ()
+{
     return this;
 }
 
@@ -2460,7 +2721,8 @@ const TextureTransformNode *
  *
  * @return a pointer to this TextureTransformNode.
  */
-TextureTransformNode * TextureTransformNode::toTextureTransform() throw () {
+TextureTransformNode * TextureTransformNode::toTextureTransform() throw ()
+{
     return this;
 }
 
@@ -2475,7 +2737,8 @@ TextureTransformNode * TextureTransformNode::toTextureTransform() throw () {
 /**
  * @brief Destructor.
  */
-NodeVisitor::~NodeVisitor() {}
+NodeVisitor::~NodeVisitor()
+{}
 
 /**
  * @fn void NodeVisitor::visit(Node & node)
