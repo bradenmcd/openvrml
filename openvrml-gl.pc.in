@@ -7,5 +7,5 @@ Name: @PACKAGE_NAME@-GL
 Description: OpenGL renderer for OpenVRML.
 Version: @PACKAGE_VERSION@
 Requires: openvrml = @PACKAGE_VERSION@
-Libs: -L${libdir} -lopenvrml-gl @GL_LIBS@
-Cflags: -I${includedir} @GL_CFLAGS@
+Libs: -L${libdir} -lopenvrml-gl @GLU_LIBS@
+Cflags: -I${includedir} @GLU_CFLAGS@
