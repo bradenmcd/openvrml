@@ -17,7 +17,7 @@ AC_DEFUN(AM_PATH_VRMLGL,
     CXXFLAGS="${VRML_CXXFLAGS} ${CXXFLAGS}"
     AC_TRY_LINK(
       [ #include <OpenVRML/GL/ViewerOpenGL.h> ],
-      [ int x = ViewerOpenGL::MAX_LIGHTS; ],
+      [ int x = OpenVRML::GL::ViewerOpenGL::MAX_LIGHTS; ],
       have_vrmlgl=yes,
       have_vrmlgl=no
     )

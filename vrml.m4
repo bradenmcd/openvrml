@@ -25,7 +25,7 @@ AC_DEFUN(AM_PATH_VRML,
         #include<OpenVRML/VrmlScene.h>
       ],
       [
-        VrmlScene::readWrl(0, 0);
+        OpenVRML::VrmlScene::readWrl(0, 0);
       ],
       have_vrml=yes,
       have_vrml=no
