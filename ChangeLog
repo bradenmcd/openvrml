@@ -1,3 +1,8 @@
+2000-12-31  Braden McDaniel  <braden@endoframe.com>
+
+        * VrmlMFRotation API improvements: moved refcounted inner class
+          to implementation file; added setLength() method.
+
 2000-12-30  Braden McDaniel  <braden@endoframe.com>
 
         * API improvements to VrmlMFNode: added const version of

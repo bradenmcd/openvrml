@@ -2221,11 +2221,11 @@ VrmlMFNode::VrmlMFNode(VrmlNode * node):
  * @param length the length of the array
  * @param nodes a pointer to an array of VrmlNode pointers
  */
-VrmlMFNode::VrmlMFNode(size_t length, VrmlNode * const * v):
-        d_v(new VrmlNode * [length]), d_allocated(length), d_size(length) {
-    if (v) {
+VrmlMFNode::VrmlMFNode(size_t length, VrmlNode * const * nodes):
+        d_v(new VrmlNode *[length]), d_allocated(length), d_size(length) {
+    if (nodes) {
         for (size_t i(0); i < length; ++i) {
-            d_v[i] = v[i] ? (v[i]->reference()) : 0;
+            d_v[i] = nodes[i] ? nodes[i]->reference() : 0;
         }
     } else {
         std::fill(d_v, d_v + length, static_cast<VrmlNode *>(0));
@@ -2418,44 +2418,162 @@ VrmlField *VrmlMFNode::clone() const
 
 VrmlField::VrmlFieldType VrmlMFNode::fieldType() const { return MFNODE; }
 
+ostream& VrmlMFNode::print(ostream& os) const
+{
+  int n = getLength();
+
+  if (n != 1) os << '[';
+  for (int i=0; i<n; ++i)
+    os << *(d_v[i]) << endl;
+  if (n != 1) os << ']';
+
+  return os;
+}
+
 
 /**
  * @class VrmlMFRotation
- * Encapsulates a MFRotation.
+ * @brief Encapsulates an MFRotation.
  */
 #include "VrmlMFRotation.h"
 
-VrmlMFRotation::VrmlMFRotation() : d_data(new FData(0))
-{}
+class VrmlMFRotation::FData {			// reference counted float data
+public:
+  FData(int n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
+  ~FData() { delete [] d_v; }
 
-VrmlMFRotation::VrmlMFRotation(float x, float y, float z, float r)
-  : d_data(new FData(4))
-{ d_data->d_v[0]=x; d_data->d_v[1]=y; d_data->d_v[2]=z; d_data->d_v[3]=r; }
+  FData *ref() { ++d_refs; return this; }
+  void deref() { if (--d_refs == 0) delete this; }
 
-VrmlMFRotation::VrmlMFRotation(size_t n, float const * v) : d_data(new FData(4*n))
-{
-  if (v) memcpy(d_data->d_v, v, 4*n*sizeof(float));
-}  
+  int d_refs;			// number of MF* objects using this data
+  int d_n;			// size (in floats) of d_v
+  float *d_v;			// data vector
+};
 
-VrmlMFRotation::VrmlMFRotation(const VrmlMFRotation &src)
-  : d_data(src.d_data->ref()) {}
-
-VrmlMFRotation::~VrmlMFRotation() { d_data->deref(); }
-
-void VrmlMFRotation::set(size_t n, const float * v)
-{
-  d_data->deref();
-  d_data = new FData(4*n);
-  if (v) memcpy(d_data->d_v, v, 4*n*sizeof(float));
+/**
+ * @brief Construct from an array of rotation values.
+ *
+ * @param length the number of rotation values in the passed array
+ * @param rotations a pointer to an array of rotation values
+ */
+VrmlMFRotation::VrmlMFRotation(size_t length, float const * rotations):
+        d_data(new FData(length * 4)) {
+    if (rotations) {
+        std::copy(rotations, rotations + (length * 4), this->d_data->d_v);
+    }
 }
 
-VrmlMFRotation& VrmlMFRotation::operator=(const VrmlMFRotation& rhs)
-{
-  if (this != &rhs) {
-    d_data->deref();
-    d_data = rhs.d_data->ref();
-  }
-  return *this;
+/**
+ * @brief Construct from a single rotation value.
+ *
+ * @param x the <var>x</var>-component of the axis of rotation
+ * @param y the <var>y</var>-component of the axis of rotation
+ * @param z the <var>z</var>-component of the axis of rotation
+ * @param angle the rotation angle
+ */
+VrmlMFRotation::VrmlMFRotation(float x, float y, float z, float angle):
+        d_data(new FData(4)) {
+    this->d_data->d_v[0] = x;
+    this->d_data->d_v[1] = y;
+    this->d_data->d_v[2] = z;
+    this->d_data->d_v[3] = angle;
+}
+
+/**
+ * @brief Copy constructor.
+ *
+ * @param mfrotation the object to copy
+ */
+VrmlMFRotation::VrmlMFRotation(const VrmlMFRotation & mfrotation):
+        d_data(mfrotation.d_data->ref()) {}
+
+/**
+ * @brief Destructor.
+ */
+VrmlMFRotation::~VrmlMFRotation() {
+    this->d_data->deref();
+}
+
+/**
+ * @brief Assignment operator.
+ *
+ * @param mfrotation the object to copy into this one
+ */
+VrmlMFRotation & VrmlMFRotation::operator=(const VrmlMFRotation & mfrotation) {
+    if (this != &mfrotation) {
+        this->d_data->deref();
+        this->d_data = mfrotation.d_data->ref();
+    }
+    return *this;
+}
+
+/**
+ * @brief Array element dereference operator.
+ *
+ * @param index
+ */
+const float * VrmlMFRotation::operator[](size_t index) const {
+    return this->d_data->d_v + (index * 4);
+}
+
+/**
+ * @brief Get the rotations.
+ *
+ * @return a pointer to an array of rotation values
+ */
+const float * VrmlMFRotation::get() const {
+    return this->d_data->d_v;
+}
+
+/**
+ * @brief Set the rotation values.
+ *
+ * @param length the number of rotation values in the passed array
+ * @param rotations a pointer to an array of rotation values
+ */
+void VrmlMFRotation::set(size_t length, const float * rotations) {
+    this->d_data->deref();
+    this->d_data = new FData(length * 4);
+    if (rotations) {
+        std::copy(rotations, rotations + (length * 4), this->d_data->d_v);
+    }
+}
+
+/**
+ * @brief Get the length.
+ *
+ * @return the number of rotation values
+ */
+size_t VrmlMFRotation::getLength() const {
+    return (this->d_data->d_n / 4);
+}
+
+/**
+ * @brief Set the length.
+ *
+ * If the new length is smaller than the current length, the array is
+ * truncated. If the new length is greater than the current length, the
+ * new values are initialized to the default rotation (0, 0, 1, 0).
+ *
+ * @param length the new length
+ */
+void VrmlMFRotation::setLength(size_t length) {
+    length *= 4;
+    FData * const newData = new FData(length);
+    if (length > this->d_data->d_n) {
+        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
+                  newData->d_v);
+        for (size_t i = this->d_data->d_n; i < length; i += 4) {
+            newData->d_v[i] = 0.0f;
+            newData->d_v[i + 1] = 0.0f;
+            newData->d_v[i + 2] = 1.0f;
+            newData->d_v[i + 3] = 0.0f;
+        }
+    } else {
+        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
+    }
+    this->d_data->deref();
+    this->d_data = newData;
 }
 
 VrmlField *VrmlMFRotation::clone() const { return new VrmlMFRotation(*this); }
@@ -2874,18 +2992,6 @@ ostream& VrmlMFVec2f::print(ostream& os) const
 
 ostream& VrmlMFVec3f::print(ostream& os) const
 { return mffprint(os, get(), getLength(), 3); }
-
-ostream& VrmlMFNode::print(ostream& os) const
-{
-  int n = getLength();
-
-  if (n != 1) os << '[';
-  for (int i=0; i<n; ++i)
-    os << *(d_v[i]) << endl;
-  if (n != 1) os << ']';
-
-  return os;
-}
 
 
 ostream& VrmlMFString::print(ostream& os) const
