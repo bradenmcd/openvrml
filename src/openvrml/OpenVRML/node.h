@@ -178,7 +178,6 @@ namespace OpenVRML {
 
     class Scope;
     class VrmlMatrix;
-    class NodeVisitor;
     class BVolume;
     class ScriptNode;
     class AppearanceNode;
@@ -246,7 +245,6 @@ namespace OpenVRML {
         ScopePtr scope;
         Scene * scene;
         RouteList routes;
-        bool visited;
 
         typedef std::map<std::string, PolledEventOutValue *> EventOutISMap;
         EventOutISMap eventOutISMap;
@@ -264,9 +262,6 @@ namespace OpenVRML {
         Scene * getScene() const throw ();
 
         std::ostream & print(std::ostream & out, size_t indent) const;
-
-        bool accept(NodeVisitor & visitor);
-        void resetVisitedFlag() throw ();
 
         void addEventOutIS(const std::string & eventOut,
                            PolledEventOutValue & eventOutValue)
@@ -669,11 +664,30 @@ namespace OpenVRML {
     };
 
 
-    class OPENVRML_SCOPE NodeVisitor {
-    public:
-        virtual ~NodeVisitor() throw () = 0;
+    class OPENVRML_SCOPE NodeTraverser {
+        std::set<Node *> traversedNodes;
+        bool halt;
 
-        virtual void visit(Node & node) = 0;
+    public:
+        NodeTraverser() throw (std::bad_alloc);
+        virtual ~NodeTraverser() throw () = 0;
+
+        void traverse(Node & node);
+        void traverse(const SFNode & node);
+        void traverse(const MFNode & nodes);
+
+    protected:
+        void haltTraversal() throw ();
+
+    private:
+        // Noncopyable.
+        NodeTraverser(const NodeTraverser &);
+        NodeTraverser operator=(const NodeTraverser &);
+
+        virtual void onEntering(Node & node);
+        virtual void onLeaving(Node & node);
+
+        void do_traversal(Node & node);
     };
 }
 

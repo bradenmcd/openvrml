@@ -1,3 +1,13 @@
+2003-02-23  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h:
+          Replaced NodeVisitor with NodeTraverser.  NodeTraverser is a
+          convenience class that performs a traversal that avoids
+          redundantly traversing nodes.  Unlike NodeVisitor, a traversal
+          may be made with a NodeTraverser in the middle of another
+          traversal.
+
 2003-02-23  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/browser.h,

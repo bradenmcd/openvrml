@@ -882,8 +882,7 @@ Node::Node(const NodeType & type, const ScopePtr & scope):
     scene(0),
     nodeType(type),
     d_modified(false),
-    d_bvol_dirty(false),
-    visited(false)
+    d_bvol_dirty(false)
 {}
 
 /**
@@ -982,78 +981,6 @@ const std::string Node::getId() const
  */
 
 /**
- * @brief Accept a visitor.
- *
- * If the node has not been visited, set the @a visited flag to @c true and
- * call NodeVisitor::visit for this object. Otherwise (if the @a visited flag
- * is already @c true), this method has no effect.
- *
- * <p>The fact that the @a visited flag is set <em>before</em> the
- * node is actually visited is an important detail. Even though scene
- * graphs should not have cycles, nodes can be self-referencing: a field
- * of a Script node can legally @c USE the Script node. (This does not pose
- * a problem for rendering since nodes in a Script node's fields are not part
- * of the transformation hierarchy.)
- *
- * @param visitor   a NodeVisitor.
- *
- * @return @c true if the visitor is accepted (the node
- *         <em>has not</em> been visited during this traversal),
- *         @c false otherwise (the node <em>has</em> been
- *         visited during this traversal).
- */
-bool Node::accept(NodeVisitor & visitor)
-{
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    return false;
-}
-
-/**
- * @brief Recursively set the @a visited flag to @c false for this node and
- *      its children.
- *
- * Typically used by a visitor (a class that implements NodeVisitor)
- * after traversal is complete.
- */
-void Node::resetVisitedFlag() throw ()
-{
-    if (this->visited) {
-        //
-        // Set this node's visited flag to false.
-        //
-        this->visited = false;
-
-        //
-        // Recursively call this method on any child nodes.
-        //
-        const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
-        for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
-                interface != interfaces.end(); ++interface) {
-            if (interface->type == NodeInterface::exposedField
-                    || interface->type == NodeInterface::field) {
-                if (interface->fieldType == FieldValue::sfnode) {
-                    const SFNode & sfnode =
-                        static_cast<const SFNode &>(this->getField(interface->id));
-                    if (sfnode.get()) { sfnode.get()->resetVisitedFlag(); }
-                } else if (interface->fieldType == FieldValue::mfnode) {
-                    const MFNode & mfnode =
-                        static_cast<const MFNode &>(this->getField(interface->id));
-                    for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                        if (mfnode.getElement(i)) {
-                            mfnode.getElement(i)->resetVisitedFlag();
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
  * @brief Add a polled eventOut value.
  *
  * Used internally by the PROTO implementation.
@@ -1068,6 +995,7 @@ void Node::addEventOutIS(const std::string & eventOutId,
                          PolledEventOutValue & eventOutValue)
     throw (UnsupportedInterface, std::bad_alloc)
 {
+    
     if (!this->nodeType.hasEventOut(eventOutId)) {
         throw UnsupportedInterface(this->nodeType,
                                    NodeInterface::eventOut,
@@ -1139,70 +1067,19 @@ void Node::initialize(Scene & scene, const double timestamp)
  */
 void Node::relocate() throw (std::bad_alloc)
 {
-    class RelocateVisitor : public NodeVisitor {
-        Node & rootNode;
-
+    class RelocateTraverser : public NodeTraverser {
     public:
-        explicit RelocateVisitor(Node & rootNode) throw ():
-            rootNode(rootNode)
+        virtual ~RelocateTraverser() throw ()
         {}
-
-        virtual ~RelocateVisitor() throw ()
-        {}
-
-        void relocate() throw (std::bad_alloc)
-        {
-            this->rootNode.do_relocate();
-            this->visitChildren(this->rootNode);
-        }
-
-        virtual void visit(Node & node) throw (std::bad_alloc)
-        {
-            if (&node == &this->rootNode) { return; }
-
-            node.do_relocate();
-            this->visitChildren(node);
-        }
 
     private:
-        // Noncopyable.
-        RelocateVisitor(const RelocateVisitor &);
-        RelocateVisitor & operator=(const RelocateVisitor &);
-
-        void visitChildren(Node & node) throw (std::bad_alloc)
+        virtual void onEntering(Node & node) throw (std::bad_alloc)
         {
-            const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
-            for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
-                    interface != interfaces.end(); ++interface) {
-                if (interface->type == NodeInterface::exposedField
-                        || interface->type == NodeInterface::field) {
-                    if (interface->fieldType == FieldValue::sfnode) {
-                        assert(dynamic_cast<const SFNode *>
-                               (&node.getField(interface->id)));
-                        const SFNode & sfnode =
-                                static_cast<const SFNode &>
-                                    (node.getField(interface->id));
-                        if (sfnode.get()) {
-                            sfnode.get()->accept(*this);
-                        }
-                    } else if (interface->fieldType == FieldValue::mfnode) {
-                        assert(dynamic_cast<const MFNode *>
-                               (&node.getField(interface->id)));
-                        const MFNode & mfnode =
-                                static_cast<const MFNode &>
-                                    (node.getField(interface->id));
-                        for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                            if (mfnode.getElement(i)) {
-                                mfnode.getElement(i)->accept(*this);
-                            }
-                        }
-                    }
-                }
-            }
+            node.do_relocate();
         }
     };
 
-    RelocateVisitor(*this).relocate();
+    RelocateTraverser().traverse(*this);
 }
 
 /**
@@ -3148,24 +3025,204 @@ ViewpointNode * ViewpointNode::toViewpoint() throw ()
 
 
 /**
- * @class NodeVisitor
+ * @class NodeTraverser
  *
- * @brief An interface to be implemented by visitors for nodes in a
- *        scene graph.
+ * @brief Traverse the children of each Node in a Node hierarchy only once.
+ *
+ * The NodeTraversal provides a generalized traversal mechanism that avoids
+ * redundantly traversing branches of the Node hierarchy. If a Node occurs
+ * multiple places in a branch, <b>the children of that Node will be visted in
+ * the traversal only once</b>.
+ *
+ * For each Node encountered in the traversal, NodeTraverser::performAction
+ * is called. Concrete subclasses of NodeTraverser implement this method in
+ * order to perform some operation on each Node.
  */
+
+/**
+ * @brief Constructor.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+NodeTraverser::NodeTraverser() throw (std::bad_alloc):
+    halt(false)
+{}
 
 /**
  * @brief Destructor.
  */
-NodeVisitor::~NodeVisitor() throw ()
+NodeTraverser::~NodeTraverser() throw ()
 {}
 
 /**
- * @fn void NodeVisitor::visit(Node & node)
+ * @brief Traverse a Node.
  *
- * @brief Visit a Node.
+ * No guarantee is made about the state of the NodeTraverser instance in the
+ * event that this method throws.
  *
- * @param node  a node.
+ * In addition to std::bad_alloc, this function throws any exception thrown
+ * from onEntering or onLeaving.
+ *
+ * @param node  the root Node of the branch to traverse.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
+void NodeTraverser::traverse(Node & node)
+{
+    assert(this->traversedNodes.empty());
+    try {
+        this->do_traversal(node);
+    } catch (...) {
+        this->halt = false;
+        this->traversedNodes.clear();
+        throw;
+    }
+    this->halt = false;
+    this->traversedNodes.clear();
+}
+
+/**
+ * @brief Traverse an SFNode.
+ *
+ * No guarantee is made about the state of the NodeTraverser instance in the
+ * event that this method throws.
+ *
+ * In addition to std::bad_alloc, this function throws any exception thrown
+ * from onEntering or onLeaving.
+ *
+ * @param node  the root Node of the branch to traverse.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void NodeTraverser::traverse(const SFNode & node)
+{
+    assert(this->traversedNodes.empty());
+    try {
+        if (node.get()) {
+            if (this->traversedNodes.find(node.get().get())
+                    == this->traversedNodes.end()) {
+                this->do_traversal(*node.get());
+            }
+        }
+    } catch (...) {
+        this->halt = false;
+        this->traversedNodes.clear();
+        throw;
+    }
+    this->halt = false;
+    this->traversedNodes.clear();
+}
+
+/**
+ * @brief Traverse an MFNode.
+ *
+ * No guarantee is made about the state of the NodeTraverser instance in the
+ * event that this method throws.
+ *
+ * In addition to std::bad_alloc, this function throws any exception thrown
+ * from onEntering or onLeaving.
+ *
+ * @param nodes  the root @link Node Nodes@endlink of the branch to traverse.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void NodeTraverser::traverse(const MFNode & nodes)
+{
+    assert(this->traversedNodes.empty());
+    try {
+        for (size_t i = 0; i < nodes.getLength(); ++i) {
+            if (nodes.getElement(i)) {
+                if (this->traversedNodes.find(nodes.getElement(i).get())
+                        == this->traversedNodes.end()) {
+                    this->do_traversal(*nodes.getElement(i));
+                }
+            }
+        }
+    } catch (...) {
+        this->halt = false;
+        this->traversedNodes.clear();
+        throw;
+    }
+    this->halt = false;
+    this->traversedNodes.clear();
+}
+
+/**
+ * @brief Halt the traversal.
+ *
+ * If this method is called during a traversal, no more descendent
+ * @link Node Nodes@endlink will be traversed. Note that if haltTraversal
+ * is called in the implementation of onEntering, onLeaving will still be
+ * called for the current node.
+ */
+void NodeTraverser::haltTraversal() throw ()
+{
+    this->halt = true;
+}
+
+/**
+ * @internal
+ *
+ * @brief Traverse a Node.
+ *
+ * @param node  the Node to traverse.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void NodeTraverser::do_traversal(Node & node)
+{
+    std::set<Node *>::iterator pos = this->traversedNodes.find(&node);
+    const bool alreadyTraversed = (pos != this->traversedNodes.end());
+
+    if (!alreadyTraversed) {
+        this->onEntering(node);
+
+        this->traversedNodes.insert(&node);
+
+        const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
+        for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
+                interface != interfaces.end() && !this->halt; ++interface) {
+            if (interface->type == NodeInterface::field
+                    || interface->type == NodeInterface::exposedField) {
+                if (interface->fieldType == FieldValue::sfnode) {
+                    const SFNode & value =
+                            static_cast<const SFNode &>
+                                (node.getField(interface->id));
+                    if (value.get()) {
+                        this->do_traversal(*value.get());
+                    }
+                } else if (interface->fieldType == FieldValue::mfnode) {
+                    const MFNode & children =
+                            static_cast<const MFNode &>
+                                (node.getField(interface->id));
+                    for (size_t i = 0; i < children.getLength(); ++i) {
+                        if (children.getElement(i)) {
+                            this->do_traversal(*children.getElement(i));
+                        }
+                    }
+                }
+            }
+        }
+        this->onLeaving(node);
+    }
+}
+
+/**
+ * @brief Called for each Node in the traversal <em>before</em>
+ *      traversing the its descendants.
+ *
+ * @param node  the Node currently being traversed.
+ */
+void NodeTraverser::onEntering(Node & node)
+{}
+
+/**
+ * @brief Called for each Node in the traversal <em>after</em>
+ *      traversing the its descendants.
+ *
+ * @param node  the Node currently being traversed.
+ */
+void NodeTraverser::onLeaving(Node & node)
+{}
 
 } // namespace OpenVRML
