@@ -28,6 +28,12 @@
         * src/openvrml-gl/OpenVRML/GL/Makefile.am: Incremented
           libopenvrml-gl library version to 3:0:0.
 
+        * NEWS: Updates for 0.12.2 release.
+
+        * INSTALL: Removed build instructions for Windows (Visual C++)
+          and Mac (CodeWarrior) since we are not presently distributing
+          project files for those compilers.
+
 2002-06-19  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.2.
