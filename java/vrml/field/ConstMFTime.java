@@ -22,17 +22,55 @@ package vrml.field;
 
 import vrml.ConstMField;
 
+/**
+ * Represents a read-only VRML MFTime field in Java.
+ */
 public class ConstMFTime extends ConstMField
 {
   public native int getSize();
 
+  /**
+   * Construct a new MFTime field in OpenVRML using the given params.
+   *
+   * @param size Number of values passed in.
+   * @param times List of times to initialize object with.
+   */
   private native void CreateObject(int size, double times[]);
 
-  public ConstMFTime(int size, double times[]) { CreateObject(size, times); }
-  public ConstMFTime(double times[]) { CreateObject(times.length, times); }
+  /**
+   * Construct a read-only MFTime field.
+   *
+   * @param size Number of values passed in.
+   * @param times List of times to initialize object with.
+   */
+  public ConstMFTime(int size, double times[])
+  {
+    CreateObject(size, times);
+  }
 
+  /**
+   * Construct a read-only MFTime field.
+   *
+   * @param times List of times to initialize object with.
+   */
+  public ConstMFTime(double times[])
+  {
+    CreateObject(times.length, times);
+  }
+
+  /**
+   * Retrieves the complete list of times making up an MFTime field.
+   *
+   * @param times List of times contained in field.
+   */
   public native void getValue(double times[]);
 
+  /**
+   * Retrieve a particular element from an MFTime field.
+   *
+   * @param index Position of desired element.
+   * @return Value at specified position.
+   */
   public native double get1Value(int index);
 
   public native String toString();

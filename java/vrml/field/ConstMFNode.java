@@ -23,17 +23,55 @@ package vrml.field;
 import vrml.ConstMField;
 import vrml.BaseNode;
 
+/**
+ * Represents a read-only VRML MFNode field in Java.
+ */
 public class ConstMFNode extends ConstMField
 {
   public native int getSize();
 
-  private native void CreateObject(int size, BaseNode node[]);
+  /**
+   * Construct a new MFNode field in OpenVRML using the given params.
+   *
+   * @param size Number of elements passed in.
+   * @param nodes List of BaseNodes.
+   */
+  private native void CreateObject(int size, BaseNode nodes[]);
 
-  public ConstMFNode(int size, BaseNode node[]) { CreateObject(size, node); }
-  public ConstMFNode(BaseNode node[]) { CreateObject(node.length, node); }
-	
-  public native void getValue(BaseNode node[]);
+  /**
+   * Construct a read-only MFNode field.
+   *
+   * @param size Number of elements passed in.
+   * @param nodes Array of BaseNodes.
+   */
+  public ConstMFNode(int size, BaseNode nodes[])
+  {
+    CreateObject(size, nodes);
+  }
 
+  /**
+   * Construct a read-only MFNode field.
+   *
+   * @param nodes Array of BaseNodes.
+   */
+  public ConstMFNode(BaseNode nodes[])
+  {
+    CreateObject(nodes.length, nodes);
+  }
+
+  /**
+   * Retrieves the value of an MFNode field.
+   *
+   * @param nodes Array of BaseNodes to be returned.
+   */
+  public native void getValue(BaseNode nodes[]);
+
+  /**
+   * Retrieves a specific BaseNode from an MFNode.
+   *
+   * @param index Position of desired BaseNode.
+   * @return Value of BaseNode at index.
+   */	
   public native BaseNode get1Value(int index);
 
   public native String toString();
