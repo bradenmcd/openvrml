@@ -17,7 +17,8 @@ CFG=libvrml97core - Win32 Debug
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "libvrml97core - Win32 Release" (based on "Win32 (x86) Static Library")
+!MESSAGE "libvrml97core - Win32 Release" (based on\
+ "Win32 (x86) Static Library")
 !MESSAGE "libvrml97core - Win32 Debug" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
@@ -67,6 +68,10 @@ BSC32=bscmake.exe
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
+# Begin Special Build Tool
+SOURCE=$(InputPath)
+PostBuild_Cmds=del unistd.h
+# End Special Build Tool
 
 !ENDIF 
 
@@ -561,6 +566,32 @@ SOURCE=.\lexer.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\vrml97\lexer.lpp
+USERDEP__LEXER="parser.out"	
+
+!IF  "$(CFG)" == "libvrml97core - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
+
+# Begin Custom Build
+InputPath=..\src\vrml97\lexer.lpp
+
+"lexer.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	set BISON_SIMPLE=c:\bison\bison.simple 
+	set BISON_HAIRY=c:\bison\bison.hairy 
+	c:\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
+	del parser.h 
+	ren parser.cpp.h parser.h 
+	c:\flex\flex -dLt ..\src\vrml97\lexer.lpp > lexer.cpp 
+	type NUL:  > unistd.h 
+	
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\vrml97\MathUtils.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
@@ -581,6 +612,27 @@ SOURCE=.\parser.cpp
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
 # ADD CPP /I "..\src\vrml97" /I "."
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\vrml97\parser.ypp
+
+!IF  "$(CFG)" == "libvrml97core - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
+
+# Begin Custom Build
+InputPath=..\src\vrml97\parser.ypp
+
+"parser.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	set BISON_SIMPLE=c:\bison\bison.simple 
+	set BISON_HAIRY=c:\bison\bison.hairy 
+	c:\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
+	
+# End Custom Build
 
 !ENDIF 
 
