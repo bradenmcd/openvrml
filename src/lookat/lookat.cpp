@@ -55,7 +55,7 @@ namespace {
     void buildViewpointMenu();
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char * argv[]) {
     using std::cerr;
     using std::cout;
     using std::endl;
@@ -64,14 +64,14 @@ int main(int argc, char **argv) {
     
 #if defined(__FreeBSD__)
     fpsetmask(0);
-#endif
+# endif
  
-#ifdef macintosh
+# ifdef macintosh
     SIOUXSettings.asktosaveonclose = 0;
     argc = ccommand(&argv);
     _fcreator = 'ttxt';
     _ftype = 'TEXT';
-#endif
+# endif
 
     glutInitWindowSize(400, 320);
     glutInit(&argc, argv);
@@ -97,9 +97,9 @@ int main(int argc, char **argv) {
                 cerr << "Usage: " << argv[0] << usage << endl;
                 exit(EXIT_FAILURE);
             }
-        } else if (! inputName) {
+        } else if (!inputName) {
             inputName = argv[i];
-        } else if (! outputName) {
+        } else if (!outputName) {
             outputName = argv[i];
         } else {
             cerr << "Usage: " << argv[0] << usage << endl;
