@@ -232,7 +232,7 @@ namespace OpenVRML {
         const MFNode & getNodes() const throw ();
         const std::string getURI() const throw (std::bad_alloc);
         
-        void initialize(double timestamp);
+        void initialize(double timestamp) throw (std::bad_alloc);
         void render(Viewer & viewer, VrmlRenderContext context);
         
         void loadURI(const MFString & uri, const MFString & parameter)

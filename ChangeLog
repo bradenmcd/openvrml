@@ -12,6 +12,10 @@
           src/openvrml/OpenVRML/vrml97node.h: Fixed exception
           specifications for do_initialize methods.
 
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/browser.h:  Scene::initialize throws
+          std::bad_alloc.
+
 2003-01-07  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, m4/Makefile.am, m4/ax_check_gl.m4, m4/gl.m4,

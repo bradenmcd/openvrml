@@ -1971,7 +1971,8 @@ const std::string Scene::getURI() const throw (std::bad_alloc) {
 /**
  * @brief Initialize the scene.
  */
-void Scene::initialize(const double timestamp) {
+void Scene::initialize(const double timestamp) throw (std::bad_alloc)
+{
     for (size_t i = 0; i < this->nodes.getLength(); ++i) {
         assert(this->nodes.getElement(i));
         this->nodes.getElement(i)->initialize(*this, timestamp);
