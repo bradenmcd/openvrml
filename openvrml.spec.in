@@ -57,7 +57,7 @@ make
 
 
 %install
-if [ -d $RPM_BUILD_ROOT ]; then rm -f $RPM_BUILD_ROOT; fi
+if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
@@ -89,6 +89,9 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Sun Dec 31 2000  Clayton Cottingham <drfrog@smartt.com>
+- Change in install section rm command is now recursive 
+
 * Fri Dec 15 2000  Braden McDaniel  <braden@endoframe.com>
 - Added lookat.xpm to files section for lookat.
 
