@@ -1,3 +1,9 @@
+2005-03-22 Braden McDaniel  <braden@endoframe.com>
+
+	* README:  Removed references to lookat.  Updated "configure
+	options" and "Significant preprocessor symbols" sections to
+	reflect changes in the I/O subsystem and image decoders.
+
 2005-03-21 Braden McDaniel  <braden@endoframe.com>
 
 	Moved lookat to examples/sdl-viewer.  It is no longer an

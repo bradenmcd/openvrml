@@ -12,8 +12,9 @@ See the "NEWS" file for a list of changes in this release.
 About
 =====
 
-   OpenVRML is a portable C++ library for reading and displaying VRML97
-files.  This distribution includes lookat, a sample viewer program.
+   OpenVRML is a portable VRML97 toolkit including a C++ library for
+reading and displaying VRML97 files, an OpenGL renderer, and a Mozilla
+Web browser plug-in for viewing VRML97 content on the Internet.
 
 
 License terms
@@ -69,8 +70,8 @@ file "COPYING.LESSER".  Code used in these libararies under other terms
 
      OpenGL(TM) is a trademark of Silicon Graphics, Inc.
 
-   The included sample viewer program "lookat" and the Mozilla plug-in
-are available under the terms of the GNU General Public License (GPL),
+   The Mozilla plug-in as well as the included example programs are
+available under the terms of the GNU General Public License (GPL),
 version 2.  The full text of the GPL can be found in the file "COPYING".
 
 
@@ -119,15 +120,13 @@ for details.
 that modify what features are built and/or what packages OpenVRML
 depends on.
 
- --disable-gzip
-     Disable support for gzipped VRML worlds. By default, OpenVRML uses
-     zlib to read gzipped worlds.
+ --disable-png-textures
+     Disable support for rendering PNG images as textures.  OpenVRML
+     uses libpng to read PNG images.
 
- --disable-render-imagetexture-node
-     Disable support for rendering ImageTexture nodes.  The node is
-     still parsed, and events to and from it are processed; but no
-     textures are rendered.  By default OpenVRML uses libpng and libjpeg
-     to read get ImageTexture data.
+ --disable-jpeg-textures
+     Disable support for rendering JPEG images as textures.  OpenVRML
+     uses libjpeg to read JPEG images.
 
  --disable-render-text-node
      Disable support for rendering Text nodes.  The node is still
@@ -152,12 +151,13 @@ depends on.
      Do not build the GL renderer.  OpenVRML's GL renderer depends on
      OpenGL/Mesa.
 
- --disable-lookat
-     Do not build lookat.  lookat depends on SDL.
-
  --disable-mozilla-plugin
      Do not build the Mozilla plug-in.  The Mozilla plug-in depends on
      GTK+ and, of course, Mozilla.
+
+ --disable-examples
+     Do not build the example programs.  The example programs depend on
+     SDL.
 
 --disable-tests
      Do not build the test programs.  The test programs depend on
@@ -185,12 +185,13 @@ previous section rather than define these symbols in CPPFLAGS.  These
 symbols are documented here primarily for the benefit of persons trying
 to compile OpenVRML without the GNU build tools.
 
- OPENVRML_ENABLE_GZIP
-     Include support for gzipped VRML files.  Requires zlib.
+ OPENVRML_ENABLE_PNG_TEXTURES
+     Include support for rendering PNG images as textures.  Requires
+     libpng.
 
- OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE
-     Include support for rendering images as textures using the
-     ImageTexture node.  Requires libpng and libjpeg.
+ OPENVRML_ENABLE_JPEG_TEXTURES
+     Include support for rendering JPEG images as textures.  Requires
+     libjpeg.
 
  OPENVRML_ENABLE_RENDER_TEXT_NODE
      Include support for rendering text using the Text node.  Requires
