@@ -72,6 +72,7 @@ script::~script()
 void script::initialize(double timestamp)
 {
     this->do_initialize(timestamp);
+    this->process_direct_output(timestamp);
 }
 
 /**
@@ -96,6 +97,7 @@ void script::process_event(const std::string & id,
                            double timestamp)
 {
     this->do_process_event(id, value, timestamp);
+    this->process_direct_output(timestamp);
 }
 
 /**
@@ -138,6 +140,7 @@ void script::events_processed(double timestamp)
 void script::shutdown(double timestamp)
 {
     this->do_shutdown(timestamp);
+    this->process_direct_output(timestamp);
 }
 
 /**
@@ -147,6 +150,29 @@ void script::shutdown(double timestamp)
  *
  * @param timestamp the current time.
  */
+
+/**
+ * @brief Whether direct output is enabled for the Script node.
+ *
+ * @return @c true if direct output is enabled for the Script node; @c false
+ *         otherwise.
+ */
+bool script::direct_output() const throw ()
+{
+    return this->node.direct_output.value;
+}
+
+/**
+ * @brief Whether the browser may delay sending input events to the script
+ *        until its outputs are needed by the browser.
+ *
+ * @return @c true if the browser may delay sending input events to the script
+ *         until its outputs are needed by the browser; @c false otherwise.
+ */
+bool script::must_evaluate() const throw ()
+{
+    return this->node.must_evaluate.value;
+}
 
 /**
  * @brief Set the value of a field.
@@ -169,6 +195,142 @@ void script::field(const std::string & id, const field_value & value)
                                     id);
     }
     field->second->assign(value); // throws std::bad_cast, std::bad_alloc
+}
+
+/**
+ * @brief Add an event for direct output processing at the end of script
+ *        execution.
+ *
+ * @param listener  the <code>event_listener</code> to which the event should
+ *                  be sent.
+ * @param value     the value to send.
+ *
+ * @exception field_value_type_mismatch if @p listener is not the correct type
+ *                                      to process events of @p value's type.
+ * @exception std::bad_alloc            if memory allocation fails.
+ */
+void script::direct_output(event_listener & listener,
+                           const boost::shared_ptr<field_value> & value)
+    throw (field_value_type_mismatch, std::bad_alloc)
+{
+    assert(value);
+    if (listener.type() != value->type()) {
+        throw field_value_type_mismatch();
+    }
+    this->direct_output_map_[&listener] = value;
+}
+
+void script::process_direct_output(double timestamp)
+{
+    for (direct_output_map_t::const_iterator output =
+             this->direct_output_map_.begin();
+         output != this->direct_output_map_.end();
+         ++output) {
+        using boost::polymorphic_downcast;
+        switch (output->first->type()) {
+        case field_value::sfbool_id:
+            polymorphic_downcast<sfbool_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sfbool *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::sfcolor_id:
+            polymorphic_downcast<sfcolor_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sfcolor *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::sffloat_id:
+            polymorphic_downcast<sffloat_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sffloat *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::sfimage_id:
+            polymorphic_downcast<sfimage_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sfimage *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::sfint32_id:
+            polymorphic_downcast<sfint32_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sfint32 *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::sfnode_id:
+            polymorphic_downcast<sfnode_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sfnode *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::sfrotation_id:
+            polymorphic_downcast<sfrotation_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sfrotation *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::sfstring_id:
+            polymorphic_downcast<sfstring_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sfstring *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::sftime_id:
+            polymorphic_downcast<sftime_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sftime *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::sfvec2f_id:
+            polymorphic_downcast<sfvec2f_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sfvec2f *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::sfvec3f_id:
+            polymorphic_downcast<sfvec3f_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<sfvec3f *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mfcolor_id:
+            polymorphic_downcast<mfcolor_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<mfcolor *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mffloat_id:
+            polymorphic_downcast<mffloat_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<mffloat *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mfint32_id:
+            polymorphic_downcast<mfint32_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<mfint32 *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mfnode_id:
+            polymorphic_downcast<mfnode_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<mfnode *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mfrotation_id:
+            polymorphic_downcast<mfrotation_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<mfrotation *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mfstring_id:
+            polymorphic_downcast<mfstring_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<mfstring *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mftime_id:
+            polymorphic_downcast<mftime_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<mftime *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mfvec2f_id:
+            polymorphic_downcast<mfvec2f_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<mfvec2f *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mfvec3f_id:
+            polymorphic_downcast<mfvec3f_listener *>(output->first)
+                ->process_event(*polymorphic_downcast<mfvec3f *>(
+                    output->second.get()), timestamp);
+            break;
+        }
+    }
+    this->direct_output_map_.clear();
 }
 
 
@@ -1444,13 +1606,19 @@ namespace {
 
 namespace js_ {
 
+class SFNode;
+
 class script : public openvrml::script {
+
+    friend class SFNode;
+
     static JSRuntime * rt;
     static size_t nInstances;
 
     double d_timeStamp;
 
     JSContext * cx;
+    JSClass & sfnode_class;
 
 public:
     script(openvrml::script_node & node, const std::string & source)
@@ -1458,6 +1626,8 @@ public:
     virtual ~script();
 
     openvrml::script_node & script_node();
+
+    using openvrml::script::direct_output;
 
     jsval vrmlFieldToJSVal(const openvrml::field_value & value) throw ();
 
@@ -2200,7 +2370,10 @@ void errorReporter(JSContext * cx, const char * message,
 script::script(openvrml::script_node & node, const std::string & source)
     throw (std::bad_alloc):
     openvrml::script(node),
-    cx(0)
+    cx(0),
+    sfnode_class(this->direct_output()
+                 ? SFNode::direct_output_jsclass
+                 : SFNode::jsclass)
 {
     //
     // Initialize the runtime.
@@ -4041,7 +4214,7 @@ JSClass SFNode::jsclass = {
     JS_PropertyStub,
     JS_PropertyStub,
     getProperty,
-    setProperty,
+    JS_PropertyStub,
     JS_EnumerateStub,
     JS_ResolveStub,
     JS_ConvertStub,
@@ -4054,7 +4227,7 @@ JSClass SFNode::direct_output_jsclass = {
     JS_PropertyStub,
     JS_PropertyStub,
     getProperty,
-    JS_PropertyStub,
+    setProperty,
     JS_EnumerateStub,
     JS_ResolveStub,
     JS_ConvertStub,
@@ -4070,17 +4243,16 @@ JSObject * SFNode::initClass(JSContext * const cx,
             { { "toString", SFNode::toString, 0, 0, 0 },
               { 0, 0, 0, 0, 0 } };
 
+    js_::script & script =
+        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+    JSClass & jsclass = script.sfnode_class;
+
     jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "Group {}"));
     JSObject * const proto =
-        direct_output
-        ? JS_InitClass(cx, obj, 0, &direct_output_jsclass,
-                       SFNode::construct, 1, // constructor function, min arg count
-                       0, methods, // instance properties, methods
-                       0, 0) // static properties and methods
-        : JS_InitClass(cx, obj, 0, &jsclass,
-                       SFNode::construct, 1, // constructor function, min arg count
-                       0, methods, // instance properties, methods
-                       0, 0); // static properties and methods
+        JS_InitClass(cx, obj, 0, &jsclass,
+                     SFNode::construct, 1, // constructor function, min arg count
+                     0, methods, // instance properties, methods
+                     0, 0); // static properties and methods
     if (!proto || !initObject(cx, proto, 1, &arg)) { return 0; }
     return proto;
 }
@@ -4091,6 +4263,9 @@ JSBool SFNode::toJsval(const node_ptr & node,
                        jsval * const rval)
     throw ()
 {
+    js_::script & script =
+        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+    JSClass & jsclass = script.sfnode_class;
     //
     // The SFNode constructor requires one arg (a vrmlstring),
     // so we can't use JS_ConstructObject here.
@@ -4139,6 +4314,9 @@ JSBool SFNode::construct(JSContext * const cx,
                          jsval * rval)
     throw ()
 {
+    js_::script & script =
+        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+    JSClass & jsclass = script.sfnode_class;
     //
     // If called without new, replace obj with a new object.
     //
@@ -4260,16 +4438,25 @@ JSBool SFNode::setProperty(JSContext * const cx,
 
         const char * const eventInId = JS_GetStringBytes(JSVAL_TO_STRING(id));
 
-        // convert vp to field, send eventIn to node
-        const node_interface_set & interfaces = nodePtr->type().interfaces();
-        const node_interface_set::const_iterator interface =
-            find_if(interfaces.begin(), interfaces.end(),
-                    bind2nd(node_interface_matches_eventin(), eventInId));
-        if (interface == interfaces.end()) { return JS_TRUE; }
-        field_value::type_id expectType = interface->field_type;
-        auto_ptr<field_value> fieldValue;
         try {
+            //
+            // Get the event_listener.
+            //
+            event_listener & listener = nodePtr->event_listener(eventInId);
+
+            // convert vp to field, send eventIn to node
+            field_value::type_id expectType = listener.type();
+            auto_ptr<field_value> fieldValue;
             fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
+            
+            assert(JS_GetContextPrivate(cx));
+            js_::script & script =
+                *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+            script.direct_output(listener,
+                                 boost::shared_ptr<field_value>(fieldValue));
+        } catch (unsupported_interface & ex) {
+            // We can't handle the property here, so get out of the way.
+            return JS_TRUE;
         } catch (bad_conversion & ex) {
             JS_ReportError(cx, ex.what());
             return JS_FALSE;
@@ -4277,18 +4464,6 @@ JSBool SFNode::setProperty(JSContext * const cx,
             JS_ReportOutOfMemory(cx);
             return JS_FALSE;
         }
-        // the timestamp should be stored as a global property and
-        // looked up via obj somehow...
-        assert(JS_GetContextPrivate(cx));
-        js_::script & script =
-            *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-        script.script_node().scene()
-            ->browser.queue_event(s_timeStamp,
-                                  fieldValue.get(),
-                                  nodePtr,
-                                  eventInId);
-        fieldValue.release();
-        sfdata.changed = true;
     }
     return JS_TRUE;
 }

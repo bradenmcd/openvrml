@@ -1,3 +1,10 @@
+2004-12-09 Braden McDaniel  <braden@endoframe.com>
+
+	Fixes for direct output from Script nodes.
+
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+
 2004-12-07 Braden McDaniel  <braden@endoframe.com>
 
 	Favor private virtual functions in openvrml::script.

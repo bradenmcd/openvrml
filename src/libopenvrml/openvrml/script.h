@@ -32,6 +32,11 @@ namespace openvrml {
     class script_node;
 
     class script : boost::noncopyable {
+        typedef std::map<openvrml::event_listener *,
+                         boost::shared_ptr<field_value> >
+            direct_output_map_t;
+        direct_output_map_t direct_output_map_;
+
     public:
         virtual ~script() = 0;
         void initialize(double timestamp);
@@ -46,8 +51,13 @@ namespace openvrml {
 
         explicit script(script_node & node);
 
+        bool direct_output() const throw ();
+        bool must_evaluate() const throw ();
         void field(const std::string & id, const field_value & value)
             throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+        void direct_output(event_listener & listener,
+                           const boost::shared_ptr<field_value> & value)
+            throw (field_value_type_mismatch, std::bad_alloc);
 
     private:
         virtual void do_initialize(double timestamp) = 0;
@@ -55,7 +65,9 @@ namespace openvrml {
                                       const field_value & value,
                                       double timestamp) = 0;
         virtual void do_events_processed(double timestamp) = 0;
-        virtual void do_shutdown(double timestamp) = 0;        
+        virtual void do_shutdown(double timestamp) = 0;
+
+        void process_direct_output(double timestamp);
     };
 
 
