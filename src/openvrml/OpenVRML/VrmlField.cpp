@@ -327,6 +327,23 @@ VrmlField * VrmlSFBool::clone() const {
 VrmlField::VrmlFieldType VrmlSFBool::fieldType() const { return SFBOOL; }
 
 /**
+ * Get the value.
+ * @return the value of this SFBool
+ */
+bool VrmlSFBool::get() const {
+    return this->d_value;
+}
+
+/**
+ * Set the value.
+ * @param value the new value
+ */
+void VrmlSFBool::set(bool value) {
+    this->d_value = value;
+}
+
+
+/**
  * @class VrmlSFColor
  * Encapsulates an SFColor value.
  */
@@ -386,22 +403,42 @@ float & VrmlSFColor::operator[](size_t index) {
     return this->d_rgb[index];
 }
 
+/**
+ * Get the red component.
+ * @return the red component value
+ */
 float VrmlSFColor::getR() const {
     return this->d_rgb[0];
 }
 
+/**
+ * Get the green component.
+ * @return the green component value
+ */
 float VrmlSFColor::getG() const {
     return this->d_rgb[1];
 }
 
+/**
+ * Get the blue component.
+ * @return the blue component value
+ */
 float VrmlSFColor::getB() const {
     return this->d_rgb[2];
 }
 
+/**
+ * Get the value.
+ * @return a pointer to a 3-element array comprising the RGB value
+ */
 const float * VrmlSFColor::get() const {
     return this->d_rgb;
 }
 
+/**
+ * Set the value.
+ * @param rgb a 3-element vector comprising a RGB value
+ */
 void VrmlSFColor::set(const float rgb[3]) {
     this->d_rgb[0] = rgb[0];
     this->d_rgb[1] = rgb[1];
@@ -411,6 +448,12 @@ void VrmlSFColor::set(const float rgb[3]) {
 // Conversion functions between RGB each in [0,1] and HSV with  
 // h in [0,360), s,v in [0,1]. From Foley, van Dam p615-616.
 
+/**
+ * Convert from HSV (with(with <var>h</var> in [0,360), <var>s</var>,
+ * <var>v</var> in [0,1]) to RGB (with each component in [0,1]).
+ * @param hsv a 3-element array comprising an HSV value
+ * @retval rgb a 3-element array comprising an RGB value
+ */
 void VrmlSFColor::HSVtoRGB(const float hsv[3], float rgb[3])
 {
     float h = hsv[0];
@@ -438,7 +481,12 @@ void VrmlSFColor::HSVtoRGB(const float hsv[3], float rgb[3])
     }
 }
 
-
+/**
+ * Convert from RGB (with each component in [0,1]) to HSV (with <var>h</var> in
+ * [0,360), <var>s</var>, <var>v</var> in [0,1]).
+ * @param rgb a 3-element array comprising an RGB value
+ * @retval hsv a 3-element array comprising an HSV value
+ */
 void VrmlSFColor::RGBtoHSV(const float rgb[3], float hsv[3]) {
     const float maxrgb = *std::max_element(rgb, rgb + 3);
     const float minrgb = *std::min_element(rgb, rgb + 3);
@@ -467,19 +515,31 @@ void VrmlSFColor::RGBtoHSV(const float rgb[3], float hsv[3]) {
     }
 }
 
+/**
+ * Set the value using HSV.
+ * @param h the hue component
+ * @param s the saturation component
+ * @param v the value component
+ */
 void VrmlSFColor::setHSV(float h, float s, float v)
 {
     const float hsv[3] = { h, s, v };
     HSVtoRGB(hsv, this->d_rgb);
 }
 
+/**
+ * Get the value expressed in HSV.
+ * @retval hsv a 3-element array comprising the HSV value.
+ */
 void VrmlSFColor::getHSV(float hsv[3]) const {
     RGBtoHSV(this->d_rgb, hsv);
 }
 
 
-// SFFloat
-
+/**
+ * @class VrmlSFFloat
+ * Encapsulates an SFFloat value.
+ */
 #include "VrmlSFFloat.h"
 
 VrmlSFFloat::VrmlSFFloat(float value) : d_value(value) {}
@@ -622,18 +682,34 @@ VrmlField * VrmlSFImage::clone() const {
 
 VrmlField::VrmlFieldType VrmlSFImage::fieldType() const { return SFIMAGE; }
 
+/**
+ * Get the image width.
+ * @return the image width
+ */
 size_t VrmlSFImage::getWidth() const {
     return this->d_w;
 }
 
+/**
+ * Get the image height.
+ * @return the image height
+ */
 size_t VrmlSFImage::getHeight() const {
     return this->d_h;
 }
 
+/**
+ * Get the number of components.
+ * @return the number of components
+ */
 size_t VrmlSFImage::getComponents() const {
     return this->d_nc;
 }
 
+/**
+ * Get the pixel data.
+ * @return a pointer to the array of pixel data.
+ */
 const unsigned char * VrmlSFImage::getPixels() const {
     return this->d_pixels;
 }
@@ -664,10 +740,16 @@ void VrmlSFImage::set(size_t width, size_t height, size_t components,
 //}
 
 
-// SFInt
-
+/**
+ * @class VrmlSFInt32
+ * Encapsulates an SFInt32 value.
+ */
 #include "VrmlSFInt32.h"
 
+/**
+ * Constructor.
+ * @param value initial value
+ */
 VrmlSFInt32::VrmlSFInt32(long value): d_value(value) {}
 
 ostream& VrmlSFInt32::print(ostream& os) const
@@ -677,27 +759,53 @@ VrmlField *VrmlSFInt32::clone() const { return new VrmlSFInt32(d_value); }
 
 VrmlField::VrmlFieldType VrmlSFInt32::fieldType() const { return SFINT32; }
 
+/**
+ * Get value.
+ * @return the integer value
+ */
 long VrmlSFInt32::get() const {
     return this->d_value;
 }
 
+/**
+ * Set value.
+ * @param value the new integer value
+ */
 void VrmlSFInt32::set(long value) {
     this->d_value = value;
 }
 
-// SFNode
 
+/**
+ * @class VrmlSFNode
+ * Encapsulates an SFNode.
+ */
 #include "VrmlSFNode.h"
 #include "VrmlNode.h"
 
-VrmlSFNode::VrmlSFNode(VrmlNode *value) : d_value(value)
+/**
+ * Constructor.
+ * @param node a pointer to a VrmlNode
+ */
+VrmlSFNode::VrmlSFNode(VrmlNode * node) : d_value(node)
 { if (d_value) d_value->reference(); }
 
-VrmlSFNode::VrmlSFNode(const VrmlSFNode &n) : d_value(n.d_value)
+/**
+ * Copy constructor.
+ * @param rhs the VrmlSFNode to copy
+ */
+VrmlSFNode::VrmlSFNode(const VrmlSFNode & rhs): d_value(rhs.d_value)
 { if (d_value) d_value->reference(); }
 
+/**
+ * Destructor.
+ */
 VrmlSFNode::~VrmlSFNode() { if (d_value) d_value->dereference(); }
 
+/**
+ * Assignment operator.
+ * @param rhs the VrmlSFNode to copy into this object
+ */
 VrmlSFNode& VrmlSFNode::operator=(const VrmlSFNode& rhs)
 {
   if (this == &rhs) return *this;
@@ -714,10 +822,23 @@ VrmlField *VrmlSFNode::clone() const { return new VrmlSFNode(d_value); }
 
 VrmlField::VrmlFieldType VrmlSFNode::fieldType() const { return SFNODE; }
 
-void VrmlSFNode::set(VrmlNode *value)
+/**
+ * Get value.
+ * @return a pointer to this object's VrmlNode
+ */
+VrmlNode * VrmlSFNode::get() const {
+    return this->d_value;
+}
+
+/**
+ * Set value.
+ * @param node a pointer to a VrmlNode, or 0 if setting this SFNode to
+ *             <code>NULL</code>
+ */
+void VrmlSFNode::set(VrmlNode * node)
 {
   if (d_value) d_value->dereference();
-  if ((d_value = value) != 0) d_value->reference();
+  if ((d_value = node) != 0) d_value->reference();
 }
 
 
@@ -1609,7 +1730,9 @@ const VrmlSFVec3f VrmlSFVec3f::subtract(const VrmlSFVec3f & vec) const {
 }
 
 
-// MFColor
+/**
+ * @class VrmlMFColor
+ */
 
 #include "VrmlMFColor.h"
 

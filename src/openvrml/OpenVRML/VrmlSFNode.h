@@ -17,6 +17,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
+
 # ifndef VRMLSFNODE_H
 # define VRMLSFNODE_H
 
@@ -27,7 +28,7 @@ class VrmlNode;
 class VrmlSFNode : public VrmlField {
 public:
 
-  VrmlSFNode(VrmlNode *value = 0);
+  VrmlSFNode(VrmlNode * node = 0);
   VrmlSFNode(const VrmlSFNode &n);
   ~VrmlSFNode();
 
@@ -42,9 +43,9 @@ public:
   virtual const VrmlSFNode* toSFNode() const;
   virtual VrmlSFNode* toSFNode();
 
-  VrmlNode *get(void) const		{ return d_value; }
+  VrmlNode * get() const;
 
-  void set(VrmlNode *value);
+  void set(VrmlNode * node);
 
 private:
   VrmlNode *d_value;

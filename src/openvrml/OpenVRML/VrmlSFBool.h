@@ -22,7 +22,6 @@
 
 #include "VrmlField.h"
 
-
 class VrmlSFBool : public VrmlField {
 public:
 
@@ -36,8 +35,8 @@ public:
   virtual const VrmlSFBool* toSFBool() const;
   virtual VrmlSFBool* toSFBool();
 
-  bool get(void) const		{ return d_value; }
-  void set(bool value)		{ d_value = value; }
+  bool get() const;
+  void set(bool value);
 
 private:
   bool d_value;
