@@ -1,3 +1,8 @@
+2002-05-19  Braden McDaniel  <braden@endoframe.com>
+
+        * Document --with-gl and --with-glut configure options in
+          README.
+
 2002-05-17  Braden McDaniel  <braden@endoframe.com>
 
         * Enable building without OpenGL and GLUT.

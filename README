@@ -1,6 +1,6 @@
 OpenVRML library version 0.12.0
 Copyright (C) 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
-Copyright (C) 2000, 2001 Braden McDaniel <braden@endoframe.com>
+Copyright (C) 2000, 2001, 2002 Braden McDaniel <braden@endoframe.com>
 Portions Copyright SGI and others
 
 Available from <http://openvrml.org>
@@ -12,7 +12,7 @@ About
 =====
 
    OpenVRML is a portable C++ class library for reading and displaying
-VRML97 files.  This distribution includes Lookat, a sample viewer
+VRML97 files.  This distribution includes LookAt, a sample viewer
 program that uses GLUT.
 
 
@@ -81,9 +81,10 @@ reuse) under other terms is as follows:
 Required libraries
 ==================
 
-   OpenVRML requires zlib, OpenGL/Mesa, and GLUT to build.  If any
-of these are not already present on your system, first consult your
-operating system vendor for packages tailored to your particular
+   OpenVRML requires zlib to build the core runtime. OpenGL (or Mesa)
+is required to build the renderer, and GLUT is required to build LookAt.
+If any of these is not already present on your system, first consult
+your operating system vendor for packages tailored to your particular
 operating system/distribution.
 
    Mac users can find the Apple OpenGL SDK here
@@ -96,10 +97,9 @@ here:
      <http://openvrml.org/dist/win32_required_libs.zip>
 
 Otherwise, consult the following URLs:
-     zlib:  <http://www.info-zip.org/pub/infozip/zlib/>
-     Mesa:  <http://www.mesa3d.org>
-     GLUT:  <http://reality.sgi.com/mjk_asd/glut3/>
-
+     zlib:  <http://www.gzip.org/zlib/index.html>
+     Mesa:  <http://mesa3d.org>
+     GLUT:  <http://opengl.org/developers/documentation/glut/index.html>
 
    OpenVRML also uses the ANTLR parser generator.  The generated sources
 come with the distribution, and most users should never need to
@@ -107,17 +107,66 @@ recompile the ANTLR source.  For those who do, ANTLR can be found here:
     <http://www.antlr.org>
 
 
-Optional features
-=================
+Optional dependencies
+=====================
 
- * PNG image support
+Most of OpenVRML's dependencies are optional; OpenVRML can be built
+without these dependencies with reduced functionality.  Note that if
+you have installed any of these libraries to a non-standard location on
+your system, you may need to add arguments to the CPPFLAGS and LDFLAGS
+variables when running `configure'. See INSTALL for details.
+
+ * OpenGL/Mesa
+
+   In addition to the core runtime, OpenVRML includes an OpenGL
+   renderer.  If your system does not include OpenGL or an OpenGL-
+   compatible implementation, you can find such an implementation at
+   <http://mesa3d.org>.  The GNU build includes configuration options to
+   allow the build either to locate an OpenGL implementation on your
+   system, or to build only the core runtime without the GL renderer and
+   LookAt.  These arguments can be passed to `configure':
+   
+   --with-gl
+   --with-gl=yes
+      Attempt to locate and build using OpenGL/Mesa.  This is the default.
+   
+   --without-gl
+   --with-gl=no
+      Build without OpenGL/Mesa.  Only the core runtime will be built.
+   
+   Other build systems should define OPENVRML_HAVE_GL when building
+   OpenVRML with OpenGL/Mesa.
+
+ * GLUT
+
+   OpenVRML uses GLUT to render Text nodes, and in LookAt.  If GLUT is
+   not present on your system, it can be found at
+   <http://opengl.org/developers/documentation/glut/index.html>.  The
+   GNU build includes configuration options to allow the build either to
+   locate GLUT on your system, or to build OpenVRML without Text node
+   support and without building LookAt.  These arguments can be passed
+   to `configure':
+   
+   --with-gl
+   --with-gl=yes
+      Attempt to locate and build using GLUT.  This is the default.
+   
+   --without-gl
+   --with-gl=no
+      Build without GLUT.  OpenVRML will not include Text node support,
+      and LookAt will not be built.
+   
+   Other build systems should define OPENVRML_HAVE_GLUT when building
+   OpenVRML with GLUT.
+
+ * libpng
    
    libpng is required for PNG support in OpenVRML.  If libpng is not
    already installed on your system, you can find it at
    <http://www.libpng.org/pub/png/libpng.html>.  The GNU build includes
-   configuration options to either allow the build to locate libpng on
-   your system, or build without PNG support (if you don't have libpng
-   or don't want PNG support).  These arguments can be passed to
+   configuration options to allow the build either to locate libpng on
+   your system, or to build without PNG support (if you don't have
+   libpng or don't want PNG support).  These arguments can be passed to
    `configure':
    
    --with-libpng
@@ -128,12 +177,10 @@ Optional features
    --with-libpng=no
       Build without PNG support.
    
-   Note that you may need to add arguments to the CPPFLAGS and LDFLAGS
-   variables if you have libpng installed in a nonstandard location.
    Other build systems should define OPENVRML_HAVE_LIBPNG when building
-   OpenVRML with PNG support.
+   OpenVRML with libpng.
 
- * JPEG image support
+ * libjpeg
    
    libjpeg is required for JPEG support in OpenVRML.  If libjpeg is not
    already installed on your system, you can find it at
@@ -150,12 +197,10 @@ Optional features
    --with-libjpeg=no
       Build without JPEG support.
    
-   Note that you may need to add arguments to the CPPFLAGS and LDFLAGS
-   variables if you have libjpg installed in a nonstandard location.
    Other build systems should define OPENVRML_HAVE_LIBJPEG when building
-   OpenVRML with JPEG support.
+   OpenVRML with libjpeg.
 
- * JavaScript support
+ * SpiderMonkey
    
    SpiderMonkey (the Mozilla JavaScript engine) is required for
    JavaScript support in OpenVRML.  If SpiderMonkey is not already
@@ -175,13 +220,10 @@ Optional features
    --with-spidermonkey=no
       Build without JavaScript support.
    
-   Note that you may need to add arguments to the CPPFLAGS and LDFLAGS
-   variables if you have SpiderMonkey installed in a nonstandard
-   location.  Other build systems should define
-   OPENVRML_HAVE_SPIDERMONKEY when building OpenVRML with JavaScript
-   support.
+   Other build systems should define OPENVRML_HAVE_SPIDERMONKEY when
+   building OpenVRML with SpiderMonkey.
 
- * Java support
+ * Sun Java Development Kit
    
    OpenVRML uses the Java Development Kit to provide Java support.
    These libraries and headers are provided by the Java Development Kit.
@@ -203,7 +245,7 @@ Optional features
    configure will use the JAVA_HOME variable to attempt to locate the
    JDK.  If this variable is not set, you may need to add arguments to
    the CPPFLAGS and LDFLAGS variables.  Other build systems should
-   define OPENVRML_HAVE_JNI when building OpenVRML with Java support.
+   define OPENVRML_HAVE_JNI when building OpenVRML with the JDK.
 
 
 Installation
@@ -219,7 +261,7 @@ Conformance
 isn't there yet, but much of the spec is supported, and OpenVRML will
 continue to get better.
 
-   Detailed results of testing Lookat against the NIST VRML97 Test Suite
+   Detailed results of testing LookAt against the NIST VRML97 Test Suite
 can be found in the file `conformance.html'.
 
 
@@ -231,9 +273,7 @@ System-specific notes
    If you are having trouble with colormap flashing on an 8-bit display,
    try restarting your X server (e.g., log out and back in in an xdm
    environment) and running "xstdcmap -default" BEFORE running anything
-   else.  In fact, you might put that command in your X startup script.
-   But you should really get a graphics card with 24-bit color.  Tell
-   your boss I said so.
+   else.
 
  * Compiling on Irix
    
@@ -304,32 +344,3 @@ a task.  This helps avoid duplicated effort.  If you do not see the task
 you'd like to pursue listed in the Task Manager, but you think the
 library could benefit from your contribution, post a proposal to the
 openvrml-develop mailing list.
-
-
-Design
-======
-
-   The very brief architecture description:
-
- * VrmlScene is the top-level class; a scene corresponds to reading in a
-   VRML file (and all its associated data).  A VrmlScene object will
-   have data members for the node type definitions (built-in and PROTOs/
-   EXTERNPROTOs) and the actual nodes of the scene graph.  The variables
-   are d_namespace and d_nodes, respectively.  You can pretty much
-   ignore everything else in VrmlScene.
-
- * A VrmlNamespace is just a list of node type definitions and a list of
-   node name definitions.  So if you want to find a particular named node
-   in a scene, you would use the findNode method of the relevant
-   namespace.  Each PROTO gets its own namespace.
-
- * Each built in node type has a corresponding VrmlNode* class.  PROTO'd
-   node instances are represented by the VrmlNodeProto class.  Vrml
-   nodes are built from the primitive field types, represented by the
-   VrmlSF* and VrmlMF* (single- and multi-valued) classes.  For each
-   field of each node as defined by the VRML97 spec there is a data
-   member in the corresponding node class.  For example, the Group node
-   has a field called children of type MFNode.  The VrmlNodeGroup class
-   has a data member VrmlMFNode d_children.  There is a lot of code,
-   but it is pretty easy to find what you want once you understand the
-   structure.
