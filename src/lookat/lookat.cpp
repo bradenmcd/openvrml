@@ -109,8 +109,8 @@ int main(int argc, char * argv[])
 
         if (inputUrl.empty()) { inputUrl = inputName; }
 
-        browser b(cout, cerr);
         sdl_viewer v(inputUrl);
+        browser b(cout, cerr);
         b.viewer(&v);
 
         vector<string> uri(1, inputUrl);

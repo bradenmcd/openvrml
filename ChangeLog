@@ -1,3 +1,9 @@
+2004-07-24 Braden McDaniel  <braden@endoframe.com>
+
+	* src/lookat/lookat.cpp:  Instantiate the viewer before the
+	instantiating the browser so that the viewer is destroyed after
+	the browser.
+
 2004-07-19 Braden McDaniel  <braden@endoframe.com>
 
 	Changed unsupported_interface and field_value_type_mismatch to
