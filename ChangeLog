@@ -1,3 +1,15 @@
+2002-10-15  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/script.cpp,
+          src/openvrml/OpenVRML/script.h: Allow Node::initialize to
+          throw std::bad_alloc; initialize prototype objects of SF*
+          classes in JavaScript; JavaScript SFNode::getProperty should
+          return JS_TRUE if no eventOut is found so that the common
+          handling code in SpiderMonkey can attempt to handle the
+          property.
+
 2002-10-12  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,
@@ -8,7 +20,6 @@
           src/openvrml/OpenVRML/vrml97node.h: Refactored bound
           Background node stack to BackgroundClass; added render and
           initialize methods to NodeClass.
-          
 
 2002-10-10  Thomas Flynn  <tflynn@users.sourceforge.net>
 

@@ -135,7 +135,7 @@ namespace OpenVRML {
         void assignWithSelfRefCheck(const SFNode &, SFNode &) const throw ();
         void assignWithSelfRefCheck(const MFNode &, MFNode &) const throw ();
         
-        virtual void initializeImpl(double timestamp) throw ();
+        virtual void initializeImpl(double timestamp) throw (std::bad_alloc);
         
         virtual void setFieldImpl(const std::string & id,
                                   const FieldValue & value)

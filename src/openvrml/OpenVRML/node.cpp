@@ -783,8 +783,11 @@ void Node::addEventOutIS(const std::string & eventOutId,
  *
  * @param scene     the Scene to which the Node will belong.
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void Node::initialize(Scene & scene, const double timestamp) throw ()
+void Node::initialize(Scene & scene, const double timestamp)
+    throw (std::bad_alloc)
 {
     if (!this->scene) {
         this->scene = &scene;
@@ -1497,8 +1500,11 @@ std::ostream & operator<<(std::ostream & out, const Node & node) {
  * The default implementation of this method does nothing.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void Node::initializeImpl(const double timestamp) throw () {}
+void Node::initializeImpl(const double timestamp) throw (std::bad_alloc)
+{}
 
 
 /**

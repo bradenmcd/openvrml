@@ -551,8 +551,10 @@ void ScriptNode::assignWithSelfRefCheck(const MFNode & inval,
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void ScriptNode::initializeImpl(const double timestamp) throw ()
+void ScriptNode::initializeImpl(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addScript(*this);
@@ -2746,10 +2748,12 @@ JSObject * SFColor::initClass(JSContext * const cx, JSObject * const obj)
               { "toString", toString, 0, 0, 0 },
               { 0, 0, 0, 0, 0 } };
 
-    return JS_InitClass(cx, obj, 0, &jsclass,
-                        construct, 0, // constructor function, min arg count
-                        properties, methods,
-                        0, 0); // static properties and methods
+    JSObject * const proto = JS_InitClass(cx, obj, 0, &jsclass,
+                                          construct, 0, // constructor function, min arg count
+                                          properties, methods,
+                                          0, 0); // static properties and methods
+    if (!proto || !initObject(cx, proto, 0, 0)) { return 0; }
+    return proto;
 }
 
 JSBool SFColor::toJsval(const OpenVRML::SFColor & sfcolor,
@@ -2953,10 +2957,13 @@ JSObject * SFImage::initClass(JSContext * const cx, JSObject * const obj)
             { { "toString", toString, 0, 0, 0 },
               { 0, 0, 0, 0, 0 } };
 
-    return JS_InitClass(cx, obj, 0, &jsclass,
-                        construct, 4, // constructor function, min arg count
-                        properties, methods,
-                        0, 0); // static properties and methods
+    JSObject * const proto = JS_InitClass(cx, obj, 0, &jsclass,
+                                          construct, 3, // constructor function, min arg count
+                                          properties, methods,
+                                          0, 0); // static properties and methods
+    jsval args[] = { INT_TO_JSVAL(0), INT_TO_JSVAL(0), INT_TO_JSVAL(0) };
+    if (!proto || !initObject(cx, proto, 3, args)) { return 0; }
+    return proto;
 }
 
 JSBool SFImage::toJsval(const OpenVRML::SFImage & sfimage,
@@ -3030,7 +3037,7 @@ JSBool SFImage::initObject(JSContext * const cx, JSObject * const obj,
                            const uintN argc, jsval * const argv)
     throw ()
 {
-    assert(argc >= 4);
+    assert(argc >= 3);
 
     //
     // x dimension.
@@ -3050,38 +3057,40 @@ JSBool SFImage::initObject(JSContext * const cx, JSObject * const obj,
     if (!JSVAL_IS_INT(argv[2])) { return JS_FALSE; }
     const size_t comp = JSVAL_TO_INT(argv[2]);
 
-    //
-    // pixel data array
-    //
-    if (!JSVAL_IS_OBJECT(argv[3])
-            || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[3]),
-                              &MFInt32::jsclass, 0)) {
-        return JS_FALSE;
-    }
-
-    MField::MFData * const mfdata =
-            static_cast<MField::MFData *>
-                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[3])));
-
-    if (mfdata->array.size() != (x * y)) { return JS_FALSE; }
-
     try {
+        //
+        // pixel data array
+        //
         typedef std::vector<unsigned char> Pixels;
 
-        Pixels pixels(x * y * comp);
+        Pixels pixels(x * y * comp, 0);
 
-        Pixels::iterator pixelPtr = pixels.begin();
-        for (MField::JsvalArray::size_type i(0);
-                i < mfdata->array.size(); ++i, pixelPtr += comp) {
-            assert(JSVAL_IS_INT(mfdata->array[i]));
-	    static const long byteMask[] =
-                    { 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 };
-            int32 pixel;
-            if (!JS_ValueToInt32(cx, mfdata->array[i], &pixel)) {
+        if (argc > 3) {
+            if (!JSVAL_IS_OBJECT(argv[3])
+                    || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[3]),
+                                      &MFInt32::jsclass, 0)) {
                 return JS_FALSE;
             }
-            for (size_t j(0); j < comp; ++j) {
-                *(pixelPtr + j) = (pixel & byteMask[j]) >> (8 * j);
+
+            MField::MFData * const mfdata =
+                    static_cast<MField::MFData *>
+                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[3])));
+
+            if (mfdata->array.size() != (x * y)) { return JS_FALSE; }
+
+            Pixels::iterator pixelPtr = pixels.begin();
+            for (MField::JsvalArray::size_type i(0);
+                    i < mfdata->array.size(); ++i, pixelPtr += comp) {
+                assert(JSVAL_IS_INT(mfdata->array[i]));
+                static const long byteMask[] =
+                        { 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 };
+                int32 pixel;
+                if (!JS_ValueToInt32(cx, mfdata->array[i], &pixel)) {
+                    return JS_FALSE;
+                }
+                for (size_t j(0); j < comp; ++j) {
+                    *(pixelPtr + j) = (pixel & byteMask[j]) >> (8 * j);
+                }
             }
         }
 
@@ -3160,10 +3169,13 @@ JSObject * SFNode::initClass(JSContext * const cx, JSObject * const obj)
             { { "toString", SFNode::toString, 0, 0, 0 },
               { 0, 0, 0, 0, 0 } };
 
-    return JS_InitClass(cx, obj, 0, &jsclass,
-                        SFNode::construct, 1, // constructor function, min arg count
-                        0, methods, // instance properties, methods
-                        0, 0); // static properties and methods
+    jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "Group {}"));
+    JSObject * const proto = JS_InitClass(cx, obj, 0, &jsclass,
+                                          SFNode::construct, 1, // constructor function, min arg count
+                                          0, methods, // instance properties, methods
+                                          0, 0); // static properties and methods
+    if (!proto || !initObject(cx, proto, 1, &arg)) { return 0; }
+    return proto;
 }
 
 JSBool SFNode::toJsval(const OpenVRML::SFNode & sfnode,
@@ -3251,7 +3263,17 @@ JSBool SFNode::initObject(JSContext * const cx, JSObject * const obj,
 
     assert(script->getScriptNode().getScene());
     OpenVRML::Browser & browser = script->getScriptNode().getScene()->browser;
-    const OpenVRML::MFNode nodes = browser.createVrmlFromStream(in);
+    OpenVRML::MFNode nodes;
+    try {
+        nodes = browser.createVrmlFromStream(in);
+    } catch (InvalidVrml & ex) {
+        JS_ReportError(cx, ex.what());
+        return JS_FALSE;
+    } catch (std::bad_alloc & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+        return JS_FALSE;
+    }
+
     //
     // Fail if the string does not produce exactly one node.
     //
@@ -3264,11 +3286,8 @@ JSBool SFNode::initObject(JSContext * const cx, JSObject * const obj,
         sfnode.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
         sfdata.release();
-    } catch (std::exception & ex) {
+    } catch (std::bad_alloc & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
-        return JS_FALSE;
-    } catch (...) {
-        assert(false);
         return JS_FALSE;
     }
     return JS_TRUE;
@@ -3287,26 +3306,28 @@ JSBool SFNode::getProperty(JSContext * const cx, JSObject * const obj,
     const OpenVRML::SFNode & thisNode =
             static_cast<OpenVRML::SFNode &>(sfdata->getFieldValue());
 
-    if (!thisNode.get()) { return JS_FALSE; }
+    if (!thisNode.get()) { return JS_TRUE; }
 
     Script * const script = static_cast<Script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    JSString * str = 0;
-    if (JSVAL_IS_STRING(id) && ((str = JSVAL_TO_STRING(id)))) {
-        char * eventOut = JS_GetStringBytes(str);
-        const FieldValue & fieldVal = thisNode.get()->getEventOut(eventOut);
+    try {
+        JSString * str = 0;
+        if (JSVAL_IS_STRING(id) && ((str = JSVAL_TO_STRING(id)))) {
+            const char * eventOut = JS_GetStringBytes(str);
+            const FieldValue & fieldVal = thisNode.get()->getEventOut(eventOut);
 
-        // convert event out value to jsval...
-        *vp = script->vrmlFieldToJSVal(fieldVal);
+            // convert event out value to jsval...
+            *vp = script->vrmlFieldToJSVal(fieldVal);
 
-        // If JS_FALSE is returned, apparently the parent object is
-        // not searched for the property, so stuff like toString()
-        // will fail... don't know how to distinguish between a valid
-        // prop and an invalid eventOut...
-        return JS_TRUE;
-    }
-    return JS_FALSE;
+            // If JS_FALSE is returned, apparently the parent object is
+            // not searched for the property, so stuff like toString()
+            // will fail... don't know how to distinguish between a valid
+            // prop and an invalid eventOut...
+            return JS_TRUE;
+        }
+    } catch (UnsupportedInterface & ex) {}
+    return JS_TRUE;
 }
 
 JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
@@ -3401,10 +3422,12 @@ JSObject * SFRotation::initClass(JSContext * const cx,
               { "toString", toString, 0, 0, 0 },
               { 0, 0, 0, 0, 0 } };
 
-    return JS_InitClass(cx, obj, 0, &jsclass,
-                        construct, 0, // constructor function, min arg count
-                        properties, methods, // instance properties, methods
-                        0, 0); // static properties and methods
+    JSObject * const proto = JS_InitClass(cx, obj, 0, &jsclass,
+                                          construct, 0, // constructor function, min arg count
+                                          properties, methods, // instance properties, methods
+                                          0, 0); // static properties and methods
+    if (!proto || !initObject(cx, proto, 0, 0)) { return 0; }
+    return proto;
 }
 
 JSBool SFRotation::toJsval(const OpenVRML::SFRotation & sfrotation,
@@ -3920,10 +3943,12 @@ JSObject * SFVec2f::initClass(JSContext * const cx, JSObject * const obj)
               { "toString", toString, 0, 0, 0 },
               { 0, 0, 0, 0, 0 } };
 
-    return JS_InitClass(cx, obj, 0, &jsclass,
-                        constructor, 0, // constructor function, min arg count
-                        properties, methods,
-                        0, 0); // static properties and methods
+    JSObject * const proto = JS_InitClass(cx, obj, 0, &jsclass,
+                                          constructor, 0, // constructor function, min arg count
+                                          properties, methods,
+                                          0, 0); // static properties and methods
+    if (!proto || !initObject(cx, proto, 0, 0)) { return 0; }
+    return proto;
 }
 
 JSBool SFVec2f::toJsval(const OpenVRML::SFVec2f & sfvec2f,
@@ -4361,10 +4386,12 @@ JSObject * SFVec3f::initClass(JSContext * const cx, JSObject * const obj)
               { "toString", toString, 0, 0, 0 },
               { 0, 0, 0, 0, 0 } };
 
-    return JS_InitClass(cx, obj, 0, &jsclass,
-                        constructor, 0, // constructor function, min arg count
-                        properties, methods,
-                        0, 0); // static properties and methods
+    JSObject * const proto = JS_InitClass(cx, obj, 0, &jsclass,
+                                          constructor, 0, // constructor function, min arg count
+                                          properties, methods,
+                                          0, 0); // static properties and methods
+    if (!proto || !initObject(cx, proto, 0, 0)) { return 0; }
+    return proto;
 }
 
 JSBool SFVec3f::toJsval(const OpenVRML::SFVec3f & sfvec3f,
@@ -5847,7 +5874,7 @@ JSBool MFNode::setLength(JSContext * const cx, JSObject * const obj,
     if (!JSVAL_IS_INT(*vp) || JSVAL_TO_INT(*vp) < 0) { return JS_FALSE; }
 
     try {
-        jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "NULL"));
+        jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "Group {}"));
 
         JsvalArray newArray(JSVAL_TO_INT(*vp));
         AddRoots(cx, newArray); // Protect from gc.
