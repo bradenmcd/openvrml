@@ -22,6 +22,8 @@ package vrml;
 
 public abstract class Field implements Cloneable
 {
+  private boolean isEventOut = false;
+
   private int FieldPtr;
 
   public native Object clone();
