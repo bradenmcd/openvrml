@@ -669,6 +669,9 @@ void Browser::replaceWorld(const MFNode & nodes) {}
  */
 void Browser::loadURI(const MFString & uri, const MFString & parameter)
         throw (std::bad_alloc) {
+    //
+    // Clear out the current Scene.
+    //
     delete this->scene;
     this->scene = 0;
     this->d_backgroundStack.clear();
@@ -680,6 +683,10 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     assert(this->d_navigationInfos.empty());
     assert(this->d_viewpoints.empty());
     this->nodeClassMap.clear();
+    
+    //
+    // Create the new Scene.
+    //
     this->initNodeClassMap();
     this->scene = new Scene(*this, uri);
     
@@ -1795,8 +1802,7 @@ namespace {
         regmatch_t regmatch[nmatch];
 
     public:
-        explicit URI(const std::string & str)
-                throw (InvalidURI, std::bad_alloc);
+        URI(const std::string & str) throw (InvalidURI, std::bad_alloc);
 
         operator std::string() const throw (std::bad_alloc);
 
@@ -1902,6 +1908,37 @@ UnreachableURI::~UnreachableURI() throw () {}
  * If the Scene is the root Scene, @a parent will be 0.
  */
 
+namespace {
+
+    const URI createFileURL(const URI & uri) throw ()
+    {
+        assert(uri.getScheme().empty());
+        
+        using std::string;
+        
+        string result = "file://";
+        
+        char buffer[PATH_MAX];
+        const char * resolvedPath = realpath(uri.getPath().c_str(), buffer);
+        if (!resolvedPath) {
+            //
+            // XXX Failed; need to check errno to see what we should throw.
+            //
+            return result;
+        }
+        
+        result += resolvedPath;
+        
+        string query = uri.getQuery();
+        if (!query.empty()) { result += '?' + query; }
+        
+        string fragment = uri.getFragment();
+        if (!fragment.empty()) { result += '#' + fragment; }
+        
+        return result;
+    }
+}
+
 /**
  * @brief Construct a Scene from a URI.
  *
@@ -1915,6 +1952,7 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
         throw (std::bad_alloc):
         browser(browser),
         parent(parent) {
+    std::string absoluteURI;
     for (size_t i = 0; i < uri.getLength(); ++i) {
         try {
             //
@@ -1922,16 +1960,22 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
             //
             URI testURI(uri.getElement(i));
 
-            //
-            // If we have a relative URI and parent is not 0, try to resolve
-            // the relative reference against the parent's URI.
-            //
-            const bool isAbsolute = !testURI.getScheme().empty();
-            std::string absoluteURI;
-            if (!isAbsolute && parent) {
-                absoluteURI = testURI.resolveAgainst(URI(parent->getURI()));
-            } else {
+            const bool absolute = !testURI.getScheme().empty();
+            if (absolute) {
                 absoluteURI = testURI;
+            } else if (!parent) {
+                //
+                // If we have a relative reference and the parent is null, then
+                // assume the reference is to the local file system: convert
+                // the relative reference to a file URL.
+                //
+                absoluteURI = createFileURL(testURI);
+            } else {
+                //
+                // If we have a relative URI and parent is not null, try to
+                // resolve the relative reference against the parent's URI.
+                //
+                absoluteURI = testURI.resolveAgainst(URI(parent->getURI()));
             }
             
             Doc2 doc(absoluteURI);
@@ -1950,7 +1994,13 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
             browser.err << ex.what() << std::endl;
             continue;
         }
-        this->uri = uri.getElement(i);
+        //
+        // If this is the root scene (that is, the parent is null), then
+        // this->uri must be the absolute URI.
+        //
+        this->uri = parent
+                  ? uri.getElement(i)
+                  : absoluteURI;
         break;
     }
 }
@@ -1963,8 +2013,9 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 const std::string Scene::getURI() const throw (std::bad_alloc) {
+    using std::string;
     return this->parent
-            ? URI(this->uri).resolveAgainst(URI(this->parent->getURI()))
+            ? string(URI(this->uri).resolveAgainst(URI(this->parent->getURI())))
             : this->uri;
 }
 
@@ -2032,7 +2083,7 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
         try {
             const URI uriElement(uri.getElement(i));
             const std::string value =
-                (uriElement.getScheme().empty() && parent)
+                uriElement.getScheme().empty()
                     ? uriElement.resolveAgainst(URI(this->getURI()))
                     : uriElement;
             absoluteURIs.setElement(i, value);
@@ -4354,6 +4405,14 @@ namespace {
 
     const char * const expression =
             "^(([^:/?#]+):)?((//([^/?#]*))?([^?#]*)([?]([^#]*))?(#(.*))?)";
+    //        |+- scheme    ||  |          |       |   |        | +- fragment-id
+    //        +- scheme ':' ||  |          |       |   |        +- '#' fragment-id
+    //                      ||  |          |       |   +- query
+    //                      ||  |          |       +- '?' query
+    //                      ||  |          +- path
+    //                      ||  +- authority
+    //                      |+- "//" authority
+    //                      +- scheme-specific-part
     
     class URIRegex {
         regex_t regex;
@@ -4407,9 +4466,9 @@ namespace {
     }
 
     const std::string URI::getAuthority() const throw (std::bad_alloc) {
-        return (this->regmatch[4].rm_so > -1)
-                ? this->str.substr(this->regmatch[4].rm_so,
-                                   this->regmatch[4].rm_eo - this->regmatch[4].rm_so)
+        return (this->regmatch[5].rm_so > -1)
+                ? this->str.substr(this->regmatch[5].rm_so,
+                                   this->regmatch[5].rm_eo - this->regmatch[5].rm_so)
                 : std::string();
     }
 
@@ -4454,14 +4513,12 @@ namespace {
         assert(this->getScheme().empty());
         assert(!absoluteURI.getScheme().empty());
 
-        string result = absoluteURI.getScheme() + "://";
+        string result = absoluteURI.getScheme() + ':';
 
-        string authority = this->getAuthority();
-        if (!authority.empty()) {
-            authority = absoluteURI.getAuthority();
-        }
-        if (!authority.empty()) {
-            result += "//" + authority;
+        if (!this->getAuthority().empty()) {
+            return result + this->getSchemeSpecificPart();
+        } else {
+            result += "//" + absoluteURI.getAuthority();
         }
 
         string path = absoluteURI.getPath();
@@ -4528,7 +4585,7 @@ namespace {
         result += this->getQuery();
         result += this->getFragment();
 
-        return URI(result);
+        return result;
     }
     
     

@@ -6,6 +6,9 @@
         * src/openvrml/OpenVRML/field.cpp: Fixed const correctness
           issue in array_vector copy ctor.
 
+        * src/openvrml/OpenVRML/browser.cpp: Fixed (?) Scene::loadURI;
+          Anchor nodes should work now.
+
 2002-08-19  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * Continue upating conformance test results.
