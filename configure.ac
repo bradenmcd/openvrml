@@ -16,14 +16,6 @@ AC_PROG_CXXCPP
 OV_CXX_HASH_MAP
 
 #
-# Checks for required packages.
-#
-AC_PATH_XTRA
-if test "X$no_x" = "Xyes"; then
-  AC_MSG_ERROR([X not found.])
-fi
-
-#
 # Optional packages.
 #
 AC_ARG_WITH(zlib, [  --with-zlib             use zlib (read gzipped VRML files)], ,
@@ -35,6 +27,7 @@ AC_ARG_WITH(libpng, [  --with-libpng           use libpng (PNG image support)], 
 AC_ARG_WITH(libjpeg, [  --with-libjpeg          use libjpeg (JPEG image support)], ,
             [# Use libjpeg by default.
              with_libjpeg=yes])
+AC_PATH_XTRA
 AC_ARG_WITH(gl, [  --with-gl               use OpenGL/Mesa (required for GL renderer)], ,
             [# Use OpenGL by default.
              with_gl=yes])
