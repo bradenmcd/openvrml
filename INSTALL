@@ -253,6 +253,16 @@ installed OpenVRML's dependencies (`README' for further information on
 obtaining these).  libvrml97core depends on libjpeg, libpng, and zlib.
 libvrml97gl depends on OpenGL. lookat depends on GLUT.
 
+   The project file for libvrml97core is configured to use ANTLR to
+regenerate the parser source as needed, but you will probably need to
+modify it slightly to point to your Java and ANTLR installations.
+Edit the Custom Build Step for antlr.g by selecting
+Project->Settings->libvrml97core->Source File in DevStudio.
+Replace `c:\User\jdk1.2.2\bin' with the location of Java compiler.
+Replace `c:\User\antlr-2.7.0' with the directory where you have
+installed ANTLR, and include the ANTLR installation directory in
+your CLASSPATH.
+
    For building only javascript dll library (libjavascript.lib and
 libjavascript.dll), workspace file `libvrml97js.dsw' is given in
 `libvrml97\libvrml97core\win32\javascript' directory.
