@@ -1,3 +1,13 @@
+2002-02-03  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * Fix bug 465024 dealing with MovieTexture nodes.
+
+        * Add some more Javadoc comments.
+
+        * Handle null CLASSPATH env. variable.
+
+        * Fix bugs in JSAI MFString and MFColor creation.
+
 2002-02-01  Braden McDaniel  <braden@endoframe.com>
 
         * Refactored code to check for self-references when assigning to
