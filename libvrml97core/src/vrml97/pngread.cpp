@@ -183,7 +183,7 @@ static int pngreadstr( FILE *fp,
 
   pixels = *ppixels;
   rows = *prows;
-  for (row=0; row<height; ++row)
+  for (row=0; row<(int)height; ++row)
     rows[row] = &pixels[row * bytes_per_row];
 
   /* Now it's time to read the image.  One of these methods is REQUIRED */
