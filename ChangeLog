@@ -1,5 +1,12 @@
 2004-01-26 Braden McDaniel  <braden@endoframe.com>
 
+	Turned off Antlr's defaultErrorHandler for "protoFieldValue".
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+
+2004-01-26 Braden McDaniel  <braden@endoframe.com>
+
 	Removed vestiges of Visual C++ 6.0 build.
 
 	* java/Makefile.am

@@ -1357,6 +1357,7 @@ protoFieldValue[openvrml::ProtoNodeClass & proto,
                 const openvrml::scope_ptr & scope,
                 openvrml::field_value::type_id ft]
 returns [openvrml::field_value_ptr fv]
+options { defaultErrorHandler=false; }
 {
     using openvrml::field_value;
 }
