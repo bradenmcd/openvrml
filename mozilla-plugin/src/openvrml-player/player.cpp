@@ -457,24 +457,6 @@ namespace {
     };
 
 
-    class plugin_istream : public std::istream {
-        boost::shared_ptr<plugin_streambuf> streambuf_;
-
-    public:
-        explicit plugin_istream(
-            const boost::shared_ptr<plugin_streambuf> & streambuf);
-        virtual ~plugin_istream() throw ();
-    };
-
-    plugin_istream::plugin_istream(
-        const boost::shared_ptr<plugin_streambuf> & streambuf):
-        std::istream(streambuf.get()),
-        streambuf_(streambuf)
-    {}
-
-    plugin_istream::~plugin_istream() throw ()
-    {}
-
     struct initial_stream_reader {
         initial_stream_reader(
             const boost::shared_ptr<plugin_streambuf> & streambuf,
@@ -485,7 +467,19 @@ namespace {
 
         void operator()() const
         {
-            plugin_istream in(this->streambuf_);
+            class plugin_istream : public std::istream {
+                boost::shared_ptr<plugin_streambuf> streambuf_;
+
+            public:
+                explicit plugin_istream(
+                    const boost::shared_ptr<plugin_streambuf> & streambuf):
+                    std::istream(streambuf.get()),
+                    streambuf_(streambuf)
+                {}
+
+                virtual ~plugin_istream() throw ()
+                {}
+            } in(this->streambuf_);
             std::vector<openvrml::node_ptr> nodes =
                 this->browser_->create_vrml_from_stream(in);
             this->browser_->replace_world(nodes);
