@@ -46,10 +46,6 @@ namespace openvrml {
             abstract_base(const node_type & type, const scope_ptr & scope);
 
         private:
-            virtual void do_field(const std::string & id,
-                                  const field_value & value)
-                throw (unsupported_interface, std::bad_cast, std::bad_alloc);
-
             virtual const field_value & do_field(const std::string & id) const
                 throw (unsupported_interface);
 

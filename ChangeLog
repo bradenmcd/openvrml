@@ -1,5 +1,12 @@
 2004-03-10 Braden McDaniel  <braden@endoframe.com>
 
+	Removed cruft associated with the generic field mutator.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
+2004-03-10 Braden McDaniel  <braden@endoframe.com>
+
 	Removed add_interface function.  node_interface_set::insert is
 	an appropriate replacement.
 

@@ -65,9 +65,6 @@ namespace {
     class vrml97_node_type : public node_type {
     public:
         virtual ~vrml97_node_type() throw () = 0;
-        virtual void field_value(openvrml::node & node, const std::string & id,
-                                 const openvrml::field_value &) const
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
         virtual const openvrml::field_value &
         field_value(const openvrml::node & node,
                     const std::string & id) const
@@ -305,9 +302,6 @@ namespace {
                        const field_ptr_ptr & fieldPtrPtr)
             throw (std::invalid_argument, std::bad_alloc);
 
-        virtual void field_value(openvrml::node & node, const std::string & id,
-                                 const openvrml::field_value &) const
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         virtual const openvrml::field_value &
         field_value(const openvrml::node & node, const std::string & id) const
             throw (unsupported_interface);
@@ -325,9 +319,6 @@ namespace {
             throw (unsupported_interface, std::bad_cast, std::bad_alloc);
 
     private:
-        void do_field_value(NodeT & node, const std::string & id,
-                            const openvrml::field_value &) const
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         const openvrml::field_value &
         do_field_value(const NodeT & node,
                        const std::string & id) const
@@ -472,17 +463,6 @@ namespace {
     }
 
     template <typename NodeT>
-    void vrml97_node_type_impl<NodeT>::field_value(
-            openvrml::node & node,
-            const std::string & id,
-            const openvrml::field_value & newVal) const
-        throw (unsupported_interface, std::bad_cast, std::bad_alloc)
-    {
-        assert(dynamic_cast<NodeT *>(&node));
-        this->do_field_value(dynamic_cast<NodeT &>(node), id, newVal);
-    }
-
-    template <typename NodeT>
     const field_value &
     vrml97_node_type_impl<NodeT>::field_value(const openvrml::node & node,
                                               const std::string & id) const
@@ -543,23 +523,6 @@ namespace {
                 .assign(*initial_value->second);
         }
         return result;
-    }
-
-    template <typename NodeT>
-    void vrml97_node_type_impl<NodeT>::do_field_value(
-            NodeT & node,
-            const std::string & id,
-            const openvrml::field_value & newVal) const
-        throw (unsupported_interface, std::bad_cast, std::bad_alloc)
-    {
-        typename field_value_map_t::iterator itr =
-            this->field_value_map.find(id);
-        if (itr == this->field_value_map.end()) {
-            throw unsupported_interface(node.type,
-                                        node_interface::field_id,
-                                        id);
-        }
-        itr->second->deref(node).assign(newVal);
     }
 
     template <typename NodeT>
@@ -645,26 +608,6 @@ abstract_base::abstract_base(const node_type & type, const scope_ptr & scope):
  */
 abstract_base::~abstract_base() throw ()
 {}
-
-/**
- * @brief Set a field value for a node.
- *
- * @param id    a field name.
- * @param value a field_value.
- *
- * @exception unsupported_interface  if the node has no field @p id.
- * @exception std::bad_cast         if @p value is not the correct type.
- * @exception std::bad_alloc        if memory allocation fails.
- *
- * @pre @p value must be of the correct type.
- */
-void abstract_base::do_field(const std::string & id, const field_value & value)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
-{
-    assert(dynamic_cast<const vrml97_node_type *>(&this->type));
-    static_cast<const vrml97_node_type &>(this->type)
-        .field_value(*this, id, value);
-}
 
 /**
  * @brief Get a field value for a node.
