@@ -199,3 +199,20 @@ void VrmlNodeSound::setField(const char *fieldName,
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
 
+/**
+ * @brief Get the sound source associated with this Sound.
+ *
+ * @return source
+ */
+const VrmlSFNode & VrmlNodeSound::getSource() const {
+    return this->d_source;
+}
+
+/**
+ * @brief Set the sound source associated with this Sound.
+ *
+ * @param source
+ */
+void VrmlNodeSound::setSource(const VrmlSFNode & source) {
+    this->d_source = source;
+}

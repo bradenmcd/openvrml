@@ -5,6 +5,8 @@
 
         * Added accessors to VrmlNodeSwitch.
 
+        * Added accessors for source to VrmlNodeSound.
+
 2001-01-24  Braden McDaniel  <braden@endoframe.com>
 
         * Changed VrmlNodeScript copy ctor to call VrmlNodeChild copy
