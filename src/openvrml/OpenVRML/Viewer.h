@@ -31,9 +31,9 @@
 namespace OpenVRML {
 
     class VrmlScene;
-    class VrmlBVolume;
-    class VrmlBSphere;
-    class VrmlAABox;
+    class BVolume;
+    class BSphere;
+    class AABox;
     class SFVec3f;
     class VrmlMatrix;
 
@@ -253,9 +253,9 @@ namespace OpenVRML {
         virtual const VrmlFrustum& getFrustum() const;
         virtual void setFrustum(const VrmlFrustum& afrust);
 
-        virtual int isectViewVolume(const VrmlBVolume& bv) const;
+        virtual int isectViewVolume(const BVolume & bv) const;
 
-        virtual void drawBSphere(const VrmlBSphere& bs, int flag) = 0;
+        virtual void drawBSphere(const BSphere & bs, int flag) = 0;
 
     protected:
         VrmlScene & scene;

@@ -222,7 +222,7 @@ namespace OpenVRML {
             // The viewer knows the current viewpoint
             virtual void transformPoints(int nPoints, float *points);
 
-            virtual void drawBSphere(const VrmlBSphere& bs, int flag);
+            virtual void drawBSphere(const BSphere & bs, int flag);
 
 
 

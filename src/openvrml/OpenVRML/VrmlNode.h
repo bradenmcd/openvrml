@@ -48,7 +48,7 @@ namespace OpenVRML {
     class FieldValue;
     class VrmlScene;
     class NodeVisitor;
-    class VrmlBVolume;
+    class BVolume;
     class ScriptNode;
     class ProtoNode;
     class NodeAnchor;
@@ -198,9 +198,9 @@ namespace OpenVRML {
 
         void updateModified(int flags = 0x003);
 
-        virtual const VrmlBVolume* getBVolume() const;
+        virtual const BVolume * getBVolume() const;
 
-        virtual void setBVolume(const VrmlBVolume& v);
+        virtual void setBVolume(const BVolume & v);
 
         virtual void setBVolumeDirty(bool f);
 

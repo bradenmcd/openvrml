@@ -34,10 +34,6 @@
 #include "MathUtils.h"
 #include "VrmlScene.h"
 
-#include "VrmlBVolume.h"
-#include "VrmlBSphere.h"
-#include "VrmlAABox.h"
-
 using namespace OpenVRML;
 using namespace OpenVRML_;
 
@@ -413,9 +409,9 @@ void Viewer::setColor(float , float , float , float ) {}
  * always return BV_INSIDE
  *
  * @param bv the bounding volume to intersect with the view volume
- * @return VrmlBVolume::INSIDE, OUTSIDE, or PARTIAL
+ * @return BVolume::INSIDE, OUTSIDE, or PARTIAL
  */
-int Viewer::isectViewVolume(const VrmlBVolume & bv) const {
+int Viewer::isectViewVolume(const BVolume & bv) const {
     //
     // For normal VRML97 use, this won't need to be overridden, but for
     // systems with non-standard view volumes, this can be changed to
@@ -425,19 +421,19 @@ int Viewer::isectViewVolume(const VrmlBVolume & bv) const {
     // is enough. If it isn't, please express any concerns to the
     // OpenVRML developer's list, and it can be fixed...
     //
-    int r = VrmlBVolume::BV_PARTIAL;
-    const VrmlBSphere * bs = 0;
-    const VrmlAABox * ab = 0;
-    if (bs = dynamic_cast<const VrmlBSphere *>(&bv)) {
+    int r = BVolume::BV_PARTIAL;
+    const BSphere * bs = 0;
+    const AABox * ab = 0;
+    if (bs = dynamic_cast<const BSphere *>(&bv)) {
         r = bs->isectFrustum(this->d_frust);
-    } else if (ab = dynamic_cast<const VrmlAABox *>(&bv)) {
+    } else if (ab = dynamic_cast<const AABox *>(&bv)) {
         r = ab->isectFrustum(this->d_frust);
     }
     return r;
 }
 
 /**
- * @fn void Viewer::drawBSphere(const VrmlBSphere & bs, int flag)
+ * @fn void Viewer::drawBSphere(const BSphere & bs, int flag)
  *
  * Draw a bounding sphere. Used for debugging view culling. Probably
  * should be drawBVolume and handle aaboxes as well.

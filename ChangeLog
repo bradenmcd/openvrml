@@ -3,6 +3,9 @@
         * Placed libopenvrml members in OpenVRML namespace. Placed
           libopenvrml-gl members in OpenVRML::GL namespace.
 
+        * Consolidated bounding volume classes in `bvolume.h' and
+          `bvolume.cpp'.
+
 2001-11-24  Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Fix bug in ScriptJDK initialize call introduced with recent

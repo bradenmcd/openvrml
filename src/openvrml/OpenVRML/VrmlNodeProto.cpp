@@ -23,7 +23,7 @@
 # include "VrmlNamespace.h"
 # include "VrmlNodeVisitor.h"
 # include "Route.h"
-# include "VrmlBSphere.h"
+# include "bvolume.h"
 
 using namespace OpenVRML;
 
@@ -617,20 +617,19 @@ const MFNode & ProtoNode::getImplNodes() const {
     return this->implNodes;
 }
 
-const VrmlBVolume*
-ProtoNode::getBVolume() const
+const BVolume * ProtoNode::getBVolume() const
 {
   //cout << "ProtoNode::getBVolume() {" << endl;
   if (!d_instantiated) {
     cout << "ProtoNode::getBVolume():WARNING:not instantiated" << endl;
-    return (VrmlBVolume*)0; // shouldn't happen
+    return 0; // shouldn't happen
   }
   const NodePtr base(firstNode());
   if (!base) {
     cout << "ProtoNode::getBVolume():WARNING:!base" << endl;
-    return (VrmlBVolume*)0; // shouldn't happen
+    return 0; // shouldn't happen
   }
-  const VrmlBVolume* bv = base->getBVolume();
+  const BVolume* bv = base->getBVolume();
   //cout << "}";
   //bv->dump(cout) << endl;
   return bv;

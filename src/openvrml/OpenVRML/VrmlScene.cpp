@@ -872,7 +872,7 @@ void VrmlScene::render(Viewer *viewer)
     MV = MV.multLeft(NMAT);
   }     
 
-  VrmlRenderContext rc(VrmlBVolume::BV_PARTIAL, MV);
+  VrmlRenderContext rc(BVolume::BV_PARTIAL, MV);
   rc.setDrawBSpheres(true);
 
   // Do the scene-level lights (Points and Spots)

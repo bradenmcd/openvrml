@@ -122,7 +122,7 @@ namespace OpenVRML {
 
         const MFNode & getImplNodes() const;
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume * getBVolume() const;
 
     private:
         const NodePtr firstNode() const;

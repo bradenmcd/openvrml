@@ -39,8 +39,7 @@
 #include "nodetype.h"
 #include "VrmlScene.h"
 #include "MathUtils.h"
-#include "VrmlBVolume.h"
-#include "VrmlBSphere.h"
+#include "bvolume.h"
 #include "VrmlRenderContext.h"
 
 # ifndef NDEBUG
@@ -443,24 +442,23 @@ void Node::clearFlags()
 
 
 /**
- * Get this node's bounding volume. Nodes that have no bounding
- * volume, or have a difficult to calculate bvolume (like, say,
- * Extrusion or Billboard) can just return an infinite bsphere. Note
- * that returning an infinite bvolume means that all the node's
- * ancestors will also end up with an infinite bvolume, and will
- * never be culled.
+ * @brief Get this node's bounding volume.
+ *
+ * Nodes that have no bounding volume, or have a difficult to calculate
+ * bvolume (like, say, Extrusion or Billboard) can just return an infinite
+ * bsphere. Note that returning an infinite bvolume means that all the node's
+ * ancestors will also end up with an infinite bvolume, and will never be
+ * culled.
  *
  * @return this node's bounding volume
  */
-const VrmlBVolume*
-Node::getBVolume() const
-{
-  static VrmlBSphere* inf_bsphere = (VrmlBSphere*)0;
+const BVolume * Node::getBVolume() const {
+  static BSphere * inf_bsphere = 0;
   if (!inf_bsphere) {
-    inf_bsphere = new VrmlBSphere();
+    inf_bsphere = new BSphere();
     inf_bsphere->setMAX();
   }
-  ((Node*)this)->setBVolumeDirty(false);
+  const_cast<Node *>(this)->setBVolumeDirty(false);
   return inf_bsphere;
 }
 
@@ -470,7 +468,7 @@ Node::getBVolume() const
  *
  * @todo Implement me!
  */
-void Node::setBVolume(const VrmlBVolume & v) {
+void Node::setBVolume(const BVolume & v) {
     // XXX Implement me!
 }
 

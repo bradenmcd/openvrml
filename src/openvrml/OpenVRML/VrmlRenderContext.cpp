@@ -23,7 +23,7 @@
 #endif
 
 #include "VrmlRenderContext.h"
-#include "VrmlBVolume.h"
+#include "bvolume.h"
 
 using namespace OpenVRML;
 
@@ -98,7 +98,7 @@ using namespace OpenVRML;
  */
 VrmlRenderContext::VrmlRenderContext()
 {
-  cull_flag = VrmlBVolume::BV_PARTIAL;
+  cull_flag = BVolume::BV_PARTIAL;
   M = (VrmlMatrix *)0;
   draw_bspheres = false;
 }

@@ -43,7 +43,7 @@
 # include <OpenVRML/System.h>
 # include <OpenVRML/VrmlScene.h>
 # include <OpenVRML/vrml97node.h>
-# include <OpenVRML/VrmlBSphere.h>
+# include <OpenVRML/bvolume.h>
 # include <OpenVRML/VrmlFrustum.h>
 
 # include "ViewerOpenGL.h"
@@ -3474,9 +3474,7 @@ static GLfloat grey[] = {0.5f, 0.5f, 0.5f, 1.0f};
 #endif
 
 
-void
-ViewerOpenGL::drawBSphere(const VrmlBSphere& bs, int flag)
-{
+void ViewerOpenGL::drawBSphere(const BSphere & bs, int flag) {
   if (!d_drawBSpheres) return;
   //cout << "ViewerOpenGL::insertBSphere(" << bs.getRadius() << ")" << endl;
   if (bs.isMAX()) return;
@@ -3492,7 +3490,7 @@ ViewerOpenGL::drawBSphere(const VrmlBSphere& bs, int flag)
   const float* c = bs.getCenter();
   glTranslatef(c[0], c[1], c[2]);
   sph = gluNewQuadric();
-  if (flag == VrmlBVolume::BV_OUTSIDE) {
+  if (flag == BVolume::BV_OUTSIDE) {
     //cout << "out" << endl;
     //glDisable(GL_LIGHTING);
     //glEnable(GL_LIGHTING);
@@ -3501,7 +3499,7 @@ ViewerOpenGL::drawBSphere(const VrmlBSphere& bs, int flag)
     glColor3f(0.5, 0.5, 0.5);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
     gluSphere(sph, bs.getRadius(), 5, 5);
-  } else if (flag == VrmlBVolume::BV_PARTIAL) {
+  } else if (flag == BVolume::BV_PARTIAL) {
     //cout << "par" << endl;
     //glEnable(GL_LIGHTING);
     gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
@@ -3510,7 +3508,7 @@ ViewerOpenGL::drawBSphere(const VrmlBSphere& bs, int flag)
     glColor3f(0.25, 1.0, 0.25);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
     gluSphere(sph, bs.getRadius(), 8, 8);
-  } else if (flag == VrmlBVolume::BV_INSIDE) {
+  } else if (flag == BVolume::BV_INSIDE) {
     //cout << "ins" << endl;
     //glEnable(GL_LIGHTING);
     gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);

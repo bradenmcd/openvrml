@@ -364,11 +364,9 @@ void NodeAnchor::setField(const std::string & fieldId,
   this->setBVolumeDirty(true);
 }
 
-const VrmlBVolume*
-NodeAnchor::getBVolume() const
+const BVolume * NodeAnchor::getBVolume() const
 {
-  const VrmlBVolume* bv = NodeGroup::getBVolume();
-  return bv;
+  return NodeGroup::getBVolume();
 }
 
 
@@ -1469,8 +1467,7 @@ NodeBox* NodeBox::toBox() const //LarryD Mar 08/99
 const SFVec3f& NodeBox::getSize() const   // LarryD Mar 08/99
 {  return d_size; }
 
-const VrmlBVolume*
-NodeBox::getBVolume() const
+const BVolume * NodeBox::getBVolume() const
 {
   if (this->isBVolumeDirty()) {
     float corner[3] = { d_size.getX()/2.0f, d_size.getY()/2.0f, d_size.getZ()/2.0f };
@@ -3492,20 +3489,20 @@ ostream& NodeGroup::printFields(ostream& os, int indent)
 
 void NodeGroup::render(Viewer *viewer, VrmlRenderContext rc)
 {
-  if (rc.getCullFlag() != VrmlBVolume::BV_INSIDE) {
+  if (rc.getCullFlag() != BVolume::BV_INSIDE) {
 
-    const VrmlBSphere* bs = (const VrmlBSphere*)this->getBVolume();
-    VrmlBSphere bv_copy(*bs);
+    const BSphere * bs = static_cast<const BSphere *>(this->getBVolume());
+    BSphere bv_copy(*bs);
     bv_copy.transform(rc.getMatrix());
     int r = viewer->isectViewVolume(bv_copy);
     if (rc.getDrawBSpheres())
       viewer->drawBSphere(*bs, r);
     //bs->dump(cout);
 
-    if (r == VrmlBVolume::BV_OUTSIDE)
+    if (r == BVolume::BV_OUTSIDE)
       return;
-    if (r == VrmlBVolume::BV_INSIDE)
-      rc.setCullFlag(VrmlBVolume::BV_INSIDE);
+    if (r == BVolume::BV_INSIDE)
+      rc.setCullFlag(BVolume::BV_INSIDE);
   }
 
   renderNoCull(viewer, rc);
@@ -3786,7 +3783,7 @@ void NodeGroup::setField(const std::string & fieldId,
   this->setBVolumeDirty(true); // overly conservative?
 }
 
-const VrmlBVolume* NodeGroup::getBVolume() const
+const BVolume * NodeGroup::getBVolume() const
 {
   if (this->isBVolumeDirty())
     ((NodeGroup*)this)->recalcBSphere();
@@ -3797,7 +3794,7 @@ void NodeGroup::recalcBSphere() {
     d_bsphere.reset();
     for (size_t i = 0; i< d_children.getLength(); ++i) {
         if (this->d_children.getElement(i)) {
-            const VrmlBVolume * const ci_bv = d_children.getElement(i)->getBVolume();
+            const BVolume * const ci_bv = d_children.getElement(i)->getBVolume();
             if (ci_bv) {
                 d_bsphere.extend(*ci_bv);
             }
@@ -3961,7 +3958,7 @@ Viewer::Object NodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc
   Viewer::Object obj = 0;
 
   if (rc.getDrawBSpheres()) {
-    const VrmlBSphere* bs = (VrmlBSphere*)this->getBVolume();
+    const BSphere* bs = (BSphere*)this->getBVolume();
     viewer->drawBSphere(*bs, 4);
   }
 
@@ -4104,7 +4101,7 @@ void NodeIFaceSet::recalcBSphere()
 }
 
 
-const VrmlBVolume* NodeIFaceSet::getBVolume() const
+const BVolume* NodeIFaceSet::getBVolume() const
 {
   if (this->isBVolumeDirty())
     ((NodeIFaceSet*)this)->recalcBSphere();
@@ -4916,7 +4913,7 @@ const SFVec3f& NodeLOD::getCenter() const
 {  return d_center; }
 
 
-const VrmlBVolume* NodeLOD::getBVolume() const
+const BVolume * NodeLOD::getBVolume() const
 {
   if (this->isBVolumeDirty())
     ((NodeLOD*)this)->recalcBSphere();
@@ -4942,7 +4939,7 @@ NodeLOD::recalcBSphere()
   // them in all at once. live with it for now.
   //
   for(int i=0; i<(int) d_level.getLength(); i++) {
-    const VrmlBVolume* ci_bv = d_level.getElement(i)->getBVolume();
+    const BVolume * ci_bv = d_level.getElement(i)->getBVolume();
     d_bsphere.extend(*ci_bv);
 
   }
@@ -6724,12 +6721,12 @@ ostream& NodePointSet::printFields(ostream& os, int indent)
 }
 
 
-Viewer::Object NodePointSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
-{
+Viewer::Object NodePointSet::insertGeometry(Viewer * viewer,
+                                            VrmlRenderContext rc) {
   Viewer::Object obj = 0;
 
   if (rc.getDrawBSpheres()) {
-    const VrmlBSphere* bs = (const VrmlBSphere*)this->getBVolume();
+    const BSphere * bs = (const BSphere*)this->getBVolume();
     viewer->drawBSphere(*bs, 4);
   }
 
@@ -6791,7 +6788,7 @@ void NodePointSet::recalcBSphere()
 }
 
 
-const VrmlBVolume* NodePointSet::getBVolume() const
+const BVolume* NodePointSet::getBVolume() const
 {
   if (this->isBVolumeDirty())
     ((NodePointSet*)this)->recalcBSphere();
@@ -7493,10 +7490,10 @@ void NodeShape::setField(const std::string & fieldId,
 
 // just pass off to the geometry's getbvolume() method
 //
-const VrmlBVolume* NodeShape::getBVolume() const
+const BVolume* NodeShape::getBVolume() const
 {
   //cout << "NodeShape::getBVolume() {" << endl;
-  const VrmlBVolume* r = (VrmlBVolume*)0;
+  const BVolume * r = 0;
   const NodePtr & geom = d_geometry.get();
   if (geom) {
     r = geom->getBVolume();
@@ -7793,11 +7790,10 @@ NodeSphere* NodeSphere::toSphere() const //LarryD Mar 08/99
 { return (NodeSphere*) this; }
 
 
-const VrmlBVolume*
-NodeSphere::getBVolume() const
+const BVolume * NodeSphere::getBVolume() const
 {
   //cout << "NodeSphere::getBVolume()" << endl;
-  //static VrmlBSphere* sphere_sphere = new VrmlBSphere();
+  //static BSphere* sphere_sphere = new BSphere();
   if (this->isBVolumeDirty()) {
     ((NodeSphere*)this)->d_bsphere.setRadius(d_radius.get());
     ((Node*)this)->setBVolumeDirty(false); // logical const
@@ -8318,7 +8314,7 @@ NodeSwitch* NodeSwitch::toSwitch() const //LarryD
 { return (NodeSwitch*) this; }
 
 
-const VrmlBVolume* NodeSwitch::getBVolume() const
+const BVolume* NodeSwitch::getBVolume() const
 {
   //cout << "NodeGroup[" << this << "]::getBVolume()" << endl;
   if (this->isBVolumeDirty())
@@ -8333,7 +8329,7 @@ NodeSwitch::recalcBSphere()
   d_bsphere.reset();
   int w = d_whichChoice.get();
   if (w >= 0 && w < (int) d_choice.getLength()) {
-    const VrmlBVolume* ci_bv = d_choice.getElement(w)->getBVolume();
+    const BVolume * ci_bv = d_choice.getElement(w)->getBVolume();
     if (ci_bv)
       d_bsphere.extend(*ci_bv);
   }
@@ -9044,12 +9040,12 @@ void NodeTimeSensor::setField(const std::string & fieldId,
 }
 
 
-const VrmlBVolume* NodeTimeSensor::getBVolume() const
+const BVolume * NodeTimeSensor::getBVolume() const
 {
   //cout << "NodeTimeSensor::getBVolume():unset" << endl;
-  static VrmlBSphere* inf_bsphere = (VrmlBSphere*)0;
+  static BSphere * inf_bsphere = 0;
   if (!inf_bsphere) {
-    inf_bsphere = new VrmlBSphere();
+    inf_bsphere = new BSphere();
   }
   return inf_bsphere;
 }
@@ -9323,21 +9319,21 @@ void NodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
 {
   //cout << "NodeTransform::render()" << endl;
   
-  if (rc.getCullFlag() != VrmlBVolume::BV_INSIDE) {
+  if (rc.getCullFlag() != BVolume::BV_INSIDE) {
 
-    const VrmlBSphere* bs = (VrmlBSphere*)this->getBVolume();
-    VrmlBSphere bv_copy(*bs);
+    const BSphere * bs = (BSphere*)this->getBVolume();
+    BSphere bv_copy(*bs);
     bv_copy.transform(rc.getMatrix());
     int r = viewer->isectViewVolume(bv_copy);
     if (rc.getDrawBSpheres())
       viewer->drawBSphere(*bs, r);
 
-    if (r == VrmlBVolume::BV_OUTSIDE)
+    if (r == BVolume::BV_OUTSIDE)
       return;
-    if (r == VrmlBVolume::BV_INSIDE)
-      rc.setCullFlag(VrmlBVolume::BV_INSIDE);
+    if (r == BVolume::BV_INSIDE)
+      rc.setCullFlag(BVolume::BV_INSIDE);
 
-    //rc.setCullFlag(VrmlBVolume::BV_PARTIAL);
+    //rc.setCullFlag(BVolume::BV_PARTIAL);
   }
 
   VrmlMatrix LM;
@@ -9464,8 +9460,7 @@ void NodeTransform::inverseTransform(VrmlMatrix & m)
 }        
 
 
-const VrmlBVolume*
-NodeTransform::getBVolume() const
+const BVolume * NodeTransform::getBVolume() const
 {
   //cout << "NodeTransform[" << this << "]::getBVolume() {" << endl;
   if (this->isBVolumeDirty())
@@ -9483,7 +9478,7 @@ NodeTransform::recalcBSphere()
   //cout << "NodeTransform[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
   for (size_t i=0; i<d_children.getLength(); ++i) {
-    const VrmlBVolume* ci_bv = d_children.getElement(i)->getBVolume();
+    const BVolume * ci_bv = d_children.getElement(i)->getBVolume();
     if (ci_bv)
       d_bsphere.extend(*ci_bv);
   }
@@ -9506,10 +9501,10 @@ NodeTransform::recalcBSphere()
   d_bsphere.reset();
   for (int i = 0; i<d_children.size(); ++i) {
     Node* ci = d_children[i];
-    const VrmlBVolume* ci_bv = ci->getBVolume();
+    const BVolume * ci_bv = ci->getBVolume();
     if (ci_bv) { // shouldn't happen...
-      VrmlBSphere* bs = (VrmlBSphere*)ci_bv;
-      VrmlBSphere tmp(*bs);
+      BSphere * bs = (BSphere*)ci_bv;
+      BSphere tmp(*bs);
       tmp.transform(M);
       d_bsphere.extend(tmp);
     }
@@ -9787,12 +9782,12 @@ void NodeViewpoint::getFrustum(VrmlFrustum& frust) const
 }
 
 
-const VrmlBVolume* NodeViewpoint::getBVolume() const
+const BVolume * NodeViewpoint::getBVolume() const
 {
   //cout << "NodeViewpoint::getBVolume():unset" << endl;
-  static VrmlBSphere* inf_bsphere = (VrmlBSphere*)0;
+  static BSphere* inf_bsphere = 0;
   if (!inf_bsphere) {
-    inf_bsphere = new VrmlBSphere();
+    inf_bsphere = new BSphere();
   }
   return inf_bsphere;
 }

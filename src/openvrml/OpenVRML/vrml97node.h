@@ -29,7 +29,7 @@
 #   include "VrmlNode.h"
 #   include "Viewer.h"
 #   include "Image.h"
-#   include "VrmlBSphere.h"
+#   include "bvolume.h"
 #   include "VrmlMatrix.h"
 
 namespace OpenVRML {
@@ -193,7 +193,7 @@ namespace OpenVRML {
 
         virtual Node* getParentTransform();
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume * getBVolume() const;
 
     protected:
         NodeGroup(const NodeType & nodeType, VrmlScene * scene);
@@ -208,7 +208,7 @@ namespace OpenVRML {
         /**
          * Cached copy of the bsphere enclosing this node's children.
          */
-        VrmlBSphere d_bsphere;
+        BSphere d_bsphere;
 
         /**
          * Construct a bounding sphere around this node's children. Store it
@@ -247,7 +247,7 @@ namespace OpenVRML {
         const std::string & description() { return d_description.get(); }
         const std::string & url() { assert(d_url.getLength() > 0); return d_url.getElement(0); }
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume * getBVolume() const;
     };
 
 
@@ -425,7 +425,7 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE NodeBox : public NodeGeometry {
         SFVec3f d_size;
-        VrmlBSphere d_bsphere;
+        BSphere d_bsphere;
 
     public:
         // Define the fields of box nodes
@@ -445,7 +445,7 @@ namespace OpenVRML {
         virtual NodeBox* toBox() const;
         const SFVec3f& getSize() const;
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume * getBVolume() const;
 
     };
 
@@ -905,7 +905,7 @@ namespace OpenVRML {
         SFNode d_texCoord;
         MFInt32 d_texCoordIndex;
 
-        VrmlBSphere d_bsphere;
+        BSphere d_bsphere;
 
     public:
         // Define the fields of indexed face set nodes
@@ -949,7 +949,7 @@ namespace OpenVRML {
         bool getNormalPerVertex(){ return d_normalPerVertex.get();}
         bool getSolid(){ return d_solid.get();}
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume* getBVolume() const;
 
     private:
         void recalcBSphere();
@@ -1047,7 +1047,7 @@ namespace OpenVRML {
         /**
          * Cached copy of the bsphere enclosing this node's children.
          */
-        VrmlBSphere d_bsphere;
+        BSphere d_bsphere;
 
     public:
         // Define the fields of all built in LOD nodes
@@ -1079,7 +1079,7 @@ namespace OpenVRML {
         virtual const MFFloat& getRange() const;
         virtual const SFVec3f& getCenter() const;
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume* getBVolume() const;
 
     private:
         /**
@@ -1420,7 +1420,7 @@ namespace OpenVRML {
         SFNode d_color;
         SFNode d_coord;
 
-        VrmlBSphere d_bsphere;
+        BSphere d_bsphere;
 
     public:
         // Define the fields of pointSet nodes
@@ -1455,7 +1455,7 @@ namespace OpenVRML {
         const SFNode & getCoord() const;
         void setCoord(const SFNode & coord);
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume* getBVolume() const;
 
     private:
         void recalcBSphere();
@@ -1576,7 +1576,7 @@ namespace OpenVRML {
         virtual bool isModified() const;
         virtual void updateModified(NodePath& path, int flags);
         virtual void clearFlags();
-        const VrmlBVolume* getBVolume() const;
+        const BVolume* getBVolume() const;
 
         virtual NodeShape* toShape()	const;
 
@@ -1655,11 +1655,11 @@ namespace OpenVRML {
         virtual NodeSphere* toSphere() const;
         float getRadius() { return d_radius.get(); }
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume* getBVolume() const;
 
     protected:
         SFFloat d_radius;
-        VrmlBSphere d_bsphere;
+        BSphere d_bsphere;
     };
 
 
@@ -1748,7 +1748,7 @@ namespace OpenVRML {
         /**
          * Cached copy of the bsphere enclosing this node's children.
          */
-        VrmlBSphere d_bsphere;
+        BSphere d_bsphere;
 
     public:
         // Define the fields of all built in switch nodes
@@ -1782,7 +1782,7 @@ namespace OpenVRML {
         const SFInt32 & getWhichChoice() const;
         void setWhichChoice(const SFInt32 & choice);
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume* getBVolume() const;
 
     private:
         /**
@@ -1921,7 +1921,7 @@ namespace OpenVRML {
         bool getLoop(){ return d_loop.get();} 
         double getStartTime(){ return d_startTime.get();} 
         double getStopTime(){ return d_stopTime.get();} 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume* getBVolume() const;
     };
 
 
@@ -1997,7 +1997,7 @@ namespace OpenVRML {
         const SFRotation& getScaleOrientation() const;
         const SFVec3f& getTranslation() const;
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume * getBVolume() const;
 
         void getMatrix(VrmlMatrix & M) const;
 
@@ -2047,7 +2047,7 @@ namespace OpenVRML {
         const SFVec3f & getPosition() const;
         const SFString & getDescription() const;
 
-        const VrmlBVolume* getBVolume() const;
+        const BVolume * getBVolume() const;
 
         void getInverseMatrix(VrmlMatrix & M) const;
 
