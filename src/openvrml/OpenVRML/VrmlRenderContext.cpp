@@ -62,8 +62,8 @@ using namespace OpenVRML;
  *
  * @author Christopher K. St. John 
  *
- * @see VrmlNode::render
- * @see VrmlScene::render
+ * @see Node::render
+ * @see Browser::render
  */
 
 /**
@@ -147,16 +147,16 @@ VrmlRenderContext::getCullFlag() const
  * BV_OUTSIDE, since the render method returns immediatly. But who knows, it
  * might be useful some day, so it's an allowed value.
  *
- * <p>Setting the cull flag to BV_INSIDE in VrmlScene at the top of the
+ * <p>Setting the cull flag to BV_INSIDE in the Browser at the top of the
  * traversal has the effect of disabling the culling tests. The behavior is
  * undefined if the flag is not one of the allowed values.</p>
  *
- * @param f Should be one of <code>VrmlBVolume::BV_INSIDE</code>,
- *          <code>VrmlBVolume::VB_OUTSIDE</code>,
- *          <code>VrmlBVolume::BV_PARTIAL</code>
+ * @param f Should be one of <code>BVolume::BV_INSIDE</code>,
+ *          <code>BVolume::VB_OUTSIDE</code>,
+ *          <code>BVolume::BV_PARTIAL</code>
  *
- * @see VrmlScene
- * @see VrmlBVolume
+ * @see Browser
+ * @see BVolume
  */
 void
 VrmlRenderContext::setCullFlag(int f)

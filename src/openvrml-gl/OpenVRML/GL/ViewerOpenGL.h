@@ -46,7 +46,7 @@ namespace OpenVRML {
                 LIGHT_POSITIONAL
             };
             
-            ViewerOpenGL(VrmlScene & scene);
+            ViewerOpenGL(Browser & browser);
             virtual ~ViewerOpenGL();
 
             // get rid of this asap.

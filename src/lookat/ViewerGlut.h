@@ -31,7 +31,7 @@ class ViewerGlut : public OpenVRML::GL::ViewerOpenGL {
     bool d_timerPending;
 
 public:
-    ViewerGlut(OpenVRML::VrmlScene & scene);
+    ViewerGlut(OpenVRML::Browser & browser);
     virtual ~ViewerGlut();
 
     // Public so glut callbacks can access

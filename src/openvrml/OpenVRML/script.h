@@ -57,7 +57,7 @@ namespace OpenVRML {
     
     class OPENVRML_SCOPE ScriptNodeClass : public NodeClass {
     public:
-        ScriptNodeClass(VrmlScene & scene);
+        ScriptNodeClass(Browser & browser);
         virtual ~ScriptNodeClass() throw ();
         
         virtual const NodeTypePtr createType(const std::string & id,
@@ -67,7 +67,6 @@ namespace OpenVRML {
     
     
     class Doc;
-    class VrmlScene;
 
     class OPENVRML_SCOPE ScriptNode : public ChildNode {
     public:
@@ -86,15 +85,13 @@ namespace OpenVRML {
                     throw (std::invalid_argument);
 
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
-            virtual const NodePtr createNode(const ScopePtr & scope,
-                                             bool inProtoDef = false) const
+            virtual const NodePtr createNode(const ScopePtr & scope) const
                     throw (std::bad_alloc);
         };
         
         friend class ScriptNodeType;
     
         ScriptNodeType scriptNodeType;
-        const bool inProtoDef;
         SFBool directOutput;
         SFBool mustEvaluate;
         MFString url;
@@ -105,8 +102,7 @@ namespace OpenVRML {
     
     public:
         ScriptNode(ScriptNodeClass & nodeClass,
-                   const ScopePtr & scope,
-                   bool inProtoDef = false);
+                   const ScopePtr & scope);
         virtual ~ScriptNode() throw ();
         
         void setUrl(const MFString & value, double timestamp);
@@ -138,6 +134,8 @@ namespace OpenVRML {
         
         void assignWithSelfRefCheck(const SFNode &, SFNode &) const throw ();
         void assignWithSelfRefCheck(const MFNode &, MFNode &) const throw ();
+        
+        virtual void initializeImpl(double timestamp) throw ();
         
         virtual void setFieldImpl(const std::string & id,
                                   const FieldValue & value)

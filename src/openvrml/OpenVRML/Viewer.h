@@ -61,7 +61,7 @@ namespace OpenVRML {
         typedef long Object;
         typedef long TextureObject;
         
-        VrmlScene & scene;
+        Browser & browser;
 
         virtual ~Viewer() = 0;
 
@@ -237,7 +237,7 @@ namespace OpenVRML {
         static void computeView(const float position[3], float orientation[3],
                                 float distance, float target[3], float up[3]);
         
-        explicit Viewer(VrmlScene & scene);
+        explicit Viewer(Browser & browser);
 
     private:
         // non-copyable

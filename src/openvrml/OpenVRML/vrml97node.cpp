@@ -24,7 +24,7 @@
 # include "vrml97node.h"
 # include "Doc.h"
 # include "doc2.hpp"
-# include "VrmlScene.h"
+# include "browser.h"
 # include "Audio.h"
 # include "sound.h"
 # include "private.h"
@@ -162,8 +162,7 @@ namespace {
 
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
             
-            virtual const NodePtr createNode(const ScopePtr & scope,
-                                             bool inProtoDef = false) const
+            virtual const NodePtr createNode(const ScopePtr & scope) const
                     throw (std::bad_alloc);
         
         private:
@@ -307,9 +306,9 @@ namespace {
 
     template <typename NodeT>
         const NodePtr Vrml97NodeTypeImpl<NodeT>::
-                createNode(const ScopePtr & scope, const bool inProtoDef) const
+                createNode(const ScopePtr & scope) const
                 throw (std::bad_alloc) {
-            return NodePtr(new NodeT(*this, scope, inProtoDef));
+            return NodePtr(new NodeT(*this, scope));
         }
 
     template <typename NodeT>
@@ -389,6 +388,7 @@ namespace {
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with this node.
+ * @param scope     the Scope to which the node belongs.
  */
 AbstractBase::AbstractBase(const NodeType & nodeType, const ScopePtr & scope):
         Node(nodeType, scope) {}
@@ -553,12 +553,11 @@ void AbstractGeometry::render(Viewer * viewer, VrmlRenderContext context) {
  *
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  */
 AbstractIndexedSet::AbstractIndexedSet(const NodeType & nodeType,
                                        const ScopePtr & scope):
-        Node(nodeType, scope), AbstractGeometry(nodeType, scope),
+        Node(nodeType, scope),
+        AbstractGeometry(nodeType, scope),
         colorPerVertex(true) {}
 
 /**
@@ -672,7 +671,8 @@ void AbstractIndexedSet::processSet_coordIndex(const FieldValue & mfint32,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType for the node..
+ * @param nodeType  the NodeType for the node.
+ * @param scope     the Scope to which the node belongs.
  */
 AbstractLight::AbstractLight(const NodeType & nodeType, const ScopePtr & scope):
         Node(nodeType, scope), AbstractChild(nodeType, scope),
@@ -776,13 +776,15 @@ void AbstractLight::processSet_on(const FieldValue & sfbool,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType for the node instance.
+ * @param nodeType  the NodeType for the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 AbstractTexture::AbstractTexture(const NodeType & nodeType,
                                  const ScopePtr & scope):
         Node(nodeType, scope), AbstractBase(nodeType, scope),
         TextureNode(nodeType, scope),
-        repeatS(true), repeatT(true) {}
+        repeatS(true),
+        repeatT(true) {}
 
 /**
  * @brief Destructor.
@@ -819,9 +821,9 @@ const SFBool & AbstractTexture::getRepeatT() const throw () {
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this AnchorClass.
+ * @param browser the Browser associated with this AnchorClass.
  */
-AnchorClass::AnchorClass(VrmlScene & scene): NodeClass(scene) {}
+AnchorClass::AnchorClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -923,12 +925,13 @@ const NodeTypePtr AnchorClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with this node.
+ * @param scope     the Scope to which the node belongs.
  */
 Anchor::Anchor(const NodeType & nodeType,
-               const ScopePtr & scope,
-               const bool inProtoDef):
-        Node(nodeType, scope), Group(nodeType, scope, inProtoDef) {
+               const ScopePtr & scope):
+        Node(nodeType, scope),
+        Group(nodeType, scope) {
     this->setBVolumeDirty(true);
 }
 
@@ -1012,26 +1015,8 @@ void Anchor::render(Viewer *viewer, VrmlRenderContext rc) {
  * @brief Handle a click by loading the url.
  */
 void Anchor::activate() {
-    if (this->url.getLength() > 0) {
-        Doc2*  tmp_url = new Doc2();
-        std::string * tmp_url_array = new std::string[this->url.getLength()];
-
-        for (size_t i = 0; i < this->url.getLength(); i++) {
-            Doc2 relDoc(this->relative.get());
-            tmp_url->seturl(this->url.getElement(i).c_str(), &relDoc);
-            tmp_url_array[i] = tmp_url->url();
-        }
-
-        MFString urls(this->url.getLength(), tmp_url_array);
-        if (!this->nodeType.nodeClass.scene.loadUrl(urls, this->parameter)) {
-            assert(this->url.getLength() > 0);
-            theSystem->warn("Couldn't load URL %s\n",
-                            this->url.getElement(0).c_str());
-        }
-
-        delete [] tmp_url_array;
-        delete tmp_url;
-    }
+    assert(this->getScene());
+    this->getScene()->loadURI(this->url, this->parameter);
 }
 
 /**
@@ -1050,9 +1035,9 @@ const BVolume * Anchor::getBVolume() const {
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-AppearanceClass::AppearanceClass(VrmlScene & scene): NodeClass(scene) {}
+AppearanceClass::AppearanceClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -1123,12 +1108,13 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Appearance::Appearance(const NodeType & nodeType,
-                       const ScopePtr & scope,
-                       const bool inProtoDef):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
+                       const ScopePtr & scope):
+        Node(nodeType, scope),
+        AbstractBase(nodeType, scope),
         AppearanceNode(nodeType, scope) {}
 
 /**
@@ -1304,9 +1290,9 @@ const SFNode & Appearance::getTextureTransform() const throw () {
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-AudioClipClass::AudioClipClass(VrmlScene & scene): NodeClass(scene) {}
+AudioClipClass::AudioClipClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -1415,31 +1401,28 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 AudioClip::AudioClip(const NodeType & nodeType,
-                     const ScopePtr & scope,
-                     const bool inProtoDef):
+                     const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractBase(nodeType, scope),
-        inProtoDef(inProtoDef),
         pitch(1.0),
         active(false),
         audio(0),
         url_modified(false),
         audio_index(0),
         audio_intensity(1.0),
-        audio_fd(-1) {
-    if (!inProtoDef) { this->nodeType.nodeClass.scene.addAudioClip(*this); }
-}
+        audio_fd(-1) {}
 
 /**
  * @brief Destructor.
  */
 AudioClip::~AudioClip() throw () {
     delete this->audio;
-    if (!this->inProtoDef) {
-        this->nodeType.nodeClass.scene.removeAudioClip(*this);
+    if (this->getScene()) {
+        this->getScene()->browser.removeAudioClip(*this);
     }
 }
 
@@ -1535,6 +1518,16 @@ void AudioClip::update(const double currentTime) {
             this->emitEvent("isActive", this->active, currentTime);
         }
     }
+}
+
+/**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void AudioClip::initializeImpl(const double timestamp) throw () {
+    assert(this->getScene());
+    this->getScene()->browser.addAudioClip(*this);
 }
 
 /**
@@ -1642,9 +1635,9 @@ void AudioClip::processSet_url(const FieldValue & mfstring,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-BackgroundClass::BackgroundClass(VrmlScene & scene): NodeClass(scene) {}
+BackgroundClass::BackgroundClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -1783,28 +1776,24 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Background::Background(const NodeType & nodeType,
-                       const ScopePtr & scope,
-                       const bool inProtoDef):
+                       const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
-        inProtoDef(inProtoDef),
         bound(false),
         viewerObject(0) {
     std::fill(this->texPtr, this->texPtr + 6, static_cast<Image *>(0));
-    if (!inProtoDef) {
-        this->nodeType.nodeClass.scene.addBackground(*this);
-    }
 }
 
 /**
  * @brief Destructor.
  */
 Background::~Background() throw () {
-    if (!this->inProtoDef) {
-        this->nodeType.nodeClass.scene.removeBackground(*this);
+    if (this->getScene()) {
+        this->getScene()->browser.removeBackground(*this);
     }
     // remove d_viewerObject...
 }
@@ -1819,16 +1808,16 @@ namespace {
     /**
      * @brief Load and scale textures as needed.
      */
-    Image * getTexture(const MFString & urls, Doc2 * relative,
+    Image * getTexture(const MFString & urls, Doc2 & baseDoc,
                        Image * tex, int thisIndex, Viewer *viewer) {
         // Check whether the url has already been loaded
         int n = urls.getLength();
         if (n > 0) {
             for (int index=thisIndex-1; index >= 0; --index) {
-                const char *currentTex = tex[index].url();
-                const char *relPath = relative ? relative->urlPath() : 0;
+                const char * currentTex = tex[index].url();
+                const std::string relPath = baseDoc.urlPath();
                 int currentLen = currentTex ? strlen(currentTex) : 0;
-                int relPathLen = relPath ? strlen(relPath) : 0;
+                int relPathLen = relPath.length();
                 if (relPathLen >= currentLen) { relPathLen = 0; }
 
                 if (currentTex) {
@@ -1843,7 +1832,7 @@ namespace {
             }
 
             // Have to load it
-            if (!tex[thisIndex].tryURLs(urls, relative)) {
+            if (!tex[thisIndex].tryURLs(urls, &baseDoc)) {
                 std::cerr << "Error: couldn't read Background texture from URL "
                           << urls << std::endl;
             } else if ( tex[thisIndex].pixels() && tex[thisIndex].nc() ) {
@@ -1898,22 +1887,19 @@ void Background::renderBindable(Viewer * const viewer) {
         viewer->insertReference(this->viewerObject);
     } else {
         if (this->isModified() || this->texPtr[0] == 0) {
-            Doc2 relDoc(this->relativeUrl.get());
-            Doc2 * const rel = !this->relativeUrl.get().empty()
-                             ? &relDoc
-                             : this->nodeType.nodeClass.scene.urlDoc();
+            Doc2 baseDoc(this->getScene()->getURI());
             this->texPtr[0] =
-                    getTexture(this->backUrl, rel, this->tex, 0, viewer);
+                    getTexture(this->backUrl, baseDoc, this->tex, 0, viewer);
             this->texPtr[1] =
-                    getTexture(this->bottomUrl, rel, this->tex, 1, viewer);
+                    getTexture(this->bottomUrl, baseDoc, this->tex, 1, viewer);
             this->texPtr[2] =
-                    getTexture(this->frontUrl, rel, this->tex, 2, viewer);
+                    getTexture(this->frontUrl, baseDoc, this->tex, 2, viewer);
             this->texPtr[3] =
-                    getTexture(this->leftUrl, rel, this->tex, 3, viewer);
+                    getTexture(this->leftUrl, baseDoc, this->tex, 3, viewer);
             this->texPtr[4] =
-                    getTexture(this->rightUrl, rel, this->tex, 4, viewer);
+                    getTexture(this->rightUrl, baseDoc, this->tex, 4, viewer);
             this->texPtr[5] =
-                    getTexture(this->topUrl, rel, this->tex, 5, viewer);
+                    getTexture(this->topUrl, baseDoc, this->tex, 5, viewer);
         }
 
         int i, whc[18];    // Width, height, and nComponents for 6 tex
@@ -1944,6 +1930,16 @@ void Background::renderBindable(Viewer * const viewer) {
 }
 
 /**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void Background::initializeImpl(const double timestamp) throw () {
+    assert(this->getScene());
+    this->getScene()->browser.addBackground(*this);
+}
+
+/**
  * @brief set_bind eventIn handler.
  *
  * @param sfbool    an SFBool value.
@@ -1956,7 +1952,7 @@ void Background::processSet_bind(const FieldValue & sfbool,
                                  const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     Background * current =
-            this->nodeType.nodeClass.scene.bindableBackgroundTop();
+            this->nodeType.nodeClass.browser.bindableBackgroundTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
 
     if (b.get()) {        // set_bind TRUE
@@ -1965,16 +1961,16 @@ void Background::processSet_bind(const FieldValue & sfbool,
                 current->bound.set(false);
                 current->emitEvent("isBound", current->bound, timestamp);
             }
-            this->nodeType.nodeClass.scene.bindablePush(this);
+            this->nodeType.nodeClass.browser.bindablePush(this);
             this->bound.set(true);
             this->emitEvent("isBound", this->bound, timestamp);
         }
     } else {            // set_bind FALSE
-        this->nodeType.nodeClass.scene.bindableRemove(this);
+        this->nodeType.nodeClass.browser.bindableRemove(this);
         if (this == current) {
             this->bound.set(false);
             this->emitEvent("isBound", this->bound, timestamp);
-            current = this->nodeType.nodeClass.scene
+            current = this->nodeType.nodeClass.browser
                         .bindableBackgroundTop();
             if (current) {
                 this->bound.set(true);
@@ -2164,9 +2160,9 @@ void Background::processSet_skyColor(const FieldValue & mfcolor,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-BillboardClass::BillboardClass(VrmlScene & scene): NodeClass(scene) {}
+BillboardClass::BillboardClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -2253,13 +2249,13 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Billboard::Billboard(const NodeType & nodeType,
-                     const ScopePtr & scope,
-                     const bool inProtoDef):
+                     const ScopePtr & scope):
         Node(nodeType, scope),
-        Group(nodeType, scope, inProtoDef),
+        Group(nodeType, scope),
         axisOfRotation(0.0, 1.0, 0.0),
 	xformObject(0) {}
 
@@ -2423,9 +2419,9 @@ void Billboard::processSet_axisOfRotation(const FieldValue & sfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-BoxClass::BoxClass(VrmlScene & scene): NodeClass(scene) {}
+BoxClass::BoxClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -2476,11 +2472,11 @@ const NodeTypePtr BoxClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Box::Box(const NodeType & nodeType,
-         const ScopePtr & scope,
-         const bool inProtoDef):
+         const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractGeometry(nodeType, scope),
         size(2.0, 2.0, 2.0) {
@@ -2526,9 +2522,9 @@ const BVolume * Box::getBVolume() const {
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-CollisionClass::CollisionClass(VrmlScene & scene): NodeClass(scene) {}
+CollisionClass::CollisionClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -2629,13 +2625,13 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Collision::Collision(const NodeType & nodeType,
-                     const ScopePtr & scope,
-                     const bool inProtoDef):
+                     const ScopePtr & scope):
         Node(nodeType, scope),
-        Group(nodeType, scope, inProtoDef),
+        Group(nodeType, scope),
         collide(true) {}
 
 /**
@@ -2678,9 +2674,9 @@ void Collision::processSet_collide(const FieldValue & sfbool,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-ColorClass::ColorClass(VrmlScene & scene): NodeClass(scene) {}
+ColorClass::ColorClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -2733,11 +2729,11 @@ const NodeTypePtr ColorClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with this node.
+ * @param scope     the Scope to which the node belongs.
  */
 Color::Color(const NodeType & nodeType,
-             const ScopePtr & scope,
-             const bool inProtoDef):
+             const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractBase(nodeType, scope),
         ColorNode(nodeType, scope) {}
@@ -2780,10 +2776,10 @@ void Color::processSet_color(const FieldValue & mfcolor, const double timestamp)
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-ColorInterpolatorClass::ColorInterpolatorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+ColorInterpolatorClass::ColorInterpolatorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -2860,11 +2856,11 @@ const NodeTypePtr ColorInterpolatorClass::
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 ColorInterpolator::ColorInterpolator(const NodeType & nodeType,
-                                     const ScopePtr & scope,
-                                     const bool inProtoDef):
+                                     const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 
@@ -2976,9 +2972,9 @@ void ColorInterpolator::processSet_keyValue(const FieldValue & mfcolor,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-ConeClass::ConeClass(VrmlScene & scene): NodeClass(scene) {}
+ConeClass::ConeClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -3052,11 +3048,11 @@ const NodeTypePtr ConeClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Cone::Cone(const NodeType & nodeType,
-           const ScopePtr & scope,
-           const bool inProtoDef):
+           const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractGeometry(nodeType, scope),
         bottom(true),
@@ -3093,9 +3089,9 @@ Viewer::Object Cone::insertGeometry(Viewer * const viewer,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-CoordinateClass::CoordinateClass(VrmlScene & scene): NodeClass(scene) {}
+CoordinateClass::CoordinateClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -3149,11 +3145,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 Coordinate::Coordinate(const NodeType & nodeType,
-                       const ScopePtr & scope,
-                       const bool inProtoDef):
+                       const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractBase(nodeType, scope),
         CoordinateNode(nodeType, scope) {}
@@ -3197,10 +3193,10 @@ const MFVec3f & Coordinate::getPoint() const throw () { return this->point; }
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-CoordinateInterpolatorClass::CoordinateInterpolatorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+CoordinateInterpolatorClass::CoordinateInterpolatorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -3277,11 +3273,11 @@ const NodeTypePtr CoordinateInterpolatorClass::
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 CoordinateInterpolator::CoordinateInterpolator(const NodeType & nodeType,
-                                               const ScopePtr & scope,
-                                               const bool inProtoDef):
+                                               const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 
@@ -3383,9 +3379,9 @@ void CoordinateInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-CylinderClass::CylinderClass(VrmlScene & scene): NodeClass(scene) {}
+CylinderClass::CylinderClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -3466,11 +3462,11 @@ const NodeTypePtr CylinderClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Cylinder::Cylinder(const NodeType & nodeType,
-                   const ScopePtr & scope,
-                   const bool inProtoDef):
+                   const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractGeometry(nodeType, scope),
         bottom(true),
@@ -3511,9 +3507,9 @@ Viewer::Object Cylinder::insertGeometry(Viewer * const viewer,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-CylinderSensorClass::CylinderSensorClass(VrmlScene & scene): NodeClass(scene) {}
+CylinderSensorClass::CylinderSensorClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -3629,11 +3625,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 CylinderSensor::CylinderSensor(const NodeType & nodeType,
-                               const ScopePtr & scope,
-                               const bool inProtoDef):
+                               const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
         autoOffset(true),
@@ -3867,10 +3863,10 @@ void CylinderSensor::setMVMatrix(const VrmlMatrix & M_in) {
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-DirectionalLightClass::DirectionalLightClass(VrmlScene & scene):
-        NodeClass(scene) {}
+DirectionalLightClass::DirectionalLightClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -3958,11 +3954,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 DirectionalLight::DirectionalLight(const NodeType & nodeType,
-                                   const ScopePtr & scope,
-                                   const bool inProtoDef):
+                                   const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractLight(nodeType, scope),
         direction(0.0, 0.0, -1.0) {}
@@ -4012,9 +4008,9 @@ void DirectionalLight::processSet_direction(const FieldValue & sfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-ElevationGridClass::ElevationGridClass(VrmlScene & scene): NodeClass(scene) {}
+ElevationGridClass::ElevationGridClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -4161,11 +4157,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 ElevationGrid::ElevationGrid(const NodeType & nodeType,
-                             const ScopePtr & scope,
-                             const bool inProtoDef):
+                             const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractGeometry(nodeType, scope),
         ccw(true),
@@ -4338,9 +4334,9 @@ void ElevationGrid::processSet_texCoord(const FieldValue & sfnode,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-ExtrusionClass::ExtrusionClass(VrmlScene & scene): NodeClass(scene) {}
+ExtrusionClass::ExtrusionClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -4488,11 +4484,11 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Extrusion::Extrusion(const NodeType & nodeType,
-                     const ScopePtr & scope,
-                     const bool inProtoDef):
+                     const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractGeometry(nodeType, scope),
         beginCap(true),
@@ -4612,9 +4608,9 @@ void Extrusion::processSet_spine(const FieldValue & mfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-FogClass::FogClass(VrmlScene & scene): NodeClass(scene) {}
+FogClass::FogClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -4696,29 +4692,37 @@ const NodeTypePtr FogClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Fog::Fog(const NodeType & nodeType,
-         const ScopePtr & scope,
-         const bool inProtoDef):
+         const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
-        inProtoDef(inProtoDef),
         color(1.0, 1.0, 1.0),
         fogType("LINEAR"),
         visibilityRange(0.0),
         bound(false) {
-    if (!inProtoDef) { this->nodeType.nodeClass.scene.addFog(*this); }
 }
 
 /**
  * @brief Destructor.
  */
 Fog::~Fog() throw () {
-    if (!this->inProtoDef) { this->nodeType.nodeClass.scene.removeFog(*this); }
+    if (this->getScene()) { this->getScene()->browser.removeFog(*this); }
 }
 
 Fog * Fog::toFog() const { return const_cast<Fog *>(this); }
+
+/**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void Fog::initializeImpl(const double timestamp) throw () {
+    assert(this->getScene());
+    this->getScene()->browser.addFog(*this);
+}
 
 /**
  * @brief set_bind eventIn handler.
@@ -4731,7 +4735,7 @@ Fog * Fog::toFog() const { return const_cast<Fog *>(this); }
  */
 void Fog::processSet_bind(const FieldValue & sfbool, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    Fog * current = this->nodeType.nodeClass.scene.bindableFogTop();
+    Fog * current = this->nodeType.nodeClass.browser.bindableFogTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
 
     if (b.get()) {        // set_bind TRUE
@@ -4740,16 +4744,16 @@ void Fog::processSet_bind(const FieldValue & sfbool, const double timestamp)
                 current->bound.set(false);
                 current->emitEvent("isBound", current->bound, timestamp);
             }
-            this->nodeType.nodeClass.scene.bindablePush(this);
+            this->nodeType.nodeClass.browser.bindablePush(this);
             this->bound.set(true);
             this->emitEvent("isBound", this->bound, timestamp);
         }
     } else {            // set_bind FALSE
-        this->nodeType.nodeClass.scene.bindableRemove(this);
+        this->nodeType.nodeClass.browser.bindableRemove(this);
         if (this == current) {
             this->bound.set(false);
             this->emitEvent("isBound", this->bound, timestamp);
-            current = this->nodeType.nodeClass.scene.bindableFogTop();
+            current = this->nodeType.nodeClass.browser.bindableFogTop();
             if (current) {
                 current->bound.set(true);
                 current->emitEvent("isBound", current->bound, timestamp);
@@ -4817,9 +4821,9 @@ void Fog::processSet_visibilityRange(const FieldValue & sffloat,
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-FontStyleClass::FontStyleClass(VrmlScene & scene): NodeClass(scene) {}
+FontStyleClass::FontStyleClass(Browser & browser): NodeClass(browser) {}
 
 FontStyleClass::~FontStyleClass() throw () {}
 
@@ -4931,11 +4935,11 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 FontStyle::FontStyle(const NodeType & nodeType,
-                     const ScopePtr & scope,
-                     const bool inProtoDef):
+                     const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractBase(nodeType, scope),
         FontStyleNode(nodeType, scope),
@@ -5044,9 +5048,9 @@ const SFBool & FontStyle::getTopToBottom() const throw () {
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-GroupClass::GroupClass(VrmlScene & scene): NodeClass(scene) {}
+GroupClass::GroupClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -5124,11 +5128,11 @@ const NodeTypePtr GroupClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 Group::Group(const NodeType & nodeType,
-             const ScopePtr & scope,
-             const bool inProtoDef):
+             const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
         bboxSize(-1.0, -1.0, -1.0),
@@ -5484,9 +5488,9 @@ void Group::recalcBSphere() {
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-ImageTextureClass::ImageTextureClass(VrmlScene & scene): NodeClass(scene) {}
+ImageTextureClass::ImageTextureClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -5555,11 +5559,11 @@ const NodeTypePtr ImageTextureClass::
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 ImageTexture::ImageTexture(const NodeType & nodeType,
-                           const ScopePtr & scope,
-                           const bool inProtoDef):
+                           const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractTexture(nodeType, scope),
         image(0),
@@ -5590,13 +5594,11 @@ void ImageTexture::render(Viewer *viewer, VrmlRenderContext rc) {
     // loaded just once... of course world authors should just DEF/USE
     // them...
     if (!this->image && this->url.getLength() > 0) {
-        const std::string relUrl = !this->d_relativeUrl.get().empty()
-                                 ? this->d_relativeUrl.get()
-                                 : this->nodeType.nodeClass.scene.urlDoc()->url();
-        Doc relDoc(relUrl, static_cast<Doc const *>(0));
+        Doc baseDoc(this->getScene()->getURI());
         this->image = new Image;
-        if (!this->image->tryURLs(this->url, &relDoc)) {
-            theSystem->error("Couldn't read ImageTexture from URL %s\n", this->url.getElement(0).c_str());
+        if (!this->image->tryURLs(this->url, &baseDoc)) {
+            theSystem->error("Couldn't read ImageTexture from URL %s\n",
+                             this->url.getElement(0).c_str());
         }
     }
 
@@ -5684,9 +5686,9 @@ void ImageTexture::processSet_url(const FieldValue & mfstring,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-IndexedFaceSetClass::IndexedFaceSetClass(VrmlScene & scene): NodeClass(scene) {}
+IndexedFaceSetClass::IndexedFaceSetClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -5859,11 +5861,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 IndexedFaceSet::IndexedFaceSet(const NodeType & nodeType,
-                               const ScopePtr & scope,
-                               const bool inProtoDef):
+                               const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractIndexedSet(nodeType, scope),
         ccw(true),
@@ -6097,9 +6099,9 @@ void IndexedFaceSet::processSet_texCoordIndex(const FieldValue & mfint32,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-IndexedLineSetClass::IndexedLineSetClass(VrmlScene & scene): NodeClass(scene) {}
+IndexedLineSetClass::IndexedLineSetClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -6195,11 +6197,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 IndexedLineSet::IndexedLineSet(const NodeType & nodeType,
-                               const ScopePtr & scope,
-                               const bool inProtoDef):
+                               const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractIndexedSet(nodeType, scope) {}
 
@@ -6254,9 +6256,9 @@ Viewer::Object IndexedLineSet::insertGeometry(Viewer * viewer,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-InlineClass::InlineClass(VrmlScene & scene): NodeClass(scene) {}
+InlineClass::InlineClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -6324,13 +6326,14 @@ const NodeTypePtr InlineClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with this node.
+ * @param scope     the Scope to which the node belongs.
  */
 Inline::Inline(const NodeType & nodeType,
-               const ScopePtr & scope,
-               const bool inProtoDef):
+               const ScopePtr & scope):
         Node(nodeType, scope),
-        Group(nodeType, scope, inProtoDef),
+        AbstractChild(nodeType, scope),
+        inlineScene(0),
         hasLoaded(false) {
     this->setBVolumeDirty(true);
 }
@@ -6345,7 +6348,7 @@ Inline::~Inline() throw () {}
  */
 void Inline::render(Viewer * const viewer, const VrmlRenderContext rc) {
     this->load();
-    this->Group::render(viewer, rc);
+    if (this->inlineScene) { this->inlineScene->render(*viewer, rc); }
 }
 
 Inline * Inline::toInline() const { return const_cast<Inline *>(this); }
@@ -6362,45 +6365,11 @@ void Inline::load() {
     this->hasLoaded = true; // although perhaps not successfully
     this->setBVolumeDirty(true);
 
-    if (this->url.getLength() > 0) {
-        MFNode * kids = 0;
-        Doc2 url;
-        int i, n = this->url.getLength();
-        for (i = 0; i < n; ++i) {
-            url.seturl(this->url.getElement(i).c_str(),
-                       this->nodeType.nodeClass.scene.urlDoc());
-
-            kids = this->nodeType.nodeClass.scene.readWrl(&url);
-            if (kids) {
-                break;
-            } else {
-                using std::equal;
-                using std::string;
-                const string urnScheme("urn:");
-                const string & uri = this->url.getElement(i);
-                if (i < n - 1
-                        && !equal(uri.begin(), uri.begin() + urnScheme.length(),
-                                  urnScheme.begin())) {
-                    theSystem->warn("Couldn't read url '%s': %s\n",
-                                    this->url.getElement(i).c_str(),
-                                    strerror( errno));
-                }
-            }
-        }
-
-        if (kids) {
-            this->relative.set(url.url()); // children will be relative to this url
-
-            this->removeChildren();
-            this->addChildren(*kids);     // check for nested Inlines
-            delete kids;
-        } else {
-            theSystem->warn("couldn't load Inline %s (relative %s)\n",
-                            this->url.getElement(0).c_str(),
-                            !this->relative.get().empty()
-                                ? this->relative.get().c_str() : "<null>");
-        }
-    }
+    assert(this->getScene());
+    this->inlineScene = new Scene(this->getScene()->browser,
+                                  this->url,
+                                  this->getScene());
+    this->inlineScene->initialize(theSystem->time());
 }
 
 /**
@@ -6429,9 +6398,9 @@ void Inline::processSet_url(const FieldValue & mfstring, const double timestamp)
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-LODClass::LODClass(VrmlScene & scene): NodeClass(scene) {}
+LODClass::LODClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -6505,11 +6474,11 @@ const NodeTypePtr LODClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with this node.
+ * @param scope     the Scope to which the node belongs.
  */
 LOD::LOD(const NodeType & nodeType,
-         const ScopePtr & scope,
-         const bool inProtoDef):
+         const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope) {
     this->setBVolumeDirty(true); // lazy calc of bvolume
@@ -6653,9 +6622,9 @@ void LOD::processSet_level(const FieldValue & mfnode, const double timestamp)
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-MaterialClass::MaterialClass(VrmlScene & scene): NodeClass(scene) {}
+MaterialClass::MaterialClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -6749,11 +6718,11 @@ const NodeTypePtr MaterialClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with this node.
+ * @param scope     the Scope to which the node belongs.
  */
 Material::Material(const NodeType & nodeType,
-                   const ScopePtr & scope,
-                   const bool inProtoDef):
+                   const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractBase(nodeType, scope),
         MaterialNode(nodeType, scope),
@@ -6930,10 +6899,10 @@ const SFFloat & Material::getTransparency() const throw () {
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-MovieTextureClass::MovieTextureClass(VrmlScene & scene):
-        NodeClass(scene) {}
+MovieTextureClass::MovieTextureClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -7048,30 +7017,27 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 MovieTexture::MovieTexture(const NodeType & nodeType,
-                           const ScopePtr & scope,
-                           const bool inProtoDef):
+                           const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractTexture(nodeType, scope),
-        inProtoDef(inProtoDef),
         loop(false),
         speed(1.0),
         image(0),
         frame(0),
         lastFrame(-1),
         lastFrameTime(-1.0),
-        texObject(0) {
-    if (!inProtoDef) { this->nodeType.nodeClass.scene.addMovie(*this); }
-}
+        texObject(0) {}
 
 /**
  * @brief Destructor.
  */
 MovieTexture::~MovieTexture() throw () {
-    if (!this->inProtoDef) {
-        this->nodeType.nodeClass.scene.removeMovie(*this);
+    if (this->getScene()) {
+        this->getScene()->browser.removeMovie(*this);
     }
     delete this->image;
 }
@@ -7106,12 +7072,9 @@ void MovieTexture::update(const double currentTime) {
 
     // Load the movie if needed (should check startTime...)
     if (!this->image && this->url.getLength() > 0) {
-        Doc2 relDoc(this->d_relativeUrl.get());
-        Doc2 * rel = !this->d_relativeUrl.get().empty()
-                   ? &relDoc
-                   : this->nodeType.nodeClass.scene.urlDoc();
+        Doc2 baseDoc(this->getScene()->getURI());
         this->image = new Image;
-        if (!this->image->tryURLs(this->url, rel)) {
+        if (!this->image->tryURLs(this->url, &baseDoc)) {
             std::cerr << "Error: couldn't read MovieTexture from URL "
                       << this->url << std::endl;
         }
@@ -7165,7 +7128,7 @@ void MovieTexture::update(const double currentTime) {
     if (this->active.get()) {
         double d = this->lastFrameTime + fabs(1 / this->speed.get())
                     - currentTime;
-        this->nodeType.nodeClass.scene.setDelta(0.9 * d);
+        this->nodeType.nodeClass.browser.setDelta(0.9 * d);
     }
 }
 
@@ -7236,6 +7199,16 @@ size_t MovieTexture::nFrames() const throw () {
 
 const unsigned char * MovieTexture::pixels() const throw () {
     return this->image ? this->image->pixels() : 0;
+}
+
+/**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void MovieTexture::initializeImpl(const double timestamp) throw () {
+    assert(this->getScene());
+    this->getScene()->browser.addMovie(*this);
 }
 
 /**
@@ -7334,10 +7307,10 @@ void MovieTexture::processSet_url(const FieldValue & mfstring,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-NavigationInfoClass::NavigationInfoClass(VrmlScene & scene):
-        NodeClass(scene) {}
+NavigationInfoClass::NavigationInfoClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -7441,36 +7414,41 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 NavigationInfo::NavigationInfo(const NodeType & nodeType,
-                               const ScopePtr & scope,
-                               const bool inProtoDef):
+                               const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
-        inProtoDef(inProtoDef),
         avatarSize(3, avatarSize_),
         headlight(true),
         speed(1.0),
         type(2, type_),
         visibilityLimit(0.0),
-        bound(false) {
-    if (!inProtoDef) {
-        this->nodeType.nodeClass.scene.addNavigationInfo(*this);
-    }
-}
+        bound(false) {}
 
 /**
  * @brief Destructor.
  */
 NavigationInfo::~NavigationInfo() throw () {
-    if (!this->inProtoDef) {
-        this->nodeType.nodeClass.scene.removeNavigationInfo(*this);
+    if (this->getScene()) {
+        this->getScene()->browser.removeNavigationInfo(*this);
     }
 }
 
 NavigationInfo* NavigationInfo::toNavigationInfo() const
 { return (NavigationInfo*) this; }
+
+/**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void NavigationInfo::initializeImpl(const double timestamp) throw () {
+    assert(this->getScene());
+    this->getScene()->browser.addNavigationInfo(*this);
+}
 
 /**
  * @brief set_avatarSize eventIn handler.
@@ -7502,7 +7480,7 @@ void NavigationInfo::processSet_bind(const FieldValue & sfbool,
                                      const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     NavigationInfo * current =
-            this->nodeType.nodeClass.scene.bindableNavigationInfoTop();
+            this->nodeType.nodeClass.browser.bindableNavigationInfoTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
 
     if (b.get()) {        // set_bind TRUE
@@ -7511,16 +7489,16 @@ void NavigationInfo::processSet_bind(const FieldValue & sfbool,
                 current->bound.set(false);
                 current->emitEvent("isBound", current->bound, timestamp);
             }
-            this->nodeType.nodeClass.scene.bindablePush(this);
+            this->nodeType.nodeClass.browser.bindablePush(this);
             this->bound.set(true);
             this->emitEvent("isBound", this->bound, timestamp);
         }
     } else {            // set_bind FALSE
-        this->nodeType.nodeClass.scene.bindableRemove(this);
+        this->nodeType.nodeClass.browser.bindableRemove(this);
         if (this == current) {
             this->bound.set(false);
             this->emitEvent("isBound", this->bound, timestamp);
-            current = this->nodeType.nodeClass.scene
+            current = this->nodeType.nodeClass.browser
                         .bindableNavigationInfoTop();
             if (current) {
                 current->bound.set(true);
@@ -7606,9 +7584,9 @@ void NavigationInfo::processSet_visibilityLimit(const FieldValue & sffloat,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-NormalClass::NormalClass(VrmlScene & scene): NodeClass(scene) {}
+NormalClass::NormalClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -7661,11 +7639,11 @@ const NodeTypePtr NormalClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 Normal::Normal(const NodeType & nodeType,
-               const ScopePtr & scope,
-               const bool inProtoDef):
+               const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractBase(nodeType, scope),
         NormalNode(nodeType, scope) {}
@@ -7709,10 +7687,10 @@ void Normal::processSet_vector(const FieldValue & mfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-NormalInterpolatorClass::NormalInterpolatorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+NormalInterpolatorClass::NormalInterpolatorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -7789,11 +7767,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 NormalInterpolator::NormalInterpolator(const NodeType & nodeType,
-                                       const ScopePtr & scope,
-                                       const bool inProtoDef):
+                                       const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 
@@ -7918,10 +7896,10 @@ void NormalInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
 OrientationInterpolatorClass::
-        OrientationInterpolatorClass(VrmlScene & scene): NodeClass(scene) {}
+        OrientationInterpolatorClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -7997,11 +7975,11 @@ const NodeTypePtr OrientationInterpolatorClass::
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 OrientationInterpolator::OrientationInterpolator(const NodeType & nodeType,
-                                                 const ScopePtr & scope,
-                                                 const bool inProtoDef):
+                                                 const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 
@@ -8129,10 +8107,10 @@ void OrientationInterpolator::processSet_keyValue(const FieldValue & mfrotation,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-PixelTextureClass::PixelTextureClass(VrmlScene & scene):
-        NodeClass(scene) {}
+PixelTextureClass::PixelTextureClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -8201,11 +8179,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 PixelTexture::PixelTexture(const NodeType & nodeType,
-                           const ScopePtr & scope,
-                           const bool inProtoDef):
+                           const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractTexture(nodeType, scope),
         texObject(0) {}
@@ -8319,10 +8297,10 @@ void PixelTexture::processSet_image(const FieldValue & sfimage,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this node class object.
+ * @param browser the Browser associated with this node class object.
  */
-PlaneSensorClass::PlaneSensorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+PlaneSensorClass::PlaneSensorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -8436,11 +8414,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 PlaneSensor::PlaneSensor(const NodeType & nodeType,
-                         const ScopePtr & scope,
-                         const bool inProtoDef):
+                         const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
         autoOffset(true),
@@ -8653,10 +8631,10 @@ void PlaneSensor::processSet_offset(const FieldValue & sfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this class object.
+ * @param browser the Browser associated with this class object.
  */
-PointLightClass::PointLightClass(VrmlScene & scene):
-        NodeClass(scene) {}
+PointLightClass::PointLightClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -8759,26 +8737,23 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 PointLight::PointLight(const NodeType & nodeType,
-                       const ScopePtr & scope,
-                       const bool inProtoDef):
+                       const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractLight(nodeType, scope),
-        inProtoDef(inProtoDef),
         attenuation(1.0, 0.0, 0.0),
         location(0.0, 0.0, 0.0),
-        radius(100) {
-    if (!inProtoDef) { this->nodeType.nodeClass.scene.addScopedLight(*this); }
-}
+        radius(100) {}
 
 /**
  * @brief Destructor.
  */
 PointLight::~PointLight() throw () {
-    if (!this->inProtoDef) {
-        this->nodeType.nodeClass.scene.removeScopedLight(*this);
+    if (this->getScene()) {
+        this->getScene()->browser.removeScopedLight(*this);
     }
 }
 
@@ -8803,6 +8778,16 @@ void PointLight::renderScoped(Viewer * const viewer) {
                                  this->radius.get());
     }
     clearModified();
+}
+
+/**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void PointLight::initializeImpl(const double timestamp) throw () {
+    assert(this->getScene());
+    this->getScene()->browser.addScopedLight(*this);
 }
 
 /**
@@ -8863,10 +8848,10 @@ void PointLight::processSet_radius(const FieldValue & sffloat,
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-PointSetClass::PointSetClass(VrmlScene & scene):
-        NodeClass(scene) {}
+PointSetClass::PointSetClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -8928,11 +8913,11 @@ const NodeTypePtr PointSetClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 PointSet::PointSet(const NodeType & nodeType,
-                   const ScopePtr & scope,
-                   const bool inProtoDef):
+                   const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractGeometry(nodeType, scope) {
     this->setBVolumeDirty(true);
@@ -9057,10 +9042,10 @@ void PointSet::processSet_coord(const FieldValue & sfnode,
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-PositionInterpolatorClass::PositionInterpolatorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+PositionInterpolatorClass::PositionInterpolatorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -9137,11 +9122,11 @@ const NodeTypePtr PositionInterpolatorClass::
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 PositionInterpolator::PositionInterpolator(const NodeType & nodeType,
-                                           const ScopePtr & scope,
-                                           const bool inProtoDef):
+                                           const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 
@@ -9234,10 +9219,10 @@ void PositionInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-ProximitySensorClass::ProximitySensorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+ProximitySensorClass::ProximitySensorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -9344,11 +9329,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 ProximitySensor::ProximitySensor(const NodeType & nodeType,
-                                 const ScopePtr & scope,
-                                 const bool inProtoDef):
+                                 const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
         center(0.0, 0.0, 0.0),
@@ -9509,10 +9494,10 @@ void ProximitySensor::processSet_enabled(const FieldValue & sfbool,
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-ScalarInterpolatorClass::ScalarInterpolatorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+ScalarInterpolatorClass::ScalarInterpolatorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -9589,11 +9574,11 @@ const NodeTypePtr ScalarInterpolatorClass::
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 ScalarInterpolator::ScalarInterpolator(const NodeType & nodeType,
-                                       const ScopePtr & scope,
-                                       const bool inProtoDef):
+                                       const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 
@@ -9681,10 +9666,10 @@ void ScalarInterpolator::processSet_keyValue(const FieldValue & mffloat,
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-ShapeClass::ShapeClass(VrmlScene & scene):
-        NodeClass(scene) {}
+ShapeClass::ShapeClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -9746,11 +9731,11 @@ const NodeTypePtr ShapeClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope to which the node belongs.
  */
 Shape::Shape(const NodeType & nodeType,
-             const ScopePtr & scope,
-             const bool inProtoDef):
+             const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
         viewerObject(0) {}
@@ -9890,10 +9875,10 @@ void Shape::processSet_geometry(const FieldValue & sfnode,
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-SoundClass::SoundClass(VrmlScene & scene):
-        NodeClass(scene) {}
+SoundClass::SoundClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -10021,8 +10006,7 @@ const NodeTypePtr SoundClass::createType(const std::string & id,
  * @param type  the NodeType associated with this node.
  */
 Sound::Sound(const NodeType & nodeType,
-             const ScopePtr & scope,
-             const bool inProtoDef):
+             const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
         direction(0, 0, 1),
@@ -10202,10 +10186,10 @@ void Sound::processSet_source(const FieldValue & sfnode, double timestamp)
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-SphereClass::SphereClass(VrmlScene & scene):
-        NodeClass(scene) {}
+SphereClass::SphereClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -10257,11 +10241,11 @@ const NodeTypePtr SphereClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Sphere::Sphere(const NodeType & nodeType,
-               const ScopePtr & scope,
-               const bool inProtoDef):
+               const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractGeometry(nodeType, scope),
         radius(1.0) {
@@ -10296,10 +10280,10 @@ const BVolume * Sphere::getBVolume() const {
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-SphereSensorClass::SphereSensorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+SphereSensorClass::SphereSensorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -10391,11 +10375,11 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 SphereSensor::SphereSensor(const NodeType & nodeType,
-                           const ScopePtr & scope,
-                           const bool inProtoDef):
+                           const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
         autoOffset(true),
@@ -10554,9 +10538,9 @@ void SphereSensor::processSet_offset(const FieldValue & sfrotation,
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-SpotLightClass::SpotLightClass(VrmlScene & scene): NodeClass(scene) {}
+SpotLightClass::SpotLightClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -10683,29 +10667,26 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 SpotLight::SpotLight(const NodeType & nodeType,
-                     const ScopePtr & scope,
-                     const bool inProtoDef):
+                     const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractLight(nodeType, scope),
-        inProtoDef(inProtoDef),
         attenuation(1.0, 0.0, 0.0),
         beamWidth(1.570796),
         cutOffAngle(0.785398),
         direction(0.0, 0.0, -1.0),
         location(0.0, 0.0, 0.0),
-        radius(100) {
-    if (!inProtoDef) { this->nodeType.nodeClass.scene.addScopedLight(*this); }
-}
+        radius(100) {}
 
 /**
  * @brief Destructor.
  */
 SpotLight::~SpotLight() throw () {
-    if (!this->inProtoDef) {
-        this->nodeType.nodeClass.scene.removeScopedLight(*this);
+    if (this->getScene()) {
+        this->getScene()->browser.removeScopedLight(*this);
     }
 }
 
@@ -10731,6 +10712,16 @@ void SpotLight::renderScoped(Viewer *viewer) {
                                 this->radius.get());
     }
     clearModified();
+}
+
+/**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void SpotLight::initializeImpl(const double timestamp) throw () {
+    assert(this->getScene());
+    this->getScene()->browser.addScopedLight(*this);
 }
 
 /**
@@ -10839,10 +10830,10 @@ void SpotLight::processSet_radius(const FieldValue & sffloat,
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-SwitchClass::SwitchClass(VrmlScene & scene):
-        NodeClass(scene) {}
+SwitchClass::SwitchClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -10910,11 +10901,11 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with this instance.
+ * @param nodeType  the NodeType associated with the node instance.
+ * @param scope     the Scope to which the node belongs.
  */
 Switch::Switch(const NodeType & nodeType,
-               const ScopePtr & scope,
-               const bool inProtoDef):
+               const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
         whichChoice(-1) {
@@ -11036,10 +11027,10 @@ void Switch::processSet_whichChoice(const FieldValue & sfint32,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-TextClass::TextClass(VrmlScene & scene):
-        NodeClass(scene) {}
+TextClass::TextClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -11149,12 +11140,9 @@ const NodeTypePtr TextClass::createType(const std::string & id,
  *
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  */
 Text::Text(const NodeType & nodeType,
-           const ScopePtr & scope,
-           const bool inProtoDef):
+           const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractGeometry(nodeType, scope) {}
 
@@ -11293,10 +11281,10 @@ void Text::processSet_maxExtent(const FieldValue & sffloat,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-TextureCoordinateClass::TextureCoordinateClass(VrmlScene & scene):
-        NodeClass(scene) {}
+TextureCoordinateClass::TextureCoordinateClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -11365,12 +11353,9 @@ const NodeTypePtr
  *
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  */
 TextureCoordinate::TextureCoordinate(const NodeType & nodeType,
-                                     const ScopePtr & scope,
-                                     const bool inProtoDef):
+                                     const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractBase(nodeType, scope),
         TextureCoordinateNode(nodeType, scope) {}
@@ -11416,10 +11401,10 @@ void TextureCoordinate::processSet_point(const FieldValue & mfvec2f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-TextureTransformClass::TextureTransformClass(VrmlScene & scene):
-        NodeClass(scene) {}
+TextureTransformClass::TextureTransformClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -11531,12 +11516,9 @@ const NodeTypePtr
  *
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  */
 TextureTransform::TextureTransform(const NodeType & nodeType,
-                                   const ScopePtr & scope,
-                                   const bool inProtoDef):
+                                   const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractBase(nodeType, scope),
         TextureTransformNode(nodeType, scope),
@@ -11638,10 +11620,10 @@ void TextureTransform::processSet_translation(const FieldValue & sfvec2f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-TimeSensorClass::TimeSensorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+TimeSensorClass::TimeSensorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -11823,33 +11805,25 @@ const NodeTypePtr TimeSensorClass::createType(const std::string & id,
  *
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  */
 TimeSensor::TimeSensor(const NodeType & nodeType,
-                       const ScopePtr & scope,
-                       const bool inProtoDef):
+                       const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
-        inProtoDef(inProtoDef),
         cycleInterval(1.0),
         enabled(true),
         loop(false),
         startTime(0.0),
         stopTime(0.0),
         active(false),
-        lastTime(-1.0) {
-    if (!inProtoDef) {
-        this->nodeType.nodeClass.scene.addTimeSensor(*this);
-    }
-}
+        lastTime(-1.0) {}
 
 /**
  * @brief Destructor.
  */
 TimeSensor::~TimeSensor() throw () {
-    if (!this->inProtoDef) {
-        this->nodeType.nodeClass.scene.removeTimeSensor(*this);
+    if (this->getScene()) {
+        this->getScene()->browser.removeTimeSensor(*this);
     }
 }
 
@@ -11944,9 +11918,9 @@ void TimeSensor::update(const double currentTime) {
         // being used, and set delta to cycleTime if not...
         if (this->active.get()) {
 #ifdef macintosh
-            this->nodeType.nodeClass.scene.setDelta(0.001); //0.0 is too fast(!)
+            this->nodeType.nodeClass.browser.setDelta(0.001); //0.0 is too fast(!)
 #else
-            this->nodeType.nodeClass.scene.setDelta(0.0);
+            this->nodeType.nodeClass.browser.setDelta(0.0);
 #endif
         }
         this->lastTime = currentTime;
@@ -11962,6 +11936,16 @@ const BVolume * TimeSensor::getBVolume() const {
     static BSphere * inf_bsphere = 0;
     if (!inf_bsphere) { inf_bsphere = new BSphere(); }
     return inf_bsphere;
+}
+
+/**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void TimeSensor::initializeImpl(const double timestamp) throw () {
+    assert(this->getScene());
+    this->getScene()->browser.addTimeSensor(*this);
 }
 
 /**
@@ -12081,10 +12065,10 @@ void TimeSensor::processSet_stopTime(const FieldValue & sftime,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-TouchSensorClass::TouchSensorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+TouchSensorClass::TouchSensorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -12230,12 +12214,9 @@ const NodeTypePtr TouchSensorClass::createType(const std::string & id,
  *
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  */
 TouchSensor::TouchSensor(const NodeType & nodeType,
-                         const ScopePtr & scope,
-                         const bool inProtoDef):
+                         const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
         enabled(true),
@@ -12313,10 +12294,10 @@ void TouchSensor::processSet_enabled(const FieldValue & sfbool,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-TransformClass::TransformClass(VrmlScene & scene):
-        NodeClass(scene) {}
+TransformClass::TransformClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -12499,14 +12480,11 @@ const NodeTypePtr
  *
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  */
 Transform::Transform(const NodeType & nodeType,
-                     const ScopePtr & scope,
-                     const bool inProtoDef):
+                     const ScopePtr & scope):
         Node(nodeType, scope),
-        Group(nodeType, scope, inProtoDef),
+        Group(nodeType, scope),
         center(0.0, 0.0, 0.0),
         rotation(0.0, 0.0, 1.0, 0.0),
         scale(1.0, 1.0, 1.0),
@@ -12820,10 +12798,10 @@ void Transform::processSet_translation(const FieldValue & sfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-ViewpointClass::ViewpointClass(VrmlScene & scene):
-        NodeClass(scene) {}
+ViewpointClass::ViewpointClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -12988,33 +12966,25 @@ namespace {
  *
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  */
 Viewpoint::Viewpoint(const NodeType & nodeType,
-                     const ScopePtr & scope,
-                     const bool inProtoDef):
+                     const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
-        inProtoDef(inProtoDef),
         fieldOfView(DEFAULT_FIELD_OF_VIEW),
         jump(true),
         orientation(0.0, 0.0, 1.0, 0.0),
         position(0.0, 0.0, 10.0),
         bound(false),
         bindTime(0),
-        parentTransform(0) {
-    if (!inProtoDef) {
-        this->nodeType.nodeClass.scene.addViewpoint(*this);
-    }
-}
+        parentTransform(0) {}
 
 /**
  * @brief Destructor.
  */
 Viewpoint::~Viewpoint() throw () {
-    if (!this->inProtoDef) {
-        this->nodeType.nodeClass.scene.removeViewpoint(*this);
+    if (this->getScene()) {
+        this->getScene()->browser.removeViewpoint(*this);
     }
 }
 
@@ -13125,6 +13095,16 @@ const SFString & Viewpoint::getDescription() const {
 }
 
 /**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void Viewpoint::initializeImpl(const double timestamp) throw () {
+    assert(this->getScene());
+    this->getScene()->browser.addViewpoint(*this);
+}
+
+/**
  * @brief set_bind eventIn handler.
  *
  * @param sfbool    an SFBool value.
@@ -13137,7 +13117,7 @@ void Viewpoint::processSet_bind(const FieldValue & sfbool,
                                 const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     Viewpoint * current =
-            this->nodeType.nodeClass.scene.bindableViewpointTop();
+            this->nodeType.nodeClass.browser.bindableViewpointTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
     if (b.get()) {      // set_bind TRUE
         if (this != current) {
@@ -13145,7 +13125,7 @@ void Viewpoint::processSet_bind(const FieldValue & sfbool,
                 current->bound.set(false);
                 current->emitEvent("isBound", current->bound, timestamp);
             }
-            this->nodeType.nodeClass.scene.bindablePush(this);
+            this->nodeType.nodeClass.browser.bindablePush(this);
             this->bound.set(true);
             this->emitEvent("isBound", this->bound, timestamp);
             const std::string & n = this->getId();
@@ -13159,12 +13139,12 @@ void Viewpoint::processSet_bind(const FieldValue & sfbool,
             }
         }
     } else {          // set_bind FALSE
-        this->nodeType.nodeClass.scene.bindableRemove(this);
+        this->nodeType.nodeClass.browser.bindableRemove(this);
         if (this == current) {
             this->bound.set(false);
             this->emitEvent("isBound", this->bound, timestamp);
             current =
-                    this->nodeType.nodeClass.scene.bindableViewpointTop();
+                    this->nodeType.nodeClass.browser.bindableViewpointTop();
             if (current) {
                 current->bound.set(true);
                 current->emitEvent("isBound", current->bound, timestamp);
@@ -13254,10 +13234,10 @@ void Viewpoint::processSet_position(const FieldValue & sfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-VisibilitySensorClass::VisibilitySensorClass(VrmlScene & scene):
-        NodeClass(scene) {}
+VisibilitySensorClass::VisibilitySensorClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -13394,12 +13374,9 @@ const NodeTypePtr
  *
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  */
 VisibilitySensor::VisibilitySensor(const NodeType & nodeType,
-                                   const ScopePtr & scope,
-                                   const bool inProtoDef):
+                                   const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope),
         center(0.0, 0.0, 0.0),
@@ -13452,7 +13429,7 @@ void VisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
         // Is the sphere visible? ...
         bool inside = xyz[0][2] < 0.0; // && z > - scene->visLimit()
         if (inside) {
-            NavigationInfo * ni = this->nodeType.nodeClass.scene
+            NavigationInfo * ni = this->nodeType.nodeClass.browser
                                     .bindableNavigationInfoTop();
             if (ni && !fpzero(ni->getVisibilityLimit())
                     && xyz[0][2] < -(ni->getVisibilityLimit())) {
@@ -13546,10 +13523,10 @@ void VisibilitySensor::processSet_size(const FieldValue & sfvec3f,
 /**
  * @brief Constructor.
  *
- * @param scene the scene associated with this NodeClass.
+ * @param browser the Browser associated with this NodeClass.
  */
-WorldInfoClass::WorldInfoClass(VrmlScene & scene):
-        NodeClass(scene) {}
+WorldInfoClass::WorldInfoClass(Browser & browser):
+        NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -13629,12 +13606,9 @@ const NodeTypePtr WorldInfoClass::createType(const std::string & id,
  *
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  */
 WorldInfo::WorldInfo(const NodeType & nodeType,
-                     const ScopePtr & scope,
-                     const bool inProtoDef):
+                     const ScopePtr & scope):
         Node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 

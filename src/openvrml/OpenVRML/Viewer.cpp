@@ -28,7 +28,7 @@
 #include "Viewer.h"
 #include "private.h"
 #include "MathUtils.h"
-#include "VrmlScene.h"
+#include "browser.h"
 
 namespace OpenVRML {
 
@@ -105,17 +105,17 @@ namespace OpenVRML {
  */
 
 /**
- * @var VrmlScene & Viewer::scene
+ * @var Browser & Viewer::browser
  *
- * @brief The scene associated with the Viewer.
+ * @brief The Browser associated with the Viewer.
  */
 
 /**
  * @brief Constructor.
  *
- * @param scene a VrmlScene.
+ * @param browser   a Browser.
  */
-Viewer::Viewer(VrmlScene & scene): scene(scene) {}
+Viewer::Viewer(Browser & browser): browser(browser) {}
 
 /**
  * @brief Destructor.

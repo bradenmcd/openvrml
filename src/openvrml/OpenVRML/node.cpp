@@ -26,7 +26,7 @@
 # include <stdio.h>
 # include "node.h"
 # include "scope.h"
-# include "VrmlScene.h"
+# include "browser.h"
 # include "MathUtils.h"
 # include "bvolume.h"
 # include "VrmlRenderContext.h"
@@ -201,20 +201,20 @@ void NodeInterfaceSet::add(const NodeInterface & nodeInterface)
  */
 
 /**
- * @var VrmlScene & NodeClass::scene
+ * @var Browser & NodeClass::browser
  *
- * @brief The scene associated with this NodeClass.
+ * @brief The Browser associated with this NodeClass.
  */
 
 /**
  * @brief Constructor.
  *
- * A NodeClass is constructed using a VrmlScene. All Node instances that share
- * a particular NodeClass are "in" the VrmlScene associated with the NodeClass.
+ * A NodeClass is constructed using a Browser. All Node instances that share
+ * a particular NodeClass "belong to" the Browser associated with the NodeClass.
  *
- * @param scene the VrmlScene to be associated with the NodeClass.
+ * @param browser   the Browser to be associated with the NodeClass.
  */
-NodeClass::NodeClass(VrmlScene & scene) throw (): scene(scene) {}
+NodeClass::NodeClass(Browser & browser) throw (): browser(browser) {}
 
 /**
  * @brief Destructor.
@@ -460,13 +460,11 @@ FieldValue::Type NodeType::hasInterface(const std::string & id) const throw () {
  */
 
 /**
- * @fn const NodePtr NodeType::createNode(const ScopePtr & scope, bool inProtoDef) const throw (std::bad_alloc)
+ * @fn const NodePtr NodeType::createNode(const ScopePtr & scope) const throw (std::bad_alloc)
  *
  * @brief Create a new Node with this NodeType.
  *
  * @param scope         the Scope that the new node should belong to.
- * @param inProtoDef    @c true if the new node will be part of a prototype
- *                      definition; @c false otherwise.
  *
  * @return a NodePtr to a new Node.
  *
@@ -594,7 +592,11 @@ Node::PolledEventOutValue::PolledEventOutValue(const FieldValuePtr & value,
  * @param type  the NodeType associated with the instance.
  */
 Node::Node(const NodeType & type, const ScopePtr & scope):
-        nodeType(type), scope(scope), d_modified(false), d_bvol_dirty(false),
+        nodeType(type),
+        scope(scope),
+        scene(0),
+        d_modified(false),
+        d_bvol_dirty(false),
         visited(false) {}
 
 typedef std::map<std::string, Node *> NamedNodeMap;
@@ -721,6 +723,18 @@ void Node::addEventOutIS(const std::string & eventOutId,
     }
     const EventOutISMap::value_type value(eventOutId, eventOutValue);
     this->eventOutISMap.insert(value);
+}
+
+/**
+ * @brief Initialize the Node.
+ *
+ * @param scene     the Scene to which the Node will belong.
+ * @param timestamp the current time.
+ */
+void Node::initialize(Scene & scene, const double timestamp) throw () {
+    assert(!this->scene);
+    this->scene = &scene;
+    this->initializeImpl(timestamp);
 }
 
 /**
@@ -1115,7 +1129,7 @@ const Node::RouteList & Node::getRoutes() const {
  */
 void Node::setModified() {
     this->d_modified = true;
-    this->nodeType.nodeClass.scene.setModified(); 
+    this->nodeType.nodeClass.browser.setModified(); 
 }
 
 bool Node::isModified() const { return this->d_modified; }
@@ -1252,7 +1266,7 @@ void Node::setBVolume(const BVolume & v) {
 void Node::setBVolumeDirty(bool f) {
     this->d_bvol_dirty = f;
     if (f) { // only if dirtying, not clearing
-        this->nodeType.nodeClass.scene.d_flags_need_updating = true;
+        this->nodeType.nodeClass.browser.d_flags_need_updating = true;
     }
 }
 
@@ -1261,9 +1275,9 @@ void Node::setBVolumeDirty(bool f) {
  * recalculated.
  */
 bool Node::isBVolumeDirty() const {
-    if (this->nodeType.nodeClass.scene.d_flags_need_updating) {
-        this->nodeType.nodeClass.scene.updateFlags();
-        this->nodeType.nodeClass.scene.d_flags_need_updating = false;
+    if (this->nodeType.nodeClass.browser.d_flags_need_updating) {
+        this->nodeType.nodeClass.browser.updateFlags();
+        this->nodeType.nodeClass.browser.d_flags_need_updating = false;
     }
     return this->d_bvol_dirty;
 }
@@ -1408,7 +1422,7 @@ void Node::emitEvent(const std::string & id, const FieldValue & value,
             itr != this->routes.end(); ++itr) {
         if (id == itr->fromEventOut) {
             FieldValue * const eventValue = value.clone();
-            this->nodeType.nodeClass.scene
+            this->nodeType.nodeClass.browser
                     .queueEvent(timestamp, eventValue,
                                 itr->toNode, itr->toEventIn);
         }
@@ -1451,6 +1465,19 @@ std::ostream & Node::print(std::ostream & out, const size_t indent) const {
 std::ostream & operator<<(std::ostream & out, const Node & node) {
     return node.print(out, 0);
 }
+
+/**
+ * @brief Node subclass-specific initialization.
+ *
+ * This method is called by Node::initialize. Subclasses of Node should
+ * override this method for any subclass-specific initialization. Note that
+ * this method cannot throw.
+ *
+ * The default implementation of this method does nothing.
+ *
+ * @param timestamp the current time.
+ */
+void Node::initializeImpl(const double timestamp) throw () {}
 
 
 /**

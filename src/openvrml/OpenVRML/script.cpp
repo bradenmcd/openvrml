@@ -28,12 +28,13 @@
 # include <algorithm>
 # include <iostream>
 # include <memory>
+# include <sstream>
 # include <strstream>
 # include <vector>
 # include "private.h"
 # include "script.h"
 # include "scope.h"
-# include "VrmlScene.h"
+# include "browser.h"
 # include "doc2.hpp"
 # include "System.h"
 # include "ScriptJDK.h"
@@ -109,12 +110,18 @@ Script::~Script() {}
  * @class ScriptNodeClass
  *
  * @brief Class object for @link ScriptNode ScriptNodes@endlink.
+ *
+ * There is one ScripNodeClass per Browser instance.
+ *
+ * @see Browser::scriptNodeClass
  */
 
 /**
  * @brief Constructor.
+ *
+ * @param browser   the Browser to be associated with the ScriptNodeClass.
  */
-ScriptNodeClass::ScriptNodeClass(VrmlScene & scene): NodeClass(scene) {}
+ScriptNodeClass::ScriptNodeClass(Browser & browser): NodeClass(browser) {}
 
 /**
  * @brief Destructor.
@@ -237,12 +244,11 @@ namespace {
  * a call to the ScriptNode constructor.
  */
 const NodePtr
-        ScriptNode::ScriptNodeType::createNode(const ScopePtr & scope,
-                                               const bool inProtoDef) const
+        ScriptNode::ScriptNodeType::createNode(const ScopePtr & scope) const
         throw (std::bad_alloc) {
     ScriptNodeClass & scriptNodeClass =
             static_cast<ScriptNodeClass &>(this->nodeClass);
-    const NodePtr node(new ScriptNode(scriptNodeClass, scope, inProtoDef));
+    const NodePtr node(new ScriptNode(scriptNodeClass, scope));
     ScriptNode & scriptNode = dynamic_cast<ScriptNode &>(*node);
     
     //
@@ -337,26 +343,22 @@ const NodePtr
  * @brief Constructor.
  */
 ScriptNode::ScriptNode(ScriptNodeClass & nodeClass,
-                       const ScopePtr & scope,
-                       const bool inProtoDef):
+                       const ScopePtr & scope):
         Node(this->scriptNodeType, scope),
         ChildNode(this->scriptNodeType, scope),
         scriptNodeType(nodeClass),
-        inProtoDef(inProtoDef),
         directOutput(false),
         mustEvaluate(false),
         script(0),
-        eventsReceived(0) {
-    if (!inProtoDef) { this->nodeType.nodeClass.scene.addScript(*this); }
-}
+        eventsReceived(0) {}
 
 /**
  * @brief Destructor.
  */
 ScriptNode::~ScriptNode() throw () {
     this->shutdown(theSystem->time());
-    if (!this->inProtoDef) {
-        this->nodeType.nodeClass.scene.removeScript(*this);
+    if (this->getScene()) {
+        this->getScene()->browser.removeScript(*this);
     }
     delete script;
 }
@@ -502,7 +504,7 @@ void ScriptNode::assignWithSelfRefCheck(const SFNode & inval,
     // Now, check to see if the new SFNode value is a self-
     // reference. If it is, we need to *decrement* the refcount.
     // A self-reference creates a cycle. If a Script node with
-    // a self-reference were completely removed from the scene,
+    // a self-reference were completely removed from the world,
     // it still wouldn't be deleted (if we didn't do this)
     // because the reference it held to itself would prevent the
     // refcount from ever dropping to zero.
@@ -534,7 +536,25 @@ void ScriptNode::assignWithSelfRefCheck(const MFNode & inval,
 }
 
 /**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void ScriptNode::initializeImpl(const double timestamp) throw () {
+    assert(this->getScene());
+    this->getScene()->browser.addScript(*this);
+    this->initialize(timestamp);
+}
+
+/**
  * @brief Set the value of one of the node's fields.
+ *
+ * @param id    the name of the field to set.
+ * @param value the new value.
+ *
+ * @exception UnsupportedInterface  if the node has no field @p id.
+ * @exception std::bad_cast         if @p value is the wrong type.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 void ScriptNode::setFieldImpl(const std::string & id, const FieldValue & value)
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
@@ -566,6 +586,12 @@ void ScriptNode::setFieldImpl(const std::string & id, const FieldValue & value)
 
 /**
  * @brief Get the value of a field.
+ *
+ * @param id    the name of the field to get.
+ *
+ * @return the value for field @p id.
+ *
+ * @exception UnsupportedInterface  if the node has no field @p id.
  */
 const FieldValue & ScriptNode::getFieldImpl(const std::string & id) const
         throw (UnsupportedInterface) {
@@ -732,19 +758,19 @@ Script * ScriptNode::createScript() {
 
         int slen = this->url.getElement(i).length();
 
-        if (slen > 6  &&
-	    (std::equal(javaExtension1, javaExtension1 + 6,
-			this->url.getElement(i).end() - 6) ||
-	     std::equal(javaExtension2, javaExtension2 + 6,
-			this->url.getElement(i).end() - 6)))
-	{
-	  Doc2 *relative = 0;
-          relative = this->nodeType.nodeClass.scene.urlDoc();
-	  Doc2 doc(this->url.getElement(i), relative);
-	  if ( doc.localName() ) {
-	    return new ScriptJDK(*this, doc.urlBase(), doc.localPath());
-	  }
-	}
+        if (slen > 6 
+                && (std::equal(javaExtension1, javaExtension1 + 6,
+                               this->url.getElement(i).end() - 6)
+                    || std::equal(javaExtension2, javaExtension2 + 6,
+                                  this->url.getElement(i).end() - 6))) {
+            Doc2 base(this->nodeType.nodeClass.browser.getWorldURI());
+            Doc2 doc(this->url.getElement(i), &base);
+            if (doc.localName()) {
+                return new ScriptJDK(*this,
+                                     doc.urlBase().c_str(),
+                                     doc.localPath());
+            }
+        }
 #endif
     }
 
@@ -2254,7 +2280,7 @@ namespace {
 
                 const char * const name =
                         script->getScriptNode().nodeType.nodeClass
-                            .scene.getName();
+                            .browser.getName();
                 *rval = STRING_TO_JSVAL(JS_InternString(cx, name));
                 return JS_TRUE;
             }
@@ -2267,7 +2293,7 @@ namespace {
 
                 const char * const version =
                         script->getScriptNode().nodeType.nodeClass
-                            .scene.getVersion();
+                            .browser.getVersion();
                 *rval = STRING_TO_JSVAL(JS_InternString(cx, version));
                 return JS_TRUE;
             }
@@ -2287,7 +2313,7 @@ namespace {
 
                 *rval = DOUBLE_TO_JSVAL(JS_NewDouble(cx,
                             script->getScriptNode().nodeType.nodeClass
-                                .scene.getFrameRate()));
+                                .browser.getFrameRate()));
                 return JS_TRUE;
             }
 
@@ -2297,16 +2323,10 @@ namespace {
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
 
-                const char * url = 0;
-                if (script->getScriptNode().nodeType.nodeClass
-                        .scene.urlDoc()) {
-                    url = script->getScriptNode().nodeType.nodeClass
-                            .scene.urlDoc()->url();
-                }
-                if (!url) {
-                    url = "";
-                }
-                *rval = STRING_TO_JSVAL(JS_InternString(cx, url));
+                const std::string url =
+                        script->getScriptNode().nodeType.nodeClass
+                            .browser.getWorldURI();
+                *rval = STRING_TO_JSVAL(JS_InternString(cx, url.c_str()));
                 return JS_TRUE;
             }
 
@@ -2350,8 +2370,8 @@ namespace {
                                                     JSVAL_TO_OBJECT(argv[1])));
                 assert(parameters.get());
 
-                script->getScriptNode().nodeType.nodeClass
-                        .scene.queueLoadUrl(*url, *parameters);
+                script->getScriptNode().getScene()
+                        ->browser.loadURI(*url, *parameters);
                 return JS_TRUE;
             }
 
@@ -2380,8 +2400,8 @@ namespace {
                         nodes(MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[0])));
                 assert(nodes.get());
                 
-                script->getScriptNode().nodeType.nodeClass
-                        .scene.queueReplaceNodes(*nodes);
+                script->getScriptNode().getScene()
+                        ->browser.replaceWorld(*nodes);
                 
                 *rval = JSVAL_VOID;
                 return JS_TRUE;
@@ -2391,6 +2411,7 @@ namespace {
                                         JSObject * const obj,
 				        const uintN argc, jsval * const argv,
                                         jsval * const rval) throw () {
+                using std::istringstream;
                 assert(argc >= 1);
 
                 Script * const script =
@@ -2400,24 +2421,23 @@ namespace {
                 //
                 // Make sure our argument is a string.
                 //
-                if (!JSVAL_IS_STRING(argv[0])) {
-                    return JS_FALSE;
-                }
+                if (!JSVAL_IS_STRING(argv[0])) { return JS_FALSE; }
 
                 JSString * str = JSVAL_TO_STRING(argv[0]);
                 assert(str);
 
-                char *vrmlString = JS_GetStringBytes(str);
-                VrmlScene & scene =
-                        script->getScriptNode().nodeType.nodeClass.scene;
-                OpenVRML::MFNode kids(scene.readString(vrmlString));
+                istringstream in(JS_GetStringBytes(str));
 
-                if (kids.getLength() == 0) {
+                assert(script->getScriptNode().getScene());
+                OpenVRML::Browser & browser =
+                        script->getScriptNode().getScene()->browser;
+                OpenVRML::MFNode nodes = 
+                        browser.createVrmlFromStream(in);
+
+                if (nodes.getLength() == 0) {
                     *rval = JSVAL_NULL;
                 } else {
-                    // Put the children from g into an MFNode and return in rval.
-                    // should store the namespace as well...
-                    if (!MFNode::toJsval(kids, cx, obj, rval)) {
+                    if (!MFNode::toJsval(nodes, cx, obj, rval)) {
                         return JS_FALSE;
                     }
                 }
@@ -2430,6 +2450,7 @@ namespace {
             JSBool createVrmlFromURL(JSContext * const cx, JSObject *,
 				     const uintN argc, jsval * const argv,
                                      jsval * const rval) throw () {
+# if 0
                 assert(argc >= 3);
 
                 Script * const script =
@@ -2437,7 +2458,7 @@ namespace {
                 assert(script);
 
                 Doc2 * relative = script->getScriptNode().nodeType.nodeClass
-                        .scene.urlDoc();
+                        .browser.urlDoc();
 
                 //
                 // Make sure our first argument (the URL) is an MFString.
@@ -2476,10 +2497,10 @@ namespace {
 
                 const char * const eventInId =
                         JS_GetStringBytes(JSVAL_TO_STRING(argv[2]));
-                VrmlScene & scene =
-                        script->getScriptNode().nodeType.nodeClass.scene;
+                OpenVRML::Browser & browser =
+                        script->getScriptNode().nodeType.nodeClass.browser;
 	        std::auto_ptr<OpenVRML::MFNode>
-                        kids(scene.readWrl(*url, relative));
+                        kids(browser.readWrl(*url, relative));
                 
                 if (!kids.get()) { return JS_FALSE; }
 
@@ -2487,6 +2508,7 @@ namespace {
                                    s_timeStamp); // fix me...
 
                 *rval = JSVAL_VOID;
+# endif
                 return JS_TRUE;
             }
 
@@ -3182,6 +3204,7 @@ namespace {
         JSBool SFNode::initObject(JSContext * const cx, JSObject * const obj,
                                   const uintN argc, jsval * const argv)
                 throw () {
+            using std::istringstream;
             assert(argc >= 1);
 
             Script * const script =
@@ -3196,10 +3219,13 @@ namespace {
             JSString * const str = JSVAL_TO_STRING(argv[0]);
             assert(str);
 
-            VrmlScene & scene =
-                    script->getScriptNode().nodeType.nodeClass.scene;
+            istringstream in(JS_GetStringBytes(str));
+
+            assert(script->getScriptNode().getScene());
+            OpenVRML::Browser & browser =
+                    script->getScriptNode().getScene()->browser;
             const OpenVRML::MFNode nodes =
-                    scene.readString(JS_GetStringBytes(str));
+                    browser.createVrmlFromStream(in);
             //
             // Fail if the string does not produce exactly one node.
             //
@@ -3304,7 +3330,7 @@ namespace {
 	        Script * const script =
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-                script->getScriptNode().nodeType.nodeClass.scene
+                script->getScriptNode().nodeType.nodeClass.browser
                         .queueEvent(s_timeStamp, fieldValue, nodePtr,
                                     eventInId);
             } else if ((expectType = nodePtr->nodeType.hasField(eventInId))) {
@@ -3324,7 +3350,7 @@ namespace {
 		Script * const script =
 		        static_cast<Script *>(JS_GetContextPrivate(cx));
 		assert(script);
-		script->getScriptNode().nodeType.nodeClass.scene
+		script->getScriptNode().nodeType.nodeClass.browser
                         .queueEvent(s_timeStamp, fieldValue, nodePtr,
                                     eventInId);
 	    }

@@ -237,7 +237,7 @@ static void reshape(int width, int height)
 #endif
 }
 
-ViewerGlut::ViewerGlut(VrmlScene & scene): ViewerOpenGL(scene) {
+ViewerGlut::ViewerGlut(Browser & browser): ViewerOpenGL(browser) {
 #if USE_STENCIL_SHAPE
   glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE | GLUT_STENCIL);
 #else

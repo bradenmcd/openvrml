@@ -40,7 +40,7 @@ libopenvrml_la_SOURCES = \
         bvolume.cpp \
         script.cpp \
         ScriptJDK.cpp \
-        VrmlScene.cpp \
+        browser.cpp \
         Viewer.cpp \
         VrmlRenderContext.cpp \
         VrmlFrustum.cpp \
@@ -69,7 +69,7 @@ OpenVRMLinclude_HEADERS = \
         bvolume.h \
         script.h \
         ScriptJDK.h \
-        VrmlScene.h \
+        browser.h \
         Viewer.h \
         VrmlRenderContext.h \
         VrmlFrustum.h \

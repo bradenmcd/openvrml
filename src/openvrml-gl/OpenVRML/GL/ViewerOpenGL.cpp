@@ -44,7 +44,7 @@
 
 # include <OpenVRML/MathUtils.h>
 # include <OpenVRML/System.h>
-# include <OpenVRML/VrmlScene.h>
+# include <OpenVRML/browser.h>
 # include <OpenVRML/vrml97node.h>
 # include <OpenVRML/bvolume.h>
 # include <OpenVRML/VrmlFrustum.h>
@@ -106,15 +106,15 @@ namespace {
     }
 }
 
-//  Construct a viewer for the specified scene. I'm not happy with the
-//  mutual dependencies between VrmlScene/VrmlNodes and Viewers...
+//  Construct a viewer for the specified Browser. I'm not happy with the
+//  mutual dependencies between Browser/Nodes and Viewers...
 //  Maybe a static callback function pointer should be passed in rather
-//  than a class object pointer. Currently, the scene is used to access
-//  the VrmlScene::render() method. Also, the static VrmlScene::update
+//  than a class object pointer. Currently, the Browser is used to access
+//  the Browser::render() method. Also, the static Browser::update
 //  is called from the idle function. A way to pass mouse/keyboard sensor 
-//  events back to the scene is also needed.
+//  events back to the Browser is also needed.
 
-ViewerOpenGL::ViewerOpenGL(VrmlScene & scene): Viewer(scene) {
+ViewerOpenGL::ViewerOpenGL(Browser & browser): Viewer(browser) {
   d_GLinitialized = false;
   d_blend = true;
   d_lit = true;
@@ -2638,13 +2638,13 @@ void ViewerOpenGL::MatrixMultiply(const float M[4][4])
 
 // update is called from a timer callback and from checkSensitive
 void ViewerOpenGL::update(const double timeNow) {
-    if (this->scene.update(timeNow)) {
+    if (this->browser.update(timeNow)) {
         checkErrors("update");
-        wsPostRedraw();
+        this->wsPostRedraw();
     }
 
     // Set an alarm clock for the next update time.
-    wsSetTimer(this->scene.getDelta());
+    this->wsSetTimer(this->browser.getDelta());
 }
 
 void ViewerOpenGL::redraw() 
@@ -2684,7 +2684,7 @@ void ViewerOpenGL::redraw()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  this->scene.render(this);
+  this->browser.render(this);
 
   if (d_reportFPS)
     {
@@ -2773,7 +2773,8 @@ void ViewerOpenGL::step(float x, float y, float z) {
     glGetIntegerv (GL_VIEWPORT, viewport);
     glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
-    Vrml97Node::NavigationInfo * nav = this->scene.bindableNavigationInfoTop();
+    Vrml97Node::NavigationInfo * nav =
+            this->browser.bindableNavigationInfoTop();
     GLdouble x_c = d_winWidth/2;
     GLdouble y_c = d_winHeight/2;
     GLdouble z_c = 0.5;
@@ -2820,7 +2821,8 @@ void ViewerOpenGL::zoom(float z) {
     glGetIntegerv (GL_VIEWPORT, viewport);
     glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
-    Vrml97Node::NavigationInfo * nav = this->scene.bindableNavigationInfoTop();
+    Vrml97Node::NavigationInfo * nav =
+            this->browser.bindableNavigationInfoTop();
     GLdouble x_c = d_winWidth/2;
     GLdouble y_c = d_winHeight/2;
     GLdouble z_c = 0.5;
@@ -2896,10 +2898,10 @@ void ViewerOpenGL::handleKey(int key)
       break;
                
     case KEY_PAGE_DOWN:
-      this->scene.nextViewpoint(); wsPostRedraw(); break;
+      this->browser.nextViewpoint(); wsPostRedraw(); break;
 
     case KEY_PAGE_UP:
-      this->scene.prevViewpoint(); wsPostRedraw(); break;
+      this->browser.prevViewpoint(); wsPostRedraw(); break;
 
     case '/':			// Frames/second
       d_reportFPS = ! d_reportFPS;
@@ -2951,7 +2953,7 @@ void ViewerOpenGL::handleKey(int key)
       break;
 # if 0
     case 'q':
-      this->scene.destroyWorld();	// may not return
+      this->browser.destroyWorld();	// may not return
       break;
 # endif
     default:
@@ -3090,7 +3092,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    this->scene.render(this);
+    this->browser.render(this);
 
     this->d_selectMode = false;
 
@@ -3176,19 +3178,19 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     if (this->d_activeSensitive) {
         if (mouseEvent == EVENT_MOUSE_RELEASE
                 || mouseEvent == EVENT_MOUSE_MOVE) {
-            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
-                                       timeNow,
-                                       selected == this->d_activeSensitive,
-                                       false,
-                                       selectCoord);
+            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
+                                         timeNow,
+                                         selected == this->d_activeSensitive,
+                                         false,
+                                         selectCoord);
 	    this->d_activeSensitive = 0;
         } else {
             // _DRAG
-	    this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
-                                       timeNow,
-                                       selected == this->d_activeSensitive,
-                                       true,
-                                       selectCoord);
+	    this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
+                                         timeNow,
+                                         selected == this->d_activeSensitive,
+                                         true,
+                                         selectCoord);
 	}
         wasActive = true;
     } else if (mouseEvent == EVENT_MOUSE_CLICK && selected) {
@@ -3197,31 +3199,31 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
         // mouse over events are no longer relevant.
         //
         if (d_overSensitive && d_overSensitive != selected) {
-            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
-                                       timeNow,
-                                       false, false, // isOver, isActive
-                                       selectCoord);
+            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
+                                         timeNow,
+                                         false, false, // isOver, isActive
+                                         selectCoord);
 	    this->d_overSensitive = 0;
         }
         this->d_activeSensitive = selected;
-        this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
-                                   timeNow,
-                                   true, true, // isOver, isActive
-                                   selectCoord);
+        this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
+                                     timeNow,
+                                     true, true, // isOver, isActive
+                                     selectCoord);
     } else if (mouseEvent == EVENT_MOUSE_MOVE) {
         // Handle isOver events (coords are bogus)
         if (d_overSensitive && d_overSensitive != selected) {
-            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
-                                       timeNow,
-                                       false, false, // isOver, isActive
-                                       selectCoord);
+            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
+                                         timeNow,
+                                         false, false, // isOver, isActive
+                                         selectCoord);
         }
         this->d_overSensitive = selected;
         if (this->d_overSensitive) {
-            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
-                                       timeNow,
-                                       true, false,  // isOver, isActive
-                                       selectCoord);
+            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
+                                         timeNow,
+                                         true, false,  // isOver, isActive
+                                         selectCoord);
         }
     }
 

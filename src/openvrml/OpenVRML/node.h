@@ -2,6 +2,7 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
+// Copyright (C) 2002  Braden McDaniel
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -94,11 +95,11 @@ namespace OpenVRML {
     }
     
     
-    class VrmlScene;
+    class Browser;
     
     class OPENVRML_SCOPE NodeClass {
     public:
-        VrmlScene & scene;
+        Browser & browser;
         
         virtual ~NodeClass() throw () = 0;
         
@@ -108,7 +109,7 @@ namespace OpenVRML {
                 throw (UnsupportedInterface, std::bad_alloc) = 0;
     
     protected:
-        explicit NodeClass(VrmlScene & scene) throw ();
+        explicit NodeClass(Browser & browser) throw ();
     };
     
     class OPENVRML_SCOPE NodeType {
@@ -125,8 +126,7 @@ namespace OpenVRML {
         FieldValue::Type hasInterface(const std::string & id) const throw ();
         
         virtual const NodeInterfaceSet & getInterfaces() const throw () = 0;
-        virtual const NodePtr createNode(const ScopePtr & scope,
-                                         bool inProtoDef = false) const
+        virtual const NodePtr createNode(const ScopePtr & scope) const
                 throw (std::bad_alloc) = 0;
     
     protected:
@@ -176,6 +176,8 @@ namespace OpenVRML {
         class Viewpoint;
     }
 
+    class Scene;
+    
     std::ostream & operator<<(std::ostream & out, const Node & node);
 
     class OPENVRML_SCOPE Node {
@@ -203,6 +205,7 @@ namespace OpenVRML {
 
     private:
         ScopePtr scope;
+        Scene * scene;
         RouteList routes;
         
         typedef std::map<std::string, PolledEventOutValue *> EventOutISMap;
@@ -218,6 +221,8 @@ namespace OpenVRML {
         
         const ScopePtr & getScope() const;
         
+        Scene * getScene() const;
+        
         std::ostream & print(std::ostream & out, size_t indent) const;
 
         bool accept(NodeVisitor & visitor);
@@ -229,6 +234,8 @@ namespace OpenVRML {
                            PolledEventOutValue * eventOutValue)
                 throw (UnsupportedInterface, std::bad_alloc);
 
+        void initialize(Scene & scene, double timestamp) throw ();
+        
         void setField(const std::string & id, const FieldValue & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
         const FieldValue & getField(const std::string & id) const
@@ -290,7 +297,7 @@ namespace OpenVRML {
         void setModified();
         void clearModified() { d_modified = false; }
         virtual bool isModified() const;
-        typedef std::list< Node* > NodePath; // duplicate from VrmlScene. argh.
+        typedef std::list< Node* > NodePath;
 
 
         static void markPathModified(NodePath& path, bool mod, int flags = 0x003);
@@ -353,6 +360,8 @@ namespace OpenVRML {
         Node(const Node &);
         Node & operator=(const Node &);
         
+        virtual void initializeImpl(double timestamp) throw ();
+        
         virtual void setFieldImpl(const std::string & id,
                                   const FieldValue & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
@@ -370,6 +379,8 @@ namespace OpenVRML {
     };
 
     inline const ScopePtr & Node::getScope() const { return this->scope; }
+    
+    inline Scene * Node::getScene() const { return this->scene; }
     
     inline bool operator==(const Node::Route & lhs, const Node::Route & rhs) {
         return lhs.fromEventOut == rhs.fromEventOut

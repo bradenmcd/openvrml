@@ -190,7 +190,7 @@ void Doc::seturl(const char * url, const Doc2 * relative)
 #endif
 
       if ( relative && ! isAbsolute(url) )
-	    path = relative->urlPath();
+	    path = relative->urlPath().c_str();
 
       d_url = new char[strlen(path) + strlen(url) + 1];
       strcpy(d_url, path);
@@ -460,7 +460,7 @@ char* Doc::convertCommonToMacPath( char *fn, int nfn )
 {
   /* Note that only full paths can be use on the Mac to
      retrieve files correctly, so this function assumes
-     that the viewer, e.g. Lookat, has provided VrmlScene with
+     that the viewer, e.g. Lookat, has provided the Browser with
      a file path in the form of a URL (optionally without the protocol
      if it is a local path) */
 

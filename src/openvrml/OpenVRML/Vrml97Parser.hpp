@@ -118,35 +118,35 @@ public:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenStream& lexer);
 	Vrml97Parser(const ANTLR_USE_NAMESPACE(antlr)ParserSharedInputState& state);
 	public: void vrmlScene(
-		OpenVRML::VrmlScene & scene,
+		OpenVRML::Browser & browser,
           OpenVRML::MFNode & mfNode
 	);
 	public: void statement(
-		OpenVRML::VrmlScene & scene,
+		OpenVRML::Browser & browser,
           OpenVRML::MFNode & mfNode,
           const OpenVRML::ScopePtr & scope
 	);
 	public: OpenVRML::NodePtr  nodeStatement(
-		OpenVRML::VrmlScene & scene,
+		OpenVRML::Browser & browser,
               const OpenVRML::ScopePtr & scope
 	);
 	public: void protoStatement(
-		OpenVRML::VrmlScene & scene,
+		OpenVRML::Browser & browser,
                const OpenVRML::ScopePtr & scope
 	);
 	public: void routeStatement(
 		const OpenVRML::Scope & scope
 	);
 	public: OpenVRML::NodePtr  node(
-		OpenVRML::VrmlScene & scene,
+		OpenVRML::Browser & browser,
      const OpenVRML::ScopePtr & scope,
      const std::string & nodeId
 	);
 	public: void externproto(
-		OpenVRML::VrmlScene & scene, const OpenVRML::ScopePtr & scope
+		OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope
 	);
 	public: void proto(
-		OpenVRML::VrmlScene & scene,
+		OpenVRML::Browser & browser,
       const OpenVRML::ScopePtr & scope
 	);
 	public: void protoInterfaceDeclaration(
@@ -161,7 +161,7 @@ public:
 	public: OpenVRML::FieldValue::Type  fieldType();
 	public: OpenVRML::NodeInterface::Type  fieldInterfaceType();
 	public: OpenVRML::FieldValuePtr  fieldValue(
-		OpenVRML::VrmlScene & scene,
+		OpenVRML::Browser & browser,
            const OpenVRML::ScopePtr & scope,
            OpenVRML::FieldValue::Type ft
 	);
@@ -221,7 +221,7 @@ public:
                                      OpenVRML::ScriptNode & node
 	);
 	public: OpenVRML::FieldValuePtr  nodeFieldValue(
-		OpenVRML::VrmlScene & scene,
+		OpenVRML::Browser & browser,
                const OpenVRML::ScopePtr & scope,
                OpenVRML::FieldValue::Type ft
 	);
@@ -252,11 +252,11 @@ public:
 	public: OpenVRML::FieldValuePtr  mfVec2fValue();
 	public: OpenVRML::FieldValuePtr  mfVec3fValue();
 	public: OpenVRML::FieldValuePtr  sfNodeValue(
-		OpenVRML::VrmlScene & scene,
+		OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope
 	);
 	public: OpenVRML::FieldValuePtr  mfNodeValue(
-		OpenVRML::VrmlScene & scene,
+		OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope
 	);
 	public: OpenVRML::FieldValuePtr  protoSfNodeValue(

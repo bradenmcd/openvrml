@@ -28,7 +28,7 @@
 namespace OpenVRML {
 
     class OPENVRML_SCOPE Doc2 {
-        char * url_;
+        std::string url_;
         char * tmpfile_;            // Local copy of http: files
         std::istream * istm_;
         std::ostream * ostm_;
@@ -38,14 +38,14 @@ namespace OpenVRML {
                       const Doc2 * relative = 0);
         ~Doc2();
 
-        void seturl(const char *url, const Doc2 * relative = 0);
+        void seturl(const std::string & url, const Doc2 * relative = 0);
 
-        const char * url() const;         // "http://www.foo.com/dir/file.xyz#Viewpoint"
-        const char * urlBase() const;     // "file" or ""
-        const char * urlExt() const;      // "xyz" or ""
-        const char * urlPath() const;     // "http://www.foo.com/dir/" or ""
-        const char * urlProtocol() const; // "http"
-        const char * urlModifier() const; // "#Viewpoint" or ""
+        const std::string url() const;         // "http://www.foo.com/dir/file.xyz#Viewpoint"
+        const std::string urlBase() const;     // "file" or ""
+        const std::string urlExt() const;      // "xyz" or ""
+        const std::string urlPath() const;     // "http://www.foo.com/dir/" or ""
+        const std::string urlProtocol() const; // "http"
+        const std::string urlModifier() const; // "#Viewpoint" or ""
 
         const char *localName();    // "/tmp/file.xyz" or NULL
         const char *localPath();    // "/tmp/" or NULL

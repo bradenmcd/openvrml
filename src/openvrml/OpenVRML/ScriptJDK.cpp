@@ -35,6 +35,7 @@
 #   include <stdio.h>
 #   include <string.h>
 #   include <strstream>
+#   include <sstream>
 
 #   include <vrml_Browser.h>
 #   include <vrml_Event.h>
@@ -90,7 +91,7 @@
 #   include "MathUtils.h"
 #   include "System.h"
 #   include "script.h"
-#   include "VrmlScene.h"
+#   include "browser.h"
 #   include "nodeptr.h"
 #   include "node.h"
 #   include "field.h"
@@ -105,7 +106,7 @@ using namespace OpenVRML;
 
 namespace {
 
-    class OPENVRML_SCOPE VrmlEvent {
+    class VrmlEvent {
         double d_timeStamp;
         char *d_eventName;
         FieldValue *d_value;
@@ -4198,20 +4199,23 @@ jstring JNICALL Java_vrml_BaseNode_getType
  *
  * @param env JNI environment
  * @param obj JNI version of a Java node object
+ *
  * @return Browser object
  */
-jobject JNICALL Java_vrml_BaseNode_getBrowser
-  (JNIEnv *env, jobject obj)
+jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
+                                              const jobject obj)
 {
-  jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  Node* pNode = (Node*) env->GetIntField(obj, fid);
-  jclass clazz = env->FindClass("vrml/Browser");
-  jobject jBrowser = env->AllocObject(clazz);
-  fid = getFid(env, jBrowser, "BrowserPtr", "I");
-  VrmlScene& blah = pNode->nodeType.nodeClass.scene;
-  env->SetIntField(jBrowser, fid,
-                   (int) &(pNode->nodeType.nodeClass.scene));
-  return jBrowser;
+    assert(env);
+    jfieldID fid = getFid(env, obj, "NodePtr", "I");
+    Node * const pNode = reinterpret_cast<Node *>(env->GetIntField(obj, fid));
+    const jclass clazz = env->FindClass("vrml/Browser");
+    const jobject jBrowser = env->AllocObject(clazz);
+    fid = getFid(env, jBrowser, "BrowserPtr", "I");
+    assert(pNode);
+    assert(pNode->getScene());
+    env->SetIntField(jBrowser, fid,
+                     reinterpret_cast<int>(&pNode->getScene()->browser));
+    return jBrowser;
 }
 
 //
@@ -4397,39 +4401,35 @@ jstring JNICALL Java_vrml_Event_toString
 // Browser
 //
 
-jstring JNICALL Java_vrml_Browser_toString
-  (JNIEnv *env, jobject obj)
+jstring JNICALL Java_vrml_Browser_toString(JNIEnv * const env,
+                                           const jobject obj)
 {
-  jfieldID fid;
-  VrmlScene* pBrowser;
-
-  fid = getFid(env, obj, "BrowserPtr", "I");
-  pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
-  char browserString[64];
-  sprintf(browserString, "%s %s", pBrowser->getName(), pBrowser->getVersion());
-  return env->NewStringUTF(browserString);
+    assert(env);
+    const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+    Browser * const pBrowser =
+            reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+    assert(pBrowser);
+    ostringstream out;
+    out << pBrowser->getName() << ' ' << pBrowser->getVersion() << std::ends;
+    return env->NewStringUTF(out.str().c_str());
 }
 
-jstring JNICALL Java_vrml_Browser_getName
-  (JNIEnv *env, jobject obj)
+jstring JNICALL Java_vrml_Browser_getName(JNIEnv * const env,
+                                          const jobject obj)
 {
-  jfieldID fid;
-  VrmlScene* pBrowser;
-
-  fid = getFid(env, obj, "BrowserPtr", "I");
-  pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
-  return env->NewStringUTF(pBrowser->getName());
+    const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+    Browser * const pBrowser =
+            reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+    return env->NewStringUTF(pBrowser->getName());
 }
 
-jstring JNICALL Java_vrml_Browser_getVersion
-  (JNIEnv *env, jobject obj)
+jstring JNICALL Java_vrml_Browser_getVersion(JNIEnv * const env,
+                                             const jobject obj)
 {
-  jfieldID fid;
-  VrmlScene* pBrowser;
-
-  fid = getFid(env, obj, "BrowserPtr", "I");
-  pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
-  return env->NewStringUTF(pBrowser->getVersion());
+    const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+    Browser * const pBrowser =
+            reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+    return env->NewStringUTF(pBrowser->getVersion());
 }
 
 /**
@@ -4441,12 +4441,12 @@ jstring JNICALL Java_vrml_Browser_getVersion
  *
  * @todo Fix me to properly return the current speed.
  */
-jfloat JNICALL Java_vrml_Browser_getCurrentSpeed(JNIEnv * env, jobject obj) {
-    jfieldID fid;
-    VrmlScene* pBrowser;
-
-    fid = getFid(env, obj, "BrowserPtr", "I");
-    pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
+jfloat JNICALL Java_vrml_Browser_getCurrentSpeed(JNIEnv * const env,
+                                                 const jobject obj)
+{
+    const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+    Browser * const pBrowser =
+            reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
     return 0.0;
 }
 
@@ -4455,27 +4455,27 @@ jfloat JNICALL Java_vrml_Browser_getCurrentSpeed(JNIEnv * env, jobject obj) {
  *
  * @param env JNI environment
  * @param obj JNI version of a Java Browser object.
+ *
  * @return Average navigation speed.
  */
-jfloat JNICALL Java_vrml_Browser_getCurrentFrameRate(JNIEnv * env,
-                                                     jobject obj) {
-    jfieldID fid;
-    VrmlScene* pBrowser;
-
-    fid = getFid(env, obj, "BrowserPtr", "I");
-    pBrowser = reinterpret_cast<VrmlScene*>(env->GetIntField(obj, fid));
+jfloat JNICALL Java_vrml_Browser_getCurrentFrameRate(JNIEnv * const env,
+                                                     const jobject obj)
+{
+    assert(env);
+    const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+    Browser * const pBrowser =
+            reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
     return pBrowser->getFrameRate();
 }
 
-jstring JNICALL Java_vrml_Browser_getWorldURL
-  (JNIEnv *env, jobject obj)
+jstring JNICALL Java_vrml_Browser_getWorldURL(JNIEnv * const env,
+                                              const jobject obj)
 {
-  jfieldID fid;
-  VrmlScene* pBrowser;
-
-  fid = getFid(env, obj, "BrowserPtr", "I");
-  pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
-  return env->NewStringUTF(pBrowser->urlDoc()->url());
+    assert(env);
+    const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+    Browser * const pBrowser =
+            reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+    return env->NewStringUTF(pBrowser->getWorldURI().c_str());
 }
 
 /**
@@ -4492,13 +4492,15 @@ void JNICALL Java_vrml_Browser_replaceWorld
  * @todo Implement me! This method should throw an
  *       InvalidVRMLSyntaxException if the syntax is invalid.
  */
-jobjectArray JNICALL Java_vrml_Browser_createVrmlFromString
-  (JNIEnv *env, jobject obj, jstring vrmlSyntax)
+jobjectArray JNICALL
+Java_vrml_Browser_createVrmlFromString(JNIEnv * const env,
+                                       const jobject obj,
+                                       const jstring vrmlSyntax)
 {
-  jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
-  VrmlScene* pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
-
-  return 0;
+    const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+    Browser * const pBrowser =
+            reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+    return 0;
 }
 
 /**
@@ -4555,44 +4557,43 @@ void JNICALL Java_vrml_Browser_deleteRoute
   pFromNode->deleteRoute(eventOut, NodePtr(pToNode), eventIn);
 }
 
-/*  @todo This method should throw an InvalidVRMLSyntaxException
+/**
+ *  @todo This method should throw an InvalidVRMLSyntaxException
  *        if the syntax is invalid. Also need to check if
  *        mustEvaluate flag is set, if not, don't continue.
  */
-void JNICALL Java_vrml_Browser_loadURL
-  (JNIEnv *env, jobject obj, jobjectArray jUrlArray,
-   jobjectArray jParameterArray)
+void JNICALL Java_vrml_Browser_loadURL(JNIEnv * const env,
+                                       const jobject obj,
+                                       const jobjectArray jUrlArray,
+                                       const jobjectArray jParameterArray)
 {
-  int pos;
+    assert(env);
+    
+    size_t i;
 
-  jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
-  VrmlScene* browser = (VrmlScene*) env->GetIntField(obj, fid);
+    MFString url(env->GetArrayLength(jUrlArray));
+    for (i = 0; i < url.getLength(); ++i) {
+        jstring jstr =
+            static_cast<jstring>(env->GetObjectArrayElement(jUrlArray, i));
+        const char * str = env->GetStringUTFChars(jstr, 0);
+        url.setElement(i, str);
+        env->ReleaseStringUTFChars(jstr, str);
+    }
 
-  jsize entries = env->GetArrayLength(jUrlArray);
-  std::string *urlArray = new std::string[entries];
-  for (pos = 0; pos < entries; pos++)
-  {
-    jstring jstr = (jstring) env->GetObjectArrayElement(jUrlArray, pos);
-    const char *str = env->GetStringUTFChars(jstr, 0);
-    std::string newString(str);
-    urlArray[pos] = newString;
-    env->ReleaseStringUTFChars(jstr, str);
-  }
-  MFString urls(entries, urlArray);
+    MFString parameters(env->GetArrayLength(jParameterArray));
+    for (i = 0; i < parameters.getLength(); ++i) {
+        jstring jstr =
+            static_cast<jstring>(env->GetObjectArrayElement(jParameterArray, i));
+        const char * str = env->GetStringUTFChars(jstr, 0);
+        parameters.setElement(i, str);
+        env->ReleaseStringUTFChars(jstr, str);
+    }
 
-  entries = env->GetArrayLength(jParameterArray);
-  std::string *parameterArray = new std::string[entries];
-  for (pos = 0; pos < entries; pos++)
-  {
-    jstring jstr = (jstring) env->GetObjectArrayElement(jParameterArray, pos);
-    const char *str = env->GetStringUTFChars(jstr, 0);
-    std::string newString(str);
-    parameterArray[pos] = newString;
-    env->ReleaseStringUTFChars(jstr, str);
-  }
-  MFString parameters(entries, parameterArray);
+    const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+    Browser * const browser =
+            reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
 
-  browser->loadUrl(urls, parameters);
+    browser->loadURI(url, parameters);
 }
 
 void JNICALL Java_vrml_Browser_setDescription

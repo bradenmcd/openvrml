@@ -502,12 +502,12 @@ Vrml97Parser::Vrml97Parser(const ANTLR_USE_NAMESPACE(antlr)ParserSharedInputStat
 }
 
 void Vrml97Parser::vrmlScene(
-	OpenVRML::VrmlScene & scene,
+	OpenVRML::Browser & browser,
           OpenVRML::MFNode & mfNode
 ) {
 #line 590 "Vrml97Parser.g"
 	
-	const ScopePtr scope(new Vrml97RootScope(scene));
+	const ScopePtr scope(new Vrml97RootScope(browser));
 	
 #line 513 "Vrml97Parser.cpp"
 	
@@ -515,7 +515,7 @@ void Vrml97Parser::vrmlScene(
 		{
 		for (;;) {
 			if ((_tokenSet_0.member(LA(1)))) {
-				statement(scene, mfNode, scope);
+				statement(browser, mfNode, scope);
 			}
 			else {
 				goto _loop3;
@@ -533,7 +533,7 @@ void Vrml97Parser::vrmlScene(
 }
 
 void Vrml97Parser::statement(
-	OpenVRML::VrmlScene & scene,
+	OpenVRML::Browser & browser,
           OpenVRML::MFNode & mfNode,
           const OpenVRML::ScopePtr & scope
 ) {
@@ -550,7 +550,7 @@ void Vrml97Parser::statement(
 		case KEYWORD_DEF:
 		case KEYWORD_USE:
 		{
-			node=nodeStatement(scene, scope);
+			node=nodeStatement(browser, scope);
 #line 605 "Vrml97Parser.g"
 			
 			assert(node);
@@ -562,7 +562,7 @@ void Vrml97Parser::statement(
 		case KEYWORD_EXTERNPROTO:
 		case KEYWORD_PROTO:
 		{
-			protoStatement(scene, scope);
+			protoStatement(browser, scope);
 			break;
 		}
 		case KEYWORD_ROUTE:
@@ -584,7 +584,7 @@ void Vrml97Parser::statement(
 }
 
 OpenVRML::NodePtr  Vrml97Parser::nodeStatement(
-	OpenVRML::VrmlScene & scene,
+	OpenVRML::Browser & browser,
               const OpenVRML::ScopePtr & scope
 ) {
 #line 613 "Vrml97Parser.g"
@@ -599,7 +599,7 @@ OpenVRML::NodePtr  Vrml97Parser::nodeStatement(
 		match(KEYWORD_DEF);
 		id0 = LT(1);
 		match(ID);
-		n=node(scene, scope, id0->getText());
+		n=node(browser, scope, id0->getText());
 		break;
 	}
 	case KEYWORD_USE:
@@ -622,7 +622,7 @@ OpenVRML::NodePtr  Vrml97Parser::nodeStatement(
 	}
 	case ID:
 	{
-		n=node(scene, scope, std::string());
+		n=node(browser, scope, std::string());
 		break;
 	}
 	default:
@@ -634,7 +634,7 @@ OpenVRML::NodePtr  Vrml97Parser::nodeStatement(
 }
 
 void Vrml97Parser::protoStatement(
-	OpenVRML::VrmlScene & scene,
+	OpenVRML::Browser & browser,
                const OpenVRML::ScopePtr & scope
 ) {
 	
@@ -642,12 +642,12 @@ void Vrml97Parser::protoStatement(
 		switch ( LA(1)) {
 		case KEYWORD_EXTERNPROTO:
 		{
-			externproto(scene, scope);
+			externproto(browser, scope);
 			break;
 		}
 		case KEYWORD_PROTO:
 		{
-			proto(scene, scope);
+			proto(browser, scope);
 			break;
 		}
 		default:
@@ -750,7 +750,7 @@ void Vrml97Parser::routeStatement(
 }
 
 OpenVRML::NodePtr  Vrml97Parser::node(
-	OpenVRML::VrmlScene & scene,
+	OpenVRML::Browser & browser,
      const OpenVRML::ScopePtr & scope,
      const std::string & nodeId
 ) {
@@ -775,7 +775,7 @@ OpenVRML::NodePtr  Vrml97Parser::node(
 		match(ID);
 #line 938 "Vrml97Parser.g"
 		
-		n.reset(new ScriptNode(scene.scriptNodeClass, scope));
+		n.reset(new ScriptNode(browser.scriptNodeClass, scope));
 		if (!nodeId.empty()) { n->setId(nodeId); }
 		
 		ScriptNode * const scriptNode = n->toScript();
@@ -851,7 +851,7 @@ OpenVRML::NodePtr  Vrml97Parser::node(
 }
 
 void Vrml97Parser::externproto(
-	OpenVRML::VrmlScene & scene, const OpenVRML::ScopePtr & scope
+	OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
 #line 793 "Vrml97Parser.g"
@@ -884,9 +884,9 @@ void Vrml97Parser::externproto(
 #line 801 "Vrml97Parser.g"
 		
 		for (size_t i = 0; i < urlList.getLength(); ++i) {
-			VrmlScene::NodeClassMap::const_iterator pos =
-		scene.nodeClassMap.find(urlList.getElement(i));
-		if (pos != scene.nodeClassMap.end()) {
+			Browser::NodeClassMap::const_iterator pos =
+		browser.nodeClassMap.find(urlList.getElement(i));
+		if (pos != browser.nodeClassMap.end()) {
 		nodeType = pos->second->createType(id->getText(),
 		interfaces);
 		break;
@@ -904,7 +904,7 @@ void Vrml97Parser::externproto(
 }
 
 void Vrml97Parser::proto(
-	OpenVRML::VrmlScene & scene,
+	OpenVRML::Browser & browser,
       const OpenVRML::ScopePtr & scope
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -921,7 +921,7 @@ void Vrml97Parser::proto(
 		match(ID);
 #line 647 "Vrml97Parser.g"
 		
-		nodeClass.reset(new ProtoNodeClass(scene));
+		nodeClass.reset(new ProtoNodeClass(browser));
 		protoScope.reset(new Scope(id->getText(), scope));
 		
 #line 928 "Vrml97Parser.cpp"
@@ -935,7 +935,7 @@ void Vrml97Parser::proto(
 				// XXX here. This is wasteful; Vrml97RootScope is expensive and
 				// XXX we only *really* need this for SFNode and MFNode
 				// XXX fields/exposedFields.
-				ScopePtr interfaceDeclScope(new Vrml97RootScope(scene));
+				ScopePtr interfaceDeclScope(new Vrml97RootScope(browser));
 				
 #line 941 "Vrml97Parser.cpp"
 				protoInterfaceDeclaration(interfaceDeclScope,
@@ -956,7 +956,7 @@ void Vrml97Parser::proto(
 #line 664 "Vrml97Parser.g"
 		
 		//
-		// Add the new NodeClass (prototype definition) to the scene's
+		// Add the new NodeClass (prototype definition) to the Browser's
 		// NodeClassMap.
 		//
 		// First, construct the id for the node implementation.
@@ -966,8 +966,8 @@ void Vrml97Parser::proto(
 		implId += '#' + protoScope->id;
 		protoScope = protoScope->parent;
 		}
-		const VrmlScene::NodeClassMap::value_type value(implId, nodeClass);
-		scene.nodeClassMap.insert(value);
+		const Browser::NodeClassMap::value_type value(implId, nodeClass);
+		browser.nodeClassMap.insert(value);
 		
 		//
 		// PROTO's implicitly introduce a new node type as well...
@@ -1045,7 +1045,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 			ft=fieldType();
 			id1 = LT(1);
 			match(ID);
-			fv=fieldValue(proto.scene, scope, ft);
+			fv=fieldValue(proto.browser, scope, ft);
 #line 722 "Vrml97Parser.g"
 			
 			assert(fv);
@@ -1097,7 +1097,7 @@ void Vrml97Parser::protoBody(
 		{
 		for (;;) {
 			if ((LA(1)==KEYWORD_EXTERNPROTO||LA(1)==KEYWORD_PROTO)) {
-				protoStatement(proto.scene, scope);
+				protoStatement(proto.browser, scope);
 			}
 			else {
 				goto _loop15;
@@ -1391,7 +1391,7 @@ OpenVRML::NodeInterface::Type  Vrml97Parser::fieldInterfaceType() {
 }
 
 OpenVRML::FieldValuePtr  Vrml97Parser::fieldValue(
-	OpenVRML::VrmlScene & scene,
+	OpenVRML::Browser & browser,
            const OpenVRML::ScopePtr & scope,
            OpenVRML::FieldValue::Type ft
 ) {
@@ -1405,7 +1405,7 @@ OpenVRML::FieldValuePtr  Vrml97Parser::fieldValue(
 #line 1406 "Vrml97Parser.cpp"
 	
 	if (((_tokenSet_10.member(LA(1))))&&( (ft == FieldValue::sfnode) || (ft == FieldValue::mfnode) )) {
-		fv=nodeFieldValue(scene, scope, ft);
+		fv=nodeFieldValue(browser, scope, ft);
 	}
 	else if ((_tokenSet_11.member(LA(1)))) {
 		fv=nonNodeFieldValue(ft);
@@ -1496,7 +1496,7 @@ void Vrml97Parser::protoBodyStatement(
 		case KEYWORD_EXTERNPROTO:
 		case KEYWORD_PROTO:
 		{
-			protoStatement(proto.scene, scope);
+			protoStatement(proto.browser, scope);
 			break;
 		}
 		case KEYWORD_ROUTE:
@@ -1543,7 +1543,7 @@ OpenVRML::NodePtr  Vrml97Parser::protoNode(
 		match(ID);
 #line 1056 "Vrml97Parser.g"
 		
-		n.reset(new ScriptNode(proto.scene.scriptNodeClass, scope, true));
+		n.reset(new ScriptNode(proto.browser.scriptNodeClass, scope));
 		if (!nodeId.empty()) { n->setId(nodeId); }
 		
 		ScriptNode * const scriptNode = n->toScript();
@@ -1590,7 +1590,7 @@ OpenVRML::NodePtr  Vrml97Parser::protoNode(
 		+ nodeTypeId->getText() + "\".",
 		std::string(), LT(0)->getLine());
 		}
-		n = nodeType->createNode(scope, true);
+		n = nodeType->createNode(scope);
 		if (!nodeId.empty()) { n->setId(nodeId); }
 		
 #line 1597 "Vrml97Parser.cpp"
@@ -1808,7 +1808,7 @@ void Vrml97Parser::nodeBodyElement(
 			}
 			
 #line 1811 "Vrml97Parser.cpp"
-			fv=fieldValue(node.nodeType.nodeClass.scene, scope, ft);
+			fv=fieldValue(node.nodeType.nodeClass.browser, scope, ft);
 #line 983 "Vrml97Parser.g"
 			
 			assert(fv);
@@ -1825,7 +1825,7 @@ void Vrml97Parser::nodeBodyElement(
 		case KEYWORD_EXTERNPROTO:
 		case KEYWORD_PROTO:
 		{
-			protoStatement(node.nodeType.nodeClass.scene, scope);
+			protoStatement(node.nodeType.nodeClass.browser, scope);
 			break;
 		}
 		default:
@@ -1925,7 +1925,7 @@ void Vrml97Parser::scriptFieldInterfaceDeclaration(
 		ft=fieldType();
 		id = LT(1);
 		match(ID);
-		fv=fieldValue(node.nodeType.nodeClass.scene, scope, ft);
+		fv=fieldValue(node.nodeType.nodeClass.browser, scope, ft);
 #line 1031 "Vrml97Parser.g"
 		
 		assert(fv);
@@ -1973,7 +1973,7 @@ void Vrml97Parser::protoNodeBodyElement(
 		case KEYWORD_EXTERNPROTO:
 		case KEYWORD_PROTO:
 		{
-			protoStatement(proto.scene, scope);
+			protoStatement(proto.browser, scope);
 			break;
 		}
 		default:
@@ -2319,7 +2319,7 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 }
 
 OpenVRML::FieldValuePtr  Vrml97Parser::nodeFieldValue(
-	OpenVRML::VrmlScene & scene,
+	OpenVRML::Browser & browser,
                const OpenVRML::ScopePtr & scope,
                OpenVRML::FieldValue::Type ft
 ) {
@@ -2333,10 +2333,10 @@ OpenVRML::FieldValuePtr  Vrml97Parser::nodeFieldValue(
 #line 2334 "Vrml97Parser.cpp"
 	
 	if (((_tokenSet_14.member(LA(1))))&&( ft == FieldValue::sfnode )) {
-		fv=sfNodeValue(scene, scope);
+		fv=sfNodeValue(browser, scope);
 	}
 	else if ((_tokenSet_15.member(LA(1)))) {
-		fv=mfNodeValue(scene, scope);
+		fv=mfNodeValue(browser, scope);
 	}
 	else {
 		throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
@@ -3098,7 +3098,7 @@ OpenVRML::FieldValuePtr  Vrml97Parser::mfVec3fValue() {
 }
 
 OpenVRML::FieldValuePtr  Vrml97Parser::sfNodeValue(
-	OpenVRML::VrmlScene & scene,
+	OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope
 ) {
 #line 1462 "Vrml97Parser.g"
@@ -3116,7 +3116,7 @@ OpenVRML::FieldValuePtr  Vrml97Parser::sfNodeValue(
 		case KEYWORD_DEF:
 		case KEYWORD_USE:
 		{
-			n=nodeStatement(scene, scope);
+			n=nodeStatement(browser, scope);
 #line 1468 "Vrml97Parser.g"
 			snv.reset(new SFNode(n));
 #line 3123 "Vrml97Parser.cpp"
@@ -3145,7 +3145,7 @@ OpenVRML::FieldValuePtr  Vrml97Parser::sfNodeValue(
 }
 
 OpenVRML::FieldValuePtr  Vrml97Parser::mfNodeValue(
-	OpenVRML::VrmlScene & scene,
+	OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope
 ) {
 #line 1482 "Vrml97Parser.g"
@@ -3161,7 +3161,7 @@ OpenVRML::FieldValuePtr  Vrml97Parser::mfNodeValue(
 		case KEYWORD_DEF:
 		case KEYWORD_USE:
 		{
-			n=nodeStatement(scene, scope);
+			n=nodeStatement(browser, scope);
 #line 1486 "Vrml97Parser.g"
 			mnv.reset(new MFNode(1, &n));
 #line 3168 "Vrml97Parser.cpp"
@@ -3176,7 +3176,7 @@ OpenVRML::FieldValuePtr  Vrml97Parser::mfNodeValue(
 			{
 			for (;;) {
 				if ((LA(1)==ID||LA(1)==KEYWORD_DEF||LA(1)==KEYWORD_USE)) {
-					n=nodeStatement(scene, scope);
+					n=nodeStatement(browser, scope);
 #line 1488 "Vrml97Parser.g"
 					
 					static_cast<MFNode &>(*mnv).addNode(n);
