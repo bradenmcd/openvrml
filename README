@@ -78,9 +78,9 @@ file "COPYING.LESSER".  Code used in these libararies under other terms
 
      OpenGL(TM) is a trademark of Silicon Graphics, Inc.
 
-   The included sample viewer program "lookat" is available under the
-terms of the GNU General Public License (GPL), version 2.  The full text
-of the GPL can be found in the file "COPYING".
+   The included sample viewer program "lookat" and the Mozilla plug-in
+are available under the terms of the GNU General Public License (GPL),
+version 2.  The full text of the GPL can be found in the file "COPYING".
 
 
 Dependencies
