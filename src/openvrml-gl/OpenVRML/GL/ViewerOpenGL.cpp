@@ -2196,7 +2196,7 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
   else
     {
       glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emission);
-      glColor4fv( diffuse );
+      glColor4fv( emission );
     }
 }
 
