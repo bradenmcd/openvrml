@@ -11,6 +11,9 @@
 	when the string "Script" was encountered, and the missing cases
 	were causing parse problems.
 
+	* VrmlScene.cpp reordered initializations in ctr to silence
+	compiler warning.
+
 2000-06-18  Christopher St. John <cstjohn@acm.org>
 
 	* Added default values for x/zDimension in VrmlNodeElevationGrid ctr
