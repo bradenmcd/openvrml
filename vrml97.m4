@@ -15,9 +15,11 @@ AC_DEFUN(AM_PATH_VRML,
     dnl
     dnl Test for libvrml97
     dnl
-    AC_MSG_CHECKING([for libvrml97])
+    AC_MSG_CHECKING([for LibVRML97])
+    ac_save_CPPFLAGS="${CPPFLAGS}"
+    CPPFLAGS="${CPPFLAGS} ${vrml__Idir}"
     ac_save_LIBS="${LIBS}"
-    LIBS="-lvrml97 ${LIBS}"
+    LIBS="${vrml__Ldir} -lvrml97 ${LIBS}"
     AC_TRY_LINK(
       [
         #include<vrml97/VrmlScene.h>
@@ -28,14 +30,15 @@ AC_DEFUN(AM_PATH_VRML,
       have_vrml=yes,
       have_vrml=no
     )
+    CPPFLAGS="${ac_save_CPPFLAGS}"
     LIBS="${ac_save_LIBS}"
     
     AC_LANG_RESTORE
 
     if test "X${have_vrml}" = Xyes; then
       AC_MSG_RESULT([yes])
-      VRML_CXXFLAGS=""
-      VRML_LIBS="-lvrml97 ${VRML_LIBS}"
+      VRML_CXXFLAGS="${vrml__Idir}"
+      VRML_LIBS="${vrml__Ldir} -lvrml97"
       ifelse([$1], , :, [$1])
     else
       AC_MSG_RESULT([no])
