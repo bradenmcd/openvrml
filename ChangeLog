@@ -3,6 +3,8 @@
         * Changed VrmlNodeProto::getNodes() to return a VrmlMFNode
           reference (instead of a pointer).
 
+        * Added accessors to VrmlNodeSwitch.
+
 2001-01-24  Braden McDaniel  <braden@endoframe.com>
 
         * Changed VrmlNodeScript copy ctor to call VrmlNodeChild copy

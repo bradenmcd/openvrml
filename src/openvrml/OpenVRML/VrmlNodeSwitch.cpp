@@ -206,3 +206,41 @@ VrmlNodeSwitch::recalcBSphere()
   }
   this->setBVolumeDirty(false);
 }
+
+/**
+ * @brief Get the nodes that may be chosen.
+ *
+ * @return choice
+ */
+const VrmlMFNode & VrmlNodeSwitch::getChoice() const {
+    return this->d_choice;
+}
+
+/**
+ * @brief Set the nodes that may be chosen.
+ *
+ * @param choice
+ */
+void VrmlNodeSwitch::setChoice(const VrmlMFNode & choice) {
+    this->d_choice = choice;
+    this->setBVolumeDirty(true);
+}
+
+/**
+ * @brief Get the index of the chosen node.
+ *
+ * @return whichChoice
+ */
+const VrmlSFInt32 & VrmlNodeSwitch::getWhichChoice() const {
+    return this->d_whichChoice;
+}
+
+/**
+ * @brief Set the index of the chosen node.
+ *
+ * @param whichChoice
+ */
+void VrmlNodeSwitch::setWhichChoice(const VrmlSFInt32 & whichChoice) {
+    this->d_whichChoice = whichChoice;
+    this->setBVolumeDirty(true);
+}

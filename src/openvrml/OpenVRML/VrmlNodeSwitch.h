@@ -57,8 +57,11 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  VrmlMFNode *getChoiceNodes()  { return &d_choice;} 
-  virtual int getWhichChoice() { return d_whichChoice.get(); }  
+  const VrmlMFNode & getChoice() const;
+  void setChoice(const VrmlMFNode & choice);
+  
+  const VrmlSFInt32 & getWhichChoice() const;
+  void setWhichChoice(const VrmlSFInt32 & choice);
 
   const VrmlBVolume* getBVolume() const;
 
