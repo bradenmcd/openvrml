@@ -27,7 +27,7 @@ noinst_HEADERS = \
         openvrml/private.h \
         openvrml/ScriptJDK.h
 
-LIBRARY_VERSION = 4:1:0
+LIBRARY_VERSION = 5:0:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |

@@ -1,5 +1,12 @@
 2004-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	Incremented library version numbers for imminent 0.15.0 release.
+
+	* src/libopenvrml/Makefile.am
+	* src/libopenvrml-gl/Makefile.am
+
+2004-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	* openvrml.spec.in:  Changed Mozilla plug-in RPM name to
 	openvrml-mozilla-plugin; refer to the plug-in in comments as
 	"for Mozilla-based browsers" rather than "for Mozilla".
