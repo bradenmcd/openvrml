@@ -2,8 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
-//
 //  VrmlNodeGroup.cpp
 //
 
@@ -378,3 +376,4 @@ VrmlNode *VrmlNodeGroup::child(int index)
 
   return 0;
 }
+
