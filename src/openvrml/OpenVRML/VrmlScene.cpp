@@ -962,7 +962,7 @@ void VrmlScene::addFog(VrmlNodeFog & n) {
     this->d_fogs.push_back(&n);
 }
 
-void VrmlScene::removeFog(VrmlNodeFog & n) {
+void VrmlScene::removeFog(VrmlNodeFog & node) {
     const std::list<VrmlNode *>::iterator end = this->d_fogs.end();
     const std::list<VrmlNode *>::iterator pos =
             std::find(this->d_fogs.begin(), end, &node);
@@ -992,7 +992,7 @@ void VrmlScene::addNavigationInfo(VrmlNodeNavigationInfo & n) {
     this->d_navigationInfos.push_back(&n);
 }
 
-void VrmlScene::removeNavigationInfo(VrmlNodeNavigationInfo & n) {
+void VrmlScene::removeNavigationInfo(VrmlNodeNavigationInfo & node) {
     const std::list<VrmlNode *>::iterator end = this->d_navigationInfos.end();
     const std::list<VrmlNode *>::iterator pos =
             std::find(this->d_navigationInfos.begin(), end, &node);
