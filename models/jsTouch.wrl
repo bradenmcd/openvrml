@@ -7,7 +7,7 @@ DEF TheGroup Transform {
     DEF Toggle Script {
 
       eventIn SFTime touch
-      field SFNode group IS TheGroup
+      field SFNode group USE TheGroup
       field SFInt32 count 2
       eventOut SFTime startTime
 
