@@ -1,5 +1,11 @@
 2004-12-17 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(viewer::transform_points):  Removed erroneously committed
+	debugging output.
+
+2004-12-17 Braden McDaniel  <braden@endoframe.com>
+
 	Short term hack allow the Mozilla plug-in to handle relative
 	URIs.  This will not be necessary once the plug-in does proper
 	streaming.
