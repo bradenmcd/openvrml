@@ -479,7 +479,7 @@ VrmlNodeType * VrmlScene::readPROTO(const VrmlMFString & urls,
     // ref counted too...
     //VrmlNamespace protos;
     VrmlNamespace * protos = new VrmlNamespace();  // leak...
-    Doc2 urlDoc(static_cast<char *>(0));
+    Doc2 urlDoc;
     VrmlNodeType * def = 0;
 //    int i, n = urls->size();
     
