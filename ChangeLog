@@ -1,3 +1,11 @@
+2001-10-15  Thomas Flynn <tflynn@users.sourceforge.net>
+
+        * Implemented Task 24920 (Use a standard container for routes)
+
+        * Fix core dumping problem with AudioClip's.
+
+        * Backout of earlier, incorrect fix to Material node handling.
+
 2001-10-12  Braden McDaniel  <braden@endoframe.com>
 
         * Replaced `configure.in' with `configure.ac'. We now require
