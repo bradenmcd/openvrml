@@ -1,341 +1,204 @@
 /**
 @page conformance Conformance Test Results
 
+@section about About
+
+The <a href="http://xsun.sdct.itl.nist.gov/~mkass/vts/html/vrml.html">NIST VRML
+Test Suite</a> is not a complete assessment of conformance to the VRML97
+specification; it does, however, provide some indication of feature coverage
+and it can suggest whether a feature is basically in working order.
+
+@subsection assessment_protocol Assessment protocol
+
+A test is said to pass if and only if it renders completely as intended.  This
+is probably the least subjective means of assessment; however, it means that in
+some cases a test may fail due to factors unrelated to the feature that was
+intended to be tested.
+
+@subsection test_problems Test problems
+
+Several of the tests in the test suite have some kind of problem. In many
+cases the test is still usable in spite of the problem; in other cases it is
+not. Instances of the latter case are marked as "invalid" in the result table.
+An attempt has been made to note problems with the tests in the endnotes
+following the primary result table.
+
 @section summary Summary
+
+@subsection overall_summary Overall
 
 <table>
   <tr>
-    <td>Total Number of Tests</td><td>796</td>
+    <th>Total Number of Tests</td><td>796</td>
   </tr>
   <tr>
-    <td>Total Passed</td><td>558</td>
+    <th>Total Passed</td><td>558</td>
   </tr>
   <tr>
-    <td>Total Failed</td><td>221</td>
+    <th>Total Failed</td><td>221</td>
   </tr>
   <tr>
-    <td>Total Invalid</td><td>17</td>
+    <th>Total Invalid</td><td>17</td>
   </tr>
 </table>
 
-@subsection group_summary Summary By Group
+@subsection group_summary By Group
 
 <table>
   <tr>
-    <td>Node Group
-    <td>Pass
-    <td>Fail
-    <td>Invalid
+    <th>Node Group<th>Total<th>Pass<th>Fail<th>Invalid
   <tr>
-    <td>Appearance (186)
-    <td>144
-    <td>42
+    <td>Appearance<td>186<td>144<td>42
   <tr>
-    <td>Bindable Nodes (93)
-    <td>53
-    <td>27
-    <td>13
+    <td>Bindable Nodes<td>93<td>53<td>27<td>13
   <tr>
-    <td>Geometric Properties (53)
-    <td>39
-    <td>14
+    <td>Geometric Properties<td>53<td>39<td>14
   <tr>
-    <td>Geometry (113)
-    <td>98
-    <td>15
+    <td>Geometry<td>113<td>98<td>15
   <tr>
-    <td>Grouping Nodes (52)
-    <td>38
-    <td>11
-    <td>3
+    <td>Grouping Nodes<td>52<td>38<td>11<td>3
   <tr>
-    <td>Interpolators (30)
-    <td>20
-    <td>10
+    <td>Interpolators<td>30<td>20<td>10
   <tr>
-    <td>Lights (92)
-    <td>70
-    <td>22
+    <td>Lights<td>92<td>70<td>22
   <tr>
-    <td>Misc (50)
-    <td>19
-    <td>31
+    <td>Misc<td>50<td>19<td>31
   <tr>
-    <td>Sensors (81)
-    <td>61
-    <td>20
+    <td>Sensors<td>81<td>61<td>20
   <tr>
-    <td>Sounds (28)
-    <td>0
-    <td>28
+    <td>Sounds<td>28<td>0<td>28
   <tr>
-    <td>Special Groups (18)
-    <td>16
-    <td>1
-    <td>1
+    <td>Special Groups<td>18<td>16<td>1<td>1
 </table>
 
 @subsection node_summary Summary By Node
 
-<TABLE BORDER="1">
+<table>
   <tr>
-    <TH>Node
-    <TH>Passed
-    <TH>Failed
-    <TH>Invalid
+    <th>Node<th>Passed<th>Failed<th>Invalid
   <tr>
-    <td>Anchor
-    <td>7
-    <td>2
-    <td>3
+    <td>Anchor<td>7<td>2<td>3
   <tr>
-    <td>Appearance
-    <td>11
-    <td>1
+    <td>Appearance<td>11<td>1
   <tr>
-    <td>AudioClip
-    <td>0
-    <td>19
+    <td>AudioClip<td>0<td>19
   <tr>
-    <td>Background
-    <td>8
-    <td>7
-    <td>8
+    <td>Background<td>8<td>7<td>8
   <tr>
-    <td>Billboard
-    <td>4
-    <td>2
+    <td>Billboard<td>4<td>2
   <tr>
-    <td>Box
-    <td>6
-    <td>0
+    <td>Box<td>6<td>0
   <tr>
-    <td>Color
-    <td>15
-    <td>6
+    <td>Color<td>15<td>6
   <tr>
-    <td>ColorInterpolator
-    <td>4
-    <td>1
+    <td>ColorInterpolator<td>4<td>1
   <tr>
-    <td>Collision
-    <td>1
-    <td>7
+    <td>Collision<td>1<td>7
   <tr>
-    <td>Cone
-    <td>8
-    <td>0
+    <td>Cone<td>8<td>0
   <tr>
-    <td>Coordinate
-    <td>5
-    <td>0
+    <td>Coordinate<td>5<td>0
   <tr>
-    <td>CoordinateInterpolator
-    <td>4
-    <td>1
+    <td>CoordinateInterpolator<td>4<td>1
   <tr>
-    <td>Cylinder
-    <td>9
-    <td>0
+    <td>Cylinder<td>9<td>0
   <tr>
-    <td>CylinderSensor
-    <td>9
-    <td>2
+    <td>CylinderSensor<td>9<td>2
   <tr>
-    <td>DirectionalLight
-    <td>18
-    <td>10
+    <td>DirectionalLight<td>18<td>10
   <tr>
-    <td>ElevationGrid
-    <td>9
-    <td>5
+    <td>ElevationGrid<td>9<td>5
   <tr>
-    <td>EXTERNPROTO
-    <td>0
-    <td>18
+    <td>EXTERNPROTO<td>0<td>18
   <tr>
-    <td>Extrusion
-    <td>13
-    <td>4
+    <td>Extrusion<td>13<td>4
   <tr>
-    <td>Fog
-    <td>21
-    <td>0
+    <td>Fog<td>21<td>0
   <tr>
-    <td>FontStyle
-    <td>0
-    <td>7
+    <td>FontStyle<td>0<td>7
   <tr>
-    <td>Group
-    <td>2
-    <td>0
+    <td>Group<td>2<td>0
   <tr>
-    <td>ImageTexture
-    <td>30
-    <td>4
+    <td>ImageTexture<td>30<td>4
   <tr>
-    <td>IndexedFaceSet
-    <td>20
-    <td>1
+    <td>IndexedFaceSet<td>20<td>1
   <tr>
-    <td>IndexedLineSet
-    <td>9
-    <td>1
+    <td>IndexedLineSet<td>9<td>1
   <tr>
-    <td>Inline
-    <td>4
-    <td>1
-    <td>1
+    <td>Inline<td>4<td>1<td>1
   <tr>
-    <td>LOD
-    <td>6
-    <td>0
+    <td>LOD<td>6<td>0
   <tr>
-    <td>Material
-    <td>22
-    <td>7
+    <td>Material<td>22<td>7
   <tr>
-    <td>MovieTexture
-    <td>35
-    <td>4
+    <td>MovieTexture<td>35<td>4
   <tr>
-    <td>NavigationInfo
-    <td>14
-    <td>10
-    <td>2
+    <td>NavigationInfo<td>14<td>10<td>2
   <tr>
-    <td>Normal
-    <td>7
-    <td>2
+    <td>Normal<td>7<td>2
   <tr>
-    <td>NormalInterpolator
-    <td>4
-    <td>1
+    <td>NormalInterpolator<td>4<td>1
   <tr>
-    <td>OrientationInterpolator
-    <td>4
-    <td>1
+    <td>OrientationInterpolator<td>4<td>1
   <tr>
-    <td>PixelTexture
-    <td>10
-    <td>7
+    <td>PixelTexture<td>10<td>7
   <tr>
-    <td>PlaneSensor
-    <td>11
-    <td>3
+    <td>PlaneSensor<td>11<td>3
   <tr>
-    <td>PointLight
-    <td>24
-    <td>5
+    <td>PointLight<td>24<td>5
   <tr>
-    <td>PointSet
-    <td>4
-    <td>1
+    <td>PointSet<td>4<td>1
   <tr>
-    <td>PositionInterpolator
-    <td>4
-    <td>1
+    <td>PositionInterpolator<td>4<td>1
   <tr>
-    <td>PROTO
-    <td>17
-    <td>13
+    <td>PROTO<td>17<td>13
   <tr>
-    <td>ProximitySensor
-    <td>9
-    <td>1
+    <td>ProximitySensor<td>9<td>1
   <tr>
-    <td>ScalarInterpolator
-    <td>0
-    <td>5
+    <td>ScalarInterpolator<td>0<td>5
   <tr>
-    <td>Script ECMAScript
-    <td>0
-    <td>0
+    <td>Script ECMAScript<td>0<td>0
   <tr>
-    <td>Script Java
-    <td>0
-    <td>0
+    <td>Script Java<td>0<td>0
   <tr>
-    <td>Shape
-    <td>4
-    <td>1
+    <td>Shape<td>4<td>1
   <tr>
-    <td>Sound
-    <td>0
-    <td>9
+    <td>Sound<td>0<td>9
   <tr>
-    <td>Sphere
-    <td>6
-    <td>0
+    <td>Sphere<td>6<td>0
   <tr>
-    <td>SphereSensor
-    <td>5
-    <td>4
+    <td>SphereSensor<td>5<td>4
   <tr>
-    <td>SpotLight
-    <td>28
-    <td>7
+    <td>SpotLight<td>28<td>7
   <tr>
-    <td>Switch
-    <td>6
-    <td>0
+    <td>Switch<td>6<td>0
   <tr>
-    <td>Text
-    <td>10
-    <td>2
+    <td>Text<td>10<td>2
   <tr>
-    <td>TextureCoordinate
-    <td>12
-    <td>6
+    <td>TextureCoordinate<td>12<td>6
   <tr>
-    <td>TextureTransform
-    <td>36
-    <td>12
+    <td>TextureTransform<td>36<td>12
   <tr>
-    <td>TimeSensor
-    <td>12
-    <td>7
+    <td>TimeSensor<td>12<td>7
   <tr>
-    <td>TouchSensor
-    <td>6
-    <td>3
+    <td>TouchSensor<td>6<td>3
   <tr>
-    <td>Transform
-    <td>24
-    <td>0
+    <td>Transform<td>24<td>0
   <tr>
-    <td>Viewpoint
-    <td>10
-    <td>10
-    <td>3
+    <td>Viewpoint<td>10<td>10<td>3
   <tr>
-    <td>VisibilitySensor
-    <td>9
-    <td>0
+    <td>VisibilitySensor<td>9<td>0
   <tr>
-    <td>WorldInfo
-    <td>2
-    <td>0
+    <td>WorldInfo<td>2<td>0
 </table>
 
-@subsection notes Notes
-
-For a complete list of reasons why tests have been declared invalid see
-<a href="http://members.rogers.com/tflynn/nist-problems.html">my list</a>.
-
-<HR>
+<hr>
 
 @section results Results
 
-For a detailed description of the purpose of each test please see the <A HREF="http://xsun.sdct.itl.nist.gov/~mkass/vts/html/vrml.html">NIST Vrml Test Suite Home Page.</A>
-
 <table>
   <tr>
-    <td>Node Group
-    <td>Node
-    <td>Test<br>Number
-    <td>Result
-    <td>Comments
+    <th>Node Group<th>Node<th>Test<br>Number<th>Result<th>Comments
   <tr>
     <td rowspan="186"><B>Appearance</B><td rowspan="12">Appearance<td>1<td class="pass">+
   <tr>
@@ -373,7 +236,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>6<td class="fail">-<td>Failed! Partially funtioning, vertical text doesn't seem to work properly and green line doesn't appear for axis.
   <tr>
-    <td>7<td class="fail">-<td>Failed! Lookat dumps the following to the console on startup:<BR>TEXT_SCRIPT: 18: SyntaxError: illegal character<BR>../../../../src/openvrml/OpenVRML/script.cpp:1506: verification (ok) failed<BR>Possible NIST error
+    <td>7<td class="invalid">x<a href="#note1"><sup>1</sup></a>
   <tr>
     <td rowspan="34">ImageTexture<td>1<td class="pass">+
   <tr>
@@ -535,7 +398,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>17<td class="pass">+
   <tr>
-    <td>18<td class="pass">+
+    <td>18<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
     <td>19<td class="pass">+
   <tr>
@@ -551,17 +414,17 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>25<td class="pass">+
   <tr>
-    <td>26<td class="pass">+
+    <td>26<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
-    <td>27<td class="pass">+
+    <td>27<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
-    <td>28<td class="pass">+
+    <td>28<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
-    <td>29<td class="pass">+
+    <td>29<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
-    <td>30<td class="pass">+
+    <td>30<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
-    <td>31<td class="pass">+
+    <td>31<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
     <td>32<td class="pass">+
   <tr>
@@ -585,7 +448,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>3<td class="pass">+
   <tr>
-    <td>4<td class="pass">+<td>Failed! All shapes are colored aqua when should be checkered red and black.
+    <td>4<td class="fail">-<td>Failed! All shapes are colored aqua when should be checkered red and black.
   <tr>
     <td>5<td class="pass">+
   <tr>
@@ -649,7 +512,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>18<td class="pass">+
   <tr>
-    <td>19<td class="pass">+
+    <td>19<td class="pass">+<a href="#note3"><sup>3</sup></a>
   <tr>
     <td>20<td class="pass">+
   <tr>
@@ -693,13 +556,13 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>40<td class="pass">+
   <tr>
-    <td>41<td class="pass">+
+    <td>41<td class="pass">+<a href="#note4"><sup>4</sup></a>
   <tr>
     <td>42<td class="pass">+
   <tr>
-    <td>43<td class="pass">+
+    <td>43<td class="pass">+<a href="#note5"><sup>5</sup></a>
   <tr>
-    <td>44<td class="pass">+
+    <td>44<td class="pass">+<a href="#note6"><sup>6</sup></a>
   <tr>
     <td>45<td class="fail">-<td>Failed! Second and fourth row of shapes has the colors reversed.
   <tr>
@@ -713,7 +576,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>2<td class="pass">+
   <tr>
-    <td>3<td class="invalid">x<a href="#note1"><sup>1</sup></a>
+    <td>3<td class="invalid">x<a href="#note7"><sup>7</sup></a>
   <tr>
     <td>4<td class="pass">+
   <tr>
@@ -737,19 +600,19 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>14<td class="fail">-<td>Failed! Panorama works great except that there is a black panel instead of the second image.
   <tr>
-    <td>15<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+    <td>15<td class="invalid">x<a href="#note8"><sup>8</sup></a>
   <tr>
-    <td>16<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+    <td>16<td class="invalid">x<a href="#note8"><sup>8</sup></a>
   <tr>
-    <td>17<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+    <td>17<td class="invalid">x<a href="#note8"><sup>8</sup></a>
   <tr>
-    <td>18<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+    <td>18<td class="invalid">x<a href="#note8"><sup>8</sup></a>
   <tr>
-    <td>19<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+    <td>19<td class="invalid">x<a href="#note8"><sup>8</sup></a>
   <tr>
-    <td>20<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+    <td>20<td class="invalid">x<a href="#note8"><sup>8</sup></a>
   <tr>
-    <td>21<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+    <td>21<td class="invalid">x<a href="#note8"><sup>8</sup></a>
   <tr>
     <td>22<td class="pass">+
   <tr>
@@ -809,11 +672,11 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>6<td class="fail">-<td>Failed! Text does not display.
   <tr>
-    <td>7<td class="pass">+
+    <td>7<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
     <td>8<td class="pass">+
   <tr>
-    <td>9<td class="invalid">x<a href="#note3"><sup>3</sup></a>
+    <td>9<td class="invalid">x<a href="#note9"><sup>9</sup></a>
   <tr>
     <td>10<td class="fail">-<td>Failed! Current speed doesn't get updated.
   <tr>
@@ -827,11 +690,11 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>15<td class="pass">+
   <tr>
-    <td>16<td class="pass">+
+    <td>16<td class="pass">+<a href="#note10"><sup>10</sup></a>
   <tr>
     <td>17<td class="fail">-<td>Failed! Cube doesn't turn red on collision.
   <tr>
-    <td>18<td class="invalid">x<a href="#note4"><sup>4</sup></a>
+    <td>18<td class="invalid">x<a href="#note11"><sup>11</sup></a>
   <tr>
     <td>19<td class="fail">-<td>Failed! Cannot click on box. See SourceForge bug 626197.
   <tr>
@@ -851,7 +714,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td rowspan="23">Viewpoint<td>1<td class="pass">+
   <tr>
-    <td>2<td class="fail">-<td>Failed! Current position does not display correctly. X-coord is not quite 0.
+    <td>2<td class="fail">-<a href="#note12"><sup>12</sup></a><td>Failed! Current position does not display correctly. X-coord is not quite 0.
   <tr>
     <td>3<td class="fail">-<td>Failed! Current position does not display correctly. Z-coord is not quite 0.
   <tr>
@@ -861,11 +724,11 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>6<td class="pass">+
   <tr>
-    <td>7<td class="invalid">x<a href="#note5"><sup>5</sup></a>
+    <td>7<td class="invalid">x<a href="#note1"><sup>1</sup></a>
   <tr>
-    <td>8<td class="invalid">x<a href="#note6"><sup>6</sup></a>
+    <td>8<td class="invalid">x<a href="#note13"><sup>13</sup></a>
   <tr>
-    <td>9<td class="invalid">x<a href="#note6"><sup>6</sup></a>
+    <td>9<td class="invalid">x<a href="#note13"><sup>13</sup></a>
   <tr>
     <td>10<td class="fail">-<td>Failed! Lookat fails to load the URL of the Viewpoint. URL is defined as "http://xsun.sdct.itl.nist.gov/~mkass/vts/Bindable_Nodes/Viewpoint/jumpcut_loadworld.wrl#RearView" but lookat strips out the # and cannot load the URL.
   <tr>
@@ -875,7 +738,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>13<td class="fail">-<td>Failed! Current position does not display correctly. Z-coord is not quite 0.
   <tr>
-    <td>14<td class="fail">-<td>Failed! See above. Indicating the box should not cause a jump to right viewpoint.
+    <td>14<td class="fail">-<a href="#note14"><sup>14</sup></a><td>Failed! See above. Indicating the box should not cause a jump to right viewpoint.
   <tr>
     <td>15<td class="fail">-<td>Failed! Nothing happens when pointing at the red box.
   <tr>
@@ -971,11 +834,11 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>3<td class="pass">+
   <tr>
-    <td>4<td class="pass">+
+    <td>4<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
-    <td>5<td class="pass">+
+    <td>5<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
-    <td>6<td class="pass">+
+    <td>6<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
     <td>7<td class="pass">+<td>Failed! Displays in blue when it should be yellow.
   <tr>
@@ -1119,7 +982,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>5<td class="pass">+
   <tr>
-    <td>6<td class="pass">+
+    <td>6<td class="pass">+<a href="#note15"><sup>15</sup></a>
   <tr>
     <td>7<td class="pass">+
   <tr>
@@ -1141,9 +1004,9 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>16<td class="pass">+
   <tr>
-    <td>17<td class="pass">+
+    <td>17<td class="pass">+<a href="#note16"><sup>16</sup></a>
   <tr>
-    <td>18<td class="pass">+
+    <td>18<td class="pass">+<a href="#note16"><sup>16</sup></a>
   <tr>
     <td>19<td class="pass">+
   <tr>
@@ -1205,7 +1068,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td rowspan="12">Text<td>1<td class="pass">+
   <tr>
-    <td>2<td class="pass">+
+    <td>2<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
     <td>3<td class="pass">+
   <tr>
@@ -1217,11 +1080,11 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>7<td class="pass">+
   <tr>
-    <td>8<td class="fail">-<td>Failed! Rightmost strings are not compressed.
+    <td>8<td class="fail">-<a href="#note2"><sup>2</sup></a><td>Failed! Rightmost strings are not compressed.
   <tr>
     <td>9<td class="pass">+
   <tr>
-    <td>10<td class="pass">+<td>Viewpoint is behind text though.
+    <td>10<td class="pass">+<a href="#note17"><sup>17</sup></a>
   <tr>
     <td>11<td class="pass">+
   <tr>
@@ -1237,15 +1100,15 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>5<td class="pass">+
   <tr>
-    <td>6<td class="invalid">x<a href="#note7"><sup>7</sup></a>
+    <td>6<td class="invalid">x<a href="#note18"><sup>18</sup></a>
   <tr>
-    <td>7<td class="invalid">x<a href="#note8"><sup>8</sup></a>
+    <td>7<td class="invalid">x<a href="#note19"><sup>19</sup></a>
   <tr>
     <td>8<td class="pass">+
   <tr>
     <td>9<td class="fail">-<td>Failed! First URL in list is invalid so lookat should use the second valid one but doesn't and just fails with the first.
   <tr>
-    <td>10<td class="invalid">x<a href="#note9"><sup>9</sup></a>
+    <td>10<td class="invalid">x<a href="#note20"><sup>20</sup></a>
   <tr>
     <td>11<td class="pass">+
   <tr>
@@ -1623,31 +1486,37 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>6<td class="pass">+
   <tr>
-    <td>7A<td class="fail">-<td>Failed! Aborted.
+    <td>7A<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Aborted.
   <tr>
-    <td>7B<td class="fail">-<td>Failed! Background not blue, text doesn't change colors.
+    <td>7B<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Background not blue, text doesn't change colors.
   <tr>
-    <td>7C<td class="fail">-<td>Failed! Cone does not move.
+    <td>7C<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Cone does not move.
   <tr>
-    <td>7D<td class="fail">-<td>Failed! Nothing displays in lookat for this test. Some kind of lighting issue as if lighting is disable, the cylinder can be seen. Lookat seems to get into an infinite loop here as well...
+    <td>7D<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Nothing displays in lookat for this test. Some kind of lighting issue as if lighting is disable, the cylinder can be seen. Lookat seems to get into an infinite loop here as well...
   <tr>
-    <td>7E<td class="pass">+
+    <td>7E<td class="pass">+<a href="#note21"><sup>21</sup></a>
   <tr>
-    <td>7F<td class="fail">-<td>Failed! Segmentation fault.
+    <td>7F<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Segmentation fault.
   <tr>
-    <td>7G<td class="pass">+
+    <td>7G<td class="pass">+<a href="#note21"><sup>21</sup></a>
   <tr>
-    <td>7H<td class="pass">+
+    <td>7H<td class="pass">+<a href="#note21"><sup>21</sup></a>
   <tr>
-    <td>7I<td class="fail">-<td>Failed! For some reason, when the PointSet shape on the left comes into view, the IndexedLineSet on the right turns into a PointSet as well!
+    <td>7I<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! For some reason, when the PointSet shape on the left comes into view, the IndexedLineSet on the right turns into a PointSet as well!
   <tr>
-    <td>7J<td class="fail">-<td>Failed! Nothing happens.
+    <td>7J<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Nothing happens.
   <tr>
-    <td>7K<td class="fail">-<td>Failed! Light should move around the shape but nothing appears to happen in lookat.
+    <td>7K<td class="fail">-<a href="#note21"><sup>21</sup></a><td>Failed! Light should move around the shape but nothing appears to happen in lookat.
   <tr>
     <td>8<td class="pass">+
   <tr>
-    <td>9<td class="fail">-<td>Failed! Animation does not occur. Following messages are dumped to the console:<BR>line 226: eventIn cannot be mapped to field<BR>line 228: expecting "IS", found '{'<BR>line 232: expecting "IS", found '['<BR>line 236: expecting ], found '}'
+    <td>9<td class="fail">-<td>Failed! Animation does not occur. Following messages are dumped to the console:
+<pre>
+line 226: eventIn cannot be mapped to field
+line 228: expecting "IS", found '{'
+line 232: expecting "IS", found '['
+line 236: expecting ], found '}'
+</pre>
   <tr>
     <td>10<td class="pass">+
   <tr>
@@ -1903,7 +1772,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>3<td class="fail">-<td>Failed! OpenVRML should ignore the first invalid URL and use the second but instead only attempts to load the first.
   <tr>
-    <td>4<td class="invalid">x<a href="note10"><sup>10</sup></a>
+    <td>4<td class="invalid">x<a href="note22"><sup>22</sup></a>
   <tr>
     <td>5<td class="pass">+
   <tr>
@@ -1917,7 +1786,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <tr>
     <td>4<td class="pass">+
   <tr>
-    <td>5<td class="pass">+
+    <td>5<td class="pass">+<a href="#note2"><sup>2</sup></a>
   <tr>
     <td>6<td class="pass">+
   <tr>
@@ -1935,7 +1804,21 @@ For a detailed description of the purpose of each test please see the <A HREF="h
 </table>
 
 
-<sup id="note1">1</sup> Test is invalid. Comments for world state, "THE
+<sup id="note1">1</sup> There are syntax errors (quoting problems) with the
+vrmlstring used in the script code.
+
+<sup id="note2">2</sup> No expected results.
+
+<sup id="note3">3</sup> Rear view picture missing in expected results.
+
+<sup id="note4">4</sup> Expected results for the bottom view are incorrect.
+
+<sup id="note5">5</sup> Expected results for top and bottom view are incorrect.
+
+<sup id="note6">6</sup> Expected results incorrect for top, bottom, left and
+right views.
+
+<sup id="note7">7</sup> Comments for world state, "THE
 SECOND BACKGROUND IS NOT FORCED TO BE THE ACTIVE BACKGROUND BY SENDING A TRUE
 EVENT TO IT, BUT BY SENDING A FALSE EVENT TO THE BACKGROUND AT THE TOP OF THE
 STACK." The problem is that the second background should @e never be bound
@@ -1944,32 +1827,53 @@ default. See comments on <a
 href="http://sourceforge.net/tracker/?func=detail&atid=107151&aid=210036&group_id=7151">
 Bug 210036</a> in SourceForge for more information.
 
-<sup id="note2">2</sup> PNG missing on server.
+<sup id="note8">8</sup> PNG missing on server.
 
-<sup id="note3">3</sup> Test is for NavigationInfo node but there is no
+<sup id="note9">9</sup> Test is for NavigationInfo node but there is no
 NavigationInfo node in the world! Comments for test indicate there should be
 one that sets the speed to 1 (comments also indicate there should be a
 Viewpoint node in the world too but that's also missing!)
 
-<sup id="note4">4</sup> url field of anchor should be "#Top_View" not
+<sup id="note10">10</sup> Test description indicates that there should be text
+displayed in the upper corner of the world but the expected results do not show
+this text.
+
+<sup id="note11">11</sup> url field of anchor should be "#Top_View" not
 "Top_View".
 
-<sup id="note5">5</sup> Improper Javascript code used in
-createVrmlFromString call. description property of VIEW1 Viewpoint needs to
-have the string properly escaped.
+<sup id="note12">12</sup> Test description erroneously states the expected
+position to be 0 0 -1. It should be 0 0 -10.
 
-<sup id="note6">6</sup> url field of anchor should be "#Top_View" not
+<sup id="note12">13</sup> url field of anchor should be "#Top_View" not
 "Top_View". (Comment at top of test even says this is what the url should be!)
 
-<sup id="note7">7</sup> url field of anchor should be "#view2" not "view2".
+<sup id="note13">14</sup> The test description indicates that the text at the
+top of the world should indicate right viewpoint is bound when mouse is over
+the box. However, sample output shows front viewpoint still bound.
 
-<sup id="note8">8</sup> url field of anchor should be "#view3" not "view3".
+<sup id="note15">15</sup> Expected results are incorrect for rear view. Should
+be green on left and red on right.
 
-<sup id="note9">9</sup> url field is hardcoded to point at an older location
-of the NIST VTS (autumn.ncsl.nist.gov) which refuses requests.
+<sup id="note16">16</sup> Expected results are incorrect. Rear view should
+match front view.
 
-<sup id="note10">10</sup> URL points to old server
-http://autumn.ncsl.nist.gov which no longer allows access. World should be
-updated to point at the current location of the NIST tests.
+<sup id="note17">17</sup> Text is placed behind avatar for some reason so it
+cannot be seen unless you back up first. Transform should be changed to use a
+negative Z-val.
+
+<sup id="note18">18</sup> url field of anchor should be "#view2" not "view2".
+
+<sup id="note19">19</sup> url field of anchor should be "#view3" not "view3".
+
+<sup id="note20">20</sup> url field is hardcoded to point at an older location
+of the NIST VTS (<tt>autumn.ncsl.nist.gov</tt>) which refuses requests.
+
+<sup id="note21">21</sup> "Next test" text in each world points at a
+non-existent CGI script at
+<tt>http://xsun.sdct.itl.nist.gov/~mkass/vts/html/write_list.cgi</tt>.
+
+<sup id="note22">22</sup> URL points to old server
+<tt>http://autumn.ncsl.nist.gov</tt> which no longer allows access. World
+should be updated to point at the current location of the NIST tests.
 
 */

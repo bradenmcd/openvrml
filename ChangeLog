@@ -1,5 +1,11 @@
 2004-04-04 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/conformance.doc:  Fully incorporated Tom Flynn's list of
+	problems with the NIST tests into the endnotes for the result
+	table.
+
+2004-04-04 Braden McDaniel  <braden@endoframe.com>
+
 	"Unescape" strings as they are parsed.
 
 	* src/libopenvrml/openvrml/Vrml97Parser.cpp
