@@ -4,6 +4,7 @@ dnl
 AC_DEFUN(VRML_PATH_PNG,
   [
     AC_REQUIRE([VRML_PATH_ZLIB])
+    AC_REQUIRE([AC_CHECK_LIBM]) dnl recent versions of libpng need pow(3M)
     
     AC_ARG_WITH(png-prefix,
       [  --with-png-prefix=DIR   pass '-IDIR/include' to cpp, '-LDIR/lib' to ld]
@@ -11,7 +12,7 @@ AC_DEFUN(VRML_PATH_PNG,
     
     if test -n "${with_png_prefix}"; then
       png__Idir="-I${with_png_prefix}/include"
-      png__Ldir="-I${with_png_prefix}/lib"
+      png__Ldir="-L${with_png_prefix}/lib"
     fi
     
     PNG_CFLAGS=""
@@ -20,11 +21,8 @@ AC_DEFUN(VRML_PATH_PNG,
     AC_LANG_SAVE
     AC_LANG_C
     
-    dnl recent versions of libpng need pow(3M)
-    AC_CHECK_LIBM
-
     ac_save_LDFLAGS="${LFDLAGS}"
-    LDFLAGS="${LDFLAGS} ${ZLIB_CFLAGS} ${png__Ldir} ${LIBM}"
+    LDFLAGS="${LDFLAGS} ${ZLIB_LIBS} ${png__Ldir} ${LIBM}"
     
     AC_CHECK_LIB(png, png_read_info,
       [
@@ -34,7 +32,7 @@ AC_DEFUN(VRML_PATH_PNG,
           [
             have_png=yes
             PNG_CFLAGS="${ZLIB_CFLAGS} ${png__Idir}"
-            PNG_LIBS="${ZLIB_LIBS} ${png__Ldir} -lpng"
+            PNG_LIBS="${ZLIB_LIBS} ${png__Ldir} -lpng ${LIBM}"
           ],
           have_png=no
         )

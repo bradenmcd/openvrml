@@ -9,7 +9,7 @@ AC_DEFUN(VRML_PATH_JPEG,
     
     if test -n "${with_jpeg_prefix}"; then
       jpeg__Idir="-I${with_jpeg_prefix}/include"
-      jpeg__Ldir="-I${with_jpeg_prefix}/lib"
+      jpeg__Ldir="-L${with_jpeg_prefix}/lib"
     fi
     
     JPEG_CFLAGS=""

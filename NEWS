@@ -1,5 +1,29 @@
-Changes new in version 0.8.0 March X 1999
-=======================================
+Changes new in version 0.8.2, January 2000
+==========================================
+
+- S. K. Bose <bose@pavan.barc.ernet.in> has revived the Win32 build.
+
+
+Changes new in version 0.8.1, December 1999
+===========================================
+
+- LibVRML97 is now hosted on the Open VRML Advancement League (OVAL) CVS server.
+
+- Braden McDaniel <braden@endoframe.com> and Christopher K. St. John
+  <cstjohn@acm.org> reorganized the GNU build, and added the use of libtool.
+
+- Braden McDaniel <braden@endoframe.com> moved xmlookat, gtklookat, win32lookat,
+  and the lookat Netscape plug-in out of the LibVRML97 build and distribution to
+  be placed in their own packages.
+
+- Braden McDaniel <braden@endoframe.com> updated the JavaScript code with a
+  snapshot from the mozilla.org CVS server.
+
+- Michael Louka <Michael.Louka@hrp.no> enabled a Mac build. (Yea!)
+
+
+Changes new in version 0.8.0 March X 1999 (Unreleased)
+======================================================
 
 - Erik Andersen <andersee@debian.org> has revived the win32 build
   and fixed a bunch of portability problems. MSVC++5 project and

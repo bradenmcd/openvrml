@@ -1,8 +1,6 @@
-LibVRML97 library version 0.8.2 ??? 1999
+LibVRML97 library version 0.8.2 January 2000
 Copyright (C) 1998, 1999 Chris Morley (cmorley@vermontel.com)
 Portions Copyright SGI and others
-
-Available from http://www.vermontel.com/~cmorley/vrml.html
 
 
 LEGAL ISSUES
@@ -10,8 +8,8 @@ LEGAL ISSUES
 
 In plain English:
 
-1. I don't promise that this software works.  (But if you find any bugs,
-   please let me know!)
+1. We don't promise that this software works.  (But if you find any bugs,
+   please let us know!)
 2. You can use this software for whatever you want.
 3. You may not pretend that you wrote this software.  If you use it in a
    program, you must acknowledge somewhere in your documentation that
@@ -50,13 +48,11 @@ commercial products, provided that all warranty or liability claims are
 assumed by the product vendor.
 
 
-Please read the README-SGI.txt file for further copyright and use information.
+Please read the README.SGI file for further copyright and use information.
 
   "Portions of this software are based in part on the VRML Parser
    written by Silicon Graphics, Inc., Mountain View, California, USA."
 
-    "The Graphics Interchange Format(c) is the Copyright property of
-    CompuServe Incorporated.  GIF(sm) is a Service Mark property of
-    CompuServe Incorporated."
-
-
+  "The Graphics Interchange Format(c) is the Copyright property of
+   CompuServe Incorporated.  GIF(sm) is a Service Mark property of
+   CompuServe Incorporated."

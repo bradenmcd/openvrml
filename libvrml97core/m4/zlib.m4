@@ -9,7 +9,7 @@ AC_DEFUN(VRML_PATH_ZLIB,
     
     if test -n "${with_zlib_prefix}"; then
       zlib__Idir="-I${with_zlib_prefix}/include"
-      zlib__Ldir="-I${with_zlib_prefix}/lib"
+      zlib__Ldir="-L${with_zlib_prefix}/lib"
     fi
     
     AC_LANG_SAVE
