@@ -1,3 +1,14 @@
+2002-09-10  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * doc/conformance.html: Retest Anchor, Inline and most of PROTO.
+
+        * src/openvrml/OpenVRML/ScriptJDK.cpp: Fix bug in MFInt32::getValue.
+          Add additional documentation.
+
+        * models/TestJSAI.java: Add tests of MFColor and MFFloat fields.
+
+        * java/vrml/field/MFColor.java: Update javadoc comments.
+
 2002-09-09  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,
