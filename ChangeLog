@@ -1,5 +1,10 @@
 2004-12-24 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp:  Removed some erroneously
+	committed debugging output.
+
+2004-12-24 Braden McDaniel  <braden@endoframe.com>
+
 	Updated libtool library versions.
 
 	* src/libopenvrml/Makefile.am:  Updated library version to

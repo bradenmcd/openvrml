@@ -1002,7 +1002,6 @@ NPError NPP_NewStream(const NPP instance,
                       const NPBool seekable,
                       uint16 * const stype)
 {
-    std::cout << "NPP_NewStream: type = " << type << std::endl;
     if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
     *stype = NP_ASFILEONLY;
     return NPERR_NO_ERROR;
@@ -1139,7 +1138,6 @@ void NPP_URLNotify(const NPP instance,
                    const NPReason reason,
                    void * const notifyData)
 {
-    std::cout << "NPP_URLNotify:" << url << std::endl;
 }
 
 jref NPP_GetJavaClass()
