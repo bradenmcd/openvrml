@@ -23,37 +23,166 @@ package vrml.field;
 import vrml.MField;
 import vrml.BaseNode;
 
+/**
+ * Represents a VRML MFNode field in Java.
+ */
 public class MFNode extends MField
 {
   public native int getSize();
   public native void clear();
   public native void delete(int index);
 
-  private native void CreateObject(int size, BaseNode node[]);
+  /**
+   * Construct a new MFNode field in OpenVRML using the given params.
+   *
+   * @param size Number of elements passed in.
+   * @param nodes List of BaseNodes.
+   */
+  private native void CreateObject(int size, BaseNode nodes[]);
 
-  public MFNode() { CreateObject(0, null); }
-  public MFNode(int size, BaseNode node[]) { CreateObject(size, node); }
-  public MFNode(BaseNode node[]) { CreateObject(node.length, node); }
+  /**
+   * Default constructor.
+   */
+  public MFNode()
+  {
+    CreateObject(0, null);
+  }
 
-  public native void getValue(BaseNode node[]);
+  /**
+   * Construct an MFNode field.
+   *
+   * @param size Number of elements passed in.
+   * @param nodes Array of BaseNodes.
+   */
+  public MFNode(int size, BaseNode nodes[])
+  {
+    CreateObject(size, nodes);
+  }
 
+  /**
+   * Construct an MFNode field.
+   *
+   * @param nodes Array of BaseNodes.
+   */
+  public MFNode(BaseNode nodes[])
+  {
+    CreateObject(nodes.length, nodes);
+  }
+
+  /**
+   * Retrieves the value of an MFNode field.
+   *
+   * @param nodes Array of BaseNodes to be returned.
+   */
+  public native void getValue(BaseNode nodes[]);
+
+  /**
+   * Retrieves a specific BaseNode from an MFNode.
+   *
+   * @param index Position of desired BaseNode.
+   * @return Value of BaseNode at index.
+   */	
   public native BaseNode get1Value(int index);
 
-  public void setValue(BaseNode node[]) { setValue(node.length, node); }
+  /**
+   * Set the value of the field.
+   *
+   * @param node New value for field.
+   */
+  public void setValue(BaseNode node[])
+  {
+    setValue(node.length, node);
+  }
+
+  /**
+   * Set the value of the field.
+   *
+   * @param size Size of new value for field.
+   * @param node New value for field.
+   */
   public native void setValue(int size, BaseNode node[]);
+
+  /**
+   * Set the value of the field.
+   *
+   * @param node New value for field.
+   */
   public native void setValue(MFNode node);
+
+  /**
+   * Set the value of the field.
+   *
+   * @param node New value for field.
+   */
   public native void setValue(ConstMFNode node);
 
+  /**
+   * Set a specified element in the field.
+   *
+   * @param index Position of element to update.
+   * @param node New value for element.
+   */
   public native void set1Value(int index, BaseNode node);
+
+  /**
+   * Set a specified element in the field.
+   *
+   * @param index Position of element to update.
+   * @param node New value for element.
+   */
   public native void set1Value(int index, ConstSFNode node);
+
+  /**
+   * Set a specified element in the field.
+   *
+   * @param index Position of element to update.
+   * @param node New value for element.
+   */
   public native void set1Value(int index, SFNode node);
 
+  /**
+   * Add a new element at the end of the list.
+   *
+   * @param node Element to add.
+   */
   public native void addValue(BaseNode node);
+
+  /**
+   * Add a new element at the end of the list.
+   *
+   * @param node Element to add.
+   */
   public native void addValue(ConstSFNode node);
+
+  /**
+   * Add a new element at the end of the list.
+   *
+   * @param node Element to add.
+   */
   public native void addValue(SFNode node);
 
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param node Value to insert.
+   */
   public native void insertValue(int index, BaseNode node);
+
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param node Value to insert.
+   */
   public native void insertValue(int index, ConstSFNode node);
+
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param node Value to insert.
+   */
   public native void insertValue(int index, SFNode node);
 
   public native String toString();

@@ -22,21 +22,89 @@ package vrml.field;
 
 import vrml.ConstMField;
 
+/**
+ * Represents a read-only VRML MFVec3f field in Java.
+ */
 public class ConstMFVec3f extends ConstMField
 {
   public native int getSize();
 
+  /**
+   * Construct a new MFVec3f field in OpenVRML using the given params.
+   *
+   * @param vec3s An array of sets of x,y,z values
+   */
   private native void CreateObject(float vec3s[][]);
+
+  /**
+   * Construct a new MFVec3f field in OpenVRML using the given params.
+   *
+   * @param size Number of SFVec3f elements passed in.
+   * @param vec3s List of x,y,z tuples
+   */
   private native void CreateObject(int size, float vec3s[]);
 
-  public ConstMFVec3f(float vec3s[][]) { CreateObject(vec3s); }
-  public ConstMFVec3f(float vec3s[]) { CreateObject(vec3s.length, vec3s); }
-  public ConstMFVec3f(int size, float vec3s[]) { CreateObject(size, vec3s); }
+  /**
+   * Construct a read-only MFVec3f field.
+   *
+   * @param vec3s An array of sets of x,y,z values
+   */
+  public ConstMFVec3f(float vec3s[][])
+  {
+    CreateObject(vec3s);
+  }
 
+  /**
+   * Construct a read-only MFVec3f field.
+   *
+   * @param vec3s List of x,y,z tuples
+   */
+  public ConstMFVec3f(float vec3s[])
+  {
+    CreateObject(vec3s.length / 3, vec3s);
+  }
+
+  /**
+   * Construct a read-only MFVec3f field.
+   *
+   * @param size Number of SFVec3f elements passed in.
+   * @param vec3s List of x,y,z tuples
+   */
+  public ConstMFVec3f(int size, float vec3s[])
+  {
+    CreateObject(size, vec3s);
+  }
+
+  /**
+   * Retrieves the value of an MFVec3f field.
+   *
+   * @param vec3s 2D array of x,y,z tuples to be returned.
+   */
   public native void getValue(float vec3s[][]);
+
+  /**
+   * Retrieves the value of an MFVec3f field.
+   *
+   * @param vec3s Array of x,y,z tuples to be returned.
+   */
   public native void getValue(float vec3s[]);
 
+  /**
+   * Retrieves a specific element in an MFVec3f and
+   * returns it as a float array.
+   *
+   * @param index Position of desired element
+   * @param vec3s Element at specified position
+   */
   public native void get1Value(int index, float vec3s[]);
+
+  /**
+   * Retrieves a specific element in an MFVec3f and
+   * returns it as an SFVec3f.
+   *
+   * @param index Position of desired element
+   * @param vec Element at specified position
+   */
   public native void get1Value(int index, SFVec3f vec);
 
   public native String toString();

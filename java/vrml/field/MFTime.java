@@ -22,37 +22,167 @@ package vrml.field;
 
 import vrml.MField;
 
+/**
+ * Represents a VRML MFTime field in Java.
+ */
 public class MFTime extends MField
 {
   public native int getSize();
   public native void clear();
   public native void delete(int index);
 
+  /**
+   * Construct a new MFTime field in OpenVRML using the given params.
+   *
+   * @param size Number of values passed in.
+   * @param times List of times to initialize object with.
+   */
   private native void CreateObject(int size, double times[]);
 
-  public MFTime() { CreateObject(0, null); }
-  public MFTime(int size, double times[]) { CreateObject(size, times); }
-  public MFTime(double times[]) { CreateObject(times.length, times); }
+  /**
+   * Default constructor.
+   */
+  public MFTime()
+  {
+    double dummy[] = new double[0];
+    CreateObject(0, dummy);
+  }
 
+  /**
+   * Construct an MFTime field.
+   *
+   * @param size Number of values passed in.
+   * @param times List of times to initialize object with.
+   */
+  public MFTime(int size, double times[])
+  {
+    CreateObject(size, times);
+  }
+
+  /**
+   * Construct an MFTime field.
+   *
+   * @param times List of times to initialize object with.
+   */
+  public MFTime(double times[])
+  {
+    CreateObject(times.length, times);
+  }
+
+  /**
+   * Retrieves the complete list of times making up an MFTime field.
+   *
+   * @param times List of times contained in field.
+   */
   public native void getValue(double times[]);
 
+  /**
+   * Retrieve a particular element from an MFTime field.
+   *
+   * @param index Position of desired element.
+   * @return Value at specified position.
+   */
   public native double get1Value(int index);
 
-  public void setValue(double times[]) { setValue(times.length, times); }
+  /**
+   * Set the value of the field.
+   *
+   * @param times New value for field.
+   */
+  public void setValue(double times[])
+  {
+    setValue(times.length, times);
+  }
+
+  /**
+   * Set the value of the field.
+   *
+   * @param size Size of new value for field.
+   * @param times New value for field.
+   */
   public native void setValue(int size, double times[]);
+
+  /**
+   * Set the value of the field.
+   *
+   * @param times New value for field.
+   */
   public native void setValue(MFTime times);
+
+  /**
+   * Set the value of the field.
+   *
+   * @param times New value for field.
+   */
   public native void setValue(ConstMFTime times);
 
+  /**
+   * Set a specified element in the field.
+   *
+   * @param index Position of element to update.
+   * @param time New value for element.
+   */
   public native void set1Value(int index, double time);
+
+  /**
+   * Set a specified element in the field.
+   *
+   * @param index Position of element to update.
+   * @param time New value for element.
+   */
   public native void set1Value(int index, ConstSFTime time);
+
+  /**
+   * Set a specified element in the field.
+   *
+   * @param index Position of element to update.
+   * @param time New value for element.
+   */
   public native void set1Value(int index, SFTime time);
 
+  /**
+   * Add a new element at the end of the list.
+   *
+   * @param time Element to add.
+   */
   public native void addValue(double time);
+
+  /**
+   * Add a new element at the end of the list.
+   *
+   * @param time Element to add.
+   */
   public native void addValue(ConstSFTime time);
+
+  /**
+   * Add a new element at the end of the list.
+   *
+   * @param time Element to add.
+   */
   public native void addValue(SFTime time);
 
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param time Value to insert.
+   */
   public native void insertValue(int index, double time);
+
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param time Value to insert.
+   */
   public native void insertValue(int index, ConstSFTime time);
+
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param time Value to insert.
+   */
   public native void insertValue(int index, SFTime time);
 
   public native String toString();

@@ -27,37 +27,187 @@ public class MFVec2f extends MField
   public native int getSize();
   public native void clear();
   public native void delete(int index);
-	
+
+  /**
+   * Construct a new MFVec2f field in OpenVRML using the given params.
+   *
+   * @param vec2s An array of sets of x,y values
+   */
   private native void CreateObject(float vec2s[][]);
+
+  /**
+   * Construct a new MFVec2f field in OpenVRML using the given params.
+   *
+   * @param size Number of SFVec2f elements passed in.
+   * @param vec2s List of x,y pairs
+   */
   private native void CreateObject(int size, float vec2s[]);
 
-  public MFVec2f() { CreateObject(0, null); }
-  public MFVec2f(float vec2s[][]) { CreateObject(vec2s); }
-  public MFVec2f(float vec2s[]) { CreateObject(vec2s.length, vec2s); }
-  public MFVec2f(int size, float vec2s[]) { CreateObject(size, vec2s); }
+  /**
+   * Default constructor.
+   */
+  public MFVec2f()
+  {
+    float[][] dummy = new float[0][0];
+    CreateObject(dummy);
+  }
 
+  /**
+   * Construct an MFVec2f field.
+   *
+   * @param vec2s An array of sets of x,y values
+   */
+  public MFVec2f(float vec2s[][])
+  {
+    CreateObject(vec2s);
+  }
+
+  /**
+   * Construct an MFVec2f field.
+   *
+   * @param vec2s List of x,y pairs
+   */
+  public MFVec2f(float vec2s[])
+  {
+    CreateObject(vec2s.length / 2, vec2s);
+  }
+
+  /**
+   * Construct an MFVec2f field.
+   *
+   * @param size Number of SFVec2f elements passed in.
+   * @param vec2s List of x,y pairs
+   */
+  public MFVec2f(int size, float vec2s[])
+  {
+    CreateObject(size, vec2s);
+  }
+
+  /**
+   * Retrieves the value of an MFVec2f field.
+   *
+   * @param vec2s 2D array of x,y pairs to be returned.
+   */
   public native void getValue(float vec2s[][]);
+
+  /**
+   * Retrieves the value of an MFVec2f field.
+   *
+   * @param vec2s Array of x,y pairs to be returned.
+   */
   public native void getValue(float vec2s[]);
 
+  /**
+   * Retrieves a specific element in an MFVec2f and
+   * returns it as a float array.
+   *
+   * @param index Position of desired element
+   * @param vec2s Element at specified position
+   */
   public native void get1Value(int index, float vec2s[]);
+
+  /**
+   * Retrieves a specific element in an MFVec2f and
+   * returns it as an SFVec2f.
+   *
+   * @param index Position of desired element
+   * @param vec Element at specified position
+   */
   public native void get1Value(int index, SFVec2f vec);
 
+  /**
+   * Set the value of the field.
+   *
+   * @param vec2s New value for field.
+   */
   public native void setValue(float vec2s[][]);
-  public void setValue(float vec2s[]) { setValue(vec2s.length, vec2s); }
+
+  /**
+   * Set the value of the field.
+   *
+   * @param vec2s New value for field.
+   */
+  public void setValue(float vec2s[])
+  {
+    setValue(vec2s.length / 2, vec2s);
+  }
+
+  /**
+   * Set the value of the field.
+   *
+   * @param size Size of new value for field.
+   * @param vec2s New value for field.
+   */
   public native void setValue(int size, float vec2s[]);
+
+  /**
+   * Set the value of the field.
+   *
+   * @param vecs New value for field.
+   */
   public native void setValue(MFVec2f vecs);
+
+  /**
+   * Set the value of the field.
+   *
+   * @param vecs New value for field.
+   */
   public native void setValue(ConstMFVec2f vecs);
 
+  /**
+   * Set a specified element in the field.
+   *
+   * @param index Position of element to update.
+   * @param x X-component of the new value.
+   * @param y Y-component of the new value.
+   */
   public native void set1Value(int index, float x, float y);
+
+  /**
+   * Set a specified element in the field.
+   *
+   * @param index Position of element to update.
+   * @param vec New value for element.
+   */
   public native void set1Value(int index, ConstSFVec2f vec);
+
+  /**
+   * Set a specified element in the field.
+   *
+   * @param index Position of element to update.
+   * @param vec New value for element.
+   */
   public native void set1Value(int index, SFVec2f vec);
 
+  /**
+   * Add a new element at the end of the list.
+   *
+   * @param x X-component of the vector to add.
+   * @param y Y-component of the vector to add.
+   */
   public native void addValue(float x, float y);
+
+  /**
+   * Add a new element at the end of the list.
+   *
+   * @param vec Element to add.
+   */
   public native void addValue(ConstSFVec2f vec);
+
+  /**
+   * Add a new element at the end of the list.
+   *
+   * @param vec Element to add.
+   */
   public native void addValue(SFVec2f vec);
 
+
   public native void insertValue(int index, float x, float y);
+
+
   public native void insertValue(int index, ConstSFVec2f vec);
+
+
   public native void insertValue(int index, SFVec2f vec);
 
   public native String toString();

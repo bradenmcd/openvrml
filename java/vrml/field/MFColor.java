@@ -73,7 +73,7 @@ public class MFColor extends MField
    */
   public MFColor(float colors[])
   {
-    CreateObject(colors.length, colors);
+    CreateObject(colors.length / 3, colors);
   }
 
   /**
@@ -131,7 +131,10 @@ public class MFColor extends MField
    *
    * @param colors Array of RGB values.
    */
-  public native void setValue(float colors[]);
+  public void setValue(float colors[])
+  {
+    setValue(colors.length / 3, colors);
+  }
 
   /**
    * Set the value of an MFColor field.
