@@ -33,7 +33,14 @@ namespace openvrml {
 
     class invalid_vrml : public std::runtime_error {
     public:
-        invalid_vrml();
+        const std::string url;
+        const size_t line;
+        const size_t column;
+
+        invalid_vrml(const std::string & url,
+                     size_t line,
+                     size_t column,
+                     const std::string & message);
         virtual ~invalid_vrml() throw ();
     };
 

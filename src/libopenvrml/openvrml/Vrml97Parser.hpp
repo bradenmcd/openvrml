@@ -177,7 +177,6 @@ public:
     const scope_ptr & scope,
     node_interface_set & interfaces,
     proto_node_class::default_value_map_t & default_value_map
-
 	);
 	public: void protoBody(
 		openvrml::browser & browser,
@@ -386,28 +385,6 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_5;
 	static const unsigned long _tokenSet_6_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_6;
-	static const unsigned long _tokenSet_7_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_7;
-	static const unsigned long _tokenSet_8_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_8;
-	static const unsigned long _tokenSet_9_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_9;
-	static const unsigned long _tokenSet_10_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_10;
-	static const unsigned long _tokenSet_11_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_11;
-	static const unsigned long _tokenSet_12_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_12;
-	static const unsigned long _tokenSet_13_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_13;
-	static const unsigned long _tokenSet_14_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_14;
-	static const unsigned long _tokenSet_15_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_15;
-	static const unsigned long _tokenSet_16_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_16;
-	static const unsigned long _tokenSet_17_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_17;
 };
 
 #endif /*INC_Vrml97Parser_hpp_*/

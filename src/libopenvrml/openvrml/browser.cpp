@@ -2372,14 +2372,43 @@ private:
  */
 
 /**
- * @brief Constructor.
+ * @var const std::string invalid_vrml::url
+ *
+ * @brief Resource identifier.
  */
-invalid_vrml::invalid_vrml():
-    std::runtime_error("Invalid VRML.")
+
+/**
+ * @var size_t invalid_vrml::line
+ *
+ * @brief Line number.
+ */
+
+/**
+ * @var size_t invalid_vrml::column
+ *
+ * @brief Column number.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param url       resource identifier of the stream.
+ * @param line      line number where the error was detected.
+ * @param column    column number where the error was detected.
+ * @param message   description of the error.
+ */
+invalid_vrml::invalid_vrml(const std::string & url,
+                           const size_t line,
+                           const size_t column,
+                           const std::string & message):
+    std::runtime_error(message),
+    url(url),
+    line(line),
+    column(column)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
 invalid_vrml::~invalid_vrml() throw ()
 {}
@@ -3119,8 +3148,13 @@ const std::vector<node_ptr> browser::create_vrml_from_stream(std::istream & in)
         Vrml97Scanner scanner(in);
         Vrml97Parser parser(scanner, "");
         parser.vrmlScene(*this, nodes);
-    } catch (antlr::ANTLRException &) {
-        throw invalid_vrml();
+    } catch (antlr::RecognitionException & ex) {
+        throw invalid_vrml(ex.getFilename(),
+                           ex.getLine(),
+                           ex.getColumn(),
+                           ex.getMessage());
+    } catch (antlr::ANTLRException & ex) {
+        throw std::runtime_error(ex.getMessage());
     }
     return nodes;
 }
@@ -4140,8 +4174,11 @@ scene::scene(openvrml::browser & browser,
                 Vrml97Scanner scanner(in);
                 Vrml97Parser parser(scanner, this->url());
                 parser.vrmlScene(browser, this->nodes_);
-            } catch (antlr::RecognitionException &) {
-                throw invalid_vrml();
+            } catch (antlr::RecognitionException & ex) {
+                throw invalid_vrml(ex.getFilename(),
+                                   ex.getLine(),
+                                   ex.getColumn(),
+                                   ex.getMessage());
             } catch (std::bad_alloc &) {
                 throw;
             } catch (...) {

@@ -1,5 +1,17 @@
 2004-03-01 Braden McDaniel  <braden@endoframe.com>
 
+	Changed parser to fail fast on errors rather than try to
+	recover.  Modified the invalid_vrml exception to store the URL
+	along with the line and column numbers for the error.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+
+2004-03-01 Braden McDaniel  <braden@endoframe.com>
+
 	* ide-projects/Makefile.am:  Added Visual C++ 7.1 project files.
 	* ide-projects/Windows/VisualC7_1/OpenVRML/OpenVRML.sln:  Added
 	file.

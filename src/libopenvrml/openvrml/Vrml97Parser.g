@@ -616,6 +616,7 @@ private:
 
 vrmlScene[openvrml::browser & browser,
           std::vector<node_ptr> & nodes]
+options { defaultErrorHandler=false; }
 {
     const scope_ptr scope(new Vrml97RootScope(browser, this->uri));
 }
@@ -625,6 +626,7 @@ vrmlScene[openvrml::browser & browser,
 statement[openvrml::browser & browser,
           std::vector<node_ptr> & nodes,
           const scope_ptr & scope]
+options { defaultErrorHandler=false; }
     {
         node_ptr node;
         node_type_ptr nodeType;
@@ -659,12 +661,9 @@ options { defaultErrorHandler=false; }
         }
     |   n=node[browser, scope, std::string()]
     ;
-    exception
-    catch [antlr::RecognitionException & ex] {
-        reportError(ex);
-    }
 
 protoStatement[openvrml::browser & browser, const scope_ptr & scope]
+options { defaultErrorHandler=false; }
     //
     // XXX What if the node type already exists in the scope? Probably need to
     // XXX handle an exception here.
@@ -674,6 +673,7 @@ protoStatement[openvrml::browser & browser, const scope_ptr & scope]
     ;
 
 proto[openvrml::browser & browser, const scope_ptr & scope]
+options { defaultErrorHandler=false; }
 {
     using std::vector;
 
@@ -749,8 +749,9 @@ protoInterfaceDeclaration[
     openvrml::browser & browser,
     const scope_ptr & scope,
     node_interface_set & interfaces,
-    proto_node_class::default_value_map_t & default_value_map
-] {
+    proto_node_class::default_value_map_t & default_value_map]
+options { defaultErrorHandler=false; }
+{
     using std::invalid_argument;
     using antlr::SemanticException;
 
@@ -788,11 +789,13 @@ protoInterfaceDeclaration[
     ;
 
 eventInterfaceType returns [node_interface::type_id it]
+options { defaultErrorHandler=false; }
     :   KEYWORD_EVENTIN  { it = node_interface::eventin_id; }
     |   KEYWORD_EVENTOUT { it = node_interface::eventout_id; }
     ;
 
 fieldInterfaceType returns [node_interface::type_id it]
+options { defaultErrorHandler=false; }
     :   KEYWORD_FIELD        { it = node_interface::field_id; }
     |   KEYWORD_EXPOSEDFIELD { it = node_interface::exposedfield_id; }
     ;
@@ -803,6 +806,7 @@ protoBody[openvrml::browser & browser,
           std::vector<node_ptr> & impl_nodes,
           proto_node_class::is_map_t & is_map,
           proto_node_class::routes_t & routes]
+options { defaultErrorHandler=false; }
 {
     assert(scope);
     assert(impl_nodes.empty());
@@ -831,6 +835,7 @@ protoBodyStatement[openvrml::browser & browser,
                    std::vector<node_ptr> & impl_nodes,
                    proto_node_class::is_map_t & is_map,
                    proto_node_class::routes_t & routes]
+options { defaultErrorHandler=false; }
 {
     assert(scope);
     assert(impl_nodes.size() == 1);
@@ -881,6 +886,7 @@ options { defaultErrorHandler=false; }
     ;
 
 externproto[openvrml::browser & browser, const openvrml::scope_ptr & scope]
+options { defaultErrorHandler=false; }
 {
     openvrml::node_interface_set interfaces;
     openvrml::mfstring urlList;
@@ -921,13 +927,14 @@ externproto[openvrml::browser & browser, const openvrml::scope_ptr & scope]
     ;
 
 externInterfaceDeclaration[openvrml::node_interface_set & interfaces]
-        {
-            using openvrml::node_interface;
-            using openvrml::field_value;
-            using antlr::SemanticException;
-            node_interface::type_id it(node_interface::invalid_type_id);
-            field_value::type_id ft(field_value::invalid_type_id);
-        }
+options { defaultErrorHandler=false; }
+{
+    using openvrml::node_interface;
+    using openvrml::field_value;
+    using antlr::SemanticException;
+    node_interface::type_id it(node_interface::invalid_type_id);
+    field_value::type_id ft(field_value::invalid_type_id);
+}
     :   it=interfaceType ft=fieldType id:ID {
             const node_interface interface(it, ft, id->getText());
             try {
@@ -942,11 +949,13 @@ externInterfaceDeclaration[openvrml::node_interface_set & interfaces]
     ;
 
 interfaceType returns [node_interface::type_id interface_type]
+options { defaultErrorHandler=false; }
     : interface_type=eventInterfaceType
     | interface_type=fieldInterfaceType
     ;
 
 externprotoUrlList returns [mfstring urlList]
+options { defaultErrorHandler=false; }
 {
     using std::string;
     using openvrml::mfstring;
@@ -958,6 +967,7 @@ externprotoUrlList returns [mfstring urlList]
     ;
 
 routeStatement[const openvrml::scope & scope]
+options { defaultErrorHandler=false; }
     :   KEYWORD_ROUTE from_node_id:ID PERIOD eventout_id:ID
         KEYWORD_TO to_node_id:ID PERIOD eventin_id:ID
         {
@@ -1000,6 +1010,7 @@ routeStatement[const openvrml::scope & scope]
 
 protoRouteStatement[const openvrml::scope & scope,
                     proto_node_class::routes_t & routes]
+options { defaultErrorHandler=false; }
     :   KEYWORD_ROUTE from_node_id:ID PERIOD eventout_id:ID
         KEYWORD_TO to_node_id:ID PERIOD eventin_id:ID
         {
@@ -1144,6 +1155,7 @@ nodeBodyElement[browser & b,
                 const scope_ptr & scope,
                 const node_interface_set & interfaces,
                 initial_value_map & initial_values]
+options { defaultErrorHandler=false; }
 {
     using std::find_if;
     using std::bind2nd;
@@ -1187,6 +1199,7 @@ scriptInterfaceDeclaration[browser & b,
                            const scope_ptr & scope,
                            node_interface_set & interfaces,
                            initial_value_map & initial_values]
+options { defaultErrorHandler=false; }
 {
     using antlr::SemanticException;
     node_interface::type_id it(node_interface::invalid_type_id);
@@ -1212,6 +1225,7 @@ scriptFieldInterfaceDeclaration[browser & b,
                                 const scope_ptr & scope,
                                 node_interface_set & interfaces,
                                 initial_value_map & initial_values]
+options { defaultErrorHandler=false; }
 {
     using std::find_if;
     using antlr::SemanticException;
@@ -1322,6 +1336,7 @@ protoNodeBodyElement[openvrml::browser & browser,
                      const node_interface_set & node_interfaces,
                      initial_value_map & initial_values,
                      is_list & is_mappings]
+options { defaultErrorHandler=false; }
 {
     using std::string;
     using antlr::SemanticException;
@@ -1362,6 +1377,7 @@ protoNodeBodyElement[openvrml::browser & browser,
 
 isStatement[const std::string & impl_node_interface_id,
             is_list & is_mappings]
+options { defaultErrorHandler=false; }
 {
     using std::string;
     using boost::lexical_cast;
@@ -1381,6 +1397,7 @@ protoScriptInterfaceDeclaration[openvrml::browser & browser,
                                 node_interface_set & interfaces,
                                 initial_value_map & initial_values,
                                 is_list & is_mappings]
+options { defaultErrorHandler=false; }
 {
     using antlr::SemanticException;
     node_interface::type_id it;
@@ -1420,6 +1437,7 @@ protoScriptFieldInterfaceDeclaration[
     node_interface_set & interfaces,
     initial_value_map & initial_values,
     is_list & is_mappings]
+options { defaultErrorHandler=false; }
 {
     using std::auto_ptr;
     using std::find_if;
@@ -1478,6 +1496,7 @@ protoScriptFieldInterfaceDeclaration[
 fieldType
 returns [openvrml::field_value::type_id ft =
          openvrml::field_value::invalid_type_id]
+options { defaultErrorHandler=false; }
 {
     using openvrml::field_value;
 }
@@ -1741,6 +1760,7 @@ options { defaultErrorHandler=false; }
 sfNodeValue[openvrml::browser & browser,
             const openvrml::scope_ptr & scope]
 returns [openvrml::field_value_ptr snv]
+options { defaultErrorHandler=false; }
 {
     openvrml::node_ptr n;
 }
@@ -1754,6 +1774,7 @@ protoSfNodeValue[openvrml::browser & browser,
                  proto_node_class::is_map_t & is_map,
                  proto_node_class::routes_t & routes]
 returns [field_value_ptr snv]
+options { defaultErrorHandler=false; }
 {
     node_ptr n;
 }
@@ -1769,6 +1790,7 @@ returns [field_value_ptr snv]
 mfNodeValue[openvrml::browser & browser,
             const openvrml::scope_ptr & scope]
 returns [openvrml::field_value_ptr mnv = openvrml::field_value_ptr(new mfnode)]
+options { defaultErrorHandler=false; }
 {
     openvrml::node_ptr n;
     mfnode & nodes = static_cast<mfnode &>(*mnv);
@@ -1787,6 +1809,7 @@ protoMfNodeValue[openvrml::browser & browser,
                  proto_node_class::is_map_t & is_map,
                  proto_node_class::routes_t & routes]
 returns [field_value_ptr mnv = field_value_ptr(new mfnode)]
+options { defaultErrorHandler=false; }
 {
     node_ptr n;
     mfnode & nodes = static_cast<mfnode &>(*mnv);
@@ -1807,12 +1830,14 @@ returns [field_value_ptr mnv = field_value_ptr(new mfnode)]
     ;
 
 sfRotationValue returns [openvrml::field_value_ptr srv]
+options { defaultErrorHandler=false; }
     { rotation r; }
     : rotationValue[r] { srv.reset(new sfrotation(r)); }
     ;
 
 mfRotationValue
 returns [field_value_ptr mrv = field_value_ptr(new mfrotation)]
+options { defaultErrorHandler=false; }
 {
     rotation r;
     mfrotation & rotations = static_cast<mfrotation &>(*mrv);
