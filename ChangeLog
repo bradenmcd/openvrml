@@ -1,3 +1,8 @@
+2003-01-02  Braden McDaniel  <braden@endoframe.com>
+
+        * m4/gl.m4:  Fix for --without-x.  Apparently when configuring
+          --without-x, $x_includes and $x_libraries are set to "NONE".
+
 2002-12-27  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp:  Added doc-comments.
