@@ -27,13 +27,13 @@
 #include <config.h>
 #endif
 
-#if HAVE_JDK
+#ifdef OPENVRML_HAVE_JAVA
 #include "ScriptJDK.h"
 
 #include <stdio.h>
 #include <string.h>
 
-#include "Doc.h"
+#include "doc2.hpp"
 #include "MathUtils.h"
 #include "System.h"
 #include "VrmlNodeScript.h"
@@ -98,7 +98,7 @@ ScriptJDK::ScriptJDK( VrmlNodeScript *node,
 	}
 
       /* Create the Java VM */
-      res = JNI_CreateJavaVM(&d_jvm, &d_env, &vm_args);
+      res = JNI_CreateJavaVM(&d_jvm, (void**) &d_env, &vm_args);
       if (res < 0)
 	theSystem->error("Can't create Java VM");
     }
@@ -150,9 +150,9 @@ ScriptJDK::~ScriptJDK()
 // Run a specified script
 
 void ScriptJDK::activate( double timeStamp,
-			  const char *fname,
+			  const std::string & fname,
 			  size_t argc,
-			  const VrmlField *argv[] )
+			  const VrmlField * const argv[] )
 {
   jstring jstr;
   jobjectArray args;
@@ -177,4 +177,4 @@ void ScriptJDK::activate( double timeStamp,
 
 VrmlScene *ScriptJDK::browser() { return d_node->browser(); }
 
-#endif // HAVE_JDK
+#endif // OPENVRML_HAVE_JAVA

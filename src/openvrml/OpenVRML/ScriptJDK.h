@@ -24,7 +24,7 @@
 #include "config.h"
 #endif
 
-#if HAVE_JDK
+#ifdef OPENVRML_HAVE_JAVA
 //
 //  Java (via Sun JDK) Script class
 //
@@ -45,9 +45,9 @@ public:
   ~ScriptJDK();
 
   virtual void activate( double timeStamp,
-			 const char *fname,
+			 const std::string & fname,
 			 size_t argc,
-			 const VrmlField *argv[]);
+			 const VrmlField * const argv[]);
 
   VrmlScene *browser();
   VrmlNodeScript *scriptNode() { return d_node; }
@@ -66,6 +66,6 @@ protected:
   jmethodID d_processEventsID, d_processEventID, d_eventsProcessedID;
 };
 
-#endif // HAVE_JDK
+#endif // OPENVRML_HAVE_JAVA
 #endif // _SCRIPTJDK_
 
