@@ -94,12 +94,12 @@ SOURCE="..\..\..\..\src\openvrml-gl\OpenVRML\Gl\ViewerOpenGL.cpp"
 
 !IF  "$(CFG)" == "openvrmlgl - Win32 Release"
 
-# ADD CPP /w /W0 /I "..\..\..\..\src\openvrml" /D "OPENVRML_GL_H=<gl/gl.h>" /D "OPENVRML_GLU_H=<gl/glu.h>" /D "OPENVRML_GLUT_H=<gl/glut.h>"
+# ADD CPP /w /W0 /I "..\..\..\..\src\openvrml" /I "..\\" /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX
 
 !ELSEIF  "$(CFG)" == "openvrmlgl - Win32 Debug"
 
-# ADD CPP /w /W0 /D "OPENVRML_GL_H=<gl/gl.h>" /D "OPENVRML_GLU_H=<gl/glu.h>" /D "OPENVRML_GLUT_H=<gl/glut.h>"
+# ADD CPP /w /W0 /I "..\\" /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX
 
 !ENDIF 

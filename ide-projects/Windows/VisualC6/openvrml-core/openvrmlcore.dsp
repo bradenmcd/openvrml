@@ -40,7 +40,7 @@ RSC=rc.exe
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
-# PROP Ignore_Export_Lib 0
+# PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /MD /w /W0 /GR /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "DLL_EXPORT" /FD /c
@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 ..\tplib\antlr\release\libantlr.lib js32.lib libpng.lib libjpeg.lib zlib.lib jvm.lib wsock32.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Release\openvrmlcore.dll"
+# ADD LINK32 ..\tplib\antlr\release\libantlr.lib regex.lib js32.lib libpng.lib libjpeg.lib zlib.lib jvm.lib wsock32.lib freetype211.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Release\openvrmlcore.dll"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 ..\tplib\antlr\debug\libantlr.lib js32.lib libpng.lib libjpeg.lib zlib.lib jvm.lib wsock32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Debug\openvrmlcore.dll"
+# ADD LINK32 ..\tplib\antlr\debug\libantlr.lib js32.lib libpng.lib libjpeg.lib zlib.lib jvm.lib wsock32.lib freetype211_d.lib regex.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Debug\openvrmlcore.dll"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
@@ -96,6 +96,10 @@ LINK32=link.exe
 # Begin Source File
 
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\OpenVRML\Audio.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\browser.h
 # End Source File
 # Begin Source File
 
@@ -120,6 +124,10 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\field.h
 # Begin Source File
 
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\fieldvalueptr.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\font.h
 # End Source File
 # Begin Source File
 
@@ -151,6 +159,14 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\private.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\scope.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\scopeptr.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\script.h
 # End Source File
 # Begin Source File
@@ -179,15 +195,7 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlMatrix.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlNamespace.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlRenderContext.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlScene.h
 # End Source File
 # End Group
 # Begin Group "Source File"
@@ -196,6 +204,21 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlScene.h
 # Begin Source File
 
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\Audio.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\browser.cpp
+
+!IF  "$(CFG)" == "openvrmlcore - Win32 Release"
+
+# ADD CPP /I "..\\" /I "..\..\..\..\lib" /D "__STDC__" /D "HAVE_CONFIG_H"
+
+!ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
+
+# ADD CPP /w /W0 /I "../../../../lib" /I "../" /D "HAVE_CONFIG_H" /D "__STDC__"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -208,6 +231,7 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\Doc.cpp
 # Begin Source File
 
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\doc2.cpp
+# ADD CPP /I "..\\" /D "__STDC__" /D "HAVE_CONFIG_H"
 # End Source File
 # Begin Source File
 
@@ -223,15 +247,20 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\fieldvalueptr.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\font.cpp
+# ADD CPP /I "..\\" /D "HAVE_CONFIG_H"
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\Image.cpp
 
 !IF  "$(CFG)" == "openvrmlcore - Win32 Release"
 
-# ADD CPP /D "XMD_H" /D "OPENVRML_HAVE_LIBJPEG" /D "OPENVRML_HAVE_LIBPNG"
+# ADD CPP /I "..\\" /D "XMD_H" /D "HAVE_CONFIG_H"
 
 !ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
 
-# ADD CPP /w /W0 /I "." /D "XMD_H" /D "OPENVRML_HAVE_LIBJPEG" /D "OPENVRML_HAVE_LIBPNG"
+# ADD CPP /w /W0 /I "..\\" /D "XMD_H" /D "HAVE_CONFIG_H"
 
 !ENDIF 
 
@@ -258,15 +287,23 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\nodetypeptr.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\scope.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\scopeptr.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\script.cpp
 
 !IF  "$(CFG)" == "openvrmlcore - Win32 Release"
 
-# ADD CPP /D "XP_PC" /D "OPENVRML_HAVE_SPIDERMONKEY" /D "OPENVRML_HAVE_JNI"
+# ADD CPP /I "..\\" /D "XP_PC" /D "HAVE_CONFIG_H"
 
 !ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
 
-# ADD CPP /w /W0 /D "XP_PC" /D "OPENVRML_HAVE_SPIDERMONKEY" /D "OPENVRML_HAVE_JNI"
+# ADD CPP /w /W0 /I "..\\" /D "XP_PC" /D "HAVE_CONFIG_H"
 
 !ENDIF 
 
@@ -277,11 +314,11 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\ScriptJDK.cpp
 
 !IF  "$(CFG)" == "openvrmlcore - Win32 Release"
 
-# ADD CPP /D "OPENVRML_HAVE_JNI" /D "_WIN32_IDE"
+# ADD CPP /I "..\\" /D "HAVE_CONFIG_H"
 
 !ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
 
-# ADD CPP /w /W0 /D "OPENVRML_HAVE_JNI" /D "_WIN32_IDE"
+# ADD CPP /w /W0 /I "..\\" /D "HAVE_CONFIG_H"
 
 !ENDIF 
 
@@ -297,7 +334,7 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\Viewer.cpp
 # Begin Source File
 
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\vrml97node.cpp
-# ADD CPP /Zm400
+# ADD CPP /I "..\\" /D "HAVE_CONFIG_H" /Zm400
 # End Source File
 # Begin Source File
 
@@ -309,26 +346,7 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlMatrix.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlNamespace.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlRenderContext.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlScene.cpp
-
-!IF  "$(CFG)" == "openvrmlcore - Win32 Release"
-
-# ADD CPP /GR /I "..\..\..\..\lib" /D PACKAGE_VERSION=\"0.12.5\"
-
-!ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
-
-# ADD CPP /I "..\..\..\..\lib" /D PACKAGE_VERSION=\"0.12.5\"
-
-!ENDIF 
-
 # End Source File
 # End Group
 # End Target
