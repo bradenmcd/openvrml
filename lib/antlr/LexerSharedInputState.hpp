@@ -2,11 +2,12 @@
 #define INC_LexerSharedInputState_hpp__
 
 #include "config.hpp"
-#include "InputBuffer.hpp"
 #include "RefCount.hpp"
 #include <string>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
+
+class InputBuffer;
 
 /** This object contains the data associated with an
  *  input stream of characters.  Multiple lexers

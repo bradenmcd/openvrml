@@ -32,6 +32,7 @@
 
 #include "MismatchedCharException.hpp"
 #include "String.hpp"
+#include "CharScanner.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

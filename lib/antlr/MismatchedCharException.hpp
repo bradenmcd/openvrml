@@ -36,9 +36,10 @@
 #include "config.hpp"
 #include "RecognitionException.hpp"
 #include "BitSet.hpp"
-#include "CharScanner.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
+
+class CharScanner;
 
 class MismatchedCharException : public RecognitionException {
 public:

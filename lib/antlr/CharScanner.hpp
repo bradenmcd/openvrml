@@ -6,7 +6,7 @@
  * <p>
  * ANTLR 2.6.0 MageLang Insitute, 1999
  * <p>
- * $Id: CharScanner.hpp,v 1.2 2000-12-16 09:30:40 braden Exp $
+ * $Id: CharScanner.hpp,v 1.3 2000-12-17 08:07:30 braden Exp $
  * <p>
  * We reserve no legal rights to the ANTLR--it is fully in the
  * public domain. An individual or company may do whatever
@@ -36,15 +36,15 @@
  */
 
 #include "config.hpp"
+#include "InputBuffer.hpp"
 #include "TokenStream.hpp"
 #include "RecognitionException.hpp"
-#include "InputBuffer.hpp"
-#include "BitSet.hpp"
 #include "LexerSharedInputState.hpp"
 #include <map>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
+class BitSet;
 class CharScanner;
 
 class CharScannerLiteralsLess : public ANTLR_USE_NAMESPACE(std)binary_function<ANTLR_USE_NAMESPACE(std)string,ANTLR_USE_NAMESPACE(std)string,bool> {

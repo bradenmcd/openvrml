@@ -32,6 +32,7 @@
 
 #include "CharScanner.hpp"
 #include "CommonToken.hpp"
+#include "InputBuffer.hpp"
 #include "MismatchedCharException.hpp"
 #include <map>
 

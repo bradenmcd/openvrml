@@ -35,11 +35,12 @@
 #include "config.hpp"
 #include "AST.hpp"
 #include "ASTFactory.hpp"
-#include "BitSet.hpp"
 #include "RecognitionException.hpp"
 #include "TreeParserSharedInputState.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
+
+class BitSet;
 
 class TreeParser {
 public:
