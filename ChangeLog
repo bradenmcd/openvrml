@@ -14,6 +14,9 @@
         * src/openvrml/OpenVRML/vrml97node.cpp:  Fixed problem with
           evaluateCurve_ introducing redundant vertices for Text.
 
+        * src/openvrml-gl/OpenVRML/GL/Makefile.am:  Removed unnecessary
+          compiler flags.
+
 2002-12-18  Braden McDaniel  <braden@endoframe.com>
 
         * m4/Makefile.am, m4/ftflib.m4:  Removed obsolete macro.
