@@ -1,3 +1,7 @@
+2001-09-16 Thomas Flynn <tflynn@users.sourceforge.net>
+
+	* Add missing class (Event.java) into the build.
+
 2001-09-12 Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Add getFieldType to field.h/.cpp from Henri Manson's patch.
