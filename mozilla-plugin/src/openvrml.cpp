@@ -1672,9 +1672,6 @@ namespace {
                 &uri_arg_vec.front()
             };
 
-            std::cout << argv[0] << ' ' << argv[1] << ' ' << argv[2]
-                      << std::endl;
-
             const gchar * working_directory = 0;
             char ** envp = 0;
             int flags = G_SPAWN_DO_NOT_REAP_CHILD

@@ -1,5 +1,10 @@
 2005-01-07 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp:  Removed some erroneously
+	checked in debugging output.
+
+2005-01-07 Braden McDaniel  <braden@endoframe.com>
+
 	Made the Mozilla plug-in out-of-process.
 
 	* openvrml.spec.in
