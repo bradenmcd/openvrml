@@ -1,0 +1,39 @@
+#VRML V2.0 utf8
+
+Transform { children [
+  DirectionalLight { direction 0 -1 0  intensity 0.75 }
+  # Grey ground-plane
+  Shape {
+    appearance DEF A Appearance { material Material { } }
+    geometry IndexedFaceSet {
+      coord Coordinate {
+        point [ -50 0 -50  -50 0 50  50 0 50  50 0 -50 ]
+      }
+      coordIndex [ 0 1 2 3 -1 ]
+    }
+  }
+  # Flag-pole at origin
+  Shape {
+    appearance USE A
+    geometry IndexedFaceSet {
+      coord Coordinate {
+        point [ -.1 0 -.1  -.1 0 .1  .1 0 0
+                -.1 6 -.1  -.1 6 .1  .1 6 0 ]
+      }
+      coordIndex [ 0 1 4 3 -1  1 2 5 4 -1  2 0 3 5 -1  3 4 5 -1 ]
+    }
+  }
+  # Flag
+  Shape {
+    appearance Appearance { material Material { diffuseColor .9 0 0 }}
+    geometry IndexedFaceSet {
+      coord Coordinate {
+        point [ .1 6 0  .1 5 0  1.4 5 0  1.4 6 0 ]
+      }
+      coordIndex [ 0 1 2 3 -1 ]
+      solid FALSE
+    }
+  }
+
+]}
+

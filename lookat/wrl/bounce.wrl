@@ -1,0 +1,33 @@
+#VRML V2.0 utf8
+PROTO BouncingShape [
+        field SFNode appearance NULL
+        field SFNode geometry NULL
+] {
+   DEF bounceTrans Transform {
+      translation 0 0 0
+      children [
+	 Shape {
+	    appearance IS appearance
+	    geometry IS geometry
+	 }
+	 DEF bounceInterp PositionInterpolator {
+	    key      [ 0, 0.5, 1 ]
+	    keyValue [ 0 0 0, 0 10 0, 0 0 0 ]
+	 }
+	 DEF bounceTimer TimeSensor {
+	    cycleInterval 2
+	    loop TRUE
+	 }
+	]
+   }
+
+   ROUTE bounceTimer.fraction_changed TO bounceInterp.set_fraction
+   ROUTE bounceInterp.value_changed TO bounceTrans.translation
+}
+
+BouncingShape {
+   appearance Appearance {
+      material Material { diffuseColor 0 1 0 }
+   }
+   geometry Sphere { radius 0.5 }
+}

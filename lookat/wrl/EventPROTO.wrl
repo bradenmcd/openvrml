@@ -1,0 +1,44 @@
+#VRML V2.0 utf8
+
+NavigationInfo {
+   headlight TRUE
+   avatarSize 0
+   type [ "EXAMINE", "ANY" ]
+}
+
+
+PROTO Icon [ eventIn SFVec3f set_position
+	     field SFColor color 0 0 1
+	    ] {
+   DEF Location Transform {
+      translation IS set_position
+      children [
+         Shape {
+            appearance Appearance {
+               material Material { diffuseColor IS color }
+            }
+            geometry Sphere {}
+         }
+      ]
+   }
+}
+
+DEF bouncer Icon { color 1 0 0 }
+
+DEF bounceInterp PositionInterpolator {
+	    key      [ 0, 0.5, 1 ]
+	    keyValue [ 0 0 0, 0 10 0, 0 0 0 ]
+}
+
+DEF bounceTimer TimeSensor {
+	    cycleInterval 2
+	    loop TRUE
+}
+
+ROUTE bounceTimer.fraction_changed TO bounceInterp.set_fraction
+ROUTE bounceInterp.value_changed TO bouncer.set_position
+
+
+
+
+

@@ -1,0 +1,26 @@
+#VRML V2.0 utf8
+
+EXTERNPROTO RefractiveMaterial [      # external protype definition
+    exposedField SFFloat ambientIntensity
+    exposedField SFColor diffuseColor
+    exposedField SFColor specularColor
+    exposedField SFColor emissiveColor
+    exposedField SFFloat shininess
+    exposedField SFFloat transparency
+    exposedField SFFloat indexOfRefraction  ]
+[
+  "urn:inet:foo.com:types:RefractiveMaterial",
+  "RefractiveMaterial.wrl",
+]
+
+Shape {
+    geometry Sphere { }
+    appearance Appearance {
+       material RefractiveMaterial {   # Instance of a RefractiveMaterial
+            ambientIntensity  0.2
+            diffuseColor      1 0 0
+            indexOfRefraction 0.3
+        }
+    }
+}
+
