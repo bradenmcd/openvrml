@@ -280,6 +280,9 @@ namespace openvrml {
     template <typename To>
     To node_cast(node * n) throw ();
 
+    template <typename FieldValue>
+    class exposedfield;
+
     class node : boost::noncopyable {
         friend std::ostream & operator<<(std::ostream & out, const node & n);
         friend script_node * node_cast<script_node *>(node * n) throw ();
@@ -865,6 +868,58 @@ namespace openvrml {
 
         void do_traversal(node & n);
     };
+
+
+    template <typename FieldValue>
+    class exposedfield : public FieldValue,
+                         public field_value_listener<FieldValue>,
+                         public field_value_emitter<FieldValue> {
+    public:
+        exposedfield(openvrml::node & node,
+                     const typename FieldValue::value_type & value =
+                     typename FieldValue::value_type());
+        virtual ~exposedfield() throw ();
+
+        virtual void process_event(const FieldValue & value, double timestamp)
+            throw (std::bad_alloc);
+
+    private:
+        virtual void do_process_event(const FieldValue & value,
+                                      double timestamp)
+            throw (std::bad_alloc);
+    };
+
+    template <typename FieldValue>
+    inline exposedfield<FieldValue>::exposedfield(
+        openvrml::node & node,
+        const typename FieldValue::value_type & value):
+        FieldValue(value),
+        field_value_listener<FieldValue>(node),
+        field_value_emitter<FieldValue>(static_cast<FieldValue &>(*this))
+    {}
+
+    template <typename FieldValue>
+    inline exposedfield<FieldValue>::~exposedfield() throw ()
+    {}
+
+    template <typename FieldValue>
+    inline void
+    exposedfield<FieldValue>::process_event(const FieldValue & value,
+                                            const double timestamp)
+        throw (std::bad_alloc)
+    {
+        static_cast<FieldValue &>(*this) = value;
+        this->do_process_event(value, timestamp);
+        this->node.modified(true);
+        node::emit_event(*this, timestamp);
+    }
+
+    template <typename FieldValue>
+    inline void
+    exposedfield<FieldValue>::do_process_event(const FieldValue & value,
+                                               const double timestamp)
+        throw (std::bad_alloc)
+    {}
 }
 
 # endif

@@ -616,7 +616,7 @@ void JNICALL Java_vrml_field_ConstSFBool_CreateObject
     try {
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) { return; }
-        std::auto_ptr<sfbool> sfbool(new sfbool(value));
+        std::auto_ptr<openvrml::sfbool> sfbool(new openvrml::sfbool(value));
         env->SetIntField(obj, fid, reinterpret_cast<int>(sfbool.release()));
     } catch (std::bad_alloc & ex) {
         env->ExceptionDescribe();
@@ -759,7 +759,8 @@ void JNICALL Java_vrml_field_ConstSFColor_CreateObject
     try {
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) { return; }
-        std::auto_ptr<sfcolor> sfcolor(new sfcolor(color(r, g, b)));
+        std::auto_ptr<openvrml::sfcolor>
+            sfcolor(new openvrml::sfcolor(color(r, g, b)));
         env->SetIntField(obj, fid, reinterpret_cast<int>(sfcolor.release()));
     } catch (std::bad_alloc & ex) {
         env->ExceptionDescribe();
@@ -1006,7 +1007,7 @@ void JNICALL Java_vrml_field_ConstSFFloat_CreateObject
     try {
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) { return; }
-        std::auto_ptr<sffloat> sffloat(new sffloat(value));
+        std::auto_ptr<openvrml::sffloat> sffloat(new openvrml::sffloat(value));
         env->SetIntField(obj, fid, reinterpret_cast<int>(sffloat.release()));
     } catch (std::bad_alloc & ex) {
         env->ExceptionDescribe();
@@ -1405,7 +1406,7 @@ void JNICALL Java_vrml_field_ConstSFInt32_CreateObject
     try {
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) { return; }
-        std::auto_ptr<sfint32> sfint32(new sfint32(value));
+        std::auto_ptr<openvrml::sfint32> sfint32(new openvrml::sfint32(value));
         env->SetIntField(obj, fid, reinterpret_cast<int>(sfint32.release()));
     } catch (std::bad_alloc & ex) {
         env->ExceptionDescribe();
@@ -1695,10 +1696,11 @@ void JNICALL Java_vrml_field_ConstSFRotation_CreateObject
    jfloat axisZ, jfloat angle)
 {
     try {
-        std::auto_ptr<sfrotation> sfrotation(new sfrotation(rotation(axisX,
-                                                                     axisY,
-                                                                     axisZ,
-                                                                     angle)));
+        std::auto_ptr<openvrml::sfrotation>
+            sfrotation(new openvrml::sfrotation(rotation(axisX,
+                                                         axisY,
+                                                         axisZ,
+                                                         angle)));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) { return; }
         env->SetIntField(obj, fid, reinterpret_cast<int>(sfrotation.release()));
@@ -1967,7 +1969,7 @@ void JNICALL Java_vrml_field_ConstSFTime_CreateObject
   (JNIEnv *env, jobject obj, jdouble time)
 {
     try {
-        std::auto_ptr<sftime> sftime(new sftime(time));
+        std::auto_ptr<openvrml::sftime> sftime(new openvrml::sftime(time));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) return;
         env->SetIntField(obj, fid, reinterpret_cast<int>(sftime.release()));
@@ -2073,7 +2075,8 @@ void JNICALL Java_vrml_field_ConstSFVec2f_CreateObject
   (JNIEnv *env, jobject obj, jfloat x, jfloat y)
 {
     try {
-        std::auto_ptr<sfvec2f> sfvec2f(new sfvec2f(vec2f(x, y)));
+        std::auto_ptr<openvrml::sfvec2f>
+            sfvec2f(new openvrml::sfvec2f(vec2f(x, y)));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) { return; }
         env->SetIntField(obj, fid, reinterpret_cast<int>(sfvec2f.release()));
@@ -2251,7 +2254,8 @@ void JNICALL Java_vrml_field_ConstSFVec3f_CreateObject(JNIEnv * env,
                                                        jfloat z)
 {
     try {
-        std::auto_ptr<sfvec3f> sfvec3f(new sfvec3f(vec3f(x, y, z)));
+        std::auto_ptr<openvrml::sfvec3f>
+            sfvec3f(new openvrml::sfvec3f(vec3f(x, y, z)));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) { return; }
         env->SetIntField(obj, fid, reinterpret_cast<int>(sfvec3f.release()));
@@ -2456,7 +2460,8 @@ void JNICALL Java_vrml_field_ConstMFColor_CreateObject___3_3F(
     jobjectArray jarr)
 {
     try {
-        std::auto_ptr<mfcolor> mfcolor(new mfcolor(env->GetArrayLength(jarr)));
+        std::auto_ptr<openvrml::mfcolor>
+            mfcolor(new openvrml::mfcolor(env->GetArrayLength(jarr)));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) return;
         env->SetIntField(obj, fid, reinterpret_cast<int>(mfcolor.release()));
@@ -2479,7 +2484,7 @@ void JNICALL Java_vrml_field_ConstMFColor_CreateObject__I_3F(JNIEnv * env,
                                                              jfloatArray jarr)
 {
     try {
-        std::auto_ptr<mfcolor> mfcolor(new mfcolor(size));
+        std::auto_ptr<openvrml::mfcolor> mfcolor(new openvrml::mfcolor(size));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) return;
         env->SetIntField(obj, fid, reinterpret_cast<int>(mfcolor.release()));
@@ -3030,7 +3035,8 @@ void JNICALL Java_vrml_field_ConstMFFloat_CreateObject
 {
     try {
         jfloat *pjf = env->GetFloatArrayElements(value, NULL);
-        std::auto_ptr<mffloat> mffloat(new mffloat(pjf, pjf + size));
+        std::auto_ptr<openvrml::mffloat>
+            mffloat(new openvrml::mffloat(pjf, pjf + size));
         env->ReleaseFloatArrayElements(value, pjf, JNI_ABORT);
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) { return; }
@@ -3750,7 +3756,7 @@ void JNICALL Java_vrml_field_ConstMFNode_CreateObject
   (JNIEnv *env, jobject obj, jint size, jobjectArray jarr)
 {
     try {
-        std::auto_ptr<mfnode> mfnode(new mfnode(size));
+        std::auto_ptr<openvrml::mfnode> mfnode(new openvrml::mfnode(size));
         jfieldID fid;
 
         for (jint i = 0; i < size; i++) {
@@ -4155,8 +4161,8 @@ Java_vrml_field_ConstMFRotation_CreateObject___3_3F(JNIEnv * env,
                                                     jobjectArray jarr)
 {
     try {
-        std::auto_ptr<mfrotation>
-                mfrotation(new mfrotation(env->GetArrayLength(jarr)));
+        std::auto_ptr<openvrml::mfrotation>
+            mfrotation(new openvrml::mfrotation(env->GetArrayLength(jarr)));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) return;
         env->SetIntField(obj, fid, reinterpret_cast<int>(mfrotation.release()));
@@ -4181,7 +4187,8 @@ Java_vrml_field_ConstMFRotation_CreateObject__I_3F(JNIEnv * env,
                                                    jfloatArray jarr)
 {
     try {
-        std::auto_ptr<mfrotation> mfrotation(new mfrotation(size));
+        std::auto_ptr<openvrml::mfrotation>
+            mfrotation(new openvrml::mfrotation(size));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) { return; }
         env->SetIntField(obj, fid,
@@ -4678,7 +4685,8 @@ void JNICALL Java_vrml_field_ConstMFString_CreateObject
   (JNIEnv *env, jobject obj, jint size, jobjectArray jarr)
 {
     try {
-        std::auto_ptr<mfstring> mfstring(new mfstring(size));
+        std::auto_ptr<openvrml::mfstring>
+            mfstring(new openvrml::mfstring(size));
 
         for (jint i = 0; i < size; i++) {
             jstring el = (jstring) env->GetObjectArrayElement(jarr, i);
@@ -5077,7 +5085,8 @@ void JNICALL Java_vrml_field_ConstMFTime_CreateObject
 {
     try {
         jdouble *pjd = env->GetDoubleArrayElements(value, 0);
-        std::auto_ptr<mftime> mftime(new mftime(pjd, pjd + size));
+        std::auto_ptr<openvrml::mftime>
+            mftime(new openvrml::mftime(pjd, pjd + size));
         env->ReleaseDoubleArrayElements(value, pjd, JNI_ABORT);
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) { return; }
@@ -5473,7 +5482,8 @@ void JNICALL Java_vrml_field_ConstMFVec2f_CreateObject___3_3F(JNIEnv * env,
                                                               jobjectArray jarr)
 {
     try {
-        std::auto_ptr<mfvec2f> mfvec2f(new mfvec2f(env->GetArrayLength(jarr)));
+        std::auto_ptr<openvrml::mfvec2f>
+            mfvec2f(new openvrml::mfvec2f(env->GetArrayLength(jarr)));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) return;
         env->SetIntField(obj, fid, reinterpret_cast<int>(mfvec2f.release()));
@@ -5496,7 +5506,7 @@ void JNICALL Java_vrml_field_ConstMFVec2f_CreateObject__I_3F(JNIEnv * env,
                                                              jfloatArray jarr)
 {
     try {
-        std::auto_ptr<mfvec2f> mfvec2f(new mfvec2f(size));
+        std::auto_ptr<openvrml::mfvec2f> mfvec2f(new openvrml::mfvec2f(size));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) return;
         env->SetIntField(obj, fid, reinterpret_cast<int>(mfvec2f.release()));
@@ -6024,7 +6034,8 @@ void JNICALL Java_vrml_field_ConstMFVec3f_CreateObject___3_3F(JNIEnv * env,
                                                               jobjectArray jarr)
 {
     try {
-        std::auto_ptr<mfvec3f> mfvec3f(new mfvec3f(env->GetArrayLength(jarr)));
+        std::auto_ptr<openvrml::mfvec3f>
+            mfvec3f(new openvrml::mfvec3f(env->GetArrayLength(jarr)));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) return;
         env->SetIntField(obj, fid, reinterpret_cast<int>(mfvec3f.release()));
@@ -6047,7 +6058,7 @@ void JNICALL Java_vrml_field_ConstMFVec3f_CreateObject__I_3F(JNIEnv * env,
                                                              jfloatArray jarr)
 {
     try {
-        std::auto_ptr<mfvec3f> mfvec3f(new mfvec3f(size));
+        std::auto_ptr<openvrml::mfvec3f> mfvec3f(new openvrml::mfvec3f(size));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         if (!fid) return;
         env->SetIntField(obj, fid, reinterpret_cast<int>(mfvec3f.release()));
