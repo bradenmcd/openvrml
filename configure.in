@@ -1,0 +1,598 @@
+dnl configure.in
+dnl
+dnl toplevel configure.in for libvrml97
+dnl
+dnl basic theory here was to run autoscan, then merge the
+dnl resulting output with the union of the configure.in's in
+dnl the libvrml97core, libvrml97gl and lookat directories.
+dnl should probably test for gtk libs and do gtklookat while
+dnl we're at it, but that can come later.
+dnl
+dnl cks Mon Dec  6 00:22:16 CST 1999
+dnl
+dnl
+dnl
+
+
+AC_INIT(libvrml97core/src/vrml97/VrmlScene.cpp)
+
+
+dnl Checks for programs.
+AC_PROG_CXX
+AC_PROG_AWK
+AC_PROG_YACC
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AM_PROG_LEX
+AM_PROG_LIBTOOL
+
+
+
+dnl random automake stuff
+dnl
+PACKAGE=libvrml97
+VERSION="0.8.1"
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+AM_CONFIG_HEADER(config.h)
+
+
+
+dnl ZLIB
+dnl
+dnl like libjpeg, zlib is now required. this test requires it to
+dnl be installed, but we'd really like to have one of those nifty
+dnl --with-zlib=path thingies. until then, users can get around
+dnl a compiled-but-not-installed zlib by setting LD_LIBRARY_PATH,
+dnl right?
+dnl
+AC_CHECK_LIB(z, zlibVersion, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libz not found]))
+AC_CHECK_HEADER(zlib.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([zlib.h not found]))
+
+
+
+dnl JPEG
+dnl
+dnl libjpeg is now a required part of the core build, but since we can
+dnl expect some people not to have it, it should get one of those
+dnl --jpeg-libraries type options so you aren't required to install it
+dnl in the system directories just to try out lookat. normally check_lib
+dnl tries to add the library to the global list of libs needed to link
+dnl apps, but we don't want that, so stick in a spurious result message
+dnl to inhibit the default action.
+dnl
+AC_CHECK_LIB(jpeg, jpeg_read_header, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libjpeg not found]))
+AC_CHECK_HEADER(jpeglib.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([jpeglib.h not found]))
+
+
+
+dnl PNG
+dnl
+dnl like libjpeg, libpng is required for the core build, but we don't
+dnl want to require that it be in a system directory.
+dnl
+AC_CHECK_LIB(png, png_read_info, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libpng not found]))
+AC_CHECK_HEADER(png.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([png.h not found]))
+
+
+
+dnl X Window System
+dnl
+dnl This one comes for free with autoconf, and defines the X_*_LIBS
+dnl macros used below.
+dnl
+AC_PATH_XTRA
+
+
+
+dnl X, GL/MESA, GLUT
+dnl
+dnl the following was simply included verbatim from
+dnl libvrml97gl/m4/vrml97gl.m4
+dnl 
+dnl
+
+AC_DEFUN(VRMLGL_PATH_GL,
+[dnl
+AC_REQUIRE([AC_PATH_XTRA])
+
+if test "x$x_includes" = "x"; then
+  X__Idir=""
+else
+  X__Idir="-I$x_includes"
+fi
+if test "x$x_libraries" = "x"; then
+  X__Ldir=""
+else
+  X__Ldir="-L$x_libraries"
+fi
+
+
+X__cflags="${X__Idir} ${X_CFLAGS}"
+X__libs="${X__Ldir} $X_LDFLAGS ${X_PRE_LIBS} ${X_LIBS} ${X_EXTRA_LIBS}"
+
+
+dnl Check for the Xext library (needed for XShm extention)
+AC_CHECK_LIB(Xext, XShmAttach,
+      X__libs="-lXext $X__libs",
+      # On AIX, it is in XextSam instead, but we still need -lXext
+      AC_CHECK_LIB(XextSam, XShmAttach,
+          X__libs="-lXextSam -lXext $X__libs",
+          no_xext_lib=yes, $X__libs),
+      $X__libs)
+
+
+dnl
+dnl
+dnl
+
+AC_ARG_WITH(GL-prefix,
+  [  --with-GL-prefix=DIR    pass '-IDIR/include' to CPP, '-LDIR/lib' to LD])
+AC_ARG_WITH(MesaGL,
+  [  --with-MesaGL           use '-lMesaGL', instead of '-lGL'])
+AC_ARG_WITH(MesaGLU,
+  [  --with-MesaGLU          use '-lMesaGLU', instead of '-lGLU'])
+
+if test -n "${with_GL_prefix}"; then
+  GL__Idir="-I${with_GL_prefix}/include"
+  GL__Ldir="-L${with_GL_prefix}/lib"
+fi
+
+dnl
+dnl Checks for GL libraries.
+dnl
+
+ac_save_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${GL__Ldir}"
+last_LDFLAGS="${X__libs} -lm"
+GLU_LDFLAGS="${X__libs} -lGL -lm"
+MGLU_LDFLAGS="${X__libs} -lMesaGL -lm"
+
+AC_CHECK_LIB(GL,      glEnable,     have_lib_GL=yes,      , ${last_LDFLAGS})
+AC_CHECK_LIB(MesaGL,  glEnable,     have_lib_MesaGL=yes,  , ${last_LDFLAGS})
+AC_CHECK_LIB(GLU,     gluErrorString, have_lib_GLU=yes,     , ${GLU_LDFLAGS})
+AC_CHECK_LIB(MesaGLU, gluErrorString, have_lib_MesaGLU=yes, , ${MGLU_LDFLAGS})
+
+LDFLAGS="${ac_save_LDFLAGS}"
+
+dnl
+dnl Checks for GL header files.
+dnl
+
+ac_save_CPPFLAGS="${CPPFLAGS}"
+CPPFLAGS="${CPPFLAGS} ${GL__Idir} ${X__cflags}"
+
+AC_CHECK_HEADER(GL/gl.h,  have_GL_gl_h=yes)
+AC_CHECK_HEADER(GL/glu.h, have_GL_glu_h=yes)
+AC_CHECK_HEADER(GL/glx.h, have_GL_glx_h=yes)
+
+CPPFLAGS="${ac_save_CPPFLAGS}"
+
+dnl
+dnl
+dnl
+
+no_GL=""
+
+if test "x${have_lib_GL}" = xyes -a "x${with_MesaGL}" = xno; then
+  GL_lib='GL'
+elif test "x${have_lib_MesaGL}" = xyes -a "x${with_MesaGL}" = xyes; then
+  GL_lib='MesaGL'
+elif test "x${have_lib_GL}" = xyes; then
+  GL_lib='GL'
+elif test "x${have_lib_MesaGL}" = xyes; then
+  GL_lib='MesaGL'
+else
+  no_GL=yes
+fi
+
+
+if test "x${have_lib_GLU}" = xyes -a "x${with_MesaGLU}" = xno; then
+  GLU_lib='GLU'
+elif test "x${have_lib_MesaGLU}" = xyes -a "x${with_MesaGLU}" = xyes; then
+  GLU_lib='MesaGLU'
+elif test "x${have_lib_GLU}" = xyes -a "x${GL_lib}" = xGL; then
+  GLU_lib='GLU'
+elif test "x${have_lib_MesaGLU}" = xyes -a "x${GL_lib}" = xMesaGL; then
+  GLU_lib='MesaGLU'
+elif test "x${have_lib_GLU}" = xyes; then
+  GLU_lib='GLU'
+elif test "x${have_lib_MesaGLU}" = xyes; then
+  GLU_lib='MesaGLU'
+else
+  no_GL=yes
+fi
+
+
+if test "x$have_GL_gl_h" = x; then
+  no_GL=yes
+fi
+if test "x$have_GL_glu_h" = x; then
+  no_GL=yes
+fi
+if test "x$have_GL_glx_h" = x; then
+  no_GL=yes
+fi
+
+dnl
+dnl
+dnl
+
+if test "x${no_GL}" = x; then
+  GL_CFLAGS="${GL__Idir} ${X__cflags}"
+  GL_LIBS="${GL__Ldir} -l${GLU_lib} -l${GL_lib} ${X__libs}"
+  ifelse([$1], , :, [$1])
+else
+  GL_CFLAGS=""
+  GL_LIBS=""
+  ifelse([$2], , :, [$2])     
+fi
+
+AC_SUBST(GL_CFLAGS)
+AC_SUBST(GL_LIBS)
+
+])
+
+dnl
+dnl VRMLGL_PATH_GLUT([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl
+AC_DEFUN(VRMLGL_PATH_GLUT,
+[
+dnl Dependencies
+AC_REQUIRE([AC_PATH_XTRA])
+AC_REQUIRE([VRMLGL_PATH_GL])
+
+if test "x$x_includes" = "x"; then
+  X__Idir=""
+else
+  X__Idir="-I$x_includes"
+fi
+if test "x$x_libraries" = "x"; then
+  X__Ldir=""
+else
+  X__Ldir="-L$x_libraries"
+fi
+
+X__cflags="${X__Idir} ${X_CFLAGS}"
+X__libs="${X__Ldir} $X_LDFLAGS ${X_PRE_LIBS} ${X_LIBS} ${X_EXTRA_LIBS}"
+
+AC_CHECK_LIB(Xi, XListInputDevices,
+    xi_libs="-lXi", 
+    ,
+    $X__libs
+)
+
+AC_CHECK_LIB(Xmu, XmuLookupStandardColormap,
+    xmu_libs="-lXmu", 
+    ,
+    $X__libs
+)
+
+AC_ARG_WITH(glut-prefix,
+  [  --with-glut-prefix=DIR    pass '-IDIR/include' to CPP, '-LDIR/lib' to LD]
+)
+
+if test -n "${with_glut_prefix}"; then
+  glut__Idir="-I${with_glut_prefix}/include"
+  glut__Ldir="-L${with_glut_prefix}/lib"
+fi
+
+AC_CHECK_LIB(glut, glutMainLoop,
+  AC_CHECK_HEADER(GL/glut.h,
+    have_glut=yes,
+    have_glut=no
+  ),
+  have_glut=no,
+  $xmu_libs $xi_libs $GL_LIBS
+)
+
+if test $have_glut = yes; then
+  GLUT_CFLAGS="${glut__Idir} $GL_CFLAGS"
+  GLUT_LIBS="${glut__Ldir} -lglut $xmu_libs $xi_libs $GL_LIBS"
+  ifelse([$1], , :, [$1])
+else
+  GLUT_LIBS=""
+  ifelse([$2], , :, [$2])
+fi
+
+AC_SUBST(GLUT_CFLAGS)
+AC_SUBST(GLUT_LIBS)
+
+])
+
+
+dnl finally, just call the above macros. the glut one checks
+dnl for the opengl one, so we're fine there.
+dnl
+AC_REQUIRE([VRMLGL_PATH_GLUT])
+
+
+dnl
+dnl
+dnl END X, GL/MESA, GLUT
+
+
+
+dnl VRML
+dnl
+dnl ok: this gets tricky: the idea is that we normally will want to
+dnl link against the libraries in the local build dir, but we should
+dnl give the user a choice: local libs, installed libs, or some other
+dnl set of libs.
+
+dnl go ahead an check for installed libvrml97 libraries whether we're
+dnl going to use them or not. it's not an error if we don't find them.
+dnl
+AC_LANG_CPLUSPLUS
+AC_MSG_CHECKING([libvrml97])
+ac_save_LIBS="$LIBS"
+LIBS="-lvrml97 -ljpeg -lpng -lz $LIBS"
+AC_TRY_LINK([#include<vrml97/VrmlScene.h>], [ VrmlScene::readWrl(0, 0);], INSTALLED_LIBVRML97=yes, INSTALLED_LIBVRML97=no)
+LIBS="$ac_save_LIBS"
+AC_LANG_C
+
+dnl why doesn't the following this work right? hmm. looks reasonable,
+dnl but what do i know. steal the try_link from the one in
+dnl libvrml97core/m4/vrml97.m4. why do people feel an urge to make
+dnl things more complicated than they need to be? sigh.
+dnl
+dnl AC_CHECK_LIB(vrml97, VrmlScene::readWrl, AC_MSG_CHECKING([libvrml97]),
+dnl AC_MSG_RESULT([not found]), -lpng -ljpeg -lz)
+
+dnl now the internal dependencies. problem: we need to give the path
+dnl to the libraries, but they're going to be referenced from a
+dnl subdirectory. instead of using a brittle set of ".."'s, use the
+dnl automake variable top_builddir. it's a little tricky getting it
+dnl from here to the Makefile without losing the "$", but putting a
+dnl slash in front of it seems to do the trick.
+dnl
+LIBVRML97GL_LIB_DIR="\$(top_builddir)/libvrml97gl/src/vrml97gl/"
+LIBVRML97CORE_LIB_DIR="\$(top_builddir)/libvrml97core/src/vrml97/"
+LIBVRML97GL_INC_DIR="\$(top_builddir)/libvrml97gl/src/"
+LIBVRML97CORE_INC_DIR="\$(top_builddir)/libvrml97core/src/"
+
+dnl ok, now we know where the internal libs are, and where any
+dnl installed libs are: which ones do we use?
+dnl --with-libvrml97=installed
+dnl --with-libvrml97=path
+dnl otherwise, do the normal thing and use the versions included
+dnl in the build tree
+dnl
+AC_ARG_WITH(libvrml97, [ xxx ])
+x_suffix="$X_LIBS $X_PRE_LIBS -lX11 -lXi -lXext -lXmu $X_EXTRA_LIBS -lm"
+if test "$with_libvrml97" = "installed"; then
+  if test "$INSTALLED_LIBVRML97" = "no"; then
+    AC_MSG_ERROR("libvrml97 not installed")
+  fi
+  AC_MSG_RESULT([use installed libvrml97])
+  VRMLGL_LIBS="-lvrml97 -lvrml97gl $GLUT_LIBS -lpng -ljpeg -lz"
+else
+  AC_MSG_RESULT([using normal libvrml97])
+  VRMLGL_LIBS="$LIBVRML97CORE_LIB_DIR/libvrml97.la $LIBVRML97GL_LIB_DIR/libvrml97gl.la $GLUT_LIBS -lpng -ljpeg -lz"
+  CPPFLAGS="$CPPFLAGS -I$LIBVRML97CORE_INC_DIR -I$LIBVRML97GL_INC_DIR"
+  AC_SUBST(CPPFLAGS)
+fi
+AC_SUBST(VRMLGL_LIBS)
+
+
+
+dnl WEIRD-ASS C++ COMPILER TESTS
+dnl
+dnl these are verbatim from libvrml97core. i suppose they could
+dnl help avert annoying support messages on the libvrml97 list
+dnl from people with ancient c++ compilers. still...
+dnl
+dnl
+
+AC_PROG_CXX
+AC_LANG_CPLUSPLUS
+
+
+AC_MSG_CHECKING(if C++ compiler supports bool(required))
+AC_TRY_COMPILE(
+[
+],[
+   bool b=true;
+   bool b1=false;
+],[
+  ac_bool=yes
+dnl  AC_DEFINE(HAVE_NATIVE_BOOL)
+],[
+  config_error=yes
+  AC_WARN(bool type is not supported by your compiler)
+])
+AC_MSG_RESULT([$ac_bool])
+
+
+
+AC_MSG_CHECKING(if C++ compiler supports const_cast (required))
+AC_TRY_COMPILE(
+[
+   class foo;
+],[
+   const foo *c=0;
+   foo *c1=const_cast<foo*>(c);
+],[
+  ac_const_cast=yes
+dnl  AC_DEFINE(HAVE_CONST_CAST)
+],[
+  AC_WARN(C++ compiler const_cast<> does not work)
+  config_error=yes
+])
+AC_MSG_RESULT([$ac_const_cast])
+
+
+
+AC_MSG_CHECKING(if C++ compiler supports member templates)
+AC_TRY_COMPILE(
+[
+class foo
+{
+public:
+  template <class T> void method(T t);
+};
+
+template <class T> void foo::method(T t) {t = 0;}
+],[
+],[
+   ac_member_templates=yes
+dnl   AC_DEFINE(HAVE_MEMBER_TEMPLATES)
+   AC_MSG_RESULT([$ac_member_templates])
+],[
+  ac_member_templates=no
+  AC_MSG_RESULT([$ac_member_templates])
+  AC_MSG_WARN([Test for member templates failed. If your compiler does support member templates, see config.log to figure out why the test failed.])
+])
+
+
+
+AC_MSG_CHECKING(if C++ compiler supports partial specialization)
+AC_TRY_COMPILE(
+[
+template<class T, class K>
+class k {
+public:
+};
+template<class T> class k<void,T> { };
+],[
+  k<float, float> b;
+  k<void,void> a;
+],[
+  ac_partial_specialization=yes
+dnl  AC_DEFINE(HAVE_PARTIAL_SPECIALIZATION)
+],[
+  ac_partial_specialization=no
+])
+AC_MSG_RESULT([$ac_partial_specialization])
+
+
+
+AC_MSG_CHECKING(if C++ compiler supports static data inside templates)
+AC_TRY_LINK(
+[
+template<class T>
+class foo { public: static T a; };
+template<class T>
+static T foo<T>::a=0;
+],[
+  foo<int> b;
+],[
+  ac_static_templates=yes
+],[
+dnl  AC_DEFINE(HAVE_NO_STATIC_TEMPLATES)
+  ac_static_templates=no
+])
+AC_MSG_RESULT([$ac_static_templates])
+
+
+
+AC_MSG_CHECKING(if C++ compiler supports templates well enough(required))
+AC_TRY_LINK(
+[
+class foo { public: int a(float,int,int,foo*,foo**) { return 0; } };
+template<class rettype, class T, class P1, class P2, class P3, class P4, class P5>
+class k {
+public:
+   rettype (T::*method)(P1,P2,P3,P4,P5);
+};
+],[
+  k<int,foo,float,int,int,foo*,foo**> a;
+],[
+],[
+  config_error=yes
+  AC_WARN(your C++ compiler does not support templates well enough)
+])
+AC_MSG_RESULT([yes])
+
+
+
+AC_MSG_CHECKING(if required compiler features are available)
+if test "x$config_error" = xyes ; then
+  AC_MSG_RESULT([no])
+  AC_MSG_ERROR(Your compiler is not powerful enough to compile libVrml97. If you think that that your compiler is powerful enough, then see config.log for more information about why things failed.)
+fi
+AC_MSG_RESULT([yes])
+
+
+dnl
+dnl
+dnl END OF WIERD-ASS COMPILER TESTS
+
+
+
+dnl Mozilla Javascript libraries
+dnl
+dnl someday we'll be able to use the standard ones, but for now it looks
+dnl like we're stuck with a customized version (anybody know what the
+dnl difference is?) well, anyway, these mystery macros have to be 
+dnl defined to make the compile work:
+dnl
+JSCFLAGS="-DXP_UNIX"
+AC_SUBST(JSCFLAGS)
+
+
+
+dnl Developer settings
+dnl
+dnl does anything actually _use_ ndebug? looks like it might
+dnl be some sort of jslib thing. leave it in for now. we have
+dnl to explicitly get rid of the existing cflags, which makes
+dnl me thing there's a builtin rule that does this exact same
+dnl thing. i mean, you'd think...
+dnl
+CFLAGS=""
+AC_ARG_ENABLE(debug, [  --enable-debug ])
+if test "${enable_debug}" = "yes"; then
+  CFLAGS="$CFLAGS -g"
+else
+  CFLAGS="$CFLAGS -DNDEBUG"
+fi
+AC_ARG_ENABLE(optimized, [  --disable-optimized ])
+if test "${enable_optimized}" != "no"; then
+  CFLAGS="$CFLAGS -O2"
+fi
+AC_SUBST(CFLAGS)
+
+
+
+dnl Checks for header files.
+AC_PATH_X
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS(fcntl.h limits.h sgtty.h strings.h sys/ioctl.h sys/time.h termio.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+AC_STRUCT_TIMEZONE
+
+dnl Checks for library functions.
+AC_PROG_GCC_TRADITIONAL
+AC_FUNC_SETVBUF_REVERSED
+AC_FUNC_STRFTIME
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS(ftime getcwd gettimeofday mktime strdup strerror strstr)
+
+
+
+AC_OUTPUT(Makefile \
+          libvrml97core/Makefile \
+          libvrml97core/m4/Makefile \
+          libvrml97core/src/Makefile \
+          libvrml97core/src/vrml97/Makefile \
+          libvrml97core/src/vrml97/libjs/Makefile \
+          libvrml97core/src/vrml97/libjs/fdlibm/Makefile \
+          libvrml97gl/Makefile \
+          libvrml97gl/m4/Makefile \
+          libvrml97gl/src/Makefile \
+          libvrml97gl/src/vrml97gl/Makefile \
+          lookat/Makefile \
+          lookat/src/Makefile)
