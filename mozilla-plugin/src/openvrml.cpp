@@ -21,12 +21,16 @@
 # include <iostream>
 # include <mozilla-config.h>
 # include <npupp.h>
+# include <nsCOMPtr.h>
+# include <nsMemory.h>
 # include <boost/noncopyable.hpp>
+# include <openvrml/browser.h>
 # if defined MOZ_X11
 #   include "gtkvrml/vrmlbrowser.h"
 # else
 #   error Unsupported toolkit.
 # endif
+# include "openvrml.h"
 
 namespace {
 
@@ -58,38 +62,90 @@ namespace {
         gtk;
 # endif
 
+
+    class ClassInfo : public nsIClassInfo {
+    public:
+        NS_IMETHOD GetFlags(PRUint32 * aFlags)
+        {
+            *aFlags = nsIClassInfo::PLUGIN_OBJECT | nsIClassInfo::DOM_OBJECT;
+            return NS_OK;
+        }
+
+        NS_IMETHOD GetImplementationLanguage(PRUint32 *aImplementationLanguage)
+        {
+	    *aImplementationLanguage = nsIProgrammingLanguage::CPLUSPLUS;
+            return NS_OK;
+        }
+
+        NS_IMETHOD GetInterfaces(PRUint32 *count, nsIID * **array)
+        {return NS_ERROR_NOT_IMPLEMENTED;}
+
+        NS_IMETHOD GetHelperForLanguage(PRUint32 language,
+                                        nsISupports **_retval)
+        {return NS_ERROR_NOT_IMPLEMENTED;}
+
+        NS_IMETHOD GetContractID(char * *aContractID)
+        {return NS_ERROR_NOT_IMPLEMENTED;}
+
+        NS_IMETHOD GetClassDescription(char * *aClassDescription)
+        {return NS_ERROR_NOT_IMPLEMENTED;}
+
+        NS_IMETHOD GetClassID(nsCID * *aClassID)
+        {return NS_ERROR_NOT_IMPLEMENTED;}
+
+        NS_IMETHOD GetClassIDNoAlloc(nsCID *aClassIDNoAlloc)
+        {return NS_ERROR_NOT_IMPLEMENTED;}
+    };
+
     template <Toolkit ToolkitType>
     class PluginInstance : boost::noncopyable {
     public:
         explicit PluginInstance(const std::string & initialURL) throw ();
         ~PluginInstance() throw ();
 
+	nsISupports * GetScriptablePeer() throw ();
+	openvrml::browser & GetBrowser() throw ();
         void SetWindow(NPWindow & window) throw (std::bad_alloc);
         void HandleEvent(void * event) throw ();
     };
 
+    class ScriptablePeer : public VrmlBrowser, public ClassInfo {
+	PluginInstance<toolkit> & pluginInstance;
+
+    public:
+        explicit ScriptablePeer(PluginInstance<toolkit> & pluginInstance);
+        ~ScriptablePeer();
+
+        NS_DECL_ISUPPORTS
+        NS_DECL_VRMLBROWSER
+    };
+
     template <>
     class PluginInstance<gtk> : boost::noncopyable {
+	friend class ScriptablePeer;
+
         std::string initialURL;
         GtkWidget * plug;
         GtkWidget * vrmlBrowser;
         gint x, y;
         gint width, height;
+	nsCOMPtr<VrmlBrowser> scriptablePeer;
 
     public:
-        explicit PluginInstance(const std::string & initialURL) throw ();
+        explicit PluginInstance(const std::string & initialURL)
+	    throw (std::bad_alloc);
         ~PluginInstance() throw ();
 
+	nsISupports * GetScriptablePeer() throw ();
+	openvrml::browser & GetBrowser() throw ();
         void SetWindow(NPWindow & window) throw (std::bad_alloc);
         void HandleEvent(void * event) throw ();
     };
 } // namespace
 
-extern "C"
 char * NP_GetMIMEDescription()
 {
-    return "model/vrml:wrl:VRML world;"
-           "x-world/x-vrml:wrl:VRML world";
+    return NPP_GetMIMEDescription();
 }
 
 namespace {
@@ -118,7 +174,6 @@ namespace {
  *
  * @see http://devedge.netscape.com/library/manuals/2002/plugin/1.0/npp_api7.html#999264
  */
-extern "C"
 NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
                       NPPluginFuncs * const pluginFuncs)
 {
@@ -184,7 +239,7 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     pluginFuncs->event         = NPP_HandleEvent;
     pluginFuncs->getvalue      = NPP_GetValue;
     pluginFuncs->setvalue      = NPP_SetValue;
-    pluginFuncs->javaClass     = NULL;
+    pluginFuncs->javaClass     = 0;
 
 # ifdef MOZ_X11
     NPError err = NPERR_NO_ERROR;
@@ -219,17 +274,21 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     return NPP_Initialize();
 }
 
-extern "C"
 NPError NP_Shutdown()
 {
     NPP_Shutdown();
     return NPERR_NO_ERROR;
 }
 
-extern "C"
 NPError NP_GetValue(void * future, NPPVariable variable, void * value)
 {
     return NPP_GetValue(static_cast<NPP>(future), variable, value);
+}
+
+char * NPP_GetMIMEDescription()
+{
+    return "model/vrml:wrl:VRML world;"
+           "x-world/x-vrml:wrl:VRML world";
 }
 
 NPError NPP_Initialize()
@@ -374,10 +433,8 @@ NPError NPP_Destroy(const NPP instance, NPSavedData * * const save)
      *    recreated.
      */
 
-    if (instance->pdata) {
-        delete static_cast<PluginInstance<toolkit> *>(instance->pdata);
-        instance->pdata = 0;
-    }
+    delete static_cast<PluginInstance<toolkit> *>(instance->pdata);
+    instance->pdata = 0;
 
     return NPERR_NO_ERROR;
 }
@@ -547,7 +604,13 @@ NPError NPP_GetValue(const NPP instance,
                      const NPPVariable variable,
                      void * const value)
 {
+    if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
+
     NPError err = NPERR_NO_ERROR;
+    static const nsIID scriptableIID = VRMLBROWSER_IID;
+    nsISupports * scriptablePeer = 0;
+    nsIID * scriptableIID_ptr = 0;
+    PluginInstance<toolkit> * pluginInstance = 0;
 
     switch (variable) {
     case NPPVpluginNameString:
@@ -555,6 +618,29 @@ NPError NPP_GetValue(const NPP instance,
         break;
     case NPPVpluginDescriptionString:
         *static_cast<const char **>(value) = "VRML browser";
+        break;
+    case NPPVpluginScriptableInstance:
+        assert(instance->pdata);
+        pluginInstance =
+            static_cast<PluginInstance<toolkit> *>(instance->pdata);
+        scriptablePeer = pluginInstance->GetScriptablePeer();
+        assert(scriptablePeer);
+        //
+        // Add reference for the caller requesting the object.
+        //
+        NS_ADDREF(scriptablePeer);
+        *static_cast<nsISupports **>(value) = scriptablePeer;
+	break;
+    case NPPVpluginScriptableIID:
+        try {
+            scriptableIID_ptr =
+                static_cast<nsIID *>(NPN_MemAlloc(sizeof (nsIID)));
+            if (!scriptableIID_ptr) { throw std::bad_alloc(); }
+            *scriptableIID_ptr = scriptableIID;
+            *static_cast<nsIID **>(value) = scriptableIID_ptr;
+        } catch (std::bad_alloc &) {
+            err = NPERR_OUT_OF_MEMORY_ERROR;
+        }
         break;
     case NPPVpluginNeedsXEmbed:
         *static_cast<PRBool *>(value) = PR_TRUE;
@@ -572,22 +658,364 @@ NPError NPP_SetValue(const NPP instance,
     return NPERR_NO_ERROR;
 }
 
+void NPN_Version(int * plugin_major,
+                 int * plugin_minor,
+                 int * mozilla_major,
+                 int * mozilla_minor)
+{
+    *plugin_major = NP_VERSION_MAJOR;
+    *plugin_minor = NP_VERSION_MINOR;
+    *mozilla_major = mozillaFuncs.version >> 8;
+    *mozilla_minor = mozillaFuncs.version & 0xff;
+}
+
+NPError NPN_GetURLNotify(NPP instance,
+                         const char * url,
+                         const char * target,
+                         void * notifyData)
+{
+    const int navMinorVers = mozillaFuncs.version & 0xFF;
+    return (navMinorVers >= NPVERS_HAS_NOTIFICATION)
+        ? CallNPN_GetURLNotifyProc(mozillaFuncs.geturlnotify,
+                                   instance,
+                                   url,
+                                   target,
+                                   notifyData)
+        : NPERR_INCOMPATIBLE_VERSION_ERROR;
+}
+
+NPError NPN_GetURL(NPP instance, const char * url, const char * target)
+{
+    return CallNPN_GetURLProc(mozillaFuncs.geturl, instance, url, target);
+}
+
+NPError NPN_PostURLNotify(NPP instance,
+                          const char * url,
+                          const char * window,
+                          uint32 len,
+                          const char * buf,
+                          NPBool file,
+                          void * notifyData)
+{
+    const int navMinorVers = mozillaFuncs.version & 0xFF;
+    return (navMinorVers >= NPVERS_HAS_NOTIFICATION)
+        ? CallNPN_PostURLNotifyProc(mozillaFuncs.posturlnotify,
+                                    instance,
+                                    url,
+                                    window,
+                                    len,
+                                    buf,
+                                    file,
+                                    notifyData)
+        : NPERR_INCOMPATIBLE_VERSION_ERROR;
+}
+
+NPError NPN_PostURL(NPP instance,
+                    const char * url,
+                    const char * window,
+                    uint32 len,
+                    const char * buf,
+                    NPBool file)
+{
+    return CallNPN_PostURLProc(mozillaFuncs.posturl,
+                               instance,
+                               url,
+                               window,
+                               len,
+                               buf,
+                               file);
+} 
+
+NPError NPN_RequestRead(NPStream * stream, NPByteRange * rangeList)
+{
+    return CallNPN_RequestReadProc(mozillaFuncs.requestread,
+                                   stream,
+                                   rangeList);
+}
+
+NPError NPN_NewStream(NPP instance,
+                      NPMIMEType type,
+                      const char * target,
+                      NPStream ** stream)
+{
+    const int navMinorVersion = mozillaFuncs.version & 0xFF;
+    return (navMinorVersion >= NPVERS_HAS_STREAMOUTPUT)
+        ? CallNPN_NewStreamProc(mozillaFuncs.newstream,
+                                instance,
+                                type,
+                                target,
+                                stream)
+        : NPERR_INCOMPATIBLE_VERSION_ERROR;
+}
+
+int32 NPN_Write(NPP instance, NPStream * stream, int32 len, void * buffer)
+{
+    const int navMinorVersion = mozillaFuncs.version & 0xFF;
+    return (navMinorVersion >= NPVERS_HAS_STREAMOUTPUT)
+        ? CallNPN_WriteProc(mozillaFuncs.write, instance, stream, len, buffer)
+        : -1;
+}
+
+NPError NPN_DestroyStream(NPP instance, NPStream* stream, NPError reason)
+{
+    const int navMinorVersion = mozillaFuncs.version & 0xFF;
+    return (navMinorVersion >= NPVERS_HAS_STREAMOUTPUT)
+        ? CallNPN_DestroyStreamProc(mozillaFuncs.destroystream,
+                                    instance,
+                                    stream,
+                                    reason)
+        : NPERR_INCOMPATIBLE_VERSION_ERROR;
+}
+
+void NPN_Status(NPP instance, const char * message)
+{
+    CallNPN_StatusProc(mozillaFuncs.status, instance, message);
+}
+
+const char * NPN_UserAgent(NPP instance)
+{
+    return CallNPN_UserAgentProc(mozillaFuncs.uagent, instance);
+}
+
+void * NPN_MemAlloc(uint32 size)
+{
+    return CallNPN_MemAllocProc(mozillaFuncs.memalloc, size);
+}
+
+void NPN_MemFree(void * ptr)
+{
+    CallNPN_MemFreeProc(mozillaFuncs.memfree, ptr);
+}
+
+uint32 NPN_MemFlush(uint32 size)
+{
+    return CallNPN_MemFlushProc(mozillaFuncs.memflush, size);
+}
+
+void NPN_ReloadPlugins(NPBool reloadPages)
+{
+    CallNPN_ReloadPluginsProc(mozillaFuncs.reloadplugins, reloadPages);
+}
+
+JRIEnv * NPN_GetJavaEnv()
+{
+    return CallNPN_GetJavaEnvProc(mozillaFuncs.getJavaEnv);
+}
+
+jref NPN_GetJavaPeer(NPP instance)
+{
+    return CallNPN_GetJavaPeerProc(mozillaFuncs.getJavaPeer, instance);
+}
+
+NPError NPN_GetValue(NPP instance, NPNVariable variable, void * value)
+{
+    return CallNPN_GetValueProc(mozillaFuncs.getvalue,
+                                instance,
+                                variable,
+                                value);
+}
+
+NPError NPN_SetValue(NPP instance, NPPVariable variable, void * value)
+{
+    return CallNPN_SetValueProc(mozillaFuncs.setvalue,
+                                instance,
+                                variable,
+                                value);
+}
+
+void NPN_InvalidateRect(NPP instance, NPRect * invalidRect)
+{
+    CallNPN_InvalidateRectProc(mozillaFuncs.invalidaterect,
+                               instance,
+                               invalidRect);
+}
+
+void NPN_InvalidateRegion(NPP instance, NPRegion invalidRegion)
+{
+    CallNPN_InvalidateRegionProc(mozillaFuncs.invalidateregion,
+                                 instance,
+                                 invalidRegion);
+}
+
+void NPN_ForceRedraw(NPP instance)
+{
+    CallNPN_ForceRedrawProc(mozillaFuncs.forceredraw, instance);
+}
+
 namespace {
 
+    ScriptablePeer::ScriptablePeer(PluginInstance<toolkit> & pluginInstance):
+	pluginInstance(pluginInstance)
+    {
+        NS_INIT_ISUPPORTS();
+    }
+
+    ScriptablePeer::~ScriptablePeer()
+    {}
+
+    NS_IMPL_ISUPPORTS2(ScriptablePeer, VrmlBrowser, nsIClassInfo)
+
+    NS_IMETHODIMP ScriptablePeer::GetName(char ** _retval)
+    {
+	if (!_retval) { return NS_ERROR_NULL_POINTER; }
+
+	const std::string & name = this->pluginInstance.GetBrowser().name();
+	const size_t bufferSize = sizeof (char) * (name.length() + 1);
+
+	*_retval = static_cast<char *>(nsMemory::Clone(name.c_str(),
+                                                       bufferSize));
+        if (!*_retval) { return NS_ERROR_OUT_OF_MEMORY; }
+
+        return NS_OK;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::GetVersion(char ** _retval)
+    {
+	if (!_retval) { return NS_ERROR_NULL_POINTER; }
+
+	const std::string & version =
+            this->pluginInstance.GetBrowser().version();
+	const size_t bufferSize = sizeof (char) * (version.length() + 1);
+
+	*_retval = static_cast<char *>(nsMemory::Clone(version.c_str(),
+                                                       bufferSize));
+        if (!*_retval) { return NS_ERROR_OUT_OF_MEMORY; }
+
+        return NS_OK;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::GetCurrentSpeed(float * _retval)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::GetCurrentFrameRate(float * _retval)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::GetWorldURL(char ** _retval)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::ReplaceWorld(PRUint32 nodeArraySize,
+                                               VrmlNode ** nodeArray)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::LoadURL(PRUint32 urlArraySize,
+                                          const char ** url,
+                                          PRUint32 paramArraySize,
+                                          const char ** parameter)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::SetDescription(const char * description)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP
+    ScriptablePeer::CreateVrmlFromString(const char * vrmlSyntax,
+                                         PRUint32 * nodeArraySize,
+                                         VrmlNode *** nodeArray)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::CreateVrmlFromURL(PRUint32 urlArraySize,
+                                                    const char ** url,
+                                                    VrmlNode * node,
+                                                    const char * event)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::GetNode(const char * name,
+                                          VrmlNode ** _retval)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::AddRoute(VrmlNode * fromNode,
+                                           const char * fromEventOut,
+                                           VrmlNode * toNode,
+                                           const char * toEventIn)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::DeleteRoute(VrmlNode * fromNode,
+                                              const char * fromEventOut,
+                                              VrmlNode * toNode,
+                                              const char * toEvent)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::BeginUpdate()
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::EndUpdate()
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::Dispose()
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP
+    ScriptablePeer::AddBrowserListener(VrmlBrowserListener * listener)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP
+    ScriptablePeer::RemoveBrowserListener(VrmlBrowserListener * listener)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
     PluginInstance<gtk>::PluginInstance(const std::string & initialURL)
-        throw ():
+        throw (std::bad_alloc):
         initialURL(initialURL),
         plug(0),
         vrmlBrowser(0),
         x(0),
         y(0),
         width(0),
-        height(0)
+        height(0),
+	scriptablePeer(new ScriptablePeer(*this))
     {}
 
     PluginInstance<gtk>::~PluginInstance() throw ()
     {
         gtk_widget_destroy(this->plug);
+    }
+
+    nsISupports * PluginInstance<gtk>::GetScriptablePeer() throw ()
+    {
+	return this->scriptablePeer;
+    }
+
+    openvrml::browser & PluginInstance<gtk>::GetBrowser() throw ()
+    {
+        //
+        // This is lame.  gtk_vrml_browser::browser is an implementation
+        // detail.  It really needs to be exposed; but that would require
+        // a C++ type in what ought to be a C interface.  We probably need
+        // simply to punt on the idea of gtk_vrml_browser ever being usable
+        // from C.
+        // 
+        return *static_cast<openvrml::browser *>(
+            GTK_VRML_BROWSER(this->vrmlBrowser)->browser);
     }
 
     void PluginInstance<gtk>::SetWindow(NPWindow & window)

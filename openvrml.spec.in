@@ -124,9 +124,13 @@ make DESTDIR=$RPM_BUILD_ROOT%{prefix} install
 %files mozilla
 %doc AUTHORS COPYING ChangeLog NEWS README THANKS
 %{prefix}/lib/mozilla/plugins/openvrml.so
+%{prefix}/lib/mozilla-%(rpm -q mozilla --qf='%%{version}')/components/openvrml.xpt
 
 
 %changelog
+* Wed May 05 2004  Braden McDaniel  <braden@endoframe.com>
+- Made Mozilla plug-in scriptable.
+
 * Mon Apr 26 2004  Braden McDaniel  <braden@endoframe.com>
 - Added Mozilla plug-in.
 

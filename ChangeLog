@@ -1,3 +1,17 @@
+2004-05-05 Braden McDaniel  <braden@endoframe.com>
+
+	Made the Mozilla plug-in scriptable.  Only a trivial amount of
+	functionality is currently exposed: you can get the name and
+	version of the plug-in.
+
+	* openvrml.spec.in:  Install the type library.
+	* mozilla-plugin/configure.ac:  Locate Mozilla's components
+	directory.
+	* mozilla-plugin/src/Makefile.am
+	* mozilla-plugin/src/openvrml.cpp
+	* mozilla-plugin/src/openvrml.idl:  Added file.  An adaptation
+	of the VRML97 EAI to XPCOM.
+
 2004-05-03 Braden McDaniel  <braden@endoframe.com>
 
 	* README:  Fixed note regarding building against a Java

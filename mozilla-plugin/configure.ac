@@ -24,8 +24,10 @@ if test -z "$XPIDL"; then
   AC_MSG_FAILURE([xpidl not found])
 fi
 mozpluginsdir=`echo "$mozlibdir" | sed s,mozilla-[^/]*$,mozilla/plugins,`
+mozcomponentsdir="$mozlibdir/components"
 mozidldir="$mozprefix/share/idl/mozilla-$mozversion"
 AC_SUBST([mozpluginsdir])
+AC_SUBST([mozcomponentsdir])
 AC_SUBST([mozincludedir])
 AC_SUBST([mozidldir])
 PKG_CHECK_MODULES([GTKGLEXT], [gtkglext-1.0], , [have_gtkglext=no])
