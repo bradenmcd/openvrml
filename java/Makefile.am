@@ -2,6 +2,7 @@ SUBDIRS = vrml
 
 noinst_HEADERS = \
 	vrml_Browser.h \
+	vrml_Event.h \
         vrml_Field.h \
         vrml_MField.h \
         vrml_ConstField.h \
@@ -52,6 +53,9 @@ noinst_HEADERS = \
 
 vrml_Browser.h: vrml/Browser.class
 	javah vrml.Browser
+
+vrml_Event.h: vrml/Event.class
+	javah vrml.Event
 
 vrml_Field.h: vrml/Field.class
 	javah vrml.Field
