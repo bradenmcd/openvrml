@@ -119,15 +119,6 @@
                     </SETTING>
                     <SETTING>
                         <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>:parser:</VALUE></SETTING>
-                            <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>Project</VALUE></SETTING>
-                        </SETTING>
-                        <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
-                        <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
-                    </SETTING>
-                    <SETTING>
-                        <SETTING><NAME>SearchPath</NAME>
                             <SETTING><NAME>Path</NAME><VALUE>:::::InternetConfig:</VALUE></SETTING>
                             <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
                             <SETTING><NAME>PathRoot</NAME><VALUE>Project</VALUE></SETTING>
@@ -183,15 +174,6 @@
                     <SETTING>
                         <SETTING><NAME>SearchPath</NAME>
                             <SETTING><NAME>Path</NAME><VALUE>:::libvrml97gl:macos:</VALUE></SETTING>
-                            <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>Project</VALUE></SETTING>
-                        </SETTING>
-                        <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
-                        <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
-                    </SETTING>
-                    <SETTING>
-                        <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>:::::libjs:</VALUE></SETTING>
                             <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
                             <SETTING><NAME>PathRoot</NAME><VALUE>Project</VALUE></SETTING>
                         </SETTING>
@@ -897,10 +879,10 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>¢Î‡</VALUE></SETTING>
-                    <SETTING><VALUE>YH8</VALUE></SETTING>
+                    <SETTING><VALUE>ì§</VALUE></SETTING>
                     <SETTING><VALUE>
-m»–</VALUE></SETTING>
+»„x</VALUE></SETTING>
+                    <SETTING><VALUE>	›d`</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -1704,7 +1686,7 @@ m»–</VALUE></SETTING>
                     <PATH>:InternetConfigLib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Library</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
+                    <FILEFLAGS>Debug, WeakImport</FILEFLAGS>
                 </FILE>
                 <FILE>
                     <PATHTYPE>PathRelative</PATHTYPE>
@@ -1738,15 +1720,6 @@ m»–</VALUE></SETTING>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::src:</ACCESSPATH>
                     <PATH>:vrml97:Doc.cpp</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Text</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>:</ACCESSPATH>
-                    <PATH>:parser:Vrml97Parser.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Text</FILEKIND>
                     <FILEFLAGS>Debug</FILEFLAGS>
@@ -1801,6 +1774,15 @@ m»–</VALUE></SETTING>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::src:vrml97:</ACCESSPATH>
                     <PATH>:VrmlRenderContext.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Text</FILEKIND>
+                    <FILEFLAGS>Debug</FILEFLAGS>
+                </FILE>
+                <FILE>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::src:vrml97:</ACCESSPATH>
+                    <PATH>:Vrml97Parser.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Text</FILEKIND>
                     <FILEFLAGS>Debug</FILEFLAGS>
@@ -2378,13 +2360,6 @@ m»–</VALUE></SETTING>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>:</ACCESSPATH>
-                    <PATH>:parser:Vrml97Parser.cpp</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>:</ACCESSPATH>
                     <PATH>:LibANTLR.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
@@ -2423,6 +2398,13 @@ m»–</VALUE></SETTING>
                     <PATH>:VrmlRenderContext.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::src:vrml97:</ACCESSPATH>
+                    <PATH>:Vrml97Parser.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
             </LINKORDER>
         </TARGET>
     </TARGETLIST>
@@ -2438,8 +2420,8 @@ m»–</VALUE></SETTING>
                     <TARGETNAME>libvrml97core</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>:</ACCESSPATH>
-                    <PATH>:parser:Vrml97Parser.cpp</PATH>
+                    <ACCESSPATH>::src:vrml97:</ACCESSPATH>
+                    <PATH>:Vrml97Parser.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>

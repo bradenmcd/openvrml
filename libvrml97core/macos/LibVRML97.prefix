@@ -1,8 +1,8 @@
 #include <MacHeaders.h>
 
-#define LIBVRML97_MAJOR_VERSION	0
-#define LIBVRML97_MINOR_VERSION	8
-#define LIBVRML97_MICRO_VERSION	3
+#define OPENVRML_MAJOR_VERSION	0
+#define OPENVRML_MINOR_VERSION	9
+#define OPENVRML_MICRO_VERSION	0
 
 #include <fstream.h>
 #include <iostream.h>

@@ -735,10 +735,10 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>°ı </VALUE></SETTING>
-                    <SETTING><VALUE>ZI8</VALUE></SETTING>
+                    <SETTING><VALUE>úÚê</VALUE></SETTING>
+                    <SETTING><VALUE>Q°¯</VALUE></SETTING>
                     <SETTING><VALUE>
-n 0</VALUE></SETTING>
+f"‡</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -869,6 +869,15 @@ n 0</VALUE></SETTING>
                     <FILEKIND>Library</FILEKIND>
                     <FILEFLAGS>Debug</FILEFLAGS>
                 </FILE>
+                <FILE>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>:</ACCESSPATH>
+                    <PATH>:JavaScript.Lib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Library</FILEKIND>
+                    <FILEFLAGS></FILEFLAGS>
+                </FILE>
             </FILELIST>
             <LINKORDER>
                 <FILEREF>
@@ -883,6 +892,13 @@ n 0</VALUE></SETTING>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>:::libvrml97gl:macos:</ACCESSPATH>
                     <PATH>:LibVRML97gl.Lib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>:</ACCESSPATH>
+                    <PATH>:JavaScript.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
             </LINKORDER>
@@ -912,6 +928,16 @@ n 0</VALUE></SETTING>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>:::libvrml97gl:macos:</ACCESSPATH>
                     <PATH>:LibVRML97gl.Lib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+            </GROUP>
+            <GROUP><NAME>JavaScript Library</NAME>
+                <FILEREF>
+                    <TARGETNAME>LibVRML97 Library</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>:</ACCESSPATH>
+                    <PATH>:JavaScript.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
             </GROUP>
