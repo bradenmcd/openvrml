@@ -559,8 +559,6 @@ bool bounding_sphere::maximized() const
 
 void bounding_sphere::orthoTransform(const mat4f & M)
 {
-    using OpenVRML_::length;
-
     if (this->maximized()) { return; }
     if (this->radius_ == -1) { return; }
     // ortho is easy: since we know it's uniform scaling, we can just
@@ -575,8 +573,6 @@ void bounding_sphere::orthoTransform(const mat4f & M)
 
 void bounding_sphere::transform(const mat4f & M)
 {
-    using OpenVRML_::length;
-
     if (this->maximized()) { return; }
     if (this->radius_ == -1) { return; }
     this->center_ *= M;

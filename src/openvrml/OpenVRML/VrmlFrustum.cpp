@@ -121,8 +121,6 @@ VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar) 
  */
 void VrmlFrustum::update()
 {
-    using OpenVRML_::normalize;
-
     // figure out the corners of the near clipping plane, then use the
     // vectors from the eyepoint to the four corners to figure out the
     // plane equations. the diagram shows how to get the x and z

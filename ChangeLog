@@ -1,8 +1,23 @@
 2003-05-31  Braden McDaniel  <braden@endoframe.com>
 
+	Moved OpenVRML_::length and OpenVRML_::normalize to
+	basetypes.cpp, which is the only place they were being used.
+
+	* src/openvrml/OpenVRML/private.h (OpenVRML_::length,
+	OpenVRML_::normalize):  Removed function definitions.
+	* src/openvrml/OpenVRML/basetypes.cpp (length_, normalize_):
+	Added function definitions.
+	* src/openvrml/OpenVRML/VrmlFrustum.cpp (VrmlFrustum::update):
+	Removed unnecessary using declaration.
+	* src/openvrml/OpenVRML/bounding_volume.cpp
+	(bounding_sphere::orthoTransform, bounding_sphere::transform):
+	Removed unnecessary using declarations.
+
+2003-05-31  Braden McDaniel  <braden@endoframe.com>
+
 	Removed unused, unnecessary function viewer::get_user_navigation.
 
-	* src/openvrml/OpenVRML/viewer.cpp: Removed doc-comment for
+	* src/openvrml/OpenVRML/viewer.cpp:  Removed doc-comment for
 	viewer::get_user_navigation.
 	* src/openvrml/OpenVRML/viewer.h (viewer::get_user_navigation):
 	Removed function declaration.

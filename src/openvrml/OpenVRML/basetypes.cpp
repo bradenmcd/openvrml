@@ -1078,17 +1078,30 @@ rotation & rotation::operator*=(const rotation & rot) throw ()
 
 namespace {
 
+    inline double length_(const float vec[3])
+    {
+        return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+    }
+
+    inline void normalize_(float vec[3])
+    {
+        using OpenVRML_::fpzero;
+        const float len = float(length_(vec));
+        if (!fpzero(len)) {
+            vec[0] /= len;
+            vec[1] /= len;
+            vec[2] /= len;
+        }
+    }
+
     void normalize_axis_(float axis[3]) throw ()
     {
-        using OpenVRML_::length;
         using OpenVRML_::fpequal;
-        using OpenVRML_::normalize;
-
-        const float axis_length = length(axis);
+        const float axis_length = length_(axis);
         if (fpequal(axis_length, 0.0)) {
             axis[2] = 1.0;
         } else {
-            normalize(axis);
+            normalize_(axis);
         }
     }
 }
