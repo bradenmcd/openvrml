@@ -2,8 +2,9 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  Image.cpp
+//  The Image class is a format-independent API for loading textures.
+//
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -20,6 +21,7 @@
 #include "gifread.h"
 
 #include "jpgread.h"
+#include "mpgread.h"
 #include "pngread.h"
 
 typedef enum {
@@ -27,6 +29,7 @@ typedef enum {
 
   ImageFile_GIF,
   ImageFile_JPG,
+  ImageFile_MPG,
   ImageFile_PNG
 
 } ImageFileType;
@@ -80,6 +83,10 @@ bool Image::setURL(const char *url, Doc *relative)
 	        d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
 	        break;
           
+	      case ImageFile_MPG:
+	        d_pixels = mpgread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
+	        break;
+
 	      case ImageFile_PNG:
 	        d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
 	        break;
@@ -89,10 +96,10 @@ bool Image::setURL(const char *url, Doc *relative)
 	        break;
 	}
 
-  if (! d_pixels)
+      if (! d_pixels)
 	  theSystem->error("Error: unable to read image file (%s).\n", url);
 	
-  d_url->fclose();
+      d_url->fclose();
   }
 
   return (d_pixels != 0);
@@ -129,6 +136,12 @@ static ImageFileType imageFileType(const char *url, FILE *)
 	   strcmp(suffix,"jpeg") == 0 ||
 	   strcmp(suffix,"JPEG") == 0)
     return ImageFile_JPG;
+
+  else if (strcmp(suffix,"mpg") == 0 ||
+	   strcmp(suffix,"MPG") == 0 ||
+	   strcmp(suffix,"mpeg") == 0 ||
+	   strcmp(suffix,"MPEG") == 0)
+    return ImageFile_MPG;
 
   else if (strcmp(suffix,"png") == 0 ||
 	   strcmp(suffix,"PNG") == 0)

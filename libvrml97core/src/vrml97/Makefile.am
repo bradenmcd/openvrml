@@ -122,6 +122,7 @@ noinst_HEADERS = \
 	MathUtils.h \
 	gifread.h \
 	jpgread.h \
+	mpgread.h \
 	pngread.h \
 	parser.h \
 	sound.h
@@ -144,6 +145,7 @@ libvrml97_la_SOURCES = \
 	MathUtils.cpp \
 	gifread.cpp \
 	jpgread.cpp \
+	mpgread.cpp \
 	pngread.cpp \
         dummysound.cpp \
 	VrmlScene.cpp VrmlNodeType.cpp VrmlNamespace.cpp \
