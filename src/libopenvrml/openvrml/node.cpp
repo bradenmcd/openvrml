@@ -27,6 +27,7 @@
 # include <algorithm>
 # include <sstream>
 # include <boost/lexical_cast.hpp>
+# include "private.h"
 # include "node.h"
 # include "scope.h"
 # include "browser.h"
@@ -498,45 +499,17 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  * non-conflicting.
  */
 
-namespace {
-
-    /**
-     * @internal
-     */
-    struct interface_id_matches_ :
-            std::unary_function<openvrml::node_interface, bool> {
-        explicit interface_id_matches_(const std::string & interface_id):
-            interface_id(&interface_id)
-        {}
-
-        bool operator()(const openvrml::node_interface & interface) const
-        {
-            static const char eventin_prefix[] = "set_";
-            static const char eventout_suffix[] = "_changed";
-
-            return interface.id == *this->interface_id
-                || (interface.type == node_interface::exposedfield_id
-                    && (eventin_prefix + interface.id == *this->interface_id
-                        || (interface.id + eventout_suffix
-                            == *this->interface_id)))
-                || (interface.type == node_interface::eventin_id
-                    && interface.id == eventin_prefix + *this->interface_id)
-                || (interface.type == node_interface::eventout_id
-                    && interface.id == *this->interface_id + eventout_suffix);
-        }
-
-    private:
-        const std::string * interface_id;
-    };
-}
-
 /**
  * @ingroup nodes
  *
  * @brief Find an interface matching @p id.
  *
  * If no interface is found with an interface identifier that is an exact match
- * for @p id, this method will look for @c set_ and @c _changed variants.
+ * for @p id, this function will look for @c set_ and @c _changed variants. If
+ * @p interfaces contains a field @c zzz along with an eventIn @c set_zzz
+ * and/or an eventOut @c zzz_changed, the eventIn or eventOut will only be
+ * found if the @c set_zzz or @c zzz_changed form, respectively, is used for
+ * @p id.
  *
  * @param interfaces    a set of <code>node_interface</code>s.
  * @param id            the interface id to look for.
@@ -548,8 +521,21 @@ const node_interface_set::const_iterator
 find_interface(const node_interface_set & interfaces, const std::string & id)
     throw ()
 {
-    return std::find_if(interfaces.begin(), interfaces.end(),
-                        interface_id_matches_(id));
+    node_interface_set::const_iterator pos =
+        std::find_if(interfaces.begin(), interfaces.end(),
+                     bind2nd(node_interface_matches_field(), id));
+    if (pos == interfaces.end()) {
+        using openvrml_::compose2;
+        using std::logical_or;
+
+        pos = std::find_if(interfaces.begin(), interfaces.end(),
+                           compose2(logical_or<bool>(),
+                                    bind2nd(node_interface_matches_eventin(),
+                                            id),
+                                    bind2nd(node_interface_matches_eventout(),
+                                            id)));
+    }
+    return pos;
 }
 
 

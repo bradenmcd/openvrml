@@ -1,5 +1,11 @@
 2005-01-22 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node.cpp (find_interface):  Fixed
+	find_interface to find a field "zzz" even if there is also an
+	eventIn "set_zzz" or an eventOut "zzz_changed".
+
+2005-01-22 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	(text_node::update_ucs4):  Check whether the UTF-8 string is
 	well-formed before calling FcUtf8ToUcs4.
