@@ -26,31 +26,33 @@ Group {
   ]
 }
 
-PROTO Highlighter [
-  eventIn SFBool isActive
-  eventOut SFColor color
-  field SFColor activeColor .8 .8 .8
-  field SFColor inactiveColor .5 .5 .5
-  field SFInt32 testInt32 500
-  field SFFloat testFloat 0.5
-  field SFString testString "test string"
-  field SFBool testBool FALSE 
-]
-{
-   Script {
-      eventIn SFBool isActive IS isActive
-      eventOut SFColor color IS color
-      field SFColor activeColor IS activeColor
-      field SFColor inactiveColor IS inactiveColor
-      field SFInt32 testInt32 IS testInt32
-      field SFFloat testFloat IS testFloat
-      field SFString testString IS testString
-      field SFBool testBool IS testBool
-      url ["TestJSAI.class"]
-   }
+Viewpoint {
+  position 0 0 10
+  description "Default Viewpoint"
 }
 
-DEF ITEM_LIGHTER Highlighter {}
+DEF TEST_VIEW Viewpoint {
+  position 0 0 40
+  description "Viewpoint 1"
+}
+
+DEF MY_SWITCH Switch {
+  whichChoice -1
+}
+
+DEF ITEM_LIGHTER Script {
+   eventIn SFBool isActive
+   eventOut SFColor color
+   field SFColor activeColor 0.8 0.8 0.8
+   field SFColor inactiveColor 0.5 0.5 0.5
+   field SFInt32 testInt32 16
+   field SFFloat testFloat 1.0
+   field SFString testString "test"
+   field SFBool testBool FALSE
+   field SFNode testTransform USE ITEM1
+   field SFNode testTouchSensor USE ITEM1_TOUCH
+   url ["TestJSAI.class"]
+}
 
 ROUTE ITEM1_DRAG.translation_changed TO ITEM1.set_translation
 ROUTE ITEM1_TOUCH.isOver TO ITEM_LIGHTER.isActive
