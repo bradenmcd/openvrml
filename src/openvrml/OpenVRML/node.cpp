@@ -1951,57 +1951,6 @@ bool node::modified() const
 }
 
 /**
- * @brief Mark all the nodes in the path as (not) modified.
- *
- * Convenience function used by update_modified.
- *
- * @param path  stack of ancestor nodes.
- * @param mod   set modified flag to this value.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void node::mark_path_modified(node_path & path, bool mod, int flags)
-{
-    const node_path::iterator end = path.end();
-    if (flags & 0x001) {
-        for (node_path::iterator i = path.begin(); i != end; ++i) {
-            (*i)->modified(mod);
-        }
-    }
-    if (flags & 0x002) {
-        for (node_path::iterator i = path.begin(); i != end; ++i) {
-            (*i)->bounding_volume_dirty(mod);
-        }
-    }
-}
-
-/**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * I don't like this at all, but it's not worth making it pretty
- * because the need for it will go away when parent pointers are
- * implemented.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void node::update_modified(node_path & path, int flags)
-{
-    if (this->modified_ || this->bounding_volume_dirty_) {
-        node::mark_path_modified(path, true, flags);
-    }
-}
-
-// note not virtual
-//
-void node::update_modified(int flags)
-{
-    node_path path;
-    this->update_modified(path, flags);
-}
-
-/**
  * @brief Get this node's bounding volume.
  *
  * Nodes that have no bounding volume, or have a difficult to calculate

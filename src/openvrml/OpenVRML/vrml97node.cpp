@@ -825,22 +825,6 @@ bool abstract_indexed_set_node::modified() const
 }
 
 /**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void abstract_indexed_set_node::update_modified(node_path & path, int flags)
-{
-    if (this->modified()) { mark_path_modified(path, true); }
-    path.push_front(this);
-    if (this->color_.value) { this->color_.value->update_modified(path); }
-    if (this->coord.value) { this->coord.value->update_modified(path); }
-    path.pop_front();
-}
-
-/**
  * @brief color_node.
  *
  * @return the color_node, or 0 if none is set.
@@ -1652,27 +1636,6 @@ bool appearance_node::modified() const
           || (this->texture_.value && this->texture_.value->modified())
           || (this->textureTransform.value
                 && this->textureTransform.value->modified()));
-}
-
-/**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void appearance_node::update_modified(node_path & path, int flags)
-{
-    if (this->modified()) { mark_path_modified(path, true); }
-    path.push_front(this);
-    if (this->material_.value) {
-        this->material_.value->update_modified(path);
-    }
-    if (this->texture_.value) { this->texture_.value->update_modified(path); }
-    if (this->textureTransform.value) {
-        this->textureTransform.value->update_modified(path);
-    }
-    path.pop_front();
 }
 
 /**
@@ -5664,23 +5627,6 @@ bool elevation_grid_node::modified() const
 }
 
 /**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void elevation_grid_node::update_modified(node_path & path, int flags)
-{
-    if (this->modified()) { mark_path_modified(path, true); }
-    path.push_front(this);
-    if (this->color.value) { this->color.value->update_modified(path); }
-    if (this->normal.value) { this->normal.value->update_modified(path); }
-    if (this->texCoord.value) { this->texCoord.value->update_modified(path); }
-    path.pop_front();
-}
-
-/**
  * @brief Insert this geometry into @p viewer's display list.
  *
  * @param viewer    a Viewer.
@@ -7161,25 +7107,6 @@ bool group_node::modified() const
 }
 
 /**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void group_node::update_modified(node_path & path, int flags)
-{
-    // if the mark_modifed short circuit doesn't
-    // pan out, we should be a little smarter here...
-    if (this->modified()) { mark_path_modified(path, true, flags); }
-    path.push_front(this);
-    for (size_t i = 0; i < this->children_.value.size(); ++i) {
-        this->children_.value[i]->update_modified(path, flags);
-    }
-    path.pop_front();
-}
-
-/**
  * @brief Render the node.
  *
  * Render each of the children.
@@ -7896,31 +7823,6 @@ bool indexed_face_set_node::modified() const {
             || (this->coord.value && this->coord.value->modified())
             || (this->normal.value && this->normal.value->modified())
             || (this->texCoord.value && this->texCoord.value->modified()));
-}
-
-/**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void indexed_face_set_node::update_modified(node_path& path, int flags) {
-    if (this->modified()) { mark_path_modified(path, true, flags); }
-    path.push_front(this);
-    if (this->color_.value) {
-        this->color_.value->update_modified(path, flags);
-    }
-    if (this->coord.value) {
-        this->coord.value->update_modified(path, flags);
-    }
-    if (this->normal.value) {
-        this->normal.value->update_modified(path, flags);
-    }
-    if (this->texCoord.value) {
-        this->texCoord.value->update_modified(path, flags);
-    }
-    path.pop_front();
 }
 
 /**
@@ -8704,28 +8606,6 @@ bool lod_node::modified() const
         if (this->level.value[i]->modified()) { return true; }
     }
     return false;
-}
-
-/**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void lod_node::update_modified(node_path & path, int flags)
-{
-    //
-    // what happens if one of the other children suddenly becomes the one
-    // selected? to be safe: check them all. this potentially means some
-    // extra work, but it's a lot easier to reason about.
-    //
-    if (this->modified()) { mark_path_modified(path, true); }
-    path.push_front(this);
-    for (size_t i = 0; i < this->level.value.size(); ++i) {
-        this->level.value[i]->update_modified(path);
-    }
-    path.pop_front();
 }
 
 /**
@@ -11899,22 +11779,6 @@ bool point_set_node::modified() const
 }
 
 /**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void point_set_node::update_modified(node_path & path, int flags)
-{
-    if (this->modified()) { mark_path_modified(path, true); }
-    path.push_front(this);
-    if (this->color.value) { this->color.value->update_modified(path); }
-    if (this->coord.value) { this->coord.value->update_modified(path); }
-    path.pop_front();
-}
-
-/**
  * @brief Insert this geometry into @p viewer's display list.
  *
  * @param viewer    a Viewer.
@@ -12928,26 +12792,6 @@ bool shape_node::modified() const
 }
 
 /**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void shape_node::update_modified(node_path & path, int flags)
-{
-    if (this->modified()) { mark_path_modified(path, true, flags); }
-    path.push_front(this);
-    if (this->appearance.value) {
-        this->appearance.value->update_modified(path, flags);
-    }
-    if (this->geometry.value) {
-        this->geometry.value->update_modified(path, flags);
-    }
-    path.pop_front();
-}
-
-/**
  * @brief Render the node.
  *
  * @param viewer    a Viewer.
@@ -13284,21 +13128,6 @@ sound_node::sound_node(const node_type & type,
  */
 sound_node::~sound_node() throw ()
 {}
-
-/**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void sound_node::update_modified(node_path & path, int flags)
-{
-    if (this->modified()) { mark_path_modified(path, true); }
-    path.push_front(this);
-    if (this->source.value) { this->source.value->update_modified(path); }
-    path.pop_front();
-}
 
 /**
  * @brief Render the node.
@@ -14487,28 +14316,6 @@ bool switch_node::modified() const {
 }
 
 /**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void switch_node::update_modified(node_path & path, int flags) {
-    //
-    // ok: again we get this issue of whether to check _all_ the children
-    // or just the current choice (ref LOD). again, chooise to test them
-    // all. note that the original modified() just tested the current
-    // one. keep that in mind, and change it back when confirmed safe.
-    //
-    if (this->modified()) { mark_path_modified(path, true); }
-    path.push_front(this);
-    for (size_t i = 0; i < this->choice.value.size(); ++i) {
-        this->choice.value[i]->update_modified(path);
-    }
-    path.pop_front();
-}
-
-/**
  * @brief Render the node.
  *
  * The child corresponding to @a whichChoice is rendered. Nothing is rendered if
@@ -15284,22 +15091,6 @@ bool text_node::modified() const
 {
     return (this->node::modified()
             || (this->fontStyle.value && this->fontStyle.value->modified()));
-}
-
-/**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * @param path  stack of ancestor nodes.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
- */
-void text_node::update_modified(node_path & path, int flags) {
-    if (this->modified()) { mark_path_modified(path, true); }
-    path.push_front(this);
-    if (this->fontStyle.value) {
-        this->fontStyle.value->update_modified(path);
-    }
-    path.pop_front();
 }
 
 /**

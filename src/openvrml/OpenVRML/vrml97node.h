@@ -104,7 +104,6 @@ namespace OpenVRML {
             virtual ~abstract_indexed_set_node() throw () = 0;
 
             virtual bool modified() const;
-            virtual void update_modified(node_path & path, int flags = 0x003);
 
             virtual const color_node * color() const throw ();
 
@@ -218,7 +217,6 @@ namespace OpenVRML {
 
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
             virtual bool modified() const;
-            virtual void update_modified(node_path& path, int flags);
             virtual void render(OpenVRML::viewer & viewer,
                                 rendering_context context);
 
@@ -317,7 +315,6 @@ namespace OpenVRML {
             virtual ~appearance_node() throw ();
 
             virtual bool modified() const;
-            virtual void update_modified(node_path & path, int flags = 0x003);
 
             virtual void render(OpenVRML::viewer & viewer,
                                 rendering_context context);
@@ -954,7 +951,6 @@ namespace OpenVRML {
             virtual ~elevation_grid_node() throw ();
 
             virtual bool modified() const;
-            virtual void update_modified(node_path & path, int flags = 0x003);
             virtual viewer::object_t
             insert_geometry(OpenVRML::viewer & viewer,
                             rendering_context context);
@@ -1212,7 +1208,6 @@ namespace OpenVRML {
             virtual ~indexed_face_set_node() throw ();
 
             virtual bool modified() const;
-            virtual void update_modified(node_path & path, int flags = 0x003);
             virtual viewer::object_t
             insert_geometry(OpenVRML::viewer & viewer,
                             rendering_context context);
@@ -1222,17 +1217,18 @@ namespace OpenVRML {
             //
             // eventIn handlers
             //
-            void process_set_normal(const field_value & value, double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
+            void process_set_normal(const field_value & value,
+                                    double timestamp)
+                throw (std::bad_cast, std::bad_alloc);
             void process_set_normalIndex(const field_value & value,
                                         double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
+                throw (std::bad_cast, std::bad_alloc);
             void process_set_texCoord(const field_value & value,
                                      double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
+                throw (std::bad_cast, std::bad_alloc);
             void process_set_texCoordIndex(const field_value & value,
                                           double timestamp)
-                     throw (std::bad_cast, std::bad_alloc);
+                throw (std::bad_cast, std::bad_alloc);
 
             void recalcBSphere();
         };
@@ -1337,7 +1333,6 @@ namespace OpenVRML {
             virtual ~lod_node() throw ();
 
             virtual bool modified() const;
-            virtual void update_modified(node_path & path, int flags = 0x003);
             virtual void render(OpenVRML::viewer & viewer,
                                 rendering_context context);
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
@@ -1843,7 +1838,6 @@ namespace OpenVRML {
                            const scope_ptr & scope);
             virtual ~point_set_node() throw ();
 
-            virtual void update_modified(node_path & path, int flags = 0x003);
             virtual bool modified() const;
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
                                                   rendering_context context);
@@ -2016,7 +2010,6 @@ namespace OpenVRML {
             virtual ~shape_node() throw ();
 
             virtual bool modified() const;
-            virtual void update_modified(node_path& path, int flags);
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
             virtual void render(OpenVRML::viewer & viewer,
                                 rendering_context context);
@@ -2063,7 +2056,6 @@ namespace OpenVRML {
                        const scope_ptr & scope);
             virtual ~sound_node() throw ();
 
-            virtual void update_modified(node_path & path, int flags = 0x003);
             virtual void render(OpenVRML::viewer & viewer,
                                 rendering_context context);
 
@@ -2266,7 +2258,6 @@ namespace OpenVRML {
             virtual ~switch_node() throw ();
 
             virtual bool modified() const;
-            virtual void update_modified(node_path & path, int flags = 0x003);
             virtual void render(OpenVRML::viewer & viewer,
                                 rendering_context context);
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
@@ -2343,7 +2334,6 @@ namespace OpenVRML {
             virtual ~text_node() throw ();
 
             virtual bool modified() const;
-            virtual void update_modified(node_path & path, int flags = 0x003);
             virtual viewer::object_t
             insert_geometry(OpenVRML::viewer & viewer,
                             rendering_context context);

@@ -262,9 +262,6 @@ namespace OpenVRML {
         eventout_is_map_t eventout_is_map;
 
     public:
-        static void mark_path_modified(node_path & path, bool mod,
-                                       int flags = 0x003);
-
         const node_type & type;
 
         virtual ~node() throw () = 0;
@@ -348,9 +345,6 @@ namespace OpenVRML {
 
         virtual bool modified() const;
         void modified(bool value);
-
-        virtual void update_modified(node_path & path, int flags = 0x003);
-        void update_modified(int flags = 0x003);
 
         virtual void bounding_volume(const OpenVRML::bounding_volume & v);
         virtual const OpenVRML::bounding_volume & bounding_volume() const;
