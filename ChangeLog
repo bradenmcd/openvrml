@@ -1,3 +1,7 @@
+2002-12-20  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * ide-projects/Makefile.am: add config.h 
+
 2002-12-20  Braden McDaniel  <braden@endoframe.com>
 
         * m4/gl.m4:  Added PTHREAD_CFLAGS to GL_CFLAGS.
