@@ -12,6 +12,9 @@
           operation on grouping nodes, which will nolonger add or remove
           NULLs as well.
 
+        * Fixed a bug in VrmlMFNode::removeNode() that caused the wrong
+          node to be dereferenced.
+
 2000-12-18  Braden McDaniel  <braden@endoframe.com>
 
         * Const-correctness changes to Viewer and ViewerOpenGL.
