@@ -1,3 +1,7 @@
+2000-03-09  Chris Morley  <cmorley@vermontel.net>
+
+	* Fix elevationGrid color/normal per vertex.
+
 2000-03-08  Chris Morley  <cmorley@vermontel.net>
 
 	* Don't attempt to render null strings. Duh.

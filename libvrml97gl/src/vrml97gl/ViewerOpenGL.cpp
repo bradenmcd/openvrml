@@ -825,24 +825,24 @@ static void elevationVertexNormal(int i, int j,
     }
   Vx[2] = 0.0;
 
+  Vz[0] = 0.0;
   if (j > 0 && j < nz-1)
     {
-      Vz[0] = 2.0 * dz;
       Vz[1] = *(height+nx) - *(height-nx);
+      Vz[2] = 2.0 * dz;
     }
   else if (j == 0)
     {
-      Vz[0] = dz;
       Vz[1] = *(height+nx) - *(height);
+      Vz[2] = dz;
     }
   else
     {
-      Vz[0] = dz;
       Vz[1] = *(height) - *(height-nx);
+      Vz[2] = dz;
     }
-  Vz[2] = 0.0;
 
-  Vcross( N, Vx, Vz );
+  Vcross( N, Vz, Vx );
 }
 
 
@@ -898,14 +898,12 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 	      ((mask & MASK_COLOR_PER_VERTEX) || (i < nx-1)))
 	    {
 	      glColor3fv( colors );
-	      colors += 3;
 	    }
 	      
 	  if (normals &&
 	      ((mask & MASK_NORMAL_PER_VERTEX) || (i < nx-1)))
 	    {
 	      glNormal3fv( normals );
-	      normals += 3;
 	    }
 	  else if (! normals)
 	    {
@@ -937,23 +935,21 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 	  glTexCoord2f( s0, t0 );
 	  glVertex3f( x, *height, z );
 
+	  // Vertex from next row
 	  if (colors && (mask & MASK_COLOR_PER_VERTEX))
 	    {
-	      glColor3fv( colors );
-	      colors += 3;
+	      glColor3fv( colors+3*nx );
 	    }
 
 	  if (mask & MASK_NORMAL_PER_VERTEX)
 	    {
 	      if (normals)
 		{
-		  glNormal3fv( normals );
-		  normals += 3;
+		  glNormal3fv( normals+3*nx );
 		}
 	      else
 		{
 		  float N[3];
-
 		  elevationVertexNormal(i, j+1, nx, nz, dx, dz, height+nx, N);
 		  glNormal3fv( N );
 		}
@@ -963,6 +959,8 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 	  glVertex3f( x, *(height+nx), z+dz );
 
 	  ++height;
+	  if ( colors ) colors += 3;
+	  if ( normals ) normals += 3;
 	}
 
       glEnd();
