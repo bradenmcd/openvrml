@@ -13,8 +13,6 @@ AC_PROG_LIBTOOL
 AC_PROG_CXX
 AC_PROG_CXXCPP
 
-OV_CXX_HASH_MAP
-
 #
 # Optional packages.
 #

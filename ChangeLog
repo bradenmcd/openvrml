@@ -1,3 +1,16 @@
+2002-10-24  Braden McDaniel  <braden@endoframe.com>
+
+        * configure.ac, m4/Makefile.am, m4/cxxhash_map.m4,
+          src/openvrml/OpenVRML/nodeptr.cpp,
+          src/openvrml/OpenVRML/nodeptr.h: Removed optional usage of
+          hash_map; use std::map.  hash_map is likely a performance win,
+          but until there's data indicating the magnitude of the gain,
+          its not worth the maintenance burden.  Since hash_map is
+          nonstandard, different implementations do different things
+          with it.  If hash_map usage is reinstated, the autoconf test
+          will need to be a good deal smarter than the one that is being
+          retired with this change.
+
 2002-10-20  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/Vrml97Parser.cpp,

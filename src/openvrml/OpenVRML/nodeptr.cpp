@@ -21,13 +21,16 @@
 # include "nodeptr.h"
 # include "node.h"
 
+namespace OpenVRML {
+
 /**
- * @class OpenVRML::NodePtr
+ * @class NodePtr
  *
- * @brief A reference-counted smart pointer for <code>Node</code>s.
+ * @brief A reference-counted smart pointer for @link Node Nodes@endlink.
  */
 
 namespace {
+    typedef std::map<OpenVRML::Node *, size_t> CountMap;
     CountMap countMap;
 }
 
@@ -36,7 +39,9 @@ namespace {
  *
  * @param node a pointer to a Node
  */
-OpenVRML::NodePtr::NodePtr(Node * node): countPtr(0) {
+NodePtr::NodePtr(Node * node):
+    countPtr(0)
+{
     if (node) {
         CountMap::iterator pos = countMap.find(node);
         if (pos == countMap.end()) {
@@ -56,8 +61,9 @@ OpenVRML::NodePtr::NodePtr(Node * node): countPtr(0) {
  *
  * @param nodePtr
  */
-OpenVRML::NodePtr::NodePtr(const NodePtr & nodePtr):
-        countPtr(nodePtr.countPtr) {
+NodePtr::NodePtr(const NodePtr & nodePtr):
+    countPtr(nodePtr.countPtr)
+{
     if (this->countPtr) {
         ++this->countPtr->second;
     }
@@ -68,7 +74,8 @@ OpenVRML::NodePtr::NodePtr(const NodePtr & nodePtr):
  *
  * @param node
  */
-void OpenVRML::NodePtr::reset(Node * node) {
+void NodePtr::reset(Node * node)
+{
     if (this->countPtr && this->countPtr->first == node) {
         return;
     }
@@ -84,7 +91,8 @@ void OpenVRML::NodePtr::reset(Node * node) {
     }
 }
 
-void OpenVRML::NodePtr::dispose() throw () {
+void NodePtr::dispose() throw ()
+{
     if (this->countPtr) {
         --this->countPtr->second;
         if (this->countPtr->second == 0) {
@@ -95,7 +103,8 @@ void OpenVRML::NodePtr::dispose() throw () {
     }
 }
 
-void OpenVRML::NodePtr::share(CountMap::value_type * countPtr) throw () {
+void NodePtr::share(CountMap::value_type * countPtr) throw ()
+{
     if (this->countPtr != countPtr) {
         ++countPtr->second;
         this->dispose();
@@ -104,19 +113,19 @@ void OpenVRML::NodePtr::share(CountMap::value_type * countPtr) throw () {
 }
 
 /**
- * @fn OpenVRML::NodePtr::~NodePtr()
+ * @fn NodePtr::~NodePtr()
  *
  * @brief Destructor.
  */
 
 /**
- * @fn OpenVRML::NodePtr::operator bool() const
+ * @fn NodePtr::operator bool() const
  *
  * @brief Automatic conversion to bool.
  */
 
 /**
- * @fn OpenVRML::NodePtr & OpenVRML::NodePtr::operator=(const NodePtr &)
+ * @fn NodePtr & NodePtr::operator=(const NodePtr &)
  *
  * @brief Assignment operator.
  *
@@ -124,7 +133,7 @@ void OpenVRML::NodePtr::share(CountMap::value_type * countPtr) throw () {
  */
 
 /**
- * @fn OpenVRML::Node & OpenVRML::NodePtr::operator*() const
+ * @fn Node & NodePtr::operator*() const
  *
  * @brief Dereference operator.
  *
@@ -132,13 +141,13 @@ void OpenVRML::NodePtr::share(CountMap::value_type * countPtr) throw () {
  */
 
 /**
- * @fn OpenVRML::Node * OpenVRML::NodePtr::operator->() const
+ * @fn Node * NodePtr::operator->() const
  *
  * @brief Access a method of the Node.
  */
 
 /**
- * @fn OpenVRML::Node * OpenVRML::NodePtr::get() const
+ * @fn Node * NodePtr::get() const
  *
  * @brief Get a raw pointer to the Node.
  *
@@ -146,10 +155,12 @@ void OpenVRML::NodePtr::share(CountMap::value_type * countPtr) throw () {
  */
 
 /**
- * @fn bool OpenVRML::NodePtr::operator==(const NodePtr & nodePtr) const
+ * @fn bool NodePtr::operator==(const NodePtr & nodePtr) const
  *
  * @brief Compare two NodePtrs.
  *
- * @return true if both NodePtrs point to the same Node; false
+ * @return @c true if both NodePtrs point to the same Node; @c false
  *         otherwise.
  */
+
+} // namespace OpenVRML
