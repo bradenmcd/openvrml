@@ -1,3 +1,17 @@
+2002-08-21  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Update *.dsp and *.vc6 to remove "winconfig.h" dependencies and
+          again to make libraries and lookat under windows
+
+        * Update ide-projects/Windows/VisualC6/Install
+
+        * Remove ide-projects/Windows/VisualC6/winconfig.h
+
+        * Update ViewerOpenGL.cpp and ViewerGlut.cpp to remove winconfig.h 
+
+        * Replace "cout" and "endl" with "std::cout" and "std::endl" in
+          ScriptJDK.cpp
+
 2002-08-20  Braden McDaniel  <braden@endoframe.com>
 
         * README: Added note about Sun JDK problems under GNU/Linux.
