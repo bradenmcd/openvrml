@@ -33,6 +33,7 @@
 # include <cstdlib>
 # include <cstring>
 # include <algorithm>
+# include <iostream>
 # include <sstream>
 
 // added for working under windows (and is not needed for mac os)...
