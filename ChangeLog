@@ -1,3 +1,8 @@
+2001-10-30  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Improve Navigation in "Examine Mode". Navigation speed is
+          taken care.
+
 2001-10-27  Braden McDaniel  <braden@endoframe.com>
 
         * Give up on trying to predict where the SpiderMonkey headers

@@ -2874,11 +2874,12 @@ ViewerOpenGL::rot(float x, float y, float z, float a)
 void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
 {
    trackball(d_lastquat, x1, y1, x2, y2);
-   float vx[4],rot_vec[4];
+   float vx[4];
    double rot_mat[4][4];
    quat_to_axis(d_lastquat,vx);
-   getOrientation(rot_vec);
-   Mrotation(rot_mat,rot_vec);
+   if (fpzero(vx[3])) return;
+   glGetDoublev(GL_MODELVIEW_MATRIX, &rot_mat[0][0]);
+   rot_mat[3][0] = rot_mat[3][1] = rot_mat[3][2] = 0.0;
    float d[3],q[4];
    VM(d, rot_mat, vx);
    axis_to_quat(d,vx[3],q);
@@ -2889,31 +2890,6 @@ void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
 
 void ViewerOpenGL::step( float x, float y, float z )
 {
-  //cout << "ViewerOpenGL::step(" << x << "," << y << "," << z << ")" << endl;
-
-#if 1
-  double rot_mat[4][4];
-  for(int i=0; i<4; i++) // oh good grief.
-    for(int j=0; j<4; j++)
-     rot_mat[i][j] = d_rotationMatrix[i][j];
-  double sco_mat[4][4];
-  float rot_vec[4];
-  float vx[3];
-  vx[0] = x;
-  vx[1] = y;
-  vx[2] = z;
-  Vnorm(vx);
-  getOrientation(rot_vec);
-  Mrotation(sco_mat,rot_vec);
-  float d[3];
-  VM(d, sco_mat, vx);
-  VM(d, rot_mat, d);
-  this->d_translatex += d[0];
-  this->d_translatey += d[1];
-  this->d_translatez += d[2];             
-#endif
-
-#if 0
   GLint viewport[4];
   GLdouble modelview[16], projection[16];
   glGetIntegerv (GL_VIEWPORT, viewport);
@@ -2922,50 +2898,71 @@ void ViewerOpenGL::step( float x, float y, float z )
 
   GLdouble ox, oy, oz;
   gluUnProject( 0.0, 0.0, 0.0, modelview, projection, viewport,
-		&ox, &oy, &oz);
+                &ox, &oy, &oz);
   GLdouble dx, dy, dz;
   gluUnProject( 100.*x, 100.*y, z, modelview, projection, viewport,
-		&dx, &dy, &dz);
-
+                &dx, &dy, &dz);
   dx -= ox; dy -= oy; dz -= oz;
-  double d = dx * dx + dy * dy + dz * dz;
-  if (fpzero(d)) return;
-
-  d = sqrt(d);
-  VrmlNodeNavigationInfo *nav = d_scene->bindableNavigationInfoTop();
+  double rot_mat[4][4];
+  for(int i=0; i<4; i++) 
+    for(int j=0; j<4; j++)
+     rot_mat[i][j] = d_rotationMatrix[i][j];
+  float rot_vec[4];
+  float vx[3];
+  vx[0] = dx;
+  vx[1] = dy;
+  vx[2] = dz;
+  float d[3];
+  VM(d, rot_mat, vx);
+  double dist = d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
+  if (dist < 1.0e-25 )return;
+  dist = sqrt(dist);
+  VrmlNodeNavigationInfo *nav = this->scene.bindableNavigationInfoTop();
   float speed = 1.0;
   if (nav) speed = nav->speed();
-
-  d = speed / d;
-  dx *= d; dy *= d; dz *= d;
-  if (fpzero(d)) return;
-  
-  d_translatex += dx;
-  d_translatey += dy;
-  d_translatez += dz;
-#endif
-
+  dist = speed / dist;
+  if (fpzero(dist))return;
+  d[0] *= dist; d[1] *= dist; d[2] *= dist;
+  this->d_translatex += d[0];
+  this->d_translatey += d[1];
+  this->d_translatez += d[2];
   wsPostRedraw();
 }
 
 void ViewerOpenGL::zoom( float z )
 {
-  double sco_mat[4][4];
-  float rot_vec[4];
-  float vx[3];
-  vx[0] = 0;
-  vx[1] = 0;
-  vx[2] = z;
-  Vnorm(vx);
-  getOrientation(rot_vec);
-  Mrotation(sco_mat,rot_vec);
-  float d[3];
-  VM(d, sco_mat, vx);
-  this->d_zoom[0] += d[0];
-  this->d_zoom[1] += d[1];
-  this->d_zoom[2] += d[2];
+  GLint viewport[4];
+  GLdouble modelview[16], projection[16];
+  glGetIntegerv (GL_VIEWPORT, viewport);
+  glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
+  glGetDoublev (GL_PROJECTION_MATRIX, projection);
+  VrmlNodeNavigationInfo *nav = this->scene.bindableNavigationInfoTop();
+  float x_c = d_winWidth/2;
+  float y_c = d_winHeight/2;
+  float visibilityLimit=0.0;
+  if (nav) visibilityLimit = nav->visibilityLimit();
+  float z_c = (visibilityLimit > 0.0) ? visibilityLimit/2 : 15000.0;
+  GLdouble ox, oy, oz;
+  gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
+                &ox, &oy, &oz);
+  z_c = z_c-100.*z;
+  GLdouble dx, dy, dz;
+  gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
+                &dx, &dy, &dz);
+  dx -= ox; dy -= oy; dz -= oz;
+  double dist = dx * dx + dy * dy + dz * dz;
+  if (dist < 1.0e-25 )return;
+  dist = sqrt(dist);
+  float speed = 1.0;
+  if (nav) speed = nav->speed();
+  dist = speed / dist;
+  if (fpzero(dist)) return;
+  dx *= dist; dy *= dist; dz *= dist;
+  this->d_zoom[0] += dx;
+  this->d_zoom[1] += dy;
+  this->d_zoom[2] += dz;
   wsPostRedraw();
-}                                
+}
 
 void ViewerOpenGL::handleKey(int key)
 {
@@ -3138,15 +3135,15 @@ void ViewerOpenGL::handleMouseDrag(int x, int y)
   // This is not scaling, it is now moving in screen Z coords
   else if (d_scaling)
     {
-      zoom(0.02 * ((float) (d_beginy - y)) / d_winHeight );
+      zoom((float) (d_beginy - y) / d_winHeight );
       d_beginx = x;
       d_beginy = y;
     }
   else if (d_translating)
     {
-      step( 0.02 * ((float) (x - d_beginx)) / d_winWidth,
-            0.02 * ((float) (d_beginy - y)) / d_winHeight,
-            0.0 );
+      step( (float) (x - d_beginx) / d_winWidth,
+            (float) (d_beginy - y) / d_winHeight,
+             0.0 );
       d_beginx = x;
       d_beginy = y;
     }
@@ -3172,6 +3169,7 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
   glPushName(0);
 
   glMatrixMode( GL_PROJECTION );
+  glPushMatrix();
   glLoadIdentity();
   gluPickMatrix( (GLdouble) x, (GLdouble)(viewport[3] - y),
 		 2.0, 2.0, viewport );
@@ -3273,6 +3271,9 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
     }
 
   bool wasActive = false;
+// To unset PickMatrix...
+  glMatrixMode( GL_PROJECTION );
+  glPopMatrix();
 
   // Sanity check. This can happen when the world gets replaced
   // by clicking on an anchor - the current sensitive object goes
