@@ -18,56 +18,45 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifndef DOC_H
-#define DOC_H
-//
-//  Document class
-//
+# ifndef OPENVRML_DOC_H
+#   define OPENVRML_DOC_H
 
-#include <stdio.h>
-#include <iostream>
-#include <string>
-#include "common.h"
+#   include <stdio.h>
+#   include <iostream>
+#   include <string>
+#   include "common.h"
 
 namespace OpenVRML {
 
     class Doc2;
 
     class OPENVRML_SCOPE Doc {
-        static const char *stripProtocol(const char *url);
-        static bool isAbsolute(const char *url);
-        bool filename( char *fn, int nfn );
-#ifdef macintosh
-        char* convertCommonToMacPath( char *fn, int nfn );
-#endif
-        char *d_url;
+        char * d_url;
         std::ostream * d_ostream;
-        FILE *d_fp;
-        char *d_tmpfile; // Local copy of http: files
+        FILE * d_fp;
+        char * d_tmpfile; // Local copy of http: files
 
     public:
         explicit Doc(const std::string & url = std::string(),
                      const Doc * relative = 0);
         Doc(const std::string & url, const Doc2 * relative);
-        Doc(Doc const *);
-        Doc(Doc2 const *);
         ~Doc();
 
-        void seturl(char const * url, Doc const * relative = 0);
-        void seturl(char const * url, Doc2 const * relative = 0);
+        void seturl(const char * url, const Doc * relative = 0);
+        void seturl(const char * url, const Doc2 * relative = 0);
 
-        const char *url() const;          // "http://www.foo.com/dir/file.xyz#Viewpoint"
-        const char *urlBase() const;      // "file" or ""
-        const char *urlExt() const;       // "xyz" or ""
-        const char *urlPath() const;      // "http://www.foo.com/dir/" or ""
-        const char *urlProtocol() const;  // "http"
-        const char *urlModifier() const;  // "#Viewpoint" or ""
+        const char * url() const;          // "http://www.foo.com/dir/file.xyz#Viewpoint"
+        const char * urlBase() const;      // "file" or ""
+        const char * urlExt() const;       // "xyz" or ""
+        const char * urlPath() const;      // "http://www.foo.com/dir/" or ""
+        const char * urlProtocol() const;  // "http"
+        const char * urlModifier() const;  // "#Viewpoint" or ""
 
-        const char *localName();    // "/tmp/file.xyz" or NULL
-        const char *localPath();    // "/tmp/" or NULL
+        const char * localName();    // "/tmp/file.xyz" or NULL
+        const char * localPath();    // "/tmp/" or NULL
 
 
-        FILE *fopen(const char *mode);
+        FILE * fopen(const char * mode);
         void fclose();
 
         std::ostream & outputStream();
@@ -77,7 +66,12 @@ namespace OpenVRML {
         Doc(Doc const &);
         Doc & operator=(Doc const &);
 
+        bool filename(char * fn, int nfn);
+        
+#   ifdef macintosh
+        char * convertCommonToMacPath(char * fn, int nfn);
+#   endif
     };
 }
 
-#endif
+# endif

@@ -1,3 +1,7 @@
+2002-06-07  Braden McDaniel  <braden@endoframe.com>
+
+        * Doxygen love and minor cruft removal for Doc and Doc2.
+
 2002-06-06  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/script.cpp: Fixed segfault introduced

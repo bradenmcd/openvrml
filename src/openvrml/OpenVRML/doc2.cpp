@@ -238,6 +238,49 @@ namespace {
 
 namespace OpenVRML {
 
+/**
+ * @class Doc2
+ *
+ * @brief A class to contain document references.
+ *
+ * Doc2 is a hack of Doc. When the ANTLR parser was added to %OpenVRML, a Doc
+ * work-alike was needed that would read from a std::istream instead of a C
+ * @c FILE @c *. Doc2's purpose is to fill that need, and to remind us through
+ * its ugliness just how badly both it and Doc need to be replaced with an I/O
+ * solution that doesn't suck.
+ */
+
+/**
+ * @var char * Doc2::url_
+ *
+ * @brief The URL.
+ */
+
+/**
+ * @var char * Doc2::tmpfile_
+ *
+ * @brief Name of the temporary file created for the local copy of the resource.
+ */
+
+/**
+ * @var std::istream * Doc2::istm_
+ *
+ * @brief A file descriptor for reading the local copy of the resource.
+ */
+
+/**
+ * @var std::ostream * Doc2::ostm_
+ *
+ * @brief A pointer to a std::ostream used for writing the resource.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the Doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
 Doc2::Doc2(const std::string & url, const Doc2 * relative)
   : url_(0), tmpfile_(0), istm_(0), ostm_(0)
 {
@@ -246,14 +289,9 @@ Doc2::Doc2(const std::string & url, const Doc2 * relative)
     }
 }
 
-Doc2::Doc2(const Doc2 * doc)
-  : url_(0), tmpfile_(0), istm_(0), ostm_(0)
-{
-    if (doc) {
-        this->seturl(doc->url());
-    }
-}
-
+/**
+ * @brief Destructor.
+ */
 Doc2::~Doc2()
 {
     delete [] url_;
@@ -271,6 +309,41 @@ Doc2::~Doc2()
     }
 }
 
+namespace {
+    const char * stripProtocol(const char * url) {
+        const char * s = url;
+
+# ifdef _WIN32
+        if (strncmp(s+1,":/",2) == 0) {
+            return url;
+        }
+# endif
+
+        // strip off protocol if any
+        while (*s && isalpha(*s)) {
+            ++s;
+        }
+
+        if (*s == ':') {
+            return s + 1;
+        }
+
+        return url;
+    }
+
+    bool isAbsolute(const char * url) {
+      const char *s = stripProtocol(url);
+      return ( *s == '/' || *(s+1) == ':' );
+    }
+}
+
+/**
+ * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the Doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
 void Doc2::seturl(const char * url, const Doc2 * relative) {
     delete [] this->url_;
     this->url_ = 0;
@@ -306,8 +379,20 @@ void Doc2::seturl(const char * url, const Doc2 * relative) {
     }
 }
 
+/**
+ * @brief Get the URL.
+ *
+ * @return the URL.
+ */
 const char * Doc2::url() const { return this->url_; }
 
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      without its extension.
+ *
+ * @return the portion of the last path element preceding the last '.' in the
+ *      path, or an empty string if the last path element is empty.
+ */
 const char * Doc2::urlBase() const {
     if (!url_) { return ""; }
     
@@ -328,6 +413,13 @@ const char * Doc2::urlBase() const {
     return s;
 }
 
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      extension.
+ *
+ * @return the portion of the last path element succeeding the last '.' in the
+ *      path, or an empty string if the last path element includes no '.'.
+ */
 const char * Doc2::urlExt() const {
     if (!url_) { return ""; }
     
@@ -344,6 +436,14 @@ const char * Doc2::urlExt() const {
     return &ext[0];
 }
 
+/**
+ * @brief Get the URL without the last component of the path.
+ *
+ * In spite of its name, this method does not return the URL's path.
+ *
+ * @return the portion of the URL including the scheme, the authority, and all
+ *      but the last component of the path.
+ */
 const char * Doc2::urlPath() const {
     if (!url_) { return ""; }
     
@@ -360,6 +460,11 @@ const char * Doc2::urlPath() const {
     return &path[0]; 
 }
 
+/**
+ * @brief Get the URL scheme.
+ *
+ * @return the URL scheme.
+ */
 const char * Doc2::urlProtocol() const {
     if (url_) {
         static char protocol[12];
@@ -386,17 +491,37 @@ const char * Doc2::urlProtocol() const {
     return "file";
 }
 
+/**
+ * @brief Get the fragment identifier.
+ *
+ * @return the fragment identifier, including the leading '#', or an empty
+ *      string if there is no fragment identifier.
+ */
 const char * Doc2::urlModifier() const {
     const char * mod = url_ ? strrchr(url_, '#') : 0;
     return mod;
 }
 
+/**
+ * @brief Get the fully qualified name of a local file that is the downloaded
+ *      resource at @a d_url.
+ *
+ * @return the fully qualified name of a local file that is the downloaded
+ *      resource at @a d_url.
+ */
 const char * Doc2::localName() {
     static char buf[1024];
     if (filename(buf, sizeof(buf))) { return buf; }
     return 0;
 }
 
+/**
+ * @brief Get the path of the local file that is the downloaded resource at
+ *      @a d_url.
+ *
+ * @return the path of the local file that is the downloaded resource at
+ *      @a d_url.
+ */
 const char * Doc2::localPath() {
     static char buf[1024];
     
@@ -413,6 +538,11 @@ const char * Doc2::localPath() {
     return 0;
 }
 
+/**
+ * @brief Get an input stream for the resource.
+ *
+ * @return an input stream for the resource.
+ */
 std::istream & Doc2::inputStream() {
     if (!this->istm_) {
         
@@ -445,6 +575,11 @@ std::istream & Doc2::inputStream() {
     return *this->istm_;
 }
 
+/**
+ * @brief Get an output stream for the resource.
+ *
+ * @return an output stream for the resource.
+ */
 std::ostream & Doc2::outputStream() {
     if (!ostm_) {
         ostm_ = new std::ofstream(stripProtocol(url_), std::ios::out);
@@ -452,34 +587,12 @@ std::ostream & Doc2::outputStream() {
     return *this->ostm_;
 }
 
-const char * Doc2::stripProtocol(const char * url) {
-    const char * s = url;
-    
-# ifdef _WIN32
-    if (strncmp(s+1,":/",2) == 0) {
-        return url;
-    }
-# endif
-    
-    // strip off protocol if any
-    while (*s && isalpha(*s)) {
-        ++s;
-    }
-    
-    if (*s == ':') {
-        return s + 1;
-    }
-    
-    return url;
-}
-
-bool Doc2::isAbsolute(const char * url) {
-  const char *s = stripProtocol(url);
-  return ( *s == '/' || *(s+1) == ':' );
-}
-
-// Converts a url into a local filename
-
+/**
+ * @brief Converts a url into a local filename.
+ *
+ * @retval fn   a character buffer to hold the local filename.
+ * @param nfn   the number of elements in the buffer @p fn points to.
+ */
 bool Doc2::filename(char * fn, int nfn) {
     fn[0] = '\0';
     

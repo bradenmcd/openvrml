@@ -18,11 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-//  Doc.cpp
-//  A class to contain document references. This is just a shell until
-//  a real http protocol library is found...
-//
-
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #include <winconfig.h>
 #endif
@@ -39,6 +34,45 @@
 
 namespace OpenVRML {
 
+/**
+ * @class Doc
+ *
+ * @brief A class to contain document references.
+ *
+ * This is just a shell until a real http protocol library is found...
+ */
+
+/**
+ * @var char * Doc::d_url
+ *
+ * @brief The URL.
+ */
+
+/**
+ * @var std::ostream * Doc::d_ostream
+ *
+ * @brief A pointer to a std::ostream used for writing the resource.
+ */
+
+/**
+ * @var FILE * Doc::d_fp
+ *
+ * @brief A file descriptor for reading the local copy of the resource.
+ */
+
+/**
+ * @var char * Doc::d_tmpfile
+ *
+ * @brief Name of the temporary file created for the local copy of the resource.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the Doc that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
 Doc::Doc(const std::string & url, const Doc * relative): d_url(0), d_ostream(0),
         d_fp(0), d_tmpfile(0) {
     if (url.length() > 0) {
@@ -46,6 +80,13 @@ Doc::Doc(const std::string & url, const Doc * relative): d_url(0), d_ostream(0),
     }
 }
 
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the Doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
 Doc::Doc(const std::string & url, const Doc2 * relative): d_url(0),
         d_ostream(0), d_fp(0), d_tmpfile(0) {
     if (url.length() > 0) {
@@ -53,22 +94,9 @@ Doc::Doc(const std::string & url, const Doc2 * relative): d_url(0),
     }
 }
 
-Doc::Doc(Doc const * doc)
-  : d_url(0), d_ostream(0), d_fp(0), d_tmpfile(0)
-{
-    if (doc) {
-        seturl(doc->url(), static_cast<Doc const *>(0));
-    }
-}
-
-Doc::Doc(Doc2 const * doc)
-  : d_url(0), d_ostream(0), d_fp(0), d_tmpfile(0)
-{
-    if (doc) {
-        seturl(doc->url(), static_cast<Doc2 const *>(0));
-    }
-}
-
+/**
+ * @brief Destructor.
+ */
 Doc::~Doc()
 {
   delete [] d_url;
@@ -81,8 +109,39 @@ Doc::~Doc()
     }
 }
 
+namespace {
+    const char * stripProtocol(const char *url)
+    {
+      const char *s = url;
 
-void Doc::seturl(char const * url, Doc const * relative)
+#ifdef _WIN32
+      if (strncmp(s+1,":/",2) == 0) return url;
+#endif
+
+      // strip off protocol if any
+      while (*s && isalpha(*s)) ++s;
+
+      if (*s == ':')
+        return s + 1;
+
+      return url;
+    }
+
+    bool isAbsolute(const char *url)
+    {
+      const char *s = stripProtocol(url);
+      return ( *s == '/' || *(s+1) == ':' );
+    }
+}
+
+/**
+ * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the Doc that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void Doc::seturl(const char * url, const Doc * relative)
 {
   delete [] d_url;
   d_url = 0;
@@ -111,7 +170,14 @@ void Doc::seturl(char const * url, Doc const * relative)
   }
 }
 
-void Doc::seturl(char const * url, Doc2 const * relative)
+/**
+ * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the Doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void Doc::seturl(const char * url, const Doc2 * relative)
 {
   delete [] d_url;
   d_url = 0;
@@ -140,12 +206,21 @@ void Doc::seturl(char const * url, Doc2 const * relative)
   }
 }
 
-char const * Doc::url() const
-{
-    return d_url;
-}
+/**
+ * @brief Get the URL.
+ *
+ * @return the URL.
+ */
+const char * Doc::url() const { return d_url; }
 
-char const * Doc::urlBase() const
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      without its extension.
+ *
+ * @return the portion of the last path element preceding the last '.' in the
+ *      path, or an empty string if the last path element is empty.
+ */
+const char * Doc::urlBase() const
 {
   if (! d_url) return "";
 
@@ -164,7 +239,14 @@ char const * Doc::urlBase() const
   return s;
 }
 
-char const * Doc::urlExt() const
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      extension.
+ *
+ * @return the portion of the last path element succeeding the last '.' in the
+ *      path, or an empty string if the last path element includes no '.'.
+ */
+const char * Doc::urlExt() const
 {
   if (! d_url) return "";
 
@@ -182,7 +264,15 @@ char const * Doc::urlExt() const
   return &ext[0];
 }
 
-char const * Doc::urlPath() const
+/**
+ * @brief Get the URL without the last component of the path.
+ *
+ * In spite of its name, this method does not return the URL's path.
+ *
+ * @return the portion of the URL including the scheme, the authority, and all
+ *      but the last component of the path.
+ */
+const char * Doc::urlPath() const
 {
   if (! d_url) return "";
 
@@ -197,8 +287,12 @@ char const * Doc::urlPath() const
   return &path[0]; 
 }
 
-
-char const * Doc::urlProtocol() const
+/**
+ * @brief Get the URL scheme.
+ *
+ * @return the URL scheme.
+ */
+const char * Doc::urlProtocol() const
 {
   if (d_url)
     {
@@ -226,13 +320,26 @@ char const * Doc::urlProtocol() const
   return "file";
 }
 
-char const * Doc::urlModifier() const
+/**
+ * @brief Get the fragment identifier.
+ *
+ * @return the fragment identifier, including the leading '#', or an empty
+ *      string if there is no fragment identifier.
+ */
+const char * Doc::urlModifier() const
 {
   char *mod = d_url ? strrchr(d_url,'#') : 0;
   return mod;
 }
 
-char const * Doc::localName()
+/**
+ * @brief Get the fully qualified name of a local file that is the downloaded
+ *      resource at @a d_url.
+ *
+ * @return the fully qualified name of a local file that is the downloaded
+ *      resource at @a d_url.
+ */
+const char * Doc::localName()
 {
   static char buf[1024];
   if (filename(buf, sizeof(buf)))
@@ -240,7 +347,14 @@ char const * Doc::localName()
   return 0;
 }
 
-char const * Doc::localPath() 
+/**
+ * @brief Get the path of the local file that is the downloaded resource at
+ *      @a d_url.
+ *
+ * @return the path of the local file that is the downloaded resource at
+ *      @a d_url.
+ */
+const char * Doc::localPath() 
 {
   static char buf[1024];
   if (filename(buf, sizeof(buf)))
@@ -252,27 +366,13 @@ char const * Doc::localPath()
   return 0;
 }
 
-const char *Doc::stripProtocol(const char *url)
-{
-  const char *s = url;
-
-#ifdef _WIN32
-  if (strncmp(s+1,":/",2) == 0) return url;
-#endif
-
-  // strip off protocol if any
-  while (*s && isalpha(*s)) ++s;
-
-  if (*s == ':')
-    return s + 1;
-
-  return url;
-}
-
-
-// Converts a url into a local filename
-
-bool Doc::filename( char *fn, int nfn )
+/**
+ * @brief Converts a url into a local filename.
+ *
+ * @retval fn   a character buffer to hold the local filename.
+ * @param nfn   the number of elements in the buffer @p fn points to.
+ */
+bool Doc::filename(char * fn, int nfn)
 {
   fn[0] = '\0';
 
@@ -406,8 +506,13 @@ char* Doc::convertCommonToMacPath( char *fn, int nfn )
 }
 #endif /* macintosh */
 
-// Having both fopen and outputStream is dumb...
-
+/**
+ * @brief Open a file.
+ *
+ * @return a pointer to a FILE struct for the opened file.
+ *
+ * Having both fopen and outputStream is dumb.
+ */
 FILE *Doc::fopen(const char *mode)
 {
   if (d_fp)
@@ -436,6 +541,11 @@ FILE *Doc::fopen(const char *mode)
   return d_fp;
 }
 
+/**
+ * @brief Close a file.
+ *
+ * Closes the file opened with Doc::fopen.
+ */
 void Doc::fclose()
 {
   if (d_fp && (strcmp(d_url, "-") != 0) && (strncmp(d_url, "-#", 2) != 0))
@@ -454,17 +564,15 @@ void Doc::fclose()
     }
 }
 
+/**
+ * @brief Get an output stream for writing to the resource.
+ *
+ * @return an output stream.
+ */
 std::ostream & Doc::outputStream()
 {
   d_ostream = new std::ofstream(stripProtocol(d_url), std::ios::out);
   return *d_ostream;
-}
-
-
-bool Doc::isAbsolute(const char *url)
-{
-  const char *s = stripProtocol(url);
-  return ( *s == '/' || *(s+1) == ':' );
 }
 
 } // namespace OpenVRML

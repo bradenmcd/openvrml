@@ -18,8 +18,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-# ifndef DOC2_HPP
-#   define DOC2_HPP
+# ifndef OPENVRML_DOC2_HPP
+#   define OPENVRML_DOC2_HPP
 
 #   include <iostream>
 #   include <string>
@@ -36,7 +36,6 @@ namespace OpenVRML {
     public:
         explicit Doc2(const std::string & url = std::string(),
                       const Doc2 * relative = 0);
-        explicit Doc2(const Doc2 *);
         ~Doc2();
 
         void seturl(const char *url, const Doc2 * relative = 0);
@@ -55,14 +54,9 @@ namespace OpenVRML {
         std::ostream & outputStream();
 
     private:
-        //
         // Non-copyable.
-        //
         Doc2(const Doc2 &);
         Doc2 & operator=(const Doc2 &);
-
-        static const char * stripProtocol(const char * url);
-        static bool isAbsolute(const char * url);
 
         bool filename(char * fn, int nfn);
 
