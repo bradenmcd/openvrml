@@ -30,6 +30,17 @@
  * and other provisions required by the GPL.  If you do not delete
  * the provisions above, a recipient may use your version of this
  * file under either the NPL or the GPL.
+ *
+ * This Original Code has been modified by IBM Corporation.
+ * Modifications made by IBM described herein are
+ * Copyright (c) International Business Machines
+ * Corporation, 2000
+ *
+ * Modifications to Mozilla code or documentation
+ * identified per MPL Section 3.3
+ *
+ * Date         Modified by     Description of modification
+ * 05/15/2000  IBM Corp.       Modified OS/2 floating point init. 
  */
 
 /*
@@ -253,6 +264,19 @@ num_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 }
 
 static JSBool
+num_toLocaleString(JSContext *cx, JSObject *obj, uintN argc,
+                   jsval *argv, jsval *rval)
+{
+/*
+ *  For now, forcibly ignore the first (or any) argument and return toString().
+ *  ECMA allows this, although it doesn't 'encourage it'.
+ *  [The first argument is being reserved by ECMA and we don't want it confused
+ *  with a radix]
+ */
+    return num_toString(cx, obj, 0, argv, rval);
+}
+
+static JSBool
 num_valueOf(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     if (!JS_InstanceOf(cx, obj, &number_class, argv))
@@ -334,14 +358,15 @@ num_toPrecision(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rv
 
 static JSFunctionSpec number_methods[] = {
 #if JS_HAS_TOSOURCE
-    {js_toSource_str,   num_toSource,      0,0,0},
+    {js_toSource_str,       num_toSource,       0,0,0},
 #endif
-    {js_toString_str,	num_toString,	   0,0,0},
-    {js_valueOf_str,	num_valueOf,	   0,0,0},
+    {js_toString_str,	    num_toString,       0,0,0},
+    {js_toLocaleString_str, num_toLocaleString, 0,0,0},
+    {js_valueOf_str,	    num_valueOf,        0,0,0},
 #if JS_HAS_NUMBER_FORMATS
-    {"toFixed",         num_toFixed,       1,0,0},
-    {"toExponential",   num_toExponential, 1,0,0},
-    {"toPrecision",     num_toPrecision,   1,0,0},
+    {"toFixed",             num_toFixed,        1,0,0},
+    {"toExponential",       num_toExponential,  1,0,0},
+    {"toPrecision",         num_toPrecision,    1,0,0},
 #endif
     {0,0,0,0,0}
 };
@@ -380,22 +405,23 @@ js_InitNumberClass(JSContext *cx, JSObject *obj)
     JSObject *proto, *ctor;
 
     rt = cx->runtime;
-    if (!rt->jsNaN) {
-#ifndef __MWERKS__
-#ifdef XP_PC
-#ifdef XP_OS2
+
+    #ifdef XP_OS2
 	/*DSR071597 - I have no idea what this really does other than mucking with the floating     */
 	/*point unit, but it does fix a "floating point underflow" exception I am getting, and there*/
 	/*is similar code in the Hursley java. Making sure we have the same code in Javascript      */
 	/*where Netscape was calling control87 on Windows...                                        */
 	_control87(MCW_EM+PC_53+RC_NEAR,MCW_EM+MCW_PC+MCW_RC);
-#else
+    #endif /* XP_OS2 */
+
+    if (!rt->jsNaN) {
+#ifndef __MWERKS__
+#if defined (XP_PC) && !defined(XP_OS2)
 #if defined (_M_IX86)
         /* On Alpha platform this is handled via Compiler option */
         _control87(MCW_EM, MCW_EM);
 #endif
-#endif /* XP_OS2 */
-#endif /* XP_PC */
+#endif /* XP_PC && !XP_OS2 */
 #endif /* __MWERKS__ */
 
 	u.s.hi = JSDOUBLE_HI32_EXPMASK | JSDOUBLE_HI32_MANTMASK;
@@ -441,14 +467,14 @@ js_InitNumberClass(JSContext *cx, JSObject *obj)
 
     /* ECMA 15.1.1.1 */
     if (!JS_DefineProperty(cx, obj, js_NaN_str, DOUBLE_TO_JSVAL(rt->jsNaN),
-			   NULL, NULL, 0)) {
+			   NULL, NULL, JSPROP_PERMANENT)) {
 	return NULL;
     }
 
     /* ECMA 15.1.1.2 */
     if (!JS_DefineProperty(cx, obj, "Infinity",
 			   DOUBLE_TO_JSVAL(rt->jsPositiveInfinity),
-			   NULL, NULL, 0)) {
+			   NULL, NULL, JSPROP_PERMANENT)) {
 	return NULL;
     }
     return proto;
@@ -540,7 +566,6 @@ js_ValueToNumber(JSContext *cx, jsval v, jsdouble *dp)
     JSObject *obj;
     JSString *str;
     const jschar *ep;
-    jsdouble d;
 
     if (JSVAL_IS_OBJECT(v)) {
 	obj = JSVAL_TO_OBJECT(v);
@@ -558,14 +583,18 @@ js_ValueToNumber(JSContext *cx, jsval v, jsdouble *dp)
     } else if (JSVAL_IS_STRING(v)) {
 	str = JSVAL_TO_STRING(v);
 	errno = 0;
-	/* Note that ECMAScript doesn't treat numbers beginning with a zero as octal numbers here.
-	 * This works because all such numbers will be interpreted as decimal by js_strtod and
-	 * will never get passed to js_strtointeger, which would interpret them as octal. */
-	if ((!js_strtod(cx, str->chars, &ep, &d) || js_SkipWhiteSpace(ep) != str->chars + str->length) &&
-	    (!js_strtointeger(cx, str->chars, &ep, 0, &d) || js_SkipWhiteSpace(ep) != str->chars + str->length)) {
+	/*
+         * Note that ECMA doesn't treat a string beginning with a '0' as an
+         * octal number here.  This works because all such numbers will be
+         * interpreted as decimal by js_strtod and will never get passed to
+         * js_strtointeger (which would interpret them as octal).
+         */
+         if ((!js_strtod(cx, str->chars, &ep, dp) ||
+              js_SkipWhiteSpace(ep) != str->chars + str->length) &&
+	     (!js_strtointeger(cx, str->chars, &ep, 0, dp) ||
+              js_SkipWhiteSpace(ep) != str->chars + str->length)) {
 	    goto badstr;
 	}
-	*dp = d;
     } else if (JSVAL_IS_BOOLEAN(v)) {
 	*dp = JSVAL_TO_BOOLEAN(v) ? 1 : 0;
     } else {
@@ -690,7 +719,7 @@ js_ValueToUint16(JSContext *cx, jsval v, uint16 *ip)
     d = floor(neg ? -d : d);
     d = neg ? -d : d;
     m = JS_BIT(16);
-    d = fmod(d, m);
+    d = fmod(d, (double)m);
     if (d < 0)
 	d += m;
     *ip = (uint16) d;

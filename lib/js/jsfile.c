@@ -37,6 +37,8 @@
  */
 #if JS_HAS_FILE_OBJECT
 
+#include "jsstddef.h"
+
 /* ----------------- Platform-specific includes and defines ----------------- */
 #ifdef XP_MAC
 #   define FILESEPARATOR         ':'
@@ -111,7 +113,7 @@
 #define STDOUTPUT_NAME          "Standard output stream"
 #define STDERROR_NAME           "Standard error stream"
 
-#define RESOLVE_PATH            js_canonicalPath	//js_absolutePath
+#define RESOLVE_PATH            js_canonicalPath	/* js_absolutePath */
 
 /* Error handling */
 typedef enum JSFileErrNum {
@@ -1685,7 +1687,7 @@ file_readln(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
                 endofline = JS_TRUE;
                 goto loop;
             }
-            if (data2!='\n') { /* we read one char to far. buffer it. */
+            if (data2!='\n') { /* We read one char too far.  Buffer it. */
                 file->charBuffer = data2;
                 file->charBufferUsed = JS_TRUE;
             }

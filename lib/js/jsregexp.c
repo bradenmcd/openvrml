@@ -452,6 +452,8 @@ FixNext(CompilerState *state, RENode *ren1, RENode *ren2, RENode *oldnext)
       case REOP_OPT:
       case REOP_LPAREN:
       case REOP_LPARENNON:
+      case REOP_ASSERT:
+      case REOP_ASSERT_NOT:
 	if (!FixNext(state, (RENode*) ren1->kid, ren2, oldnext))
 	    return JS_FALSE;
 	break;
@@ -1665,8 +1667,12 @@ static const jschar *matchRENodes(MatchState *state, RENode *ren, RENode *stop,
               ren = (RENode *)ren->kid;
               continue;
           }
+          num = state->parenCount;
           kidMatch = matchRENodes(state, (RENode *)ren->kid, stop, cp);
           if (kidMatch != NULL) return kidMatch;
+          for (i = num; i < state->parenCount; i++)
+              state->parens[i].length = 0;
+          state->parenCount = num;
           break;
         case REOP_QUANT:
           lastKid = NULL;
@@ -2181,11 +2187,11 @@ enum regexp_tinyid {
 };
 
 static JSPropertySpec regexp_props[] = {
-    {"source",     REGEXP_SOURCE,      JSPROP_ENUMERATE | JSPROP_READONLY,0,0},
-    {"global",     REGEXP_GLOBAL,      JSPROP_ENUMERATE | JSPROP_READONLY,0,0},
-    {"ignoreCase", REGEXP_IGNORE_CASE, JSPROP_ENUMERATE | JSPROP_READONLY,0,0},
-    {"lastIndex",  REGEXP_LAST_INDEX,  JSPROP_ENUMERATE,0,0},
-    {"multiline",  REGEXP_MULTILINE,   JSPROP_ENUMERATE | JSPROP_READONLY,0,0},
+    {"source",     REGEXP_SOURCE,      JSPROP_ENUMERATE | JSPROP_READONLY | JSPROP_PERMANENT,0,0},
+    {"global",     REGEXP_GLOBAL,      JSPROP_ENUMERATE | JSPROP_READONLY | JSPROP_PERMANENT,0,0},
+    {"ignoreCase", REGEXP_IGNORE_CASE, JSPROP_ENUMERATE | JSPROP_READONLY | JSPROP_PERMANENT,0,0},
+    {"lastIndex",  REGEXP_LAST_INDEX,  JSPROP_ENUMERATE | JSPROP_PERMANENT,0,0},
+    {"multiline",  REGEXP_MULTILINE,   JSPROP_ENUMERATE | JSPROP_READONLY | JSPROP_PERMANENT,0,0},
     {0,0,0,0,0}
 };
 

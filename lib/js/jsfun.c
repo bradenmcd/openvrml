@@ -18,7 +18,7 @@
  * Copyright (C) 1998 Netscape Communications Corporation. All
  * Rights Reserved.
  *
- * Contributor(s): 
+ * Contributor(s):
  *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU Public License (the "GPL"), in which case the
@@ -177,7 +177,7 @@ args_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     switch (slot) {
       case ARGS_CALLEE:
         if (fp && !TEST_BIT(slot, fp->overrides))
-            *vp = OBJECT_TO_JSVAL(fp->fun->object);
+            *vp = fp->argv ? fp->argv[-2] : OBJECT_TO_JSVAL(fp->fun->object);
         break;
 
       case ARGS_LENGTH:
@@ -280,9 +280,7 @@ js_GetCallObject(JSContext *cx, JSStackFrame *fp, JSObject *parent)
 
     /* The default call parent is its function's parent (static link). */
     if (!parent) {
-        funobj = (fp->argv && JSVAL_IS_OBJECT(fp->argv[-2]))
-                 ? JSVAL_TO_OBJECT(fp->argv[-2])
-                 : fp->fun->object;
+        funobj = fp->argv ? JSVAL_TO_OBJECT(fp->argv[-2]) : fp->fun->object;
         if (funobj)
             parent = OBJ_GET_PARENT(cx, funobj);
     }
@@ -390,7 +388,7 @@ call_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 
       case CALL_CALLEE:
         if (fp && !TEST_BIT(slot, fp->overrides))
-            *vp = OBJECT_TO_JSVAL(fp->fun->object);
+            *vp = fp->argv ? fp->argv[-2] : OBJECT_TO_JSVAL(fp->fun->object);
         break;
 
       case FUN_CALL:
@@ -502,6 +500,7 @@ call_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
              JSObject **objp)
 {
     JSStackFrame *fp;
+    JSObject *funobj;
     JSString *str;
     JSAtom *atom;
     JSObject *obj2;
@@ -518,14 +517,15 @@ call_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
     if (!JSVAL_IS_STRING(id))
         return JS_TRUE;
 
-    if (!fp->fun->object)
+    funobj = fp->argv ? JSVAL_TO_OBJECT(fp->argv[-2]) : fp->fun->object;
+    if (!funobj)
         return JS_TRUE;
 
     str = JSVAL_TO_STRING(id);
     atom = js_AtomizeString(cx, str, 0);
     if (!atom)
         return JS_FALSE;
-    if (!OBJ_LOOKUP_PROPERTY(cx, fp->fun->object, (jsid)atom, &obj2,
+    if (!OBJ_LOOKUP_PROPERTY(cx, funobj, (jsid)atom, &obj2,
                              (JSProperty **)&sprop)) {
         return JS_FALSE;
     }
@@ -572,7 +572,7 @@ call_convert(JSContext *cx, JSObject *obj, JSType type, jsval *vp)
     if (type == JSTYPE_FUNCTION) {
         fp = (JSStackFrame *) JS_GetPrivate(cx, obj);
         if (fp)
-            *vp = OBJECT_TO_JSVAL(fp->fun->object);
+            *vp = fp->argv ? fp->argv[-2] : OBJECT_TO_JSVAL(fp->fun->object);
     }
     return JS_TRUE;
 }
@@ -615,13 +615,17 @@ fun_delProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 static JSBool
 fun_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
+    jsint slot;
     JSFunction *fun;
     JSStackFrame *fp;
-    jsint slot;
 #if defined XP_PC && defined _MSC_VER &&_MSC_VER <= 800
     /* MSVC1.5 coredumps */
     jsval bogus = *vp;
 #endif
+
+    if (!JSVAL_IS_INT(id))
+        return JS_TRUE;
+    slot = JSVAL_TO_INT(id);
 
     /* No valid function object should lack private data, but check anyway. */
     fun = (JSFunction *) JS_GetPrivate(cx, obj);
@@ -632,7 +636,6 @@ fun_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     for (fp = cx->fp; fp && (fp->fun != fun || fp->special); fp = fp->down)
         continue;
 
-    slot = (jsint)JSVAL_TO_INT(id);
     switch (slot) {
       case CALL_ARGUMENTS:
 #if JS_HAS_ARGS_OBJECT
@@ -730,7 +733,7 @@ fun_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
         jsval pval;
 
         proto = NULL;
-        if (fun->object != obj) {
+        if (fun->object != obj && fun->object) {
             /*
              * Clone of a function: make its prototype property value have the
              * same class as the clone-parent's prototype.
@@ -742,21 +745,27 @@ fun_resolve(JSContext *cx, JSObject *obj, jsval id, uintN flags,
         }
 
         /* If resolving "prototype" in a clone, clone the parent's prototype. */
-        if (proto)
+        if (proto) {
             proto = js_NewObject(cx, OBJ_GET_CLASS(cx, proto), proto, NULL);
-        else
-            proto = js_NewObject(cx, &js_ObjectClass, NULL, NULL);
+        } else {
+            /*
+             * Handle the wacky case of a user function Object() -- trying to
+             * build a prototype for that will recur back here ad perniciem.
+             */
+            if (fun->atom != cx->runtime->atomState.ObjectAtom)
+                proto = js_NewObject(cx, &js_ObjectClass, NULL, NULL);
+        }
         if (!proto)
             return JS_FALSE;
 
         /*
-         * ECMA says that constructor.prototype is DontEnum for user-defined
-         * functions, but DontEnum | ReadOnly | DontDelete for native "system"
-         * constructors such as Object or Function.  So lazily set the former
-         * here in fun_resolve, but eagerly define the latter in JS_InitClass,
-         * with the right attributes.
+         * ECMA says that constructor.prototype is DontEnum | DontDelete for
+         * user-defined functions, but DontEnum | ReadOnly | DontDelete for
+         * native "system" constructors such as Object or Function.  So lazily
+         * set the former here in fun_resolve, but eagerly define the latter
+         * in JS_InitClass, with the right attributes.
          */
-        if (!js_SetClassPrototype(cx, obj, proto, 0)) {
+        if (!js_SetClassPrototype(cx, obj, proto, JSPROP_PERMANENT)) {
             cx->newborn[GCX_OBJECT] = NULL;
             return JS_FALSE;
         }
@@ -951,54 +960,81 @@ fun_xdrObject(JSXDRState *xdr, JSObject **objp)
 #if JS_HAS_INSTANCEOF
 
 /*
- * [[HasInstance]] internal method for Function objects - takes the .prototype
- * property of its target, and walks the prototype chain of v (only if v is an
- * object,) returning true if .prototype is found.
+ * [[HasInstance]] internal method for Function objects: fetch the .prototype
+ * property of its 'this' parameter, and walks the prototype chain of v (only
+ * if v is an object) returning true if .prototype is found.
  */
 static JSBool
 fun_hasInstance(JSContext *cx, JSObject *obj, jsval v, JSBool *bp)
 {
-    jsval pval;
+    jsval pval, cval;
     JSString *str;
+    JSObject *proto, *obj2;
+    JSFunction *cfun, *ofun;
 
     if (!OBJ_GET_PROPERTY(cx, obj,
                           (jsid)cx->runtime->atomState.classPrototypeAtom,
                           &pval)) {
         return JS_FALSE;
     }
-    if (!JSVAL_IS_PRIMITIVE(pval)) {
-        JSObject *protoObj = JSVAL_TO_OBJECT(pval);
-        if (!js_IsDelegate(cx, protoObj, v, bp))
-            return JS_FALSE;
 
-#if JS_HAS_ERROR_EXCEPTIONS
+    if (JSVAL_IS_PRIMITIVE(pval)) {
         /*
-         * For exceptions, we want cross-context exceptions to be equal, i.e. a
-         * SyntaxError thrown from one context (another window) will still be a
-         * 'instanceof SyntaxError' in another context (window). Here, if we're
-         * asking if an object is an instance of an exception, make a special
-         * call into js_exnHasInstance.
-         * XXXbe why?  what makes Exception so special?
+         * Throw a runtime error if instanceof is called on a function that
+         * has a non-object as its .prototype value.
          */
-        if (*bp == JS_TRUE)
-            return JS_TRUE;
-        if (OBJ_GET_CLASS(cx, protoObj) == &js_ErrorClass)
-            return js_exnHasInstance(cx, obj, v, bp);
-#endif /* JS_HAS_ERROR_EXCEPTIONS */
-        return JS_TRUE;
+        str = js_DecompileValueGenerator(cx, JS_TRUE, OBJECT_TO_JSVAL(obj),
+                                         NULL);
+        if (str) {
+            JS_ReportErrorNumber(cx, js_GetErrorMessage, NULL,
+                                 JSMSG_BAD_PROTOTYPE, JS_GetStringBytes(str));
+        }
+        return JS_FALSE;
     }
 
-    /*
-     * Throw a runtime error if instanceof is called on a function
-     * that has a non-Object as its .prototype value.
-     */
-    str = js_DecompileValueGenerator(cx, JS_TRUE, OBJECT_TO_JSVAL(obj), NULL);
-    if (str) {
-        JS_ReportErrorNumber(cx, js_GetErrorMessage, NULL, JSMSG_BAD_PROTOTYPE,
-                             JS_GetStringBytes(str));
-    }
-    return JS_FALSE;
+    proto = JSVAL_TO_OBJECT(pval);
+    if (!js_IsDelegate(cx, proto, v, bp))
+        return JS_FALSE;
 
+    if (!*bp && !JSVAL_IS_PRIMITIVE(v)) {
+        /*
+         * Extension for "brutal sharing" of standard class constructors: if
+         * a script is compiled using a single, shared set of constructors, in
+         * particular Function and RegExp, but executed many times using other
+         * sets of standard constructors, then (/re/ instanceof RegExp), e.g.,
+         * will be false.
+         *
+         * We extend instanceof in this case to look for a matching native or
+         * script underlying the function object found in the 'constructor'
+         * property of the object in question (which is JSVAL_TO_OBJECT(v)),
+         * or found in the 'constructor' property of one of its prototypes.
+         *
+         * See also jsexn.c, where the *Error constructors are defined, each
+         * with its own native function, to satisfy (e instanceof Error) even
+         * when exceptions cross standard-class sharing boundaries.  Note that
+         * Error.prototype may not lie on e's __proto__ chain in that case.
+         */
+        obj2 = JSVAL_TO_OBJECT(v);
+        do {
+            if (!OBJ_GET_PROPERTY(cx, obj2,
+                                  (jsid)cx->runtime->atomState.constructorAtom,
+                                  &cval)) {
+                return JS_FALSE;
+            }
+
+            if (JSVAL_IS_FUNCTION(cx, cval)) {
+                cfun = (JSFunction *) JS_GetPrivate(cx, JSVAL_TO_OBJECT(cval));
+                ofun = (JSFunction *) JS_GetPrivate(cx, obj);
+                if (cfun->native == ofun->native &&
+                    cfun->script == ofun->script) {
+                    *bp = JS_TRUE;
+                    break;
+                }
+            }
+        } while ((obj2 = OBJ_GET_PROTO(cx, obj2)) != NULL);
+    }
+
+    return JS_TRUE;
 }
 
 #else  /* !JS_HAS_INSTANCEOF */
@@ -1077,6 +1113,8 @@ fun_toSource(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 }
 #endif
 
+static char js_call_str[] = "call";
+
 #if JS_HAS_CALL_FUNCTION
 static JSBool
 fun_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
@@ -1094,7 +1132,7 @@ fun_call(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     if (!JSVAL_IS_FUNCTION(cx, fval)) {
         JS_ReportErrorNumber(cx, js_GetErrorMessage, NULL,
                              JSMSG_INCOMPATIBLE_PROTO,
-                             "Function", "call",
+                             "Function", js_call_str,
                              JS_GetStringBytes(JS_ValueToString(cx, fval)));
         return JS_FALSE;
     }
@@ -1170,11 +1208,11 @@ fun_apply(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
             argc = 0;
         } else {
             /* The second arg must be an array (or arguments object). */
-            if (JSVAL_IS_PRIMITIVE(argv[1]) || 
-                (aobj = JSVAL_TO_OBJECT(argv[1]), 
-                OBJ_GET_CLASS(cx, aobj) != &js_ArgumentsClass && 
+            if (JSVAL_IS_PRIMITIVE(argv[1]) ||
+                (aobj = JSVAL_TO_OBJECT(argv[1]),
+                OBJ_GET_CLASS(cx, aobj) != &js_ArgumentsClass &&
                 OBJ_GET_CLASS(cx, aobj) != &js_ArrayClass))
-            { 
+            {
                 JS_ReportErrorNumber(cx, js_GetErrorMessage, NULL,
                                      JSMSG_BAD_APPLY_ARGS);
                 return JS_FALSE;
@@ -1228,7 +1266,7 @@ static JSFunctionSpec function_methods[] = {
     {"apply",           fun_apply,      1,0,0},
 #endif
 #if JS_HAS_CALL_FUNCTION
-    {"call",            fun_call,       1,0,0},
+    {js_call_str,       fun_call,       1,0,0},
 #endif
     {0,0,0,0,0}
 };
@@ -1301,7 +1339,7 @@ Function(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
      */
     parent = OBJ_GET_PARENT(cx, JSVAL_TO_OBJECT(argv[-2]));
 #else
-    /* Set up for dynamic parenting (see Call in jsinterp.c). */
+    /* Set up for dynamic parenting (see js_Invoke in jsinterp.c). */
     parent = NULL;
 #endif
 
@@ -1561,7 +1599,7 @@ js_InitArgsAndCallClasses(JSContext *cx, JSObject *obj)
 }
 
 JSFunction *
-js_NewFunction(JSContext *cx, JSObject *funobj, JSNative call, uintN nargs,
+js_NewFunction(JSContext *cx, JSObject *funobj, JSNative native, uintN nargs,
                uintN flags, JSObject *parent, JSAtom *atom)
 {
     JSFunction *fun;
@@ -1585,14 +1623,14 @@ js_NewFunction(JSContext *cx, JSObject *funobj, JSNative call, uintN nargs,
     /* Initialize all function members. */
     fun->nrefs = 0;
     fun->object = NULL;
-    fun->call = call;
+    fun->native = native;
+    fun->script = NULL;
     fun->nargs = nargs;
     fun->extra = 0;
     fun->nvars = 0;
     fun->flags = flags & JSFUN_FLAGS_MASK;
     fun->spare = 0;
     fun->atom = atom;
-    fun->script = NULL;
     fun->clasp = NULL;
 
     /* Link fun to funobj and vice versa. */
@@ -1634,12 +1672,12 @@ js_LinkFunctionObject(JSContext *cx, JSFunction *fun, JSObject *funobj)
 }
 
 JSFunction *
-js_DefineFunction(JSContext *cx, JSObject *obj, JSAtom *atom, JSNative call,
+js_DefineFunction(JSContext *cx, JSObject *obj, JSAtom *atom, JSNative native,
                   uintN nargs, uintN attrs)
 {
     JSFunction *fun;
 
-    fun = js_NewFunction(cx, NULL, call, nargs, attrs, obj, atom);
+    fun = js_NewFunction(cx, NULL, native, nargs, attrs, obj, atom);
     if (!fun)
         return NULL;
     if (!OBJ_DEFINE_PROPERTY(cx, obj, (jsid)atom, OBJECT_TO_JSVAL(fun->object),

@@ -30,11 +30,19 @@
  * and other provisions required by the GPL.  If you do not delete
  * the provisions above, a recipient may use your version of this
  * file under either the NPL or the GPL.
+ *
+ * This Original Code has been modified by IBM Corporation. Modifications made by IBM
+ * described herein are Copyright (c) International Business Machines Corporation, 2000.
+ * Modifications to Mozilla code or documentation identified per MPL Section 3.3
+ *
+ * Date        Modified by     Description of modification
+ * 04/10/2000  IBM Corp.       Added DebugBreak() definitions for OS/2
  */
 
 /*
  * PR assertion checker.
  */
+#include "jsstddef.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "jstypes.h"
@@ -50,6 +58,26 @@
 #	 include "jsprf.h"
 #endif
 
+#if defined(XP_OS2) && defined(DEBUG)
+/* Added definitions for DebugBreak() for 2 different OS/2 compilers.  Doing
+ * the int3 on purpose for Visual Age so that a developer can step over the
+ * instruction if so desired.  Not always possible if trapping due to exception
+ * handling IBM-AKR
+ */
+#if defined(XP_OS2_VACPP)
+   #include <builtin.h>
+   #define DebugBreak() { _interrupt(3); }
+#elif defined(XP_OS2_EMX)
+   /* Force a trap */
+   #define DebugBreak() { int *pTrap=NULL; *pTrap = 1; }
+#else
+   #define DebugBreak()
+#endif
+
+#elif defined(XP_OS2)
+   #define DebugBreak()
+#endif /* XP_OS2 && DEBUG */
+
 #ifdef XP_MAC
 /*
  * PStrFromCStr converts the source C string to a destination
@@ -61,18 +89,18 @@
 static void PStrFromCStr(const char* src, Str255 dst)
 {
 	short 	length  = 0;
-	
+
 	/* handle case of overlapping strings */
 	if ( (void*)src == (void*)dst )
 	{
 		unsigned char*		curdst = &dst[1];
 		unsigned char		thisChar;
-				
+
 		thisChar = *(const unsigned char*)src++;
-		while ( thisChar != '\0' ) 
+		while ( thisChar != '\0' )
 		{
 			unsigned char	nextChar;
-			
+
 			/*
                          * Use nextChar so we don't overwrite what we
                          * are about to read
@@ -80,7 +108,7 @@ static void PStrFromCStr(const char* src, Str255 dst)
 			nextChar = *(const unsigned char*)src++;
 			*curdst++ = thisChar;
 			thisChar = nextChar;
-			
+
 			if ( ++length >= 255 )
 				break;
 		}
@@ -91,16 +119,16 @@ static void PStrFromCStr(const char* src, Str255 dst)
 		/* count down so test it loop is faster */
 		short 				overflow = 255;
 		register char		temp;
-	
+
 		/*
                  * Can't do the K&R C thing of while (*s++ = *t++)
                  * because it will copy trailing zero which might
                  * overrun pascal buffer.  Instead we use a temp variable.
                  */
-		while ( (temp = *src++) != 0 ) 
+		while ( (temp = *src++) != 0 )
 		{
 			*(char*)curdst++ = temp;
-				
+
 			if ( --overflow <= 0 )
 				break;
 		}
@@ -112,7 +140,7 @@ static void PStrFromCStr(const char* src, Str255 dst)
 static void jsdebugstr(const char *debuggerMsg)
 {
 	Str255		pStr;
-	
+
 	PStrFromCStr(debuggerMsg, pStr);
 	DebugStr(pStr);
 }
@@ -121,11 +149,11 @@ static void dprintf(const char *format, ...)
 {
     va_list ap;
 	char	*buffer;
-	
+
 	va_start(ap, format);
 	buffer = (char *)JS_vsmprintf(format, ap);
 	va_end(ap);
-	
+
 	jsdebugstr(buffer);
 	JS_DELETE(buffer);
 }
@@ -139,7 +167,7 @@ JS_PUBLIC_API(void) JS_Assert(const char *s, const char *file, JSIntn ln)
 #ifdef XP_MAC
     dprintf("Assertion failure: %s, at %s:%d\n", s, file, ln);
 #endif
-#ifdef WIN32
+#if defined(WIN32) || defined(XP_OS2)
     DebugBreak();
 #endif
 #ifndef XP_MAC

@@ -424,7 +424,7 @@ JS_RemoveArgumentFormatter(JSContext *cx, const char *format)
 JS_PUBLIC_API(JSBool)
 JS_ConvertValue(JSContext *cx, jsval v, JSType type, jsval *vp)
 {
-    JSBool ok = JS_FALSE, b;
+    JSBool ok, b;
     JSObject *obj;
     JSFunction *fun;
     JSString *str;
@@ -434,6 +434,7 @@ JS_ConvertValue(JSContext *cx, jsval v, JSType type, jsval *vp)
     switch (type) {
       case JSTYPE_VOID:
 	*vp = JSVAL_VOID;
+        ok = JS_TRUE;
 	break;
       case JSTYPE_OBJECT:
 	ok = js_ValueToObject(cx, v, &obj);
@@ -551,15 +552,14 @@ JS_ValueToBoolean(JSContext *cx, jsval v, JSBool *bp)
 JS_PUBLIC_API(JSType)
 JS_TypeOfValue(JSContext *cx, jsval v)
 {
-    JSType type = JSTYPE_VOID;
+    JSType type;
     JSObject *obj;
     JSObjectOps *ops;
     JSClass *clasp;
 
     CHECK_REQUEST(cx);
-    if (JSVAL_IS_VOID(v)) {
-	type = JSTYPE_VOID;
-    } else if (JSVAL_IS_OBJECT(v)) {
+    if (JSVAL_IS_OBJECT(v)) {
+        /* XXX JSVAL_IS_OBJECT(v) is true for null too! Can we change ECMA? */
 	obj = JSVAL_TO_OBJECT(v);
 	if (obj &&
 	    (ops = obj->map->ops,
@@ -577,6 +577,8 @@ JS_TypeOfValue(JSContext *cx, jsval v)
 	type = JSTYPE_STRING;
     } else if (JSVAL_IS_BOOLEAN(v)) {
 	type = JSTYPE_BOOLEAN;
+    } else {
+	type = JSTYPE_VOID;
     }
     return type;
 }
@@ -631,9 +633,16 @@ JS_NewRuntime(uint32 maxbytes)
     rt->requestDone = JS_NEW_CONDVAR(rt->gcLock);
     if (!rt->requestDone)
 	goto bad;
-    js_SetupLocks(20,20);		/* this is asymmetric with JS_ShutDown. */
+    js_SetupLocks(20,20);       /* this is asymmetric with JS_ShutDown. */
     rt->rtLock = JS_NEW_LOCK();
+    if (!rt->rtLock)
+	goto bad;
     rt->stateChange = JS_NEW_CONDVAR(rt->rtLock);
+    if (!rt->stateChange)
+	goto bad;
+    rt->setSlotLock = JS_NEW_LOCK();
+    if (!rt->setSlotLock)
+	goto bad;
 #endif
     rt->propertyCache.empty = JS_TRUE;
     JS_INIT_CLIST(&rt->contextList);
@@ -649,6 +658,11 @@ bad:
 JS_PUBLIC_API(void)
 JS_DestroyRuntime(JSRuntime *rt)
 {
+    JSContext *cx, *iter;
+
+    iter = NULL;
+    while ((cx = js_ContextIterator(rt, &iter)) != NULL)
+        js_DestroyContext(cx, JS_NO_GC);
     js_FinishGC(rt);
 #ifdef JS_THREADSAFE
     if (rt->gcLock)
@@ -657,8 +671,12 @@ JS_DestroyRuntime(JSRuntime *rt)
 	JS_DESTROY_CONDVAR(rt->gcDone);
     if (rt->requestDone)
 	JS_DESTROY_CONDVAR(rt->requestDone);
-    JS_DESTROY_LOCK(rt->rtLock);
-    JS_DESTROY_CONDVAR(rt->stateChange);
+    if (rt->rtLock)
+        JS_DESTROY_LOCK(rt->rtLock);
+    if (rt->stateChange)
+        JS_DESTROY_CONDVAR(rt->stateChange);
+    if (rt->setSlotLock)
+        JS_DESTROY_LOCK(rt->setSlotLock);
 #endif
     free(rt);
 }
@@ -666,10 +684,23 @@ JS_DestroyRuntime(JSRuntime *rt)
 JS_PUBLIC_API(void)
 JS_ShutDown(void)
 {
+    JS_ArenaShutDown();
     js_FreeStringGlobals();
 #ifdef JS_THREADSAFE
     js_CleanupLocks();
 #endif
+}
+
+JS_PUBLIC_API(void *)
+JS_GetRuntimePrivate(JSRuntime *rt)
+{
+    return rt->data;
+}
+
+JS_PUBLIC_API(void)
+JS_SetRuntimePrivate(JSRuntime *rt, void *data)
+{
+    rt->data = data;
 }
 
 #ifdef JS_THREADSAFE
@@ -732,40 +763,16 @@ JS_YieldRequest(JSContext *cx)
     JS_UNLOCK_GC(rt);
 }
 
-/* Like JS_EndRequest, but don't notify any GC waiting in the wings. */
 JS_PUBLIC_API(void)
 JS_SuspendRequest(JSContext *cx)
 {
-    JSRuntime *rt;
-
-    CHECK_REQUEST(cx);
-    cx->requestDepth--;
-    if (!cx->requestDepth) {
-	rt = cx->runtime;
-	JS_LOCK_GC(rt);
-	JS_ASSERT(rt->requestCount > 0);
-	rt->requestCount--;
-	JS_UNLOCK_GC(rt);
-    }
+    JS_EndRequest(cx);
 }
 
 JS_PUBLIC_API(void)
 JS_ResumeRequest(JSContext *cx)
 {
-    JSRuntime *rt;
-
-    if (!cx->requestDepth) {
-	/* Wait until the GC is finished. */
-	rt = cx->runtime;
-	JS_LOCK_GC(rt);
-	while (rt->gcLevel > 0)
-	    JS_AWAIT_GC_DONE(rt);
-
-	/* Indicate that a request is running. */
-	rt->requestCount++;
-	JS_UNLOCK_GC(rt);
-    }
-    cx->requestDepth++;
+    JS_BeginRequest(cx);
 }
 
 #endif /* JS_THREADSAFE */
@@ -783,9 +790,9 @@ JS_Unlock(JSRuntime *rt)
 }
 
 JS_PUBLIC_API(JSContext *)
-JS_NewContext(JSRuntime *rt, size_t stacksize)
+JS_NewContext(JSRuntime *rt, size_t stackChunkSize)
 {
-    return js_NewContext(rt, stacksize);
+    return js_NewContext(rt, stackChunkSize);
 }
 
 JS_PUBLIC_API(void)
@@ -857,11 +864,6 @@ JS_SetVersion(JSContext *cx, JSVersion version)
 	cx->jsop_ne = JSOP_NE;
     }
 #endif /* !JS_BUG_FALLIBLE_EQOPS */
-
-#if JS_HAS_EXPORT_IMPORT
-    /* XXX this might fail due to low memory */
-    js_InitScanner(cx);
-#endif /* JS_HAS_EXPORT_IMPORT */
 
     return oldVersion;
 }
@@ -960,7 +962,7 @@ JS_InitStandardClasses(JSContext *cx, JSObject *obj)
      */
     if (!OBJ_DEFINE_PROPERTY(cx, obj,
                              (jsid)cx->runtime->atomState.typeAtoms[JSTYPE_VOID],
-                             JSVAL_VOID, NULL, NULL, 0, NULL)) {
+                             JSVAL_VOID, NULL, NULL, JSPROP_PERMANENT, NULL)) {
         return JS_FALSE;
     }
 #endif
@@ -1014,12 +1016,10 @@ JS_malloc(JSContext *cx, size_t nbytes)
 {
     void *p;
 
-    cx->runtime->gcMallocBytes += nbytes;
-
-#if defined(XP_OS2) || defined(XP_MAC) || defined(AIX) || defined(OSF1) || defined(__MWERKS__)
-    if (nbytes == 0) /*DSR072897 - Windows allows this, OS/2 & Mac don't*/
+    JS_ASSERT(nbytes != 0);
+    if (nbytes == 0)
 	nbytes = 1;
-#endif
+    cx->runtime->gcMallocBytes += nbytes;
     p = malloc(nbytes);
     if (!p)
 	JS_ReportOutOfMemory(cx);
@@ -1175,30 +1175,28 @@ JS_MaybeGC(JSContext *cx)
     rt = cx->runtime;
     bytes = rt->gcBytes;
     lastBytes = rt->gcLastBytes;
-    if ((bytes > 8192 && bytes > lastBytes + lastBytes / 2)
-#ifdef NES40
-/*
-    This is the other side of the fix in jsgc.c, allocGCThing where we stopped
-    doing a gc when the allocation fails. It turned out that the server branch-
-    callback wasn't providing for enough gc to prevent certain string concatenations
-    from exhausting the heap - with large strings the number of JSObjects remains
-    small but the amount of malloc'd space can be huge. We re-instate a test of the
-    malloc'd space here to help trigger a gc. (The server changed the frequency of
-    issuing calls to MaybeGC as well).
-*/
-            || (rt->gcMallocBytes > rt->gcMaxBytes)
-#endif /* NES40 */
-            )
+    if ((bytes > 8192 && bytes > lastBytes + lastBytes / 2) ||
+        rt->gcMallocBytes > rt->gcMaxBytes) {
+        /*
+         * Run the GC if we have half again as many bytes of GC-things as
+         * the last time we GC'd, or if we have malloc'd more bytes through
+         * JS_malloc than we were told to allocate by JS_NewRuntime.
+         */
 	JS_GC(cx);
+    }
 }
 
 JS_PUBLIC_API(JSGCCallback)
 JS_SetGCCallback(JSContext *cx, JSGCCallback cb)
 {
-    JSRuntime *rt;
+    return JS_SetGCCallbackRT(cx->runtime, cb);
+}
+
+JS_PUBLIC_API(JSGCCallback)
+JS_SetGCCallbackRT(JSRuntime *rt, JSGCCallback cb)
+{
     JSGCCallback oldcb;
 
-    rt = cx->runtime;
     oldcb = rt->gcCallback;
     rt->gcCallback = cb;
     return oldcb;
@@ -1434,6 +1432,8 @@ JS_PUBLIC_API(JSBool)
 JS_SetPrototype(JSContext *cx, JSObject *obj, JSObject *proto)
 {
     CHECK_REQUEST(cx);
+    if (obj->map->ops->setProto)
+        return obj->map->ops->setProto(cx, obj, JSSLOT_PROTO, proto);
     OBJ_SET_SLOT(cx, obj, JSSLOT_PROTO, OBJECT_TO_JSVAL(proto));
     return JS_TRUE;
 }
@@ -1454,6 +1454,8 @@ JS_PUBLIC_API(JSBool)
 JS_SetParent(JSContext *cx, JSObject *obj, JSObject *parent)
 {
     CHECK_REQUEST(cx);
+    if (obj->map->ops->setParent)
+        return obj->map->ops->setParent(cx, obj, JSSLOT_PARENT, parent);
     OBJ_SET_SLOT(cx, obj, JSSLOT_PARENT, OBJECT_TO_JSVAL(parent));
     return JS_TRUE;
 }
@@ -1461,15 +1463,14 @@ JS_SetParent(JSContext *cx, JSObject *obj, JSObject *parent)
 JS_PUBLIC_API(JSObject *)
 JS_GetConstructor(JSContext *cx, JSObject *proto)
 {
-    JSBool ok;
     jsval cval;
 
     CHECK_REQUEST(cx);
-    ok = OBJ_GET_PROPERTY(cx, proto,
+    if (!OBJ_GET_PROPERTY(cx, proto,
 			  (jsid)cx->runtime->atomState.constructorAtom,
-			  &cval);
-    if (!ok)
+			  &cval)) {
 	return NULL;
+    }
     if (!JSVAL_IS_FUNCTION(cx, cval)) {
 	JS_ReportErrorNumber(cx, js_GetErrorMessage, NULL, JSMSG_NO_CONSTRUCTOR,
 			     OBJ_GET_CLASS(cx, proto)->name);
@@ -1482,6 +1483,8 @@ JS_PUBLIC_API(JSObject *)
 JS_NewObject(JSContext *cx, JSClass *clasp, JSObject *proto, JSObject *parent)
 {
     CHECK_REQUEST(cx);
+    if (!clasp)
+        clasp = &js_ObjectClass;    /* default class is Object */
     return js_NewObject(cx, clasp, proto, parent);
 }
 
@@ -1490,6 +1493,8 @@ JS_ConstructObject(JSContext *cx, JSClass *clasp, JSObject *proto,
 		   JSObject *parent)
 {
     CHECK_REQUEST(cx);
+    if (!clasp)
+        clasp = &js_ObjectClass;    /* default class is Object */
     return js_ConstructObject(cx, clasp, proto, parent);
 }
 
@@ -1538,6 +1543,8 @@ JS_DefineObject(JSContext *cx, JSObject *obj, const char *name, JSClass *clasp,
     JSObject *nobj;
 
     CHECK_REQUEST(cx);
+    if (!clasp)
+        clasp = &js_ObjectClass;    /* default class is Object */
     nobj = js_NewObject(cx, clasp, proto, obj);
     if (!nobj)
 	return NULL;
@@ -1972,7 +1979,7 @@ JS_PUBLIC_API(JSObject *)
 JS_NewArrayObject(JSContext *cx, jsint length, jsval *vector)
 {
     CHECK_REQUEST(cx);
-    /* jsuint cast does ToUint32 */
+    /* NB: jsuint cast does ToUint32. */
     return js_NewArrayObject(cx, (jsuint)length, vector);
 }
 
@@ -2098,6 +2105,7 @@ JS_ClearScope(JSContext *cx, JSObject *obj)
 
     CHECK_REQUEST(cx);
     /* XXXbe push this into jsobj.c or jsscope.c */
+    /* XXXbe2 worse, assumes obj is native here, before MAP_IS_NATIVE! */
     JS_LOCK_OBJ(cx, obj);
     map = obj->map;
     if (MAP_IS_NATIVE(map)) {
@@ -2184,7 +2192,7 @@ JS_CheckAccess(JSContext *cx, JSObject *obj, jsid id, JSAccessMode mode,
 }
 
 JS_PUBLIC_API(JSFunction *)
-JS_NewFunction(JSContext *cx, JSNative call, uintN nargs, uintN flags,
+JS_NewFunction(JSContext *cx, JSNative native, uintN nargs, uintN flags,
 	       JSObject *parent, const char *name)
 {
     JSAtom *atom;
@@ -2198,7 +2206,7 @@ JS_NewFunction(JSContext *cx, JSNative call, uintN nargs, uintN flags,
 	if (!atom)
 	    return NULL;
     }
-    return js_NewFunction(cx, NULL, call, nargs, flags, parent, atom);
+    return js_NewFunction(cx, NULL, native, nargs, flags, parent, atom);
 }
 
 JS_PUBLIC_API(JSObject *)
@@ -2206,7 +2214,7 @@ JS_CloneFunctionObject(JSContext *cx, JSObject *funobj, JSObject *parent)
 {
     CHECK_REQUEST(cx);
     if (OBJ_GET_CLASS(cx, funobj) != &js_FunctionClass) {
-        /* Indicate we cannot clone this object */
+        /* Indicate we cannot clone this object. */
 	return funobj;
     }
     return js_CloneFunctionObject(cx, funobj, parent);
@@ -2532,14 +2540,12 @@ JS_CompileUCFunctionForPrincipals(JSContext *cx, JSObject *obj,
     JSAtom *funAtom, *argAtom;
     uintN i;
     JSScopeProperty *sprop;
-    jsval junk;
 
     CHECK_REQUEST(cx);
     mark = JS_ARENA_MARK(&cx->tempPool);
     ts = js_NewTokenStream(cx, chars, length, filename, lineno, principals);
     if (!ts) {
 	fun = NULL;
-	funAtom = NULL;
 	goto out;
     }
     if (!name) {
@@ -2551,8 +2557,7 @@ JS_CompileUCFunctionForPrincipals(JSContext *cx, JSObject *obj,
 	    goto out;
 	}
     }
-/* XXXbe new-function, bind name only on success */
-    fun = js_DefineFunction(cx, obj, funAtom, NULL, nargs, 0);
+    fun = js_NewFunction(cx, NULL, NULL, nargs, 0, obj, funAtom);
     if (!fun)
 	goto out;
     if (nargs) {
@@ -2571,14 +2576,20 @@ JS_CompileUCFunctionForPrincipals(JSContext *cx, JSObject *obj,
 	    OBJ_DROP_PROPERTY(cx, fun->object, (JSProperty *)sprop);
 	}
 	if (i < nargs) {
-	    (void) OBJ_DELETE_PROPERTY(cx, obj, (jsid)funAtom, &junk);
 	    fun = NULL;
 	    goto out;
 	}
     }
     if (!js_CompileFunctionBody(cx, ts, fun)) {
-	(void) OBJ_DELETE_PROPERTY(cx, obj, (jsid)funAtom, &junk);
 	fun = NULL;
+        goto out;
+    }
+    if (funAtom) {
+        if (!OBJ_DEFINE_PROPERTY(cx, obj, (jsid)funAtom,
+                                 OBJECT_TO_JSVAL(fun->object),
+                                 NULL, NULL, 0, NULL)) {
+            return NULL;
+        }
     }
 out:
     if (ts)
@@ -2665,15 +2676,31 @@ JS_PUBLIC_API(JSBool)
 JS_ExecuteScriptPart(JSContext *cx, JSObject *obj, JSScript *script,
                      JSExecPart part, jsval *rval)
 {
-    JSScript tmp = *script;
-
-    if (part == JSEXEC_PROLOG)
+    JSScript tmp;
+    JSRuntime *rt;
+    JSBool ok;
+    
+    /* Make a temporary copy of the JSScript structure and farble it a bit. */
+    tmp = *script;
+    if (part == JSEXEC_PROLOG) {
         tmp.length = PTRDIFF(tmp.main, tmp.code, jsbytecode);
-    else {
+    } else {
         tmp.length -= PTRDIFF(tmp.main, tmp.code, jsbytecode);
         tmp.code = tmp.main;
     }
-    return JS_ExecuteScript(cx, obj, &tmp, rval);
+
+    /* Tell the debugger about our temporary copy of the script structure. */
+    rt = cx->runtime;
+    if (rt->newScriptHook) {
+        rt->newScriptHook(cx, tmp.filename, tmp.lineno, &tmp, NULL,
+                          rt->newScriptHookData);
+    }
+
+    /* Execute the farbled struct and tell the debugger to forget about it. */
+    ok = JS_ExecuteScript(cx, obj, &tmp, rval);
+    if (rt->destroyScriptHook)
+        rt->destroyScriptHook(cx, &tmp, rt->destroyScriptHookData);
+    return ok;
 }
 
 JS_PUBLIC_API(JSBool)
@@ -3047,7 +3074,7 @@ JS_ReportErrorFlagsAndNumberUC(JSContext *cx, uintN flags,
 JS_PUBLIC_API(void)
 JS_ReportOutOfMemory(JSContext *cx)
 {
-    JS_ReportError(cx, "out of memory");
+    JS_ReportErrorNumber(cx, js_GetErrorMessage, NULL, JSMSG_OUT_OF_MEMORY);
 }
 
 JS_PUBLIC_API(JSErrorReporter)
@@ -3116,7 +3143,6 @@ JS_ClearRegExpStatics(JSContext *cx)
 {
     JSRegExpStatics *res;
 
-    CHECK_REQUEST(cx);
     /* No locking required, cx is thread-private and input must be live. */
     res = &cx->regExpStatics;
     res->input = NULL;

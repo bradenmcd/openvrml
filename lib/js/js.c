@@ -59,7 +59,7 @@
 #include "jsscript.h"
 
 #ifdef PERLCONNECT
-#include "jsperl.h"
+#include "perlconnect/jsperl.h"
 #endif
 
 #ifdef LIVECONNECT
@@ -90,6 +90,8 @@
 #define EXITCODE_RUNTIME_ERROR 3
 #define EXITCODE_FILE_NOT_FOUND 4
 
+
+size_t gStackChunkSize = 8192;
 int gExitCode = 0;
 FILE *gErrFile = NULL;
 FILE *gOutFile = NULL;
@@ -390,18 +392,17 @@ static int
 usage(void)
 {
     fprintf(gErrFile, "%s\n", JS_GetImplementationVersion());
-    fprintf(gErrFile, "usage: js [-s] [-w] [-v version] [-f scriptfile] [scriptfile] [scriptarg...]\n");
+    fprintf(gErrFile, "usage: js [-s] [-w] [-c stackchunksize] [-v version] [-f scriptfile] [scriptfile] [scriptarg...]\n");
     return 2;
 }
 
 static int
 ProcessArgs(JSContext *cx, JSObject *obj, char **argv, int argc)
 {
-    int i;
+    int i, j;
     char *filename = NULL;
     jsint length;
     jsval *vector;
-    jsval *p;
     JSObject *argsObj;
     JSBool isInteractive = JS_TRUE;
 
@@ -423,6 +424,11 @@ ProcessArgs(JSContext *cx, JSObject *obj, char **argv, int argc)
 	    case 's':
 		JS_ToggleOptions(cx, JSOPTION_STRICT);
 		break;
+
+            case 'c':
+                /* set stack chunk size */
+                gStackChunkSize = atoi (argv[++i]);
+                break;
 
 	    case 'f':
 		if (i+1 == argc) {
@@ -453,27 +459,31 @@ ProcessArgs(JSContext *cx, JSObject *obj, char **argv, int argc)
     }
 
     length = argc - i;
-    vector = (jsval *) JS_malloc(cx, length * sizeof(jsval));
-    p = vector;
+    if (length == 0) {
+        vector = NULL;
+    } else {
+        vector = (jsval *) JS_malloc(cx, length * sizeof(jsval));
+        if (vector == NULL)
+            return 1;
 
-    if (vector == NULL)
-	return 1;
-
-    while (i < argc) {
-	JSString *str = JS_NewStringCopyZ(cx, argv[i]);
-	if (str == NULL)
-	    return 1;
-	*p++ = STRING_TO_JSVAL(str);
-	i++;
+        for (j = 0; j < length; j++) {
+            JSString *str = JS_NewStringCopyZ(cx, argv[i++]);
+            if (str == NULL)
+                return 1;
+            vector[j] = STRING_TO_JSVAL(str);
+        }
     }
+
     argsObj = JS_NewArrayObject(cx, length, vector);
-    JS_free(cx, vector);
+    if (vector)
+        JS_free(cx, vector);
     if (argsObj == NULL)
 	return 1;
 
-    if (!JS_DefineProperty(cx, obj, "arguments",
-			   OBJECT_TO_JSVAL(argsObj), NULL, NULL, 0))
+    if (!JS_DefineProperty(cx, obj, "arguments", OBJECT_TO_JSVAL(argsObj),
+                           NULL, NULL, 0)) {
 	return 1;
+    }
 
     if (filename || isInteractive)
         Process(cx, obj, filename);
@@ -688,7 +698,7 @@ ValueToScript(JSContext *cx, jsval v)
     } else {
 	fun = JS_ValueToFunction(cx, v);
 	if (!fun)
-	    return JS_FALSE;
+	    return NULL;
 	script = fun->script;
     }
     return script;
@@ -1636,6 +1646,16 @@ my_LoadErrorReporter(JSContext *cx, const char *message, JSErrorReport *report)
     my_ErrorReporter(cx, message, report);
 }
 
+static uint32 branch_count;
+
+static JSBool
+my_BranchCallback(JSContext *cx, JSScript *script)
+{
+    if ((++branch_count & 0x3fffff) == 0)
+        return JS_FALSE;
+    return JS_TRUE;
+}
+
 static void
 my_ErrorReporter(JSContext *cx, const char *message, JSErrorReport *report)
 {
@@ -1887,9 +1907,11 @@ main(int argc, char **argv)
     rt = JS_NewRuntime(8L * 1024L * 1024L);
     if (!rt)
 	return 1;
-    cx = JS_NewContext(rt, 8192);
+
+    cx = JS_NewContext(rt, gStackChunkSize);
     if (!cx)
 	return 1;
+    JS_SetBranchCallback(cx, my_BranchCallback);
     JS_SetErrorReporter(cx, my_ErrorReporter);
 
     glob = JS_NewObject(cx, &global_class, NULL, NULL);

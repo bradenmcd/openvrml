@@ -203,6 +203,7 @@ extern char   js_setter_str[];
 extern char   js_set_str[];
 extern char   js_toSource_str[];
 extern char   js_toString_str[];
+extern char   js_toLocaleString_str[];
 extern char   js_valueOf_str[];
 
 /*
@@ -228,7 +229,7 @@ extern void
 js_MarkAtomState(JSAtomState *state, JSGCThingMarker mark);
 
 extern void
-js_SweepAtomState(JSAtomState *state);
+js_SweepAtomState(JSAtomState *state, uintN gcflags);
 
 extern void
 js_UnpinPinnedAtoms(JSAtomState *state);
