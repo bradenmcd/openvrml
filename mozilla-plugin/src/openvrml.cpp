@@ -911,22 +911,14 @@ NPError NPP_New(const NPMIMEType pluginType,
     nsAutoString href;
     rv = location->GetHref(href);
     if (NS_FAILED(rv)) { return NPERR_GENERIC_ERROR; }
-    std::cout << "href = " << NS_ConvertUTF16toUTF8(href).get() << std::endl;
-    std::cout << "url = " << url << std::endl;
 
     uri plugin_data_uri(url);
     bool relative = plugin_data_uri.scheme().empty();
-    std::cout << "plugin_data_uri.scheme() = " << plugin_data_uri.scheme()
-              << std::endl;
-    std::cout << "relative = " << relative << std::endl;
     if (relative) {
         plugin_data_uri =
             plugin_data_uri
             .resolve_against(uri(NS_ConvertUTF16toUTF8(href).get()));
     }
-
-    std::cout << "plugin_data_uri = " << std::string(plugin_data_uri)
-              << std::endl;
 
     try {
         instance->pdata = new PluginInstance(plugin_data_uri);
