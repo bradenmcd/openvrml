@@ -181,7 +181,7 @@ AM_CONDITIONAL([ENABLE_LOOKAT],
                [test "X$enable_lookat" != "Xno" -a "X$no_glut" != "Xyes"])
 
 AC_SUBST([OPENVRML_PKG_REQUIRES])
-    
+
 AC_OUTPUT([Makefile \
 doc/Makefile \
 m4/Makefile \

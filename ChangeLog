@@ -51,6 +51,10 @@
           src/openvrml-gl/OpenVRML/GL/common.h:  Added Emacs mode
           line.
 
+        * lib/antlr/MacTokenStrmHiddenTknFltr.cpp
+          lib/antlr/MacTokenStrmHiddenTknFltr.hpp
+          lib/antlr/Makefile.am:  Mac OS <= 9 is no longer supported.
+
 2003-03-30  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/ViewerGlut.cpp:  Removed some debugging output that
