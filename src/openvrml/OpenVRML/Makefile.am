@@ -26,21 +26,12 @@ else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
-if DISABLE_JAVASCRIPT
-else
-#
-# JS doesn't include config.h, so we have to do this here.
-#
-JS_CPPFLAGS = -DXP_UNIX
-JAVASCRIPT_INCLUDES = -I$(top_builddir)/lib/js
-endif
-
-INCLUDES = -I$(top_srcdir)/lib $(JAVASCRIPT_INCLUDES)
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF) $(JS_CPPFLAGS)
-AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@
+INCLUDES = -I$(top_srcdir)/lib
+AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF)
+AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@ @JS_CFLAGS@
 
 lib_LTLIBRARIES = libopenvrml.la 
-libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@
+libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@ @JS_LIBS@
 
 libopenvrml_la_SOURCES = \
         Doc.cpp \
@@ -127,7 +118,7 @@ libopenvrml_la_SOURCES = \
         VrmlScene.cpp
 
 
-libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la $(top_builddir)/lib/js/libjs.la
+libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
 
 OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = \

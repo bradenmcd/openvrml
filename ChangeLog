@@ -1,3 +1,488 @@
+2004-12-10  Braden McDaniel  <braden@endoframe.com>
+
+	Removed SpiderMonkey from the distribution.  Use the version
+	distributed with Mozilla instead.
+
+	* configure.in
+	* lib/Makefile.am
+	* lib/js/MANIFEST:  Removed file.
+	* lib/js/Makefile.am:  Removed file.
+	* lib/js/Makefile.ref:  Removed file.
+	* lib/js/README.html:  Removed file.
+	* lib/js/SpiderMonkey.rsp:  Removed file.
+	* lib/js/config.mk:  Removed file.
+	* lib/js/js.c:  Removed file.
+	* lib/js/js.mak:  Removed file.
+	* lib/js/js.mdp:  Removed file.
+	* lib/js/js.msg:  Removed file.
+	* lib/js/js3240.rc:  Removed file.
+	* lib/js/jsOS240.def:  Removed file.
+	* lib/js/jsapi.c:  Removed file.
+	* lib/js/jsapi.h:  Removed file.
+	* lib/js/jsarena.c:  Removed file.
+	* lib/js/jsarena.h:  Removed file.
+	* lib/js/jsarray.c:  Removed file.
+	* lib/js/jsarray.h:  Removed file.
+	* lib/js/jsatom.c:  Removed file.
+	* lib/js/jsatom.h:  Removed file.
+	* lib/js/jsbit.h:  Removed file.
+	* lib/js/jsbool.c:  Removed file.
+	* lib/js/jsbool.h:  Removed file.
+	* lib/js/jsclist.h:  Removed file.
+	* lib/js/jscntxt.c:  Removed file.
+	* lib/js/jscntxt.h:  Removed file.
+	* lib/js/jscompat.h:  Removed file.
+	* lib/js/jsconfig.h:  Removed file.
+	* lib/js/jsconfig.mk:  Removed file.
+	* lib/js/jscpucfg.c:  Removed file.
+	* lib/js/jscpucfg.h:  Removed file.
+	* lib/js/jsdate.c:  Removed file.
+	* lib/js/jsdate.h:  Removed file.
+	* lib/js/jsdbgapi.c:  Removed file.
+	* lib/js/jsdbgapi.h:  Removed file.
+	* lib/js/jsdhash.c:  Removed file.
+	* lib/js/jsdhash.h:  Removed file.
+	* lib/js/jsdtoa.c:  Removed file.
+	* lib/js/jsdtoa.h:  Removed file.
+	* lib/js/jsemit.c:  Removed file.
+	* lib/js/jsemit.h:  Removed file.
+	* lib/js/jsexn.c:  Removed file.
+	* lib/js/jsexn.h:  Removed file.
+	* lib/js/jsfile.c:  Removed file.
+	* lib/js/jsfile.h:  Removed file.
+	* lib/js/jsfile.msg:  Removed file.
+	* lib/js/jsfun.c:  Removed file.
+	* lib/js/jsfun.h:  Removed file.
+	* lib/js/jsgc.c:  Removed file.
+	* lib/js/jsgc.h:  Removed file.
+	* lib/js/jshash.c:  Removed file.
+	* lib/js/jshash.h:  Removed file.
+	* lib/js/jsify.pl:  Removed file.
+	* lib/js/jsinterp.c:  Removed file.
+	* lib/js/jsinterp.h:  Removed file.
+	* lib/js/jslibmath.h:  Removed file.
+	* lib/js/jslock.c:  Removed file.
+	* lib/js/jslock.h:  Removed file.
+	* lib/js/jslog2.c:  Removed file.
+	* lib/js/jslong.c:  Removed file.
+	* lib/js/jslong.h:  Removed file.
+	* lib/js/jsmath.c:  Removed file.
+	* lib/js/jsmath.h:  Removed file.
+	* lib/js/jsnum.c:  Removed file.
+	* lib/js/jsnum.h:  Removed file.
+	* lib/js/jsobj.c:  Removed file.
+	* lib/js/jsobj.h:  Removed file.
+	* lib/js/jsopcode.c:  Removed file.
+	* lib/js/jsopcode.h:  Removed file.
+	* lib/js/jsopcode.tbl:  Removed file.
+	* lib/js/jsosdep.h:  Removed file.
+	* lib/js/jsotypes.h:  Removed file.
+	* lib/js/jsparse.c:  Removed file.
+	* lib/js/jsparse.h:  Removed file.
+	* lib/js/jsprf.c:  Removed file.
+	* lib/js/jsprf.h:  Removed file.
+	* lib/js/jsprvtd.h:  Removed file.
+	* lib/js/jspubtd.h:  Removed file.
+	* lib/js/jsregexp.c:  Removed file.
+	* lib/js/jsregexp.h:  Removed file.
+	* lib/js/jsscan.c:  Removed file.
+	* lib/js/jsscan.h:  Removed file.
+	* lib/js/jsscope.c:  Removed file.
+	* lib/js/jsscope.h:  Removed file.
+	* lib/js/jsscript.c:  Removed file.
+	* lib/js/jsscript.h:  Removed file.
+	* lib/js/jsshell.msg:  Removed file.
+	* lib/js/jsstddef.h:  Removed file.
+	* lib/js/jsstr.c:  Removed file.
+	* lib/js/jsstr.h:  Removed file.
+	* lib/js/jstypes.h:  Removed file.
+	* lib/js/jsutil.c:  Removed file.
+	* lib/js/jsutil.h:  Removed file.
+	* lib/js/jsxdrapi.c:  Removed file.
+	* lib/js/jsxdrapi.h:  Removed file.
+	* lib/js/lock_SunOS.s:  Removed file.
+	* lib/js/makefile.win:  Removed file.
+	* lib/js/perfect.js:  Removed file.
+	* lib/js/prmjtime.c:  Removed file.
+	* lib/js/prmjtime.h:  Removed file.
+	* lib/js/resource.h:  Removed file.
+	* lib/js/rules.mk:  Removed file.
+	* lib/js/config/AIX4.1.mk:  Removed file.
+	* lib/js/config/AIX4.2.mk:  Removed file.
+	* lib/js/config/AIX4.3.mk:  Removed file.
+	* lib/js/config/HP-UXB.10.10.mk:  Removed file.
+	* lib/js/config/HP-UXB.10.20.mk:  Removed file.
+	* lib/js/config/HP-UXB.11.00.mk:  Removed file.
+	* lib/js/config/IRIX.mk:  Removed file.
+	* lib/js/config/IRIX5.3.mk:  Removed file.
+	* lib/js/config/IRIX6.1.mk:  Removed file.
+	* lib/js/config/IRIX6.2.mk:  Removed file.
+	* lib/js/config/IRIX6.3.mk:  Removed file.
+	* lib/js/config/IRIX6.5.mk:  Removed file.
+	* lib/js/config/Linux_All.mk:  Removed file.
+	* lib/js/config/Mac_OS10.0.mk:  Removed file.
+	* lib/js/config/OSF1V4.0.mk:  Removed file.
+	* lib/js/config/SunOS4.1.4.mk:  Removed file.
+	* lib/js/config/SunOS5.3.mk:  Removed file.
+	* lib/js/config/SunOS5.4.mk:  Removed file.
+	* lib/js/config/SunOS5.5.1.mk:  Removed file.
+	* lib/js/config/SunOS5.5.mk:  Removed file.
+	* lib/js/config/SunOS5.6.mk:  Removed file.
+	* lib/js/config/SunOS5.7.mk:  Removed file.
+	* lib/js/config/WINNT4.0.mk:  Removed file.
+	* lib/js/config/dgux.mk:  Removed file.
+	* lib/js/editline/Makefile.ref:  Removed file.
+	* lib/js/editline/README:  Removed file.
+	* lib/js/editline/editline.3:  Removed file.
+	* lib/js/editline/editline.c:  Removed file.
+	* lib/js/editline/editline.h:  Removed file.
+	* lib/js/editline/sysunix.c:  Removed file.
+	* lib/js/editline/unix.h:  Removed file.
+	* lib/js/fdlibm/Makefile.am:  Removed file.
+	* lib/js/fdlibm/Makefile.ref:  Removed file.
+	* lib/js/fdlibm/e_acos.c:  Removed file.
+	* lib/js/fdlibm/e_acosh.c:  Removed file.
+	* lib/js/fdlibm/e_asin.c:  Removed file.
+	* lib/js/fdlibm/e_atan2.c:  Removed file.
+	* lib/js/fdlibm/e_atanh.c:  Removed file.
+	* lib/js/fdlibm/e_cosh.c:  Removed file.
+	* lib/js/fdlibm/e_exp.c:  Removed file.
+	* lib/js/fdlibm/e_fmod.c:  Removed file.
+	* lib/js/fdlibm/e_gamma.c:  Removed file.
+	* lib/js/fdlibm/e_gamma_r.c:  Removed file.
+	* lib/js/fdlibm/e_hypot.c:  Removed file.
+	* lib/js/fdlibm/e_j0.c:  Removed file.
+	* lib/js/fdlibm/e_j1.c:  Removed file.
+	* lib/js/fdlibm/e_jn.c:  Removed file.
+	* lib/js/fdlibm/e_lgamma.c:  Removed file.
+	* lib/js/fdlibm/e_lgamma_r.c:  Removed file.
+	* lib/js/fdlibm/e_log.c:  Removed file.
+	* lib/js/fdlibm/e_log10.c:  Removed file.
+	* lib/js/fdlibm/e_pow.c:  Removed file.
+	* lib/js/fdlibm/e_rem_pio2.c:  Removed file.
+	* lib/js/fdlibm/e_remainder.c:  Removed file.
+	* lib/js/fdlibm/e_scalb.c:  Removed file.
+	* lib/js/fdlibm/e_sinh.c:  Removed file.
+	* lib/js/fdlibm/e_sqrt.c:  Removed file.
+	* lib/js/fdlibm/fdlibm.h:  Removed file.
+	* lib/js/fdlibm/fdlibm.mak:  Removed file.
+	* lib/js/fdlibm/fdlibm.mdp:  Removed file.
+	* lib/js/fdlibm/k_cos.c:  Removed file.
+	* lib/js/fdlibm/k_rem_pio2.c:  Removed file.
+	* lib/js/fdlibm/k_sin.c:  Removed file.
+	* lib/js/fdlibm/k_standard.c:  Removed file.
+	* lib/js/fdlibm/k_tan.c:  Removed file.
+	* lib/js/fdlibm/makefile.win:  Removed file.
+	* lib/js/fdlibm/s_asinh.c:  Removed file.
+	* lib/js/fdlibm/s_atan.c:  Removed file.
+	* lib/js/fdlibm/s_cbrt.c:  Removed file.
+	* lib/js/fdlibm/s_ceil.c:  Removed file.
+	* lib/js/fdlibm/s_copysign.c:  Removed file.
+	* lib/js/fdlibm/s_cos.c:  Removed file.
+	* lib/js/fdlibm/s_erf.c:  Removed file.
+	* lib/js/fdlibm/s_expm1.c:  Removed file.
+	* lib/js/fdlibm/s_fabs.c:  Removed file.
+	* lib/js/fdlibm/s_finite.c:  Removed file.
+	* lib/js/fdlibm/s_floor.c:  Removed file.
+	* lib/js/fdlibm/s_frexp.c:  Removed file.
+	* lib/js/fdlibm/s_ilogb.c:  Removed file.
+	* lib/js/fdlibm/s_isnan.c:  Removed file.
+	* lib/js/fdlibm/s_ldexp.c:  Removed file.
+	* lib/js/fdlibm/s_lib_version.c:  Removed file.
+	* lib/js/fdlibm/s_log1p.c:  Removed file.
+	* lib/js/fdlibm/s_logb.c:  Removed file.
+	* lib/js/fdlibm/s_matherr.c:  Removed file.
+	* lib/js/fdlibm/s_modf.c:  Removed file.
+	* lib/js/fdlibm/s_nextafter.c:  Removed file.
+	* lib/js/fdlibm/s_rint.c:  Removed file.
+	* lib/js/fdlibm/s_scalbn.c:  Removed file.
+	* lib/js/fdlibm/s_signgam.c:  Removed file.
+	* lib/js/fdlibm/s_significand.c:  Removed file.
+	* lib/js/fdlibm/s_sin.c:  Removed file.
+	* lib/js/fdlibm/s_tan.c:  Removed file.
+	* lib/js/fdlibm/s_tanh.c:  Removed file.
+	* lib/js/fdlibm/w_acos.c:  Removed file.
+	* lib/js/fdlibm/w_acosh.c:  Removed file.
+	* lib/js/fdlibm/w_asin.c:  Removed file.
+	* lib/js/fdlibm/w_atan2.c:  Removed file.
+	* lib/js/fdlibm/w_atanh.c:  Removed file.
+	* lib/js/fdlibm/w_cosh.c:  Removed file.
+	* lib/js/fdlibm/w_exp.c:  Removed file.
+	* lib/js/fdlibm/w_fmod.c:  Removed file.
+	* lib/js/fdlibm/w_gamma.c:  Removed file.
+	* lib/js/fdlibm/w_gamma_r.c:  Removed file.
+	* lib/js/fdlibm/w_hypot.c:  Removed file.
+	* lib/js/fdlibm/w_j0.c:  Removed file.
+	* lib/js/fdlibm/w_j1.c:  Removed file.
+	* lib/js/fdlibm/w_jn.c:  Removed file.
+	* lib/js/fdlibm/w_lgamma.c:  Removed file.
+	* lib/js/fdlibm/w_lgamma_r.c:  Removed file.
+	* lib/js/fdlibm/w_log.c:  Removed file.
+	* lib/js/fdlibm/w_log10.c:  Removed file.
+	* lib/js/fdlibm/w_pow.c:  Removed file.
+	* lib/js/fdlibm/w_remainder.c:  Removed file.
+	* lib/js/fdlibm/w_scalb.c:  Removed file.
+	* lib/js/fdlibm/w_sinh.c:  Removed file.
+	* lib/js/fdlibm/w_sqrt.c:  Removed file.
+	* lib/js/liveconnect/LiveConnect.dsp:  Removed file.
+	* lib/js/liveconnect/LiveConnectShell.dsp:  Removed file.
+	* lib/js/liveconnect/LiveConnectShell.dsw:  Removed file.
+	* lib/js/liveconnect/MANIFEST:  Removed file.
+	* lib/js/liveconnect/Makefile.in:  Removed file.
+	* lib/js/liveconnect/Makefile.ref:  Removed file.
+	* lib/js/liveconnect/README.html:  Removed file.
+	* lib/js/liveconnect/jsj.c:  Removed file.
+	* lib/js/liveconnect/jsj.msg:  Removed file.
+	* lib/js/liveconnect/jsj_JSObject.c:  Removed file.
+	* lib/js/liveconnect/jsj_JavaArray.c:  Removed file.
+	* lib/js/liveconnect/jsj_JavaClass.c:  Removed file.
+	* lib/js/liveconnect/jsj_JavaMember.c:  Removed file.
+	* lib/js/liveconnect/jsj_JavaObject.c:  Removed file.
+	* lib/js/liveconnect/jsj_JavaPackage.c:  Removed file.
+	* lib/js/liveconnect/jsj_array.c:  Removed file.
+	* lib/js/liveconnect/jsj_class.c:  Removed file.
+	* lib/js/liveconnect/jsj_convert.c:  Removed file.
+	* lib/js/liveconnect/jsj_field.c:  Removed file.
+	* lib/js/liveconnect/jsj_hash.c:  Removed file.
+	* lib/js/liveconnect/jsj_hash.h:  Removed file.
+	* lib/js/liveconnect/jsj_method.c:  Removed file.
+	* lib/js/liveconnect/jsj_nodl.c:  Removed file.
+	* lib/js/liveconnect/jsj_private.h:  Removed file.
+	* lib/js/liveconnect/jsj_simpleapi.c:  Removed file.
+	* lib/js/liveconnect/jsj_utils.c:  Removed file.
+	* lib/js/liveconnect/jsjava.h:  Removed file.
+	* lib/js/liveconnect/makefile.win:  Removed file.
+	* lib/js/liveconnect/netscape_javascript_JSObject.h:  Removed file.
+	* lib/js/liveconnect/nsCLiveconnect.cpp:  Removed file.
+	* lib/js/liveconnect/nsCLiveconnect.h:  Removed file.
+	* lib/js/liveconnect/nsCLiveconnectFactory.cpp:  Removed file.
+	* lib/js/liveconnect/nsCLiveconnectFactory.h:  Removed file.
+	* lib/js/liveconnect/nsILiveconnect.h:  Removed file.
+	* lib/js/liveconnect/nsISecureLiveconnect.h:  Removed file.
+	* lib/js/liveconnect/nsISecurityContext.h:  Removed file.
+	* lib/js/liveconnect/_jni/netscape_javascript_JSException.h:
+	Removed file.
+	* lib/js/liveconnect/_jni/netscape_javascript_JSObject.h:
+	Removed file.
+	* lib/js/liveconnect/classes/Makefile.in:  Removed file.
+	* lib/js/liveconnect/classes/Makefile.ref:  Removed file.
+	* lib/js/liveconnect/classes/makefile.win:  Removed file.
+	* lib/js/liveconnect/classes/netscape/Makefile.ref:  Removed file.
+	* lib/js/liveconnect/classes/netscape/javascript/JSException.java:
+	Removed file.
+	* lib/js/liveconnect/classes/netscape/javascript/JSObject.java:
+	Removed file.
+	* lib/js/liveconnect/classes/netscape/javascript/JSProxy.java:
+	Removed file.
+	* lib/js/liveconnect/classes/netscape/javascript/JSRunnable.java:
+	Removed file.
+	* lib/js/liveconnect/classes/netscape/javascript/JSUtil.java:
+	Removed file.
+	* lib/js/liveconnect/classes/netscape/javascript/Makefile.ref:
+	Removed file.
+	* lib/js/liveconnect/config/AIX4.1.mk:  Removed file.
+	* lib/js/liveconnect/config/AIX4.2.mk:  Removed file.
+	* lib/js/liveconnect/config/AIX4.3.mk:  Removed file.
+	* lib/js/liveconnect/config/HP-UXB.10.10.mk:  Removed file.
+	* lib/js/liveconnect/config/HP-UXB.10.20.mk:  Removed file.
+	* lib/js/liveconnect/config/HP-UXB.11.00.mk:  Removed file.
+	* lib/js/liveconnect/config/IRIX6.2.mk:  Removed file.
+	* lib/js/liveconnect/config/IRIX6.3.mk:  Removed file.
+	* lib/js/liveconnect/config/IRIX6.5.mk:  Removed file.
+	* lib/js/liveconnect/config/Linux_All.mk:  Removed file.
+	* lib/js/liveconnect/config/OSF1V4.0.mk:  Removed file.
+	* lib/js/liveconnect/config/SunOS5.5.1.mk:  Removed file.
+	* lib/js/liveconnect/config/SunOS5.6.mk:  Removed file.
+	* lib/js/liveconnect/config/WINNT4.0.mk:  Removed file.
+	* lib/js/liveconnect/macbuild/LiveConnect.mcp:  Removed file.
+	* lib/js/liveconnect/macbuild/LiveConnectShell.mcp:  Removed
+	file.
+	* lib/js/liveconnect/macbuild/LiveConnectShell.prefix:  Removed
+	file.
+	* lib/js/liveconnect/macbuild/JavaSession/JavaSession.cpp:
+	Removed file.
+	* lib/js/liveconnect/macbuild/JavaSession/JavaSession.h:
+	Removed file.
+	* lib/js/liveconnect/macbuild/JavaSession/OSStatusException.h:
+	Removed file.
+	* lib/js/liveconnect/macbuild/JavaSession/prmacos.cpp:  Removed
+	file.
+	* lib/js/macbuild/JSRef.mcp:  Removed file.
+	* lib/js/macbuild/JSRef.prefix:  Removed file.
+	* lib/js/macbuild/JSRefDebug.prefix:  Removed file.
+	* lib/js/macbuild/JSRefMPWDebug.prefix:  Removed file.
+	* lib/js/perlconnect/JS.def:  Removed file.
+	* lib/js/perlconnect/JS.dsp:  Removed file.
+	* lib/js/perlconnect/JS.pm:  Removed file.
+	* lib/js/perlconnect/JS.xs:  Removed file.
+	* lib/js/perlconnect/Makefile.PL:  Removed file.
+	* lib/js/perlconnect/Makefile.ref:  Removed file.
+	* lib/js/perlconnect/PerlConnect.dsp:  Removed file.
+	* lib/js/perlconnect/PerlConnect.dsw:  Removed file.
+	* lib/js/perlconnect/PerlConnect.pm:  Removed file.
+	* lib/js/perlconnect/PerlConnectShell.dsp:  Removed file.
+	* lib/js/perlconnect/README.html:  Removed file.
+	* lib/js/perlconnect/bg.jpg:  Removed file.
+	* lib/js/perlconnect/jsperl.c:  Removed file.
+	* lib/js/perlconnect/jsperl.h:  Removed file.
+	* lib/js/perlconnect/jsperlbuild.pl:  Removed file.
+	* lib/js/perlconnect/jsperlpvt.h:  Removed file.
+	* lib/js/perlconnect/test.js:  Removed file.
+	* lib/js/perlconnect/test.pl:  Removed file.
+	* lib/js/perlconnect/typemap:  Removed file.
+	* lib/js/sh/README.html:  Removed file.
+	* lib/js/sh/jssh.c:  Removed file.
+	* lib/js/sh/jssh.dsp:  Removed file.
+	* lib/js/sh/jssh.dsw:  Removed file.
+	* lib/js/xpconnect/Makefile.in:  Removed file.
+	* lib/js/xpconnect/makefile.win:  Removed file.
+	* lib/js/xpconnect/idl/MANIFEST:  Removed file.
+	* lib/js/xpconnect/idl/Makefile.in:  Removed file.
+	* lib/js/xpconnect/idl/makefile.win:  Removed file.
+	* lib/js/xpconnect/idl/nsIJSContextStack.idl:  Removed file.
+	* lib/js/xpconnect/idl/nsIJSRuntimeService.idl:  Removed file.
+	* lib/js/xpconnect/idl/nsIXPCSecurityManager.idl:  Removed file.
+	* lib/js/xpconnect/idl/nsIXPConnect.idl:  Removed file.
+	* lib/js/xpconnect/idl/xpccomponents.idl:  Removed file.
+	* lib/js/xpconnect/idl/xpcexception.idl:  Removed file.
+	* lib/js/xpconnect/idl/xpcjsid.idl:  Removed file.
+	* lib/js/xpconnect/loader/Makefile.in:  Removed file.
+	* lib/js/xpconnect/loader/makefile.win:  Removed file.
+	* lib/js/xpconnect/loader/mozJSComponentLoader.cpp:  Removed file.
+	* lib/js/xpconnect/loader/mozJSComponentLoader.h:  Removed file.
+	* lib/js/xpconnect/public/MANIFEST:  Removed file.
+	* lib/js/xpconnect/public/Makefile.in:  Removed file.
+	* lib/js/xpconnect/public/makefile.win:  Removed file.
+	* lib/js/xpconnect/public/nsIXPCScriptable.h:  Removed file.
+	* lib/js/xpconnect/sample/README:  Removed file.
+	* lib/js/xpconnect/sample/makefile.win:  Removed file.
+	* lib/js/xpconnect/sample/xpcsample1.cpp:  Removed file.
+	* lib/js/xpconnect/sample/xpcsample1.idl:  Removed file.
+	* lib/js/xpconnect/sample/xpcsample1.js:  Removed file.
+	* lib/js/xpconnect/shell/Makefile.in:  Removed file.
+	* lib/js/xpconnect/shell/jsshell.msg:  Removed file.
+	* lib/js/xpconnect/shell/makefile.win:  Removed file.
+	* lib/js/xpconnect/shell/xpcshell.cpp:  Removed file.
+	* lib/js/xpconnect/src/Makefile.in:  Removed file.
+	* lib/js/xpconnect/src/README:  Removed file.
+	* lib/js/xpconnect/src/TODO:  Removed file.
+	* lib/js/xpconnect/src/makefile.win:  Removed file.
+	* lib/js/xpconnect/src/nsXPConnect.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpc.msg:  Removed file.
+	* lib/js/xpconnect/src/xpcarbitrary.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpccomponents.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpccontext.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcconvert.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcdebug.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcexception.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcforwards.h:  Removed file.
+	* lib/js/xpconnect/src/xpcjsid.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcjsruntime.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpclog.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpclog.h:  Removed file.
+	* lib/js/xpconnect/src/xpcmaps.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcmaps.h:  Removed file.
+	* lib/js/xpconnect/src/xpcmodule.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcnativecallcontext.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcprivate.h:  Removed file.
+	* lib/js/xpconnect/src/xpcruntimesvc.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcstack.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcthreadcontext.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcthrower.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcwrappedjs.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcwrappedjsclass.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcwrappednative.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcwrappednativeclass.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcwrappednativejsops.cpp:  Removed file.
+	* lib/js/xpconnect/src/xpcwrappednativescope.cpp:  Removed file.
+	* lib/js/xpconnect/tests/Makefile.in:  Removed file.
+	* lib/js/xpconnect/tests/TestXPC.cpp:  Removed file.
+	* lib/js/xpconnect/tests/makefile.win:  Removed file.
+	* lib/js/xpconnect/tests/components/Makefile.in:  Removed file.
+	* lib/js/xpconnect/tests/components/makefile.win:  Removed file.
+	* lib/js/xpconnect/tests/components/xpctest_array.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_attributes.cpp:
+	Removed file.
+	* lib/js/xpconnect/tests/components/xpctest_calljs.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_child.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_const.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_echo.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_in.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_inout.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_module.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_multiple.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_noisy.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_out.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_overloaded.cpp:
+	Removed file.
+	* lib/js/xpconnect/tests/components/xpctest_private.h:  Removed
+	file.
+	* lib/js/xpconnect/tests/components/xpctest_string.cpp:  Removed
+	file.
+	* lib/js/xpconnect/tests/idl/Makefile.in:  Removed file.
+	* lib/js/xpconnect/tests/idl/makefile.win:  Removed file.
+	* lib/js/xpconnect/tests/idl/xpctest.idl:  Removed file.
+	* lib/js/xpconnect/tests/idl/xpctest2.idl:  Removed file.
+	* lib/js/xpconnect/tests/idl/xpctest_attributes.idl:  Removed file.
+	* lib/js/xpconnect/tests/idl/xpctest_calljs.idl:  Removed file.
+	* lib/js/xpconnect/tests/idl/xpctest_const.idl:  Removed file.
+	* lib/js/xpconnect/tests/idl/xpctest_in.idl:  Removed file.
+	* lib/js/xpconnect/tests/idl/xpctest_inout.idl:  Removed file.
+	* lib/js/xpconnect/tests/idl/xpctest_multiple.idl:  Removed file.
+	* lib/js/xpconnect/tests/idl/xpctest_out.idl:  Removed file.
+	* lib/js/xpconnect/tests/js/checkid.js:  Removed file.
+	* lib/js/xpconnect/tests/js/evaluate.js:  Removed file.
+	* lib/js/xpconnect/tests/js/exceptions-2.js:  Removed file.
+	* lib/js/xpconnect/tests/js/exceptions-3.js:  Removed file.
+	* lib/js/xpconnect/tests/js/exceptions-4.js:  Removed file.
+	* lib/js/xpconnect/tests/js/exceptions-5.js:  Removed file.
+	* lib/js/xpconnect/tests/js/exceptions.js:  Removed file.
+	* lib/js/xpconnect/tests/js/javascript.js:  Removed file.
+	* lib/js/xpconnect/tests/js/multiple-2.js:  Removed file.
+	* lib/js/xpconnect/tests/js/multiple-3.js:  Removed file.
+	* lib/js/xpconnect/tests/js/multiple-4.js:  Removed file.
+	* lib/js/xpconnect/tests/js/multiple.js:  Removed file.
+	* lib/js/xpconnect/tests/js/notscriptable.js:  Removed file.
+	* lib/js/xpconnect/tests/js/readonlyattributes.js:  Removed file.
+	* lib/js/xpconnect/tests/js/readwriteattributes.js:  Removed file.
+	* lib/js/xpconnect/tests/js/scriptable.js:  Removed file.
+	* lib/js/xpconnect/tests/js/testin.js:  Removed file.
+	* lib/js/xpconnect/tests/js/xpcfun.js:  Removed file.
+	* lib/js/xpconnect/tests/js/xpctest_primitives.js:  Removed file.
+	* lib/js/xpconnect/tests/js/old/simpletest.js:  Removed file.
+	* lib/js/xpconnect/tests/js/old/speed.js:  Removed file.
+	* lib/js/xpconnect/tests/js/old/testxpc.js:  Removed file.
+	* lib/js/xpconnect/tests/js/old/try.js:  Removed file.
+	* lib/js/xpconnect/tests/js/old/xpctest_array.js:  Removed file.
+	* lib/js/xpconnect/tests/js/old/xpctest_callcontext.js:  Removed
+	file.
+	* lib/js/xpconnect/tests/js/old/xpctest_echo.js:  Removed file.
+	* lib/js/xpconnect/tests/js/old/xpctest_enum_and_sort.js:
+	Removed file.
+	* lib/js/xpconnect/tests/js/old/xpctest_enum_constants.js:
+	Removed file.
+	* lib/js/xpconnect/tests/js/old/xpctest_enum_create.js:  Removed
+	file.
+	* lib/js/xpconnect/tests/js/old/xpctest_exceptions.js:  Removed
+	file.
+	* lib/js/xpconnect/tests/js/old/xpctest_ids.js:  Removed file.
+	* lib/js/xpconnect/tests/js/old/xpctest_overloaded.js:  Removed
+	file.
+	* lib/js/xpconnect/tests/js/old/xpctest_primitives.js:  Removed
+	file.
+	* src/openvrml/OpenVRML/Makefile.am
+
 2004-12-09  Braden McDaniel  <braden@endoframe.com>
 
 	Fixes to build with modern tools.
