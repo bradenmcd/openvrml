@@ -52,36 +52,18 @@
 # include "ViewerOpenGL.h"
 # include "OpenGLEvent.h"
 
-/**
- * @namespace OpenVRML::GL
- *
- * @brief OpenGL geometry renderer
- */
-
-/**
- * @class OpenVRML::GL::ViewerOpenGL
- *
- * @brief Abstract class for display of VRML models using OpenGL/Mesa.
- *
- * A window-system specific subclass needs to redefine the pure
- * virtual methods.
- */
-
 // Put geometry into display lists.
 // If geometry is not in display lists, performance will suffer,
 // especially for non-convex geometries. You probably shouldn't
 // change these unless you know what you are doing.
 
-#define USE_GEOMETRY_DISPLAY_LISTS 1
+# define USE_GEOMETRY_DISPLAY_LISTS 1
 
 // Textures are now done using OGL1.1 bindTexture API rather than
 // display lists when this flag is set. Don't define this if you
 // are still at OpenGL 1.0 (or get a newer OpenGL).
 
-#define USE_TEXTURE_DISPLAY_LISTS 1
-
-using namespace OpenVRML;
-using namespace OpenVRML::GL;
+# define USE_TEXTURE_DISPLAY_LISTS 1
 
 namespace {
     const float FPTOLERANCE(1.0e-6);
@@ -118,14 +100,27 @@ namespace {
     }
 }
 
-//  Construct a viewer for the specified Browser. I'm not happy with the
-//  mutual dependencies between Browser/Nodes and Viewers...
-//  Maybe a static callback function pointer should be passed in rather
-//  than a class object pointer. Currently, the Browser is used to access
-//  the Browser::render() method. Also, the static Browser::update
-//  is called from the idle function. A way to pass mouse/keyboard sensor 
-//  events back to the Browser is also needed.
+namespace OpenVRML {
 
+/**
+ * @brief OpenGL geometry renderer.
+ */
+namespace GL {
+
+/**
+ * @class ViewerOpenGL
+ *
+ * @brief Abstract class for display of VRML models using OpenGL/Mesa.
+ *
+ * A window-system specific subclass needs to redefine the pure
+ * virtual methods.
+ */
+
+/**
+ * @brief Construct a viewer for the specified Browser.
+ *
+ * @param browser   the Browser.
+ */
 ViewerOpenGL::ViewerOpenGL(Browser & browser): Viewer(browser) {
   d_GLinitialized = false;
   d_blend = true;
@@ -241,47 +236,51 @@ static void checkErrors(const char * s)
 //  retain hint is ignored.
 
 Viewer::Object ViewerOpenGL::beginObject(const char *,
-					 bool /* retain */
-					 )
+                                         bool retain)
 {
-  // Finish setup stuff before first object
-  if (1 == ++d_nObjects)
-    {
-      // Finish specifying the view (postponed to make Background easier)
-      glPushMatrix();
-      glTranslatef(d_zoom[0], d_zoom[1], d_zoom[2]); // M = M * T
-      glMultMatrixf(&d_rotationMatrix[0][0]);                  // M = M * R 
-      glTranslatef(d_translatex, d_translatey, d_translatez);  // M = M * T 
-      if (!d_lit) glDisable(GL_LIGHTING);
+    // Finish setup stuff before first object
+    if (1 == ++this->d_nObjects) {
+        // Finish specifying the view (postponed to make Background easier)
+        glPushMatrix();
+        glTranslatef(this->d_zoom[0],
+                     this->d_zoom[1],
+                     this->d_zoom[2]); // M = M * T
+        glMultMatrixf(&this->d_rotationMatrix[0][0]); // M = M * R 
+        glTranslatef(this->d_translatex,
+                     this->d_translatey,
+                     this->d_translatez); // M = M * T 
+        if (!this->d_lit) { glDisable(GL_LIGHTING); }
     }
 
-  ++d_nestedObjects;
+    ++this->d_nestedObjects;
 
-  // Increment nesting level for group-scoped lights
-  for (int i=0; i<MAX_LIGHTS; ++i)
-    if (d_lightInfo[i].lightType == LIGHT_DIRECTIONAL)
-      ++d_lightInfo[i].nestingLevel;
+    // Increment nesting level for group-scoped lights
+    for (size_t i = 0; i < MAX_LIGHTS; ++i) {
+        if (this->d_lightInfo[i].lightType == LIGHT_DIRECTIONAL) {
+            ++this->d_lightInfo[i].nestingLevel;
+        }
+    }
 
-  return 0;
+    return 0;
 }
 
 // End of group scope
 
 void ViewerOpenGL::endObject()
 {
-  // Decrement nesting level for group-scoped lights and get rid
-  // of any defined at this level
-  for (int i=0; i<MAX_LIGHTS; ++i)
-    if (d_lightInfo[i].lightType == LIGHT_DIRECTIONAL)
-      if (--d_lightInfo[i].nestingLevel < 0)
-	{
-	  glDisable( (GLenum) (GL_LIGHT0 + i) );
-	  d_lightInfo[i].lightType = LIGHT_UNUSED;
-	}
+    // Decrement nesting level for group-scoped lights and get rid
+    // of any defined at this level
+    for (size_t i = 0; i < MAX_LIGHTS; ++i) {
+        if (this->d_lightInfo[i].lightType == LIGHT_DIRECTIONAL) {
+            if (--this->d_lightInfo[i].nestingLevel < 0) {
+                glDisable(GLenum(GL_LIGHT0 + i));
+                this->d_lightInfo[i].lightType = LIGHT_UNUSED;
+            }
+        }
+    }
 
-  if (--d_nestedObjects == 0)
-    {
-      glPopMatrix();
+    if (--this->d_nestedObjects == 0) {
+        glPopMatrix();
     }
 }
 
@@ -375,295 +374,289 @@ static void indexFaceNormal(int i1,
 //
 
 Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
-				              const float * groundAngle,
-				              const float * groundColor,
-				              size_t nSkyAngles,
-				              const float * skyAngle,
-				              const float * skyColor,
-				              int* whc,
+                                              const float * groundAngle,
+                                              const float * groundColor,
+                                              size_t nSkyAngles,
+                                              const float * skyAngle,
+                                              const float * skyColor,
+                                              int * whc,
                                               unsigned char ** pixels) 
 {
-  float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
+    float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
 
-  // Clear to last sky color
-  if (skyColor != 0)
-    {
-      r = skyColor[3*nSkyAngles+0];
-      g = skyColor[3*nSkyAngles+1];
-      b = skyColor[3*nSkyAngles+2];
+    // Clear to last sky color
+    if (skyColor != 0) {
+        r = skyColor[3 * nSkyAngles + 0];
+        g = skyColor[3 * nSkyAngles + 1];
+        b = skyColor[3 * nSkyAngles + 2];
     }
 
-  GLuint glid = 0;
+    GLuint glid = 0;
 
-  // Need to separate the geometry from the transformation so the
-  // dlist doesn't have to get rebuilt for every mouse movement...
-#if USE_GEOMETRY_DISPLAY_LISTS && 0
-  // Don't bother with a dlist if we aren't drawing anything
-  if (! d_selectMode &&
-      (nSkyAngles > 0 || nGroundAngles > 0 || pixels) )
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
+    // Need to separate the geometry from the transformation so the
+    // dlist doesn't have to get rebuilt for every mouse movement...
+# if USE_GEOMETRY_DISPLAY_LISTS && 0
+    // Don't bother with a dlist if we aren't drawing anything
+    if (!this->d_selectMode
+            && (nSkyAngles > 0 || nGroundAngles > 0 || pixels)) {
+        glid = glGenLists(1);
+        glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
-#endif
+# endif
 
-  glClearColor( r, g, b, a );
-  GLuint mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
-#if USE_STENCIL_SHAPE
-  mask |= GL_STENCIL_BUFFER_BIT;
-  glClear( mask );
-#else
-  glClear( mask );
+    glClearColor(r, g, b, a);
+    GLuint mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+# if USE_STENCIL_SHAPE
+    mask |= GL_STENCIL_BUFFER_BIT;
+    glClear(mask);
+# else
+    glClear(mask);
 
-  // Draw the background as big spheres centered at the view position
-  if ( ! d_selectMode && (nSkyAngles > 0 || nGroundAngles > 0 || pixels) )
-    {
-      glDisable( GL_DEPTH_TEST );
-      glDisable( GL_LIGHTING );
+    // Draw the background as big spheres centered at the view position
+    if (!this->d_selectMode
+            && (nSkyAngles > 0 || nGroundAngles > 0 || pixels)) {
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_LIGHTING);
 
-      glPushMatrix();
-//      glLoadIdentity();
+        glPushMatrix();
 
-      // Undo translation
-//      glTranslatef( d_position[0], d_position[1], d_position[2] );
+        // Apply current view rotation
+        glMultMatrixf(&this->d_rotationMatrix[0][0]);
 
-      // Apply current view rotation
-      glMultMatrixf( &d_rotationMatrix[0][0] );
+        glScalef(1000.0, 1000.0, 1000.0);
 
-      glScalef(1000.,1000.,1000.);
+        // Sphere constants
+        const int nCirc = 8; // number of circumferential slices
+        const double cd = 2.0 * pi / nCirc;
 
-      // Sphere constants
-      const int nCirc = 8;		// number of circumferential slices
-      const double cd = 2.0 * pi / nCirc;
+        double heightAngle0, heightAngle1 = 0.0;
+        const float *c0, *c1 = skyColor;
 
-      double heightAngle0, heightAngle1 = 0.0;
-      const float *c0, *c1 = skyColor;
+        for (size_t nSky = 0; nSky < nSkyAngles; ++nSky) {
+            heightAngle0 = heightAngle1;
+            heightAngle1 = skyAngle[nSky];
+            c0 = c1;
+            c1 += 3;
 
-      for (size_t nSky=0; nSky<nSkyAngles; ++nSky)
-	{
-	  heightAngle0 = heightAngle1;
-	  heightAngle1 = skyAngle[nSky];
-	  c0 = c1;
-	  c1 += 3;
+            double circAngle0, circAngle1 = 0.0;
+            double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
+            double sha1 = sin(heightAngle1), cha1 = cos(heightAngle1);
+            double sca0, cca0;
+            double sca1 = sin(circAngle1), cca1 = cos(circAngle1);
 
-	  double circAngle0, circAngle1 = 0.0;
-	  double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
-	  double sha1 = sin(heightAngle1), cha1 = cos(heightAngle1);
-	  double sca0, cca0;
-	  double sca1 = sin(circAngle1), cca1 = cos(circAngle1);
+            glBegin(GL_QUADS);
+            for (size_t nc = 0; nc < nCirc; ++nc) {
+                circAngle0 = circAngle1;
+                circAngle1 = (nc + 1) * cd;
+                sca0 = sca1;
+                sca1 = sin(circAngle1);
+                cca0 = cca1;
+                cca1 = cos(circAngle1);
 
-	  glBegin( GL_QUADS );
-	  for (int nc=0; nc<nCirc; ++nc)
-	    {
-	      circAngle0 = circAngle1;
-	      circAngle1 = (nc+1) * cd;
-	      sca0 = sca1;
-	      sca1 = sin(circAngle1);
-	      cca0 = cca1;
-	      cca1 = cos(circAngle1);
-
-	      glColor3fv( c1 );
-	      glVertex3f( sha1 * cca0, cha1, sha1 * sca0 );
-	      glVertex3f( sha1 * cca1, cha1, sha1 * sca1 );
-	      glColor3fv( c0 );
-	      glVertex3f( sha0 * cca1, cha0, sha0 * sca1 );
-	      glVertex3f( sha0 * cca0, cha0, sha0 * sca0 );
-	    }
-	  glEnd();
-	}
-
-      // Ground
-      heightAngle1 = pi;
-      c1 = groundColor;
-
-      for (size_t nGround=0; nGround<nGroundAngles; ++nGround)
-	{
-	  heightAngle0 = heightAngle1;
-	  heightAngle1 = pi - groundAngle[nGround];
-	  c0 = c1;
-	  c1 += 3;
-
-	  double circAngle0, circAngle1 = 0.0;
-	  double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
-	  double sha1 = sin(heightAngle1), cha1 = cos(heightAngle1);
-	  double sca0, cca0;
-	  double sca1 = sin(circAngle1), cca1 = cos(circAngle1);
-
-	  glBegin( GL_QUADS );
-	  for (int nc=0; nc<nCirc; ++nc)
-	    {
-	      circAngle0 = circAngle1;
-	      circAngle1 = (nc+1) * cd;
-	      sca0 = sca1;
-	      sca1 = sin(circAngle1);
-	      cca0 = cca1;
-	      cca1 = cos(circAngle1);
-
-	      glColor3fv( c1 );
-	      glVertex3f( sha1 * cca1, cha1, sha1 * sca1 );
-	      glVertex3f( sha1 * cca0, cha1, sha1 * sca0 );
-	      glColor3fv( c0 );
-	      glVertex3f( sha0 * cca0, cha0, sha0 * sca0 );
-	      glVertex3f( sha0 * cca1, cha0, sha0 * sca1 );
-	    }
-	  glEnd();
-	}
-
-      // Background textures are drawn on a transparent cube
-      if (pixels && d_texture && ! d_wireframe)
-	{
-	  float v2[6][4][3] = {
-	    {{1,-1,1}, {-1,-1,1}, {-1,1,1}, {1,1,1}},     // Back
-	    {{-1,-1,1}, {1,-1,1}, {1,-1,-1}, {-1,-1,-1}}, // Bottom
-	    {{-1,-1,-1}, {1,-1,-1}, {1,1,-1}, {-1,1,-1}}, // Front
-	    {{-1,-1,1}, {-1,-1,-1}, {-1,1,-1}, {-1,1,1}}, // Left
-	    {{1,-1,-1}, {1,-1,1}, {1,1,1}, {1,1,-1}},     // Right
-	    {{-1,1,-1}, {1,1,-1}, {1,1,1}, {-1,1,1}}};    // Top
-
-          // Tile big textures into 256x256 (or 256xsmaller or smallerx256) pieces 
-
-	  float v3[6][4][3];
-          int number_tiles;
-          int number_vertices;
-          const size_t NUM_SPLITS = 4;
-	  float v[NUM_SPLITS*NUM_SPLITS*6][4][3];
-          float size_x;
-          float size_y;
-          int number_splits_x; 
-          int number_splits_y; 
-          number_splits_x=NUM_SPLITS;
-          number_splits_y=NUM_SPLITS;
-          number_tiles=number_splits_x*number_splits_y;
-          size_x=2.0/(float)number_splits_x;
-          size_y=2.0/(float)number_splits_y;
-          int i, j, k;
-          for (j=0;j<16*6;j++)
-            for (k=0;k<4;k++)
-              for (i=0;i<3;i++)
-                 v[j][k][i]=0;
-
-          for (j=0;j<6;j++)
-            for (k=0;k<4;k++)
-              for (i=0;i<3;i++)
-                 v3[j][k][i]=v2[j][k][i]-v2[j][0][i];
-
-          for (j=0;j<6;j++)
-            for (i=0;i<3;i++)
-            {
-              v[j*number_tiles][0][i]=v2[j][0][i];
-              for (k=0;k<4;k++)
-                v[j*number_tiles][k][i]=v[j*number_tiles][0][i]+v3[j][k][i]/number_splits_y;
-            }          
-
-          for (j=0;j<6;j++)
-          {
-            number_vertices=j*number_tiles+1;
-            for (k=0;k<number_splits_y;k++)
-            {
-              int num_line;
-              num_line=number_vertices-1;
-              for (int l=1;l<number_splits_x;l++)
-              {
-                for (i=0;i<3;i++)
-                {
-                  v[number_vertices][0][i]=v[number_vertices-1][0][i]+
-                                           v3[j][1][i]/number_splits_x;
-                  for (int m=0;m<4;m++)
-                    v[number_vertices][m][i]=v[number_vertices][0][i]+
-                                             v3[j][m][i]/number_splits_x;
-                }
-                number_vertices++;
-              }
-              if (k==(number_splits_y-1)) break;
-              for (i=0;i<3;i++)
-              {
-                v[number_vertices][0][i]=v[num_line][0][i]+
-                                         v3[j][3][i]/number_splits_y;
-                for (int m=0;m<4;m++)
-                  v[number_vertices][m][i]=v[number_vertices][0][i]+
-                                           v3[j][m][i]/number_splits_y;
-              }
-              number_vertices++;                
+                glColor3fv(c1);
+                glVertex3f(sha1 * cca0, cha1, sha1 * sca0);
+                glVertex3f(sha1 * cca1, cha1, sha1 * sca1);
+                glColor3fv(c0);
+                glVertex3f(sha0 * cca1, cha0, sha0 * sca1);
+                glVertex3f(sha0 * cca0, cha0, sha0 * sca0);
             }
-          }
+            glEnd();
+        }
 
-	  glScalef( 0.5, 0.5, 0.5 );
+        // Ground
+        heightAngle1 = pi;
+        c1 = groundColor;
 
-	  glEnable( GL_TEXTURE_2D );
-	  glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+        for (size_t nGround = 0; nGround < nGroundAngles; ++nGround) {
+            heightAngle0 = heightAngle1;
+            heightAngle1 = pi - groundAngle[nGround];
+            c0 = c1;
+            c1 += 3;
 
-          int vertices_number = 0;
-	  int t, lastT = -1;
-          for (t=0; t<6; ++t, whc+=3) 
-            for (j=0;j<number_splits_y;j++)
-              for (i=0;i<number_splits_x;i++)
-              {
+            double circAngle0, circAngle1 = 0.0;
+            double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
+            double sha1 = sin(heightAngle1), cha1 = cos(heightAngle1);
+            double sca0, cca0;
+            double sca1 = sin(circAngle1), cca1 = cos(circAngle1);
 
-                // Check for non-zero width,height,coords and pixel data
-                if (whc[0] && whc[1] && whc[2] && pixels[t])
-                {
-                  // Optimize for the case where the same texture is used
-// do not work here....
-//                  if (lastT == -1 || pixels[t] != pixels[lastT])
-                    insertSubTexture(
-                            i*whc[0]/number_splits_x,
-                            j*whc[1]/number_splits_y,
-                            whc[0]/number_splits_x, 
-                            whc[1]/number_splits_y,
-                            whc[0],
-                            whc[1], 
-                            whc[2],
-                            false, false, pixels[t],
-                            false);  // Don't put the textures in dlists
-    
-                //
-                // The commented out code suggests what might be done to
-                // subdivide a texture with sides that are a *multiple* of 2
-                // into textures that have sides that are a *power* of 2.
-                //
-                  lastT = t;
-                  glBegin( GL_QUADS );
-//                  float len_x=1.0/number_splits_x;
-//                  float len_y=1.0/number_splits_y;
-//                  float x0=i*len_x;
-//                  float y0=j*len_y;
-//                  glTexCoord2f( x0, y0 );
-                  glTexCoord2f( 0, 0 );
-                  glVertex3fv( v[vertices_number][0] );
-//                  glTexCoord2f( x0+len_x, y0 );
-                  glTexCoord2f( 1, 0 );
-                  glVertex3fv( v[vertices_number][1] );
-//                  glTexCoord2f( x0+len_x, y0+len_y );
-                  glTexCoord2f( 1, 1 );
-                  glVertex3fv( v[vertices_number][2] );
-//                  glTexCoord2f( x0, y0+len_y );
-                  glTexCoord2f( 0, 1 );
-                  glVertex3fv( v[vertices_number][3] );
-                  glEnd();
-                  vertices_number++;
+            glBegin(GL_QUADS);
+            for (size_t nc = 0; nc < nCirc; ++nc) {
+                circAngle0 = circAngle1;
+                circAngle1 = (nc + 1) * cd;
+                sca0 = sca1;
+                sca1 = sin(circAngle1);
+                cca0 = cca1;
+                cca1 = cos(circAngle1);
+
+                glColor3fv(c1);
+                glVertex3f(sha1 * cca1, cha1, sha1 * sca1);
+                glVertex3f(sha1 * cca0, cha1, sha1 * sca0);
+                glColor3fv(c0);
+                glVertex3f(sha0 * cca0, cha0, sha0 * sca0);
+                glVertex3f(sha0 * cca1, cha0, sha0 * sca1);
+            }
+            glEnd();
+        }
+
+        // Background textures are drawn on a transparent cube
+        if (pixels && this->d_texture && !this->d_wireframe) {
+            float v2[6][4][3] = {
+              {{1,-1,1}, {-1,-1,1}, {-1,1,1}, {1,1,1}},     // Back
+              {{-1,-1,1}, {1,-1,1}, {1,-1,-1}, {-1,-1,-1}}, // Bottom
+              {{-1,-1,-1}, {1,-1,-1}, {1,1,-1}, {-1,1,-1}}, // Front
+              {{-1,-1,1}, {-1,-1,-1}, {-1,1,-1}, {-1,1,1}}, // Left
+              {{1,-1,-1}, {1,-1,1}, {1,1,1}, {1,1,-1}},     // Right
+              {{-1,1,-1}, {1,1,-1}, {1,1,1}, {-1,1,1}}};    // Top
+
+            // Tile big textures into 256x256 (or 256xsmaller or smallerx256) pieces 
+
+            float v3[6][4][3];
+            int number_tiles;
+            int number_vertices;
+            const size_t NUM_SPLITS = 4;
+            float v[NUM_SPLITS * NUM_SPLITS * 6][4][3];
+            float size_x;
+            float size_y;
+            int number_splits_x; 
+            int number_splits_y; 
+            number_splits_x = NUM_SPLITS;
+            number_splits_y = NUM_SPLITS;
+            number_tiles = number_splits_x * number_splits_y;
+            size_x = 2.0 / float(number_splits_x);
+            size_y = 2.0 / float(number_splits_y);
+            int i, j, k;
+            for (j = 0; j < 16 * 6; j++) {
+                for (k = 0; k < 4; k++) {
+                    for (i = 0; i < 3; i++) { v[j][k][i] = 0; }
                 }
-              }
-	  glDisable( GL_TEXTURE_2D );
-	}
+            }
 
-      // Put everything back the way it was
-      glPopMatrix();
+            for (j = 0; j < 6; j++) {
+                for (k = 0; k < 4; k++) {
+                    for (i = 0; i < 3; i++) {
+                        v3[j][k][i] = v2[j][k][i] - v2[j][0][i];
+                    }
+                }
+            }
 
-      if (d_lit) glEnable( GL_LIGHTING );
-      glEnable( GL_DEPTH_TEST );
+            for (j = 0; j < 6; j++) {
+                for (i = 0; i < 3; i++) {
+                    v[j * number_tiles][0][i] = v2[j][0][i];
+                    for (k = 0; k < 4; k++) {
+                        v[j * number_tiles][k][i] =
+                            v[j * number_tiles][0][i]
+                            + v3[j][k][i] / number_splits_y;
+                    }
+                }
+            }
+
+            for (j = 0; j < 6; j++) {
+                number_vertices = j * number_tiles + 1;
+                for (k = 0; k < number_splits_y; k++) {
+                    int num_line;
+                    num_line = number_vertices - 1;
+                    for (int l = 1; l < number_splits_x; l++) {
+                        for (i = 0; i < 3; i++) {
+                            v[number_vertices][0][i] =
+                                v[number_vertices-1][0][i]
+                                + v3[j][1][i] / number_splits_x;
+                            for (int m = 0; m < 4; m++) {
+                                v[number_vertices][m][i] =
+                                    v[number_vertices][0][i]
+                                    + v3[j][m][i] / number_splits_x;
+                            }
+                        }
+                        number_vertices++;
+                    }
+                    if (k == (number_splits_y - 1)) { break; }
+                    for (i = 0; i < 3; i++) {
+                        v[number_vertices][0][i] =
+                            v[num_line][0][i] + v3[j][3][i] / number_splits_y;
+                        for (size_t m = 0; m < 4; m++) {
+                            v[number_vertices][m][i] =
+                                v[number_vertices][0][i]
+                                + v3[j][m][i] / number_splits_y;
+                        }
+                    }
+                    number_vertices++;                
+                }
+            }
+
+            glScalef(0.5, 0.5, 0.5);
+
+            glEnable(GL_TEXTURE_2D);
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+            int vertices_number = 0;
+            int t, lastT = -1;
+            for (t = 0; t < 6; ++t, whc += 3) {
+                for (j = 0; j < number_splits_y; j++) {
+                    for (i = 0; i < number_splits_x; i++) {
+                        // Check for non-zero width,height,coords and pixel data
+                        if (whc[0] && whc[1] && whc[2] && pixels[t]) {
+                            // Optimize for the case where the same texture is used
+                            // do not work here....
+                            // if (lastT == -1 || pixels[t] != pixels[lastT])
+                            insertSubTexture(i * whc[0] / number_splits_x,
+                                             j * whc[1] / number_splits_y,
+                                             whc[0] / number_splits_x, 
+                                             whc[1] / number_splits_y,
+                                             whc[0],
+                                             whc[1], 
+                                             whc[2],
+                                             false, false, pixels[t],
+                                             false); // Don't put the textures in dlists
+
+                            //
+                            // The commented out code suggests what might be
+                            // done to subdivide a texture with sides that are
+                            // a *multiple* of 2 into textures that have sides
+                            // that are a *power* of 2.
+                            //
+                            lastT = t;
+                            glBegin(GL_QUADS);
+                            // float len_x = 1.0 / number_splits_x;
+                            // float len_y = 1.0 / number_splits_y;
+                            // float x0 = i * len_x;
+                            // float y0 = j * len_y;
+                            // glTexCoord2f(x0, y0);
+                            glTexCoord2f(0, 0);
+                            glVertex3fv(v[vertices_number][0]);
+                            // glTexCoord2f(x0 + len_x, y0);
+                            glTexCoord2f(1, 0);
+                            glVertex3fv(v[vertices_number][1]);
+                            // glTexCoord2f(x0 + len_x, y0 + len_y);
+                            glTexCoord2f(1, 1);
+                            glVertex3fv(v[vertices_number][2]);
+                            // glTexCoord2f(x0, y0 + len_y);
+                            glTexCoord2f(0, 1);
+                            glVertex3fv(v[vertices_number][3]);
+                            glEnd();
+                            vertices_number++;
+                        }
+                    }
+                }
+            }
+            glDisable(GL_TEXTURE_2D);
+        }
+
+        // Put everything back the way it was
+        glPopMatrix();
+
+        if (this->d_lit) { glEnable(GL_LIGHTING); }
+        glEnable(GL_DEPTH_TEST);
     }
 
-#endif // USE_STENCIL_SHAPE
+# endif // USE_STENCIL_SHAPE
 
-  //endGeometry();
-  if (glid) glEndList();
+    if (glid) { glEndList(); }
 
-  // Save bg color so we can choose a fg color (doesn't help bg textures...)
-  d_background[0] = r;
-  d_background[1] = g;
-  d_background[2] = b;
+    // Save bg color so we can choose a fg color (doesn't help bg textures...)
+    this->d_background[0] = r;
+    this->d_background[1] = g;
+    this->d_background[2] = b;
 
-  return (Object) glid;
+    return Object(glid);
 }
 
 
@@ -3559,3 +3552,7 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
     gluDeleteQuadric(sph);
     glPopMatrix();
 }
+
+} // namespace GL
+
+} // namespace OpenVRML

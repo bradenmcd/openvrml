@@ -10,7 +10,9 @@
           src/openvrml/OpenVRML/vrml97node.cpp,
           src/openvrml/OpenVRML/vrml97node.h: Refactored bound Fog node
           stack to FogClass.
-          
+
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Source
+          formatting changes.
 
 2002-10-15  Braden McDaniel  <braden@endoframe.com>
 
