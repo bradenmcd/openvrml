@@ -146,7 +146,10 @@ depends on.
      Disable support for Java in the Script node.  "configure" searches
      for a Java Native Interface (JNI) implementation, which may be
      provided either by a Java Development Kit or the GNU Compiler for
-     Java (gcj).  If using
+     Java (gcj).  If using a Java Development Kit, you will probably
+     need to supply the include and library directories using CPPFLAGS
+     and LDFLAGS, respectively.  See the file INSTALL for general
+     information on using these variables.
 
  --disable-gl-renderer
      Do not build the GL renderer.  OpenVRML's GL renderer depends on
