@@ -1,3 +1,27 @@
+2004-12-03 Braden McDaniel  <braden@endoframe.com>
+
+	Merged changes from 0.15.2 release.
+
+	* NEWS
+	* README:  Note dependency on DejaGnu.
+	* configure.ac:  Added --disable-test option for configure.
+	Check for dejagnu.h, and fail configuration if it is not found
+	and the tests are supposed to be built.
+	* openvrml.spec.in:  Use %makeinstall macro; install COPYING
+	(GPL) with lookat documentation rather than COPYING.LESSER
+	(LGPL).  Added dejagnu as a build prerequisite.
+	* doc/Makefile.am:  Remove generated documentation as part of
+	maintainer-clean.
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
+	(gtk_vrml_browser_get_type):  First try to look up the type from
+	glib's type registry.
+	(GtkGLViewer::set_timer):  Don't invoke gtk_main_iteration.
+	* src/libopenvrml/openvrml/browser.cpp
+	(path_getter::get_path_from(const node_ptr &)):  Removed
+	spurious assert.
+	* test/Makefile.am:  Made building the tests optional.
+	* test/parse/Makefile.am:  Made building the tests optional.
+
 2004-11-27 Braden McDaniel  <braden@endoframe.com>
 
 	Merged changes from 0.15.1 release.

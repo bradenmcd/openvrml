@@ -81,6 +81,8 @@ SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`
 
 OV_CHECK_JNI
 
+AC_CHECK_HEADER([dejagnu.h], [have_dejagnu_h=yes], [have_dejagnu_h=no])
+
 #
 # gzipped file support
 #
@@ -222,6 +224,19 @@ AM_CONDITIONAL([ENABLE_LOOKAT],
 AC_ARG_ENABLE([mozilla-plugin],
               [AC_HELP_STRING([--disable-mozilla-plugin],
                               [do not build the Mozilla plug-in])])
+
+#
+# build tests
+#
+AC_ARG_ENABLE([tests], [AC_HELP_STRING([--disable-tests],
+                                       [do not build the tests])])
+if test X$enable_tests != Xno; then
+  if test X$have_dejagnu_h != Xyes; then
+    AC_MSG_FAILURE([DejaGnu is required to build and run the tests])
+  fi
+fi
+AM_CONDITIONAL([ENABLE_TESTS],
+               [test X$enable_tests != Xno -a X$have_dejagnu_h = Xyes]) 
 
 #
 # Apply Rez to executables? (Only seem to need this if we're using the Apple

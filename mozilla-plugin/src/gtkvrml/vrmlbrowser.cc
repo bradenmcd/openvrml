@@ -73,7 +73,8 @@ namespace {
 
 GType gtk_vrml_browser_get_type()
 {
-    static GType vrml_browser_type = 0;
+    static const char type_name[] = "GtkVrmlBrowser";
+    static GType vrml_browser_type = g_type_from_name(type_name);
 
     if (!vrml_browser_type) {
         GTypeInfo vrml_browser_info = {
@@ -88,7 +89,7 @@ GType gtk_vrml_browser_get_type()
             reinterpret_cast<GInstanceInitFunc>(gtk_vrml_browser_init)
         };
         vrml_browser_type = g_type_register_static(GTK_TYPE_DRAWING_AREA,
-                                                   "GtkVrmlBrowser",
+                                                   type_name,
                                                    &vrml_browser_info,
                                                    GTypeFlags(0));
     }
@@ -318,7 +319,6 @@ void GtkGLViewer::set_timer(const double t)
                                     GtkFunction(timeout_callback),
                                     this);
     }
-    while (gtk_events_pending()) { gtk_main_iteration(); }
 }
 
 void GtkGLViewer::timer_update()

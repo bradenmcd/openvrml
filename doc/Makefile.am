@@ -49,7 +49,7 @@ DOCUMENTED_SOURCE_FILES = \
 
 EXTRA_DIST = $(DOCUMENTATION_FILES) manual
 
-DISTCLEANFILES = $(srcdir)/manual/*
+MAINTAINERCLEANFILES = $(srcdir)/manual/*
 
 html-local: manual/index.html
 

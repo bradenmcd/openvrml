@@ -404,9 +404,6 @@ namespace {
     void path_getter::get_path_from(const node_ptr & node)
         throw (std::bad_alloc)
     {
-# ifndef NDEBUG
-        size_t initial_size = this->node_path.size();
-# endif
         if (node) {
             this->node_path.push_back(node_path_element());
             if (node.get() == &objective) {
@@ -416,7 +413,6 @@ namespace {
             this->traverse_children(*node);
             if (!this->found) { this->node_path.pop_back(); }
         }
-        assert(this->node_path.size() == initial_size);
     }
 
     void path_getter::get_path_from(const std::vector<node_ptr> & nodes)
