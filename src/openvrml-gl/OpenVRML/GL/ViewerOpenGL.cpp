@@ -51,6 +51,12 @@
 # include "private.h"
 
 /**
+ * @namespace OpenVRML::GL
+ *
+ * @brief OpenGL geometry renderer
+ */
+
+/**
  * @class OpenVRML::GL::ViewerOpenGL
  *
  * @brief Abstract class for display of VRML models using OpenGL/Mesa.
