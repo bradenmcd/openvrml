@@ -12440,7 +12440,7 @@ point_set_node::~point_set_node() throw ()
  */
 bool point_set_node::modified() const
 {
-    return modified()
+    return this->node::modified()
         || (this->color_.sfnode::value
             && this->color_.sfnode::value->modified())
         || (this->coord_.sfnode::value
@@ -13544,7 +13544,7 @@ shape_node::~shape_node() throw ()
  */
 bool shape_node::modified() const
 {
-    return modified()
+    return this->node::modified()
         || (this->geometry_.sfnode::value
             && this->geometry_.sfnode::value->modified())
         || (this->appearance_.sfnode::value

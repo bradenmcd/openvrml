@@ -1,5 +1,11 @@
 2004-03-22 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(point_set_node::modified, shape_node::modified):  Fixed
+	recursive call.
+
+2004-03-22 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(viewer::insert_shell):  Only build vector of vertices when
 	drawing shells with non-convex polygons.
