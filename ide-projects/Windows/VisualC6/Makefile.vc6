@@ -297,11 +297,6 @@ $(BINOUTDIR) :
 $(LIBDIR) : 
 	   if not exist $(LIBDIR) mkdir $(LIBDIR)
 
-NOJNI :
-!IF "$(WITH_JNI)" == "YES"
-WITH_JNI = NO
-!ENDIF
-
 # variables
 
 OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOUTDIR)\dummysound$(O)\
@@ -346,7 +341,7 @@ all: openvrml-dynamic lookat-dynamic script-jar
 all-static : openvrml-static lookat-static  
 
 openvrml-dynamic : $(LIBDIR) $(BINOUTDIR) $(LIBDIR)\openvrml.dll
-openvrml-static : NOJNI $(LIBDIR)  $(LIBDIR)\openvrml.lib
+openvrml-static :  $(LIBDIR)  $(LIBDIR)\openvrml.lib
 
 $(LIBDIR)\openvrml.lib  :  core-static gl prompt
                    if exist $(LIBDIR) del /Q $(LIBDIR)
@@ -368,7 +363,7 @@ core-static:
   nmake /F Makefile.vc6 WITH_PNG=$(WITH_PNG) PNGLIB_DIR=$(PNGLIB_DIR)\
   WITH_JPEG=$(WITH_JPEG) JPEGLIB_DIR=$(JPEGLIB_DIR)\
   WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLALIB_DIR=$(MOZILLALIB_DIR)\
-  WITH_JNI=$(WITH_JNI) JAVA_DIR=$(JAVA_DIR)\
+  WITH_JNI=NO JAVA_DIR=$(JAVA_DIR)\
   ZLIB_DIR=$(ZLIB_DIR) LIBTYPE=STATIC\
   ANTLRLIB_DIR=$(ANTLRLIB_DIR) WITH_ANTLR=$(WITH_ANTLR) core
   cd $(MAKEDIR)

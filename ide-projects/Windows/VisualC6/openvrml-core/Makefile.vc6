@@ -214,14 +214,13 @@ WITH_ANTLR = NO
 ANTLRLIB_DIR = c:\User\antlr-2.7.0
 !ENDIF
 
+!IF "$(LIBTYPE)" == "STATIC"
+WITH_JNI = NO
+!ENDIF
 
 PROMPT :
       -@echo Making openvrmlcore library
 
-NOJNI :
-!IF "$(WITH_JNI)" == "YES"
-WITH_JNI = NO
-!ENDIF
 
 $(BINOUTDIR) : 
 	   if not exist $(BINOUTDIR) mkdir $(BINOUTDIR)
@@ -294,7 +293,7 @@ all : core
 
 core  : \
 !IF "$(LIBTYPE)" == "STATIC"  
-     prompt NOJNI $(BINOUTDIR) $(LIBDIR) $(LIBDIR)\openvrmlcore.lib
+     prompt $(BINOUTDIR) $(LIBDIR) $(LIBDIR)\openvrmlcore.lib
 !ELSE
      prompt $(BINOUTDIR) $(LIBDIR) $(LIBDIR)\openvrmlcore.dll
 !ENDIF
