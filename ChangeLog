@@ -1,5 +1,10 @@
 2003-08-21  Braden McDaniel  <braden@endoframe.com>
 
+	* lib/antlr/antlr/config.hpp:  Fixed dllimport/dllexport macro
+	for building a static library.
+
+2003-08-21  Braden McDaniel  <braden@endoframe.com>
+
 	Gave regex API functions C linkage.
 
 	* lib/regex/regcomp.c

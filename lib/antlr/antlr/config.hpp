@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/RIGHTS.html
  *
- * $Id: config.hpp,v 1.3 2003-07-25 17:33:45 braden Exp $
+ * $Id: config.hpp,v 1.4 2003-08-20 23:38:56 braden Exp $
  */
 
 /*
@@ -39,12 +39,12 @@
 # pragma warning( disable : 4786 )
 
 // For the DLL support contributed by Stephen Naughton
-# ifdef ANTLR_EXPORTS
-#	undef ANTLR_API
+# ifdef ANTLR_EXPORT
 #	define ANTLR_API __declspec(dllexport)
-# else
-#	undef ANTLR_API
+# elif defined(ANTLR_IMPORT)
 #	define ANTLR_API __declspec(dllimport)
+# else
+#   define ANTLR_API
 # endif
 
 // Now, some defines for shortcomings in the MS compiler:
