@@ -2,25 +2,21 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
-
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#include <winconfig.h>
-#endif
+//
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -150,7 +146,7 @@ void Doc::seturl(const char * url, const Doc * relative)
   {
       const char *path = "";
 
-#ifdef _WIN32     
+#ifdef _WIN32
 // Convert windows path stream to standard URL
 	  char *p = (char *)url;
 	  for(;*p != '\0';p++)
@@ -186,7 +182,7 @@ void Doc::seturl(const char * url, const Doc2 * relative)
   {
       const char *path = "";
 
-#ifdef _WIN32     
+#ifdef _WIN32
 // Convert windows path stream to standard URL
 	  char *p = (char *)url;
 	  for(;*p != '\0';p++)
@@ -235,7 +231,7 @@ const char * Doc::urlBase() const
 
   if ((p = strrchr(s, '.')) != 0)
     *p = '\0';
-  
+
   return s;
 }
 
@@ -260,7 +256,7 @@ const char * Doc::urlExt() const
     }
   else
     ext[0] = '\0';
-  
+
   return &ext[0];
 }
 
@@ -284,7 +280,7 @@ const char * Doc::urlPath() const
     *(slash+1) = '\0';
   else
     path[0] = '\0';
-  return &path[0]; 
+  return &path[0];
 }
 
 /**
@@ -316,7 +312,7 @@ const char * Doc::urlProtocol() const
       if (*s == ':')
 	return protocol;
     }
-    
+
   return "file";
 }
 
@@ -354,7 +350,7 @@ const char * Doc::localName()
  * @return the path of the local file that is the downloaded resource at
  *      @a d_url.
  */
-const char * Doc::localPath() 
+const char * Doc::localPath()
 {
   static char buf[1024];
   if (filename(buf, sizeof(buf)))
@@ -401,8 +397,8 @@ bool Doc::filename(char * fn, int nfn)
   else if (strcmp(protocol, "file") != 0)
     s = 0;
 
-#ifdef _WIN32   
-  // Does not like "//C:" skip "// "  
+#ifdef _WIN32
+  // Does not like "//C:" skip "// "
    if(s)
 	   if(strlen(s)>2 && s[0] == '/' && s[1] == '/')s=s+2;
 #endif
@@ -429,7 +425,7 @@ inline char convertHex(char c)
     else
         if (c>='A' && c<='F')
             converted = c-'A'+10;
-        else 
+        else
             converted = c-'a'+10;
     return converted;
 }
@@ -441,7 +437,7 @@ char* decodePath(const char* path)
 
     char * a = converted;
     char * b = converted;
-    
+
     while(*a) {
 	    if (*a == '%') {
 		    a++;
@@ -451,11 +447,11 @@ char* decodePath(const char* path)
 		    	*b = *b+convertHex(*a);
 		    a++, b++;
 		} else {
-		    *b++ = *a++; 
+		    *b++ = *a++;
 		}
     }
     *b++ = 0;
-    
+
     return &converted[0];
 }
 
@@ -467,12 +463,12 @@ char* Doc::convertCommonToMacPath( char *fn, int nfn )
      that the viewer, e.g. Lookat, has provided VrmlScene with
      a file path in the form of a URL (optionally without the protocol
      if it is a local path) */
-  
+
   static char macfn[256];
-  
+
   // We start at index 3 in order to skip the /// at the start
   // of a legal Mac file protocol URL
-    
+
   if ( !((nfn > 3) && (fn[0] == '/') && (fn[1] == '/') && (fn[2] == '/')) ) {
     return fn; // its either a tmp file from a URL transfer or its an incorrect path
   }
@@ -495,7 +491,7 @@ char* Doc::convertCommonToMacPath( char *fn, int nfn )
           macfn[macfnpos] = fn[i];
           macfnpos++;
         }
-      } 
+      }
       else {
         macfn[macfnpos] = fn[i];
         macfnpos++;

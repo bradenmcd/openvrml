@@ -44,7 +44,8 @@ using namespace OpenVRML_;
  * @param rhs   a VrmlMatrix.
  */
 bool operator==(const VrmlMatrix & lhs, const VrmlMatrix & rhs) {
-    return std::equal(lhs.matrix[0], lhs.matrix[0] + 16, rhs.matrix[0]);
+    return std::equal(&lhs.matrix[0][0], &lhs.matrix[0][0] + 16,
+                      &rhs.matrix[0][0]);
 }
 
 /**
@@ -135,7 +136,7 @@ VrmlMatrix::VrmlMatrix(float f11, float f12, float f13, float f14,
  *
  */
 VrmlMatrix::VrmlMatrix(const float m[4][4]) {
-    std::copy(m[0], m[0] + 16, this->matrix[0]);
+    std::copy(&m[0][0], &m[0][0] + 16, &this->matrix[0][0]);
 }
 
 /**
@@ -551,17 +552,19 @@ float VrmlMatrix::det4() const {
 /**
  * @brief Prints a formatted version of the matrix to the given output stream.
  *
- * @param o is output streams
+ * @param out   an output stream.
+ *
+ * @return @p out.
  */
-ostream & VrmlMatrix::print(ostream & o) {
-  for(int i=0; i<4; i++) {
-    for(int j=0; j<4; j++) {
-      o << matrix[i][j];
-      if (j!=3) cout << ",";
+std::ostream & VrmlMatrix::print(std::ostream & out) const {
+    for(size_t i = 0; i < 4; i++) {
+        for(size_t j = 0; j < 4; j++) {
+            out << matrix[i][j];
+            if (j != 3) { out << ", "; }
+        }
+        out << std::endl;
     }
-    o << endl;
-  }
-  return o;
+    return out;
 }
 
 /**
@@ -730,7 +733,7 @@ void VrmlMatrix::getTransform(SFVec3f & translation,
     //
     assert(!fpzero(matrix[3][3]));
     assert(!fpzero(det3(0, 1, 2, 0, 1, 2)));
-    std::copy(this->matrix[0], this->matrix[0] + 16, tmp_matrix[0]);
+    std::copy(&this->matrix[0][0], &this->matrix[0][0] + 16, &tmp_matrix[0][0]);
     
     //
     // Ignore perspective.
@@ -822,7 +825,7 @@ void VrmlMatrix::getTransform(SFVec3f & translation,
     //
     assert(!fpzero(matrix[3][3]));
     assert(!fpzero(det3(0, 1, 2, 0, 1, 2)));
-    std::copy(this->matrix[0], this->matrix[0] + 16, tmp_matrix[0]);
+    std::copy(&this->matrix[0][0], &this->matrix[0][0] + 16, &tmp_matrix[0][0]);
     
     //
     // Ignore perspective.

@@ -1,4 +1,4 @@
-OpenVRML library version 0.13.0
+OpenVRML library version 0.12.4
 Copyright (C) 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
 Copyright (C) 2000, 2001, 2002 Braden McDaniel <braden@endoframe.com>
 Portions Copyright SGI and others
@@ -254,6 +254,20 @@ are provided for convenience:
    JDK.  If this variable is not set, you may need to add arguments to
    the CPPFLAGS and LDFLAGS variables.  Other build systems should
    define OPENVRML_HAVE_JNI when building OpenVRML with the JDK.
+
+ * Doxygen
+
+   OpenVRML uses Doxygen to build API documentation.  If Doxygen is not
+   already installed on your system, you can find it at
+   <http://doxygen.org>.  These arguments can be passed to "configure":
+   
+   --with-doxygen
+   --with-doxygen=yes
+      Attempt to locate and build using Doxygen. This is the default.
+   
+   --without-doxygen
+   --with-doxygen=no
+      Do not build API documentation.
 
 
 Installation

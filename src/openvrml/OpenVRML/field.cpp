@@ -386,6 +386,12 @@ void SFBool::set(bool value) throw () { this->d_value = value; }
  */
 
 /**
+ * @typedef SFColor::ConstArrayReference
+ *
+ * @brief A reference to the SFColor's 3-element array.
+ */
+
+/**
  * @brief Construct with the default value, (0, 0, 0).
  */
 SFColor::SFColor() throw () {
@@ -510,7 +516,9 @@ float SFColor::getB() const throw () { return this->d_rgb[2]; }
  *
  * @return a reference to a 3-element array comprising the RGB value
  */
-const float (&SFColor::get() const throw ())[3] { return this->d_rgb; }
+SFColor::ConstArrayReference SFColor::get() const throw () {
+    return this->d_rgb;
+}
 
 /**
  * @brief Set the value.
@@ -994,9 +1002,9 @@ SFNode::~SFNode() throw () {}
  */
 std::ostream & SFNode::print(std::ostream & out) const {
     if (!this->node) {
-        return out << "NULL" << endl;
+        return out << "NULL" << std::endl;
     }
-    return out << *this->node << endl;
+    return out << *this->node << std::endl;
 }
 
 /**
@@ -1065,6 +1073,12 @@ void SFNode::set(const NodePtr & node) throw () { this->node = NodePtr(node); }
  * <li>Assignment to individual components of the axis will result in the
  * axis being re-normalized upon each assignment.
  * </ul>
+ */
+
+/**
+ * @typedef SFRotation::ConstArrayReference
+ *
+ * @brief A reference to the SFRotation's 4-element array.
  */
 
 /**
@@ -1294,7 +1308,9 @@ void SFRotation::setAngle(float value) throw () { this->d_x[3] = value; }
  *
  * @return a reference to a 4-element array.
  */
-const float (&SFRotation::get() const throw ())[4] { return this->d_x; }
+SFRotation::ConstArrayReference SFRotation::get() const throw () {
+    return this->d_x;
+}
 
 /**
  * @brief Set the value of this rotation.
@@ -1637,6 +1653,12 @@ void SFTime::set(double value) throw () { this->d_value = value; }
  */
 
 /**
+ * @typedef SFVec2f::ConstArrayReference
+ *
+ * @brief A reference to the SFVec2f's 2-element array.
+ */
+
+/**
  * @brief Construct a SFVec2f with the default values, (0, 0).
  */
 SFVec2f::SFVec2f() throw () { this->d_x[0] = this->d_x[1] = 0; }
@@ -1758,7 +1780,9 @@ void SFVec2f::setY(float value) throw () { this->d_x[1] = value; }
  *
  * @returns a reference to a 2-element array.
  */
-const float (&SFVec2f::get() const throw ())[2] { return this->d_x; }
+SFVec2f::ConstArrayReference SFVec2f::get() const throw () {
+    return this->d_x;
+}
 
 /**
  * @brief Set the value of this vector.
@@ -1878,6 +1902,12 @@ const SFVec2f SFVec2f::subtract(const SFVec2f & vec) const throw () {
  * @class SFVec3f
  *
  * @brief Encapsulates a SFVec3f value.
+ */
+
+/**
+ * @typedef SFVec3f::ConstArrayReference
+ *
+ * @brief A reference to the SFVec3f's 3-element array.
  */
 
 /**
@@ -2024,7 +2054,9 @@ void SFVec3f::setZ(float value) throw () { this->d_x[2] = value; }
  *
  * @return a reference to a 3-element array
  */
-const float (&SFVec3f::get() const throw ())[3] { return this->d_x; }
+SFVec3f::ConstArrayReference SFVec3f::get() const throw () {
+    return this->d_x;
+}
 
 /**
  * @brief Set the vector value.
@@ -3151,7 +3183,7 @@ std::ostream & MFNode::print(std::ostream & out) const {
     if (this->nodes.size() != 1) { out << '['; }
     for (std::vector<NodePtr>::const_iterator i(this->nodes.begin());
             i != this->nodes.end(); ++i) {
-        out << **i << endl;
+        out << **i << std::endl;
     }
     if (this->nodes.size() != 1) { out << ']'; }
     

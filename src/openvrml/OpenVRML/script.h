@@ -61,7 +61,8 @@ namespace OpenVRML {
         virtual ~ScriptNodeClass() throw ();
         
         virtual const NodeTypePtr createType(const std::string & id,
-                                             const NodeInterfaceSet &) throw ();
+                                             const NodeInterfaceSet &)
+                throw ();
     };
     
     

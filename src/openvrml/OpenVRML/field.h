@@ -87,6 +87,8 @@ namespace OpenVRML {
         float d_rgb[3];
 
     public:
+        typedef const float (&ConstArrayReference)[3];
+        
         static void HSVtoRGB(const float hsv[3], float rgb[3]) throw ();
         static void RGBtoHSV(const float rgb[3], float hsv[3]) throw ();
 
@@ -102,7 +104,7 @@ namespace OpenVRML {
         float getR() const throw ();
         float getG() const throw ();
         float getB() const throw ();
-        const float (&get() const throw ())[3];
+        ConstArrayReference get() const throw ();
         void set(const float rgb[3]) throw ();
         void setHSV(float h, float s, float v) throw ();
         void getHSV(float hsv[3]) const throw ();
@@ -217,6 +219,8 @@ namespace OpenVRML {
         float d_x[4];
 
     public:
+        typedef const float (&ConstArrayReference)[4];
+        
         SFRotation() throw ();
         explicit SFRotation(const float rot[4]) throw ();
         SFRotation(float x, float y, float z, float angle) throw ();
@@ -226,7 +230,7 @@ namespace OpenVRML {
 
         // Use compiler-defined copy ctor and operator=.
 
-        const float (&get() const throw ())[4];
+        ConstArrayReference get() const throw ();
         void set(const float rot[4]) throw ();
         float getX() const throw ();
         void setX(float) throw ();
@@ -301,6 +305,8 @@ namespace OpenVRML {
         float d_x[2];
 
     public:
+        typedef const float (&ConstArrayReference)[2];
+        
         SFVec2f() throw ();
         explicit SFVec2f(const float vec[2]) throw ();
         SFVec2f(float x, float y) throw ();
@@ -314,7 +320,7 @@ namespace OpenVRML {
         void setX(float) throw ();
         float getY() const throw ();
         void setY(float) throw ();
-        const float (&get() const throw ())[2];
+        ConstArrayReference get() const throw ();
         void set(const float vec[2]) throw ();
         const SFVec2f add(const SFVec2f & vec) const throw ();
         const SFVec2f divide(float number) const throw ();
@@ -338,6 +344,8 @@ namespace OpenVRML {
         float d_x[3];
 
     public:
+        typedef const float (&ConstArrayReference)[3];
+        
         SFVec3f() throw ();
         explicit SFVec3f(const float vec[3]) throw ();
         SFVec3f(float x, float y, float z) throw ();
@@ -353,7 +361,7 @@ namespace OpenVRML {
         void setY(float) throw ();
         float getZ() const throw ();
         void setZ(float) throw ();
-        const float (&get() const throw ())[3];
+        ConstArrayReference get() const throw ();
         void set(const float vec[3]) throw ();
         const SFVec3f add(const SFVec3f & vec) const throw ();
         const SFVec3f cross(const SFVec3f & vec) const throw ();

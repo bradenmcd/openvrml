@@ -2,21 +2,21 @@
 // OpenVRML
 //
 // Copyright (C) 2000  Braden N. McDaniel
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 //
 // This class is a temporary hack to supplant a temporary hack. Sigh. At some
@@ -28,10 +28,6 @@
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
-# endif
-
-# if defined(_WIN32) && !defined(__CYGWIN__)
-#   include <winconfig.h>
 # endif
 
 # include "doc2.hpp"
@@ -46,24 +42,24 @@
 
 namespace {
     namespace z {
-        
+
         typedef int level;
         const level no_compression      = Z_NO_COMPRESSION;
         const level best_speed          = Z_BEST_SPEED;
         const level best_compression    = Z_BEST_COMPRESSION;
         const level default_compression = Z_DEFAULT_COMPRESSION;
-        
+
         enum strategy {
             default_strategy    = Z_DEFAULT_STRATEGY,
             filtered            = Z_FILTERED,
             huffman_only        = Z_HUFFMAN_ONLY
         };
-        
+
         class filebuf : public std::streambuf {
-            enum { buffer_size = 10 };
+            enum { buffer_size = 16384 };
             char buffer[buffer_size];
             gzFile file;
-        
+
         public:
             filebuf();
             virtual ~filebuf();
@@ -78,10 +74,10 @@ namespace {
             virtual int underflow();
             virtual int overflow(int = EOF);
         };
-        
+
         class ifstream : public std::istream {
             filebuf fbuf;
-        
+
         public:
             ifstream();
             explicit ifstream(const char * path, level = default_compression,
@@ -94,7 +90,7 @@ namespace {
                       strategy = default_strategy);
             void close();
         };
-        
+
         //
         // filebuf
         //
@@ -120,7 +116,7 @@ namespace {
                                 const level comp_level,
                                 const strategy comp_strategy) {
             using std::ios;
-            
+
             if (this->file) { return 0; }
 
             //
@@ -172,7 +168,7 @@ namespace {
             int num = gzread(this->file,
                              this->buffer + lookback,
                              filebuf::buffer_size - lookback);
-            
+
             if (num <= 0) { return EOF; } // Error condition or end of file.
 
             //
@@ -345,30 +341,30 @@ namespace {
 void Doc2::seturl(const char * url, const Doc2 * relative) {
     delete [] this->url_;
     this->url_ = 0;
-    
+
     if (url) {
-        
+
         delete this->istm_;
         this->istm_ = 0;
         delete this->ostm_;
         this->ostm_ = 0;
-        
+
         const char * path = "";
 
-#ifdef _WIN32     
+#ifdef _WIN32
 // Convert windows path stream to standard URL
 	  char *p = (char *)url;
 	  for(;*p != '\0';p++)
 		  if(*p == '\\')*p = '/';
 #endif
-        
+
         if (relative && !isAbsolute(url)) {
 	    path = relative->urlPath();
         }
-        
+
         this->url_ = new char[strlen(path) + strlen(url) + 1];
         strcpy(this->url_, path);
-        
+
         if (strlen(url) > 2 && url[0] == '.' && url[1] == '/') {
             strcat(this->url_, url + 2); // skip "./"
         } else {
@@ -393,7 +389,7 @@ const char * Doc2::url() const { return this->url_; }
  */
 const char * Doc2::urlBase() const {
     if (!url_) { return ""; }
-    
+
     static char path[1024];
     char * p, * s = path;
     strncpy(path, url_, sizeof(path) - 1);
@@ -403,11 +399,11 @@ const char * Doc2::urlBase() const {
     } else if ((p = strchr(s, ':')) != 0) {
         s = p + 1;
     }
-    
+
     if ((p = strrchr(s, '.')) != 0) {
         *p = '\0';
     }
-    
+
     return s;
 }
 
@@ -420,17 +416,17 @@ const char * Doc2::urlBase() const {
  */
 const char * Doc2::urlExt() const {
     if (!url_) { return ""; }
-    
+
     static char ext[20];
     char * p;
-    
+
     if ((p = strrchr(url_, '.')) != 0) {
         strncpy(ext, p + 1, sizeof(ext) - 1);
         ext[sizeof(ext)-1] = '\0';
     } else {
         ext[0] = '\0';
     }
-    
+
     return &ext[0];
 }
 
@@ -444,9 +440,9 @@ const char * Doc2::urlExt() const {
  */
 const char * Doc2::urlPath() const {
     if (!url_) { return ""; }
-    
+
     static char path[1024];
-    
+
     strcpy(path, url_);
     char * slash;
     if ((slash = strrchr(path, '/')) != 0) {
@@ -454,8 +450,8 @@ const char * Doc2::urlPath() const {
     } else {
         path[0] = '\0';
     }
-    
-    return &path[0]; 
+
+    return &path[0];
 }
 
 /**
@@ -467,7 +463,7 @@ const char * Doc2::urlProtocol() const {
     if (url_) {
         static char protocol[12];
         const char * s = url_;
-        
+
 # ifdef _WIN32
         if (strncmp(s+1,":/",2) == 0) {
             return "file";
@@ -485,7 +481,7 @@ const char * Doc2::urlProtocol() const {
             return protocol;
         }
     }
-    
+
     return "file";
 }
 
@@ -522,17 +518,17 @@ const char * Doc2::localName() {
  */
 const char * Doc2::localPath() {
     static char buf[1024];
-    
+
     if (filename(buf, sizeof(buf))) {
-        
+
         char * s = strrchr(buf, '/');
         if (s) {
             *(s+1) = '\0';
         }
-        
+
         return buf;
     }
-    
+
     return 0;
 }
 
@@ -543,9 +539,9 @@ const char * Doc2::localPath() {
  */
 std::istream & Doc2::inputStream() {
     if (!this->istm_) {
-        
+
         char fn[256];
-        
+
         filename(fn, sizeof(fn));
         if (strcmp(fn, "-") == 0) {
             this->istm_ = &std::cin;
@@ -569,7 +565,7 @@ std::istream & Doc2::inputStream() {
 # endif
         }
     }
-    
+
     return *this->istm_;
 }
 
@@ -593,16 +589,16 @@ std::ostream & Doc2::outputStream() {
  */
 bool Doc2::filename(char * fn, int nfn) {
     fn[0] = '\0';
-    
+
     char * e = 0;
-    const char * s = stripProtocol(url_);
-    
+    char * s = const_cast<char *>(stripProtocol(url_));
+
     if ((e = strrchr(s,'#')) != 0) {
         *e = '\0';
     }
-    
+
     const char * protocol = urlProtocol();
-    
+
     // Get a local copy of http files
     if (strcmp(protocol, "http") == 0) {
         if (tmpfile_) {    // Already fetched it
@@ -619,28 +615,28 @@ bool Doc2::filename(char * fn, int nfn) {
         s = 0;
     }
 
-#ifdef _WIN32   
-  // Does not like "//C:" skip "// "  
+#ifdef _WIN32
+  // Does not like "//C:" skip "// "
    if(s)
 	   if(strlen(s)>2 && s[0] == '/' && s[1] == '/')s=s+2;
-#endif  
-  
+#endif
+
     if (s) {
         strncpy( fn, s, nfn-1 );
         fn[nfn-1] = '\0';
     }
-    
+
     if (e) {
         *e = '#';
     }
-    
+
     return s && *s;
 }
 
 # ifdef macintosh
 
 namespace {
-    
+
     inline char convertHex(char c)
     {
         static char converted;
@@ -649,19 +645,19 @@ namespace {
         else
             if (c>='A' && c<='F')
                 converted = c-'A'+10;
-            else 
+            else
                 converted = c-'a'+10;
         return converted;
     }
-    
+
     char* decodePath(const char* path)
     {
         static char converted[256];
         strcpy (converted, path);
-    
+
         char * a = converted;
         char * b = converted;
-        
+
         while(*a) {
             if (*a == '%') {
                 a++;
@@ -673,11 +669,11 @@ namespace {
                 }
                 a++, b++;
             } else {
-                *b++ = *a++; 
+                *b++ = *a++;
             }
         }
         *b++ = 0;
-        
+
         return &converted[0];
     }
 }
@@ -689,12 +685,12 @@ char* Doc2::convertCommonToMacPath( char *fn, int nfn )
      that the viewer, e.g. Lookat, has provided VrmlScene with
      a file path in the form of a URL (optionally without the protocol
      if it is a local path) */
-  
+
   static char macfn[256];
-  
+
   // We start at index 3 in order to skip the /// at the start
   // of a legal Mac file protocol URL
-    
+
   if ( !((nfn > 3) && (fn[0] == '/') && (fn[1] == '/') && (fn[2] == '/')) ) {
     return fn; // its either a tmp file from a URL transfer or its an incorrect path
   }
@@ -717,7 +713,7 @@ char* Doc2::convertCommonToMacPath( char *fn, int nfn )
           macfn[macfnpos] = fn[i];
           macfnpos++;
         }
-      } 
+      }
       else {
         macfn[macfnpos] = fn[i];
         macfnpos++;

@@ -1,4 +1,4 @@
-LIBRARY_VERSION = 2:0:0
+LIBRARY_VERSION = 3:0:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |
@@ -12,13 +12,12 @@ LIBRARY_VERSION = 2:0:0
 #          +- Increment if interfaces have been added, removed or changed
 
 INCLUDES = -I$(top_srcdir)/src/openvrml
-AM_CXXFLAGS = $(X_CFLAGS)
+AM_CXXFLAGS = $(GLUT_CFLAGS)
 
 if WITH_GL
 lib_LTLIBRARIES = libopenvrml-gl.la
 libopenvrml_gl_la_SOURCES = ViewerOpenGL.cpp OpenGLEvent.cpp
-libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) $(GLUT_LIBS) \
-$(GL_LIBS) $(X_PRE_LIBS) $(X_LIBS) $(X_EXTRA_LIBS)
+libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) $(GLUT_LIBS)
 
 OpenVRMLGLincludedir = $(includedir)/OpenVRML/GL
 OpenVRMLGLinclude_HEADERS = common.h OpenGLEvent.h ViewerOpenGL.h

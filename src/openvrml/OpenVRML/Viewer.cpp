@@ -2,31 +2,27 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 //  Viewer.cpp
 //  Abstract base class for display of VRML models
 //
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
-#ifdef _WIN32
-#include <winconfig.h>
 #endif
 
 #include "Viewer.h"
@@ -151,7 +147,7 @@ Viewer::~Viewer() {}
 /**
  * @fn void Viewer::getUserNavigation(VrmlMatrix & M)
  *
- * @brief Get the user's navigation from the last bound viewpoint. 
+ * @brief Get the user's navigation from the last bound viewpoint.
  *
  * @retval M    orthonormal navigation transformation.
  */
@@ -283,7 +279,7 @@ void Viewer::computeCylinder(const double height, const double radius,
                              const int numFacets, float c[][3],
                              float tc[][3], int faces[]) {
     using OpenVRML_::pi;
-    
+
     double angle, x, y;
     int i, polyIndex;
 
@@ -338,7 +334,7 @@ void Viewer::computeExtrusion(int nOrientation,
                               float *tc,  // OUT: texture coords
                               int *faces) {    // OUT: face list
     using OpenVRML_::fpzero;
-    
+
     int i, j, ci;
 
     // Xscp, Yscp, Zscp- columns of xform matrix to align cross section
@@ -529,7 +525,7 @@ void Viewer::computeSphere(const double radius, const int numLatLong,
                            float c[][3], float tc[][3], int *faces) {
     using OpenVRML_::pi;
     using OpenVRML_::pi_2;
-    
+
     double r, angle, x, y, z;
     int i, j, polyIndex;
 
@@ -640,9 +636,9 @@ int Viewer::isectViewVolume(const BVolume & bv) const {
     int r = BVolume::BV_PARTIAL;
     const BSphere * bs = 0;
     const AABox * ab = 0;
-    if (bs = dynamic_cast<const BSphere *>(&bv)) {
+    if ((bs = dynamic_cast<const BSphere *>(&bv))) {
         r = bs->isectFrustum(this->d_frust);
-    } else if (ab = dynamic_cast<const AABox *>(&bv)) {
+    } else if ((ab = dynamic_cast<const AABox *>(&bv))) {
         r = ab->isectFrustum(this->d_frust);
     }
     return r;
