@@ -1,3 +1,7 @@
+2002-02-07  Braden McDaniel  <braden@endoframe.com>
+
+        * Added a stylesheet for the Doxygen-generated docs.
+
 2002-02-04  Braden McDaniel  <braden@endoframe.com>
 
         * Quell some Doxygen warningspew.
