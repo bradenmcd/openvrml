@@ -778,7 +778,7 @@ if (std::equal(javascriptScheme, javascriptScheme + 11,
 }
 # endif
 
-#ifdef OPENVRML_HAVE_JNI
+#if OPENVRML_ENABLE_SCRIPT_NODE_JAVA
 const char javaExtension1[] = ".class";
 const char javaExtension2[] = ".CLASS";
 

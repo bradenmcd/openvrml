@@ -42,7 +42,7 @@ JAVA_FILES = \
         ConstMFVec2f.java \
         ConstMFVec3f.java
 
-if WITH_JDK
+if ENABLE_SCRIPT_NODE_JAVA
 javadir = $(datadir)/java/vrml/field
 noinst_JAVA = $(JAVA_FILES)
 endif

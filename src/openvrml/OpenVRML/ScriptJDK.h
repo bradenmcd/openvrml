@@ -24,7 +24,7 @@
 #include "config.h"
 #endif
 
-#ifdef OPENVRML_HAVE_JNI
+#if OPENVRML_ENABLE_SCRIPT_NODE_JAVA
 #include "script.h"
 
 #include <jni.h>
@@ -61,5 +61,5 @@ namespace OpenVRML {
     };
 }
 
-#endif // OPENVRML_HAVE_JNI
+#endif // OPENVRML_ENABLE_SCRIPT_NODE_JAVA
 #endif // _SCRIPTJDK_

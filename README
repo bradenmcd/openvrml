@@ -126,6 +126,11 @@ depends on.
      Disable support for JavaScript in the Script node.  By default,
      OpenVRML uses the Mozilla JavaScript library to execute JavaScript.
 
+ --enable-script-node-java
+     Enable support for Java in the Script node using the Java
+     Development Kit.  OpenVRML does not include Script node Java
+     support by default.
+
  --disable-api-docs
      Do not build the API documentation.  By default, OpenVRML uses
      doxygen to build API documentation.
@@ -144,11 +149,10 @@ depends on.
      where there are OpenGL implementations available for both X and the
      Windows GDI.
 
- --with-jdk
-     Passing the argument "--without-jdk" to "configure" will allow
-     OpenVRML to be built without support for Java in the Script node.
-     By default, OpenVRML uses the Java Development Kit to support Java
-     in the Script node.
+ --with-jdk=JDKHOME
+     By default the configure script uses the standard include and
+     library paths when testing for the JDK.  Use this argument to
+     tell the configure script to use a JDK in a specific directory.
 
         As of the 1.4.1 release, the Sun distribution of the JDK is
      rather badly broken for many recent GNU/Linux distributions.  The

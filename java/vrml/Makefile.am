@@ -18,7 +18,7 @@ JAVA_FILES = \
         InvalidRouteException.java \
         InvalidVRMLSyntaxException.java
 
-if WITH_JDK
+if ENABLE_SCRIPT_NODE_JAVA
 javadir = $(datadir)/java/vrml
 noinst_JAVA = $(JAVA_FILES)
 endif

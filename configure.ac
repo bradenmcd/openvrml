@@ -14,6 +14,10 @@ enable_static=yes
 AC_PROG_LIBTOOL
 AC_PROG_CXX
 AC_PROG_CXXCPP
+OV_PROG_JAVA
+OV_PROG_JAVAC
+OV_PROG_JAVAH
+OV_PROG_JAR
 AC_PATH_PROG([DOXYGEN], [doxygen])
 
 #
@@ -94,6 +98,24 @@ AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
 
 #
+# Script node Java support
+#
+AC_ARG_ENABLE([script-node-java], [  --enable-script-node-java  enable Script node Java support])
+if test "X$enable_script_node_java" != "Xyes"; then
+  JNI_CFLAGS=""
+  JNI_LIBS=""
+else
+  if test "X$no_jdk" = "Xyes"; then
+    AC_MSG_ERROR([The Java Development Kit is required for Script node Java support.])
+  fi
+  AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVA], [1], [Defined if Script node Java support is enabled.])
+fi
+AC_SUBST([JNI_CFLAGS])
+AC_SUBST([JNI_LIBS])
+AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVA],
+               [test "X$enable_script_node_java" = "Xyes" -a "X$no_jdk" != "Xyes"])
+
+#
 # build API docs
 #
 AC_ARG_ENABLE([api-docs], [  --disable-api-docs      do not build API documentation])
@@ -130,37 +152,9 @@ fi
 AM_CONDITIONAL([ENABLE_LOOKAT],
                [test "X$enable_lookat" != "Xno" -a "X$no_glut" != "Xyes"])
 
-AC_ARG_WITH(jdk, [  --with-jdk              use the Java Development Kit (Java support)], ,
-             [# Use the JDK by default.
-              with_jdk=yes])
 AC_ARG_WITH(ftflib, [  --with-ftflib           use ftflib (required for font support)], ,
             [# Use ftflib by default.
              with_ftflib=yes])
-
-#
-# Check for the Java Development Kit.
-#
-if test "X$with_jdk" = "Xyes"; then
-  AC_PATH_PROG(JDK_JAVAC, javac)
-  if test -z "${JDK_JAVAC}"; then
-    AC_MSG_ERROR([Java compiler not found.])
-  fi
-  AC_PATH_PROG(JAR, jar)
-  if test -z "${JAR}"; then
-    AC_MSG_ERROR([Java archive utility not found.])
-  fi
-  AC_PATH_PROG(JAVAH, javah)
-  if test -z "${JAVAH}"; then
-    AC_MSG_ERROR([JNI header generator not found.])
-  fi
-  OV_CHECK_JNI
-  if test "X$no_jni" = "Xyes"; then
-    AC_MSG_ERROR([Java Native Interface not found.])
-  else
-    AC_DEFINE(OPENVRML_HAVE_JNI, , [defined if JNI is available and should be used])
-  fi
-fi
-AM_CONDITIONAL([WITH_JDK], [test "X$with_jdk" = "Xyes"])
 
 #
 # Check for ftflib.

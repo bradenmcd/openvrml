@@ -3,4 +3,4 @@ EXTRA_DIST = \
         ftflib.m4 \
         gl.m4 \
         glut.m4 \
-        jni.m4
+        jdk.m4

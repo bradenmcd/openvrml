@@ -2,7 +2,7 @@ JAVAROOT = $(top_builddir)/java
 
 JAVA_FILES = Node.java Script.java
 
-if WITH_JDK
+if ENABLE_SCRIPT_NODE_JAVA
 javadir = $(datadir)/java/vrml/node
 noinst_JAVA = $(JAVA_FILES)
 endif

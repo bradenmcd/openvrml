@@ -1,3 +1,13 @@
+2002-12-09  Braden McDaniel  <braden@endoframe.com>
+
+        * README, configure.ac, java/Makefile.am, java/vrml/Makefile.am,
+          java/vrml/field/Makefile.am, java/vrml/node/Makefile.am,
+          m4/Makefile.am, m4/jdk.m4, m4/jni.m4,
+          src/openvrml/OpenVRML/ScriptJDK.cpp,
+          src/openvrml/OpenVRML/ScriptJDK.h,
+          src/openvrml/OpenVRML/script.cpp:  Improvements to usability
+          of configure option for Script node Java support.
+
 2002-12-08  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, openvrml.pc.in:  Conditionally add mozilla-js to

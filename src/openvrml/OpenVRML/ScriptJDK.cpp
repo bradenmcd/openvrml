@@ -29,7 +29,7 @@
 #   include <config.h>
 # endif
 
-# ifdef OPENVRML_HAVE_JNI
+# if OPENVRML_ENABLE_SCRIPT_NODE_JAVA
 #   include "ScriptJDK.h"
 
 #   include <algorithm>
@@ -6400,4 +6400,4 @@ void JNICALL Java_vrml_Browser_setDescription
   env->ReleaseStringUTFChars(jDescription, description);
 }
 
-#endif // OPENVRML_HAVE_JNI
+#endif // OPENVRML_ENABLE_SCRIPT_NODE_JAVA
