@@ -40,7 +40,7 @@ public abstract class MField extends Field
   /**
    * Deletes a field from the MField.
    *
-   * @param Index of field to delete.
+   * @param index Index of field to delete.
    */
   public abstract void delete(int index);
 }
