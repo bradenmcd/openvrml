@@ -4,6 +4,10 @@
 
         * doc/openvrml.css:  Maintain vertical scrollbar on Mozilla.
 
+        * src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/Makefile.am: Updated libtool
+          library version numbers.
+
 2002-08-24  Thomas Flynn  <tflynn@users.sf.net>
 
         * Finish updating conformance test results.
