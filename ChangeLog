@@ -5,6 +5,9 @@
           implementations to AudioClip, MovieTexture, PointLight,
           SpotLight, TimeSensor.
 
+        * src/openvrml/OpenVRML/browser.cpp:  Removed unnecessary
+          clearing of node lists in Browser::loadURI.
+
 2003-02-09  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp:  Only call Scene::shutdown
