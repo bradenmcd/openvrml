@@ -253,3 +253,22 @@ VrmlNodeLOD::recalcBSphere()
   }
   this->setBVolumeDirty(false);
 }
+
+/**
+ * @brief Get the detail levels.
+ *
+ * @return level
+ */
+const VrmlMFNode & VrmlNodeLOD::getLevel() const {
+    return this->d_level;
+}
+
+/**
+ * @brief Set the detail levels.
+ *
+ * @param level
+ */
+void VrmlNodeLOD::setLevel(const VrmlMFNode & level) {
+    this->d_level = level;
+    this->setBVolumeDirty(true);
+}

@@ -97,15 +97,6 @@ ostream& VrmlNodeIndexedSet::printFields(ostream& os, int indent)
   return os;
 }
 
-VrmlNodeColor *VrmlNodeIndexedSet::color()
-{
-  return d_color.get() ? d_color.get()->toColor() : 0;
-}
-
-
-VrmlNode* VrmlNodeIndexedSet::getCoordinate()
-{   return d_coord.get(); }
-
 const VrmlMFInt32 & VrmlNodeIndexedSet::getCoordIndex() const
 {   return d_coordIndex; }
 
@@ -137,4 +128,40 @@ void VrmlNodeIndexedSet::setField(const char *fieldName,
   else if TRY_FIELD(coordIndex, MFInt32)
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
+}
+
+/**
+ * @brief Get the Color node associated with this Indexed*Set.
+ *
+ * @return color
+ */
+const VrmlSFNode & VrmlNodeIndexedSet::getColor() const {
+    return this->d_color;
+}
+
+/**
+ * @brief Set the Color node associated with this Indexed*Set.
+ *
+ * @param color
+ */
+void VrmlNodeIndexedSet::setColor(const VrmlSFNode & color) {
+    this->d_color = color;
+}
+
+/**
+ * @brief Get the Coordinate node associated with this Indexed*Set.
+ *
+ * @return coord
+ */
+const VrmlSFNode & VrmlNodeIndexedSet::getCoord() const {
+    return this->d_coord;
+}
+
+/**
+ * @brief Set the Coordinate node associated with this Indexed*Set.
+ *
+ * @param coord
+ */
+void VrmlNodeIndexedSet::setCoord(const VrmlSFNode & coord) {
+    this->d_coord = coord;
 }

@@ -50,9 +50,12 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  virtual VrmlNodeColor *color();
-
-  virtual VrmlNode* getCoordinate();
+  const VrmlSFNode & getColor() const;
+  void setColor(const VrmlSFNode & color);
+  
+  const VrmlSFNode & getCoord() const;
+  void setCoord(const VrmlSFNode & coord);
+  
   virtual const VrmlMFInt32 & getCoordIndex() const;
   virtual bool getColorPerVertex(){ return d_colorPerVertex.get(); } // LarryD  Feb18/99
   virtual const VrmlMFInt32 & getColorIndex() const; // LarryD  Feb18/99

@@ -55,6 +55,12 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
+  const VrmlSFNode & getColor() const;
+  void setColor(const VrmlSFNode & color);
+  
+  const VrmlSFNode & getCoord() const;
+  void setCoord(const VrmlSFNode & coord);
+  
   const VrmlBVolume* getBVolume() const;
 
 protected:

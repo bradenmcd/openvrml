@@ -204,3 +204,39 @@ const VrmlBVolume* VrmlNodePointSet::getBVolume() const
     ((VrmlNodePointSet*)this)->recalcBSphere();
   return &d_bsphere;
 }
+
+/**
+ * @brief Get the Color node associated with this PointSet.
+ *
+ * @return color
+ */
+const VrmlSFNode & VrmlNodePointSet::getColor() const {
+    return this->d_color;
+}
+
+/**
+ * @brief Set the Color node associated with this PointSet.
+ *
+ * @param color
+ */
+void VrmlNodePointSet::setColor(const VrmlSFNode & color) {
+    this->d_color = color;
+}
+
+/**
+ * @brief Get the Coordinate node associated with this PointSet.
+ *
+ * @return coord
+ */
+const VrmlSFNode & VrmlNodePointSet::getCoord() const {
+    return this->d_coord;
+}
+
+/**
+ * @brief Set the Coordinate node associated with this PointSet.
+ *
+ * @param coord
+ */
+void VrmlNodePointSet::setCoord(const VrmlSFNode & coord) {
+    this->d_coord = coord;
+}

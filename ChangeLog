@@ -1,3 +1,11 @@
+2001-01-23  Braden McDaniel  <braden@endoframe.com>
+
+        * Added getters/setters to VrmlNodeIndexedSet.
+
+        * Added getter/setter for level to VrmlNodeLOD.
+
+        * Added getters/setters to VrmlNodePointSet.
+
 2001-01-22  Braden McDaniel  <braden@endoframe.com>
 
         * Added SFNode field getters/setters to VrmlNodeIFaceSet.

@@ -58,7 +58,8 @@ public:
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual VrmlNodeLOD* toLOD() const;
-  VrmlMFNode *getLevel()  { return &d_level;}
+  const VrmlMFNode & getLevel() const;
+  void setLevel(const VrmlMFNode & level);
   virtual const VrmlMFFloat& getRange() const;
   virtual const VrmlSFVec3f& getCenter() const;
 
