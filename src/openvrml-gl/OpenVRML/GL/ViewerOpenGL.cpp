@@ -26,6 +26,14 @@
 #   include <winconfig.h>
 # endif
 
+// Win32 needs to know that GL stuff lives in a DLL (OPENGL32.DLL)
+#if defined(_WIN32)
+#include <wtypes.h>
+#include <winbase.h>
+#include <windef.h>
+#include <wingdi.h>
+#endif
+
 # if defined(__MACH__)&&defined(__APPLE__)
 #   include <OpenGL/gl.h>
 #   include <OpenGL/glu.h>

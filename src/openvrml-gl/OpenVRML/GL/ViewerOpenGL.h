@@ -32,13 +32,7 @@
 #define USE_STENCIL_SHAPE 0
 
 
-// Win32 needs to know that GL stuff lives in a DLL (OPENGL32.DLL)
-#if defined(WIN32)
-#include <wtypes.h>
-#include <winbase.h>
-#include <windef.h>
-#include <wingdi.h>
-#endif
+
 
 extern "C" struct GLUtesselator;
 
