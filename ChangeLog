@@ -19,6 +19,9 @@
           src/openvrml/OpenVRML/vrml97node.h:  Added GroupingNode
           abstract node type.
 
+        * src/openvrml/OpenVRML/node.h:  Removed obsolete FontFace class
+          declaration.
+
 2002-12-26  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.h:  Made Node::visited private.

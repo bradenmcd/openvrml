@@ -192,7 +192,6 @@ namespace OpenVRML {
     class TextureNode;
     class TextureCoordinateNode;
     class TextureTransformNode;
-    class FontFace;
 
     namespace Vrml97Node {
         class Anchor;
