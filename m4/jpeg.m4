@@ -26,7 +26,7 @@
 AC_DEFUN([OV_WITH_LIBJPEG],
 [AC_ARG_WITH(libjpeg, [  --with-libjpeg          use libjpeg])
 AC_CACHE_CHECK([for libjpeg], [ov_cv_libjpeg],
-[if test "X$with_zlib" = "Xno"; then
+[if test "X$with_libjpeg" = "Xno"; then
   ov_cv_libjpeg=disabled
 else
   JPEG_LIBS="-ljpeg"

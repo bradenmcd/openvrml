@@ -1,3 +1,13 @@
+2002-10-31  Braden McDaniel  <braden@endoframe.com>
+
+        * configure.ac, m4/jpeg.m4, m4/png.m4, m4/zlib.m4,
+          src/openvrml/OpenVRML/Image.cpp,
+          src/openvrml/OpenVRML/doc2.cpp: Improved autoconf macros for
+          zlib, libpng, and libjpeg.  These macros now work a bit more
+          like AC_PATH_X, and the test result is cached.
+
+        * m4/jpeg.m4:  Fixed cut&paste error.
+
 2002-10-30  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp, 
