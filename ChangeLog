@@ -1,3 +1,8 @@
+2002-12-02  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/node.h: Added OPENVRML_SCOPE to some API
+          elements.
+
 2002-11-30  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/Image.cpp: Gracefully handle the case
