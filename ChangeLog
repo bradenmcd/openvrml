@@ -1,9 +1,14 @@
+2000-10-15  Braden McDaniel  <braden@endoframe.com>
+
+        * Took out the #ifdef around including <string.h> in System.cpp. It
+          should be safe to include this everywhere, and now gcc wants it there
+          on Linux.
+
 2000-09-21  Chris Morley  <cmorley@vermontel.net>
 
 	* Applied (the gist of) patches submitted by Bose, tflynn, and
 	Jean-Daniel Fekete for VrmlNamespace invalid memory access,
 	mpeg playback speed fix, and Cygwin support, respectively.
-	
 
 2000-09-09  Christopher St. John <cstjohn@acm.org>
 
