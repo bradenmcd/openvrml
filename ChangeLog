@@ -9,6 +9,15 @@
           problem has apparently been addressed with a patch to Sun
           Forte update 2.
 
+        * m4/gl.m4, m4/glut.m4:  OV_CHECK_GL should *not* depend on
+          AM_PATH_XTRA; OV_CHECK_GLUT *should* depend on AM_PATH_XTRA.
+          Now, OV_CHECK_GLUT only adds X11 libs and cflags to the
+          GLUT_LIBS and GLUT_CFLAGS variables if X11 is present and
+          should be used.  But what about platforms where GLUT depends
+          on platform-specific GUI libraries (Mac, Windows)? 
+          OV_CHECK_GLUT may need to get a good deal smarter; OTOH, we
+          will eventually be eliminating the GLUT dependency altogether.
+
 2002-06-20  Braden McDaniel  <braden@endoframe.com>
 
         * m4/gl.m4: AC_REQUIRE([AC_PATH_XTRA]) and add the X CFLAGS and

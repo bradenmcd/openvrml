@@ -26,11 +26,23 @@
 #
 AC_DEFUN(OV_CHECK_GLUT,
 [AC_REQUIRE([OV_CHECK_GL])dnl
+AC_REQUIRE([AC_PATH_XTRA])dnl
+
+GLUT_LIBS="${GL_LIBS}"
+
+#
+# If X is present, assume GLUT depends on it.
+#
+if test "X${no_x}" != "Xyes"; then
+  GLUT_CFLAGS="${X_CFLAGS}"
+  GLUT_LIBS="${GLUT_LIBS} ${X_PRE_LIBS} ${X_LIBS} -lX11 ${X_EXTRA_LIBS}"
+fi
 
 AC_LANG_PUSH(C)
 ov_have_glut=no
 AC_CHECK_LIB(glut, glutMainLoop,
-             [AC_CHECK_HEADER(GL/glut.h,
+             [GLUT_LIBS="-lglut ${GLUT_LIBS}"
+              AC_CHECK_HEADER(GL/glut.h,
                               [ov_have_glut=yes
                                AC_DEFINE(OPENVRML_GLUT_H, [<GL/glut.h>],
                                          [Header for GLUT])],
@@ -40,13 +52,11 @@ AC_CHECK_LIB(glut, glutMainLoop,
                                                 AC_DEFINE(OPENVRML_GLUT_H,
                                                           [<GLUT/glut.h>],
                                                           [Header for GLUT])])])],
-             , ${GL_LIBS})
+             , ${GLUT_LIBS})
 AC_LANG_POP(C)
-    
+
 if test "X${ov_have_glut}" = Xyes; then
   no_glut=""
-  GLUT_CFLAGS="${GL_CFLAGS}"
-  GLUT_LIBS="-lglut ${GL_LIBS}"
 else
   no_glut="yes"
   GLUT_CFLAGS=""
