@@ -48,8 +48,8 @@ public:
   VrmlNodePlaneSensor( VrmlScene *scene = 0);
   virtual ~VrmlNodePlaneSensor();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodePlaneSensor* toPlaneSensor() const;
 
   virtual ostream& printFields(ostream& os, int indent);

@@ -20,6 +20,7 @@
 
 #include "VrmlNodeIFaceSet.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlNodeColor.h"
 #include "VrmlNodeCoordinate.h"
 #include "VrmlNodeNormal.h"
@@ -80,24 +81,33 @@ VrmlNodeIFaceSet::~VrmlNodeIFaceSet()
 {
 }
 
-
-VrmlNode *VrmlNodeIFaceSet::cloneMe() const
-{
-  return new VrmlNodeIFaceSet(*this);
+bool VrmlNodeIFaceSet::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
-void VrmlNodeIFaceSet::cloneChildren(VrmlNamespace* ns)
-{
-  if (d_color.get())
-    d_color.set(d_color.get()->clone(ns));
-  if (d_coord.get())
-    d_coord.set(d_coord.get()->clone(ns));
-  if (d_normal.get())
-    d_normal.set(d_normal.get()->clone(ns));
-  if (d_texCoord.get())
-    d_texCoord.set(d_texCoord.get()->clone(ns));
+void VrmlNodeIFaceSet::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        if (this->d_color.get()) {
+            this->d_color.get()->resetVisitedFlag();
+        }
+        if (this->d_coord.get()) {
+            this->d_coord.get()->resetVisitedFlag();
+        }
+        if (this->d_normal.get()) {
+            this->d_normal.get()->resetVisitedFlag();
+        }
+        if (this->d_texCoord.get()) {
+            this->d_texCoord.get()->resetVisitedFlag();
+        }
+    }
 }
-
 
 bool VrmlNodeIFaceSet::isModified() const
 {
@@ -137,16 +147,6 @@ void VrmlNodeIFaceSet::addToScene( VrmlScene *s, const char *rel )
   if (d_normal.get()) d_normal.get()->addToScene(s, rel);
   if (d_texCoord.get()) d_texCoord.get()->addToScene(s, rel);
 }
-
-void VrmlNodeIFaceSet::copyRoutes( VrmlNamespace *ns ) const
-{
-  VrmlNode::copyRoutes(ns);
-  if (d_color.get()) d_color.get()->copyRoutes(ns);
-  if (d_coord.get()) d_coord.get()->copyRoutes(ns);
-  if (d_normal.get()) d_normal.get()->copyRoutes(ns);
-  if (d_texCoord.get()) d_texCoord.get()->copyRoutes(ns);
-}
-
 
 ostream& VrmlNodeIFaceSet::printFields(ostream& os, int indent)
 {

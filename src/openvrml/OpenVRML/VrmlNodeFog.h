@@ -40,8 +40,8 @@ public:
   VrmlNodeFog(VrmlScene *);
   virtual ~VrmlNodeFog();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeFog* toFog() const;
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );

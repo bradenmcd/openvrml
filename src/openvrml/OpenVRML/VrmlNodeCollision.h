@@ -38,15 +38,13 @@ public:
   VrmlNodeCollision(VrmlScene *);
   virtual ~VrmlNodeCollision();
 
-  virtual VrmlNode *cloneMe() const;
-  virtual void cloneChildren(VrmlNamespace *);
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  virtual void resetVisitedFlag();
+  
   virtual bool isModified() const;
   virtual void clearFlags();	// Clear childrens flags too.
 
   virtual void addToScene( VrmlScene *s, const char *rel );
-
-  virtual void copyRoutes(VrmlNamespace *ns) const;
 
   virtual ostream& printFields(ostream& os, int indent);
 

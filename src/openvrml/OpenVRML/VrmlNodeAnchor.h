@@ -41,10 +41,9 @@ public:
   VrmlNodeAnchor(VrmlScene*);
   VrmlNodeAnchor(const VrmlNodeAnchor&);
   virtual ~VrmlNodeAnchor();
-
-  // Copy the node.
-  virtual VrmlNode *cloneMe() const;
-
+  
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeAnchor *toAnchor() const;
 
   virtual ostream& printFields(ostream& os, int indent);

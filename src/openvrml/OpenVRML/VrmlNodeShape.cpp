@@ -23,6 +23,7 @@
 #include "VrmlNodeGeometry.h"
 #include "VrmlNodeTexture.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "Viewer.h"
 #include "VrmlBVolume.h"
 
@@ -68,20 +69,27 @@ VrmlNodeShape::~VrmlNodeShape()
   // need viewer to free d_viewerObject ...
 }
 
-
-VrmlNode *VrmlNodeShape::cloneMe() const
-{
-  return new VrmlNodeShape(*this);
+bool VrmlNodeShape::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
-void VrmlNodeShape::cloneChildren(VrmlNamespace *ns)
-{
-  if (d_appearance.get())
-    d_appearance.set(d_appearance.get()->clone(ns));
-  if (d_geometry.get())
-    d_geometry.set(d_geometry.get()->clone(ns));
+void VrmlNodeShape::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        if (this->d_appearance.get()) {
+            this->d_appearance.get()->resetVisitedFlag();
+        }
+        if (this->d_geometry.get()) {
+            this->d_geometry.get()->resetVisitedFlag();
+        }
+    }
 }
-
 
 bool VrmlNodeShape::isModified() const
 {
@@ -112,13 +120,6 @@ void VrmlNodeShape::addToScene(VrmlScene *s, const char *relUrl)
   d_scene = s;
   if (d_appearance.get()) d_appearance.get()->addToScene(s,relUrl);
   if (d_geometry.get()) d_geometry.get()->addToScene(s,relUrl);
-}
-
-void VrmlNodeShape::copyRoutes(VrmlNamespace *ns) const
-{
-  VrmlNode::copyRoutes(ns);
-  if (d_appearance.get()) d_appearance.get()->copyRoutes(ns);
-  if (d_geometry.get()) d_geometry.get()->copyRoutes(ns);
 }
 
 ostream& VrmlNodeShape::printFields(ostream& os, int indent)
@@ -229,4 +230,44 @@ const VrmlBVolume* VrmlNodeShape::getBVolume() const
   //cout << endl;
   ((VrmlNodeShape*)this)->setBVolumeDirty(false);
   return r;
+}
+
+/**
+ * @brief Get the Appearance node associated with this Shape.
+ *
+ * @return appearance
+ */
+const VrmlSFNode & VrmlNodeShape::getAppearance() const {
+    return this->d_appearance;
+}
+
+/**
+ * @brief Set the Appearance node associated with this Shape.
+ *
+ * @param appearance
+ */
+void VrmlNodeShape::setAppearance(const VrmlSFNode & appearance) {
+    assert(!appearance.get()
+            || dynamic_cast<VrmlNodeAppearance *>(appearance.get()));
+    this->d_appearance = appearance;
+}
+
+/**
+ * @brief Get the geometry node associated with this Shape.
+ *
+ * @return geometry
+ */
+const VrmlSFNode & VrmlNodeShape::getGeometry() const {
+    return this->d_geometry;
+}
+
+/**
+ * @brief Set the geometry node associated with this Shape.
+ *
+ * @param geometry
+ */
+void VrmlNodeShape::setGeometry(const VrmlSFNode & geometry) {
+    assert(!geometry.get()
+            || dynamic_cast<VrmlNodeGeometry *>(geometry.get()));
+    this->d_geometry = geometry;
 }

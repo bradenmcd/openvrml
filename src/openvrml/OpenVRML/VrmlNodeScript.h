@@ -48,9 +48,9 @@ public:
   VrmlNodeScript( const VrmlNodeScript& );
   virtual ~VrmlNodeScript();
 
-  virtual VrmlNode *cloneMe() const;
-  virtual void cloneChildren(VrmlNamespace*);
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  virtual void resetVisitedFlag();
+  
   virtual VrmlNodeScript* toScript() const;
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );

@@ -35,8 +35,8 @@ public:
   VrmlNodeCoordinate(VrmlScene *);
   virtual ~VrmlNodeCoordinate();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeCoordinate* toCoordinate() const;
 
   virtual ostream& printFields(ostream& os, int indent);

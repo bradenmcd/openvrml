@@ -22,6 +22,7 @@
 
 #include "VrmlNodeScript.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlSFTime.h"
 #include "VrmlSFNode.h"
 #include "VrmlMFNode.h"
@@ -134,47 +135,36 @@ VrmlNodeScript::~VrmlNodeScript()
     }
 }
 
-
-VrmlNode *VrmlNodeScript::cloneMe() const
-{
-  return new VrmlNodeScript(*this);
+bool VrmlNodeScript::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
-//
-// Any SFNode or MFNode fields need to be cloned as well.
-//
-
-void VrmlNodeScript::cloneChildren(VrmlNamespace * ns) {
-    for (FieldList::iterator itr = this->d_fields.begin();
-            itr != this->d_fields.end(); ++itr) {
-        if ((*itr)->value) {
+void VrmlNodeScript::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        for (FieldList::const_iterator itr = this->d_fields.begin();
+                itr != this->d_fields.end(); ++itr) {
+            assert((*itr)->value);
             if ((*itr)->type == VrmlField::SFNODE) {
                 assert(dynamic_cast<VrmlSFNode *>((*itr)->value));
-                const VrmlSFNode * const sfn =
-                        static_cast<VrmlSFNode *>((*itr)->value);
-                if (sfn->get()) {
-                    (*itr)->value = new VrmlSFNode(sfn->get()->clone(ns));
-                    delete sfn;
-                }
+                static_cast<VrmlSFNode *>((*itr)->value)
+                        ->get()->resetVisitedFlag();
             } else if ((*itr)->type == VrmlField::MFNODE) {
                 assert(dynamic_cast<VrmlMFNode *>((*itr)->value));
-                VrmlMFNode * const mfn =
-                        static_cast<VrmlMFNode *>((*itr)->value);
-                for (size_t index = 0;
-                        index < static_cast<VrmlMFNode *>((*itr)->value)->getLength();
-                        ++index) {
-                    if ((*mfn)[index]) {
-                        VrmlNode * const tmp = (*mfn)[index];
-                        (*mfn)[index] = tmp->clone(ns);
-                        tmp->dereference();
-                    }
+                VrmlMFNode & mfnode(static_cast<VrmlMFNode &>(*(*itr)->value));
+                for (size_t i = 0; i < mfnode.getLength(); ++i) {
+                    mfnode[i]->resetVisitedFlag();
                 }
             }
         }
     }
 }
-
-
 
 VrmlNodeScript* VrmlNodeScript::toScript() const
 { return (VrmlNodeScript*) this; }

@@ -20,7 +20,7 @@
 
 #include "VrmlNodeNormal.h"
 #include "VrmlNodeType.h"
-
+#include "VrmlNodeVisitor.h"
 
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeNormal(s); }
 
@@ -59,12 +59,15 @@ VrmlNodeNormal::~VrmlNodeNormal()
 {
 }
 
-
-VrmlNode *VrmlNodeNormal::cloneMe() const
-{
-  return new VrmlNodeNormal(*this);
+bool VrmlNodeNormal::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 VrmlNodeNormal* VrmlNodeNormal::toNormal() const
 { return (VrmlNodeNormal*) this; }

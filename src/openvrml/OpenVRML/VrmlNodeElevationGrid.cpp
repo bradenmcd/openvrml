@@ -20,6 +20,7 @@
 
 #include "VrmlNodeElevationGrid.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlNodeColor.h"
 #include "VrmlNodeNormal.h"
 #include "VrmlNodeTextureCoordinate.h"
@@ -87,21 +88,30 @@ VrmlNodeElevationGrid::~VrmlNodeElevationGrid()
 {
 }
 
-VrmlNode *VrmlNodeElevationGrid::cloneMe() const
-{
-  return new VrmlNodeElevationGrid(*this);
+bool VrmlNodeElevationGrid::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
-void VrmlNodeElevationGrid::cloneChildren(VrmlNamespace *ns)
-{
-  if (d_color.get())
-    d_color.set(d_color.get()->clone(ns));
-  if (d_normal.get())
-    d_normal.set(d_normal.get()->clone(ns));
-  if (d_texCoord.get())
-    d_texCoord.set(d_texCoord.get()->clone(ns));
+void VrmlNodeElevationGrid::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        if (this->d_color.get()) {
+            this->d_color.get()->resetVisitedFlag();
+        }
+        if (this->d_normal.get()) {
+            this->d_normal.get()->resetVisitedFlag();
+        }
+        if (this->d_texCoord.get()) {
+            this->d_texCoord.get()->resetVisitedFlag();
+        }
+    }
 }
-
 
 bool VrmlNodeElevationGrid::isModified() const
 {
@@ -137,15 +147,6 @@ void VrmlNodeElevationGrid::addToScene( VrmlScene *s, const char *rel )
   if (d_normal.get()) d_normal.get()->addToScene(s, rel);
   if (d_texCoord.get()) d_texCoord.get()->addToScene(s, rel);
 }
-
-void VrmlNodeElevationGrid::copyRoutes( VrmlNamespace *ns ) const
-{
-  VrmlNode::copyRoutes(ns);
-  if (d_color.get()) d_color.get()->copyRoutes(ns);
-  if (d_normal.get()) d_normal.get()->copyRoutes(ns);
-  if (d_texCoord.get()) d_texCoord.get()->copyRoutes(ns);
-}
-
 
 ostream& VrmlNodeElevationGrid::printFields(ostream& os, int indent)
 {

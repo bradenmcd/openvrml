@@ -41,8 +41,8 @@ public:
   VrmlNodePositionInt( VrmlScene *scene = 0);
   virtual ~VrmlNodePositionInt();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void eventIn(double timeStamp,

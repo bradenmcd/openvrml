@@ -21,6 +21,7 @@
 #include "VrmlNodeImageTexture.h"
 #include "Image.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 #include "Doc.h"
 #include "doc2.hpp"
@@ -76,12 +77,15 @@ VrmlNodeImageTexture::~VrmlNodeImageTexture()
   // delete d_texObject...
 }
 
-
-VrmlNode *VrmlNodeImageTexture::cloneMe() const
-{
-  return new VrmlNodeImageTexture(*this);
+bool VrmlNodeImageTexture::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 ostream& VrmlNodeImageTexture::printFields(ostream& os, int indent)
 {

@@ -21,6 +21,7 @@
 #include "VrmlNodeViewpoint.h"
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 #include "Viewer.h"
 #include "VrmlFrustum.h"
@@ -88,12 +89,15 @@ VrmlNodeViewpoint::~VrmlNodeViewpoint()
   if (d_scene) d_scene->removeViewpoint(this);
 }
 
-
-VrmlNode *VrmlNodeViewpoint::cloneMe() const
-{
-  return new VrmlNodeViewpoint(*this);
+bool VrmlNodeViewpoint::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 VrmlNodeViewpoint* VrmlNodeViewpoint::toViewpoint() const
 { return (VrmlNodeViewpoint*) this; }

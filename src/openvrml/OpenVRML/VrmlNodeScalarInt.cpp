@@ -20,6 +20,7 @@
 
 #include "VrmlNodeScalarInt.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 
 // ScalarInt factory.
@@ -67,12 +68,15 @@ VrmlNodeScalarInt::~VrmlNodeScalarInt()
 {
 }
 
-
-VrmlNode *VrmlNodeScalarInt::cloneMe() const
-{
-  return new VrmlNodeScalarInt(*this);
+bool VrmlNodeScalarInt::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 ostream& VrmlNodeScalarInt::printFields(ostream& os, int indent)
 {

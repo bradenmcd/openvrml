@@ -22,6 +22,7 @@
 #include "VrmlNodeBillboard.h"
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 
 
 static VrmlNode *creator(VrmlScene *s) { return new VrmlNodeBillboard(s); }
@@ -64,11 +65,15 @@ VrmlNodeBillboard::~VrmlNodeBillboard()
   // delete d_xformObject...
 }
 
-VrmlNode *VrmlNodeBillboard::cloneMe() const
-{
-  return new VrmlNodeBillboard(*this);
+bool VrmlNodeBillboard::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 ostream& VrmlNodeBillboard::printFields(ostream& os, int indent)
 {

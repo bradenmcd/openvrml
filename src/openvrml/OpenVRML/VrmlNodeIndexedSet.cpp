@@ -80,13 +80,6 @@ void VrmlNodeIndexedSet::addToScene( VrmlScene *s, const char *rel )
   if (d_coord.get()) d_coord.get()->addToScene(s, rel);
 }
 
-void VrmlNodeIndexedSet::copyRoutes( VrmlNamespace *ns ) const
-{
-  VrmlNode::copyRoutes(ns);
-  if (d_color.get()) d_color.get()->copyRoutes(ns);
-  if (d_coord.get()) d_coord.get()->copyRoutes(ns);
-}
-
 ostream& VrmlNodeIndexedSet::printFields(ostream& os, int indent)
 {
   if (d_color.get()) PRINT_FIELD(color);

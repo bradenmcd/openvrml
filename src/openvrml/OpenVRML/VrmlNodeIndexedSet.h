@@ -43,8 +43,6 @@ public:
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
 
-  virtual void copyRoutes(VrmlNamespace *ns) const;
-
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual const VrmlField *getField(const char *fieldName) const;

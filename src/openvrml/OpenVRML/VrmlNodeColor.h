@@ -34,10 +34,10 @@ public:
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
   virtual VrmlNodeType & nodeType() const;
 
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   VrmlNodeColor(VrmlScene *);
   virtual ~VrmlNodeColor();
-
-  virtual VrmlNode *cloneMe() const;
 
   virtual VrmlNodeColor* toColor() const;
 

@@ -41,8 +41,8 @@ public:
   VrmlNodeMovieTexture(VrmlScene *);
   virtual ~VrmlNodeMovieTexture();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeMovieTexture* toMovieTexture() const;
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );

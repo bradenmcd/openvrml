@@ -37,8 +37,8 @@ public:
   VrmlNodeSpotLight(VrmlScene *);
   virtual ~VrmlNodeSpotLight();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeSpotLight* toSpotLight() const;
 
   virtual void addToScene( VrmlScene *s, const char * );

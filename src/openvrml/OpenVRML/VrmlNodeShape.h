@@ -36,9 +36,9 @@ public:
   VrmlNodeShape(VrmlScene *);
   virtual ~VrmlNodeShape();
 
-  virtual VrmlNode *cloneMe() const;
-  virtual void cloneChildren(VrmlNamespace*);
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  virtual void resetVisitedFlag();
+  
   virtual bool isModified() const;
   virtual void updateModified(VrmlNodePath& path, int flags);
   virtual void clearFlags();
@@ -48,8 +48,6 @@ public:
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
 
-  virtual void copyRoutes(VrmlNamespace *ns) const;
-
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void render(Viewer *, VrmlRenderContext rc);
@@ -57,8 +55,11 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  virtual VrmlNode* getAppearance()  { return d_appearance.get(); }
-  virtual VrmlNode* getGeometry()    { return d_geometry.get(); }
+  const VrmlSFNode & getAppearance() const;
+  void setAppearance(const VrmlSFNode & appearance);
+  
+  const VrmlSFNode & getGeometry() const;
+  void setGeometry(const VrmlSFNode & geometry);
 
 private:
 

@@ -33,6 +33,7 @@ class VrmlNamespace;
 class VrmlNodeType;
 class VrmlField;
 class VrmlScene;
+class VrmlNodeVisitor;
 
 #include "VrmlRenderContext.h"
 class VrmlBVolume;
@@ -106,11 +107,8 @@ public:
   VrmlNode(  const VrmlNode& );
   virtual ~VrmlNode() = 0;
 
-  VrmlNode *clone( VrmlNamespace* );
-  virtual VrmlNode *cloneMe() const = 0;
-  virtual void cloneChildren( VrmlNamespace* );
-
-  virtual void copyRoutes(VrmlNamespace *ns) const;
+  virtual bool accept(VrmlNodeVisitor & visitor) = 0;
+  virtual void resetVisitedFlag();
 
   VrmlNode *reference();
   void dereference();
@@ -260,6 +258,7 @@ protected:
   bool d_modified;
   bool d_flag;
   bool d_bvol_dirty;
+  bool visited;
 
   // Routes from this node (clean this up, add RouteList ...)
   Route *d_routes;

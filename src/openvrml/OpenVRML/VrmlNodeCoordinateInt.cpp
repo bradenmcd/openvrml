@@ -20,6 +20,7 @@
 
 #include "VrmlNodeCoordinateInt.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 
 // CoordinateInt factory.
@@ -67,11 +68,15 @@ VrmlNodeCoordinateInt::~VrmlNodeCoordinateInt()
 {
 }
 
-VrmlNode *VrmlNodeCoordinateInt::cloneMe() const
-{
-  return new VrmlNodeCoordinateInt(*this);
+bool VrmlNodeCoordinateInt::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 ostream& VrmlNodeCoordinateInt::printFields(ostream& os, int indent)
 {

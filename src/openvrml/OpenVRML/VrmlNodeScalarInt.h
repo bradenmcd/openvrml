@@ -39,8 +39,8 @@ public:
   VrmlNodeScalarInt( VrmlScene *scene = 0 );
   virtual ~VrmlNodeScalarInt();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void eventIn(double timeStamp,

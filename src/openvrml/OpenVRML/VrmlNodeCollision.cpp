@@ -21,7 +21,7 @@
 #include "VrmlNodeCollision.h"
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
-
+#include "VrmlNodeVisitor.h"
 
 static VrmlNode *creator(VrmlScene *s) { return new VrmlNodeCollision(s); }
 
@@ -63,17 +63,28 @@ VrmlNodeCollision::~VrmlNodeCollision()
 {
 }
 
-
-VrmlNode *VrmlNodeCollision::cloneMe() const
-{
-  return new VrmlNodeCollision(*this);
+bool VrmlNodeCollision::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
-void VrmlNodeCollision::cloneChildren(VrmlNamespace *ns)
-{
-  VrmlNodeGroup::cloneChildren(ns);
-  if (d_proxy.get())
-    d_proxy.set(d_proxy.get()->clone(ns));
+void VrmlNodeCollision::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        for (size_t i = 0; i < this->d_children.getLength(); ++i) {
+            if (this->d_children[i]) {
+                this->d_children[i]->resetVisitedFlag();
+            }
+        }
+        if (this->d_proxy.get()) {
+            this->d_proxy.get()->resetVisitedFlag();
+        }
+    }
 }
 
 bool VrmlNodeCollision::isModified() const
@@ -93,14 +104,6 @@ void VrmlNodeCollision::addToScene( VrmlScene *s, const char *rel )
 {
   VrmlNodeGroup::addToScene(s, rel);
   if (d_proxy.get()) d_proxy.get()->addToScene(s, rel);
-}
-
-// Copy the routes to nodes in the given namespace.
-
-void VrmlNodeCollision::copyRoutes( VrmlNamespace *ns ) const
-{
-  VrmlNodeGroup::copyRoutes(ns);
-  if (d_proxy.get()) d_proxy.get()->copyRoutes(ns);
 }
 
 ostream& VrmlNodeCollision::printFields(ostream& os, int indent)

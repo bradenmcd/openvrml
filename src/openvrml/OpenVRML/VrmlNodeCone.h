@@ -35,10 +35,10 @@ public:
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
   virtual VrmlNodeType & nodeType() const;
 
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   VrmlNodeCone(VrmlScene *);
   virtual ~VrmlNodeCone();
-
-  virtual VrmlNode *cloneMe() const;
 
   virtual ostream& printFields(ostream& os, int indent);
 

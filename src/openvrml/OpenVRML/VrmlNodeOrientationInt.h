@@ -41,8 +41,8 @@ public:
   VrmlNodeOrientationInt( VrmlScene *scene = 0);
   virtual ~VrmlNodeOrientationInt();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void eventIn(double timeStamp,

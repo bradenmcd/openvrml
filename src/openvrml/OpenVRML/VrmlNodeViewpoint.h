@@ -45,8 +45,8 @@ public:
   VrmlNodeViewpoint(VrmlScene *);
   virtual ~VrmlNodeViewpoint();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeViewpoint* toViewpoint() const;
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );

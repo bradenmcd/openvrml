@@ -25,9 +25,9 @@
 //
 
 #include <list>
+#include "VrmlMFNode.h"
 
 class VrmlNodeType;
-class VrmlNode;
 
 class VrmlNamespace {
 public:
@@ -64,6 +64,8 @@ public:
   
   // Find a node by name.
   VrmlNode *findNode(const char *name) const;
+  
+  const VrmlMFNode cloneNodes(const VrmlMFNode & mfnode);
   
 private:
 

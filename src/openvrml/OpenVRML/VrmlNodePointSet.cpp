@@ -22,6 +22,7 @@
 #include "VrmlNodeCoordinate.h"
 #include "VrmlNodeColor.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "Viewer.h"
 
 
@@ -64,20 +65,27 @@ VrmlNodePointSet::~VrmlNodePointSet()
 {
 }
 
-
-VrmlNode *VrmlNodePointSet::cloneMe() const
-{
-  return new VrmlNodePointSet(*this);
+bool VrmlNodePointSet::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
-void VrmlNodePointSet::cloneChildren(VrmlNamespace *ns)
-{
-  if (d_color.get())
-    d_color.set(d_color.get()->clone(ns));
-  if (d_coord.get())
-    d_coord.set(d_coord.get()->clone(ns));
+void VrmlNodePointSet::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        if (this->d_color.get()) {
+            this->d_color.get()->resetVisitedFlag();
+        }
+        if (this->d_coord.get()) {
+            this->d_coord.get()->resetVisitedFlag();
+        }
+    }
 }
-
 
 bool VrmlNodePointSet::isModified() const
 {
@@ -109,13 +117,6 @@ void VrmlNodePointSet::addToScene( VrmlScene *s, const char *rel )
   d_scene = s;
   if (d_color.get()) d_color.get()->addToScene(s, rel);
   if (d_coord.get()) d_coord.get()->addToScene(s, rel);
-}
-
-void VrmlNodePointSet::copyRoutes( VrmlNamespace *ns ) const
-{
-  VrmlNode::copyRoutes(ns);
-  if (d_color.get()) d_color.get()->copyRoutes(ns);
-  if (d_coord.get()) d_coord.get()->copyRoutes(ns);
 }
 
 ostream& VrmlNodePointSet::printFields(ostream& os, int indent)

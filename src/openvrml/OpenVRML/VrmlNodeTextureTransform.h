@@ -38,8 +38,8 @@ public:
   VrmlNodeTextureTransform(VrmlScene *);
   virtual ~VrmlNodeTextureTransform();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeTextureTransform* toTextureTransform()	const;
 
   virtual ostream& printFields(ostream& os, int indent);

@@ -20,6 +20,7 @@
 
 #include "VrmlNodeGroup.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlNodeProto.h"
 #include "VrmlNodePlaneSensor.h"
 #include "VrmlNodeSphereSensor.h"
@@ -77,25 +78,26 @@ VrmlNodeGroup::~VrmlNodeGroup()
   // delete d_viewerObject...
 }
 
-// 
-
-VrmlNode *VrmlNodeGroup::cloneMe() const
-{
-  return new VrmlNodeGroup(*this);
-}
-
-void VrmlNodeGroup::cloneChildren(VrmlNamespace * ns) {
-    for (size_t i = 0; i < this->d_children.getLength(); ++i) {
-        if (! this->d_children[i]) {
-            continue;
-        }
-        VrmlNode * const newKid = this->d_children[i]->clone(ns)->reference();
-        this->d_children[i]->dereference();
-        this->d_children[i] = newKid;
+bool VrmlNodeGroup::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
     }
-    this->setBVolumeDirty(true);
+    
+    return false;
 }
 
+void VrmlNodeGroup::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        for (size_t i = 0; i < this->d_children.getLength(); ++i) {
+            if (this->d_children[i]) {
+                this->d_children[i]->resetVisitedFlag();
+            }
+        }
+    }
+}
 
 VrmlNodeGroup* VrmlNodeGroup::toGroup() const
 { return (VrmlNodeGroup*) this; }
@@ -160,18 +162,6 @@ void VrmlNodeGroup::addToScene(VrmlScene *s, const char *relativeUrl)
     d_children[i]->addToScene(s, d_relative.get());
 }
 
-
-// Copy the routes to nodes in the given namespace.
-
-void VrmlNodeGroup::copyRoutes( VrmlNamespace *ns ) const
-{
-  VrmlNode::copyRoutes(ns);  // Copy my routes
-
-  // Copy childrens' routes
-  int n = d_children.getLength();
-  for (int i = 0; i<n; ++i)
-    d_children[i]->copyRoutes( ns );
-}
 
 VrmlNode* VrmlNodeGroup::getParentTransform() { return d_parentTransform; }
 

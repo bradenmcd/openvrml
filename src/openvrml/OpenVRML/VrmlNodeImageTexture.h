@@ -39,8 +39,8 @@ public:
   VrmlNodeImageTexture(VrmlScene *);
   virtual ~VrmlNodeImageTexture();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void render(Viewer *, VrmlRenderContext rc);

@@ -39,8 +39,8 @@ public:
   VrmlNodeTimeSensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeTimeSensor();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeTimeSensor* toTimeSensor() const;
 
   virtual void addToScene( VrmlScene *s, const char* );

@@ -21,6 +21,7 @@
 #include "VrmlNodeMaterial.h"
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "Viewer.h"
 
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeMaterial(s); }
@@ -69,12 +70,15 @@ VrmlNodeMaterial::~VrmlNodeMaterial()
 {
 }
 
-
-VrmlNode *VrmlNodeMaterial::cloneMe() const
-{
-  return new VrmlNodeMaterial(*this);
+bool VrmlNodeMaterial::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 VrmlNodeMaterial* VrmlNodeMaterial::toMaterial() const
 { return (VrmlNodeMaterial*) this; }

@@ -24,6 +24,7 @@
 
 #include "VrmlNodeTouchSensor.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "System.h"
 #include "Viewer.h"
@@ -83,12 +84,15 @@ VrmlNodeTouchSensor::~VrmlNodeTouchSensor()
 {
 }
 
-
-VrmlNode *VrmlNodeTouchSensor::cloneMe() const
-{
-  return new VrmlNodeTouchSensor(*this);
+bool VrmlNodeTouchSensor::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 VrmlNodeTouchSensor* VrmlNodeTouchSensor::toTouchSensor() const
 { return (VrmlNodeTouchSensor*) this; }

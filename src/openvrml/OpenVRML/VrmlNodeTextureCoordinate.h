@@ -36,8 +36,8 @@ public:
   VrmlNodeTextureCoordinate(VrmlScene *);
   virtual ~VrmlNodeTextureCoordinate();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeTextureCoordinate* toTextureCoordinate() const;
 
   virtual ostream& printFields(ostream& os, int indent);

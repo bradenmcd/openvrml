@@ -40,8 +40,8 @@ public:
   VrmlNodeCylinderSensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeCylinderSensor();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeCylinderSensor* toCylinderSensor() const;
 
   virtual ostream& printFields(ostream& os, int indent);

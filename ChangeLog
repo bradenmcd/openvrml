@@ -7,6 +7,11 @@
           implementation has been retrieved by the length of the
           VrmlMFNode object.)
 
+        * Added a visitor class for the node hierarchy, VrmlNodeVisitor.
+
+        * Reimplemented node cloning using a visitor. This cleans up
+          the VrmlNode API a bit.
+
 2001-01-27  Braden McDaniel  <braden@endoframe.com>
 
         * Changed VrmlNodeProto::getNodes() to return a VrmlMFNode

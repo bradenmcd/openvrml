@@ -40,8 +40,9 @@ class VrmlNodeTransform : public VrmlNodeGroup {
   VrmlNodeTransform(VrmlScene *);
   virtual ~VrmlNodeTransform();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  virtual void resetVisitedFlag();
+  
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void render(Viewer *, VrmlRenderContext rc);

@@ -20,6 +20,7 @@
 
 #include "VrmlNodeText.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlNodeFontStyle.h"
 #include "MathUtils.h"
 #include "Viewer.h"
@@ -66,16 +67,23 @@ VrmlNodeText::~VrmlNodeText()
 {
 }
 
-
-VrmlNode *VrmlNodeText::cloneMe() const
-{
-  return new VrmlNodeText(*this);
+bool VrmlNodeText::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
-void VrmlNodeText::cloneChildren(VrmlNamespace *ns)
-{
-  if (d_fontStyle.get())
-    d_fontStyle.set(d_fontStyle.get()->clone(ns));
+void VrmlNodeText::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        if (this->d_fontStyle.get()) {
+            this->d_fontStyle.get()->resetVisitedFlag();
+        }
+    }
 }
 
 bool VrmlNodeText::isModified() const
@@ -103,12 +111,6 @@ void VrmlNodeText::addToScene( VrmlScene *s, const char *relUrl )
 {
   d_scene = s;
   if (d_fontStyle.get()) d_fontStyle.get()->addToScene(s, relUrl);
-}
-
-void VrmlNodeText::copyRoutes( VrmlNamespace *ns ) const
-{
-  VrmlNode::copyRoutes(ns);
-  if (d_fontStyle.get()) d_fontStyle.get()->copyRoutes(ns);
 }
 
 ostream& VrmlNodeText::printFields(ostream& os, int indent)

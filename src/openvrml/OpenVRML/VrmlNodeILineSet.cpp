@@ -20,6 +20,7 @@
 
 #include "VrmlNodeILineSet.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlNodeColor.h"
 #include "VrmlNodeCoordinate.h"
 #include "VrmlNodeTextureCoordinate.h"
@@ -60,20 +61,27 @@ VrmlNodeILineSet::~VrmlNodeILineSet()
 {
 }
 
-
-VrmlNode *VrmlNodeILineSet::cloneMe() const
-{
-  return new VrmlNodeILineSet(*this);
+bool VrmlNodeILineSet::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
-void VrmlNodeILineSet::cloneChildren(VrmlNamespace* ns)
-{
-  if (d_color.get())
-    d_color.set(d_color.get()->clone(ns));
-  if (d_coord.get())
-    d_coord.set(d_coord.get()->clone(ns));
+void VrmlNodeILineSet::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        if (this->d_color.get()) {
+            this->d_color.get()->resetVisitedFlag();
+        }
+        if (this->d_coord.get()) {
+            this->d_coord.get()->resetVisitedFlag();
+        }
+    }
 }
-
 
 // TO DO colors
 

@@ -39,16 +39,14 @@ public:
   VrmlNodeIFaceSet(VrmlScene *);
   virtual ~VrmlNodeIFaceSet();
 
-  virtual VrmlNode *cloneMe() const;
-  virtual void cloneChildren(VrmlNamespace *);
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  virtual void resetVisitedFlag();
+  
   virtual bool isModified() const;
   virtual void updateModified(VrmlNodePath& path, int flags);
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
-
-  virtual void copyRoutes( VrmlNamespace *ns ) const;
 
   virtual ostream& printFields(ostream& os, int indent);
 

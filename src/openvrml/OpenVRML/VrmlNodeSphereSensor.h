@@ -40,8 +40,8 @@ public:
   VrmlNodeSphereSensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeSphereSensor();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeSphereSensor* toSphereSensor() const;
 
   virtual ostream& printFields(ostream& os, int indent);

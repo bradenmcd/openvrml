@@ -37,9 +37,9 @@ public:
   VrmlNodeSwitch(VrmlScene *);
   virtual ~VrmlNodeSwitch();
 
-  virtual VrmlNode *cloneMe() const;
-  void cloneChildren(VrmlNamespace *);
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  virtual void resetVisitedFlag();
+  
   virtual VrmlNodeSwitch* toSwitch() const; //LarryD
 
   virtual bool isModified() const;
@@ -47,8 +47,6 @@ public:
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
-
-  virtual void copyRoutes( VrmlNamespace *ns ) const;
 
   virtual ostream& printFields(ostream& os, int indent);
 

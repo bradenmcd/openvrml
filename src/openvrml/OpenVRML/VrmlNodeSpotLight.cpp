@@ -21,6 +21,7 @@
 #include "VrmlNodeSpotLight.h"
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 #include "Viewer.h"
 
@@ -76,12 +77,15 @@ VrmlNodeSpotLight::~VrmlNodeSpotLight()
   if (d_scene) d_scene->removeScopedLight(this);
 }
 
-
-VrmlNode *VrmlNodeSpotLight::cloneMe() const
-{
-  return new VrmlNodeSpotLight(*this);
+bool VrmlNodeSpotLight::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 VrmlNodeSpotLight* VrmlNodeSpotLight::toSpotLight() const
 { return (VrmlNodeSpotLight*) this; }

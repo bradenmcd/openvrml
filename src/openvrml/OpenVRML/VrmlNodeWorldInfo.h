@@ -38,9 +38,8 @@ public:
   VrmlNodeWorldInfo(VrmlScene *);
   virtual ~VrmlNodeWorldInfo();
 
-
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);

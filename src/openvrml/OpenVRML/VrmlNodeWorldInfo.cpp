@@ -19,6 +19,7 @@
 // 
 
 #include "VrmlNodeWorldInfo.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
 
@@ -65,11 +66,15 @@ VrmlNodeWorldInfo::~VrmlNodeWorldInfo()
 {
 }
 
-VrmlNode *VrmlNodeWorldInfo::cloneMe() const
-{
-  return new VrmlNodeWorldInfo(*this);
+bool VrmlNodeWorldInfo::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 ostream& VrmlNodeWorldInfo::printFields(ostream& os, int indent)
 {

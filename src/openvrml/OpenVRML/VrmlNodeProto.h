@@ -28,8 +28,7 @@
 #include "VrmlNode.h"
 #include "VrmlNodeType.h"
 #include "Viewer.h"
-
-class VrmlMFNode;
+#include "VrmlMFNode.h"
 
 class VrmlNodeProto : public VrmlNode {
 
@@ -41,8 +40,9 @@ public:
   VrmlNodeProto(const VrmlNodeProto&);
   virtual ~VrmlNodeProto();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  virtual void resetVisitedFlag();
+  
   virtual void addToScene( VrmlScene *, const char *relUrl );
   virtual ostream& printFields(ostream& os, int indent);
 

@@ -24,6 +24,7 @@
 
 #include "VrmlNodePlaneSensor.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "System.h"
 #include "Viewer.h"
@@ -87,12 +88,15 @@ VrmlNodePlaneSensor::~VrmlNodePlaneSensor()
 {
 }
 
-
-VrmlNode *VrmlNodePlaneSensor::cloneMe() const
-{
-  return new VrmlNodePlaneSensor(*this);
+bool VrmlNodePlaneSensor::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 VrmlNodePlaneSensor* VrmlNodePlaneSensor::toPlaneSensor() const
 { return (VrmlNodePlaneSensor*) this; }

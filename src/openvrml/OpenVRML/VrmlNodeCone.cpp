@@ -21,6 +21,7 @@
 #include "VrmlNodeCone.h"
 
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "Viewer.h"
 
 
@@ -69,12 +70,15 @@ VrmlNodeCone::~VrmlNodeCone()
 {
 }
 
-
-VrmlNode *VrmlNodeCone::cloneMe() const
-{
-  return new VrmlNodeCone(*this);
+bool VrmlNodeCone::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 ostream& VrmlNodeCone::printFields(ostream& os, int indent)
 {

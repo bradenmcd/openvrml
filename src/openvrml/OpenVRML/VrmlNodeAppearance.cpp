@@ -20,6 +20,7 @@
 
 #include "VrmlNodeAppearance.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 
 #include "Viewer.h"
 #include "VrmlNodeMaterial.h"
@@ -66,22 +67,30 @@ VrmlNodeAppearance::~VrmlNodeAppearance()
 {
 }
 
-VrmlNode *VrmlNodeAppearance::cloneMe() const
-{
-  return new VrmlNodeAppearance(*this);
+bool VrmlNodeAppearance::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
-void VrmlNodeAppearance::cloneChildren(VrmlNamespace *ns)
-{
-  // Replace references with clones
-  if (d_material.get())
-    d_material.set(d_material.get()->clone(ns));
-  if (d_texture.get())
-    d_texture.set(d_texture.get()->clone(ns));
-  if (d_textureTransform.get())
-    d_textureTransform.set(d_textureTransform.get()->clone(ns));
+void VrmlNodeAppearance::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        if (this->d_material.get()) {
+            this->d_material.get()->resetVisitedFlag();
+        }
+        if (this->d_texture.get()) {
+            this->d_texture.get()->resetVisitedFlag();
+        }
+        if (this->d_textureTransform.get()) {
+            this->d_textureTransform.get()->resetVisitedFlag();
+        }
+    }
 }
-
 
 VrmlNodeAppearance* VrmlNodeAppearance::toAppearance() const
 {
@@ -124,20 +133,6 @@ void VrmlNodeAppearance::addToScene( VrmlScene *s, const char *rel )
   if (d_textureTransform.get())
     d_textureTransform.get()->addToScene(s,rel);
 }
-
-// Copy the routes to nodes in the given namespace.
-
-void VrmlNodeAppearance::copyRoutes( VrmlNamespace *ns ) const
-{
-  VrmlNode::copyRoutes(ns);  // Copy my routes
-
-  // Copy subnode routes
-  if (d_material.get()) d_material.get()->copyRoutes(ns);
-  if (d_texture.get()) d_texture.get()->copyRoutes(ns);
-  if (d_textureTransform.get())
-    d_textureTransform.get()->copyRoutes(ns);
-}
-
 
 ostream& VrmlNodeAppearance::printFields(ostream& os, int indent)
 {

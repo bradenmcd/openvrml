@@ -21,6 +21,7 @@
 #include "VrmlNodeTransform.h"
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlRenderContext.h"
 
 
@@ -75,6 +76,27 @@ VrmlNodeTransform::~VrmlNodeTransform()
   // delete d_xformObject...
 }
 
+bool VrmlNodeTransform::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
+}
+
+void VrmlNodeTransform::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        for (size_t i = 0; i < this->d_children.getLength(); ++i) {
+            if (this->d_children[i]) {
+                this->d_children[i]->resetVisitedFlag();
+            }
+        }
+    }
+}
+
 VrmlNodeTransform* VrmlNodeTransform::toTransform() const //LarryD Feb24/99
 { return (VrmlNodeTransform*) this; }
 
@@ -92,12 +114,6 @@ const VrmlSFRotation& VrmlNodeTransform::getScaleOrientation() const //LarryD Fe
 
 const VrmlSFVec3f& VrmlNodeTransform::getTranslation() const  //LarryD Feb 24/99
 { return d_translation; }
-
-VrmlNode *VrmlNodeTransform::cloneMe() const
-{
-  return new VrmlNodeTransform(*this);
-}
-
 
 ostream& VrmlNodeTransform::printFields(ostream& os, int indent)
 {

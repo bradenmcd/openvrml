@@ -30,6 +30,7 @@
  */
 #include "VrmlNodeProto.h"
 #include "VrmlNamespace.h"
+#include "VrmlNodeVisitor.h"
 #include "Route.h"
 #include "VrmlMFNode.h"
 #include "VrmlBSphere.h"
@@ -137,14 +138,26 @@ VrmlNodeProto::~VrmlNodeProto()
 }
 
 
-// Note that the copy constructor doesn't copy the implementation
-// nodes, so they will need to be instantiated.
-
-VrmlNode *VrmlNodeProto::cloneMe() const
-{
-  return new VrmlNodeProto(*this);
+bool VrmlNodeProto::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
+void VrmlNodeProto::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        for (size_t i = 0; i < this->implNodes.getLength(); ++i) {
+            if (this->implNodes[i]) {
+                this->implNodes[i]->resetVisitedFlag();
+            }
+        }
+    }
+}
 
 VrmlNodeProto* VrmlNodeProto::toProto() const
 { return (VrmlNodeProto*) this; }
@@ -162,29 +175,12 @@ void VrmlNodeProto::instantiate()
 
   if (this->implNodes.getLength() == 0)
     {
-      const VrmlMFNode & protoNodes = d_nodeType->getImplementationNodes();
-      int nNodes = protoNodes.getLength();
-      int i;
-
       d_scope = new VrmlNamespace();
 
-      // Clear all flags - encountering a set flag during cloning
-      // indicates a USEd node, which should be referenced rather
-      // than cloned.
-      for (i=0; i<nNodes; ++i)
-	protoNodes[i]->clearFlags();
-
       // Clone nodes
-      // Those squeamish about broken encapsulations shouldn't look...
-      this->implNodes = VrmlMFNode(nNodes);
-//      VrmlNode **clone = d_nodes->get();
-      for (i=0; i<nNodes; ++i)
-	this->implNodes[i] = protoNodes[i]->clone(d_scope)->reference();
-
-      // Copy internal (to the PROTO implementation) ROUTEs.
-      for (i=0; i<nNodes; ++i)
-	protoNodes[i]->copyRoutes( d_scope );
-
+      this->implNodes =
+              d_scope->cloneNodes(this->d_nodeType->getImplementationNodes());
+      
       // Collect eventIns coming from outside the PROTO.
       // A list of eventIns along with their maps to local
       // nodes/eventIns is constructed for each instance.

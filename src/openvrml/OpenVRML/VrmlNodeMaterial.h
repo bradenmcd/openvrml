@@ -36,8 +36,8 @@ public:
   VrmlNodeMaterial(VrmlScene *);
   virtual ~VrmlNodeMaterial();
 
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual VrmlNodeMaterial* toMaterial()	const;
 
   virtual ostream& printFields(ostream& os, int indent);

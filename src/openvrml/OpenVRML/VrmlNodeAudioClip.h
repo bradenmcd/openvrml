@@ -42,9 +42,8 @@ public:
   VrmlNodeAudioClip(const VrmlNodeAudioClip&);
   virtual ~VrmlNodeAudioClip();
 
-  // Copy the node.
-  virtual VrmlNode *cloneMe() const;
-
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  
   virtual void addToScene(VrmlScene *s, const char *relativeUrl);
 
   void update (VrmlSFTime &now);

@@ -20,7 +20,7 @@
 
 #include "VrmlNodeCoordinate.h"
 #include "VrmlNodeType.h"
-
+#include "VrmlNodeVisitor.h"
 
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeCoordinate(s); }
 
@@ -59,12 +59,15 @@ VrmlNodeCoordinate::~VrmlNodeCoordinate()
 {
 }
 
-
-VrmlNode *VrmlNodeCoordinate::cloneMe() const
-{
-  return new VrmlNodeCoordinate(*this);
+bool VrmlNodeCoordinate::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 VrmlNodeCoordinate* VrmlNodeCoordinate::toCoordinate() const
 { return (VrmlNodeCoordinate*)this; }

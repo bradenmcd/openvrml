@@ -24,6 +24,7 @@
 
 #include "VrmlNodeSphereSensor.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "System.h"
 #include "Viewer.h"
@@ -82,10 +83,14 @@ VrmlNodeSphereSensor::~VrmlNodeSphereSensor()
 {
 }
 
-
-VrmlNode *VrmlNodeSphereSensor::cloneMe() const
-{
-  return new VrmlNodeSphereSensor(*this);
+bool VrmlNodeSphereSensor::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
 VrmlNodeSphereSensor* VrmlNodeSphereSensor::toSphereSensor() const	// mgiger 6/16/00

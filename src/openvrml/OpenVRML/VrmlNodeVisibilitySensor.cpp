@@ -24,6 +24,7 @@
 
 #include "VrmlNodeVisibilitySensor.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlNodeNavigationInfo.h"
 #include "MathUtils.h"
 #include "System.h"
@@ -84,12 +85,15 @@ VrmlNodeVisibilitySensor::~VrmlNodeVisibilitySensor()
 {
 }
 
-
-VrmlNode *VrmlNodeVisibilitySensor::cloneMe() const
-{
-  return new VrmlNodeVisibilitySensor(*this);
+bool VrmlNodeVisibilitySensor::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 ostream& VrmlNodeVisibilitySensor::printFields(ostream& os, int indent)
 {

@@ -20,6 +20,7 @@
 
 #include "VrmlNodeFog.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 #include "VrmlSFBool.h"
 #include "Viewer.h"
@@ -80,12 +81,15 @@ VrmlNodeFog::~VrmlNodeFog()
   if (d_scene) d_scene->removeFog(this);
 }
 
-
-VrmlNode *VrmlNodeFog::cloneMe() const
-{
-  return new VrmlNodeFog(*this);
+bool VrmlNodeFog::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 VrmlNodeFog* VrmlNodeFog::toFog() const
 { return (VrmlNodeFog*) this; }

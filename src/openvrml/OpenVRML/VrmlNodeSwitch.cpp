@@ -20,6 +20,7 @@
 
 #include "VrmlNodeSwitch.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "Viewer.h"
 #include "VrmlBSphere.h"
 
@@ -65,23 +66,26 @@ VrmlNodeSwitch::~VrmlNodeSwitch()
 {
 }
 
-
-VrmlNode *VrmlNodeSwitch::cloneMe() const
-{
-  return new VrmlNodeSwitch(*this);
+bool VrmlNodeSwitch::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
 
-void VrmlNodeSwitch::cloneChildren(VrmlNamespace * ns) {
-    for (size_t i = 0; i < this->d_choice.getLength(); ++i) {
-        if (! this->d_choice[i]) {
-            continue;
+void VrmlNodeSwitch::resetVisitedFlag() {
+    if (this->visited) {
+        this->visited = false;
+        for (size_t i = 0; i < this->d_choice.getLength(); ++i) {
+            if (this->d_choice[i]) {
+                this->d_choice[i]->resetVisitedFlag();
+            }
         }
-        VrmlNode * const newKid = this->d_choice[i]->clone(ns)->reference();
-        this->d_choice[i]->dereference();
-        this->d_choice[i] = newKid;
     }
 }
-
 
 bool VrmlNodeSwitch::isModified() const
 {
@@ -127,16 +131,6 @@ void VrmlNodeSwitch::addToScene( VrmlScene *s, const char *rel )
   for (int i = 0; i<n; ++i)
     d_choice[i]->addToScene(s, rel);
 }
-
-void VrmlNodeSwitch::copyRoutes( VrmlNamespace *ns ) const
-{
-  VrmlNode::copyRoutes(ns);
-  
-  int n = d_choice.getLength();
-  for (int i = 0; i<n; ++i)
-    d_choice[i]->copyRoutes(ns);
-}
-
 
 ostream& VrmlNodeSwitch::printFields(ostream& os, int indent)
 {

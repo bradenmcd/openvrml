@@ -20,6 +20,7 @@
 
 #include "VrmlNodePixelTexture.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 
 static VrmlNode *creator( VrmlScene *s ) {
@@ -70,12 +71,15 @@ VrmlNodePixelTexture::~VrmlNodePixelTexture()
   // viewer->removeTextureObject( d_texObject ); ...
 }
 
-
-VrmlNode *VrmlNodePixelTexture::cloneMe() const
-{
-  return new VrmlNodePixelTexture(*this);
+bool VrmlNodePixelTexture::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 ostream& VrmlNodePixelTexture::printFields(ostream& os, int indent)
 {

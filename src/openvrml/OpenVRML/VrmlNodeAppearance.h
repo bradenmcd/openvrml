@@ -37,11 +37,10 @@ public:
 
   VrmlNodeAppearance(VrmlScene *);
   virtual ~VrmlNodeAppearance();
-
-  // Copy the node.
-  virtual VrmlNode *cloneMe() const;
-  virtual void cloneChildren( VrmlNamespace* );
-
+  
+  virtual bool accept(VrmlNodeVisitor & visitor);
+  virtual void resetVisitedFlag();
+  
   virtual VrmlNodeAppearance* toAppearance() const;
 
   virtual bool isModified() const;
@@ -49,8 +48,6 @@ public:
   virtual void clearFlags();	// Clear childrens flags too.
 
   virtual void addToScene( VrmlScene *s, const char *relativeUrl );
-
-  virtual void copyRoutes(VrmlNamespace *ns) const;
 
   virtual ostream& printFields(ostream& os, int indent);
 

@@ -20,6 +20,7 @@
 
 #include "VrmlNodeNormalInt.h"
 #include "VrmlNodeType.h"
+#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "VrmlScene.h"
 
@@ -68,12 +69,15 @@ VrmlNodeNormalInt::~VrmlNodeNormalInt()
 {
 }
 
-
-VrmlNode *VrmlNodeNormalInt::cloneMe() const
-{
-  return new VrmlNodeNormalInt(*this);
+bool VrmlNodeNormalInt::accept(VrmlNodeVisitor & visitor) {
+    if (!this->visited) {
+        this->visited = true;
+        visitor.visit(*this);
+        return true;
+    }
+    
+    return false;
 }
-
 
 ostream& VrmlNodeNormalInt::printFields(ostream& os, int indent)
 {

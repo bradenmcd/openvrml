@@ -68,23 +68,21 @@
  */
 VrmlNodeType *VrmlNode::defineType(VrmlNodeType *t) { return t; }
 
-VrmlNode::VrmlNode(VrmlScene *scene) :
-  d_scene(scene),
-  d_modified(false),
-  d_routes(0),
-  d_refCount(0),
-  d_name(0)
-{
+VrmlNode::VrmlNode(VrmlScene * scene): d_scene(scene), d_modified(false),
+        visited(false), d_routes(0), d_refCount(0), d_name(0) {
   this->setBVolumeDirty(true);
 }
 
-VrmlNode::VrmlNode( const VrmlNode & ) :
+VrmlNode::VrmlNode(const VrmlNode & node):
   d_scene(0),
   d_modified(true),
   d_routes(0),
   d_refCount(0),
-  d_name(0)
+  d_name(node.d_name ? new char[strlen(node.d_name) + 1] : 0)
 {
+  if (this->d_name) {
+      strcpy(this->d_name, node.d_name);
+  }
   this->setBVolumeDirty(true);
 }
 
@@ -116,52 +114,40 @@ VrmlNode::~VrmlNode()
 }
 
 /**
- * @brief Clone this node in the argument namespace.
+ * @fn void VrmlNode::accept(VrmlNodeVisitor & visitor);
  *
- * Copy the node, defining its name in the specified scope.
- * Uses the flag to determine whether the node is a USEd node.
+ * @brief Accept a visitor.
+ *
+ * If the node has not been visited, set the <var>visited</var> flag to
+ * <code>true</code> and call <code>VrmlNodeVisitor::visit()</code> for this object.
+ * Otherwise (if the <var>visited</var> flag is already
+ * <code>true</code>), this method has no effect.
+ *
+ * <p>The fact that the <var>visited</var> flag is set <em>before</em> the
+ * node is actually visited is an important detail. Even though scene
+ * graphs should not have cycles, nodes can be self-referencing: a field
+ * of a <code>Script</code> node can legally <code>USE</code> the
+ * <code>Script</code> node. (This does not pose a problem for rendering
+ * since nodes in a <code>Script</code> node's fields are not part of
+ * the transformation hierarchy.)
+ *
+ * @param visitor
+ * @return <code>true</code> if the visitor is accepted (the node
+ *         <em>has not</em> been visited during this traversal),
+ *         <code>false</code> otherwise (the node <em>has</em> been
+ *         visited during this traversal.
  */
-VrmlNode *VrmlNode::clone( VrmlNamespace *ns )
-{
-  if (isFlagSet())
-    return ns->findNode(name());
-
-  VrmlNode *n = this->cloneMe();
-  if (n)
-    {
-      if (*name()) n->setName( name(), ns );
-      setFlag();
-      n->cloneChildren(ns);
-    }
-  return n;
-}
-
-void VrmlNode::cloneChildren( VrmlNamespace* ) {}
-
 
 /**
- * @brief Copy the routes to nodes in the given namespace.
+ * @brief Recursively set the <var>visited</var> flag to
+ *        <code>false</code> for this node and its children.
  *
- * This method takes a pointer to a VrmlNamespace which has nodes of the
- * same name and type as the nodes to which this node has routes. This
- * method is a no-op if this node is unnamed, and it will fail silently
- * for any "to" nodes it fails to find in the argument namespace.
- *
- * @param ns a pointer to a VrmlNamespace
+ * Typically used by a visitor (a class that implements VrmlNodeVisitor)
+ * after traversal is complete. The default implementation is only
+ * appropriate for nodes with no child nodes.
  */
-void VrmlNode::copyRoutes( VrmlNamespace *ns ) const
-{
-  const char *fromName = name();
-  VrmlNode *fromNode = fromName ? ns->findNode( fromName ) : 0;
-
-  if ( fromNode )
-    for (Route *r = d_routes; r; r = r->next() )
-      {
-	const char *toName = r->toNode()->name();
-	VrmlNode *toNode = toName ? ns->findNode( toName ) : 0;
-	if ( toNode )
-	  fromNode->addRoute( r->fromEventOut(), toNode, r->toEventIn() );
-      }
+void VrmlNode::resetVisitedFlag() {
+    this->visited = false;
 }
 
 /**
@@ -228,7 +214,7 @@ const char *VrmlNode::name() const
  * @param scene
  * @param relativeUrl
  */
-void VrmlNode::addToScene( VrmlScene *scene, const char * /* relativeUrl */ )
+void VrmlNode::addToScene(VrmlScene * scene, const char * relativeUrl)
 {
   d_scene = scene;
 }
