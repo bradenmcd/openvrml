@@ -3,9 +3,9 @@
 
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
- * $Id: BaseAST.hpp,v 1.1.1.1 2003-04-06 22:26:24 braden Exp $
+ * $Id: BaseAST.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -67,6 +67,11 @@ public:
 
    /// Add a node to the end of the child list for this node
 	virtual void addChild(RefAST c);
+	/** Get the number of child nodes of this node (shallow e.g. not of the
+	 * whole tree it spans).
+	 */
+	virtual size_t getNumberOfChildren() const;
+
 	/// Get the first child of this node; null if no children
 	virtual RefAST getFirstChild() const
 	{
@@ -133,6 +138,7 @@ public:
 	virtual ANTLR_USE_NAMESPACE(std)string toStringList() const;
 	virtual ANTLR_USE_NAMESPACE(std)string toStringTree() const;
 
+	static const char* const TYPE_NAME;
 protected:
 	RefBaseAST down;
 	RefBaseAST right;

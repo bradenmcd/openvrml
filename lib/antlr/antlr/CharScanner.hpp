@@ -3,9 +3,9 @@
 
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
- * $Id: CharScanner.hpp,v 1.1.1.1 2003-04-06 22:26:27 braden Exp $
+ * $Id: CharScanner.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -18,8 +18,15 @@
 #include <cctype>
 #endif
 
+#if ( _MSC_VER == 1200 )
+// VC6 seems to need this
+// note that this is not a standard C++ include file.
+# include <stdio.h>
+#endif
+
 #include <antlr/TokenStream.hpp>
 #include <antlr/RecognitionException.hpp>
+#include <antlr/SemanticException.hpp>
 #include <antlr/MismatchedCharException.hpp>
 #include <antlr/InputBuffer.hpp>
 #include <antlr/BitSet.hpp>
@@ -62,7 +69,7 @@ private:
 	const CharScanner* scanner;
 public:
 #ifdef NO_TEMPLATE_PARTS
-	CharScannerLiteralsLess(); // not really used
+	CharScannerLiteralsLess() {} // not really used, definition to appease MSVC
 #endif
 	CharScannerLiteralsLess(const CharScanner* theScanner)
 	: scanner(theScanner)
@@ -88,7 +95,7 @@ public:
 	{
 	}
 
-	virtual int LA(int i);
+	virtual int LA(unsigned int i);
 
 	virtual void append(char c)
 	{
@@ -138,12 +145,12 @@ public:
 	}
 
 	/// Mark the current position and return a id for it
-	virtual int mark()
+	virtual unsigned int mark()
 	{
 		return inputState->getInput().mark();
 	}
 	/// Rewind the scanner to a previously marked position
-	virtual void rewind(int pos)
+	virtual void rewind(unsigned int pos)
 	{
 		inputState->getInput().rewind(pos);
 	}
@@ -162,23 +169,43 @@ public:
 	 */
 	virtual void match(const BitSet& b)
 	{
-		if (!b.member(LA(1))) {
-			throw MismatchedCharException(LA(1),b,false,this);
-		}
+		int la_1 = LA(1);
+
+		if ( !b.member(la_1) )
+			throw MismatchedCharException( la_1, b, false, this );
 		consume();
 	}
 
-	/// See if input contains string 's' throw MismatchedCharException if not
+	/** See if input contains string 's' throw MismatchedCharException if not
+	 * @note the string cannot match EOF
+	 */
+	virtual void match( const char* s )
+	{
+		while( *s != '\0' )
+		{
+			// the & 0xFF is here to prevent sign extension lateron
+			int la_1 = LA(1), c = (*s++ & 0xFF);
+
+			if ( la_1 != c )
+				throw MismatchedCharException(la_1, c, false, this);
+
+			consume();
+		}
+	}
+	/** See if input contains string 's' throw MismatchedCharException if not
+	 * @note the string cannot match EOF
+	 */
 	virtual void match(const ANTLR_USE_NAMESPACE(std)string& s)
 	{
-		int len = s.length();
+		size_t len = s.length();
 
-		for (int i = 0; i < len; i++)
+		for (size_t i = 0; i < len; i++)
 		{
-			int la_1 = LA(1);
+			// the & 0xFF is here to prevent sign extension lateron
+			int la_1 = LA(1), c = (s[i] & 0xFF);
 
-			if ( la_1 != s[i] )
-				throw MismatchedCharException(la_1, s[i], false, this);
+			if ( la_1 != c )
+				throw MismatchedCharException(la_1, c, false, this);
 
 			consume();
 		}
@@ -297,7 +324,8 @@ public:
 	}
 
 	/** Advance the current column number by an appropriate amount according
-	 * to the tabsize. This methad is called automatically from consume()
+	 * to the tabsize. This method needs to be explicitly called from the 
+	 * lexer rules encountering tabs.
 	 */
 	virtual void tab()
 	{
@@ -318,10 +346,14 @@ public:
 		return tabsize;
 	}
 
-	/// Called when a unrecoverable error is encountered
-	void panic();
-	/// Called when a unrecoverable error is encountered
-	void panic(const ANTLR_USE_NAMESPACE(std)string& s);
+	/** Terminate program using exit()
+	 * @deprecated will be removed in the next release. It is not used.
+	 */
+	virtual void panic();
+	/** Terminate program using exit()
+	 * @deprecated will be removed in the next release. It is not used.
+	 */
+	virtual void panic(const ANTLR_USE_NAMESPACE(std)string& s);
 
 	/** Report exception errors caught in nextToken() */
 	virtual void reportError(const RecognitionException& e);
@@ -485,7 +517,7 @@ private:
 #endif
 };
 
-inline int CharScanner::LA(int i)
+inline int CharScanner::LA(unsigned int i)
 {
 	int c = inputState->getInput().LA(i);
 

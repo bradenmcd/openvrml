@@ -1,9 +1,7 @@
-* Add $FOLLOW(rulename) and $FIRST(rulename)
 * ANTLR should issue a warning if you have protected rules and
   filter == true or filter=IGNORE in a lexer?
   This can be tackled by tracking rule references in a more general approach.
-* Check the VC6 projects at home..
-* I think the ASTFactory change of C++ should be propagated to java.
+
 * Have a look at the doc's.
 
 * Add allocators to the objects
@@ -21,10 +19,6 @@
   ANTLR with STL Port. Changing the EOF define to char_traits<char>::eof()
   breaks things for gcc-2.95.2. Fix this in next release portably.
   http://www.egroups.com/message/antlr-interest/2520
-
-* John Millaway requested some mechanism to add code to the constructor
-  of the parser/lexer/treewalker. This can be usefull.
-  http://www.egroups.com/message/antlr-interest/2501
 
 * Fix heterogeneous AST stuff. It boils down to adding a method to AST
   types that knows how to duplicate the sucker.
@@ -70,13 +64,6 @@
 
   RefModest_AST tau = create_tau_ast(#p1->getLine(),#p1->getColumn());
   #perform_action = #( tau, #p1 );
-
-* ANTLR lexer chokes on extended ASCII stuff. Fix it.
-
-* according to the documentation of Antlr 2.7.1:
-    "A grammar (.g) file may contain an arbitrary number of parser class
-     definitions (along with lexers and tree-parsers)."
-  => Not so! fix docu
 
 * Unicode and related.
   - The patch from Jean-Daniel Fekete is an approach. But has some issues.

@@ -1,6 +1,6 @@
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
  * $Id$
  */
@@ -15,17 +15,19 @@
 namespace antlr {
 #endif
 
+const char* const CommonAST::TYPE_NAME = "CommonAST";
+
 CommonAST::CommonAST()
-:  BaseAST(),
-   ttype( Token::INVALID_TYPE ),
-   text("")
+: BaseAST()
+, ttype( Token::INVALID_TYPE )
+, text("")
 {
 }
 
 CommonAST::CommonAST(RefToken t)
-:  BaseAST(),
-   ttype( t->getType() ),
-   text( t->getText() )
+: BaseAST()
+, ttype( t->getType() )
+, text( t->getText() )
 {
 }
 
@@ -35,11 +37,13 @@ CommonAST::~CommonAST()
 
 const char* CommonAST::typeName( void ) const
 {
-	return "CommonAST";
+	return CommonAST::TYPE_NAME;
 }
 
 CommonAST::CommonAST(const CommonAST& other)
-	: BaseAST(other), ttype(other.ttype), text(other.text)
+: BaseAST(other)
+, ttype(other.ttype)
+, text(other.text)
 {
 }
 
@@ -85,10 +89,12 @@ void CommonAST::initialize( ANTLR_USE_NAMESPACE(std)istream& in )
 	// text
 	read_AttributeNValue( in, t1, text );
 
-	// type
-	int type;
 	read_AttributeNValue( in, t1, t2 );
-	type = ANTLR_USE_NAMESPACE(std)atoi(t2.c_str());
+#ifdef ANTLR_ATOI_IN_STD
+	int type = ANTLR_USE_NAMESPACE(std)atoi(t2.c_str());
+#else
+	int type = atoi(t2.c_str());
+#endif
 
 	// initialize first part of AST.
 	this->initialize( type, text );

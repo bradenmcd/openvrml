@@ -3,9 +3,9 @@
 
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
- * $Id: ASTFactory.hpp,v 1.1.1.1 2003-04-06 22:26:24 braden Exp $
+ * $Id: ASTFactory.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -19,6 +19,11 @@
 namespace antlr {
 #endif
 
+// Using these extra types to appease MSVC
+typedef RefAST (*factory_type_)();
+typedef ANTLR_USE_NAMESPACE(std)pair< const char*, factory_type_ >  factory_descriptor_;
+typedef ANTLR_USE_NAMESPACE(std)vector< factory_descriptor_* >      factory_descriptor_list_;
+
 /** AST Super Factory shared by TreeParser and Parser.
  * This super factory maintains a map of all AST node types to their respective
  * AST factories. One instance should be shared among a parser/treeparser
@@ -29,9 +34,9 @@ namespace antlr {
  */
 class ANTLR_API ASTFactory {
 public:
-	typedef RefAST (*factory_type)();
-	typedef ANTLR_USE_NAMESPACE(std)pair< const char*, factory_type > factory_descriptor;
-	typedef ANTLR_USE_NAMESPACE(std)vector< factory_descriptor* > factory_descriptor_list;
+	typedef factory_type_             factory_type;
+	typedef factory_descriptor_       factory_descriptor;
+	typedef factory_descriptor_list_  factory_descriptor_list;
 protected:
 	/* The mapping of AST node type to factory..
 	 */

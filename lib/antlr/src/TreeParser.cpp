@@ -1,6 +1,6 @@
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
  * $Id$
  */
@@ -18,12 +18,16 @@ namespace antlr {
 ANTLR_C_USING(exit)
 
 TreeParser::TreeParser()
-: astFactory(0), inputState(new TreeParserInputState()), traceDepth(0)
+: astFactory(0)
+, inputState(new TreeParserInputState())
+, traceDepth(0)
 {
 }
 
 TreeParser::TreeParser(const TreeParserSharedInputState& state)
-: astFactory(0), inputState(state), traceDepth(0)
+: astFactory(0)
+, inputState(state)
+, traceDepth(0)
 {
 }
 
@@ -38,34 +42,29 @@ TreeParser::~TreeParser()
  */
 RefAST TreeParser::ASTNULL(new ASTNULLType);
 
-/** Get the AST return value squirreled away in the parser */
-//RefAST getAST() const {
-//	return returnAST;
-//}
-
 void TreeParser::match(RefAST t, int ttype)
 {
-	if (!t || t==ASTNULL || t->getType()!=ttype)
-		throw MismatchedTokenException();
+	if (!t || t == ASTNULL || t->getType() != ttype )
+		throw MismatchedTokenException( getTokenNames(), getNumTokens(),
+												  t, ttype, false );
 }
 
-/**Make sure current lookahead symbol matches the given set
+/** Make sure current lookahead symbol matches the given set
  * Throw an exception upon mismatch, which is caught by either the
  * error handler or by the syntactic predicate.
  */
 void TreeParser::match(RefAST t, const BitSet& b)
 {
-	if ( !t || t==ASTNULL || !b.member(t->getType()) ) {
-		throw MismatchedTokenException();
-	}
+	if ( !t || t==ASTNULL || !b.member(t->getType()) )
+		throw MismatchedTokenException( getTokenNames(), getNumTokens(),
+												  t, b, false );
 }
 
 void TreeParser::matchNot(RefAST t, int ttype)
 {
-	//ANTLR_USE_NAMESPACE(std)cout << "match(" << ttype << "); cursor is " << t.toString() << ANTLR_USE_NAMESPACE(std)endl;
-	if ( !t || t==ASTNULL || t->getType()==ttype ) {
-		throw MismatchedTokenException();
-	}
+	if ( !t || t == ASTNULL || t->getType() == ttype )
+		throw MismatchedTokenException( getTokenNames(), getNumTokens(),
+												  t, ttype, true );
 }
 
 void TreeParser::panic()

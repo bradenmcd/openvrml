@@ -3,9 +3,9 @@
 
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
- * $Id: Parser.hpp,v 1.1.1.1 2003-04-06 22:26:27 braden Exp $
+ * $Id: Parser.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -71,10 +71,10 @@ public:
 	 * is the current token being examined by the parser (i.e., it
 	 * has not been matched yet).
 	 */
-	virtual int LA(int i)=0;
+	virtual int LA(unsigned int i)=0;
 
 	/// Return the i-th token of lookahead
-	virtual RefToken LT(int i)=0;
+	virtual RefToken LT(unsigned int i)=0;
 
 	/** DEPRECATED! Specify the factory to be used during tree building. (Compulsory)
 	 * Setting the factory is nowadays compulsory.
@@ -99,11 +99,11 @@ public:
 	{
 		return astFactory;
 	}
-	/// Get the root AST node of the generated AST.
-	inline RefAST getAST()
-	{
-		return returnAST;
-	}
+	/** Get the root AST node of the generated AST. When using a custom AST type
+	 * or heterogenous AST's, you'll have to convert it to the right type
+	 * yourself.
+	 */
+	virtual RefAST getAST() = 0;
 
 	/// Return the filename of the input file.
 	virtual inline ANTLR_USE_NAMESPACE(std)string getFilename() const
@@ -147,12 +147,12 @@ public:
 	/** Mark a spot in the input and return the position.
 	 * Forwarded to TokenBuffer.
 	 */
-	virtual inline int mark()
+	virtual inline unsigned int mark()
 	{
 		return inputState->getInput().mark();
 	}
 	/// rewind to a previously marked position
-	virtual inline void rewind(int pos)
+	virtual inline void rewind(unsigned int pos)
 	{
 		inputState->getInput().rewind(pos);
 	}
@@ -164,14 +164,16 @@ public:
 	/// Parser warning-reporting function can be overridden in subclass
 	virtual void reportWarning(const ANTLR_USE_NAMESPACE(std)string& s);
 
-	static void panic();
+	/** Give panic message and exit the program. can be overridden in subclass
+	 * @deprecated this method is unused and will dissappear in the next release
+	 */
+	virtual void panic();
 
 	/// get the token name for the token number 'num'
 	virtual const char* getTokenName(int num) const = 0;
 	/// get a vector with all token names
 	virtual const char* const* getTokenNames() const = 0;
-	/// get the number of tokens defined
-	/** get the max token number
+	/** Get the number of tokens defined.
 	 * This one should be overridden in subclasses.
 	 */
 	virtual int getNumTokens(void) const = 0;
@@ -187,8 +189,8 @@ protected:
 
 	ParserSharedInputState inputState;
 
-	/// AST return value for a rule is squirreled away here
-	RefAST returnAST;
+//	/// AST return value for a rule is squirreled away here
+//	RefAST returnAST;
 
 	/// AST support code; parser and treeparser delegate to this object
 	ASTFactory *astFactory;
@@ -214,7 +216,7 @@ protected:
 #ifdef ANTLR_CXX_SUPPORTS_UNCAUGHT_EXCEPTION
 			// Only give trace if there's no uncaught exception..
 			if(!ANTLR_USE_NAMESPACE(std)uncaught_exception())
-#endif				
+#endif
 				parser->traceOut(text);
 		}
 	private:
