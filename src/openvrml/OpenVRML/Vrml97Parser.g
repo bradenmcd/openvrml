@@ -38,88 +38,6 @@ header "post_include_cpp" {
 # include "VrmlNodeType.h"
 # include "VrmlNode.h"
 # include "VrmlNodeScript.h"
-
-namespace {
-
-    template <typename T>
-        class SimpleVector {
-            public:
-                static size_t const BUFFER_INCREMENT;
-                
-                SimpleVector();
-                SimpleVector(SimpleVector<T> const &);
-                ~SimpleVector();
-                
-                SimpleVector<T> & operator=(SimpleVector<T> const &);
-                
-                size_t size() const;
-                void add(T const &);
-                T const * data() const;
-                
-            private:
-                size_t bufferSize_;
-                size_t size_;
-                T * data_;
-        };
-    
-    template <typename T>
-        size_t const SimpleVector<T>::BUFFER_INCREMENT = 64;
-    
-    template <typename T>
-        SimpleVector<T>::SimpleVector()
-          : bufferSize_(BUFFER_INCREMENT), size_(0), data_(new T[bufferSize_])
-        {}
-    
-    template <typename T>
-        SimpleVector<T>::SimpleVector(SimpleVector<T> const & c)
-          : bufferSize_(c.bufferSize_), size_(c.size_), data_(new T[bufferSize_])
-        {
-            std::copy(c.data_, c.data_ + c.size_, this->data_);
-        }
-    
-    template <typename T>
-        SimpleVector<T>::~SimpleVector()
-        {
-            delete [] this->data_;
-        }
-
-    template <typename T>
-        SimpleVector<T> & SimpleVector<T>::operator=(SimpleVector<T> const & c)
-        {
-            if (this != &c) {
-                delete [] this->data_;
-                bufferSize_ = c.bufferSize_;
-                size_ = c.size_;
-                this->data_ = new T[bufferSize_];
-                std::copy(c.data_, c.data_ + c.size_, this->data_);
-            }
-            return *this;
-        }
-    
-    template <typename T>
-        size_t SimpleVector<T>::size() const
-        {
-            return size_;
-        }
-    
-    template <typename T>
-        void SimpleVector<T>::add(T const & val)
-        {
-            if (size_ == bufferSize_) {
-                T * newData = new T[bufferSize_ += BUFFER_INCREMENT];
-                std::copy(this->data_, this->data_ + size_, newData);
-                delete [] this->data_;
-                this->data_ = newData;
-            }
-            this->data_[size_++] = val;
-        }
-    
-    template <typename T>
-        T const * SimpleVector<T>::data() const
-        {
-            return this->data_;
-        }
-}
 }
 
 options {
@@ -851,18 +769,18 @@ mfColorValue returns [VrmlMFColor * mcv = new VrmlMFColor()]
         }
     |   LBRACKET
         {
-            SimpleVector<float> colorVector;
+            std::vector<float> colorVector;
         }
         (
             colorValue[c]
             {
-                colorVector.add(c[0]);
-                colorVector.add(c[1]);
-                colorVector.add(c[2]);
+                colorVector.push_back(c[0]);
+                colorVector.push_back(c[1]);
+                colorVector.push_back(c[2]);
             }
         )* RBRACKET
         {
-            *mcv = VrmlMFColor(colorVector.size() / 3L, colorVector.data());
+            *mcv = VrmlMFColor(colorVector.size() / 3L, &colorVector[0]);
         }
     ;
 
@@ -906,16 +824,16 @@ mfFloatValue returns [VrmlMFFloat * mfv = new VrmlMFFloat()]
         }
     |   LBRACKET
         {
-            SimpleVector<float> floatVector;
+            std::vector<float> floatVector;
         }
         (
             f=floatValue
             {
-                floatVector.add(f);
+                floatVector.push_back(f);
             }
         )* RBRACKET
         {
-            *mfv = VrmlMFFloat(floatVector.size(), floatVector.data());
+            *mfv = VrmlMFFloat(floatVector.size(), &floatVector[0]);
         }
     ;
 
@@ -930,7 +848,7 @@ sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
         }
     :   w=intValue h=intValue com=intValue
         {
-            SimpleVector<unsigned char> pixelVector;
+            std::vector<unsigned char> pixelVector;
         }
         (
             pixel=intValue
@@ -940,7 +858,7 @@ sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
                 // we read the value as an integer, then strip off the
                 // bytes one by one.
 		for (int i = com - 1; i >= 0; i--) {
-                    pixelVector.add(static_cast<unsigned char>(pixel >> (8 * i) & 0xff));
+                    pixelVector.push_back(static_cast<unsigned char>(pixel >> (8 * i) & 0xff));
                 }
             }
         )*
@@ -956,7 +874,7 @@ sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
             if (pixelVector.size() != (w * h * com)) {
                 throw antlr::SemanticException("Wrong number of pixel values for SFImage.");
             }
-            *siv = VrmlSFImage(w, h, com, pixelVector.data()); // hmmmm...
+            *siv = VrmlSFImage(w, h, com, &pixelVector[0]); // hmmmm...
         }
     ;
 
@@ -980,16 +898,16 @@ mfInt32Value returns [VrmlMFInt32 * miv = new VrmlMFInt32()]
         }
     |   LBRACKET
         {
-            SimpleVector<long> longVector;
+            std::vector<long> longVector;
         }
         (
             i=intValue
             {
-                longVector.add(i);
+                longVector.push_back(i);
             }
         )* RBRACKET
         {
-            *miv = VrmlMFInt32(longVector.size(), longVector.data());
+            *miv = VrmlMFInt32(longVector.size(), &longVector[0]);
         }
     ;
 
@@ -1080,19 +998,19 @@ mfRotationValue returns [VrmlMFRotation * mrv = new VrmlMFRotation()]
         }
     |   LBRACKET
         {
-            SimpleVector<float> floatVector;
+            std::vector<float> floatVector;
         }
         (
             rotationValue[r]
             {
-                floatVector.add(r[0]);
-                floatVector.add(r[1]);
-                floatVector.add(r[2]);
-                floatVector.add(r[3]);
+                floatVector.push_back(r[0]);
+                floatVector.push_back(r[1]);
+                floatVector.push_back(r[2]);
+                floatVector.push_back(r[3]);
             }
         )* RBRACKET
         {
-            *mrv = VrmlMFRotation(floatVector.size() / 4L, floatVector.data());
+            *mrv = VrmlMFRotation(floatVector.size() / 4L, &floatVector[0]);
         }
     ;
 
@@ -1185,16 +1103,16 @@ mfTimeValue returns [VrmlMFTime * mtv = new VrmlMFTime()]
         }
     |   LBRACKET
         {
-            SimpleVector<double> doubleVector;
+            std::vector<double> doubleVector;
         }
         (
             t=doubleValue
             {
-                doubleVector.add(t);
+                doubleVector.push_back(t);
             }
         )* RBRACKET
         {
-            *mtv = VrmlMFTime(doubleVector.size(), doubleVector.data());
+            *mtv = VrmlMFTime(doubleVector.size(), &doubleVector[0]);
         }
     ;
 
@@ -1223,17 +1141,17 @@ mfVec2fValue returns [VrmlMFVec2f * mvv = new VrmlMFVec2f()]
         }
     |   LBRACKET
         {
-            SimpleVector<float> floatVector;
+            std::vector<float> floatVector;
         }
         (
             vec2fValue[v]
             {
-                floatVector.add(v[0]);
-                floatVector.add(v[1]);
+                floatVector.push_back(v[0]);
+                floatVector.push_back(v[1]);
             }
         )* RBRACKET
         {
-            *mvv = VrmlMFVec2f(floatVector.size() / 2L, floatVector.data());
+            *mvv = VrmlMFVec2f(floatVector.size() / 2L, &floatVector[0]);
         }
     ;
 
@@ -1268,18 +1186,18 @@ mfVec3fValue returns [VrmlMFVec3f * mvv = new VrmlMFVec3f()]
         }
     |   LBRACKET
         {
-            SimpleVector<float> floatVector;
+            std::vector<float> floatVector;
         }
         (
             vec3fValue[v]
             {
-                floatVector.add(v[0]);
-                floatVector.add(v[1]);
-                floatVector.add(v[2]);
+                floatVector.push_back(v[0]);
+                floatVector.push_back(v[1]);
+                floatVector.push_back(v[2]);
             }
         )* RBRACKET
         {
-            *mvv = VrmlMFVec3f(floatVector.size() / 3L, floatVector.data());
+            *mvv = VrmlMFVec3f(floatVector.size() / 3L, &floatVector[0]);
         }
     ;
 

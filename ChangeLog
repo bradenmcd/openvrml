@@ -1,3 +1,7 @@
+2001-06-07  Braden McDaniel <braden@endoframe.com>
+
+        * Replaced SimpleVector in the parser with std::vector.
+
 2001-06-06  Braden McDaniel <braden@endoframe.com>
 
         * Made PNG support (libpng) optional.

@@ -24,7 +24,7 @@ class Doc2;
 #line 25 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
-#line 134 "Vrml97Parser.g"
+#line 52 "Vrml97Parser.g"
 
     public:
         enum NodeInterfaceType {
