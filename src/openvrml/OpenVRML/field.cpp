@@ -2848,7 +2848,7 @@ MFColor::MFColor(size_t length, SFColor::ConstArrayPointer values)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 MFColor::MFColor(const MFColor & mfcolor) throw (std::bad_alloc):
-    values(new ColorVec(*static_cast<const ColorVec *>(mfcolor.values)))
+    values(new ColorVec(*static_cast<ColorVec *>(mfcolor.values)))
 {}
 
 /**
@@ -2884,7 +2884,7 @@ MFColor & MFColor::operator=(const MFColor & mfcolor) throw (std::bad_alloc)
 SFColor::ConstArrayReference MFColor::getElement(size_t index) const throw ()
 {
     assert(index < this->getLength());
-    return (*static_cast<const ColorVec *>(this->values))[index];
+    return (*static_cast<ColorVec *>(this->values))[index];
 }
 
 /**
@@ -3602,7 +3602,7 @@ MFRotation::MFRotation(const size_t length,
  * @param mfrotation the object to copy
  */
 MFRotation::MFRotation(const MFRotation & mfrotation) throw (std::bad_alloc):
-    values(new RotationVec(*static_cast<const RotationVec *>(mfrotation.values)))
+    values(new RotationVec(*static_cast<RotationVec *>(mfrotation.values)))
 {}
 
 /**
@@ -3636,7 +3636,7 @@ SFRotation::ConstArrayReference MFRotation::getElement(size_t index) const
     throw ()
 {
     assert(index < this->getLength());
-    return (*static_cast<const RotationVec *>(this->values))[index];
+    return (*static_cast<RotationVec *>(this->values))[index];
 }
 
 /**
@@ -4145,7 +4145,7 @@ MFVec2f::MFVec2f(size_t length, SFVec2f::ConstArrayPointer values)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 MFVec2f::MFVec2f(const MFVec2f & mfvec2f) throw (std::bad_alloc):
-    values(new Vec2fVec(*static_cast<const Vec2fVec *>(mfvec2f.values)))
+    values(new Vec2fVec(*static_cast<Vec2fVec *>(mfvec2f.values)))
 {}
 
 /**
@@ -4180,7 +4180,7 @@ SFVec2f::ConstArrayReference MFVec2f::getElement(const size_t index) const
     throw ()
 {
     assert(index < this->getLength());
-    return (*static_cast<const Vec2fVec *>(this->values))[index];
+    return (*static_cast<Vec2fVec *>(this->values))[index];
 }
 
 /**
@@ -4204,7 +4204,7 @@ void MFVec2f::setElement(size_t index, SFVec2f::ConstArrayReference value)
  */
 size_t MFVec2f::getLength() const throw ()
 {
-    return static_cast<const Vec2fVec *>(this->values)->size();
+    return static_cast<Vec2fVec *>(this->values)->size();
 }
 
 /**
@@ -4343,7 +4343,7 @@ MFVec3f::MFVec3f(const size_t length, SFVec3f::ConstArrayPointer values)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 MFVec3f::MFVec3f(const MFVec3f & mfvec3f) throw (std::bad_alloc):
-    values(new Vec3fVec(*static_cast<const Vec3fVec *>(mfvec3f.values)))
+    values(new Vec3fVec(*static_cast<Vec3fVec *>(mfvec3f.values)))
 {}
 
 /**
@@ -4376,7 +4376,7 @@ SFVec3f::ConstArrayReference MFVec3f::getElement(const size_t index) const
     throw ()
 {
     assert(index < this->getLength());
-    return (*static_cast<const Vec3fVec *>(this->values))[index];
+    return (*static_cast<Vec3fVec *>(this->values))[index];
 }
 
 /**
@@ -4400,7 +4400,7 @@ void MFVec3f::setElement(const size_t index, SFVec3f::ConstArrayReference value)
  */
 size_t MFVec3f::getLength() const throw ()
 {
-    return static_cast<const Vec3fVec *>(this->values)->size();
+    return static_cast<Vec3fVec *>(this->values)->size();
 }
 
 /**
