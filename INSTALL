@@ -1,8 +1,6 @@
 Basic Installation
 ==================
 
-   These are generic installation instructions.
-
    The `configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
 those values to create a `Makefile' in each directory of the package.
@@ -63,6 +61,10 @@ this:
 
 Or on systems that have the `env' program, you can do it like this:
      env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
+
+Red Hat Linux 7.0 systems using the gcc 2.96 development snapshot will
+need to turn off optimization in the CFLAGS variable. For example:
+     CFLAGS="-O0" ./configure
 
 Compiling For Multiple Architectures
 ====================================

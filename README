@@ -56,14 +56,27 @@ Unimplemented:  drag sensors (CylinderSensor, PlaneSensor, and
 SphereSensor), navigation types other than examine.
 
 
-X11 colormap flashing on 8-bit displays
-=======================================
+System-specific notes
+=====================
 
-If you are having trouble with colormap flashing on an 8-bit display, try
-restarting your X server (e.g., log out and back in in an xdm environment) and
-running "xstdcmap -default" BEFORE running anything else.  In fact, you might
-put that command in your X startup script.  But you should really get a graphics
-card with 24-bit color.  Tell your boss I said so.
+ * Compiling on Red Hat Linux 7.0
+   
+   If you are compiling the library with the version of gcc that comes with Red
+   Hat Linux 7.0 (a development snapshot labeled 2.96), you will need to turn of
+   optimization in the CFLAGS variable when running configure. For example:
+   
+     CFLAGS="-O0" ./configure
+   
+   This version of gcc has a bug which is triggered by compiling the JavaScript
+   engine with optimization.
+
+ * X11 colormap flashing on 8-bit displays
+
+   If you are having trouble with colormap flashing on an 8-bit display, try
+   restarting your X server (e.g., log out and back in in an xdm environment)
+   and running "xstdcmap -default" BEFORE running anything else.  In fact, you
+   might put that command in your X startup script.  But you should really get
+   a graphics card with 24-bit color.  Tell your boss I said so.
 
 
 Bug reports
