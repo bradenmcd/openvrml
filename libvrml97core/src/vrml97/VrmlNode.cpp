@@ -13,8 +13,11 @@
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
 #include "MathUtils.h"
+#include "VrmlBVolume.h"
+#include "VrmlBSphere.h"
+#include "VrmlRenderContext.h"
 
-#include <stdio.h>     // sprintf
+#include <stdio.h>		// sprintf
 
 #ifndef NDEBUG
 //#   define VRML_NODE_DEBUG
@@ -29,6 +32,7 @@ VrmlNode::VrmlNode(VrmlScene *scene) :
   d_refCount(0),
   d_name(0)
 {
+  this->setBVolumeDirty(true);
 }
 
 VrmlNode::VrmlNode( const VrmlNode & ) :
@@ -38,6 +42,7 @@ VrmlNode::VrmlNode( const VrmlNode & ) :
   d_refCount(0),
   d_name(0)
 {
+  this->setBVolumeDirty(true);
 }
 
 
@@ -300,6 +305,56 @@ bool VrmlNode::isModified() const
   return d_modified; 
 }
 
+
+void
+VrmlNode::markPathModified(VrmlNodePath& path, bool mod, int flags) {
+  VrmlNodePath::iterator i;
+  VrmlNodePath::iterator end = path.end();
+  if (flags & 0x001) {
+    //cout << "VrmlNode[]::markPathModified():mod" << endl;
+    for (i = path.begin(); i != end; ++i) {
+      VrmlNode *c = *i;
+      if (mod) {
+	// do the proof that our invarient shows that this short
+	// circuit is legal...
+	//if (c->isModified()) 
+	//break;
+	c->setModified();
+      } else
+	c->clearModified();
+    }
+  }
+  if (flags & 0x002) {
+    //cout << "VrmlNode[]::markPathModified():bvol" << endl;
+    for (i = path.begin(); i != end; ++i) {
+      VrmlNode *c = *i;
+      if (mod) {
+	c->setBVolumeDirty(true);
+      } else
+	c->setBVolumeDirty(false);
+    }
+  }
+}
+
+
+void
+VrmlNode::updateModified(VrmlNodePath& path, int flags)
+{
+  //cout << "VrmlNode[" << this << "]::updateModified()" << endl;
+  if (this->d_modified||this->d_bvol_dirty) markPathModified(path, true, flags);
+}
+
+
+// note not virtual
+//
+void
+VrmlNode::updateModified(int flags)
+{
+  VrmlNodePath path;
+  updateModified(path, flags);
+}
+
+
 void VrmlNode::clearFlags()
 {
   d_flag = false;
@@ -307,9 +362,69 @@ void VrmlNode::clearFlags()
 
 // Render
 
-void VrmlNode::render(Viewer *)
+//bool VrmlNode::cull(Viewer *v, RenderContext* c)
+//{
+//if (c && c->getCullFlag()) {
+//VrmlBVolume* bv = this->getBVolume();
+//int r = v->isectViewVolume(*bv); // better not be null...
+//if (r == VrmlBVolume::BV_OUTSIDE) {
+//cout << "VrmlNode::render():OUTSIDE:culled" << endl;
+//return true;
+//} else if (r == VrmlBVolume::BV_INSIDE) {
+//cout << "VrmlNode::render():INSIDE:no more cull tests" << endl;
+//c->setCullFlag(false);
+//return false;
+//} else {
+//cout << "VrmlNode::render():PARTIAL:continue cull tests" << endl;
+//return false;
+//}
+//}
+//return false;
+//}
+
+
+const VrmlBVolume*
+VrmlNode::getBVolume() const
 {
-  clearModified(); 
+  //cout << "VrmlNode::getBVolume():inf" << endl;
+  static VrmlBSphere* inf_bsphere = (VrmlBSphere*)0;
+  if (!inf_bsphere) {
+    inf_bsphere = new VrmlBSphere();
+    inf_bsphere->setMAX();
+  }
+  this->setBVolumeDirty(false);
+  return inf_bsphere;
+}
+
+
+void
+VrmlNode::setBVolume(const VrmlBVolume& v)
+{
+  cout << "VrmlNode::setBVolume():WARNING:not implemented" << endl;
+}
+
+void
+VrmlNode::setBVolumeDirty(bool f)
+{
+  this->d_bvol_dirty = f;
+  if (f && this->d_scene) // only if dirtying, not clearing
+    this->d_scene->d_flags_need_updating = true;
+}
+
+bool
+VrmlNode::isBVolumeDirty() const
+{
+  if (d_scene && d_scene->d_flags_need_updating) {
+    d_scene->updateFlags();
+    d_scene->d_flags_need_updating = false;
+  }
+  return this->d_bvol_dirty;
+}
+
+void VrmlNode::render(Viewer* v, VrmlRenderContext rc)
+{
+  //if (cull(v, c)) return;
+  clearModified();
 }
 
 // Accumulate transformations for proper rendering of bindable nodes.
@@ -330,6 +445,7 @@ void VrmlNode::inverseTransform(Viewer *v)
 
 void VrmlNode::inverseTransform(double m[4][4])
 {
+  //cout << "VrmlNode::inverseTransform" << endl;
   VrmlNode *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(m);

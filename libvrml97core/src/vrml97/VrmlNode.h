@@ -8,6 +8,7 @@
 #define VRMLNODE_H
 
 #include <string.h>
+#include <list>
 #include <iostream.h>
 #include "System.h"		// error
 
@@ -19,6 +20,8 @@ class VrmlNodeType;
 class VrmlField;
 class VrmlScene;
 
+#include "VrmlRenderContext.h"
+class VrmlBVolume;
 
 // For the safe downcasts
 class VrmlNodeAnchor;
@@ -74,6 +77,9 @@ class VrmlNode;
 ostream& operator<<(ostream& os, const VrmlNode& f);
 
 
+/**
+ * A node in the scene graph.
+ */
 class VrmlNode {
   friend ostream& operator<<(ostream& os, const VrmlNode& f);
 
@@ -177,6 +183,63 @@ public:
   void setModified();
   void clearModified() { d_modified = false; }
   virtual bool isModified() const;
+  typedef std::list< VrmlNode* > VrmlNodePath; // duplicate from VrmlScene. argh.
+
+
+  /**
+   * Mark all the nodes in the path as (not) modified. Convenience
+   * function used by updateModified.
+   */
+  static void markPathModified(VrmlNodePath& path, bool mod, int flags = 0x003);
+
+  // do the work of updatemodified. move this to be protected
+  //
+  virtual void updateModified(VrmlNodePath& path, int flags = 0x003);
+
+  /**
+   * Propegate the bvolume dirty flag from children to parents. I
+   * don't like this at all, but it's not worth making it pretty
+   * because the need for it will go away when parent pointers are
+   * implemented.
+   *
+   * @param path stack of ancestor nodes
+   * @param mod set modified flag to this value
+   * @param flags 1 indicates normal modified flag, 2 indicates the
+   *              bvolume dirty flag, 3 indicates both
+   */
+  void updateModified(int flags = 0x003);
+
+  /**
+   * Get this node's bounding volume. Nodes that have no bounding
+   * volume, or have a difficult to calculate bvolume (like, say,
+   * extrusion or billboard) can just return an infinite bsphere. Note
+   * that returning an infinite bvolume means that all the node's
+   * ancestors will also end up with an infinite bvolume, and will
+   * never be culled.
+   *
+   * @return this node's bounding volume
+   */
+  virtual const VrmlBVolume* getBVolume() const;
+
+  /**
+   * Override a node's calculated bounding volume. Not implemented.
+   */
+  virtual void setBVolume(const VrmlBVolume& v);
+  
+  /** 
+   * Indicate that a node's bounding volume needs to be recalculated
+   * (or not). If a node's bvolume is invalid, then the bvolumes of
+   * all that node's ancestors are also invalid. Normally, the node
+   * itself will determine when its bvolume needs updating.
+   */
+  virtual void setBVolumeDirty(bool f);
+
+  /**
+   * Return true if the node's bounding volume needs to be
+   * recalculated.
+   */
+  virtual bool isBVolumeDirty() const;
+
 
   // A generic flag (typically used to find USEd nodes).
   void setFlag() { d_flag = true; }
@@ -197,7 +260,7 @@ public:
 		       const VrmlField *fieldValue);
 
   // Set a field by name (used by the parser, not for external consumption).
-  virtual void setField(char const * fieldName, VrmlField const &);
+  virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   // Get a field or eventOut by name. getField is used by Script nodes
   // to access exposedFields. It does not allow access to private fields
@@ -210,16 +273,65 @@ public:
   // and tries to access the field using getField.
   const VrmlField *getEventOut(const char *fieldName) const;
 
-  // Do nothing. Renderable nodes need to redefine this.
-  virtual void render(Viewer *);
 
-  // Do nothing. Grouping nodes need to redefine this.
+  /**
+   * Render this node. Actually, most of the rendering work is
+   * delegated to the viewer, but this method is responsible for
+   * traversal to the node's renderable children, including
+   * culling. Each node class needs to implement this routine
+   * appropriately. It's not abstract since it doesn't make sense to
+   * call render on some nodes. Alternative would be to break render
+   * out into a seperate mixins class, but that's probably overkill.
+   *
+   * @param v viewer implementation responsible for actually doing the
+   *          drawing
+   * @param rc generic context argument, holds things like the
+   *          accumulated modelview transform.
+   */
+  virtual void render(Viewer *, VrmlRenderContext rc);
+
+
+  /**
+   * Cache a pointer to one of the parent transforms. The resulting
+   * pointer is used by getParentTransform. Grouping nodes need to
+   * redefine this, the default implementation does nothing.
+   *
+   * @param p parent node. can be null.
+   *
+   * @deprecated This routine will go away once parent pointers
+   * are implemented.
+   */
   virtual void accumulateTransform(VrmlNode*);
 
+  /**
+   * Return the nearest ancestor node that affects the modelview
+   * transform. Doesn't work for nodes with more than one parent.
+   */
   virtual VrmlNode* getParentTransform();
 
-  // Compute an inverse transform (either render it or construct the matrix)
+  /**
+   * Compute the inverse of the transform above a viewpoint node. Just
+   * like the version that takes a matrix, but instead calls
+   * Viewer::setTransform at each level. The idea is to call this
+   * routine right before the start of a render traversal.
+   *
+   * @see getParentTransform
+   *
+   * @deprecated This method is (gradually) being replaces by
+   * inverseTranform(double[4][4]) and should no longer be used.
+   */
   virtual void inverseTransform(Viewer *);
+
+  /**
+   * Compute the inverse of the transform stack above a Viewpoint
+   * node. This is safe since the behavior of multi-parented
+   * Viewpoint nodes is undefined. May be called at any time.
+   *
+   * @param M return the accumulated inverse
+   *
+   * @see accumulateTransform
+   * @see getParentTransform
+   */
   virtual void inverseTransform(double [4][4]);
 
   VrmlScene *scene() { return d_scene; }
@@ -240,6 +352,7 @@ protected:
   // True if a field changed since last render
   bool d_modified;
   bool d_flag;
+  bool d_bvol_dirty;
 
   // Routes from this node (clean this up, add RouteList ...)
   Route *d_routes;
@@ -253,7 +366,9 @@ private:
 };
 
 
-// Routes
+/**
+ * Routes
+ */
 class Route {
 public:
   Route(const char *fromEventOut, VrmlNode *toNode, const char *toEventIn);
@@ -316,4 +431,5 @@ private:
   }
 
 
-#endif
+#endif VRMLNODE_H
+
