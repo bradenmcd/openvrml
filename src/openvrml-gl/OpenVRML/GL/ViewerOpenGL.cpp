@@ -40,7 +40,7 @@
 
 # include <math.h>
 
-# include <OpenVRML/System.h>
+# include <OpenVRML/system.h>
 # include <OpenVRML/browser.h>
 # include <OpenVRML/vrml97node.h>
 # include <OpenVRML/bounding_volume.h>
@@ -404,7 +404,7 @@ namespace {
     {
         GLenum glerr;
         while ((glerr = glGetError()) != GL_NO_ERROR) {
-            theSystem->error("GL ERROR: %s %s\n", s, gluErrorString(glerr));
+            the_system->error("GL ERROR: %s %s\n", s, gluErrorString(glerr));
         }
     }
 }
@@ -2740,7 +2740,7 @@ void ViewerOpenGL::set_sensitive(node * object)
     if (object) {
         // should make this dynamic...
         if (this->d_nSensitive == MAXSENSITIVE) {
-            theSystem->error("Internal Error: too many sensitive objects.\n");
+            the_system->error("Internal Error: too many sensitive objects.\n");
             return;
         }
 
@@ -3323,25 +3323,25 @@ void ViewerOpenGL::handleKey(int key)
     case 'b':
       d_blend = ! d_blend;
       wsPostRedraw();
-      theSystem->inform(" Alpha blending %sabled.",
+      the_system->inform(" Alpha blending %sabled.",
                      d_blend ? "en" : "dis");
       break;
 
     case 'd':
       d_drawBSpheres = ! d_drawBSpheres;
-      theSystem->inform(" bspheres %sabled.", d_drawBSpheres ? "en" : "dis");
+      the_system->inform(" bspheres %sabled.", d_drawBSpheres ? "en" : "dis");
       wsPostRedraw();
       break;
 
     case 'c':
       d_cull = ! d_cull;
-      theSystem->inform(" culling %sabled.", d_cull ? "en" : "dis");
+      the_system->inform(" culling %sabled.", d_cull ? "en" : "dis");
       wsPostRedraw();
       break;
 
     case 'l':
       d_lit = ! d_lit;
-      theSystem->inform(" Lighting %sabled.", d_lit ? "en" : "dis");
+      the_system->inform(" Lighting %sabled.", d_lit ? "en" : "dis");
       wsPostRedraw();
       break;
 
@@ -3353,7 +3353,7 @@ void ViewerOpenGL::handleKey(int key)
     case 't':
       d_texture = ! d_texture;
       wsPostRedraw();
-      theSystem->inform(" Texture mapping %sabled.",
+      the_system->inform(" Texture mapping %sabled.",
                      d_texture ? "en" : "dis");
       break;
 
@@ -3361,7 +3361,7 @@ void ViewerOpenGL::handleKey(int key)
       d_wireframe = ! d_wireframe;
       glPolygonMode(GL_FRONT_AND_BACK, d_wireframe ? GL_LINE : GL_FILL);
       wsPostRedraw();
-      theSystem->inform(" Drawing polygons in %s mode.", d_wireframe ? "wireframe" : "filled");
+      the_system->inform(" Drawing polygons in %s mode.", d_wireframe ? "wireframe" : "filled");
       break;
 
     default:

@@ -1,5 +1,38 @@
 2003-06-03  Braden McDaniel  <braden@endoframe.com>
 
+	Applied naming convention changes:  System -> system.
+
+	* src/lookat/ViewerGlut.cpp (ViewerGlut::ViewerGlut):  Changes
+	associated with naming convention changes to system.
+	* src/openvrml/OpenVRML/system.cpp:  Added file.  Replaces
+	System.cpp.
+	* src/openvrml/OpenVRML/system.h:  Added file.  Replaces
+	System.h
+	* src/openvrml/OpenVRML/System.cpp:  Removed file.
+	* src/openvrml/OpenVRML/System.h:  Removed file.
+	* src/openvrml/OpenVRML/Makefile.am:  Replaced System.cpp,
+	System.h with system.cpp, system.h.
+	* src/openvrml/OpenVRML/Audio.cpp (Audio::setURL):  Changes
+	associated with naming convention changes to system.
+	* src/openvrml/OpenVRML/Image.cpp (Image::setURL):  Changes
+	associated with naming convention changes to system.
+	* src/openvrml/OpenVRML/ScriptJDK.cpp (ScriptJDK::ScriptJDK,
+	ScriptJDK::activate):  Changes associated with naming convention
+	changes to system.
+	* src/openvrml/OpenVRML/doc.cpp (doc::~doc, doc::filename,
+	doc::fopen, doc::fclose, doc2::~doc2, doc2::filename):  Changes
+	associated with naming convention changes to system.
+	* src/openvrml/OpenVRML/script.cpp (setDescription):  Changes
+	associated with naming convention changes to system.
+	* src/openvrml/OpenVRML/vrml97node.cpp
+	(Group::processAddChildren, ImageTexture::render):  Changes
+	associated with naming convention changes to system.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp (checkErrors,
+	ViewerOpenGL::set_sensitive, ViewerOpenGL::handleKey):  Changes
+	associated with naming convention changes to system.
+
+2003-06-03  Braden McDaniel  <braden@endoframe.com>
+
 	Applied naming convention changes:  Doc -> doc, Doc2 -> doc2.
 
 	* src/lookat/lookat.cpp:  Changes associated with naming

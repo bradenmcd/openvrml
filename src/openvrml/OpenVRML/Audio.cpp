@@ -24,7 +24,7 @@
 
 #include "Audio.h"
 #include "doc.h"
-#include "System.h"
+#include "system.h"
 #include "field.h"
 
 namespace OpenVRML {
@@ -148,7 +148,7 @@ bool Audio::setURL(const std::string & url, doc *relative)
             break;
 
           default:
-            theSystem->warn("Unrecognized audio file format (%s).\n", url.c_str());
+            the_system->warn("Unrecognized audio file format (%s).\n", url.c_str());
 
 
             // Suppress the error message below
@@ -157,14 +157,14 @@ bool Audio::setURL(const std::string & url, doc *relative)
         }
 
         if (success == false)
-            theSystem->warn("Unable to read audio file (%s).\n", url.c_str());
+            the_system->warn("Unable to read audio file (%s).\n", url.c_str());
 
 
         _doc->fclose ();
     }
 
     else
-        theSystem->warn("Unable to find audio file (%s).\n", url.c_str());
+        the_system->warn("Unable to find audio file (%s).\n", url.c_str());
 
 
     return (_num_samples > 0);

@@ -29,7 +29,7 @@
 
 #include "Image.h"
 #include "doc.h"
-#include "System.h"
+#include "system.h"
 #include "field.h"
 
 #include <stdarg.h>
@@ -6882,12 +6882,12 @@ bool Image::setURL(const char * const url, const doc2 * const relative)
             break;
 # endif
         default:
-            theSystem->error("Error: unrecognized image file format (%s).\n", url);
+            the_system->error("Error: unrecognized image file format (%s).\n", url);
             break;
 	}
 
         if (! d_pixels) {
-            theSystem->error("Error: unable to read image file (%s).\n", url);
+            the_system->error("Error: unable to read image file (%s).\n", url);
         }
 
         this->d_url->fclose();

@@ -26,30 +26,30 @@
 #include <config.h>
 #endif
 
-#include "System.h"
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <algorithm>
 
+#include "system.h"
+
 # ifndef NDEBUG
 #   define SYSTEM_DEBUG
 # endif
 
-using namespace OpenVRML;
+namespace OpenVRML {
 
-// A default System object
-static System defaultSystem;
+// A default system object
+static system defaultSystem;
 
-// The global System object
-System * OpenVRML::theSystem = &defaultSystem;
+// The global system object
+system * OpenVRML::the_system = &defaultSystem;
 
 
 // Should make these iostream objects...
 
-void System::error(const char *fmt, ...)
+void system::error(const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -57,7 +57,7 @@ void System::error(const char *fmt, ...)
     va_end(ap);
 }
 
-void System::warn(const char *fmt, ...)
+void system::warn(const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -69,7 +69,7 @@ void System::warn(const char *fmt, ...)
 
 // Write to the browser status line...
 
-void System::inform(const char *fmt, ...)
+void system::inform(const char *fmt, ...)
 {
     static char lastbuf[1024] = { 0 };
     char buf[1024];
@@ -86,21 +86,21 @@ void System::inform(const char *fmt, ...)
 }
 
 #ifdef SYSTEM_DEBUG
-void System::debug(const char *fmt, ...)
+void system::debug(const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
     va_end(ap);
 #else
-void System::debug(const char *, ...)
+void system::debug(const char *, ...)
 {
 #endif
 }
 
 // This won't work under windows or if netscape isn't running...
 
-bool System::loadUrl(const std::string & url, const mfstring & parameters)
+bool system::load_url(const std::string & url, const mfstring & parameters)
 {
     return false;
 }
@@ -122,7 +122,7 @@ bool System::loadUrl(const std::string & url, const mfstring & parameters)
 #include <ctype.h>
 #endif // _WIN32
 
-int System::connectSocket(const char * host, int port)
+int system::connect_socket(const char * host, int port)
 {
     hostent * he;
 
@@ -136,7 +136,7 @@ int System::connectSocket(const char * host, int port)
 #if defined(_WIN32) && !defined(__CYGWIN__)
     wVersionRequested = MAKEWORD(1, 0);
     if (WSAStartup(wVersionRequested,&wsaData) == SOCKET_ERROR) {
-        theSystem->error("WSAStartup failed with error %d\n",WSAGetLastError());
+        the_system->error("WSAStartup failed with error %d\n",WSAGetLastError());
         WSACleanup();
         return -1;
     }
@@ -185,7 +185,7 @@ int System::connectSocket(const char * host, int port)
 
 #include <errno.h>
 
-const char * System::httpHost(const char * url, int * port)
+const char * system::http_host(const char * url, int * port)
 {
     static char hostname[256];
     const char *s = strstr(url,"//");
@@ -201,27 +201,27 @@ const char * System::httpHost(const char * url, int * port)
 
 // This isn't particularly robust or complete...
 
-const char *System::httpFetch(const char * url)
+const char *system::http_fetch(const char * url)
 {
     int port = 80;
-    const char *hostname = httpHost(url, &port);
+    const char *hostname = this->http_host(url, &port);
 
     if (port == 80) {
-        theSystem->inform("Connecting to %s ...", hostname);
+        the_system->inform("Connecting to %s ...", hostname);
     } else {
-        theSystem->inform("Connecting to %s:%d ...", hostname, port);
+        the_system->inform("Connecting to %s:%d ...", hostname, port);
     }
 
     int sockfd;
-    if ((sockfd = System::connectSocket( hostname, port )) != -1) {
-        theSystem->inform("connected.");
+    if ((sockfd = system::connect_socket( hostname, port )) != -1) {
+        the_system->inform("connected.");
     } else {
 #if defined(_WIN32) && !defined(__CYGWIN__)
-        theSystem->warn("Connect failed:  (errno %d)\n",
+        the_system->warn("Connect failed:  (errno %d)\n",
         WSAGetLastError());
         WSACleanup();
 # else
-        theSystem->warn("Connect failed: %s (errno %d).\n",
+        the_system->warn("Connect failed: %s (errno %d).\n",
                         strerror(errno), errno);
 #endif
     }
@@ -249,11 +249,11 @@ const char *System::httpFetch(const char * url)
             if (write(sockfd, request, nbytes) != nbytes) {
 #endif
 #if defined(_WIN32) && !defined(__CYGWIN__)
-                theSystem->warn("http GET failed:  (errno %d)\n",
+                the_system->warn("http GET failed:  (errno %d)\n",
                 WSAGetLastError());
                 WSACleanup();
 #else
-                theSystem->warn("http GET failed: %s (errno %d)\n",
+                the_system->warn("http GET failed: %s (errno %d)\n",
                                 strerror(errno), errno);
 #endif
             } else {
@@ -287,13 +287,13 @@ const char *System::httpFetch(const char * url)
 # else
                     if (write(fd, start, nmore) != nmore) {
 # endif
-                        theSystem->warn("http: temp file write error\n");
+                        the_system->warn("http: temp file write error\n");
                         break;
                     }
                     nwrote += nmore;
                 }
 
-                theSystem->inform("Read %dk from %s", (nread+1023)/1024, url);
+                the_system->inform("Read %dk from %s", (nread+1023)/1024, url);
             }
 
 # if defined(_WIN32) && !defined(__CYGWIN__)
@@ -316,7 +316,9 @@ const char *System::httpFetch(const char * url)
     return result;
 }
 
-void System::removeFile(const char * fn)
+void system::remove_file(const char * fn)
 {
     remove(fn);
 }
+
+} // namespace OpenVRML

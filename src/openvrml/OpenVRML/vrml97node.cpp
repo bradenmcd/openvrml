@@ -46,7 +46,7 @@ extern "C" {
 # include "Audio.h"
 # include "sound.h"
 # include "private.h"
-# include "System.h"
+# include "system.h"
 
 /**
  * @internal
@@ -5845,7 +5845,7 @@ void Group::processAddChildren(const field_value & value,
             this->children_.value.push_back(child);
             child->relocate();
         } else {
-            theSystem->error(
+            the_system->error(
                 "Error: Attempt to add a %s node as a child of a %s node.\n",
                 child->type.id.c_str(), this->type.id.c_str());
         }
@@ -6242,8 +6242,8 @@ void ImageTexture::render(OpenVRML::viewer & viewer, rendering_context context)
         doc2 baseDoc(this->scene()->url());
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &baseDoc)) {
-            theSystem->error("Couldn't read ImageTexture from URL %s\n",
-                             this->url.value[0].c_str());
+            the_system->error("Couldn't read ImageTexture from URL %s\n",
+                              this->url.value[0].c_str());
         }
     }
 

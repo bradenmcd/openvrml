@@ -30,9 +30,9 @@
 # else
 #   include <GL/glut.h>
 # endif
-#include <OpenVRML/System.h>
+# include <OpenVRML/system.h>
 
-#include "ViewerGlut.h"
+# include "ViewerGlut.h"
 
 using namespace OpenVRML;
 using namespace OpenVRML::GL;
@@ -259,7 +259,7 @@ ViewerGlut::ViewerGlut(OpenVRML::browser & browser):
 
     // If d_window is not "small", convert viewers to a map...
     if (d_window > MAX_WINDOWS) {
-        theSystem->error("ViewerGlut: too many windows.\n");
+        the_system->error("ViewerGlut: too many windows.\n");
         return;
     }
 

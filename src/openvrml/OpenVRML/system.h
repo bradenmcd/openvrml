@@ -19,35 +19,32 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifndef SYSTEM_H
-#   define SYSTEM_H
-//
-//  System dependent utilities class
-//
+# ifndef OPENVRML_SYSTEM_H
+#   define OPENVRML_SYSTEM_H
 
 #   include <stddef.h>
 #   include <string>
-#   include "common.h"
+#   include <OpenVRML/common.h>
 
 namespace OpenVRML {
 
     class mfstring;
 
-    class OPENVRML_SCOPE System {
+    class OPENVRML_SCOPE system {
     public:
         virtual void error(const char *, ...);
         virtual void warn(const char *, ...);
         virtual void inform(const char *, ...);
         virtual void debug(const char *, ...);
-        virtual bool loadUrl(const std::string & url,
+        virtual bool load_url(const std::string & url,
                              const mfstring & parameters);
-        virtual int connectSocket( const char *host, int port );
-        virtual const char *httpHost(const char *url, int *port);
-        virtual const char *httpFetch( const char *url );
-        virtual void removeFile( const char *fn );
+        virtual int connect_socket( const char *host, int port );
+        virtual const char *http_host(const char *url, int *port);
+        virtual const char *http_fetch( const char *url );
+        virtual void remove_file( const char *fn );
     };
 
-    extern OPENVRML_SCOPE System * theSystem;
+    extern OPENVRML_SCOPE system * the_system;
 }
 
-#endif // SYSTEM_H
+#endif // OPENVRML_SYSTEM_H

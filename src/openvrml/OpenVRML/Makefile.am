@@ -33,7 +33,7 @@ libopenvrml_la_SOURCES = \
         dummysound.cpp \
         Image.cpp \
         Audio.cpp \
-        System.cpp \
+        system.cpp \
         field.cpp \
         field_value_ptr.cpp \
         scope.cpp \
@@ -60,7 +60,7 @@ OpenVRMLinclude_HEADERS = \
         doc.h \
         Image.h \
         Audio.h \
-        System.h \
+        system.h \
         field.h \
         field_value_ptr.h \
         scope.h \

@@ -27,7 +27,7 @@
 # include <regex.h>
 
 # include "doc.h"
-# include "System.h"
+# include "system.h"
 # include "browser.h"
 
 namespace OpenVRML {
@@ -105,7 +105,7 @@ doc::~doc()
     delete [] this->url_;
     delete this->out_;
     if (this->tmpfile_) {
-        theSystem->removeFile(this->tmpfile_);
+        the_system->remove_file(this->tmpfile_);
         delete [] this->tmpfile_;
     }
 }
@@ -387,7 +387,7 @@ bool doc::filename(char * fn, int nfn)
     {
       if (tmpfile_)		// Already fetched it
 	s = tmpfile_;
-      else if ((s = const_cast<char *>(theSystem->httpFetch(url_))))
+      else if ((s = const_cast<char *>(the_system->http_fetch(url_))))
 	{
 	  tmpfile_ = new char[strlen(s)+1];
 	  strcpy(tmpfile_, s);
@@ -427,7 +427,7 @@ bool doc::filename(char * fn, int nfn)
 FILE *doc::fopen(const char *mode)
 {
   if (fp_)
-    theSystem->error("doc::fopen: %s is already open.\n", url_ ? url_ : "");
+    the_system->error("doc::fopen: %s is already open.\n", url_ ? url_ : "");
 
   char fn[256];
   if (filename(fn, sizeof(fn)))
@@ -461,7 +461,7 @@ void doc::fclose()
   fp_ = 0;
   if (tmpfile_)
     {
-      theSystem->removeFile(tmpfile_);
+      the_system->remove_file(tmpfile_);
       delete [] tmpfile_;
       tmpfile_ = 0;
     }
@@ -761,7 +761,7 @@ doc2::~doc2()
     delete istm_;
     delete ostm_;
     if (tmpfile_) {
-        theSystem->removeFile(tmpfile_);
+        the_system->remove_file(tmpfile_);
         delete [] tmpfile_;
     }
 }
@@ -1011,7 +1011,7 @@ bool doc2::filename(char * fn, const size_t nfn) {
         //
         if (this->tmpfile_) {    // Already fetched it
             s = this->tmpfile_;
-        } else if ((s = theSystem->httpFetch(this->url_.c_str()))) {
+        } else if ((s = the_system->http_fetch(this->url_.c_str()))) {
             tmpfile_ = new char[strlen(s)+1];
             strcpy(tmpfile_, s);
             free(const_cast<char *>(s));        // assumes tempnam or equiv...
