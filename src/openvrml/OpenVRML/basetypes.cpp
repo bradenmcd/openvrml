@@ -31,6 +31,14 @@ namespace OpenVRML {
  */
 
 /**
+ * @typedef int32
+ *
+ * @ingroup basetypes
+ *
+ * @brief 32-bit signed integer.
+ */
+
+/**
  * @class color
  *
  * @ingroup basetypes

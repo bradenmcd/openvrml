@@ -429,9 +429,9 @@ namespace OpenVRML {
         virtual const AppearanceNode * toAppearance() const throw ();
         virtual AppearanceNode * toAppearance() throw ();
 
-        virtual const SFNode & getMaterial() const throw () = 0;
-        virtual const SFNode & getTexture() const throw () = 0;
-        virtual const SFNode & getTextureTransform() const throw () = 0;
+        virtual const NodePtr & getMaterial() const throw () = 0;
+        virtual const NodePtr & getTexture() const throw () = 0;
+        virtual const NodePtr & getTextureTransform() const throw () = 0;
 
     protected:
         AppearanceNode(const NodeType & nodeType, const ScopePtr & scope);
@@ -457,7 +457,7 @@ namespace OpenVRML {
         virtual const ColorNode * toColor() const throw ();
         virtual ColorNode * toColor() throw ();
 
-        virtual const MFColor & getColor() const throw () = 0;
+        virtual const std::vector<color> & getColor() const throw () = 0;
 
     protected:
         ColorNode(const NodeType & nodeType, const ScopePtr & scope);
@@ -471,7 +471,7 @@ namespace OpenVRML {
         virtual const CoordinateNode * toCoordinate() const throw ();
         virtual CoordinateNode * toCoordinate() throw ();
 
-        virtual const MFVec3f & getPoint() const throw () = 0;
+        virtual const std::vector<vec3f> & getPoint() const throw () = 0;
 
     protected:
         CoordinateNode(const NodeType & nodeType, const ScopePtr & scope);
@@ -485,15 +485,15 @@ namespace OpenVRML {
         virtual const FontStyleNode * toFontStyle() const throw ();
         virtual FontStyleNode * toFontStyle() throw ();
 
-        virtual const MFString & getFamily() const throw () = 0;
-        virtual const SFBool & getHorizontal() const throw () = 0;
-        virtual const MFString & getJustify() const throw () = 0;
-        virtual const SFString & getLanguage() const throw () = 0;
-        virtual const SFBool & getLeftToRight() const throw () = 0;
-        virtual const SFFloat & getSize() const throw () = 0;
-        virtual const SFFloat & getSpacing() const throw () = 0;
-        virtual const SFString & getStyle() const throw () = 0;
-        virtual const SFBool & getTopToBottom() const throw () = 0;
+        virtual const std::vector<std::string> & getFamily() const throw () = 0;
+        virtual bool getHorizontal() const throw () = 0;
+        virtual const std::vector<std::string> & getJustify() const throw () = 0;
+        virtual const std::string & getLanguage() const throw () = 0;
+        virtual bool getLeftToRight() const throw () = 0;
+        virtual float getSize() const throw () = 0;
+        virtual float getSpacing() const throw () = 0;
+        virtual const std::string & getStyle() const throw () = 0;
+        virtual bool getTopToBottom() const throw () = 0;
 
     protected:
         FontStyleNode(const NodeType & nodeType, const ScopePtr & scope);
@@ -523,7 +523,7 @@ namespace OpenVRML {
         virtual const GroupingNode * toGrouping() const throw ();
         virtual GroupingNode * toGrouping() throw ();
 
-        virtual const MFNode & getChildren() const throw () = 0;
+        virtual const std::vector<NodePtr> & getChildren() const throw () = 0;
         virtual void activate(double timestamp, bool over, bool active,
                               double *p) = 0;
 
@@ -539,12 +539,12 @@ namespace OpenVRML {
         virtual const MaterialNode * toMaterial() const throw ();
         virtual MaterialNode * toMaterial() throw ();
 
-        virtual const SFFloat & getAmbientIntensity() const throw () = 0;
-        virtual const SFColor & getDiffuseColor() const throw () = 0;
-        virtual const SFColor & getEmissiveColor() const throw () = 0;
-        virtual const SFFloat & getShininess() const throw () = 0;
-        virtual const SFColor & getSpecularColor() const throw () = 0;
-        virtual const SFFloat & getTransparency() const throw () = 0;
+        virtual float getAmbientIntensity() const throw () = 0;
+        virtual const color & getDiffuseColor() const throw () = 0;
+        virtual const color & getEmissiveColor() const throw () = 0;
+        virtual float getShininess() const throw () = 0;
+        virtual const color & getSpecularColor() const throw () = 0;
+        virtual float getTransparency() const throw () = 0;
 
     protected:
         MaterialNode(const NodeType & nodeType, const ScopePtr & scope);
@@ -558,7 +558,7 @@ namespace OpenVRML {
         virtual const NormalNode * toNormal() const throw ();
         virtual NormalNode * toNormal() throw ();
 
-        virtual const MFVec3f & getVector() const throw () = 0;
+        virtual const std::vector<vec3f> & getVector() const throw () = 0;
 
     protected:
         NormalNode(const NodeType & nodeType, const ScopePtr & scope);
@@ -588,8 +588,8 @@ namespace OpenVRML {
         virtual size_t height() const throw () = 0;
         virtual size_t nFrames() const throw () = 0;
         virtual const unsigned char * pixels() const throw () = 0;
-        virtual const SFBool & getRepeatS() const throw () = 0;
-        virtual const SFBool & getRepeatT() const throw () = 0;
+        virtual bool getRepeatS() const throw () = 0;
+        virtual bool getRepeatT() const throw () = 0;
 
     protected:
         TextureNode(const NodeType & nodeType, const ScopePtr & scope);
@@ -604,7 +604,7 @@ namespace OpenVRML {
             throw ();
         virtual TextureCoordinateNode * toTextureCoordinate() throw ();
 
-        virtual const MFVec2f & getPoint() const throw () = 0;
+        virtual const std::vector<vec2f> & getPoint() const throw () = 0;
 
     protected:
         TextureCoordinateNode(const NodeType & nodeType,
@@ -649,8 +649,8 @@ namespace OpenVRML {
         virtual const mat4f & getUserViewTransform() const throw () = 0;
         virtual void setUserViewTransform(const mat4f & transform)
             throw () = 0;
-        virtual const SFString & getDescription() const throw () = 0;
-        virtual const SFFloat & getFieldOfView() const throw () = 0;
+        virtual const std::string & getDescription() const throw () = 0;
+        virtual float getFieldOfView() const throw () = 0;
 
     protected:
         ViewpointNode(const NodeType & nodeType, const ScopePtr & scope);
@@ -666,8 +666,8 @@ namespace OpenVRML {
         virtual ~NodeTraverser() throw () = 0;
 
         void traverse(Node & node);
-        void traverse(const SFNode & node);
-        void traverse(const MFNode & nodes);
+        void traverse(const NodePtr & node);
+        void traverse(const std::vector<NodePtr> & nodes);
 
     protected:
         void haltTraversal() throw ();

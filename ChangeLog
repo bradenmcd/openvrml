@@ -1,3 +1,26 @@
+2003-03-12  Braden McDaniel  <braden@endoframe.com>
+
+        * src/lookat/lookat.cpp, src/openvrml/OpenVRML/ScriptJDK.cpp,
+          src/openvrml/OpenVRML/Viewer.h,
+          src/openvrml/OpenVRML/Vrml97Parser.cpp,
+          src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.hpp,
+          src/openvrml/OpenVRML/basetypes.cpp,
+          src/openvrml/OpenVRML/basetypes.h,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/browser.h,
+          src/openvrml/OpenVRML/field.cpp,
+          src/openvrml/OpenVRML/field.h,
+          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/script.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Return base types
+          (color, rotation, vec2f, etc.) from abstract node type
+          accessors instead of FieldValue types. Added a typedef for
+          int32.
+
 2003-03-10  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Makefile.am,

@@ -1768,11 +1768,11 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
 Viewer::Object ViewerOpenGL::insertLineSet(size_t npoints,
                                            const float * points,
                                            size_t nlines,
-                                           const long * lines,
+                                           const int32 * lines,
                                            bool colorPerVertex,
                                            const float * color,
                                            size_t nci,
-                                           const long * ci)
+                                           const int32 * ci)
 {
   GLuint glid = 0;
 
@@ -1924,7 +1924,7 @@ namespace {
 
     struct IndexData {
         const float * v; // data values
-        size_t ni; const long * i; // number of indices, index pointer
+        size_t ni; const int32 * i; // number of indices, index pointer
     };
 
     /**
@@ -1933,7 +1933,7 @@ namespace {
     struct ShellData {
         unsigned int mask;
         const float * points;
-        size_t nfaces; const long * faces; // face list
+        size_t nfaces; const int32 * faces; // face list
         IndexData texCoord; // texture coordinates and indices
         IndexData normal; // normals and indices
         IndexData color; // colors and indices
@@ -2157,16 +2157,16 @@ ViewerOpenGL::insertShell(unsigned int mask,
                           size_t npoints,
                           const float * points,
                           size_t nfaces,
-                          const long * faces,    // face list (-1 ends each face)
+                          const int32 * faces,    // face list (-1 ends each face)
                           const float * tc,     // texture coordinates
                           size_t ntci,      // # of texture coordinate indices
-                          const long * tci,      // texture coordinate indices
+                          const int32 * tci,      // texture coordinate indices
                           const float * normal, // normals
                           size_t nni,       // # of normal indices
-                          const long * ni,       // normal indices
+                          const int32 * ni,       // normal indices
                           const float *color,  // colors
                           size_t nci,
-                          const long * ci)
+                          const int32 * ci)
 {
     if (nfaces < 4) { return 0; } // 3 pts and a trailing -1
 

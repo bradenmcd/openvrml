@@ -27,9 +27,18 @@
 #   include <stddef.h>
 #   include <algorithm>
 #   include <iosfwd>
+#   ifndef _WIN32
+#     include <stdint.h>
+#   endif
 #   include <OpenVRML/common.h>
 
 namespace OpenVRML {
+
+#   ifdef _WIN32
+    typedef __int32 int32;
+#   else
+    typedef int32_t int32;
+#   endif
 
     class OPENVRML_SCOPE color {
         float rgb[3];

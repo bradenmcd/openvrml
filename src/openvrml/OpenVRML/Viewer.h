@@ -99,21 +99,21 @@ namespace OpenVRML {
                                        size_t nSpine,
                                        const float * spine) = 0;
         virtual Object insertLineSet(size_t nCoords, const float * coord,
-                                     size_t nCoordIndex, const long * coordIndex,
+                                     size_t nCoordIndex, const int32 * coordIndex,
                                      bool colorPerVertex,
                                      const float * color,
                                      size_t nColorIndex,
-                                     const long * colorIndex) = 0;
+                                     const int32 * colorIndex) = 0;
         virtual Object insertPointSet(size_t nv, const float * v, const float * c) = 0;
         virtual Object insertShell(unsigned int mask,
                                    size_t npoints, const float * points,
-                                   size_t nfaces, const long * faces,
+                                   size_t nfaces, const int32 * faces,
                                    const float * tc,
-                                   size_t ntci, const long * tci,
+                                   size_t ntci, const int32 * tci,
                                    const float * normal,
-                                   size_t nni, const long * ni,
+                                   size_t nni, const int32 * ni,
                                    const float * color,
-                                   size_t nci, const long * ci) = 0;
+                                   size_t nci, const int32 * ci) = 0;
         virtual Object insertSphere(float radius) = 0;
         virtual Object insertDirLight(float, float, const float [], const float []) = 0;
         virtual Object insertPointLight(float, const float [], const float [],

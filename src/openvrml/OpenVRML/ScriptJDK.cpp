@@ -7226,13 +7226,16 @@ void JNICALL Java_vrml_Browser_loadURL(JNIEnv * const env,
                                        const jobjectArray jUrlArray,
                                        const jobjectArray jParameterArray)
 {
+    using std::string;
+    using std::vector;
+
     assert(env);
     assert(jUrlArray);
 
     try {
         size_t i;
-        MFString url(env->GetArrayLength(jUrlArray)); // Throws std::bad_alloc.
-        for (i = 0; i < url.value.size(); ++i) {
+        vector<string> url(env->GetArrayLength(jUrlArray)); // Throws std::bad_alloc.
+        for (i = 0; i < url.size(); ++i) {
             jstring jstr =
                 static_cast<jstring>(env->GetObjectArrayElement(jUrlArray, i));
             if (env->ExceptionCheck()) {
@@ -7240,12 +7243,12 @@ void JNICALL Java_vrml_Browser_loadURL(JNIEnv * const env,
             }
             const char * str = env->GetStringUTFChars(jstr, 0);
             if (!str) { return; } // OutOfMemoryError
-            url.value[i] = str; // Throws std::bad_alloc.
+            url[i] = str; // Throws std::bad_alloc.
             env->ReleaseStringUTFChars(jstr, str);
         }
 
-        MFString parameters(env->GetArrayLength(jParameterArray)); // Throws std::bad_alloc.
-        for (i = 0; i < parameters.value.size(); ++i) {
+        vector<string> parameters(env->GetArrayLength(jParameterArray)); // Throws std::bad_alloc.
+        for (i = 0; i < parameters.size(); ++i) {
             jstring jstr = static_cast<jstring>
                             (env->GetObjectArrayElement(jParameterArray, i));
             if (env->ExceptionCheck()) {
@@ -7253,7 +7256,7 @@ void JNICALL Java_vrml_Browser_loadURL(JNIEnv * const env,
             }
             const char * str = env->GetStringUTFChars(jstr, 0);
             if (!str) { return; } // OutOfMemoryError
-            parameters.value[i] = str; // Throws std::bad_alloc.
+            parameters[i] = str; // Throws std::bad_alloc.
             env->ReleaseStringUTFChars(jstr, str);
         }
 

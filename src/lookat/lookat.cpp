@@ -65,6 +65,7 @@ int main(int argc, char * argv[]) {
     using std::cout;
     using std::endl;
     using std::string;
+    using std::vector;
     
     atexit(onExit);
     
@@ -122,8 +123,8 @@ int main(int argc, char * argv[]) {
 
     browser = new Browser(cout, cerr);
 
-    MFString uri(1, inputUrl);
-    MFString parameter;
+    vector<string> uri(1, inputUrl);
+    vector<string> parameter;
     browser->loadURI(uri, parameter);
 
     viewer = new ViewerGlut(*browser);
@@ -203,8 +204,7 @@ namespace {
         const ViewpointList & viewpoints = browser->getViewpoints();
         for (ViewpointList::const_iterator viewpoint(viewpoints.begin());
                 viewpoint != viewpoints.end(); ++viewpoint) {
-            const std::string & description =
-                    (*viewpoint)->getDescription().value;
+            const std::string & description = (*viewpoint)->getDescription();
             if (!description.empty()) {
                 glutAddMenuEntry(description.c_str(),
                                  std::distance(viewpoints.begin(), viewpoint));

@@ -989,9 +989,9 @@ AbstractTexture::~AbstractTexture() throw ()
  * @return @c TRUE if the texture should repeat in the <var>S</var> direction,
  *      @c FALSE otherwise.
  */
-const SFBool & AbstractTexture::getRepeatS() const throw ()
+bool AbstractTexture::getRepeatS() const throw ()
 {
-    return this->repeatS;
+    return this->repeatS.value;
 }
 
 /**
@@ -1000,9 +1000,9 @@ const SFBool & AbstractTexture::getRepeatS() const throw ()
  * @return @c TRUE if the texture should repeat in the <var>T</var> direction,
  *      @c FALSE otherwise.
  */
-const SFBool & AbstractTexture::getRepeatT() const throw ()
+bool AbstractTexture::getRepeatT() const throw ()
 {
-    return this->repeatT;
+    return this->repeatT.value;
 }
 
 
@@ -1225,7 +1225,7 @@ void Anchor::render(Viewer & viewer, const VrmlRenderContext context)
 void Anchor::activate()
 {
     assert(this->getScene());
-    this->getScene()->loadURI(this->url, this->parameter);
+    this->getScene()->loadURI(this->url.value, this->parameter.value);
 }
 
 /**
@@ -1444,19 +1444,19 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
                                 : 0;
 
     if (material) {
-        float trans = material->getTransparency().value;
-        const color & diff = material->getDiffuseColor().value;
+        float trans = material->getTransparency();
+        const color & diff = material->getDiffuseColor();
         float diffuse[3] = { diff[0], diff[1], diff[2] };
         size_t nTexComponents = texture ? texture->nComponents() : 0;
         if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
         if (nTexComponents >= 3) { diffuse[0] = diffuse[1] = diffuse[2] = 1.0; }
 
         viewer.enableLighting(true);   // turn lighting on for this object
-        viewer.setMaterial(material->getAmbientIntensity().value,
+        viewer.setMaterial(material->getAmbientIntensity(),
                            diffuse,
-                           &material->getEmissiveColor().value[0],
-                           material->getShininess().value,
-                           &material->getSpecularColor().value[0],
+                           &material->getEmissiveColor()[0],
+                           material->getShininess(),
+                           &material->getSpecularColor()[0],
                            trans);
 
         material->clearModified();
@@ -1482,9 +1482,9 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
  * @returns an SFNode object containing the Material node associated with
  *          this Appearance.
  */
-const SFNode & Appearance::getMaterial() const throw ()
+const NodePtr & Appearance::getMaterial() const throw ()
 {
-    return this->material;
+    return this->material.value;
 }
 
 /**
@@ -1493,9 +1493,9 @@ const SFNode & Appearance::getMaterial() const throw ()
  * @return an SFNode object containing the texture node associated with
  *         this Appearance.
  */
-const SFNode & Appearance::getTexture() const throw ()
+const NodePtr & Appearance::getTexture() const throw ()
 {
-    return this->texture;
+    return this->texture.value;
 }
 
 /**
@@ -1504,9 +1504,9 @@ const SFNode & Appearance::getTexture() const throw ()
  * @return an SFNode object containing the TextureTransform node
  *         associated with this Appearance.
  */
-const SFNode & Appearance::getTextureTransform() const throw ()
+const NodePtr & Appearance::getTextureTransform() const throw ()
 {
-    return this->textureTransform;
+    return this->textureTransform.value;
 }
 
 
@@ -3141,9 +3141,12 @@ Color::~Color() throw () {}
 /**
  * @brief Get the color array.
  *
- * @return the MFColor object associated with the node.
+ * @return the color array associated with the node.
  */
-const MFColor & Color::getColor() const throw () { return this->color; }
+const std::vector<color> & Color::getColor() const throw ()
+{
+    return this->color.value;
+}
 
 /**
  * @brief set_color eventIn handler.
@@ -3574,9 +3577,12 @@ void Coordinate::processSet_point(const FieldValue & mfvec3f,
 /**
  * @brief Get the points encapsulated by this node.
  *
- * @return the MFVec3f array of points for this node.
+ * @return the array of points for this node.
  */
-const MFVec3f & Coordinate::getPoint() const throw () { return this->point; }
+const std::vector<vec3f> & Coordinate::getPoint() const throw ()
+{
+    return this->point.value;
+}
 
 
 /**
@@ -4626,16 +4632,15 @@ Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
         const float * colors = 0;
 
         if (this->texCoord.value) {
-            tc = &this->texCoord.value->toTextureCoordinate()
-                    ->getPoint().value[0][0];
+            tc = &this->texCoord.value->toTextureCoordinate()->getPoint()[0][0];
         }
 
         if (this->normal.value) {
-            normals = &this->normal.value->toNormal()->getVector().value[0][0];
+            normals = &this->normal.value->toNormal()->getVector()[0][0];
         }
 
         if (this->color.value) {
-            colors = &this->color.value->toColor()->getColor().value[0][0];
+            colors = &this->color.value->toColor()->getColor()[0][0];
         }
 
         // insert geometry
@@ -5510,27 +5515,32 @@ FontStyle::~FontStyle() throw ()
  * @return an MFString containing the font families that may be used for this
  *      FontStyle.
  */
-const MFString & FontStyle::getFamily() const throw () { return this->family; }
+const std::vector<std::string> & FontStyle::getFamily() const throw ()
+{
+    return this->family.value;
+}
 
 /**
  * @brief Get the flag indicating whether the text should be horizontal or
  *      vertical.
  *
- * @return @c TRUE if the text should be horizontal, or @c FALSE if the text
+ * @return @c true if the text should be horizontal, or @c false if the text
  *      should be vertical.
  */
-const SFBool & FontStyle::getHorizontal() const throw () {
-    return this->horizontal;
+bool FontStyle::getHorizontal() const throw ()
+{
+    return this->horizontal.value;
 }
 
 /**
  * @brief Get the descriptor for the text justification.
  *
- * @return an MFString value describing the characteristics of the text
+ * @return a string array describing the characteristics of the text
  *      justification.
  */
-const MFString & FontStyle::getJustify() const throw () {
-    return this->justify;
+const std::vector<std::string> & FontStyle::getJustify() const throw ()
+{
+    return this->justify.value;
 }
 
 /**
@@ -5538,19 +5548,21 @@ const MFString & FontStyle::getJustify() const throw () {
  *
  * @return the language code.
  */
-const SFString & FontStyle::getLanguage() const throw () {
-    return this->language;
+const std::string & FontStyle::getLanguage() const throw ()
+{
+    return this->language.value;
 }
 
 /**
  * @brief Get the flag indicating whether the text should be rendered
  *      left-to-right.
  *
- * @return @c TRUE if the text should be rendered left-to-right, or @c FALSE if
+ * @return @c true if the text should be rendered left-to-right, or @c false if
  *      the text should be rendered right-to-left.
  */
-const SFBool & FontStyle::getLeftToRight() const throw () {
-    return this->leftToRight;
+bool FontStyle::getLeftToRight() const throw ()
+{
+    return this->leftToRight.value;
 }
 
 /**
@@ -5558,31 +5570,41 @@ const SFBool & FontStyle::getLeftToRight() const throw () {
  *
  * @return the size of the text.
  */
-const SFFloat & FontStyle::getSize() const throw () { return this->size; }
+float FontStyle::getSize() const throw ()
+{
+    return this->size.value;
+}
 
 /**
  * @brief Get the spacing for the text.
  *
  * @return the spacing for the text.
  */
-const SFFloat & FontStyle::getSpacing() const throw () { return this->spacing; }
+float FontStyle::getSpacing() const throw ()
+{
+    return this->spacing.value;
+}
 
 /**
  * @brief Get the style for the text.
  *
- * @return an SFString descriptor of the text style.
+ * @return an string descriptor of the text style.
  */
-const SFString & FontStyle::getStyle() const throw () { return this->style; }
+const std::string & FontStyle::getStyle() const throw ()
+{
+    return this->style.value;
+}
 
 /**
  * @brief Get the flag indicating whether the text should be rendered
  *      top-to-bottom.
  *
- * @return @c TRUE if the text should be rendered top-to-bottom, or @c FALSE if
+ * @return @c true if the text should be rendered top-to-bottom, or @c false if
  *      the text should be rendered bottom-to-top.
  */
-const SFBool & FontStyle::getTopToBottom() const throw () {
-    return this->topToBottom;
+bool FontStyle::getTopToBottom() const throw ()
+{
+    return this->topToBottom.value;
 }
 
 
@@ -5911,9 +5933,9 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
  *
  * @return the child nodes in the scene graph.
  */
-const MFNode & Group::getChildren() const throw ()
+const std::vector<NodePtr> & Group::getChildren() const throw ()
 {
-    return this->children;
+    return this->children.value;
 }
 
 /**
@@ -6427,20 +6449,21 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
     }
 
     if (this->coord.value && this->coordIndex.value.size() > 0) {
-        const MFVec3f & coord = this->coord.value->toCoordinate()->getPoint();
-        size_t nvert = coord.value.size();
+        const std::vector<vec3f> & coord =
+                this->coord.value->toCoordinate()->getPoint();
+        size_t nvert = coord.size();
         const float *tc = 0, *color = 0, *normal = 0;
         int ntc = 0;
-        size_t ntci = 0; const long * tci = 0;    // texture coordinate indices
-        int nci = 0; const long * ci = 0;    // color indices
-        int nni = 0; const long * ni = 0;    // normal indices
+        size_t ntci = 0; const int32 * tci = 0;    // texture coordinate indices
+        int nci = 0; const int32 * ci = 0;    // color indices
+        int nni = 0; const int32 * ni = 0;    // normal indices
 
         // Get texture coordinates and texCoordIndex
         if (this->texCoord.value) {
-            const MFVec2f & texcoord =
+            const std::vector<vec2f> & texcoord =
                     this->texCoord.value->toTextureCoordinate()->getPoint();
-            tc = &texcoord.value[0][0];
-            ntc = texcoord.value.size();
+            tc = &texcoord[0][0];
+            ntc = texcoord.size();
             ntci = this->texCoordIndex.value.size();
             if (ntci) { tci = &this->texCoordIndex.value[0]; }
         }
@@ -6458,17 +6481,18 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
                                     ? this->color.value->toColor()
                                     : 0;
         if (colorNode) {
-            const MFColor & c = colorNode->getColor();
+            const std::vector<OpenVRML::color> & c = colorNode->getColor();
 
-            color = &c.value[0][0];
+            color = &c[0][0];
             nci = this->colorIndex.value.size();
             if (nci) { ci = &this->colorIndex.value[0]; }
         }
 
         // check #normals is consistent with normalPerVtx, normalIndex...
         if (this->normal.value) {
-            const MFVec3f & n = this->normal.value->toNormal()->getVector();
-            normal = &n.value[0][0];
+            const std::vector<vec3f> & n =
+                    this->normal.value->toNormal()->getVector();
+            normal = &n[0][0];
             nni = this->normalIndex.value.size();
             if (nni) { ni = &this->normalIndex.value[0]; }
         }
@@ -6491,7 +6515,7 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
         }
 
         obj = viewer.insertShell(optMask,
-                                 nvert, &coord.value[0][0],
+                                 nvert, &coord[0][0],
                                  this->coordIndex.value.size(),
                                  &this->coordIndex.value[0],
                                  tc, ntci, tci,
@@ -6510,7 +6534,8 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
 /**
  * @brief Recalculate the bounding volume.
  */
-void IndexedFaceSet::recalcBSphere() {
+void IndexedFaceSet::recalcBSphere()
+{
     // take the bvolume of all the points. technically, we should figure
     // out just which points are used by the index and just use those,
     // but for a first pass this is fine (also: if we do it this way
@@ -6521,9 +6546,9 @@ void IndexedFaceSet::recalcBSphere() {
                                           ? this->coord.value->toCoordinate()
                                           : 0;
     if (coordinateNode) {
-        const MFVec3f & coord = coordinateNode->getPoint();
+        const std::vector<vec3f> & coord = coordinateNode->getPoint();
         this->bsphere.reset();
-        this->bsphere.enclose(&coord.value[0][0], coord.value.size());
+        this->bsphere.enclose(&coord[0][0], coord.size());
     }
     this->setBVolumeDirty(false);
 }
@@ -6738,23 +6763,23 @@ Viewer::Object IndexedLineSet::insertGeometry(Viewer & viewer,
 {
     Viewer::Object obj = 0;
     if (this->coord.value && this->coordIndex.value.size() > 0) {
-        const MFVec3f & coord = this->coord.value->toCoordinate()->getPoint();
-        int nvert = coord.value.size();
+        const std::vector<vec3f> & coord =
+                this->coord.value->toCoordinate()->getPoint();
+        int nvert = coord.size();
         const float * color = 0;
-        int nci = 0; const long * ci = 0;
+        int nci = 0; const int32 * ci = 0;
 
         // check #colors is consistent with colorPerVtx, colorIndex...
         if (this->color.value) {
-            const MFColor & c = this->color.value->toColor()->getColor();
-            color = & c.value[0][0];
+            const std::vector<OpenVRML::color> & c =
+                    this->color.value->toColor()->getColor();
+            color = & c[0][0];
             nci = this->colorIndex.value.size();
             if (nci) { ci = &this->colorIndex.value[0]; }
         }
 
         obj =  viewer.insertLineSet(nvert,
-                                    (coord.value.size() > 0)
-                                        ? &coord.value[0][0]
-                                        : 0,
+                                    !coord.empty() ? &coord[0][0] : 0,
                                     this->coordIndex.value.size(),
                                     (this->coordIndex.value.size() > 0)
                                         ? &this->coordIndex.value[0]
@@ -6892,9 +6917,9 @@ Inline * Inline::toInline() const { return const_cast<Inline *>(this); }
  *
  * @return the child nodes in the scene graph.
  */
-const MFNode & Inline::getChildren() const throw ()
+const std::vector<NodePtr> & Inline::getChildren() const throw ()
 {
-    static const MFNode empty;
+    static const std::vector<NodePtr> empty;
     return this->inlineScene
             ? this->inlineScene->getNodes()
             : empty;
@@ -6905,9 +6930,9 @@ const MFNode & Inline::getChildren() const throw ()
  */
 void Inline::activate(double time, bool isOver, bool isActive, double *p)
 {
-    const MFNode & children = this->getChildren();
-    for (size_t i = 0; i < children.value.size(); ++i) {
-        const NodePtr & node = children.value[i];
+    const std::vector<NodePtr> & children = this->getChildren();
+    for (size_t i = 0; i < children.size(); ++i) {
+        const NodePtr & node = children[i];
         if (node) {
             if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
                 node->toTouchSensor()->activate(time, isOver, isActive, p);
@@ -6939,7 +6964,7 @@ void Inline::load() {
 
     assert(this->getScene());
     this->inlineScene = new Scene(this->getScene()->browser,
-                                  this->url,
+                                  this->url.value,
                                   this->getScene());
     this->inlineScene->initialize(Browser::getCurrentTime());
 }
@@ -7166,9 +7191,9 @@ const BVolume * LOD::getBVolume() const {
  *
  * @return the child nodes in the scene graph.
  */
-const MFNode & LOD::getChildren() const throw ()
+const std::vector<NodePtr> & LOD::getChildren() const throw ()
 {
-    return this->children;
+    return this->children.value;
 }
 
 /**
@@ -7176,8 +7201,8 @@ const MFNode & LOD::getChildren() const throw ()
  */
 void LOD::activate(double time, bool isOver, bool isActive, double *p)
 {
-    const MFNode & children = this->getChildren();
-    const NodePtr & node = children.value[0];
+    const std::vector<NodePtr> & children = this->getChildren();
+    const NodePtr & node = children[0];
     if (node) {
         if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
             node->toTouchSensor()->activate(time, isOver, isActive, p);
@@ -7467,8 +7492,9 @@ void Material::processSet_transparency(const FieldValue & sffloat,
  *
  * @return the ambient intensity.
  */
-const SFFloat & Material::getAmbientIntensity() const throw () {
-    return this->ambientIntensity;
+float Material::getAmbientIntensity() const throw ()
+{
+    return this->ambientIntensity.value;
 }
 
 /**
@@ -7476,8 +7502,9 @@ const SFFloat & Material::getAmbientIntensity() const throw () {
  *
  * @return the diffuse color.
  */
-const SFColor & Material::getDiffuseColor() const throw () {
-    return this->diffuseColor;
+const color & Material::getDiffuseColor() const throw ()
+{
+    return this->diffuseColor.value;
 }
 
 /**
@@ -7485,8 +7512,9 @@ const SFColor & Material::getDiffuseColor() const throw () {
  *
  * @return the emissive color.
  */
-const SFColor & Material::getEmissiveColor() const throw () {
-    return this->emissiveColor;
+const color & Material::getEmissiveColor() const throw ()
+{
+    return this->emissiveColor.value;
 }
 
 /**
@@ -7494,8 +7522,9 @@ const SFColor & Material::getEmissiveColor() const throw () {
  *
  * @return the shininess.
  */
-const SFFloat & Material::getShininess() const throw () {
-    return this->shininess;
+float Material::getShininess() const throw ()
+{
+    return this->shininess.value;
 }
 
 /**
@@ -7503,8 +7532,9 @@ const SFFloat & Material::getShininess() const throw () {
  *
  * @return the specular color.
  */
-const SFColor & Material::getSpecularColor() const throw () {
-    return this->specularColor;
+const color & Material::getSpecularColor() const throw ()
+{
+    return this->specularColor.value;
 }
 
 /**
@@ -7512,8 +7542,9 @@ const SFColor & Material::getSpecularColor() const throw () {
  *
  * @return the transparency.
  */
-const SFFloat & Material::getTransparency() const throw () {
-    return this->transparency;
+float Material::getTransparency() const throw () 
+{
+    return this->transparency.value;
 }
 
 
@@ -8345,7 +8376,10 @@ Normal::~Normal() throw () {}
  *
  * @return the array of normal vectors.
  */
-const MFVec3f & Normal::getVector() const throw () { return this->vector; }
+const std::vector<vec3f> & Normal::getVector() const throw ()
+{
+    return this->vector.value;
+}
 
 /**
  * @brief set_vector eventIn handler.
@@ -9817,18 +9851,18 @@ Viewer::Object PointSet::insertGeometry(Viewer & viewer,
     if (this->coord.value) {
         const float * color = 0;
         if (this->color.value) {
-            const MFColor & c = this->color.value->toColor()->getColor();
-            color = (c.value.size() > 0)
-                  ? &c.value[0][0]
+            const std::vector<OpenVRML::color> & c =
+                    this->color.value->toColor()->getColor();
+            color = (c.size() > 0)
+                  ? &c[0][0]
                   : 0;
         }
 
-        const MFVec3f & coord = this->coord.value->toCoordinate()->getPoint();
+        const std::vector<vec3f> & coord =
+                this->coord.value->toCoordinate()->getPoint();
 
-        obj = viewer.insertPointSet(coord.value.size(),
-                                    (coord.value.size() > 0)
-                                        ? &coord.value[0][0]
-                                        : 0,
+        obj = viewer.insertPointSet(coord.size(),
+                                    !coord.empty() ? &coord[0][0] : 0,
                                     color);
     }
 
@@ -9848,9 +9882,10 @@ void PointSet::recalcBSphere()
                                           ? this->coord.value->toCoordinate()
                                           : 0;
     if (coordinateNode) {
-        const MFVec3f & coord = coordinateNode->getPoint();
-        for(size_t i = 0; i < coord.value.size(); i++) {
-            this->bsphere.extend(coord.value[i]);
+        const std::vector<vec3f> & coord = coordinateNode->getPoint();
+        for(std::vector<vec3f>::const_iterator vec(coord.begin());
+                vec != coord.end(); ++vec) {
+            this->bsphere.extend(*vec);
         }
     }
     this->setBVolumeDirty(false);
@@ -10846,10 +10881,9 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
                 AppearanceNode * a = this->appearance.value->toAppearance();
                 a->render(viewer, context);
 
-                if (a->getTexture().value
-                        && a->getTexture().value->toTexture()) {
-                    nTexComponents = a->getTexture().value->toTexture()
-                                        ->nComponents();
+                if (a->getTexture() && a->getTexture()->toTexture()) {
+                    nTexComponents =
+                            a->getTexture()->toTexture()->nComponents();
                 }
             } else {
                 viewer.setColor(1.0, 1.0, 1.0); // default object color
@@ -12378,9 +12412,9 @@ const BVolume* Switch::getBVolume() const {
  *
  * @return the child nodes in the scene graph.
  */
-const MFNode & Switch::getChildren() const throw ()
+const std::vector<NodePtr> & Switch::getChildren() const throw ()
 {
-    return this->children;
+    return this->children.value;
 }
 
 /**
@@ -12388,8 +12422,8 @@ const MFNode & Switch::getChildren() const throw ()
  */
 void Switch::activate(double time, bool isOver, bool isActive, double *p)
 {
-    const MFNode & children = this->getChildren();
-    const NodePtr & node = children.value[0];
+    const std::vector<NodePtr> & children = this->getChildren();
+    const NodePtr & node = children[0];
     if (node) {
         if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
             node->toTouchSensor()->activate(time, isOver, isActive, p);
@@ -13218,8 +13252,8 @@ void Text::updateFace() throw (std::bad_alloc)
 
     FcChar8String language;
 
-    MFString family;
-    family.value.push_back("SERIF");
+    std::vector<string> family;
+    family.push_back("SERIF");
 
     string style;
 
@@ -13227,11 +13261,11 @@ void Text::updateFace() throw (std::bad_alloc)
                                     ? this->fontStyle.value->toFontStyle()
                                     : 0;
     if (fontStyle) {
-        if (fontStyle->getFamily().value.size() > 0) {
+        if (!fontStyle->getFamily().empty()) {
             family = fontStyle->getFamily();
-            style = fontStyle->getStyle().value;
-            language.assign(fontStyle->getLanguage().value.begin(),
-                            fontStyle->getLanguage().value.end());
+            style = fontStyle->getStyle();
+            language.assign(fontStyle->getLanguage().begin(),
+                            fontStyle->getLanguage().end());
         }
     }
 
@@ -13246,8 +13280,8 @@ void Text::updateFace() throw (std::bad_alloc)
             //
             // Set the family.
             //
-            for (size_t i = 0; i < family.value.size(); ++i) {
-                const std::string & element = family.value[i];
+            for (size_t i = 0; i < family.size(); ++i) {
+                const std::string & element = family[i];
                 if (element == "SERIF") {
                     fontName += "serif";
                 } else if (element == "SANS") {
@@ -13257,7 +13291,7 @@ void Text::updateFace() throw (std::bad_alloc)
                 } else {
                     fontName += element;
                 }
-                if (i + 1 < family.value.size()) { fontName += ", "; }
+                if (i + 1 < family.size()) { fontName += ", "; }
             }
 
             //
@@ -13522,17 +13556,17 @@ void Text::updateGeometry() throw (std::bad_alloc)
     FontStyleNode * fontStyle;
     if (this->fontStyle.value
             && (fontStyle = this->fontStyle.value->toFontStyle())) {
-        horizontal = fontStyle->getHorizontal().value;
-        if (fontStyle->getJustify().value.size() > 0) {
-            justify[0] = fontStyle->getJustify().value[0];
+        horizontal = fontStyle->getHorizontal();
+        if (!fontStyle->getJustify().empty()) {
+            justify[0] = fontStyle->getJustify()[0];
         }
-        if (fontStyle->getJustify().value.size() > 1) {
-            justify[1] = fontStyle->getJustify().value[1];
+        if (fontStyle->getJustify().size() > 1) {
+            justify[1] = fontStyle->getJustify()[1];
         }
-        leftToRight = fontStyle->getLeftToRight().value;
-        topToBottom = fontStyle->getTopToBottom().value;
-        size = fontStyle->getSize().value;
-        spacing = fontStyle->getSpacing().value;
+        leftToRight = fontStyle->getLeftToRight();
+        topToBottom = fontStyle->getTopToBottom();
+        size = fontStyle->getSize();
+        spacing = fontStyle->getSpacing();
     }
 
     TextGeometry newGeometry;
@@ -13902,8 +13936,9 @@ TextureCoordinate::~TextureCoordinate() throw () {}
  *
  * @return the MFVec2f array of points for this node.
  */
-const MFVec2f & TextureCoordinate::getPoint() const throw () {
-    return this->point;
+const std::vector<vec2f> & TextureCoordinate::getPoint() const throw ()
+{
+    return this->point.value;
 }
 
 /**
@@ -15684,9 +15719,9 @@ void Viewpoint::setUserViewTransform(const mat4f & transform) throw ()
  *
  * @return the description.
  */
-const SFString & Viewpoint::getDescription() const throw ()
+const std::string & Viewpoint::getDescription() const throw ()
 {
-    return this->description;
+    return this->description.value;
 }
 
 /**
@@ -15694,9 +15729,9 @@ const SFString & Viewpoint::getDescription() const throw ()
  *
  * @return the field of view in radians.
  */
-const SFFloat & Viewpoint::getFieldOfView() const throw ()
+float Viewpoint::getFieldOfView() const throw ()
 {
-    return this->fieldOfView;
+    return this->fieldOfView.value;
 }
 
 /**

@@ -2049,7 +2049,7 @@ AppearanceNode * AppearanceNode::toAppearance() throw ()
 }
 
 /**
- * @fn const SFNode & AppearanceNode::getMaterial() const throw ()
+ * @fn const NodePtr & AppearanceNode::getMaterial() const throw ()
  *
  * @brief Get the material node associated with this appearance node.
  *
@@ -2057,7 +2057,7 @@ AppearanceNode * AppearanceNode::toAppearance() throw ()
  */
 
 /**
- * @fn const SFNode & AppearanceNode::getTexture() const throw ()
+ * @fn const NodePtr & AppearanceNode::getTexture() const throw ()
  *
  * @brief Get the texture node associated with this appearance node.
  *
@@ -2065,7 +2065,7 @@ AppearanceNode * AppearanceNode::toAppearance() throw ()
  */
 
 /**
- * @fn const SFNode & AppearanceNode::getTextureTransform() const throw ()
+ * @fn const NodePtr & AppearanceNode::getTextureTransform() const throw ()
  *
  * @brief Get the texture transform node associated with this appearance node.
  *
@@ -2159,11 +2159,11 @@ ColorNode * ColorNode::toColor() throw ()
 }
 
 /**
- * @fn const MFColor & ColorNode::getColor() const
+ * @fn const std::vector<color> & ColorNode::getColor() const
  *
  * @brief Get the color array encapsulated by this node.
  *
- * @return the MFColor for this node.
+ * @return the color array for this node.
  */
 
 
@@ -2211,11 +2211,11 @@ CoordinateNode * CoordinateNode::toCoordinate() throw ()
 }
 
 /**
- * @fn const MFVec3f & CoordinateNode::getPoint() const
+ * @fn const std::vector<vec3f> & CoordinateNode::getPoint() const
  *
  * @brief Get the points encapsulated by this node.
  *
- * @return the MFVec3f array of points for this node.
+ * @return the array of points for this node.
  */
 
 
@@ -2262,7 +2262,7 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
 }
 
 /**
- * @fn const MFString & FontStyleNode::getFamily() const throw ()
+ * @fn const std::vector<std::string> & FontStyleNode::getFamily() const throw ()
  *
  * @brief Get the list of font families.
  *
@@ -2271,7 +2271,7 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn const SFBool & FontStyleNode::getHorizontal() const throw ()
+ * @fn bool FontStyleNode::getHorizontal() const throw ()
  *
  * @brief Get the flag indicating whether the text should be horizontal or
  *      vertical.
@@ -2281,7 +2281,7 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn const MFString & FontStyleNode::getJustify() const throw ()
+ * @fn const std::vector<std::string> & FontStyleNode::getJustify() const throw ()
  *
  * @brief Get the descriptor for the text justification.
  *
@@ -2290,7 +2290,7 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn const SFString & FontStyleNode::getLanguage() const throw ()
+ * @fn const std::string & FontStyleNode::getLanguage() const throw ()
  *
  * @brief Get the language code.
  *
@@ -2298,7 +2298,7 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn const SFBool & FontStyleNode::getLeftToRight() const throw ()
+ * @fn bool FontStyleNode::getLeftToRight() const throw ()
  *
  * @brief Get the flag indicating whether the text should be rendered
  *      left-to-right.
@@ -2308,7 +2308,7 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn const SFFloat & FontStyleNode::getSize() const throw ()
+ * @fn float FontStyleNode::getSize() const throw ()
  *
  * @brief Get the size of the text.
  *
@@ -2316,7 +2316,7 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn const SFFloat & FontStyleNode::getSpacing() const throw ()
+ * @fn float FontStyleNode::getSpacing() const throw ()
  *
  * @brief Get the spacing for the text.
  *
@@ -2324,7 +2324,7 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn const SFString & FontStyleNode::getStyle() const throw ()
+ * @fn const std::string & FontStyleNode::getStyle() const throw ()
  *
  * @brief Get the style for the text.
  *
@@ -2332,7 +2332,7 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn const SFBool & FontStyleNode::getTopToBottom() const throw ()
+ * @fn bool FontStyleNode::getTopToBottom() const throw ()
  *
  * @brief Get the flag indicating whether the text should be rendered
  *      top-to-bottom.
@@ -2443,7 +2443,7 @@ GroupingNode * GroupingNode::toGrouping() throw ()
 }
 
 /**
- * @fn const MFNode & GroupingNode::getChildren() const throw ()
+ * @fn const std::vector<NodePtr> & GroupingNode::getChildren() const throw ()
  *
  * @brief Get the children in the scene graph.
  *
@@ -2494,7 +2494,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
 }
 
 /**
- * @fn const SFFloat & MaterialNode::getAmbientIntensity() const throw ()
+ * @fn float MaterialNode::getAmbientIntensity() const throw ()
  *
  * @brief Get the ambient intensity.
  *
@@ -2502,7 +2502,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
  */
 
 /**
- * @fn const SFColor & MaterialNode::getDiffuseColor() const throw ()
+ * @fn const color & MaterialNode::getDiffuseColor() const throw ()
  *
  * @brief Get the diffuse color.
  *
@@ -2510,7 +2510,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
  */
 
 /**
- * @fn const SFColor & MaterialNode::getEmissiveColor() const throw ()
+ * @fn const color & MaterialNode::getEmissiveColor() const throw ()
  *
  * @brief Get the emissive color.
  *
@@ -2518,7 +2518,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
  */
 
 /**
- * @fn const SFFloat & MaterialNode::getShininess() const throw ()
+ * @fn float MaterialNode::getShininess() const throw ()
  *
  * @brief Get the shininess.
  *
@@ -2526,7 +2526,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
  */
 
 /**
- * @fn const SFColor & MaterialNode::getSpecularColor() const throw ()
+ * @fn const color & MaterialNode::getSpecularColor() const throw ()
  *
  * @brief Get the specular color.
  *
@@ -2534,7 +2534,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
  */
 
 /**
- * @fn const SFFloat & MaterialNode::getTransparency() const throw ()
+ * @fn float MaterialNode::getTransparency() const throw ()
  *
  * @brief Get the transparency.
  *
@@ -2585,7 +2585,7 @@ NormalNode * NormalNode::toNormal() throw ()
 }
 
 /**
- * @fn const MFVec3f & NormalNode::getVector() const throw ()
+ * @fn const std::vector<vec3f> & NormalNode::getVector() const throw ()
  *
  * @brief Get the array of normal vectors.
  *
@@ -2726,7 +2726,7 @@ TextureNode * TextureNode::toTexture() throw ()
  */
 
 /**
- * @fn const SFBool & TextureNode::getRepeatS() const throw ()
+ * @fn bool TextureNode::getRepeatS() const throw ()
  *
  * @brief Get the flag indicating whether the texture should repeat in the
  *      <var>S</var> direction.
@@ -2736,7 +2736,7 @@ TextureNode * TextureNode::toTexture() throw ()
  */
 
 /**
- * @fn const SFBool & TextureNode::getRepeatT() const throw ()
+ * @fn bool TextureNode::getRepeatT() const throw ()
  *
  * @brief Get the flag indicating whether the texture should repeat in the
  *      <var>T</var> direction.
@@ -2963,7 +2963,7 @@ ViewpointNode * ViewpointNode::toViewpoint() throw ()
  */
 
 /**
- * @fn const SFString & ViewpointNode::getDescription() const throw ()
+ * @fn const std::string & ViewpointNode::getDescription() const throw ()
  *
  * @brief Get the description.
  *
@@ -2971,7 +2971,7 @@ ViewpointNode * ViewpointNode::toViewpoint() throw ()
  */
 
 /**
- * @fn const SFFloat & ViewpointNode::getFieldOfView() const throw ()
+ * @fn float ViewpointNode::getFieldOfView() const throw ()
  *
  * @brief Get the field of view.
  *
@@ -3049,14 +3049,14 @@ void NodeTraverser::traverse(Node & node)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NodeTraverser::traverse(const SFNode & node)
+void NodeTraverser::traverse(const NodePtr & node)
 {
     assert(this->traversedNodes.empty());
     try {
-        if (node.value) {
-            if (this->traversedNodes.find(node.value.get())
+        if (node) {
+            if (this->traversedNodes.find(node.get())
                     == this->traversedNodes.end()) {
-                this->do_traversal(*node.value);
+                this->do_traversal(*node);
             }
         }
     } catch (...) {
@@ -3081,15 +3081,16 @@ void NodeTraverser::traverse(const SFNode & node)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NodeTraverser::traverse(const MFNode & nodes)
+void NodeTraverser::traverse(const std::vector<NodePtr> & nodes)
 {
     assert(this->traversedNodes.empty());
     try {
-        for (size_t i = 0; i < nodes.value.size(); ++i) {
-            if (nodes.value[i]) {
-                if (this->traversedNodes.find(nodes.value[i].get())
+        for (std::vector<NodePtr>::const_iterator node(nodes.begin());
+                node != nodes.end(); ++node) {
+            if (*node) {
+                if (this->traversedNodes.find(node->get())
                         == this->traversedNodes.end()) {
-                    this->do_traversal(*nodes.value[i]);
+                    this->do_traversal(**node);
                 }
             }
         }

@@ -109,7 +109,7 @@ namespace OpenVRML {
         Browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc);
         virtual ~Browser() throw ();
 
-        const MFNode & getRootNodes() const throw ();
+        const std::vector<NodePtr> & getRootNodes() const throw ();
         const NodePath findNode(const Node & node) const throw (std::bad_alloc);
         ViewpointNode & getActiveViewpoint() const throw ();
         void setActiveViewpoint(ViewpointNode & viewpoint) throw ();
@@ -122,12 +122,13 @@ namespace OpenVRML {
         virtual const char * getVersion() const throw ();
         float getCurrentSpeed();
         const std::string getWorldURI() const throw (std::bad_alloc);
-        void replaceWorld(const MFNode & nodes);
-        virtual void loadURI(const MFString & uri, const MFString & parameter)
+        void replaceWorld(const std::vector<NodePtr> & nodes);
+        virtual void loadURI(const std::vector<std::string> & uri,
+                             const std::vector<std::string> & parameter)
             throw (std::bad_alloc);
         virtual void setDescription(const std::string & description);
-        const MFNode createVrmlFromStream(std::istream & in);
-        void createVrmlFromURI(const MFString & uri,
+        const std::vector<NodePtr> createVrmlFromStream(std::istream & in);
+        void createVrmlFromURI(const std::vector<std::string> & uri,
                                const NodePtr & node,
                                const std::string & event);
 
@@ -220,21 +221,23 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE Scene {
-        MFNode nodes;
+        std::vector<NodePtr> nodes;
         std::string uri;
 
     public:
         Browser & browser;
         Scene * const parent;
 
-        Scene(Browser & browser, const MFString & uri, Scene * parent = 0)
+        Scene(Browser & browser, const std::vector<std::string> & uri,
+              Scene * parent = 0)
             throw (InvalidVrml, std::bad_alloc);
 
         void initialize(double timestamp) throw (std::bad_alloc);
-        const MFNode & getNodes() const throw ();
+        const std::vector<NodePtr> & getNodes() const throw ();
         const std::string getURI() const throw (std::bad_alloc);
         void render(Viewer & viewer, VrmlRenderContext context);
-        void loadURI(const MFString & uri, const MFString & parameter)
+        void loadURI(const std::vector<std::string> & uri,
+                     const std::vector<std::string> & parameter)
                 throw (std::bad_alloc);
         void shutdown(double timestamp) throw ();
 
@@ -244,7 +247,8 @@ namespace OpenVRML {
         Scene & operator=(const Scene &);
     };
 
-    inline const MFNode & Scene::getNodes() const throw() {
+    inline const std::vector<NodePtr> & Scene::getNodes() const throw()
+    {
         return this->nodes;
     }
 }

@@ -230,22 +230,22 @@ namespace OpenVRML {
                                            size_t nSpine,
                                            const float * spine);
 
-            virtual Object insertLineSet(size_t, const float *, size_t, const long *,
+            virtual Object insertLineSet(size_t, const float *, size_t, const int32 *,
                                          bool colorPerVertex,
                                          const float * color,
                                          size_t nColorIndex,
-                                         const long * colorIndex);
+                                         const int32 * colorIndex);
 
             virtual Object insertPointSet(size_t npts, const float * points, const float * colors);
             virtual Object insertShell(unsigned int mask,
                                        size_t npoints, const float * points,
-                                       size_t nfaces, const long * faces,
+                                       size_t nfaces, const int32 * faces,
                                        const float * tc,
-                                       size_t ntci, const long * tci,
+                                       size_t ntci, const int32 * tci,
                                        const float * normal,
-                                       size_t nni, const long * ni,
+                                       size_t nni, const int32 * ni,
                                        const float * color,
-                                       size_t nci, const long * ci);
+                                       size_t nci, const int32 * ci);
 
             virtual Object insertSphere(float radius);
 

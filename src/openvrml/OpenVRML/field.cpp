@@ -860,7 +860,7 @@ void SFImage::set(size_t width, size_t height, size_t components,
  *
  * @param value initial value.
  */
-SFInt32::SFInt32(const long value) throw ():
+SFInt32::SFInt32(const int32 value) throw ():
     value(value)
 {}
 
@@ -1860,7 +1860,7 @@ void MFFloat::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<long> MFInt32::value
+ * @var std::vector<int32> MFInt32::value
  *
  * @brief Signed 32-bit integer values.
  */
@@ -1877,7 +1877,7 @@ void MFFloat::print(std::ostream & out) const
  *
  * @post size is @p n. Every element is a copy of @p value.
  */
-MFInt32::MFInt32(const std::vector<long>::size_type n, const long value)
+MFInt32::MFInt32(const std::vector<int32>::size_type n, const int32 value)
     throw (std::bad_alloc):
     value(n, value)
 {}
@@ -1948,7 +1948,7 @@ void MFInt32::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
-        for (std::vector<long>::const_iterator i(this->value.begin());
+        for (std::vector<int32>::const_iterator i(this->value.begin());
                 i != this->value.end() - 1; ++i) {
             out << *i << ", ";
         }

@@ -616,15 +616,15 @@ private:
 }
 
 vrmlScene[OpenVRML::Browser & browser,
-          OpenVRML::MFNode & mfNode]
+          std::vector<NodePtr> & nodes]
 {
     const ScopePtr scope(new Vrml97RootScope(browser, this->uri));
 }
-    :   (statement[browser, mfNode, scope])*
+    :   (statement[browser, nodes, scope])*
     ;
 
 statement[OpenVRML::Browser & browser,
-          OpenVRML::MFNode & mfNode,
+          std::vector<NodePtr> & nodes,
           const OpenVRML::ScopePtr & scope]
     {
         OpenVRML::NodePtr node;
@@ -634,9 +634,7 @@ statement[OpenVRML::Browser & browser,
             //
             // If we are unable to parse a node, node will be null.
             //
-            if (node) {
-                mfNode.value.push_back(node);
-            }
+            if (node) { nodes.push_back(node); }
         }
     | protoStatement[browser, scope]
     | routeStatement[*scope]

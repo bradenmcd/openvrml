@@ -189,9 +189,9 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE SFInt32 : public FieldValue {
     public:
-        long value;
+        int32 value;
 
-        explicit SFInt32(long value = 0) throw ();
+        explicit SFInt32(int32 value = 0) throw ();
         virtual ~SFInt32() throw ();
 
         // Use compiler-defined copy ctor and operator=.
@@ -471,9 +471,9 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE MFInt32 : public FieldValue {
     public:
-        std::vector<long> value;
+        std::vector<int32> value;
 
-        explicit MFInt32(std::vector<long>::size_type n = 0, long value = 0)
+        explicit MFInt32(std::vector<int32>::size_type n = 0, int32 value = 0)
             throw (std::bad_alloc);
         template <typename InputIterator>
         MFInt32(InputIterator first, InputIterator last);

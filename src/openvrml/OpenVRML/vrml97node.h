@@ -189,8 +189,8 @@ namespace OpenVRML {
             //
             // TextureNode implementation.
             //
-            virtual const SFBool & getRepeatS() const throw ();
-            virtual const SFBool & getRepeatT() const throw ();
+            virtual bool getRepeatS() const throw ();
+            virtual bool getRepeatT() const throw ();
 
         protected:
             AbstractTexture(const NodeType & nodeType, const ScopePtr & scope);
@@ -234,7 +234,7 @@ namespace OpenVRML {
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
-            virtual const MFNode & getChildren() const throw ();
+            virtual const std::vector<NodePtr> & getChildren() const throw ();
             virtual void activate(double timeStamp, bool isOver, bool isActive, double *p);
 
             void renderNoCull(Viewer & viewer, VrmlRenderContext context);
@@ -348,9 +348,9 @@ namespace OpenVRML {
             //
             // AppearanceNode implementation
             //
-            virtual const SFNode & getMaterial() const throw ();
-            virtual const SFNode & getTexture() const throw ();
-            virtual const SFNode & getTextureTransform() const throw ();
+            virtual const NodePtr & getMaterial() const throw ();
+            virtual const NodePtr & getTexture() const throw ();
+            virtual const NodePtr & getTextureTransform() const throw ();
 
         private:
             //
@@ -657,7 +657,8 @@ namespace OpenVRML {
             //
             // ColorNode implementation
             //
-            virtual const MFColor & getColor() const throw ();
+            virtual const std::vector<OpenVRML::color> & getColor() const
+                throw ();
 
         private:
             //
@@ -771,7 +772,7 @@ namespace OpenVRML {
             //
             // CoordinateNode implementation
             //
-            virtual const MFVec3f & getPoint() const throw ();
+            virtual const std::vector<vec3f> & getPoint() const throw ();
 
         private:
             //
@@ -1148,15 +1149,15 @@ namespace OpenVRML {
             //
             // FontStyleNode implementation
             //
-            virtual const MFString & getFamily() const throw ();
-            virtual const SFBool & getHorizontal() const throw ();
-            virtual const MFString & getJustify() const throw ();
-            virtual const SFString & getLanguage() const throw ();
-            virtual const SFBool & getLeftToRight() const throw ();
-            virtual const SFFloat & getSize() const throw ();
-            virtual const SFFloat & getSpacing() const throw ();
-            virtual const SFString & getStyle() const throw ();
-            virtual const SFBool & getTopToBottom() const throw ();
+            virtual const std::vector<std::string> & getFamily() const throw ();
+            virtual bool getHorizontal() const throw ();
+            virtual const std::vector<std::string> & getJustify() const throw ();
+            virtual const std::string & getLanguage() const throw ();
+            virtual bool getLeftToRight() const throw ();
+            virtual float getSize() const throw ();
+            virtual float getSpacing() const throw ();
+            virtual const std::string & getStyle() const throw ();
+            virtual bool getTopToBottom() const throw ();
         };
 
 
@@ -1309,7 +1310,7 @@ namespace OpenVRML {
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             virtual Inline * toInline() const;
 
-            virtual const MFNode & getChildren() const throw ();
+            virtual const std::vector<NodePtr> & getChildren() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
@@ -1355,7 +1356,7 @@ namespace OpenVRML {
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             virtual const BVolume * getBVolume() const;
 
-            virtual const MFNode & getChildren() const throw ();
+            virtual const std::vector<NodePtr> & getChildren() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
@@ -1399,12 +1400,12 @@ namespace OpenVRML {
             //
             // MaterialNode implementation
             //
-            virtual const SFFloat & getAmbientIntensity() const throw ();
-            virtual const SFColor & getDiffuseColor() const throw ();
-            virtual const SFColor & getEmissiveColor() const throw ();
-            virtual const SFFloat & getShininess() const throw ();
-            virtual const SFColor & getSpecularColor() const throw ();
-            virtual const SFFloat & getTransparency() const throw ();
+            virtual float getAmbientIntensity() const throw ();
+            virtual const color & getDiffuseColor() const throw ();
+            virtual const color & getEmissiveColor() const throw ();
+            virtual float getShininess() const throw ();
+            virtual const color & getSpecularColor() const throw ();
+            virtual float getTransparency() const throw ();
 
         private:
             //
@@ -1591,7 +1592,7 @@ namespace OpenVRML {
             //
             // NormalNode implementation.
             //
-            virtual const MFVec3f & getVector() const throw ();
+            virtual const std::vector<vec3f> & getVector() const throw ();
 
         private:
             //
@@ -2228,7 +2229,7 @@ namespace OpenVRML {
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             virtual const BVolume * getBVolume() const;
 
-            virtual const MFNode & getChildren() const throw ();
+            virtual const std::vector<NodePtr> & getChildren() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
@@ -2349,7 +2350,7 @@ namespace OpenVRML {
             //
             // TextureCoordinateNode implementation.
             //
-            virtual const MFVec2f & getPoint() const throw();
+            virtual const std::vector<vec2f> & getPoint() const throw();
 
         private:
             //
@@ -2605,8 +2606,8 @@ namespace OpenVRML {
             virtual const mat4f & getUserViewTransform() const throw ();
             virtual void setUserViewTransform(const mat4f & transform)
                 throw ();
-            virtual const SFString & getDescription() const throw ();
-            virtual const SFFloat & getFieldOfView() const throw ();
+            virtual const std::string & getDescription() const throw ();
+            virtual float getFieldOfView() const throw ();
 
             const SFRotation & getOrientation() const;
             const SFVec3f & getPosition() const;

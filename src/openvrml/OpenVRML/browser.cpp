@@ -89,7 +89,7 @@ namespace OpenVRML {
         ISMap isMap;
         FieldValueMap unISdFieldValueMap;
         EventOutValueMap eventOutValueMap;
-        MFNode implNodes;
+        std::vector<NodePtr> implNodes;
 
     public:
         explicit ProtoNode(const NodeType & nodeType) throw (std::bad_alloc);
@@ -98,7 +98,7 @@ namespace OpenVRML {
                   const ProtoNode & node) throw (std::bad_alloc);
         virtual ~ProtoNode() throw ();
 
-        const MFNode & getImplNodes() const throw ();
+        const std::vector<NodePtr> & getImplNodes() const throw ();
 
         void addRootNode(const NodePtr & node) throw (std::bad_alloc);
         void addIS(Node & implNode,
@@ -294,8 +294,8 @@ public:
     virtual const mat4f & getTransformation() const throw ();
     virtual const mat4f & getUserViewTransform() const throw ();
     virtual void setUserViewTransform(const mat4f & transform) throw ();
-    virtual const SFString & getDescription() const throw ();
-    virtual const SFFloat & getFieldOfView() const throw ();
+    virtual const std::string & getDescription() const throw ();
+    virtual float getFieldOfView() const throw ();
 
 private:
     virtual void do_setField(const std::string & id, const FieldValue & value)
@@ -647,8 +647,10 @@ Browser::Browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc):
     err(err),
     d_flags_need_updating(false)
 {
+    using std::string;
+    using std::vector;
     assert(this->activeViewpoint);
-    this->Browser::loadURI(MFString(), MFString());
+    this->Browser::loadURI(vector<string>(), vector<string>());
 }
 
 /**
@@ -678,7 +680,8 @@ Browser::~Browser() throw ()
  *
  * @return the root nodes for the browser.
  */
-const MFNode & Browser::getRootNodes() const throw () {
+const std::vector<NodePtr> & Browser::getRootNodes() const throw ()
+{
     assert(this->scene);
     return this->scene->getNodes();
 }
@@ -852,7 +855,7 @@ const std::string Browser::getWorldURI() const throw (std::bad_alloc) {
 /**
  * @todo Implement me!
  */
-void Browser::replaceWorld(const MFNode & nodes) {}
+void Browser::replaceWorld(const std::vector<NodePtr> & nodes) {}
 
 namespace {
     typedef std::map<std::string, NodeClassPtr> NodeClassMap;
@@ -932,7 +935,8 @@ namespace {
  *
  * @todo Make this asynchronous.
  */
-void Browser::loadURI(const MFString & uri, const MFString & parameter)
+void Browser::loadURI(const std::vector<std::string> & uri,
+                      const std::vector<std::string> & parameter)
     throw (std::bad_alloc)
 {
     using std::for_each;
@@ -971,8 +975,8 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     ViewpointNode * initialViewpoint = 0;
     const string viewpointNodeId = URI(this->scene->getURI()).getFragment();
     if (!viewpointNodeId.empty()) {
-        if (!this->scene->getNodes().value.empty()) {
-            const NodePtr & node = this->scene->getNodes().value[0];
+        if (!this->scene->getNodes().empty()) {
+            const NodePtr & node = this->scene->getNodes()[0];
             if (node) {
                 Node * const vp = node->getScope()->findNode(viewpointNodeId);
                 initialViewpoint = dynamic_cast<ViewpointNode *>(vp);
@@ -1030,8 +1034,8 @@ void Browser::setDescription(const std::string & description)
  * @exception InvalidVrml       if @p in has invalid VRML syntax.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-const MFNode Browser::createVrmlFromStream(std::istream & in) {
-    MFNode nodes;
+const std::vector<NodePtr> Browser::createVrmlFromStream(std::istream & in) {
+    std::vector<NodePtr> nodes;
     try {
         Vrml97Scanner scanner(in);
         Vrml97Parser parser(scanner, "");
@@ -1045,7 +1049,7 @@ const MFNode Browser::createVrmlFromStream(std::istream & in) {
 /**
  * @todo Implement me!
  */
-void Browser::createVrmlFromURI(const MFString & uri,
+void Browser::createVrmlFromURI(const std::vector<std::string> & uri,
                                 const NodePtr & node,
                                 const std::string & event) {}
 
@@ -1404,7 +1408,7 @@ void Browser::render(Viewer & viewer)
     t.transformation(position, orientation, scale);
     viewer.setViewpoint(&position[0],
                         &orientation[0],
-                        activeViewpoint->getFieldOfView().value,
+                        activeViewpoint->getFieldOfView(),
                         avatarSize,
                         visibilityLimit);
 
@@ -1922,18 +1926,20 @@ namespace {
  * @exception InvalidVrml       if there is a syntax error in the VRML input.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
+Scene::Scene(Browser & browser,
+             const std::vector<std::string> & uri,
+             Scene * parent)
     throw (InvalidVrml, std::bad_alloc):
     browser(browser),
     parent(parent)
 {
     std::string absoluteURI;
-    for (size_t i = 0; i < uri.value.size(); ++i) {
+    for (size_t i = 0; i < uri.size(); ++i) {
         try {
             //
             // Throw InvalidURI if it isn't a valid URI.
             //
-            URI testURI(uri.value[i]);
+            URI testURI(uri[i]);
 
             const bool absolute = !testURI.getScheme().empty();
             if (absolute) {
@@ -1976,7 +1982,7 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
         // this->uri must be the absolute URI.
         //
         this->uri = parent
-                  ? uri.value[i]
+                  ? uri[i]
                   : absoluteURI;
         break;
     }
@@ -2005,10 +2011,11 @@ const std::string Scene::getURI() const throw (std::bad_alloc) {
  */
 void Scene::initialize(const double timestamp) throw (std::bad_alloc)
 {
-    for (size_t i = 0; i < this->nodes.value.size(); ++i) {
-        assert(this->nodes.value[i]);
-        this->nodes.value[i]->initialize(*this, timestamp);
-        this->nodes.value[i]->relocate();
+    for (std::vector<NodePtr>::iterator node(this->nodes.begin());
+            node != this->nodes.end(); ++node) {
+        assert(*node);
+        (*node)->initialize(*this, timestamp);
+        (*node)->relocate();
     }
 }
 
@@ -2019,8 +2026,10 @@ void Scene::initialize(const double timestamp) throw (std::bad_alloc)
  * @param context   a VrmlRenderContext.
  */
 void Scene::render(Viewer & viewer, VrmlRenderContext context) {
-    for (size_t i = 0; i < this->nodes.value.size(); ++i) {
-        this->nodes.value[i]->render(viewer, context);
+    for (std::vector<NodePtr>::iterator node(this->nodes.begin());
+            node != this->nodes.end(); ++node) {
+        assert(*node);
+        (*node)->render(viewer, context);
     }
 }
 
@@ -2050,30 +2059,31 @@ void Scene::render(Viewer & viewer, VrmlRenderContext context) {
  * @todo This method currently fails silently if any of the URIs in @p uri is
  *      invalid. Should this throw InvalidURI?
  */
-void Scene::loadURI(const MFString & uri, const MFString & parameter)
+void Scene::loadURI(const std::vector<std::string> & uri,
+                    const std::vector<std::string> & parameter)
     throw (std::bad_alloc)
 {
     using std::string;
 
-    if (!uri.value.empty()) {
-        if (uri.value[0][0] == '#') {
+    if (!uri.empty()) {
+        if (uri[0][0] == '#') {
 # if 0
             //
             // If the first element in uri is a Viewpoint name, bind the
             // Viewpoint.
             //
-            this->browser.setViewpoint(uri.value[0].substr(1));
+            this->browser.setViewpoint(uri[0].substr(1));
 # endif
         } else {
-            MFString absoluteURIs(uri.value.size());
-            for (size_t i = 0; i < absoluteURIs.value.size(); ++i) {
+            std::vector<std::string> absoluteURIs(uri.size());
+            for (size_t i = 0; i < absoluteURIs.size(); ++i) {
                 try {
-                    const URI uriElement(uri.value[i]);
+                    const URI uriElement(uri[i]);
                     const string value =
                         uriElement.getScheme().empty()
                             ? uriElement.resolveAgainst(URI(this->getURI()))
                             : uriElement;
-                    absoluteURIs.value[i] = value;
+                    absoluteURIs[i] = value;
                 } catch (InvalidURI & ex) {
                     OPENVRML_PRINT_EXCEPTION_(ex);
                 }
@@ -2092,9 +2102,9 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
  */
 void Scene::shutdown(const double timestamp) throw ()
 {
-    for (size_t i = 0; i < this->nodes.value.size(); ++i) {
-        const NodePtr & node = this->nodes.value[i];
-        if (node) { node->shutdown(timestamp); }
+    for (std::vector<NodePtr>::iterator node(this->nodes.begin());
+            node != this->nodes.end(); ++node) {
+        if (*node) { (*node)->shutdown(timestamp); }
     }
 }
 
@@ -2253,8 +2263,8 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
                      const ProtoNode & node) throw (std::bad_alloc):
     Node(nodeType, scope)
 {
-    assert(!node.implNodes.value.empty());
-    assert(node.implNodes.value[0]);
+    assert(!node.implNodes.empty());
+    assert(node.implNodes[0]);
 
     //
     // For each exposedField and eventOut in the prototype interface, add
@@ -2293,11 +2303,13 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
 
             this->protoDef = &protoDef;
             this->protoInstance = &protoInstance;
-            const MFNode & protoDefImplNodes = protoDef.getImplNodes();
-            for (size_t i = 0; i < protoDefImplNodes.value.size(); ++i) {
+            const std::vector<NodePtr> & protoDefImplNodes =
+                    protoDef.getImplNodes();
+            for (std::vector<NodePtr>::const_iterator node =
+                    protoDefImplNodes.begin();
+                    node != protoDefImplNodes.end(); ++node) {
                 const NodePtr newNode =
-                        this->cloneNode(protoDefImplNodes.value[i],
-                                        protoInstance.getScope());
+                        this->cloneNode(*node, protoInstance.getScope());
                 assert(newNode);
                 protoInstance.addRootNode(newNode);
             }
@@ -2552,7 +2564,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
     typedef ProtoNodeClass::DefaultValueMap DefaultValueMap;
     DefaultValueMap & defaultValueMap =
             static_cast<ProtoNodeClass &>(nodeType.nodeClass).defaultValueMap;
-    const ScopePtr & protoScope = this->implNodes.value[0]->getScope();
+    const ScopePtr & protoScope = this->implNodes[0]->getScope();
 
     for (DefaultValueMap::const_iterator i(defaultValueMap.begin());
             i != defaultValueMap.end(); ++i) {
@@ -2606,9 +2618,9 @@ ProtoNode::~ProtoNode() throw ()
  */
 const ScriptNode * ProtoNode::toScript() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toScript();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toScript();
 }
 
 /**
@@ -2619,9 +2631,9 @@ const ScriptNode * ProtoNode::toScript() const throw ()
  */
 ScriptNode * ProtoNode::toScript() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toScript();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toScript();
 }
 
 /**
@@ -2632,9 +2644,9 @@ ScriptNode * ProtoNode::toScript() throw ()
  */
 const AppearanceNode * ProtoNode::toAppearance() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toAppearance();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toAppearance();
 }
 
 /**
@@ -2645,9 +2657,9 @@ const AppearanceNode * ProtoNode::toAppearance() const throw ()
  */
 AppearanceNode * ProtoNode::toAppearance() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toAppearance();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toAppearance();
 }
 
 /**
@@ -2658,9 +2670,9 @@ AppearanceNode * ProtoNode::toAppearance() throw ()
  */
 const ChildNode * ProtoNode::toChild() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toChild();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toChild();
 }
 
 /**
@@ -2671,9 +2683,9 @@ const ChildNode * ProtoNode::toChild() const throw ()
  */
 ChildNode * ProtoNode::toChild() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toChild();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toChild();
 }
 
 /**
@@ -2684,9 +2696,9 @@ ChildNode * ProtoNode::toChild() throw ()
  */
 const ColorNode * ProtoNode::toColor() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toColor();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toColor();
 }
 
 /**
@@ -2697,9 +2709,9 @@ const ColorNode * ProtoNode::toColor() const throw ()
  */
 ColorNode * ProtoNode::toColor() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toColor();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toColor();
 }
 
 /**
@@ -2710,9 +2722,9 @@ ColorNode * ProtoNode::toColor() throw ()
  */
 const CoordinateNode * ProtoNode::toCoordinate() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toCoordinate();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toCoordinate();
 }
 
 /**
@@ -2723,9 +2735,9 @@ const CoordinateNode * ProtoNode::toCoordinate() const throw ()
  */
 CoordinateNode * ProtoNode::toCoordinate() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toCoordinate();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toCoordinate();
 }
 
 /**
@@ -2736,9 +2748,9 @@ CoordinateNode * ProtoNode::toCoordinate() throw ()
  */
 const FontStyleNode * ProtoNode::toFontStyle() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toFontStyle();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toFontStyle();
 }
 
 /**
@@ -2749,9 +2761,9 @@ const FontStyleNode * ProtoNode::toFontStyle() const throw ()
  */
 FontStyleNode * ProtoNode::toFontStyle() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toFontStyle();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toFontStyle();
 }
 
 /**
@@ -2762,9 +2774,9 @@ FontStyleNode * ProtoNode::toFontStyle() throw ()
  */
 const GeometryNode * ProtoNode::toGeometry() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toGeometry();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toGeometry();
 }
 
 /**
@@ -2775,9 +2787,9 @@ const GeometryNode * ProtoNode::toGeometry() const throw ()
  */
 GeometryNode * ProtoNode::toGeometry() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toGeometry();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toGeometry();
 }
 
 /**
@@ -2788,9 +2800,9 @@ GeometryNode * ProtoNode::toGeometry() throw ()
  */
 const MaterialNode * ProtoNode::toMaterial() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toMaterial();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toMaterial();
 }
 
 /**
@@ -2801,9 +2813,9 @@ const MaterialNode * ProtoNode::toMaterial() const throw ()
  */
 MaterialNode * ProtoNode::toMaterial() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toMaterial();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toMaterial();
 }
 
 /**
@@ -2814,9 +2826,9 @@ MaterialNode * ProtoNode::toMaterial() throw ()
  */
 const NormalNode * ProtoNode::toNormal() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toNormal();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toNormal();
 }
 
 /**
@@ -2827,9 +2839,9 @@ const NormalNode * ProtoNode::toNormal() const throw ()
  */
 NormalNode * ProtoNode::toNormal() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toNormal();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toNormal();
 }
 
 /**
@@ -2840,9 +2852,9 @@ NormalNode * ProtoNode::toNormal() throw ()
  */
 const SoundSourceNode * ProtoNode::toSoundSource() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toSoundSource();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toSoundSource();
 }
 
 /**
@@ -2853,9 +2865,9 @@ const SoundSourceNode * ProtoNode::toSoundSource() const throw ()
  */
 SoundSourceNode * ProtoNode::toSoundSource() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toSoundSource();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toSoundSource();
 }
 
 /**
@@ -2866,9 +2878,9 @@ SoundSourceNode * ProtoNode::toSoundSource() throw ()
  */
 const TextureNode * ProtoNode::toTexture() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toTexture();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toTexture();
 }
 
 /**
@@ -2879,9 +2891,9 @@ const TextureNode * ProtoNode::toTexture() const throw ()
  */
 TextureNode * ProtoNode::toTexture() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toTexture();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toTexture();
 }
 
 /**
@@ -2892,9 +2904,9 @@ TextureNode * ProtoNode::toTexture() throw ()
  */
 const TextureCoordinateNode * ProtoNode::toTextureCoordinate() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toTextureCoordinate();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toTextureCoordinate();
 }
 
 /**
@@ -2905,9 +2917,9 @@ const TextureCoordinateNode * ProtoNode::toTextureCoordinate() const throw ()
  */
 TextureCoordinateNode * ProtoNode::toTextureCoordinate() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toTextureCoordinate();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toTextureCoordinate();
 }
 
 /**
@@ -2918,9 +2930,9 @@ TextureCoordinateNode * ProtoNode::toTextureCoordinate() throw ()
  */
 const TextureTransformNode * ProtoNode::toTextureTransform() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toTextureTransform();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toTextureTransform();
 }
 
 /**
@@ -2931,9 +2943,9 @@ const TextureTransformNode * ProtoNode::toTextureTransform() const throw ()
  */
 TextureTransformNode * ProtoNode::toTextureTransform() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toTextureTransform();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toTextureTransform();
 }
 
 /**
@@ -2944,9 +2956,9 @@ TextureTransformNode * ProtoNode::toTextureTransform() throw ()
  */
 const TransformNode * ProtoNode::toTransform() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toTransform();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toTransform();
 }
 
 /**
@@ -2957,9 +2969,9 @@ const TransformNode * ProtoNode::toTransform() const throw ()
  */
 TransformNode * ProtoNode::toTransform() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toTransform();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toTransform();
 }
 
 /**
@@ -2970,9 +2982,9 @@ TransformNode * ProtoNode::toTransform() throw ()
  */
 const ViewpointNode * ProtoNode::toViewpoint() const throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toViewpoint();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toViewpoint();
 }
 
 /**
@@ -2983,9 +2995,9 @@ const ViewpointNode * ProtoNode::toViewpoint() const throw ()
  */
 ViewpointNode * ProtoNode::toViewpoint() throw ()
 {
-    assert(!this->implNodes.value.empty());
-    assert(this->implNodes.value[0]);
-    return this->implNodes.value[0]->toViewpoint();
+    assert(!this->implNodes.empty());
+    assert(this->implNodes[0]);
+    return this->implNodes[0]->toViewpoint();
 }
 
 /**
@@ -2993,7 +3005,7 @@ ViewpointNode * ProtoNode::toViewpoint() throw ()
  *
  * @return the implementation Nodes
  */
-const MFNode & ProtoNode::getImplNodes() const throw ()
+const std::vector<NodePtr> & ProtoNode::getImplNodes() const throw ()
 {
     return this->implNodes;
 }
@@ -3004,7 +3016,7 @@ const MFNode & ProtoNode::getImplNodes() const throw ()
 void ProtoNode::addRootNode(const NodePtr & node) throw (std::bad_alloc)
 {
     assert(node);
-    this->implNodes.value.push_back(node);
+    this->implNodes.push_back(node);
 }
 
 /**
@@ -3118,9 +3130,9 @@ void ProtoNode::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
 
-    for (size_t i = 0; i < this->implNodes.value.size(); ++i) {
-        assert(this->implNodes.value[i]);
-        this->implNodes.value[i]->initialize(*this->getScene(), timestamp);
+    for (size_t i = 0; i < this->implNodes.size(); ++i) {
+        assert(this->implNodes[i]);
+        this->implNodes[i]->initialize(*this->getScene(), timestamp);
     }
 
     this->getScene()->browser.addProto(*this);
@@ -3294,63 +3306,63 @@ void ProtoNode::do_shutdown(const double timestamp) throw ()
     assert(this->getScene());
     this->getScene()->browser.removeProto(*this);
 
-    for (size_t i = 0; i < this->implNodes.value.size(); ++i) {
-        assert(this->implNodes.value[i]);
-        this->implNodes.value[i]->shutdown(timestamp);
+    for (size_t i = 0; i < this->implNodes.size(); ++i) {
+        assert(this->implNodes[i]);
+        this->implNodes[i]->shutdown(timestamp);
     }
 }
 
 Vrml97Node::Anchor * ProtoNode::toAnchor() const {
-    return this->implNodes.value[0]->toAnchor();
+    return this->implNodes[0]->toAnchor();
 }
 
 Vrml97Node::AudioClip * ProtoNode::toAudioClip() const {
-    return this->implNodes.value[0]->toAudioClip();
+    return this->implNodes[0]->toAudioClip();
 }
 
 Vrml97Node::CylinderSensor * ProtoNode::toCylinderSensor() const {
-    return this->implNodes.value[0]->toCylinderSensor();
+    return this->implNodes[0]->toCylinderSensor();
 }
 
 Vrml97Node::AbstractLight * ProtoNode::toLight() const {
-    return this->implNodes.value[0]->toLight();
+    return this->implNodes[0]->toLight();
 }
 
 Vrml97Node::MovieTexture * ProtoNode::toMovieTexture() const {
-    return this->implNodes.value[0]->toMovieTexture();
+    return this->implNodes[0]->toMovieTexture();
 }
 
 Vrml97Node::NavigationInfo * ProtoNode::toNavigationInfo() const {
-    return this->implNodes.value[0]->toNavigationInfo();
+    return this->implNodes[0]->toNavigationInfo();
 }
 
 Vrml97Node::PlaneSensor * ProtoNode::toPlaneSensor() const {
-    return this->implNodes.value[0]->toPlaneSensor();
+    return this->implNodes[0]->toPlaneSensor();
 }
 
 Vrml97Node::PointLight * ProtoNode::toPointLight() const {
-    return this->implNodes.value[0]->toPointLight();
+    return this->implNodes[0]->toPointLight();
 }
 
 Vrml97Node::SphereSensor * ProtoNode::toSphereSensor() const {
-    return this->implNodes.value[0]->toSphereSensor();
+    return this->implNodes[0]->toSphereSensor();
 }
 
 Vrml97Node::SpotLight * ProtoNode::toSpotLight() const {
-    return this->implNodes.value[0]->toSpotLight();
+    return this->implNodes[0]->toSpotLight();
 }
 
 Vrml97Node::TimeSensor * ProtoNode::toTimeSensor() const {
-    return this->implNodes.value[0]->toTimeSensor();
+    return this->implNodes[0]->toTimeSensor();
 }
 
 Vrml97Node::TouchSensor * ProtoNode::toTouchSensor() const {
-    return this->implNodes.value[0]->toTouchSensor();
+    return this->implNodes[0]->toTouchSensor();
 }
 
 void ProtoNode::render(Viewer & viewer, const VrmlRenderContext context) {
-    assert(this->implNodes.value[0]);
-    this->implNodes.value[0]->render(viewer, context);
+    assert(this->implNodes[0]);
+    this->implNodes[0]->render(viewer, context);
 }
 
 
@@ -4784,15 +4796,15 @@ void DefaultViewpoint::setUserViewTransform(const mat4f & transform)
     this->userViewTransform = transform;
 }
 
-const SFString & DefaultViewpoint::getDescription() const throw ()
+const std::string & DefaultViewpoint::getDescription() const throw ()
 {
-    static const SFString description;
+    static const std::string description;
     return description;
 }
 
-const SFFloat & DefaultViewpoint::getFieldOfView() const throw ()
+float DefaultViewpoint::getFieldOfView() const throw ()
 {
-    static const SFFloat fieldOfView(0.785398);
+    static const float fieldOfView = 0.785398;
     return fieldOfView;
 }
 

@@ -130,11 +130,11 @@ public:
 	Vrml97Parser(const ANTLR_USE_NAMESPACE(antlr)ParserSharedInputState& state);
 	public: void vrmlScene(
 		OpenVRML::Browser & browser,
-          OpenVRML::MFNode & mfNode
+          std::vector<NodePtr> & nodes
 	);
 	public: void statement(
 		OpenVRML::Browser & browser,
-          OpenVRML::MFNode & mfNode,
+          std::vector<NodePtr> & nodes,
           const OpenVRML::ScopePtr & scope
 	);
 	public: OpenVRML::NodePtr  nodeStatement(
