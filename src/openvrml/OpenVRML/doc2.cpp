@@ -60,43 +60,41 @@ namespace {
         };
         
         class filebuf : public std::streambuf {
-            
-            public:
-                filebuf();
-                ~filebuf();
-                
-                bool is_open() const;
-                filebuf * open(const char * path, int mode,
-                               level = default_compression,
-                               strategy = default_strategy);
-                filebuf * close();
-                
-            protected:
-                virtual int underflow();
-                virtual int overflow(int = EOF);
-                
-            private:
-                enum { buffer_size = 10 };
-                char buffer[buffer_size];
-                gzFile file;
+            enum { buffer_size = 10 };
+            char buffer[buffer_size];
+            gzFile file;
+        
+        public:
+            filebuf();
+            virtual ~filebuf();
+
+            bool is_open() const;
+            filebuf * open(const char * path, int mode,
+                           level = default_compression,
+                           strategy = default_strategy);
+            filebuf * close();
+
+        protected:
+            virtual int underflow();
+            virtual int overflow(int = EOF);
         };
         
         class ifstream : public std::istream {
-            public:
-                ifstream();
-                explicit ifstream(const char * path, level = default_compression,
-                                  strategy = default_strategy);
-                ~ifstream();
-                
-                filebuf * rdbuf() const;
-                bool is_open() const;
-                void open(const char * path, level = default_compression,
-                          strategy = default_strategy);
-                void close();
-                
-            private:
-                filebuf fbuf;
+            filebuf fbuf;
+        
+        public:
+            ifstream();
+            explicit ifstream(const char * path, level = default_compression,
+                              strategy = default_strategy);
+            virtual ~ifstream();
+
+            filebuf * rdbuf() const;
+            bool is_open() const;
+            void open(const char * path, level = default_compression,
+                      strategy = default_strategy);
+            void close();
         };
+        
         //
         // filebuf
         //
