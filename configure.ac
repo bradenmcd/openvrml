@@ -17,10 +17,10 @@ AC_CONFIG_FILES([Makefile]
                 [src/Makefile]
                 [src/libopenvrml/Makefile]
                 [src/libopenvrml-gl/Makefile]
-                [src/lookat/Makefile]
                 [test/Makefile]
                 [test/parse/Makefile]
                 [test/parse/testsuite/Makefile]
+                [examples/Makefile]
                 [openvrml.pc]
                 [openvrml.spec])
 
@@ -203,24 +203,25 @@ AM_CONDITIONAL([ENABLE_GL_RENDERER],
                [test "X$enable_gl_renderer" != "Xno" -a "X$no_gl" != "Xyes"])
 
 #
-# build lookat
-#
-AC_ARG_ENABLE([lookat],
-              [AC_HELP_STRING([--disable-lookat], [do not build lookat])])
-if test "X$enable_lookat" != "Xno"; then
-  if test "X$have_sdl" != "Xyes"; then
-    AC_MSG_FAILURE([SDL is required for lookat])
-  fi
-fi
-AM_CONDITIONAL([ENABLE_LOOKAT],
-               [test "X$enable_lookat" != "Xno" -a "X$have_sdl" = "Xyes"])
-
-#
 # build Mozilla plug-in
 #
 AC_ARG_ENABLE([mozilla-plugin],
               [AC_HELP_STRING([--disable-mozilla-plugin],
                               [do not build the Mozilla plug-in])])
+
+#
+# build examples
+#
+AC_ARG_ENABLE([lookat],
+              [AC_HELP_STRING([--disable-examples],
+                              [do not build the example programs])])
+if test "X$enable_examples" != "Xno"; then
+  if test "X$have_sdl" != "Xyes"; then
+    AC_MSG_FAILURE([SDL is required for the example programs])
+  fi
+fi
+AM_CONDITIONAL([ENABLE_EXAMPLES],
+               [test "X$enable_examples" != "Xno" -a "X$have_sdl" = "Xyes"])
 
 #
 # build tests

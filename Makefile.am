@@ -1,12 +1,11 @@
-SUBDIRS = doc ide-projects m4 models lib java src mozilla-plugin test
+SUBDIRS = doc ide-projects m4 models lib java src mozilla-plugin examples test
 
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = \
         openvrml.pc.in \
         openvrml-gl.pc.in \
-        openvrml.spec.in \
-        lookat.xpm
+        openvrml.spec.in
 
 if ENABLE_GL_RENDERER
 OPENVRML_GL_PC = openvrml-gl.pc
@@ -14,9 +13,6 @@ endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = openvrml.pc $(OPENVRML_GL_PC)
-
-pixmapdatadir = $(datadir)/pixmaps
-pixmapdata_DATA = lookat.xpm
 
 dist-hook: openvrml.spec
 	cp openvrml.spec $(distdir)

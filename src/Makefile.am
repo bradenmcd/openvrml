@@ -1,1 +1,1 @@
-SUBDIRS = libopenvrml libopenvrml-gl lookat
+SUBDIRS = libopenvrml libopenvrml-gl

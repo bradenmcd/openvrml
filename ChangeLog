@@ -1,5 +1,21 @@
 2005-03-21 Braden McDaniel  <braden@endoframe.com>
 
+	Moved lookat to examples/sdl-viewer.  It is no longer an
+	installed program.
+
+	* Makefile.am:  Removed reference to lookat.xpm.
+	* configure.ac:  Changed "--disable-lookat" option to
+	"--disable-examples".
+	* lookat.xpm:  Removed file.
+	* openvrml.spec.in:  No longer emit lookat package.
+	* examples/Makefile.am:  Added file.
+	* examples/sdl_viewer.cpp:  Added file.
+	* src/Makefile.am:  Removed reference to lookat subdirectory.
+	* src/lookat/Makefile.am:  Removed file.
+	* src/lookat/lookat.cpp:  Removed file.
+
+2005-03-21 Braden McDaniel  <braden@endoframe.com>
+
 	Removed file left over from GLUT-based lookat.
 
 	* src/lookat/glutint.h:  Removed file.
