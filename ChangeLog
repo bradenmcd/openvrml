@@ -9,6 +9,8 @@
 
         * Clean up VrmlNodePtr::dispose().
 
+        * Fixed crash on exit in VrmlNodePtr::dispose().
+
 2001-10-17  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Fixes for bug #213579. Problem on invariant background under

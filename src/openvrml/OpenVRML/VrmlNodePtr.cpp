@@ -100,8 +100,8 @@ void VrmlNodePtr::dispose() {
         if (this->countPtr->second == 0) {
             delete this->countPtr->first;
             countMap.erase(this->countPtr->first);
+            this->countPtr = 0;
         }
-        this->countPtr = 0;
     }
 }
 
