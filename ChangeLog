@@ -1,3 +1,9 @@
+2004-11-29 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(path_getter::get_path_from(const node_ptr &)):  Removed
+	spurious assert.
+
 2004-11-28 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
