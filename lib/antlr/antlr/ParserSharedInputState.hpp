@@ -3,9 +3,9 @@
 
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
- * $Id: ParserSharedInputState.hpp,v 1.1.1.1 2003-04-06 22:26:27 braden Exp $
+ * $Id: ParserSharedInputState.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -25,7 +25,7 @@ namespace antlr {
 class ANTLR_API ParserInputState {
 public:
 	/** Construct a new ParserInputState
-	 * @param input_ the TokenBuffer to read from. The object is deleted together
+	 * @param in the TokenBuffer to read from. The object is deleted together
 	 * with the ParserInputState object.
 	 */
 	ParserInputState( TokenBuffer* in )
@@ -38,7 +38,7 @@ public:
 	/** Construct a new ParserInputState
 	 * @param in the TokenBuffer to read from.
 	 */
-	ParserInputState(TokenBuffer& in )
+	ParserInputState( TokenBuffer& in )
 	: guessing(0)
 	, filename("")
 	, input(&in)
@@ -46,7 +46,7 @@ public:
 	{
 	}
 
-	~ParserInputState()
+	virtual ~ParserInputState()
 	{
 		if (inputResponsible)
 			delete input;

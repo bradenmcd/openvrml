@@ -2,9 +2,8 @@
 # $Id$
 ###############################################################################
 
-# The support lib
-L_TARGET := libantlr.a
-WIN_SOURCE := dll.cpp
+# The sources for the support lib
+WIN32_SOURCE := dll.cpp
 SOURCE     := ANTLRUtil.cpp \
 				  ASTFactory.cpp \
 				  ASTNULLType.cpp \
@@ -34,6 +33,10 @@ SOURCE     := ANTLRUtil.cpp \
 				  TreeParser.cpp
 
 L_OBJS   := $(SOURCE:.cpp=.o)
+L_TARGET := libantlr.a
+
+DLL_OBJS := $(L_OBJS) $(WIN32_SOURCE:.cpp=.o)
+DLL_TARGET := antlr-$(VERSION)-$(SUBVERSION)-$(PATCHLEVEL).dll
 
 ifndef TOPDIR
 TOPDIR  = $(shell pwd)/../../..

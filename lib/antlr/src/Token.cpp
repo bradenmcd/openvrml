@@ -1,6 +1,6 @@
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
  * $Id$
  */
@@ -15,6 +15,8 @@ namespace antlr {
 // The below initialization ICED AIX Visualage CC
 //ANTLR_API RefToken Token::badToken(new Token(Token::INVALID_TYPE, "<no text>"));
 // this seemed to work
+// RK: maybe the above one is necessary for MSVC DLL build.
+// leaving it unchanged untill after testing..
 ANTLR_API RefToken Token::badToken = RefToken(new Token(Token::INVALID_TYPE, "<no text>"));
 
 Token::Token() : type(INVALID_TYPE)
@@ -26,9 +28,8 @@ Token::Token(int t) : type(t)
 }
 
 Token::Token(int t, const ANTLR_USE_NAMESPACE(std)string& txt)
-	: type(t)
+: type(t)
 {
-	type=t;
 	setText(txt);
 }
 
@@ -52,18 +53,18 @@ int Token::getType() const
 	return type;
 }
 
-void Token::setColumn(int c)
+void Token::setColumn(int)
 {}
 
-void Token::setLine(int l)
+void Token::setLine(int)
 {}
 
-void Token::setText(const ANTLR_USE_NAMESPACE(std)string& t)
+void Token::setText(const ANTLR_USE_NAMESPACE(std)string&)
 {}
 
 void Token::setType(int t)
 {
-	type=t;
+	type = t;
 }
 
 ANTLR_USE_NAMESPACE(std)string Token::toString() const

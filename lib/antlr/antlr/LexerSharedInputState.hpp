@@ -3,9 +3,9 @@
 
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
- * $Id: LexerSharedInputState.hpp,v 1.1.1.1 2003-04-06 22:26:27 braden Exp $
+ * $Id: LexerSharedInputState.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -141,13 +141,13 @@ private:
 	LexerInputState& operator=(const LexerInputState&);
 };
 
-/// A reference counted LexerInputState object
-typedef RefCount<LexerInputState> LexerSharedInputState;
-
 inline InputBuffer& LexerInputState::getInput()
 {
 	return *input;
 }
+
+/// A reference counted LexerInputState object
+typedef RefCount<LexerInputState> LexerSharedInputState;
 
 #ifdef ANTLR_CXX_SUPPORTS_NAMESPACE
 }

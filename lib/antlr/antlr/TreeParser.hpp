@@ -3,9 +3,9 @@
 
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
- * $Id: TreeParser.hpp,v 1.1.1.1 2003-04-06 22:26:27 braden Exp $
+ * $Id: TreeParser.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -26,10 +26,7 @@ public:
 	virtual ~TreeParser();
 
 	/// Get the AST return value squirreled away in the parser
-	RefAST getAST() const
-	{
-		return returnAST;
-	}
+	virtual RefAST getAST() = 0;
 
 	/** Make sure current lookahead symbol matches the given set
 	 * Throw an exception upon mismatch, which is catch by either the
@@ -54,7 +51,10 @@ public:
 	}
 	/// Get the name for token 'num'
 	virtual const char* getTokenName(int num) const = 0;
+	/// Return the number of tokens defined
 	virtual int getNumTokens() const = 0;
+	/// Return an array of getNumTokens() token names
+	virtual const char* const* getTokenNames() const = 0;
 
 	/// Parser error-reporting function can be overridden in subclass
 	virtual void reportError(const RecognitionException& ex);
@@ -62,8 +62,10 @@ public:
 	virtual void reportError(const ANTLR_USE_NAMESPACE(std)string& s);
 	/// Parser warning-reporting function can be overridden in subclass
 	virtual void reportWarning(const ANTLR_USE_NAMESPACE(std)string& s);
-	/// Give panic message and exit the program. can be overridden in subclass
-	static void panic();
+	/** Give panic message and exit the program. can be overridden in subclass
+	 * @deprecated this method is unused and will dissappear in the next release
+	 */
+	virtual void panic();
 
 	/// These are used during when traceTreeParser commandline option is passed.
 	virtual void traceIndent();
@@ -81,10 +83,10 @@ protected:
 	virtual void match(RefAST t, int ttype);
 	virtual void matchNot(RefAST t, int ttype);
 
-	/** Where did this rule leave off parsing; avoids a return parameter */
-	RefAST _retTree;
-	/** AST return value for a rule is squirreled away here */
-	RefAST returnAST;
+	/* Where did this rule leave off parsing; avoids a return parameter */
+	//RefAST _retTree;
+	/* AST return value for a rule is squirreled away here */
+	//RefAST returnAST;
 	/** AST support code; parser and treeparser delegate to this object */
 	ASTFactory* astFactory;
 

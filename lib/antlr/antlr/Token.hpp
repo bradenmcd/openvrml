@@ -3,9 +3,9 @@
 
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
- * $Id: Token.hpp,v 1.1.1.1 2003-04-06 22:26:27 braden Exp $
+ * $Id: Token.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -72,11 +72,16 @@ private:
 	const Token& operator=(const Token&);
 };
 
-#ifdef NEEDS_OPERATOR_LESS_THAN
-inline operator<(RefToken l,RefToken r); //{return true;}
-#endif
-
 extern ANTLR_API RefToken nullToken;
+
+#ifdef NEEDS_OPERATOR_LESS_THAN
+// RK: Added after 2.7.2 previously it was undefined.
+// AL: what to return if l and/or r point to nullToken???
+inline bool operator<( RefToken l, RefToken r )
+{
+	return nullToken == l ? ( nullToken == r ? false : true ) : l->getType() < r->getType();
+}
+#endif
 
 #ifdef ANTLR_CXX_SUPPORTS_NAMESPACE
 }
