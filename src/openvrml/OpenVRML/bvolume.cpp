@@ -606,7 +606,7 @@ BSphere::getCenter() const
 void 
 BSphere::setCenter(const SFVec3f & center)
 {
-  const float * const centerVec = center.get();
+  SFVec3f::ConstArrayReference centerVec = center.get();
   std::copy(centerVec, centerVec + 3, this->c);
 }
 

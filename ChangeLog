@@ -33,6 +33,11 @@
           match the exception specification for NodeClass::createType.
           This circumvents a bug in Sun Forte 6 update 2.
 
+        * src/openvrml/OpenVRML/bvolume.cpp,
+          src/openvrml/OpenVRML/vrml97node.h: Avoid converting from
+          array references to pointers when we don't need to. Sun
+          Forte 6 update 2 is iffy on some conversions.
+
 2002-06-17  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.1.
