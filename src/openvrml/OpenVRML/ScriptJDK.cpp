@@ -994,9 +994,22 @@ JNIEXPORT jstring JNICALL Java_vrml_field_SFRotation_toString
 JNIEXPORT void JNICALL Java_vrml_field_ConstSFString_CreateObject
   (JNIEnv *env, jobject obj, jstring jstr)
 {
-  const char *str = env->GetStringUTFChars(jstr, 0);
-  SFString* pSFString = new SFString(str);
-  env->ReleaseStringUTFChars(jstr, str);
+  SFString* pSFString;
+
+  // Need to handle null strings
+  if (jstr != 0)
+  {
+    const char* str = env->GetStringUTFChars(jstr, 0);
+    std::string stdString(str);
+    pSFString = new SFString(std::string(str));
+    env->ReleaseStringUTFChars(jstr, str);
+  }
+  else
+  {
+    std::string str;
+    pSFString = new SFString(str);
+  }
+
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pSFString);
 }
