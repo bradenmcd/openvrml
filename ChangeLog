@@ -1,3 +1,7 @@
+2005-03-06 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/Makefile.am:  Updated documentation dependencies.
+
 2005-02-09 Braden McDaniel  <braden@endoframe.com>
 
 	Load the initial plug-in URL from Mozilla rather than using

@@ -8,13 +8,13 @@ DOCUMENTATION_FILES = \
         conformance.doc
 
 DOCUMENTED_SOURCE_FILES = \
+        $(top_srcdir)/src/libopenvrml/private.h \
         $(top_srcdir)/src/libopenvrml/openvrml/basetypes.cpp \
         $(top_srcdir)/src/libopenvrml/openvrml/basetypes.h \
         $(top_srcdir)/src/libopenvrml/openvrml/bounding_volume.cpp \
         $(top_srcdir)/src/libopenvrml/openvrml/bounding_volume.h \
         $(top_srcdir)/src/libopenvrml/openvrml/browser.cpp \
         $(top_srcdir)/src/libopenvrml/openvrml/browser.h \
-        $(top_srcdir)/src/libopenvrml/openvrml/common.h \
         $(top_srcdir)/src/libopenvrml/openvrml/event.cpp \
         $(top_srcdir)/src/libopenvrml/openvrml/event.h \
         $(top_srcdir)/src/libopenvrml/openvrml/exposedfield.cpp \
@@ -29,7 +29,6 @@ DOCUMENTED_SOURCE_FILES = \
         $(top_srcdir)/src/libopenvrml/openvrml/node.h \
         $(top_srcdir)/src/libopenvrml/openvrml/node_ptr.cpp \
         $(top_srcdir)/src/libopenvrml/openvrml/node_ptr.h \
-        $(top_srcdir)/src/libopenvrml/openvrml/private.h \
         $(top_srcdir)/src/libopenvrml/openvrml/rendering_context.cpp \
         $(top_srcdir)/src/libopenvrml/openvrml/rendering_context.h \
         $(top_srcdir)/src/libopenvrml/openvrml/scope.cpp \
