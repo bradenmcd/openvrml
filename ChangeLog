@@ -1,5 +1,10 @@
 2004-01-30 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node.cpp:  Consistently pass
+	comparator parameter to std::set.
+
+2004-01-30 Braden McDaniel  <braden@endoframe.com>
+
 	Don't inline so much.
 
 	* src/libopenvrml/openvrml/basetypes.cpp

@@ -331,7 +331,7 @@ node_interface_set::add(const node_interface & interface)
 {
     using std::pair;
     using std::set;
-    pair<set<node_interface>::iterator, bool> result =
+    pair<set<node_interface, id_less>::iterator, bool> result =
         this->interfaces.insert(interface);
     if (!result.second) {
         throw std::invalid_argument("Interface conflicts with an interface "
