@@ -2,7 +2,7 @@ dnl
 dnl OV_PATH_GL([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
 AC_DEFUN(OV_PATH_GL,
-  [dnl
+  [
     dnl
     dnl Dependencies
     dnl
@@ -37,19 +37,13 @@ AC_DEFUN(OV_PATH_GL,
     
     
     
-    AC_ARG_WITH(GL-prefix,
-      [  --with-GL-prefix=DIR    pass '-IDIR/include' to CPP, '-LDIR/lib' to LD]
-    )
-    AC_ARG_WITH(MesaGL,
-      [  --with-MesaGL           use '-lMesaGL', instead of '-lGL']
-    )
-    AC_ARG_WITH(MesaGLU,
-      [  --with-MesaGLU          use '-lMesaGLU', instead of '-lGLU']
-    )
+    AC_ARG_WITH(gl-prefix, [  --with-gl-prefix=PREFIX OpenGL/Mesa installed under PREFIX])
+    AC_ARG_WITH(MesaGL, [  --with-MesaGL           use MesaGL library, instead of GL library])
+    AC_ARG_WITH(MesaGLU, [  --with-MesaGLU          use MesaGLU library, instead of GLU library])
     
-    if test -n "${with_GL_prefix}"; then
-      GL__Idir="-I${with_GL_prefix}/include"
-      GL__Ldir="-L${with_GL_prefix}/lib"
+    if test -n "${with_gl_prefix}"; then
+      GL__Idir="-I${with_gl_prefix}/include"
+      GL__Ldir="-L${with_gl_prefix}/lib"
     fi
     
     dnl

@@ -3,7 +3,8 @@ dnl OV_PATH_ZLIB([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
 AC_DEFUN(OV_PATH_ZLIB,
   [
-    AC_ARG_WITH(zlib-prefix, [  --with-zlib-prefix=DIR  prefix where zlib is installed])
+    AC_ARG_WITH(zlib-prefix, [  --with-zlib-prefix=PREFIX
+                          zlib installed under PREFIX])
     
     if test -n "${with_zlib_prefix}"; then
       zlib__Idir="-I${with_zlib_prefix}/include"
@@ -13,7 +14,7 @@ AC_DEFUN(OV_PATH_ZLIB,
     AC_LANG_SAVE
     AC_LANG_C
     
-    ac_save_LDFLAGS="${LFDLAGS}"
+    ac_save_LDFLAGS="${LDFLAGS}"
     LDFLAGS="${LDFLAGS} ${zlib__Ldir}"
     
     AC_CHECK_LIB(z, zlibVersion,

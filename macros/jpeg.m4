@@ -3,7 +3,8 @@ dnl OV_PATH_JPEG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
 AC_DEFUN(OV_PATH_JPEG,
   [
-    AC_ARG_WITH(jpeg-prefix, [  --with-jpeg-prefix=DIR  prefix where libjpeg is installed])
+    AC_ARG_WITH(jpeg-prefix, [  --with-jpeg-prefix=PREFIX
+                          libjpeg installed under PREFIX])
     
     if test -n "${with_jpeg_prefix}"; then
       jpeg__Idir="-I${with_jpeg_prefix}/include"

@@ -35,9 +35,8 @@ AC_DEFUN(OV_PATH_GLUT,
       $X__libs
     )
     
-    AC_ARG_WITH(glut-prefix,
-      [  --with-glut-prefix=DIR  pass '-IDIR/include' to CPP, '-LDIR/lib' to LD]
-    )
+    AC_ARG_WITH(glut-prefix, [  --with-glut-prefix=PREFIX
+                          glut installed under PREFIX])
     
     if test -n "${with_glut_prefix}"; then
       glut__Idir="-I${with_glut_prefix}/include"

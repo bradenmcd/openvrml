@@ -5,7 +5,8 @@ AC_DEFUN(OV_PATH_PNG,
   [
     AC_REQUIRE([OV_PATH_ZLIB])
     
-    AC_ARG_WITH(png-prefix, [  --with-png-prefix=DIR   prefix where libpng is installed])
+    AC_ARG_WITH(png-prefix, [  --with-png-prefix=PREFIX
+                          libpng installed under PREFIX])
     
     if test -n "${with_png_prefix}"; then
       png__Idir="-I${with_png_prefix}/include"
