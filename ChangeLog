@@ -8,6 +8,9 @@
 
         * Mark ProtoNode::ProtoNodeType "internal" for Doxygen.
 
+        * src/openvrml/OpenVRML/node.cpp: Sync'd Doxygen comments with
+          code.
+
 2002-06-06  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/script.cpp: Fixed segfault introduced

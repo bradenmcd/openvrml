@@ -202,6 +202,12 @@ void NodeInterfaceSet::add(const NodeInterface & nodeInterface)
  */
 
 /**
+ * @var VrmlScene & NodeClass::scene
+ *
+ * @brief The scene associated with this NodeClass.
+ */
+
+/**
  * @brief Constructor.
  *
  * A NodeClass is constructed using a VrmlScene. All Node instances that share
@@ -215,14 +221,6 @@ NodeClass::NodeClass(VrmlScene & scene) throw (): scene(scene) {}
  * @brief Destructor.
  */
 NodeClass::~NodeClass() throw () {}
-
-/**
- * @fn VrmlScene & NodeClass::getScene() const throw ()
- *
- * @brief Get the scene associated with this NodeClass.
- *
- * @return the VrmlScene associated with this NodeClass.
- */
 
 /**
  * @fn const NodeTypePtr NodeClass::createType(const std::string & id, const NodeInterfaceSet & interfaces) throw (std::invalid_argument, std::bad_alloc)
@@ -1941,11 +1939,46 @@ const TextureNode * TextureNode::toTexture() const throw () { return this; }
 TextureNode * TextureNode::toTexture() throw () { return this; }
 
 /**
- * @fn const SFImage & TextureNode::getImage() const throw ()
+ * @fn size_t TextureNode::nComponents() const throw ()
  *
- * @brief Get the image.
+ * @brief Get the number of components for the image.
  *
- * @return the image.
+ * @return the number of components for the image.
+ */
+
+/**
+ * @fn size_t TextureNode::width() const throw ()
+ *
+ * @brief Get width of the image in pixels.
+ *
+ * @return the width of the image in pixels.
+ */
+
+/**
+ * @fn size_t TextureNode::height() const throw ()
+ *
+ * @brief Get height of the image in pixels.
+ *
+ * @return the height of the image in pixels.
+ */
+
+/**
+ * @fn size_t TextureNode::nFrames() const throw ()
+ *
+ * @brief Get the number of frames for a time-dependent texture.
+ *
+ * @return the number of frames.
+ *
+ * @todo This needs to go away. Time-dependent textures might not be
+ *      frame-based. For instance, consider an SVG animation.
+ */
+
+/**
+ * @fn const unsigned char * TextureNode::pixels() const throw ()
+ *
+ * @brief Get the pixels.
+ *
+ * @return the pixels.
  */
 
 /**
