@@ -1541,8 +1541,8 @@ const node_ptr & appearance_node::texture_transform() const throw ()
 /**
  * @brief render_appearance implementation.
  *
- * @param v                 viewer.
- * @param rendering_context context.
+ * @param v         viewer.
+ * @param context   rendering_context.
  */
 void appearance_node::do_render_appearance(viewer & v,
                                            rendering_context context)
@@ -2429,18 +2429,75 @@ background_class::create_type(const std::string & id,
  */
 
 /**
- * @var img * background_node::texPtr[6]
+ * @var image background_node::front
  *
- * @brief Pointers to the @link openvrml::img imgs@endlink in @a tex.
- *
- * The pointers are initialized to zero, and become non-null once the textures
- * are loaded and, if necessary, resized.
+ * @brief Front image.
  */
 
 /**
- * @var img background_node::tex[6]
+ * @var bool background_node::front_needs_update
  *
- * @brief Texture data.
+ * @brief Flag to indicate that the front image needs to be updated.
+ */
+
+/**
+ * @var image background_node::back
+ *
+ * @brief Back image.
+ */
+
+/**
+ * @var bool background_node::back_needs_update
+ *
+ * @brief Flag to indicate that the back image needs to be updated.
+ */
+
+/**
+ * @var image background_node::left
+ *
+ * @brief Left image.
+ */
+
+/**
+ * @var bool background_node::left_needs_update
+ *
+ * @brief Flag to indicate that the left image needs to be updated.
+ */
+
+/**
+ * @var image background_node::right
+ *
+ * @brief Right image.
+ */
+
+/**
+ * @var bool background_node::right_needs_update
+ *
+ * @brief Flag to indicate that the right image needs to be updated.
+ */
+
+/**
+ * @var image background_node::top
+ *
+ * @brief Top image.
+ */
+
+/**
+ * @var bool background_node::top_needs_update
+ *
+ * @brief Flag to indicate that the top image needs to be updated.
+ */
+
+/**
+ * @var image background_node::bottom
+ *
+ * @brief Bottom image.
+ */
+
+/**
+ * @var bool background_node::bottom_needs_update
+ *
+ * @brief Flag to indicate that the bottom image needs to be updated.
  */
 
 /**
@@ -2708,6 +2765,9 @@ void background_node::process_set_skyColor(const field_value & value,
     this->emit_event("skyColor_changed", this->skyColor, timestamp);
 }
 
+/**
+ * @brief Called lazily to update texture data.
+ */
 void background_node::update_textures()
 {
     if (this->front_needs_update) {
@@ -7323,9 +7383,10 @@ image_texture_class::create_type(const std::string & id,
  */
 
 /**
- * @var viewer::texture_object_t image_texture_node::texObject
+ * @var bool image_texture_node::texture_needs_update
  *
- * @brief Handler for the renderer.
+ * @brief Flag to indicate that image_texture_node::update_texture should be
+ *        called.
  */
 
 /**
@@ -7387,6 +7448,9 @@ image_texture_node::do_render_texture(viewer & v, rendering_context context)
                             true);
 }
 
+/**
+ * @brief Called to lazily update texture data.
+ */
 void image_texture_node::update_texture()
 {
     if (this->texture_needs_update) {
@@ -10652,7 +10716,7 @@ pixel_texture_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfimage pixel_texture_node::image
+ * @var sfimage pixel_texture_node::image_
  *
  * @brief image exposedField.
  */

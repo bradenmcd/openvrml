@@ -417,7 +417,7 @@ namespace openvrml {
 
             virtual void initialize(viewpoint_node * initialViewpoint,
                                     double timestamp) throw ();
-            virtual void render(openvrml::viewer & viewer) throw ();
+            virtual void render(viewer & v) throw ();
             virtual const node_type_ptr create_type(const std::string & id,
                                                     const node_interface_set &)
                 throw (unsupported_interface, std::bad_alloc);

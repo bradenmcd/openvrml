@@ -1,3 +1,10 @@
+2003-12-31 Braden McDaniel  <braden@endoframe.com>
+
+	Doxygen doc-comment updates.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
 2003-12-14 Braden McDaniel  <braden@endoframe.com>
 
 	Added value_type typedef to field_value subclasses.  Added
@@ -2678,7 +2685,7 @@
 
 2002-10-30  Braden McDaniel  <braden@endoframe.com>
 
-        * src/openvrml/OpenVRML/field.cpp, 
+        * src/openvrml/OpenVRML/field.cpp,
           src/openvrml/OpenVRML/field.h: Added protected default
           constructor, copy constructor, and assignment operator to
           FieldValue.
@@ -2694,7 +2701,7 @@
 2002-10-29  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * ide-projects/Windows/VisualC6/openvrml.dsp,
-          ide-projects/Windows/VisualC6/lookat/lookat.dsp, 
+          ide-projects/Windows/VisualC6/lookat/lookat.dsp,
           ide-projects/Windows/VisualC6/openvrml-core/openvrmlcore.dsp,
           ide-projects/Windows/VisualC6/openvrml-gl/openvrmlgl.dsp:
           Accommodate font and defined "HAVE_CONFIG_H"
@@ -2704,7 +2711,7 @@
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:
           Fixed if there is no vector information about character in
           "insertText" method.
-  
+
 2002-10-28  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * src/openvrml/OpenVRML/font.h,
@@ -2714,10 +2721,10 @@
           src/opevrml/OpenVRML/node.h, src/openvrml/OpenVRML/Viewer.h,
           src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
           src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:
-          To support font based on scalable font (TrueType, Type1) 
+          To support font based on scalable font (TrueType, Type1)
           present in the system using FreeType library.
 
-        * src/openvrml/OpenVRML/doc2.cpp, 
+        * src/openvrml/OpenVRML/doc2.cpp,
           src/openvrml/OpenVRML/browser.cpp:
           std:: correctness fixes.
 
@@ -2943,7 +2950,7 @@
         * src/openvrml-gl/OpenVRML/GL/Makefile.am,
           src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
           src/openvrml-gl/OpenVRML/GL/private.h: Removed private.h.
-          
+
 
 2002-09-29  Braden McDaniel  <braden@endoframe.com>
 
@@ -2984,7 +2991,7 @@
 2002-09-27  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * ide-projects/Windows/VisualC6/winconfig.h: In MSVC project
-          file, if macros are defined with values, it does not give 
+          file, if macros are defined with values, it does not give
           the result as expected. Rename "winconfig.h" as "config.h"
           to define macros for MSVC project file. Inside the project
           file "HAVE_CONFIG_H" macro is defined.
@@ -3005,7 +3012,7 @@
 
         * lib/regex/regex.h: Minor fixes for MSVC build to deal with
           "extern".
-   
+
 2002-09-25  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.cpp,
@@ -3022,20 +3029,20 @@
 2002-09-23  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * src/openvrml/OpenVRML/field.cpp: VC++6.0 complains about
-          reference to a zero-sized array at "typedef value_type 
+          reference to a zero-sized array at "typedef value_type
           & reference" within array_vector class definition. Though
           ArraySize is passed as an argument in template declaration.
-          To get rid of this spurious complain "enum {_ArraySize = 
+          To get rid of this spurious complain "enum {_ArraySize =
           ArraySize}" is declared.
 
         * src/openvrml/OpenVRML/field.cpp: reverse_iterator template
           definition in VC++6.0 does not take one argument and some
           other fixes for VC++6.0.
-   
+
 2002-09-23  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/ScriptJDK.cpp: Use std::copy instead of
-          memcpy. Fix bugs in ConstSFNode::CreateObject, 
+          memcpy. Fix bugs in ConstSFNode::CreateObject,
           ConstMFRotation::CreateObject, ConstMFVec3f::CreateObject and
           MFVec3f::setValue. Additional documentation.
 
@@ -3221,11 +3228,11 @@
 
 2002-08-23  S. K. Bose  <bose@pavan.barc.ernet.in>
 
-        * VrmlMatrix.cpp: If the matrix is singular then it  
+        * VrmlMatrix.cpp: If the matrix is singular then it
           prints debug message and returns instead of aborting.
 
         * private.h: Add macro to print debug messages.
-  
+
 2002-08-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp,
@@ -3472,7 +3479,7 @@
           Now, OV_CHECK_GLUT only adds X11 libs and cflags to the
           GLUT_LIBS and GLUT_CFLAGS variables if X11 is present and
           should be used.  But what about platforms where GLUT depends
-          on platform-specific GUI libraries (Mac, Windows)? 
+          on platform-specific GUI libraries (Mac, Windows)?
           OV_CHECK_GLUT may need to get a good deal smarter; OTOH, we
           will eventually be eliminating the GLUT dependency altogether.
 
@@ -3976,11 +3983,11 @@
         * Changed some constants to lower-case in "private.h".
 
 2002-02-25  S. K. Bose  <bose@pavan.barc.ernet.in>
- 
+
         * Put back "const float (&get() const)[4][4]" in
           VrmlMatrix as VC++6.0 gives error by using operator[].
 
-        * Put static_cast in assisgnWithSelfRefCheck method in 
+        * Put static_cast in assisgnWithSelfRefCheck method in
           script.cpp
 
         * Fix to handle null CLASSPATH env. variable in ScriptJDK.cpp
@@ -4039,7 +4046,7 @@
 
         * Updated doc/Makefile.am for Autoconf 2.52; added openvrml.css
           to the distribution.
-        
+
         * Fixed cases where the parser was returning a funky line
           number: use the "antlr::SemanicException" constructor
           that takes a line number argument.
@@ -4136,7 +4143,7 @@
 
 2002-01-28  S. K. Bose  <bose@pavan.barc.ernet.in>
 
-        * In "NodeLOD", accumulated modelview matrix within 
+        * In "NodeLOD", accumulated modelview matrix within
           rendercontext is used to find the viewer position in local
           coordinate system.
 
@@ -4145,7 +4152,7 @@
 
         * "getPosition" method is removed from ViewerOpenGL. This is
           no longer needed.
- 
+
 2002-01-25  Thomas Flynn <tflynn@users.sourceforge.net>
 
         * Update OpenVRML autoconf macros to use namespaces.
@@ -4166,14 +4173,14 @@
         * In ProximitySensor, getPosition and getOrientation are
           replaced by getTransform method of VrmlMatrix to find
           out position and orientation of Viewer w.r.t local coordinate
-          system. Fix the bug #466786. Thanks to Javier Taibo 
+          system. Fix the bug #466786. Thanks to Javier Taibo
           <http://sourceforge.net/mailarchive/forum.php?thread_id=394826&forum_id=7147>
           for pointing it.
 
         * getOrientation method is removed from ViewerOpenGL. This is
           no longer needed.
 
-        * "build_quaternion" is shifted from MathUtils to VrmlMatrix. 
+        * "build_quaternion" is shifted from MathUtils to VrmlMatrix.
 
 2002-01-20  Braden McDaniel  <braden@endoframe.com>
 
@@ -4203,23 +4210,23 @@
 2001-12-13  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Remove java.library.path option while creating JavaVM
-          under windows. This will allow its own way to search 
+          under windows. This will allow its own way to search
           openvrml.dll. For loading libraries, JDK uses same rule
           as windows.
 
-        * Put back d_activationMatrix in PlaneSensor node to cache 
+        * Put back d_activationMatrix in PlaneSensor node to cache
           inverse transform above PlaneSensor. This removes jittery
           response from rotation_toy.wrl
-        
+
 2001-12-12  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Checkin Makefiles to add java support classes under windows.
 
         * Update *.dsp and Makefiles to add java support.
- 
+
 2001-12-10  Thomas Flynn  <tflynn@users.sourceforge.net>
 
-        * Checkin patch 488262 to fix(?) relative URL issues with Inline 
+        * Checkin patch 488262 to fix(?) relative URL issues with Inline
           nodes. Fixes bug 225694.
 
         * Update JSAI test world and class to test more classes/methods.
@@ -4233,13 +4240,13 @@
 
         * Update *.dsp, *.dsw and Makefiles for windows to incorporate
           recent changes in OpenVRML.
- 
+
 2001-11-26  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * Commit patch 485502 that fixes a problem with events being
           sent at incorrect times.
 
-        * Update ScriptJDK.cpp to include nodeptr.h instead of VrmlNodePtr.h 
+        * Update ScriptJDK.cpp to include nodeptr.h instead of VrmlNodePtr.h
 
         * Add flags to Field.java to indicate if the value is an
           eventIn, eventOut or exposedField.
@@ -4362,7 +4369,7 @@
 
         * Added checks for `javac' and `jar' to configure.
 
-        * Changed `--with-jni' option to `--with-jdk'. 
+        * Changed `--with-jni' option to `--with-jdk'.
 
         * Don't attempt to compile Java classes for `--without-jdk'.
 
@@ -4382,7 +4389,7 @@
 
         * Incorporated changes as suggested by Braden (Thanks to Braden)
 
-        * As defined in ECMAScript definition, remove 
+        * As defined in ECMAScript definition, remove
           "transform_to_matrix" method from VrmlNodeTransform node and
           put it in VrmlMatrix as "setTransform" method.
 
@@ -4451,7 +4458,7 @@
 
 	* Update all java classes to match spec. (throw exceptions as
 	  needed, add toString to subclasses, implement Cloneable where
-	  required) 
+	  required)
 
 	* Add clone method to VrmlEvent.h
 
@@ -4473,7 +4480,7 @@
           by its own calculated transformation matrix for improving
           performance.
 
-        * In "Billboard node", the transformation matrix is 
+        * In "Billboard node", the transformation matrix is
           calculated in core by using modelview matrix accumulated
           during render traversal. So this transformation matrix is
           also accumulated in modelview matrix.
@@ -4481,11 +4488,11 @@
         * For calculating local coord. from world coord. in sensor
           nodes (PlaneSensor, CylinderSensor and SphereSensor) during
           activation, the accumulated transformation matrix is used.
-          Though by this "DEF/USE" problem is not solved unless 
-          someday "Ray based picking" is implemented. 
+          Though by this "DEF/USE" problem is not solved unless
+          someday "Ray based picking" is implemented.
 
-        * Fix for bug #230460 
-          
+        * Fix for bug #230460
+
 2001-09-27 Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Update VrmlNodeScript::addToScene to use std::string instead of
@@ -4495,16 +4502,16 @@
 
 2001-09-20  S. K. Bose  <bose@pavan.barc.ernet.in>
 
-        * If all "iostreams" are converted to standard "iostreams" 
-          template classes (STL) that manipulate standard streams,then 
+        * If all "iostreams" are converted to standard "iostreams"
+          template classes (STL) that manipulate standard streams,then
           it gives error in constructor of "ifstream" class (doc2.cpp)
-          "no appropriate default constructor available" (Is this 
+          "no appropriate default constructor available" (Is this
           problem with VC6++ STL ?). To get rid of this, "c_str()" of
           std::string is used where this string is directed to iostreams.
 
         * Fix other compile problems for WIN32 port.
 
-        * Applied patch #446396 from Henri Manson to include "ScriptJDK" 
+        * Applied patch #446396 from Henri Manson to include "ScriptJDK"
           into the WIN32 build.
 
 2001-09-16 Thomas Flynn <tflynn@users.sourceforge.net>
@@ -4554,7 +4561,7 @@
         * Fix for shininess component in Material node.
 
         * Fix for getOrientation(). In some cases it was failing.
- 
+
 2001-08-31  Braden McDaniel  <braden@endoframe.com>
 
         * Removed VrmlNode::toProto() method; use dynamic_cast instead.
@@ -4585,7 +4592,7 @@
 
 	* Use OPENVRML_HAVE_JAVA instead of HAVE_JDK.
 
-	* Update ScriptJDK code to use std::string. 
+	* Update ScriptJDK code to use std::string.
 
 2001-08-22  Braden McDaniel  <braden@endoframe.com>
 
@@ -4653,7 +4660,7 @@
 
 2001-07-18  S. K. Bose  <bose@pavan.barc.ernet.in>
 
-        * Win32 GL declarations are taken out from 
+        * Win32 GL declarations are taken out from
           ViewerOpenGL.h and put it into ViewerOpenGL.cpp
 
 2001-07-14  Braden McDaniel  <braden@endoframe.com>
@@ -4714,13 +4721,13 @@
 
         * Update *.dsp and *.dsw to support OpenVRML WIN32 DLL and
           remove libjs.dsp and libjs.dsw as these are no longer
-          needed. ANTLR parser generator is no longer needed as this 
-          will use the generated sources which come with the 
+          needed. ANTLR parser generator is no longer needed as this
+          will use the generated sources which come with the
           distribution.
 
         * Update Makefiles for windows to support WIN32 DLLs and
           made javascript support, PNG image support and JPEG image
-          support optional. 
+          support optional.
 
 2001-06-12  Braden McDaniel <braden@endoframe.com>
 
@@ -4734,7 +4741,7 @@
 
 2001-06-14  S. K. Bose  <bose@pavan.barc.ernet.in>
 
-        * Fixes for object construction in several places in 
+        * Fixes for object construction in several places in
           vrml97node.cpp, VrmlScene.cpp, VrmlNodeType.cpp and
           VrmlNodeScript.cpp. MSVC++6.0 does not like the way it was.
 
@@ -4742,13 +4749,13 @@
 
 2001-06-13  S. K. Bose  <bose@pavan.barc.ernet.in>
 
-        * In "VrmlNodePtr.h" as "pointer" is not a member of std::map 
+        * In "VrmlNodePtr.h" as "pointer" is not a member of std::map
           (though it is in standard) in containers library of MSVC++6.0,
-          "value_type" can be used (it is also in standard). Though 
-          I have used "WIN32" preprocessing directive for making 
-          equivalent of "countPtr", but I hope this will work for other 
+          "value_type" can be used (it is also in standard). Though
+          I have used "WIN32" preprocessing directive for making
+          equivalent of "countPtr", but I hope this will work for other
           compiler as well.
- 
+
 2001-06-12  Braden McDaniel <braden@endoframe.com>
 
         * Used classes and namespaces to organize functions in the
@@ -4830,15 +4837,15 @@
           value of a field that had not had its default value
           overridden. findField() now returns the default value in this
           case. Fixes bug #229687:
-          
+
           <http://sourceforge.net/tracker/index.php?func=detail&aid=229687&group_id=7151&atid=107151>
-          
+
           (Patch from <jpw20@users.sourceforge.net>.)
 
         * Fix for bug #414259:
-          
+
           <http://sourceforge.net/tracker/index.php?func=detail&aid=414259&group_id=7151&atid=107151>
-          
+
           (Patch from <jpw20@users.sourceforge.net>.)
 
 2001-05-01  Braden McDaniel <braden@endoframe.com>
@@ -5053,12 +5060,12 @@
 2001-01-01  Braden McDaniel  <braden@endoframe.com>
 
         * Doxygen comments for VrmlMFTime, VrmlMFVec2f, and VrmlMFVec3f.
-        
+
         * Added setLength() method to VrmlMFTime.
-        
+
         * Added setLength() method to VrmlSFVec2f; consolidated default
           constructor.
-        
+
         * Added setLength() method to VrmlSFVec3f; consolidated default
           constructor; removed non-const get() method.
 
@@ -5148,9 +5155,9 @@
 2000-12-06  Braden McDaniel  <braden@endoframe.com>
 
         * Applied patch to fix
-          
+
           <http://sourceforge.net/bugs/?func=detailbug&bug_id=124439&group_id=7151>
-          
+
           This adds identification of hexadecimal integers to the lexer,
           and removes use of istrstream from the parser.
 
@@ -5198,9 +5205,9 @@
         * Upgraded JavaScript to 1.5RC2.
 
         * Added another tryURLs method to Image:
-          
+
             bool tryURLs(const VrmlMFString & urls, Doc2 * relative = 0);
-          
+
           This was needed as there is currently no reliable way to get the
           char** to the 2D array of strings out of VrmlMFString.  This fixes
           <http://sourceforge.net/bugs/?func=detailbug&bug_id=116908&group_id=7151>.
@@ -5212,7 +5219,7 @@
           <http://sourceforge.net/bugs/?func=detailbug&bug_id=122340&group_id=7151>
 
 2000-11-16  S. K. Bose <bose@pavan.barc.ernet.in>
-        
+
         * Changes in Makefile.win to include conditional generation
           of C++ code from ANTLR grammar by having java or not.
 
@@ -5230,7 +5237,7 @@
 
         * Modified ANTLR's config.cpp to define NO_STATIC_CONSTS for gcc 2.96.
           This fixes <http://sourceforge.net/bugs/?func=detailbug&bug_id=117652&group_id=7151>.
-        
+
         * In configure.in, disabled the ability to disable building static
           libraries. We need them to incrementally link against, even when the
           only desired end product are shared libraries.
@@ -5239,7 +5246,7 @@
 
         * Unified typedef for Win32 and non-Win32 for TessCB in
           ViewerOpenGL.cpp.
-        
+
         * Removed gcc-specific compiler flags from JavaScript's Makefile.am.
 
 2000-10-15  Braden McDaniel  <braden@endoframe.com>
@@ -5260,7 +5267,7 @@
 	correctly parsing hex values starting with "0x". Generally not a
 	good idea to use iostreams as a lexer, its too error prone. Also
 	fixed the sfImageValue production, it was not correctly unpacking
-	longs into the byte array that a pixel texture expects. 
+	longs into the byte array that a pixel texture expects.
 
 	* VrmlField.cpp fixed VrmlSFImage constructors to take the "num
 	components" specification into account when computing the length
@@ -5287,7 +5294,7 @@
 	generation code to match the new loader code. Fixes also improve
 	(but maybe don't totally fix) several other texture coord problems
 	including bug #'s 110035, 111335, 111343.
-	
+
 2000-08-27  Christopher St. John <cstjohn@acm.org>
 
 	* ViewerOpenGL.cpp Changed the default zfar in setViewpoint()
@@ -5313,20 +5320,20 @@
 
 	* Change license to LGPL for library code.
 
-	* Added mgiger's SphereSensor implementation and 
+	* Added mgiger's SphereSensor implementation and
 	  CylinderSensor stubs.
 
 2000-06-27  Braden McDaniel  <braden@endoframe.com>
 
         * Eliminated dependency on the GL header files from ViewerOpenGL.h.
 	  (Note that ViewerOpenGL still depends on these headers, of course.)
-	
+
 	* Moved dependency on zlib.h from Doc.h to Doc.cpp.
-	
+
 	* Changed autoconf macro prefix to 'OV'.
-	
+
 	* Removed libvrml97js check from AM_PATH_VRML.
-	
+
 	* Removed dependency on zlib, libpng, libjpeg, and GL from AM_PATH_VRML
 	  and AM_PATH_VRMLGL. The dependencies in the headers has been
 	  eliminated, and since we're using libtool inter-library dependencies
@@ -5341,14 +5348,14 @@
 
   * Rewrote VrmlNodeAnchor::activate() so that relative URLs to non-VRML
     data are handled correctly.
-    
+
 2000-06-27  Braden McDaniel <braden@endoframe.com>
 
         * Changed build scripts to use JavaScript 1.5 RC1 (SpiderMonkey).
 	  Importantly, it's being built a little differently from before.
 	  libvrml97js is now obsolete. libvrml97core is now pre-linked against
 	  libjs (and its subordinate fdlibm).
-	  
+
 	  Finally, dependencies in the libvrml97 headers upon the libjs headers
 	  were eliminated: we nolonger have to install the libjs headers. (yea!)
 	  So, note to future JS hackers: let's try to keep it that way.
@@ -5388,101 +5395,101 @@
 	* Added -title arg to lookat for multiple viewers under xswallow.
 
 2000-04-11  Braden McDaniel  <braden@endoframe.com>
-        
+
         * Added some infectious const lovin' with a dash of size_t. Too much
-          to list. 
-        
+          to list.
+
         * In VrmlMFString, removed the method:
-        
+
             char ** getURL()
-          
+
           This was redundant with the availability of
-          
+
             virtual const VrmlMFString & getUrl() const;
-            
+
 2000-04-09  Michael Louka <Michael.Louka@hrp.no>
 
         * Modified System::time() for the Mac OS to provide VRML97 compliancy
 
 2000-04-07  Braden McDaniel  <braden@endoframe.com>
-        
+
         * The VrmlSFImage constructor was assuming ownership of the pixel array
           passed to it. This is inconsistent with the behavior of the similar
           constructors for MF* types, which copy the data in the buffer passed
           to them. I modified the VrmlSFImage constructor to instead make a copy
           of the pixel buffer passed to it.
-          
+
           Also changed the constructor's signature from
-          
+
             VrmlSFImage(int w = 0, int h = 0, int nc = 0, unsigned char * pixels = 0);
-          
+
           to
-          
+
             VrmlSFImage(int w = 0, int h = 0, int nc = 0, unsigned char const * pixels = 0);
-        
+
         * Changed VrmlMFColor constructor from
-          
+
             VrmlMFColor(int n, float * values);
-          
+
           to
-          
+
             VrmlMFColor(int n, float const * values);
-          
+
         * Changed VrmlMFFloat constructor from
-          
+
             VrmlMFFloat(int n, float * values);
-          
+
           to
-          
+
             VrmlMFFloat(int n, float const * values);
-          
+
         * Changed VrmlMFInt constructor from
-          
+
             VrmlMFInt(int n, int * values);
-          
+
           to
-          
+
             VrmlMFInt(int n, int const * values);
-        
+
         * Changed VrmlMFRotation constructor from
-          
+
             VrmlMFRotation(int n, float * values);
-          
+
           to
-          
+
             VrmlMFRotation(int n, float const * values);
-        
+
         * Changed VrmlMFVec2f constructor from
-          
+
             VrmlMFVec2f(int n, float * values);
-          
+
           to
-          
+
             VrmlMFVec2f(int n, float const * values);
-        
+
         * Changed VrmlMFVec3f constructor from
-          
+
             VrmlMFVec3f(int n, float * values);
-          
+
           to
-          
+
             VrmlMFVec3f(int n, float const * values);
-        
+
 2000-04-06  Braden McDaniel  <braden@endoframe.com>
-        
+
         * Changed the signature of VrmlNode::nodeType from
-          
+
             virtual NodeType * nodeType();
-        
+
           to
-        
+
             virtual NodeType & nodeType() const = 0;
-          
+
           Previously, the default implementation returned 0. As this isn't
           really useful behavior, the method now returns a reference to the
           NodeType (cannot be null) and requires that concrete subclasses
           implement it.
-        
+
 2000-04-05  Chris Morley  <cmorley@vermontel.net>
 
 	* Initial support for MPEG files in MovieTexture nodes.
@@ -5541,7 +5548,7 @@
 	Navigation is so broken right now.
 
 	* Define VrmlNodeNavigationInfo::getField.
-	
+
 	* Make createVrmlFromUrl a little more robust
 	(don't crash if no valid vrml nodes are read).
 
@@ -5581,10 +5588,10 @@
 
 2000-01-19  S. K. Bose <bose@pavan.barc.ernet.in>
 
-        * Incorporated additions in System.cpp to support "http" under windows 
-	  and also replaced "System::" with "theSystem->" to support virtual 
+        * Incorporated additions in System.cpp to support "http" under windows
+	  and also replaced "System::" with "theSystem->" to support virtual
           function-call mechanism.
- 
+
 2000-01-16  Braden McDaniel <braden@endoframe.com>
 
         * Submissions from S. K. Bose <bose@pavan.barc.ernet.in>: Added "std::"
@@ -5603,7 +5610,7 @@
         * Now tests HAVE_SOUND in Audio::setURL() to check whether to load audio
           files. Previously audio files were (down)loaded even if HAVE_SOUND was
           not true.
-          
+
         * Suppressed "couldn't read AudioClip from URL" error message in
           VrmlNodeAudioClip::update() if HAVE_SOUND is not true.
 
@@ -5612,13 +5619,13 @@
         * Incorporated modifications to support Mac OS 8/9. This was mainly additions
           to System.cpp and Doc.cpp as well as some Macintosh specific header file
           inclusions and other minor modifications to other files.
-          
+
         * Added CodeWarrior projects for Mac OS (in macos directories for lookat and
           libvrml97core).
-          
+
         * Added HAVE_CONFIG_H checks to a number of files that were missing them.
 
-        * Replaced output to stderr with output via theSystem in setURL() in Audio.cpp        
+        * Replaced output to stderr with output via theSystem in setURL() in Audio.cpp
 
 1999-11-21  Braden McDaniel <braden@endoframe.com>
 
@@ -5630,7 +5637,7 @@
 
         * Displaced lookat, xmlookat, and gtklookat to their own packages. This
           removed these files from libvrml97core:
-          
+
           lookat.cpp
           ViewerGlut.cpp
           ViewerGlut.h
@@ -5644,7 +5651,7 @@
           gtkglarea.h
           gdkgl.c
           gdkgl.h
-          
+
           This eliminated dependence on X, Motif, and GTK+ from the build.
 
         * Displaced ViewerOpenGL.* and OpenGLEvent.* to libvrml97gl, eliminating
@@ -5653,12 +5660,12 @@
         * Removed ViewerHOOPS.* and HOOPSEvent.*. These could potentially be
           made into their own package and provide an alternative to the OpenGL
           renderer.
-        
+
         * Displaced plugin to its own package.
 
         * Removed win32Lookat. This, too, belongs in its own package. But I'll
           leave the specifics of that package to the Win32 developers.
-        
+
         * Removed the javascript subtree and added a newer version of libjs to
           src/vrml97/libjs, and incorporated it into the automake build.
 
@@ -5676,4 +5683,3 @@
           unnamed namespace in ViewerOpenGL.cpp.
 
 	* OpenGLEvent.c renamed to OpenGLEvent.cpp
-
