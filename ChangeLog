@@ -1,3 +1,22 @@
+2002-10-28  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * src/openvrml/OpenVRML/font.h,
+          src/openvrml/OpenVRML/font.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h,
+          src/opevrml/OpenVRML/node.h, src/openvrml/OpenVRML/Viewer.h,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:
+          To support font based on scalable font (TrueType, Type1) 
+          present in the system using FreeType library.
+
+        * src/openvrml/OpenVRML/doc2.cpp, 
+          src/openvrml/OpenVRML/browser.cpp:
+          std:: correctness fixes.
+
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:
+          remove "tex3" method.
+
 2002-10-27  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,
