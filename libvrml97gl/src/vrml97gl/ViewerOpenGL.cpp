@@ -19,7 +19,6 @@
 #include <stdio.h>		// sprintf
 #include <math.h>
 
-//#include "MathUtils.h"
 #include <vrml97/System.h>
 #include <vrml97/VrmlScene.h>
 #include <vrml97/VrmlNodeNavigationInfo.h>
@@ -138,8 +137,13 @@ void ViewerOpenGL::initialize()
 static void checkErrors(char *s)
 {
   GLenum glerr;
-  while ((glerr = glGetError()) != GL_NO_ERROR)
-    theSystem->error("GL ERROR: %s %s\n", s, gluErrorString(glerr));
+  while ((glerr = glGetError()) != GL_NO_ERROR) {
+#ifdef macintosh
+    if (glerr != 1285) // This avoids automatic switching between SW and HW
+                       // renderers being continuously reported as an error
+#endif
+      theSystem->error("GL ERROR: %s %s\n", s, gluErrorString(glerr));
+ }
 }
 
 
@@ -2609,11 +2613,11 @@ void ViewerOpenGL::handleKey(int key)
       theSystem->inform(" Drawing polygons in %s mode.",
 		     d_wireframe ? "wireframe" : "filled");
       break;
-	     
+#ifndef macintosh
     case 'q':
       d_scene->destroyWorld();	// may not return
       break;
-
+#endif
     default:
       break;
     }
