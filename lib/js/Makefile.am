@@ -64,7 +64,6 @@ if AIX4_3
   AM_CPPFLAGS = $(AM_CPPFLAGS) $(AIX_4_3_DEFS)
 endif
 
-AM_CFLAGS = -Wall -Wno-format
 INCLUDES = -I.
 
 noinst_PROGRAMS = jscpucfg
