@@ -1,5 +1,15 @@
 2003-09-28  Braden McDaniel  <braden@endoframe.com>
 
+	Added GNUmakefile to DISTCLEANFILES to quell an error message
+	from distcleancheck. (This has got to be a bug in Automake
+	(1.7.7).)
+
+	* lib/antlr/GNUmakefile.am
+	* lib/antlr/antlr/GNUmakefile.am
+	* lib/antlr/src/GNUmakefile.am
+
+2003-09-28  Braden McDaniel  <braden@endoframe.com>
+
 	* doc/Makefile.am:  Made install-data-local DESTDIR-aware;
 	removed doc from dist-hook.
 

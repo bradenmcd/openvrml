@@ -49,3 +49,5 @@ noinst_HEADERS = \
         config.hpp
 
 EXTRA_DIST = Makefile
+
+DISTCLEANFILES = GNUmakefile

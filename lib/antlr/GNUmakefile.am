@@ -19,3 +19,5 @@ EXTRA_DIST = \
         scripts/cr_stripper.sh \
         scripts/make_change_log.tcl \
         Makefile.vc6
+
+DISTCLEANFILES = GNUmakefile

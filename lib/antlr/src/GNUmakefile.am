@@ -32,3 +32,5 @@ libantlr_la_SOURCES = \
         TreeParser.cpp
 
 EXTRA_DIST = Makefile dll.cpp
+
+DISTCLEANFILES = GNUmakefile
