@@ -1,3 +1,7 @@
+2001-01-22  Braden McDaniel  <braden@endoframe.com>
+
+        * Added SFNode field getters/setters to VrmlNodeIFaceSet.
+
 2001-01-21  Braden McDaniel  <braden@endoframe.com>
 
         * Moved definition of Route from VrmlNode.* to its own

@@ -59,10 +59,14 @@ public:
 
   virtual VrmlNodeIFaceSet* toIFaceSet() const;
 
-  virtual VrmlNode* getNormal();
+  const VrmlSFNode & getNormal() const;
+  void setNormal(const VrmlSFNode & normal);
+  
   virtual const VrmlMFInt32 & getNormalIndex() const;
 
-  virtual VrmlNode* getTexCoord();
+  const VrmlSFNode & getTexCoord() const;
+  void setTexCoord(const VrmlSFNode & texCoord);
+  
   virtual const VrmlMFInt32 & getTexCoordIndex() const;
 
   virtual bool getCcw(){ return d_ccw.get(); }  // LarryD  Feb18/99

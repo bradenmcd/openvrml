@@ -289,14 +289,8 @@ void VrmlNodeIFaceSet::setField(const char *fieldName,
 }
 
 
-VrmlNode* VrmlNodeIFaceSet::getNormal()
-{   return d_normal.get(); }
-
 const VrmlMFInt32 & VrmlNodeIFaceSet::getNormalIndex() const
 {   return d_normalIndex; }
-
-VrmlNode* VrmlNodeIFaceSet::getTexCoord()
-{   return d_texCoord.get(); }
 
 const VrmlMFInt32 & VrmlNodeIFaceSet::getTexCoordIndex() const
 {   return d_texCoordIndex; }
@@ -337,4 +331,42 @@ const VrmlBVolume* VrmlNodeIFaceSet::getBVolume() const
   if (this->isBVolumeDirty())
     ((VrmlNodeIFaceSet*)this)->recalcBSphere();
   return &d_bsphere; // hmmm, const?
+}
+
+/**
+ * @brief Get the Normal node associated with this IndexedFaceSet.
+ *
+ * @return normal
+ */
+const VrmlSFNode & VrmlNodeIFaceSet::getNormal() const {
+    return this->d_normal;
+}
+
+/**
+ * @brief Set the Normal node associated with this IndexedFaceSet.
+ *
+ * @param normal
+ */
+void VrmlNodeIFaceSet::setNormal(const VrmlSFNode & normal) {
+    this->d_normal = normal;
+}
+
+/**
+ * @brief Get the TextureCoordinate node associated with this
+ *        IndexedFaceSet.
+ *
+ * @return the SFNode value of texCoord
+ */
+const VrmlSFNode & VrmlNodeIFaceSet::getTexCoord() const {
+    return this->d_texCoord;
+}
+
+/**
+ * @brief Set the TextureCoordinate node associated with this
+ *        IndexedFaceSet.
+ *
+ * @param textCoord
+ */
+void VrmlNodeIFaceSet::setTexCoord(const VrmlSFNode & texCoord) {
+    this->d_texCoord = texCoord;
 }
