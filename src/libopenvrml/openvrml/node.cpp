@@ -936,6 +936,108 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @fn std::ostream & node::operator<<(std::ostream & out, const node & n)
+ *
+ * @brief Stream output.
+ */
+
+/**
+ * @fn script_node * node::node_cast<script_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>script_node</code>.
+ */
+
+/**
+ * @fn appearance_node * node::node_cast<appearance_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>appearance_node</code>.
+ */
+
+/**
+ * @fn child_node * node::node_cast<child_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>child_node</code>.
+ */
+
+/**
+ * @fn color_node * node::node_cast<color_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>color_node</code>.
+ */
+
+/**
+ * @fn coordinate_node * node::node_cast<coordinate_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>coordinate_node</code>.
+ */
+
+/**
+ * @fn font_style_node * node::node_cast<font_style_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>font_style_node</code>.
+ */
+
+/**
+ * @fn geometry_node * node::node_cast<geometry_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>geometry_node</code>.
+ */
+
+/**
+ * @fn grouping_node * node::node_cast<grouping_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>grouping_node</code>.
+ */
+
+/**
+ * @fn material_node * node::node_cast<material_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>material_node</code>.
+ */
+
+/**
+ * @fn normal_node * node::node_cast<normal_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>normal_node</code>.
+ */
+
+/**
+ * @fn sound_source_node * node::node_cast<sound_source_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>sound_source_node</code>.
+ */
+
+/**
+ * @fn texture_node * node::node_cast<texture_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>texture_node</code>.
+ */
+
+/**
+ * @fn texture_coordinate_node * node::node_cast<texture_coordinate_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>texture_coordinate_node</code>.
+ */
+
+/**
+ * @fn texture_transform_node * node::node_cast<texture_transform_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>texture_transform_node</code>.
+ */
+
+/**
+ * @fn transform_node * node::node_cast<transform_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>transform_node</code>.
+ */
+
+/**
+ * @fn viewpoint_node * node::node_cast<viewpoint_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>viewpoint_node</code>.
+ */
+
+/**
  * @internal
  *
  * @var scope_ptr node::scope_
@@ -1382,20 +1484,6 @@ material_node * node::to_material() throw ()
 /**
  * @internal
  *
- * @brief Cast to a navigation_info_node.
- *
- * Default implementation returns 0.
- *
- * @return 0.
- */
-navigation_info_node * node::to_navigation_info() throw ()
-{
-    return 0;
-}
-
-/**
- * @internal
- *
  * @brief Cast to a normal_node.
  *
  * Default implementation returns 0.
@@ -1527,6 +1615,16 @@ vrml97_node::abstract_light_node * node::to_light() const
  * @return 0.
  */
 vrml97_node::movie_texture_node * node::to_movie_texture() const
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a navigation_info_node.
+ *
+ * @return 0.
+ */
+vrml97_node::navigation_info_node * node::to_navigation_info() const
 {
     return 0;
 }
@@ -2914,85 +3012,6 @@ material_node * material_node::to_material() throw ()
 
 
 /**
- * @class navigation_info_node
- *
- * @ingroup nodes
- *
- * @brief Abstract base class for normal nodes.
- */
-
-/**
- * @brief Construct.
- *
- * @param t     the node_type associated with the node.
- * @param scope the Scope the node belongs to.
- */
-navigation_info_node::
-navigation_info_node(const node_type & t,
-                     const boost::shared_ptr<openvrml::scope> & scope)
-    throw ():
-    node(t, scope),
-    child_node(t, scope)
-{}
-
-/**
- * @brief Destroy.
- */
-navigation_info_node::~navigation_info_node() throw ()
-{}
-
-/**
- * @brief Cast to a navigation_info_node.
- *
- * @return a pointer to this navigation_info_node.
- */
-navigation_info_node * navigation_info_node::to_navigation_info() throw ()
-{
-    return this;
-}
-
-/**
- * @fn const std::vector<float> & navigation_info_node::avatar_size() const throw ()
- *
- * @brief Get the avatar dimensions.
- *
- * @return the avatar dimensions.
- */
-
-/**
- * @fn bool navigation_info_node::headlight() const throw ()
- *
- * @brief Get the state of the headlight.
- *
- * @return @c true if the headlight is on; @c false otherwise.
- */
-
-/**
- * @fn float navigation_info_node::speed() const throw ()
- *
- * @brief Get the current speed of the user view.
- *
- * @return the current speed of the user view.
- */
-
-/**
- * @fn const std::vector<std::string> & navigation_info_node::type() const throw ()
- *
- * @brief Get the navigation type.
- *
- * @return the navigation type.
- */
-
-/**
- * @fn float navigation_info_node::visibility_limit() const throw ()
- *
- * @brief Get the visibility limit.
- *
- * @return the visibility limit.
- */
-
-
-/**
  * @class normal_node
  *
  * @ingroup nodes
@@ -3645,7 +3664,9 @@ void node_traverser::do_traversal(node & n)
                 } else if (interface->field_type == field_value::mfnode_id) {
                     const mfnode & children =
                         static_cast<const mfnode &>(n.field(interface->id));
-                    for (size_t i = 0; i < children.value.size(); ++i) {
+                    for (size_t i = 0;
+                         i < children.value.size() && !this->halt;
+                         ++i) {
                         if (children.value[i]) {
                             this->do_traversal(*children.value[i]);
                         }

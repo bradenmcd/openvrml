@@ -30,7 +30,7 @@
 # include <iostream>
 # include <iterator>
 # include <limits>
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
 #   include FT_GLYPH_H
@@ -40,9 +40,9 @@ extern "C" {
 #   include <fontconfig/fcfreetype.h>
 }
 # endif
-# include <private.h>
 # include "vrml97node.h"
 # include "browser.h"
+# include "private.h"
 
 namespace {
 
@@ -542,7 +542,7 @@ namespace {
         const typename field_value_map_t::const_iterator itr =
                 this->field_value_map.find(id);
         if (itr == this->field_value_map.end()) {
-            throw unsupported_interface(node.node::type(),
+            throw unsupported_interface(node.type(),
                                         node_interface::field_id,
                                         id);
         }
@@ -564,7 +564,7 @@ namespace {
             this->event_listener_map.find(id);
         if (pos == end) { pos = this->event_listener_map.find("set_" + id); }
         if (pos == end) {
-            throw unsupported_interface(node.node::type(),
+            throw unsupported_interface(node.type(),
                                         node_interface::eventin_id,
                                         id);
         }
@@ -588,7 +588,7 @@ namespace {
             pos = this->event_emitter_map.find(id + "_changed");
         }
         if (pos == end) {
-            throw unsupported_interface(node.node::type(),
+            throw unsupported_interface(node.type(),
                                         node_interface::eventout_id,
                                         id);
         }
@@ -1238,6 +1238,12 @@ anchor_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var anchor_node::anchor_class
+ *
+ * @brief Class object for Anchor nodes.
+ */
+
+/**
  * @var exposedfield<sfstring> anchor_node::description_
  *
  * @brief description exposedField
@@ -1435,6 +1441,12 @@ appearance_class::do_create_type(const std::string & id,
  * @class appearance_node
  *
  * @brief Appearance node instances.
+ */
+
+/**
+ * @var appearance_node::appearance_class
+ *
+ * @brief Class object for Appearance nodes.
  */
 
 /**
@@ -1784,6 +1796,12 @@ audio_clip_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var audio_clip_node::audio_clip_class
+ *
+ * @brief Class object for AudioClip nodes.
+ */
+
+/**
  * @var exposedfield<sfstring> audio_clip_node::description_
  *
  * @brief description exposedField.
@@ -1959,23 +1977,13 @@ background_class::~background_class() throw ()
  * @brief Set the first Background node in the world.
  *
  * The first Background node in the world is used as the initial background.
- * This method is used by background_node::do_initialize.
+ * This method is used by Background::do_initialize.
  *
  * @param background    a Background node.
  */
 void background_class::set_first(background_node & background) throw ()
 {
     this->first = &background;
-}
-
-/**
- * @brief Reset the pointer to the first Background node in the world to null.
- *
- * This function is called by <code>background_node::do_shutdown</code>.
- */
-void background_class::reset_first() throw ()
-{
-    this->first = 0;
 }
 
 /**
@@ -1988,18 +1996,6 @@ void background_class::reset_first() throw ()
 bool background_class::has_first() const throw ()
 {
     return this->first;
-}
-
-/**
- * @brief Check to see if a node is registered as the "first" node.
- *
- * @param background    a background_node.
- *
- * @return @c true if @p background is the fist node; @c false otherwise.
- */
-bool background_class::is_first(background_node & background) throw ()
-{
-    return &background == this->first;
 }
 
 /**
@@ -2410,6 +2406,12 @@ background_class::do_create_type(const std::string & id,
  * @class background_node
  *
  * @brief Background node instances.
+ */
+
+/**
+ * @var background_node::background_class
+ *
+ * @brief Class object for Background nodes.
  */
 
 /**
@@ -2896,9 +2898,8 @@ event_side_effect(const mfstring & value,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-background_node::
-background_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope):
+background_node::background_node(const node_type & type,
+                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -2954,12 +2955,10 @@ void background_node::do_initialize(const double timestamp) throw ()
  */
 void background_node::do_shutdown(const double timestamp) throw ()
 {
-    background_class & node_class =
+    background_class & nodeClass =
         const_cast<background_class &>(
             static_cast<const background_class &>(this->type().node_class()));
-    node_class.unbind(*this, timestamp);
-
-    if (node_class.is_first(*this)) { node_class.reset_first(); }
+    nodeClass.unbind(*this, timestamp);
 }
 
 /**
@@ -3251,6 +3250,12 @@ billboard_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var billboard_node::billboard_class
+ *
+ * @brief Class object for Billboard nodes.
+ */
+
+/**
  * @var exposedfield<sfvec3f> billboard_node::axis_of_rotation_
  *
  * @brief axisOfRotation exposedField.
@@ -3466,6 +3471,12 @@ box_class::do_create_type(const std::string & id,
  * @class box_node
  *
  * @brief Box node instances.
+ */
+
+/**
+ * @var box_node::box_class
+ *
+ * @brief Class object for Box nodes.
  */
 
 /**
@@ -3693,6 +3704,12 @@ collision_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var collision_node::collision_class
+ *
+ * @brief Class object for Collision nodes.
+ */
+
+/**
  * @var sfbool collision_node::collide_
  *
  * @brief collide exposedField.
@@ -3825,6 +3842,12 @@ color_class::do_create_type(const std::string & id,
  * @class color_node
  *
  * @brief Color node instances.
+ */
+
+/**
+ * @var color_node::color_class
+ *
+ * @brief Class object for Color nodes.
  */
 
 /**
@@ -3980,6 +4003,12 @@ color_interpolator_class::do_create_type(const std::string & id,
  * @class color_interpolator_node
  *
  * @brief ColorInterpolator node instances.
+ */
+
+/**
+ * @var color_interpolator_node::color_interpolator_class
+ *
+ * @brief Class object for ColorInterpolator nodes.
  */
 
 /**
@@ -4231,6 +4260,12 @@ cone_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var cone_node::cone_class
+ *
+ * @brief Class object for Cone nodes.
+ */
+
+/**
  * @var sfbool cone_node::bottom
  *
  * @brief bottom field.
@@ -4370,6 +4405,12 @@ coordinate_class::do_create_type(const std::string & id,
  * @class coordinate_node
  *
  * @brief Coordinate node instances.
+ */
+
+/**
+ * @var coordinate_node::coordinate_class
+ *
+ * @brief Class object for Coordinate nodes.
  */
 
 /**
@@ -4526,6 +4567,12 @@ coordinate_interpolator_class::do_create_type(
  * @class coordinate_interpolator_node
  *
  * @brief CoordinateInterpolator node instances.
+ */
+
+/**
+ * @var class coordinate_interpolator_node::coordinate_interpolator_class
+ *
+ * @brief Class object for CoordinateInterpolator nodes.
  */
 
 /**
@@ -4777,6 +4824,12 @@ cylinder_class::do_create_type(const std::string & id,
  * @class cylinder_node
  *
  * @brief Cylinder node instances.
+ */
+
+/**
+ * @var cylinder_node::cylinder_class
+ *
+ * @brief Class object for Cylinder nodes.
  */
 
 /**
@@ -5045,6 +5098,12 @@ cylinder_sensor_class::do_create_type(const std::string & id,
  * @class cylinder_sensor_node
  *
  * @brief CylinderSensor node instances.
+ */
+
+/**
+ * @var cylinder_sensor_node::cylinder_sensor_class
+ *
+ * @brief Class object for CylinderSensor nodes.
  */
 
 /**
@@ -5451,6 +5510,12 @@ directional_light_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var directional_light_node::directional_light_class
+ *
+ * @brief Class object for DirectionalLight nodes.
+ */
+
+/**
  * @var exposedfield<sfvec3f> directional_light_node::direction_
  *
  * @brief direction exposedField.
@@ -5714,6 +5779,12 @@ elevation_grid_class::do_create_type(const std::string & id,
  * @class elevation_grid_node
  *
  * @brief ElevationGrid node instances.
+ */
+
+/**
+ * @var elevation_grid_node::elevation_grid_class
+ *
+ * @brief Class object for ElevationGrid nodes.
  */
 
 /**
@@ -6174,6 +6245,12 @@ extrusion_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var extrusion_node::extrusion_class
+ *
+ * @brief Class object for Extrusion nodes.
+ */
+
+/**
  * @internal
  *
  * @class extrusion_node::set_cross_section_listener
@@ -6578,16 +6655,6 @@ void fog_class::set_first(fog_node & fog) throw ()
 }
 
 /**
- * @brief Reset the pointer to the first Fog node in the world to null.
- *
- * This function is called by <code>fog_node::do_shutdown</code>.
- */
-void fog_class::reset_first() throw ()
-{
-    this->first = 0;
-}
-
-/**
  * @brief Check to see if the first node has been set.
  *
  * This method is used by fog_node::do_initialize.
@@ -6597,18 +6664,6 @@ void fog_class::reset_first() throw ()
 bool fog_class::has_first() const throw ()
 {
     return this->first;
-}
-
-/**
- * @brief Check to see if a node is registered as the "first" node.
- *
- * @param fog   a fog_node.
- *
- * @return @c true if @p fog is the fist node; @c false otherwise.
- */
-bool fog_class::is_first(fog_node & fog) throw ()
-{
-    return &fog == this->first;
 }
 
 /**
@@ -6829,6 +6884,12 @@ fog_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var class fog_node::fog_class
+ *
+ * @brief Class object for Fog nodes.
+ */
+
+/**
  * @internal
  *
  * @class fog_node::set_bind_listener
@@ -6860,7 +6921,7 @@ fog_node::set_bind_listener::~set_bind_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void fog_node::set_bind_listener::do_process_event(const sfbool & bind,
-                                                   const double timestamp)
+                                                const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -6920,8 +6981,7 @@ void fog_node::set_bind_listener::do_process_event(const sfbool & bind,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-fog_node::fog_node(const node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope):
+fog_node::fog_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -6960,12 +7020,10 @@ void fog_node::do_initialize(const double timestamp) throw ()
  */
 void fog_node::do_shutdown(const double timestamp) throw ()
 {
-    fog_class & node_class =
+    fog_class & nodeClass =
         const_cast<fog_class &>(
             static_cast<const fog_class &>(this->type().node_class()));
-    node_class.unbind(*this, timestamp);
-
-    if (node_class.is_first(*this)) { node_class.reset_first(); }
+    nodeClass.unbind(*this, timestamp);
 }
 
 
@@ -7118,6 +7176,12 @@ font_style_class::do_create_type(const std::string & id,
  * @class font_style_node
  *
  * @brief FontStyle node instances.
+ */
+
+/**
+ * @var font_style_node::font_style_class
+ *
+ * @brief Class object for FontStyle nodes.
  */
 
 /**
@@ -7421,6 +7485,12 @@ group_class::do_create_type(const std::string & id,
  * @class group_node
  *
  * @brief Represents Group node instances.
+ */
+
+/**
+ * @var group_node::group_class
+ *
+ * @brief Class object for Group nodes.
  */
 
 /**
@@ -7964,6 +8034,12 @@ image_texture_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var class image_texture_node::image_texture_class
+ *
+ * @brief Class object for ImageTexture nodes.
+ */
+
+/**
  * @internal
  *
  * @class image_texture_node::url_exposedfield
@@ -8485,6 +8561,12 @@ do_process_event(const mfint32 & tex_coord_index, const double timestamp)
 }
 
 /**
+ * @var indexed_face_set_node::indexed_face_set_class
+ *
+ * @brief Class object for IndexedFaceSet nodes.
+ */
+
+/**
  * @var indexed_face_set_node::set_normal_index_listener indexed_face_set_node::set_normal_index_listener_
  *
  * @brief set_normalIndex eventIn handler.
@@ -8866,6 +8948,12 @@ indexed_line_set_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var indexed_line_set_node::indexed_line_set_class
+ *
+ * @brief Class object for IndexedLineSet nodes.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node.
@@ -9024,6 +9112,12 @@ inline_class::do_create_type(const std::string & id,
  * @class inline_node
  *
  * @brief Represents Inline node instances.
+ */
+
+/**
+ * @var inline_node::inline_class
+ *
+ * @brief Class object for Inline nodes.
  */
 
 /**
@@ -9254,6 +9348,12 @@ lod_class::do_create_type(const std::string & id,
  * @class lod_node
  *
  * @brief Represents LOD node instances.
+ */
+
+/**
+ * @var lod_node::lod_class
+ *
+ * @brief Class object for LOD nodes.
  */
 
 /**
@@ -9615,6 +9715,12 @@ material_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var material_node::material_class
+ *
+ * @brief Class object for Material nodes.
+ */
+
+/**
  * @var exposedfield<sffloat> material_node::ambient_intensity_
  *
  * @brief ambientIntensity exposedField.
@@ -9917,6 +10023,12 @@ movie_texture_class::do_create_type(const std::string & id,
  * @class movie_texture_node
  *
  * @brief MovieTexture node instances.
+ */
+
+/**
+ * @var class movie_texture_node::movie_texture_class
+ *
+ * @brief Class object for MovieTexture nodes.
  */
 
 /**
@@ -10339,8 +10451,7 @@ viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
  * @param browser the browser associated with this class object.
  */
 navigation_info_class::navigation_info_class(openvrml::browser & browser):
-    node_class(browser),
-    first(0)
+    node_class(browser)
 {}
 
 /**
@@ -10348,162 +10459,6 @@ navigation_info_class::navigation_info_class(openvrml::browser & browser):
  */
 navigation_info_class::~navigation_info_class() throw ()
 {}
-
-/**
- * @brief Set the first NavigationInfo node in the world.
- *
- * The first NavigationInfo node in the world is used as the initially active
- * NavigationInfo. This method is used by navigation_info_node::do_initialize.
- *
- * @param nav_info    a Background node.
- */
-void navigation_info_class::set_first(navigation_info_node & nav_info) throw ()
-{
-    this->first = &nav_info;
-}
-
-/**
- * @brief Reset the pointer to the first NavigationInfo node in the world to
- *        null.
- *
- * This function is called by <code>navigation_info_node::do_shutdown</code>.
- */
-void navigation_info_class::reset_first() throw ()
-{
-    this->first = 0;
-}
-
-/**
- * @brief Check to see if the first node has been set.
- *
- * This method is used by navigation_info_node::do_initialize.
- *
- * @return @c true if the first node has already been set; @c false otherwise.
- */
-bool navigation_info_class::has_first() const throw ()
-{
-    return this->first;
-}
-
-/**
- * @brief Check to see if a node is registered as the "first" node.
- *
- * @param nav_info  a navigation_info_node.
- *
- * @return @c true if @p nav_info is the fist node; @c false otherwise.
- */
-bool navigation_info_class::is_first(navigation_info_node & nav_info) throw ()
-{
-    return &nav_info == this->first;
-}
-
-/**
- * @brief Push a navigation_info_node on the top of the bound node stack.
- *
- * @param nav_info    the node to bind.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void navigation_info_class::bind(navigation_info_node & nav_info,
-                                 const double timestamp)
-    throw (std::bad_alloc)
-{
-    using std::find;
-
-    //
-    // If the node is already the active node, do nothing.
-    //
-    if (!this->bound_nodes.empty() && &nav_info == this->bound_nodes.back())
-    {
-        return;
-    }
-
-    //
-    // If the node is already on the stack, remove it.
-    //
-    const bound_nodes_t::iterator pos =
-        find(this->bound_nodes.begin(), this->bound_nodes.end(), &nav_info);
-    if (pos != this->bound_nodes.end()) { this->bound_nodes.erase(pos); }
-
-    //
-    // Send FALSE from the currently active node's isBound.
-    //
-    if (!this->bound_nodes.empty()) {
-        navigation_info_node & current =
-            dynamic_cast<navigation_info_node &>(*this->bound_nodes.back());
-        current.is_bound_.value = false;
-        node::emit_event(current.is_bound_emitter_, timestamp);
-    }
-
-    //
-    // Push the node to the top of the stack, and have it send isBound TRUE.
-    //
-    this->bound_nodes.push_back(&nav_info);
-    nav_info.is_bound_.value = true;
-    node::emit_event(nav_info.is_bound_emitter_, timestamp);
-
-    this->browser().active_navigation_info(nav_info);
-}
-
-/**
- * @brief Remove a navigation_info_node from the bound node stack.
- *
- * @param nav_info    the node to unbind.
- * @param timestamp     the current time.
- */
-void navigation_info_class::unbind(navigation_info_node & nav_info,
-                                   const double timestamp)
-    throw ()
-{
-    using std::find;
-
-    const bound_nodes_t::iterator pos =
-        find(this->bound_nodes.begin(), this->bound_nodes.end(), &nav_info);
-    if (pos != this->bound_nodes.end()) {
-        nav_info.is_bound_.value = false;
-        node::emit_event(nav_info.is_bound_emitter_, timestamp);
-
-        if (pos == this->bound_nodes.end() - 1
-            && this->bound_nodes.size() > 1) {
-            navigation_info_node & newActive =
-                dynamic_cast<navigation_info_node &>(
-                    **(this->bound_nodes.end() - 2));
-            newActive.is_bound_.value = true;
-            node::emit_event(newActive.is_bound_emitter_, timestamp);
-
-            this->browser().active_navigation_info(nav_info);
-        } else {
-            this->browser().reset_default_navigation_info();
-        }
-        this->bound_nodes.erase(pos);
-    }
-}
-
-/**
- * @brief node_class-specific initialization.
- *
- * @param initial_viewpoint the viewpoint_node that should be bound initially.
- * @param timestamp         the current time.
- */
-void
-navigation_info_class::
-do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-              const double timestamp)
-    throw ()
-{
-    if (this->first) {
-        try {
-            event_listener & listener =
-                this->first->event_listener("set_bind");
-            assert(dynamic_cast<sfbool_listener *>(&listener));
-            static_cast<sfbool_listener &>(listener)
-                .process_event(sfbool(true), timestamp);
-        } catch (unsupported_interface & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
-    }
-}
 
 /**
  * @brief Create a node_type.
@@ -10649,6 +10604,12 @@ navigation_info_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var class navigation_info_node::navigation_info_class
+ *
+ * @brief Class object for NavigationInfo nodes.
+ */
+
+/**
  * @internal
  *
  * @class navigation_info_node::set_bind_listener
@@ -10681,22 +10642,39 @@ navigation_info_node::set_bind_listener::~set_bind_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-navigation_info_node::set_bind_listener::
-do_process_event(const sfbool & bind,
-                 const double timestamp)
+navigation_info_node::set_bind_listener::do_process_event(const sfbool & bind,
+                                                       const double timestamp)
     throw (std::bad_alloc)
 {
     try {
         navigation_info_node & node =
             dynamic_cast<navigation_info_node &>(this->node());
-        navigation_info_class & node_class =
-            const_cast<navigation_info_class &>(
-                static_cast<const navigation_info_class &>(
-                    this->node().type().node_class()));
-        if (bind.value) {
-            node_class.bind(node, timestamp);
-        } else {
-            node_class.unbind(node, timestamp);
+
+        navigation_info_node * current =
+            node.type().node_class().browser().bindable_navigation_info_top();
+
+        if (bind.value) {        // set_bind TRUE
+            if (&node != current) {
+                if (current) {
+                    current->is_bound_.value = false;
+                    node::emit_event(current->is_bound_emitter_, timestamp);
+                }
+                node.type().node_class().browser().bindable_push(&node);
+                node.is_bound_.value = true;
+                node::emit_event(node.is_bound_emitter_, timestamp);
+            }
+        } else {            // set_bind FALSE
+            node.type().node_class().browser().bindable_remove(&node);
+            if (&node == current) {
+                node.is_bound_.value = false;
+                node::emit_event(node.is_bound_emitter_, timestamp);
+                current = node.type().node_class().browser()
+                    .bindable_navigation_info_top();
+                if (current) {
+                    current->is_bound_.value = true;
+                    node::emit_event(current->is_bound_emitter_, timestamp);
+                }
+            }
         }
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
@@ -10762,13 +10740,11 @@ namespace {
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-navigation_info_node::
-navigation_info_node(const node_type & t,
-                     const boost::shared_ptr<openvrml::scope> & scope):
-    node(t, scope),
-    abstract_base(t, scope),
-    child_node(t, scope),
-    openvrml::navigation_info_node(t, scope),
+navigation_info_node::navigation_info_node(const node_type & type,
+                                           const boost::shared_ptr<openvrml::scope> & scope):
+    node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_bind_listener_(*this),
     avatar_size_(*this, std::vector<float>(navigation_avatar_size_,
                                            navigation_avatar_size_ + 3)),
@@ -10787,13 +10763,23 @@ navigation_info_node::~navigation_info_node() throw ()
 {}
 
 /**
+ * @brief Cast to a navigation_info_node.
+ *
+ * @return A pointer to the navigation_info_node.
+ */
+navigation_info_node* navigation_info_node::to_navigation_info() const
+{ return (navigation_info_node*) this; }
+
+/**
  * @brief The avatar size.
  *
  * @return the avatar size.
  */
-const std::vector<float> & navigation_info_node::avatar_size() const throw ()
+const float * navigation_info_node::avatar_size() const
 {
-    return this->avatar_size_.mffloat::value;
+    return !this->avatar_size_.mffloat::value.empty()
+        ? &this->avatar_size_.mffloat::value[0]
+        : 0;
 }
 
 /**
@@ -10801,7 +10787,7 @@ const std::vector<float> & navigation_info_node::avatar_size() const throw ()
  *
  * @return @c true if the headlight is on; @c false otherwise.
  */
-bool navigation_info_node::headlight() const throw ()
+bool navigation_info_node::headlight() const
 {
     return this->headlight_.sfbool::value;
 }
@@ -10811,19 +10797,9 @@ bool navigation_info_node::headlight() const throw ()
  *
  * @return the speed.
  */
-float navigation_info_node::speed() const throw ()
+float navigation_info_node::speed() const
 {
     return this->speed_.sffloat::value;
-}
-
-/**
- * @brief The navigation type.
- *
- * @return the navigation type.
- */
-const std::vector<std::string> & navigation_info_node::type() const throw ()
-{
-    return this->type_.mfstring::value;
 }
 
 /**
@@ -10831,7 +10807,7 @@ const std::vector<std::string> & navigation_info_node::type() const throw ()
  *
  * @return the visibility limit.
  */
-float navigation_info_node::visibility_limit() const throw ()
+float navigation_info_node::visibility_limit() const
 {
     return this->visibility_limit_.sffloat::value;
 }
@@ -10840,16 +10816,14 @@ float navigation_info_node::visibility_limit() const throw ()
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void navigation_info_node::do_initialize(const double timestamp) throw ()
+void navigation_info_node::do_initialize(const double timestamp)
+    throw (std::bad_alloc)
 {
-    using boost::polymorphic_downcast;
-
-    navigation_info_class & node_class =
-        const_cast<navigation_info_class &>(
-            *polymorphic_downcast<const navigation_info_class *>(
-                &this->node::type().node_class()));
-    if (!node_class.has_first()) { node_class.set_first(*this); }
+    assert(this->scene());
+    this->scene()->browser.add_navigation_info(*this);
 }
 
 /**
@@ -10859,15 +10833,8 @@ void navigation_info_node::do_initialize(const double timestamp) throw ()
  */
 void navigation_info_node::do_shutdown(const double timestamp) throw ()
 {
-    using boost::polymorphic_downcast;
-
-    navigation_info_class & node_class =
-        const_cast<navigation_info_class &>(
-            *polymorphic_downcast<const navigation_info_class *>(
-                &this->node::type().node_class()));
-    node_class.unbind(*this, timestamp);
-
-    if (node_class.is_first(*this)) { node_class.reset_first(); }
+    assert(this->scene());
+    this->scene()->browser.remove_navigation_info(*this);
 }
 
 
@@ -10945,6 +10912,12 @@ normal_class::do_create_type(const std::string & id,
  * @class normal_node
  *
  * @brief Normal node instances.
+ */
+
+/**
+ * @var normal_node::normal_class
+ *
+ * @brief Class object for Normal nodes.
  */
 
 /**
@@ -11099,6 +11072,12 @@ normal_interpolator_class::do_create_type(const std::string & id,
  * @class normal_interpolator_node
  *
  * @brief NormalInterpolator node instances.
+ */
+
+/**
+ * @var class normal_interpolator_node::normal_interpolator_class
+ *
+ * @brief Class object for NormalInterpolator nodes.
  */
 
 /**
@@ -11383,6 +11362,12 @@ do_create_type(const std::string & id,
  */
 
 /**
+ * @var class orientation_interpolator_node::orientation_interpolator_class
+ *
+ * @brief Class object for OrientationInterpolator nodes.
+ */
+
+/**
  * @internal
  *
  * @class orientation_interpolator_node::set_fraction_listener
@@ -11642,6 +11627,12 @@ pixel_texture_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var pixel_texture_node::pixel_texture_class
+ *
+ * @brief Class object for PixelTexture nodes.
+ */
+
+/**
  * @var sfimage pixel_texture_node::image_
  *
  * @brief image exposedField.
@@ -11881,6 +11872,12 @@ plane_sensor_class::do_create_type(const std::string & id,
  * the local coordinate system. The PlaneSensor node uses the descendent
  * geometry of its parent node to determine whether it is liable to generate
  * events.
+ */
+
+/**
+ * @var plane_sensor_node::plane_sensor_class
+ *
+ * @brief Class object for PlaneSensor instances.
  */
 
 /**
@@ -12290,6 +12287,12 @@ point_light_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var point_light_node::point_light_class
+ *
+ * @brief Class object for PointLight instances.
+ */
+
+/**
  * @var exposedfield<sfvec3f> point_light_node::attenuation_
  *
  * @brief attenuation exposedField.
@@ -12480,6 +12483,12 @@ point_set_class::do_create_type(const std::string & id,
  * @class point_set_node
  *
  * @brief Represents PointSet node instances.
+ */
+
+/**
+ * @var point_set_node::point_set_class
+ *
+ * @brief Class object for PointSet instances.
  */
 
 /**
@@ -12739,6 +12748,12 @@ position_interpolator_class::do_create_type(const std::string & id,
  * @class position_interpolator_node
  *
  * @brief PositionInterpolator node instances.
+ */
+
+/**
+ * @var class position_interpolator_node::position_interpolator_class
+ *
+ * @brief Class object for PositionInterpolator nodes.
  */
 
 /**
@@ -13028,6 +13043,12 @@ proximity_sensor_class::do_create_type(const std::string & id,
  * @class proximity_sensor_node
  *
  * @brief Represents ProximitySensor node instances.
+ */
+
+/**
+ * @var proximity_sensor_node::proximity_sensor_class
+ *
+ * @brief Class object for ProximitySensor instances.
  */
 
 /**
@@ -13349,6 +13370,12 @@ scalar_interpolator_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var class scalar_interpolator_node::scalar_interpolator_class
+ *
+ * @brief Class object for ScalarInterpolator nodes.
+ */
+
+/**
  * @internal
  *
  * @class scalar_interpolator_node::set_fraction_listener
@@ -13566,6 +13593,12 @@ shape_class::do_create_type(const std::string & id,
  * @class shape_node
  *
  * @brief Represents Shape node instances.
+ */
+
+/**
+ * @var shape_node::shape_class
+ *
+ * @brief Class object for Shape instances.
  */
 
 /**
@@ -13938,6 +13971,12 @@ sound_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var sound_node::sound_class
+ *
+ * @brief Class object for Sound instances.
+ */
+
+/**
  * @var exposedfield<sfvec3f> sound_node::direction_
  *
  * @brief direction exposedField.
@@ -14109,6 +14148,12 @@ sphere_class::do_create_type(const std::string & id,
  * @class sphere_node
  *
  * @brief Sphere node instances.
+ */
+
+/**
+ * @var sphere_node::sphere_class
+ *
+ * @brief Class object for Sphere instances.
  */
 
 /**
@@ -14312,6 +14357,12 @@ sphere_sensor_class::do_create_type(const std::string & id,
  * @class sphere_sensor_node
  *
  * @brief SphereSensor node instances.
+ */
+
+/**
+ * @var sphere_sensor_node::sphere_sensor_class
+ *
+ * @brief Class object for SphereSensor instances.
  */
 
 /**
@@ -14771,6 +14822,12 @@ spot_light_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var spot_light_node::spot_light_class
+ *
+ * @brief Class object for SpotLight instances.
+ */
+
+/**
  * @var exposedfield<sfvec3f> spot_light_node::attenuation_
  *
  * @brief attenuation exposedField.
@@ -14988,6 +15045,12 @@ switch_class::do_create_type(const std::string & id,
  * @class switch_node
  *
  * @brief Switch node instances.
+ */
+
+/**
+ * @var class switch_node::switch_class
+ *
+ * @brief Class object for Switch nodes.
  */
 
 /**
@@ -15259,13 +15322,13 @@ void switch_node::recalcBSphere()
 text_class::text_class(openvrml::browser & browser):
     node_class(browser)
 {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# if OPENVRML_ENABLE_TEXT_NODE
     FT_Error error = 0;
     error = FT_Init_FreeType(&this->freeTypeLibrary);
     if (error) {
         browser.err << "Error initializing FreeType library." << std::endl;
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -15273,14 +15336,14 @@ text_class::text_class(openvrml::browser & browser):
  */
 text_class::~text_class() throw ()
 {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# if OPENVRML_ENABLE_TEXT_NODE
     FT_Error error = 0;
     error = FT_Done_FreeType(this->freeTypeLibrary);
     if (error) {
         this->browser().err << "Error shutting down FreeType library."
                             << std::endl;
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -15391,6 +15454,12 @@ text_class::do_create_type(const std::string & id,
  * @class text_node
  *
  * @brief Text node instances.
+ */
+
+/**
+ * @var class text_node::text_class
+ *
+ * @brief Class object for Text nodes.
  */
 
 /**
@@ -15628,7 +15697,7 @@ event_side_effect(const sffloat & max_extent,
  *      glyph.
  */
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
     /**
@@ -15904,7 +15973,7 @@ namespace {
         return -1;
     }
 }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 
 /**
  * @brief Construct from a set of contours.
@@ -15926,7 +15995,7 @@ text_node::glyph_geometry::glyph_geometry(
     advance_width(advance_width),
     advance_height(advance_height)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     using std::vector;
 
     const vector<polygon_> polygons = get_polygons_(contours);
@@ -16004,7 +16073,7 @@ text_node::glyph_geometry::glyph_geometry(
         assert(connection_map.empty());
         this->coord_index.push_back(-1);
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -16168,12 +16237,12 @@ void text_node::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 void text_node::do_shutdown(const double timestamp) throw ()
 {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# if OPENVRML_ENABLE_TEXT_NODE
     if (this->face) {
         FT_Error ftError = FT_Done_Face(this->face);
         assert(ftError == FT_Err_Ok); // Surely this can't fail.
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -16183,7 +16252,7 @@ void text_node::do_shutdown(const double timestamp) throw ()
  */
 void text_node::update_ucs4() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     this->ucs4_string.clear();
     this->ucs4_string.resize(this->string_.mfstring::value.size());
 
@@ -16214,10 +16283,10 @@ void text_node::update_ucs4() throw (std::bad_alloc)
             }
         }
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
     //
@@ -16341,7 +16410,7 @@ namespace {
         return e1 == e2;
     }
 }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 
 /**
  * @brief Called when @a fontStyle changes to update the font face.
@@ -16350,7 +16419,7 @@ namespace {
  */
 void text_node::update_face() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     static const char * const fcResultMessage[] = { "match",
                                                     "no match",
                                                     "type mismatch",
@@ -16515,10 +16584,10 @@ void text_node::update_face() throw (std::bad_alloc)
     } catch (FreeTypeError & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
     struct GlyphContours_ {
@@ -16683,7 +16752,7 @@ namespace {
         return 0;
     }
 }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 
 /**
  * @brief Called to update @a text_geometry.
@@ -16692,7 +16761,7 @@ namespace {
  */
 void text_node::update_geometry() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     using std::pair;
     using std::string;
     using std::vector;
@@ -17005,7 +17074,7 @@ void text_node::update_geometry() throw (std::bad_alloc)
     }
 
     this->text_geometry_ = newGeometry;
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 
@@ -17086,6 +17155,12 @@ texture_coordinate_class::do_create_type(const std::string & id,
  * @class texture_coordinate_node
  *
  * @brief TextureCoordinate node instances.
+ */
+
+/**
+ * @var texture_coordinate_node::texture_coordinate_class
+ *
+ * @brief Class object for TextureCoordinate instances.
  */
 
 /**
@@ -17251,6 +17326,12 @@ texture_transform_class::do_create_type(const std::string & id,
  * @class texture_transform_node
  *
  * @brief TextureTransform node instances.
+ */
+
+/**
+ * @var texture_transform_node::texture_transform_class
+ *
+ * @brief Class object for TextureTransform instances.
  */
 
 /**
@@ -17498,6 +17579,12 @@ time_sensor_class::do_create_type(const std::string & id,
  * @class time_sensor_node
  *
  * @brief TimeSensor node instances.
+ */
+
+/**
+ * @var class time_sensor_node::time_sensor_class
+ *
+ * @brief Class object for TimeSensor nodes.
  */
 
 /**
@@ -18097,6 +18184,12 @@ touch_sensor_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var touch_sensor_node::touch_sensor_class
+ *
+ * @brief Class object for TouchSensor instances.
+ */
+
+/**
  * @var exposedfield<sfbool> touch_sensor_node::enabled_
  *
  * @brief enabled exposedField.
@@ -18465,6 +18558,12 @@ transform_class::do_create_type(const std::string & id,
  * @class transform_node
  *
  * @brief Transform node instances.
+ */
+
+/**
+ * @var class transform_node::transform_class
+ *
+ * @brief Class object for Transform nodes.
  */
 
 /**
@@ -18935,24 +19034,13 @@ viewpoint_class::~viewpoint_class() throw ()
  * @brief Set the first Viewpoint node in the world.
  *
  * The first Viewpoint node in the world is used as the initial viewpoint.
- * This function is used by <code>viewpoint_node::do_initialize</code>.
+ * This method is used by viewpoint_node::do_initialize.
  *
  * @param viewpoint    a Viewpoint node.
  */
 void viewpoint_class::set_first(viewpoint_node & viewpoint) throw ()
 {
-    assert(!this->has_first());
     this->first = &viewpoint;
-}
-
-/**
- * @brief Reset the pointer to the first Viewpoint node in the world to null.
- *
- * This function is called by <code>viewpoint_node::do_shutdown</code>.
- */
-void viewpoint_class::reset_first() throw ()
-{
-    this->first = 0;
 }
 
 /**
@@ -18965,18 +19053,6 @@ void viewpoint_class::reset_first() throw ()
 bool viewpoint_class::has_first() const throw ()
 {
     return this->first;
-}
-
-/**
- * @brief Check to see if a node is registered as the "first" node.
- *
- * @param viewpoint a viewpoint_node.
- *
- * @return @c true if @p viewpoint is the fist node; @c false otherwise.
- */
-bool viewpoint_class::is_first(viewpoint_node & viewpoint) throw ()
-{
-    return &viewpoint == this->first;
 }
 
 /**
@@ -19029,7 +19105,7 @@ void viewpoint_class::bind(viewpoint_node & viewpoint, const double timestamp)
  * @brief Remove a Viewpoint from the bound node stack.
  *
  * @param viewpoint    the node to unbind.
- * @param timestamp    the current time.
+ * @param timestamp     the current time.
  */
 void viewpoint_class::unbind(viewpoint_node & viewpoint,
                              const double timestamp)
@@ -19232,6 +19308,12 @@ viewpoint_class::do_create_type(const std::string & id,
  * @class viewpoint_node
  *
  * @brief Viewpoint node instance.
+ */
+
+/**
+ * @var class viewpoint_node::viewpoint_class
+ *
+ * @brief Class object for Viewpoint nodes.
  */
 
 /**
@@ -19632,14 +19714,8 @@ void viewpoint_node::do_relocate() throw (std::bad_alloc)
  */
 void viewpoint_node::do_shutdown(const double timestamp) throw ()
 {
-    viewpoint_class & node_class =
-        const_cast<viewpoint_class &>(
-            static_cast<const viewpoint_class &>(this->type().node_class()));
-    node_class.unbind(*this, timestamp);
     assert(this->scene());
     this->scene()->browser.remove_viewpoint(*this);
-
-    if (node_class.is_first(*this)) { node_class.reset_first(); }
 }
 
 /**
@@ -19807,6 +19883,12 @@ visibility_sensor_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var visibility_sensor_node::visibility_sensor_class
+ *
+ * @brief Class object for VisibilitySensor instances.
+ */
+
+/**
  * @var exposedfield<sfvec3f> visibility_sensor_node::center_
  *
  * @brief center exposedField.
@@ -19923,10 +20005,11 @@ void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
         if (inside) {
             using openvrml_::fequal;
 
-            openvrml::navigation_info_node & nav_info =
-                this->type().node_class().browser().active_navigation_info();
-            if (!fequal<float>()(nav_info.visibility_limit(), 0.0f)
-                && xyz[0][2] < -(nav_info.visibility_limit())) {
+            navigation_info_node * ni =
+                this->type().node_class().browser()
+                .bindable_navigation_info_top();
+            if (ni && !fequal<float>()(ni->visibility_limit(), 0.0f)
+                    && xyz[0][2] < -(ni->visibility_limit())) {
                 inside = false;
             }
         }
@@ -20039,6 +20122,12 @@ world_info_class::do_create_type(const std::string & id,
  * @class world_info_node
  *
  * @brief WorldInfo node instances.
+ */
+
+/**
+ * @var world_info_node::world_info_class
+ *
+ * @brief Class object for WorldInfo instances.
  */
 
 /**

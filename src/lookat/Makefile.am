@@ -2,7 +2,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml-gl
 AM_CXXFLAGS = @SDL_CFLAGS@
-AM_LDFLAGS = -rpath @OPENVRML_RPATH@ @SDL_LIBS@ @JNI_LIBS@
+AM_LDFLAGS = @OPENVRML_RPATH@ @SDL_LIBS@ @JNI_LIBS@
 LDADD = $(top_builddir)/src/libopenvrml-gl/libopenvrml-gl.la \
         $(top_builddir)/src/libopenvrml/libopenvrml.la
 

@@ -36,11 +36,18 @@ namespace openvrml {
  * @brief The scope class keeps track of defined nodes and
  *      prototypes.
  *
- * @c PROTO definitions add node types to the namespace. @c PROTO
- * implementations are a separate node type namespace, and require that any
- * nested <code>PROTO</code>s @b not be available outside the @c PROTO
- * implementation. <code>PROTO</code>s defined outside the current namespace
- * are available.
+ * PROTO definitions add node types to the namespace.
+ * PROTO implementations are a separate node type namespace,
+ * and require that any nested PROTOs NOT be available outside
+ * the PROTO implementation. PROTOs defined outside the current
+ * namespace are available.
+ */
+
+/**
+ * @var scope::node
+ *
+ * @brief node identifiers are stored in the scope, so node needs special
+ *        privilege to access them.
  */
 
 /**

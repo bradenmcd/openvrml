@@ -1,48 +1,120 @@
-2004-12-30 Braden McDaniel  <braden@endoframe.com>
+2005-01-10 Braden McDaniel  <braden@endoframe.com>
 
-	Thread safety improvements (using Boost threads).  Also, added
-	browser::world_url mutator so that the world URI can be set
-	independently of browser::load_url.  This is needed for the
-	Mozilla plug-in, where the initial stream is delivered to the
-	plug-in at startup (i.e., the plug-in is not responsible for
-	initiating the fetch).
+	Updated package version to 0.15.5.
 
-	* src/libopenvrml/Makefile.am:  Link with libboost_thread.
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac
+
+2005-01-10 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/Makefile.am:  Incremented library version to
+	5:2:0.
+
+2005-01-10 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for Doxygen 1.4.
+
+	* doc/Doxyfile
+	* doc/doxygen-header
+
+2005-01-10 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp:  Use getenv instead of
+	g_getenv.
+
+2005-01-10 Braden McDaniel  <braden@endoframe.com>
+
+	Replaced doc-comments for friend declarations. (Bug fixed in
+	Doxygen 1.4.)
+
 	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/node.cpp
 	* src/libopenvrml/openvrml/node_ptr.cpp
-
-2004-12-30 Braden McDaniel  <braden@endoframe.com>
-
-	Use boost::scoped_ptr for browser::scene_.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/browser.h
-
-2004-12-30 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/vrml97node.cpp:  Removed erroneously
-	committed debugging output.
-
-2004-12-30 Braden McDaniel  <braden@endoframe.com>
-
-	Unregister bindable nodes as "first" during shutdown.
-
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/script.cpp
 	* src/libopenvrml/openvrml/vrml97node.cpp
-	* src/libopenvrml/openvrml/vrml97node.h
-	
+
+2005-01-09 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed problem with an empty -rpath argument when configured with
+	--disable-script-node-javascript.
+
+	* configure.ac
+	* src/lookat/Makefile.am
+	* test/Makefile.am
+	* test/parse/Makefile.am
+
+2005-01-09 Braden McDaniel  <braden@endoframe.com>
+
+	Use fork/exec directly instead of using g_spawn_async.  For some
+	reason, g_spawn_async did not play well with reloading the plug-
+	in shortly after unloading it.
+
+	* mozilla-plugin/src/openvrml.cpp
+	* mozilla-plugin/src/openvrml-player/Makefile.am:  No longer
+	link with GTK/Glib.
+
+2005-01-07 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp:  Removed some erroneously
+	checked in debugging output.
+
+2005-01-07 Braden McDaniel  <braden@endoframe.com>
+
+	Made the Mozilla plug-in out-of-process.
+
+	* openvrml.spec.in
+	* mozilla-plugin/configure.ac
+	* mozilla-plugin/src/Makefile.am
+	* mozilla-plugin/src/openvrml.cpp
+	* mozilla-plugin/src/openvrml-player/Makefile.am:  Added file.
+	* mozilla-plugin/src/openvrml-player/player.cpp:  Added file.
+
+2005-01-07 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/viewer.cpp:  Explicitly qualify
+	openvrml::browser to make doxygen happy.
+
+2005-01-05 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed a problem with browser::find_node along with a more
+	general problem with node_traverser.
+
+	* src/libopenvrml/openvrml/browser.cpp (browser::find_node):
+	Don't pop nodes off of the node path if the traversal has been
+	halted.
+	* src/libopenvrml/openvrml/node.cpp
+	(node_traverser::do_traversal):  Check whether the traversal has
+	been halted when iterating over an MFNode field.
+
 2004-12-29 Braden McDaniel  <braden@endoframe.com>
 
-	Merged changes from 0.15.4 release.
+	Updated package version to 0.15.4.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac
+
+2004-12-29 Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.spec.in:  Fixed name of xorg-x11-devel prerequisite
+	for the openvrml-gl-devel package.
+
+2004-12-29 Braden McDaniel  <braden@endoframe.com>
 
 	Refactored GtkGLExt usage to eliminate GtkVrmlBrowser widget.
 	Since OpenVRML is a C++ library, this widget would probably
 	never support a useful (C) API.  So it needlessly complicated
 	the code.
 
-	* NEWS:  Updates for 0.15.4 release.
-	* openvrml.spec.in:  Fixed name of xorg-x11-devel prerequisite
-	for the openvrml-gl-devel package.
 	* mozilla-plugin/src/Makefile.am:  Removed references to
 	GtkVrmlBrowser widget sources.
 	* mozilla-plugin/src/openvrml.cpp:  Add GL capabilities and
@@ -51,40 +123,56 @@
 	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc:  Removed file.
 	* mozilla-plugin/src/gtkvrml/vrmlbrowser.h:  Removed file.
 
-2004-12-28 Braden McDaniel  <braden@endoframe.com>
-
-	Added abstract navigation_info_node to the core API.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/browser.h
-	* src/libopenvrml/openvrml/node.cpp
-	* src/libopenvrml/openvrml/node.h
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	* src/libopenvrml/openvrml/vrml97node.h
-	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
-
 2004-12-25 Braden McDaniel  <braden@endoframe.com>
 
-	Merged changes from 0.15.3 release.
+	Updated package version to 0.15.3.
 
 	* NEWS
-	* INSTALL:  Updated to the one included with Automake 1.9.2.
-	* README:  Removed references to GtkGLExt dependency; fixed
-	mailing list addresses; eliminated ambiguity regarding required
-	vs. optional dependencies (i.e., make it clear that Boost is
-	required).
+	* README
 	* configure.ac
-	* openvrml.spec.in
 	* doc/Doxyfile
-	* ide-projects/Windows/VisualC7_1/OpenVRML/antlr/antlr.vcproj:
-	Define NDEBUG for Release configuration in the Visual C++ 7.1
-	project.
-	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
-	Define NDEBUG for Release configuration in the Visual C++ 7.1
-	project.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac
+
+2004-12-24 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp:  Removed some erroneously
+	committed debugging output.
+
+2004-12-24 Braden McDaniel  <braden@endoframe.com>
+
+	Updated libtool library versions.
+
+	* src/libopenvrml/Makefile.am:  Updated library version to
+	5:1:0.
+	* src/libopenvrml-gl/Makefile.am:  Updated library version to
+	6:1:0.
+
+2004-12-24 Braden McDaniel  <braden@endoframe.com>
+
+	Link plug-in shared object with requisite libraries.
+
 	* mozilla-plugin/Makefile.am
-	* mozilla-plugin/configure.ac:  Don't fail when xpidl isn't
-	found when configured with --disable-mozilla-plugin.
+	* mozilla-plugin/configure.ac
+	* mozilla-plugin/src/Makefile.am
+
+2004-12-24 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglconfig.c:  Use
+	g_type_from_name to first check if the type has already been
+	registered.  This would be the case if the shared object had
+	previously been loaded and then unloaded.
+
+2004-12-24 Braden McDaniel  <braden@endoframe.com>
+
+	Added GtkGLExt to the distribution.  We need to patch it to get
+	it to work with the Mozilla plug-in and the project does not
+	appear to be actively maintained.
+
+	* README:  Removed references to GtkGLExt dependency.
+	* openvrml.spec.in
+	* mozilla-plugin/Makefile.am
+	* mozilla-plugin/configure.ac
 	* mozilla-plugin/lib/Makefile.am
 	* mozilla-plugin/lib/gtkglext/Makefile.am:  Removed
 	gtkglext.spec from the distribution (it confuses rpm); don't
@@ -98,10 +186,6 @@
 	build directory rather than the source directory; moved
 	$(gdk_built_sources) from MAINTAINERCLEANFILES to
 	DISTCLEANFILES.
-	* mozilla-plugin/lib/gtkglext/gdk/gdkglconfig.c:  Use
-	g_type_from_name to first check if the type has already been
-	registered.  This would be the case if the shared object had
-	previously been loaded and then unloaded.
 	* mozilla-plugin/lib/gtkglext/gdk/glext/Makefile.am:  Don't
 	install gdkglext headers.
 	* mozilla-plugin/lib/gtkglext/gdk/win32/Makefile.am:  Don't
@@ -113,140 +197,141 @@
 	* mozilla-plugin/lib/gtkglext/m4macros/Makefile.am:  Don't
 	install GtkGLExt macro.
 	* mozilla-plugin/src/Makefile.am:  Use GtkGLExt in the
-	distribution; added MOZILLA_PLUGIN_LIBS to LDFLAGS.
+	distribution.
+
+2004-12-17 Braden McDaniel  <braden@endoframe.com>
+
+	* README:  Fixed mailing list addresses.
+
+2004-12-17 Braden McDaniel  <braden@endoframe.com>
+
+	* INSTALL:  Updated to the one included with Automake 1.9.2.
+
+2004-12-17 Braden McDaniel  <braden@endoframe.com>
+
+	* README:  Eliminate ambiguity regarding required vs. optional
+	dependencies (i.e., make it clear that Boost is required).
+
+2004-12-17 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp (NPP_New):  Removed
+	erroneously committed debugging output.
+
+2004-12-17 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(viewer::transform_points):  Removed erroneously committed
+	debugging output.
+
+2004-12-17 Braden McDaniel  <braden@endoframe.com>
+
+	Short term hack allow the Mozilla plug-in to handle relative
+	URIs.  This will not be necessary once the plug-in does proper
+	streaming.
+
+	* mozilla-plugin/configure.ac:  Substitute mozlibdir.
+	* mozilla-plugin/src/Makefile.am:  Added MOZILLA_PLUGIN_LIBS to
+	LDFLAGS.
 	* mozilla-plugin/src/openvrml.cpp:  Copied the URI parser from
 	openvrml::browser.  Get the URI for the Web page hosting the
 	plug-in, and then resolve the relative URI for the plug-in
 	against it.
-	* src/libopenvrml/Makefile.am:  Updated library version to
-	5:1:0.
+
+2004-12-17 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp:  Improved relative URI
 	handling.
+
+2004-12-14 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/configure.ac:  Don't fail when xpidl isn't
+	found when configured with --disable-mozilla-plugin.
+
+2004-12-13 Braden McDaniel  <braden@endoframe.com>
+
+	Define NDEBUG for Release configuration in the Visual C++ 7.1
+	project.
+
+	* ide-projects/Windows/VisualC7_1/OpenVRML/antlr/antlr.vcproj
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
 	* src/libopenvrml/openvrml/system.cpp:  Added missing <iostream>
 	inclusion.
-	* src/libopenvrml-gl/Makefile.am:  Updated library version to
-	6:1:0.
+
+2004-12-04 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(viewer::transform_points):  Fixed math to correctly transform
 	by the modelview matrix.  This fixes a problem with the
 	VisibilitySensor node.
 
-2004-12-13 Braden McDaniel  <braden@endoframe.com>
-
-	Moved private.h from src/libopenvrml/openvrml to
-	src/libopenvrml.
-
-	* src/libopenvrml/Makefile.am
-	* src/libopenvrml/private.h:  Added file.
-	* src/libopenvrml/openvrml/ScriptJDK.cpp
-	* src/libopenvrml/openvrml/Vrml97Parser.cpp
-	* src/libopenvrml/openvrml/Vrml97Parser.g
-	* src/libopenvrml/openvrml/basetypes.cpp
-	* src/libopenvrml/openvrml/bounding_volume.cpp
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/field_value.cpp
-	* src/libopenvrml/openvrml/frustum.cpp
-	* src/libopenvrml/openvrml/img.cpp
-	* src/libopenvrml/openvrml/private.h:  Removed file.
-	* src/libopenvrml/openvrml/script.cpp
-	* src/libopenvrml/openvrml/system.cpp
-	* src/libopenvrml/openvrml/viewer.cpp
-	* src/libopenvrml/openvrml/vrml97node.cpp
-
-2004-12-13 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/script.cpp:  Report error from
-	Browser.createVrmlFromString with bad syntax.
-
-2004-12-09 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/script.cpp (MField::getElement):
-	Fixed crash on an invalid index for a JavaScript MF* type.
-
-2004-12-09 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/script.cpp:  Consistently use
-	js_::script::sfnode_class.
-
-2004-12-09 Braden McDaniel  <braden@endoframe.com>
-
-	Fixes for direct output from Script nodes.
-
-	* src/libopenvrml/openvrml/script.cpp
-	* src/libopenvrml/openvrml/script.h
-
-2004-12-07 Braden McDaniel  <braden@endoframe.com>
-
-	Favor private virtual functions in openvrml::script.
-
-	* src/libopenvrml/openvrml/ScriptJDK.cpp
-	* src/libopenvrml/openvrml/ScriptJDK.h
-	* src/libopenvrml/openvrml/script.cpp
-	* src/libopenvrml/openvrml/script.h
-
-2004-12-06 Braden McDaniel  <braden@endoframe.com>
-
-	Added event_listener::type to get a the type_id for the type
-	accepted by the listener. This required adding a static type
-	identifier to each field_value subclass.
-
-	* src/libopenvrml/openvrml/event.cpp
-	* src/libopenvrml/openvrml/event.h
-	* src/libopenvrml/openvrml/field_value.cpp
-	* src/libopenvrml/openvrml/field_value.h
-
 2004-12-03 Braden McDaniel  <braden@endoframe.com>
 
-	Changed the names of the options to disable ImageTexture and
-	Text node rendering to reflect the fact that only rendering is
-	being disabled.
-
-	* README
-	* configure.ac
-	* src/libopenvrml/openvrml/img.cpp
-	* src/libopenvrml/openvrml/vrml97node.cpp
-
-2004-12-03 Braden McDaniel  <braden@endoframe.com>
-
-	Merged changes from 0.15.2 release.
+	Updated package version to 0.15.2.
 
 	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* mozilla-plugin/configure.ac
+
+2004-12-03 Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.spec.in:  Use %makeinstall macro; install COPYING
+	(GPL) with lookat documentation rather than COPYING.LESSER
+	(LGPL).
+
+2004-12-03 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/Makefile.am:  Remove generated documentation as part of
+	maintainer-clean.
+
+2004-12-02 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
+	(gtk_vrml_browser_get_type):  First try to look up the type from
+	glib's type registry.
+
+2004-11-30 Braden McDaniel  <braden@endoframe.com>
+
+	Made building the tests optional (via configure).
+
 	* README:  Note dependency on DejaGnu.
 	* configure.ac:  Added --disable-test option for configure.
 	Check for dejagnu.h, and fail configuration if it is not found
 	and the tests are supposed to be built.
-	* openvrml.spec.in:  Use %makeinstall macro; install COPYING
-	(GPL) with lookat documentation rather than COPYING.LESSER
-	(LGPL).  Added dejagnu as a build prerequisite.
-	* doc/Makefile.am:  Remove generated documentation as part of
-	maintainer-clean.
-	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
-	(gtk_vrml_browser_get_type):  First try to look up the type from
-	glib's type registry.
-	(GtkGLViewer::set_timer):  Don't invoke gtk_main_iteration.
-	* src/libopenvrml/openvrml/browser.cpp
-	(path_getter::get_path_from(const node_ptr &)):  Removed
-	spurious assert.
+	* openvrml.spec.in:  Added dejagnu as a build prerequisite.
 	* test/Makefile.am:  Made building the tests optional.
 	* test/parse/Makefile.am:  Made building the tests optional.
 
+2004-11-29 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(path_getter::get_path_from(const node_ptr &)):  Removed
+	spurious assert.
+
+2004-11-28 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
+	(GtkGLViewer::set_timer):  Don't invoke gtk_main_iteration.
+
 2004-11-27 Braden McDaniel  <braden@endoframe.com>
 
-	Merged changes from 0.15.1 release.
+	Updated version number for 0.15.1 release.
 
 	* NEWS:  Updated for 0.15.1.
-	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
-	Project file updates.
-	* src/libopenvrml/openvrml/event.h:  event_emitter::last_time
-	accessor should be public.
+	* configure.ac:  Updated package version.
+	* doc/Doxyfile:  Updated package version.
+	* mozilla-plugin/configure.ac:  Updated package version.
 
 2004-11-27 Braden McDaniel  <braden@endoframe.com>
 
-	Updated package version to 0.15.99.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
+	Project file updates.
 
-	* configure.ac
-	* doc/Doxyfile
-	* mozilla-plugin/configure.ac
+2004-11-27 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/event.h:  event_emitter::last_time
+	accessor should be public.
 
 2004-11-26 Braden McDaniel  <braden@endoframe.com>
 
