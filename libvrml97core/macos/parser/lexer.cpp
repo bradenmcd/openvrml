@@ -2984,6 +2984,14 @@ typedef union {
 #define	SF_NODE	288
 #define	MF_NODE	289
 
+void convertToUnixFormat(char* buf, int result) {
+#ifdef macintosh
+for (int i = 0; i < result; i++) {
+  if( buf[i] == '\r')
+    buf[i] = '\n';
+}
+#endif
+}
 
 extern YYSTYPE yylval;
 
@@ -3008,6 +3016,8 @@ gzFile yygz = 0;			/* For input from gzipped files */
 	} else if (yygz) { \
 		if ((result = gzread( yygz, buf, max_size )) == -1) \
 		    YY_FATAL_ERROR( "gz input in flex scanner failed" ); \
+		else \
+		  convertToUnixFormat(buf,result);\
 	} else if ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
 		  && ferror( yyin ) ) \
 		YY_FATAL_ERROR( "yyin input in flex scanner failed" );
