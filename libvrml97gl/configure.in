@@ -1,0 +1,23 @@
+AC_INIT(src/vrml97gl/ViewerOpenGL.cpp)
+
+PACKAGE=libvrml97-gl
+VERSION="0.8.0"
+
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+dnl SAM_ACLOCAL_INCLUDE(macros)
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AM_PROG_LIBTOOL
+
+dnl Test for libvrml97 (also checks for libjpeg, libpng)
+AM_PATH_VRML(, AC_MSG_ERROR([Missing libvrml97 or one of its dependencies. See 'config.log' for details.]))
+
+dnl Check for glut, OpenGL, X (need to remove the dependency on glut)
+AM_PATH_GLUT(, AC_MSG_ERROR([glut or one of its dependencies not found. See 'config.log' for details.]))
+
+AC_OUTPUT(Makefile \
+          src/Makefile \
+          src/vrml97gl/Makefile)
