@@ -1,7 +1,9 @@
-Changes new in version 0.11.2, 12 October, 2001
-=============================================
+Changes new in version 0.11.2, 18 October, 2001
+===============================================
 
 - Fixed some minor regressions since 0.10.1.
+
+- `configure' now works for `--without-mozjs'.
 
 
 Changes new in version 0.11.1, 5 August, 2001
