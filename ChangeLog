@@ -1,5 +1,10 @@
 2004-09-17 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Doxyfile.in:  Don't generate documentation for "internal"
+	doc-comments.
+
+2004-09-17 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp:  Changed
 	DefaultViewpoint class to default_viewpoint; moved to unnamed
 	namespace.
