@@ -2,6 +2,8 @@
 
         * Replaced SimpleVector in the parser with std::vector.
 
+        * Moved Vrml97Scanner implementation to Vrml97Parser.g.
+
 2001-06-06  Braden McDaniel <braden@endoframe.com>
 
         * Made PNG support (libpng) optional.

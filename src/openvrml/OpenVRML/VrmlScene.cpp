@@ -42,7 +42,6 @@
 #include "Viewer.h"
 #include "System.h"
 #include "MathUtils.h"
-#include "Vrml97Scanner.h"
 #include "Vrml97Parser.hpp"
 #include "VrmlNamespace.h"
 #include "VrmlNodeType.h"

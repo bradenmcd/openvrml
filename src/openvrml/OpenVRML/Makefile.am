@@ -52,9 +52,6 @@ lib_LTLIBRARIES = libopenvrml.la
 libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
 @PNG_LIBS@ @Z_LIBS@
 
-Vrml97Scanner.o Vrml97Scanner.lo: Vrml97Scanner.cpp Vrml97Scanner.h
-	$(LTCXXCOMPILE) -c $<
-
 Vrml97Parser.o Vrml97Parser.lo: Vrml97Parser.cpp Vrml97Parser.hpp field.h \
 doc2.hpp VrmlNamespace.h VrmlNodeType.h VrmlNode.h System.h VrmlNodeScript.h \
 vrml97node.h
@@ -67,8 +64,7 @@ VrmlNamespace.cpp VrmlNodeType.cpp VrmlNodePtr.cpp Route.cpp \
 VrmlNodeVisitor.cpp VrmlNode.cpp VrmlNodeProto.cpp ScriptObject.cpp \
 VrmlNodeScript.cpp VrmlScene.cpp vrml97node.cpp
 
-antlr-prelinked.lo: Vrml97Scanner.lo Vrml97Parser.lo \
-$(top_builddir)/lib/antlr/libantlr.la
+antlr-prelinked.lo: Vrml97Parser.lo $(top_builddir)/lib/antlr/libantlr.la
 	$(CXXLINK) $^
 
 libopenvrml_la_LIBADD = antlr-prelinked.lo $(JAVASCRIPT_SUPPORT_LIBOBJ)
@@ -81,7 +77,7 @@ VrmlNodeScript.h VrmlNodeType.h vrml97node.h VrmlRenderContext.h VrmlScene.h \
 doc2.hpp
 
 noinst_HEADERS = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp ScriptJS.h \
-sound.h Vrml97Scanner.h
+sound.h
 
-EXTRA_DIST = Vrml97Scanner.cpp Vrml97TokenTypes.txt Vrml97Parser.cpp \
-Vrml97Parser.hpp Vrml97ParserTokenTypes.txt Vrml97Parser.g ScriptJS.cpp
+EXTRA_DIST = Vrml97TokenTypes.txt Vrml97Parser.cpp Vrml97Parser.hpp \
+Vrml97ParserTokenTypes.txt Vrml97Parser.g ScriptJS.cpp
