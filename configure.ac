@@ -27,9 +27,14 @@ AC_CONFIG_FILES([Makefile]
                 [openvrml-gl.pc]
                 [openvrml.spec])
 
-AM_INIT_AUTOMAKE([1.6.3 foreign])
+AM_INIT_AUTOMAKE([1.7 foreign])
 AM_CONFIG_HEADER([config.h])
 
+#
+# These strings are used with PKG_CHECK_MODULES.  If the corresponding
+# features are enabled, they also propagate to the pkg-config metadata files
+# output by configure.
+#
 REQUIRE_FONTCONFIG="fontconfig"
 REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
 
@@ -212,6 +217,9 @@ fi
 AM_CONDITIONAL([ENABLE_LOOKAT],
                [test "X$enable_lookat" != "Xno" -a "X$no_glut" != "Xyes"])
 
+#
+# Optional dependencies (substituted in the pkg-config metadata files).
+#
 AC_SUBST([OPENVRML_PKG_REQUIRES])
 
 AC_OUTPUT
