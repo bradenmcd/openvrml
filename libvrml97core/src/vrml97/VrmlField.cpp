@@ -366,9 +366,58 @@ void VrmlSFRotation::invert(void)
   d_x[3] = - d_x[3];
 }
 
-void VrmlSFRotation::multiply(VrmlSFRotation* )
+void VrmlSFRotation::multiply(VrmlSFRotation* rotVec)
 {
-  // not implemented...
+		// convert to quaternions
+	float quatUS[4], quatVec[4];
+	ToQuaternion(quatUS);
+	rotVec->ToQuaternion(quatVec);
+	
+		// multiply quaternions
+	float result[4];
+	MultQuat(result, quatUS, quatVec);
+	
+		// now convert back to axis/angle
+	FromQuaternion(result);
+}
+
+void VrmlSFRotation::ToQuaternion(float* theQuat)
+{
+	float sintd2 = sin(d_x[3] * 0.5);
+	float len = sqrt(d_x[0] * d_x[0] + d_x[1] * d_x[1] + d_x[2] * d_x[2]);
+	float f = sintd2 / len;
+	theQuat[3] = cos(d_x[3] * 0.5);
+	theQuat[0] = d_x[0] * f;
+	theQuat[1] = d_x[1] * f;
+	theQuat[2] = d_x[2] * f;
+}
+
+void VrmlSFRotation::FromQuaternion(float* theQuat)
+{
+	double sina2 = sqrt(theQuat[0]*theQuat[0] + theQuat[1]*theQuat[1] + theQuat[2]*theQuat[2]);
+	double angle = (2.0*atan2(sina2, theQuat[3]));
+
+	if (sina2 >= 1e-8) {
+		sina2 = 1.0/sina2;
+		set(theQuat[0]*sina2,theQuat[1]*sina2,theQuat[2]*sina2, angle);
+	} else {
+        set(0,1,0, 0);
+	}
+}
+
+void VrmlSFRotation::MultQuat(float* result, float* quat1, float* quat2)
+{
+	result[3] = quat1[3]*quat2[3] - quat1[0]*quat2[0] - 
+		      quat1[1]*quat2[1] - quat1[2]*quat2[2];
+
+	result[0] = quat1[3]*quat2[0] + quat1[0]*quat2[3] + 
+		      quat1[1]*quat2[2] - quat1[2]*quat2[1];
+
+	result[1] = quat1[3]*quat2[1] + quat1[1]*quat2[3] + 
+		      quat1[2]*quat2[0] - quat1[0]*quat2[2];
+
+	result[2] = quat1[3]*quat2[2] + quat1[2]*quat2[3] + 
+		      quat1[0]*quat2[1] - quat1[1]*quat2[0];
 }
 
 void VrmlSFRotation::slerp(VrmlSFRotation* , float )

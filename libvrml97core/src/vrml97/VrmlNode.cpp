@@ -179,6 +179,8 @@ VrmlNodeMovieTexture*	VrmlNode::toMovieTexture() const { return 0; }
 VrmlNodeNavigationInfo*	VrmlNode::toNavigationInfo() const { return 0; }
 VrmlNodeNormal*		VrmlNode::toNormal() const { return 0; }
 VrmlNodePlaneSensor*	VrmlNode::toPlaneSensor() const { return 0; }
+VrmlNodeSphereSensor*	VrmlNode::toSphereSensor() const { return 0; }
+VrmlNodeCylinderSensor*	VrmlNode::toCylinderSensor() const { return 0; }
 VrmlNodePointLight*	VrmlNode::toPointLight() const { return 0; }
 VrmlNodeScript*		VrmlNode::toScript() const { return 0; }
 VrmlNodeShape*		VrmlNode::toShape() const { return 0; }

@@ -57,6 +57,7 @@ VrmlNodeSphereSensor::VrmlNodeSphereSensor( VrmlScene *scene ) :
   VrmlNodeChild(scene),
   d_autoOffset(true),
   d_enabled(true),
+  d_offset(0,1,0,0),
   d_isActive(false)
 {
   setModified();
@@ -73,6 +74,10 @@ VrmlNode *VrmlNodeSphereSensor::cloneMe() const
   return new VrmlNodeSphereSensor(*this);
 }
 
+VrmlNodeSphereSensor* VrmlNodeSphereSensor::toSphereSensor() const	// mgiger 6/16/00
+{
+	return (VrmlNodeSphereSensor*) this;
+}
 
 ostream& VrmlNodeSphereSensor::printFields(ostream& os, int indent)
 {
@@ -118,4 +123,72 @@ void VrmlNodeSphereSensor::setField(const char *fieldName,
   else if TRY_FIELD(offset, SFRotation)
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
+}
+
+void VrmlNodeSphereSensor::activate( double timeStamp,
+				    bool isActive,
+				    double *p )
+{
+		// Become active
+	if ( isActive && ! d_isActive.get() ) {
+		d_isActive.set(isActive);
+		
+			// set activation point in world coords
+		d_activationPoint.set( p[0], p[1], p[2] );
+		
+		if(d_autoOffset.get())
+			d_rotation = d_offset;
+		
+			// calculate the center of the object in world coords
+		float V[3] = { 0.0, 0.0, 0.0 };
+		double M[4][4];
+		inverseTransform( M );
+		VM( V, M, V );
+		d_centerPoint.set( V[0], V[1], V[2] );
+		
+			// send message
+		eventOut( timeStamp, "isActive", d_isActive );
+	}
+
+		// Become inactive
+	else if ( ! isActive && d_isActive.get() ) {
+		d_isActive.set(isActive);
+		eventOut( timeStamp, "isActive", d_isActive );
+
+			// save auto offset of rotation
+		if ( d_autoOffset.get() ) {
+			d_offset = d_rotation;
+			eventOut( timeStamp, "offset_changed", d_offset );
+		}
+	}
+
+		// Tracking
+	else if ( isActive ) {
+
+		// get local coord for touch point
+		float V[3] = { p[0], p[1], p[2] };
+		double M[4][4];
+		inverseTransform( M );
+		VM( V, M, V );
+		d_trackPoint.set(V[0], V[1], V[2]);
+		eventOut( timeStamp, "trackPoint_changed", d_trackPoint );
+		
+		float V2[3] = { p[0], p[1], p[2] };
+		VrmlSFVec3f dir1, dir2;
+		Vdiff(dir1.get(), V2, d_centerPoint.get());
+		double dist = dir1.length();				// get the length of the pre-normalized vector
+		dir1.normalize();
+		Vdiff(dir2.get(), d_activationPoint.get(), d_centerPoint.get());
+		dir2.normalize();
+		
+		VrmlSFVec3f cx;
+		Vcross(cx.get(), dir1.get(), dir2.get());
+
+		VrmlSFRotation newRot(cx.x(), cx.y(), cx.z(), dist * acos(dir1.dot(&dir2)));
+		if ( d_autoOffset.get() )
+			newRot.multiply(&d_offset);
+		d_rotation = newRot;
+		
+		eventOut( timeStamp, "rotation_changed", d_rotation );
+	}
 }

@@ -81,6 +81,11 @@ VrmlNode *VrmlNodeCylinderSensor::cloneMe() const
 }
 
 
+VrmlNodeCylinderSensor* VrmlNodeCylinderSensor::toCylinderSensor() const	// mgiger 6/16/00
+{
+	return (VrmlNodeCylinderSensor*) this;
+}
+
 ostream& VrmlNodeCylinderSensor::printFields(ostream& os, int indent)
 {
   if (! d_autoOffset.get()) PRINT_FIELD(autoOffset);
@@ -134,3 +139,9 @@ void VrmlNodeCylinderSensor::setField(const char *fieldName,
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
 
+
+void VrmlNodeCylinderSensor::activate( double timeStamp,
+				    bool isActive,
+				    double *p )
+{
+}

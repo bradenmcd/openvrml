@@ -29,10 +29,14 @@ public:
 
   virtual VrmlNode *cloneMe() const;
 
+  virtual VrmlNodeCylinderSensor* toCylinderSensor() const;
+
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+
+  void activate( double timeStamp, bool isActive, double *p );
 
   bool isEnabled() { return d_enabled.get(); }
 

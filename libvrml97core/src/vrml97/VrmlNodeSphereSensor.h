@@ -29,10 +29,14 @@ public:
 
   virtual VrmlNode *cloneMe() const;
 
+  virtual VrmlNodeSphereSensor* toSphereSensor() const;
+
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+
+  void activate( double timeStamp, bool isActive, double *p );
 
   bool isEnabled() { return d_enabled.get(); }
 
@@ -47,6 +51,8 @@ private:
   VrmlSFRotation d_rotation;
   VrmlSFVec3f d_trackPoint;
 
+  VrmlSFVec3f d_activationPoint;
+  VrmlSFVec3f d_centerPoint;
 };
 
 #endif

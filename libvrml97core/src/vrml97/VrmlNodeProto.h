@@ -59,6 +59,8 @@ public:
   virtual VrmlNodeNavigationInfo*	toNavigationInfo() const;
   virtual VrmlNodeNormal*	toNormal() const;
   virtual VrmlNodePlaneSensor*	toPlaneSensor() const;
+  virtual VrmlNodeSphereSensor*	toSphereSensor() const;
+  virtual VrmlNodeCylinderSensor*	toCylinderSensor() const;
   virtual VrmlNodePointLight*	toPointLight() const;
   virtual VrmlNodeScript*	toScript() const;
   virtual VrmlNodeSound*	toSound() const;

@@ -54,6 +54,8 @@ class VrmlNodePointLight;
 class VrmlNodeScript;
 class VrmlNodeShape;
 class VrmlNodeSphere; //LarryD Mar 08/99
+class VrmlNodeSphereSensor;
+class VrmlNodeCylinderSensor;
 class VrmlNodeSound;
 class VrmlNodeSpotLight;
 class VrmlNodeSwitch;
@@ -145,6 +147,8 @@ public:
   virtual VrmlNodeNavigationInfo*	toNavigationInfo() const;
   virtual VrmlNodeNormal*	toNormal() const;
   virtual VrmlNodePlaneSensor*	toPlaneSensor() const;
+  virtual VrmlNodeSphereSensor*	toSphereSensor() const;
+  virtual VrmlNodeCylinderSensor* toCylinderSensor() const;
   virtual VrmlNodePointLight*	toPointLight() const;
   virtual VrmlNodeScript*	toScript() const;
   virtual VrmlNodeShape*	toShape() const;

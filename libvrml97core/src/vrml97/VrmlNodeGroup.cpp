@@ -10,6 +10,8 @@
 #include "VrmlNodeType.h"
 #include "VrmlNodeProto.h"
 #include "VrmlNodePlaneSensor.h"
+#include "VrmlNodeSphereSensor.h"
+#include "VrmlNodeCylinderSensor.h"
 #include "VrmlNodeTouchSensor.h"
 #include "VrmlMFNode.h"
 #include "VrmlSFVec3f.h"
@@ -241,7 +243,9 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
 	  if ( kid->toLight() && ! (kid->toPointLight() || kid->toSpotLight()) )
 	    kid->render(viewer, rc);
 	  else if (( kid->toTouchSensor() && kid->toTouchSensor()->isEnabled() ) ||
-		   ( kid->toPlaneSensor() && kid->toPlaneSensor()->isEnabled() ))
+		   ( kid->toPlaneSensor() && kid->toPlaneSensor()->isEnabled() ) ||
+		   ( kid->toCylinderSensor() && kid->toCylinderSensor()->isEnabled() ) ||
+		    ( kid->toSphereSensor() && kid->toSphereSensor()->isEnabled() ))
 	    {
 	      if (++nSensors == 1)
 		viewer->setSensitive( this );
@@ -252,6 +256,8 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
       for (i = 0; i<n; ++i)
 	if (! (d_children[i]->toLight() ||
 	       d_children[i]->toPlaneSensor() ||
+	       d_children[i]->toCylinderSensor() ||
+	       d_children[i]->toSphereSensor() ||
 	       d_children[i]->toTouchSensor()) )
 	  d_children[i]->render(viewer, rc);
 
@@ -305,6 +311,16 @@ void VrmlNodeGroup::activate( double time,
       else if ( kid->toPlaneSensor() && kid->toPlaneSensor()->isEnabled() )
 	{
 	  kid->toPlaneSensor()->activate( time, isActive, p );
+	  break;
+	}
+      else if ( kid->toCylinderSensor() && kid->toCylinderSensor()->isEnabled() )
+	{
+	  kid->toCylinderSensor()->activate( time, isActive, p );
+	  break;
+	}
+      else if ( kid->toSphereSensor() && kid->toSphereSensor()->isEnabled() )
+	{
+	  kid->toSphereSensor()->activate( time, isActive, p );
 	  break;
 	}
     }	      

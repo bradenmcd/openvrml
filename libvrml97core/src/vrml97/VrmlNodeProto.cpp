@@ -373,6 +373,12 @@ VrmlNodeNormal* VrmlNodeProto::toNormal() const
 VrmlNodePlaneSensor* VrmlNodeProto::toPlaneSensor() const
 { return firstNode() ? firstNode()->toPlaneSensor() : 0; }
 
+VrmlNodeSphereSensor* VrmlNodeProto::toSphereSensor() const
+{ return firstNode() ? firstNode()->toSphereSensor() : 0; }
+
+VrmlNodeCylinderSensor* VrmlNodeProto::toCylinderSensor() const
+{ return firstNode() ? firstNode()->toCylinderSensor() : 0; }
+
 VrmlNodePointLight* VrmlNodeProto::toPointLight() const
 { return firstNode() ? firstNode()->toPointLight() : 0; }
 

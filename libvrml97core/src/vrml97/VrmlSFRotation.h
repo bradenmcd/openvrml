@@ -32,6 +32,11 @@ public:
 
   void invert(void);
   void multiply(VrmlSFRotation*);
+  
+  void ToQuaternion(float* theQuat);
+  void FromQuaternion(float* theQuat);
+  void MultQuat(float* result, float* quat1, float* quat2);
+  
   void slerp(VrmlSFRotation*, float);  
 
 private:
