@@ -144,8 +144,8 @@ static void buildViewpointMenu() {
   if ( vpmenu )
     {
       glutSetMenu( vpmenu );
-      for (int i=0; i<nvp; ++i)
-	glutRemoveMenuItem( i+1 );
+      for (int i=nvp; i>0; --i)
+	glutRemoveMenuItem( i );
     }
   else
     {
