@@ -1,3 +1,11 @@
+2002-08-18  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.cpp,
+          src/openvrml/OpenVRML/Vrml97Parser.hpp,
+          src/openvrml/OpenVRML/browser.cpp: Provide the resource URI to
+          the parser in a parameter to the constructor.
+
 2002-08-17  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp: If the Scene's parent is 0,

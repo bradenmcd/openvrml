@@ -587,10 +587,23 @@ options {
     importVocab=Vrml97;
 }
 
+{
+public:
+    Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
+        antlr::LLkParser(lexer, 1),
+        uri(uri)
+    {
+        setTokenNames(_tokenNames);
+    }
+
+private:
+    const std::string uri;
+}
+
 vrmlScene[OpenVRML::Browser & browser,
           OpenVRML::MFNode & mfNode]
 {
-    const ScopePtr scope(new Vrml97RootScope(browser));
+    const ScopePtr scope(new Vrml97RootScope(browser, this->uri));
 }
     :   (statement[browser, mfNode, scope])*
     ;
@@ -622,7 +635,7 @@ options { defaultErrorHandler=false; }
             if (!n) {
                 throw antlr::SemanticException("Node \"" + id1->getText()
                                     + "\" has not been defined in this scope.",
-                                    std::string(), LT(0)->getLine());
+                                    this->uri, LT(0)->getLine());
             }
         }
     |   n=node[browser, scope, std::string()]
@@ -654,7 +667,8 @@ proto[OpenVRML::Browser & browser,
                 // XXX here. This is wasteful; Vrml97RootScope is expensive and
                 // XXX we only *really* need this for SFNode and MFNode
                 // XXX fields/exposedFields.
-                ScopePtr interfaceDeclScope(new Vrml97RootScope(browser));
+                ScopePtr interfaceDeclScope(new Vrml97RootScope(browser,
+                                                                this->uri));
             }
             protoInterfaceDeclaration[interfaceDeclScope,
                                       static_cast<ProtoNodeClass &>(*nodeClass)]
@@ -714,8 +728,7 @@ protoInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                     assert(false);
                 }
             } catch (std::invalid_argument & ex) {
-                throw SemanticException(ex.what(), std::string(),
-                                        LT(0)->getLine());
+                throw SemanticException(ex.what(), this->uri, LT(0)->getLine());
             }
         }
     | it=fieldInterfaceType ft=fieldType id1:ID
@@ -735,8 +748,7 @@ protoInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                     assert(false);
                 }
             } catch (std::invalid_argument & ex) {
-                throw SemanticException(ex.what(), std::string(),
-                                        LT(0)->getLine());
+                throw SemanticException(ex.what(), this->uri, LT(0)->getLine());
             }
         }
     ;
@@ -784,7 +796,7 @@ options { defaultErrorHandler=false; }
             if (!n) {
                 throw SemanticException("Node \"" + id1->getText()
                                     + "\" has not been defined in this scope.",
-                                    std::string(), LT(0)->getLine());
+                                    this->uri, LT(0)->getLine());
             }
         }
     | n=protoNode[proto, scope, std::string()]
@@ -825,8 +837,7 @@ externInterfaceDeclaration[OpenVRML::NodeInterfaceSet & interfaces]
             try {
                 interfaces.add(interface);
             } catch (std::invalid_argument & ex) {
-            	throw SemanticException(ex.what(), std::string(),
-                                        LT(0)->getLine());
+            	throw SemanticException(ex.what(), this->uri, LT(0)->getLine());
             }
         }
     ;
@@ -876,7 +887,7 @@ routeStatement[const OpenVRML::Scope & scope]
             if (!fromNode) {
                 throw SemanticException("Node \"" + fromNodeId->getText()
                                     + "\" has not been defined in this scope.",
-                                    std::string(), LT(0)->getLine());
+                                    this->uri, LT(0)->getLine());
             }
             
             FieldValue::Type fromInterfaceType =
@@ -888,7 +899,7 @@ routeStatement[const OpenVRML::Scope & scope]
                     throw SemanticException(fromNode->nodeType.id
                                         + " has no eventOut or exposedField \""
                                         + fromInterfaceId->getText() + "\".",
-                                        std::string(), LT(0)->getLine());
+                                        this->uri, LT(0)->getLine());
                 }
             }
             
@@ -896,7 +907,7 @@ routeStatement[const OpenVRML::Scope & scope]
             if (!toNode) {
                 throw SemanticException("Node \"" + toNodeId->getText()
                         + "\" has not been defined in this scope.",
-                        std::string(), LT(0)->getLine());
+                        this->uri, LT(0)->getLine());
             }
             
             FieldValue::Type toInterfaceType =
@@ -908,13 +919,13 @@ routeStatement[const OpenVRML::Scope & scope]
                     throw SemanticException(toNode->nodeType.id
                                         + " has no eventIn or exposedField \""
                                         + toInterfaceId->getText() + "\".",
-                                        std::string(), LT(0)->getLine());
+                                        this->uri, LT(0)->getLine());
                 }
             }
             
             if (fromInterfaceType != toInterfaceType) {
                 throw SemanticException("Routed interface types must match.",
-                                        std::string(), LT(0)->getLine());
+                                        this->uri, LT(0)->getLine());
             }
             
             fromNode->addRoute(fromInterfaceId->getText(),
@@ -951,7 +962,7 @@ options { defaultErrorHandler = false; }
             if (!nodeType) {
                 throw SemanticException("Unknown node type \""
                                         + nodeTypeId->getText() + "\".",
-                                        std::string(), LT(0)->getLine());
+                                        this->uri, LT(0)->getLine());
             }
             
             n = NodePtr(nodeType->createNode(scope));
@@ -976,7 +987,7 @@ nodeBodyElement[const OpenVRML::ScopePtr & scope,
                     throw SemanticException(node.nodeType.id
                                     + " node has no field or exposedField \""
                                     + id->getText() + "\"",
-                                    std::string(), LT(0)->getLine());
+                                    this->uri, LT(0)->getLine());
                 }
             }
         }
@@ -1002,7 +1013,7 @@ scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                     != FieldValue::invalidType) {
                 throw SemanticException("Interface \"" + id->getText()
                                     + "\" already declared for Script node.",
-                                    std::string(), LT(0)->getLine());
+                                    this->uri, LT(0)->getLine());
             }
             switch (it) {
             case NodeInterface::eventIn:
@@ -1034,7 +1045,7 @@ scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                     != FieldValue::invalidType) {
                 throw SemanticException("Interface \"" + id->getText()
                                     + "\" already declared for Script node.",
-                                    std::string(), LT(0)->getLine());
+                                    this->uri, LT(0)->getLine());
             }
             node.addField(id->getText(), fv);
         }
@@ -1070,7 +1081,7 @@ options { defaultErrorHandler=false; }
             if (!nodeType) {
                 throw SemanticException("Unknown node type \""
                                         + nodeTypeId->getText() + "\".",
-                                        std::string(), LT(0)->getLine());
+                                        this->uri, LT(0)->getLine());
             }
             n = nodeType->createNode(scope);
             if (!nodeId.empty()) { n->setId(nodeId); }
@@ -1097,7 +1108,7 @@ protoNodeBodyElement[OpenVRML::ProtoNodeClass & proto,
                     throw SemanticException(node.nodeType.id
                                     + " node has no field or exposedField \""
                                     + id->getText() + "\".",
-                                    std::string(), LT(0)->getLine());
+                                    this->uri, LT(0)->getLine());
                 }
             }
         } (
@@ -1120,7 +1131,7 @@ isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::Node & node,
             try {
                 proto.addIS(node, nodeInterfaceId, id->getText());
             } catch (std::invalid_argument & ex) {
-                throw antlr::SemanticException(ex.what(), std::string(),
+                throw antlr::SemanticException(ex.what(), this->uri,
                                                LT(0)->getLine());
             }
         }
@@ -1140,7 +1151,7 @@ protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
             if (node.nodeType.hasInterface(id->getText())) {
                 throw SemanticException("Interface \"" + id->getText()
                                     + "\" already declared for Script node.",
-                                    std::string(), LT(0)->getLine());
+                                    this->uri, LT(0)->getLine());
             }
             switch (it) {
                 case NodeInterface::eventIn:
@@ -1170,7 +1181,7 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
             if (node.nodeType.hasInterface(id->getText())) {
                 throw SemanticException("Interface \"" + id->getText()
                                     + "\" already declared for Script node.",
-                                    std::string(), LT(0)->getLine());
+                                    this->uri, LT(0)->getLine());
             }
             
         } (
@@ -1191,7 +1202,7 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                     if (pos == proto.defaultValueMap.end()) {
                         throw SemanticException("Proto has no field \""
                                                 + protoFieldId->getText()
-                                                + "\".", std::string(),
+                                                + "\".", this->uri,
                                                 LT(0)->getLine());
                     }
                     
@@ -1208,7 +1219,7 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                         proto.addIS(node, id->getText(),
                                     protoFieldId->getText());
                     } catch (std::invalid_argument & ex) {
-                        throw SemanticException(ex.what(), std::string(),
+                        throw SemanticException(ex.what(), this->uri,
                                                 LT(0)->getLine());
                     }
                 }
@@ -1432,7 +1443,7 @@ options { defaultErrorHandler=false; }
             //
             if (pixelVector.size() != (w * h * com)) {
                 throw antlr::SemanticException("Wrong number of pixel values for SFImage.",
-                                               std::string(), LT(0)->getLine());
+                                               this->uri, LT(0)->getLine());
             }
             siv.reset(new SFImage(w, h, com, &pixelVector[0]));
         }

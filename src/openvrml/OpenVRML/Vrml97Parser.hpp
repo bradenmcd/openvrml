@@ -106,7 +106,18 @@ namespace OpenVRML ANTLR_LBRACE
 #line 107 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
-#line 1 "Vrml97Parser.g"
+#line 590 "Vrml97Parser.g"
+
+public:
+    Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
+        antlr::LLkParser(lexer, 1),
+        uri(uri)
+    {
+        setTokenNames(_tokenNames);
+    }
+
+private:
+    const std::string uri;
 #line 111 "Vrml97Parser.hpp"
 protected:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);

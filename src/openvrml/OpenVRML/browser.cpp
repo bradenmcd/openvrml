@@ -271,7 +271,9 @@ namespace OpenVRML {
     
     class Vrml97RootScope : public Scope {
     public:
-        Vrml97RootScope(const Browser & browser) throw (std::bad_alloc);
+        Vrml97RootScope(const Browser & browser,
+                        const std::string & uri = std::string())
+            throw (std::bad_alloc);
         virtual ~Vrml97RootScope() throw ();
     };
 }
@@ -668,6 +670,10 @@ void Browser::replaceWorld(const MFNode & nodes) {}
 void Browser::loadURI(const MFString & uri, const MFString & parameter)
         throw (std::bad_alloc) {
     delete this->scene;
+    assert(this->d_backgrounds.empty());
+    assert(this->d_fogs.empty());
+    assert(this->d_navigationInfos.empty());
+    assert(this->d_viewpoints.empty());
     this->nodeClassMap.clear();
     this->initNodeClassMap();
     this->scene = new Scene(*this, uri);
@@ -1928,7 +1934,7 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
             if (!in) { throw UnreachableURI(); }
             try {
                 Vrml97Scanner scanner(in);
-                Vrml97Parser parser(scanner);
+                Vrml97Parser parser(scanner, this->getURI());
                 parser.vrmlScene(browser, this->nodes);
             } catch (std::bad_alloc &) {
                 throw;
@@ -3312,14 +3318,15 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param nodeClassMap  a map containing @link NodeClass NodeClasses@endlink
- *                      for the VRML97 nodes.
+ * @param browser   the Browser object.
+ * @param uri       the URI associated with the stream being read.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-Vrml97RootScope::Vrml97RootScope(const Browser & browser)
+Vrml97RootScope::Vrml97RootScope(const Browser & browser,
+                                 const std::string & uri)
         throw (std::bad_alloc):
-        Scope(browser.scene->getURI()) {
+        Scope(uri) {
     const Browser::NodeClassMap & nodeClassMap = browser.nodeClassMap;
     Browser::NodeClassMap::const_iterator pos;
     
