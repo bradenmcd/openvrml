@@ -4,6 +4,8 @@
           docs for ProtoNode::NodeCloneVisitor and
           ProtoNode::RouteCopyVisitor "internal".
 
+        * Moved Node::printFields logic to Node::print.
+
 2002-05-26  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.cpp: Allocate the default BSphere

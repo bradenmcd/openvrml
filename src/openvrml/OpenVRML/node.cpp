@@ -35,9 +35,6 @@
 
 namespace OpenVRML {
 
-ostream & operator<<(ostream & os, const Node & f)
-{ return f.print(os, 0); }
-
 /**
  * @class UnsupportedInterface
  *
@@ -132,6 +129,8 @@ bool operator==(const NodeInterface & rhs, const NodeInterface & lhs) {
  */
 
 /**
+ * @internal
+ *
  * @struct NodeInterfaceSet::IdLess
  *
  * @brief A functor for ordering @link NodeInterface NodeInterfaces@endlink in
@@ -1354,35 +1353,14 @@ void Node::emitEvent(const std::string & id, const FieldValue & value,
 
 namespace {
     const short indentIncrement_ = 4;
-}
-
-ostream & Node::print(ostream & os, int indent) const {
-  for (int i=0; i<indent; ++i)
-    os << ' ';
-
-  if (!this->id.empty()) {
-    os << "DEF " << this->id.c_str() << " ";
-  }
-
-  os << this->nodeType.id.c_str() << " { ";
-
-  // cast away const-ness for now...
-  Node *n = (Node*)this;
-  n->printFields(os, indent + indentIncrement_);
-
-  os << " }";
-
-  return os; 
-}
-
-namespace {
+    
     class PrintField_ : public std::unary_function<NodeInterface, void> {
         const Node & node;
         std::ostream & out;
-        const int indent;
+        const size_t indent;
     
     public:
-        PrintField_(const Node & node, std::ostream & out, const int indent):
+        PrintField_(const Node & node, std::ostream & out, const size_t indent):
                 node(node), out(out), indent(indent) {}
         
         void operator()(const NodeInterface & interface) const {
@@ -1395,11 +1373,18 @@ namespace {
     };
 }
 
-std::ostream & Node::printFields(std::ostream & os, const int indent) const {
+std::ostream & Node::print(std::ostream & out, const size_t indent) const {
+    for (size_t i = 0; i < indent; ++i) { out << ' '; }
+    if (!this->id.empty()) { out << "DEF " << this->id.c_str() << " "; }
+    out << this->nodeType.id.c_str() << " { ";
     const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
     std::for_each(interfaces.begin(), interfaces.end(),
-                  PrintField_(*this, os, indent));
-    return os; 
+                  PrintField_(*this, out, indent));
+    return out << " }";
+}
+
+std::ostream & operator<<(std::ostream & out, const Node & node) {
+    return node.print(out, 0);
 }
 
 

@@ -4255,10 +4255,8 @@ jstring JNICALL Java_vrml_node_Node_toString
   ostrstream os;
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   Node* pNode = (Node*) env->GetIntField(obj, fid);
-  pNode->printFields(os, 0);
-  os << ends;
-  char* szString = os.str();
-  jstring result = env->NewStringUTF(szString); 
+  os << *pNode << ends;
+  jstring result = env->NewStringUTF(os.str()); 
   os.rdbuf()->freeze(0);
   return result;
 }

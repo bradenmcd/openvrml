@@ -21,8 +21,7 @@
 # ifndef OPENVRML_NODE_H
 #   define OPENVRML_NODE_H
 
-#   include <string.h>
-#   include <iostream.h>
+#   include <iostream>
 #   include <list>
 #   include <set>
 #   include <stdexcept>
@@ -174,8 +173,10 @@ namespace OpenVRML {
         class Viewpoint;
     }
 
+    std::ostream & operator<<(std::ostream & out, const Node & node);
+
     class OPENVRML_SCOPE Node {
-        friend ostream & operator<<(ostream & os, const Node & f);
+        friend std::ostream & operator<<(std::ostream & out, const Node & node);
     
     public:
         struct Route {
@@ -212,8 +213,7 @@ namespace OpenVRML {
         const std::string & getId() const;
         void setId(const std::string & nodeId, VrmlNamespace * ns = 0);
         
-        ostream & print(ostream & os, int indent) const;
-        ostream & printFields(ostream & os, int indent) const;
+        std::ostream & print(std::ostream & out, size_t indent) const;
 
         bool accept(NodeVisitor & visitor);
         void resetVisitedFlag();
