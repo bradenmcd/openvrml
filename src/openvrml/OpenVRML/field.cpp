@@ -2888,6 +2888,18 @@ size_t VrmlMFString::getLength() const {
     return this->values.size();
 }
 
+/**
+ *
+ * Set the length of the vector of std::strings. If the new length is
+ * greater than the current length, the new positions are filled with
+ * empty std::strings.
+ *
+ * @param length the new length
+ */
+void VrmlMFString::setLength(const size_t length) {
+  this->values.resize(length);
+}
+
 void VrmlMFString::insertElement(size_t index, const std::string & value)
 {
   assert(index < this->values.size());
