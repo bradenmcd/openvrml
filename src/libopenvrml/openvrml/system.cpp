@@ -64,15 +64,21 @@
 
 namespace openvrml {
 
-// A default system object
-static system defaultSystem;
+namespace {
+    // A default system object
+    system defaultSystem;
+}
 
 /**
  * @brief The global system object.
  */
 system * the_system = &defaultSystem;
 
-// This won't work under windows or if netscape isn't running...
+/**
+ * @brief Destroy.
+ */
+system::~system() throw ()
+{}
 
 bool system::load_url(const std::string & url, const mfstring & parameters)
 {
@@ -202,7 +208,7 @@ const char *system::http_fetch(const char * url)
 #if defined(_WIN32) && !defined(__CYGWIN__)
             if (send(sockfd, request, int(nbytes), 0) != nbytes) {
 #else
-            if (write(sockfd, request, nbytes) != nbytes) {
+            if (write(sockfd, request, nbytes) != ssize_t(nbytes)) {
 #endif
                 std::ostringstream error_sstream;
 #if defined(_WIN32) && !defined(__CYGWIN__)

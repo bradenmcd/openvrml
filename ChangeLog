@@ -1,5 +1,12 @@
 2004-01-24 Braden McDaniel  <braden@endoframe.com>
 
+	Quell warnings from gcc.
+
+	* src/libopenvrml/openvrml/system.cpp
+	* src/libopenvrml/openvrml/system.h
+
+2004-01-24 Braden McDaniel  <braden@endoframe.com>
+
 	Correctly check for NaN.
 
 	* src/libopenvrml/openvrml/basetypes.h

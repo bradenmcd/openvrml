@@ -33,6 +33,7 @@ namespace openvrml {
 
     class system : boost::noncopyable {
     public:
+        virtual ~system() throw ();
         virtual bool load_url(const std::string & url,
                               const mfstring & parameters);
         virtual int connect_socket( const char *host, int port );
