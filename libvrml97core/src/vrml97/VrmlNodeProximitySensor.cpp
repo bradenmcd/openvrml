@@ -112,7 +112,7 @@ ostream& VrmlNodeProximitySensor::printFields(ostream& os, int indent)
 // coordinate system and it could be transformed all the way down the
 // scenegraph, but that sounds painful.
 
-void VrmlNodeProximitySensor::render(Viewer *viewer)
+void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if (d_enabled.get() &&
       d_size.x() > 0.0 &&

@@ -35,6 +35,7 @@
 #include "VrmlNodeProto.h"
 #include "VrmlNamespace.h"
 #include "VrmlMFNode.h"
+#include "VrmlBSphere.h"
 
 #include <string.h>
 
@@ -60,6 +61,7 @@ VrmlNodeProto::VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene) :
   d_nodes(0),
   d_viewerObject(0)
 {
+  this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 VrmlNodeProto::VrmlNodeProto(const VrmlNodeProto &n) :
@@ -77,6 +79,7 @@ VrmlNodeProto::VrmlNodeProto(const VrmlNodeProto &n) :
       VrmlField *value = (*i)->value;
       setField( (*i)->name, *value );
     }
+  this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 VrmlNodeProto::~VrmlNodeProto()
@@ -235,6 +238,7 @@ void VrmlNodeProto::instantiate()
     }
 
   d_instantiated = true;
+  this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 
@@ -435,7 +439,7 @@ VrmlNodePixelTexture* VrmlNodeProto::toPixelTexture() const
  
 //
 
-void VrmlNodeProto::render(Viewer *viewer)
+void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if (! d_instantiated)
     {
@@ -454,7 +458,7 @@ void VrmlNodeProto::render(Viewer *viewer)
       // render the nodes with the new values
       int n = d_nodes->size();
       for (int j = 0; j<n; ++j)
-	d_nodes->get(j)->render(viewer);
+	d_nodes->get(j)->render(viewer, rc);
 
       viewer->endObject();
     }
@@ -499,6 +503,7 @@ void VrmlNodeProto::eventIn(double timeStamp,
   }
   // Let the generic code handle errors.
   VrmlNode::eventIn( timeStamp, origEventName, fieldValue );
+  this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 
@@ -534,6 +539,7 @@ void VrmlNodeProto::setField(const char *fieldName,
     }
 
   nv->value = fieldValue.clone();
+  this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 const VrmlField *VrmlNodeProto::getField(const char *fieldName) const
@@ -554,4 +560,34 @@ VrmlNodePositionInt* VrmlNodeProto::toPositionInt() const
 
 VrmlNodeScalarInt* VrmlNodeProto::toScalarInt() const    
 { return firstNode() ? firstNode()->toScalarInt() : 0; }
+
+const VrmlBVolume*
+VrmlNodeProto::getBVolume() const
+{
+  //cout << "VrmlNodeProto::getBVolume() {" << endl;
+  if (!d_instantiated) {
+    cout << "VrmlNodeProto::getBVolume():WARNING:not instantiated" << endl;
+    return (VrmlBVolume*)0; // shouldn't happen
+  }
+  VrmlNode* base = firstNode();
+  if (!base) {
+    cout << "VrmlNodeProto::getBVolume():WARNING:!base" << endl;
+    return (VrmlBVolume*)0; // shouldn't happen
+  }
+  VrmlBVolume* bv = base->getBVolume();
+  //cout << "}";
+  //bv->dump(cout) << endl;
+  return bv;
+}
+
+void
+VrmlNodeProto::updateModified(VrmlNodePath& path, int flags)
+{
+  //cout << "VrmlNodeProto::updateModified()" << endl;
+  if (this->isModified()) markPathModified(path, true);
+  path.push_front(this);
+  VrmlNode* base = firstNode();
+  if (base) base->updateModified(path, flags);    
+  path.pop_front();
+}
 

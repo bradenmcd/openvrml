@@ -59,7 +59,7 @@ public:
   void addEventIn(const char *name, VrmlField::VrmlFieldType type);
   void addEventOut(const char *name, VrmlField::VrmlFieldType type);
   void addField(const char *name, VrmlField::VrmlFieldType type,
-		VrmlField const * defaultVal = 0);
+		const VrmlField * defaultVal = 0);
 
   // Access to eventIns/Outs/fields for ScriptObjects
 
@@ -118,4 +118,5 @@ private:
   int d_eventsReceived;
 };
 
-#endif
+#endif VRMLNODESCRIPT_H
+

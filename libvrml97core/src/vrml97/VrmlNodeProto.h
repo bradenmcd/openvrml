@@ -12,6 +12,10 @@
 // nodes.
 //
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "VrmlNode.h"
 #include "VrmlNodeType.h"
 #include "Viewer.h"
@@ -84,7 +88,7 @@ public:
   virtual VrmlNodeOrientationInt* toOrientationInt() const;
   virtual VrmlNodePositionInt* toPositionInt() const;
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual void eventIn(double timeStamp,
 		       const char *eventName,
@@ -93,6 +97,7 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
+  virtual void updateModified(VrmlNodePath& path, int flags);
 
   virtual void accumulateTransform( VrmlNode* );
 
@@ -109,6 +114,8 @@ public:
     char *name;
     VrmlField *value;
   } NameValueRec;
+
+  const VrmlBVolume* getBVolume() const;
 
 private:
 
@@ -143,4 +150,4 @@ private:
 
 };
 
-#endif
+#endif _VRMLNODEPROTO_

@@ -4,11 +4,12 @@
 //
 //  VrmlNodePointSet.h
 
-#ifndef VRMLNODEPOINTSET_H
-#define VRMLNODEPOINTSET_H
+#ifndef  _VRMLNODEPOINTSET_
+#define  _VRMLNODEPOINTSET_
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFNode.h"
+#include "VrmlBSphere.h"
 
 
 class VrmlNodePointSet : public VrmlNodeGeometry {
@@ -24,7 +25,7 @@ public:
 
   virtual VrmlNode *cloneMe() const;
   virtual void cloneChildren(VrmlNamespace *);
-
+  virtual void updateModified(VrmlNodePath& path);
   virtual bool isModified() const;
 
   virtual void clearFlags();
@@ -35,16 +36,20 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual Viewer::Object insertGeometry(Viewer *);
+  virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+
+  const VrmlBVolume* getBVolume() const;
 
 protected:
 
   VrmlSFNode d_color;
   VrmlSFNode d_coord;
 
+  VrmlBSphere d_bsphere;
+  void recalcBSphere();
 };
 
-#endif
+#endif _VRMLNODEPOINTSET_

@@ -42,6 +42,7 @@ VrmlNodeType & VrmlNodePointSet::nodeType() const
 VrmlNodePointSet::VrmlNodePointSet(VrmlScene *scene) :
   VrmlNodeGeometry(scene)
 {
+  this->setBVolumeDirty(true);
 }
 
 VrmlNodePointSet::~VrmlNodePointSet()
@@ -69,6 +70,16 @@ bool VrmlNodePointSet::isModified() const
 	   (d_color.get() && d_color.get()->isModified()) ||
 	   (d_coord.get() && d_coord.get()->isModified()) );
 }
+
+void VrmlNodePointSet::updateModified(VrmlNodePath& path)
+{
+  if (this->isModified()) markPathModified(path, true);
+  path.push_front(this);
+  if (d_color.get()) d_color.get()->updateModified(path);
+  if (d_coord.get()) d_coord.get()->updateModified(path);
+  path.pop_front();
+}
+
 
 
 void VrmlNodePointSet::clearFlags()
@@ -101,9 +112,14 @@ ostream& VrmlNodePointSet::printFields(ostream& os, int indent)
 }
 
 
-Viewer::Object VrmlNodePointSet::insertGeometry(Viewer *viewer)
+Viewer::Object VrmlNodePointSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
+
+  if (rc.getDrawBSpheres()) {
+    const VrmlBSphere* bs = (const VrmlBSphere*)this->getBVolume();
+    viewer->drawBSphere(*bs, 4);
+  }
 
   if ( d_coord.get() )
     {
@@ -147,4 +163,29 @@ void VrmlNodePointSet::setField(const char *fieldName,
   else if TRY_SFNODE_FIELD(coord, Coordinate)
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
+  this->setBVolumeDirty(true);
+}
+
+void VrmlNodePointSet::recalcBSphere()
+{
+  //cout << "VrmlNodePointSet::recalcBSphere()" << endl;
+  d_bsphere.reset();
+  VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
+  int nvert = coord.size();
+  for(int i=0; i<nvert; i++) {
+    float* vi = coord[i]; // vi[3]
+    //cout << vi[0] << "," << vi[1] << "," << vi[2] << ")" << endl;
+    d_bsphere.extend(vi);
+    //d_bsphere.dump(cout);
+  }
+  //d_bsphere.dump(cout);
+  this->setBVolumeDirty(false);
+}
+
+
+const VrmlBVolume* VrmlNodePointSet::getBVolume() const
+{
+  if (this->isBVolumeDirty())
+    recalcBSphere();
+  return &d_bsphere;
 }

@@ -75,7 +75,7 @@ ostream& VrmlNodePixelTexture::printFields(ostream& os, int indent)
 }
 
       
-void VrmlNodePixelTexture::render(Viewer *viewer)
+void VrmlNodePixelTexture::render(Viewer *viewer, VrmlRenderContext rc)
 {
   unsigned char *pixels = d_image.pixels();
 
@@ -191,3 +191,4 @@ void VrmlNodePixelTexture::setField(const char *fieldName,
 						x, y, nc, *p);
   }
 }
+

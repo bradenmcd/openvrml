@@ -4,8 +4,8 @@
 //
 //  VrmlNodeProximitySensor.h
 
-#ifndef VRMLNODEPROXIMITYSENSOR_H
-#define VRMLNODEPROXIMITYSENSOR_H
+#ifndef  _VRMLNODEPROXIMITYSENSOR_
+#define  _VRMLNODEPROXIMITYSENSOR_
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
@@ -30,7 +30,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
@@ -50,4 +50,4 @@ private:
   VrmlSFTime d_exitTime;
 };
 
-#endif
+#endif _VRMLNODEPROXIMITYSENSOR_

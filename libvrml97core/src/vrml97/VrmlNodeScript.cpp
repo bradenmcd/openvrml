@@ -292,7 +292,7 @@ void VrmlNodeScript::addEventOut(const char *ename, VrmlField::VrmlFieldType t)
 }
 
 void VrmlNodeScript::addField(const char *ename, VrmlField::VrmlFieldType t,
-			      VrmlField const * val)
+			      const VrmlField * val)
 {
   add(d_fields, ename, t);
   if (val) set(d_fields, ename, val);
@@ -310,7 +310,7 @@ void VrmlNodeScript::add(FieldList &recs,
 }
 
 // get event/field values
-# if 0
+#if 0
 VrmlField*
 VrmlNodeScript::getEventIn(const char *fname) const
 {
@@ -328,7 +328,7 @@ VrmlNodeScript::getField(const char *fname) const
 {
   return get(d_fields, fname);
 }
-# endif
+#endif
 
 VrmlField*
 VrmlNodeScript::get(const FieldList &recs, const char *fname) const
@@ -442,10 +442,10 @@ VrmlNodeScript::setEventIn(const char *fname, const VrmlField *value)
 void
 VrmlNodeScript::setEventOut(const char *fname, const VrmlField *value)
 {
-# if 0
+#if 0
   cerr << "Script::" << name() << " setEventOut(" << fname << ", "
        << (*value) << endl;
-# endif
+#endif
   set(d_eventOuts, fname, value);
 }
 
