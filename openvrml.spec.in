@@ -62,7 +62,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %files 
-%doc AUTHORS COPYING.LIB ChangeLog MPL-1.1.txt NEWS NODES README README.SOUND TODO
+%doc AUTHORS COPYING.LIB ChangeLog MPL-1.1.txt NEWS README README.SOUND TODO
 %doc doc
 %{prefix}/lib/libvrml97.so.*
 %{prefix}/share/aclocal/vrml97.m4
@@ -94,6 +94,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 - Added doc subdir to %doc.
 - Removed obsolete COPYING.ANTLR from %doc.
 - Changed URL to <http://openvrml.sourceforge.net>.
+- Removed obsolete NODES from %doc.
 
 * Thu Nov 23 2000  Braden McDaniel  <braden@endoframe.com>
 - Gave much love. Checked into CVS. Still not guaranteed to work, though.

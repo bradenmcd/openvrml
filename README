@@ -107,15 +107,15 @@ Installation
 Refer to the file INSTALL for detailed installation instructions.
 
 
-Supported nodes
-======================================================
+Conformance
+===========
 
-Details of the implementation status of each node can be found in NODES.  All of
-the static geometry is supported except generation of per-vertex normals.  Text/
-FontStyle node support is very limited.
+OpenVRML aspires to full conformance to the VRML97 specification. It isn't
+there yet, but much of the spec is supported, and OpenVRML will continue to
+get better.
 
-Unimplemented:  drag sensors (CylinderSensor, PlaneSensor, and 
-SphereSensor), navigation types other than examine.
+Detailed results of testing the lookat against the NIST VRML97 Test Suite can
+be found in the file "conformance.html".
 
 
 System-specific notes
