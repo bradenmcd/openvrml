@@ -688,7 +688,7 @@ void Vrml97Parser::protoBody(
 #line 276 "Vrml97Parser.g"
 		
 		assert(n);
-		nodeType.addNode(n);
+		nodeType.addNode(*n);
 		
 #line 694 "Vrml97Parser.cpp"
 		{
@@ -1059,7 +1059,7 @@ void Vrml97Parser::protoBodyStatement(
 #line 288 "Vrml97Parser.g"
 			
 			assert(n);
-			nodeType.addNode(n);
+			nodeType.addNode(*n);
 			
 #line 1065 "Vrml97Parser.cpp"
 			break;

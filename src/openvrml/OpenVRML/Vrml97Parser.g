@@ -275,7 +275,7 @@ protoBody[Doc2 const * doc, VrmlNodeType & nodeType]
     :   (protoStatement[*nodeType.scope(), doc])* n=protoNodeStatement[doc, nodeType]
         {
             assert(n);
-            nodeType.addNode(n);
+            nodeType.addNode(*n);
         }
         (protoBodyStatement[doc, nodeType])*
     ;
@@ -287,7 +287,7 @@ protoBodyStatement[Doc2 const * doc, VrmlNodeType & nodeType]
     :   n=protoNodeStatement[doc, nodeType]
         {
             assert(n);
-            nodeType.addNode(n);
+            nodeType.addNode(*n);
         }
     |   protoStatement[*nodeType.scope(), doc]
     |   routeStatement[*nodeType.scope()]

@@ -9,6 +9,9 @@
         * Changed VrmlMFNode::addNode() and ::removeNode() to take
           VrmlNode references (rather than pointers).
 
+        * Changed VrmlNodeType::addNode() to take a VrmlNode reference
+          (rather than a pointer).
+
 2001-02-05  Braden McDaniel  <braden@endoframe.com>
 
         * Removed dynamic_cast in assertions in VrmlNodeAppearance's,

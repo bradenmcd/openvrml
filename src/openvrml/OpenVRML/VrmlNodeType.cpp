@@ -385,10 +385,9 @@ VrmlNodeType::fieldDefault(const char *fname) const
   return 0;
 }
 
-void VrmlNodeType::addNode(VrmlNode * node)
-{
+void VrmlNodeType::addNode(VrmlNode & node) {
     // add node to list of implementation nodes
-    this->implNodes.addNode(*node);
+    this->implNodes.addNode(node);
 }
 
 void VrmlNodeType::addIS(const char *isFieldName,
