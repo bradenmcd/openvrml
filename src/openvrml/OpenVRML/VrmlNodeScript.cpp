@@ -287,6 +287,7 @@ void VrmlNodeScript::eventIn(double timeStamp,
     if (!d_script) {
         this->initialize(timeStamp);
     }
+    
     if (!d_script) {
         return;
     }
@@ -300,10 +301,6 @@ void VrmlNodeScript::eventIn(double timeStamp,
     }
     bool valid = (this->hasEventIn(eventName)
                 || this->hasEventIn(basicEventName));
-    cerr << "eventIn Script::" << this->getId() << "." << eventName
-         << " " << fieldValue << ", valid " << valid
-         << ", d_script " << (unsigned long)d_script
-         << endl;
     if (valid) {
         this->setEventIn(eventName, fieldValue);
 
@@ -319,7 +316,6 @@ void VrmlNodeScript::eventIn(double timeStamp,
         // For each modified eventOut, send an event
         for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i) {
 	    if ((*i)->modified) {
-                cout << "Sending eventOut." << endl;
                 eventOut(timeStamp, (*i)->name, *((*i)->value));
             }
         }

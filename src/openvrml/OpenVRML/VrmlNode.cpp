@@ -174,9 +174,6 @@ const std::string & VrmlNode::getId() const {
  * @param relativeUrl
  */
 void VrmlNode::addToScene(VrmlScene * scene, const std::string &) {
-    cout << "Adding " << this->nodeType().getName() << " " << this->getId()
-         << " to scene 0x" << hex << reinterpret_cast<unsigned long>(scene)
-         << dec << endl;
     this->d_scene = scene;
 }
 
@@ -295,13 +292,6 @@ VrmlNodeProto * VrmlNode::toProto() const { return 0; }
 void VrmlNode::addRoute(const std::string & fromEventOut,
 			const VrmlNodePtr & toNode,
 			const std::string & toEventIn) {
-# ifdef VRML_NODE_DEBUG
-    cout << this->nodeType().getName() << "::" << this->getId() << " "
-         << hex << reinterpret_cast<unsigned long>(this) << dec
-         << " addRoute " << fromEventOut << endl;
-# endif
-
-
   // Check to make sure fromEventOut and toEventIn are valid names...
   
   // Is this route already here?
@@ -394,21 +384,17 @@ VrmlNode::markPathModified(VrmlNodePath& path, bool mod, int flags) {
   VrmlNodePath::iterator i;
   VrmlNodePath::iterator end = path.end();
   if (flags & 0x001) {
-    //cout << "VrmlNode[]::markPathModified():mod" << endl;
     for (i = path.begin(); i != end; ++i) {
       VrmlNode *c = *i;
       if (mod) {
 	// do the proof that our invarient shows that this short
 	// circuit is legal...
-	//if (c->isModified()) 
-	//break;
 	c->setModified();
       } else
 	c->clearModified();
     }
   }
   if (flags & 0x002) {
-    //cout << "VrmlNode[]::markPathModified():bvol" << endl;
     for (i = path.begin(); i != end; ++i) {
       VrmlNode *c = *i;
       if (mod) {
@@ -423,7 +409,6 @@ VrmlNode::markPathModified(VrmlNodePath& path, bool mod, int flags) {
 void
 VrmlNode::updateModified(VrmlNodePath& path, int flags)
 {
-  //cout << "VrmlNode[" << this << "]::updateModified()" << endl;
   if (this->d_modified||this->d_bvol_dirty) markPathModified(path, true, flags);
 }
 
@@ -490,7 +475,6 @@ void VrmlNode::clearFlags()
 const VrmlBVolume*
 VrmlNode::getBVolume() const
 {
-  //cout << "VrmlNode::getBVolume():inf" << endl;
   static VrmlBSphere* inf_bsphere = (VrmlBSphere*)0;
   if (!inf_bsphere) {
     inf_bsphere = new VrmlBSphere();
@@ -503,11 +487,11 @@ VrmlNode::getBVolume() const
 
 /**
  * Override a node's calculated bounding volume. Not implemented.
+ *
+ * @todo Implement me!
  */
-void
-VrmlNode::setBVolume(const VrmlBVolume& v)
-{
-  cout << "VrmlNode::setBVolume():WARNING:not implemented" << endl;
+void VrmlNode::setBVolume(const VrmlBVolume & v) {
+    // XXX Implement me!
 }
 
 /** 
@@ -612,7 +596,6 @@ void VrmlNode::inverseTransform(Viewer *v)
  */
 void VrmlNode::inverseTransform(double m[4][4])
 {
-  //cout << "VrmlNode::inverseTransform" << endl;
   VrmlNode *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(m);
@@ -629,21 +612,8 @@ void VrmlNode::inverseTransform(double m[4][4])
 void VrmlNode::eventIn(double timeStamp,
 		       const std::string & eventName,
 		       const VrmlField & fieldValue) {
-#ifdef VRML_NODE_DEBUG
-  cout << "eventIn "
-       << nodeType().getName()
-       << "::"
-       << this->id
-       << "."
-       << eventName
-       << " "
-       << fieldValue
-       << endl;
-#endif
-
     // Strip set_ prefix
     static const char * eventInPrefix = "set_";
-//    const char *origEventName = eventName;
     std::string basicEventName;
     if (std::equal(eventInPrefix, eventInPrefix + 4, eventName.begin())) {
         basicEventName = eventName.substr(4);
@@ -690,39 +660,20 @@ const VrmlMFNode VrmlNode::getChildren() const {
 }
 
 /**
- * @brief Send a named event from this node.
+ * @brief Send an event from this node.
  */
-void VrmlNode::eventOut(double timeStamp, const std::string & eventOut,
+void VrmlNode::eventOut(double timeStamp, const std::string & id,
 			const VrmlField & fieldValue) {
-# ifdef VRML_NODE_DEBUG
-    cout << this->nodeType().getName() << "::" << this->id
-         << hex << reinterpret_cast<unsigned long>(this) << dec
-         << " eventOut " << eventOut << endl;
-# endif	  
-
-  // Find routes from this eventOut
-  Route *r;
-  for (r=d_routes; r; r=r->getNext())
-    {
-      if (eventOut == r->fromEventOut)
-	{
-#ifdef VRML_NODE_DEBUG
-	  cerr << "  => "
-	       << r->toNode->nodeType().getName()
-	       << "::"
-	       << r->toNode->id
-	       << "."
-	       << r->toEventIn
-	       << endl;
-#endif	  
-	  VrmlField * eventValue = fieldValue.clone();
-          assert(this->d_scene);
-	  this->d_scene->queueEvent(timeStamp, eventValue, r->toNode,
-                                    r->toEventIn);
+    // Find routes from this eventOut
+    for (Route * r = this->d_routes; r; r = r->getNext()) {
+        if (id == r->fromEventOut) {
+            VrmlField * eventValue = fieldValue.clone();
+            assert(this->d_scene);
+            this->d_scene->queueEvent(timeStamp, eventValue, r->toNode,
+                                      r->toEventIn);
 	}
     }
 }
-
 
 ostream& operator<<(ostream& os, const VrmlNode& f)
 { return f.print(os, 0); }

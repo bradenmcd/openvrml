@@ -573,12 +573,6 @@ void VrmlScene::queueReplaceNodes( VrmlMFNode *nodes, VrmlNamespace *ns )
 void VrmlScene::queueEvent(double timeStamp, VrmlField * value,
 			   const VrmlNodePtr & toNode,
 			   const std::string & toEventIn) {
-    cout << "VrmlScene::queueEvent" << endl;
-    cout << "timestamp = " << timeStamp << endl;
-    cout << "toEventIn = " << toEventIn << endl;
-    cout << "d_firstEvent = " << flush;
-    cout << this->d_firstEvent << endl;
-    cout << "d_lastEvent = " << this->d_lastEvent << endl;
     Event * e = &this->d_eventMem[this->d_lastEvent];
     e->timeStamp = timeStamp;
     e->value = value;

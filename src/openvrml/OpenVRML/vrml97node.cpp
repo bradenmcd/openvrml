@@ -391,10 +391,7 @@ void VrmlNodeAnchor::setField(const std::string & fieldId,
 const VrmlBVolume*
 VrmlNodeAnchor::getBVolume() const
 {
-  //cout << "VrmlNodeAnchor::getBVolume() {" << endl;
   const VrmlBVolume* bv = VrmlNodeGroup::getBVolume();
-  //cout << "}:";
-  //bv->dump(cout) << endl;
   return bv;
 }
 
@@ -1475,18 +1472,12 @@ const VrmlSFVec3f& VrmlNodeBox::getSize() const   // LarryD Mar 08/99
 const VrmlBVolume*
 VrmlNodeBox::getBVolume() const
 {
-  //cout << "VrmlNodeBox::getBVolume()" << endl;
-  //static VrmlBSphere* box_sphere = (VrmlBSphere*)0;
-  //if (!box_sphere) 
-  //box_sphere = new VrmlBSphere();
   if (this->isBVolumeDirty()) {
     float corner[3] = { d_size.getX()/2.0f, d_size.getY()/2.0f, d_size.getZ()/2.0f };
     float r = Vlength(corner);
     ((VrmlNodeBox*)this)->d_bsphere.setRadius(r);
     ((VrmlNodeBox*)this)->setBVolumeDirty(false); // logical const
   }
-  //cout << "VrmlNodeBox::getBVolume():";
-  //box_sphere->dump(cout) << endl;
   return &d_bsphere;
 }
 
@@ -3532,13 +3523,10 @@ VrmlNodeGroup::updateModified(VrmlNodePath& path, int flags)
 {
   // if the mark_modifed short circuit doesn't
   // pan out, we should be a little smarter here...
-  //cout << "VrmlNodeGroup[" << this << "]::updateModified()" << endl;
   if (this->isModified()) markPathModified(path, true, flags);
   path.push_front(this);
   int n = d_children.getLength();
-  //cout << "VrmlNodeGroup[" << this << "]::updateModified():n=" << n << endl;
   for (int i=0; i<n; ++i) {
-    //cout << "VrmlNodeGroup[" << this << "]::updateModified():" << d_children[i] << endl;
     d_children.getElement(i)->updateModified(path, flags);
   }
   path.pop_front();
@@ -3557,13 +3545,7 @@ void VrmlNodeGroup::clearFlags()
 
 void VrmlNodeGroup::addToScene(VrmlScene * scene,
                                const std::string & relativeUrl) {
-    cout << "Adding " << this->nodeType().getName() << " " << this->getId()
-         << " to scene 0x" << hex << reinterpret_cast<unsigned long>(scene)
-         << dec << endl;
     this->d_scene = scene;
-
-    //theSystem->debug("VrmlNodeGroup::addToScene( %s )\n",
-    //relativeUrl ? relativeUrl : "<null>");
 
     const std::string & currentRel = this->d_relative.get();
     if (currentRel.length() == 0 || relativeUrl.length() == 0
@@ -3603,8 +3585,6 @@ ostream& VrmlNodeGroup::printFields(ostream& os, int indent)
 
 void VrmlNodeGroup::render(Viewer *viewer, VrmlRenderContext rc)
 {
-  //cout << "VrmlNodeGroup::render()" << endl;
-
   if (rc.getCullFlag() != VrmlBVolume::BV_INSIDE) {
 
     const VrmlBSphere* bs = (const VrmlBSphere*)this->getBVolume();
@@ -3619,8 +3599,6 @@ void VrmlNodeGroup::render(Viewer *viewer, VrmlRenderContext rc)
       return;
     if (r == VrmlBVolume::BV_INSIDE)
       rc.setCullFlag(VrmlBVolume::BV_INSIDE);
-
-    //rc.setCullFlag(VrmlBVolume::BV_PARTIAL);
   }
 
   renderNoCull(viewer, rc);
@@ -3632,8 +3610,6 @@ void VrmlNodeGroup::render(Viewer *viewer, VrmlRenderContext rc)
 //
 void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
 {
-  //cout << "VrmlNodeGroup::renderNoCull()" << endl;
-
   if ( d_viewerObject && isModified() )
     {
       viewer->removeObject(d_viewerObject);
@@ -3905,11 +3881,8 @@ void VrmlNodeGroup::setField(const std::string & fieldId,
 
 const VrmlBVolume* VrmlNodeGroup::getBVolume() const
 {
-  //cout << "VrmlNodeGroup[" << this << "]::getBVolume() {" << endl;
   if (this->isBVolumeDirty())
     ((VrmlNodeGroup*)this)->recalcBSphere();
-  //cout << "}:";
-  //d_bsphere.dump(cout) << endl;
   return &d_bsphere;
 }
 
@@ -4027,7 +4000,6 @@ bool VrmlNodeIFaceSet::isModified() const
 
 void VrmlNodeIFaceSet::updateModified(VrmlNodePath& path, int flags)
 {
-  //cout << "VrmlNodeIFaceSet::updateModified()" << endl;
   if (this->isModified()) markPathModified(path, true, flags);
   path.push_front(this);
   if (d_color.get()) d_color.get()->updateModified(path, flags);
@@ -4216,8 +4188,6 @@ VrmlNodeIFaceSet* VrmlNodeIFaceSet::toIFaceSet() const
 
 void VrmlNodeIFaceSet::recalcBSphere()
 {
-  //cout << "VrmlNodeIFaceSet::recalcBSphere()" << endl;
-
   // take the bvolume of all the points. technically, we should figure
   // out just which points are used by the index and just use those,
   // but for a first pass this is fine (also: if we do it this way
@@ -4229,19 +4199,12 @@ void VrmlNodeIFaceSet::recalcBSphere()
   int n = coord.getLength();
   d_bsphere.reset();
   d_bsphere.enclose(p, n);
-  //int nvert = coord.size();
-  //for(int i=0; i<nvert; i++) {
-  //float* vi = coord[i]; // vi[3]
-  //d_bsphere.extend(vi);
-  //}
-  //d_bsphere.dump(cout);
   this->setBVolumeDirty(false);
 }
 
 
 const VrmlBVolume* VrmlNodeIFaceSet::getBVolume() const
 {
-  //cout << "VrmlNodeIFaceSet::getBVolume():" << this->isBVolumeDirty() << endl;
   if (this->isBVolumeDirty())
     ((VrmlNodeIFaceSet*)this)->recalcBSphere();
   return &d_bsphere; // hmmm, const?
@@ -5097,7 +5060,6 @@ const VrmlSFVec3f& VrmlNodeLOD::getCenter() const
 
 const VrmlBVolume* VrmlNodeLOD::getBVolume() const
 {
-  //cout << "VrmlNodeLOD[" << this << "]::getBVolume()" << endl;
   if (this->isBVolumeDirty())
     ((VrmlNodeLOD*)this)->recalcBSphere();
   return &d_bsphere;
@@ -5107,7 +5069,6 @@ const VrmlBVolume* VrmlNodeLOD::getBVolume() const
 void
 VrmlNodeLOD::recalcBSphere()
 {
-  //cout << "VrmlNodeLOD[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
   
   // let's say our bsphere is the union of the bspheres of all the
@@ -7035,17 +6996,13 @@ void VrmlNodePointSet::setField(const std::string & fieldId,
 
 void VrmlNodePointSet::recalcBSphere()
 {
-  //cout << "VrmlNodePointSet::recalcBSphere()" << endl;
   d_bsphere.reset();
   VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
   int nvert = coord.getLength();
   for(int i=0; i<nvert; i++) {
     const float * vi = coord.getElement(i); // vi[3]
-    //cout << vi[0] << "," << vi[1] << "," << vi[2] << ")" << endl;
     d_bsphere.extend(vi);
-    //d_bsphere.dump(cout);
   }
-  //d_bsphere.dump(cout);
   this->setBVolumeDirty(false);
 }
 
@@ -7677,7 +7634,6 @@ bool VrmlNodeShape::isModified() const
 
 void VrmlNodeShape::updateModified(VrmlNodePath& path, int flags)
 {
-  //cout << "VrmlNodeShape[" << this << "]::updateModified()" << endl;
   if (this->isModified()) markPathModified(path, true, flags);
   path.push_front(this);
   if (d_appearance.get()) d_appearance.get()->updateModified(path, flags);
@@ -7716,8 +7672,6 @@ VrmlNodeShape*	VrmlNodeShape::toShape() const
 
 void VrmlNodeShape::render(Viewer *viewer, VrmlRenderContext rc)
 {
-  //cout << "VrmlNodeShape::render()" << endl;
-
   if ( d_viewerObject && isModified() )
     {
       viewer->removeObject(d_viewerObject);
@@ -10334,9 +10288,12 @@ void VrmlNodeViewpoint::getInverseMatrix(double IM[4][4]) const
   MM(IM, rot_mat, pos_mat);
 }
 
+/**
+ * @todo Implement me!
+ */
 void VrmlNodeViewpoint::getFrustum(VrmlFrustum& frust) const
 {
-  cout << "VrmlNodeViewpoint::getFrustum():WARNING:not implemented" << endl;
+    // XXX Implement me!;
 }
 
 
