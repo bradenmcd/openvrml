@@ -1,3 +1,8 @@
+html {
+  overflow: -moz-scrollbars-vertical;
+  height: 100%;
+}
+
 body {
   background-color: black;
   color: white;
@@ -28,11 +33,16 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "LucidaBright", "Palatino", serif;
+  font-family: "Luxi Serif", "LucidaBright", "Palatino", serif;
+  font-weight: normal;
+}
+
+h1 {
+  text-align: center;
 }
 
 pre, code {
-  font-family: "LucidaTypewriter", "Lucida Console", monospace;
+  font-family: "Luxi Mono", "Lucida Console", "LucidaTypewriter", monospace;
 }
 
 hr {
@@ -42,7 +52,8 @@ hr {
 }
 
 .sitenav, .body, .body th, .body td, .body caption {
-  font-family: "Verdana", "Lucida", sans-serif;
+  font-family: "Luxi Sans", "Verdana", "Lucida", sans-serif;
+  font-weight: normal;
 }
 
 .body, .body th, .body td, .body caption {
@@ -79,6 +90,7 @@ hr {
   margin: 0;
   border: 0;
   padding: 0;
+  line-height: 1.5em;
 }
 
 .sitenav :link, .sitenav :visited {
@@ -87,7 +99,6 @@ hr {
   display: block;
   margin: 0;
   border: 0;
-  padding: 0.25em;
 }
 
 .sitenav :link:hover, .sitenav :visited:hover {
@@ -97,14 +108,12 @@ hr {
 
 .footer {
   margin-top: 1em;
+  font-size: smaller;
 }
 
 .md, td.md, .md td {
   background-color: rgb(95%, 95%, 95%);
 }
-
-H1 { text-align: center; }
-
 
 /*
 :link.qindex {}

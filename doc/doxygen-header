@@ -1,17 +1,24 @@
+<!doctype html public "-//W3C//DTD HTML 4.01 Transitional//EN"
+               "http://www.w3.org/TR/html4/loose.dtd">
+
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
 <title>$title</title>
-<link href="openvrml.css" rel="stylesheet" type="text/css">
-<link rel="icon" href="vrml-16.png">
+<link rel="stylesheet" href="openvrml.css">
+<link rel="icon" href="../vrml-16.png">
+<link rel="start" href="http://openvrml.org/index.php">
+<link rel="prev" href="http://openvrml.org/discussion.php">
+<link rel="next" href="http://openvrml.org/links.php">
+<link rel="contents" href="index.html">
+<link rel="index" href="classes.html">
 </head>
 <body>
 <table class="sitenav">
   <tr>
-    <th><a href="http://openvrml.org/index.php">Home</a></th>
-    <th><a href="http://openvrml.org/download.php">Download</a></th>
+    <th><a href="http://openvrml.org/index.php" title="Home">Home</a></th>
+    <th><a href="http://openvrml.org/download.php" title="Download">Download</a></th>
     <th><a href="http://openvrml.org/screenshots/index.php" title="Screen shots">Screen shots</a></th>
-    <th><a href="http://openvrml.org/discussion.php">Discussion</a></th>
+    <th><a href="http://openvrml.org/discussion.php" title="Mailing lists and IRC">Discussion</a></th>
     <th>Documentation</th>
     <th><a href="http://openvrml.org/links.php" title="Links to related resources">Links</a></th>
   </tr>

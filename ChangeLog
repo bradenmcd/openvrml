@@ -1,3 +1,8 @@
+2002-12-16  Braden McDaniel  <braden@endoframe.com>
+
+        * doc/doxygen-footer, doc/doxygen-header, doc/openvrml.css:
+          Documentation enhancements.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
