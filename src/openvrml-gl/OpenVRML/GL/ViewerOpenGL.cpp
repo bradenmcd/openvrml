@@ -22,10 +22,6 @@
 #   include <config.h>
 # endif
 
-# if defined(_WIN32) && !defined(__CYGWIN__)
-#   include <winconfig.h>
-# endif
-
 // Win32 needs to know that GL stuff lives in a DLL (OPENGL32.DLL)
 #if defined(_WIN32)
 #include <wtypes.h>
@@ -401,7 +397,7 @@ void ViewerOpenGL::resetUserNavigation()
 
 void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
 {
-  // The Matrix M should be an unit matrix
+  // The Matrix M should be a unit matrix
   VrmlMatrix tmp,rot(d_rotationMatrix); 
   float pos_vec[3];
   pos_vec[0] = d_zoom[0];
@@ -3138,7 +3134,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
   //      glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
 
         //
-        // make modelview as an unit matrix as this is taken care in the core side
+        // make modelview as a unit matrix as this is taken care in the core side
         // during render traversal.
         //
         for (int i = 0; i < 4; ++i) {
