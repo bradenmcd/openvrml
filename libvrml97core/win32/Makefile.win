@@ -44,11 +44,19 @@ where: [target] may be any one of the following ...
 
 			 set JPEGLIB_DIR=C:\jpeg-6b
 
+   HAVE_JAVA  .................... - If it is YES, 
+               then you must have java in your system and system will
+               generate C++ code from antlr grammar(Vrml97Parser.g). 
+               Otherwise it will take generated code(Vrml97Parser.cpp)
+               and create the library. Default is NO.
+
+
    ANTLRLIB_DIR  .................... - required to be defined as the path
-		   where your antlr is installed. Default path 
-		   is C:\User\antlr, however you may provide it as an 
-		   environment variable by doing something like this prior 
-		   to execute nmake:
+               where your antlr is installed. If you define HAVE_JAVA=YES 
+               then you must give this path. Otherwise it is not needed. 
+               Default path is C:\User\antlr, however you may provide it 
+               as an environment variable by doing something like this 
+               prio to execute nmake:
 
 			 set ANTLRLIB_DIR=C:\antlr-2.7.0
 
@@ -245,11 +253,15 @@ clean :
       -@erase $(BINOUTDIR)\VrmlBVolume.obj
       -@erase $(BINOUTDIR)\VrmlFrustum.obj
       -@erase $(BINOUTDIR)\VrmlRenderContext.obj
+
+!IF "$(HAVE_JAVA)" == "YES"
       -@erase Vrml97Parser.cpp
       -@erase Vrml97Parser.hpp
       -@erase Vrml97ParserTokenTypes.hpp
       -@erase Vrml97ParserTokenTypes.txt
       -@erase vrml97tokentypes.txt
+!endif
+
 	-@erase $(LIBDIR)\libvrml97core.lib
 
 all : core
@@ -294,9 +306,10 @@ $(BINOUTDIR)\Image.obj :  $(SOURCE)\Image.cpp $(SOURCE)\Image.h $(SOURCE)\gifrea
 
 $(BINOUTDIR)\jpgread.obj :  $(SOURCE)\jpgread.cpp $(SOURCE)\jpgread.h 
             			    $(CPP) $(CFLAGS) /I $(JPEGLIB_DIR) $(SOURCE)\jpgread.cpp 
+!IF "$(HAVE_JAVA)" == "YES"
 
-Vrml97Parser.cpp     :                $(SOURCE)\vrml97parser.g $(SOURCE)\Vrml97TokenTypes.txt.in 
-						   copy $(SOURCE)\Vrml97TokenTypes.txt.in vrml97tokentypes.txt
+Vrml97Parser.cpp     :                $(SOURCE)\vrml97parser.g $(SOURCE)\Vrml97TokenTypes.txt 
+						   copy $(SOURCE)\Vrml97TokenTypes.txt vrml97tokentypes.txt
 						   SET CLASSPATH=$(ANTLRLIB_DIR)
 						   java antlr.Tool $(SOURCE)\vrml97parser.g
 
@@ -312,6 +325,22 @@ $(BINOUTDIR)\Vrml97Parser.obj  :       Vrml97Parser.cpp $(SOURCE)\Doc2.hpp\
 					         $(SOURCE)\VrmlMFRotation.h $(SOURCE)\VrmlMFTime.h\
                                        $(SOURCE)\VrmlMFVec2f.h $(SOURCE)\VrmlMFVec3f.h
 						   $(CPP) $(CFLAGS) /GR /I $(SOURCE) /I . Vrml97Parser.cpp
+
+!ELSE
+$(BINOUTDIR)\Vrml97Parser.obj  :       $(SOURCE)\Vrml97Parser.cpp $(SOURCE)\Doc2.hpp\
+                                       $(SOURCE)\VrmlMFTime.h $(SOURCE)\VrmlSFBool.h $(SOURCE)\VrmlMFNode.h\
+						   $(SOURCE)\VrmlMFString.h $(SOURCE)\VrmlNamespace.h $(SOURCE)\VrmlNode.h\
+						   $(SOURCE)\VrmlNodeScript.h $(SOURCE)\VrmlNodeType.h\
+						   $(SOURCE)\VrmlSFColor.h $(SOURCE)\VrmlSFFloat.h $(SOURCE)\VrmlSFNode.h\
+						   $(SOURCE)\VrmlSFImage.h $(SOURCE)\VrmlSFVec3f.h \
+						   $(SOURCE)\VrmlMFColor.h $(SOURCE)\VrmlMFFloat.h\
+						   $(SOURCE)\VrmlSFInt.h $(SOURCE)\VrmlSFRotation.h $(SOURCE)\VrmlSFTime.h\
+						   $(SOURCE)\VrmlMFInt.h $(SOURCE)\VrmlSFVec2f.h \
+					         $(SOURCE)\VrmlMFRotation.h $(SOURCE)\VrmlMFTime.h\
+                                       $(SOURCE)\VrmlMFVec2f.h $(SOURCE)\VrmlMFVec3f.h
+						   $(CPP) $(CFLAGS) /GR /I $(SOURCE) $(SOURCE)\Vrml97Parser.cpp
+
+!ENDIF
 
 
 $(BINOUTDIR)\vrml97scanner.obj :   $(SOURCE)\vrml97scanner.cpp $(SOURCE)\vrml97scanner.hpp 
@@ -361,8 +390,9 @@ $(BINOUTDIR)\ScriptJS.obj : $(SOURCE)\ScriptJS.cpp $(SOURCE)\ScriptJS.h\
 							$(SOURCE)\VrmlSFRotation.h $(SOURCE)\VrmlSFString.h\
 							$(SOURCE)\VrmlSFTime.h $(SOURCE)\VrmlSFVec2f.h\
 							$(SOURCE)\VrmlSFVec3f.h
-							$(CPP) $(CFLAGS) /I $(JSINCLUDE) /I $(ZLIB_DIR) /D XP_PC\
-							/D js_InitArrayClass=JS_InitArrayClass $(SOURCE)\ScriptJS.cpp
+							$(CPP) $(CFLAGS) /I $(JSINCLUDE) /I $(ZLIB_DIR) /I ..\..\win32 \
+						      /D XP_PC /D js_InitArrayClass=JS_InitArrayClass \
+                                          $(SOURCE)\ScriptJS.cpp
 
 $(BINOUTDIR)\ScriptObject.obj : $(SOURCE)\ScriptObject.cpp $(SOURCE)\ScriptObject.h\
 								$(SOURCE)\Doc.h\
@@ -382,7 +412,7 @@ $(BINOUTDIR)\ScriptObject.obj : $(SOURCE)\ScriptObject.cpp $(SOURCE)\ScriptObjec
 								$(SOURCE)\VrmlSFString.h\
 								$(SOURCE)\VrmlSFVec3f.h
 								$(CPP) $(CFLAGS) /I $(JSINCLUDE) /I $(ZLIB_DIR) /D XP_PC\
-								$(SOURCE)\ScriptObject.cpp
+								/I ..\..\win32 $(SOURCE)\ScriptObject.cpp
 
 $(BINOUTDIR)\sound.obj : $(SOURCE)\sound.c $(SOURCE)\sound.h
 						 $(CPP) $(CFLAGS) $(SOURCE)\sound.c
