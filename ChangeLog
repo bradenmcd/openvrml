@@ -4,6 +4,28 @@
           use the standard, cross-platform means of freeing the buffer required
           by the ostrstream. Squashing #ifdefs gives me warm fuzzies.
 
+1999-12-14  Michael N. Louka <michael.louka@hrp.no>
+
+        * Now tests HAVE_SOUND in Audio::setURL() to check whether to load audio
+          files. Previously audio files were (down)loaded even if HAVE_SOUND was
+          not true.
+          
+        * Suppressed "couldn't read AudioClip from URL" error message in
+          VrmlNodeAudioClip::update() if HAVE_SOUND is not true.
+
+1999-12-03  Michael N. Louka <michael.louka@hrp.no>
+
+        * Incorporated modifications to support Mac OS 8/9. This was mainly additions
+          to System.cpp and Doc.cpp as well as some Macintosh specific header file
+          inclusions and other minor modifications to other files.
+          
+        * Added CodeWarrior projects for Mac OS (in macos directories for lookat and
+          libvrml97core).
+          
+        * Added HAVE_CONFIG_H checks to a number of files that were missing them.
+
+        * Replaced output to stderr with output via theSystem in setURL() in Audio.cpp        
+
 1999-11-21  Braden McDaniel <braden@endoframe.com>
 
         * Cleaned up some old #ifdefs in VrmlScene.cpp, Image.cpp, pngread.c,
