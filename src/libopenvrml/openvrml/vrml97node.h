@@ -1317,10 +1317,9 @@ namespace openvrml {
             bool hasLoaded;
 
         public:
-            inline_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
+            inline_node(const node_type & type,
+                        const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~inline_node() throw ();
-
-            virtual inline_node * to_inline() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,

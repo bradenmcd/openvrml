@@ -9879,16 +9879,6 @@ void inline_node::do_render_child(openvrml::viewer & viewer,
 }
 
 /**
- * @brief Cast to an inline_node.
- *
- * @return a pointer to the inline_node.
- */
-inline_node * inline_node::to_inline() const
-{
-    return const_cast<inline_node *>(this);
-}
-
-/**
  * @brief Get the children in the scene graph.
  *
  * @return the child nodes in the scene graph.

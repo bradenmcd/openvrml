@@ -1,5 +1,13 @@
 2005-03-28 Braden McDaniel  <braden@endoframe.com>
 
+	Removed to_inline member function from
+	openvrml::vrml97_node::inline_node.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
+2005-03-28 Braden McDaniel  <braden@endoframe.com>
+
 	Added swap member function to openvrml::image along with a
 	specialization of std::swap.
 
