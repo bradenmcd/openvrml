@@ -144,12 +144,40 @@ void VrmlNodeProto::resetVisitedFlag() {
     }
 }
 
-/**
- * @todo Implement me!
- */
+namespace {
+    struct AccumulateNodes_ :
+            std::unary_function<VrmlNodeProto::NameValueRec *, void> {
+        explicit AccumulateNodes_(VrmlMFNode & children): children(children) {};
+        result_type operator()(argument_type protoFieldRec) {
+            assert(protoFieldRec);
+            if (protoFieldRec->value->fieldType() == VrmlField::SFNODE) {
+                assert(dynamic_cast<VrmlSFNode *>(protoFieldRec->value));
+                this->children.setLength(this->children.getLength() + 1);
+                this->children.setElement(this->children.getLength() - 1,
+                        static_cast<VrmlSFNode *>(protoFieldRec->value)->get());
+            } else if (protoFieldRec->value->fieldType() == VrmlField::MFNODE) {
+                assert(dynamic_cast<VrmlMFNode *>(protoFieldRec->value));
+                VrmlMFNode & nodes =
+                        *static_cast<VrmlMFNode *>(protoFieldRec->value);
+                this->children.setLength(this->children.getLength()
+                                         + nodes.getLength());
+                for (size_t i = 0; i < nodes.getLength(); ++i) {
+                    this->children.setElement(this->children.getLength() + i,
+                                              nodes.getElement(i));
+                }
+            }
+        };
+    
+    private:
+        VrmlMFNode & children;
+    };
+}
+
 const VrmlMFNode VrmlNodeProto::getChildren() const {
-    // XXX Implement me!
-    return VrmlMFNode();
+    VrmlMFNode children;
+    std::for_each(this->d_fields.begin(), this->d_fields.end(),
+                  AccumulateNodes_(children));
+    return children;
 }
 
 /**

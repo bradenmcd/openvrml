@@ -1,3 +1,8 @@
+2001-09-06  Braden McDaniel  <braden@endoframe.com>
+
+        * Applied patch from Luca Regini <lucaregini@libero.it> to
+          implement getChildren() for VrmlNodeProto.
+
 2001-09-04  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Fixed Navigation problems in "Examine Mode", as it was
