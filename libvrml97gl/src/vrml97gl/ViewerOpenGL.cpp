@@ -1134,11 +1134,10 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 
 #if _WIN32
 # define WINAPI __stdcall
-typedef GLvoid ( WINAPI *TessCB)();
 #else
 # define WINAPI 
-typedef GLvoid ( WINAPI *TessCB)(...);
 #endif
+typedef GLvoid ( WINAPI *TessCB)();
 
 
 // Extrusion cap tessellation for non-convex shapes
