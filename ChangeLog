@@ -1,5 +1,16 @@
 2005-03-14 Braden McDaniel  <braden@endoframe.com>
 
+	Use boost::bind instead of openvrml_::compose2.
+
+	* src/libopenvrml/private.h:  Removed
+	openvrml_::binary_compose and openvrml_::compose2.
+	* src/libopenvrml/openvrml/browser.cpp:  Use boost::bind instead
+	of openvrml_::compose2.
+	* src/libopenvrml/openvrml/node.cpp:  Use boost::bind instead of
+	openvrml_::compose2.
+
+2005-03-14 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml-player/player.cpp:
 	bounded_buffer<>'s mutex needs to be mutable for
 	bounded_buffer<>::buffered.

@@ -26,6 +26,7 @@
 
 # include <algorithm>
 # include <sstream>
+# include <boost/bind.hpp>
 # include <boost/lexical_cast.hpp>
 # include "private.h"
 # include "node.h"
@@ -521,19 +522,18 @@ const node_interface_set::const_iterator
 find_interface(const node_interface_set & interfaces, const std::string & id)
     throw ()
 {
+    using std::find_if;
+    using boost::bind;
     node_interface_set::const_iterator pos =
-        std::find_if(interfaces.begin(), interfaces.end(),
-                     bind2nd(node_interface_matches_field(), id));
+        find_if(interfaces.begin(), interfaces.end(),
+                bind(node_interface_matches_field(), _1, id));
     if (pos == interfaces.end()) {
-        using openvrml_::compose2;
         using std::logical_or;
 
-        pos = std::find_if(interfaces.begin(), interfaces.end(),
-                           compose2(logical_or<bool>(),
-                                    bind2nd(node_interface_matches_eventin(),
-                                            id),
-                                    bind2nd(node_interface_matches_eventout(),
-                                            id)));
+        pos = find_if(interfaces.begin(), interfaces.end(),
+                      bind(logical_or<bool>(),
+                           bind(node_interface_matches_eventin(), _1, id),
+                           bind(node_interface_matches_eventout(), _1, id)));
     }
     return pos;
 }

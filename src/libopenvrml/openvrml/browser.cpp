@@ -38,6 +38,7 @@
 # else
 #   include <sys/time.h>
 # endif
+# include <boost/bind.hpp>
 # include <boost/cast.hpp>
 # include <boost/shared_ptr.hpp>
 # include <boost/spirit.hpp>
@@ -740,7 +741,7 @@ namespace {
                                     matches_is_target(
                                         is_target(*n, interface->id)));
                         if (is_mapping != this->node_class.is_map.end()) {
-                            using openvrml_::compose2;
+                            using boost::bind;
                             using std::logical_or;
                             //
                             // If an exposedField in the implementation is IS'd
@@ -754,11 +755,13 @@ namespace {
                                 proto_interface =
                                 find_if(this->node_class.interfaces.begin(),
                                         this->node_class.interfaces.end(),
-                                        compose2(logical_or<bool>(),
-                                                 bind2nd(node_interface_matches_exposedfield(),
-                                                         is_mapping->first),
-                                                 bind2nd(node_interface_matches_field(),
-                                                         is_mapping->first)));
+                                        bind(logical_or<bool>(),
+                                             bind(node_interface_matches_exposedfield(),
+                                                  _1,
+                                                  is_mapping->first),
+                                             bind(node_interface_matches_field(),
+                                                  _1,
+                                                  is_mapping->first)));
 
                             if (proto_interface
                                 != this->node_class.interfaces.end()) {
