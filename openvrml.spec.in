@@ -7,16 +7,21 @@ Group:          System Environment/Libraries
 Packager:       The OpenVRML Development Team <openvrml-develop@lists.sf.net>
 Source:         http://prdownloads.sf.net/openvrml/%{name}-%{version}.tar.gz
 URL:            http://openvrml.org
+BuildRoot:      %{_tmppath}/%{name}-root
+BuildRequires:  pkgconfig >= 0.12.0
 BuildRequires:  zlib-devel >= 1.1.3
 BuildRequires:  libpng-devel >= 1.0.12
 BuildRequires:  libjpeg-devel >= 6b
+BuildRequires:  fontconfig-devel >= 2.0
+BuildRequires:  freetype-devel >= 2.1.2
 BuildRequires:  mozilla-devel >= 1.2.1
 BuildRequires:  XFree86-devel >= 4.2
 BuildRequires:  glut-devel >= 3.7
-BuildRoot:      %{_tmppath}/%{name}-root
 Requires:       zlib >= 1.1.3
 Requires:       libpng >= 1.0.12
 Requires:       libjpeg >= 6b
+Requires:       fontconfig >= 2.0
+Requires:       freetype >= 2.1.2
 Requires:       mozilla >= 1.2.1
 Prefix:         /usr
 
@@ -65,7 +70,7 @@ GLUT-based VRML viewer.
 
 
 %build
-./configure $ARCH_FLAGS --prefix=%{prefix} --without-jdk --without-ftflib --without-doxygen CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
+./configure $ARCH_FLAGS --prefix=%{prefix} --disable-api-docs CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
 make
 
 
@@ -101,6 +106,11 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Tue Dec 10 2002  Braden McDaniel  <braden@endoframe.com>
+- Added BuildRequires for pkgconfig, fontconfig-devel, freetype-devel.
+- Added Requires for fontconfig, freetype.
+- Updated configure arguments.
+
 * Sun Dec 08 2002  Braden McDaniel  <braden@endoframe.com>
 - Removed COPYING from %doc.
 

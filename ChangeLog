@@ -16,6 +16,10 @@
           for font discovery.  Refactored glyph data->polygon conversion
           to Text node implementation.
 
+        * openvrml.spec.in:  Added BuildRequires for pkgconfig,
+          fontconfig-devel, freetype-devel.  Added Requires for
+          fontconfig, freetype.  Updated configure arguments.
+
 2002-12-09  Braden McDaniel  <braden@endoframe.com>
 
         * README, configure.ac, java/Makefile.am, java/vrml/Makefile.am,
