@@ -100,12 +100,12 @@ public:
 	);
 	public: void scriptInterfaceDeclaration(
 		VrmlNamespace & vrmlNamespace,
-                           Doc2 const * doc,
+                           const Doc2 * doc,
                            VrmlNodeScript & node
 	);
 	public: void scriptFieldInterfaceDeclaration(
 		VrmlNamespace & vrmlNamespace,
-                                Doc2 const * doc,
+                                const Doc2 * doc,
                                 VrmlNodeScript & node
 	);
 	public: void protoNodeBodyElement(
