@@ -3266,21 +3266,6 @@ namespace {
     };
 
 
-    struct HasId_ : std::unary_function<bool, viewpoint_node *> {
-        explicit HasId_(const std::string & nodeId) throw ():
-            nodeId(&nodeId)
-        {}
-
-        bool operator()(viewpoint_node * const node) const throw ()
-        {
-            return node->id() == *this->nodeId;
-        }
-
-    private:
-        const std::string * nodeId;
-    };
-
-
     class URI {
         std::string str;
         enum { nmatch = 11 };

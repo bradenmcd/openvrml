@@ -1,5 +1,10 @@
 2004-10-28 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp:  Removed obsoleted
+	function object HasId_.
+
+2004-10-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/system.cpp:  Removed some debugging
 	output.
 
