@@ -1,3 +1,20 @@
+2004-04-26 Braden McDaniel  <braden@endoframe.com>
+
+	Added a Mozilla plug-in.
+
+	* Makefile.am
+	* configure.ac
+	* openvrml.spec.in
+	* mozilla-plugin/Makefile.am:  Added file.
+	* mozilla-plugin/configure.ac:  Added file.
+	* mozilla-plugin/src/Makefile.am:  Added file.
+	* mozilla-plugin/src/openvrml.cpp:  Added file (plug-in API
+	entry points).
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc:  Added file (GTK+
+	widget).
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.h:  Added file (GTK+
+	widget).
+
 2004-04-23 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp:  Removed erroneously

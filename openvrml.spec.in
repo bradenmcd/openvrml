@@ -19,6 +19,7 @@ BuildRequires:  mozilla-devel >= 1.2.1
 BuildRequires:  libgcj-devel >= 3.3
 BuildRequires:  XFree86-devel >= 4.3
 BuildRequires:  SDL-devel >= 1.2
+BuildRequires:  gtkglext-devel >= 1.0.0
 Requires:       zlib >= 1.1.3
 Requires:       libpng >= 1.0.12
 Requires:       libjpeg >= 6b
@@ -67,6 +68,14 @@ Requires:       SDL >= 1.2
 %description -n lookat
 GLUT-based VRML viewer.
 
+%package mozilla
+Summary:        VRML browser plug-in for Mozilla.
+Group:          Applications/Internet
+Requires:       %{name}-gl = %{version}
+Requires:       gtkglext >= 1.0.0
+Requires:       mozilla >= 1.6
+%description mozilla
+VRML browser plug-in for Mozilla.
 
 %prep
 %setup
@@ -112,8 +121,15 @@ make DESTDIR=$RPM_BUILD_ROOT%{prefix} install
 %{prefix}/bin/lookat
 %{prefix}/share/pixmaps/lookat.xpm
 
+%files mozilla
+%doc AUTHORS COPYING ChangeLog NEWS README THANKS
+%{prefix}/lib/mozilla/plugins/openvrml.so
+
 
 %changelog
+* Mon Apr 26 2004  Braden McDaniel  <braden@endoframe.com>
+- Added Mozilla plug-in.
+
 * Thu Nov 20 2003  Braden McDaniel  <braden@endoframe.com>
 - Require SDL for lookat instead of glut.
 - Set "DESTDIR" for "make install" rather than "prefix".
