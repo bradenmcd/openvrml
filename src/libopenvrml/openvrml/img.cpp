@@ -32,8 +32,7 @@
 # include <cstdlib>		// free()
 # include <cstring>
 # include <algorithm>
-
-# include "private.h"
+# include <private.h>
 # include "img.h"
 # include "browser.h"
 # include "system.h"

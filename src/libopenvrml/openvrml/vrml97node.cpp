@@ -40,9 +40,9 @@ extern "C" {
 #   include <fontconfig/fcfreetype.h>
 }
 # endif
+# include <private.h>
 # include "vrml97node.h"
 # include "browser.h"
-# include "private.h"
 
 namespace {
 

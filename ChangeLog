@@ -1,5 +1,27 @@
 2004-12-13 Braden McDaniel  <braden@endoframe.com>
 
+	Moved private.h from src/libopenvrml/openvrml to
+	src/libopenvrml.
+
+	* src/libopenvrml/Makefile.am
+	* src/libopenvrml/private.h:  Added file.
+	* src/libopenvrml/openvrml/ScriptJDK.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/img.cpp
+	* src/libopenvrml/openvrml/private.h:  Removed file.
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/system.cpp
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
+2004-12-13 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/script.cpp:  Report error from
 	Browser.createVrmlFromString with bad syntax.
 

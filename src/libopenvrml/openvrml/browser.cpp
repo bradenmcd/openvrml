@@ -45,7 +45,7 @@
 # ifdef OPENVRML_ENABLE_GZIP
 #   include <zlib.h>
 # endif
-# include "private.h"
+# include <private.h>
 # include "browser.h"
 # include "viewer.h"
 # include "scope.h"

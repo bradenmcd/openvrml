@@ -21,7 +21,7 @@
 //
 
 # include <numeric>
-# include "private.h"
+# include <private.h>
 # include "basetypes.h"
 
 namespace openvrml {

@@ -55,7 +55,7 @@
 # include <unistd.h>
 #endif
 
-# include "private.h"
+# include <private.h>
 # include "system.h"
 
 # ifndef NDEBUG

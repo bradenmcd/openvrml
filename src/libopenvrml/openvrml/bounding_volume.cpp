@@ -20,7 +20,7 @@
 //
 
 # include <limits>
-# include "private.h"
+# include <private.h>
 # include "bounding_volume.h"
 # include "field_value.h"
 # include "frustum.h"

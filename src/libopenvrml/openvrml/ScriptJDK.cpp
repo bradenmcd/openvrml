@@ -88,7 +88,7 @@
 #   include <vrml_node_Node.h>
 #   include <vrml_node_Script.h>
 
-#   include "private.h"
+#   include <private.h>
 #   include "script.h"
 #   include "browser.h"
 #   include "node.h"

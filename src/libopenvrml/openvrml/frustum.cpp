@@ -23,7 +23,7 @@
 #   include <config.h>
 # endif
 
-# include "private.h"
+# include <private.h>
 # include "basetypes.h"
 # include "frustum.h"
 

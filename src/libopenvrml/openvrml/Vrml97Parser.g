@@ -126,9 +126,9 @@ header "post_include_cpp" {
 # include <iostream>
 # include <antlr/CommonToken.hpp>
 # include <boost/lexical_cast.hpp>
+# include <private.h>
 # include "scope.h"
 # include "script.h"
-# include "private.h"
 
 namespace {
 

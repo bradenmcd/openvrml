@@ -24,7 +24,7 @@
 #   include <config.h>
 # endif
 
-# include "private.h"
+# include <private.h>
 # include "script.h"
 # include "scope.h"
 # include "browser.h"

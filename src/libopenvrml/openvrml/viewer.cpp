@@ -27,8 +27,8 @@
 #   include <config.h>
 # endif
 
+# include <private.h>
 # include "viewer.h"
-# include "private.h"
 
 namespace openvrml {
 
