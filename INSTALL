@@ -6,7 +6,7 @@ installation in three environments:
 
   * Using the GNU build tools in a Un*x environment.
   * Using Microsoft Visual C++ 6.0 under Microsoft Windows 9x/NT/2000.
-  * Using Metrowerks CodeWarrior Pro 5 on an Apple Macintosh.
+  * Using Metrowerks CodeWarrior Pro 5 on an Apple Macintosh (Classic OS).
 
 
 Contents
@@ -282,8 +282,10 @@ libjs.dll), workspace file `libjs.dsw' is given in
 
 
 
-3  CodeWarrior 5.x Professional for Macintosh
-=============================================
+3  CodeWarrior 5.x Professional for Macintosh (Classic Mac OS)
+==============================================================
+
+[For Mac OS X, compile as for Un*x environments, as described above]
 
 3.1  Source directory structure
 ===============================
