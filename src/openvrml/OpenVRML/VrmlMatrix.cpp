@@ -44,25 +44,7 @@ using namespace OpenVRML_;
  * @param rhs   a VrmlMatrix.
  */
 bool operator==(const VrmlMatrix & lhs, const VrmlMatrix & rhs) {
-    return (lhs.matrix[0][0] == rhs.matrix[0][0]
-            && lhs.matrix[0][1] == rhs.matrix[0][1]
-            && lhs.matrix[0][2] == rhs.matrix[0][2]
-            && lhs.matrix[0][3] == rhs.matrix[0][3]
-            
-            && lhs.matrix[1][0] == rhs.matrix[1][0]
-            && lhs.matrix[1][1] == rhs.matrix[1][1]
-            && lhs.matrix[1][2] == rhs.matrix[1][2]
-            && lhs.matrix[1][3] == rhs.matrix[1][3]
-            
-            && lhs.matrix[2][0] == rhs.matrix[2][0]
-            && lhs.matrix[2][1] == rhs.matrix[2][1]
-            && lhs.matrix[2][2] == rhs.matrix[2][2]
-            && lhs.matrix[2][3] == rhs.matrix[2][3]
-            
-            && lhs.matrix[3][0] == rhs.matrix[3][0]
-            && lhs.matrix[3][1] == rhs.matrix[3][1]
-            && lhs.matrix[3][2] == rhs.matrix[3][2]
-            && lhs.matrix[3][3] == rhs.matrix[3][3]);
+    return std::equal(lhs.matrix[0], lhs.matrix[0] + 16, rhs.matrix[0]);
 }
 
 /**
@@ -73,29 +55,6 @@ bool operator==(const VrmlMatrix & lhs, const VrmlMatrix & rhs) {
  * @param lhs   a VrmlMatrix.
  * @param rhs   a VrmlMatrix.
  */
-
-
-/**
- * Macro for checking is a matrix is idenity?
- */
-
-#define IS_IDENTITY(matrix) ( \
-    (matrix[0][0] == 1.0) && \
-    (matrix[0][1] == 0.0) && \
-    (matrix[0][2] == 0.0) && \
-    (matrix[0][3] == 0.0) && \
-    (matrix[1][0] == 0.0) && \
-    (matrix[1][1] == 1.0) && \
-    (matrix[1][2] == 0.0) && \
-    (matrix[1][3] == 0.0) && \
-    (matrix[2][0] == 0.0) && \
-    (matrix[2][1] == 0.0) && \
-    (matrix[2][2] == 1.0) && \
-    (matrix[2][3] == 0.0) && \
-    (matrix[3][0] == 0.0) && \
-    (matrix[3][1] == 0.0) && \
-    (matrix[3][2] == 0.0) && \
-    (matrix[3][3] == 1.0))
 
 /**
  * @brief Default constructor.
@@ -127,32 +86,32 @@ VrmlMatrix::VrmlMatrix() {
 /**
  * @brief Construct VrmlMatrix with given 16 elements in row-major order.
  *
- * @param aXX are 16 elements in row-major order
+ * @param fXX   16 elements in row-major order.
  *
  */
-VrmlMatrix::VrmlMatrix(float a11, float a12, float a13, float a14,
-                       float a21, float a22, float a23, float a24, 
-                       float a31, float a32, float a33, float a34, 
-                       float a41, float a42, float a43, float a44) {
-    this->matrix[0][0] = a11;
-    this->matrix[0][1] = a12;
-    this->matrix[0][2] = a13;
-    this->matrix[0][3] = a14;
+VrmlMatrix::VrmlMatrix(float f11, float f12, float f13, float f14,
+                       float f21, float f22, float f23, float f24, 
+                       float f31, float f32, float f33, float f34, 
+                       float f41, float f42, float f43, float f44) {
+    this->matrix[0][0] = f11;
+    this->matrix[0][1] = f12;
+    this->matrix[0][2] = f13;
+    this->matrix[0][3] = f14;
 
-    this->matrix[1][0] = a21;
-    this->matrix[1][1] = a22;
-    this->matrix[1][2] = a23;
-    this->matrix[1][3] = a24;
+    this->matrix[1][0] = f21;
+    this->matrix[1][1] = f22;
+    this->matrix[1][2] = f23;
+    this->matrix[1][3] = f24;
 
-    this->matrix[2][0] = a31;
-    this->matrix[2][1] = a32;
-    this->matrix[2][2] = a33;
-    this->matrix[2][3] = a34;
+    this->matrix[2][0] = f31;
+    this->matrix[2][1] = f32;
+    this->matrix[2][2] = f33;
+    this->matrix[2][3] = f34;
 
-    this->matrix[3][0] = a41;
-    this->matrix[3][1] = a42;
-    this->matrix[3][2] = a43;
-    this->matrix[3][3] = a44;
+    this->matrix[3][0] = f41;
+    this->matrix[3][1] = f42;
+    this->matrix[3][2] = f43;
+    this->matrix[3][3] = f44;
 }
 
 /**
@@ -166,116 +125,70 @@ VrmlMatrix::VrmlMatrix(const float m[4][4]) {
 }
 
 /**
- * @brief Sets value with given 4x4 array of elements in row-major order
- *
- * @param m is input array
- *
- */
-void VrmlMatrix::set(const float m[4][4]) {
-    std::copy(m[0], m[0] + 16, this->matrix[0]);
-}
-
-/**
- * @brief Assignment operator.
- *
- * @param rhs is the 4x4 array of elements to copy into this object
- */
-//VrmlMatrix & VrmlMatrix::operator=(const Matrix m) {
-//    set(m);
-//    return *this;
-//}
-
-/**
- * @brief Assignment operator.
- *
- * @param rhs the VrmlMatrix to copy into this object
- */
-//VrmlMatrix & VrmlMatrix::operator=(const VrmlMatrix & m) {
-//    memcpy(matrix, m.matrix, sizeof(float[4][4]));
-//    return *this;
-//}
-
-/**
  * @brief Sets matrix to rotate by given rotation Graphics Gems p466
- * @param axisAngle[X Y Z angle] should be in normalized form
+ *
+ * @param axisAngle [X Y Z angle] should be in normalized form
  */
-
 void VrmlMatrix::setRotate(const float axisAngle[4]) {
+    //
     // Make sure axis is normalized.
-
+    //
     assert(fpequal(length(axisAngle), 1.0));
 
-    float aa_norm[4];
-    aa_norm[0] = axisAngle[0];
-    aa_norm[1] = axisAngle[1];
-    aa_norm[2] = axisAngle[2];
-    aa_norm[3] = axisAngle[3];
-
-    double s = sin(aa_norm[3]);
-    double c = cos(aa_norm[3]);
+    double s = sin(axisAngle[3]);
+    double c = cos(axisAngle[3]);
     double t = 1.0 - c;
-    double x = aa_norm[0];
-    double y = aa_norm[1];
-    double z = aa_norm[2];
+    double x = axisAngle[0];
+    double y = axisAngle[1];
+    double z = axisAngle[2];
 
-    matrix[0][0] = t*x*x + c;
-    matrix[1][0] = t*x*y - s*z;
-    matrix[2][0] = t*x*z + s*y;
-    matrix[3][0] = 0.0;
-    matrix[0][1] = t*x*y + s*z;
-    matrix[1][1] = t*y*y + c;
-    matrix[2][1] = t*y*z - s*x;
-    matrix[3][1] = 0.0;
-    matrix[0][2] = t*x*z - s*y;
-    matrix[1][2] = t*y*z + s*x;
-    matrix[2][2] = t*z*z + c;
-    matrix[3][2] = 0.0;
-    matrix[0][3] = matrix[1][3] = matrix[2][3] = 0.0;
-    matrix[3][3] = 1.0;
+    this->matrix[0][0] = t*x*x + c;
+    this->matrix[1][0] = t*x*y - s*z;
+    this->matrix[2][0] = t*x*z + s*y;
+    this->matrix[3][0] = 0.0;
+    this->matrix[0][1] = t*x*y + s*z;
+    this->matrix[1][1] = t*y*y + c;
+    this->matrix[2][1] = t*y*z - s*x;
+    this->matrix[3][1] = 0.0;
+    this->matrix[0][2] = t*x*z - s*y;
+    this->matrix[1][2] = t*y*z + s*x;
+    this->matrix[2][2] = t*z*z + c;
+    this->matrix[3][2] = 0.0;
+    this->matrix[0][3] = this->matrix[1][3] = this->matrix[2][3] = 0.0;
+    this->matrix[3][3] = 1.0;
 }
 
 /**
  * @brief Sets matrix to rotate by given rotation Graphics Gems p466
- * @param axisAngle is the SFRotation object. This should be in normalized form
+ *
+ * @param axisAngle the SFRotation object.
  */
-
-void
-VrmlMatrix::setRotate(const SFRotation &axisAngle)
-{
-   float aa_norm[4];
-
-   aa_norm[0] = axisAngle.getX();
-   aa_norm[1] = axisAngle.getY();
-   aa_norm[2] = axisAngle.getZ();
-   aa_norm[3] = axisAngle.getAngle();
-   setRotate(aa_norm);
+void VrmlMatrix::setRotate(const SFRotation & axisAngle) {
+    this->setRotate(axisAngle.get());
 }
 
 /**
  * @brief Sets matrix to scale by given uniform factor
- * @param s is uniform scale factor
  *
+ * @param s is uniform scale factor
  */
-
-void
-VrmlMatrix::setScale(float s)
-{
-    matrix[0][0] = s;
-    matrix[0][1] = 0.0;
-    matrix[0][2] = 0.0;
-    matrix[0][3] = 0.0;
-    matrix[1][0] = 0.0;
-    matrix[1][1] = s;
-    matrix[1][2] = 0.0;
-    matrix[1][3] = 0.0;
-    matrix[2][0] = 0.0;
-    matrix[2][1] = 0.0;
-    matrix[2][2] = s;
-    matrix[2][3] = 0.0;
-    matrix[3][0] = 0.0;
-    matrix[3][1] = 0.0;
-    matrix[3][2] = 0.0;
-    matrix[3][3] = 1.0;
+void VrmlMatrix::setScale(float s) {
+    this->matrix[0][0] = s;
+    this->matrix[0][1] = 0.0;
+    this->matrix[0][2] = 0.0;
+    this->matrix[0][3] = 0.0;
+    this->matrix[1][0] = 0.0;
+    this->matrix[1][1] = s;
+    this->matrix[1][2] = 0.0;
+    this->matrix[1][3] = 0.0;
+    this->matrix[2][0] = 0.0;
+    this->matrix[2][1] = 0.0;
+    this->matrix[2][2] = s;
+    this->matrix[2][3] = 0.0;
+    this->matrix[3][0] = 0.0;
+    this->matrix[3][1] = 0.0;
+    this->matrix[3][2] = 0.0;
+    this->matrix[3][3] = 1.0;
 }
 
 /**
@@ -284,8 +197,22 @@ VrmlMatrix::setScale(float s)
  * @param s a vector.
  */
 void VrmlMatrix::setScale(const float s[3]) {
-    *this = VrmlMatrix(); // Set to identity.
-    for (size_t i = 0; i < 3; ++i) { this->matrix[i][i] = s[i]; }
+    this->matrix[0][0] = s[0];
+    this->matrix[0][1] = 0.0;
+    this->matrix[0][2] = 0.0;
+    this->matrix[0][3] = 0.0;
+    this->matrix[1][0] = 0.0;
+    this->matrix[1][1] = s[1];
+    this->matrix[1][2] = 0.0;
+    this->matrix[1][3] = 0.0;
+    this->matrix[2][0] = 0.0;
+    this->matrix[2][1] = 0.0;
+    this->matrix[2][2] = s[2];
+    this->matrix[2][3] = 0.0;
+    this->matrix[3][0] = 0.0;
+    this->matrix[3][1] = 0.0;
+    this->matrix[3][2] = 0.0;
+    this->matrix[3][3] = 1.0;
 }
 
 /**
@@ -293,19 +220,14 @@ void VrmlMatrix::setScale(const float s[3]) {
  *
  * @param s a vector
  */
-void VrmlMatrix::setScale(const SFVec3f &s) {
-    *this = VrmlMatrix(); // Set to identity.
-    for (size_t i = 0; i < 3; ++i) { this->matrix[i][i] = s[i]; }
-}
+void VrmlMatrix::setScale(const SFVec3f & s) { this->setScale(s.get()); }
 
 /**
  * @brief Sets matrix to translate by given vector in array[X Y Z]
- * @param t is a given vector 
  *
+ * @param t a translation vector.
  */
-void
-VrmlMatrix::setTranslate(const float t[3])
-{
+void VrmlMatrix::setTranslate(const float t[3]) {
     matrix[0][0] = 1.0;
     matrix[0][1] = 0.0;
     matrix[0][2] = 0.0;
@@ -326,38 +248,20 @@ VrmlMatrix::setTranslate(const float t[3])
 
 /**
  * @brief Sets matrix to translate by given SFVec3f object
+ *
  * @param t is a given vector object
- *
  */
-void
-VrmlMatrix::setTranslate(const SFVec3f &t)
-{
-    setTranslate(t.get());
+void VrmlMatrix::setTranslate(const SFVec3f & t) {
+    this->setTranslate(t.get());
 }
 
 /**
- * @brief Returns copy 4x4 array of elements.
- *
- * @param m output of 4x4 elements
- *
- */
-void VrmlMatrix::get(float m[4][4]) const {
-    std::copy(this->matrix[0], this->matrix[0] + 16, m[0]);
-}
-
-/**
- * @brief Postmultiplies matrix by given matrix on right 
+ * @brief Postmultiplies matrix by given matrix on right.
  *
  * @param m a VrmlMatrix.
  */
-const VrmlMatrix VrmlMatrix::multRight(const VrmlMatrix &m) {
-    // Trivial cases
-    if (IS_IDENTITY(m))
-      return *this;
-    else if (IS_IDENTITY(matrix))
-      return (*this = m);
-	
-    float tmp[4][4];
+const VrmlMatrix VrmlMatrix::multRight(const VrmlMatrix & m) {
+    VrmlMatrix tmp;
 
 #define POSTMULT(i,j) (matrix[i][0]*m.matrix[0][j] + \
                        matrix[i][1]*m.matrix[1][j] + \
@@ -383,25 +287,16 @@ const VrmlMatrix VrmlMatrix::multRight(const VrmlMatrix &m) {
 
 #undef POSTMULT
 
-    return VrmlMatrix(tmp);
+    return tmp;
 }
 
 /**
- * @brief Premultiplies matrix by given matrix on left 
- * @param m is given VrmlMatrix object
+ * @brief Premultiplies matrix by given matrix on left.
  *
+ * @param m a VrmlMatrix
  */
-
-const VrmlMatrix 
-VrmlMatrix::multLeft(const VrmlMatrix &m)
-{
-    // Trivial cases
-    if (IS_IDENTITY(m))
-        return *this;
-    else if (IS_IDENTITY(matrix))
-        return (*this = m);
-	
-    float tmp[4][4];
+const VrmlMatrix VrmlMatrix::multLeft(const VrmlMatrix & m) {
+    VrmlMatrix tmp;
 
 #define PREMULT(i,j) (m.matrix[i][0]*matrix[0][j] + \
                       m.matrix[i][1]*matrix[1][j] + \
@@ -427,62 +322,55 @@ VrmlMatrix::multLeft(const VrmlMatrix &m)
 
 #undef PREMULT
 
-    return (VrmlMatrix(tmp));
+    return tmp;
 
 }
 
 /**
- * @brief Postmultiplies matrix by given column vector on right 
- * @param in src is given vector in array
- * @param out dst is output of result vector in an array 
+ * @brief Postmultiplies matrix by a column vector on the right.
+ *
+ * @param src   a column vector.
+ *
+ * @retval dst  the result vector.
  */
-
-void
-VrmlMatrix::multMatrixVec(const float src[3], float dst[3]) const
-{
-    float    x,y,z,w;
+void VrmlMatrix::multMatrixVec(const float src[3], float dst[3]) const {
+    float x, y, z, w;
     
-    x = matrix[0][0]*src[0] + matrix[0][1]*src[1] +
-        matrix[0][2]*src[2] + matrix[0][3];
-    y = matrix[1][0]*src[0] + matrix[1][1]*src[1] +
-        matrix[1][2]*src[2] + matrix[1][3];
-    z = matrix[2][0]*src[0] + matrix[2][1]*src[1] +
-        matrix[2][2]*src[2] + matrix[2][3];
-    w = matrix[3][0]*src[0] + matrix[3][1]*src[1] +
-        matrix[3][2]*src[2] + matrix[3][3];
-    dst[0] = x/w;
-    dst[1] = y/w;
-    dst[2] = z/w;
+    x = this->matrix[0][0] * src[0] + this->matrix[0][1] * src[1]
+        + this->matrix[0][2] * src[2] + this->matrix[0][3];
+    y = this->matrix[1][0] * src[0] + this->matrix[1][1] * src[1]
+        + this->matrix[1][2] * src[2] + this->matrix[1][3];
+    z = this->matrix[2][0] * src[0] + this->matrix[2][1] * src[1]
+        + this->matrix[2][2] * src[2] + this->matrix[2][3];
+    w = this->matrix[3][0] * src[0] + this->matrix[3][1] * src[1]
+        + this->matrix[3][2] * src[2] + this->matrix[3][3];
+    dst[0] = x / w;
+    dst[1] = y / w;
+    dst[2] = z / w;
 }
 
 /**
- * @brief Postmultiplies matrix by given column vector on right 
- * @param in src is given SFVec3f object
- * @param out dst is output of result SFVec3f object
+ * @brief Postmultiplies matrix by a column vector on the right.
+ *
+ * @param src   a column vector.
+ *
+ * @retval dst  the result vector.
  */
-void
-VrmlMatrix::multMatrixVec(const SFVec3f &src, SFVec3f &dst) const
-{
-    float   sv[3],dv[3];
-    sv[0] = src[0];
-    sv[1] = src[1];
-    sv[2] = src[2];
-    multMatrixVec(sv , dv);
-    dst[0] = dv[0];
-    dst[1] = dv[1];
-    dst[2] = dv[2];
+void VrmlMatrix::multMatrixVec(const SFVec3f & src, SFVec3f & dst) const {
+    float dv[3];
+    this->multMatrixVec(src.get(), dv);
+    dst.set(dv);
 }
 
 /**
- * @brief Premultiplies matrix by given row vector on left 
- * @param in src is given vector in array
- * @param out dst is output of result vector in an array 
+ * @brief Premultiplies matrix by a row vector on the left.
+ *
+ * @param src   a row vector.
+ *
+ * @retval dst  the result vector.
  */
-
-void
-VrmlMatrix::multVecMatrix(const float src[3], float dst[3]) const
-{
-    float    x,y,z,w;
+void VrmlMatrix::multVecMatrix(const float src[3], float dst[3]) const {
+    float x, y, z, w;
     
     x = src[0]*matrix[0][0] + src[1]*matrix[1][0] +
         src[2]*matrix[2][0] + matrix[3][0];
@@ -499,127 +387,132 @@ VrmlMatrix::multVecMatrix(const float src[3], float dst[3]) const
 
 /**
  * @brief Premultiplies matrix by given row vector on left 
- * @param in src is given SFVec3f object
- * @param out dst is output of result SFVec3f object
+ *
+ * @param src   a row vector.
+ *
+ * @retval dst  the result vector.
  */
-void
-VrmlMatrix::multVecMatrix(const SFVec3f &src, SFVec3f &dst) const
-{
-    float   sv[3],dv[3];
-    sv[0] = src[0];
-    sv[1] = src[1];
-    sv[2] = src[2];
-    multVecMatrix(sv , dv);
-    dst[0] = dv[0];
-    dst[1] = dv[1];
-    dst[2] = dv[2];
+void VrmlMatrix::multVecMatrix(const SFVec3f & src, SFVec3f & dst) const {
+    float dv[3];
+    this->multVecMatrix(src.get(), dv);
+    dst.set(dv);
 }
 
-/**
- * This is taken from Graphics Gems 2, Page 603 and it is valid for only
- * affine matrix with dimension of 4x4. As here we are storing row-major order,
- * this means the last column ***MUST** be [0 0 0 1]
- *
- * By this procedure there is a significant performance improvement over
- * a general procedure that can invert any nonsingular matrix.
- *
- *            -1 
- *  -1   |    |      |  -1    |
- * M   = |A  0|  =   | A     0|
- *       |    |      |        |
- *       |    |      |   -1   |
- *       |B  1|      |-BA    1|
- *
- *  where   M is a 4 by 4 matrix,
- *          A is the 3 by 3 upper left submatrix of M,
- *          B is the 1 by 3 lower left submatrix of M.
- * 
- *  It aborts if input matrix is singular and not affine
- *  @param in - 3D affine matrix
- *  @param out - inverse of 3D affine matrix
- 
-*/
-namespace
-{
-void get_affine_inverse(const float in[4][4], float out[4][4]) {
-    // Check if it is an affine matrix
-    assert(! ( in[0][3] != 0.0 || in[1][3] != 0.0 || in[2][3] != 0.0 || 
-           in[3][3] != 1.0 ));
+namespace {
+    /**
+     * This is taken from Graphics Gems 2, Page 603 and it is valid for only
+     * affine matrix with dimension of 4x4. As here we are storing row-major order,
+     * this means the last column ***MUST** be [0 0 0 1]
+     *
+     * By this procedure there is a significant performance improvement over
+     * a general procedure that can invert any nonsingular matrix.
+     *
+     *            -1 
+     *  -1   |    |      |  -1    |
+     * M   = |A  0|  =   | A     0|
+     *       |    |      |        |
+     *       |    |      |   -1   |
+     *       |B  1|      |-BA    1|
+     *
+     *  where   M is a 4 by 4 matrix,
+     *          A is the 3 by 3 upper left submatrix of M,
+     *          B is the 1 by 3 lower left submatrix of M.
+     * 
+     * It aborts if input matrix is singular and not affine.
+     *
+     * @param in   3D affine matrix.
+     *
+     * @retval out  inverse of 3D affine matrix.
+     */
+    void get_affine_inverse(const VrmlMatrix & in, VrmlMatrix & out) {
+        // Check if it is an affine matrix
+        assert(! ( in[0][3] != 0.0 || in[1][3] != 0.0 || in[2][3] != 0.0 || 
+               in[3][3] != 1.0 ));
 
-    double det;
-    double pos, neg, temp;
+        double det;
+        double pos, neg, temp;
 
-    pos = neg = 0.0;
-    temp =  in[0][0] * in[1][1] * in[2][2];
-    if(temp >= 0.0) pos += temp; else neg += temp;
-    temp =  in[0][1] * in[1][2] * in[2][0];
-    if(temp >= 0.0) pos += temp; else neg += temp;
-    temp =  in[0][2] * in[1][0] * in[2][1];
-    if(temp >= 0.0) pos += temp; else neg += temp;
-    temp = -in[0][2] * in[1][1] * in[2][0];
-    if(temp >= 0.0) pos += temp; else neg += temp;
-    temp = -in[0][1] * in[1][0] * in[2][2];
-    if(temp >= 0.0) pos += temp; else neg += temp;
-    temp = -in[0][0] * in[1][2] * in[2][1];
-    if(temp >= 0.0) pos += temp; else neg += temp;
-    det = pos + neg;
+        pos = neg = 0.0;
+        temp =  in[0][0] * in[1][1] * in[2][2];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        temp =  in[0][1] * in[1][2] * in[2][0];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        temp =  in[0][2] * in[1][0] * in[2][1];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        temp = -in[0][2] * in[1][1] * in[2][0];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        temp = -in[0][1] * in[1][0] * in[2][2];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        temp = -in[0][0] * in[1][2] * in[2][1];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        det = pos + neg;
 
 #define PRECISION_LIMIT (1.0e-25)
 
-    // Is the submatrix A singular?
+        // Is the submatrix A singular?
 
-    assert (det*det > PRECISION_LIMIT);
+        assert (det*det > PRECISION_LIMIT);
 
-    // Calculate inverse(A) = adj(A) / det(A)
+        // Calculate inverse(A) = adj(A) / det(A)
 
-    det = 1.0 / det;
-    out[0][0] =  (in[1][1] * in[2][2] - in[1][2] * in[2][1]) * det;
-    out[1][0] = -(in[1][0] * in[2][2] - in[1][2] * in[2][0]) * det;
-    out[2][0] =  (in[1][0] * in[2][1] - in[1][1] * in[2][0]) * det;
-    out[0][1] = -(in[0][1] * in[2][2] - in[0][2] * in[2][1]) * det;
-    out[1][1] =  (in[0][0] * in[2][2] - in[0][2] * in[2][0]) * det;
-    out[2][1] = -(in[0][0] * in[2][1] - in[0][1] * in[2][0]) * det;
-    out[0][2] =  (in[0][1] * in[1][2] - in[0][2] * in[1][1]) * det;
-    out[1][2] = -(in[0][0] * in[1][2] - in[0][2] * in[1][0]) * det;
-    out[2][2] =  (in[0][0] * in[1][1] - in[0][1] * in[1][0]) * det;
+        det = 1.0 / det;
+        out[0][0] =  (in[1][1] * in[2][2] - in[1][2] * in[2][1]) * det;
+        out[1][0] = -(in[1][0] * in[2][2] - in[1][2] * in[2][0]) * det;
+        out[2][0] =  (in[1][0] * in[2][1] - in[1][1] * in[2][0]) * det;
+        out[0][1] = -(in[0][1] * in[2][2] - in[0][2] * in[2][1]) * det;
+        out[1][1] =  (in[0][0] * in[2][2] - in[0][2] * in[2][0]) * det;
+        out[2][1] = -(in[0][0] * in[2][1] - in[0][1] * in[2][0]) * det;
+        out[0][2] =  (in[0][1] * in[1][2] - in[0][2] * in[1][1]) * det;
+        out[1][2] = -(in[0][0] * in[1][2] - in[0][2] * in[1][0]) * det;
+        out[2][2] =  (in[0][0] * in[1][1] - in[0][1] * in[1][0]) * det;
 
-    // Calculate -B * inverse(A) Do the translation part
+        // Calculate -B * inverse(A) Do the translation part
 
-    out[3][0] = -( in[3][0] * out[0][0] + 
-                   in[3][1] * out[1][0] + 
-                   in[3][2] * out[2][0] );
-    out[3][1] = -( in[3][0] * out[0][1] + 
-                   in[3][1] * out[1][1] + 
-                   in[3][2] * out[2][1] );
-    out[3][2] = -( in[3][0] * out[0][2] + 
-                   in[3][1] * out[1][2] + 
-                   in[3][2] * out[2][2] );
+        out[3][0] = -( in[3][0] * out[0][0] + 
+                       in[3][1] * out[1][0] + 
+                       in[3][2] * out[2][0] );
+        out[3][1] = -( in[3][0] * out[0][1] + 
+                       in[3][1] * out[1][1] + 
+                       in[3][2] * out[2][1] );
+        out[3][2] = -( in[3][0] * out[0][2] + 
+                       in[3][1] * out[1][2] + 
+                       in[3][2] * out[2][2] );
 
-    // Fill in last column
-    out[0][3] = out[1][3] = out[2][3] = 0.0;
-    out[3][3] = 1.0;
+        // Fill in last column
+        out[0][3] = out[1][3] = out[2][3] = 0.0;
+        out[3][3] = 1.0;
 
 #undef PRECISION_LIMIT
 
-}
-}
-const VrmlMatrix VrmlMatrix::affine_inverse() const {
-    float in[4][4], out[4][4];
-    std::copy(this->matrix[0], this->matrix[0] + 16, in[0]);
-    get_affine_inverse(in,out);
-    return VrmlMatrix(out);
+    }
 }
 
 /**
- * @brief Return determinant of 3X3 submatrix by given
- * row and column indices
- * @param in r1, r2, r3 are row indices c1, c2, c3 are column indices
- * @param out is return value of determinant
+ * @brief Get the inverse of an affine matrix.
+ *
+ * @return the inverse of the matrix.
+ *
+ * @pre the current matrix must be affine.
  */
+const VrmlMatrix VrmlMatrix::affine_inverse() const {
+    VrmlMatrix out;
+    get_affine_inverse(*this, out);
+    return out;
+}
 
-float
-VrmlMatrix::det3(int r1, int r2, int r3, int c1, int c2, int c3) const
-{
+/**
+ * @brief Return determinant of 3X3 submatrix by given row and column indices.
+ *
+ * @param r1    row index.
+ * @param r2    row index.
+ * @param r3    row index.
+ * @param c1    column index.
+ * @param c2    column index.
+ * @param c3    column index.
+ *
+ * @return the determinant.
+ */
+float VrmlMatrix::det3(int r1, int r2, int r3, int c1, int c2, int c3) const {
   return (  matrix[r1][c1] * matrix[r2][c2] * matrix[r3][c3]
           - matrix[r1][c1] * matrix[r2][c3] * matrix[r3][c2]
           + matrix[r1][c2] * matrix[r2][c3] * matrix[r3][c1]
@@ -629,13 +522,11 @@ VrmlMatrix::det3(int r1, int r2, int r3, int c1, int c2, int c3) const
 }
 
 /**
- * @brief Return determinant of entire matrix
- * @param out is return value of determinant
+ * @brief Return determinant of entire matrix.
+ *
+ * @return the determinant.
  */
-
-float
-VrmlMatrix::det4() const
-{
+float VrmlMatrix::det4() const {
   return (  matrix[0][0] * det3(1, 2, 3, 1, 2, 3)
           + matrix[0][1] * det3(1, 2, 3, 0, 2, 3)
           + matrix[0][2] * det3(1, 2, 3, 0, 1, 3)
@@ -644,14 +535,11 @@ VrmlMatrix::det4() const
 
 
 /**
- * @brief Prints a formatted version of the matrix to the 
- * given output stream.
+ * @brief Prints a formatted version of the matrix to the given output stream.
+ *
  * @param o is output streams
  */
-
-ostream& 
-VrmlMatrix::print(ostream& o)
-{
+ostream & VrmlMatrix::print(ostream & o) {
   for(int i=0; i<4; i++) {
     for(int j=0; j<4; j++) {
       o << matrix[i][j];
@@ -675,8 +563,8 @@ VrmlMatrix::print(ostream& o)
  */
 
 /**
- * @brief Set the matrix from  translation, rotation, scale,
- *      scaleOrientation and center.
+ * @brief Set the matrix from  translation, rotation, scale, scaleOrientation,
+ *      and center.
  *
  * @param translation   the translation.
  * @param rotation      the rotation.

@@ -28,11 +28,8 @@
 namespace OpenVRML {
     class VrmlMatrix;
 
-    bool operator==(const VrmlMatrix & m1, const VrmlMatrix & m2);
-
-    inline bool operator!=(const VrmlMatrix & m1, const VrmlMatrix & m2) {
-        return !(m1 == m2);
-    }
+    bool operator==(const VrmlMatrix & lhs, const VrmlMatrix & rhs);
+    bool operator!=(const VrmlMatrix & lhs, const VrmlMatrix & rhs);
 
     class SFVec3f;
     class SFRotation;
@@ -45,10 +42,10 @@ namespace OpenVRML {
     
     public:
         VrmlMatrix();
-        explicit VrmlMatrix(float a11, float a12, float a13, float a14,
-                            float a21, float a22, float a23, float a24, 
-                            float a31, float a32, float a33, float a34, 
-                            float a41, float a42, float a43, float a44);
+        VrmlMatrix(float f11, float f12, float f13, float f14,
+                   float f21, float f22, float f23, float f24, 
+                   float f31, float f32, float f33, float f34, 
+                   float f41, float f42, float f43, float f44);
         explicit VrmlMatrix(const float m[4][4]);
 
         // use compiler-defined operator= and copy constructor.
@@ -72,16 +69,6 @@ namespace OpenVRML {
 
         void     setTranslate(const float t[3]);
         void     setTranslate(const SFVec3f & t);
-
-
-        // Sets value with given 4x4 array of elements
-        void     set(const float m[4][4]);
-
-        // Returns 4x4 array of elements
-        void     get(float m[4][4]) const;
-
-        // Returns a reference to 4x4 array
-        const float (&get() const)[4][4] { return matrix; }
 
         // Multiplies matrix by given matrix on right or left
         const VrmlMatrix  multRight(const VrmlMatrix &m);	
@@ -128,6 +115,10 @@ namespace OpenVRML {
         // Prints a formatted version of the matrix to the given output stream
         ostream& print(ostream& o);
     };
+
+    inline bool operator!=(const VrmlMatrix & lhs, const VrmlMatrix & rhs) {
+        return !(lhs == rhs);
+    }
     
     inline float (&VrmlMatrix::operator[](size_t index))[4] {
         assert(index < 4);

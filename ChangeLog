@@ -1,3 +1,25 @@
+2002-02-21  Braden McDaniel  <braden@endoframe.com>
+
+        * VrmlMatrix: contructor that takes float args doesn't need to
+          be explicit.
+
+        * VrmlMatrix: removed methods:
+
+              void set(const float[4][4]);
+              void get(float[4][4]);
+              const float (&get() const)[4][4];
+
+          Use operator[] and std::copy instead.
+
+        * VrmlMatrix: doc-comment improvements.
+
+        * VrmlMatrix: Don't check if matrix is identity before
+          performing multiplication in multRight and multLeft.
+
+        * VrmlMatrix: Use std::equal to implement operator==.
+
+        * VrmlMatrix: more doc-comment improvements.
+
 2002-02-19  Braden McDaniel  <braden@endoframe.com>
 
         * VrmlMatrix: use std::copy instead of memcpy.

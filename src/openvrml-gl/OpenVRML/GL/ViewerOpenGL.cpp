@@ -403,7 +403,7 @@ void ViewerOpenGL::resetUserNavigation()
 
   trackball(d_curquat, 0.0, 0.0, 0.0, 0.0);
   //d_rotationChanged = true;
-  matrix_to_glmatrix(VrmlMatrix().get(), this->d_rotationMatrix[0]);
+  matrix_to_glmatrix(&VrmlMatrix()[0], this->d_rotationMatrix[0]);
   wsPostRedraw();
 }
 
@@ -2787,7 +2787,7 @@ ViewerOpenGL::rot(float x, float y, float z, float a)
   VrmlMatrix curr_rot_mat(this->d_rotationMatrix);
   curr_rot_mat = curr_rot_mat.transpose(); // d_rotationMatrix is column major.
 
-  matrix_to_glmatrix(curr_rot_mat.multRight(rot_mat).get(),
+  matrix_to_glmatrix(&curr_rot_mat.multRight(rot_mat)[0],
                      this->d_rotationMatrix[0]);
 
   wsPostRedraw();
