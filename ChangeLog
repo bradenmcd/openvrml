@@ -3,6 +3,9 @@
         * Move doc-comments to implementation files for VrmlBVolume,
           VrmlAABox, and VrmlBSphere.
 
+        * Use dynamic_cast instead of VrmlBVolume::toBSphere() and
+          VrmlBVolume::toAABox().
+
 2001-11-05  Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Implement 6 more methods in ScriptJDK.cpp

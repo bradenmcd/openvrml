@@ -63,24 +63,6 @@
 VrmlBVolume::~VrmlBVolume() {}
 
 /**
- * @fn VrmlBSphere * VrmlBVolume::toBSphere() const
- *
- * @brief Dynamic cast to a sphere.
- *
- * @return Returns null if this object is not a sphere, otherwise
- *         returns this object cast to a VrmlBSphere pointer.
- */
-
-/**
- * @fn VrmlAABox * VrmlBVolume::toAABox() const
- *
- * @brief Dynamic cast to a box.
- *
- * @return Returns null if this object is not a box, otherwise
- *         returns this object cast to a VrmlAABox pointer.
- */
-
-/**
  * @fn bool VrmlBVolume::isMAX() const
  *
  * @brief Gets the MAX flag.

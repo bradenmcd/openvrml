@@ -34,9 +34,6 @@ public:
     VrmlBSphere(const VrmlBSphere & rhs);
     virtual ~VrmlBSphere();
 
-    virtual VrmlBSphere * toBSphere() const;
-    virtual VrmlAABox * toAABox() const;
-
     void reset();
 
     virtual int isectFrustum(const VrmlFrustum & f) const;

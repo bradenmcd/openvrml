@@ -27,8 +27,6 @@
 class OPENVRML_SCOPE VrmlAABox : public VrmlBVolume {
 public:
     virtual ~VrmlAABox();
-    virtual VrmlBSphere * toBSphere() const;
-    virtual VrmlAABox * toAABox() const;
     virtual int isectFrustum(const VrmlFrustum & f) const;
     virtual void extend(const VrmlBVolume & b);
     virtual void extend(const float p[3]);

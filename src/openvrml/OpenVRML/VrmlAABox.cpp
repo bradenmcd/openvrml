@@ -33,19 +33,6 @@
 
 VrmlAABox::~VrmlAABox() {}
 
-VrmlBSphere*
-VrmlAABox::toBSphere() const
-{
-  return (VrmlBSphere*)0;
-}
-
-
-VrmlAABox*
-VrmlAABox::toAABox() const
-{
-  return (VrmlAABox*)this;
-}
-
 int
 VrmlAABox::isectFrustum(const VrmlFrustum& f) const
 {
@@ -57,13 +44,13 @@ VrmlAABox::isectFrustum(const VrmlFrustum& f) const
 void
 VrmlAABox::extend(const VrmlBVolume& bv)
 {
-  VrmlBSphere* bs = bv.toBSphere();
-  if (bs) {
+  const VrmlBSphere * bs = 0;
+  const VrmlAABox * ab = 0;
+  if (bs = dynamic_cast<const VrmlBSphere *>(&bv)) {
     this->extend(*bs);
     return;
   }
-  VrmlAABox* ab = bv.toAABox();
-  if (ab) {
+  if (ab = dynamic_cast<const VrmlAABox *>(&bv)) {
     this->extend(*ab);
     return;
   }

@@ -414,7 +414,7 @@ void Viewer::setColor(float , float , float , float ) {}
  * @param bv the bounding volume to intersect with the view volume
  * @return VrmlBVolume::INSIDE, OUTSIDE, or PARTIAL
  */
-int Viewer::isectViewVolume(const VrmlBVolume& bv) const {
+int Viewer::isectViewVolume(const VrmlBVolume & bv) const {
     //
     // For normal VRML97 use, this won't need to be overridden, but for
     // systems with non-standard view volumes, this can be changed to
@@ -425,16 +425,13 @@ int Viewer::isectViewVolume(const VrmlBVolume& bv) const {
     // OpenVRML developer's list, and it can be fixed...
     //
     int r = VrmlBVolume::BV_PARTIAL;
-    VrmlBSphere* bs = bv.toBSphere();
-    if (bs) {
-        r = bs->isectFrustum(d_frust);
-    } else {
-        VrmlAABox* ab = bv.toAABox();
-        if (ab) {
-            r = ab->isectFrustum(d_frust);
-        }
+    const VrmlBSphere * bs = 0;
+    const VrmlAABox * ab = 0;
+    if (bs = dynamic_cast<const VrmlBSphere *>(&bv)) {
+        r = bs->isectFrustum(this->d_frust);
+    } else if (ab = dynamic_cast<const VrmlAABox *>(&bv)) {
+        r = ab->isectFrustum(this->d_frust);
     }
-    //cout << "Viewer::isectViewVolume(VrmlBSphere&)=" << r << endl;
     return r;
 }
 

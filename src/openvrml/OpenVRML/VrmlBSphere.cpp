@@ -71,20 +71,6 @@ VrmlBSphere::~VrmlBSphere()
 }
 
 
-VrmlBSphere*
-VrmlBSphere::toBSphere() const
-{
-  return (VrmlBSphere*)this;
-}
-
-
-VrmlAABox*
-VrmlBSphere::toAABox() const
-{
-  return (VrmlAABox*)0;
-}
-
-
 void
 VrmlBSphere::reset()
 {
@@ -185,13 +171,13 @@ VrmlBSphere::isectFrustum(const VrmlFrustum& frust) const
 void
 VrmlBSphere::extend(const VrmlBVolume& bv)
 {
-  VrmlBSphere* bs = bv.toBSphere();
-  if (bs) {
+  const VrmlBSphere * bs = 0;
+  const VrmlAABox * ab = 0;
+  if (bs = dynamic_cast<const VrmlBSphere *>(&bv)) {
     this->extend(*bs);
     return;
   }
-  VrmlAABox* ab = bv.toAABox();
-  if (ab) {
+  if (ab = dynamic_cast<const VrmlAABox *>(&bv)) {
     this->extend(*ab);
     return;
   }

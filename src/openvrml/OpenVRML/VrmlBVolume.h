@@ -34,8 +34,6 @@ public:
     enum { BV_INSIDE = 1, BV_OUTSIDE = -1, BV_PARTIAL = 0 };
 
     virtual ~VrmlBVolume() = 0;
-    virtual VrmlBSphere * toBSphere() const = 0;
-    virtual VrmlAABox * toAABox() const = 0;
     virtual bool isMAX() const = 0;
     virtual void setMAX() = 0;
     virtual int isectFrustum(const VrmlFrustum & f) const = 0;
