@@ -1,3 +1,12 @@
+2004-11-15 Braden McDaniel  <braden@endoframe.com>
+
+	Updated versions of GL detection macros.
+
+	* m4/Makefile.am
+	* m4/ax_check_gl.m4
+	* m4/ax_check_glu.m4
+	* m4/ax_lang_compiler_ms.m4:  Added file.
+
 2004-11-14 Braden McDaniel  <braden@endoframe.com>
 
 	Added member function "halted" to node_traversal; used to check

@@ -8,13 +8,12 @@ dnl Apple's OpenGL framework should be used on Mac OS X.  If Apple's OpenGL
 dnl framework is used, the symbol "HAVE_APPLE_OPENGL_FRAMEWORK" is defined.  If
 dnl no GLU implementation is found, "no_glu" is set to "yes".
 dnl
-dnl @copyright (C) 2003 Braden McDaniel
-dnl @license GNU GPL
-dnl @version 1.0
+dnl @version 1.2
 dnl @author Braden McDaniel <braden@endoframe.com>
 dnl
 AC_DEFUN([AX_CHECK_GLU],
 [AC_REQUIRE([AX_CHECK_GL])dnl
+AC_REQUIRE([AC_PROG_CXX])dnl
 GLU_CFLAGS="${GL_CFLAGS}"
 if test "X${with_apple_opengl_framework}" != "Xyes"; then
   AC_CACHE_CHECK([for OpenGL Utility library], [ax_cv_check_glu_libglu],
@@ -25,7 +24,7 @@ if test "X${with_apple_opengl_framework}" != "Xyes"; then
   LIBS=""
   ax_check_libs="-lglu32 -lGLU"
   for ax_lib in ${ax_check_libs}; do
-    if test "X$CC" = "Xcl"; then
+    if test X$ax_compiler_ms = Xyes; then
       ax_try_lib=`echo $ax_lib | sed -e 's/^-l//' -e 's/$/.lib/'`
     else
       ax_try_lib="${ax_lib}"
@@ -37,25 +36,27 @@ if test "X${with_apple_opengl_framework}" != "Xyes"; then
     # "conftest.cc"; and Microsoft cl doesn't know what to do with such a
     # file.
     #
-    if test "X$CXX" != "Xcl"; then
-      AC_LANG_PUSH([C++])
+    AC_LANG_PUSH([C++])
+    if test X$ax_compiler_ms = Xyes; then
+      AC_LANG_PUSH([C])
     fi
-    AC_TRY_LINK([
+    AC_LINK_IFELSE(
+    [AC_LANG_PROGRAM([[
 # if HAVE_WINDOWS_H && defined(_WIN32)
 #   include <windows.h>
 # endif
-# include <GL/glu.h>
-],
-    [gluBeginCurve(0)],
+# include <GL/glu.h>]],
+                     [[gluBeginCurve(0)]])],
     [ax_cv_check_glu_libglu="${ax_try_lib}"; break])
-    if test "X$CXX" != "Xcl"; then
-      AC_LANG_POP([C++])
+    if test X$ax_compiler_ms = Xyes; then
+      AC_LANG_POP([C])
     fi
+    AC_LANG_POP([C++])
   done
   LIBS=${ax_save_LIBS}
   CPPFLAGS=${ax_save_CPPFLAGS}])
   if test "X${ax_cv_check_glu_libglu}" = "Xno"; then
-    no_gl="yes"
+    no_glu="yes"
     GLU_CFLAGS=""
     GLU_LIBS=""
   else
