@@ -86,7 +86,7 @@ here
      <http://developer.apple.com/opengl/>
 and compiled versions of the remaining dependencies here (courtesy of
 Michael Louka):
-     <ftp://openvrml.sourceforge.net/pub/openvrml/macos_required_libs.sit>
+     <ftp://openvrml.sf.net/pub/openvrml/macos_required_libs.sit>
 
 Otherwise, consult the following URLs:
      zlib:          <http://www.info-zip.org/pub/infozip/zlib/>
@@ -246,7 +246,7 @@ Bug reports
    Please report any bugs you encounter via the SourceForge bug tracking
 system:
 
-     <http://sourceforge.net/bugs/?group_id=7151>
+     <http://sf.net/bugs/?group_id=7151>
 
    Note that you will need to log into SourceForge before reporting a
 bug.
@@ -260,12 +260,12 @@ Mailing lists
  * <openvrml-announce@sourceforge.net> is a low-traffic list for
    announcments, typically regarding new releases.  Subscription
    instructions are at
-     <http://lists.sourceforge.net/mailman/listinfo/openvrml-announce>
+     <http://lists.sf.net/mailman/listinfo/openvrml-announce>
 
  * <openvrml-develop@sourceforge.net> is a forum for developers using
    and working on the libraries.  User feedback is welcome in this
    channel.  Subscription instructions are at
-     <http://lists.sourceforge.net/mailman/listinfo/openvrml-develop>
+     <http://lists.sf.net/mailman/listinfo/openvrml-develop>
 
 
 Get involved
@@ -274,7 +274,7 @@ Get involved
    We're always grateful for help in improving OpenVRML.  Consult the
 SourceForge Task Manager for a list of planned improvements:
 
-     <http://sourceforge.net/pm/task.php?group_project_id=2579&group_id=7151&func=browse>
+     <http://sf.net/pm/task.php?group_project_id=2579&group_id=7151&func=browse>
 
    Unassigned tasks are up for grabs, but please post to the
 openvrml-develop mailing list to alert others of your intention to take
