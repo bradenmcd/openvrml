@@ -52,7 +52,7 @@ public:
 
   VrmlMFRotation();
   VrmlMFRotation(float x, float y, float z, float r);
-  VrmlMFRotation(int n, float const * v);
+  VrmlMFRotation(size_t n, float const * v);
   VrmlMFRotation(const VrmlMFRotation &src);
 
   ~VrmlMFRotation();
@@ -60,7 +60,7 @@ public:
   virtual ostream& print(ostream& os) const;
 
   // Assignment.
-  void set(int n, float *v);
+  void set(size_t n, const float * v);
   VrmlMFRotation& operator=(const VrmlMFRotation& rhs);
 
   virtual VrmlField *clone() const;
@@ -69,9 +69,9 @@ public:
   virtual const VrmlMFRotation* toMFRotation() const;
   virtual VrmlMFRotation* toMFRotation();
 
-  int size() const		{ return d_data->d_n/4; } // # of rotations
-  float *get() const		{ return d_data->d_v; }
-  float *operator[](int index)	{ return &d_data->d_v[4*index]; }
+  size_t size() const		{ return d_data->d_n/4; } // # of rotations
+  const float * get() const		{ return d_data->d_v; }
+  const float * operator[](size_t index)	{ return &d_data->d_v[4*index]; }
 
 };
 

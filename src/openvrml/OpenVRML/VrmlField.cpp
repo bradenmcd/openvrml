@@ -1252,7 +1252,7 @@ VrmlMFRotation::VrmlMFRotation(float x, float y, float z, float r)
   : d_data(new FData(4))
 { d_data->d_v[0]=x; d_data->d_v[1]=y; d_data->d_v[2]=z; d_data->d_v[3]=r; }
 
-VrmlMFRotation::VrmlMFRotation(int n, float const * v) : d_data(new FData(4*n))
+VrmlMFRotation::VrmlMFRotation(size_t n, float const * v) : d_data(new FData(4*n))
 {
   if (v) memcpy(d_data->d_v, v, 4*n*sizeof(float));
 }  
@@ -1262,7 +1262,7 @@ VrmlMFRotation::VrmlMFRotation(const VrmlMFRotation &src)
 
 VrmlMFRotation::~VrmlMFRotation() { d_data->deref(); }
 
-void VrmlMFRotation::set(int n, float *v)
+void VrmlMFRotation::set(size_t n, const float * v)
 {
   d_data->deref();
   d_data = new FData(4*n);

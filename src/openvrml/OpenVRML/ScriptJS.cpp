@@ -1910,7 +1910,7 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
 	JS_AddRoot( d_cx, obj );
-	float *fn = mf ? mf->get() : 0;
+	const float * fn = mf ? mf->get() : 0;
 	for (i=0; i<n; ++i, fn+=4)
 	  {
 	    JSObject *elt = JS_NewObject( d_cx, &SFRotationClass,

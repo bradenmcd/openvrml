@@ -112,13 +112,13 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
       int n = d_key.size() - 1;
       if (f < d_key[0])
 	{
-	  float *v0 = d_keyValue[0];
+	  const float * v0 = d_keyValue[0];
 	  //printf(" 0 [%g %g %g %g]\n", v0[0], v0[1], v0[2], v0[3] );
 	  d_value.set(v0);
 	}
       else if (f > d_key[n])
 	{
-	  float *vn = d_keyValue[n];
+	  const float * vn = d_keyValue[n];
 	  //printf(" n [%g %g %g %g]\n", vn[0], vn[1], vn[2], vn[3] );
 	  d_value.set(vn);
 	}
@@ -127,8 +127,8 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
 	  for (int i=0; i<n; ++i)
 	    if (d_key[i] <= f && f <= d_key[i+1])
 	      {
-		float *v1 = d_keyValue[i];
-		float *v2 = d_keyValue[i+1];
+		const float * v1 = d_keyValue[i];
+		const float * v2 = d_keyValue[i+1];
 
 		// Interpolation factor
 		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
