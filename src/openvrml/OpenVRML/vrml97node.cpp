@@ -2039,7 +2039,7 @@ namespace {
                 if (relPathLen >= currentLen) { relPathLen = 0; }
 
                 if (currentTex) {
-                    for (int i=0; i<n; ++i) {
+                    for (size_t i = 0; i < n; ++i) {
                         if (urls.value[i] == currentTex
                                 || urls.value[i]
                                     == (currentTex + relPathLen)) {
@@ -8510,7 +8510,7 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
 
                 // Interpolate on the surface of unit sphere.
                 // Contributed by S. K. Bose. (bose@garuda.barc.ernet.in)
-                for (int j = 0; j < nNormals; ++j) {
+                for (size_t j = 0; j < nNormals; ++j) {
                     float alpha, beta;
                     float dotval = v1->dot(*v2);
                     if ((dotval + 1.0) > fptolerance) { // Vectors are not opposite
@@ -8695,7 +8695,7 @@ void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
 {
     float f = dynamic_cast<const SFFloat &>(sffloat).value;
 
-    int n = this->key.value.size() - 1;
+    size_t n = this->key.value.size() - 1;
     if (f < this->key.value[0]) {
         this->value.value = this->keyValue.value[0];
     } else if (f > this->key.value[n]) {

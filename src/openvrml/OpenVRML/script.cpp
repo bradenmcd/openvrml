@@ -1503,6 +1503,8 @@ Script::Script(ScriptNode & scriptNode, const std::string & source)
 
 Script::~Script()
 {
+    using namespace std;
+    cout << "Script::~Script" << endl;
     JS_DestroyContext(this->cx);
     if (--nInstances == 0) {
         JS_DestroyRuntime(rt);
@@ -1553,6 +1555,9 @@ void Script::activate(const double timeStamp, const std::string & fname,
                       const FieldValue * const argv[])
 {
     assert(this->cx);
+
+    using namespace std;
+    cout << "Script::activate: fname = " << fname << endl;
 
     jsval fval, rval;
     JSObject * const globalObj = JS_GetGlobalObject(this->cx);

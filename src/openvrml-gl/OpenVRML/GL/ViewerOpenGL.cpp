@@ -542,8 +542,6 @@ namespace {
                                 const int i3,
                                 const std::vector<vec3f> & points)
     {
-        float V1[3], V2[3];
-
         const vec3f v1 = points[i2] - points[i3];
         const vec3f v2 = points[i2] - points[i1];
         return v1 * v2;
@@ -1233,7 +1231,7 @@ ViewerOpenGL::insertElevationGrid(const unsigned int mask,
                                   const std::vector<vec3f> & normal,
                                   const std::vector<vec2f> & texCoord)
 {
-    size_t i, j;
+    int32 i, j;
     float x, z;
 
     GLuint glid = 0;
@@ -1525,7 +1523,7 @@ namespace {
                            std::vector<vec3f> & c,
                            std::vector<vec2f> & tc)
     {
-        int i, j, ci;
+        size_t i, j, ci;
 
         // Xscp, Yscp, Zscp- columns of xform matrix to align cross section
         // with spine segments.
@@ -1592,7 +1590,6 @@ namespace {
 
             // Compute Spine-aligned Cross-section Plane (SCP)
             if (!spineStraight) {
-                vec3f S1, S2; // Spine vectors [i,i-1] and [i,i+1]
                 int yi1, yi2, si1, s1i2, s2i2;
 
                 if (spineClosed && (i == 0 || i == spine.size() - 1)) {
@@ -1855,7 +1852,7 @@ ViewerOpenGL::insertLineSet(const std::vector<vec3f> & coord,
                 const int32 index = !colorIndex.empty()
                                   ? colorIndex[nl]
                                   : nl;
-                if (index < color.size()) {
+                if (size_t(index) < color.size()) {
                     glColor3fv(&color[index][0]);
                 }
             }
@@ -1864,11 +1861,11 @@ ViewerOpenGL::insertLineSet(const std::vector<vec3f> & coord,
                 const int32 index = !colorIndex.empty()
                                   ? colorIndex[i]
                                   : coordIndex[i];
-                if (index < color.size()) {
+                if (size_t(index) < color.size()) {
                     glColor3fv(&color[index][0]);
                 }
             }
-            if (coordIndex[i] < coord.size()) {
+            if (size_t(coordIndex[i]) < coord.size()) {
                 glVertex3fv(&coord[coordIndex[i]][0]);
             }
         }
@@ -2094,7 +2091,6 @@ namespace {
     void OPENVRML_GL_CALLBACK_ tessShellBegin(GLenum type, void * pdata)
     {
         ShellData * s = static_cast<ShellData *>(pdata);
-        float N[3];
 
         glBegin(type);
 

@@ -60,7 +60,8 @@ namespace OpenVRML {
 /**
  * @var char * Doc::d_tmpfile
  *
- * @brief Name of the temporary file created for the local copy of the resource.
+ * @brief Name of the temporary file created for the local copy of the
+ *        resource.
  */
 
 /**
@@ -70,8 +71,12 @@ namespace OpenVRML {
  * @param relative  the Doc that @p url is relative to, or 0 if @p url is an
  *                  absolute URL.
  */
-Doc::Doc(const std::string & url, const Doc * relative): d_url(0), d_ostream(0),
-        d_fp(0), d_tmpfile(0) {
+Doc::Doc(const std::string & url, const Doc * relative):
+    d_url(0),
+    d_ostream(0),
+    d_fp(0),
+    d_tmpfile(0)
+{
     if (url.length() > 0) {
         this->seturl(url.c_str(), relative);
     }
@@ -84,8 +89,12 @@ Doc::Doc(const std::string & url, const Doc * relative): d_url(0), d_ostream(0),
  * @param relative  the Doc2 that @p url is relative to, or 0 if @p url is an
  *                  absolute URL.
  */
-Doc::Doc(const std::string & url, const Doc2 * relative): d_url(0),
-        d_ostream(0), d_fp(0), d_tmpfile(0) {
+Doc::Doc(const std::string & url, const Doc2 * relative):
+    d_url(0),
+    d_ostream(0),
+    d_fp(0),
+    d_tmpfile(0)
+{
     if (url.length() > 0) {
         this->seturl(url.c_str(), relative);
     }
@@ -371,7 +380,7 @@ bool Doc::filename(char * fn, int nfn)
 {
   fn[0] = '\0';
 
-  char *e = 0, *s = (char*) stripProtocol(d_url);
+  char *e = 0, *s = const_cast<char *>(stripProtocol(d_url));
 
   if ((e = strrchr(s,'#')) != 0)
     *e = '\0';
@@ -383,7 +392,7 @@ bool Doc::filename(char * fn, int nfn)
     {
       if (d_tmpfile)		// Already fetched it
 	s = d_tmpfile;
-      else if ((s = (char *) theSystem->httpFetch(d_url)))
+      else if ((s = const_cast<char *>(theSystem->httpFetch(d_url))))
 	{
 	  d_tmpfile = new char[strlen(s)+1];
 	  strcpy(d_tmpfile, s);

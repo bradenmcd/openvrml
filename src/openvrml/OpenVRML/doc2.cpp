@@ -567,7 +567,7 @@ std::ostream & Doc2::outputStream() {
  * @retval fn   a character buffer to hold the local filename.
  * @param nfn   the number of elements in the buffer @p fn points to.
  */
-bool Doc2::filename(char * fn, int nfn) {
+bool Doc2::filename(char * fn, const size_t nfn) {
     using std::copy;
     using std::string;
 
@@ -837,7 +837,7 @@ namespace {
         list<string> pathSegments;
         string::size_type slashIndex = 0;
         string::size_type segmentStartIndex = 0;
-        while (slashIndex = path.find('/', segmentStartIndex)) {
+        while ((slashIndex = path.find('/', segmentStartIndex))) {
             string segment = path.substr(segmentStartIndex,
                                          slashIndex - segmentStartIndex);
             if (!segment.empty()) {

@@ -1,3 +1,13 @@
+2003-05-12  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Doc.cpp,
+	  src/openvrml/OpenVRML/doc2.cpp,
+	  src/openvrml/OpenVRML/doc2.hpp,
+	  src/openvrml/OpenVRML/script.cpp,
+	  src/openvrml/OpenVRML/vrml97node.cpp,
+	  src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Fixes for
+	  various warnings.
+
 2003-05-10  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/System.cpp:  Corrected usage of tmpnam.
@@ -300,7 +310,6 @@
           src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h,
           src/openvrml/OpenVRML/vrml97node.cpp:  Fixed bug in
           Browser::findNode.
-          
 
 2003-02-15  Braden McDaniel  <braden@endoframe.com>
 
@@ -540,7 +549,7 @@
 
 2002-12-20  S. K. Bose  <bose@pavan.barc.ernet.in>
 
-        * ide-projects/Makefile.am: add config.h 
+        * ide-projects/Makefile.am: add config.h
 
 2002-12-20  Braden McDaniel  <braden@endoframe.com>
 
