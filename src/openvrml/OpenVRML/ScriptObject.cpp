@@ -55,30 +55,33 @@
 #   include <mozilla/jsapi.h>
 namespace {
 
-    class ScriptJS : public ScriptObject {
-        static JSRuntime * rt;
-        static size_t nInstances;
+    namespace JavaScript_ {
+        
+        class Script : public ScriptObject {
+            static JSRuntime * rt;
+            static size_t nInstances;
 
-        double d_timeStamp;
+            double d_timeStamp;
 
-        JSContext * d_cx;
-        JSObject * d_globalObj;
-        JSObject * d_browserObj;
+            JSContext * d_cx;
+            JSObject * d_globalObj;
+            JSObject * d_browserObj;
 
-    public:
-        ScriptJS(VrmlNodeScript & scriptNode, const char * source);
-        virtual ~ScriptJS();
+        public:
+            Script(VrmlNodeScript & scriptNode, const char * source);
+            virtual ~Script();
 
-        virtual void activate(double timeStamp, const char * fname,
-                              size_t argc, const VrmlField * argv[]);
+            virtual void activate(double timeStamp, const char * fname,
+                                  size_t argc, const VrmlField * argv[]);
 
-        VrmlNodeScript & getScriptNode() { return this->scriptNode; }
+            VrmlNodeScript & getScriptNode() { return this->scriptNode; }
 
-        jsval vrmlFieldToJSVal(const VrmlField & f, bool protect);
+            jsval vrmlFieldToJSVal(const VrmlField & f, bool protect);
 
-    private:
-        void defineFields();
-    };
+        private:
+            void defineFields();
+        };
+    }
 }
 # endif
 
@@ -105,7 +108,7 @@ ScriptObject * ScriptObject::create(VrmlNodeScript & scriptNode,
         if (strncmp(url.getElement(i), "javascript:", 11) == 0 ||
 	    strncmp(url.getElement(i), "vrmlscript:", 11) == 0 )
 	{
-	    return new ScriptJS(scriptNode, url.getElement(i) + 11);
+            return new JavaScript_::Script(scriptNode, url.getElement(i) + 11);
 	}
 # endif
 
@@ -143,7 +146,6 @@ namespace {
                                JSContext * cx, jsval * rval);
         VrmlField * createVrmlFieldFromJsval(JSContext * cx, jsval val,
 				             VrmlField::VrmlFieldType fieldType);
-        ScriptJS * objToScript(JSContext * cx, JSObject * obj);
         char * objToEventOut(JSContext * cx, JSObject * obj);
         void checkEventOut(JSContext * cx, JSObject * obj,
                            const VrmlField & val);
@@ -164,18 +166,36 @@ namespace {
                 JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
                 JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub
             };
-            JSBool getName(JSContext *, JSObject *, uintN, jsval *, jsval *);
-            JSBool getVersion(JSContext *, JSObject *, uintN, jsval *, jsval *);
-            JSBool getCurrentSpeed(JSContext *, JSObject *, uintN, jsval *, jsval *);
-            JSBool getCurrentFrameRate(JSContext *, JSObject *, uintN, jsval*, jsval*);
-            JSBool getWorldURL(JSContext *, JSObject *, uintN, jsval *, jsval *);
-            JSBool replaceWorld(JSContext *, JSObject *, uintN, jsval *, jsval *);
-            JSBool createVrmlFromString(JSContext *, JSObject *, uintN, jsval *, jsval *);
-            JSBool createVrmlFromURL(JSContext *, JSObject *, uintN, jsval *, jsval *);
-            JSBool addRoute(JSContext *, JSObject *, uintN, jsval *, jsval *);
-            JSBool deleteRoute(JSContext *, JSObject *, uintN, jsval *, jsval *);
-            JSBool loadURL(JSContext *, JSObject *, uintN, jsval *, jsval *);
-            JSBool setDescription(JSContext *, JSObject *, uintN, jsval *, jsval *);
+            JSBool getName(JSContext * cx, JSObject * obj,
+                           uintN argc, jsval * argv, jsval * rval) throw ();
+            JSBool getVersion(JSContext * cx, JSObject * obj,
+                              uintN argc, jsval * argv, jsval * rval) throw ();
+            JSBool getCurrentSpeed(JSContext * cx, JSObject * obj,
+                                   uintN argc, jsval * argv, jsval * rval)
+                    throw ();
+            JSBool getCurrentFrameRate(JSContext * cx, JSObject * obj,
+                                       uintN argc, jsval * argv, jsval * rval)
+                    throw ();
+            JSBool getWorldURL(JSContext * cx, JSObject * obj,
+                               uintN argc, jsval * argv, jsval * rval) throw ();
+            JSBool replaceWorld(JSContext * cx, JSObject * obj,
+                                uintN argc, jsval * argv, jsval * rval)
+                    throw ();
+            JSBool createVrmlFromString(JSContext * cx, JSObject * obj,
+                                        uintN argc, jsval * argv, jsval * rval)
+                    throw ();
+            JSBool createVrmlFromURL(JSContext * cx, JSObject * obj,
+                                     uintN argc, jsval * argv, jsval * rval)
+                    throw ();
+            JSBool addRoute(JSContext * cx, JSObject * obj,
+                            uintN argc, jsval * argv, jsval * rval) throw ();
+            JSBool deleteRoute(JSContext * cx, JSObject * obj,
+                               uintN argc, jsval * argv, jsval * rval) throw ();
+            JSBool loadURL(JSContext * cx, JSObject * obj,
+                           uintN argc, jsval * argv, jsval * rval) throw ();
+            JSBool setDescription(JSContext * cx, JSObject * obj,
+                                  uintN argc, jsval * argv, jsval * rval)
+                    throw ();
         }
 
         class SField {
@@ -389,7 +409,7 @@ namespace {
 
         class MField {
             
-            friend class ScriptJS;
+            friend class Script;
             friend VrmlField * createVrmlFieldFromJsval(JSContext * cx,
                                 jsval v, VrmlField::VrmlFieldType expectType);
 
@@ -606,463 +626,464 @@ namespace {
                                   JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
         };
-    }
-    
-    JSRuntime * ScriptJS::rt = 0; // Javascript runtime singleton object
-    size_t ScriptJS::nInstances = 0; // Number of distinct script objects
-    
-    void ErrorReporter(JSContext *, const char *, JSErrorReport *);
+
+        JSRuntime * Script::rt = 0; // Javascript runtime singleton object
+        size_t Script::nInstances = 0; // Number of distinct script objects
+
+        void ErrorReporter(JSContext *, const char *, JSErrorReport *);
 
 
-    // Construct from inline script
+        // Construct from inline script
 
-    ScriptJS::ScriptJS(VrmlNodeScript & scriptNode, const char * source ):
-            ScriptObject(scriptNode), d_cx(0), d_globalObj(0), d_browserObj(0)
-    {
-        using namespace JavaScript_;
-      if (! rt)
-        rt = JS_Init( MAX_HEAP_BYTES );
+        Script::Script(VrmlNodeScript & scriptNode, const char * source ):
+                ScriptObject(scriptNode), d_cx(0), d_globalObj(0), d_browserObj(0) {
 
-      ++nInstances;
+            using namespace JavaScript_;
 
-      if (rt)
-        d_cx = JS_NewContext( rt, STACK_CHUNK_BYTES );
+            //
+            // Initialize the runtime.
+            //
+            if (!rt) {
+                if (!(rt = JS_NewRuntime(MAX_HEAP_BYTES))) {
+                    throw std::bad_alloc();
+                }
+            }
+            ++nInstances;
 
-      if (d_cx)
-        {
-          JS_SetErrorReporter(d_cx, ErrorReporter);
-
-          // Define the global objects (builtins, Browser, SF*, MF*) ...
-          d_globalObj = JS_NewObject( d_cx, &Global::jsclass, 0, 0 );
-          JS_InitStandardClasses( d_cx, d_globalObj );
-
-          static JSFunctionSpec globalFunctions[] = {
-              { "print", Global::print, 0 },
-              { 0, 0, 0 }
-          };
-
-          JS_DefineFunctions( d_cx, d_globalObj, globalFunctions );
-
-          // VRML-like TRUE, FALSE syntax
-          if (! JS_DefineProperty( d_cx, d_globalObj, "FALSE",
-			           BOOLEAN_TO_JSVAL(false), 0, 0,
-			           JSPROP_READONLY | JSPROP_PERMANENT ))
-	    theSystem->error("JS_DefineProp FALSE failed\n");
-          if (! JS_DefineProperty( d_cx, d_globalObj, "TRUE",
-			           BOOLEAN_TO_JSVAL(true), 0, 0,
-			           JSPROP_READONLY | JSPROP_PERMANENT ))
-	    theSystem->error("JS_DefineProp TRUE failed\n");
-
-          if (! JS_DefineProperty( d_cx, d_globalObj, "_script",
-			           PRIVATE_TO_JSVAL(this), 0, 0,
-			           JSPROP_READONLY | JSPROP_PERMANENT ))
-	    theSystem->error("JS_DefineProp _script failed\n");
-
-          // Browser object
-          static JSFunctionSpec browserFunctions[] = {
-              { "getName", Browser::getName, 0 },
-              { "getVersion", Browser::getVersion, 0 },
-              { "getCurrentSpeed", Browser::getCurrentSpeed, 0 },
-              { "getCurrentFrameRate", Browser::getCurrentFrameRate, 0 },
-              { "getWorldURL", Browser::getWorldURL, 0 },
-              { "replaceWorld", Browser::replaceWorld, 0 },
-              { "createVrmlFromString", Browser::createVrmlFromString, 0 },
-              { "createVrmlFromURL", Browser::createVrmlFromURL, 0 },
-              { "addRoute", Browser::addRoute, 0 },
-              { "deleteRoute", Browser::deleteRoute, 0 },
-              { "loadURL", Browser::loadURL, 0 },
-              { "setDescription", Browser::setDescription, 0 },
-              { 0 }
-          };
-          d_browserObj = JS_DefineObject( d_cx, d_globalObj, "Browser",
-				        &Browser::jsclass, 0, 0 );
-          if (! JS_DefineProperty( d_cx, d_browserObj, "_script",
-			           PRIVATE_TO_JSVAL(this), 0, 0,
-			           JSPROP_READONLY | JSPROP_PERMANENT ))
-	    theSystem->error("JS_DefineProp _script failed\n");
-
-          if (! JS_DefineFunctions( d_cx, d_browserObj, browserFunctions ))
-	    theSystem->error("JS_DefineFunctions failed\n");
-
-          // Define SF*/MF* classes
-          initVrmlClasses(this->d_cx, this->d_globalObj);
-
-          // Define field/eventOut vars for this script
-          defineFields();
-
-          /* These should indicate source location for diagnostics. */
-          char *filename = 0;
-          uintN lineno = 0;
-
-          jsval rval;
-          if (! JS_EvaluateScript( d_cx, d_globalObj, source, strlen(source),
-			           filename, lineno, &rval))
-	    theSystem->error("JS_EvaluateScript failed\n");
-        }
-    }
-
-
-    ScriptJS::~ScriptJS()
-    {
-      JS_DestroyContext(d_cx);
-      if (--nInstances == 0) {
-	      JS_Finish(rt);
-	      rt = 0;
-      }
-    }
-
-
-    static double s_timeStamp;	// go away...
-
-    /**
-     * @brief Run a specified script.
-     *
-     * @todo Decide what to do if a call to a JavaScript function fails
-     *      (probably due to an error in the script).
-     */
-
-    void ScriptJS::activate(double timeStamp, const char * fname,
-                            const size_t argc, const VrmlField * argv[]) {
-        assert(this->d_cx);
-
-        jsval fval, rval;
-
-        try {
-            if (!JS_LookupProperty(d_cx, d_globalObj, fname, &fval)) {
+            //
+            // Initialize the context for this Script object.
+            //
+            if (!(this->d_cx = JS_NewContext(rt, STACK_CHUNK_BYTES))) {
                 throw std::bad_alloc();
             }
 
             //
-            // The function may not be defined, in which case we should do nothing.
+            // Store a pointer to this Script object in the context.
             //
-            if (JSVAL_IS_VOID(fval)) {
-                return;
-            }
+            JS_SetContextPrivate(this->d_cx, this);
 
-            jsval * const jsargv = new jsval[argc];
+            JS_SetErrorReporter(d_cx, ErrorReporter);
 
-            d_timeStamp = timeStamp;
-            s_timeStamp = timeStamp;	// this won't work for long...
+            // Define the global objects (builtins, Browser, SF*, MF*) ...
+            d_globalObj = JS_NewObject( d_cx, &Global::jsclass, 0, 0 );
+            JS_InitStandardClasses( d_cx, d_globalObj );
 
-            // convert VrmlField*'s to (gc-protected) jsvals
-            size_t i;
-            for (i = 0; i < argc; ++i) {
-                jsargv[i] = argv[i] ? vrmlFieldToJSVal(*argv[i], true) : JSVAL_NULL;
-            }
+            static JSFunctionSpec globalFunctions[] = {
+                { "print", Global::print, 0 },
+                { 0, 0, 0 }
+            };
 
-            JSBool ok;
-            ok = JS_CallFunctionValue(d_cx, d_globalObj, fval, argc, jsargv, &rval);
-            //
-            // What should we do at this point if a function call fails? For now,
-            // just print a message for a debug build.
-            //
-    # ifndef NDEBUG
-            if (!ok) {
-                cerr << "Call to " << fname << " in Script node "
-                     << this->scriptNode.name() << " failed." << endl;
-            }
-    # endif
+            JS_DefineFunctions( d_cx, d_globalObj, globalFunctions );
 
-            // Free up args
-            for (i = 0; i < argc; ++i) {
-                if (JSVAL_IS_GCTHING(jsargv[i])) {
-                    ok = JS_RemoveRoot(d_cx, JSVAL_TO_GCTHING(jsargv[i]));
-                    assert(ok);
+            // VRML-like TRUE, FALSE syntax
+            if (! JS_DefineProperty( d_cx, d_globalObj, "FALSE",
+			             BOOLEAN_TO_JSVAL(false), 0, 0,
+			             JSPROP_READONLY | JSPROP_PERMANENT ))
+	      theSystem->error("JS_DefineProp FALSE failed\n");
+            if (! JS_DefineProperty( d_cx, d_globalObj, "TRUE",
+			             BOOLEAN_TO_JSVAL(true), 0, 0,
+			             JSPROP_READONLY | JSPROP_PERMANENT ))
+	      theSystem->error("JS_DefineProp TRUE failed\n");
+
+            // Browser object
+            static JSFunctionSpec browserFunctions[] =
+                    { { "getName", Browser::getName, 0 },
+                      { "getVersion", Browser::getVersion, 0 },
+                      { "getCurrentSpeed", Browser::getCurrentSpeed, 0 },
+                      { "getCurrentFrameRate", Browser::getCurrentFrameRate, 0 },
+                      { "getWorldURL", Browser::getWorldURL, 0 },
+                      { "replaceWorld", Browser::replaceWorld, 1 },
+                      { "createVrmlFromString", Browser::createVrmlFromString, 1 },
+                      { "createVrmlFromURL", Browser::createVrmlFromURL, 3 },
+                      { "addRoute", Browser::addRoute, 4 },
+                      { "deleteRoute", Browser::deleteRoute, 4 },
+                      { "loadURL", Browser::loadURL, 2 },
+                      { "setDescription", Browser::setDescription, 1 },
+                      { 0 } };
+            d_browserObj = JS_DefineObject( d_cx, d_globalObj, "Browser",
+				          &Browser::jsclass, 0, 0 );
+
+            if (! JS_DefineFunctions( d_cx, d_browserObj, browserFunctions ))
+	      theSystem->error("JS_DefineFunctions failed\n");
+
+            // Define SF*/MF* classes
+            initVrmlClasses(this->d_cx, this->d_globalObj);
+
+            // Define field/eventOut vars for this script
+            defineFields();
+
+            /* These should indicate source location for diagnostics. */
+            char *filename = 0;
+            uintN lineno = 0;
+
+            jsval rval;
+            if (! JS_EvaluateScript( d_cx, d_globalObj, source, strlen(source),
+			             filename, lineno, &rval))
+	      theSystem->error("JS_EvaluateScript failed\n");
+        }
+
+
+        Script::~Script()
+        {
+          JS_DestroyContext(d_cx);
+          if (--nInstances == 0) {
+	          JS_Finish(rt);
+	          rt = 0;
+          }
+        }
+
+
+        static double s_timeStamp;	// go away...
+
+        /**
+         * @brief Run a specified script.
+         *
+         * @todo Decide what to do if a call to a JavaScript function fails
+         *      (probably due to an error in the script).
+         */
+
+        void Script::activate(double timeStamp, const char * fname,
+                              const size_t argc, const VrmlField * argv[]) {
+            assert(this->d_cx);
+
+            jsval fval, rval;
+
+            try {
+                if (!JS_LookupProperty(d_cx, d_globalObj, fname, &fval)) {
+                    throw std::bad_alloc();
                 }
+
+                //
+                // The function may not be defined, in which case we should do nothing.
+                //
+                if (JSVAL_IS_VOID(fval)) {
+                    return;
+                }
+
+                jsval * const jsargv = new jsval[argc];
+
+                d_timeStamp = timeStamp;
+                s_timeStamp = timeStamp;	// this won't work for long...
+
+                // convert VrmlField*'s to (gc-protected) jsvals
+                size_t i;
+                for (i = 0; i < argc; ++i) {
+                    jsargv[i] = argv[i] ? vrmlFieldToJSVal(*argv[i], true) : JSVAL_NULL;
+                }
+
+                JSBool ok;
+                ok = JS_CallFunctionValue(d_cx, d_globalObj, fval, argc, jsargv, &rval);
+                //
+                // What should we do at this point if a function call fails? For now,
+                // just print a message for a debug build.
+                //
+        # ifndef NDEBUG
+                if (!ok) {
+                    cerr << "Call to " << fname << " in Script node "
+                         << this->scriptNode.name() << " failed." << endl;
+                }
+        # endif
+
+                // Free up args
+                for (i = 0; i < argc; ++i) {
+                    if (JSVAL_IS_GCTHING(jsargv[i])) {
+                        ok = JS_RemoveRoot(d_cx, JSVAL_TO_GCTHING(jsargv[i]));
+                        assert(ok);
+                    }
+                }
+
+                delete [] jsargv;
+
+            } catch (std::exception & ex) {
+        # ifndef NDEBUG
+                cerr << ex.what() << endl;
+        # endif
+            } catch (...) {
+                assert(false);
             }
-
-            delete [] jsargv;
-
-        } catch (std::exception & ex) {
-    # ifndef NDEBUG
-            cerr << ex.what() << endl;
-    # endif
-        } catch (...) {
-            assert(false);
         }
-    }
 
 
-    // Convert a VrmlField value to a jsval, optionally protect from gc.
+        // Convert a VrmlField value to a jsval, optionally protect from gc.
 
-    jsval ScriptJS::vrmlFieldToJSVal(const VrmlField & f, const bool protect) {
+        jsval Script::vrmlFieldToJSVal(const VrmlField & f, const bool protect) {
 
-        jsval rval;
+            jsval rval;
 
-        switch (f.fieldType()) {
-        case VrmlField::SFBOOL:
-	    rval = BOOLEAN_TO_JSVAL(static_cast<const VrmlSFBool &>(f).get());
-            break;
-
-        case VrmlField::SFCOLOR:
-            if (!JavaScript_::SFColor::toJsval(static_cast<const VrmlSFColor &>(f), protect,
-                                 this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
-
-        case VrmlField::SFFLOAT:
-            {
-	        jsdouble * const d =
-                        JS_NewDouble(d_cx, static_cast<const VrmlSFFloat &>(f).get());
-	        if (protect) JS_AddRoot( d_cx, d );
-	        rval = DOUBLE_TO_JSVAL( d );
+            switch (f.fieldType()) {
+            case VrmlField::SFBOOL:
+	        rval = BOOLEAN_TO_JSVAL(static_cast<const VrmlSFBool &>(f).get());
                 break;
-            }
 
-        case VrmlField::SFIMAGE:
-            if (!JavaScript_::SFImage::toJsval(static_cast<const VrmlSFImage &>(f), protect,
-                                 this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
-
-        case VrmlField::SFINT32:
-	    return INT_TO_JSVAL(static_cast<const VrmlSFInt32 &>(f).get());
-
-        case VrmlField::SFNODE:
-            if (!JavaScript_::SFNode::toJsval(static_cast<const VrmlSFNode &>(f), protect,
-                                 this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
-
-        case VrmlField::SFROTATION:
-            if (!JavaScript_::SFRotation::toJsval(static_cast<const VrmlSFRotation &>(f), protect,
+            case VrmlField::SFCOLOR:
+                if (!JavaScript_::SFColor::toJsval(static_cast<const VrmlSFColor &>(f), protect,
                                      this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
-
-        case VrmlField::SFSTRING:
-            {
-	        JSString * s = JS_NewStringCopyZ(d_cx,
-                                        static_cast<const VrmlSFString &>(f).get());
-	        if (protect) JS_AddRoot( d_cx, s );
-	        rval = STRING_TO_JSVAL(s);
+                    rval = JSVAL_NULL;
+                }
                 break;
-            }
 
-        case VrmlField::SFTIME:
-            {
-	        jsdouble *d = JS_NewDouble(d_cx,
-                                        static_cast<const VrmlSFTime &>(f).get());
-	        if (protect) JS_AddRoot( d_cx, d );
-	        rval = DOUBLE_TO_JSVAL(d);
-                break;
-            }
+            case VrmlField::SFFLOAT:
+                {
+	            jsdouble * const d =
+                            JS_NewDouble(d_cx, static_cast<const VrmlSFFloat &>(f).get());
+	            if (protect) JS_AddRoot( d_cx, d );
+	            rval = DOUBLE_TO_JSVAL( d );
+                    break;
+                }
 
-        case VrmlField::SFVEC2F:
-            if (!JavaScript_::SFVec2f::toJsval(static_cast<const VrmlSFVec2f &>(f), protect,
-                                  this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
-
-        case VrmlField::SFVEC3F:
-            if (!JavaScript_::SFVec3f::toJsval(static_cast<const VrmlSFVec3f &>(f), protect,
-                                  this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
-
-        case VrmlField::MFCOLOR:
-            if (!JavaScript_::MFColor::toJsval(static_cast<const VrmlMFColor &>(f), protect,
-                                  this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
-
-        case VrmlField::MFFLOAT:
-            if (!JavaScript_::MFFloat::toJsval(static_cast<const VrmlMFFloat &>(f), protect,
-                                  this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
-
-        case VrmlField::MFINT32:
-            if (!JavaScript_::MFInt32::toJsval(static_cast<const VrmlMFInt32 &>(f), protect,
-                                  this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
-
-        case VrmlField::MFNODE:
-            if (!JavaScript_::MFNode::toJsval(static_cast<const VrmlMFNode &>(f), protect,
-                                  this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
-
-        case VrmlField::MFROTATION:
-            if (!JavaScript_::MFRotation::toJsval(static_cast<const VrmlMFRotation &>(f), protect,
+            case VrmlField::SFIMAGE:
+                if (!JavaScript_::SFImage::toJsval(static_cast<const VrmlSFImage &>(f), protect,
                                      this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
+                    rval = JSVAL_NULL;
+                }
+                break;
 
-        case VrmlField::MFSTRING:
-            if (!JavaScript_::MFString::toJsval(static_cast<const VrmlMFString &>(f), protect,
-                                   this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
+            case VrmlField::SFINT32:
+	        return INT_TO_JSVAL(static_cast<const VrmlSFInt32 &>(f).get());
 
-        case VrmlField::MFTIME:
-            if (!JavaScript_::MFTime::toJsval(static_cast<const VrmlMFTime &>(f), protect,
-                                 this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
+            case VrmlField::SFNODE:
+                if (!JavaScript_::SFNode::toJsval(static_cast<const VrmlSFNode &>(f), protect,
+                                     this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
 
-        case VrmlField::MFVEC2F:
-            if (!JavaScript_::MFVec2f::toJsval(static_cast<const VrmlMFVec2f &>(f), protect,
-                                  this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
+            case VrmlField::SFROTATION:
+                if (!JavaScript_::SFRotation::toJsval(static_cast<const VrmlSFRotation &>(f), protect,
+                                         this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
 
-        case VrmlField::MFVEC3F:
-            if (!JavaScript_::MFVec3f::toJsval(static_cast<const VrmlMFVec3f &>(f), protect,
-                                  this->d_cx, this->d_globalObj, &rval)) {
-                rval = JSVAL_NULL;
-            }
-            break;
+            case VrmlField::SFSTRING:
+                {
+	            JSString * s = JS_NewStringCopyZ(d_cx,
+                                            static_cast<const VrmlSFString &>(f).get());
+	            if (protect) JS_AddRoot( d_cx, s );
+	            rval = STRING_TO_JSVAL(s);
+                    break;
+                }
 
-        default:
-            assert(false);
-            rval = BOOLEAN_TO_JSVAL(false);
+            case VrmlField::SFTIME:
+                {
+	            jsdouble *d = JS_NewDouble(d_cx,
+                                            static_cast<const VrmlSFTime &>(f).get());
+	            if (protect) JS_AddRoot( d_cx, d );
+	            rval = DOUBLE_TO_JSVAL(d);
+                    break;
+                }
+
+            case VrmlField::SFVEC2F:
+                if (!JavaScript_::SFVec2f::toJsval(static_cast<const VrmlSFVec2f &>(f), protect,
+                                      this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            case VrmlField::SFVEC3F:
+                if (!JavaScript_::SFVec3f::toJsval(static_cast<const VrmlSFVec3f &>(f), protect,
+                                      this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            case VrmlField::MFCOLOR:
+                if (!JavaScript_::MFColor::toJsval(static_cast<const VrmlMFColor &>(f), protect,
+                                      this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            case VrmlField::MFFLOAT:
+                if (!JavaScript_::MFFloat::toJsval(static_cast<const VrmlMFFloat &>(f), protect,
+                                      this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            case VrmlField::MFINT32:
+                if (!JavaScript_::MFInt32::toJsval(static_cast<const VrmlMFInt32 &>(f), protect,
+                                      this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            case VrmlField::MFNODE:
+                if (!JavaScript_::MFNode::toJsval(static_cast<const VrmlMFNode &>(f), protect,
+                                      this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            case VrmlField::MFROTATION:
+                if (!JavaScript_::MFRotation::toJsval(static_cast<const VrmlMFRotation &>(f), protect,
+                                         this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            case VrmlField::MFSTRING:
+                if (!JavaScript_::MFString::toJsval(static_cast<const VrmlMFString &>(f), protect,
+                                       this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            case VrmlField::MFTIME:
+                if (!JavaScript_::MFTime::toJsval(static_cast<const VrmlMFTime &>(f), protect,
+                                     this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            case VrmlField::MFVEC2F:
+                if (!JavaScript_::MFVec2f::toJsval(static_cast<const VrmlMFVec2f &>(f), protect,
+                                      this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            case VrmlField::MFVEC3F:
+                if (!JavaScript_::MFVec3f::toJsval(static_cast<const VrmlMFVec3f &>(f), protect,
+                                      this->d_cx, this->d_globalObj, &rval)) {
+                    rval = JSVAL_NULL;
+                }
+                break;
+
+            default:
+                assert(false);
+                rval = BOOLEAN_TO_JSVAL(false);
+            }
+
+            return rval;
         }
 
-        return rval;
-    }
 
+        // Must assign the proper type to eventOuts
 
-    // Must assign the proper type to eventOuts
+        JSBool eventOut_setProperty(JSContext * const cx, JSObject * const obj,
+                                    const jsval id, jsval * const val) {
+          using JavaScript_::createVrmlFieldFromJsval;
 
-    static JSBool
-    eventOut_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *val)
-    {
-      using JavaScript_::objToScript;
-      using JavaScript_::createVrmlFieldFromJsval;
+          JSString *str = JS_ValueToString(cx, id);
+          if (! str) return JS_FALSE;
+          const char *eventName = JS_GetStringBytes(str);
 
-      JSString *str = JS_ValueToString(cx, id);
-      if (! str) return JS_FALSE;
-      const char *eventName = JS_GetStringBytes(str);
+          //
+          // The Script object pointer is stored as private data in the
+          // context.
+          //
+          Script * script = reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+          assert(script);
+            
+          VrmlNodeScript & scriptNode = script->getScriptNode();
 
-      // The ScriptJS object pointer is stored as a global property value:
-      ScriptJS *script = objToScript( cx, obj );
-      if (! script) return JS_FALSE;
-      VrmlNodeScript & scriptNode = script->getScriptNode();
+          // Validate the type
+          VrmlField::VrmlFieldType t = scriptNode.hasEventOut(eventName);
+          if (! t) return JS_FALSE;
 
-      // Validate the type
-      VrmlField::VrmlFieldType t = scriptNode.hasEventOut(eventName);
-      if (! t) return JS_FALSE;
+          // Convert to a vrmlField and set the eventOut value
+          VrmlField *f = createVrmlFieldFromJsval( cx, *val, t );
+          if (! f)
+            {
+              theSystem->error("Error: invalid type in assignment to eventOut %s\n",
+	              eventName );
+              return JS_FALSE;
+            }
 
-      // Convert to a vrmlField and set the eventOut value
-      VrmlField *f = createVrmlFieldFromJsval( cx, *val, t );
-      if (! f)
-        {
-          theSystem->error("Error: invalid type in assignment to eventOut %s\n",
-	          eventName );
-          return JS_FALSE;
-        }
+          scriptNode.setEventOut(eventName, *f);
+          if (f) delete f;
 
-      scriptNode.setEventOut(eventName, *f);
-      if (f) delete f;
-
-      // Don't overwrite the property value.
-      if (JSVAL_IS_OBJECT(*val) &&
-          JSVAL_TO_OBJECT(*val) != 0 &&
-          ! JS_DefineProperty( cx, JSVAL_TO_OBJECT(*val), "_eventOut",
-			       PRIVATE_TO_JSVAL((long int)eventName),
-			       0, 0, JSPROP_READONLY | JSPROP_PERMANENT ))
-        theSystem->error("JS_DefineProp _eventOut failed\n");
-
-      return JS_TRUE;
-    }
-
-
-    // Define objects corresponding to fields/eventOuts
-
-    void ScriptJS::defineFields()
-    {
-      VrmlNodeScript::FieldList::iterator i, end = this->scriptNode.fields().end();
-      for (i = this->scriptNode.fields().begin(); i!=end; ++i)
-        {
-          jsval val = vrmlFieldToJSVal(*(*i)->value, false);
-    #ifdef SCRIPTJS_DEBUG
-          if ( (*i)->value )
-	    cout << "field " << (*i)->name << " value "
-	         << *((*i)->value) << endl;
-          else
-	    cout << "field " << (*i)->name << " <no value>\n";
-    #endif
-          if (! JS_DefineProperty( d_cx, d_globalObj, (*i)->name, val,
-			           //getter, setter, ...
-			           0, 0,
-			           JSPROP_PERMANENT ))
-	    theSystem->error("JS_DefineProp %s failed\n", (*i)->name );
-        }
-
-      end = this->scriptNode.eventOuts().end();
-      for (i = this->scriptNode.eventOuts().begin(); i!=end; ++i)
-        {
-          assert((*i)->value);
-          jsval val = vrmlFieldToJSVal(*(*i)->value, false);
-          if (JSVAL_IS_OBJECT(val) &&
-	      JSVAL_TO_OBJECT(val) != 0 &&
-	      ! JS_DefineProperty( d_cx, JSVAL_TO_OBJECT(val), "_eventOut",
-			           PRIVATE_TO_JSVAL((long int)((*i)->name)),
+          // Don't overwrite the property value.
+          if (JSVAL_IS_OBJECT(*val) &&
+              JSVAL_TO_OBJECT(*val) != 0 &&
+              ! JS_DefineProperty( cx, JSVAL_TO_OBJECT(*val), "_eventOut",
+			           PRIVATE_TO_JSVAL((long int)eventName),
 			           0, 0, JSPROP_READONLY | JSPROP_PERMANENT ))
-	    theSystem->error("JS_DefineProp _eventOut failed\n");
+            theSystem->error("JS_DefineProp _eventOut failed\n");
 
-          if (! JS_DefineProperty( d_cx, d_globalObj, (*i)->name, val,
-			           //getter, setter
-			           0, eventOut_setProperty,
-			           JSPROP_PERMANENT ))
-	    theSystem->error("JS_DefineProp %s failed\n", (*i)->name );
+          return JS_TRUE;
         }
 
-    }
 
+        // Define objects corresponding to fields/eventOuts
 
-    void
-    ErrorReporter(JSContext *, const char *message, JSErrorReport *report)
-    {
-        int i, j, k, n;
+        void Script::defineFields()
+        {
+          VrmlNodeScript::FieldList::iterator i, end = this->scriptNode.fields().end();
+          for (i = this->scriptNode.fields().begin(); i!=end; ++i)
+            {
+              jsval val = vrmlFieldToJSVal(*(*i)->value, false);
+        #ifdef SCRIPTJS_DEBUG
+              if ( (*i)->value )
+	        cout << "field " << (*i)->name << " value "
+	             << *((*i)->value) << endl;
+              else
+	        cout << "field " << (*i)->name << " <no value>\n";
+        #endif
+              if (! JS_DefineProperty( d_cx, d_globalObj, (*i)->name, val,
+			               //getter, setter, ...
+			               0, 0,
+			               JSPROP_PERMANENT ))
+	        theSystem->error("JS_DefineProp %s failed\n", (*i)->name );
+            }
 
-        theSystem->error("javascript: ");
-        if (!report) {
-	    theSystem->error("%s\n", message);
-	    return;
+          end = this->scriptNode.eventOuts().end();
+          for (i = this->scriptNode.eventOuts().begin(); i!=end; ++i)
+            {
+              assert((*i)->value);
+              jsval val = vrmlFieldToJSVal(*(*i)->value, false);
+              if (JSVAL_IS_OBJECT(val) &&
+	          JSVAL_TO_OBJECT(val) != 0 &&
+	          ! JS_DefineProperty( d_cx, JSVAL_TO_OBJECT(val), "_eventOut",
+			               PRIVATE_TO_JSVAL((long int)((*i)->name)),
+			               0, 0, JSPROP_READONLY | JSPROP_PERMANENT ))
+	        theSystem->error("JS_DefineProp _eventOut failed\n");
+
+              if (! JS_DefineProperty( d_cx, d_globalObj, (*i)->name, val,
+			               //getter, setter
+			               0, eventOut_setProperty,
+			               JSPROP_PERMANENT ))
+	        theSystem->error("JS_DefineProp %s failed\n", (*i)->name );
+            }
+
         }
 
-        if (report->filename)
-	    theSystem->error("%s, ", report->filename);
-        if (report->lineno)
-	    theSystem->error("line %u: ", report->lineno);
-        theSystem->error(message);
-        if (!report->linebuf) {
-	    theSystem->error("\n");
-	    return;
-        }
 
-        theSystem->error(":\n%s\n", report->linebuf);
-        n = report->tokenptr - report->linebuf;
-        for (i = j = 0; i < n; i++) {
-	    if (report->linebuf[i] == '\t') {
-	        for (k = (j + 8) & ~7; j < k; j++)
-	          theSystem->error(".");
-	        continue;
-	    }
-	    theSystem->error(".");
-	    j++;
-        }
-        theSystem->error("\n");
-    }
+        void
+        ErrorReporter(JSContext *, const char *message, JSErrorReport *report)
+        {
+            int i, j, k, n;
 
-    namespace JavaScript_ {
+            theSystem->error("javascript: ");
+            if (!report) {
+	        theSystem->error("%s\n", message);
+	        return;
+            }
+
+            if (report->filename)
+	        theSystem->error("%s, ", report->filename);
+            if (report->lineno)
+	        theSystem->error("line %u: ", report->lineno);
+            theSystem->error(message);
+            if (!report->linebuf) {
+	        theSystem->error("\n");
+	        return;
+            }
+
+            theSystem->error(":\n%s\n", report->linebuf);
+            n = report->tokenptr - report->linebuf;
+            for (i = j = 0; i < n; i++) {
+	        if (report->linebuf[i] == '\t') {
+	            for (k = (j + 8) & ~7; j < k; j++)
+	              theSystem->error(".");
+	            continue;
+	        }
+	        theSystem->error(".");
+	        j++;
+            }
+            theSystem->error("\n");
+        }
 
         void initVrmlClasses(JSContext * const cx, JSObject * const obj) {
 
@@ -1489,18 +1510,6 @@ namespace {
             }
         }
 
-        // Get a handle to the ScriptJS from the global object
-        ScriptJS * objToScript(JSContext * cx, JSObject * obj) {
-            jsval val;
-            if (! JS_LookupProperty( cx, obj, "_script", &val ))
-              theSystem->error("JS_LookupProperty _script failed\n");
-
-            else if (! JSVAL_IS_INT(val)) // Actually JSVAL_IS_PRIVATE
-              theSystem->error("JS_LookupProperty _script failed- NULL _script\n");
-
-            return (ScriptJS*) JSVAL_TO_PRIVATE(val);
-        }
-
         // Get a pointer to an eventOut from an object
         char * objToEventOut(JSContext * const cx, JSObject * const obj) {
             jsval val;
@@ -1511,16 +1520,19 @@ namespace {
             return 0;
         }
 
+        //
         // Check whether we are modifying a prop on an eventOut object, and if so,
         // notify the script.
+        //
         void checkEventOut(JSContext * const cx, JSObject * const obj,
                            const VrmlField & val) {
+            Script * const script =
+                    reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+            assert(script);
+            
             char * eventOut = 0;
-            ScriptJS * script = 0;
-            if ((eventOut = objToEventOut(cx, obj))
-                    && (script = objToScript(cx, JS_GetParent(cx, obj)))) {
-                VrmlNodeScript & scriptNode = script->getScriptNode();
-                scriptNode.setEventOut(eventOut, val);
+            if ((eventOut = objToEventOut(cx, obj))) {
+                script->getScriptNode().setEventOut(eventOut, val);
             }
         }
 
@@ -1542,327 +1554,398 @@ namespace {
 
         namespace Browser {
 
-            JSBool getName(JSContext *cx, JSObject *b,
-		           uintN , jsval *, jsval * rval) {
-              jsval p;
-              if (! JS_GetProperty( cx, b, "_script", &p ))
-                return JS_FALSE;
+            JSBool getName(JSContext * const cx, JSObject *,
+		           uintN, jsval *, jsval * const rval) throw () {
+                Script * const script =
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                assert(script);
+                if (!script->getScriptNode().scene()) {
+                    return JS_FALSE;
+                }
 
-              ScriptJS *s = (ScriptJS *)JSVAL_TO_PRIVATE(p);
-              if (! s || ! s->getScriptNode().scene() )
-                return JS_FALSE;
-
-              const char *name = s->getScriptNode().scene()->getName();
-              *rval = STRING_TO_JSVAL(JS_InternString( cx, name ));
-              return JS_TRUE;
+                const char * const name =
+                        script->getScriptNode().scene()->getName();
+                *rval = STRING_TO_JSVAL(JS_InternString(cx, name));
+                return JS_TRUE;
             }
 
-            JSBool getVersion(JSContext *cx, JSObject *b,
-		                  uintN , jsval *,
-		                  jsval *rval)
-            {
-              jsval p;
-              if (! JS_GetProperty( cx, b, "_script", &p ))
-                return JS_FALSE;
+            JSBool getVersion(JSContext * const cx, JSObject *,
+		              uintN, jsval *, jsval * const rval) throw () {
+                Script * const script =
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                assert(script);
+                if (!script->getScriptNode().scene()) {
+                    return JS_FALSE;
+                }
 
-              ScriptJS *s = (ScriptJS *)JSVAL_TO_PRIVATE(p);
-              if (! s || ! s->getScriptNode().scene() )
-                return JS_FALSE;
-
-              const char *version = s->getScriptNode().scene()->getVersion();
-              *rval = STRING_TO_JSVAL(JS_InternString( cx, version ));
-              return JS_TRUE;
+                const char * const version =
+                        script->getScriptNode().scene()->getVersion();
+                *rval = STRING_TO_JSVAL(JS_InternString(cx, version));
+                return JS_TRUE;
             }
 
-            JSBool getCurrentSpeed(JSContext *cx, JSObject*,
-			                  uintN, jsval *,
-			                  jsval *rval)
-            {
-              *rval = DOUBLE_TO_JSVAL(JS_NewDouble( cx, 0.0 )); //...
-              return JS_TRUE;
+            JSBool getCurrentSpeed(JSContext * const cx, JSObject *,
+                                   uintN, jsval *, jsval * const rval) throw () {
+                *rval = DOUBLE_TO_JSVAL(JS_NewDouble( cx, 0.0 )); //...
+                return JS_TRUE;
             }
 
-            JSBool getCurrentFrameRate(JSContext *cx, JSObject* b,
-				              uintN, jsval*, jsval *rval)
-            {
-              jsval p;
-              if (! JS_GetProperty( cx, b, "_script", &p ))
-                return JS_FALSE;
+            JSBool getCurrentFrameRate(JSContext * const cx, JSObject *,
+                                       uintN, jsval *, jsval * const rval)
+                    throw () {
+                Script * const script =
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                assert(script);
+                if (!script->getScriptNode().scene()) {
+                    return JS_FALSE;
+                }
 
-              ScriptJS *s = (ScriptJS *)JSVAL_TO_PRIVATE(p);
-              if (! s || ! s->getScriptNode().scene())
-                return JS_FALSE;
-
-              *rval = DOUBLE_TO_JSVAL(JS_NewDouble(cx, s->getScriptNode().scene()->getFrameRate() ));
-              return JS_TRUE;
+                *rval = DOUBLE_TO_JSVAL(JS_NewDouble(cx,
+                            script->getScriptNode().scene()->getFrameRate()));
+                return JS_TRUE;
             }
 
-            JSBool getWorldURL(JSContext *cx, JSObject *b,
-			              uintN, jsval *,
-			              jsval *rval)
-            {
-              jsval p;
-              if (! JS_GetProperty( cx, b, "_script", &p ))
-                return JS_FALSE;
+            JSBool getWorldURL(JSContext * const cx, JSObject *,
+                               uintN, jsval *, jsval * const rval) throw () {
+                Script * const script =
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                assert(script);
+                if (!script->getScriptNode().scene()) {
+                    return JS_FALSE;
+                }
 
-              ScriptJS *s = (ScriptJS *)JSVAL_TO_PRIVATE(p);
-              if (! s || ! s->getScriptNode().scene())
-                return JS_FALSE;
-
-              const char *url = 0;
-              if (s->getScriptNode().scene()->urlDoc())
-                url = s->getScriptNode().scene()->urlDoc()->url();
-              if (! url) url = "";
-              *rval = STRING_TO_JSVAL(JS_InternString( cx, url ));
-              return JS_TRUE;
+                const char * url = 0;
+                if (script->getScriptNode().scene()->urlDoc()) {
+                    url = script->getScriptNode().scene()->urlDoc()->url();
+                }
+                if (!url) {
+                    url = "";
+                }
+                *rval = STRING_TO_JSVAL(JS_InternString(cx, url));
+                return JS_TRUE;
             }
 
 
             // No events will be processed after loadURL.
 
-            JSBool loadURL(JSContext* cx, JSObject* b,
-		                  uintN argc, jsval *argv, jsval *)
-            {
-              if ((int)argc < 1)
-                return JS_FALSE;
+            JSBool loadURL(JSContext * const cx, JSObject *,
+                           const uintN argc, jsval * const argv,
+                           jsval * const rval) throw () {
+                assert(argc >= 2);
+                
+                Script * const script =
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                assert(script);
+                if (!script->getScriptNode().scene()) {
+                    return JS_FALSE;
+                }
 
-              jsval p;
-              if (! JS_GetProperty( cx, b, "_script", &p ))
-                return JS_FALSE;
-
-              ScriptJS *s = (ScriptJS *)JSVAL_TO_PRIVATE(p);
-              if (! s || ! s->getScriptNode().scene())
-                return JS_FALSE;
-
-              // Get 2 arguments MFString url, MFString parameters
-              VrmlMFString *url, *parameters = 0;
-              url = (VrmlMFString*) createVrmlFieldFromJsval( cx, argv[0], VrmlField::MFSTRING );
-              if (! url) return JS_TRUE;	// empty URL
-
-              if ((int)argc > 1)
-                parameters = (VrmlMFString*) createVrmlFieldFromJsval( cx, argv[1],
-						               VrmlField::MFSTRING );
-
-              s->getScriptNode().scene()->queueLoadUrl( url, parameters );
-              return JS_TRUE;
+                //
+                // Make sure our first argument (the URL) is an MFString.
+                //
+                if (!JSVAL_IS_OBJECT(argv[0])
+                        || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                                          &MFString::jsclass, 0)) {
+                    return JS_FALSE;
+                }
+                
+                std::auto_ptr<VrmlMFString>
+                        url(static_cast<VrmlMFString *>
+                            (createVrmlFieldFromJsval(cx, argv[0],
+                                                      VrmlField::MFSTRING)));
+                assert(url.get());
+                
+                //
+                // Make sure our second argument is an MFString
+                //
+                if (!JSVAL_IS_OBJECT(argv[1])
+                        || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[1]),
+                                          &MFString::jsclass, 0)) {
+                    return JS_FALSE;
+                }
+                
+                std::auto_ptr<VrmlMFString>
+                        parameters(static_cast<VrmlMFString *>
+                            (createVrmlFieldFromJsval(cx, argv[0],
+                                                      VrmlField::MFSTRING)));
+                assert(parameters.get());
+                
+                script->getScriptNode().scene()->queueLoadUrl(url.get(),
+                                                              parameters.get());
+                return JS_TRUE;
             }
 
 
             // This does return, but no events will be processed after it is called.
 
-            JSBool replaceWorld(JSContext *cx, JSObject *b,
-			               uintN argc, jsval *argv, jsval *)
-            {
-              if ((int)argc < 1)
-                return JS_FALSE;
-
-              jsval p;
-              if (! JS_GetProperty( cx, b, "_script", &p ))
-                return JS_FALSE;
-
-              ScriptJS *s = (ScriptJS *)JSVAL_TO_PRIVATE(p);
-              if (! s || ! s->getScriptNode().scene())
-                return JS_FALSE;
-
-              // Get 1 argument MFNode nodes
-              VrmlMFNode *nodes = (VrmlMFNode*) createVrmlFieldFromJsval( cx,
-						                  argv[0],
-						                  VrmlField::MFNODE );
-              if (nodes)
-                {
-                  VrmlNamespace *ns = new VrmlNamespace(); // should be stored with nodes...
-                  s->getScriptNode().scene()->queueReplaceNodes( nodes, ns );
+            JSBool replaceWorld(JSContext * const cx, JSObject *,
+                                const uintN argc, jsval * const argv,
+                                jsval * const rval) throw () {
+                assert(argc >= 1);
+                
+                Script * const script =
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                assert(script);
+                if (!script->getScriptNode().scene()) {
+                    return JS_FALSE;
                 }
-
-              return JS_TRUE;
+                
+                //
+                // Make sure our argument is an MFNode.
+                //
+                if (!JSVAL_IS_OBJECT(argv[0])
+                        || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                                          &MFNode::jsclass, 0)) {
+                    return JS_FALSE;
+                }
+                
+                std::auto_ptr<VrmlMFNode>
+                        nodes(static_cast<VrmlMFNode *>
+                            (createVrmlFieldFromJsval(cx, argv[0],
+                                                      VrmlField::MFNODE)));
+                assert(nodes.get());
+                
+                VrmlNamespace * ns = new VrmlNamespace(); // should be stored with nodes...
+                script->getScriptNode().scene()->queueReplaceNodes(nodes.get(), ns);
+                
+                *rval = JSVAL_VOID;
+                return JS_TRUE;
             }
 
-            JSBool createVrmlFromString(JSContext *cx, JSObject* bobj,
-				        uintN argc, jsval *argv, jsval *rval)
-            {
-              JSString *str;
-
-              if (argc == 1 &&
-                  JSVAL_IS_STRING(argv[0]) &&
-                  (str = JSVAL_TO_STRING(argv[0])) != 0)
-                {
-                  char *vrmlString = JS_GetStringBytes(str);
-                  VrmlNamespace ns;
-                  VrmlMFNode kids(VrmlScene::readString(vrmlString, &ns));
-
-                  if (kids.getLength() == 0)
-	            return JS_FALSE;
-
-                  // Put the children from g into an MFNode and return in rval.
-                  // should store the namespace as well...
-                  size_t i, n = kids.getLength();
-                  jsval *jsvec = new jsval[n];
-
-                  for (i=0; i<n; ++i)
-	            {
-	              JSObject *obj = JS_NewObject(cx, &SFNode::jsclass, 0, bobj);
-	              if (! obj) return JS_FALSE;
-	              //uwe JS_SetPrivate( cx, obj, k[i] ? k[i]->reference() : 0);
-	              JS_SetPrivate(cx, obj, new VrmlSFNode(kids.getElement(i)));
-	              jsvec[i] = OBJECT_TO_JSVAL(obj);
-	            }
-                  *rval = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, (jsint)n, jsvec));
-                  delete [] jsvec;
-                  return JS_TRUE;
+            JSBool createVrmlFromString(JSContext * const cx,
+                                        JSObject * const obj,
+				        const uintN argc, jsval * const argv,
+                                        jsval * const rval) throw () {
+                assert(argc >= 1);
+                
+                //
+                // Make sure our argument is a string.
+                //
+                if (!JSVAL_IS_STRING(argv[0])) {
+                    return JS_FALSE;
                 }
+                
+                JSString * str = JSVAL_TO_STRING(argv[0]);
+                assert(str);
 
-              return JS_FALSE;
+                char *vrmlString = JS_GetStringBytes(str);
+                VrmlNamespace ns;
+                VrmlMFNode kids(VrmlScene::readString(vrmlString, &ns));
+
+                if (kids.getLength() == 0) {
+                    *rval = JSVAL_NULL;
+                } else {
+                    // Put the children from g into an MFNode and return in rval.
+                    // should store the namespace as well...
+                    if (!MFNode::toJsval(kids, false, cx, obj, rval)) {
+                        return JS_FALSE;
+                    }
+                }
+                return JS_TRUE;
             }
 
 
             // createVrmlFromURL( MFString url, SFNode node, SFString event )
 
-            JSBool createVrmlFromURL(JSContext* cx, JSObject* b,
-				     uintN argc, jsval *argv, jsval *)
-            {
-              if ((int)argc != 3) return JS_FALSE;
+            JSBool createVrmlFromURL(JSContext * const cx, JSObject *,
+				     const uintN argc, jsval * const argv,
+                                     jsval * const rval) throw () {
+                assert(argc >= 3);
 
-              Doc2 * relative = 0;
-
-              jsval p;
-              ScriptJS * s = 0;
-              if (JS_GetProperty( cx, b, "_script", &p ) &&
-                  (s = (ScriptJS *)JSVAL_TO_PRIVATE(p)) != 0 &&
-                  s->getScriptNode().scene())
-                relative = s->getScriptNode().scene()->urlDoc();
-
-              VrmlMFString *url = 0;
-              VrmlField *f;
-              if (JSVAL_IS_STRING(argv[0]))
-                {
-                  JSString *str = JSVAL_TO_STRING(argv[0]);
-                  const char * const strBytes = JS_GetStringBytes(str);
-                  url = new VrmlMFString(1, &strBytes);
+                Script * const script =
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                assert(script);
+                if (!script->getScriptNode().scene()) {
+                    return JS_FALSE;
                 }
-              else if ((f = createVrmlFieldFromJsval( cx, argv[0], VrmlField::MFSTRING )) != 0)
-                {
-                  url = f->toMFString();
+                
+                Doc2 * relative = script->getScriptNode().scene()->urlDoc();
+                
+                //
+                // Make sure our first argument (the URL) is an MFString.
+                //
+                if (!JSVAL_IS_OBJECT(argv[0])
+                        || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                                          &MFString::jsclass, 0)) {
+                    return JS_FALSE;
                 }
-
-              if (url)
-                {
-                  VrmlSFNode *node = 0;
-                  JSString *str = 0;
-
-                  f = createVrmlFieldFromJsval( cx, argv[1], VrmlField::SFNODE );
-                  if ( f != 0 &&
-	               (node = f->toSFNode()) != 0 &&
-	               JSVAL_IS_STRING(argv[2]) &&
-	               (str = JSVAL_TO_STRING(argv[2])) != 0)
-	            {
-	              char *event = JS_GetStringBytes(str);
-
-	              VrmlNamespace ns;	// this is a problem...
-	              VrmlMFNode *kids = VrmlScene::readWrl( url, relative, &ns );
-	              VrmlNodePtr nn = node->get();
-
-	              if ( ! kids )
-	                {
-	                  const char* sUrl = (url->get() && url->getElement(0))
-                                  ? url->getElement(0) : "(null)";
-	                  theSystem->error("createVrmlFromUrl \"%s\" failed.\n", sUrl);
-
-	                  delete node;
-	                  delete url;
-	                  return JS_FALSE;
-	                }
-
-	              if (nn)
-	                nn->eventIn( s_timeStamp, // fix me...
-			             event,
-			             *kids );
-	              delete node;
-	              delete kids;
-	              delete url;
-	              return JS_TRUE;
-	            }
-
-                  delete url;
-                  delete f;
+                
+                std::auto_ptr<VrmlMFString>
+                        url(static_cast<VrmlMFString *>
+                            (createVrmlFieldFromJsval(cx, argv[0],
+                                                      VrmlField::MFSTRING)));
+                assert(url.get());
+                
+                //
+                // Make sure our second arument is an SFNode.
+                //
+                if (!JSVAL_IS_OBJECT(argv[1])
+                        || ! JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[1]),
+                                           &SFNode::jsclass, 0)) {
+                    return JS_FALSE;
                 }
-              return JS_FALSE;
+                
+                std::auto_ptr<VrmlSFNode>
+                        sfnode(static_cast<VrmlSFNode *>
+                            (createVrmlFieldFromJsval(cx, argv[1],
+                                                      VrmlField::SFNODE)));
+                assert(sfnode.get());
+                VrmlNodePtr node(sfnode->get());
+                if (!node) {
+                    return JS_FALSE;
+                }
+                
+                //
+                // Make sure our third argument is a string.
+                //
+                if (!JSVAL_IS_STRING(argv[2])) {
+                    return JS_FALSE;
+                }
+                
+                const char * const eventInId =
+                        JS_GetStringBytes(JSVAL_TO_STRING(argv[2]));
+                
+	        VrmlNamespace ns;	// this is a problem...
+	        std::auto_ptr<VrmlMFNode>
+                        kids(VrmlScene::readWrl(url.get(), relative, &ns));
+                
+                if (!kids.get()) {
+                    return JS_FALSE;
+                }
+                
+	        node->eventIn(s_timeStamp, // fix me...
+			      eventInId, *kids);
+                
+                *rval = JSVAL_VOID;
+                return JS_TRUE;
             }
 
             // addRoute(SFNode fromNode, String fromEventOut, SFNode toNode, String toEvent)
 
-            JSBool addRoute(JSContext* cx, JSObject*,
-		                   uintN argc, jsval *argv,
-		                   jsval *)
-            {
-              if ((int)argc != 4 ||
-                  ! JSVAL_IS_STRING(argv[1]) ||
-                  ! JSVAL_IS_STRING(argv[3]))
-                return JS_FALSE;
-              JSString *str = JS_ValueToString(cx, argv[1]);
-              if (! str) return JS_FALSE;
-              char *eventOut = JS_GetStringBytes( str );
-              str = JS_ValueToString(cx, argv[3]);
-              if (! str) return JS_FALSE;
-              char *eventIn = JS_GetStringBytes( str );
-
-              if (! eventOut || ! eventIn) return JS_FALSE;
-              VrmlField *f = createVrmlFieldFromJsval( cx, argv[0], VrmlField::SFNODE );
-              VrmlSFNode *from = f ? f->toSFNode() : 0;
-              f = createVrmlFieldFromJsval( cx, argv[2], VrmlField::SFNODE );
-              VrmlSFNode *to = f ? f->toSFNode() : 0;
-              if (! to || !to->get() || !from || !from->get()) return JS_FALSE;
-
-              theSystem->debug("addRoute(%s::%s::%s, %s::%s::%s)\n",
-		               from->get()->nodeType().getName(),
-		               from->get()->name(),
-		               eventOut,
-		               to->get()->nodeType().getName(),
-		               to->get()->name(),
-		               eventIn);
-
-              (from->get())->addRoute( eventOut, to->get(), eventIn );
-
-              return JS_TRUE;
+            JSBool addRoute(JSContext * const cx, JSObject *,
+                            const uintN argc, jsval * const argv,
+                            jsval * const rval) throw () {
+                assert(argc >= 4);
+                
+                //
+                // Make sure our first argument (fromNode) is a SFNode.
+                //
+                if (!JSVAL_IS_OBJECT(argv[0])
+                        || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                                          &SFNode::jsclass, 0)) {
+                    return JS_FALSE;
+                }
+                std::auto_ptr<VrmlSFNode>
+                        fromNode(static_cast<VrmlSFNode *>
+                            (createVrmlFieldFromJsval(cx, argv[0],
+                                                      VrmlField::SFNODE)));
+                
+                //
+                // Makes sure our second argument (fromEventOut) is a string.
+                //
+                if (!JSVAL_IS_STRING(argv[1])) {
+                    return JS_FALSE;
+                }
+                const char * const fromEventOut =
+                        JS_GetStringBytes(JSVAL_TO_STRING(argv[1]));
+                
+                //
+                // Make sure our third argument (toNode) is a SFNode.
+                //
+                if (!JSVAL_IS_OBJECT(argv[2])
+                        || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[2]),
+                                          &SFNode::jsclass, 0)) {
+                    return JS_FALSE;
+                }
+                std::auto_ptr<VrmlSFNode>
+                        toNode(static_cast<VrmlSFNode *>
+                            (createVrmlFieldFromJsval(cx, argv[2],
+                                                      VrmlField::SFNODE)));
+                
+                //
+                // Makes sure our third argument (toEventIn) is a string.
+                //
+                if (!JSVAL_IS_STRING(argv[3])) {
+                    return JS_FALSE;
+                }
+                const char * const toEventIn =
+                        JS_GetStringBytes(JSVAL_TO_STRING(argv[3]));
+                
+                fromNode->get()->addRoute(fromEventOut,
+                                          toNode->get(), toEventIn);
+                
+                *rval = JSVAL_VOID;
+                return JS_TRUE;
             }
 
             // deleteRoute(SFNode fromNode, String fromEventOut, SFNode toNode, String toEvent)
 
-            JSBool deleteRoute(JSContext* cx, JSObject*,
-			              uintN argc, jsval *argv, jsval *)
-            {
-              if ((int)argc != 4 ||
-                  ! JSVAL_IS_STRING(argv[1]) ||
-                  ! JSVAL_IS_STRING(argv[3]))
-                return JS_FALSE;
-              JSString *str = JS_ValueToString(cx, argv[1]);
-              if (! str) return JS_FALSE;
-              char *eventOut = JS_GetStringBytes( str );
-              str = JS_ValueToString(cx, argv[3]);
-              if (! str) return JS_FALSE;
-              char *eventIn = JS_GetStringBytes( str );
-
-              if (! eventOut || ! eventIn) return JS_FALSE;
-              VrmlField *f = createVrmlFieldFromJsval( cx, argv[0], VrmlField::SFNODE );
-              VrmlSFNode *from = f ? f->toSFNode() : 0;
-              f = createVrmlFieldFromJsval( cx, argv[2], VrmlField::SFNODE );
-              VrmlSFNode *to = f ? f->toSFNode() : 0;
-              if (! to || !to->get() || !from || !from->get()) return JS_FALSE;
-
-              (from->get())->deleteRoute( eventOut, to->get(), eventIn );
-
-              return JS_TRUE;
+            JSBool deleteRoute(JSContext * const cx, JSObject *,
+                               const uintN argc, jsval * const argv,
+                               jsval * const rval) throw () {
+                assert(argc >= 4);
+                
+                //
+                // Make sure our first argument (fromNode) is a SFNode.
+                //
+                if (!JSVAL_IS_OBJECT(argv[0])
+                        || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                                          &SFNode::jsclass, 0)) {
+                    return JS_FALSE;
+                }
+                std::auto_ptr<VrmlSFNode>
+                        fromNode(static_cast<VrmlSFNode *>
+                            (createVrmlFieldFromJsval(cx, argv[0],
+                                                      VrmlField::SFNODE)));
+                
+                //
+                // Makes sure our second argument (fromEventOut) is a string.
+                //
+                if (!JSVAL_IS_STRING(argv[1])) {
+                    return JS_FALSE;
+                }
+                const char * const fromEventOut =
+                        JS_GetStringBytes(JSVAL_TO_STRING(argv[1]));
+                
+                //
+                // Make sure our third argument (toNode) is a SFNode.
+                //
+                if (!JSVAL_IS_OBJECT(argv[2])
+                        || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[2]),
+                                          &SFNode::jsclass, 0)) {
+                    return JS_FALSE;
+                }
+                std::auto_ptr<VrmlSFNode>
+                        toNode(static_cast<VrmlSFNode *>
+                            (createVrmlFieldFromJsval(cx, argv[2],
+                                                      VrmlField::SFNODE)));
+                
+                //
+                // Makes sure our third argument (toEventIn) is a string.
+                //
+                if (!JSVAL_IS_STRING(argv[3])) {
+                    return JS_FALSE;
+                }
+                const char * const toEventIn =
+                        JS_GetStringBytes(JSVAL_TO_STRING(argv[3]));
+                
+                fromNode->get()->deleteRoute(fromEventOut,
+                                             toNode->get(), toEventIn);
+                
+                *rval = JSVAL_VOID;
+                return JS_TRUE;
             }
 
-            JSBool setDescription(JSContext * cx, JSObject *,
-			          const uintN argc, jsval * const argv, jsval *) {
-                if (argc < 1) {
+            JSBool setDescription(JSContext * const cx, JSObject *,
+			          const uintN argc, jsval * const argv,
+                                  jsval * const rval) throw () {
+                assert(argc >= 1);
+                if (!JSVAL_IS_STRING(argv[0])) {
                     return JS_FALSE;
                 }
-                JSString * const str = JS_ValueToString(cx, argv[0]);
-                if (!str) {
-                    return JS_FALSE;
-                }
-                theSystem->inform("%s", JS_GetStringBytes(str));
+                theSystem->inform("%s",
+                                  JS_GetStringBytes(JSVAL_TO_STRING(argv[0])));
+                *rval = JSVAL_VOID;
                 return JS_TRUE;
             }
         }
@@ -2442,11 +2525,12 @@ namespace {
                 return JS_FALSE;
             }
             
-            JSString * str = 0;
-            ScriptJS * script = 0;
+            Script * const script =
+                    reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+            assert(script);
 
-            if (JSVAL_IS_STRING(id) && ((str = JSVAL_TO_STRING(id)))
-                    && (script = objToScript(cx, JS_GetParent(cx, obj)))) {
+            JSString * str = 0;
+            if (JSVAL_IS_STRING(id) && ((str = JSVAL_TO_STRING(id)))) {
                 char * eventOut = JS_GetStringBytes(str);
                 const VrmlField * fieldVal = sfnode->get()->getEventOut(eventOut);
 
@@ -2487,7 +2571,7 @@ namespace {
 
                     // This should only happen if directOutput is set...
 # ifdef SCRIPTJS_DEBUG
-                    cout << "ScriptJS::node_setProperty sending " << eventIn
+                    cout << "Script::node_setProperty sending " << eventIn
                          << " (" << (*f) << ") to "
                          << n->nodeType().getName() << "::"
                          << n->name() << endl;
@@ -2495,8 +2579,10 @@ namespace {
 
 	            // the timestamp should be stored as a global property and
 	            // looked up via obj somehow...
-	            ScriptJS *script = objToScript( cx, JS_GetParent( cx, obj ));
-	            if (script && script->getScriptNode().scene())
+	            Script * const script = 
+                            reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                    assert(script);
+	            if (script->getScriptNode().scene())
 	              script->getScriptNode().scene()->queueEvent( s_timeStamp, f, n, eventIn );
 	          }
 

@@ -1,3 +1,9 @@
+2001-06-20  Braden McDaniel <braden@endoframe.com>
+
+        * In the JavaScript API implementation, store the pointer to the
+          Script object as private data in the JSContext rather than as a
+          property of the global object.
+
 2001-06-20  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Update *.dsp and *.dsw to support OpenVRML WIN32 DLL and
@@ -13,7 +19,7 @@
 2001-06-12  Braden McDaniel <braden@endoframe.com>
 
         * Use `std::map<>::value_type *' instead of
-          'std::map<>::pointer' in VrmlNodePtr.h. Removed #ifdef for
+          `std::map<>::pointer' in VrmlNodePtr.h. Removed #ifdef for
           Win32.
 
 2001-06-15  S. K. Bose  <bose@pavan.barc.ernet.in>
