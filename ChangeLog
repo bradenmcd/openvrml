@@ -1,3 +1,7 @@
+2002-07-01  Braden McDaniel  <braden@endoframe.com>
+
+        * configure.ac, README:  Incremented version to 0.12.4.
+
 2002-06-30  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/doc2.cpp:  Use a reasonable value for
