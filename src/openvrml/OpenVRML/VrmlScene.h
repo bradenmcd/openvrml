@@ -32,7 +32,27 @@ class VrmlNamespace;
 class VrmlNodeType;
 
 class OPENVRML_SCOPE VrmlScene {
+    Doc2 * d_url;
+    Doc2 * d_urlLocal;
     VrmlMFNode nodes;
+    VrmlNamespace * d_namespace;
+    typedef std::list<VrmlNodePtr> BindStack;
+    BindStack d_backgroundStack;
+    BindStack d_fogStack;
+    BindStack d_navigationInfoStack;
+    BindStack d_viewpointStack;
+    std::list<VrmlNode *> d_backgrounds;
+    std::list<VrmlNode *> d_fogs;
+    std::list<VrmlNode *> d_navigationInfos;
+    std::list<VrmlNode *> d_viewpoints;
+    std::list<VrmlNode *> d_scopedLights;
+    std::list<VrmlNode *> d_scripts;
+    std::list<VrmlNode *> d_timers;
+    std::list<VrmlNode *> d_audioClips;
+    std::list<VrmlNode *> d_movies;
+    bool d_modified;
+    bool d_newView;
+    double d_deltaTime;
     
 public:
     static VrmlMFNode * readWrl(const VrmlMFString & urls, Doc2 * relative,
@@ -130,29 +150,29 @@ public:
     //    void bindableRemove(VrmlNodeType *);
 
     // Background
-    void addBackground( VrmlNodeBackground * );
-    void removeBackground( VrmlNodeBackground * );
-    VrmlNodeBackground *bindableBackgroundTop();
+    void addBackground(VrmlNodeBackground &);
+    void removeBackground(VrmlNodeBackground &);
+    VrmlNodeBackground * bindableBackgroundTop();
     void bindablePush( VrmlNodeBackground * );
     void bindableRemove( VrmlNodeBackground * );
 
     // Fog
-    void addFog( VrmlNodeFog * );
-    void removeFog( VrmlNodeFog * );
+    void addFog(VrmlNodeFog &);
+    void removeFog(VrmlNodeFog &);
     VrmlNodeFog *bindableFogTop();
     void bindablePush( VrmlNodeFog * );
     void bindableRemove( VrmlNodeFog * );
 
     // NavigationInfo
-    void addNavigationInfo( VrmlNodeNavigationInfo * );
-    void removeNavigationInfo( VrmlNodeNavigationInfo * );
+    void addNavigationInfo(VrmlNodeNavigationInfo &);
+    void removeNavigationInfo(VrmlNodeNavigationInfo &);
     VrmlNodeNavigationInfo *bindableNavigationInfoTop();
     void bindablePush( VrmlNodeNavigationInfo * );
     void bindableRemove( VrmlNodeNavigationInfo * );
 
     // Viewpoint
-    void addViewpoint( VrmlNodeViewpoint * );
-    void removeViewpoint( VrmlNodeViewpoint * );
+    void addViewpoint(VrmlNodeViewpoint &);
+    void removeViewpoint(VrmlNodeViewpoint &);
     VrmlNodeViewpoint *bindableViewpointTop();
     void bindablePush( VrmlNodeViewpoint * );
     void bindableRemove( VrmlNodeViewpoint * );
@@ -168,27 +188,24 @@ public:
     // Other (non-bindable) node types that the scene needs access to:
 
     // Scene-scoped lights
-    void addScopedLight( VrmlNodeLight * );
-    void removeScopedLight( VrmlNodeLight * );
+    void addScopedLight(VrmlNodeLight &);
+    void removeScopedLight(VrmlNodeLight &);
 
     // Scripts
-    void addScript( VrmlNodeScript * );
-    void removeScript( VrmlNodeScript * );
+    void addScript(VrmlNodeScript &);
+    void removeScript(VrmlNodeScript &);
 
     // TimeSensors
-    void addTimeSensor( VrmlNodeTimeSensor * );
-    void removeTimeSensor( VrmlNodeTimeSensor * );
+    void addTimeSensor(VrmlNodeTimeSensor &);
+    void removeTimeSensor(VrmlNodeTimeSensor &);
 
     // AudioClips
-    void addAudioClip( VrmlNodeAudioClip * );
-    void removeAudioClip( VrmlNodeAudioClip * );
+    void addAudioClip(VrmlNodeAudioClip &);
+    void removeAudioClip(VrmlNodeAudioClip &);
 
     // MovieTextures
-    void addMovie( VrmlNodeMovieTexture * );
-    void removeMovie( VrmlNodeMovieTexture * );
-
-
-    VrmlNode* getRoot();
+    void addMovie(VrmlNodeMovieTexture &);
+    void removeMovie(VrmlNodeMovieTexture &);
 
     /**
      * True if the bvolume dirty flag has been set on a node in the
@@ -201,26 +218,8 @@ public:
     void updateFlags();
 
 protected:
-    typedef std::list<VrmlNodePtr> VrmlNodeList;
-    
     bool headlightOn();
     void doCallbacks(int reason);
-
-    // Document URL
-    Doc2 * d_url;
-    Doc2 * d_urlLocal;
-
-    // Nodes and node types defined in this scope
-    VrmlNamespace *d_namespace;
-
-    // Need render
-    bool d_modified;
-
-    // New viewpoint has been bound
-    bool d_newView;
-
-    // Time until next update
-    double d_deltaTime;
 
     // Allow requests to load urls, nodes to wait until events are processed
     VrmlMFString *d_pendingUrl;
@@ -236,30 +235,10 @@ protected:
     // frame rate
     double d_frameRate;
 
-    // Bindable children nodes (pseudo-stacks - allow random access deletion).
-    typedef VrmlNodeList* BindStack;
-
     // Generic bindable children stack operations
-    const VrmlNodePtr bindableTop(BindStack);
-    void bindablePush(BindStack, const VrmlNodePtr &);
-    void bindableRemove(BindStack, const VrmlNodePtr &);
-    void bindableRemoveAll( BindStack );
-
-    //   Background
-    VrmlNodeList* d_backgrounds;		// All backgrounds
-    BindStack d_backgroundStack;		// Background stack
-
-    //   Fog
-    VrmlNodeList* d_fogs;			// All fog nodes
-    BindStack d_fogStack;			// Fog stack
-
-    //   NavigationInfo
-    VrmlNodeList* d_navigationInfos;	// All navigation info nodes
-    BindStack d_navigationInfoStack;	// Navigation info stack
-
-    //   Viewpoint
-    VrmlNodeList* d_viewpoints;		// All viewpoint nodes
-    BindStack d_viewpointStack;		// Viewpoint stack
+    const VrmlNodePtr bindableTop(const BindStack & stack);
+    void bindablePush(BindStack & stack, const VrmlNodePtr & node);
+    void bindableRemove(BindStack & stack, const VrmlNodePtr & node);
 
     // An event has a value and a destination, and is associated with a time
     struct Event{
@@ -280,21 +259,6 @@ protected:
     Event d_eventMem[MAXEVENTS];
     size_t d_firstEvent;
     size_t d_lastEvent;
-
-    // Scene-scoped lights (PointLights and SpotLights)
-    VrmlNodeList* d_scopedLights;
-
-    // Scripts in this scene
-    VrmlNodeList* d_scripts;
-
-    // Time sensors in this scene
-    VrmlNodeList* d_timers;
-
-    // Audio clips in this scene
-    VrmlNodeList* d_audioClips;
-
-    // Movies in this scene
-    VrmlNodeList* d_movies;
 };
 
 # endif

@@ -697,7 +697,9 @@ VrmlNodeAudioClip::VrmlNodeAudioClip(VrmlScene *scene) :
   _audio_intensity(1.0),
   _audio_fd(-1)
 {
-    if (d_scene) d_scene->addAudioClip(this);
+    if (this->d_scene) {
+        this->d_scene->addAudioClip(*this);
+    }
 }
 
 
@@ -719,14 +721,18 @@ VrmlNodeAudioClip::VrmlNodeAudioClip(const VrmlNodeAudioClip &n) :
   _audio_intensity(1.0),
   _audio_fd(-1)
 {
-    if (d_scene) d_scene->addAudioClip(this);
+    if (this->d_scene) {
+        this->d_scene->addAudioClip(*this);
+    }
 }
 
 
 VrmlNodeAudioClip::~VrmlNodeAudioClip()
 {
-  delete d_audio;
-  if (d_scene) d_scene->removeAudioClip(this);
+    delete this->d_audio;
+    if (this->d_scene) {
+        this->d_scene->removeAudioClip(*this);
+    }
 }
 
 bool VrmlNodeAudioClip::accept(VrmlNodeVisitor & visitor) {
@@ -741,7 +747,7 @@ bool VrmlNodeAudioClip::accept(VrmlNodeVisitor & visitor) {
 
 void VrmlNodeAudioClip::addToScene(VrmlScene * scene, const std::string & rel) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
-        this->d_scene->addAudioClip(this);
+        this->d_scene->addAudioClip(*this);
     }
     this->d_relativeUrl.set(rel);
 }
@@ -954,13 +960,14 @@ VrmlNodeBackground::VrmlNodeBackground(VrmlScene *scene)
     d_viewerObject(0)
 {
   for (int i=0; i<6; ++i) d_texPtr[i] = 0;
-  if (d_scene) d_scene->addBackground(this);
+  if (d_scene) d_scene->addBackground(*this);
 }
 
-VrmlNodeBackground::~VrmlNodeBackground()
-{
-  if (d_scene) d_scene->removeBackground(this);
-  // remove d_viewerObject...
+VrmlNodeBackground::~VrmlNodeBackground() {
+    if (this->d_scene) {
+        this->d_scene->removeBackground(*this);
+    }
+    // remove d_viewerObject...
 }
 
 bool VrmlNodeBackground::accept(VrmlNodeVisitor & visitor) {
@@ -979,7 +986,7 @@ VrmlNodeBackground* VrmlNodeBackground::toBackground() const
 void VrmlNodeBackground::addToScene(VrmlScene * scene,
                                     const std::string & rel) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
-        this->d_scene->addBackground(this);
+        this->d_scene->addBackground(*this);
     }
     this->d_relativeUrl.set(rel);
 }
@@ -3197,12 +3204,16 @@ VrmlNodeFog::VrmlNodeFog(VrmlScene *scene) :
   d_visibilityRange(0.0),
   d_isBound(false)
 {
-  if (d_scene) d_scene->addFog(this);
+    if (this->d_scene) {
+        this->d_scene->addFog(*this);
+    }
 }
 
 VrmlNodeFog::~VrmlNodeFog()
 {
-  if (d_scene) d_scene->removeFog(this);
+    if (this->d_scene) {
+        this->d_scene->removeFog(*this);
+    }
 }
 
 bool VrmlNodeFog::accept(VrmlNodeVisitor & visitor) {
@@ -3221,7 +3232,7 @@ VrmlNodeFog* VrmlNodeFog::toFog() const
 
 void VrmlNodeFog::addToScene(VrmlScene * scene, const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
-        this->d_scene->addFog(this);
+        this->d_scene->addFog(*this);
     }
 }
 
@@ -5300,15 +5311,17 @@ VrmlNodeMovieTexture::VrmlNodeMovieTexture(VrmlScene *scene) :
   d_lastFrameTime(-1.0),
   d_texObject(0)
 {
-  if (d_scene) d_scene->addMovie( this );
+    if (this->d_scene) {
+        this->d_scene->addMovie(*this);
+    }
 }
 
 
-VrmlNodeMovieTexture::~VrmlNodeMovieTexture()
-{
-  //if (d_texObject) d_viewer->removeTextureObject(d_texObject);
-  if (d_scene) d_scene->removeMovie( this );
-  delete d_image;
+VrmlNodeMovieTexture::~VrmlNodeMovieTexture() {
+    if (this->d_scene) {
+        this->d_scene->removeMovie(*this);
+    }
+    delete this->d_image;
 }
 
 bool VrmlNodeMovieTexture::accept(VrmlNodeVisitor & visitor) {
@@ -5328,7 +5341,7 @@ VrmlNodeMovieTexture* VrmlNodeMovieTexture::toMovieTexture() const
 void VrmlNodeMovieTexture::addToScene(VrmlScene * scene,
                                       const std::string & rel) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
-        this->d_scene->addMovie(this);
+        this->d_scene->addMovie(*this);
     }
     VrmlNodeTexture::addToScene(scene, rel);
 }
@@ -5657,12 +5670,13 @@ VrmlNodeNavigationInfo::VrmlNodeNavigationInfo(VrmlScene *scene) :
 
   d_avatarSize.set(3, avatarSize);
   d_type = VrmlMFString(2, type);
-  if (d_scene) d_scene->addNavigationInfo(this);
+  if (d_scene) d_scene->addNavigationInfo(*this);
 }
 
-VrmlNodeNavigationInfo::~VrmlNodeNavigationInfo()
-{
-  if (d_scene) d_scene->removeNavigationInfo(this);
+VrmlNodeNavigationInfo::~VrmlNodeNavigationInfo() {
+    if (this->d_scene) {
+        this->d_scene->removeNavigationInfo(*this);
+    }
 }
 
 bool VrmlNodeNavigationInfo::accept(VrmlNodeVisitor & visitor) {
@@ -5682,7 +5696,7 @@ VrmlNodeNavigationInfo* VrmlNodeNavigationInfo::toNavigationInfo() const
 void VrmlNodeNavigationInfo::addToScene(VrmlScene * scene,
                                         const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
-        this->d_scene->addNavigationInfo(this);
+        this->d_scene->addNavigationInfo(*this);
     }
 }
 
@@ -6731,12 +6745,15 @@ VrmlNodePointLight::VrmlNodePointLight(VrmlScene *scene) :
   d_location(0.0, 0.0, 0.0),
   d_radius(100)
 {
-  if (d_scene) d_scene->addScopedLight(this);
+    if (this->d_scene) {
+        this->d_scene->addScopedLight(*this);
+    }
 }
 
-VrmlNodePointLight::~VrmlNodePointLight()
-{
-  if (d_scene) d_scene->removeScopedLight(this);
+VrmlNodePointLight::~VrmlNodePointLight() {
+    if (this->d_scene) {
+        this->d_scene->removeScopedLight(*this);
+    }
 }
 
 bool VrmlNodePointLight::accept(VrmlNodeVisitor & visitor) {
@@ -6754,7 +6771,7 @@ VrmlNodePointLight* VrmlNodePointLight::toPointLight() const
 
 void VrmlNodePointLight::addToScene(VrmlScene * scene, const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
-        this->d_scene->addScopedLight(this);
+        this->d_scene->addScopedLight(*this);
     }
 }
 
@@ -8321,12 +8338,15 @@ VrmlNodeSpotLight::VrmlNodeSpotLight(VrmlScene *scene) :
   d_location(0.0, 0.0, 0.0),
   d_radius(100)
 {
-  if (d_scene) d_scene->addScopedLight(this);
+    if (this->d_scene) {
+        this->d_scene->addScopedLight(*this);
+    }
 }
 
-VrmlNodeSpotLight::~VrmlNodeSpotLight()
-{
-  if (d_scene) d_scene->removeScopedLight(this);
+VrmlNodeSpotLight::~VrmlNodeSpotLight() {
+    if (this->d_scene) {
+        this->d_scene->removeScopedLight(*this);
+    }
 }
 
 bool VrmlNodeSpotLight::accept(VrmlNodeVisitor & visitor) {
@@ -8345,7 +8365,7 @@ VrmlNodeSpotLight* VrmlNodeSpotLight::toSpotLight() const
 
 void VrmlNodeSpotLight::addToScene(VrmlScene * scene, const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
-        this->d_scene->addScopedLight(this);
+        this->d_scene->addScopedLight(*this);
     }
 }
 
@@ -9116,12 +9136,15 @@ VrmlNodeTimeSensor::VrmlNodeTimeSensor( VrmlScene *scene ) :
   d_isActive(false),
   d_lastTime(-1.0)
 {
-  if (d_scene) d_scene->addTimeSensor(this);
+    if (this->d_scene) {
+        this->d_scene->addTimeSensor(*this);
+    }
 }
 
-VrmlNodeTimeSensor::~VrmlNodeTimeSensor()
-{
-  if (d_scene) d_scene->removeTimeSensor(this);
+VrmlNodeTimeSensor::~VrmlNodeTimeSensor() {
+    if (this->d_scene) {
+        this->d_scene->removeTimeSensor(*this);
+    }
 }
 
 bool VrmlNodeTimeSensor::accept(VrmlNodeVisitor & visitor) {
@@ -9141,7 +9164,7 @@ VrmlNodeTimeSensor* VrmlNodeTimeSensor::toTimeSensor() const
 
 void VrmlNodeTimeSensor::addToScene(VrmlScene * scene, const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
-        this->d_scene->addTimeSensor(this);
+        this->d_scene->addTimeSensor(*this);
     }
 }
 
@@ -10093,14 +10116,17 @@ VrmlNodeViewpoint::VrmlNodeViewpoint(VrmlScene *scene) :
   d_bindTime(0),
   d_parentTransform(0)
 {
-  if (d_scene) d_scene->addViewpoint(this);
+    if (this->d_scene) {
+        this->d_scene->addViewpoint(*this);
+    }
 }
 
 // need copy constructor for d_parentTransform ...
 
-VrmlNodeViewpoint::~VrmlNodeViewpoint()
-{
-  if (d_scene) d_scene->removeViewpoint(this);
+VrmlNodeViewpoint::~VrmlNodeViewpoint() {
+    if (this->d_scene) {
+        this->d_scene->removeViewpoint(*this);
+    }
 }
 
 bool VrmlNodeViewpoint::accept(VrmlNodeVisitor & visitor) {
@@ -10118,7 +10144,7 @@ VrmlNodeViewpoint* VrmlNodeViewpoint::toViewpoint() const
 
 void VrmlNodeViewpoint::addToScene(VrmlScene * scene, const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
-        this->d_scene->addViewpoint(this);
+        this->d_scene->addViewpoint(*this);
     }
 }
 

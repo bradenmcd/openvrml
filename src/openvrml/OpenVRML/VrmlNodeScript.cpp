@@ -102,7 +102,7 @@ VrmlNodeScript::VrmlNodeScript(VrmlScene * const scene): VrmlNodeChild(scene),
         d_directOutput(false), d_mustEvaluate(false), d_script(0),
         d_eventsReceived(0) {
     if (this->d_scene) {
-        this->d_scene->addScript(this);
+        this->d_scene->addScript(*this);
     }
 }
 
@@ -127,7 +127,7 @@ VrmlNodeScript::~VrmlNodeScript()
   shutdown( theSystem->time() );
 
   // removeScript ought to call shutdown...
-  if (d_scene) d_scene->removeScript(this);
+  if (d_scene) d_scene->removeScript(*this);
 
   delete d_script;
 
@@ -231,7 +231,7 @@ void VrmlNodeScript::addToScene(VrmlScene * const scene,
     }
     if ((this->d_scene = scene)) {
         this->initialize(theSystem->time());
-        this->d_scene->addScript(this);
+        this->d_scene->addScript(*this);
     }
 }
 
@@ -542,8 +542,6 @@ void VrmlNodeScript::setEventIn(const std::string & fname,
 
 void VrmlNodeScript::setEventOut(const std::string & fname,
                                  const VrmlField & value) {
-    cout << "Script::" << this->getId() << " setEventOut(" << fname << ", "
-         << value << endl;
     this->set(d_eventOuts, fname, value);
 }
 
