@@ -1,3 +1,10 @@
+2004-04-23 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed incorrect assertion in Vrml97Parser::protoBodyStatement.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+
 2004-04-09 Braden McDaniel  <braden@endoframe.com>
 
 	Fixes for self-referential Script nodes.  This usage was broken

@@ -857,7 +857,7 @@ protoBodyStatement[openvrml::browser & browser,
 options { defaultErrorHandler=false; }
 {
     assert(scope);
-    assert(impl_nodes.size() == 1);
+    assert(!impl_nodes.empty());
 
     node_ptr n;
 }

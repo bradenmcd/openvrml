@@ -1547,7 +1547,7 @@ void Vrml97Parser::protoBodyStatement(
 #line 851 "Vrml97Parser.g"
 	
 	assert(scope);
-	assert(impl_nodes.size() == 1);
+	assert(!impl_nodes.empty());
 	
 	node_ptr n;
 	
