@@ -1,3 +1,11 @@
+2003-11-12  Braden McDaniel  <braden@endoframe.com>
+
+	Apply Rez utility to lookat executable when building with Apple's
+	OpenGL framework on Mac OS X.
+
+	* configure.ac
+	* src/lookat/Makefile.am
+
 2003-11-10  Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Made

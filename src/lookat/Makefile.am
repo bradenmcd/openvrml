@@ -10,7 +10,18 @@ lookat_LDFLAGS = @GLUT_LIBS@ @JNI_LIBS@
 lookat_LDADD = \
         $(top_builddir)/src/libopenvrml-gl/openvrml/gl/libopenvrml-gl.la \
         $(top_builddir)/src/libopenvrml/openvrml/libopenvrml.la
-endif
+
+if WITH_REZ
+if ENABLE_SHARED
+all-local:
+	$(REZ) -d __DARWIN__ Carbon.r -t APPL -o .libs/lookat
+else
+all-local:
+	$(REZ) -d __DARWIN__ Carbon.r -t APPL -o lookat
+endif # ENABLE_SHARED
+endif # WITH_REZ
+
+endif # ENABLE_LOOKAT
 
 noinst_HEADERS = ViewerGlut.h glutint.h
 

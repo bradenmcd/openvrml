@@ -50,6 +50,12 @@ OV_PROG_JAVAC
 OV_PROG_JAVAH
 OV_PROG_JAR
 
+AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
+AC_PATH_PROG([DOXYGEN], [doxygen])
+
+AC_ARG_VAR([REZ], [Mac OS X resource fork compiler])
+AC_PATH_PROG([REZ], [Rez], [$PATH:/Developer/Tools])
+
 #
 # Checks for libraries/headers.
 #
@@ -78,9 +84,6 @@ AC_PATH_PROG([FREETYPE_CONFIG], [freetype-config])
 PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
 
 AX_CHECK_GLUT
-
-AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
-AC_PATH_PROG([DOXYGEN], [doxygen])
 
 #
 # gzipped file support
@@ -217,6 +220,14 @@ if test "X$enable_lookat" != "Xno"; then
 fi
 AM_CONDITIONAL([ENABLE_LOOKAT],
                [test "X$enable_lookat" != "Xno" -a "X$no_glut" != "Xyes"])
+
+#
+# Apply Rez to executables? (Only seem to need this if we're using the Apple
+# OpenGL framework.)
+#
+AM_CONDITIONAL([WITH_REZ],
+               [test "X$with_apple_opengl_framework" = "Xyes" -a -n "$REZ"])
+AM_CONDITIONAL([ENABLE_SHARED], [test "X$enable_shared" != "Xno"])
 
 #
 # Optional dependencies (substituted in the pkg-config metadata files).
