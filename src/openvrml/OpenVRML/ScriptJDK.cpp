@@ -347,8 +347,8 @@ namespace {
 
       if (eventOut)
       {
-        ScriptNode::PolledEventOutValue * const eventOutPtr =
-          reinterpret_cast<ScriptNode::PolledEventOutValue *>
+        ScriptNode::polled_eventout_value * const eventOutPtr =
+          reinterpret_cast<ScriptNode::polled_eventout_value *>
             (env->GetIntField(obj, fid));
         fieldPtr = eventOutPtr->value.get();
         eventOutPtr->modified = true;
@@ -1542,8 +1542,8 @@ void JNICALL Java_vrml_field_ConstSFNode_CreateObject(JNIEnv * env,
         } else {
             fid = getFid(env, value, "NodePtr", "I");
             if (!fid) { return; }
-            Node * baseNode =
-                    reinterpret_cast<Node*>(env->GetIntField(value, fid));
+            node * baseNode =
+                reinterpret_cast<node *>(env->GetIntField(value, fid));
             if (!baseNode) return;
             sfn.reset(new sfnode(NodePtr(baseNode)));
         }
@@ -1636,8 +1636,8 @@ void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_BaseNode_2(JNIEnv * env,
     if (!sfn) { return; }
     jfieldID fid = getFid(env, value, "NodePtr", "I");
     if (!fid) { return; }
-    Node* node = reinterpret_cast<Node*>(env->GetIntField(value, fid));
-    sfn->value = NodePtr(node);
+    node * const n = reinterpret_cast<node *>(env->GetIntField(value, fid));
+    sfn->value = NodePtr(n);
 }
 
 /**
@@ -3751,9 +3751,10 @@ void JNICALL Java_vrml_field_ConstMFNode_CreateObject
             jobject jNode = env->GetObjectArrayElement(jarr, i);
             fid = getFid(env, jNode, "NodePtr", "I");
             if (!fid) { return; }
-            Node * node = reinterpret_cast<Node*>(env->GetIntField(jNode, fid));
-            if (!node) { return; }
-            mfnode->value[i].reset(node);
+            node * const n =
+                reinterpret_cast<node *>(env->GetIntField(jNode, fid));
+            if (!n) { return; }
+            mfnode->value[i].reset(n);
         }
 
         fid = getFid(env, obj, "FieldPtr", "I");
@@ -3948,7 +3949,8 @@ void JNICALL Java_vrml_field_MFNode_set1Value__ILvrml_BaseNode_2(JNIEnv * env,
     if (!mfn) { return; }
     jfieldID fid = getFid(env, value, "NodePtr", "I");
     if (!fid) { return; }
-    Node* newNode = reinterpret_cast<Node*>(env->GetIntField(value, fid));
+    node * const newNode =
+        reinterpret_cast<node *>(env->GetIntField(value, fid));
     if (!newNode) { return; }
     mfn->value[pos] = NodePtr(newNode);
 }
@@ -3989,7 +3991,8 @@ void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_BaseNode_2(JNIEnv * env,
     if (!mfn) { return; }
     jfieldID fid = getFid(env, value, "NodePtr", "I");
     if (!fid) { return; }
-    Node* newNode = reinterpret_cast<Node*>(env->GetIntField(value, fid));
+    node * const newNode =
+        reinterpret_cast<node *>(env->GetIntField(value, fid));
     if (!newNode) { return; }
     try {
         mfn->value.push_back(NodePtr(newNode));
@@ -4057,7 +4060,8 @@ Java_vrml_field_MFNode_insertValue__ILvrml_BaseNode_2(JNIEnv * env,
     if (!mfn) { return; }
     jfieldID fid = getFid(env, value, "NodePtr", "I");
     if (!fid) { return; }
-    Node* newNode = reinterpret_cast<Node*>(env->GetIntField(value, fid));
+    node * const newNode =
+        reinterpret_cast<node *>(env->GetIntField(value, fid));
     if (!newNode) { return; }
     if (!(size_t(index) < mfn->value.size())) {
         env->ExceptionDescribe();
@@ -6645,7 +6649,7 @@ jobject JNICALL Java_vrml_node_Script_getEventOut
   if (!script) return 0;
 
   field_value::type_id eventOutType =
-    script->nodeType.hasEventOut(eventOutName);
+    script->type.has_eventout(eventOutName);
 
   if (eventOutType != field_value::invalid_type_id)
   {
@@ -6656,7 +6660,7 @@ jobject JNICALL Java_vrml_node_Script_getEventOut
 
     if (iter != eventOutMap.end())
     {
-      const ScriptNode::PolledEventOutValue& eventOutValue = iter->second;
+      const ScriptNode::polled_eventout_value & eventOutValue = iter->second;
       // Found the eventOut
       std::ostrstream os;
       os << "vrml/field/" << iter->second.value->type() << '\0';
@@ -6710,7 +6714,7 @@ jobject JNICALL Java_vrml_node_Script_getEventIn
   if (!script) return 0;
   jobject eventIn;
   field_value::type_id eventInType =
-    script->nodeType.hasEventIn(eventInName);
+    script->type.has_eventin(eventInName);
 
   if (eventInType != field_value::invalid_type_id)
   {
@@ -6729,7 +6733,7 @@ jobject JNICALL Java_vrml_node_Script_getEventIn
   else
   {
     // look for eventIn in exposed field list
-    eventInType = script->nodeType.hasField(eventInName);
+    eventInType = script->type.has_field(eventInName);
 
     if (eventInType != field_value::invalid_type_id)
     {
@@ -6795,14 +6799,13 @@ jstring JNICALL Java_vrml_node_Script_toString
  * @param obj JNI version of a Java node object
  * @return Type of node
  */
-jstring JNICALL Java_vrml_BaseNode_getType
-  (JNIEnv *env, jobject obj)
+jstring JNICALL Java_vrml_BaseNode_getType(JNIEnv * env, jobject obj)
 {
-  jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  if (!fid) return 0;
-  Node* node = (Node*)env->GetIntField(obj, fid);
-  if (!node) return 0;
-  return env->NewStringUTF(node->nodeType.id.c_str());
+    jfieldID fid = getFid(env, obj, "NodePtr", "I");
+    if (!fid) return 0;
+    node * const n = reinterpret_cast<node *>(env->GetIntField(obj, fid));
+    if (!n) { return 0; }
+    return env->NewStringUTF(n->type.id.c_str());
 }
 
 /**
@@ -6815,39 +6818,35 @@ jstring JNICALL Java_vrml_BaseNode_getType
 jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
                                               const jobject obj)
 {
-  assert(env);
-  jfieldID fid = getFid(env, obj, "isScript", "Z");
-  if (!fid) return 0;
-  bool isScript = static_cast<bool>(env->GetBooleanField(obj, fid));
-  const jclass clazz = env->FindClass("vrml/Browser");
-  const jobject jBrowser = env->AllocObject(clazz);
-  fid = getFid(env, obj, "NodePtr", "I");
-  if (!fid) return 0;
-
-  if (isScript)
-  {
-    ScriptNode * const node =
-      reinterpret_cast<ScriptNode *>(env->GetIntField(obj, fid));
-    assert(node);
-    assert(node->getScene());
-    fid = getFid(env, jBrowser, "BrowserPtr", "I");
+    assert(env);
+    jfieldID fid = getFid(env, obj, "isScript", "Z");
     if (!fid) return 0;
-    env->SetIntField(jBrowser, fid,
-                     reinterpret_cast<int>(&node->getScene()->browser));
-  }
-  else
-  {
-    Node * const node =
-      reinterpret_cast<Node *>(env->GetIntField(obj, fid));
-    assert(node);
-    assert(node->getScene());
-    fid = getFid(env, jBrowser, "BrowserPtr", "I");
-    if (!fid) return 0;
-    env->SetIntField(jBrowser, fid,
-                     reinterpret_cast<int>(&node->getScene()->browser));
-  }
+    bool isScript = static_cast<bool>(env->GetBooleanField(obj, fid));
+    const jclass clazz = env->FindClass("vrml/Browser");
+    const jobject jBrowser = env->AllocObject(clazz);
+    fid = getFid(env, obj, "NodePtr", "I");
+    if (!fid) { return 0; }
 
-  return jBrowser;
+    if (isScript) {
+        ScriptNode * const node =
+            reinterpret_cast<ScriptNode *>(env->GetIntField(obj, fid));
+        assert(node);
+        assert(node->scene());
+        fid = getFid(env, jBrowser, "BrowserPtr", "I");
+        if (!fid) return 0;
+        env->SetIntField(jBrowser, fid,
+                         reinterpret_cast<int>(&node->scene()->browser));
+    } else {
+        node * const n =
+            reinterpret_cast<node *>(env->GetIntField(obj, fid));
+        assert(n);
+        assert(n->scene());
+        fid = getFid(env, jBrowser, "BrowserPtr", "I");
+        if (!fid) { return 0; }
+        env->SetIntField(jBrowser, fid,
+                         reinterpret_cast<int>(&n->scene()->browser));
+    }
+    return jBrowser;
 }
 
 /**
@@ -6861,34 +6860,35 @@ jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
  * @todo Implement me! Need to throw InvalidEventInException if
  *       eventIn not present.
  */
-jobject JNICALL Java_vrml_node_Node_getEventIn
-  (JNIEnv *env, jobject obj, jstring jstrEventInName)
+jobject JNICALL Java_vrml_node_Node_getEventIn(JNIEnv * const env,
+                                               jobject obj,
+                                               jstring jstrEventInName)
 {
-  const char *eventInName = env->GetStringUTFChars(jstrEventInName , 0);
-  jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  if (!fid) return 0;
-  Node* node = (Node*) env->GetIntField(obj, fid);
-  if (!node) return 0;
+    const char *eventInName = env->GetStringUTFChars(jstrEventInName , 0);
+    jfieldID fid = getFid(env, obj, "NodePtr", "I");
+    if (!fid) return 0;
+    node * n = reinterpret_cast<node*>(env->GetIntField(obj, fid));
+    if (!n) { return 0; }
 
-  /* Uncomment when getEventIn implementation is added to Node
-  const field_value* field = pNode->getEventIn(eventInName);
+    /* Uncomment when getEventIn implementation is added to Node
+    const field_value* field = pNode->getEventIn(eventInName);
 
-  if (field == 0)
-  {
-    // throw exception as given eventIn name doesn't exist
-    return 0;
-  }
+    if (field == 0)
+    {
+       // throw exception as given eventIn name doesn't exist
+       return 0;
+    }
 
-  char clazzName[256];
-  sprintf(clazzName, "vrml/field/%s", field->typeName());
-  jclass clazz = env->FindClass(clazzName);
-  jobject eventIn = env->AllocObject(clazz);
-  fid = env->GetFieldID(clazz, "FieldPtr", "I");;
-  env->SetIntField(eventIn, fid, (int) field);
-  env->ReleaseStringUTFChars(jstrEventInName, eventInName);
-  */
-  jobject eventIn;
-  return eventIn;
+    char clazzName[256];
+    sprintf(clazzName, "vrml/field/%s", field->typeName());
+    jclass clazz = env->FindClass(clazzName);
+    jobject eventIn = env->AllocObject(clazz);
+    fid = env->GetFieldID(clazz, "FieldPtr", "I");;
+    env->SetIntField(eventIn, fid, (int) field);
+    env->ReleaseStringUTFChars(jstrEventInName, eventInName);
+    */
+    jobject eventIn;
+    return eventIn;
 }
 
 
@@ -6979,18 +6979,17 @@ jobject JNICALL Java_vrml_node_Node_getExposedField
  * @param obj Node object.
  * @return Stringified version of node.
  */
-jstring JNICALL Java_vrml_node_Node_toString
-  (JNIEnv *env, jobject obj)
+jstring JNICALL Java_vrml_node_Node_toString(JNIEnv * const env, jobject obj)
 {
-  std::ostrstream os;
-  jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  if (!fid) return 0;
-  Node* node = reinterpret_cast<Node*>(env->GetIntField(obj, fid));
-  if (!node) return 0;
-  os << *node << std::ends;
-  jstring result = env->NewStringUTF(os.str());
-  os.rdbuf()->freeze(0);
-  return result;
+    std::ostrstream os;
+    jfieldID fid = getFid(env, obj, "NodePtr", "I");
+    if (!fid) return 0;
+    node * n = reinterpret_cast<node*>(env->GetIntField(obj, fid));
+    if (!n) { return 0; }
+    os << *n << std::ends;
+    jstring result = env->NewStringUTF(os.str());
+    os.rdbuf()->freeze(0);
+    return result;
 }
 
 /**
@@ -7282,25 +7281,29 @@ void JNICALL Java_vrml_Browser_createVrmlFromURL
  *       the arguments is invalid. This method should first check
  *       if directOutput is set, if it isn't, don't continue.
  */
-void JNICALL Java_vrml_Browser_addRoute
-  (JNIEnv *env, jobject obj, jobject fromNodeObj, jstring fromEventOut,
-   jobject toNodeObj, jstring toEventIn)
+void JNICALL Java_vrml_Browser_addRoute(JNIEnv * const env,
+                                        jobject obj,
+                                        jobject fromNodeObj,
+                                        jstring fromEventOut,
+                                        jobject toNodeObj,
+                                        jstring toEventIn)
 {
-  jfieldID fid = getFid(env, fromNodeObj, "NodePtr", "I");
-  if (!fid) return;
-  Node* fromNode = reinterpret_cast<Node*>(env->GetIntField(fromNodeObj, fid));
-  assert(fromNode);
-  fid = getFid(env, toNodeObj, "NodePtr", "I");
-  if (!fid) return;
-  Node* toNode = reinterpret_cast<Node*>(env->GetIntField(toNodeObj, fid));
-  assert(toNode);
-  const char* str = env->GetStringUTFChars(fromEventOut, 0);
-  std::string eventOut(str);
-  env->ReleaseStringUTFChars(fromEventOut, str);
-  str = env->GetStringUTFChars(toEventIn, 0);
-  std::string eventIn(str);
-  env->ReleaseStringUTFChars(toEventIn, str);
-  fromNode->addRoute(eventOut, NodePtr(toNode), eventIn);
+    jfieldID fid = getFid(env, fromNodeObj, "NodePtr", "I");
+    if (!fid) { return; }
+    node * fromNode =
+        reinterpret_cast<node *>(env->GetIntField(fromNodeObj, fid));
+    assert(fromNode);
+    fid = getFid(env, toNodeObj, "NodePtr", "I");
+    if (!fid) { return; }
+    node * toNode = reinterpret_cast<node *>(env->GetIntField(toNodeObj, fid));
+    assert(toNode);
+    const char* str = env->GetStringUTFChars(fromEventOut, 0);
+    std::string eventOut(str);
+    env->ReleaseStringUTFChars(fromEventOut, str);
+    str = env->GetStringUTFChars(toEventIn, 0);
+    std::string eventIn(str);
+    env->ReleaseStringUTFChars(toEventIn, str);
+    fromNode->add_route(eventOut, NodePtr(toNode), eventIn);
 }
 
 /**
@@ -7317,25 +7320,29 @@ void JNICALL Java_vrml_Browser_addRoute
  *       the arguments is invalid. This method should first check
  *       if directOutput is set, if it isn't, don't continue.
  */
-void JNICALL Java_vrml_Browser_deleteRoute
-  (JNIEnv *env, jobject obj, jobject fromNodeObj, jstring fromEventOut,
-   jobject toNodeObj, jstring toEventIn)
+void JNICALL Java_vrml_Browser_deleteRoute(JNIEnv * const env,
+                                           jobject obj,
+                                           jobject fromNodeObj,
+                                           jstring fromEventOut,
+                                           jobject toNodeObj,
+                                           jstring toEventIn)
 {
-  jfieldID fid = getFid(env, fromNodeObj, "NodePtr", "I");
-  if (!fid) return;
-  Node* fromNode = reinterpret_cast<Node*>(env->GetIntField(fromNodeObj, fid));
-  assert(fromNode);
-  fid = getFid(env, toNodeObj, "NodePtr", "I");
-  if (!fid) return;
-  Node* toNode = reinterpret_cast<Node*>(env->GetIntField(toNodeObj, fid));
-  assert(toNode);
-  const char* str = env->GetStringUTFChars(fromEventOut, 0);
-  std::string eventOut(str);
-  env->ReleaseStringUTFChars(fromEventOut, str);
-  str = env->GetStringUTFChars(toEventIn, 0);
-  std::string eventIn(str);
-  env->ReleaseStringUTFChars(toEventIn, str);
-  fromNode->deleteRoute(eventOut, NodePtr(toNode), eventIn);
+    jfieldID fid = getFid(env, fromNodeObj, "NodePtr", "I");
+    if (!fid) { return; }
+    node * fromNode =
+        reinterpret_cast<node *>(env->GetIntField(fromNodeObj, fid));
+    assert(fromNode);
+    fid = getFid(env, toNodeObj, "NodePtr", "I");
+    if (!fid) { return; }
+    node * toNode = reinterpret_cast<node *>(env->GetIntField(toNodeObj, fid));
+    assert(toNode);
+    const char* str = env->GetStringUTFChars(fromEventOut, 0);
+    std::string eventOut(str);
+    env->ReleaseStringUTFChars(fromEventOut, str);
+    str = env->GetStringUTFChars(toEventIn, 0);
+    std::string eventIn(str);
+    env->ReleaseStringUTFChars(toEventIn, str);
+    fromNode->delete_route(eventOut, NodePtr(toNode), eventIn);
 }
 
 /**

@@ -28,16 +28,16 @@
 
 namespace OpenVRML {
 
-    class Node;
+    class node;
 
     class OPENVRML_SCOPE NodePtr {
 
         friend class ScriptNode;
 
-        std::map<Node *, size_t>::value_type * countPtr; // MSVC6 doesn't like std::map<>::pointer
+        std::map<node *, size_t>::value_type * countPtr; // MSVC6 doesn't like std::map<>::pointer
 
     public:
-        explicit NodePtr(Node * node = 0);
+        explicit NodePtr(node * node = 0);
         NodePtr(const NodePtr & nodePtr);
         ~NodePtr();
 
@@ -47,16 +47,16 @@ namespace OpenVRML {
 
         bool operator==(const NodePtr & nodePtr) const;
 
-        Node & operator*() const;
-        Node * operator->() const;
-        Node * get() const;
+        node & operator*() const;
+        node * operator->() const;
+        node * get() const;
 
-        void reset(Node * node = 0);
+        void reset(node * node = 0);
         void swap(NodePtr & nodePtr) throw ();
 
     private:
         void dispose() throw ();
-        void share(std::map<Node *, size_t>::value_type * countPtr) throw ();
+        void share(std::map<node *, size_t>::value_type * countPtr) throw ();
     };
 
 
@@ -76,21 +76,21 @@ namespace OpenVRML {
         return *this;
     }
 
-    inline Node & NodePtr::operator*() const
+    inline node & NodePtr::operator*() const
     {
         assert(this->countPtr);
         assert(this->countPtr->first);
         return *this->countPtr->first;
     }
 
-    inline Node * NodePtr::operator->() const
+    inline node * NodePtr::operator->() const
     {
         assert(this->countPtr);
         assert(this->countPtr->first);
         return this->countPtr->first;
     }
 
-    inline Node * NodePtr::get() const
+    inline node * NodePtr::get() const
     {
         return this->countPtr ? this->countPtr->first : 0;
     }

@@ -169,29 +169,31 @@ namespace {
     /**
      * @internal
      */
-    class Vrml97NodeType : public NodeType {
+    class Vrml97NodeType : public node_type {
     public:
         virtual ~Vrml97NodeType() throw () = 0;
-        virtual void setFieldValue(Node & node, const std::string & id,
+        virtual void setFieldValue(OpenVRML::node & node, const std::string & id,
                                    const field_value &) const
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
-        virtual const field_value & getFieldValue(const Node & node,
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
+        virtual const field_value & getFieldValue(const OpenVRML::node & node,
                                                  const std::string & id) const
-            throw (UnsupportedInterface) = 0;
-        virtual void dispatchEventIn(Node & node, const std::string & id,
-                                     const field_value &, double timestamp) const
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
-        virtual const field_value & getEventOutValue(const Node & node,
-                                                    const std::string & id) const
-            throw (UnsupportedInterface) = 0;
+            throw (unsupported_interface) = 0;
+        virtual void
+        dispatchEventIn(OpenVRML::node & node, const std::string & id,
+                        const field_value &, double timestamp) const
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
+        virtual const field_value &
+        getEventOutValue(const OpenVRML::node & node,
+                         const std::string & id) const
+            throw (unsupported_interface) = 0;
 
     protected:
-        Vrml97NodeType(NodeClass & nodeClass, const std::string & id);
+        Vrml97NodeType(node_class & nodeClass, const std::string & id);
     };
 
-    Vrml97NodeType::Vrml97NodeType(NodeClass & nodeClass,
+    Vrml97NodeType::Vrml97NodeType(node_class & nodeClass,
                                    const std::string & id):
-        NodeType(nodeClass, id)
+        node_type(nodeClass, id)
     {}
 
     Vrml97NodeType::~Vrml97NodeType() throw ()
@@ -252,7 +254,7 @@ namespace {
         typedef void (NodeT::* EventInHandlerPtr)(const field_value &, double);
 
     private:
-        NodeInterfaceSet interfaces;
+        node_interface_set interfaces_;
         typedef std::map<std::string, EventInHandlerPtr> EventInHandlerMap;
         typedef std::map<std::string, NodeFieldPtrPtr> FieldValueMap;
         mutable FieldValueMap fieldValueMap;
@@ -260,62 +262,61 @@ namespace {
         FieldValueMap eventOutValueMap;
 
     public:
-        Vrml97NodeTypeImpl(NodeClass & nodeClass, const std::string & id);
+        Vrml97NodeTypeImpl(node_class & nodeClass, const std::string & id);
         virtual ~Vrml97NodeTypeImpl() throw ();
 
         void addEventIn(field_value::type_id, const std::string & id,
                         EventInHandlerPtr eventInHandlerPtr)
-            throw (UnsupportedInterface, std::bad_alloc);
+            throw (unsupported_interface, std::bad_alloc);
         void addEventOut(field_value::type_id, const std::string & id,
                          const NodeFieldPtrPtr & eventOutPtrPtr)
-            throw (UnsupportedInterface, std::bad_alloc);
+            throw (unsupported_interface, std::bad_alloc);
         void addExposedField(field_value::type_id, const std::string & id,
                              EventInHandlerPtr eventInHandlerPtr,
                              const NodeFieldPtrPtr & fieldPtrPtr)
-            throw (UnsupportedInterface, std::bad_alloc);
+            throw (unsupported_interface, std::bad_alloc);
         void addField(field_value::type_id, const std::string & id,
                       const NodeFieldPtrPtr & fieldPtrPtr)
-            throw (UnsupportedInterface, std::bad_alloc);
+            throw (unsupported_interface, std::bad_alloc);
 
-        virtual void setFieldValue(Node & node, const std::string & id,
+        virtual void setFieldValue(OpenVRML::node & node, const std::string & id,
                                    const field_value &) const
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         virtual const field_value &
-                getFieldValue(const Node & node,
+                getFieldValue(const OpenVRML::node & node,
                               const std::string & id) const
-            throw (UnsupportedInterface);
-        virtual void dispatchEventIn(Node & node,
+            throw (unsupported_interface);
+        virtual void dispatchEventIn(OpenVRML::node & node,
                                      const std::string & id,
                                      const field_value &,
                                      double timestamp) const
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         virtual const field_value &
-                getEventOutValue(const Node & node,
-                                 const std::string & id) const
-            throw (UnsupportedInterface);
+        getEventOutValue(const OpenVRML::node & node,
+                         const std::string & id) const
+            throw (unsupported_interface);
 
-        virtual const NodeInterfaceSet & getInterfaces() const throw ();
-
-        virtual const NodePtr createNode(const ScopePtr & scope) const
+        virtual const node_interface_set & interfaces() const throw ();
+        virtual const NodePtr create_node(const ScopePtr & scope) const
             throw (std::bad_alloc);
 
     private:
         void do_setFieldValue(NodeT & node, const std::string & id,
                               const field_value &) const
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         const field_value & do_getFieldValue(const NodeT & node,
                                             const std::string & id) const
-            throw (UnsupportedInterface);
+            throw (unsupported_interface);
         void do_dispatchEventIn(NodeT & node, const std::string & id,
                                  const field_value &, double timestamp) const
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         const field_value & do_getEventOutValue(const NodeT & node,
                                                 const std::string & id) const
-            throw (UnsupportedInterface);
+            throw (unsupported_interface);
     };
 
     template <typename NodeT>
-    Vrml97NodeTypeImpl<NodeT>::Vrml97NodeTypeImpl(NodeClass & nodeClass,
+    Vrml97NodeTypeImpl<NodeT>::Vrml97NodeTypeImpl(node_class & nodeClass,
                                                   const std::string & id):
         Vrml97NodeType(nodeClass, id)
     {}
@@ -329,10 +330,10 @@ namespace {
             const field_value::type_id type,
             const std::string & id,
             const EventInHandlerPtr eventInHandlerPtr)
-        throw (UnsupportedInterface, std::bad_alloc)
+        throw (unsupported_interface, std::bad_alloc)
     {
-        const NodeInterface interface(NodeInterface::eventIn, type, id);
-        this->interfaces.add(interface);
+        const node_interface interface(node_interface::eventin_id, type, id);
+        this->interfaces_.add(interface);
         const typename EventInHandlerMap::value_type
                 value(id, eventInHandlerPtr);
         const bool succeeded = this->eventInHandlerMap.insert(value).second;
@@ -344,10 +345,10 @@ namespace {
             const field_value::type_id type,
             const std::string & id,
             const NodeFieldPtrPtr & eventOutPtrPtr)
-        throw (UnsupportedInterface, std::bad_alloc)
+        throw (unsupported_interface, std::bad_alloc)
     {
-        const NodeInterface interface(NodeInterface::eventOut, type, id);
-        this->interfaces.add(interface);
+        const node_interface interface(node_interface::eventout_id, type, id);
+        this->interfaces_.add(interface);
         const typename FieldValueMap::value_type value(id, eventOutPtrPtr);
         const bool succeeded = this->eventOutValueMap.insert(value).second;
         assert(succeeded);
@@ -359,10 +360,10 @@ namespace {
             const std::string & id,
             const EventInHandlerPtr eventInHandlerPtr,
             const NodeFieldPtrPtr & fieldPtrPtr)
-        throw (UnsupportedInterface, std::bad_alloc)
+        throw (unsupported_interface, std::bad_alloc)
     {
-        const NodeInterface interface(NodeInterface::exposedField, type, id);
-        this->interfaces.add(interface);
+        const node_interface interface(node_interface::exposedfield_id, type, id);
+        this->interfaces_.add(interface);
 
         bool succeeded;
         {
@@ -389,10 +390,10 @@ namespace {
             const field_value::type_id type,
             const std::string & id,
             const NodeFieldPtrPtr & nodeFieldPtrPtr)
-        throw (UnsupportedInterface, std::bad_alloc)
+        throw (unsupported_interface, std::bad_alloc)
     {
-        const NodeInterface interface(NodeInterface::field, type, id);
-        this->interfaces.add(interface);
+        const node_interface interface(node_interface::field_id, type, id);
+        this->interfaces_.add(interface);
         const typename FieldValueMap::value_type value(id, nodeFieldPtrPtr);
         const bool succeeded = this->fieldValueMap.insert(value).second;
         assert(succeeded);
@@ -400,10 +401,10 @@ namespace {
 
     template <typename NodeT>
     void Vrml97NodeTypeImpl<NodeT>::setFieldValue(
-            Node & node,
+            OpenVRML::node & node,
             const std::string & id,
             const field_value & newVal) const
-        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+        throw (unsupported_interface, std::bad_cast, std::bad_alloc)
     {
         assert(dynamic_cast<NodeT *>(&node));
         this->do_setFieldValue(dynamic_cast<NodeT &>(node), id, newVal);
@@ -411,9 +412,9 @@ namespace {
 
     template <typename NodeT>
     const field_value &
-    Vrml97NodeTypeImpl<NodeT>::getFieldValue(const Node & node,
+    Vrml97NodeTypeImpl<NodeT>::getFieldValue(const OpenVRML::node & node,
                                              const std::string & id) const
-        throw (UnsupportedInterface)
+        throw (unsupported_interface)
     {
         assert(dynamic_cast<const NodeT *>(&node));
         return this->do_getFieldValue(dynamic_cast<const NodeT &>(node), id);
@@ -421,11 +422,11 @@ namespace {
 
     template <typename NodeT>
     void
-    Vrml97NodeTypeImpl<NodeT>::dispatchEventIn(Node & node,
+    Vrml97NodeTypeImpl<NodeT>::dispatchEventIn(OpenVRML::node & node,
                                                const std::string & id,
                                                const field_value & value,
                                                const double timestamp) const
-        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+        throw (unsupported_interface, std::bad_cast, std::bad_alloc)
     {
         assert(dynamic_cast<NodeT *>(&node));
         this->do_dispatchEventIn(dynamic_cast<NodeT &>(node), id, value,
@@ -434,24 +435,24 @@ namespace {
 
     template <typename NodeT>
     const field_value &
-    Vrml97NodeTypeImpl<NodeT>::getEventOutValue(const Node & node,
+    Vrml97NodeTypeImpl<NodeT>::getEventOutValue(const OpenVRML::node & node,
                                                 const std::string & id) const
-        throw (UnsupportedInterface)
+        throw (unsupported_interface)
     {
         assert(dynamic_cast<const NodeT *>(&node));
         return this->do_getEventOutValue(dynamic_cast<const NodeT &>(node), id);
     }
 
     template <typename NodeT>
-    const NodeInterfaceSet & Vrml97NodeTypeImpl<NodeT>::getInterfaces() const
+    const node_interface_set & Vrml97NodeTypeImpl<NodeT>::interfaces() const
         throw ()
     {
-        return this->interfaces;
+        return this->interfaces_;
     }
 
     template <typename NodeT>
     const NodePtr
-    Vrml97NodeTypeImpl<NodeT>::createNode(const ScopePtr & scope) const
+    Vrml97NodeTypeImpl<NodeT>::create_node(const ScopePtr & scope) const
         throw (std::bad_alloc)
     {
         return NodePtr(new NodeT(*this, scope));
@@ -462,11 +463,13 @@ namespace {
             NodeT & node,
             const std::string & id,
             const field_value & newVal) const
-        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+        throw (unsupported_interface, std::bad_cast, std::bad_alloc)
     {
         typename FieldValueMap::iterator itr = this->fieldValueMap.find(id);
         if (itr == this->fieldValueMap.end()) {
-            throw UnsupportedInterface(node.nodeType, NodeInterface::field, id);
+            throw unsupported_interface(node.OpenVRML::node::type,
+                                        node_interface::field_id,
+                                        id);
         }
         itr->second->dereference(node).assign(newVal);
     }
@@ -475,12 +478,14 @@ namespace {
     const field_value &
     Vrml97NodeTypeImpl<NodeT>::do_getFieldValue(const NodeT & node,
                                                 const std::string & id) const
-        throw (UnsupportedInterface)
+        throw (unsupported_interface)
     {
         const typename FieldValueMap::const_iterator itr =
                 this->fieldValueMap.find(id);
         if (itr == this->fieldValueMap.end()) {
-            throw UnsupportedInterface(node.nodeType, NodeInterface::field, id);
+            throw unsupported_interface(node.OpenVRML::node::type,
+                                        node_interface::field_id,
+                                        id);
         }
         return itr->second->dereference(node);
     }
@@ -491,7 +496,7 @@ namespace {
             const std::string & id,
             const field_value & value,
             const double timestamp) const
-        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+        throw (unsupported_interface, std::bad_cast, std::bad_alloc)
     {
         typename EventInHandlerMap::const_iterator
                 itr(this->eventInHandlerMap.find(id));
@@ -499,9 +504,9 @@ namespace {
             itr = this->eventInHandlerMap.find("set_" + id);
         }
         if (itr == this->eventInHandlerMap.end()) {
-            throw UnsupportedInterface(node.nodeType,
-                                       NodeInterface::eventIn,
-                                       id);
+            throw unsupported_interface(node.OpenVRML::node::type,
+                                        node_interface::eventin_id,
+                                        id);
         }
         (node.*(itr->second))(value, timestamp);
     }
@@ -511,7 +516,7 @@ namespace {
     Vrml97NodeTypeImpl<NodeT>::do_getEventOutValue(
             const NodeT & node,
             const std::string & id) const
-        throw (UnsupportedInterface)
+        throw (unsupported_interface)
     {
         typename FieldValueMap::const_iterator
                 itr(this->eventOutValueMap.find(id));
@@ -519,9 +524,9 @@ namespace {
             itr = this->eventOutValueMap.find(id + "_changed");
         }
         if (itr == this->eventOutValueMap.end()) {
-            throw UnsupportedInterface(node.nodeType,
-                                       NodeInterface::eventOut,
-                                       id);
+            throw unsupported_interface(node.OpenVRML::node::type,
+                                        node_interface::eventout_id,
+                                        id);
         }
         return itr->second->dereference(node);
     }
@@ -542,8 +547,8 @@ namespace {
  * @param nodeType  the NodeType associated with this node.
  * @param scope     the Scope to which the node belongs.
  */
-AbstractBase::AbstractBase(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope)
+AbstractBase::AbstractBase(const node_type & nodeType, const ScopePtr & scope):
+    node(nodeType, scope)
 {}
 
 /**
@@ -558,19 +563,18 @@ AbstractBase::~AbstractBase() throw ()
  * @param id    a field name.
  * @param value a field_value.
  *
- * @exception UnsupportedInterface  if the node has no field @p id.
+ * @exception unsupported_interface  if the node has no field @p id.
  * @exception std::bad_cast         if @p value is not the correct type.
  * @exception std::bad_alloc        if memory allocation fails.
  *
  * @pre @p value must be of the correct type.
  */
-void AbstractBase::do_setField(const std::string & id,
-                               const field_value & value)
-    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+void AbstractBase::do_field(const std::string & id, const field_value & value)
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
-    assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
-    static_cast<const Vrml97NodeType &>(this->nodeType)
-            .setFieldValue(*this, id, value);
+    assert(dynamic_cast<const Vrml97NodeType *>(&this->type));
+    static_cast<const Vrml97NodeType &>(this->type)
+        .setFieldValue(*this, id, value);
 }
 
 /**
@@ -578,14 +582,14 @@ void AbstractBase::do_setField(const std::string & id,
  *
  * @param id    a field name.
  *
- * @exception UnsupportedInterface  if the node has no field @p id.
+ * @exception unsupported_interface  if the node has no field @p id.
  */
-const field_value & AbstractBase::do_getField(const std::string & id) const
-    throw (UnsupportedInterface)
+const field_value & AbstractBase::do_field(const std::string & id) const
+    throw (unsupported_interface)
 {
-    assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
-    return static_cast<const Vrml97NodeType &>(this->nodeType)
-            .getFieldValue(*this, id);
+    assert(dynamic_cast<const Vrml97NodeType *>(&this->type));
+    return static_cast<const Vrml97NodeType &>(this->type)
+        .getFieldValue(*this, id);
 }
 
 /**
@@ -595,20 +599,20 @@ const field_value & AbstractBase::do_getField(const std::string & id) const
  * @param value     a field_value.
  * @param timestamp the current time.
  *
- * @exception UnsupportedInterface  if the node has no eventIn @p id.
+ * @exception unsupported_interface  if the node has no eventIn @p id.
  * @exception std::bad_cast         if @p value is not the correct type.
  * @exception std::bad_alloc        if memory allocation fails.
  *
  * @pre @p value must be of the correct type.
  */
-void AbstractBase::do_processEvent(const std::string & id,
-                                   const field_value & value,
-                                   const double timestamp)
-    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+void AbstractBase::do_process_event(const std::string & id,
+                                    const field_value & value,
+                                    const double timestamp)
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
-    assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
-    static_cast<const Vrml97NodeType &>(this->nodeType)
-            .dispatchEventIn(*this, id, value, timestamp);
+    assert(dynamic_cast<const Vrml97NodeType *>(&this->type));
+    static_cast<const Vrml97NodeType &>(this->type)
+        .dispatchEventIn(*this, id, value, timestamp);
 }
 
 /**
@@ -616,14 +620,14 @@ void AbstractBase::do_processEvent(const std::string & id,
  *
  * @param id    an eventOut name.
  *
- * @exception UnsupportedInterface  if the node has no eventOut @p id.
+ * @exception unsupported_interface  if the node has no eventOut @p id.
  */
-const field_value & AbstractBase::do_getEventOut(const std::string & id) const
-    throw (UnsupportedInterface)
+const field_value & AbstractBase::do_eventout(const std::string & id) const
+    throw (unsupported_interface)
 {
-    assert(dynamic_cast<const Vrml97NodeType *>(&this->nodeType));
-    return static_cast<const Vrml97NodeType &>(this->nodeType)
-            .getEventOutValue(*this, id);
+    assert(dynamic_cast<const Vrml97NodeType *>(&this->type));
+    return static_cast<const Vrml97NodeType &>(this->type)
+        .getEventOutValue(*this, id);
 }
 
 
@@ -644,10 +648,11 @@ const field_value & AbstractBase::do_getEventOut(const std::string & id) const
  * @param nodeType  the NodeType for the node.
  * @param scope     the Scope the new node should belong to.
  */
-AbstractChild::AbstractChild(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope),
+AbstractChild::AbstractChild(const node_type & nodeType,
+                             const ScopePtr & scope):
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    ChildNode(nodeType, scope)
+    child_node(nodeType, scope)
 {}
 
 /**
@@ -668,11 +673,11 @@ AbstractChild::~AbstractChild() throw ()
  * @param nodeType  the NodeType for the node.
  * @param scope     the Scope the new node should belong to.
  */
-AbstractGeometry::AbstractGeometry(const NodeType & nodeType,
+AbstractGeometry::AbstractGeometry(const node_type & nodeType,
                                    const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    GeometryNode(nodeType, scope),
+    geometry_node(nodeType, scope),
     d_viewerObject(0)
 {}
 
@@ -687,14 +692,14 @@ AbstractGeometry::~AbstractGeometry() throw ()
 /**
  * @brief Render this node.
  *
- * Subclasses need only define insertGeometry(), not render().
+ * Subclasses need only define insert_geometry(), not render().
  *
  * @param viewer a renderer
  * @param context the renderer context
  */
 void AbstractGeometry::render(Viewer & viewer, VrmlRenderContext context)
 {
-    if (this->d_viewerObject && this->isModified()) {
+    if (this->d_viewerObject && this->modified()) {
         viewer.removeObject(this->d_viewerObject);
         this->d_viewerObject = 0;
     }
@@ -702,8 +707,8 @@ void AbstractGeometry::render(Viewer & viewer, VrmlRenderContext context)
     if (this->d_viewerObject) {
         viewer.insertReference(this->d_viewerObject);
     } else {
-        this->d_viewerObject = this->insertGeometry(viewer, context);
-        this->clearModified();
+        this->d_viewerObject = this->insert_geometry(viewer, context);
+        this->modified(false);
     }
 }
 
@@ -720,9 +725,9 @@ void AbstractGeometry::render(Viewer & viewer, VrmlRenderContext context)
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
  */
-AbstractIndexedSet::AbstractIndexedSet(const NodeType & nodeType,
+AbstractIndexedSet::AbstractIndexedSet(const node_type & nodeType,
                                        const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractGeometry(nodeType, scope),
     colorPerVertex(true)
 {}
@@ -739,11 +744,11 @@ AbstractIndexedSet::~AbstractIndexedSet() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool AbstractIndexedSet::isModified() const
+bool AbstractIndexedSet::modified() const
 {
-    return (this->d_modified
-            || (this->color.value && this->color.value->isModified())
-            || (this->coord.value && this->coord.value->isModified()));
+    return (this->modified_
+            || (this->color_.value && this->color_.value->modified())
+            || (this->coord.value && this->coord.value->modified()));
 }
 
 /**
@@ -753,19 +758,19 @@ bool AbstractIndexedSet::isModified() const
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void AbstractIndexedSet::updateModified(NodePath & path, int flags)
+void AbstractIndexedSet::update_modified(node_path & path, int flags)
 {
-    if (this->isModified()) { markPathModified(path, true); }
+    if (this->modified()) { mark_path_modified(path, true); }
     path.push_front(this);
-    if (this->color.value) { this->color.value->updateModified(path); }
-    if (this->coord.value) { this->coord.value->updateModified(path); }
+    if (this->color_.value) { this->color_.value->update_modified(path); }
+    if (this->coord.value) { this->coord.value->update_modified(path); }
     path.pop_front();
 }
 
-const ColorNode * AbstractIndexedSet::getColor() const throw ()
+const color_node * AbstractIndexedSet::color() const throw ()
 {
-    return this->color.value
-            ? this->color.value->toColor()
+    return this->color_.value
+            ? this->color_.value->to_color()
             : 0;
 }
 
@@ -782,9 +787,9 @@ void AbstractIndexedSet::processSet_color(const field_value & value,
                                           const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->color = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("color_changed", this->color, timestamp);
+    this->color_ = dynamic_cast<const sfnode &>(value);
+    this->node::modified(true);
+    this->emit_event("color_changed", this->color_, timestamp);
 }
 
 /**
@@ -801,7 +806,7 @@ void AbstractIndexedSet::processSet_colorIndex(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->colorIndex = dynamic_cast<const mfint32 &>(value);
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -818,8 +823,8 @@ void AbstractIndexedSet::processSet_coord(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->coord = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("coord_changed", this->coord, timestamp);
+    this->node::modified(true);
+    this->emit_event("coord_changed", this->coord, timestamp);
 }
 
 /**
@@ -836,7 +841,7 @@ void AbstractIndexedSet::processSet_coordIndex(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->coordIndex = dynamic_cast<const mfint32 &>(value);
-    this->setModified();
+    this->node::modified(true);
 }
 
 
@@ -852,8 +857,8 @@ void AbstractIndexedSet::processSet_coordIndex(const field_value & value,
  * @param nodeType  the NodeType for the node.
  * @param scope     the Scope to which the node belongs.
  */
-AbstractLight::AbstractLight(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope),
+AbstractLight::AbstractLight(const node_type & nodeType, const ScopePtr & scope):
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     ambientIntensity(0.0),
     color(OpenVRML::color(1.0, 1.0, 1.0)),
@@ -872,7 +877,7 @@ AbstractLight::~AbstractLight() throw ()
  *
  * @return a pointer to this object.
  */
-AbstractLight * AbstractLight::toLight() const
+AbstractLight * AbstractLight::to_light() const
 {
     return const_cast<AbstractLight *>(this);
 }
@@ -900,8 +905,8 @@ void AbstractLight::processSet_ambientIntensity(const field_value & value,
     throw (std::bad_cast)
 {
     this->ambientIntensity = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("ambientIntensity_changed", this->ambientIntensity,
+    this->node::modified(true);
+    this->emit_event("ambientIntensity_changed", this->ambientIntensity,
                     timestamp);
 }
 
@@ -918,8 +923,8 @@ void AbstractLight::processSet_color(const field_value & value,
     throw (std::bad_cast)
 {
     this->color = dynamic_cast<const sfcolor &>(value);
-    this->setModified();
-    this->emitEvent("color_changed", this->color, timestamp);
+    this->node::modified(true);
+    this->emit_event("color_changed", this->color, timestamp);
 }
 
 /**
@@ -935,8 +940,8 @@ void AbstractLight::processSet_intensity(const field_value & value,
     throw (std::bad_cast)
 {
     this->intensity = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("intensity_changed", this->intensity, timestamp);
+    this->node::modified(true);
+    this->emit_event("intensity_changed", this->intensity, timestamp);
 }
 
 /**
@@ -952,8 +957,8 @@ void AbstractLight::processSet_on(const field_value & value,
     throw (std::bad_cast)
 {
     this->on = dynamic_cast<const sfbool &>(value);
-    this->setModified();
-    this->emitEvent("on_changed", this->on, timestamp);
+    this->node::modified(true);
+    this->emit_event("on_changed", this->on, timestamp);
 }
 
 
@@ -969,11 +974,11 @@ void AbstractLight::processSet_on(const field_value & value,
  * @param nodeType  the NodeType for the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-AbstractTexture::AbstractTexture(const NodeType & nodeType,
+AbstractTexture::AbstractTexture(const node_type & nodeType,
                                  const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    TextureNode(nodeType, scope),
+    texture_node(nodeType, scope),
     repeatS(true),
     repeatT(true)
 {}
@@ -987,10 +992,10 @@ AbstractTexture::~AbstractTexture() throw ()
 /**
  * @brief Get the repeatS flag.
  *
- * @return @c TRUE if the texture should repeat in the <var>S</var> direction,
- *      @c FALSE otherwise.
+ * @return @c true if the texture should repeat in the <var>S</var> direction,
+ *      @c false otherwise.
  */
-bool AbstractTexture::getRepeatS() const throw ()
+bool AbstractTexture::repeat_s() const throw ()
 {
     return this->repeatS.value;
 }
@@ -998,10 +1003,10 @@ bool AbstractTexture::getRepeatS() const throw ()
 /**
  * @brief Get the repeatT flag.
  *
- * @return @c TRUE if the texture should repeat in the <var>T</var> direction,
- *      @c FALSE otherwise.
+ * @return @c true if the texture should repeat in the <var>T</var> direction,
+ *      @c false otherwise.
  */
-bool AbstractTexture::getRepeatT() const throw ()
+bool AbstractTexture::repeat_t() const throw ()
 {
     return this->repeatT.value;
 }
@@ -1019,7 +1024,7 @@ bool AbstractTexture::getRepeatT() const throw ()
  * @param browser the Browser associated with this AnchorClass.
  */
 AnchorClass::AnchorClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -1036,80 +1041,81 @@ AnchorClass::~AnchorClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Anchor nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by AnchorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr AnchorClass::createType(const std::string & id,
-                                          const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+const NodeTypePtr
+AnchorClass::create_type(const std::string & id,
+                        const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfstring_id, "description"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "parameter"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::mfnode_id, "addChildren"),
+        node_interface(node_interface::eventin_id, field_value::mfnode_id, "removeChildren"),
+        node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "children"),
+        node_interface(node_interface::exposedfield_id, field_value::sfstring_id, "description"),
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "parameter"),
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "url"),
+        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
+        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Anchor>(*this, id));
     Vrml97NodeTypeImpl<Anchor> & anchorNodeType =
             static_cast<Vrml97NodeTypeImpl<Anchor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Anchor>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
-            anchorNodeType.addEventIn(supportedInterfaces[0].fieldType,
+            anchorNodeType.addEventIn(supportedInterfaces[0].field_type,
                                       supportedInterfaces[0].id,
                                       &Anchor::processAddChildren);
         } else if (*itr == supportedInterfaces[1]) {
-            anchorNodeType.addEventIn(supportedInterfaces[1].fieldType,
+            anchorNodeType.addEventIn(supportedInterfaces[1].field_type,
                                       supportedInterfaces[1].id,
                                       &Anchor::processRemoveChildren);
         } else if (*itr == supportedInterfaces[2]) {
             anchorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Anchor::processSet_children,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, mfnode>
-                                    (&Anchor::children)));
+                                    (&Anchor::children_)));
         } else if (*itr == supportedInterfaces[3]) {
             anchorNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &Anchor::processSet_description,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, sfstring>
                                     (&Anchor::description)));
         } else if (*itr == supportedInterfaces[4]) {
             anchorNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &Anchor::processSet_parameter,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, mfstring>
                                     (&Anchor::parameter)));
         } else if (*itr == supportedInterfaces[5]) {
             anchorNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &Anchor::processSet_url,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, mfstring>
                                     (&Anchor::url)));
         } else if (*itr == supportedInterfaces[6]) {
             anchorNodeType.addField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, sfvec3f>
                                     (&Anchor::bboxCenter)));
         } else if (*itr == supportedInterfaces[7]) {
             anchorNodeType.addField(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Anchor, sfvec3f>
                                 (&Anchor::bboxSize)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -1127,14 +1133,14 @@ const NodeTypePtr AnchorClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with this node.
  * @param scope     the Scope to which the node belongs.
  */
-Anchor::Anchor(const NodeType & nodeType,
+Anchor::Anchor(const node_type & nodeType,
                const ScopePtr & scope):
-    Node(nodeType, scope),
-    ChildNode(nodeType, scope),
-    GroupingNode(nodeType, scope),
+    node(nodeType, scope),
+    child_node(nodeType, scope),
+    grouping_node(nodeType, scope),
     Group(nodeType, scope)
 {
-    this->setBVolumeDirty(true);
+    this->bvolume_dirty(true);
 }
 
 /**
@@ -1157,7 +1163,7 @@ void Anchor::processSet_description(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->description = dynamic_cast<const sfstring &>(value);
-    this->emitEvent("description_changed", this->description, timestamp);
+    this->emit_event("description_changed", this->description, timestamp);
 }
 
 /**
@@ -1174,7 +1180,7 @@ void Anchor::processSet_parameter(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->parameter = dynamic_cast<const mfstring &>(value);
-    this->emitEvent("parameter_changed", this->parameter, timestamp);
+    this->emit_event("parameter_changed", this->parameter, timestamp);
 }
 
 /**
@@ -1191,7 +1197,7 @@ void Anchor::processSet_url(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->url = dynamic_cast<const mfstring &>(value);
-    this->emitEvent("url_changed", this->url, timestamp);
+    this->emit_event("url_changed", this->url, timestamp);
 }
 
 /**
@@ -1199,7 +1205,7 @@ void Anchor::processSet_url(const field_value & value,
  *
  * @return a pointer to this node.
  */
-Anchor * Anchor::toAnchor() const
+Anchor * Anchor::to_anchor() const
 {
     return const_cast<Anchor *>(this);
 }
@@ -1225,8 +1231,8 @@ void Anchor::render(Viewer & viewer, const VrmlRenderContext context)
  */
 void Anchor::activate()
 {
-    assert(this->getScene());
-    this->getScene()->loadURI(this->url.value, this->parameter.value);
+    assert(this->scene());
+    this->scene()->loadURI(this->url.value, this->parameter.value);
 }
 
 /**
@@ -1234,9 +1240,9 @@ void Anchor::activate()
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Anchor::getBVolume() const
+const BVolume * Anchor::bvolume() const
 {
-    return Group::getBVolume();
+    return Group::bvolume();
 }
 
 /**
@@ -1251,7 +1257,7 @@ const BVolume * Anchor::getBVolume() const
  * @param browser the Browser associated with this class object.
  */
 AppearanceClass::AppearanceClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -1268,49 +1274,49 @@ AppearanceClass::~AppearanceClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Appearance nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by AppearanceClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-AppearanceClass::createType(const std::string & id,
-                            const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+AppearanceClass::create_type(const std::string & id,
+                            const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "material"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "texture"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "textureTransform")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "material"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "texture"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "textureTransform")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Appearance>(*this, id));
     Vrml97NodeTypeImpl<Appearance> & appearanceNodeType =
             static_cast<Vrml97NodeTypeImpl<Appearance> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Appearance>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             appearanceNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &Appearance::processSet_material,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Appearance, sfnode>
-                                    (&Appearance::material)));
+                                    (&Appearance::material_)));
         } else if (*itr == supportedInterfaces[1]) {
             appearanceNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &Appearance::processSet_texture,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Appearance, sfnode>
-                                    (&Appearance::texture)));
+                                    (&Appearance::texture_)));
         } else if (*itr == supportedInterfaces[2]) {
             appearanceNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Appearance::processSet_textureTransform,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Appearance, sfnode>
                                     (&Appearance::textureTransform)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -1328,11 +1334,11 @@ AppearanceClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Appearance::Appearance(const NodeType & nodeType,
+Appearance::Appearance(const node_type & nodeType,
                        const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    AppearanceNode(nodeType, scope)
+    appearance_node(nodeType, scope)
 {}
 
 /**
@@ -1354,9 +1360,9 @@ void Appearance::processSet_material(const field_value & value,
                                      double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->material = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("material_changed", this->material, timestamp);
+    this->material_ = dynamic_cast<const sfnode &>(value);
+    this->node::modified(true);
+    this->emit_event("material_changed", this->material_, timestamp);
 }
 
 /**
@@ -1372,9 +1378,9 @@ void Appearance::processSet_texture(const field_value & value,
                                     double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->texture = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("texture_changed", this->texture, timestamp);
+    this->texture_ = dynamic_cast<const sfnode &>(value);
+    this->node::modified(true);
+    this->emit_event("texture_changed", this->texture_, timestamp);
 }
 
 /**
@@ -1391,8 +1397,8 @@ void Appearance::processSet_textureTransform(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->textureTransform = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("textureTransform_changed",
+    this->node::modified(true);
+    this->emit_event("textureTransform_changed",
                     this->textureTransform,
                     timestamp);
 }
@@ -1403,13 +1409,13 @@ void Appearance::processSet_textureTransform(const field_value & value,
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool Appearance::isModified() const
+bool Appearance::modified() const
 {
-    return (this->d_modified
-          || (this->material.value && this->material.value->isModified())
-          || (this->texture.value && this->texture.value->isModified())
+    return (this->modified_
+          || (this->material_.value && this->material_.value->modified())
+          || (this->texture_.value && this->texture_.value->modified())
           || (this->textureTransform.value
-                && this->textureTransform.value->isModified()));
+                && this->textureTransform.value->modified()));
 }
 
 /**
@@ -1419,14 +1425,14 @@ bool Appearance::isModified() const
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Appearance::updateModified(NodePath & path, int flags)
+void Appearance::update_modified(node_path & path, int flags)
 {
-    if (this->isModified()) { markPathModified(path, true); }
+    if (this->modified()) { mark_path_modified(path, true); }
     path.push_front(this);
-    if (this->material.value) { this->material.value->updateModified(path); }
-    if (this->texture.value) { this->texture.value->updateModified(path); }
+    if (this->material_.value) { this->material_.value->update_modified(path); }
+    if (this->texture_.value) { this->texture_.value->update_modified(path); }
     if (this->textureTransform.value) {
-        this->textureTransform.value->updateModified(path);
+        this->textureTransform.value->update_modified(path);
     }
     path.pop_front();
 }
@@ -1439,29 +1445,29 @@ void Appearance::updateModified(NodePath & path, int flags)
  */
 void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    MaterialNode * const material = this->material.value
-                                  ? this->material.value->toMaterial()
+    material_node * const material = this->material_.value
+                                  ? this->material_.value->to_material()
                                   : 0;
-    TextureNode * const texture = this->texture.value
-                                ? this->texture.value->toTexture()
+    texture_node * const texture = this->texture_.value
+                                ? this->texture_.value->to_texture()
                                 : 0;
 
     if (material) {
-        float trans = material->getTransparency();
-        color diffuse = material->getDiffuseColor();
+        float trans = material->transparency();
+        color diffuse = material->diffuse_color();
         size_t nTexComponents = texture ? texture->nComponents() : 0;
         if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
         if (nTexComponents >= 3) { diffuse = color(1.0, 1.0, 1.0); }
 
         viewer.enableLighting(true);   // turn lighting on for this object
-        viewer.setMaterial(material->getAmbientIntensity(),
+        viewer.setMaterial(material->ambient_intensity(),
                            diffuse,
-                           material->getEmissiveColor(),
-                           material->getShininess(),
-                           material->getSpecularColor(),
+                           material->emissive_color(),
+                           material->shininess(),
+                           material->specular_color(),
                            trans);
 
-        material->clearModified();
+        material->modified(false);
     } else {
         viewer.setColor(color(1.0, 1.0, 1.0)); // default color
         viewer.enableLighting(false);   // turn lighting off for this object
@@ -1479,7 +1485,7 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
         }
         texture->render(viewer, context);
     }
-    this->clearModified();
+    this->node::modified(false);
 }
 
 /**
@@ -1488,9 +1494,9 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
  * @returns an sfnode object containing the Material node associated with
  *          this Appearance.
  */
-const NodePtr & Appearance::getMaterial() const throw ()
+const NodePtr & Appearance::material() const throw ()
 {
-    return this->material.value;
+    return this->material_.value;
 }
 
 /**
@@ -1499,9 +1505,9 @@ const NodePtr & Appearance::getMaterial() const throw ()
  * @return an sfnode object containing the texture node associated with
  *         this Appearance.
  */
-const NodePtr & Appearance::getTexture() const throw ()
+const NodePtr & Appearance::texture() const throw ()
 {
-    return this->texture.value;
+    return this->texture_.value;
 }
 
 /**
@@ -1510,7 +1516,7 @@ const NodePtr & Appearance::getTexture() const throw ()
  * @return an sfnode object containing the TextureTransform node
  *         associated with this Appearance.
  */
-const NodePtr & Appearance::getTextureTransform() const throw ()
+const NodePtr & Appearance::texture_transform() const throw ()
 {
     return this->textureTransform.value;
 }
@@ -1528,7 +1534,7 @@ const NodePtr & Appearance::getTextureTransform() const throw ()
  * @param browser the Browser associated with this class object.
  */
 AudioClipClass::AudioClipClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -1545,87 +1551,87 @@ AudioClipClass::~AudioClipClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating AudioClip nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by AudioClipClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-AudioClipClass::createType(const std::string & id,
-                           const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+AudioClipClass::create_type(const std::string & id,
+                           const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfstring_id, "description"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "loop"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "pitch"),
-        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "startTime"),
-        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "stopTime"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
-        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "duration_changed"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfstring_id, "description"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "loop"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "pitch"),
+        node_interface(node_interface::exposedfield_id, field_value::sftime_id, "startTime"),
+        node_interface(node_interface::exposedfield_id, field_value::sftime_id, "stopTime"),
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "url"),
+        node_interface(node_interface::eventout_id, field_value::sftime_id, "duration_changed"),
+        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<AudioClip>(*this, id));
     Vrml97NodeTypeImpl<AudioClip> & audioClipNodeType =
             static_cast<Vrml97NodeTypeImpl<AudioClip> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<AudioClip>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             audioClipNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &AudioClip::processSet_description,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sfstring>
                                     (&AudioClip::description)));
         } else if (*itr == supportedInterfaces[1]) {
             audioClipNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &AudioClip::processSet_loop,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sfbool>
                                     (&AudioClip::loop)));
         } else if (*itr == supportedInterfaces[2]) {
             audioClipNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &AudioClip::processSet_pitch,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sffloat>
                                     (&AudioClip::pitch)));
         } else if (*itr == supportedInterfaces[3]) {
             audioClipNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &AudioClip::processSet_startTime,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sftime>
                                     (&AudioClip::startTime)));
         } else if (*itr == supportedInterfaces[4]) {
             audioClipNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &AudioClip::processSet_stopTime,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sftime>
                                     (&AudioClip::stopTime)));
         } else if (*itr == supportedInterfaces[5]) {
             audioClipNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &AudioClip::processSet_url,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, mfstring>
                                     (&AudioClip::url)));
         } else if (*itr == supportedInterfaces[6]) {
             audioClipNodeType.addEventOut(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sftime>
                                     (&AudioClip::duration)));
         } else if (*itr == supportedInterfaces[7]) {
             audioClipNodeType.addEventOut(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<AudioClip, sfbool>
                                     (&AudioClip::active)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -1643,9 +1649,9 @@ AudioClipClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-AudioClip::AudioClip(const NodeType & nodeType,
+AudioClip::AudioClip(const node_type & nodeType,
                      const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
     pitch(1.0),
     active(false),
@@ -1669,7 +1675,7 @@ AudioClip::~AudioClip() throw ()
  *
  * @return a pointer to this node.
  */
-AudioClip* AudioClip::toAudioClip() const
+AudioClip* AudioClip::to_audio_clip() const
 {
     return (AudioClip*)this;
 }
@@ -1684,7 +1690,7 @@ void AudioClip::update(const double currentTime)
         this->audio = new Audio(emptyUrl);
         if (this->audio->tryURLs(this->url, &relDoc)) {
             this->duration.value = this->audio->duration();
-            this->emitEvent("duration_changed", this->duration, currentTime);
+            this->emit_event("duration_changed", this->duration, currentTime);
         } else {
 #if HAVE_SOUND
             cerr << "Error: couldn't read AudioClip from URL "
@@ -1739,7 +1745,7 @@ void AudioClip::update(const double currentTime)
                                           - this->startTime.value);
 
             this->active.value = true;
-            this->emitEvent("isActive", this->active, currentTime);
+            this->emit_event("isActive", this->active, currentTime);
         }
 
         // Send out a sound buffer
@@ -1757,7 +1763,7 @@ void AudioClip::update(const double currentTime)
         if (this->audio_fd >= 0) {
             this->audio_fd = closeSound(this->audio_fd);
             this->active.value = false;
-            this->emitEvent("isActive", this->active, currentTime);
+            this->emit_event("isActive", this->active, currentTime);
         }
     }
 }
@@ -1771,8 +1777,8 @@ void AudioClip::update(const double currentTime)
  */
 void AudioClip::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
-    assert(this->getScene());
-    this->getScene()->browser.addAudioClip(*this);
+    assert(this->scene());
+    this->scene()->browser.addAudioClip(*this);
 }
 
 /**
@@ -1782,8 +1788,8 @@ void AudioClip::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 void AudioClip::do_shutdown(const double timestamp) throw ()
 {
-    assert(this->getScene());
-    this->getScene()->browser.removeAudioClip(*this);
+    assert(this->scene());
+    this->scene()->browser.removeAudioClip(*this);
 }
 
 /**
@@ -1800,7 +1806,7 @@ void AudioClip::processSet_description(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->description = dynamic_cast<const sfstring &>(value);
-    this->emitEvent("description_changed", this->description, timestamp);
+    this->emit_event("description_changed", this->description, timestamp);
 }
 
 /**
@@ -1815,8 +1821,8 @@ void AudioClip::processSet_loop(const field_value & value, double timestamp)
     throw (std::bad_cast)
 {
     this->loop = dynamic_cast<const sfbool &>(value);
-    this->setModified();
-    this->emitEvent("loop_changed", this->loop, timestamp);
+    this->node::modified(true);
+    this->emit_event("loop_changed", this->loop, timestamp);
 }
 
 /**
@@ -1831,8 +1837,8 @@ void AudioClip::processSet_pitch(const field_value & value, double timestamp)
     throw (std::bad_cast)
 {
     this->pitch = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("pitch_changed", this->pitch, timestamp);
+    this->node::modified(true);
+    this->emit_event("pitch_changed", this->pitch, timestamp);
 }
 
 /**
@@ -1848,8 +1854,8 @@ void AudioClip::processSet_startTime(const field_value & value,
     throw (std::bad_cast)
 {
     this->startTime = dynamic_cast<const sftime &>(value);
-    this->setModified();
-    this->emitEvent("startTime_changed", this->startTime, timestamp);
+    this->node::modified(true);
+    this->emit_event("startTime_changed", this->startTime, timestamp);
 }
 
 /**
@@ -1865,8 +1871,8 @@ void AudioClip::processSet_stopTime(const field_value & value,
     throw (std::bad_cast)
 {
     this->stopTime = dynamic_cast<const sftime &>(value);
-    this->setModified();
-    this->emitEvent("stopTime_changed", this->stopTime, timestamp);
+    this->node::modified(true);
+    this->emit_event("stopTime_changed", this->stopTime, timestamp);
 }
 
 /**
@@ -1883,8 +1889,8 @@ void AudioClip::processSet_url(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->url = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("url_changed", this->url, timestamp);
+    this->node::modified(true);
+    this->emit_event("url_changed", this->url, timestamp);
 }
 
 
@@ -1900,7 +1906,7 @@ void AudioClip::processSet_url(const field_value & value,
  * @param browser the Browser associated with this class object.
  */
 BackgroundClass::BackgroundClass(Browser & browser):
-    NodeClass(browser),
+    node_class(browser),
     first(0)
 {}
 
@@ -1969,7 +1975,7 @@ void BackgroundClass::bind(Background & background, const double timestamp)
         Background & current =
                 dynamic_cast<Background &>(*this->boundNodes.back());
         current.bound.value = false;
-        current.emitEvent("isBound", current.bound, timestamp);
+        current.emit_event("isBound", current.bound, timestamp);
     }
 
     //
@@ -1977,7 +1983,7 @@ void BackgroundClass::bind(Background & background, const double timestamp)
     //
     this->boundNodes.push_back(&background);
     background.bound.value = true;
-    background.emitEvent("isBound", background.bound, timestamp);
+    background.emit_event("isBound", background.bound, timestamp);
 }
 
 /**
@@ -1995,14 +2001,14 @@ void BackgroundClass::unbind(Background & background, const double timestamp)
         find(this->boundNodes.begin(), this->boundNodes.end(), &background);
     if (pos != this->boundNodes.end()) {
         background.bound.value = false;
-        background.emitEvent("isBound", background.bound, timestamp);
+        background.emit_event("isBound", background.bound, timestamp);
 
         if (pos == this->boundNodes.end() - 1
                 && this->boundNodes.size() > 1) {
             Background & newActive =
                     dynamic_cast<Background &>(**(this->boundNodes.end() - 2));
             newActive.bound.value = true;
-            newActive.emitEvent("isBound", newActive.bound, timestamp);
+            newActive.emit_event("isBound", newActive.bound, timestamp);
         }
         this->boundNodes.erase(pos);
     }
@@ -2011,15 +2017,15 @@ void BackgroundClass::unbind(Background & background, const double timestamp)
 /**
  * @brief NodeClass-specific initialization.
  *
- * @param initialViewpoint  the ViewpointNode that should be bound initially.
+ * @param initialViewpoint  the viewpoint_node that should be bound initially.
  * @param timestamp         the current time.
  */
-void BackgroundClass::initialize(ViewpointNode * initialViewpoint,
+void BackgroundClass::initialize(viewpoint_node * initialViewpoint,
                                  const double timestamp)
     throw ()
 {
     if (this->first) {
-        this->first->processEvent("set_bind", sfbool(true), timestamp);
+        this->first->process_event("set_bind", sfbool(true), timestamp);
     }
 }
 
@@ -2106,7 +2112,7 @@ void BackgroundClass::render(Viewer & viewer) throw ()
         // Background isn't selectable, so don't waste the time.
         if (viewer.getRenderMode() == Viewer::RENDER_MODE_PICK) { return; }
 
-        if (background.viewerObject && background.isModified()) {
+        if (background.viewerObject && background.modified()) {
             viewer.removeObject(background.viewerObject);
             background.viewerObject = 0;
         }
@@ -2114,8 +2120,8 @@ void BackgroundClass::render(Viewer & viewer) throw ()
         if (background.viewerObject) {
             viewer.insertReference(background.viewerObject);
         } else {
-            if (background.isModified() || background.texPtr[0] == 0) {
-                Doc2 baseDoc(background.getScene()->getURI());
+            if (background.modified() || background.texPtr[0] == 0) {
+                Doc2 baseDoc(background.scene()->getURI());
                 background.texPtr[0] =
                         getTexture(background.backUrl, baseDoc, background.tex, 0, viewer);
                 background.texPtr[1] =
@@ -2151,7 +2157,7 @@ void BackgroundClass::render(Viewer & viewer) throw ()
                                             whc,
                                             (nPix > 0) ? pixels : 0);
 
-            background.clearModified();
+            background.modified(false);
         }
     } else {
         //
@@ -2174,117 +2180,117 @@ void BackgroundClass::render(Viewer & viewer) throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Background nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by BackgroundClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-BackgroundClass::createType(const std::string & id,
-                            const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+BackgroundClass::create_type(const std::string & id,
+                            const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::sfbool_id, "set_bind"),
-        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "groundAngle"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfcolor_id, "groundColor"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "backUrl"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "bottomUrl"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "frontUrl"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "leftUrl"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "rightUrl"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "topUrl"),
-        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "skyAngle"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfcolor_id, "skyColor"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isBound")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::sfbool_id, "set_bind"),
+        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "groundAngle"),
+        node_interface(node_interface::exposedfield_id, field_value::mfcolor_id, "groundColor"),
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "backUrl"),
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "bottomUrl"),
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "frontUrl"),
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "leftUrl"),
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "rightUrl"),
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "topUrl"),
+        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "skyAngle"),
+        node_interface(node_interface::exposedfield_id, field_value::mfcolor_id, "skyColor"),
+        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Background>(*this, id));
     Vrml97NodeTypeImpl<Background> & backgroundNodeType =
             static_cast<Vrml97NodeTypeImpl<Background> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Background>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
-            backgroundNodeType.addEventIn(supportedInterfaces[0].fieldType,
+            backgroundNodeType.addEventIn(supportedInterfaces[0].field_type,
                                           supportedInterfaces[0].id,
                                           &Background::processSet_bind);
         } else if (*itr == supportedInterfaces[1]) {
             backgroundNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &Background::processSet_groundAngle,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mffloat>
                                     (&Background::groundAngle)));
         } else if (*itr == supportedInterfaces[2]) {
             backgroundNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Background::processSet_groundColor,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfcolor>
                                     (&Background::groundColor)));
         } else if (*itr == supportedInterfaces[3]) {
             backgroundNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &Background::processSet_backUrl,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::backUrl)));
         } else if (*itr == supportedInterfaces[4]) {
             backgroundNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &Background::processSet_bottomUrl,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::bottomUrl)));
         } else if (*itr == supportedInterfaces[5]) {
             backgroundNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &Background::processSet_frontUrl,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::frontUrl)));
         } else if (*itr == supportedInterfaces[6]) {
             backgroundNodeType.addExposedField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 &Background::processSet_leftUrl,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::leftUrl)));
         } else if (*itr == supportedInterfaces[7]) {
             backgroundNodeType.addExposedField(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 &Background::processSet_rightUrl,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::rightUrl)));
         } else if (*itr == supportedInterfaces[8]) {
             backgroundNodeType.addExposedField(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 &Background::processSet_topUrl,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfstring>
                                     (&Background::topUrl)));
         } else if (*itr == supportedInterfaces[9]) {
             backgroundNodeType.addExposedField(
-                supportedInterfaces[9].fieldType,
+                supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
                 &Background::processSet_skyAngle,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mffloat>
                                     (&Background::skyAngle)));
         } else if (*itr == supportedInterfaces[10]) {
             backgroundNodeType.addExposedField(
-                supportedInterfaces[10].fieldType,
+                supportedInterfaces[10].field_type,
                 supportedInterfaces[10].id,
                 &Background::processSet_skyColor,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, mfcolor>
                                     (&Background::skyColor)));
         } else if (*itr == supportedInterfaces[11]) {
             backgroundNodeType.addEventOut(
-                supportedInterfaces[11].fieldType,
+                supportedInterfaces[11].field_type,
                 supportedInterfaces[11].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Background, sfbool>
                                     (&Background::bound)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -2302,9 +2308,9 @@ BackgroundClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Background::Background(const NodeType & nodeType,
+Background::Background(const node_type & nodeType,
                        const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     bound(false),
     viewerObject(0)
@@ -2327,9 +2333,9 @@ Background::~Background() throw ()
  */
 void Background::do_initialize(const double timestamp) throw ()
 {
-    assert(dynamic_cast<BackgroundClass *>(&this->nodeType.nodeClass));
+    assert(dynamic_cast<BackgroundClass *>(&this->type._class));
     BackgroundClass & nodeClass =
-            static_cast<BackgroundClass &>(this->nodeType.nodeClass);
+            static_cast<BackgroundClass &>(this->type._class);
     if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
 }
 
@@ -2343,7 +2349,7 @@ void Background::do_initialize(const double timestamp) throw ()
 void Background::do_shutdown(const double timestamp) throw ()
 {
     BackgroundClass & nodeClass =
-            static_cast<BackgroundClass &>(this->nodeType.nodeClass);
+            static_cast<BackgroundClass &>(this->type._class);
     nodeClass.unbind(*this, timestamp);
 }
 
@@ -2361,9 +2367,9 @@ void Background::processSet_bind(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     const sfbool & bind = dynamic_cast<const sfbool &>(value);
-    assert(dynamic_cast<BackgroundClass *>(&this->nodeType.nodeClass));
+    assert(dynamic_cast<BackgroundClass *>(&this->type._class));
     BackgroundClass & nodeClass =
-            static_cast<BackgroundClass &>(this->nodeType.nodeClass);
+            static_cast<BackgroundClass &>(this->type._class);
     if (bind.value) {
         nodeClass.bind(*this, timestamp);
     } else {
@@ -2385,8 +2391,8 @@ void Background::processSet_groundAngle(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->groundAngle = dynamic_cast<const mffloat &>(value);
-    this->setModified();
-    this->emitEvent("groundAngle_changed", this->groundAngle, timestamp);
+    this->node::modified(true);
+    this->emit_event("groundAngle_changed", this->groundAngle, timestamp);
 }
 
 /**
@@ -2403,8 +2409,8 @@ void Background::processSet_groundColor(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->groundColor = dynamic_cast<const mfcolor &>(value);
-    this->setModified();
-    this->emitEvent("groundColor_changed", this->groundColor, timestamp);
+    this->node::modified(true);
+    this->emit_event("groundColor_changed", this->groundColor, timestamp);
 }
 
 /**
@@ -2421,8 +2427,8 @@ void Background::processSet_backUrl(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->backUrl = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("backUrl_changed", this->backUrl, timestamp);
+    this->node::modified(true);
+    this->emit_event("backUrl_changed", this->backUrl, timestamp);
 }
 
 /**
@@ -2439,8 +2445,8 @@ void Background::processSet_bottomUrl(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->bottomUrl = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("bottomUrl_changed", this->bottomUrl, timestamp);
+    this->node::modified(true);
+    this->emit_event("bottomUrl_changed", this->bottomUrl, timestamp);
 }
 
 /**
@@ -2457,8 +2463,8 @@ void Background::processSet_frontUrl(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->frontUrl = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("frontUrl_changed", this->backUrl, timestamp);
+    this->node::modified(true);
+    this->emit_event("frontUrl_changed", this->backUrl, timestamp);
 }
 
 /**
@@ -2475,8 +2481,8 @@ void Background::processSet_leftUrl(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->leftUrl = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("leftUrl_changed", this->leftUrl, timestamp);
+    this->node::modified(true);
+    this->emit_event("leftUrl_changed", this->leftUrl, timestamp);
 }
 
 /**
@@ -2493,8 +2499,8 @@ void Background::processSet_rightUrl(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->rightUrl = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("rightUrl_changed", this->rightUrl, timestamp);
+    this->node::modified(true);
+    this->emit_event("rightUrl_changed", this->rightUrl, timestamp);
 }
 
 /**
@@ -2511,8 +2517,8 @@ void Background::processSet_topUrl(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->topUrl = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("topUrl_changed", this->topUrl, timestamp);
+    this->node::modified(true);
+    this->emit_event("topUrl_changed", this->topUrl, timestamp);
 }
 
 /**
@@ -2529,8 +2535,8 @@ void Background::processSet_skyAngle(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->skyAngle = dynamic_cast<const mffloat &>(value);
-    this->setModified();
-    this->emitEvent("skyAngle_changed", this->skyAngle, timestamp);
+    this->node::modified(true);
+    this->emit_event("skyAngle_changed", this->skyAngle, timestamp);
 }
 
 /**
@@ -2547,8 +2553,8 @@ void Background::processSet_skyColor(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->skyColor = dynamic_cast<const mfcolor &>(value);
-    this->setModified();
-    this->emitEvent("skyColor_changed", this->skyColor, timestamp);
+    this->node::modified(true);
+    this->emit_event("skyColor_changed", this->skyColor, timestamp);
 }
 
 
@@ -2563,7 +2569,7 @@ void Background::processSet_skyColor(const field_value & value,
  *
  * @param browser the Browser associated with this class object.
  */
-BillboardClass::BillboardClass(Browser & browser): NodeClass(browser)
+BillboardClass::BillboardClass(Browser & browser): node_class(browser)
 {}
 
 /**
@@ -2580,65 +2586,65 @@ BillboardClass::~BillboardClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Billboard nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by BillboardClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-BillboardClass::createType(const std::string & id,
-                           const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+BillboardClass::create_type(const std::string & id,
+                           const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "axisOfRotation"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::mfnode_id, "addChildren"),
+        node_interface(node_interface::eventin_id, field_value::mfnode_id, "removeChildren"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "axisOfRotation"),
+        node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "children"),
+        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
+        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Billboard>(*this, id));
     Vrml97NodeTypeImpl<Billboard> & billboardNodeType =
             static_cast<Vrml97NodeTypeImpl<Billboard> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Billboard>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
-            billboardNodeType.addEventIn(supportedInterfaces[0].fieldType,
+            billboardNodeType.addEventIn(supportedInterfaces[0].field_type,
                                          supportedInterfaces[0].id,
                                          &Billboard::processAddChildren);
         } else if (*itr == supportedInterfaces[1]) {
-            billboardNodeType.addEventIn(supportedInterfaces[1].fieldType,
+            billboardNodeType.addEventIn(supportedInterfaces[1].field_type,
                                          supportedInterfaces[1].id,
                                          &Billboard::processRemoveChildren);
         } else if (*itr == supportedInterfaces[2]) {
             billboardNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Billboard::processSet_axisOfRotation,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, sfvec3f>
                                     (&Billboard::axisOfRotation)));
         } else if (*itr == supportedInterfaces[3]) {
             billboardNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &Billboard::processSet_children,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, mfnode>
-                                    (&Billboard::children)));
+                                    (&Billboard::children_)));
         } else if (*itr == supportedInterfaces[4]) {
             billboardNodeType.addField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, sfvec3f>
                                     (&Billboard::bboxCenter)));
         } else if (*itr == supportedInterfaces[5]) {
             billboardNodeType.addField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Billboard, sfvec3f>
                                     (&Billboard::bboxSize)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -2656,11 +2662,11 @@ BillboardClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Billboard::Billboard(const NodeType & nodeType,
+Billboard::Billboard(const node_type & nodeType,
                      const ScopePtr & scope):
-    Node(nodeType, scope),
-    ChildNode(nodeType, scope),
-    GroupingNode(nodeType, scope),
+    node(nodeType, scope),
+    child_node(nodeType, scope),
+    grouping_node(nodeType, scope),
     Group(nodeType, scope),
     axisOfRotation(vec3f(0.0, 1.0, 0.0)),
     xformObject(0)
@@ -2688,15 +2694,15 @@ void Billboard::render(Viewer & viewer, VrmlRenderContext context)
     new_LM = LM * new_LM;
     context.setMatrix(new_LM);
 
-    if (this->xformObject && this->isModified()) {
+    if (this->xformObject && this->modified()) {
         viewer.removeObject(this->xformObject);
         this->xformObject = 0;
     }
 
     if (this->xformObject) {
         viewer.insertReference(this->xformObject);
-    } else if (this->children.value.size() > 0) {
-        this->xformObject = viewer.beginObject(this->getId().c_str());
+    } else if (this->children_.value.size() > 0) {
+        this->xformObject = viewer.beginObject(this->id().c_str());
 
         viewer.transform(LM);
 
@@ -2706,7 +2712,7 @@ void Billboard::render(Viewer & viewer, VrmlRenderContext context)
         viewer.endObject();
     }
 
-    this->clearModified();
+    this->node::modified(false);
 }
 
 /**
@@ -2782,7 +2788,7 @@ void Billboard::processSet_axisOfRotation(const field_value & value,
     throw (std::bad_cast)
 {
     this->axisOfRotation = dynamic_cast<const sfvec3f &>(value);
-    this->emitEvent("axisOfRotation_changed", this->axisOfRotation, timestamp);
+    this->emit_event("axisOfRotation_changed", this->axisOfRotation, timestamp);
 }
 
 
@@ -2798,7 +2804,7 @@ void Billboard::processSet_axisOfRotation(const field_value & value,
  * @param browser the Browser associated with this class object.
  */
 BoxClass::BoxClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -2815,29 +2821,29 @@ BoxClass::~BoxClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Box nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by BoxClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr BoxClass::createType(const std::string & id,
-                                       const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+const NodeTypePtr BoxClass::create_type(const std::string & id,
+                                       const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "size");
+    static const node_interface supportedInterface =
+            node_interface(node_interface::field_id, field_value::sfvec3f_id, "size");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Box>(*this, id));
     Vrml97NodeTypeImpl<Box> & boxNodeType =
             static_cast<Vrml97NodeTypeImpl<Box> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Box>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterface) {
             boxNodeType.addField(
-                supportedInterface.fieldType,
+                supportedInterface.field_type,
                 supportedInterface.id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Box, sfvec3f>(&Box::size)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -2855,13 +2861,13 @@ const NodeTypePtr BoxClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Box::Box(const NodeType & nodeType,
+Box::Box(const node_type & nodeType,
          const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractGeometry(nodeType, scope),
     size(vec3f(2.0, 2.0, 2.0))
 {
-    this->setBVolumeDirty(true); // lazy calc of bvolume
+    this->bvolume_dirty(true); // lazy calc of bvolume
 }
 
 /**
@@ -2878,7 +2884,7 @@ Box::~Box() throw ()
  *
  * @return display object identifier.
  */
-Viewer::Object Box::insertGeometry(Viewer & viewer,
+Viewer::Object Box::insert_geometry(Viewer & viewer,
                                    const VrmlRenderContext context)
 {
     return viewer.insertBox(this->size.value);
@@ -2889,17 +2895,17 @@ Viewer::Object Box::insertGeometry(Viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Box::getBVolume() const
+const BVolume * Box::bvolume() const
 {
     using OpenVRML_::length;
 
-    if (this->isBVolumeDirty()) {
+    if (this->bvolume_dirty()) {
         const float corner[3] = { this->size.value.x() / 2.0f,
                                   this->size.value.y() / 2.0f,
                                   this->size.value.z() / 2.0f };
         float r = length(corner);
         ((Box*)this)->bsphere.setRadius(r);
-        ((Box*)this)->setBVolumeDirty(false); // logical const
+        ((Box*)this)->bvolume_dirty(false); // logical const
     }
     return &this->bsphere;
 }
@@ -2917,7 +2923,7 @@ const BVolume * Box::getBVolume() const
  * @param browser the Browser associated with this class object.
  */
 CollisionClass::CollisionClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -2934,78 +2940,78 @@ CollisionClass::~CollisionClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Collision nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CollisionClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        CollisionClass::createType(const std::string & id,
-                                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "collide"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize"),
-        NodeInterface(NodeInterface::field, field_value::sfnode_id, "proxy"),
-        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "collideTime")
+        CollisionClass::create_type(const std::string & id,
+                                   const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::mfnode_id, "addChildren"),
+        node_interface(node_interface::eventin_id, field_value::mfnode_id, "removeChildren"),
+        node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "children"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "collide"),
+        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
+        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize"),
+        node_interface(node_interface::field_id, field_value::sfnode_id, "proxy"),
+        node_interface(node_interface::eventout_id, field_value::sftime_id, "collideTime")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Collision>(*this, id));
     Vrml97NodeTypeImpl<Collision> & collisionNodeType =
             static_cast<Vrml97NodeTypeImpl<Collision> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Collision>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
-            collisionNodeType.addEventIn(supportedInterfaces[0].fieldType,
+            collisionNodeType.addEventIn(supportedInterfaces[0].field_type,
                                          supportedInterfaces[0].id,
                                          &Collision::processAddChildren);
         } else if (*itr == supportedInterfaces[1]) {
-            collisionNodeType.addEventIn(supportedInterfaces[1].fieldType,
+            collisionNodeType.addEventIn(supportedInterfaces[1].field_type,
                                          supportedInterfaces[1].id,
                                          &Collision::processRemoveChildren);
         } else if (*itr == supportedInterfaces[2]) {
             collisionNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Collision::processSet_children,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, mfnode>
-                                    (&Collision::children)));
+                                    (&Collision::children_)));
         } else if (*itr == supportedInterfaces[3]) {
             collisionNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &Collision::processSet_collide,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, sfbool>
                                     (&Collision::collide)));
         } else if (*itr == supportedInterfaces[4]) {
             collisionNodeType.addField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, sfvec3f>
                                     (&Collision::bboxCenter)));
         } else if (*itr == supportedInterfaces[5]) {
             collisionNodeType.addField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, sfvec3f>
                                     (&Collision::bboxSize)));
         } else if (*itr == supportedInterfaces[6]) {
             collisionNodeType.addField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, sfnode>
                                     (&Collision::proxy)));
         } else if (*itr == supportedInterfaces[7]) {
             collisionNodeType.addEventOut(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Collision, sftime>
                                     (&Collision::collideTime)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -3023,11 +3029,11 @@ const NodeTypePtr
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Collision::Collision(const NodeType & nodeType,
+Collision::Collision(const node_type & nodeType,
                      const ScopePtr & scope):
-    Node(nodeType, scope),
-    ChildNode(nodeType, scope),
-    GroupingNode(nodeType, scope),
+    node(nodeType, scope),
+    child_node(nodeType, scope),
+    grouping_node(nodeType, scope),
     Group(nodeType, scope),
     collide(true)
 {}
@@ -3043,9 +3049,9 @@ Collision::~Collision() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool Collision::isModified() const {
-  return ((this->proxy.value && this->proxy.value->isModified())
-          || this->Group::isModified());
+bool Collision::modified() const {
+  return ((this->proxy.value && this->proxy.value->modified())
+          || this->Group::modified());
 }
 
 /**
@@ -3061,7 +3067,7 @@ void Collision::processSet_collide(const field_value & value,
     throw (std::bad_cast)
 {
     this->collide = dynamic_cast<const sfbool &>(value);
-    this->emitEvent("collide_changed", this->collide, timestamp);
+    this->emit_event("collide_changed", this->collide, timestamp);
 }
 
 
@@ -3076,7 +3082,7 @@ void Collision::processSet_collide(const field_value & value,
  *
  * @param browser the Browser associated with this node class object.
  */
-ColorClass::ColorClass(Browser & browser): NodeClass(browser) {}
+ColorClass::ColorClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -3091,30 +3097,30 @@ ColorClass::~ColorClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Color nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ColorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr ColorClass::createType(const std::string & id,
-                                         const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::exposedField, field_value::mfcolor_id, "color");
+const NodeTypePtr ColorClass::create_type(const std::string & id,
+                                         const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterface =
+            node_interface(node_interface::exposedfield_id, field_value::mfcolor_id, "color");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Color>(*this, id));
     Vrml97NodeTypeImpl<Color> & colorNodeType =
             static_cast<Vrml97NodeTypeImpl<Color> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Color>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterface) {
             colorNodeType.addExposedField(
-                supportedInterface.fieldType,
+                supportedInterface.field_type,
                 supportedInterface.id,
                 &Color::processSet_color,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Color, mfcolor>
-                                    (&Color::color)));
+                                    (&Color::color_)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -3132,11 +3138,11 @@ const NodeTypePtr ColorClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with this node.
  * @param scope     the Scope to which the node belongs.
  */
-Color::Color(const NodeType & nodeType,
+Color::Color(const node_type & nodeType,
              const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractBase(nodeType, scope),
-        ColorNode(nodeType, scope) {}
+        color_node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -3148,9 +3154,9 @@ Color::~Color() throw () {}
  *
  * @return the color array associated with the node.
  */
-const std::vector<color> & Color::getColor() const throw ()
+const std::vector<color> & Color::color() const throw ()
 {
-    return this->color.value;
+    return this->color_.value;
 }
 
 /**
@@ -3163,10 +3169,11 @@ const std::vector<color> & Color::getColor() const throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void Color::processSet_color(const field_value & value, const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->color = dynamic_cast<const mfcolor &>(value);
-    this->setModified();
-    this->emitEvent("color_changed", this->color, timestamp);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->color_ = dynamic_cast<const mfcolor &>(value);
+    this->node::modified(true);
+    this->emit_event("color_changed", this->color_, timestamp);
 }
 
 
@@ -3182,12 +3189,14 @@ void Color::processSet_color(const field_value & value, const double timestamp)
  * @param browser the Browser associated with this class object.
  */
 ColorInterpolatorClass::ColorInterpolatorClass(Browser & browser):
-        NodeClass(browser) {}
+    node_class(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-ColorInterpolatorClass::~ColorInterpolatorClass() throw () {}
+ColorInterpolatorClass::~ColorInterpolatorClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -3198,25 +3207,26 @@ ColorInterpolatorClass::~ColorInterpolatorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating ColorInterpolator
  *      nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
- *                              supported by ColorInterpolatorClass.
+ * @exception unsupported_interface if @p interfaces includes an interface not
+ *                                  supported by ColorInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr ColorInterpolatorClass::
-        createType(const std::string & id,
-                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn,
+const NodeTypePtr
+ColorInterpolatorClass::create_type(const std::string & id,
+                                    const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id,
                       field_value::sffloat_id,
                       "set_fraction"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::mffloat_id,
                       "key"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::mfcolor_id,
                       "keyValue"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sfcolor_id,
                       "value_changed")
     };
@@ -3226,16 +3236,16 @@ const NodeTypePtr ColorInterpolatorClass::
             static_cast<Vrml97NodeTypeImpl<ColorInterpolator> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<ColorInterpolator>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             colorInterpolatorNodeType
-                    .addEventIn(supportedInterfaces[0].fieldType,
+                    .addEventIn(supportedInterfaces[0].field_type,
                                 supportedInterfaces[0].id,
                                 &ColorInterpolator::processSet_fraction);
         } else if (*itr == supportedInterfaces[1]) {
             colorInterpolatorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &ColorInterpolator::processSet_key,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ColorInterpolator,
@@ -3243,7 +3253,7 @@ const NodeTypePtr ColorInterpolatorClass::
                                 (&ColorInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             colorInterpolatorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &ColorInterpolator::processSet_keyValue,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ColorInterpolator,
@@ -3251,13 +3261,13 @@ const NodeTypePtr ColorInterpolatorClass::
                                 (&ColorInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             colorInterpolatorNodeType.addEventOut(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ColorInterpolator,
                                                      sfcolor>
                                 (&ColorInterpolator::value)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -3275,9 +3285,9 @@ const NodeTypePtr ColorInterpolatorClass::
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-ColorInterpolator::ColorInterpolator(const NodeType & nodeType,
+ColorInterpolator::ColorInterpolator(const node_type & nodeType,
                                      const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 
 /**
@@ -3342,7 +3352,7 @@ void ColorInterpolator::processSet_fraction(const field_value & value,
     }
 
     // Send the new value
-    this->emitEvent("value_changed", this->value, timestamp);
+    this->emit_event("value_changed", this->value, timestamp);
 }
 
 /**
@@ -3359,7 +3369,7 @@ void ColorInterpolator::processSet_key(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->key = dynamic_cast<const mffloat &>(value);
-    this->emitEvent("key_changed", this->key, timestamp);
+    this->emit_event("key_changed", this->key, timestamp);
 }
 
 /**
@@ -3376,7 +3386,7 @@ void ColorInterpolator::processSet_keyValue(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->keyValue = dynamic_cast<const mfcolor &>(value);
-    this->emitEvent("keyValue_changed", this->keyValue, timestamp);
+    this->emit_event("keyValue_changed", this->keyValue, timestamp);
 }
 
 
@@ -3391,7 +3401,7 @@ void ColorInterpolator::processSet_keyValue(const field_value & value,
  *
  * @param browser the Browser associated with this class object.
  */
-ConeClass::ConeClass(Browser & browser): NodeClass(browser) {}
+ConeClass::ConeClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -3406,51 +3416,51 @@ ConeClass::~ConeClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Cone nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ConeClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr ConeClass::createType(const std::string & id,
-                                        const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "bottomRadius"),
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "height"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "side"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "bottom")
+const NodeTypePtr ConeClass::create_type(const std::string & id,
+                                        const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::field_id, field_value::sffloat_id, "bottomRadius"),
+        node_interface(node_interface::field_id, field_value::sffloat_id, "height"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "side"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "bottom")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Cone>(*this, id));
     Vrml97NodeTypeImpl<Cone> & coneNodeType =
             static_cast<Vrml97NodeTypeImpl<Cone> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Cone>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             coneNodeType.addField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, sffloat>
                                     (&Cone::bottomRadius)));
         } else if (*itr == supportedInterfaces[1]) {
             coneNodeType.addField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, sffloat>
                                     (&Cone::height)));
         } else if (*itr == supportedInterfaces[2]) {
             coneNodeType.addField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, sfbool>
                                     (&Cone::side)));
         } else if (*itr == supportedInterfaces[3]) {
             coneNodeType.addField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Cone, sfbool>
                                     (&Cone::bottom)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -3468,9 +3478,9 @@ const NodeTypePtr ConeClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Cone::Cone(const NodeType & nodeType,
+Cone::Cone(const node_type & nodeType,
            const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractGeometry(nodeType, scope),
         bottom(true),
         bottomRadius(1.0),
@@ -3488,7 +3498,7 @@ Cone::~Cone() throw () {}
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object Cone::insertGeometry(Viewer & viewer,
+Viewer::Object Cone::insert_geometry(Viewer & viewer,
                                     const VrmlRenderContext context)
 {
     return viewer.insertCone(this->height.value,
@@ -3509,7 +3519,7 @@ Viewer::Object Cone::insertGeometry(Viewer & viewer,
  *
  * @param browser the Browser associated with this node class object.
  */
-CoordinateClass::CoordinateClass(Browser & browser): NodeClass(browser) {}
+CoordinateClass::CoordinateClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -3524,31 +3534,34 @@ CoordinateClass::~CoordinateClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Coordinate nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CoordinateClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        CoordinateClass::createType(const std::string & id,
-                                    const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "point");
+CoordinateClass::create_type(const std::string & id,
+                             const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
+    static const node_interface supportedInterface =
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "point");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Coordinate>(*this, id));
     Vrml97NodeTypeImpl<Coordinate> & coordinateNodeType =
             static_cast<Vrml97NodeTypeImpl<Coordinate> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Coordinate>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterface) {
             coordinateNodeType.addExposedField(
-                supportedInterface.fieldType,
+                supportedInterface.field_type,
                 supportedInterface.id,
                 &Coordinate::processSet_point,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Coordinate, mfvec3f>
-                                    (&Coordinate::point)));
+                                    (&Coordinate::point_)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -3566,11 +3579,11 @@ const NodeTypePtr
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-Coordinate::Coordinate(const NodeType & nodeType,
+Coordinate::Coordinate(const node_type & nodeType,
                        const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractBase(nodeType, scope),
-        CoordinateNode(nodeType, scope) {}
+        coordinate_node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -3590,9 +3603,9 @@ void Coordinate::processSet_point(const field_value & value,
                                   const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->point = dynamic_cast<const mfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("point_changed", this->point, timestamp);
+    this->point_ = dynamic_cast<const mfvec3f &>(value);
+    this->node::modified(true);
+    this->emit_event("point_changed", this->point_, timestamp);
 }
 
 /**
@@ -3600,9 +3613,9 @@ void Coordinate::processSet_point(const field_value & value,
  *
  * @return the array of points for this node.
  */
-const std::vector<vec3f> & Coordinate::getPoint() const throw ()
+const std::vector<vec3f> & Coordinate::point() const throw ()
 {
-    return this->point.value;
+    return this->point_.value;
 }
 
 
@@ -3618,12 +3631,13 @@ const std::vector<vec3f> & Coordinate::getPoint() const throw ()
  * @param browser the Browser associated with this class object.
  */
 CoordinateInterpolatorClass::CoordinateInterpolatorClass(Browser & browser):
-        NodeClass(browser) {}
+    node_class(browser) {}
 
 /**
  * @brief Destructor.
  */
-CoordinateInterpolatorClass::~CoordinateInterpolatorClass() throw () {}
+CoordinateInterpolatorClass::~CoordinateInterpolatorClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -3634,53 +3648,67 @@ CoordinateInterpolatorClass::~CoordinateInterpolatorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating
  *      CoordinateInterpolator nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr CoordinateInterpolatorClass::
-        createType(const std::string & id,
-                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::sffloat_id, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "key"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, field_value::mfvec3f_id, "value_changed")
+const NodeTypePtr
+CoordinateInterpolatorClass::create_type(const std::string & id,
+                                         const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id, "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::mfvec3f_id,
+                       "value_changed")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<CoordinateInterpolator>(*this, id));
-    Vrml97NodeTypeImpl<CoordinateInterpolator> & coordinateInterpolatorNodeType =
-            static_cast<Vrml97NodeTypeImpl<CoordinateInterpolator> &>(*nodeType);
-    typedef Vrml97NodeTypeImpl<CoordinateInterpolator>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    const NodeTypePtr
+        nodeType(new Vrml97NodeTypeImpl<CoordinateInterpolator>(*this, id));
+    Vrml97NodeTypeImpl<CoordinateInterpolator> &
+        coordinateInterpolatorNodeType =
+        static_cast<Vrml97NodeTypeImpl<CoordinateInterpolator> &>(*nodeType);
+    typedef Vrml97NodeTypeImpl<CoordinateInterpolator>::NodeFieldPtrPtr
+        NodeFieldPtrPtr;
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             coordinateInterpolatorNodeType
-                    .addEventIn(supportedInterfaces[0].fieldType,
+                    .addEventIn(supportedInterfaces[0].field_type,
                                 supportedInterfaces[0].id,
                                 &CoordinateInterpolator::processSet_fraction);
         } else if (*itr == supportedInterfaces[1]) {
             coordinateInterpolatorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &CoordinateInterpolator::processSet_key,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator, mffloat>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator,
+                                                     mffloat>
                                     (&CoordinateInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             coordinateInterpolatorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &CoordinateInterpolator::processSet_keyValue,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator, mfvec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator,
+                                                     mfvec3f>
                                     (&CoordinateInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             coordinateInterpolatorNodeType.addEventOut(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator, mfvec3f>
+                NodeFieldPtrPtr(new NodeFieldPtrImpl<CoordinateInterpolator,
+                                                     mfvec3f>
                                     (&CoordinateInterpolator::value)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -3698,9 +3726,9 @@ const NodeTypePtr CoordinateInterpolatorClass::
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-CoordinateInterpolator::CoordinateInterpolator(const NodeType & nodeType,
+CoordinateInterpolator::CoordinateInterpolator(const node_type & nodeType,
                                                const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 
 /**
@@ -3762,7 +3790,7 @@ void CoordinateInterpolator::processSet_fraction(const field_value & value,
     }
 
     // Send the new value
-    this->emitEvent("value_changed", this->value, timestamp);
+    this->emit_event("value_changed", this->value, timestamp);
 }
 
 /**
@@ -3778,7 +3806,7 @@ void CoordinateInterpolator::processSet_key(const field_value & value,
                                             const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->key = dynamic_cast<const mffloat &>(value);
-    this->emitEvent("key_changed", this->key, timestamp);
+    this->emit_event("key_changed", this->key, timestamp);
 }
 
 /**
@@ -3794,7 +3822,7 @@ void CoordinateInterpolator::processSet_keyValue(const field_value & value,
                                                  const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->keyValue = dynamic_cast<const mfvec3f &>(value);
-    this->emitEvent("keyValue_changed", this->keyValue, timestamp);
+    this->emit_event("keyValue_changed", this->keyValue, timestamp);
 }
 
 
@@ -3809,7 +3837,7 @@ void CoordinateInterpolator::processSet_keyValue(const field_value & value,
  *
  * @param browser the Browser associated with this class object.
  */
-CylinderClass::CylinderClass(Browser & browser): NodeClass(browser) {}
+CylinderClass::CylinderClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -3824,58 +3852,58 @@ CylinderClass::~CylinderClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Cylinder nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CylinderClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr CylinderClass::createType(const std::string & id,
-                                            const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "bottom"),
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "height"),
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "radius"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "side"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "top")
+const NodeTypePtr CylinderClass::create_type(const std::string & id,
+                                            const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::field_id, field_value::sfbool_id, "bottom"),
+        node_interface(node_interface::field_id, field_value::sffloat_id, "height"),
+        node_interface(node_interface::field_id, field_value::sffloat_id, "radius"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "side"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "top")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Cylinder>(*this, id));
     Vrml97NodeTypeImpl<Cylinder> & cylinderNodeType =
             static_cast<Vrml97NodeTypeImpl<Cylinder> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Cylinder>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             cylinderNodeType.addField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, sfbool>
                                     (&Cylinder::bottom)));
         } else if (*itr == supportedInterfaces[1]) {
             cylinderNodeType.addField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, sffloat>
                                     (&Cylinder::height)));
         } else if (*itr == supportedInterfaces[2]) {
             cylinderNodeType.addField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, sffloat>
                                     (&Cylinder::radius)));
         } else if (*itr == supportedInterfaces[3]) {
             cylinderNodeType.addField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, sfbool>
                                     (&Cylinder::side)));
         } else if (*itr == supportedInterfaces[4]) {
             cylinderNodeType.addField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Cylinder, sfbool>
                                     (&Cylinder::top)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -3893,9 +3921,9 @@ const NodeTypePtr CylinderClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Cylinder::Cylinder(const NodeType & nodeType,
+Cylinder::Cylinder(const node_type & nodeType,
                    const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractGeometry(nodeType, scope),
         bottom(true),
         height(2.0),
@@ -3916,7 +3944,7 @@ Cylinder::~Cylinder() throw () {
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object Cylinder::insertGeometry(Viewer & viewer,
+Viewer::Object Cylinder::insert_geometry(Viewer & viewer,
                                         const VrmlRenderContext context)
 {
     return viewer.insertCylinder(this->height.value,
@@ -3938,7 +3966,7 @@ Viewer::Object Cylinder::insertGeometry(Viewer & viewer,
  *
  * @param browser the Browser associated with this class object.
  */
-CylinderSensorClass::CylinderSensorClass(Browser & browser): NodeClass(browser) {}
+CylinderSensorClass::CylinderSensorClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -3953,93 +3981,93 @@ CylinderSensorClass::~CylinderSensorClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating CylinderSensor nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CylinderSensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        CylinderSensorClass::createType(const std::string & id,
-                                        const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "autoOffset"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "diskAngle"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxAngle"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "minAngle"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "offset"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfrotation_id, "rotation_changed"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "trackPoint_changed")
+        CylinderSensorClass::create_type(const std::string & id,
+                                        const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "autoOffset"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "diskAngle"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxAngle"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "minAngle"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "offset"),
+        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
+        node_interface(node_interface::eventout_id, field_value::sfrotation_id, "rotation_changed"),
+        node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<CylinderSensor>(*this, id));
     Vrml97NodeTypeImpl<CylinderSensor> & cylinderSensorNodeType =
             static_cast<Vrml97NodeTypeImpl<CylinderSensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<CylinderSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             cylinderSensorNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &CylinderSensor::processSet_autoOffset,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sfbool>
                                     (&CylinderSensor::autoOffset)));
         } else if (*itr == supportedInterfaces[1]) {
             cylinderSensorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &CylinderSensor::processSet_diskAngle,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sffloat>
                                     (&CylinderSensor::diskAngle)));
         } else if (*itr == supportedInterfaces[2]) {
             cylinderSensorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &CylinderSensor::processSet_enabled,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sfbool>
                                     (&CylinderSensor::enabled)));
         } else if (*itr == supportedInterfaces[3]) {
             cylinderSensorNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &CylinderSensor::processSet_maxAngle,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sffloat>
                                     (&CylinderSensor::maxAngle)));
         } else if (*itr == supportedInterfaces[4]) {
             cylinderSensorNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &CylinderSensor::processSet_minAngle,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sffloat>
                                     (&CylinderSensor::minAngle)));
         } else if (*itr == supportedInterfaces[5]) {
             cylinderSensorNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &CylinderSensor::processSet_offset,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sffloat>
                                     (&CylinderSensor::offset)));
         } else if (*itr == supportedInterfaces[6]) {
             cylinderSensorNodeType.addEventOut(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sfbool>
                                     (&CylinderSensor::active)));
         } else if (*itr == supportedInterfaces[7]) {
             cylinderSensorNodeType.addEventOut(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sfrotation>
                                     (&CylinderSensor::rotation)));
         } else if (*itr == supportedInterfaces[8]) {
             cylinderSensorNodeType.addEventOut(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<CylinderSensor, sfvec3f>
                                     (&CylinderSensor::trackPoint)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -4057,9 +4085,9 @@ const NodeTypePtr
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-CylinderSensor::CylinderSensor(const NodeType & nodeType,
+CylinderSensor::CylinderSensor(const node_type & nodeType,
                                const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractChild(nodeType, scope),
         autoOffset(true),
         diskAngle(0.262),
@@ -4068,7 +4096,7 @@ CylinderSensor::CylinderSensor(const NodeType & nodeType,
         minAngle(0.0),
         offset(0.0),
         active(false) {
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -4079,7 +4107,7 @@ CylinderSensor::~CylinderSensor() throw () {}
 /**
  * @brief Cast to a CylinderSensor.
  */
-CylinderSensor* CylinderSensor::toCylinderSensor() const {   // mgiger 6/16/00
+CylinderSensor* CylinderSensor::to_cylinder_sensor() const {   // mgiger 6/16/00
     return (CylinderSensor*) this;
 }
 
@@ -4126,18 +4154,18 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p)
             disk.value = false;
         }
         // send message
-        this->emitEvent("isActive", this->active, timeStamp);
+        this->emit_event("isActive", this->active, timeStamp);
     }
 
     // Become inactive
     else if (!isActive && this->active.value) {
         this->active.value = isActive;
-        this->emitEvent("isActive", this->active, timeStamp);
+        this->emit_event("isActive", this->active, timeStamp);
 
         // save auto offset of rotation
         if (this->autoOffset.value) {
             this->offset = rotation_val;
-            this->emitEvent("offset_changed", this->offset, timeStamp);
+            this->emit_event("offset_changed", this->offset, timeStamp);
         }
     }
 
@@ -4147,7 +4175,7 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p)
         vec3f Vec(p[0], p[1], p[2]);
         Vec = Vec * this->activationMatrix;
         this->trackPoint.value = Vec;
-        this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
+        this->emit_event("trackPoint_changed", this->trackPoint, timeStamp);
         vec3f tempv;
         float rot, radius;
         vec3f dir1(Vec[0], 0, Vec[2]);
@@ -4180,7 +4208,7 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p)
         rotation_val.value = rot;
         this->rotation.value = OpenVRML::rotation(0, 1, 0, rot);
 
-        this->emitEvent("rotation_changed", this->rotation, timeStamp);
+        this->emit_event("rotation_changed", this->rotation, timeStamp);
     }
 }
 
@@ -4197,7 +4225,7 @@ void CylinderSensor::processSet_autoOffset(const field_value & value,
     throw (std::bad_cast)
 {
     this->autoOffset = dynamic_cast<const sfbool &>(value);
-    this->emitEvent("autoOffset_changed", this->autoOffset, timestamp);
+    this->emit_event("autoOffset_changed", this->autoOffset, timestamp);
 }
 
 /**
@@ -4213,7 +4241,7 @@ void CylinderSensor::processSet_diskAngle(const field_value & value,
     throw (std::bad_cast)
 {
     this->diskAngle = dynamic_cast<const sffloat &>(value);
-    this->emitEvent("diskAngle_changed", this->diskAngle, timestamp);
+    this->emit_event("diskAngle_changed", this->diskAngle, timestamp);
 }
 
 /**
@@ -4229,7 +4257,7 @@ void CylinderSensor::processSet_enabled(const field_value & value,
     throw (std::bad_cast)
 {
     this->enabled = dynamic_cast<const sfbool &>(value);
-    this->emitEvent("enabled_changed", this->enabled, timestamp);
+    this->emit_event("enabled_changed", this->enabled, timestamp);
 }
 
 /**
@@ -4245,7 +4273,7 @@ void CylinderSensor::processSet_maxAngle(const field_value & value,
     throw (std::bad_cast)
 {
     this->maxAngle = dynamic_cast<const sffloat &>(value);
-    this->emitEvent("maxAngle_changed", this->maxAngle, timestamp);
+    this->emit_event("maxAngle_changed", this->maxAngle, timestamp);
 }
 
 /**
@@ -4261,7 +4289,7 @@ void CylinderSensor::processSet_minAngle(const field_value & value,
     throw (std::bad_cast)
 {
     this->minAngle = dynamic_cast<const sffloat &>(value);
-    this->emitEvent("minAngle_changed", this->minAngle, timestamp);
+    this->emit_event("minAngle_changed", this->minAngle, timestamp);
 }
 
 /**
@@ -4277,7 +4305,7 @@ void CylinderSensor::processSet_offset(const field_value & value,
     throw (std::bad_cast)
 {
     this->offset = dynamic_cast<const sffloat &>(value);
-    this->emitEvent("offset_changed", this->offset, timestamp);
+    this->emit_event("offset_changed", this->offset, timestamp);
 }
 
 
@@ -4293,7 +4321,7 @@ void CylinderSensor::processSet_offset(const field_value & value,
  * @param browser the Browser associated with this class object.
  */
 DirectionalLightClass::DirectionalLightClass(Browser & browser):
-        NodeClass(browser) {}
+        node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -4309,64 +4337,64 @@ DirectionalLightClass::~DirectionalLightClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating DirectionalLight
  *      nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by DirectionalLightClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        DirectionalLightClass::createType(const std::string & id,
-                                          const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "ambientIntensity"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "color"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "direction"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "intensity"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "on")
+        DirectionalLightClass::create_type(const std::string & id,
+                                          const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "color"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "direction"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "intensity"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "on")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<DirectionalLight>(*this, id));
     Vrml97NodeTypeImpl<DirectionalLight> & directionalLightNodeType =
             static_cast<Vrml97NodeTypeImpl<DirectionalLight> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<DirectionalLight>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             directionalLightNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &DirectionalLight::processSet_ambientIntensity,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, sffloat>
                                     (&DirectionalLight::ambientIntensity)));
         } else if (*itr == supportedInterfaces[1]) {
             directionalLightNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &DirectionalLight::processSet_color,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, sfcolor>
                                     (&DirectionalLight::color)));
         } else if (*itr == supportedInterfaces[2]) {
             directionalLightNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &DirectionalLight::processSet_direction,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, sfvec3f>
                                     (&DirectionalLight::direction)));
         } else if (*itr == supportedInterfaces[3]) {
             directionalLightNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &DirectionalLight::processSet_intensity,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, sffloat>
                                     (&DirectionalLight::intensity)));
         } else if (*itr == supportedInterfaces[4]) {
             directionalLightNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &DirectionalLight::processSet_on,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<DirectionalLight, sfbool>
                                     (&DirectionalLight::on)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -4384,9 +4412,9 @@ const NodeTypePtr
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-DirectionalLight::DirectionalLight(const NodeType & nodeType,
+DirectionalLight::DirectionalLight(const node_type & nodeType,
                                    const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractLight(nodeType, scope),
     direction(vec3f(0.0, 0.0, -1.0))
 {}
@@ -4412,7 +4440,7 @@ void DirectionalLight::render(Viewer & viewer, const VrmlRenderContext rc)
                               this->color.value,
                               this->direction.value);
     }
-    this->clearModified();
+    this->node::modified(false);
 }
 
 /**
@@ -4427,8 +4455,8 @@ void DirectionalLight::processSet_direction(const field_value & value,
                                             const double timestamp)
         throw (std::bad_cast) {
     this->direction = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("direction_changed", this->direction, timestamp);
+    this->node::modified(true);
+    this->emit_event("direction_changed", this->direction, timestamp);
 }
 
 
@@ -4443,7 +4471,7 @@ void DirectionalLight::processSet_direction(const field_value & value,
  *
  * @param browser the Browser associated with this class object.
  */
-ElevationGridClass::ElevationGridClass(Browser & browser): NodeClass(browser) {}
+ElevationGridClass::ElevationGridClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -4458,124 +4486,124 @@ ElevationGridClass::~ElevationGridClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating ElevationGrid nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ElevationGridClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        ElevationGridClass::createType(const std::string & id,
-                                       const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::mffloat_id, "set_height"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "color"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "normal"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "texCoord"),
-        NodeInterface(NodeInterface::field, field_value::mffloat_id, "height"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "ccw"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "colorPerVertex"),
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "creaseAngle"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "normalPerVertex"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "solid"),
-        NodeInterface(NodeInterface::field, field_value::sfint32_id, "xDimension"),
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "xSpacing"),
-        NodeInterface(NodeInterface::field, field_value::sfint32_id, "zDimension"),
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "zSpacing")
+        ElevationGridClass::create_type(const std::string & id,
+                                       const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::mffloat_id, "set_height"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "normal"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "texCoord"),
+        node_interface(node_interface::field_id, field_value::mffloat_id, "height"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "ccw"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "colorPerVertex"),
+        node_interface(node_interface::field_id, field_value::sffloat_id, "creaseAngle"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "normalPerVertex"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
+        node_interface(node_interface::field_id, field_value::sfint32_id, "xDimension"),
+        node_interface(node_interface::field_id, field_value::sffloat_id, "xSpacing"),
+        node_interface(node_interface::field_id, field_value::sfint32_id, "zDimension"),
+        node_interface(node_interface::field_id, field_value::sffloat_id, "zSpacing")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ElevationGrid>(*this, id));
     Vrml97NodeTypeImpl<ElevationGrid> & elevationGridNodeType =
             static_cast<Vrml97NodeTypeImpl<ElevationGrid> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<ElevationGrid>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             elevationGridNodeType.addEventIn(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &ElevationGrid::processSet_height);
         } else if (*itr == supportedInterfaces[1]) {
             elevationGridNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &ElevationGrid::processSet_color,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfnode>
                                     (&ElevationGrid::color)));
         } else if (*itr == supportedInterfaces[2]) {
             elevationGridNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &ElevationGrid::processSet_normal,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfnode>
                                     (&ElevationGrid::normal)));
         } else if (*itr == supportedInterfaces[3]) {
             elevationGridNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &ElevationGrid::processSet_texCoord,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfnode>
                                     (&ElevationGrid::texCoord)));
         } else if (*itr == supportedInterfaces[4]) {
             elevationGridNodeType.addField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, mffloat>
                                     (&ElevationGrid::height)));
         } else if (*itr == supportedInterfaces[5]) {
             elevationGridNodeType.addField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfbool>
                                     (&ElevationGrid::ccw)));
         } else if (*itr == supportedInterfaces[6]) {
             elevationGridNodeType.addField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfbool>
                                     (&ElevationGrid::colorPerVertex)));
         } else if (*itr == supportedInterfaces[7]) {
             elevationGridNodeType.addField(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sffloat>
                                     (&ElevationGrid::creaseAngle)));
         } else if (*itr == supportedInterfaces[8]) {
             elevationGridNodeType.addField(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfbool>
                                     (&ElevationGrid::normalPerVertex)));
         } else if (*itr == supportedInterfaces[9]) {
             elevationGridNodeType.addField(
-                supportedInterfaces[9].fieldType,
+                supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfbool>
                                     (&ElevationGrid::solid)));
         } else if (*itr == supportedInterfaces[10]) {
             elevationGridNodeType.addField(
-                supportedInterfaces[10].fieldType,
+                supportedInterfaces[10].field_type,
                 supportedInterfaces[10].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfint32>
                                     (&ElevationGrid::xDimension)));
         } else if (*itr == supportedInterfaces[11]) {
             elevationGridNodeType.addField(
-                supportedInterfaces[11].fieldType,
+                supportedInterfaces[11].field_type,
                 supportedInterfaces[11].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sffloat>
                                     (&ElevationGrid::xSpacing)));
         } else if (*itr == supportedInterfaces[12]) {
             elevationGridNodeType.addField(
-                supportedInterfaces[12].fieldType,
+                supportedInterfaces[12].field_type,
                 supportedInterfaces[12].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sfint32>
                                     (&ElevationGrid::zDimension)));
         } else if (*itr == supportedInterfaces[13]) {
             elevationGridNodeType.addField(
-                supportedInterfaces[13].fieldType,
+                supportedInterfaces[13].field_type,
                 supportedInterfaces[13].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ElevationGrid, sffloat>
                                     (&ElevationGrid::zSpacing)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -4593,9 +4621,9 @@ const NodeTypePtr
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-ElevationGrid::ElevationGrid(const NodeType & nodeType,
+ElevationGrid::ElevationGrid(const node_type & nodeType,
                              const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractGeometry(nodeType, scope),
         ccw(true),
         colorPerVertex(true),
@@ -4617,12 +4645,12 @@ ElevationGrid::~ElevationGrid() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool ElevationGrid::isModified() const
+bool ElevationGrid::modified() const
 {
-    return (this->d_modified
-            || (this->color.value && this->color.value->isModified())
-            || (this->normal.value && this->normal.value->isModified())
-            || (this->texCoord.value && this->texCoord.value->isModified()));
+    return (this->modified_
+            || (this->color.value && this->color.value->modified())
+            || (this->normal.value && this->normal.value->modified())
+            || (this->texCoord.value && this->texCoord.value->modified()));
 }
 
 /**
@@ -4632,13 +4660,13 @@ bool ElevationGrid::isModified() const
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void ElevationGrid::updateModified(NodePath & path, int flags)
+void ElevationGrid::update_modified(node_path & path, int flags)
 {
-    if (this->isModified()) { markPathModified(path, true); }
+    if (this->modified()) { mark_path_modified(path, true); }
     path.push_front(this);
-    if (this->color.value) { this->color.value->updateModified(path); }
-    if (this->normal.value) { this->normal.value->updateModified(path); }
-    if (this->texCoord.value) { this->texCoord.value->updateModified(path); }
+    if (this->color.value) { this->color.value->update_modified(path); }
+    if (this->normal.value) { this->normal.value->update_modified(path); }
+    if (this->texCoord.value) { this->texCoord.value->update_modified(path); }
     path.pop_front();
 }
 
@@ -4648,7 +4676,7 @@ void ElevationGrid::updateModified(NodePath & path, int flags)
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
+Viewer::Object ElevationGrid::insert_geometry(Viewer & viewer,
                                              const VrmlRenderContext context)
 {
     Viewer::Object obj = 0;
@@ -4656,20 +4684,20 @@ Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
     if (!this->height.value.empty()) {
         using std::vector;
 
-        ColorNode * const colorNode = this->color.value->toColor();
+        color_node * const colorNode = this->color.value->to_color();
         const vector<OpenVRML::color> & color = colorNode
-                                              ? colorNode->getColor()
+                                              ? colorNode->color()
                                               : vector<OpenVRML::color>();
 
-        NormalNode * const normalNode = this->normal.value->toNormal();
+        normal_node * const normalNode = this->normal.value->to_normal();
         const vector<vec3f> & normal = normalNode
-                                     ? normalNode->getVector()
+                                     ? normalNode->vector()
                                      : vector<vec3f>();
 
-        TextureCoordinateNode * const texCoordNode =
-                this->texCoord.value->toTextureCoordinate();
+        texture_coordinate_node * const texCoordNode =
+                this->texCoord.value->to_texture_coordinate();
         const vector<vec2f> & texCoord = texCoordNode
-                                       ? texCoordNode->getPoint()
+                                       ? texCoordNode->point()
                                        : vector<vec2f>();
         // insert geometry
         unsigned int optMask = 0;
@@ -4697,9 +4725,9 @@ Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
                                          texCoord);
     }
 
-    if (this->color.value) { this->color.value->clearModified(); }
-    if (this->normal.value) { this->normal.value->clearModified(); }
-    if (this->texCoord.value) { this->texCoord.value->clearModified(); }
+    if (this->color.value) { this->color.value->modified(false); }
+    if (this->normal.value) { this->normal.value->modified(false); }
+    if (this->texCoord.value) { this->texCoord.value->modified(false); }
 
     return obj;
 }
@@ -4717,8 +4745,8 @@ void ElevationGrid::processSet_color(const field_value & value,
                                      const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->color = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("color_changed", this->color, timestamp);
+    this->node::modified(true);
+    this->emit_event("color_changed", this->color, timestamp);
 }
 
 /**
@@ -4734,8 +4762,8 @@ void ElevationGrid::processSet_height(const field_value & value,
                                       const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->height = dynamic_cast<const mffloat &>(value);
-    this->setModified();
-    this->emitEvent("height_changed", this->height, timestamp);
+    this->node::modified(true);
+    this->emit_event("height_changed", this->height, timestamp);
 }
 
 /**
@@ -4751,7 +4779,7 @@ void ElevationGrid::processSet_normal(const field_value & value,
                                       const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->normal = dynamic_cast<const sfnode &>(value);
-    this->emitEvent("normal_changed", this->normal, timestamp);
+    this->emit_event("normal_changed", this->normal, timestamp);
 }
 
 /**
@@ -4767,8 +4795,8 @@ void ElevationGrid::processSet_texCoord(const field_value & value,
                                         const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->texCoord = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("texCoord_changed", this->texCoord, timestamp);
+    this->node::modified(true);
+    this->emit_event("texCoord_changed", this->texCoord, timestamp);
 }
 
 
@@ -4783,7 +4811,7 @@ void ElevationGrid::processSet_texCoord(const field_value & value,
  *
  * @param browser the Browser associated with this class object.
  */
-ExtrusionClass::ExtrusionClass(Browser & browser): NodeClass(browser) {}
+ExtrusionClass::ExtrusionClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -4798,114 +4826,114 @@ ExtrusionClass::~ExtrusionClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Extrusion nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ExtrusionClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        ExtrusionClass::createType(const std::string & id,
-                                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::mfvec2f_id, "set_crossSection"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfrotation_id, "set_orientation"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfvec2f_id, "set_scale"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfvec3f_id, "set_spine"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "beginCap"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "ccw"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "convex"),
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "creaseAngle"),
-        NodeInterface(NodeInterface::field, field_value::mfvec2f_id, "crossSection"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "endCap"),
-        NodeInterface(NodeInterface::field, field_value::mfrotation_id, "orientation"),
-        NodeInterface(NodeInterface::field, field_value::mfvec2f_id, "scale"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "solid"),
-        NodeInterface(NodeInterface::field, field_value::mfvec3f_id, "spine")
+        ExtrusionClass::create_type(const std::string & id,
+                                   const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::mfvec2f_id, "set_crossSection"),
+        node_interface(node_interface::eventin_id, field_value::mfrotation_id, "set_orientation"),
+        node_interface(node_interface::eventin_id, field_value::mfvec2f_id, "set_scale"),
+        node_interface(node_interface::eventin_id, field_value::mfvec3f_id, "set_spine"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "beginCap"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "ccw"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "convex"),
+        node_interface(node_interface::field_id, field_value::sffloat_id, "creaseAngle"),
+        node_interface(node_interface::field_id, field_value::mfvec2f_id, "crossSection"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "endCap"),
+        node_interface(node_interface::field_id, field_value::mfrotation_id, "orientation"),
+        node_interface(node_interface::field_id, field_value::mfvec2f_id, "scale"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
+        node_interface(node_interface::field_id, field_value::mfvec3f_id, "spine")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Extrusion>(*this, id));
     Vrml97NodeTypeImpl<Extrusion> & extrusionNodeType =
             static_cast<Vrml97NodeTypeImpl<Extrusion> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Extrusion>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
-            extrusionNodeType.addEventIn(supportedInterfaces[0].fieldType,
+            extrusionNodeType.addEventIn(supportedInterfaces[0].field_type,
                                          supportedInterfaces[0].id,
                                          &Extrusion::processSet_crossSection);
         } else if (*itr == supportedInterfaces[1]) {
-            extrusionNodeType.addEventIn(supportedInterfaces[1].fieldType,
+            extrusionNodeType.addEventIn(supportedInterfaces[1].field_type,
                                          supportedInterfaces[1].id,
                                          &Extrusion::processSet_orientation);
         } else if (*itr == supportedInterfaces[2]) {
-            extrusionNodeType.addEventIn(supportedInterfaces[2].fieldType,
+            extrusionNodeType.addEventIn(supportedInterfaces[2].field_type,
                                          supportedInterfaces[2].id,
                                          &Extrusion::processSet_scale);
         } else if (*itr == supportedInterfaces[3]) {
-            extrusionNodeType.addEventIn(supportedInterfaces[3].fieldType,
+            extrusionNodeType.addEventIn(supportedInterfaces[3].field_type,
                                          supportedInterfaces[3].id,
                                          &Extrusion::processSet_spine);
         } else if (*itr == supportedInterfaces[4]) {
             extrusionNodeType.addField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sfbool>
                                     (&Extrusion::beginCap)));
         } else if (*itr == supportedInterfaces[5]) {
             extrusionNodeType.addField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sfbool>
                                     (&Extrusion::ccw)));
         } else if (*itr == supportedInterfaces[6]) {
             extrusionNodeType.addField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sfbool>
                                     (&Extrusion::convex)));
         } else if (*itr == supportedInterfaces[7]) {
             extrusionNodeType.addField(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sffloat>
                                     (&Extrusion::creaseAngle)));
         } else if (*itr == supportedInterfaces[8]) {
             extrusionNodeType.addField(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, mfvec2f>
                                     (&Extrusion::crossSection)));
         } else if (*itr == supportedInterfaces[9]) {
             extrusionNodeType.addField(
-                supportedInterfaces[9].fieldType,
+                supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sfbool>
                                     (&Extrusion::endCap)));
         } else if (*itr == supportedInterfaces[10]) {
             extrusionNodeType.addField(
-                supportedInterfaces[10].fieldType,
+                supportedInterfaces[10].field_type,
                 supportedInterfaces[10].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, mfrotation>
                                     (&Extrusion::orientation)));
         } else if (*itr == supportedInterfaces[11]) {
             extrusionNodeType.addField(
-                supportedInterfaces[11].fieldType,
+                supportedInterfaces[11].field_type,
                 supportedInterfaces[11].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, mfvec2f>
                                     (&Extrusion::scale)));
         } else if (*itr == supportedInterfaces[12]) {
             extrusionNodeType.addField(
-                supportedInterfaces[12].fieldType,
+                supportedInterfaces[12].field_type,
                 supportedInterfaces[12].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, sfbool>
                                     (&Extrusion::solid)));
         } else if (*itr == supportedInterfaces[13]) {
             extrusionNodeType.addField(
-                supportedInterfaces[13].fieldType,
+                supportedInterfaces[13].field_type,
                 supportedInterfaces[13].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Extrusion, mfvec3f>
                                     (&Extrusion::spine)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -4936,9 +4964,9 @@ namespace {
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Extrusion::Extrusion(const NodeType & nodeType,
+Extrusion::Extrusion(const node_type & nodeType,
                      const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractGeometry(nodeType, scope),
     beginCap(true),
     ccw(true),
@@ -4964,7 +4992,7 @@ Extrusion::~Extrusion() throw () {}
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object Extrusion::insertGeometry(Viewer & viewer,
+Viewer::Object Extrusion::insert_geometry(Viewer & viewer,
                                          const VrmlRenderContext context)
 {
     Viewer::Object obj = 0;
@@ -5001,7 +5029,7 @@ void Extrusion::processSet_crossSection(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->crossSection = dynamic_cast<const mfvec2f &>(value);
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -5018,7 +5046,7 @@ void Extrusion::processSet_orientation(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->orientation = dynamic_cast<const mfrotation &>(value);
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -5034,7 +5062,7 @@ void Extrusion::processSet_scale(const field_value & value,
                                  const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->scale = dynamic_cast<const mfvec2f &>(value);
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -5050,7 +5078,7 @@ void Extrusion::processSet_spine(const field_value & value,
                                  const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->spine = dynamic_cast<const mfvec3f &>(value);
-    this->setModified();
+    this->node::modified(true);
 }
 
 
@@ -5066,7 +5094,7 @@ void Extrusion::processSet_spine(const field_value & value,
  * @param browser the Browser associated with this class object.
  */
 FogClass::FogClass(Browser & browser):
-    NodeClass(browser),
+    node_class(browser),
     first(0)
 {}
 
@@ -5130,7 +5158,7 @@ void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
     if (!this->boundNodes.empty()) {
         Fog & current = dynamic_cast<Fog &>(*this->boundNodes.back());
         current.bound.value = false;
-        current.emitEvent("isBound", current.bound, timestamp);
+        current.emit_event("isBound", current.bound, timestamp);
     }
 
     //
@@ -5138,7 +5166,7 @@ void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
     //
     this->boundNodes.push_back(&fog);
     fog.bound.value = true;
-    fog.emitEvent("isBound", fog.bound, timestamp);
+    fog.emit_event("isBound", fog.bound, timestamp);
 }
 
 /**
@@ -5153,14 +5181,14 @@ void FogClass::unbind(Fog & fog, const double timestamp) throw ()
             std::find(this->boundNodes.begin(), this->boundNodes.end(), &fog);
     if (pos != this->boundNodes.end()) {
         fog.bound.value = false;
-        fog.emitEvent("isBound", fog.bound, timestamp);
+        fog.emit_event("isBound", fog.bound, timestamp);
 
         if (pos == this->boundNodes.end() - 1
                 && this->boundNodes.size() > 1) {
             Fog & newActive =
                     dynamic_cast<Fog &>(**(this->boundNodes.end() - 2));
             newActive.bound.value = true;
-            newActive.emitEvent("isBound", newActive.bound, timestamp);
+            newActive.emit_event("isBound", newActive.bound, timestamp);
         }
         this->boundNodes.erase(pos);
     }
@@ -5169,15 +5197,15 @@ void FogClass::unbind(Fog & fog, const double timestamp) throw ()
 /**
  * @brief NodeClass-specific initialization.
  *
- * @param initialViewpoint  the ViewpointNode that should be bound initially.
+ * @param initialViewpoint  the viewpoint_node that should be bound initially.
  * @param timestamp         the current time.
  */
-void FogClass::initialize(ViewpointNode * initialViewpoint,
+void FogClass::initialize(viewpoint_node * initialViewpoint,
                           const double timestamp)
     throw ()
 {
     if (this->first) {
-        this->first->processEvent("set_bind", sfbool(true), timestamp);
+        this->first->process_event("set_bind", sfbool(true), timestamp);
     }
 }
 
@@ -5206,59 +5234,59 @@ void FogClass::render(Viewer & viewer) throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Fog nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by FogClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr FogClass::createType(const std::string & id,
-                                       const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::sfbool_id, "set_bind"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "color"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfstring_id, "fogType"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "visibilityRange"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isBound")
+const NodeTypePtr FogClass::create_type(const std::string & id,
+                                       const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::sfbool_id, "set_bind"),
+        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "color"),
+        node_interface(node_interface::exposedfield_id, field_value::sfstring_id, "fogType"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "visibilityRange"),
+        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Fog>(*this, id));
     Vrml97NodeTypeImpl<Fog> & fogNodeType =
             static_cast<Vrml97NodeTypeImpl<Fog> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Fog>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
-            fogNodeType.addEventIn(supportedInterfaces[0].fieldType,
+            fogNodeType.addEventIn(supportedInterfaces[0].field_type,
                                    supportedInterfaces[0].id,
                                    &Fog::processSet_bind);
         } else if (*itr == supportedInterfaces[1]) {
             fogNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &Fog::processSet_color,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, sfcolor>
                                     (&Fog::color)));
         } else if (*itr == supportedInterfaces[2]) {
             fogNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Fog::processSet_fogType,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, sfstring>
                                     (&Fog::fogType)));
         } else if (*itr == supportedInterfaces[3]) {
             fogNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &Fog::processSet_visibilityRange,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, sffloat>
                                     (&Fog::visibilityRange)));
         } else if (*itr == supportedInterfaces[4]) {
             fogNodeType.addEventOut(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Fog, sfbool>
                                     (&Fog::bound)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -5276,9 +5304,9 @@ const NodeTypePtr FogClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Fog::Fog(const NodeType & nodeType,
+Fog::Fog(const node_type & nodeType,
          const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     color(OpenVRML::color(1.0, 1.0, 1.0)),
     fogType("LINEAR"),
@@ -5299,7 +5327,7 @@ Fog::~Fog() throw ()
  */
 void Fog::do_initialize(const double timestamp) throw ()
 {
-    FogClass & nodeClass = static_cast<FogClass &>(this->nodeType.nodeClass);
+    FogClass & nodeClass = static_cast<FogClass &>(this->type._class);
     if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
 }
 
@@ -5312,7 +5340,7 @@ void Fog::do_initialize(const double timestamp) throw ()
  */
 void Fog::do_shutdown(const double timestamp) throw ()
 {
-    FogClass & nodeClass = static_cast<FogClass &>(this->nodeType.nodeClass);
+    FogClass & nodeClass = static_cast<FogClass &>(this->type._class);
     nodeClass.unbind(*this, timestamp);
 }
 
@@ -5329,7 +5357,7 @@ void Fog::processSet_bind(const field_value & value, const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     const sfbool & bind = dynamic_cast<const sfbool &>(value);
-    FogClass & nodeClass = static_cast<FogClass &>(this->nodeType.nodeClass);
+    FogClass & nodeClass = static_cast<FogClass &>(this->type._class);
     if (bind.value) {
         nodeClass.bind(*this, timestamp);
     } else {
@@ -5349,8 +5377,8 @@ void Fog::processSet_color(const field_value & value, const double timestamp)
     throw (std::bad_cast)
 {
     this->color = dynamic_cast<const sfcolor &>(value);
-    this->setModified();
-    this->emitEvent("color_changed", this->color, timestamp);
+    this->node::modified(true);
+    this->emit_event("color_changed", this->color, timestamp);
 }
 
 /**
@@ -5367,8 +5395,8 @@ void Fog::processSet_fogType(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->fogType = dynamic_cast<const sfstring &>(value);
-    this->setModified();
-    this->emitEvent("fogType_changed", this->fogType, timestamp);
+    this->node::modified(true);
+    this->emit_event("fogType_changed", this->fogType, timestamp);
 }
 
 /**
@@ -5384,8 +5412,8 @@ void Fog::processSet_visibilityRange(const field_value & value,
     throw (std::bad_cast)
 {
     this->visibilityRange = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("visibilityRange_changed", this->visibilityRange,
+    this->node::modified(true);
+    this->emit_event("visibilityRange_changed", this->visibilityRange,
                     timestamp);
 }
 
@@ -5401,7 +5429,7 @@ void Fog::processSet_visibilityRange(const field_value & value,
  *
  * @param browser the Browser associated with this class object.
  */
-FontStyleClass::FontStyleClass(Browser & browser): NodeClass(browser) {}
+FontStyleClass::FontStyleClass(Browser & browser): node_class(browser) {}
 
 FontStyleClass::~FontStyleClass() throw () {}
 
@@ -5413,87 +5441,106 @@ FontStyleClass::~FontStyleClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating FontStyle nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by FontStyleClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        FontStyleClass::createType(const std::string & id,
-                                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::field, field_value::mfstring_id, "family"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "horizontal"),
-        NodeInterface(NodeInterface::field, field_value::mfstring_id, "justify"),
-        NodeInterface(NodeInterface::field, field_value::sfstring_id, "language"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "leftToRight"),
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "size"),
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "spacing"),
-        NodeInterface(NodeInterface::field, field_value::sfstring_id, "style"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "topToBottom")
+FontStyleClass::create_type(const std::string & id,
+                            const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "family"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "horizontal"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "justify"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "language"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "leftToRight"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "size"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "spacing"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "style"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "topToBottom")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<FontStyle>(*this, id));
     Vrml97NodeTypeImpl<FontStyle> & fontStyleNodeType =
             static_cast<Vrml97NodeTypeImpl<FontStyle> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<FontStyle>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             fontStyleNodeType.addField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, mfstring>
-                                    (&FontStyle::family)));
+                                    (&FontStyle::family_)));
         } else if (*itr == supportedInterfaces[1]) {
             fontStyleNodeType.addField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sfbool>
-                                    (&FontStyle::horizontal)));
+                                    (&FontStyle::horizontal_)));
         } else if (*itr == supportedInterfaces[2]) {
             fontStyleNodeType.addField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, mfstring>
-                                    (&FontStyle::justify)));
+                                    (&FontStyle::justify_)));
         } else if (*itr == supportedInterfaces[3]) {
             fontStyleNodeType.addField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sfstring>
-                                    (&FontStyle::language)));
+                                    (&FontStyle::language_)));
         } else if (*itr == supportedInterfaces[4]) {
             fontStyleNodeType.addField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sfbool>
                                     (&FontStyle::leftToRight)));
         } else if (*itr == supportedInterfaces[5]) {
             fontStyleNodeType.addField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sffloat>
-                                    (&FontStyle::size)));
+                                    (&FontStyle::size_)));
         } else if (*itr == supportedInterfaces[6]) {
             fontStyleNodeType.addField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sffloat>
-                                    (&FontStyle::spacing)));
+                                    (&FontStyle::spacing_)));
         } else if (*itr == supportedInterfaces[7]) {
             fontStyleNodeType.addField(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sfstring>
-                                    (&FontStyle::style)));
+                                    (&FontStyle::style_)));
         } else if (*itr == supportedInterfaces[8]) {
             fontStyleNodeType.addField(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<FontStyle, sfbool>
                                     (&FontStyle::topToBottom)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -5516,18 +5563,18 @@ namespace {
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-FontStyle::FontStyle(const NodeType & nodeType,
+FontStyle::FontStyle(const node_type & nodeType,
                      const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    FontStyleNode(nodeType, scope),
-    family(fontStyleInitFamily_, fontStyleInitFamily_ + 1),
-    horizontal(true),
-    justify(fontStyleInitJustify_, fontStyleInitJustify_ + 2),
+    font_style_node(nodeType, scope),
+    family_(fontStyleInitFamily_, fontStyleInitFamily_ + 1),
+    horizontal_(true),
+    justify_(fontStyleInitJustify_, fontStyleInitJustify_ + 2),
     leftToRight(true),
-    size(1.0),
-    spacing(1.0),
-    style("PLAIN"),
+    size_(1.0),
+    spacing_(1.0),
+    style_("PLAIN"),
     topToBottom(true)
 {}
 
@@ -5543,9 +5590,9 @@ FontStyle::~FontStyle() throw ()
  * @return an mfstring containing the font families that may be used for this
  *      FontStyle.
  */
-const std::vector<std::string> & FontStyle::getFamily() const throw ()
+const std::vector<std::string> & FontStyle::family() const throw ()
 {
-    return this->family.value;
+    return this->family_.value;
 }
 
 /**
@@ -5555,9 +5602,9 @@ const std::vector<std::string> & FontStyle::getFamily() const throw ()
  * @return @c true if the text should be horizontal, or @c false if the text
  *      should be vertical.
  */
-bool FontStyle::getHorizontal() const throw ()
+bool FontStyle::horizontal() const throw ()
 {
-    return this->horizontal.value;
+    return this->horizontal_.value;
 }
 
 /**
@@ -5566,9 +5613,9 @@ bool FontStyle::getHorizontal() const throw ()
  * @return a string array describing the characteristics of the text
  *      justification.
  */
-const std::vector<std::string> & FontStyle::getJustify() const throw ()
+const std::vector<std::string> & FontStyle::justify() const throw ()
 {
-    return this->justify.value;
+    return this->justify_.value;
 }
 
 /**
@@ -5576,9 +5623,9 @@ const std::vector<std::string> & FontStyle::getJustify() const throw ()
  *
  * @return the language code.
  */
-const std::string & FontStyle::getLanguage() const throw ()
+const std::string & FontStyle::language() const throw ()
 {
-    return this->language.value;
+    return this->language_.value;
 }
 
 /**
@@ -5588,7 +5635,7 @@ const std::string & FontStyle::getLanguage() const throw ()
  * @return @c true if the text should be rendered left-to-right, or @c false if
  *      the text should be rendered right-to-left.
  */
-bool FontStyle::getLeftToRight() const throw ()
+bool FontStyle::left_to_right() const throw ()
 {
     return this->leftToRight.value;
 }
@@ -5598,9 +5645,9 @@ bool FontStyle::getLeftToRight() const throw ()
  *
  * @return the size of the text.
  */
-float FontStyle::getSize() const throw ()
+float FontStyle::size() const throw ()
 {
-    return this->size.value;
+    return this->size_.value;
 }
 
 /**
@@ -5608,9 +5655,9 @@ float FontStyle::getSize() const throw ()
  *
  * @return the spacing for the text.
  */
-float FontStyle::getSpacing() const throw ()
+float FontStyle::spacing() const throw ()
 {
-    return this->spacing.value;
+    return this->spacing_.value;
 }
 
 /**
@@ -5618,9 +5665,9 @@ float FontStyle::getSpacing() const throw ()
  *
  * @return an string descriptor of the text style.
  */
-const std::string & FontStyle::getStyle() const throw ()
+const std::string & FontStyle::style() const throw ()
 {
-    return this->style.value;
+    return this->style_.value;
 }
 
 /**
@@ -5630,7 +5677,7 @@ const std::string & FontStyle::getStyle() const throw ()
  * @return @c true if the text should be rendered top-to-bottom, or @c false if
  *      the text should be rendered bottom-to-top.
  */
-bool FontStyle::getTopToBottom() const throw ()
+bool FontStyle::top_to_bottom() const throw ()
 {
     return this->topToBottom.value;
 }
@@ -5647,7 +5694,7 @@ bool FontStyle::getTopToBottom() const throw ()
  *
  * @param browser the Browser associated with this node class object.
  */
-GroupClass::GroupClass(Browser & browser): NodeClass(browser) {}
+GroupClass::GroupClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -5662,55 +5709,66 @@ GroupClass::~GroupClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Group nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by GroupClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr GroupClass::createType(const std::string & id,
-                                         const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
+const NodeTypePtr GroupClass::create_type(const std::string & id,
+                                         const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Group>(*this, id));
     Vrml97NodeTypeImpl<Group> & groupNodeType =
             static_cast<Vrml97NodeTypeImpl<Group> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Group>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
-            groupNodeType.addEventIn(supportedInterfaces[0].fieldType,
+            groupNodeType.addEventIn(supportedInterfaces[0].field_type,
                                      supportedInterfaces[0].id,
                                      &Group::processAddChildren);
         } else if (*itr == supportedInterfaces[1]) {
-            groupNodeType.addEventIn(supportedInterfaces[1].fieldType,
+            groupNodeType.addEventIn(supportedInterfaces[1].field_type,
                                      supportedInterfaces[1].id,
                                      &Group::processRemoveChildren);
         } else if (*itr == supportedInterfaces[2]) {
             groupNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Group::processSet_children,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Group, mfnode>
-                                    (&Group::children)));
+                                    (&Group::children_)));
         } else if (*itr == supportedInterfaces[3]) {
             groupNodeType.addField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Group, sfvec3f>
                                     (&Group::bboxCenter)));
         } else if (*itr == supportedInterfaces[4]) {
             groupNodeType.addField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Group, sfvec3f>
                                 (&Group::bboxSize)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -5728,16 +5786,16 @@ const NodeTypePtr GroupClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-Group::Group(const NodeType & nodeType,
+Group::Group(const node_type & nodeType,
              const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    ChildNode(nodeType, scope),
-    GroupingNode(nodeType, scope),
+    child_node(nodeType, scope),
+    grouping_node(nodeType, scope),
     bboxSize(vec3f(-1.0, -1.0, -1.0)),
     viewerObject(0)
 {
-    this->setBVolumeDirty(true);
+    this->bvolume_dirty(true);
 }
 
 /**
@@ -5761,23 +5819,23 @@ void Group::processAddChildren(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     const mfnode & newChildren = dynamic_cast<const mfnode &>(value);
-    size_t nNow = this->children.value.size();
+    size_t nNow = this->children_.value.size();
 
     for (size_t i = 0; i < newChildren.value.size(); ++i) {
         const NodePtr & child = newChildren.value[i];
-        if (child && child->toChild()) {
-            this->children.value.push_back(child);
+        if (child && child->to_child()) {
+            this->children_.value.push_back(child);
             child->relocate();
         } else {
             theSystem->error(
                 "Error: Attempt to add a %s node as a child of a %s node.\n",
-                child->nodeType.id.c_str(), this->nodeType.id.c_str());
+                child->type.id.c_str(), this->type.id.c_str());
         }
     }
 
-    if (nNow != this->children.value.size()) {
-        setModified();
-        this->setBVolumeDirty(true);
+    if (nNow != this->children_.value.size()) {
+        this->node::modified(true);
+        this->bvolume_dirty(true);
     }
 }
 
@@ -5795,22 +5853,23 @@ void Group::processRemoveChildren(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     const mfnode & childrenToRemove = dynamic_cast<const mfnode &>(value);
-    const size_t oldLength = this->children.value.size();
+    const size_t oldLength = this->children_.value.size();
 
     for (size_t i = 0; i < childrenToRemove.value.size(); ++i) {
         const NodePtr & node = childrenToRemove.value[i];
         if (node) {
             using std::remove;
             using std::vector;
-            const vector<NodePtr>::iterator begin(this->children.value.begin());
-            const vector<NodePtr>::iterator end(this->children.value.end());
-            this->children.value.erase(remove(begin, end, node), end);
+            const vector<NodePtr>::iterator begin =
+                this->children_.value.begin();
+            const vector<NodePtr>::iterator end = this->children_.value.end();
+            this->children_.value.erase(remove(begin, end, node), end);
         }
     }
 
-    if (oldLength != this->children.value.size()) {
-        setModified();
-        this->setBVolumeDirty(true);
+    if (oldLength != this->children_.value.size()) {
+        this->node::modified(true);
+        this->bvolume_dirty(true);
     }
 }
 
@@ -5825,18 +5884,19 @@ void Group::processRemoveChildren(const field_value & value,
  */
 void Group::processSet_children(const field_value & value,
                                 const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->children = dynamic_cast<const mfnode &>(value);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->children_ = dynamic_cast<const mfnode &>(value);
 
-    for (size_t i = 0; i < this->children.value.size(); ++i) {
-        if (children.value[i]) {
-            children.value[i]->relocate();
+    for (size_t i = 0; i < this->children_.value.size(); ++i) {
+        if (children_.value[i]) {
+            children_.value[i]->relocate();
         }
     }
 
-    this->setModified();
-    this->setBVolumeDirty(true);
-    this->emitEvent("children_changed", this->children, timestamp);
+    this->node::modified(true);
+    this->bvolume_dirty(true);
+    this->emit_event("children_changed", this->children_, timestamp);
 }
 
 /**
@@ -5845,13 +5905,11 @@ void Group::processSet_children(const field_value & value,
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool Group::isModified() const {
-    if (this->d_modified) { return true; }
-
-    for (size_t i = 0; i < this->children.value.size(); ++i) {
-        if (this->children.value[i]->isModified()) {
-            return true;
-        }
+bool Group::modified() const
+{
+    if (this->modified_) { return true; }
+    for (size_t i = 0; i < this->children_.value.size(); ++i) {
+        if (this->children_.value[i]->modified()) { return true; }
     }
     return false;
 }
@@ -5863,13 +5921,14 @@ bool Group::isModified() const {
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Group::updateModified(NodePath & path, int flags) {
+void Group::update_modified(node_path & path, int flags)
+{
     // if the mark_modifed short circuit doesn't
     // pan out, we should be a little smarter here...
-    if (this->isModified()) { markPathModified(path, true, flags); }
+    if (this->modified()) { mark_path_modified(path, true, flags); }
     path.push_front(this);
-    for (size_t i = 0; i < this->children.value.size(); ++i) {
-        this->children.value[i]->updateModified(path, flags);
+    for (size_t i = 0; i < this->children_.value.size(); ++i) {
+        this->children_.value[i]->update_modified(path, flags);
     }
     path.pop_front();
 }
@@ -5885,7 +5944,7 @@ void Group::updateModified(NodePath & path, int flags) {
 void Group::render(Viewer & viewer, VrmlRenderContext context)
 {
     if (context.getCullFlag() != BVolume::inside) {
-        const BSphere * bs = static_cast<const BSphere *>(this->getBVolume());
+        const BSphere * bs = static_cast<const BSphere *>(this->bvolume());
         BSphere bv_copy(*bs);
         bv_copy.transform(context.getMatrix());
         BVolume::Intersection r = viewer.intersectViewVolume(bv_copy);
@@ -5902,47 +5961,47 @@ void Group::render(Viewer & viewer, VrmlRenderContext context)
  * to repeat it here.
  */
 void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
-    if (this->viewerObject && this->isModified()) {
+    if (this->viewerObject && this->modified()) {
         viewer.removeObject(this->viewerObject);
         this->viewerObject = 0;
     }
 
     if (this->viewerObject) {
         viewer.insertReference(this->viewerObject);
-    } else if (this->children.value.size() > 0) {
-        int i, n = this->children.value.size();
+    } else if (this->children_.value.size() > 0) {
+        int i, n = this->children_.value.size();
         int nSensors = 0;
 
-        this->viewerObject = viewer.beginObject(this->getId().c_str());
+        this->viewerObject = viewer.beginObject(this->id().c_str());
 
         // Draw nodes that impact their siblings (DirectionalLights,
         // TouchSensors, any others? ...)
         for (i = 0; i < n; ++i) {
-          const NodePtr & kid = this->children.value[i];
+          const NodePtr & kid = this->children_.value[i];
 
-            if (kid->toLight()
-                    && !(kid->toPointLight() || kid->toSpotLight())) {
+            if (kid->to_light()
+                    && !(kid->to_point_light() || kid->to_spot_light())) {
                 kid->render(viewer, context);
-            } else if ((kid->toTouchSensor()
-                        && kid->toTouchSensor()->isEnabled())
-                    || (kid->toPlaneSensor()
-                        && kid->toPlaneSensor()->isEnabled())
-                    || (kid->toCylinderSensor()
-                        && kid->toCylinderSensor()->isEnabled())
-                    || (kid->toSphereSensor()
-                        && kid->toSphereSensor()->isEnabled())) {
+            } else if ((kid->to_touch_sensor()
+                        && kid->to_touch_sensor()->isEnabled())
+                    || (kid->to_plane_sensor()
+                        && kid->to_plane_sensor()->isEnabled())
+                    || (kid->to_cylinder_sensor()
+                        && kid->to_cylinder_sensor()->isEnabled())
+                    || (kid->to_sphere_sensor()
+                        && kid->to_sphere_sensor()->isEnabled())) {
                 if (++nSensors == 1) { viewer.setSensitive(this); }
             }
         }
 
         // Do the rest of the children (except the scene-level lights)
         for (i = 0; i<n; ++i) {
-            const NodePtr & child = this->children.value[i];
-            if (!(child->toLight()
-//                    || child->toPlaneSensor()
-//                    || child->toCylinderSensor()
-//                    || child->toSphereSensor()
-                    || child->toTouchSensor())) {
+            const NodePtr & child = this->children_.value[i];
+            if (!(child->to_light()
+//                    || child->to_plane_sensor()
+//                    || child->to_cylinder_sensor()
+//                    || child->to_sphere_sensor()
+                    || child->to_touch_sensor())) {
                 child->render(viewer, context);
             }
         }
@@ -5953,7 +6012,7 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
         viewer.endObject();
     }
 
-    this->clearModified();
+    this->node::modified(false);
 }
 
 /**
@@ -5961,9 +6020,9 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<NodePtr> & Group::getChildren() const throw ()
+const std::vector<NodePtr> & Group::children() const throw ()
 {
-    return this->children.value;
+    return this->children_.value;
 }
 
 /**
@@ -5971,20 +6030,21 @@ const std::vector<NodePtr> & Group::getChildren() const throw ()
  */
 void Group::activate(double time, bool isOver, bool isActive, double *p)
 {
-    for (size_t i = 0; i < this->children.value.size(); ++i) {
-        const NodePtr & node = this->children.value[i];
+    for (size_t i = 0; i < this->children_.value.size(); ++i) {
+        const NodePtr & node = this->children_.value[i];
         if (node) {
-            if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
-                node->toTouchSensor()->activate(time, isOver, isActive, p);
-            } else if (node->toPlaneSensor()
-                    && node->toPlaneSensor()->isEnabled()) {
-                node->toPlaneSensor()->activate(time, isActive, p);
-            } else if (node->toCylinderSensor()
-                    && node->toCylinderSensor()->isEnabled()) {
-                node->toCylinderSensor()->activate(time, isActive, p);
-            } else if (node->toSphereSensor()
-                    && node->toSphereSensor()->isEnabled()) {
-                node->toSphereSensor()->activate(time, isActive, p);
+            if (node->to_touch_sensor()
+                    && node->to_touch_sensor()->isEnabled()) {
+                node->to_touch_sensor()->activate(time, isOver, isActive, p);
+            } else if (node->to_plane_sensor()
+                    && node->to_plane_sensor()->isEnabled()) {
+                node->to_plane_sensor()->activate(time, isActive, p);
+            } else if (node->to_cylinder_sensor()
+                    && node->to_cylinder_sensor()->isEnabled()) {
+                node->to_cylinder_sensor()->activate(time, isActive, p);
+            } else if (node->to_sphere_sensor()
+                    && node->to_sphere_sensor()->isEnabled()) {
+                node->to_sphere_sensor()->activate(time, isActive, p);
             }
         }
     }
@@ -5995,9 +6055,9 @@ void Group::activate(double time, bool isOver, bool isActive, double *p)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Group::getBVolume() const
+const BVolume * Group::bvolume() const
 {
-  if (this->isBVolumeDirty())
+  if (this->bvolume_dirty())
     ((Group*)this)->recalcBSphere();
   return &this->bsphere;
 }
@@ -6005,16 +6065,17 @@ const BVolume * Group::getBVolume() const
 /**
  * @brief Recalculate the bounding volume.
  */
-void Group::recalcBSphere() {
+void Group::recalcBSphere()
+{
     this->bsphere.reset();
-    for (size_t i = 0; i < this->children.value.size(); ++i) {
-        const NodePtr & node = this->children.value[i];
+    for (size_t i = 0; i < this->children_.value.size(); ++i) {
+        const NodePtr & node = this->children_.value[i];
         if (node) {
-            const BVolume * const ci_bv = node->getBVolume();
+            const BVolume * const ci_bv = node->bvolume();
             if (ci_bv) { this->bsphere.extend(*ci_bv); }
         }
     }
-    this->setBVolumeDirty(false);
+    this->bvolume_dirty(false);
 }
 
 
@@ -6029,7 +6090,7 @@ void Group::recalcBSphere() {
  *
  * @param browser the Browser associated with this node class object.
  */
-ImageTextureClass::ImageTextureClass(Browser & browser): NodeClass(browser) {}
+ImageTextureClass::ImageTextureClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -6044,46 +6105,54 @@ ImageTextureClass::~ImageTextureClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating ImageTexture nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ImageTextureClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr ImageTextureClass::
-        createType(const std::string & id,
-                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "repeatS"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "repeatT")
+const NodeTypePtr
+ImageTextureClass::create_type(const std::string & id,
+                               const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatS"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatT")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ImageTexture>(*this, id));
+    const NodeTypePtr
+        nodeType(new Vrml97NodeTypeImpl<ImageTexture>(*this, id));
     Vrml97NodeTypeImpl<ImageTexture> & imageTextureNodeType =
             static_cast<Vrml97NodeTypeImpl<ImageTexture> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<ImageTexture>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             imageTextureNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &ImageTexture::processSet_url,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ImageTexture, mfstring>
                                     (&ImageTexture::url)));
         } else if (*itr == supportedInterfaces[1]) {
             imageTextureNodeType.addField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ImageTexture, sfbool>
                                     (&ImageTexture::repeatS)));
         } else if (*itr == supportedInterfaces[2]) {
             imageTextureNodeType.addField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ImageTexture, sfbool>
                                     (&ImageTexture::repeatT)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -6101,9 +6170,9 @@ const NodeTypePtr ImageTextureClass::
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-ImageTexture::ImageTexture(const NodeType & nodeType,
+ImageTexture::ImageTexture(const node_type & nodeType,
                            const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractTexture(nodeType, scope),
         image(0),
         texObject(0) {}
@@ -6124,7 +6193,7 @@ ImageTexture::~ImageTexture() throw () {
  */
 void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
 {
-    if (isModified()) {
+    if (modified()) {
         if (this->image) {
             delete this->image;        // URL is the only modifiable bit
             this->image = 0;
@@ -6140,7 +6209,7 @@ void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
     // loaded just once... of course world authors should just DEF/USE
     // them...
     if (!this->image && this->url.value.size() > 0) {
-        Doc2 baseDoc(this->getScene()->getURI());
+        Doc2 baseDoc(this->scene()->getURI());
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &baseDoc)) {
             theSystem->error("Couldn't read ImageTexture from URL %s\n",
@@ -6184,7 +6253,7 @@ void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
         }
     }
 
-    this->clearModified();
+    this->node::modified(false);
 }
 
 size_t ImageTexture::nComponents() const throw () {
@@ -6218,8 +6287,8 @@ void ImageTexture::processSet_url(const field_value & value,
                                   const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->url = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("url_changed", this->url, timestamp);
+    this->node::modified(true);
+    this->emit_event("url_changed", this->url, timestamp);
 }
 
 
@@ -6234,7 +6303,7 @@ void ImageTexture::processSet_url(const field_value & value,
  *
  * @param browser the Browser associated with this node class object.
  */
-IndexedFaceSetClass::IndexedFaceSetClass(Browser & browser): NodeClass(browser) {}
+IndexedFaceSetClass::IndexedFaceSetClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -6249,150 +6318,150 @@ IndexedFaceSetClass::~IndexedFaceSetClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating IndexedFaceSet nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by IndexedFaceSetClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        IndexedFaceSetClass::createType(const std::string & id,
-                                        const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_colorIndex"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_coordIndex"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_normalIndex"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfint32_id, "set_texCoordIndex"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "color"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "coord"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "normal"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "texCoord"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "ccw"),
-        NodeInterface(NodeInterface::field, field_value::mfint32_id, "colorIndex"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "colorPerVertex"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "convex"),
-        NodeInterface(NodeInterface::field, field_value::mfint32_id, "coordIndex"),
-        NodeInterface(NodeInterface::field, field_value::sffloat_id, "creaseAngle"),
-        NodeInterface(NodeInterface::field, field_value::mfint32_id, "normalIndex"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "normalPerVertex"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "solid"),
-        NodeInterface(NodeInterface::field, field_value::mfint32_id, "texCoordIndex")
+        IndexedFaceSetClass::create_type(const std::string & id,
+                                        const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_colorIndex"),
+        node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_coordIndex"),
+        node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_normalIndex"),
+        node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_texCoordIndex"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "coord"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "normal"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "texCoord"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "ccw"),
+        node_interface(node_interface::field_id, field_value::mfint32_id, "colorIndex"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "colorPerVertex"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "convex"),
+        node_interface(node_interface::field_id, field_value::mfint32_id, "coordIndex"),
+        node_interface(node_interface::field_id, field_value::sffloat_id, "creaseAngle"),
+        node_interface(node_interface::field_id, field_value::mfint32_id, "normalIndex"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "normalPerVertex"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
+        node_interface(node_interface::field_id, field_value::mfint32_id, "texCoordIndex")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<IndexedFaceSet>(*this, id));
     Vrml97NodeTypeImpl<IndexedFaceSet> & indexedFaceSetNodeType =
             static_cast<Vrml97NodeTypeImpl<IndexedFaceSet> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<IndexedFaceSet>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             indexedFaceSetNodeType
-                    .addEventIn(supportedInterfaces[0].fieldType,
+                    .addEventIn(supportedInterfaces[0].field_type,
                                 supportedInterfaces[0].id,
                                 &IndexedFaceSet::processSet_colorIndex);
         } else if (*itr == supportedInterfaces[1]) {
             indexedFaceSetNodeType
-                    .addEventIn(supportedInterfaces[1].fieldType,
+                    .addEventIn(supportedInterfaces[1].field_type,
                                 supportedInterfaces[1].id,
                                 &IndexedFaceSet::processSet_coordIndex);
         } else if (*itr == supportedInterfaces[2]) {
             indexedFaceSetNodeType
-                    .addEventIn(supportedInterfaces[2].fieldType,
+                    .addEventIn(supportedInterfaces[2].field_type,
                                 supportedInterfaces[2].id,
                                 &IndexedFaceSet::processSet_normalIndex);
         } else if (*itr == supportedInterfaces[3]) {
             indexedFaceSetNodeType
-                    .addEventIn(supportedInterfaces[3].fieldType,
+                    .addEventIn(supportedInterfaces[3].field_type,
                                 supportedInterfaces[3].id,
                                 &IndexedFaceSet::processSet_texCoordIndex);
         } else if (*itr == supportedInterfaces[4]) {
             indexedFaceSetNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &IndexedFaceSet::processSet_color,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfnode>
-                                    (&IndexedFaceSet::color)));
+                                    (&IndexedFaceSet::color_)));
         } else if (*itr == supportedInterfaces[5]) {
             indexedFaceSetNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &IndexedFaceSet::processSet_coord,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfnode>
                                     (&IndexedFaceSet::coord)));
         } else if (*itr == supportedInterfaces[6]) {
             indexedFaceSetNodeType.addExposedField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 &IndexedFaceSet::processSet_normal,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfnode>
                                     (&IndexedFaceSet::normal)));
         } else if (*itr == supportedInterfaces[7]) {
             indexedFaceSetNodeType.addExposedField(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 &IndexedFaceSet::processSet_texCoord,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfnode>
                                     (&IndexedFaceSet::texCoord)));
         } else if (*itr == supportedInterfaces[8]) {
             indexedFaceSetNodeType.addField(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfbool>
                                     (&IndexedFaceSet::ccw)));
         } else if (*itr == supportedInterfaces[9]) {
             indexedFaceSetNodeType.addField(
-                supportedInterfaces[9].fieldType,
+                supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, mfint32>
                                     (&IndexedFaceSet::colorIndex)));
         } else if (*itr == supportedInterfaces[10]) {
             indexedFaceSetNodeType.addField(
-                supportedInterfaces[10].fieldType,
+                supportedInterfaces[10].field_type,
                 supportedInterfaces[10].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfbool>
                                     (&IndexedFaceSet::colorPerVertex)));
         } else if (*itr == supportedInterfaces[11]) {
             indexedFaceSetNodeType.addField(
-                supportedInterfaces[11].fieldType,
+                supportedInterfaces[11].field_type,
                 supportedInterfaces[11].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfbool>
                                     (&IndexedFaceSet::convex)));
         } else if (*itr == supportedInterfaces[12]) {
             indexedFaceSetNodeType.addField(
-                supportedInterfaces[12].fieldType,
+                supportedInterfaces[12].field_type,
                 supportedInterfaces[12].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, mfint32>
                                     (&IndexedFaceSet::coordIndex)));
         } else if (*itr == supportedInterfaces[13]) {
             indexedFaceSetNodeType.addField(
-                supportedInterfaces[13].fieldType,
+                supportedInterfaces[13].field_type,
                 supportedInterfaces[13].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sffloat>
                                     (&IndexedFaceSet::creaseAngle)));
         } else if (*itr == supportedInterfaces[14]) {
             indexedFaceSetNodeType.addField(
-                supportedInterfaces[14].fieldType,
+                supportedInterfaces[14].field_type,
                 supportedInterfaces[14].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, mfint32>
                                     (&IndexedFaceSet::normalIndex)));
         } else if (*itr == supportedInterfaces[15]) {
             indexedFaceSetNodeType.addField(
-                supportedInterfaces[15].fieldType,
+                supportedInterfaces[15].field_type,
                 supportedInterfaces[15].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfbool>
                                     (&IndexedFaceSet::normalPerVertex)));
         } else if (*itr == supportedInterfaces[16]) {
             indexedFaceSetNodeType.addField(
-                supportedInterfaces[16].fieldType,
+                supportedInterfaces[16].field_type,
                 supportedInterfaces[16].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, sfbool>
                                     (&IndexedFaceSet::solid)));
         } else if (*itr == supportedInterfaces[17]) {
             indexedFaceSetNodeType.addField(
-                supportedInterfaces[17].fieldType,
+                supportedInterfaces[17].field_type,
                 supportedInterfaces[17].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedFaceSet, mfint32>
                                     (&IndexedFaceSet::texCoordIndex)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -6410,16 +6479,16 @@ const NodeTypePtr
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-IndexedFaceSet::IndexedFaceSet(const NodeType & nodeType,
+IndexedFaceSet::IndexedFaceSet(const node_type & nodeType,
                                const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractIndexedSet(nodeType, scope),
         ccw(true),
         convex(true),
         creaseAngle(0.0),
         normalPerVertex(true),
         solid(true) {
-    this->setBVolumeDirty(true);
+    this->bvolume_dirty(true);
 }
 
 /**
@@ -6433,12 +6502,12 @@ IndexedFaceSet::~IndexedFaceSet() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool IndexedFaceSet::isModified() const {
-    return (this->d_modified
-            || (this->color.value && this->color.value->isModified())
-            || (this->coord.value && this->coord.value->isModified())
-            || (this->normal.value && this->normal.value->isModified())
-            || (this->texCoord.value && this->texCoord.value->isModified()));
+bool IndexedFaceSet::modified() const {
+    return (this->modified_
+            || (this->color_.value && this->color_.value->modified())
+            || (this->coord.value && this->coord.value->modified())
+            || (this->normal.value && this->normal.value->modified())
+            || (this->texCoord.value && this->texCoord.value->modified()));
 }
 
 /**
@@ -6448,13 +6517,21 @@ bool IndexedFaceSet::isModified() const {
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void IndexedFaceSet::updateModified(NodePath& path, int flags) {
-    if (this->isModified()) { markPathModified(path, true, flags); }
+void IndexedFaceSet::update_modified(node_path& path, int flags) {
+    if (this->modified()) { mark_path_modified(path, true, flags); }
     path.push_front(this);
-    if (this->color.value) { this->color.value->updateModified(path, flags); }
-    if (this->coord.value) { this->coord.value->updateModified(path, flags); }
-    if (this->normal.value) { this->normal.value->updateModified(path, flags); }
-    if (this->texCoord.value) { this->texCoord.value->updateModified(path, flags); }
+    if (this->color_.value) {
+        this->color_.value->update_modified(path, flags);
+    }
+    if (this->coord.value) {
+        this->coord.value->update_modified(path, flags);
+    }
+    if (this->normal.value) {
+        this->normal.value->update_modified(path, flags);
+    }
+    if (this->texCoord.value) {
+        this->texCoord.value->update_modified(path, flags);
+    }
     path.pop_front();
 }
 
@@ -6466,42 +6543,42 @@ void IndexedFaceSet::updateModified(NodePath& path, int flags) {
  *
  * @todo stripify, crease angle, generate normals ...
  */
-Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
+Viewer::Object IndexedFaceSet::insert_geometry(Viewer & viewer,
                                               const VrmlRenderContext context)
 {
     using std::vector;
 
     if (context.getDrawBSpheres()) {
-        const BSphere* bs = (BSphere*)this->getBVolume();
+        const BSphere* bs = (BSphere*)this->bvolume();
         viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
     }
 
-    CoordinateNode * const coordinateNode = this->coord.value
-                                          ? this->coord.value->toCoordinate()
+    coordinate_node * const coordinateNode = this->coord.value
+                                          ? this->coord.value->to_coordinate()
                                           : 0;
     const vector<vec3f> & coord = coordinateNode
-                                ? coordinateNode->getPoint()
+                                ? coordinateNode->point()
                                 : vector<vec3f>();
 
-    ColorNode * const colorNode = this->color.value
-                                ? this->color.value->toColor()
-                                : 0;
+    color_node * const colorNode = this->color_.value
+                                 ? this->color_.value->to_color()
+                                 : 0;
     const vector<OpenVRML::color> & color = colorNode
-                                          ? colorNode->getColor()
+                                          ? colorNode->color()
                                           : vector<OpenVRML::color>();
 
-    NormalNode * const normalNode = this->normal.value
-                                  ? this->normal.value->toNormal()
-                                  : 0;
+    normal_node * const normalNode = this->normal.value
+                                   ? this->normal.value->to_normal()
+                                   : 0;
     const vector<vec3f> & normal = normalNode
-                                 ? normalNode->getVector()
+                                 ? normalNode->vector()
                                  : vector<vec3f>();
 
-    TextureCoordinateNode * const texCoordNode = this->texCoord.value
-                                ? this->texCoord.value->toTextureCoordinate()
+    texture_coordinate_node * const texCoordNode = this->texCoord.value
+                                ? this->texCoord.value->to_texture_coordinate()
                                 : 0;
     const vector<vec2f> & texCoord = texCoordNode
-                                   ? texCoordNode->getPoint()
+                                   ? texCoordNode->point()
                                    : vector<vec2f>();
 
     unsigned int optMask = 0;
@@ -6528,10 +6605,10 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
                                normal, this->normalIndex.value,
                                texCoord, this->texCoordIndex.value);
 
-    if (this->color.value)      { this->color.value->clearModified(); }
-    if (this->coord.value)      { this->coord.value->clearModified(); }
-    if (this->normal.value)     { this->normal.value->clearModified(); }
-    if (this->texCoord.value)   { this->texCoord.value->clearModified(); }
+    if (this->color_.value)     { this->color_.value->modified(false); }
+    if (this->coord.value)      { this->coord.value->modified(false); }
+    if (this->normal.value)     { this->normal.value->modified(false); }
+    if (this->texCoord.value)   { this->texCoord.value->modified(false); }
 
     return obj;
 }
@@ -6547,15 +6624,15 @@ void IndexedFaceSet::recalcBSphere()
     // then we don't have to update the bvolume when the index
     // changes). motto: always do it the simple way first...
     //
-    CoordinateNode * const coordinateNode = this->coord.value
-                                          ? this->coord.value->toCoordinate()
+    coordinate_node * const coordinateNode = this->coord.value
+                                          ? this->coord.value->to_coordinate()
                                           : 0;
     if (coordinateNode) {
-        const std::vector<vec3f> & coord = coordinateNode->getPoint();
+        const std::vector<vec3f> & coord = coordinateNode->point();
         this->bsphere.reset();
         this->bsphere.enclose(coord);
     }
-    this->setBVolumeDirty(false);
+    this->bvolume_dirty(false);
 }
 
 /**
@@ -6563,8 +6640,8 @@ void IndexedFaceSet::recalcBSphere()
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * IndexedFaceSet::getBVolume() const {
-    if (this->isBVolumeDirty()) { ((IndexedFaceSet*)this)->recalcBSphere(); }
+const BVolume * IndexedFaceSet::bvolume() const {
+    if (this->bvolume_dirty()) { ((IndexedFaceSet*)this)->recalcBSphere(); }
     return &this->bsphere; // hmmm, const?
 }
 
@@ -6581,8 +6658,8 @@ void IndexedFaceSet::processSet_normal(const field_value & value,
                                        const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->normal = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("normal_changed", this->normal, timestamp);
+    this->node::modified(true);
+    this->emit_event("normal_changed", this->normal, timestamp);
 }
 
 /**
@@ -6598,7 +6675,7 @@ void IndexedFaceSet::processSet_normalIndex(const field_value & value,
                                             const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->normalIndex = dynamic_cast<const mfint32 &>(value);
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -6615,8 +6692,8 @@ void IndexedFaceSet::processSet_texCoord(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->texCoord = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("texCoord_changed", this->texCoord, timestamp);
+    this->node::modified(true);
+    this->emit_event("texCoord_changed", this->texCoord, timestamp);
 }
 
 /**
@@ -6633,7 +6710,7 @@ void IndexedFaceSet::processSet_texCoordIndex(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->texCoordIndex = dynamic_cast<const mfint32 &>(value);
-    this->setModified();
+    this->node::modified(true);
 }
 
 
@@ -6649,7 +6726,7 @@ void IndexedFaceSet::processSet_texCoordIndex(const field_value & value,
  * @param browser the Browser associated with this node class object.
  */
 IndexedLineSetClass::IndexedLineSetClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -6666,35 +6743,35 @@ IndexedLineSetClass::~IndexedLineSetClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating IndexedLineSet
  *         nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by IndexedLineSetClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-IndexedLineSetClass::createType(const std::string & id,
-                                const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+IndexedLineSetClass::create_type(const std::string & id,
+                                const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn,
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id,
                       field_value::mfint32_id,
                       "set_colorIndex"),
-        NodeInterface(NodeInterface::eventIn,
+        node_interface(node_interface::eventin_id,
                       field_value::mfint32_id,
                       "set_coordIndex"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfnode_id,
                       "color"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfnode_id,
                       "coord"),
-        NodeInterface(NodeInterface::field,
+        node_interface(node_interface::field_id,
                       field_value::mfint32_id,
                       "colorIndex"),
-        NodeInterface(NodeInterface::field,
+        node_interface(node_interface::field_id,
                       field_value::sfbool_id,
                       "colorPerVertex"),
-        NodeInterface(NodeInterface::field,
+        node_interface(node_interface::field_id,
                       field_value::mfint32_id,
                       "coordIndex")
     };
@@ -6704,52 +6781,52 @@ IndexedLineSetClass::createType(const std::string & id,
         static_cast<Vrml97NodeTypeImpl<IndexedLineSet> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<IndexedLineSet>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             indexedLineSetNodeType
-                    .addEventIn(supportedInterfaces[0].fieldType,
+                    .addEventIn(supportedInterfaces[0].field_type,
                                 supportedInterfaces[0].id,
                                 &IndexedLineSet::processSet_colorIndex);
         } else if (*itr == supportedInterfaces[1]) {
             indexedLineSetNodeType
-                    .addEventIn(supportedInterfaces[1].fieldType,
+                    .addEventIn(supportedInterfaces[1].field_type,
                                 supportedInterfaces[1].id,
                                 &IndexedLineSet::processSet_coordIndex);
         } else if (*itr == supportedInterfaces[2]) {
             indexedLineSetNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &IndexedLineSet::processSet_color,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, sfnode>
-                                    (&IndexedLineSet::color)));
+                                    (&IndexedLineSet::color_)));
         } else if (*itr == supportedInterfaces[3]) {
             indexedLineSetNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &IndexedLineSet::processSet_coord,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, sfnode>
                                     (&IndexedLineSet::coord)));
         } else if (*itr == supportedInterfaces[4]) {
             indexedLineSetNodeType.addField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, mfint32>
                                     (&IndexedLineSet::colorIndex)));
         } else if (*itr == supportedInterfaces[5]) {
             indexedLineSetNodeType.addField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, sfbool>
                                     (&IndexedLineSet::colorPerVertex)));
         } else if (*itr == supportedInterfaces[6]) {
             indexedLineSetNodeType.addField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<IndexedLineSet, mfint32>
                                     (&IndexedLineSet::coordIndex)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -6767,9 +6844,9 @@ IndexedLineSetClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-IndexedLineSet::IndexedLineSet(const NodeType & nodeType,
+IndexedLineSet::IndexedLineSet(const node_type & nodeType,
                                const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractIndexedSet(nodeType, scope) {}
 
 /**
@@ -6785,31 +6862,31 @@ IndexedLineSet::~IndexedLineSet() throw () {}
  *
  * @todo colors
  */
-Viewer::Object IndexedLineSet::insertGeometry(Viewer & viewer,
+Viewer::Object IndexedLineSet::insert_geometry(Viewer & viewer,
                                               const VrmlRenderContext context)
 {
     using std::vector;
 
-    CoordinateNode * const coordinateNode = this->coord.value
-                                          ? this->coord.value->toCoordinate()
+    coordinate_node * const coordinateNode = this->coord.value
+                                          ? this->coord.value->to_coordinate()
                                           : 0;
     const vector<vec3f> & coord = coordinateNode
-                                ? coordinateNode->getPoint()
+                                ? coordinateNode->point()
                                 : vector<vec3f>();
 
-    ColorNode * const colorNode = this->color.value
-                                ? this->color.value->toColor()
-                                : 0;
+    color_node * const colorNode = this->color_.value
+                                 ? this->color_.value->to_color()
+                                 : 0;
     const vector<OpenVRML::color> & color = colorNode
-                                          ? colorNode->getColor()
+                                          ? colorNode->color()
                                           : vector<OpenVRML::color>();
 
     Viewer::Object obj = viewer.insertLineSet(coord, this->coordIndex.value,
                                               this->colorPerVertex.value,
                                               color, this->colorIndex.value);
 
-    if (this->color.value) { this->color.value->clearModified(); }
-    if (this->coord.value) { this->coord.value->clearModified(); }
+    if (this->color_.value) { this->color_.value->modified(false); }
+    if (this->coord.value)  { this->coord.value->modified(false); }
 
     return obj;
 }
@@ -6826,7 +6903,7 @@ Viewer::Object IndexedLineSet::insertGeometry(Viewer & viewer,
  *
  * @param browser the Browser associated with this node class object.
  */
-InlineClass::InlineClass(Browser & browser): NodeClass(browser) {}
+InlineClass::InlineClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -6841,45 +6918,53 @@ InlineClass::~InlineClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Inline nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by InlineClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr InlineClass::createType(const std::string & id,
-                                          const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "url"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
+const NodeTypePtr
+InlineClass::create_type(const std::string & id,
+                         const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Inline>(*this, id));
     Vrml97NodeTypeImpl<Inline> & inlineNodeType =
             static_cast<Vrml97NodeTypeImpl<Inline> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Inline>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             inlineNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &Inline::processSet_url,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Inline, mfstring>
                                     (&Inline::url)));
         } else if (*itr == supportedInterfaces[1]) {
             inlineNodeType.addField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Inline, sfvec3f>
                                     (&Inline::bboxCenter)));
         } else if (*itr == supportedInterfaces[2]) {
             inlineNodeType.addField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Inline, sfvec3f>
                                     (&Inline::bboxSize)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -6897,16 +6982,16 @@ const NodeTypePtr InlineClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with this node.
  * @param scope     the Scope to which the node belongs.
  */
-Inline::Inline(const NodeType & nodeType,
+Inline::Inline(const node_type & nodeType,
                const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    ChildNode(nodeType, scope),
-    GroupingNode(nodeType, scope),
+    child_node(nodeType, scope),
+    grouping_node(nodeType, scope),
     inlineScene(0),
     hasLoaded(false)
 {
-    this->setBVolumeDirty(true);
+    this->bvolume_dirty(true);
 }
 
 /**
@@ -6928,14 +7013,14 @@ void Inline::render(Viewer & viewer, const VrmlRenderContext context)
     if (this->inlineScene) { this->inlineScene->render(viewer, context); }
 }
 
-Inline * Inline::toInline() const { return const_cast<Inline *>(this); }
+Inline * Inline::to_inline() const { return const_cast<Inline *>(this); }
 
 /**
  * @brief Get the children in the scene graph.
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<NodePtr> & Inline::getChildren() const throw ()
+const std::vector<NodePtr> & Inline::children() const throw ()
 {
     static const std::vector<NodePtr> empty;
     return this->inlineScene
@@ -6948,21 +7033,22 @@ const std::vector<NodePtr> & Inline::getChildren() const throw ()
  */
 void Inline::activate(double time, bool isOver, bool isActive, double *p)
 {
-    const std::vector<NodePtr> & children = this->getChildren();
+    const std::vector<NodePtr> & children = this->children();
     for (size_t i = 0; i < children.size(); ++i) {
         const NodePtr & node = children[i];
         if (node) {
-            if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
-                node->toTouchSensor()->activate(time, isOver, isActive, p);
-            } else if (node->toPlaneSensor()
-                    && node->toPlaneSensor()->isEnabled()) {
-                node->toPlaneSensor()->activate(time, isActive, p);
-            } else if (node->toCylinderSensor()
-                    && node->toCylinderSensor()->isEnabled()) {
-                node->toCylinderSensor()->activate(time, isActive, p);
-            } else if (node->toSphereSensor()
-                    && node->toSphereSensor()->isEnabled()) {
-                node->toSphereSensor()->activate(time, isActive, p);
+            if (node->to_touch_sensor()
+                    && node->to_touch_sensor()->isEnabled()) {
+                node->to_touch_sensor()->activate(time, isOver, isActive, p);
+            } else if (node->to_plane_sensor()
+                    && node->to_plane_sensor()->isEnabled()) {
+                node->to_plane_sensor()->activate(time, isActive, p);
+            } else if (node->to_cylinder_sensor()
+                    && node->to_cylinder_sensor()->isEnabled()) {
+                node->to_cylinder_sensor()->activate(time, isActive, p);
+            } else if (node->to_sphere_sensor()
+                    && node->to_sphere_sensor()->isEnabled()) {
+                node->to_sphere_sensor()->activate(time, isActive, p);
             }
         }
     }
@@ -6978,12 +7064,12 @@ void Inline::load() {
     if (this->hasLoaded) { return; }
 
     this->hasLoaded = true; // although perhaps not successfully
-    this->setBVolumeDirty(true);
+    this->bvolume_dirty(true);
 
-    assert(this->getScene());
-    this->inlineScene = new Scene(this->getScene()->browser,
+    assert(this->scene());
+    this->inlineScene = new Scene(this->scene()->browser,
                                   this->url.value,
-                                  this->getScene());
+                                  this->scene());
     this->inlineScene->initialize(Browser::getCurrentTime());
 }
 
@@ -7002,8 +7088,8 @@ void Inline::load() {
 void Inline::processSet_url(const field_value & value, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->url = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("url_changed", this->url, timestamp);
+    this->node::modified(true);
+    this->emit_event("url_changed", this->url, timestamp);
 }
 
 
@@ -7018,7 +7104,7 @@ void Inline::processSet_url(const field_value & value, const double timestamp)
  *
  * @param browser the Browser associated with this node class object.
  */
-LODClass::LODClass(Browser & browser): NodeClass(browser) {}
+LODClass::LODClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -7033,45 +7119,45 @@ LODClass::~LODClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating LOD nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by LODClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr LODClass::createType(const std::string & id,
-                                       const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "level"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "center"),
-        NodeInterface(NodeInterface::field, field_value::mffloat_id, "range")
+const NodeTypePtr LODClass::create_type(const std::string & id,
+                                       const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "level"),
+        node_interface(node_interface::field_id, field_value::sfvec3f_id, "center"),
+        node_interface(node_interface::field_id, field_value::mffloat_id, "range")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<LOD>(*this, id));
     Vrml97NodeTypeImpl<LOD> & lodNodeType =
             static_cast<Vrml97NodeTypeImpl<LOD> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<LOD>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             lodNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &LOD::processSet_level,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<LOD, mfnode>
                                     (&LOD::level)));
         } else if (*itr == supportedInterfaces[1]) {
             lodNodeType.addField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<LOD, sfvec3f>
                                     (&LOD::center)));
         } else if (*itr == supportedInterfaces[2]) {
             lodNodeType.addField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<LOD, mffloat>
                                     (&LOD::range)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -7095,15 +7181,15 @@ const NodeTypePtr LODClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with this node.
  * @param scope     the Scope to which the node belongs.
  */
-LOD::LOD(const NodeType & nodeType,
+LOD::LOD(const node_type & nodeType,
          const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    ChildNode(nodeType, scope),
-    GroupingNode(nodeType, scope),
-    children(1)
+    child_node(nodeType, scope),
+    grouping_node(nodeType, scope),
+    children_(1)
 {
-    this->setBVolumeDirty(true); // lazy calc of bvolume
+    this->bvolume_dirty(true); // lazy calc of bvolume
 }
 
 /**
@@ -7117,12 +7203,12 @@ LOD::~LOD() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool LOD::isModified() const {
-    if (this->d_modified) { return true; }
+bool LOD::modified() const {
+    if (this->modified_) { return true; }
 
     // This should really check which range is being rendered...
     for (size_t i = 0; i < this->level.value.size(); ++i) {
-        if (this->level.value[i]->isModified()) { return true; }
+        if (this->level.value[i]->modified()) { return true; }
     }
     return false;
 }
@@ -7134,16 +7220,16 @@ bool LOD::isModified() const {
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void LOD::updateModified(NodePath & path, int flags) {
+void LOD::update_modified(node_path & path, int flags) {
     //
     // what happens if one of the other children suddenly becomes the one
     // selected? to be safe: check them all. this potentially means some
     // extra work, but it's a lot easier to reason about.
     //
-    if (this->isModified()) { markPathModified(path, true); }
+    if (this->modified()) { mark_path_modified(path, true); }
     path.push_front(this);
     for (size_t i = 0; i < this->level.value.size(); ++i) {
-        this->level.value[i]->updateModified(path);
+        this->level.value[i]->update_modified(path);
     }
     path.pop_front();
 }
@@ -7158,7 +7244,7 @@ void LOD::updateModified(NodePath & path, int flags) {
  */
 void LOD::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    this->clearModified();
+    this->node::modified(false);
     if (this->level.value.size() <= 0) { return; }
 
     float x, y, z;
@@ -7188,7 +7274,7 @@ void LOD::render(Viewer & viewer, const VrmlRenderContext context)
 
     // Don't re-render on their accounts
     for (i = 0; i < this->level.value.size(); ++i) {
-        this->level.value[i]->clearModified();
+        this->level.value[i]->modified(false);
     }
 }
 
@@ -7197,8 +7283,8 @@ void LOD::render(Viewer & viewer, const VrmlRenderContext context)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * LOD::getBVolume() const {
-    if (this->isBVolumeDirty()) {
+const BVolume * LOD::bvolume() const {
+    if (this->bvolume_dirty()) {
         ((LOD*)this)->recalcBSphere();
     }
     return &this->bsphere;
@@ -7209,9 +7295,9 @@ const BVolume * LOD::getBVolume() const {
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<NodePtr> & LOD::getChildren() const throw ()
+const std::vector<NodePtr> & LOD::children() const throw ()
 {
-    return this->children.value;
+    return this->children_.value;
 }
 
 /**
@@ -7219,20 +7305,20 @@ const std::vector<NodePtr> & LOD::getChildren() const throw ()
  */
 void LOD::activate(double time, bool isOver, bool isActive, double *p)
 {
-    const std::vector<NodePtr> & children = this->getChildren();
+    const std::vector<NodePtr> & children = this->children();
     const NodePtr & node = children[0];
     if (node) {
-        if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
-            node->toTouchSensor()->activate(time, isOver, isActive, p);
-        } else if (node->toPlaneSensor()
-                && node->toPlaneSensor()->isEnabled()) {
-            node->toPlaneSensor()->activate(time, isActive, p);
-        } else if (node->toCylinderSensor()
-                && node->toCylinderSensor()->isEnabled()) {
-            node->toCylinderSensor()->activate(time, isActive, p);
-        } else if (node->toSphereSensor()
-                && node->toSphereSensor()->isEnabled()) {
-            node->toSphereSensor()->activate(time, isActive, p);
+        if (node->to_touch_sensor() && node->to_touch_sensor()->isEnabled()) {
+            node->to_touch_sensor()->activate(time, isOver, isActive, p);
+        } else if (node->to_plane_sensor()
+                && node->to_plane_sensor()->isEnabled()) {
+            node->to_plane_sensor()->activate(time, isActive, p);
+        } else if (node->to_cylinder_sensor()
+                && node->to_cylinder_sensor()->isEnabled()) {
+            node->to_cylinder_sensor()->activate(time, isActive, p);
+        } else if (node->to_sphere_sensor()
+                && node->to_sphere_sensor()->isEnabled()) {
+            node->to_sphere_sensor()->activate(time, isActive, p);
         }
     }
 }
@@ -7258,11 +7344,11 @@ void LOD::recalcBSphere() {
     for (size_t i = 0; i < this->level.value.size(); i++) {
         const NodePtr & node = this->level.value[i];
         if (node) {
-            const BVolume * ci_bv = node->getBVolume();
+            const BVolume * ci_bv = node->bvolume();
             this->bsphere.extend(*ci_bv);
         }
     }
-    this->setBVolumeDirty(false);
+    this->bvolume_dirty(false);
 }
 
 /**
@@ -7277,8 +7363,8 @@ void LOD::recalcBSphere() {
 void LOD::processSet_level(const field_value & value, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->level = dynamic_cast<const mfnode &>(value);
-    this->setModified();
-    this->emitEvent("level_changed", this->level, timestamp);
+    this->node::modified(true);
+    this->emit_event("level_changed", this->level, timestamp);
 }
 
 
@@ -7293,7 +7379,7 @@ void LOD::processSet_level(const field_value & value, const double timestamp)
  *
  * @param browser the Browser associated with this node class object.
  */
-MaterialClass::MaterialClass(Browser & browser): NodeClass(browser) {}
+MaterialClass::MaterialClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -7308,71 +7394,71 @@ MaterialClass::~MaterialClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Material nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by MaterialClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr MaterialClass::createType(const std::string & id,
-                                            const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "ambientIntensity"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "diffuseColor"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "emissiveColor"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "shininess"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "specularColor"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "transparency")
+const NodeTypePtr MaterialClass::create_type(const std::string & id,
+                                            const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "diffuseColor"),
+        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "emissiveColor"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "shininess"),
+        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "specularColor"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "transparency")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Material>(*this, id));
     Vrml97NodeTypeImpl<Material> & materialNodeType =
             static_cast<Vrml97NodeTypeImpl<Material> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Material>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             materialNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &Material::processSet_ambientIntensity,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sffloat>
                                     (&Material::ambientIntensity)));
         } else if (*itr == supportedInterfaces[1]) {
             materialNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &Material::processSet_diffuseColor,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sfcolor>
                                     (&Material::diffuseColor)));
         } else if (*itr == supportedInterfaces[2]) {
             materialNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Material::processSet_emissiveColor,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sfcolor>
                                     (&Material::emissiveColor)));
         } else if (*itr == supportedInterfaces[3]) {
             materialNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &Material::processSet_shininess,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sffloat>
-                                    (&Material::shininess)));
+                                    (&Material::shininess_)));
         } else if (*itr == supportedInterfaces[4]) {
             materialNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &Material::processSet_specularColor,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sfcolor>
                                     (&Material::specularColor)));
         } else if (*itr == supportedInterfaces[5]) {
             materialNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &Material::processSet_transparency,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Material, sffloat>
-                                    (&Material::transparency)));
+                                    (&Material::transparency_)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -7390,17 +7476,17 @@ const NodeTypePtr MaterialClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with this node.
  * @param scope     the Scope to which the node belongs.
  */
-Material::Material(const NodeType & nodeType,
+Material::Material(const node_type & nodeType,
                    const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    MaterialNode(nodeType, scope),
+    material_node(nodeType, scope),
     ambientIntensity(0.2),
     diffuseColor(color(0.8, 0.8, 0.8)),
     emissiveColor(color(0.0, 0.0, 0.0)),
-    shininess(0.2),
+    shininess_(0.2),
     specularColor(color(0.0, 0.0, 0.0)),
-    transparency(0.0)
+    transparency_(0.0)
 {}
 
 /**
@@ -7421,8 +7507,8 @@ void Material::processSet_ambientIntensity(const field_value & value,
     throw (std::bad_cast)
 {
     this->ambientIntensity = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("ambientIntensity_changed", this->ambientIntensity,
+    this->node::modified(true);
+    this->emit_event("ambientIntensity_changed", this->ambientIntensity,
                     timestamp);
 }
 
@@ -7439,8 +7525,8 @@ void Material::processSet_diffuseColor(const field_value & value,
     throw (std::bad_cast)
 {
     this->diffuseColor = dynamic_cast<const sfcolor &>(value);
-    this->setModified();
-    this->emitEvent("diffuseColor_changed", this->diffuseColor, timestamp);
+    this->node::modified(true);
+    this->emit_event("diffuseColor_changed", this->diffuseColor, timestamp);
 }
 
 /**
@@ -7456,8 +7542,8 @@ void Material::processSet_emissiveColor(const field_value & value,
     throw (std::bad_cast)
 {
     this->emissiveColor = dynamic_cast<const sfcolor &>(value);
-    this->setModified();
-    this->emitEvent("emissiveColor_changed", this->emissiveColor, timestamp);
+    this->node::modified(true);
+    this->emit_event("emissiveColor_changed", this->emissiveColor, timestamp);
 }
 
 /**
@@ -7472,9 +7558,9 @@ void Material::processSet_shininess(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast)
 {
-    this->shininess = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("shininess_changed", this->shininess, timestamp);
+    this->shininess_ = dynamic_cast<const sffloat &>(value);
+    this->node::modified(true);
+    this->emit_event("shininess_changed", this->shininess_, timestamp);
 }
 
 /**
@@ -7490,8 +7576,8 @@ void Material::processSet_specularColor(const field_value & value,
     throw (std::bad_cast)
 {
     this->specularColor = dynamic_cast<const sfcolor &>(value);
-    this->setModified();
-    this->emitEvent("specularColor_changed", this->specularColor, timestamp);
+    this->node::modified(true);
+    this->emit_event("specularColor_changed", this->specularColor, timestamp);
 }
 
 /**
@@ -7506,9 +7592,9 @@ void Material::processSet_transparency(const field_value & value,
                                        const double timestamp)
     throw (std::bad_cast)
 {
-    this->transparency = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("transparency_changed", this->transparency, timestamp);
+    this->transparency_ = dynamic_cast<const sffloat &>(value);
+    this->node::modified(true);
+    this->emit_event("transparency_changed", this->transparency_, timestamp);
 }
 
 /**
@@ -7516,7 +7602,7 @@ void Material::processSet_transparency(const field_value & value,
  *
  * @return the ambient intensity.
  */
-float Material::getAmbientIntensity() const throw ()
+float Material::ambient_intensity() const throw ()
 {
     return this->ambientIntensity.value;
 }
@@ -7526,7 +7612,7 @@ float Material::getAmbientIntensity() const throw ()
  *
  * @return the diffuse color.
  */
-const color & Material::getDiffuseColor() const throw ()
+const color & Material::diffuse_color() const throw ()
 {
     return this->diffuseColor.value;
 }
@@ -7536,7 +7622,7 @@ const color & Material::getDiffuseColor() const throw ()
  *
  * @return the emissive color.
  */
-const color & Material::getEmissiveColor() const throw ()
+const color & Material::emissive_color() const throw ()
 {
     return this->emissiveColor.value;
 }
@@ -7546,9 +7632,9 @@ const color & Material::getEmissiveColor() const throw ()
  *
  * @return the shininess.
  */
-float Material::getShininess() const throw ()
+float Material::shininess() const throw ()
 {
-    return this->shininess.value;
+    return this->shininess_.value;
 }
 
 /**
@@ -7556,7 +7642,7 @@ float Material::getShininess() const throw ()
  *
  * @return the specular color.
  */
-const color & Material::getSpecularColor() const throw ()
+const color & Material::specular_color() const throw ()
 {
     return this->specularColor.value;
 }
@@ -7566,9 +7652,9 @@ const color & Material::getSpecularColor() const throw ()
  *
  * @return the transparency.
  */
-float Material::getTransparency() const throw () 
+float Material::transparency() const throw () 
 {
-    return this->transparency.value;
+    return this->transparency_.value;
 }
 
 
@@ -7584,7 +7670,7 @@ float Material::getTransparency() const throw ()
  * @param browser the Browser associated with this class object.
  */
 MovieTextureClass::MovieTextureClass(Browser & browser):
-        NodeClass(browser) {}
+        node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -7599,41 +7685,41 @@ MovieTextureClass::~MovieTextureClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating MovieTexture nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by MovieTextureClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-MovieTextureClass::createType(const std::string & id,
-                              const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+MovieTextureClass::create_type(const std::string & id,
+                              const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField,
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfbool_id,
                       "loop"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sffloat_id,
                       "speed"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sftime_id,
                       "startTime"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sftime_id,
                       "stopTime"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::mfstring_id,
                       "url"),
-        NodeInterface(NodeInterface::field,
+        node_interface(node_interface::field_id,
                       field_value::sfbool_id,
                       "repeatS"),
-        NodeInterface(NodeInterface::field,
+        node_interface(node_interface::field_id,
                       field_value::sfbool_id,
                       "repeatT"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sftime_id,
                       "duration_changed"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sfbool_id,
                       "isActive")
     };
@@ -7642,69 +7728,69 @@ MovieTextureClass::createType(const std::string & id,
     Vrml97NodeTypeImpl<MovieTexture> & movieTextureNodeType =
             static_cast<Vrml97NodeTypeImpl<MovieTexture> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<MovieTexture>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             movieTextureNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &MovieTexture::processSet_loop,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sfbool>
                                     (&MovieTexture::loop)));
         } else if (*itr == supportedInterfaces[1]) {
             movieTextureNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &MovieTexture::processSet_speed,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sffloat>
                                     (&MovieTexture::speed)));
         } else if (*itr == supportedInterfaces[2]) {
             movieTextureNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &MovieTexture::processSet_startTime,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sftime>
                                     (&MovieTexture::startTime)));
         } else if (*itr == supportedInterfaces[3]) {
             movieTextureNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &MovieTexture::processSet_stopTime,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sftime>
                                     (&MovieTexture::stopTime)));
         } else if (*itr == supportedInterfaces[4]) {
             movieTextureNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &MovieTexture::processSet_url,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, mfstring>
                                     (&MovieTexture::url)));
         } else if (*itr == supportedInterfaces[5]) {
             movieTextureNodeType.addField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sfbool>
                                     (&MovieTexture::repeatS)));
         } else if (*itr == supportedInterfaces[6]) {
             movieTextureNodeType.addField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sfbool>
                                     (&MovieTexture::repeatT)));
         } else if (*itr == supportedInterfaces[7]) {
             movieTextureNodeType.addEventOut(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sftime>
                                     (&MovieTexture::duration)));
         } else if (*itr == supportedInterfaces[8]) {
             movieTextureNodeType.addEventOut(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<MovieTexture, sfbool>
                                     (&MovieTexture::active)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -7722,9 +7808,9 @@ MovieTextureClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-MovieTexture::MovieTexture(const NodeType & nodeType,
+MovieTexture::MovieTexture(const node_type & nodeType,
                            const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractTexture(nodeType, scope),
         loop(false),
         speed(1.0),
@@ -7742,12 +7828,12 @@ MovieTexture::~MovieTexture() throw ()
     delete this->image;
 }
 
-MovieTexture* MovieTexture::toMovieTexture() const
+MovieTexture* MovieTexture::to_movie_texture() const
 { return (MovieTexture*) this; }
 
 void MovieTexture::update(const double currentTime)
 {
-    if (isModified()) {
+    if (modified()) {
         if (this->image) {
             const char * imageUrl = this->image->url();
             size_t imageLen = strlen(imageUrl);
@@ -7773,7 +7859,7 @@ void MovieTexture::update(const double currentTime)
 
     // Load the movie if needed (should check startTime...)
     if (!this->image && this->url.value.size() > 0) {
-        Doc2 baseDoc(this->getScene()->getURI());
+        Doc2 baseDoc(this->scene()->getURI());
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &baseDoc)) {
             std::cerr << "Error: couldn't read MovieTexture from URL "
@@ -7782,7 +7868,7 @@ void MovieTexture::update(const double currentTime)
 
         int nFrames = this->image->nFrames();
         this->duration = sftime((nFrames >= 0) ? double(nFrames) : double(-1));
-        this->emitEvent("duration_changed", this->duration, currentTime);
+        this->emit_event("duration_changed", this->duration, currentTime);
         this->frame = (this->speed.value >= 0) ? 0 : nFrames-1;
         // Set the last frame equal to the start time.
         // This is needed to properly handle the case where the startTime
@@ -7802,27 +7888,27 @@ void MovieTexture::update(const double currentTime)
                 if (this->startTime.value >= this->stopTime.value) {
                     if (this->loop.value) {
                         this->active.value = true;
-                        this->emitEvent("isActive", this->active, currentTime);
+                        this->emit_event("isActive", this->active, currentTime);
                         this->lastFrameTime = currentTime;
                         this->frame = (this->speed.value >= 0) ? 0 :
                                          this->image->nFrames() - 1;
-                        setModified();
+                        this->modified(true);
 	            } else if (this->startTime.value > this->lastFrameTime) {
                         this->active.value = true;
-                        this->emitEvent("isActive", this->active, currentTime);
+                        this->emit_event("isActive", this->active, currentTime);
                         this->lastFrameTime = currentTime;
                         this->frame = (this->speed.value >= 0) ? 0 :
                                          this->image->nFrames() - 1;
-                        setModified();
+                        this->modified(true);
 	            }
 	        }
             } else if (this->stopTime.value > currentTime) {
                 this->active.value = true;
-                this->emitEvent("isActive", this->active, currentTime);
+                this->emit_event("isActive", this->active, currentTime);
                 this->lastFrameTime = currentTime;
                 this->frame = (this->speed.value >= 0) ? 0 :
                                  this->image->nFrames() - 1;
-                setModified();
+                this->modified(true);
             }
         }
     }
@@ -7832,8 +7918,8 @@ void MovieTexture::update(const double currentTime)
 		  && this->stopTime.value <= currentTime))
              || ((this->frame < 0) && !this->loop.value)) {
         this->active.value = false;
-        this->emitEvent("isActive", this->active, currentTime);
-        setModified();
+        this->emit_event("isActive", this->active, currentTime);
+        this->modified(true);
     } else if (this->frame < 0 && this->loop.value) {
         // Reset frame to 0 to begin loop again.
         this->frame = 0;
@@ -7850,14 +7936,14 @@ void MovieTexture::update(const double currentTime)
         }
 
         this->lastFrameTime = currentTime;
-        setModified();
+        this->modified(true);
     }
 
     // Tell the scene when the next update is needed.
     if (this->active.value) {
         double d = this->lastFrameTime + fabs(1 / this->speed.value)
                     - currentTime;
-        this->nodeType.nodeClass.browser.setDelta(0.9 * d);
+        this->type._class.browser.setDelta(0.9 * d);
     }
 }
 
@@ -7913,7 +7999,7 @@ void MovieTexture::render(Viewer & viewer, const VrmlRenderContext context)
     }
 
     this->lastFrame = this->frame;
-    this->clearModified();
+    this->node::modified(false);
 }
 
 size_t MovieTexture::nComponents() const throw () {
@@ -7945,8 +8031,8 @@ const unsigned char * MovieTexture::pixels() const throw () {
  */
 void MovieTexture::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
-    assert(this->getScene());
-    this->getScene()->browser.addMovie(*this);
+    assert(this->scene());
+    this->scene()->browser.addMovie(*this);
 }
 
 /**
@@ -7956,8 +8042,8 @@ void MovieTexture::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 void MovieTexture::do_shutdown(const double timestamp) throw ()
 {
-    assert(this->getScene());
-    this->getScene()->browser.removeMovie(*this);
+    assert(this->scene());
+    this->scene()->browser.removeMovie(*this);
 }
 
 /**
@@ -7973,8 +8059,8 @@ void MovieTexture::processSet_loop(const field_value & value,
     throw (std::bad_cast)
 {
     this->loop = dynamic_cast<const sfbool &>(value);
-    this->setModified();
-    this->emitEvent("loop_changed", this->loop, timestamp);
+    this->node::modified(true);
+    this->emit_event("loop_changed", this->loop, timestamp);
 }
 
 /**
@@ -7994,8 +8080,8 @@ void MovieTexture::processSet_speed(const field_value & value,
     //
     if (!this->active.value) {
         this->speed = dynamic_cast<const sffloat &>(value);
-        this->setModified();
-        this->emitEvent("speed_changed", this->speed, timestamp);
+        this->node::modified(true);
+        this->emit_event("speed_changed", this->speed, timestamp);
     }
 }
 
@@ -8011,8 +8097,8 @@ void MovieTexture::processSet_startTime(const field_value & value,
                                         const double timestamp)
         throw (std::bad_cast) {
     this->startTime = dynamic_cast<const sftime &>(value);
-    this->setModified();
-    this->emitEvent("startTime_changed", this->startTime, timestamp);
+    this->node::modified(true);
+    this->emit_event("startTime_changed", this->startTime, timestamp);
 }
 
 /**
@@ -8027,8 +8113,8 @@ void MovieTexture::processSet_stopTime(const field_value & value,
                                        const double timestamp)
         throw (std::bad_cast) {
     this->stopTime = dynamic_cast<const sftime &>(value);
-    this->setModified();
-    this->emitEvent("stopTime_changed", this->stopTime, timestamp);
+    this->node::modified(true);
+    this->emit_event("stopTime_changed", this->stopTime, timestamp);
 }
 
 /**
@@ -8044,8 +8130,8 @@ void MovieTexture::processSet_url(const field_value & value,
                                   const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->url = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("url_changed", this->url, timestamp);
+    this->node::modified(true);
+    this->emit_event("url_changed", this->url, timestamp);
 }
 
 
@@ -8061,7 +8147,7 @@ void MovieTexture::processSet_url(const field_value & value,
  * @param browser the Browser associated with this class object.
  */
 NavigationInfoClass::NavigationInfoClass(Browser & browser):
-        NodeClass(browser) {}
+        node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -8076,76 +8162,76 @@ NavigationInfoClass::~NavigationInfoClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating NavigationInfo nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by NavigationInfoClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        NavigationInfoClass::createType(const std::string & id,
-                                        const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::sfbool_id, "set_bind"),
-        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "avatarSize"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "headlight"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "speed"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "type"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "visibilityLimit"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isBound")
+        NavigationInfoClass::create_type(const std::string & id,
+                                        const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::sfbool_id, "set_bind"),
+        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "avatarSize"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "headlight"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "speed"),
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "type"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "visibilityLimit"),
+        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<NavigationInfo>(*this, id));
     Vrml97NodeTypeImpl<NavigationInfo> & navigationInfoNodeType =
             static_cast<Vrml97NodeTypeImpl<NavigationInfo> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<NavigationInfo>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
-            navigationInfoNodeType.addEventIn(supportedInterfaces[0].fieldType,
+            navigationInfoNodeType.addEventIn(supportedInterfaces[0].field_type,
                                    supportedInterfaces[0].id,
                                    &NavigationInfo::processSet_bind);
         } else if (*itr == supportedInterfaces[1]) {
             navigationInfoNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &NavigationInfo::processSet_avatarSize,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, mffloat>
                                     (&NavigationInfo::avatarSize)));
         } else if (*itr == supportedInterfaces[2]) {
             navigationInfoNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &NavigationInfo::processSet_headlight,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, sfbool>
                                     (&NavigationInfo::headlight)));
         } else if (*itr == supportedInterfaces[3]) {
             navigationInfoNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &NavigationInfo::processSet_speed,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, sffloat>
                                     (&NavigationInfo::speed)));
         } else if (*itr == supportedInterfaces[4]) {
             navigationInfoNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &NavigationInfo::processSet_type,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, mfstring>
                                     (&NavigationInfo::type)));
         } else if (*itr == supportedInterfaces[5]) {
             navigationInfoNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &NavigationInfo::processSet_visibilityLimit,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, sffloat>
                                     (&NavigationInfo::visibilityLimit)));
         } else if (*itr == supportedInterfaces[6]) {
             navigationInfoNodeType.addEventOut(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<NavigationInfo, sfbool>
                                     (&NavigationInfo::bound)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -8168,9 +8254,9 @@ namespace {
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-NavigationInfo::NavigationInfo(const NodeType & nodeType,
+NavigationInfo::NavigationInfo(const node_type & nodeType,
                                const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     avatarSize(avatarSize_, avatarSize_ + 3),
     headlight(true),
@@ -8186,7 +8272,7 @@ NavigationInfo::NavigationInfo(const NodeType & nodeType,
 NavigationInfo::~NavigationInfo() throw ()
 {}
 
-NavigationInfo* NavigationInfo::toNavigationInfo() const
+NavigationInfo* NavigationInfo::to_navigation_info() const
 { return (NavigationInfo*) this; }
 
 /**
@@ -8199,8 +8285,8 @@ NavigationInfo* NavigationInfo::toNavigationInfo() const
 void NavigationInfo::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
-    assert(this->getScene());
-    this->getScene()->browser.addNavigationInfo(*this);
+    assert(this->scene());
+    this->scene()->browser.addNavigationInfo(*this);
 }
 
 /**
@@ -8210,8 +8296,8 @@ void NavigationInfo::do_initialize(const double timestamp)
  */
 void NavigationInfo::do_shutdown(const double timestamp) throw ()
 {
-    assert(this->getScene());
-    this->getScene()->browser.removeNavigationInfo(*this);
+    assert(this->scene());
+    this->scene()->browser.removeNavigationInfo(*this);
 }
 
 /**
@@ -8227,8 +8313,8 @@ void NavigationInfo::processSet_avatarSize(const field_value & value,
                                            const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->avatarSize = dynamic_cast<const mffloat &>(value);
-    this->setModified();
-    this->emitEvent("avatarSize_changed", this->avatarSize, timestamp);
+    this->node::modified(true);
+    this->emit_event("avatarSize_changed", this->avatarSize, timestamp);
 }
 
 /**
@@ -8245,29 +8331,29 @@ void NavigationInfo::processSet_bind(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     NavigationInfo * current =
-        this->nodeType.nodeClass.browser.bindableNavigationInfoTop();
+        this->node::type._class.browser.bindableNavigationInfoTop();
     const sfbool & b = dynamic_cast<const sfbool &>(value);
 
     if (b.value) {        // set_bind TRUE
         if (this != current) {
             if (current) {
                 current->bound.value = false;
-                current->emitEvent("isBound", current->bound, timestamp);
+                current->emit_event("isBound", current->bound, timestamp);
             }
-            this->nodeType.nodeClass.browser.bindablePush(this);
+            this->node::type._class.browser.bindablePush(this);
             this->bound.value = true;
-            this->emitEvent("isBound", this->bound, timestamp);
+            this->emit_event("isBound", this->bound, timestamp);
         }
     } else {            // set_bind FALSE
-        this->nodeType.nodeClass.browser.bindableRemove(this);
+        this->node::type._class.browser.bindableRemove(this);
         if (this == current) {
             this->bound.value = false;
-            this->emitEvent("isBound", this->bound, timestamp);
-            current = this->nodeType.nodeClass.browser
+            this->emit_event("isBound", this->bound, timestamp);
+            current = this->node::type._class.browser
                         .bindableNavigationInfoTop();
             if (current) {
                 current->bound.value = true;
-                current->emitEvent("isBound", current->bound, timestamp);
+                current->emit_event("isBound", current->bound, timestamp);
             }
         }
     }
@@ -8286,8 +8372,8 @@ void NavigationInfo::processSet_headlight(const field_value & value,
     throw (std::bad_cast)
 {
     this->headlight = dynamic_cast<const sfbool &>(value);
-    this->setModified();
-    this->emitEvent("headlight_changed", this->headlight, timestamp);
+    this->node::modified(true);
+    this->emit_event("headlight_changed", this->headlight, timestamp);
 }
 
 /**
@@ -8303,8 +8389,8 @@ void NavigationInfo::processSet_speed(const field_value & value,
     throw (std::bad_cast)
 {
     this->speed = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("speed_changed", this->speed, timestamp);
+    this->node::modified(true);
+    this->emit_event("speed_changed", this->speed, timestamp);
 }
 
 /**
@@ -8318,10 +8404,11 @@ void NavigationInfo::processSet_speed(const field_value & value,
  */
 void NavigationInfo::processSet_type(const field_value & value,
                                      const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->type = dynamic_cast<const mfstring &>(value);
-    this->setModified();
-    this->emitEvent("type_changed", this->type, timestamp);
+    this->node::modified(true);
+    this->emit_event("type_changed", this->type, timestamp);
 }
 
 /**
@@ -8334,10 +8421,11 @@ void NavigationInfo::processSet_type(const field_value & value,
  */
 void NavigationInfo::processSet_visibilityLimit(const field_value & value,
                                                 const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->visibilityLimit = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("visibilityLimit_changed", this->visibilityLimit,
+    this->node::modified(true);
+    this->emit_event("visibilityLimit_changed", this->visibilityLimit,
                     timestamp);
 }
 
@@ -8353,7 +8441,7 @@ void NavigationInfo::processSet_visibilityLimit(const field_value & value,
  *
  * @param browser the Browser associated with this node class object.
  */
-NormalClass::NormalClass(Browser & browser): NodeClass(browser) {}
+NormalClass::NormalClass(Browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -8368,30 +8456,34 @@ NormalClass::~NormalClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating Normal nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by NormalClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr NormalClass::createType(const std::string & id,
-                                          const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "vector");
+const NodeTypePtr
+NormalClass::create_type(const std::string & id,
+                         const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
+    static const node_interface supportedInterface =
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfvec3f_id,
+                           "vector");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Normal>(*this, id));
     Vrml97NodeTypeImpl<Normal> & normalNodeType =
             static_cast<Vrml97NodeTypeImpl<Normal> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Normal>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterface) {
             normalNodeType.addExposedField(
-                supportedInterface.fieldType,
+                supportedInterface.field_type,
                 supportedInterface.id,
                 &Normal::processSet_vector,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Normal, mfvec3f>
-                                    (&Normal::vector)));
+                                    (&Normal::vector_)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -8409,11 +8501,12 @@ const NodeTypePtr NormalClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-Normal::Normal(const NodeType & nodeType,
+Normal::Normal(const node_type & nodeType,
                const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        NormalNode(nodeType, scope) {}
+    node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    normal_node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
@@ -8425,9 +8518,9 @@ Normal::~Normal() throw () {}
  *
  * @return the array of normal vectors.
  */
-const std::vector<vec3f> & Normal::getVector() const throw ()
+const std::vector<vec3f> & Normal::vector() const throw ()
 {
-    return this->vector.value;
+    return this->vector_.value;
 }
 
 /**
@@ -8441,10 +8534,11 @@ const std::vector<vec3f> & Normal::getVector() const throw ()
  */
 void Normal::processSet_vector(const field_value & value,
                                const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->vector = dynamic_cast<const mfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("vector_changed", this->vector, timestamp);
+    throw (std::bad_cast, std::bad_alloc)
+{
+    this->vector_ = dynamic_cast<const mfvec3f &>(value);
+    this->node::modified(true);
+    this->emit_event("vector_changed", this->vector_, timestamp);
 }
 
 
@@ -8460,7 +8554,7 @@ void Normal::processSet_vector(const field_value & value,
  * @param browser the Browser associated with this class object.
  */
 NormalInterpolatorClass::NormalInterpolatorClass(Browser & browser):
-        NodeClass(browser) {}
+        node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -8476,53 +8570,53 @@ NormalInterpolatorClass::~NormalInterpolatorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating NormalInterpolator
  *      nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by NormalInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        NormalInterpolatorClass::createType(const std::string & id,
-                                            const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::sffloat_id, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "key"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfvec3f_id, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, field_value::mfvec3f_id, "value_changed")
+        NormalInterpolatorClass::create_type(const std::string & id,
+                                            const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::sffloat_id, "set_fraction"),
+        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "key"),
+        node_interface(node_interface::exposedfield_id, field_value::mfvec3f_id, "keyValue"),
+        node_interface(node_interface::eventout_id, field_value::mfvec3f_id, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<NormalInterpolator>(*this, id));
     Vrml97NodeTypeImpl<NormalInterpolator> & normalInterpolatorNodeType =
             static_cast<Vrml97NodeTypeImpl<NormalInterpolator> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<NormalInterpolator>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             normalInterpolatorNodeType
-                    .addEventIn(supportedInterfaces[0].fieldType,
+                    .addEventIn(supportedInterfaces[0].field_type,
                                 supportedInterfaces[0].id,
                                 &NormalInterpolator::processSet_fraction);
         } else if (*itr == supportedInterfaces[1]) {
             normalInterpolatorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &NormalInterpolator::processSet_key,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<NormalInterpolator, mffloat>
                                     (&NormalInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             normalInterpolatorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &NormalInterpolator::processSet_keyValue,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<NormalInterpolator, mfvec3f>
                                     (&NormalInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             normalInterpolatorNodeType.addEventOut(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<NormalInterpolator, mfvec3f>
                                     (&NormalInterpolator::value)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -8540,9 +8634,9 @@ const NodeTypePtr
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-NormalInterpolator::NormalInterpolator(const NodeType & nodeType,
+NormalInterpolator::NormalInterpolator(const node_type & nodeType,
                                        const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 
 /**
@@ -8626,7 +8720,7 @@ void NormalInterpolator::processSet_fraction(const field_value & value,
     }
 
     // Send the new value
-    this->emitEvent("value_changed", this->value, timestamp);
+    this->emit_event("value_changed", this->value, timestamp);
 }
 
 /**
@@ -8642,7 +8736,7 @@ void NormalInterpolator::processSet_key(const field_value & value,
                                         const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->key = dynamic_cast<const mffloat &>(value);
-    this->emitEvent("key_changed", this->key, timestamp);
+    this->emit_event("key_changed", this->key, timestamp);
 }
 
 /**
@@ -8658,7 +8752,7 @@ void NormalInterpolator::processSet_keyValue(const field_value & value,
                                              const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->keyValue = dynamic_cast<const mfvec3f &>(value);
-    this->emitEvent("keyValue_changed", this->keyValue, timestamp);
+    this->emit_event("keyValue_changed", this->keyValue, timestamp);
 }
 
 
@@ -8674,7 +8768,7 @@ void NormalInterpolator::processSet_keyValue(const field_value & value,
  * @param browser the Browser associated with this class object.
  */
 OrientationInterpolatorClass::OrientationInterpolatorClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -8691,26 +8785,26 @@ OrientationInterpolatorClass::~OrientationInterpolatorClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating
  *      OrientationInterpolator nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by OrientationInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-OrientationInterpolatorClass::createType(const std::string & id,
-                                         const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+OrientationInterpolatorClass::create_type(const std::string & id,
+                                         const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn,
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id,
                       field_value::sffloat_id,
                       "set_fraction"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::mffloat_id,
                       "key"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::mfrotation_id,
                       "keyValue"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sfrotation_id,
                       "value_changed")
     };
@@ -8721,16 +8815,16 @@ OrientationInterpolatorClass::createType(const std::string & id,
         static_cast<Vrml97NodeTypeImpl<OrientationInterpolator> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<OrientationInterpolator>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             orientationInterpolatorNodeType
-                    .addEventIn(supportedInterfaces[0].fieldType,
+                    .addEventIn(supportedInterfaces[0].field_type,
                                 supportedInterfaces[0].id,
                                 &OrientationInterpolator::processSet_fraction);
         } else if (*itr == supportedInterfaces[1]) {
             orientationInterpolatorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &OrientationInterpolator::processSet_key,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<OrientationInterpolator,
@@ -8738,7 +8832,7 @@ OrientationInterpolatorClass::createType(const std::string & id,
                                 (&OrientationInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             orientationInterpolatorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &OrientationInterpolator::processSet_keyValue,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<OrientationInterpolator,
@@ -8746,13 +8840,13 @@ OrientationInterpolatorClass::createType(const std::string & id,
                                 (&OrientationInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             orientationInterpolatorNodeType.addEventOut(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<OrientationInterpolator,
                                                      sfrotation>
                                 (&OrientationInterpolator::value)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -8770,9 +8864,9 @@ OrientationInterpolatorClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-OrientationInterpolator::OrientationInterpolator(const NodeType & nodeType,
+OrientationInterpolator::OrientationInterpolator(const node_type & nodeType,
                                                  const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractChild(nodeType, scope) {}
 
 /**
@@ -8850,7 +8944,7 @@ void OrientationInterpolator::processSet_fraction(const field_value & value,
     }
 
     // Send the new value
-    this->emitEvent("value_changed", this->value, timestamp);
+    this->emit_event("value_changed", this->value, timestamp);
 }
 
 /**
@@ -8867,7 +8961,7 @@ void OrientationInterpolator::processSet_key(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->key = dynamic_cast<const mffloat &>(value);
-    this->emitEvent("key_changed", this->key, timestamp);
+    this->emit_event("key_changed", this->key, timestamp);
 }
 
 /**
@@ -8884,7 +8978,7 @@ void OrientationInterpolator::processSet_keyValue(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->keyValue = dynamic_cast<const mfrotation &>(value);
-    this->emitEvent("keyValue_changed", this->keyValue, timestamp);
+    this->emit_event("keyValue_changed", this->keyValue, timestamp);
 }
 
 
@@ -8900,7 +8994,7 @@ void OrientationInterpolator::processSet_keyValue(const field_value & value,
  * @param browser the Browser associated with this class object.
  */
 PixelTextureClass::PixelTextureClass(Browser & browser):
-        NodeClass(browser) {}
+        node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -8915,23 +9009,23 @@ PixelTextureClass::~PixelTextureClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating PixelTexture nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PixelTextureClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-PixelTextureClass::createType(const std::string & id,
-                              const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+PixelTextureClass::create_type(const std::string & id,
+                              const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField,
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfimage_id,
                       "image"),
-        NodeInterface(NodeInterface::field,
+        node_interface(node_interface::field_id,
                       field_value::sfbool_id,
                       "repeatS"),
-        NodeInterface(NodeInterface::field,
+        node_interface(node_interface::field_id,
                       field_value::sfbool_id,
                       "repeatT")
     };
@@ -8940,29 +9034,29 @@ PixelTextureClass::createType(const std::string & id,
     Vrml97NodeTypeImpl<PixelTexture> & pixelTextureNodeType =
         static_cast<Vrml97NodeTypeImpl<PixelTexture> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<PixelTexture>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             pixelTextureNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &PixelTexture::processSet_image,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PixelTexture, sfimage>
                                     (&PixelTexture::image)));
         } else if (*itr == supportedInterfaces[1]) {
             pixelTextureNodeType.addField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PixelTexture, sfbool>
                                     (&PixelTexture::repeatS)));
         } else if (*itr == supportedInterfaces[2]) {
             pixelTextureNodeType.addField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PixelTexture, sfbool>
                                     (&PixelTexture::repeatT)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -8980,9 +9074,9 @@ PixelTextureClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-PixelTexture::PixelTexture(const NodeType & nodeType,
+PixelTexture::PixelTexture(const node_type & nodeType,
                            const ScopePtr & scope):
-        Node(nodeType, scope),
+        node(nodeType, scope),
         AbstractTexture(nodeType, scope),
         texObject(0) {}
 
@@ -9002,7 +9096,7 @@ PixelTexture::~PixelTexture() throw ()
  */
 void PixelTexture::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    if (isModified()) {
+    if (modified()) {
         if (this->texObject) {
             viewer.removeTextureObject(this->texObject);
             this->texObject = 0;
@@ -9057,7 +9151,7 @@ void PixelTexture::render(Viewer & viewer, const VrmlRenderContext context)
             }
         }
     }
-    this->clearModified();
+    this->node::modified(false);
 }
 
 size_t PixelTexture::nComponents() const throw ()
@@ -9099,8 +9193,8 @@ void PixelTexture::processSet_image(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->image = dynamic_cast<const sfimage &>(value);
-    this->setModified();
-    this->emitEvent("image_changed", this->image, timestamp);
+    this->node::modified(true);
+    this->emit_event("image_changed", this->image, timestamp);
 }
 
 
@@ -9116,7 +9210,7 @@ void PixelTexture::processSet_image(const field_value & value,
  * @param browser the Browser associated with this node class object.
  */
 PlaneSensorClass::PlaneSensorClass(Browser & browser):
-        NodeClass(browser) {}
+        node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -9131,85 +9225,85 @@ PlaneSensorClass::~PlaneSensorClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating PlaneSensor nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PlaneSensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        PlaneSensorClass::createType(const std::string & id,
-                                     const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "autoOffset"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "maxPosition"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "minPosition"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "offset"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "trackPoint_changed"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "translation_changed")
+        PlaneSensorClass::create_type(const std::string & id,
+                                     const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "autoOffset"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "maxPosition"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "minPosition"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "offset"),
+        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
+        node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed"),
+        node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "translation_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PlaneSensor>(*this, id));
     Vrml97NodeTypeImpl<PlaneSensor> & planeSensorNodeType =
             static_cast<Vrml97NodeTypeImpl<PlaneSensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<PlaneSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             planeSensorNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &PlaneSensor::processSet_autoOffset,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfbool>
                                     (&PlaneSensor::autoOffset)));
         } else if (*itr == supportedInterfaces[1]) {
             planeSensorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &PlaneSensor::processSet_enabled,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfbool>
                                     (&PlaneSensor::enabled)));
         } else if (*itr == supportedInterfaces[2]) {
             planeSensorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &PlaneSensor::processSet_maxPosition,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfvec2f>
                                     (&PlaneSensor::maxPosition)));
         } else if (*itr == supportedInterfaces[3]) {
             planeSensorNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &PlaneSensor::processSet_minPosition,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfvec2f>
                                     (&PlaneSensor::minPosition)));
         } else if (*itr == supportedInterfaces[4]) {
             planeSensorNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &PlaneSensor::processSet_offset,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfvec3f>
                                     (&PlaneSensor::offset)));
         } else if (*itr == supportedInterfaces[5]) {
             planeSensorNodeType.addEventOut(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfbool>
                                     (&PlaneSensor::active)));
         } else if (*itr == supportedInterfaces[6]) {
             planeSensorNodeType.addEventOut(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfvec3f>
                                     (&PlaneSensor::trackPoint)));
         } else if (*itr == supportedInterfaces[7]) {
             planeSensorNodeType.addEventOut(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PlaneSensor, sfvec3f>
                                     (&PlaneSensor::translation)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -9309,9 +9403,9 @@ const NodeTypePtr
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-PlaneSensor::PlaneSensor(const NodeType & nodeType,
+PlaneSensor::PlaneSensor(const node_type & nodeType,
                          const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     autoOffset(true),
     enabled(true),
@@ -9320,7 +9414,7 @@ PlaneSensor::PlaneSensor(const NodeType & nodeType,
     offset(vec3f(0.0, 0.0, 0.0)),
     active(false)
 {
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -9334,7 +9428,7 @@ PlaneSensor::~PlaneSensor() throw ()
  *
  * @return a pointer to the PlaneSensor.
  */
-PlaneSensor * PlaneSensor::toPlaneSensor() const
+PlaneSensor * PlaneSensor::to_plane_sensor() const
 {
     return (PlaneSensor*) this;
 }
@@ -9371,18 +9465,18 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p)
         this->activationMatrix = this->modelview.inverse();
         V = V * this->activationMatrix;
         this->activationPoint.value = V;
-        this->emitEvent("isActive", this->active, timeStamp);
+        this->emit_event("isActive", this->active, timeStamp);
     }
 
     // Become inactive
     else if (!isActive && this->active.value) {
         this->active.value = isActive;
-        this->emitEvent("isActive", this->active, timeStamp);
+        this->emit_event("isActive", this->active, timeStamp);
 
         // auto offset
         if (this->autoOffset.value) {
             this->offset = this->translation;
-            this->emitEvent("offset_changed", this->offset, timeStamp);
+            this->emit_event("offset_changed", this->offset, timeStamp);
         }
     }
 
@@ -9391,7 +9485,7 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p)
         vec3f V(p[0], p[1], p[2]);
         V = V * this->activationMatrix;
         this->trackPoint.value = V;
-        this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
+        this->emit_event("trackPoint_changed", this->trackPoint, timeStamp);
 
         vec3f t(V[0] - this->activationPoint.value.x() + this->offset.value.x(),
                 V[1] - this->activationPoint.value.y() + this->offset.value.y(),
@@ -9418,7 +9512,7 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p)
         }
 
         this->translation.value = t;
-        this->emitEvent("translation_changed", this->translation, timeStamp);
+        this->emit_event("translation_changed", this->translation, timeStamp);
     }
 }
 
@@ -9435,8 +9529,8 @@ void PlaneSensor::processSet_autoOffset(const field_value & value,
     throw (std::bad_cast)
 {
     this->autoOffset = dynamic_cast<const sfbool &>(value);
-    this->setModified();
-    this->emitEvent("autoOffset_changed", this->autoOffset, timestamp);
+    this->node::modified(true);
+    this->emit_event("autoOffset_changed", this->autoOffset, timestamp);
 }
 
 /**
@@ -9452,8 +9546,8 @@ void PlaneSensor::processSet_enabled(const field_value & value,
     throw (std::bad_cast)
 {
     this->enabled = dynamic_cast<const sfbool &>(value);
-    this->setModified();
-    this->emitEvent("enabled_changed", this->enabled, timestamp);
+    this->node::modified(true);
+    this->emit_event("enabled_changed", this->enabled, timestamp);
 }
 
 /**
@@ -9469,8 +9563,8 @@ void PlaneSensor::processSet_maxPosition(const field_value & value,
     throw (std::bad_cast)
 {
     this->maxPosition = dynamic_cast<const sfvec2f &>(value);
-    this->setModified();
-    this->emitEvent("maxPosition_changed", this->maxPosition, timestamp);
+    this->node::modified(true);
+    this->emit_event("maxPosition_changed", this->maxPosition, timestamp);
 }
 
 /**
@@ -9485,8 +9579,8 @@ void PlaneSensor::processSet_minPosition(const field_value & value,
                                          const double timestamp)
         throw (std::bad_cast) {
     this->minPosition = dynamic_cast<const sfvec2f &>(value);
-    this->setModified();
-    this->emitEvent("minPosition_changed", this->minPosition, timestamp);
+    this->node::modified(true);
+    this->emit_event("minPosition_changed", this->minPosition, timestamp);
 }
 
 /**
@@ -9501,8 +9595,8 @@ void PlaneSensor::processSet_offset(const field_value & value,
                                     const double timestamp)
         throw (std::bad_cast) {
     this->offset = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("offset_changed", this->offset, timestamp);
+    this->node::modified(true);
+    this->emit_event("offset_changed", this->offset, timestamp);
 }
 
 
@@ -9518,7 +9612,7 @@ void PlaneSensor::processSet_offset(const field_value & value,
  * @param browser the Browser associated with this class object.
  */
 PointLightClass::PointLightClass(Browser & browser):
-        NodeClass(browser) {}
+        node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -9533,81 +9627,81 @@ PointLightClass::~PointLightClass() throw () {}
  *
  * @return a NodeTypePtr to a NodeType capable of creating PointLight nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PointLightClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-PointLightClass::createType(const std::string & id,
-                            const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+PointLightClass::create_type(const std::string & id,
+                            const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "ambientIntensity"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "attenuation"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfcolor_id, "color"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "intensity"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "location"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "on"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "radius")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "attenuation"),
+        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "color"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "intensity"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "location"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "on"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "radius")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PointLight>(*this, id));
     Vrml97NodeTypeImpl<PointLight> & pointLightNodeType =
             static_cast<Vrml97NodeTypeImpl<PointLight> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<PointLight>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             pointLightNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &PointLight::processSet_ambientIntensity,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sffloat>
                                     (&PointLight::ambientIntensity)));
         } else if (*itr == supportedInterfaces[1]) {
             pointLightNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &PointLight::processSet_attenuation,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sfvec3f>
                                     (&PointLight::attenuation)));
         } else if (*itr == supportedInterfaces[2]) {
             pointLightNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &PointLight::processSet_color,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sfcolor>
                                     (&PointLight::color)));
         } else if (*itr == supportedInterfaces[3]) {
             pointLightNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &PointLight::processSet_intensity,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sffloat>
                                     (&PointLight::intensity)));
         } else if (*itr == supportedInterfaces[4]) {
             pointLightNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &PointLight::processSet_location,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sfvec3f>
                                     (&PointLight::location)));
         } else if (*itr == supportedInterfaces[5]) {
             pointLightNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &PointLight::processSet_on,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sfbool>
                                     (&PointLight::on)));
         } else if (*itr == supportedInterfaces[6]) {
             pointLightNodeType.addExposedField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 &PointLight::processSet_radius,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PointLight, sffloat>
                                     (&PointLight::radius)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -9649,9 +9743,9 @@ PointLightClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-PointLight::PointLight(const NodeType & nodeType,
+PointLight::PointLight(const node_type & nodeType,
                        const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractLight(nodeType, scope),
     attenuation(vec3f(1.0, 0.0, 0.0)),
     location(vec3f(0.0, 0.0, 0.0)),
@@ -9669,7 +9763,7 @@ PointLight::~PointLight() throw ()
  *
  * @return a pointer to the PointLight.
  */
-PointLight* PointLight::toPointLight() const
+PointLight* PointLight::to_point_light() const
 {
     return (PointLight*) this;
 }
@@ -9696,7 +9790,7 @@ void PointLight::renderScoped(Viewer & viewer)
                                 this->location.value,
                                 this->radius.value);
     }
-    this->clearModified();
+    this->node::modified(false);
 }
 
 /**
@@ -9708,8 +9802,8 @@ void PointLight::renderScoped(Viewer & viewer)
  */
 void PointLight::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
-    assert(this->getScene());
-    this->getScene()->browser.addScopedLight(*this);
+    assert(this->scene());
+    this->scene()->browser.addScopedLight(*this);
 }
 
 /**
@@ -9719,8 +9813,8 @@ void PointLight::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 void PointLight::do_shutdown(const double timestamp) throw ()
 {
-    assert(this->getScene());
-    this->getScene()->browser.removeScopedLight(*this);
+    assert(this->scene());
+    this->scene()->browser.removeScopedLight(*this);
 }
 
 /**
@@ -9736,8 +9830,8 @@ void PointLight::processSet_attenuation(const field_value & value,
     throw (std::bad_cast)
 {
     this->attenuation = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("attenuation_changed", this->attenuation, timestamp);
+    this->node::modified(true);
+    this->emit_event("attenuation_changed", this->attenuation, timestamp);
 }
 
 /**
@@ -9753,8 +9847,8 @@ void PointLight::processSet_location(const field_value & value,
     throw (std::bad_cast)
 {
     this->location = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("location_changed", this->location, timestamp);
+    this->node::modified(true);
+    this->emit_event("location_changed", this->location, timestamp);
 }
 
 /**
@@ -9770,8 +9864,8 @@ void PointLight::processSet_radius(const field_value & value,
     throw (std::bad_cast)
 {
     this->radius = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("radius_changed", this->radius, timestamp);
+    this->node::modified(true);
+    this->emit_event("radius_changed", this->radius, timestamp);
 }
 
 
@@ -9787,7 +9881,7 @@ void PointLight::processSet_radius(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 PointSetClass::PointSetClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -9804,40 +9898,40 @@ PointSetClass::~PointSetClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating PointSet nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PointSetClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr PointSetClass::createType(const std::string & id,
-                                            const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+const NodeTypePtr PointSetClass::create_type(const std::string & id,
+                                            const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "color"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "coord")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "coord")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PointSet>(*this, id));
     Vrml97NodeTypeImpl<PointSet> & pointSetNodeType =
             static_cast<Vrml97NodeTypeImpl<PointSet> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<PointSet>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             pointSetNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &PointSet::processSet_color,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PointSet, sfnode>
                                     (&PointSet::color)));
         } else if (*itr == supportedInterfaces[1]) {
             pointSetNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &PointSet::processSet_coord,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PointSet, sfnode>
                                     (&PointSet::coord)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -9879,12 +9973,12 @@ const NodeTypePtr PointSetClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-PointSet::PointSet(const NodeType & nodeType,
+PointSet::PointSet(const node_type & nodeType,
                    const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractGeometry(nodeType, scope)
 {
-    this->setBVolumeDirty(true);
+    this->bvolume_dirty(true);
 }
 
 /**
@@ -9899,11 +9993,11 @@ PointSet::~PointSet() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool PointSet::isModified() const
+bool PointSet::modified() const
 {
-    return (d_modified
-            || (this->color.value && this->color.value->isModified())
-            || (this->coord.value && this->coord.value->isModified()));
+    return (modified_
+            || (this->color.value && this->color.value->modified())
+            || (this->coord.value && this->coord.value->modified()));
 }
 
 /**
@@ -9913,12 +10007,12 @@ bool PointSet::isModified() const
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void PointSet::updateModified(NodePath & path, int flags)
+void PointSet::update_modified(node_path & path, int flags)
 {
-    if (this->isModified()) { markPathModified(path, true); }
+    if (this->modified()) { mark_path_modified(path, true); }
     path.push_front(this);
-    if (this->color.value) { this->color.value->updateModified(path); }
-    if (this->coord.value) { this->coord.value->updateModified(path); }
+    if (this->color.value) { this->color.value->update_modified(path); }
+    if (this->coord.value) { this->coord.value->update_modified(path); }
     path.pop_front();
 }
 
@@ -9928,34 +10022,34 @@ void PointSet::updateModified(NodePath & path, int flags)
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object PointSet::insertGeometry(Viewer & viewer,
+Viewer::Object PointSet::insert_geometry(Viewer & viewer,
                                         const VrmlRenderContext context)
 {
     using std::vector;
 
     if (context.getDrawBSpheres()) {
-        const BSphere * bs = (const BSphere*)this->getBVolume();
+        const BSphere * bs = (const BSphere*)this->bvolume();
         viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
     }
 
-    CoordinateNode * const coordinateNode = this->coord.value
-                                          ? this->coord.value->toCoordinate()
+    coordinate_node * const coordinateNode = this->coord.value
+                                          ? this->coord.value->to_coordinate()
                                           : 0;
     const vector<vec3f> & coord = coordinateNode
-                                ? coordinateNode->getPoint()
+                                ? coordinateNode->point()
                                 : vector<vec3f>();
 
-    ColorNode * const colorNode = this->color.value
-                                ? this->color.value->toColor()
-                                : 0;
+    color_node * const colorNode = this->color.value
+                                 ? this->color.value->to_color()
+                                 : 0;
     const vector<OpenVRML::color> & color = colorNode
-                                          ? colorNode->getColor()
+                                          ? colorNode->color()
                                           : vector<OpenVRML::color>();
 
     Viewer::Object obj = viewer.insertPointSet(coord, color);
 
-    if (this->color.value) { this->color.value->clearModified(); }
-    if (this->coord.value) { this->coord.value->clearModified(); }
+    if (this->color.value) { this->color.value->modified(false); }
+    if (this->coord.value) { this->coord.value->modified(false); }
 
     return obj;
 }
@@ -9966,17 +10060,17 @@ Viewer::Object PointSet::insertGeometry(Viewer & viewer,
 void PointSet::recalcBSphere()
 {
     this->bsphere.reset();
-    CoordinateNode * const coordinateNode = this->coord.value
-                                          ? this->coord.value->toCoordinate()
+    coordinate_node * const coordinateNode = this->coord.value
+                                          ? this->coord.value->to_coordinate()
                                           : 0;
     if (coordinateNode) {
-        const std::vector<vec3f> & coord = coordinateNode->getPoint();
+        const std::vector<vec3f> & coord = coordinateNode->point();
         for(std::vector<vec3f>::const_iterator vec(coord.begin());
                 vec != coord.end(); ++vec) {
             this->bsphere.extend(*vec);
         }
     }
-    this->setBVolumeDirty(false);
+    this->bvolume_dirty(false);
 }
 
 /**
@@ -9984,9 +10078,9 @@ void PointSet::recalcBSphere()
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume* PointSet::getBVolume() const
+const BVolume* PointSet::bvolume() const
 {
-    if (this->isBVolumeDirty()) {
+    if (this->bvolume_dirty()) {
         ((PointSet*)this)->recalcBSphere();
     }
     return &this->bsphere;
@@ -10006,8 +10100,8 @@ void PointSet::processSet_color(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->color = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("color_changed", this->color, timestamp);
+    this->node::modified(true);
+    this->emit_event("color_changed", this->color, timestamp);
 }
 
 /**
@@ -10024,8 +10118,8 @@ void PointSet::processSet_coord(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->coord = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("coord_changed", this->coord, timestamp);
+    this->node::modified(true);
+    this->emit_event("coord_changed", this->coord, timestamp);
 }
 
 
@@ -10041,7 +10135,7 @@ void PointSet::processSet_coord(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 PositionInterpolatorClass::PositionInterpolatorClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -10059,26 +10153,26 @@ PositionInterpolatorClass::~PositionInterpolatorClass() throw ()
  * @return a NodeTypePtr to a NodeType capable of creating
  *      CoordinateInterpolator nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-PositionInterpolatorClass::createType(const std::string & id,
-                                      const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+PositionInterpolatorClass::create_type(const std::string & id,
+                                      const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn,
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id,
                       field_value::sffloat_id,
                       "set_fraction"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::mffloat_id,
                       "key"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::mfvec3f_id,
                       "keyValue"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sfvec3f_id,
                       "value_changed")
     };
@@ -10088,35 +10182,35 @@ PositionInterpolatorClass::createType(const std::string & id,
             static_cast<Vrml97NodeTypeImpl<PositionInterpolator> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<PositionInterpolator>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             positionInterpolatorNodeType
-                    .addEventIn(supportedInterfaces[0].fieldType,
+                    .addEventIn(supportedInterfaces[0].field_type,
                                 supportedInterfaces[0].id,
                                 &PositionInterpolator::processSet_fraction);
         } else if (*itr == supportedInterfaces[1]) {
             positionInterpolatorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &PositionInterpolator::processSet_key,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PositionInterpolator, mffloat>
                                     (&PositionInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             positionInterpolatorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &PositionInterpolator::processSet_keyValue,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PositionInterpolator, mfvec3f>
                                     (&PositionInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             positionInterpolatorNodeType.addEventOut(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<PositionInterpolator, sfvec3f>
                                     (&PositionInterpolator::value)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -10159,9 +10253,9 @@ PositionInterpolatorClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-PositionInterpolator::PositionInterpolator(const NodeType & nodeType,
+PositionInterpolator::PositionInterpolator(const node_type & nodeType,
                                            const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope)
 {}
 
@@ -10210,7 +10304,7 @@ void PositionInterpolator::processSet_fraction(const field_value & value,
     }
 
     // Send the new value
-    this->emitEvent("value_changed", this->value, timestamp);
+    this->emit_event("value_changed", this->value, timestamp);
 }
 
 /**
@@ -10227,7 +10321,7 @@ void PositionInterpolator::processSet_key(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->key = dynamic_cast<const mffloat &>(value);
-    this->emitEvent("key_changed", this->key, timestamp);
+    this->emit_event("key_changed", this->key, timestamp);
 }
 
 /**
@@ -10244,7 +10338,7 @@ void PositionInterpolator::processSet_keyValue(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->keyValue = dynamic_cast<const mfvec3f &>(value);
-    this->emitEvent("keyValue_changed", this->keyValue, timestamp);
+    this->emit_event("keyValue_changed", this->keyValue, timestamp);
 }
 
 
@@ -10260,7 +10354,7 @@ void PositionInterpolator::processSet_keyValue(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 ProximitySensorClass::ProximitySensorClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -10278,84 +10372,84 @@ ProximitySensorClass::~ProximitySensorClass() throw ()
  * @return a NodeTypePtr to a NodeType capable of creating ProximitySensor
  *      nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ProximitySensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-ProximitySensorClass::createType(const std::string & id,
-                                 const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+ProximitySensorClass::create_type(const std::string & id,
+                                 const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "center"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "size"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "position_changed"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfrotation_id, "orientation_changed"),
-        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "enterTime"),
-        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "exitTime")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "center"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "size"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
+        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
+        node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "position_changed"),
+        node_interface(node_interface::eventout_id, field_value::sfrotation_id, "orientation_changed"),
+        node_interface(node_interface::eventout_id, field_value::sftime_id, "enterTime"),
+        node_interface(node_interface::eventout_id, field_value::sftime_id, "exitTime")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ProximitySensor>(*this, id));
     Vrml97NodeTypeImpl<ProximitySensor> & proximitySensorNodeType =
             static_cast<Vrml97NodeTypeImpl<ProximitySensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<ProximitySensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             proximitySensorNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &ProximitySensor::processSet_center,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfvec3f>
                                     (&ProximitySensor::center)));
         } else if (*itr == supportedInterfaces[1]) {
             proximitySensorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &ProximitySensor::processSet_size,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfvec3f>
                                     (&ProximitySensor::size)));
         } else if (*itr == supportedInterfaces[2]) {
             proximitySensorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &ProximitySensor::processSet_enabled,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfbool>
                                     (&ProximitySensor::enabled)));
         } else if (*itr == supportedInterfaces[3]) {
             proximitySensorNodeType.addEventOut(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfbool>
                                     (&ProximitySensor::active)));
         } else if (*itr == supportedInterfaces[4]) {
             proximitySensorNodeType.addEventOut(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfvec3f>
                                     (&ProximitySensor::position)));
         } else if (*itr == supportedInterfaces[5]) {
             proximitySensorNodeType.addEventOut(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sfrotation>
                                     (&ProximitySensor::orientation)));
         } else if (*itr == supportedInterfaces[6]) {
             proximitySensorNodeType.addEventOut(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sftime>
                                     (&ProximitySensor::enterTime)));
         } else if (*itr == supportedInterfaces[7]) {
             proximitySensorNodeType.addEventOut(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ProximitySensor, sftime>
                                     (&ProximitySensor::exitTime)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -10427,9 +10521,9 @@ ProximitySensorClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-ProximitySensor::ProximitySensor(const NodeType & nodeType,
+ProximitySensor::ProximitySensor(const node_type & nodeType,
                                  const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     center(vec3f(0.0, 0.0, 0.0)),
     enabled(true),
@@ -10439,7 +10533,7 @@ ProximitySensor::ProximitySensor(const NodeType & nodeType,
     enterTime(0.0),
     exitTime(0.0)
 {
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -10498,26 +10592,26 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
         // Check if viewer has entered the box
         if (inside && ! wasIn) {
             this->active.value = true;
-            this->emitEvent("isActive", this->active, timeNow.value);
+            this->emit_event("isActive", this->active, timeNow.value);
 
             this->enterTime = timeNow;
-            this->emitEvent("enterTime", this->enterTime, timeNow.value);
+            this->emit_event("enterTime", this->enterTime, timeNow.value);
         }
 
         // Check if viewer has left the box
         else if (wasIn && !inside) {
             this->active.value = false;
-            this->emitEvent("isActive", this->active, timeNow.value);
+            this->emit_event("isActive", this->active, timeNow.value);
 
             this->exitTime = timeNow;
-            this->emitEvent("exitTime", this->exitTime, timeNow.value);
+            this->emit_event("exitTime", this->exitTime, timeNow.value);
         }
 
         // Check for movement within the box
         if (wasIn || inside) {
             if (position.value != vec3f(x, y, z)) {
                 this->position.value = vec3f(x, y, z);
-                this->emitEvent("position_changed", this->position,
+                this->emit_event("position_changed", this->position,
                                 timeNow.value);
             }
 
@@ -10526,12 +10620,12 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
             MV.transformation(trans, orientation, scale, shear);
             if (this->orientation.value != orientation) {
                 this->orientation.value = orientation;
-                this->emitEvent("orientation_changed", this->orientation,
+                this->emit_event("orientation_changed", this->orientation,
                                 timeNow.value);
             }
         }
     } else {
-        this->clearModified();
+        this->node::modified(false);
     }
 }
 
@@ -10548,8 +10642,8 @@ void ProximitySensor::processSet_center(const field_value & value,
     throw (std::bad_cast)
 {
     this->center = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("center_changed", this->center, timestamp);
+    this->node::modified(true);
+    this->emit_event("center_changed", this->center, timestamp);
 }
 
 /**
@@ -10565,8 +10659,8 @@ void ProximitySensor::processSet_size(const field_value & value,
     throw (std::bad_cast)
 {
     this->size = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("size_changed", this->size, timestamp);
+    this->node::modified(true);
+    this->emit_event("size_changed", this->size, timestamp);
 }
 
 /**
@@ -10582,8 +10676,8 @@ void ProximitySensor::processSet_enabled(const field_value & value,
     throw (std::bad_cast)
 {
     this->enabled = dynamic_cast<const sfbool &>(value);
-    this->setModified();
-    this->emitEvent("enabled_changed", this->enabled, timestamp);
+    this->node::modified(true);
+    this->emit_event("enabled_changed", this->enabled, timestamp);
 }
 
 
@@ -10600,7 +10694,7 @@ void ProximitySensor::processSet_enabled(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 ScalarInterpolatorClass::ScalarInterpolatorClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -10618,54 +10712,54 @@ ScalarInterpolatorClass::~ScalarInterpolatorClass() throw ()
  * @return a NodeTypePtr to a NodeType capable of creating
  *      CoordinateInterpolator nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-ScalarInterpolatorClass::createType(const std::string & id,
-                                    const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+ScalarInterpolatorClass::create_type(const std::string & id,
+                                    const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::sffloat_id, "set_fraction"),
-        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "key"),
-        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "keyValue"),
-        NodeInterface(NodeInterface::eventOut, field_value::sffloat_id, "value_changed")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::sffloat_id, "set_fraction"),
+        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "key"),
+        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "keyValue"),
+        node_interface(node_interface::eventout_id, field_value::sffloat_id, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ScalarInterpolator>(*this, id));
     Vrml97NodeTypeImpl<ScalarInterpolator> & scalarInterpolatorNodeType =
             static_cast<Vrml97NodeTypeImpl<ScalarInterpolator> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<ScalarInterpolator>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             scalarInterpolatorNodeType
-                    .addEventIn(supportedInterfaces[0].fieldType,
+                    .addEventIn(supportedInterfaces[0].field_type,
                                 supportedInterfaces[0].id,
                                 &ScalarInterpolator::processSet_fraction);
         } else if (*itr == supportedInterfaces[1]) {
             scalarInterpolatorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &ScalarInterpolator::processSet_key,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ScalarInterpolator, mffloat>
                                     (&ScalarInterpolator::key)));
         } else if (*itr == supportedInterfaces[2]) {
             scalarInterpolatorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &ScalarInterpolator::processSet_keyValue,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ScalarInterpolator, mffloat>
                                     (&ScalarInterpolator::keyValue)));
         } else if (*itr == supportedInterfaces[3]) {
             scalarInterpolatorNodeType.addEventOut(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<ScalarInterpolator, sffloat>
                                     (&ScalarInterpolator::value)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -10707,9 +10801,9 @@ ScalarInterpolatorClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-ScalarInterpolator::ScalarInterpolator(const NodeType & nodeType,
+ScalarInterpolator::ScalarInterpolator(const node_type & nodeType,
                                        const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope)
 {}
 
@@ -10754,7 +10848,7 @@ void ScalarInterpolator::processSet_fraction(const field_value & value,
     }
 
     // Send the new value
-    this->emitEvent("value_changed", this->value, timestamp);
+    this->emit_event("value_changed", this->value, timestamp);
 }
 
 /**
@@ -10771,7 +10865,7 @@ void ScalarInterpolator::processSet_key(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->key = dynamic_cast<const mffloat &>(value);
-    this->emitEvent("key_changed", this->key, timestamp);
+    this->emit_event("key_changed", this->key, timestamp);
 }
 
 /**
@@ -10788,7 +10882,7 @@ void ScalarInterpolator::processSet_keyValue(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->keyValue = dynamic_cast<const mffloat &>(value);
-    this->emitEvent("keyValue_changed", this->keyValue, timestamp);
+    this->emit_event("keyValue_changed", this->keyValue, timestamp);
 }
 
 
@@ -10804,7 +10898,7 @@ void ScalarInterpolator::processSet_keyValue(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 ShapeClass::ShapeClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -10821,40 +10915,40 @@ ShapeClass::~ShapeClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Shape nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ShapeClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr ShapeClass::createType(const std::string & id,
-                                         const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+const NodeTypePtr ShapeClass::create_type(const std::string & id,
+                                         const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "appearance"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "geometry")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "appearance"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "geometry")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Shape>(*this, id));
     Vrml97NodeTypeImpl<Shape> & shapeNodeType =
             static_cast<Vrml97NodeTypeImpl<Shape> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Shape>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             shapeNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &Shape::processSet_appearance,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Shape, sfnode>
                                     (&Shape::appearance)));
         } else if (*itr == supportedInterfaces[1]) {
             shapeNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &Shape::processSet_geometry,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Shape, sfnode>
                                     (&Shape::geometry)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -10900,9 +10994,9 @@ const NodeTypePtr ShapeClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node.
  * @param scope     the Scope to which the node belongs.
  */
-Shape::Shape(const NodeType & nodeType,
+Shape::Shape(const node_type & nodeType,
              const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     viewerObject(0)
 {}
@@ -10921,11 +11015,11 @@ Shape::~Shape() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool Shape::isModified() const
+bool Shape::modified() const
 {
-    return (d_modified
-            || (this->geometry.value && this->geometry.value->isModified())
-            || (this->appearance.value && this->appearance.value->isModified()));
+    return (modified_
+            || (this->geometry.value && this->geometry.value->modified())
+            || (this->appearance.value && this->appearance.value->modified()));
 }
 
 /**
@@ -10935,15 +11029,15 @@ bool Shape::isModified() const
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Shape::updateModified(NodePath & path, int flags)
+void Shape::update_modified(node_path & path, int flags)
 {
-    if (this->isModified()) { markPathModified(path, true, flags); }
+    if (this->modified()) { mark_path_modified(path, true, flags); }
     path.push_front(this);
     if (this->appearance.value) {
-        this->appearance.value->updateModified(path, flags);
+        this->appearance.value->update_modified(path, flags);
     }
     if (this->geometry.value) {
-        this->geometry.value->updateModified(path, flags);
+        this->geometry.value->update_modified(path, flags);
     }
     path.pop_front();
 }
@@ -10956,19 +11050,19 @@ void Shape::updateModified(NodePath & path, int flags)
  */
 void Shape::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    if (this->viewerObject && isModified()) {
+    if (this->viewerObject && modified()) {
         viewer.removeObject(this->viewerObject);
         this->viewerObject = 0;
     }
 
-    GeometryNode * g = this->geometry.value
-                     ? this->geometry.value->toGeometry()
-                     : 0;
+    geometry_node * g = this->geometry.value
+                      ? this->geometry.value->to_geometry()
+                      : 0;
 
     if (this->viewerObject) {
         viewer.insertReference(this->viewerObject);
     } else if (g) {
-        this->viewerObject = viewer.beginObject(this->getId().c_str());
+        this->viewerObject = viewer.beginObject(this->id().c_str());
 
         // Don't care what color it is if we are picking
         bool picking = (Viewer::RENDER_MODE_PICK == viewer.getRenderMode());
@@ -10976,13 +11070,12 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
             int nTexComponents = 0;
 
             if (!picking && this->appearance.value
-                    && this->appearance.value->toAppearance()) {
-                AppearanceNode * a = this->appearance.value->toAppearance();
+                    && this->appearance.value->to_appearance()) {
+                appearance_node * a = this->appearance.value->to_appearance();
                 a->render(viewer, context);
 
-                if (a->getTexture() && a->getTexture()->toTexture()) {
-                    nTexComponents =
-                            a->getTexture()->toTexture()->nComponents();
+                if (a->texture() && a->texture()->to_texture()) {
+                    nTexComponents = a->texture()->to_texture()->nComponents();
                 }
             } else {
                 viewer.setColor(color(1.0, 1.0, 1.0)); // default object color
@@ -10990,16 +11083,16 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
             }
 
             // hack for opengl material mode
-            viewer.setMaterialMode(nTexComponents, g->getColor());
+            viewer.setMaterialMode(nTexComponents, g->color());
         }
 
         g->render(viewer, context);
 
         viewer.endObject();
     } else if (this->appearance.value) {
-        this->appearance.value->clearModified();
+        this->appearance.value->modified(false);
     }
-    this->clearModified();
+    this->node::modified(false);
 }
 
 /**
@@ -11007,15 +11100,15 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume* Shape::getBVolume() const
+const BVolume* Shape::bvolume() const
 {
     //
     // just pass off to the geometry's getbvolume() method
     //
     const BVolume * r = 0;
     const NodePtr & geom = this->geometry.value;
-    if (geom) { r = geom->getBVolume(); }
-    ((Shape*)this)->setBVolumeDirty(false);
+    if (geom) { r = geom->bvolume(); }
+    ((Shape*)this)->bvolume_dirty(false);
     return r;
 }
 
@@ -11033,8 +11126,8 @@ void Shape::processSet_appearance(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->appearance = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("appearance_changed", this->appearance, timestamp);
+    this->node::modified(true);
+    this->emit_event("appearance_changed", this->appearance, timestamp);
 }
 
 /**
@@ -11051,8 +11144,8 @@ void Shape::processSet_geometry(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     this->geometry = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("geometry_changed", this->geometry, timestamp);
+    this->node::modified(true);
+    this->emit_event("geometry_changed", this->geometry, timestamp);
 }
 
 
@@ -11068,7 +11161,7 @@ void Shape::processSet_geometry(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 SoundClass::SoundClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -11085,103 +11178,103 @@ SoundClass::~SoundClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Sound nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SoundClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr SoundClass::createType(const std::string & id,
-                                         const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+const NodeTypePtr SoundClass::create_type(const std::string & id,
+                                         const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "direction"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "intensity"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "location"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxBack"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxFront"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "minBack"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "minFront"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "priority"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "source"),
-        NodeInterface(NodeInterface::field, field_value::sfbool_id, "spatialize")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "direction"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "intensity"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "location"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxBack"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxFront"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "minBack"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "minFront"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "priority"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "source"),
+        node_interface(node_interface::field_id, field_value::sfbool_id, "spatialize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Sound>(*this, id));
     Vrml97NodeTypeImpl<Sound> & soundNodeType =
             static_cast<Vrml97NodeTypeImpl<Sound> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Sound>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             soundNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &Sound::processSet_direction,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sfvec3f>
                                     (&Sound::direction)));
         } else if (*itr == supportedInterfaces[1]) {
             soundNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &Sound::processSet_intensity,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::intensity)));
         } else if (*itr == supportedInterfaces[2]) {
             soundNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Sound::processSet_location,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sfvec3f>
                                     (&Sound::location)));
         } else if (*itr == supportedInterfaces[3]) {
             soundNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &Sound::processSet_maxBack,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::maxBack)));
         } else if (*itr == supportedInterfaces[4]) {
             soundNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &Sound::processSet_maxFront,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::maxFront)));
         } else if (*itr == supportedInterfaces[5]) {
             soundNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &Sound::processSet_minBack,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::minBack)));
         } else if (*itr == supportedInterfaces[6]) {
             soundNodeType.addExposedField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 &Sound::processSet_minFront,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::minFront)));
         } else if (*itr == supportedInterfaces[7]) {
             soundNodeType.addExposedField(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 &Sound::processSet_priority,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sffloat>
                                     (&Sound::priority)));
         } else if (*itr == supportedInterfaces[8]) {
             soundNodeType.addExposedField(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 &Sound::processSet_source,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sfnode>
                                     (&Sound::source)));
         } else if (*itr == supportedInterfaces[9]) {
             soundNodeType.addField(
-                supportedInterfaces[9].fieldType,
+                supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sound, sfbool>
                                     (&Sound::spatialize)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -11265,9 +11358,9 @@ const NodeTypePtr SoundClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the instance.
  * @param scope     the Scope associated with the instance.
  */
-Sound::Sound(const NodeType & nodeType,
+Sound::Sound(const node_type & nodeType,
              const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     direction(vec3f(0, 0, 1)),
     intensity(1),
@@ -11291,11 +11384,11 @@ Sound::~Sound() throw ()
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Sound::updateModified(NodePath & path, int flags)
+void Sound::update_modified(node_path & path, int flags)
 {
-    if (this->isModified()) { markPathModified(path, true); }
+    if (this->modified()) { mark_path_modified(path, true); }
     path.push_front(this);
-    if (this->source.value) { this->source.value->updateModified(path); }
+    if (this->source.value) { this->source.value->update_modified(path); }
     path.pop_front();
 }
 
@@ -11308,7 +11401,7 @@ void Sound::updateModified(NodePath & path, int flags)
 void Sound::render(Viewer & viewer, const VrmlRenderContext context)
 {
     // If this clip has been modified, update the internal data
-    if (this->source.value && this->source.value->isModified()) {
+    if (this->source.value && this->source.value->modified()) {
         this->source.value->render(viewer, context);
     }
 }
@@ -11326,8 +11419,8 @@ void Sound::processSet_direction(const field_value & value,
     throw (std::bad_cast)
 {
     this->direction = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("direction_changed", this->direction, timestamp);
+    this->node::modified(true);
+    this->emit_event("direction_changed", this->direction, timestamp);
 }
 
 /**
@@ -11343,8 +11436,8 @@ void Sound::processSet_intensity(const field_value & value,
     throw (std::bad_cast)
 {
     this->intensity = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("intensity_changed", this->intensity, timestamp);
+    this->node::modified(true);
+    this->emit_event("intensity_changed", this->intensity, timestamp);
 }
 
 /**
@@ -11360,8 +11453,8 @@ void Sound::processSet_location(const field_value & value,
     throw (std::bad_cast)
 {
     this->location = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("location_changed", this->location, timestamp);
+    this->node::modified(true);
+    this->emit_event("location_changed", this->location, timestamp);
 }
 
 /**
@@ -11377,8 +11470,8 @@ void Sound::processSet_maxBack(const field_value & value,
     throw (std::bad_cast)
 {
     this->maxBack = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("maxBack_changed", this->maxBack, timestamp);
+    this->node::modified(true);
+    this->emit_event("maxBack_changed", this->maxBack, timestamp);
 }
 
 /**
@@ -11394,8 +11487,8 @@ void Sound::processSet_maxFront(const field_value & value,
     throw (std::bad_cast)
 {
     this->maxFront = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("maxFront_changed", this->maxFront, timestamp);
+    this->node::modified(true);
+    this->emit_event("maxFront_changed", this->maxFront, timestamp);
 }
 
 /**
@@ -11411,8 +11504,8 @@ void Sound::processSet_minBack(const field_value & value,
     throw (std::bad_cast)
 {
     this->minBack = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("minBack_changed", this->minBack, timestamp);
+    this->node::modified(true);
+    this->emit_event("minBack_changed", this->minBack, timestamp);
 }
 
 /**
@@ -11428,8 +11521,8 @@ void Sound::processSet_minFront(const field_value & value,
     throw (std::bad_cast)
 {
     this->minFront = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("minFront_changed", this->minFront, timestamp);
+    this->node::modified(true);
+    this->emit_event("minFront_changed", this->minFront, timestamp);
 }
 
 /**
@@ -11445,8 +11538,8 @@ void Sound::processSet_priority(const field_value & value,
     throw (std::bad_cast)
 {
     this->priority = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("priority_changed", this->priority, timestamp);
+    this->node::modified(true);
+    this->emit_event("priority_changed", this->priority, timestamp);
 }
 
 /**
@@ -11461,8 +11554,8 @@ void Sound::processSet_source(const field_value & value, double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     this->source = dynamic_cast<const sfnode &>(value);
-    this->setModified();
-    this->emitEvent("source_changed", this->source, timestamp);
+    this->node::modified(true);
+    this->emit_event("source_changed", this->source, timestamp);
 }
 
 
@@ -11478,7 +11571,7 @@ void Sound::processSet_source(const field_value & value, double timestamp)
  * @param browser the Browser associated with this NodeClass.
  */
 SphereClass::SphereClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -11495,30 +11588,30 @@ SphereClass::~SphereClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Sphere nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SphereClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr SphereClass::createType(const std::string & id,
-                                          const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+const NodeTypePtr SphereClass::create_type(const std::string & id,
+                                          const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterface =
-            NodeInterface(NodeInterface::field, field_value::sffloat_id, "radius");
+    static const node_interface supportedInterface =
+            node_interface(node_interface::field_id, field_value::sffloat_id, "radius");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Sphere>(*this, id));
     Vrml97NodeTypeImpl<Sphere> & spereNodeType =
             static_cast<Vrml97NodeTypeImpl<Sphere> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Sphere>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterface) {
             spereNodeType.addField(
-                supportedInterface.fieldType,
+                supportedInterface.field_type,
                 supportedInterface.id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Sphere, sffloat>
                                     (&Sphere::radius)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -11554,13 +11647,13 @@ const NodeTypePtr SphereClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Sphere::Sphere(const NodeType & nodeType,
+Sphere::Sphere(const node_type & nodeType,
                const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractGeometry(nodeType, scope),
     radius(1.0)
 {
-    this->setBVolumeDirty(true); // lazy calc of bvolumes
+    this->bvolume_dirty(true); // lazy calc of bvolumes
 }
 
 /**
@@ -11575,7 +11668,7 @@ Sphere::~Sphere() throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object Sphere::insertGeometry(Viewer & viewer,
+Viewer::Object Sphere::insert_geometry(Viewer & viewer,
                                       const VrmlRenderContext context)
 {
     return viewer.insertSphere(this->radius.value);
@@ -11586,11 +11679,11 @@ Viewer::Object Sphere::insertGeometry(Viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Sphere::getBVolume() const
+const BVolume * Sphere::bvolume() const
 {
-    if (this->isBVolumeDirty()) {
+    if (this->bvolume_dirty()) {
         ((Sphere*)this)->bsphere.setRadius(this->radius.value);
-        ((Node*)this)->setBVolumeDirty(false); // logical const
+        ((node*)this)->bvolume_dirty(false); // logical const
     }
     return &this->bsphere;
 }
@@ -11608,7 +11701,7 @@ const BVolume * Sphere::getBVolume() const
  * @param browser the Browser associated with this NodeClass.
  */
 SphereSensorClass::SphereSensorClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -11625,70 +11718,70 @@ SphereSensorClass::~SphereSensorClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating SphereSensor nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SphereSensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-SphereSensorClass::createType(const std::string & id,
-                              const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+SphereSensorClass::create_type(const std::string & id,
+                              const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "autoOffset"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "offset"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfrotation_id, "rotation_changed"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfvec3f_id, "trackPoint_changed")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "autoOffset"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "offset"),
+        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
+        node_interface(node_interface::eventout_id, field_value::sfrotation_id, "rotation_changed"),
+        node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<SphereSensor>(*this, id));
     Vrml97NodeTypeImpl<SphereSensor> & sphereSensorNodeType =
             static_cast<Vrml97NodeTypeImpl<SphereSensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<SphereSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             sphereSensorNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &SphereSensor::processSet_autoOffset,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfbool>
                                     (&SphereSensor::autoOffset)));
         } else if (*itr == supportedInterfaces[1]) {
             sphereSensorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &SphereSensor::processSet_enabled,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfbool>
                                     (&SphereSensor::enabled)));
         } else if (*itr == supportedInterfaces[2]) {
             sphereSensorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &SphereSensor::processSet_offset,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfrotation>
                                     (&SphereSensor::offset)));
         } else if (*itr == supportedInterfaces[3]) {
             sphereSensorNodeType.addEventOut(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfbool>
                                     (&SphereSensor::active)));
         } else if (*itr == supportedInterfaces[4]) {
             sphereSensorNodeType.addEventOut(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfrotation>
                                     (&SphereSensor::rotation)));
         } else if (*itr == supportedInterfaces[5]) {
             sphereSensorNodeType.addEventOut(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SphereSensor, sfvec3f>
                                     (&SphereSensor::trackPoint)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -11766,16 +11859,16 @@ SphereSensorClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-SphereSensor::SphereSensor(const NodeType & nodeType,
+SphereSensor::SphereSensor(const node_type & nodeType,
                            const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     autoOffset(true),
     enabled(true),
     offset(OpenVRML::rotation(0.0, 1.0, 0.0, 0.0)),
     active(false)
 {
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -11789,7 +11882,7 @@ SphereSensor::~SphereSensor() throw ()
  *
  * @return a pointer to the node.
  */
-SphereSensor * SphereSensor::toSphereSensor() const
+SphereSensor * SphereSensor::to_sphere_sensor() const
 {
     return const_cast<SphereSensor *>(this);
 }
@@ -11840,17 +11933,17 @@ void SphereSensor::activate(double timeStamp, bool isActive, double * p)
         this->centerPoint.value = V;
 
         // send message
-        this->emitEvent("isActive", this->active, timeStamp);
+        this->emit_event("isActive", this->active, timeStamp);
     }
     // Become inactive
     else if (!isActive && this->active.value) {
         this->active.value = isActive;
-        this->emitEvent("isActive", this->active, timeStamp);
+        this->emit_event("isActive", this->active, timeStamp);
 
         // save auto offset of rotation
         if (this->autoOffset.value) {
             this->offset = this->rotation;
-            this->emitEvent("offset_changed", this->offset, timeStamp);
+            this->emit_event("offset_changed", this->offset, timeStamp);
         }
     }
     // Tracking
@@ -11860,7 +11953,7 @@ void SphereSensor::activate(double timeStamp, bool isActive, double * p)
         mat4f M = this->modelview.inverse();
         V = V * M;
         this->trackPoint.value = V;
-        this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
+        this->emit_event("trackPoint_changed", this->trackPoint, timeStamp);
 
         vec3f V2(p[0], p[1], p[2]);
         vec3f tempv = V2 - this->centerPoint.value;
@@ -11881,7 +11974,7 @@ void SphereSensor::activate(double timeStamp, bool isActive, double * p)
         }
         this->rotation.value = newRot;
 
-        this->emitEvent("rotation_changed", this->rotation, timeStamp);
+        this->emit_event("rotation_changed", this->rotation, timeStamp);
     }
 }
 
@@ -11908,7 +12001,7 @@ void SphereSensor::processSet_autoOffset(const field_value & value,
     throw (std::bad_cast)
 {
     this->autoOffset = dynamic_cast<const sfbool &>(value);
-    this->emitEvent("autoOffset_changed", this->autoOffset, timestamp);
+    this->emit_event("autoOffset_changed", this->autoOffset, timestamp);
 }
 
 /**
@@ -11924,7 +12017,7 @@ void SphereSensor::processSet_enabled(const field_value & value,
     throw (std::bad_cast)
 {
     this->enabled = dynamic_cast<const sfbool &>(value);
-    this->emitEvent("enabled_changed", this->enabled, timestamp);
+    this->emit_event("enabled_changed", this->enabled, timestamp);
 }
 
 /**
@@ -11940,7 +12033,7 @@ void SphereSensor::processSet_offset(const field_value & value,
     throw (std::bad_cast)
 {
     this->offset = dynamic_cast<const sfrotation &>(value);
-    this->emitEvent("offset_changed", this->offset, timestamp);
+    this->emit_event("offset_changed", this->offset, timestamp);
 }
 
 
@@ -11956,7 +12049,7 @@ void SphereSensor::processSet_offset(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 SpotLightClass::SpotLightClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -11973,44 +12066,44 @@ SpotLightClass::~SpotLightClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating PointLight nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PointLightClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-SpotLightClass::createType(const std::string & id,
-                           const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+SpotLightClass::create_type(const std::string & id,
+                           const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField,
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id,
                       field_value::sffloat_id,
                       "ambientIntensity"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfvec3f_id,
                       "attenuation"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sffloat_id,
                       "beamWidth"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfcolor_id,
                       "color"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sffloat_id,
                       "cutOffAngle"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfvec3f_id,
                       "direction"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sffloat_id,
                       "intensity"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfvec3f_id,
                       "location"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfbool_id,
                       "on"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sffloat_id,
                       "radius")
     };
@@ -12018,80 +12111,80 @@ SpotLightClass::createType(const std::string & id,
     Vrml97NodeTypeImpl<SpotLight> & spotLightNodeType =
             static_cast<Vrml97NodeTypeImpl<SpotLight> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<SpotLight>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             spotLightNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &SpotLight::processSet_ambientIntensity,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sffloat>
                                     (&SpotLight::ambientIntensity)));
         } else if (*itr == supportedInterfaces[1]) {
             spotLightNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &SpotLight::processSet_attenuation,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sfvec3f>
                                     (&SpotLight::attenuation)));
         } else if (*itr == supportedInterfaces[2]) {
             spotLightNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &SpotLight::processSet_beamWidth,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sffloat>
                                     (&SpotLight::beamWidth)));
         } else if (*itr == supportedInterfaces[3]) {
             spotLightNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &SpotLight::processSet_color,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sfcolor>
                                     (&SpotLight::color)));
         } else if (*itr == supportedInterfaces[4]) {
             spotLightNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &SpotLight::processSet_cutOffAngle,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sffloat>
                                     (&SpotLight::cutOffAngle)));
         } else if (*itr == supportedInterfaces[5]) {
             spotLightNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &SpotLight::processSet_direction,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sfvec3f>
                                     (&SpotLight::direction)));
         } else if (*itr == supportedInterfaces[6]) {
             spotLightNodeType.addExposedField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 &SpotLight::processSet_intensity,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sffloat>
                                     (&SpotLight::intensity)));
         } else if (*itr == supportedInterfaces[7]) {
             spotLightNodeType.addExposedField(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 &SpotLight::processSet_location,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sfvec3f>
                                     (&SpotLight::location)));
         } else if (*itr == supportedInterfaces[8]) {
             spotLightNodeType.addExposedField(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 &SpotLight::processSet_on,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sfbool>
                                     (&SpotLight::on)));
         } else if (*itr == supportedInterfaces[9]) {
             spotLightNodeType.addExposedField(
-                supportedInterfaces[9].fieldType,
+                supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
                 &SpotLight::processSet_radius,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<SpotLight, sffloat>
                                     (&SpotLight::radius)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -12151,9 +12244,9 @@ SpotLightClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-SpotLight::SpotLight(const NodeType & nodeType,
+SpotLight::SpotLight(const node_type & nodeType,
                      const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractLight(nodeType, scope),
     attenuation(vec3f(1.0, 0.0, 0.0)),
     beamWidth(1.570796),
@@ -12174,7 +12267,7 @@ SpotLight::~SpotLight() throw ()
  *
  * @return a pointer to the node.
  */
-SpotLight * SpotLight::toSpotLight() const
+SpotLight * SpotLight::to_spot_light() const
 {
     return const_cast<SpotLight *>(this);
 }
@@ -12204,7 +12297,7 @@ void SpotLight::renderScoped(Viewer & viewer)
                                this->location.value,
                                this->radius.value);
     }
-    this->clearModified();
+    this->node::modified(false);
 }
 
 /**
@@ -12216,8 +12309,8 @@ void SpotLight::renderScoped(Viewer & viewer)
  */
 void SpotLight::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
-    assert(this->getScene());
-    this->getScene()->browser.addScopedLight(*this);
+    assert(this->scene());
+    this->scene()->browser.addScopedLight(*this);
 }
 
 /**
@@ -12227,8 +12320,8 @@ void SpotLight::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 void SpotLight::do_shutdown(const double timestamp) throw ()
 {
-    assert(this->getScene());
-    this->getScene()->browser.removeScopedLight(*this);
+    assert(this->scene());
+    this->scene()->browser.removeScopedLight(*this);
 }
 
 /**
@@ -12244,8 +12337,8 @@ void SpotLight::processSet_attenuation(const field_value & value,
     throw (std::bad_cast)
 {
     this->attenuation = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("attenuation_changed", this->attenuation, timestamp);
+    this->node::modified(true);
+    this->emit_event("attenuation_changed", this->attenuation, timestamp);
 }
 
 /**
@@ -12261,8 +12354,8 @@ void SpotLight::processSet_beamWidth(const field_value & value,
     throw (std::bad_cast)
 {
     this->beamWidth = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("beamWidth_changed", this->beamWidth, timestamp);
+    this->node::modified(true);
+    this->emit_event("beamWidth_changed", this->beamWidth, timestamp);
 }
 
 /**
@@ -12278,8 +12371,8 @@ void SpotLight::processSet_cutOffAngle(const field_value & value,
     throw (std::bad_cast)
 {
     this->cutOffAngle = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("cutOffAngle_changed", this->cutOffAngle, timestamp);
+    this->node::modified(true);
+    this->emit_event("cutOffAngle_changed", this->cutOffAngle, timestamp);
 }
 
 /**
@@ -12295,8 +12388,8 @@ void SpotLight::processSet_direction(const field_value & value,
     throw (std::bad_cast)
 {
     this->direction = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("direction_changed", this->direction, timestamp);
+    this->node::modified(true);
+    this->emit_event("direction_changed", this->direction, timestamp);
 }
 
 /**
@@ -12312,8 +12405,8 @@ void SpotLight::processSet_location(const field_value & value,
     throw (std::bad_cast)
 {
     this->location = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("location_changed", this->location, timestamp);
+    this->node::modified(true);
+    this->emit_event("location_changed", this->location, timestamp);
 }
 
 /**
@@ -12329,8 +12422,8 @@ void SpotLight::processSet_radius(const field_value & value,
     throw (std::bad_cast)
 {
     this->radius = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("radius_changed", this->radius, timestamp);
+    this->node::modified(true);
+    this->emit_event("radius_changed", this->radius, timestamp);
 }
 
 
@@ -12346,7 +12439,7 @@ void SpotLight::processSet_radius(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 SwitchClass::SwitchClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -12363,18 +12456,18 @@ SwitchClass::~SwitchClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Switch nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SwitchClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr SwitchClass::createType(const std::string & id,
-                                          const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField,
+const NodeTypePtr SwitchClass::create_type(const std::string & id,
+                                          const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id,
                       field_value::mfnode_id,
                       "choice"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfint32_id,
                       "whichChoice")
     };
@@ -12382,24 +12475,24 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
     Vrml97NodeTypeImpl<Switch> & switchNodeType =
             static_cast<Vrml97NodeTypeImpl<Switch> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Switch>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             switchNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &Switch::processSet_choice,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Switch, mfnode>
                                     (&Switch::choice)));
         } else if (*itr == supportedInterfaces[1]) {
             switchNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &Switch::processSet_whichChoice,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Switch, sfint32>
                                     (&Switch::whichChoice)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -12447,16 +12540,16 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
  * @param nodeType  the NodeType associated with the node instance.
  * @param scope     the Scope to which the node belongs.
  */
-Switch::Switch(const NodeType & nodeType,
+Switch::Switch(const node_type & nodeType,
                const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    ChildNode(nodeType, scope),
-    GroupingNode(nodeType, scope),
+    child_node(nodeType, scope),
+    grouping_node(nodeType, scope),
     whichChoice(-1),
-    children(1)
+    children_(1)
 {
-    this->setBVolumeDirty(true);
+    this->bvolume_dirty(true);
 }
 
 /**
@@ -12470,13 +12563,13 @@ Switch::~Switch() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool Switch::isModified() const {
-    if (d_modified) { return true; }
+bool Switch::modified() const {
+    if (modified_) { return true; }
 
     long w = this->whichChoice.value;
 
     return (w >= 0 && size_t(w) < this->choice.value.size()
-            && this->choice.value[w]->isModified());
+            && this->choice.value[w]->modified());
 }
 
 /**
@@ -12486,17 +12579,17 @@ bool Switch::isModified() const {
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Switch::updateModified(NodePath & path, int flags) {
+void Switch::update_modified(node_path & path, int flags) {
     //
     // ok: again we get this issue of whether to check _all_ the children
     // or just the current choice (ref LOD). again, chooise to test them
-    // all. note that the original isModified() just tested the current
+    // all. note that the original modified() just tested the current
     // one. keep that in mind, and change it back when confirmed safe.
     //
-    if (this->isModified()) { markPathModified(path, true); }
+    if (this->modified()) { mark_path_modified(path, true); }
     path.push_front(this);
     for (size_t i = 0; i < this->choice.value.size(); ++i) {
-        this->choice.value[i]->updateModified(path);
+        this->choice.value[i]->update_modified(path);
     }
     path.pop_front();
 }
@@ -12512,10 +12605,10 @@ void Switch::updateModified(NodePath & path, int flags) {
  */
 void Switch::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    if (this->children.value[0]) {
-        this->children.value[0]->render(viewer, context);
+    if (this->children_.value[0]) {
+        this->children_.value[0]->render(viewer, context);
     }
-    this->clearModified();
+    this->node::modified(false);
 }
 
 /**
@@ -12523,8 +12616,8 @@ void Switch::render(Viewer & viewer, const VrmlRenderContext context)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume* Switch::getBVolume() const {
-    if (this->isBVolumeDirty()) {
+const BVolume* Switch::bvolume() const {
+    if (this->bvolume_dirty()) {
         ((Switch*)this)->recalcBSphere();
     }
     return &this->bsphere;
@@ -12535,9 +12628,9 @@ const BVolume* Switch::getBVolume() const {
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<NodePtr> & Switch::getChildren() const throw ()
+const std::vector<NodePtr> & Switch::children() const throw ()
 {
-    return this->children.value;
+    return this->children_.value;
 }
 
 /**
@@ -12545,20 +12638,20 @@ const std::vector<NodePtr> & Switch::getChildren() const throw ()
  */
 void Switch::activate(double time, bool isOver, bool isActive, double *p)
 {
-    const std::vector<NodePtr> & children = this->getChildren();
+    const std::vector<NodePtr> & children = this->children();
     const NodePtr & node = children[0];
     if (node) {
-        if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
-            node->toTouchSensor()->activate(time, isOver, isActive, p);
-        } else if (node->toPlaneSensor()
-                && node->toPlaneSensor()->isEnabled()) {
-            node->toPlaneSensor()->activate(time, isActive, p);
-        } else if (node->toCylinderSensor()
-                && node->toCylinderSensor()->isEnabled()) {
-            node->toCylinderSensor()->activate(time, isActive, p);
-        } else if (node->toSphereSensor()
-                && node->toSphereSensor()->isEnabled()) {
-            node->toSphereSensor()->activate(time, isActive, p);
+        if (node->to_touch_sensor() && node->to_touch_sensor()->isEnabled()) {
+            node->to_touch_sensor()->activate(time, isOver, isActive, p);
+        } else if (node->to_plane_sensor()
+                && node->to_plane_sensor()->isEnabled()) {
+            node->to_plane_sensor()->activate(time, isActive, p);
+        } else if (node->to_cylinder_sensor()
+                && node->to_cylinder_sensor()->isEnabled()) {
+            node->to_cylinder_sensor()->activate(time, isActive, p);
+        } else if (node->to_sphere_sensor()
+                && node->to_sphere_sensor()->isEnabled()) {
+            node->to_sphere_sensor()->activate(time, isActive, p);
         }
     }
 }
@@ -12572,11 +12665,11 @@ void Switch::recalcBSphere() {
     if (w >= 0 && size_t(w) < this->choice.value.size()) {
         const NodePtr & node = this->choice.value[w];
         if (node) {
-            const BVolume * ci_bv = node->getBVolume();
+            const BVolume * ci_bv = node->bvolume();
             if (ci_bv) { this->bsphere.extend(*ci_bv); }
         }
     }
-    this->setBVolumeDirty(false);
+    this->bvolume_dirty(false);
 }
 
 /**
@@ -12594,11 +12687,11 @@ void Switch::processSet_choice(const field_value & value,
 {
     this->choice = dynamic_cast<const mfnode &>(value);
     const size_t whichChoice = size_t(this->whichChoice.value);
-    this->children.value[0] = (whichChoice < this->choice.value.size())
-                            ? this->choice.value[whichChoice]
-                            : NodePtr(0);
-    this->setModified();
-    this->emitEvent("choice_changed", this->choice, timestamp);
+    this->children_.value[0] = (whichChoice < this->choice.value.size())
+                             ? this->choice.value[whichChoice]
+                             : NodePtr(0);
+    this->node::modified(true);
+    this->emit_event("choice_changed", this->choice, timestamp);
 }
 
 /**
@@ -12615,11 +12708,11 @@ void Switch::processSet_whichChoice(const field_value & value,
 {
     this->whichChoice = dynamic_cast<const sfint32 &>(value);
     const size_t whichChoice = size_t(this->whichChoice.value);
-    this->children.value[0] = (whichChoice < this->choice.value.size())
-                            ? this->choice.value[whichChoice]
-                            : NodePtr(0);
-    this->setModified();
-    this->emitEvent("whichChoice_changed", this->whichChoice, timestamp);
+    this->children_.value[0] = (whichChoice < this->choice.value.size())
+                             ? this->choice.value[whichChoice]
+                             : NodePtr(0);
+    this->node::modified(true);
+    this->emit_event("whichChoice_changed", this->whichChoice, timestamp);
 }
 
 
@@ -12643,7 +12736,7 @@ void Switch::processSet_whichChoice(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 TextClass::TextClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {
 # if OPENVRML_ENABLE_TEXT_NODE
     FT_Error error = 0;
@@ -12676,55 +12769,55 @@ TextClass::~TextClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Text nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by TextClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr TextClass::createType(const std::string & id,
-                                        const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::mfstring_id, "string"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfnode_id, "fontStyle"),
-        NodeInterface(NodeInterface::exposedField, field_value::mffloat_id, "length"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "maxExtent")
+const NodeTypePtr TextClass::create_type(const std::string & id,
+                                        const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "string"),
+        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "fontStyle"),
+        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "length"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxExtent")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Text>(*this, id));
     Vrml97NodeTypeImpl<Text> & textNodeType =
             static_cast<Vrml97NodeTypeImpl<Text> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Text>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             textNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &Text::processSet_string,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, mfstring>
                                     (&Text::string)));
         } else if (*itr == supportedInterfaces[1]) {
             textNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &Text::processSet_fontStyle,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, sfnode>
                                     (&Text::fontStyle)));
         } else if (*itr == supportedInterfaces[2]) {
             textNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Text::processSet_length,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, mffloat>
                                     (&Text::length)));
         } else if (*itr == supportedInterfaces[3]) {
             textNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &Text::processSet_maxExtent,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Text, sffloat>
                                     (&Text::maxExtent)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -13245,9 +13338,9 @@ Text::GlyphGeometry::GlyphGeometry(
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
  */
-Text::Text(const NodeType & nodeType,
+Text::Text(const node_type & nodeType,
            const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractGeometry(nodeType, scope),
     face(0)
 {}
@@ -13264,9 +13357,9 @@ Text::~Text() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool Text::isModified() const {
-    return (this->Node::isModified()
-            || (this->fontStyle.value && this->fontStyle.value->isModified()));
+bool Text::modified() const {
+    return (this->node::modified()
+            || (this->fontStyle.value && this->fontStyle.value->modified()));
 }
 
 /**
@@ -13276,10 +13369,12 @@ bool Text::isModified() const {
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Text::updateModified(NodePath & path, int flags) {
-    if (this->isModified()) { markPathModified(path, true); }
+void Text::update_modified(node_path & path, int flags) {
+    if (this->modified()) { mark_path_modified(path, true); }
     path.push_front(this);
-    if (this->fontStyle.value) { this->fontStyle.value->updateModified(path); }
+    if (this->fontStyle.value) {
+        this->fontStyle.value->update_modified(path);
+    }
     path.pop_front();
 }
 
@@ -13289,20 +13384,20 @@ void Text::updateModified(NodePath & path, int flags) {
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object Text::insertGeometry(Viewer & viewer,
-                                    const VrmlRenderContext context)
+Viewer::Object Text::insert_geometry(Viewer & viewer,
+                                     const VrmlRenderContext context)
 {
     const Viewer::Object retval =
         viewer.insertShell(Viewer::MASK_CCW,
                            this->textGeometry.coord,
                            this->textGeometry.coordIndex,
-                           std::vector<color>(), // color
+                           std::vector<OpenVRML::color>(), // color
                            std::vector<int32>(), // colorIndex
                            this->textGeometry.normal,
                            std::vector<int32>(), // normalIndex
                            this->textGeometry.texCoord,
                            std::vector<int32>()); // texCoordIndex
-    if (this->fontStyle.value) { this->fontStyle.value->clearModified(); }
+    if (this->fontStyle.value) { this->fontStyle.value->modified(false); }
     return retval;
 }
 
@@ -13351,8 +13446,8 @@ void Text::processSet_string(const field_value & value,
     this->string = dynamic_cast<const mfstring &>(value);
     this->updateUcs4();
     this->updateGeometry();
-    this->setModified();
-    this->emitEvent("string_changed", this->string, timestamp);
+    this->node::modified(true);
+    this->emit_event("string_changed", this->string, timestamp);
 }
 
 /**
@@ -13371,8 +13466,8 @@ void Text::processSet_fontStyle(const field_value & value,
     this->fontStyle = dynamic_cast<const sfnode &>(value);
     this->updateFace();
     this->updateGeometry();
-    this->setModified();
-    this->emitEvent("fontStyle_changed", this->fontStyle, timestamp);
+    this->node::modified(true);
+    this->emit_event("fontStyle_changed", this->fontStyle, timestamp);
 }
 
 /**
@@ -13390,8 +13485,8 @@ void Text::processSet_length(const field_value & value,
 {
     this->length = dynamic_cast<const mffloat &>(value);
     this->updateGeometry();
-    this->setModified();
-    this->emitEvent("length_changed", this->length, timestamp);
+    this->node::modified(true);
+    this->emit_event("length_changed", this->length, timestamp);
 }
 
 /**
@@ -13408,8 +13503,8 @@ void Text::processSet_maxExtent(const field_value & value,
 {
     this->maxExtent = dynamic_cast<const sffloat &>(value);
     this->updateGeometry();
-    this->setModified();
-    this->emitEvent("maxExtent_changed", this->maxExtent, timestamp);
+    this->node::modified(true);
+    this->emit_event("maxExtent_changed", this->maxExtent, timestamp);
 }
 
 /**
@@ -13501,15 +13596,15 @@ void Text::updateFace() throw (std::bad_alloc)
 
     string style;
 
-    FontStyleNode * const fontStyle = this->fontStyle.value
-                                    ? this->fontStyle.value->toFontStyle()
-                                    : 0;
+    font_style_node * const fontStyle = this->fontStyle.value
+                                      ? this->fontStyle.value->to_font_style()
+                                      : 0;
     if (fontStyle) {
-        if (!fontStyle->getFamily().empty()) {
-            family = fontStyle->getFamily();
-            style = fontStyle->getStyle();
-            language.assign(fontStyle->getLanguage().begin(),
-                            fontStyle->getLanguage().end());
+        if (!fontStyle->family().empty()) {
+            family = fontStyle->family();
+            style = fontStyle->style();
+            language.assign(fontStyle->language().begin(),
+                            fontStyle->language().end());
         }
     }
 
@@ -13586,7 +13681,7 @@ void Text::updateFace() throw (std::bad_alloc)
             if (result != FcResultMatch) { throw FontconfigError(result); }
 
             TextClass & nodeClass =
-                    static_cast<TextClass &>(this->nodeType.nodeClass);
+                    static_cast<TextClass &>(this->type._class);
 
             size_t filenameLen = 0;
             for (; filename[filenameLen]; ++filenameLen) {}
@@ -13808,20 +13903,20 @@ void Text::updateGeometry() throw (std::bad_alloc)
     bool topToBottom = true;
     float size = 1.0;
     float spacing = 1.0;
-    FontStyleNode * fontStyle;
+    font_style_node * fontStyle;
     if (this->fontStyle.value
-            && (fontStyle = this->fontStyle.value->toFontStyle())) {
-        horizontal = fontStyle->getHorizontal();
-        if (!fontStyle->getJustify().empty()) {
-            justify[0] = fontStyle->getJustify()[0];
+            && (fontStyle = this->fontStyle.value->to_font_style())) {
+        horizontal = fontStyle->horizontal();
+        if (!fontStyle->justify().empty()) {
+            justify[0] = fontStyle->justify()[0];
         }
-        if (fontStyle->getJustify().size() > 1) {
-            justify[1] = fontStyle->getJustify()[1];
+        if (fontStyle->justify().size() > 1) {
+            justify[1] = fontStyle->justify()[1];
         }
-        leftToRight = fontStyle->getLeftToRight();
-        topToBottom = fontStyle->getTopToBottom();
-        size = fontStyle->getSize();
-        spacing = fontStyle->getSpacing();
+        leftToRight = fontStyle->left_to_right();
+        topToBottom = fontStyle->top_to_bottom();
+        size = fontStyle->size();
+        spacing = fontStyle->spacing();
     }
 
     TextGeometry newGeometry;
@@ -14115,7 +14210,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
  * @param browser the Browser associated with this NodeClass.
  */
 TextureCoordinateClass::TextureCoordinateClass(Browser & browser):
-        NodeClass(browser) {}
+        node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -14131,16 +14226,16 @@ TextureCoordinateClass::~TextureCoordinateClass() throw () {}
  * @return a NodeTypePtr to a NodeType capable of creating TextureCoordinate
  *      nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by TextureCoordinateClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        TextureCoordinateClass::createType(const std::string & id,
-                                           const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
-    static const NodeInterface supportedInterface =
-        NodeInterface(NodeInterface::exposedField,
+        TextureCoordinateClass::create_type(const std::string & id,
+                                           const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc) {
+    static const node_interface supportedInterface =
+        node_interface(node_interface::exposedfield_id,
                       field_value::mfvec2f_id,
                       "point");
     const NodeTypePtr
@@ -14149,18 +14244,18 @@ const NodeTypePtr
             static_cast<Vrml97NodeTypeImpl<TextureCoordinate> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<TextureCoordinate>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterface) {
             textureCoordinateNodeType.addExposedField(
-                supportedInterface.fieldType,
+                supportedInterface.field_type,
                 supportedInterface.id,
                 &TextureCoordinate::processSet_point,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureCoordinate,
                                                      mfvec2f>
-                                (&TextureCoordinate::point)));
+                                (&TextureCoordinate::point_)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -14190,11 +14285,12 @@ const NodeTypePtr
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
  */
-TextureCoordinate::TextureCoordinate(const NodeType & nodeType,
+TextureCoordinate::TextureCoordinate(const node_type & nodeType,
                                      const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        TextureCoordinateNode(nodeType, scope) {}
+    node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    texture_coordinate_node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
@@ -14206,9 +14302,9 @@ TextureCoordinate::~TextureCoordinate() throw () {}
  *
  * @return the mfvec2f array of points for this node.
  */
-const std::vector<vec2f> & TextureCoordinate::getPoint() const throw ()
+const std::vector<vec2f> & TextureCoordinate::point() const throw ()
 {
-    return this->point.value;
+    return this->point_.value;
 }
 
 /**
@@ -14224,9 +14320,9 @@ void TextureCoordinate::processSet_point(const field_value & value,
                                          const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->point = dynamic_cast<const mfvec2f &>(value);
-    this->setModified();
-    this->emitEvent("point_changed", this->point, timestamp);
+    this->point_ = dynamic_cast<const mfvec2f &>(value);
+    this->node::modified(true);
+    this->emit_event("point_changed", this->point_, timestamp);
 }
 
 
@@ -14242,7 +14338,7 @@ void TextureCoordinate::processSet_point(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 TextureTransformClass::TextureTransformClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -14260,57 +14356,57 @@ TextureTransformClass::~TextureTransformClass() throw ()
  * @return a NodeTypePtr to a NodeType capable of creating TextureTransform
  *      nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by TextureTransformClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-TextureTransformClass::createType(const std::string & id,
-                                  const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+TextureTransformClass::create_type(const std::string & id,
+                                  const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "center"),
-        NodeInterface(NodeInterface::exposedField, field_value::sffloat_id, "rotation"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "scale"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec2f_id, "translation")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "center"),
+        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "rotation"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "scale"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "translation")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TextureTransform>(*this, id));
     Vrml97NodeTypeImpl<TextureTransform> & textureTransformNodeType =
             static_cast<Vrml97NodeTypeImpl<TextureTransform> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<TextureTransform>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             textureTransformNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &TextureTransform::processSet_center,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, sfvec2f>
                                     (&TextureTransform::center)));
         } else if (*itr == supportedInterfaces[1]) {
             textureTransformNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &TextureTransform::processSet_rotation,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, sffloat>
                                     (&TextureTransform::rotation)));
         } else if (*itr == supportedInterfaces[2]) {
             textureTransformNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &TextureTransform::processSet_scale,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, sfvec2f>
                                     (&TextureTransform::scale)));
         } else if (*itr == supportedInterfaces[3]) {
             textureTransformNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &TextureTransform::processSet_translation,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TextureTransform, sfvec2f>
                                     (&TextureTransform::translation)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -14358,11 +14454,11 @@ TextureTransformClass::createType(const std::string & id,
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
  */
-TextureTransform::TextureTransform(const NodeType & nodeType,
+TextureTransform::TextureTransform(const node_type & nodeType,
                                    const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    TextureTransformNode(nodeType, scope),
+    texture_transform_node(nodeType, scope),
     center(vec2f(0.0, 0.0)),
     rotation(0.0),
     scale(vec2f(1.0, 1.0)),
@@ -14387,7 +14483,7 @@ void TextureTransform::render(Viewer & viewer, const VrmlRenderContext context)
                                this->rotation.value,
                                this->scale.value,
                                this->translation.value);
-    this->clearModified();
+    this->node::modified(false);
 }
 
 /**
@@ -14403,8 +14499,8 @@ void TextureTransform::processSet_center(const field_value & value,
     throw (std::bad_cast)
 {
     this->center = dynamic_cast<const sfvec2f &>(value);
-    this->setModified();
-    this->emitEvent("center_changed", this->center, timestamp);
+    this->node::modified(true);
+    this->emit_event("center_changed", this->center, timestamp);
 }
 
 /**
@@ -14420,8 +14516,8 @@ void TextureTransform::processSet_rotation(const field_value & value,
     throw (std::bad_cast)
 {
     this->rotation = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("rotation_changed", this->rotation, timestamp);
+    this->node::modified(true);
+    this->emit_event("rotation_changed", this->rotation, timestamp);
 }
 
 /**
@@ -14437,8 +14533,8 @@ void TextureTransform::processSet_scale(const field_value & value,
     throw (std::bad_cast)
 {
     this->scale = dynamic_cast<const sfvec2f &>(value);
-    this->setModified();
-    this->emitEvent("scale_changed", this->scale, timestamp);
+    this->node::modified(true);
+    this->emit_event("scale_changed", this->scale, timestamp);
 }
 
 /**
@@ -14454,8 +14550,8 @@ void TextureTransform::processSet_translation(const field_value & value,
     throw (std::bad_cast)
 {
     this->translation = dynamic_cast<const sfvec2f &>(value);
-    this->setModified();
-    this->emitEvent("translation_changed", this->translation, timestamp);
+    this->node::modified(true);
+    this->emit_event("translation_changed", this->translation, timestamp);
 }
 
 
@@ -14471,7 +14567,7 @@ void TextureTransform::processSet_translation(const field_value & value,
  * @param browser   the Browser associated with this NodeClass.
  */
 TimeSensorClass::TimeSensorClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -14488,93 +14584,93 @@ TimeSensorClass::~TimeSensorClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating TimeSensor nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by TimeSensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-TimeSensorClass::createType(const std::string & id,
-                            const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+TimeSensorClass::create_type(const std::string & id,
+                            const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "cycleInterval"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "loop"),
-        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "startTime"),
-        NodeInterface(NodeInterface::exposedField, field_value::sftime_id, "stopTime"),
-        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "cycleTime"),
-        NodeInterface(NodeInterface::eventOut, field_value::sffloat_id, "fraction_changed"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive"),
-        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "time")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sftime_id, "cycleInterval"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "loop"),
+        node_interface(node_interface::exposedfield_id, field_value::sftime_id, "startTime"),
+        node_interface(node_interface::exposedfield_id, field_value::sftime_id, "stopTime"),
+        node_interface(node_interface::eventout_id, field_value::sftime_id, "cycleTime"),
+        node_interface(node_interface::eventout_id, field_value::sffloat_id, "fraction_changed"),
+        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
+        node_interface(node_interface::eventout_id, field_value::sftime_id, "time")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TimeSensor>(*this, id));
     Vrml97NodeTypeImpl<TimeSensor> & timeSensorNodeType =
             static_cast<Vrml97NodeTypeImpl<TimeSensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<TimeSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             timeSensorNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &TimeSensor::processSet_cycleInterval,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sftime>
                                     (&TimeSensor::cycleInterval)));
         } else if (*itr == supportedInterfaces[1]) {
             timeSensorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &TimeSensor::processSet_enabled,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sfbool>
                                     (&TimeSensor::enabled)));
         } else if (*itr == supportedInterfaces[2]) {
             timeSensorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &TimeSensor::processSet_loop,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sfbool>
                                     (&TimeSensor::loop)));
         } else if (*itr == supportedInterfaces[3]) {
             timeSensorNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &TimeSensor::processSet_startTime,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sftime>
                                     (&TimeSensor::startTime)));
         } else if (*itr == supportedInterfaces[4]) {
             timeSensorNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &TimeSensor::processSet_stopTime,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sftime>
                                     (&TimeSensor::stopTime)));
         } else if (*itr == supportedInterfaces[5]) {
             timeSensorNodeType.addEventOut(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sftime>
                                     (&TimeSensor::cycleTime)));
         } else if (*itr == supportedInterfaces[6]) {
             timeSensorNodeType.addEventOut(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sffloat>
                                     (&TimeSensor::fraction)));
         } else if (*itr == supportedInterfaces[7]) {
             timeSensorNodeType.addEventOut(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sfbool>
                                     (&TimeSensor::active)));
         } else if (*itr == supportedInterfaces[8]) {
             timeSensorNodeType.addEventOut(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TimeSensor, sftime>
                                     (&TimeSensor::time)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -14658,9 +14754,9 @@ TimeSensorClass::createType(const std::string & id,
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
  */
-TimeSensor::TimeSensor(const NodeType & nodeType,
+TimeSensor::TimeSensor(const node_type & nodeType,
                        const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     cycleInterval(1.0),
     enabled(true),
@@ -14682,7 +14778,7 @@ TimeSensor::~TimeSensor() throw ()
  *
  * @return a pointer to the object.
  */
-TimeSensor * TimeSensor::toTimeSensor() const
+TimeSensor * TimeSensor::to_time_sensor() const
 {
     return (TimeSensor*) this;
 }
@@ -14716,10 +14812,10 @@ void TimeSensor::update(const double currentTime)
             this->active.value = true;
 
             // Start at first tick >= startTime
-            this->emitEvent("isActive", this->active, timeNow.value);
-            this->emitEvent("time", timeNow, timeNow.value);
-            this->emitEvent("fraction_changed", sffloat(0.0), timeNow.value);
-            this->emitEvent("cycleTime", timeNow, timeNow.value);
+            this->emit_event("isActive", this->active, timeNow.value);
+            this->emit_event("time", timeNow, timeNow.value);
+            this->emit_event("fraction_changed", sffloat(0.0), timeNow.value);
+            this->emit_event("cycleTime", timeNow, timeNow.value);
         }
 
         // Running (active and enabled)
@@ -14752,18 +14848,18 @@ void TimeSensor::update(const double currentTime)
 
             // Fraction of cycle message
             sffloat fraction_changed(fpzero(f) ? 1.0 : (f / cycleInt));
-            this->emitEvent("fraction_changed", fraction_changed, timeNow.value);
+            this->emit_event("fraction_changed", fraction_changed, timeNow.value);
 
             // Current time message
-            this->emitEvent("time", timeNow, timeNow.value);
+            this->emit_event("time", timeNow, timeNow.value);
 
             // End of cycle message (this may miss cycles...)
             if (fpequal(fraction_changed.value, 1.0)) {
-                this->emitEvent("cycleTime", timeNow, timeNow.value);
+                this->emit_event("cycleTime", timeNow, timeNow.value);
             }
 
             if (deactivate) {
-                this->emitEvent("isActive", this->active, timeNow.value);
+                this->emit_event("isActive", this->active, timeNow.value);
             }
         }
 
@@ -14772,9 +14868,9 @@ void TimeSensor::update(const double currentTime)
         // being used, and set delta to cycleTime if not...
         if (this->active.value) {
 #ifdef macintosh
-            this->nodeType.nodeClass.browser.setDelta(0.001); //0.0 is too fast(!)
+            this->type._class.browser.setDelta(0.001); //0.0 is too fast(!)
 #else
-            this->nodeType.nodeClass.browser.setDelta(0.0);
+            this->type._class.browser.setDelta(0.0);
 #endif
         }
         this->lastTime = currentTime;
@@ -14786,7 +14882,7 @@ void TimeSensor::update(const double currentTime)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * TimeSensor::getBVolume() const
+const BVolume * TimeSensor::bvolume() const
 {
     static BSphere * inf_bsphere = 0;
     if (!inf_bsphere) { inf_bsphere = new BSphere(); }
@@ -14802,8 +14898,8 @@ const BVolume * TimeSensor::getBVolume() const
  */
 void TimeSensor::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
-    assert(this->getScene());
-    this->getScene()->browser.addTimeSensor(*this);
+    assert(this->scene());
+    this->scene()->browser.addTimeSensor(*this);
 }
 
 /**
@@ -14813,8 +14909,8 @@ void TimeSensor::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 void TimeSensor::do_shutdown(const double timestamp) throw ()
 {
-    assert(this->getScene());
-    this->getScene()->browser.removeTimeSensor(*this);
+    assert(this->scene());
+    this->scene()->browser.removeTimeSensor(*this);
 }
 
 /**
@@ -14832,7 +14928,7 @@ void TimeSensor::processSet_cycleInterval(const field_value & value,
     if (!this->active.value) {
         this->cycleInterval = dynamic_cast<const sftime &>(value);
         this->lastTime = timestamp;
-        this->emitEvent("cycleInterval_changed", this->cycleInterval,
+        this->emit_event("cycleInterval_changed", this->cycleInterval,
                         timestamp);
     }
 }
@@ -14869,18 +14965,18 @@ void TimeSensor::processSet_enabled(const field_value & value,
             // Was inactive; startup.
             //
             this->cycleTime.value = timestamp;
-            this->emitEvent("cycleTime", this->cycleTime, timestamp);
+            this->emit_event("cycleTime", this->cycleTime, timestamp);
 
             // Fraction of cycle message
             this->fraction.value = 0.0;
         }
         this->time.value = timestamp;
-        this->emitEvent("time", this->time, timestamp);
-        this->emitEvent("fraction_changed", this->fraction, timestamp);
+        this->emit_event("time", this->time, timestamp);
+        this->emit_event("fraction_changed", this->fraction, timestamp);
         this->active = this->enabled;
-        this->emitEvent("isActive", this->active, timestamp);
+        this->emit_event("isActive", this->active, timestamp);
     }
-    this->emitEvent("enabled_changed", this->enabled, timestamp);
+    this->emit_event("enabled_changed", this->enabled, timestamp);
 }
 
 /**
@@ -14896,7 +14992,7 @@ void TimeSensor::processSet_loop(const field_value & value,
     throw (std::bad_cast)
 {
     this->loop = dynamic_cast<const sfbool &>(value);
-    this->emitEvent("loop_changed", this->loop, timestamp);
+    this->emit_event("loop_changed", this->loop, timestamp);
 }
 
 /**
@@ -14914,7 +15010,7 @@ void TimeSensor::processSet_startTime(const field_value & value,
     if (!this->active.value) {
         this->startTime = dynamic_cast<const sftime &>(value);
         this->lastTime = timestamp;
-        this->emitEvent("startTime_changed", this->startTime, timestamp);
+        this->emit_event("startTime_changed", this->startTime, timestamp);
     }
 }
 
@@ -14931,7 +15027,7 @@ void TimeSensor::processSet_stopTime(const field_value & value,
     throw (std::bad_cast)
 {
     this->stopTime = dynamic_cast<const sftime &>(value);
-    this->emitEvent("stopTime_changed", this->stopTime, timestamp);
+    this->emit_event("stopTime_changed", this->stopTime, timestamp);
 }
 
 
@@ -14947,7 +15043,7 @@ void TimeSensor::processSet_stopTime(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 TouchSensorClass::TouchSensorClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -14964,35 +15060,35 @@ TouchSensorClass::~TouchSensorClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating TouchSensor nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by TouchSensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-TouchSensorClass::createType(const std::string & id,
-                             const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+TouchSensorClass::create_type(const std::string & id,
+                             const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField,
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfbool_id,
                       "enabled"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sfvec3f_id,
                       "hitNormal_changed"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sfvec3f_id,
                       "hitPoint_changed"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sfvec2f_id,
                       "hitTexCoord_changed"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sfbool_id,
                       "isActive"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sfbool_id,
                       "isOver"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sftime_id,
                       "touchTime")
     };
@@ -15000,53 +15096,53 @@ TouchSensorClass::createType(const std::string & id,
     Vrml97NodeTypeImpl<TouchSensor> & touchSensorNodeType =
             static_cast<Vrml97NodeTypeImpl<TouchSensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<TouchSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             touchSensorNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &TouchSensor::processSet_enabled,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfbool>
                                     (&TouchSensor::enabled)));
         } else if (*itr == supportedInterfaces[1]) {
             touchSensorNodeType.addEventOut(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfvec3f>
                                     (&TouchSensor::hitNormal)));
         } else if (*itr == supportedInterfaces[2]) {
             touchSensorNodeType.addEventOut(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfvec3f>
                                     (&TouchSensor::hitPoint)));
         } else if (*itr == supportedInterfaces[3]) {
             touchSensorNodeType.addEventOut(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfvec2f>
                                     (&TouchSensor::hitTexCoord)));
         } else if (*itr == supportedInterfaces[4]) {
             touchSensorNodeType.addEventOut(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfbool>
                                     (&TouchSensor::active)));
         } else if (*itr == supportedInterfaces[5]) {
             touchSensorNodeType.addEventOut(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sfbool>
                                     (&TouchSensor::over)));
         } else if (*itr == supportedInterfaces[6]) {
             touchSensorNodeType.addEventOut(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<TouchSensor, sftime>
                                     (&TouchSensor::touchTime)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -15112,16 +15208,16 @@ TouchSensorClass::createType(const std::string & id,
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
  */
-TouchSensor::TouchSensor(const NodeType & nodeType,
+TouchSensor::TouchSensor(const node_type & nodeType,
                          const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     enabled(true),
     active(false),
     over(false),
     touchTime(0.0)
 {
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -15135,7 +15231,7 @@ TouchSensor::~TouchSensor() throw ()
  *
  * @return a pointer to the object.
  */
-TouchSensor* TouchSensor::toTouchSensor() const
+TouchSensor* TouchSensor::to_touch_sensor() const
 {
     return (TouchSensor*) this;
 }
@@ -15148,17 +15244,17 @@ void TouchSensor::activate(double timeStamp, bool isOver, bool isActive,
 {
     if (isOver && !isActive && this->active.value) {
         this->touchTime.value = timeStamp;
-        this->emitEvent("touchTime", this->touchTime, timeStamp);
+        this->emit_event("touchTime", this->touchTime, timeStamp);
     }
 
     if (isOver != this->over.value) {
         this->over.value = isOver;
-        this->emitEvent("isOver", this->over, timeStamp);
+        this->emit_event("isOver", this->over, timeStamp);
     }
 
     if (isActive != this->active.value) {
         this->active.value = isActive;
-        this->emitEvent("isActive", this->active, timeStamp);
+        this->emit_event("isActive", this->active, timeStamp);
     }
     // if (isOver && any routes from eventOuts)
     //   generate xxx_changed eventOuts...
@@ -15187,7 +15283,7 @@ void TouchSensor::processSet_enabled(const field_value & value,
     throw (std::bad_cast)
 {
     this->enabled = dynamic_cast<const sfbool &>(value);
-    this->emitEvent("enabled_changed", this->enabled, timestamp);
+    this->emit_event("enabled_changed", this->enabled, timestamp);
 }
 
 
@@ -15203,7 +15299,7 @@ void TouchSensor::processSet_enabled(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 TransformClass::TransformClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -15220,97 +15316,97 @@ TransformClass::~TransformClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating Transform nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by TransformClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-TransformClass::createType(const std::string & id,
-                           const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+TransformClass::create_type(const std::string & id,
+                           const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "addChildren"),
-        NodeInterface(NodeInterface::eventIn, field_value::mfnode_id, "removeChildren"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "center"),
-        NodeInterface(NodeInterface::exposedField, field_value::mfnode_id, "children"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfrotation_id, "rotation"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "scale"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfrotation_id, "scaleOrientation"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "translation"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxCenter"),
-        NodeInterface(NodeInterface::field, field_value::sfvec3f_id, "bboxSize")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id, field_value::mfnode_id, "addChildren"),
+        node_interface(node_interface::eventin_id, field_value::mfnode_id, "removeChildren"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "center"),
+        node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "children"),
+        node_interface(node_interface::exposedfield_id, field_value::sfrotation_id, "rotation"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "scale"),
+        node_interface(node_interface::exposedfield_id, field_value::sfrotation_id, "scaleOrientation"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "translation"),
+        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
+        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Transform>(*this, id));
     Vrml97NodeTypeImpl<Transform> & transformNodeType =
             static_cast<Vrml97NodeTypeImpl<Transform> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Transform>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
-            transformNodeType.addEventIn(supportedInterfaces[0].fieldType,
+            transformNodeType.addEventIn(supportedInterfaces[0].field_type,
                                       supportedInterfaces[0].id,
                                       &Transform::processAddChildren);
         } else if (*itr == supportedInterfaces[1]) {
-            transformNodeType.addEventIn(supportedInterfaces[1].fieldType,
+            transformNodeType.addEventIn(supportedInterfaces[1].field_type,
                                       supportedInterfaces[1].id,
                                       &Transform::processRemoveChildren);
         } else if (*itr == supportedInterfaces[2]) {
             transformNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Transform::processSet_center,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfvec3f>
                                     (&Transform::center)));
         } else if (*itr == supportedInterfaces[3]) {
             transformNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &Transform::processSet_children,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, mfnode>
-                                    (&Transform::children)));
+                                    (&Transform::children_)));
         } else if (*itr == supportedInterfaces[4]) {
             transformNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &Transform::processSet_rotation,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfrotation>
                                     (&Transform::rotation)));
         } else if (*itr == supportedInterfaces[5]) {
             transformNodeType.addExposedField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 &Transform::processSet_scale,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfvec3f>
                                     (&Transform::scale)));
         } else if (*itr == supportedInterfaces[6]) {
             transformNodeType.addExposedField(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 &Transform::processSet_scaleOrientation,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfrotation>
                                     (&Transform::scaleOrientation)));
         } else if (*itr == supportedInterfaces[7]) {
             transformNodeType.addExposedField(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 &Transform::processSet_translation,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfvec3f>
                                     (&Transform::translation)));
         } else if (*itr == supportedInterfaces[8]) {
             transformNodeType.addField(
-                supportedInterfaces[8].fieldType,
+                supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfvec3f>
                                     (&Transform::bboxCenter)));
         } else if (*itr == supportedInterfaces[9]) {
             transformNodeType.addField(
-                supportedInterfaces[9].fieldType,
+                supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Transform, sfvec3f>
                                 (&Transform::bboxSize)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -15379,7 +15475,7 @@ TransformClass::createType(const std::string & id,
  *
  * @brief If true, we need to recalculate M.
  *
- * Is this the same as Node::d_modified? No, since it's entirely a core-side
+ * Is this the same as Node::modified_? No, since it's entirely a core-side
  * issue, and has nothing to do with the viewer being out of date wrt the
  * core scene graph.
  */
@@ -15390,13 +15486,13 @@ TransformClass::createType(const std::string & id,
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
  */
-Transform::Transform(const NodeType & nodeType,
+Transform::Transform(const node_type & nodeType,
                      const ScopePtr & scope):
-    Node(nodeType, scope),
-    ChildNode(nodeType, scope),
-    GroupingNode(nodeType, scope),
+    node(nodeType, scope),
+    child_node(nodeType, scope),
+    grouping_node(nodeType, scope),
     Group(nodeType, scope),
-    TransformNode(nodeType, scope),
+    transform_node(nodeType, scope),
     center(vec3f(0.0, 0.0, 0.0)),
     rotation(OpenVRML::rotation(0.0, 0.0, 1.0, 0.0)),
     scale(vec3f(1.0, 1.0, 1.0)),
@@ -15405,7 +15501,7 @@ Transform::Transform(const NodeType & nodeType,
     transformDirty(true),
     xformObject(0)
 {
-    this->setBVolumeDirty(true);
+    this->bvolume_dirty(true);
 }
 
 /**
@@ -15421,10 +15517,10 @@ Transform::~Transform() throw ()
  *
  * @return the transformation associated with the node.
  */
-const mat4f & Transform::getTransform() const throw ()
+const mat4f & Transform::transform() const throw ()
 {
     this->updateTransform();
-    return this->transform;
+    return this->transform_;
 }
 
 /**
@@ -15436,7 +15532,7 @@ const mat4f & Transform::getTransform() const throw ()
 void Transform::render(Viewer & viewer, VrmlRenderContext context)
 {
     if (context.getCullFlag() != BVolume::inside) {
-        const BSphere * bs = (BSphere*)this->getBVolume();
+        const BSphere * bs = (BSphere*)this->bvolume();
         BSphere bv_copy(*bs);
         bv_copy.transform(context.getMatrix());
         BVolume::Intersection r = viewer.intersectViewVolume(bv_copy);
@@ -15448,29 +15544,29 @@ void Transform::render(Viewer & viewer, VrmlRenderContext context)
         //context.setCullFlag(BVolume::BV_PARTIAL);
     }
 
-    mat4f LM = this->getTransform();
+    mat4f LM = this->transform();
     mat4f new_LM = context.getMatrix();
     new_LM = LM * new_LM;
     context.setMatrix(new_LM);
 
-    if (this->xformObject && isModified()) {
+    if (this->xformObject && modified()) {
         viewer.removeObject(this->xformObject);
         this->xformObject = 0;
     }
 
     if (this->xformObject) {
         viewer.insertReference(this->xformObject);
-    } else if (!this->children.value.empty()) {
-        this->xformObject = viewer.beginObject(this->getId().c_str());
+    } else if (!this->children_.value.empty()) {
+        this->xformObject = viewer.beginObject(this->id().c_str());
 
         // Apply transforms
-        viewer.transform(this->getTransform());
+        viewer.transform(this->transform());
         // Render children
         this->Group::renderNoCull(viewer, context);
 
         viewer.endObject();
     }
-    this->clearModified();
+    this->node::modified(false);
 }
 
 /**
@@ -15478,9 +15574,9 @@ void Transform::render(Viewer & viewer, VrmlRenderContext context)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Transform::getBVolume() const
+const BVolume * Transform::bvolume() const
 {
-    if (this->isBVolumeDirty()) {
+    if (this->bvolume_dirty()) {
         ((Transform*)this)->recalcBSphere();
     }
     return &this->bsphere;
@@ -15492,16 +15588,16 @@ const BVolume * Transform::getBVolume() const
 void Transform::recalcBSphere()
 {
     this->bsphere.reset();
-    for (size_t i = 0; i < this->children.value.size(); ++i) {
-        const NodePtr & node = this->children.value[i];
+    for (size_t i = 0; i < this->children_.value.size(); ++i) {
+        const NodePtr & node = this->children_.value[i];
         if (node) {
-            const BVolume * ci_bv = node->getBVolume();
+            const BVolume * ci_bv = node->bvolume();
             if (ci_bv) { this->bsphere.extend(*ci_bv); }
         }
     }
-    this->bsphere.transform(this->getTransform());
+    this->bsphere.transform(this->transform());
 
-    this->setBVolumeDirty(false);
+    this->bvolume_dirty(false);
 }
 
 
@@ -15515,7 +15611,7 @@ Transform::recalcBSphere()
   d_bsphere.reset();
   for (int i = 0; i<d_children.size(); ++i) {
     Node* ci = d_children[i];
-    const BVolume * ci_bv = ci->getBVolume();
+    const BVolume * ci_bv = ci->bvolume();
     if (ci_bv) { // shouldn't happen...
       BSphere * bs = (BSphere*)ci_bv;
       BSphere tmp(*bs);
@@ -15523,7 +15619,7 @@ Transform::recalcBSphere()
       d_bsphere.extend(tmp);
     }
   }
-  this->setBVolumeDirty(false);
+  this->bvolume_dirty(false);
 }
 #endif
 
@@ -15539,11 +15635,11 @@ Transform::recalcBSphere()
 void Transform::updateTransform() const throw ()
 {
     if (this->transformDirty) {
-        this->transform = mat4f::transformation(this->translation.value,
-                                                this->rotation.value,
-                                                this->scale.value,
-                                                this->scaleOrientation.value,
-                                                this->center.value);
+        this->transform_ = mat4f::transformation(this->translation.value,
+                                                 this->rotation.value,
+                                                 this->scale.value,
+                                                 this->scaleOrientation.value,
+                                                 this->center.value);
         this->transformDirty = false;
     }
 }
@@ -15561,10 +15657,10 @@ void Transform::processSet_center(const field_value & value,
     throw (std::bad_cast)
 {
     this->center = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->setBVolumeDirty(true);
+    this->node::modified(true);
+    this->bvolume_dirty(true);
     this->transformDirty = true;
-    this->emitEvent("center_changed", this->center, timestamp);
+    this->emit_event("center_changed", this->center, timestamp);
 }
 
 /**
@@ -15580,10 +15676,10 @@ void Transform::processSet_rotation(const field_value & value,
     throw (std::bad_cast)
 {
     this->rotation = dynamic_cast<const sfrotation &>(value);
-    this->setModified();
-    this->setBVolumeDirty(true);
+    this->node::modified(true);
+    this->bvolume_dirty(true);
     this->transformDirty = true;
-    this->emitEvent("rotation_changed", this->rotation, timestamp);
+    this->emit_event("rotation_changed", this->rotation, timestamp);
 }
 
 /**
@@ -15599,10 +15695,10 @@ void Transform::processSet_scale(const field_value & value,
     throw (std::bad_cast)
 {
     this->scale = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->setBVolumeDirty(true);
+    this->node::modified(true);
+    this->bvolume_dirty(true);
     this->transformDirty = true;
-    this->emitEvent("scale_changed", this->scale, timestamp);
+    this->emit_event("scale_changed", this->scale, timestamp);
 }
 
 /**
@@ -15618,11 +15714,11 @@ void Transform::processSet_scaleOrientation(const field_value & value,
     throw (std::bad_cast)
 {
     this->scaleOrientation = dynamic_cast<const sfrotation &>(value);
-    this->setModified();
-    this->setBVolumeDirty(true);
+    this->node::modified(true);
+    this->bvolume_dirty(true);
     this->transformDirty = true;
-    this->emitEvent("scaleOrientation_changed", this->scaleOrientation,
-                    timestamp);
+    this->emit_event("scaleOrientation_changed", this->scaleOrientation,
+                     timestamp);
 }
 
 /**
@@ -15638,10 +15734,10 @@ void Transform::processSet_translation(const field_value & value,
     throw (std::bad_cast)
 {
     this->translation = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->setBVolumeDirty(true);
+    this->node::modified(true);
+    this->bvolume_dirty(true);
     this->transformDirty = true;
-    this->emitEvent("translation_changed", this->translation, timestamp);
+    this->emit_event("translation_changed", this->translation, timestamp);
 }
 
 
@@ -15657,7 +15753,7 @@ void Transform::processSet_translation(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 ViewpointClass::ViewpointClass(Browser & browser):
-    NodeClass(browser),
+    node_class(browser),
     first(0)
 {}
 
@@ -15724,7 +15820,7 @@ void ViewpointClass::bind(Viewpoint & viewpoint, const double timestamp)
         Viewpoint & current =
                 dynamic_cast<Viewpoint &>(*this->boundNodes.back());
         current.bound.value = false;
-        current.emitEvent("isBound", current.bound, timestamp);
+        current.emit_event("isBound", current.bound, timestamp);
     }
 
     //
@@ -15732,7 +15828,7 @@ void ViewpointClass::bind(Viewpoint & viewpoint, const double timestamp)
     //
     this->boundNodes.push_back(&viewpoint);
     viewpoint.bound.value = true;
-    viewpoint.emitEvent("isBound", viewpoint.bound, timestamp);
+    viewpoint.emit_event("isBound", viewpoint.bound, timestamp);
 
     this->browser.setActiveViewpoint(viewpoint);
 }
@@ -15750,14 +15846,14 @@ void ViewpointClass::unbind(Viewpoint & viewpoint, const double timestamp)
         std::find(this->boundNodes.begin(), this->boundNodes.end(), &viewpoint);
     if (pos != this->boundNodes.end()) {
         viewpoint.bound.value = false;
-        viewpoint.emitEvent("isBound", viewpoint.bound, timestamp);
+        viewpoint.emit_event("isBound", viewpoint.bound, timestamp);
 
         if (pos == this->boundNodes.end() - 1
                 && this->boundNodes.size() > 1) {
             Viewpoint & newActive =
                     dynamic_cast<Viewpoint &>(**(this->boundNodes.end() - 2));
             newActive.bound.value = true;
-            newActive.emitEvent("isBound", newActive.bound, timestamp);
+            newActive.emit_event("isBound", newActive.bound, timestamp);
 
             this->browser.setActiveViewpoint(viewpoint);
         } else {
@@ -15770,16 +15866,16 @@ void ViewpointClass::unbind(Viewpoint & viewpoint, const double timestamp)
 /**
  * @brief NodeClass-specific initialization.
  *
- * @param initialViewpoint  the ViewpointNode that should be bound initially.
+ * @param initialViewpoint  the viewpoint_node that should be bound initially.
  * @param timestamp         the current time.
  */
-void ViewpointClass::initialize(ViewpointNode * initialViewpoint,
+void ViewpointClass::initialize(viewpoint_node * initialViewpoint,
                                 const double timestamp)
     throw ()
 {
     if (!initialViewpoint) { initialViewpoint = this->first; }
     if (initialViewpoint) {
-        initialViewpoint->processEvent("set_bind", sfbool(true), timestamp);
+        initialViewpoint->process_event("set_bind", sfbool(true), timestamp);
     }
 }
 
@@ -15791,38 +15887,38 @@ void ViewpointClass::initialize(ViewpointNode * initialViewpoint,
  *
  * @return a NodeTypePtr to a NodeType capable of creating Viewpoint nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by ViewpointClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-ViewpointClass::createType(const std::string & id,
-                           const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+ViewpointClass::create_type(const std::string & id,
+                           const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::eventIn,
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::eventin_id,
                       field_value::sfbool_id,
                       "set_bind"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sffloat_id,
                       "fieldOfView"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfbool_id,
                       "jump"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfrotation_id,
                       "orientation"),
-        NodeInterface(NodeInterface::exposedField,
+        node_interface(node_interface::exposedfield_id,
                       field_value::sfvec3f_id,
                       "position"),
-        NodeInterface(NodeInterface::field,
+        node_interface(node_interface::field_id,
                       field_value::sfstring_id,
                       "description"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sftime_id,
                       "bindTime"),
-        NodeInterface(NodeInterface::eventOut,
+        node_interface(node_interface::eventout_id,
                       field_value::sfbool_id,
                       "isBound")
     };
@@ -15830,60 +15926,60 @@ ViewpointClass::createType(const std::string & id,
     Vrml97NodeTypeImpl<Viewpoint> & viewpointNodeType =
             static_cast<Vrml97NodeTypeImpl<Viewpoint> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Viewpoint>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
-            viewpointNodeType.addEventIn(supportedInterfaces[0].fieldType,
+            viewpointNodeType.addEventIn(supportedInterfaces[0].field_type,
                                    supportedInterfaces[0].id,
                                    &Viewpoint::processSet_bind);
         } else if (*itr == supportedInterfaces[1]) {
             viewpointNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &Viewpoint::processSet_fieldOfView,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sffloat>
                                     (&Viewpoint::fieldOfView)));
         } else if (*itr == supportedInterfaces[2]) {
             viewpointNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &Viewpoint::processSet_jump,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sfbool>
                                     (&Viewpoint::jump)));
         } else if (*itr == supportedInterfaces[3]) {
             viewpointNodeType.addExposedField(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &Viewpoint::processSet_orientation,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sfrotation>
-                                    (&Viewpoint::orientation)));
+                                    (&Viewpoint::orientation_)));
         } else if (*itr == supportedInterfaces[4]) {
             viewpointNodeType.addExposedField(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &Viewpoint::processSet_position,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sfvec3f>
-                                    (&Viewpoint::position)));
+                                    (&Viewpoint::position_)));
         } else if (*itr == supportedInterfaces[5]) {
             viewpointNodeType.addField(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sfstring>
-                                    (&Viewpoint::description)));
+                                    (&Viewpoint::description_)));
         } else if (*itr == supportedInterfaces[6]) {
             viewpointNodeType.addEventOut(
-                supportedInterfaces[6].fieldType,
+                supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sftime>
                                     (&Viewpoint::bindTime)));
         } else if (*itr == supportedInterfaces[7]) {
             viewpointNodeType.addEventOut(
-                supportedInterfaces[7].fieldType,
+                supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<Viewpoint, sfbool>
                                     (&Viewpoint::bound)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -15959,16 +16055,16 @@ namespace {
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
  */
-Viewpoint::Viewpoint(const NodeType & nodeType,
+Viewpoint::Viewpoint(const node_type & nodeType,
                      const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractBase(nodeType, scope),
-    ChildNode(nodeType, scope),
-    ViewpointNode(nodeType, scope),
+    child_node(nodeType, scope),
+    viewpoint_node(nodeType, scope),
     fieldOfView(DEFAULT_FIELD_OF_VIEW),
     jump(true),
-    orientation(rotation(0.0, 0.0, 1.0, 0.0)),
-    position(vec3f(0.0, 0.0, 10.0)),
+    orientation_(rotation(0.0, 0.0, 1.0, 0.0)),
+    position_(vec3f(0.0, 0.0, 10.0)),
     bound(false),
     bindTime(0),
     finalTransformationDirty(true)
@@ -15981,13 +16077,13 @@ Viewpoint::~Viewpoint() throw ()
 {}
 
 /**
- * @brief Get the transformation of the ViewpointNode in the global coordinate
+ * @brief Get the transformation of the viewpoint_node in the global coordinate
  *      system.
  *
- * @return the transformation of the ViewpointNode in the global coordinate
+ * @return the transformation of the viewpoint_node in the global coordinate
  *      system.
  */
-const mat4f & Viewpoint::getTransformation() const throw ()
+const mat4f & Viewpoint::transformation() const throw ()
 {
     this->updateFinalTransformation();
     return this->finalTransformation;
@@ -15995,22 +16091,22 @@ const mat4f & Viewpoint::getTransformation() const throw ()
 
 /**
  * @brief Get the transformation of the user view relative to the
- *      ViewpointNode.
+ *      viewpoint_node.
  *
- * @return the transformation of the user view relative to the ViewpointNode.
+ * @return the transformation of the user view relative to the viewpoint_node.
  */
-const mat4f & Viewpoint::getUserViewTransform() const throw ()
+const mat4f & Viewpoint::user_view_transform() const throw ()
 {
     return this->userViewTransform;
 }
 
 /**
  * @brief Set the transformation of the user view relative to the
- *      ViewpointNode.
+ *      viewpoint_node.
  *
  * @param transform the new transformation.
  */
-void Viewpoint::setUserViewTransform(const mat4f & transform) throw ()
+void Viewpoint::user_view_transform(const mat4f & transform) throw ()
 {
     this->userViewTransform = transform;
 }
@@ -16020,9 +16116,9 @@ void Viewpoint::setUserViewTransform(const mat4f & transform) throw ()
  *
  * @return the description.
  */
-const std::string & Viewpoint::getDescription() const throw ()
+const std::string & Viewpoint::description() const throw ()
 {
-    return this->description.value;
+    return this->description_.value;
 }
 
 /**
@@ -16030,7 +16126,7 @@ const std::string & Viewpoint::getDescription() const throw ()
  *
  * @return the field of view in radians.
  */
-float Viewpoint::getFieldOfView() const throw ()
+float Viewpoint::field_of_view() const throw ()
 {
     return this->fieldOfView.value;
 }
@@ -16048,7 +16144,7 @@ void Viewpoint::getFrustum(VrmlFrustum& frust) const
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Viewpoint::getBVolume() const
+const BVolume * Viewpoint::bvolume() const
 {
     static BSphere * inf_bsphere = 0;
     if (!inf_bsphere) { inf_bsphere = new BSphere(); }
@@ -16060,9 +16156,9 @@ const BVolume * Viewpoint::getBVolume() const
  *
  * @return the orientation.
  */
-const sfrotation & Viewpoint::getOrientation() const
+const sfrotation & Viewpoint::orientation() const
 {
-    return this->orientation;
+    return this->orientation_;
 }
 
 /**
@@ -16070,9 +16166,9 @@ const sfrotation & Viewpoint::getOrientation() const
  *
  * @return the position.
  */
-const sfvec3f & Viewpoint::getPosition() const
+const sfvec3f & Viewpoint::position() const
 {
-    return this->position;
+    return this->position_;
 }
 
 /**
@@ -16082,28 +16178,28 @@ const sfvec3f & Viewpoint::getPosition() const
  */
 void Viewpoint::do_initialize(const double timestamp) throw ()
 {
-    assert(this->getScene());
-    this->getScene()->browser.addViewpoint(*this);
-    assert(dynamic_cast<ViewpointClass *>(&this->nodeType.nodeClass));
+    assert(this->scene());
+    this->scene()->browser.addViewpoint(*this);
+    assert(dynamic_cast<ViewpointClass *>(&this->type._class));
     ViewpointClass & nodeClass =
-            static_cast<ViewpointClass &>(this->nodeType.nodeClass);
+            static_cast<ViewpointClass &>(this->type._class);
     if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
 }
 
 namespace {
 
-    struct AccumulateTransform : std::unary_function<const Node *, void> {
+    struct AccumulateTransform : std::unary_function<const node *, void> {
         explicit AccumulateTransform(mat4f & transform) throw ():
             transform(&transform)
         {}
 
-        void operator()(const Node * node) const throw ()
+        void operator()(const OpenVRML::node * node) const throw ()
         {
             assert(node);
-            const TransformNode * const transformNode = node->toTransform();
+            const transform_node * const transformNode = node->to_transform();
             if (transformNode) {
                 *this->transform =
-                        transformNode->getTransform() * *this->transform;
+                        transformNode->transform() * *this->transform;
             }
         }
 
@@ -16119,8 +16215,8 @@ namespace {
  */
 void Viewpoint::do_relocate() throw (std::bad_alloc)
 {
-    assert(this->getScene());
-    const NodePath path = this->getScene()->browser.findNode(*this);
+    assert(this->scene());
+    const node_path path = this->scene()->browser.findNode(*this);
     assert(!path.empty());
     this->parentTransform = mat4f();
     std::for_each(path.begin(), path.end(),
@@ -16135,8 +16231,8 @@ void Viewpoint::do_relocate() throw (std::bad_alloc)
  */
 void Viewpoint::do_shutdown(const double timestamp) throw ()
 {
-    assert(this->getScene());
-    this->getScene()->browser.removeViewpoint(*this);
+    assert(this->scene());
+    this->scene()->browser.removeViewpoint(*this);
 }
 
 /**
@@ -16153,9 +16249,9 @@ void Viewpoint::processSet_bind(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     const sfbool & bind = dynamic_cast<const sfbool &>(value);
-    assert(dynamic_cast<ViewpointClass *>(&this->nodeType.nodeClass));
+    assert(dynamic_cast<ViewpointClass *>(&this->type._class));
     ViewpointClass & nodeClass =
-            static_cast<ViewpointClass &>(this->nodeType.nodeClass);
+            static_cast<ViewpointClass &>(this->type._class);
     if (bind.value) {
         nodeClass.bind(*this, timestamp);
     } else {
@@ -16177,8 +16273,8 @@ void Viewpoint::processSet_fieldOfView(const field_value & value,
     throw (std::bad_cast)
 {
     this->fieldOfView = dynamic_cast<const sffloat &>(value);
-    this->setModified();
-    this->emitEvent("fieldOfView_changed", this->fieldOfView, timestamp);
+    this->node::modified(true);
+    this->emit_event("fieldOfView_changed", this->fieldOfView, timestamp);
 }
 
 /**
@@ -16195,8 +16291,8 @@ void Viewpoint::processSet_jump(const field_value & value,
     throw (std::bad_cast)
 {
     this->jump = dynamic_cast<const sfbool &>(value);
-    this->setModified();
-    this->emitEvent("jump_changed", this->jump, timestamp);
+    this->node::modified(true);
+    this->emit_event("jump_changed", this->jump, timestamp);
 }
 
 /**
@@ -16212,10 +16308,10 @@ void Viewpoint::processSet_orientation(const field_value & value,
                                        const double timestamp)
     throw (std::bad_cast)
 {
-    this->orientation = dynamic_cast<const sfrotation &>(value);
-    this->setModified();
+    this->orientation_ = dynamic_cast<const sfrotation &>(value);
+    this->node::modified(true);
     this->finalTransformationDirty = true;
-    this->emitEvent("orientation_changed", this->orientation, timestamp);
+    this->emit_event("orientation_changed", this->orientation_, timestamp);
 }
 
 /**
@@ -16231,10 +16327,10 @@ void Viewpoint::processSet_position(const field_value & value,
                                     const double timestamp)
     throw (std::bad_cast)
 {
-    this->position = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
+    this->position_ = dynamic_cast<const sfvec3f &>(value);
+    this->node::modified(true);
     this->finalTransformationDirty = true;
-    this->emitEvent("position_changed", this->position, timestamp);
+    this->emit_event("position_changed", this->position_, timestamp);
 }
 
 void Viewpoint::updateFinalTransformation() const throw ()
@@ -16243,8 +16339,8 @@ void Viewpoint::updateFinalTransformation() const throw ()
         static const vec3f scale(1.0, 1.0, 1.0);
         static const rotation scaleOrientation;
         static const vec3f center;
-        const mat4f & t = mat4f::transformation(this->position.value,
-                                                this->orientation.value,
+        const mat4f & t = mat4f::transformation(this->position_.value,
+                                                this->orientation_.value,
                                                 scale,
                                                 scaleOrientation,
                                                 center);
@@ -16266,7 +16362,7 @@ void Viewpoint::updateFinalTransformation() const throw ()
  * @param browser the Browser associated with this NodeClass.
  */
 VisibilitySensorClass::VisibilitySensorClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -16284,70 +16380,70 @@ VisibilitySensorClass::~VisibilitySensorClass() throw ()
  * @return a NodeTypePtr to a NodeType capable of creating VisibilitySensor
  *      nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by VisibilitySensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-VisibilitySensorClass::createType(const std::string & id,
-                                  const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+VisibilitySensorClass::create_type(const std::string & id,
+                                  const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "center"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfbool_id, "enabled"),
-        NodeInterface(NodeInterface::exposedField, field_value::sfvec3f_id, "size"),
-        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "enterTime"),
-        NodeInterface(NodeInterface::eventOut, field_value::sftime_id, "exitTime"),
-        NodeInterface(NodeInterface::eventOut, field_value::sfbool_id, "isActive")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "center"),
+        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
+        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "size"),
+        node_interface(node_interface::eventout_id, field_value::sftime_id, "enterTime"),
+        node_interface(node_interface::eventout_id, field_value::sftime_id, "exitTime"),
+        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<VisibilitySensor>(*this, id));
     Vrml97NodeTypeImpl<VisibilitySensor> & visibilitySensorNodeType =
             static_cast<Vrml97NodeTypeImpl<VisibilitySensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<VisibilitySensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             visibilitySensorNodeType.addExposedField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &VisibilitySensor::processSet_center,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sfvec3f>
                                     (&VisibilitySensor::center)));
         } else if (*itr == supportedInterfaces[1]) {
             visibilitySensorNodeType.addExposedField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &VisibilitySensor::processSet_enabled,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sfbool>
                                     (&VisibilitySensor::enabled)));
         } else if (*itr == supportedInterfaces[2]) {
             visibilitySensorNodeType.addExposedField(
-                supportedInterfaces[2].fieldType,
+                supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &VisibilitySensor::processSet_size,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sfvec3f>
                                     (&VisibilitySensor::size)));
         } else if (*itr == supportedInterfaces[3]) {
             visibilitySensorNodeType.addEventOut(
-                supportedInterfaces[3].fieldType,
+                supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sftime>
                                     (&VisibilitySensor::enterTime)));
         } else if (*itr == supportedInterfaces[4]) {
             visibilitySensorNodeType.addEventOut(
-                supportedInterfaces[4].fieldType,
+                supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sftime>
                                     (&VisibilitySensor::exitTime)));
         } else if (*itr == supportedInterfaces[5]) {
             visibilitySensorNodeType.addEventOut(
-                supportedInterfaces[5].fieldType,
+                supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<VisibilitySensor, sfbool>
                                     (&VisibilitySensor::active)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -16407,9 +16503,9 @@ VisibilitySensorClass::createType(const std::string & id,
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
  */
-VisibilitySensor::VisibilitySensor(const NodeType & nodeType,
+VisibilitySensor::VisibilitySensor(const node_type & nodeType,
                                    const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope),
     center(vec3f(0.0, 0.0, 0.0)),
     enabled(true),
@@ -16418,7 +16514,7 @@ VisibilitySensor::VisibilitySensor(const NodeType & nodeType,
     enterTime(0.0),
     exitTime(0.0)
 {
-    this->setModified();
+    this->node::modified(true);
 }
 
 /**
@@ -16464,7 +16560,7 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
         // Is the sphere visible? ...
         bool inside = xyz[0][2] < 0.0; // && z > - scene->visLimit()
         if (inside) {
-            NavigationInfo * ni = this->nodeType.nodeClass.browser
+            NavigationInfo * ni = this->type._class.browser
                                     .bindableNavigationInfoTop();
             if (ni && !fpzero(ni->getVisibilityLimit())
                     && xyz[0][2] < -(ni->getVisibilityLimit())) {
@@ -16481,22 +16577,22 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
         // Just became visible
         if (inside && !wasIn) {
             this->active.value = true;
-            this->emitEvent("isActive", this->active, timeNow.value);
+            this->emit_event("isActive", this->active, timeNow.value);
 
             this->enterTime = timeNow;
-            this->emitEvent("enterTime", this->enterTime, timeNow.value);
+            this->emit_event("enterTime", this->enterTime, timeNow.value);
         }
 
         // Check if viewer has left the box
         else if (wasIn && !inside) {
             this->active.value = false;
-            this->emitEvent("isActive", this->active, timeNow.value);
+            this->emit_event("isActive", this->active, timeNow.value);
 
             this->exitTime = timeNow;
-            this->emitEvent("exitTime", this->exitTime, timeNow.value);
+            this->emit_event("exitTime", this->exitTime, timeNow.value);
         }
     } else {
-        this->clearModified();
+        this->node::modified(false);
     }
 }
 
@@ -16513,8 +16609,8 @@ void VisibilitySensor::processSet_center(const field_value & value,
     throw (std::bad_cast)
 {
     this->center = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("center_changed", this->center, timestamp);
+    this->node::modified(true);
+    this->emit_event("center_changed", this->center, timestamp);
 }
 
 /**
@@ -16530,8 +16626,8 @@ void VisibilitySensor::processSet_enabled(const field_value & value,
     throw (std::bad_cast)
 {
     this->enabled = dynamic_cast<const sfbool &>(value);
-    this->setModified();
-    this->emitEvent("enabled_changed", this->enabled, timestamp);
+    this->node::modified(true);
+    this->emit_event("enabled_changed", this->enabled, timestamp);
 }
 
 /**
@@ -16547,8 +16643,8 @@ void VisibilitySensor::processSet_size(const field_value & value,
     throw (std::bad_cast)
 {
     this->size = dynamic_cast<const sfvec3f &>(value);
-    this->setModified();
-    this->emitEvent("size_changed", this->size, timestamp);
+    this->node::modified(true);
+    this->emit_event("size_changed", this->size, timestamp);
 }
 
 
@@ -16564,7 +16660,7 @@ void VisibilitySensor::processSet_size(const field_value & value,
  * @param browser the Browser associated with this NodeClass.
  */
 WorldInfoClass::WorldInfoClass(Browser & browser):
-    NodeClass(browser)
+    node_class(browser)
 {}
 
 /**
@@ -16581,38 +16677,43 @@ WorldInfoClass::~WorldInfoClass() throw ()
  *
  * @return a NodeTypePtr to a NodeType capable of creating WorldInfo nodes.
  *
- * @exception UnsupportedInterface  if @p interfaces includes an interface not
+ * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by WorldInfoClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr WorldInfoClass::createType(const std::string & id,
-                                        const NodeInterfaceSet & interfaces)
-    throw (UnsupportedInterface, std::bad_alloc)
+const NodeTypePtr
+WorldInfoClass::create_type(const std::string & id,
+                            const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    static const NodeInterface supportedInterfaces[] = {
-        NodeInterface(NodeInterface::field, field_value::mfstring_id, "info"),
-        NodeInterface(NodeInterface::field, field_value::sfstring_id, "title")
+    static const node_interface supportedInterfaces[] = {
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "info"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "title")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<WorldInfo>(*this, id));
     Vrml97NodeTypeImpl<WorldInfo> & worldInfoNodeType =
             static_cast<Vrml97NodeTypeImpl<WorldInfo> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<WorldInfo>::NodeFieldPtrPtr NodeFieldPtrPtr;
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+    for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
         if (*itr == supportedInterfaces[0]) {
             worldInfoNodeType.addField(
-                supportedInterfaces[0].fieldType,
+                supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<WorldInfo, mfstring>
                                     (&WorldInfo::info)));
         } else if (*itr == supportedInterfaces[1]) {
             worldInfoNodeType.addField(
-                supportedInterfaces[1].fieldType,
+                supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 NodeFieldPtrPtr(new NodeFieldPtrImpl<WorldInfo, sfstring>
                                     (&WorldInfo::title)));
         } else {
-            throw UnsupportedInterface("Invalid interface.");
+            throw unsupported_interface("Invalid interface.");
         }
     }
     return nodeType;
@@ -16648,9 +16749,9 @@ const NodeTypePtr WorldInfoClass::createType(const std::string & id,
  * @param nodeType      the NodeType associated with the instance.
  * @param scope         the Scope that the new node will belong to.
  */
-WorldInfo::WorldInfo(const NodeType & nodeType,
+WorldInfo::WorldInfo(const node_type & nodeType,
                      const ScopePtr & scope):
-    Node(nodeType, scope),
+    node(nodeType, scope),
     AbstractChild(nodeType, scope)
 {}
 

@@ -567,12 +567,12 @@ inline bool isHexDigit(const char c)
 }
 
 struct interface_id_equals_ :
-        std::unary_function<OpenVRML::NodeInterface, bool> {
+        std::unary_function<OpenVRML::node_interface, bool> {
     explicit interface_id_equals_(const std::string & interface_id):
         interface_id(&interface_id)
     {}
 
-    bool operator()(const OpenVRML::NodeInterface & interface) const
+    bool operator()(const OpenVRML::node_interface & interface) const
     {
         return interface.id == *this->interface_id;
     }
@@ -709,10 +709,11 @@ proto[OpenVRML::Browser & browser,
             //
             // PROTO's implicitly introduce a new node type as well...
             //
+            const node_interface_set & interfaces =
+                static_cast<ProtoNodeClass &>(*nodeClass)
+                    .protoNodeType.interfaces();
             const NodeTypePtr nodeType =
-                    nodeClass->createType(id->getText(),
-                                          static_cast<ProtoNodeClass &>(*nodeClass)
-                                              .protoNodeType.getInterfaces());
+                nodeClass->create_type(id->getText(), interfaces);
             assert(nodeType);
             assert(scope);
             scope->addNodeType(nodeType);
@@ -722,21 +723,21 @@ proto[OpenVRML::Browser & browser,
 protoInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                           OpenVRML::ProtoNodeClass & proto]
 {
-    using OpenVRML::NodeInterface;
+    using OpenVRML::node_interface;
     using antlr::SemanticException;
 
-    NodeInterface::Type it(NodeInterface::invalidType);
+    node_interface::type_id it(node_interface::invalid_type_id);
     OpenVRML::field_value::type_id ft(field_value::invalid_type_id);
     OpenVRML::FieldValuePtr fv;
 }
     : it=eventInterfaceType ft=fieldType id0:ID {
             try {
                 switch (it) {
-                case NodeInterface::eventIn:
+                case node_interface::eventin_id:
                     proto.addEventIn(ft, id0->getText());
                     break;
 
-                case NodeInterface::eventOut:
+                case node_interface::eventout_id:
                     proto.addEventOut(ft, id0->getText());
                     break;
 
@@ -755,11 +756,11 @@ protoInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
             assert(fv);
             try {
                 switch (it) {
-                case NodeInterface::field:
+                case node_interface::field_id:
                     proto.addField(id1->getText(), fv);
                     break;
 
-                case NodeInterface::exposedField:
+                case node_interface::exposedfield_id:
                     proto.addExposedField(id1->getText(), fv);
                     break;
 
@@ -775,14 +776,16 @@ protoInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
         }
     ;
 
-eventInterfaceType returns [OpenVRML::NodeInterface::Type it = OpenVRML::NodeInterface::invalidType]
-    :   KEYWORD_EVENTIN  { it = OpenVRML::NodeInterface::eventIn; }
-    |   KEYWORD_EVENTOUT { it = OpenVRML::NodeInterface::eventOut; }
+eventInterfaceType returns [OpenVRML::node_interface::type_id it = OpenVRML::node_interface::invalid_type_id]
+    :   KEYWORD_EVENTIN  { it = OpenVRML::node_interface::eventin_id; }
+    |   KEYWORD_EVENTOUT { it = OpenVRML::node_interface::eventout_id; }
     ;
 
-fieldInterfaceType returns [OpenVRML::NodeInterface::Type it = OpenVRML::NodeInterface::invalidType]
-    :   KEYWORD_FIELD        { it = OpenVRML::NodeInterface::field; }
-    |   KEYWORD_EXPOSEDFIELD { it = OpenVRML::NodeInterface::exposedField; }
+fieldInterfaceType
+returns [OpenVRML::node_interface::type_id it =
+            OpenVRML::node_interface::invalid_type_id]
+    :   KEYWORD_FIELD        { it = OpenVRML::node_interface::field_id; }
+    |   KEYWORD_EXPOSEDFIELD { it = OpenVRML::node_interface::exposedfield_id; }
     ;
 
 protoBody[const OpenVRML::ScopePtr & scope,
@@ -827,7 +830,7 @@ options { defaultErrorHandler=false; }
 
 externproto[OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope]
 {
-    OpenVRML::NodeInterfaceSet interfaces;
+    OpenVRML::node_interface_set interfaces;
     OpenVRML::mfstring urlList;
     OpenVRML::NodeTypePtr nodeType;
 }
@@ -838,8 +841,8 @@ externproto[OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope]
             	Browser::NodeClassMap::const_iterator pos =
                         browser.nodeClassMap.find(urlList.value[i]);
                 if (pos != browser.nodeClassMap.end()) {
-                    nodeType = pos->second->createType(id->getText(),
-                                                       interfaces);
+                    nodeType = pos->second->create_type(id->getText(),
+                                                        interfaces);
                     break;
                 }
             }
@@ -855,16 +858,16 @@ externproto[OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope]
         }
     ;
 
-externInterfaceDeclaration[OpenVRML::NodeInterfaceSet & interfaces]
+externInterfaceDeclaration[OpenVRML::node_interface_set & interfaces]
         {
-            using OpenVRML::NodeInterface;
+            using OpenVRML::node_interface;
             using OpenVRML::field_value;
             using antlr::SemanticException;
-            NodeInterface::Type it(NodeInterface::invalidType);
+            node_interface::type_id it(node_interface::invalid_type_id);
             field_value::type_id ft(field_value::invalid_type_id);
         }
     :   it=interfaceType ft=fieldType id:ID {
-            const NodeInterface interface(it, ft, id->getText());
+            const node_interface interface(it, ft, id->getText());
             try {
                 interfaces.add(interface);
             } catch (std::invalid_argument & ex) {
@@ -877,7 +880,7 @@ externInterfaceDeclaration[OpenVRML::NodeInterfaceSet & interfaces]
     ;
 
 interfaceType
-returns [OpenVRML::NodeInterface::Type it = OpenVRML::NodeInterface::invalidType]
+returns [OpenVRML::node_interface::type_id it = OpenVRML::node_interface::invalid_type_id]
     : it=eventInterfaceType
     | it=fieldInterfaceType
     ;
@@ -898,29 +901,33 @@ routeStatement[const OpenVRML::Scope & scope]
         KEYWORD_TO toNodeId:ID PERIOD toInterfaceId:ID
         {
             using OpenVRML::field_value;
-            using OpenVRML::Node;
+            using OpenVRML::node;
             using OpenVRML::NodePtr;
             using antlr::SemanticException;
 
-            Node * const fromNode = scope.findNode(fromNodeId->getText());
+            node * const fromNode = scope.findNode(fromNodeId->getText());
             if (!fromNode) {
-                throw SemanticException("Node \"" + fromNodeId->getText() + "\" has not been defined in this scope.",
+                throw SemanticException("Node \"" + fromNodeId->getText()
+                                        + "\" has not been defined in this "
+                                        "scope.",
                                         this->uri,
                                         fromNodeId->getLine(),
                                         fromNodeId->getColumn());
             }
 
-            Node * const toNode = scope.findNode(toNodeId->getText());
+            node * const toNode = scope.findNode(toNodeId->getText());
             if (!toNode) {
-                throw SemanticException("Node \"" + toNodeId->getText() + "\" has not been defined in this scope.",
+                throw SemanticException("Node \"" + toNodeId->getText()
+                                        + "\" has not been defined in this "
+                                        "scope.",
                                         this->uri,
                                         toNodeId->getLine(),
                                         toNodeId->getColumn());
             }
 
             try {
-                fromNode->addRoute(fromInterfaceId->getText(),
-       	                           NodePtr(toNode), toInterfaceId->getText());
+                fromNode->add_route(fromInterfaceId->getText(),
+                                    NodePtr(toNode), toInterfaceId->getText());
             } catch (std::runtime_error & ex) {
                 throw SemanticException(ex.what(),
                                         this->uri,
@@ -945,9 +952,9 @@ options { defaultErrorHandler = false; }
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
             n.reset(new ScriptNode(browser.scriptNodeClass, scope));
-            if (!nodeId.empty()) { n->setId(nodeId); }
+            if (!nodeId.empty()) { n->id(nodeId); }
 
-            ScriptNode * const scriptNode = n->toScript();
+            ScriptNode * const scriptNode = n->to_script();
             assert(scriptNode);
         } LBRACE (
             nodeBodyElement[scope, *n]
@@ -957,20 +964,21 @@ options { defaultErrorHandler = false; }
     | nodeTypeId:ID {
             nodeType = scope->findType(nodeTypeId->getText());
             if (!nodeType) {
-                throw SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".",
+                throw SemanticException("Unknown node type \""
+                                        + nodeTypeId->getText() + "\".",
                                         this->uri,
                                         nodeTypeId->getLine(),
                                         nodeTypeId->getColumn());
             }
 
-            n = NodePtr(nodeType->createNode(scope));
+            n = NodePtr(nodeType->create_node(scope));
 
-            if (!nodeId.empty()) { n->setId(nodeId); }
+            if (!nodeId.empty()) { n->id(nodeId); }
         } LBRACE (nodeBodyElement[scope, *n])* RBRACE
     ;
 
 nodeBodyElement[const OpenVRML::ScopePtr & scope,
-                OpenVRML::Node & node]
+                OpenVRML::node & node]
 {
     using OpenVRML::field_value;
     using antlr::SemanticException;
@@ -978,48 +986,52 @@ nodeBodyElement[const OpenVRML::ScopePtr & scope,
     FieldValuePtr fv;
 }
     : id:ID {
-            ft = node.nodeType.hasField(id->getText());
+            ft = node.type.has_field(id->getText());
             if (ft == field_value::invalid_type_id) {
-                ft = node.nodeType.hasExposedField(id->getText());
+                ft = node.type.has_exposedfield(id->getText());
                 if (ft == field_value::invalid_type_id) {
-                    throw SemanticException(node.nodeType.id + " node has no field or exposedField \"" + id->getText() + "\"",
+                    throw SemanticException(node.type.id + " node has no "
+                                            "field or exposedField \""
+                                            + id->getText() + "\"",
                                             this->uri,
                                             id->getLine(),
                                             id->getColumn());
                 }
             }
         }
-        fv=fieldValue[node.nodeType.nodeClass.browser, scope, ft] {
+        fv=fieldValue[node.type._class.browser, scope, ft] {
             assert(fv);
-            node.setField(id->getText(), *fv);
+            node.field(id->getText(), *fv);
         }
     |   routeStatement[*scope]
-    |   protoStatement[node.nodeType.nodeClass.browser, scope]
+    |   protoStatement[node.type._class.browser, scope]
     ;
 
 scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                            OpenVRML::ScriptNode & node]
     {
-        using OpenVRML::NodeInterface;
+        using OpenVRML::node_interface;
         using OpenVRML::field_value;
         using antlr::SemanticException;
-        NodeInterface::Type it(NodeInterface::invalidType);
+        node_interface::type_id it(node_interface::invalid_type_id);
         field_value::type_id ft(field_value::invalid_type_id);
     }
     : it=eventInterfaceType ft=fieldType id:ID {
-            const NodeInterfaceSet::const_iterator pos =
-                    node.nodeType.getInterfaces().findInterface(id->getText());
-            if (pos != node.nodeType.getInterfaces().end()) {
-                throw SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.",
+            const node_interface_set::const_iterator pos =
+                    node.type.interfaces().find(id->getText());
+            if (pos != node.type.interfaces().end()) {
+                throw SemanticException("Interface \"" + id->getText()
+                                        + "\" already declared for Script "
+                                        "node.",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
             }
             switch (it) {
-            case NodeInterface::eventIn:
+            case node_interface::eventin_id:
                 node.addEventIn(ft, id->getText());
                 break;
-            case NodeInterface::eventOut:
+            case node_interface::eventout_id:
                 node.addEventOut(ft, id->getText());
                 break;
             default:
@@ -1040,13 +1052,15 @@ scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
     FieldValuePtr fv;
 }
     : KEYWORD_FIELD ft=fieldType id:ID
-        fv=fieldValue[node.nodeType.nodeClass.browser, scope, ft] {
+        fv=fieldValue[node.type._class.browser, scope, ft] {
             assert(fv);
-            const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
-            const NodeInterfaceSet::const_iterator pos =
-                    interfaces.findInterface(id->getText());
+            const node_interface_set & interfaces = node.type.interfaces();
+            const node_interface_set::const_iterator pos =
+                    interfaces.find(id->getText());
             if (pos != interfaces.end()) {
-                throw SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.",
+                throw SemanticException("Interface \"" + id->getText()
+                                        + "\" already declared for Script "
+                                        "node.",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
@@ -1070,9 +1084,9 @@ options { defaultErrorHandler=false; }
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
             n.reset(new ScriptNode(proto.browser.scriptNodeClass, scope));
-            if (!nodeId.empty()) { n->setId(nodeId); }
+            if (!nodeId.empty()) { n->id(nodeId); }
 
-            ScriptNode * const scriptNode = n->toScript();
+            ScriptNode * const scriptNode = n->to_script();
             assert(scriptNode);
         }
         LBRACE (
@@ -1083,20 +1097,21 @@ options { defaultErrorHandler=false; }
     | nodeTypeId:ID {
             nodeType = scope->findType(nodeTypeId->getText());
             if (!nodeType) {
-                throw SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".",
+                throw SemanticException("Unknown node type \""
+                                        + nodeTypeId->getText() + "\".",
                                         this->uri,
                                         nodeTypeId->getLine(),
                                         nodeTypeId->getColumn());
             }
-            n = nodeType->createNode(scope);
-            if (!nodeId.empty()) { n->setId(nodeId); }
+            n = nodeType->create_node(scope);
+            if (!nodeId.empty()) { n->id(nodeId); }
         }
         LBRACE (protoNodeBodyElement[proto, scope, *n])* RBRACE
     ;
 
 protoNodeBodyElement[OpenVRML::ProtoNodeClass & proto,
                      const OpenVRML::ScopePtr & scope,
-                     OpenVRML::Node & node]
+                     OpenVRML::node & node]
 {
     using OpenVRML::field_value;
     using antlr::SemanticException;
@@ -1104,13 +1119,15 @@ protoNodeBodyElement[OpenVRML::ProtoNodeClass & proto,
     field_value::type_id ft(field_value::invalid_type_id);
     FieldValuePtr fv;
 }
-    : { node.nodeType.hasField(LT(1)->getText())
-        || node.nodeType.hasExposedField(LT(1)->getText()) }? id:ID {
-            ft = node.nodeType.hasField(id->getText());
+    : { node.type.has_field(LT(1)->getText())
+        || node.type.has_exposedfield(LT(1)->getText()) }? id:ID {
+            ft = node.type.has_field(id->getText());
             if (ft == field_value::invalid_type_id) {
-                ft = node.nodeType.hasExposedField(id->getText());
+                ft = node.type.has_exposedfield(id->getText());
                 if (ft == field_value::invalid_type_id) {
-                    throw SemanticException(node.nodeType.id + " node has no field or exposedField \"" + id->getText() + "\".",
+                    throw SemanticException(node.type.id + " node has no "
+                                            "field or exposedField \""
+                                            + id->getText() + "\".",
                                             this->uri,
                                             id->getLine(),
                                             id->getColumn());
@@ -1120,7 +1137,7 @@ protoNodeBodyElement[OpenVRML::ProtoNodeClass & proto,
             (
                 fv=protoFieldValue[proto, scope, ft] {
                     assert(fv);
-                    node.setField(id->getText(), *fv);
+                    node.field(id->getText(), *fv);
                 }
             )
             | isStatement[proto, node, id->getText()]
@@ -1130,7 +1147,7 @@ protoNodeBodyElement[OpenVRML::ProtoNodeClass & proto,
     | protoStatement[proto.browser, scope]
     ;
 
-isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::Node & node,
+isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::node & node,
             std::string const & nodeInterfaceId]
 {
     using antlr::SemanticException;
@@ -1142,7 +1159,7 @@ isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::Node & node,
                 throw;
             } catch (std::runtime_error & ex) {
                 //
-                // ex should be UnsupportedInterface, NodeInterfaceTypeMismatch,
+                // ex should be UnsupportedInterface, node_interfaceTypeMismatch,
                 // or FieldValueTypeMismatch.
                 //
                 throw SemanticException(ex.what(),
@@ -1157,26 +1174,28 @@ protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                                 const OpenVRML::ScopePtr & scope,
                                 OpenVRML::ScriptNode & node]
 {
-    using OpenVRML::NodeInterface;
+    using OpenVRML::node_interface;
     using OpenVRML::field_value;
     using antlr::SemanticException;
-    NodeInterface::Type it(NodeInterface::invalidType);
+    node_interface::type_id it(node_interface::invalid_type_id);
     field_value::type_id ft(field_value::invalid_type_id);
 }
     : it=eventInterfaceType ft=fieldType id:ID {
-            const NodeInterfaceSet::const_iterator pos =
-                    node.nodeType.getInterfaces().findInterface(id->getText());
-            if (pos != node.nodeType.getInterfaces().end()) {
-                throw SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.",
+            const node_interface_set::const_iterator pos =
+                    node.type.interfaces().find(id->getText());
+            if (pos != node.type.interfaces().end()) {
+                throw SemanticException("Interface \"" + id->getText()
+                                        + "\" already declared for Script "
+                                        "node.",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
             }
             switch (it) {
-            case NodeInterface::eventIn:
+            case node_interface::eventin_id:
                 node.addEventIn(ft, id->getText());
                 break;
-            case NodeInterface::eventOut:
+            case node_interface::eventout_id:
                 node.addEventOut(ft, id->getText());
                 break;
             default:
@@ -1201,14 +1220,16 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
             //
             // We need to check if the fieldId is an exact match for any
             // existing interface for the Script node; so, we don't use
-            // NodeInterfaceSet::findInterface.
+            // node_interface_set::findInterface.
             //
-            const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
-            const NodeInterfaceSet::const_iterator pos =
+            const node_interface_set & interfaces = node.type.interfaces();
+            const node_interface_set::const_iterator pos =
                     find_if(interfaces.begin(), interfaces.end(),
                             interface_id_equals_(id->getText()));
             if (pos != interfaces.end()) {
-                throw SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.",
+                throw SemanticException("Interface \"" + id->getText()
+                                        + "\" already declared for Script "
+                                        "node.",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
@@ -1229,7 +1250,9 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                     ProtoNodeClass::DefaultValueMap::const_iterator pos =
                             proto.defaultValueMap.find(protoFieldId->getText());
                     if (pos == proto.defaultValueMap.end()) {
-                        throw SemanticException("Proto has no field \"" + protoFieldId->getText() + "\".",
+                        throw SemanticException("Proto has no field \""
+                                                + protoFieldId->getText()
+                                                + "\".",
                                                 this->uri,
                                                 protoFieldId->getLine(),
                                                 protoFieldId->getColumn());

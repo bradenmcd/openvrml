@@ -52,35 +52,36 @@ namespace OpenVRML {
     };
 
 
-    class OPENVRML_SCOPE ScriptNodeClass : public NodeClass {
+    class OPENVRML_SCOPE ScriptNodeClass : public node_class {
     public:
         ScriptNodeClass(Browser & browser);
         virtual ~ScriptNodeClass() throw ();
 
-        virtual const NodeTypePtr createType(const std::string & id,
-                                             const NodeInterfaceSet &)
-                throw ();
+        virtual const NodeTypePtr
+        create_type(const std::string & id,
+                    const node_interface_set & interfaces)
+            throw ();
     };
 
 
-    class OPENVRML_SCOPE ScriptNode : public ChildNode {
+    class OPENVRML_SCOPE ScriptNode : public child_node {
     public:
         typedef std::map<std::string, FieldValuePtr> FieldValueMap;
-        typedef std::map<std::string, PolledEventOutValue> EventOutValueMap;
+        typedef std::map<std::string, polled_eventout_value> EventOutValueMap;
 
     private:
-        class ScriptNodeType : public NodeType {
-            NodeInterfaceSet interfaces;
+        class ScriptNodeType : public node_type {
+            node_interface_set interfaces_;
 
         public:
             ScriptNodeType(ScriptNodeClass & nodeClass);
             virtual ~ScriptNodeType() throw ();
 
-            void addInterface(const NodeInterface & interface)
+            void addInterface(const node_interface & interface)
                     throw (std::invalid_argument);
 
-            virtual const NodeInterfaceSet & getInterfaces() const throw ();
-            virtual const NodePtr createNode(const ScopePtr & scope) const
+            virtual const node_interface_set & interfaces() const throw ();
+            virtual const NodePtr create_node(const ScopePtr & scope) const
                     throw (std::bad_alloc);
         };
 
@@ -114,13 +115,13 @@ namespace OpenVRML {
         void update(double timestamp);
 
         void setEventOut(const std::string & id, const field_value & value)
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
 
         const FieldValueMap & getFieldValueMap() const throw ();
         const EventOutValueMap & getEventOutValueMap() const throw ();
 
-        virtual const ScriptNode * toScript() const throw ();
-        virtual ScriptNode * toScript() throw ();
+        virtual const ScriptNode * to_script() const throw ();
+        virtual ScriptNode * to_script() throw ();
 
     private:
         Script * createScript();
@@ -129,18 +130,18 @@ namespace OpenVRML {
         void assignWithSelfRefCheck(const mfnode &, mfnode &) const throw ();
 
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
-        virtual void do_setField(const std::string & id,
-                                 const field_value & value)
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        virtual const field_value & do_getField(const std::string & id) const
-            throw (UnsupportedInterface);
-        virtual void do_processEvent(const std::string & id,
-                                     const field_value & value,
-                                     double timestamp)
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        virtual void do_field(const std::string & id,
+                              const field_value & value)
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+        virtual const field_value & do_field(const std::string & id) const
+            throw (unsupported_interface);
+        virtual void do_process_event(const std::string & id,
+                                      const field_value & value,
+                                      double timestamp)
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         virtual const field_value &
-        do_getEventOut(const std::string & id) const
-            throw (UnsupportedInterface);
+        do_eventout(const std::string & id) const
+            throw (unsupported_interface);
         virtual void do_shutdown(double timestamp) throw ();
     };
 

@@ -519,8 +519,8 @@ double ViewerOpenGL::getFrameRate()
 
 void ViewerOpenGL::resetUserNavigation()
 {
-    ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
-    activeViewpoint.setUserViewTransform(mat4f());
+    viewpoint_node & activeViewpoint = this->browser.getActiveViewpoint();
+    activeViewpoint.user_view_transform(mat4f());
 
     this->curquat = quatf(trackball(0.0, 0.0, 0.0, 0.0));
     this->d_rotationChanged = true;
@@ -531,8 +531,8 @@ void ViewerOpenGL::resetUserNavigation()
 void ViewerOpenGL::getUserNavigation(mat4f & M)
 {
     // The Matrix M should be a unit matrix
-    ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
-    M = activeViewpoint.getUserViewTransform() * M;
+    viewpoint_node & activeViewpoint = this->browser.getActiveViewpoint();
+    M = activeViewpoint.user_view_transform() * M;
 }
 
 namespace {
@@ -2746,7 +2746,8 @@ void ViewerOpenGL::setMaterialMode (int textureComponents,
 
 }
 
-void ViewerOpenGL::setSensitive(Node * object) {
+void ViewerOpenGL::setSensitive(node * object)
+{
     if (object) {
         // should make this dynamic...
         if (this->d_nSensitive == MAXSENSITIVE) {
@@ -3150,10 +3151,10 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
     this->lastquat = quatf(rot);
     if (fpzero(rot.angle())) { return; }
 
-    ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
-    const mat4f & viewpointTransformation = activeViewpoint.getTransformation();
+    viewpoint_node & activeViewpoint = this->browser.getActiveViewpoint();
+    const mat4f & viewpointTransformation = activeViewpoint.transformation();
     const mat4f & currentUserViewTransform =
-            activeViewpoint.getUserViewTransform();
+            activeViewpoint.user_view_transform();
 
     mat4f oldCameraTransform =
             currentUserViewTransform * viewpointTransformation;
@@ -3173,7 +3174,7 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
     const mat4f newCameraTransform =
             prevOrientation * (t * (r * viewpointTransformation.inverse()));
 
-    activeViewpoint.setUserViewTransform(newCameraTransform);
+    activeViewpoint.user_view_transform(newCameraTransform);
 
     mat4f rotationMatrix;
     glGetFloatv(GL_MODELVIEW_MATRIX, &rotationMatrix[0][0]);
@@ -3192,9 +3193,9 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
 void ViewerOpenGL::step(float x, float y, float z)
 {
     mat4f t = mat4f::translation(vec3f(x, y, z));
-    ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
+    viewpoint_node & activeViewpoint = this->browser.getActiveViewpoint();
     activeViewpoint
-            .setUserViewTransform(t * activeViewpoint.getUserViewTransform());
+            .user_view_transform(t * activeViewpoint.user_view_transform());
     wsPostRedraw();
 }
 
@@ -3233,9 +3234,9 @@ void ViewerOpenGL::zoom(float z)
     dz *= dist;
     const vec3f translation(dx, dy, dz);
     mat4f t = mat4f::translation(translation);
-    ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
-    const mat4f & userViewTransform = activeViewpoint.getUserViewTransform();
-    activeViewpoint.setUserViewTransform(t * userViewTransform);
+    viewpoint_node & activeViewpoint = this->browser.getActiveViewpoint();
+    const mat4f & userViewTransform = activeViewpoint.user_view_transform();
+    activeViewpoint.user_view_transform(t * userViewTransform);
     wsPostRedraw();
 }
 
@@ -3294,18 +3295,18 @@ void ViewerOpenGL::handleKey(int key)
     //
     case KEY_PAGE_DOWN:
         {
-            ViewpointNode & currentViewpoint =
+            viewpoint_node & currentViewpoint =
                     this->browser.getActiveViewpoint();
-            const list<ViewpointNode *> & viewpoints =
+            const list<viewpoint_node *> & viewpoints =
                     this->browser.getViewpoints();
-            list<ViewpointNode *>::const_iterator pos =
+            list<viewpoint_node *>::const_iterator pos =
                     find(viewpoints.begin(), viewpoints.end(),
                          &currentViewpoint);
             if (pos != viewpoints.end()) {
                 ++pos;
                 if (pos == viewpoints.end()) { pos = viewpoints.begin(); }
-                (*pos)->processEvent("set_bind", sfbool(true),
-                                     Browser::getCurrentTime());
+                (*pos)->process_event("set_bind", sfbool(true),
+                                      Browser::getCurrentTime());
             }
         }
         wsPostRedraw();
@@ -3313,11 +3314,11 @@ void ViewerOpenGL::handleKey(int key)
 
     case KEY_PAGE_UP:
         {
-            ViewpointNode & currentViewpoint =
+            viewpoint_node & currentViewpoint =
                     this->browser.getActiveViewpoint();
-            const list<ViewpointNode *> & viewpoints =
+            const list<viewpoint_node *> & viewpoints =
                     this->browser.getViewpoints();
-            list<ViewpointNode *>::const_iterator pos =
+            list<viewpoint_node *>::const_iterator pos =
                     find(viewpoints.begin(), viewpoints.end(),
                          &currentViewpoint);
             if (pos != viewpoints.end()) {
@@ -3325,8 +3326,8 @@ void ViewerOpenGL::handleKey(int key)
                     pos = viewpoints.end();
                 }
                 --pos;
-                (*pos)->processEvent("set_bind", sfbool(true),
-                                     Browser::getCurrentTime());
+                (*pos)->process_event("set_bind", sfbool(true),
+                                      Browser::getCurrentTime());
             }
         }
         wsPostRedraw();

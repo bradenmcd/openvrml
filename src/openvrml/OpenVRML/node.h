@@ -38,167 +38,172 @@
 
 namespace OpenVRML {
 
-    class OPENVRML_SCOPE NodeInterface {
+    class OPENVRML_SCOPE node_interface {
     public:
-        enum Type {
-            invalidType,
-            eventIn,
-            eventOut,
-            exposedField,
-            field
+        enum type_id {
+            invalid_type_id,
+            eventin_id,
+            eventout_id,
+            exposedfield_id,
+            field_id
         };
 
-        Type type;
-        field_value::type_id fieldType;
+        type_id type;
+        field_value::type_id field_type;
         std::string id;
 
-        NodeInterface(Type type,
-                      field_value::type_id fieldType,
-                      const std::string & id);
+        node_interface(type_id type,
+                       field_value::type_id field_type,
+                       const std::string & id);
     };
 
     std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             NodeInterface::Type type);
+                                             node_interface::type_id type);
     std::istream & OPENVRML_SCOPE operator>>(std::istream & in,
-                                             NodeInterface::Type & type);
+                                             node_interface::type_id & type);
 
-    inline bool operator==(const NodeInterface & lhs,
-                           const NodeInterface & rhs)
+    inline bool operator==(const node_interface & lhs,
+                           const node_interface & rhs)
         throw ()
     {
         return lhs.type == rhs.type
-                && lhs.fieldType == rhs.fieldType
-                && lhs.id == rhs.id;
+            && lhs.field_type == rhs.field_type
+            && lhs.id == rhs.id;
     }
 
-    inline bool operator!=(const NodeInterface & lhs,
-                           const NodeInterface & rhs)
+    inline bool operator!=(const node_interface & lhs,
+                           const node_interface & rhs)
         throw ()
     {
         return !(lhs == rhs);
     }
 
-    class NodeType;
+    class node_type;
 
-    class OPENVRML_SCOPE UnsupportedInterface : public std::runtime_error {
+    class OPENVRML_SCOPE unsupported_interface : public std::runtime_error {
     public:
-        explicit UnsupportedInterface(const std::string & message);
-        UnsupportedInterface(const NodeType & nodeType,
-                             const std::string & interfaceId);
-        UnsupportedInterface(const NodeType & nodeType,
-                             NodeInterface::Type interfaceType,
-                             const std::string & interfaceId);
-        virtual ~UnsupportedInterface() throw ();
+        explicit unsupported_interface(const std::string & message);
+        unsupported_interface(const node_type & type,
+                              const std::string & interface_id);
+        unsupported_interface(const node_type & type,
+                              node_interface::type_id interface_type,
+                              const std::string & interface_id);
+        virtual ~unsupported_interface() throw ();
     };
 
 
-    class OPENVRML_SCOPE NodeInterfaceSet {
-        struct IdLess :
-                std::binary_function<NodeInterface, NodeInterface, bool> {
-            bool operator()(const NodeInterface & lhs,
-                            const NodeInterface & rhs) const
+    class OPENVRML_SCOPE node_interface_set {
+        struct id_less :
+                std::binary_function<node_interface, node_interface, bool> {
+            bool operator()(const node_interface & lhs,
+                            const node_interface & rhs) const
             {
                 return lhs.id < rhs.id;
             }
         };
 
-        std::set<NodeInterface, IdLess> nodeInterfaceSet;
+        std::set<node_interface, id_less> interfaces;
 
     public:
-        typedef std::set<NodeInterface, IdLess>::const_iterator const_iterator;
+        typedef std::set<node_interface, id_less>::const_iterator
+            const_iterator;
 
-        void add(const NodeInterface & nodeInterface)
-                throw (std::invalid_argument, std::bad_alloc);
+        void add(const node_interface & interface)
+            throw (std::invalid_argument, std::bad_alloc);
         const_iterator begin() const throw ();
         const_iterator end() const throw ();
-        const_iterator findInterface(const std::string & id) const throw ();
+        const_iterator find(const std::string & id) const throw ();
     };
 
-    inline NodeInterfaceSet::const_iterator NodeInterfaceSet::begin() const
+    inline node_interface_set::const_iterator node_interface_set::begin() const
         throw ()
     {
-        return this->nodeInterfaceSet.begin();
+        return this->interfaces.begin();
     }
 
-    inline NodeInterfaceSet::const_iterator NodeInterfaceSet::end() const
+    inline node_interface_set::const_iterator node_interface_set::end() const
         throw ()
     {
-        return this->nodeInterfaceSet.end();
+        return this->interfaces.end();
     }
 
 
     class Browser;
     class Viewer;
-    class ViewpointNode;
+    class viewpoint_node;
 
-    class OPENVRML_SCOPE NodeClass {
+    class OPENVRML_SCOPE node_class {
     public:
         Browser & browser;
 
-        virtual ~NodeClass() throw () = 0;
-        virtual void initialize(ViewpointNode * initialViewpoint,
+        virtual ~node_class() throw () = 0;
+        virtual void initialize(viewpoint_node * initial_viewpoint,
                                 double time) throw ();
         virtual void render(Viewer & viewer) throw ();
-        virtual const NodeTypePtr createType(const std::string & id,
-                                             const NodeInterfaceSet & interfaces)
-            throw (UnsupportedInterface, std::bad_alloc) = 0;
+        virtual const NodeTypePtr
+        create_type(const std::string & id,
+                    const node_interface_set & interfaces)
+            throw (unsupported_interface, std::bad_alloc) = 0;
 
     protected:
-        explicit NodeClass(Browser & browser) throw ();
+        explicit node_class(Browser & browser) throw ();
     };
 
-    class OPENVRML_SCOPE NodeType {
+    class OPENVRML_SCOPE node_type {
     public:
-        NodeClass & nodeClass;
+        node_class & _class;
         const std::string id;
 
-        virtual ~NodeType() throw () = 0;
+        virtual ~node_type() throw () = 0;
 
-        field_value::type_id hasEventIn(const std::string & id) const throw ();
-        field_value::type_id hasEventOut(const std::string & id) const
+        field_value::type_id has_eventin(const std::string & id) const
             throw ();
-        field_value::type_id hasField(const std::string & id) const throw ();
-        field_value::type_id hasExposedField(const std::string & id) const
+        field_value::type_id has_eventout(const std::string & id) const
+            throw ();
+        field_value::type_id has_field(const std::string & id) const
+            throw ();
+        field_value::type_id has_exposedfield(const std::string & id) const
             throw ();
 
-        virtual const NodeInterfaceSet & getInterfaces() const throw () = 0;
-        virtual const NodePtr createNode(const ScopePtr & scope) const
+        virtual const node_interface_set & interfaces() const throw () = 0;
+        virtual const NodePtr create_node(const ScopePtr & scope) const
             throw (std::bad_alloc) = 0;
 
     protected:
-        NodeType(NodeClass & nodeClass, const std::string & id)
+        node_type(node_class & _class, const std::string & id)
             throw (std::bad_alloc);
     };
 
 
-    class OPENVRML_SCOPE FieldValueTypeMismatch : public std::runtime_error {
+    class OPENVRML_SCOPE field_value_type_mismatch :
+        public std::runtime_error {
     public:
-        FieldValueTypeMismatch();
-        virtual ~FieldValueTypeMismatch() throw ();
+        field_value_type_mismatch();
+        virtual ~field_value_type_mismatch() throw ();
     };
 
 
-    typedef std::deque<Node *> NodePath;
+    typedef std::deque<node *> node_path;
 
 
     class Scope;
     class BVolume;
     class ScriptNode;
-    class AppearanceNode;
-    class ChildNode;
-    class ColorNode;
-    class CoordinateNode;
-    class FontStyleNode;
-    class GeometryNode;
-    class GroupingNode;
-    class MaterialNode;
-    class NormalNode;
-    class SoundSourceNode;
-    class TextureNode;
-    class TextureCoordinateNode;
-    class TextureTransformNode;
-    class TransformNode;
-    class ViewpointNode;
+    class appearance_node;
+    class child_node;
+    class color_node;
+    class coordinate_node;
+    class font_style_node;
+    class geometry_node;
+    class grouping_node;
+    class material_node;
+    class normal_node;
+    class sound_source_node;
+    class texture_node;
+    class texture_coordinate_node;
+    class texture_transform_node;
+    class transform_node;
+    class viewpoint_node;
 
     namespace Vrml97Node {
         class Anchor;
@@ -218,474 +223,481 @@ namespace OpenVRML {
     class Scene;
 
     std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             const Node & node);
+                                             const node & node);
 
-    class OPENVRML_SCOPE Node {
-        friend std::ostream & operator<<(std::ostream & out, const Node & node);
+    class OPENVRML_SCOPE node {
+        friend std::ostream & operator<<(std::ostream & out,
+                                         const node & node);
 
     public:
-        class Route {
+        class route {
         public:
-            const std::string fromEventOut;
-            const NodePtr toNode;
-            const std::string toEventIn;
+            const std::string from_eventout;
+            const NodePtr to_node;
+            const std::string to_eventin;
 
-            Route(const std::string & fromEventOut, const NodePtr & toNode,
-                  const std::string & toEventIn);
-            Route(const Route & route);
+            route(const std::string & from_eventout, const NodePtr & to_node,
+                  const std::string & to_eventin);
+            route(const route & route);
         };
 
-        typedef std::list<Route> RouteList;
+        typedef std::list<route> routes_t;
 
-        struct PolledEventOutValue {
+        struct polled_eventout_value {
             const FieldValuePtr value;
             bool modified;
 
-            PolledEventOutValue();
-            PolledEventOutValue(const FieldValuePtr & value, bool modified);
+            polled_eventout_value();
+            polled_eventout_value(const FieldValuePtr & value, bool modified);
         };
 
     private:
-        ScopePtr scope;
-        Scene * scene;
-        RouteList routes;
+        ScopePtr scope_;
+        Scene * scene_;
+        routes_t routes_;
 
-        typedef std::map<std::string, PolledEventOutValue *> EventOutISMap;
-        EventOutISMap eventOutISMap;
+        typedef std::map<std::string, polled_eventout_value *>
+            eventout_is_map_t;
+        eventout_is_map_t eventout_is_map;
 
     public:
-        const NodeType & nodeType;
+        const node_type & type;
 
-        virtual ~Node() throw () = 0;
+        virtual ~node() throw () = 0;
 
-        const std::string getId() const;
-        void setId(const std::string & nodeId);
+        const std::string id() const;
+        void id(const std::string & node_id);
 
-        const ScopePtr & getScope() const throw ();
+        const ScopePtr & scope() const throw ();
 
-        Scene * getScene() const throw ();
+        Scene * scene() const throw ();
 
         std::ostream & print(std::ostream & out, size_t indent) const;
 
-        void addEventOutIS(const std::string & eventOut,
-                           PolledEventOutValue & eventOutValue)
-            throw (UnsupportedInterface, std::bad_alloc);
+        void add_eventout_is(const std::string & eventout,
+                             polled_eventout_value & eventout_value)
+            throw (unsupported_interface, std::bad_alloc);
 
-        void initialize(Scene & scene, double timestamp) throw (std::bad_alloc);
+        void initialize(Scene & scene, double timestamp)
+            throw (std::bad_alloc);
         void relocate() throw (std::bad_alloc);
 
-        void setField(const std::string & id, const field_value & value)
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        const field_value & getField(const std::string & id) const
-            throw (UnsupportedInterface);
-        void processEvent(const std::string & id, const field_value & value,
-                          double timestamp)
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        const field_value & getEventOut(const std::string & id) const
-            throw (UnsupportedInterface);
+        const field_value & field(const std::string & id) const
+            throw (unsupported_interface);
+        void field(const std::string & id, const field_value & value)
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+        void process_event(const std::string & id, const field_value & value,
+                           double timestamp)
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+        const field_value & eventout(const std::string & id) const
+            throw (unsupported_interface);
 
         void shutdown(double timestamp) throw ();
 
-        virtual const ScriptNode * toScript() const throw ();
-        virtual ScriptNode * toScript() throw ();
-        virtual const AppearanceNode * toAppearance() const throw ();
-        virtual AppearanceNode * toAppearance() throw ();
-        virtual const ChildNode * toChild() const throw ();
-        virtual ChildNode * toChild() throw ();
-        virtual const ColorNode * toColor() const throw ();
-        virtual ColorNode * toColor() throw ();
-        virtual const CoordinateNode * toCoordinate() const throw ();
-        virtual CoordinateNode * toCoordinate() throw ();
-        virtual const FontStyleNode * toFontStyle() const throw ();
-        virtual FontStyleNode * toFontStyle() throw () ;
-        virtual const GeometryNode * toGeometry() const throw ();
-        virtual GeometryNode * toGeometry() throw ();
-        virtual const GroupingNode * toGrouping() const throw ();
-        virtual GroupingNode * toGrouping() throw ();
-        virtual const MaterialNode * toMaterial() const throw ();
-        virtual MaterialNode * toMaterial() throw ();
-        virtual const NormalNode * toNormal() const throw ();
-        virtual NormalNode * toNormal() throw ();
-        virtual const SoundSourceNode * toSoundSource() const throw ();
-        virtual SoundSourceNode * toSoundSource() throw ();
-        virtual const TextureNode * toTexture() const throw ();
-        virtual TextureNode * toTexture() throw ();
-        virtual const TextureCoordinateNode * toTextureCoordinate() const
+        virtual const ScriptNode * to_script() const throw ();
+        virtual ScriptNode * to_script() throw ();
+        virtual const appearance_node * to_appearance() const throw ();
+        virtual appearance_node * to_appearance() throw ();
+        virtual const child_node * to_child() const throw ();
+        virtual child_node * to_child() throw ();
+        virtual const color_node * to_color() const throw ();
+        virtual color_node * to_color() throw ();
+        virtual const coordinate_node * to_coordinate() const throw ();
+        virtual coordinate_node * to_coordinate() throw ();
+        virtual const font_style_node * to_font_style() const throw ();
+        virtual font_style_node * to_font_style() throw () ;
+        virtual const geometry_node * to_geometry() const throw ();
+        virtual geometry_node * to_geometry() throw ();
+        virtual const grouping_node * to_grouping() const throw ();
+        virtual grouping_node * to_grouping() throw ();
+        virtual const material_node * to_material() const throw ();
+        virtual material_node * to_material() throw ();
+        virtual const normal_node * to_normal() const throw ();
+        virtual normal_node * to_normal() throw ();
+        virtual const sound_source_node * to_sound_source() const throw ();
+        virtual sound_source_node * to_sound_source() throw ();
+        virtual const texture_node * to_texture() const throw ();
+        virtual texture_node * to_texture() throw ();
+        virtual const texture_coordinate_node * to_texture_coordinate() const
             throw ();
-        virtual TextureCoordinateNode * toTextureCoordinate() throw ();
-        virtual const TextureTransformNode * toTextureTransform() const
+        virtual texture_coordinate_node * to_texture_coordinate() throw ();
+        virtual const texture_transform_node * to_texture_transform() const
             throw ();
-        virtual TextureTransformNode * toTextureTransform() throw ();
-        virtual const TransformNode * toTransform() const throw ();
-        virtual TransformNode * toTransform() throw ();
-        virtual const ViewpointNode * toViewpoint() const throw ();
-        virtual ViewpointNode * toViewpoint() throw ();
+        virtual texture_transform_node * to_texture_transform() throw ();
+        virtual const transform_node * to_transform() const throw ();
+        virtual transform_node * to_transform() throw ();
+        virtual const viewpoint_node * to_viewpoint() const throw ();
+        virtual viewpoint_node * to_viewpoint() throw ();
 
-        virtual Vrml97Node::Anchor * toAnchor() const;
-        virtual Vrml97Node::AudioClip * toAudioClip() const;
-        virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
-        virtual Vrml97Node::AbstractLight * toLight() const;
-        virtual Vrml97Node::MovieTexture * toMovieTexture() const;
-        virtual Vrml97Node::NavigationInfo * toNavigationInfo() const;
-        virtual Vrml97Node::PlaneSensor * toPlaneSensor() const;
-        virtual Vrml97Node::PointLight * toPointLight() const;
-        virtual Vrml97Node::SphereSensor * toSphereSensor() const;
-        virtual Vrml97Node::SpotLight * toSpotLight() const;
-        virtual Vrml97Node::TimeSensor * toTimeSensor() const;
-        virtual Vrml97Node::TouchSensor * toTouchSensor() const;
+        virtual Vrml97Node::Anchor * to_anchor() const;
+        virtual Vrml97Node::AudioClip * to_audio_clip() const;
+        virtual Vrml97Node::CylinderSensor * to_cylinder_sensor() const;
+        virtual Vrml97Node::AbstractLight * to_light() const;
+        virtual Vrml97Node::MovieTexture * to_movie_texture() const;
+        virtual Vrml97Node::NavigationInfo * to_navigation_info() const;
+        virtual Vrml97Node::PlaneSensor * to_plane_sensor() const;
+        virtual Vrml97Node::PointLight * to_point_light() const;
+        virtual Vrml97Node::SphereSensor * to_sphere_sensor() const;
+        virtual Vrml97Node::SpotLight * to_spot_light() const;
+        virtual Vrml97Node::TimeSensor * to_time_sensor() const;
+        virtual Vrml97Node::TouchSensor * to_touch_sensor() const;
 
         // Indicate that the node state has changed, need to re-render
-        void setModified();
-        void clearModified() { d_modified = false; }
-        virtual bool isModified() const;
+        virtual bool modified() const;
+        void modified(bool modified);
 
-        static void markPathModified(NodePath& path, bool mod, int flags = 0x003);
+        static void mark_path_modified(node_path & path, bool mod,
+                                       int flags = 0x003);
 
         // do the work of updatemodified. move this to be protected
         //
-        virtual void updateModified(NodePath& path, int flags = 0x003);
+        virtual void update_modified(node_path & path, int flags = 0x003);
 
-        void updateModified(int flags = 0x003);
+        void update_modified(int flags = 0x003);
 
-        virtual const BVolume * getBVolume() const;
+        virtual const BVolume * bvolume() const;
 
-        virtual void setBVolume(const BVolume & v);
+        virtual void bvolume(const BVolume & v);
 
-        virtual void setBVolumeDirty(bool f);
+        virtual void bvolume_dirty(bool f);
 
-        virtual bool isBVolumeDirty() const;
+        virtual bool bvolume_dirty() const;
 
-        // Add a ROUTE from a field in this node
-        void addRoute(const std::string & fromEventOut,
-                      const NodePtr & toNode, const std::string & toEventIn)
-            throw (UnsupportedInterface, FieldValueTypeMismatch);
-
-        // Delete a ROUTE from a field in this node
-        void deleteRoute(const std::string & fromEventOut,
-                         const NodePtr & toNode, const std::string & toEventIn)
+        void add_route(const std::string & from_eventout,
+                       const NodePtr & toNode, const std::string & to_eventin)
+            throw (unsupported_interface, field_value_type_mismatch);
+        void delete_route(const std::string & from_eventout,
+                          const NodePtr & toNode,
+                          const std::string & to_eventin)
             throw ();
 
-        const RouteList & getRoutes() const;
+        const routes_t & routes() const;
 
         virtual void render(Viewer & viewer, VrmlRenderContext context);
 
     protected:
-        Node(const NodeType & nodeType, const ScopePtr & scope);
+        node(const node_type & type, const ScopePtr & scope);
 
         // Send a named event from this node.
-        void emitEvent(const std::string & id, const field_value & fieldValue,
-                       double timestamp)
+        void emit_event(const std::string & id,
+                        const field_value & value,
+                        double timestamp)
             throw (std::bad_cast, std::bad_alloc);
 
-        bool d_modified;
-        bool d_bvol_dirty;
+        bool modified_;
+        bool bvolume_dirty_;
 
     private:
         // Not copyable.
-        Node(const Node &);
-        Node & operator=(const Node &);
+        node(const node &);
+        node & operator=(const node &);
 
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
         virtual void do_relocate() throw (std::bad_alloc);
 
-        virtual void do_setField(const std::string & id,
-                                 const field_value & value)
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
-        virtual const field_value & do_getField(const std::string & id) const
-            throw (UnsupportedInterface) = 0;
-        virtual void do_processEvent(const std::string & id,
-                                     const field_value & value,
-                                     double timestamp)
-            throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
-        virtual const field_value & do_getEventOut(const std::string & id) const
-            throw (UnsupportedInterface) = 0;
+        virtual void do_field(const std::string & id,
+                              const field_value & value)
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
+        virtual const field_value & do_field(const std::string & id) const
+            throw (unsupported_interface) = 0;
+        virtual void do_process_event(const std::string & id,
+                                      const field_value & value,
+                                      double timestamp)
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
+        virtual const field_value &
+        do_eventout(const std::string & id) const
+            throw (unsupported_interface) = 0;
         virtual void do_shutdown(double timestamp) throw ();
     };
 
-    inline const ScopePtr & Node::getScope() const throw ()
+    inline const ScopePtr & node::scope() const throw ()
     {
-        return this->scope;
+        return this->scope_;
     }
 
-    inline Scene * Node::getScene() const throw ()
+    inline Scene * node::scene() const throw ()
     {
-        return this->scene;
+        return this->scene_;
     }
 
-    inline bool operator==(const Node::Route & lhs, const Node::Route & rhs)
+    inline bool operator==(const node::route & lhs, const node::route & rhs)
         throw ()
     {
-        return lhs.fromEventOut == rhs.fromEventOut
-            && lhs.toNode == rhs.toNode
-            && lhs.toEventIn == rhs.toEventIn;
+        return lhs.from_eventout == rhs.from_eventout
+            && lhs.to_node == rhs.to_node
+            && lhs.to_eventin == rhs.to_eventin;
     }
 
-    inline bool operator!=(const Node::Route & lhs, const Node::Route & rhs)
+    inline bool operator!=(const node::route & lhs, const node::route & rhs)
         throw ()
     {
         return !(lhs == rhs);
     }
 
 
-    class OPENVRML_SCOPE AppearanceNode : public virtual Node {
+    class OPENVRML_SCOPE appearance_node : public virtual node {
     public:
-        virtual ~AppearanceNode() throw () = 0;
+        virtual ~appearance_node() throw () = 0;
 
-        virtual const AppearanceNode * toAppearance() const throw ();
-        virtual AppearanceNode * toAppearance() throw ();
+        virtual const appearance_node * to_appearance() const throw ();
+        virtual appearance_node * to_appearance() throw ();
 
-        virtual const NodePtr & getMaterial() const throw () = 0;
-        virtual const NodePtr & getTexture() const throw () = 0;
-        virtual const NodePtr & getTextureTransform() const throw () = 0;
+        virtual const NodePtr & material() const throw () = 0;
+        virtual const NodePtr & texture() const throw () = 0;
+        virtual const NodePtr & texture_transform() const throw () = 0;
 
     protected:
-        AppearanceNode(const NodeType & nodeType, const ScopePtr & scope);
+        appearance_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE ChildNode : public virtual Node {
+    class OPENVRML_SCOPE child_node : public virtual node {
     public:
-        virtual ~ChildNode() throw () = 0;
+        virtual ~child_node() throw () = 0;
 
-        virtual const ChildNode * toChild() const throw ();
-        virtual ChildNode * toChild() throw ();
+        virtual const child_node * to_child() const throw ();
+        virtual child_node * to_child() throw ();
 
     protected:
-        ChildNode(const NodeType & nodeType, const ScopePtr & scope);
+        child_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE ColorNode : public virtual Node {
+    class OPENVRML_SCOPE color_node : public virtual node {
     public:
-        virtual ~ColorNode() throw () = 0;
+        virtual ~color_node() throw () = 0;
 
-        virtual const ColorNode * toColor() const throw ();
-        virtual ColorNode * toColor() throw ();
+        virtual const color_node * to_color() const throw ();
+        virtual color_node * to_color() throw ();
 
-        virtual const std::vector<color> & getColor() const throw () = 0;
+        virtual const std::vector<OpenVRML::color> & color() const throw () = 0;
 
     protected:
-        ColorNode(const NodeType & nodeType, const ScopePtr & scope);
+        color_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE CoordinateNode : public virtual Node {
+    class OPENVRML_SCOPE coordinate_node : public virtual node {
     public:
-        virtual ~CoordinateNode() throw () = 0;
+        virtual ~coordinate_node() throw () = 0;
 
-        virtual const CoordinateNode * toCoordinate() const throw ();
-        virtual CoordinateNode * toCoordinate() throw ();
+        virtual const coordinate_node * to_coordinate() const throw ();
+        virtual coordinate_node * to_coordinate() throw ();
 
-        virtual const std::vector<vec3f> & getPoint() const throw () = 0;
+        virtual const std::vector<vec3f> & point() const throw () = 0;
 
     protected:
-        CoordinateNode(const NodeType & nodeType, const ScopePtr & scope);
+        coordinate_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE FontStyleNode : public virtual Node {
+    class OPENVRML_SCOPE font_style_node : public virtual node {
     public:
-        virtual ~FontStyleNode() throw () = 0;
+        virtual ~font_style_node() throw () = 0;
 
-        virtual const FontStyleNode * toFontStyle() const throw ();
-        virtual FontStyleNode * toFontStyle() throw ();
+        virtual const font_style_node * to_font_style() const throw ();
+        virtual font_style_node * to_font_style() throw ();
 
-        virtual const std::vector<std::string> & getFamily() const throw () = 0;
-        virtual bool getHorizontal() const throw () = 0;
-        virtual const std::vector<std::string> & getJustify() const throw () = 0;
-        virtual const std::string & getLanguage() const throw () = 0;
-        virtual bool getLeftToRight() const throw () = 0;
-        virtual float getSize() const throw () = 0;
-        virtual float getSpacing() const throw () = 0;
-        virtual const std::string & getStyle() const throw () = 0;
-        virtual bool getTopToBottom() const throw () = 0;
+        virtual const std::vector<std::string> & family() const
+            throw () = 0;
+        virtual bool horizontal() const throw () = 0;
+        virtual const std::vector<std::string> & justify() const
+            throw () = 0;
+        virtual const std::string & language() const throw () = 0;
+        virtual bool left_to_right() const throw () = 0;
+        virtual float size() const throw () = 0;
+        virtual float spacing() const throw () = 0;
+        virtual const std::string & style() const throw () = 0;
+        virtual bool top_to_bottom() const throw () = 0;
 
     protected:
-        FontStyleNode(const NodeType & nodeType, const ScopePtr & scope);
+        font_style_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE GeometryNode : public virtual Node {
+    class OPENVRML_SCOPE geometry_node : public virtual node {
     public:
-        virtual ~GeometryNode() throw () = 0;
+        virtual ~geometry_node() throw () = 0;
 
-        virtual const GeometryNode * toGeometry() const throw ();
-        virtual GeometryNode * toGeometry() throw ();
+        virtual const geometry_node * to_geometry() const throw ();
+        virtual geometry_node * to_geometry() throw ();
 
-        virtual Viewer::Object insertGeometry(Viewer & viewer,
-                                              VrmlRenderContext context) = 0;
-        virtual const ColorNode * getColor() const throw ();
+        virtual Viewer::Object insert_geometry(Viewer & viewer,
+                                               VrmlRenderContext context) = 0;
+        virtual const color_node * color() const throw ();
 
     protected:
-        GeometryNode(const NodeType & nodeType, const ScopePtr & scope);
+        geometry_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE GroupingNode : public virtual ChildNode {
+    class OPENVRML_SCOPE grouping_node : public virtual child_node {
     public:
-        virtual ~GroupingNode() throw () = 0;
+        virtual ~grouping_node() throw () = 0;
 
-        virtual const GroupingNode * toGrouping() const throw ();
-        virtual GroupingNode * toGrouping() throw ();
+        virtual const grouping_node * to_grouping() const throw ();
+        virtual grouping_node * to_grouping() throw ();
 
-        virtual const std::vector<NodePtr> & getChildren() const throw () = 0;
+        virtual const std::vector<NodePtr> & children() const throw () = 0;
         virtual void activate(double timestamp, bool over, bool active,
                               double *p) = 0;
 
     protected:
-        GroupingNode(const NodeType & nodeType, const ScopePtr & scope);
+        grouping_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE MaterialNode : public virtual Node {
+    class OPENVRML_SCOPE material_node : public virtual node {
     public:
-        virtual ~MaterialNode() throw () = 0;
+        virtual ~material_node() throw () = 0;
 
-        virtual const MaterialNode * toMaterial() const throw ();
-        virtual MaterialNode * toMaterial() throw ();
+        virtual const material_node * to_material() const throw ();
+        virtual material_node * to_material() throw ();
 
-        virtual float getAmbientIntensity() const throw () = 0;
-        virtual const color & getDiffuseColor() const throw () = 0;
-        virtual const color & getEmissiveColor() const throw () = 0;
-        virtual float getShininess() const throw () = 0;
-        virtual const color & getSpecularColor() const throw () = 0;
-        virtual float getTransparency() const throw () = 0;
+        virtual float ambient_intensity() const throw () = 0;
+        virtual const color & diffuse_color() const throw () = 0;
+        virtual const color & emissive_color() const throw () = 0;
+        virtual float shininess() const throw () = 0;
+        virtual const color & specular_color() const throw () = 0;
+        virtual float transparency() const throw () = 0;
 
     protected:
-        MaterialNode(const NodeType & nodeType, const ScopePtr & scope);
+        material_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE NormalNode : public virtual Node {
+    class OPENVRML_SCOPE normal_node : public virtual node {
     public:
-        virtual ~NormalNode() throw () = 0;
+        virtual ~normal_node() throw () = 0;
 
-        virtual const NormalNode * toNormal() const throw ();
-        virtual NormalNode * toNormal() throw ();
+        virtual const normal_node * to_normal() const throw ();
+        virtual normal_node * to_normal() throw ();
 
-        virtual const std::vector<vec3f> & getVector() const throw () = 0;
+        virtual const std::vector<vec3f> & vector() const throw () = 0;
 
     protected:
-        NormalNode(const NodeType & nodeType, const ScopePtr & scope);
+        normal_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE SoundSourceNode : public virtual Node {
+    class OPENVRML_SCOPE sound_source_node : public virtual node {
     public:
-        virtual ~SoundSourceNode() throw () = 0;
-        virtual const SoundSourceNode * toSoundSource() const throw ();
-        virtual SoundSourceNode * toSoundSource() throw ();
+        virtual ~sound_source_node() throw () = 0;
+        virtual const sound_source_node * to_sound_source() const throw ();
+        virtual sound_source_node * to_sound_source() throw ();
 
     protected:
-        SoundSourceNode(const NodeType & nodeType, const ScopePtr & scope);
+        sound_source_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE TextureNode : public virtual Node {
+    class OPENVRML_SCOPE texture_node : public virtual node {
     public:
-        virtual ~TextureNode() throw () = 0;
+        virtual ~texture_node() throw () = 0;
 
-        virtual const TextureNode * toTexture() const throw ();
-        virtual TextureNode * toTexture() throw ();
+        virtual const texture_node * to_texture() const throw ();
+        virtual texture_node * to_texture() throw ();
 
         virtual size_t nComponents() const throw () = 0;
         virtual size_t width() const throw () = 0;
         virtual size_t height() const throw () = 0;
         virtual size_t nFrames() const throw () = 0;
         virtual const unsigned char * pixels() const throw () = 0;
-        virtual bool getRepeatS() const throw () = 0;
-        virtual bool getRepeatT() const throw () = 0;
+        virtual bool repeat_s() const throw () = 0;
+        virtual bool repeat_t() const throw () = 0;
 
     protected:
-        TextureNode(const NodeType & nodeType, const ScopePtr & scope);
+        texture_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE TextureCoordinateNode : public virtual Node {
+    class OPENVRML_SCOPE texture_coordinate_node : public virtual node {
     public:
-        virtual ~TextureCoordinateNode() throw () = 0;
+        virtual ~texture_coordinate_node() throw () = 0;
 
-        virtual const TextureCoordinateNode * toTextureCoordinate() const
+        virtual const texture_coordinate_node * to_texture_coordinate() const
             throw ();
-        virtual TextureCoordinateNode * toTextureCoordinate() throw ();
+        virtual texture_coordinate_node * to_texture_coordinate() throw ();
 
-        virtual const std::vector<vec2f> & getPoint() const throw () = 0;
+        virtual const std::vector<vec2f> & point() const throw () = 0;
 
     protected:
-        TextureCoordinateNode(const NodeType & nodeType,
-                              const ScopePtr & scope);
+        texture_coordinate_node(const node_type & type,
+                                const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE TextureTransformNode : public virtual Node {
+    class OPENVRML_SCOPE texture_transform_node : public virtual node {
     public:
-        virtual ~TextureTransformNode() throw () = 0;
+        virtual ~texture_transform_node() throw () = 0;
 
-        virtual const TextureTransformNode * toTextureTransform() const throw ();
-        virtual TextureTransformNode * toTextureTransform() throw ();
+        virtual const texture_transform_node * to_texture_transform() const
+            throw ();
+        virtual texture_transform_node * to_texture_transform() throw ();
 
     protected:
-        TextureTransformNode(const NodeType & nodeType, const ScopePtr & scope);
+        texture_transform_node(const node_type & type,
+                               const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE TransformNode : public virtual GroupingNode {
+    class OPENVRML_SCOPE transform_node : public virtual grouping_node {
     public:
-        virtual ~TransformNode() throw () = 0;
+        virtual ~transform_node() throw () = 0;
 
-        virtual const TransformNode * toTransform() const throw ();
-        virtual TransformNode * toTransform() throw ();
+        virtual const transform_node * to_transform() const throw ();
+        virtual transform_node * to_transform() throw ();
 
-        virtual const mat4f & getTransform() const throw () = 0;
+        virtual const mat4f & transform() const throw () = 0;
 
     protected:
-        TransformNode(const NodeType & nodeType, const ScopePtr & scope);
+        transform_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE ViewpointNode : public virtual ChildNode {
+    class OPENVRML_SCOPE viewpoint_node : public virtual child_node {
     public:
-        virtual ~ViewpointNode() throw () = 0;
+        virtual ~viewpoint_node() throw () = 0;
 
-        virtual const ViewpointNode * toViewpoint() const throw ();
-        virtual ViewpointNode * toViewpoint() throw ();
+        virtual const viewpoint_node * to_viewpoint() const throw ();
+        virtual viewpoint_node * to_viewpoint() throw ();
 
-        virtual const mat4f & getTransformation() const throw () = 0;
-        virtual const mat4f & getUserViewTransform() const throw () = 0;
-        virtual void setUserViewTransform(const mat4f & transform)
+        virtual const mat4f & transformation() const throw () = 0;
+        virtual const mat4f & user_view_transform() const throw () = 0;
+        virtual void user_view_transform(const mat4f & transform)
             throw () = 0;
-        virtual const std::string & getDescription() const throw () = 0;
-        virtual float getFieldOfView() const throw () = 0;
+        virtual const std::string & description() const throw () = 0;
+        virtual float field_of_view() const throw () = 0;
 
     protected:
-        ViewpointNode(const NodeType & nodeType, const ScopePtr & scope);
+        viewpoint_node(const node_type & type, const ScopePtr & scope);
     };
 
 
-    class OPENVRML_SCOPE NodeTraverser {
-        std::set<Node *> traversedNodes;
+    class OPENVRML_SCOPE node_traverser {
+        std::set<node *> traversed_nodes;
         bool halt;
 
     public:
-        NodeTraverser() throw (std::bad_alloc);
-        virtual ~NodeTraverser() throw () = 0;
+        node_traverser() throw (std::bad_alloc);
+        virtual ~node_traverser() throw () = 0;
 
-        void traverse(Node & node);
+        void traverse(node & node);
         void traverse(const NodePtr & node);
         void traverse(const std::vector<NodePtr> & nodes);
 
     protected:
-        void haltTraversal() throw ();
+        void halt_traversal() throw ();
 
     private:
         // Noncopyable.
-        NodeTraverser(const NodeTraverser &);
-        NodeTraverser & operator=(const NodeTraverser &);
+        node_traverser(const node_traverser &);
+        node_traverser & operator=(const node_traverser &);
 
-        virtual void onEntering(Node & node);
-        virtual void onLeaving(Node & node);
+        virtual void on_entering(node & node);
+        virtual void on_leaving(node & node);
 
-        void do_traversal(Node & node);
+        void do_traversal(node & node);
     };
 }
 

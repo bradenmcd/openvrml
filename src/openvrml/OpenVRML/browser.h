@@ -66,16 +66,16 @@ namespace OpenVRML {
         ScriptNodeClass scriptNodeClass;
         Scene * scene;
         NodePtr defaultViewpoint;
-        ViewpointNode * activeViewpoint;
-        std::list<ViewpointNode *> viewpointList;
+        viewpoint_node * activeViewpoint;
+        std::list<viewpoint_node *> viewpointList;
         typedef std::list<NodePtr> BindStack;
         BindStack d_navigationInfoStack;
-        std::list<Node *> d_navigationInfos;
-        std::list<Node *> d_scopedLights;
+        std::list<node *> d_navigationInfos;
+        std::list<node *> d_scopedLights;
         std::list<ScriptNode *> d_scripts;
-        std::list<Node *> d_timers;
-        std::list<Node *> d_audioClips;
-        std::list<Node *> d_movies;
+        std::list<node *> d_timers;
+        std::list<node *> d_audioClips;
+        std::list<node *> d_movies;
         std::list<ProtoNode *> protoNodeList;
         bool d_modified;
         bool d_newView;
@@ -111,13 +111,14 @@ namespace OpenVRML {
         virtual ~Browser() throw ();
 
         const std::vector<NodePtr> & getRootNodes() const throw ();
-        const NodePath findNode(const Node & node) const throw (std::bad_alloc);
-        ViewpointNode & getActiveViewpoint() const throw ();
-        void setActiveViewpoint(ViewpointNode & viewpoint) throw ();
+        const node_path findNode(const node & node) const
+            throw (std::bad_alloc);
+        viewpoint_node & getActiveViewpoint() const throw ();
+        void setActiveViewpoint(viewpoint_node & viewpoint) throw ();
         void resetDefaultViewpoint() throw ();
-        void addViewpoint(ViewpointNode & viewpoint) throw (std::bad_alloc);
-        void removeViewpoint(ViewpointNode & viewpoint) throw ();
-        const std::list<ViewpointNode *> & getViewpoints() const throw ();
+        void addViewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc);
+        void removeViewpoint(viewpoint_node & viewpoint) throw ();
+        const std::list<viewpoint_node *> & getViewpoints() const throw ();
 
         virtual const char * getName() const throw ();
         virtual const char * getVersion() const throw ();
@@ -135,7 +136,7 @@ namespace OpenVRML {
 
         void addWorldChangedCallback(SceneCB);
 
-        void sensitiveEvent(Node * object, double timeStamp,
+        void sensitiveEvent(node * object, double timeStamp,
 		            bool isOver, bool isActive, double *point );
 
         void queueEvent(double timeStamp, field_value * value,

@@ -115,12 +115,15 @@ Script::~Script() {}
  *
  * @param browser   the Browser to be associated with the ScriptNodeClass.
  */
-ScriptNodeClass::ScriptNodeClass(Browser & browser): NodeClass(browser) {}
+ScriptNodeClass::ScriptNodeClass(Browser & browser):
+    node_class(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-ScriptNodeClass::~ScriptNodeClass() throw () {}
+ScriptNodeClass::~ScriptNodeClass() throw ()
+{}
 
 /**
  * @brief Not implemented.
@@ -129,9 +132,10 @@ ScriptNodeClass::~ScriptNodeClass() throw () {}
  * unlike other node implementations, cannot provide the implementation of
  * an @c EXTERNPROTO. It is an error to call this method.
  */
-const NodeTypePtr ScriptNodeClass::createType(const std::string &,
-                                              const NodeInterfaceSet &)
-        throw () {
+const NodeTypePtr ScriptNodeClass::create_type(const std::string &,
+                                               const node_interface_set &)
+    throw ()
+{
     assert(false);
     return NodeTypePtr(0);
 }
@@ -167,42 +171,46 @@ const NodeTypePtr ScriptNodeClass::createType(const std::string &,
  * @brief Constructor.
  */
 ScriptNode::ScriptNodeType::ScriptNodeType(ScriptNodeClass & nodeClass):
-        NodeType(nodeClass, "Script") {
-    static const NodeInterface interfaces[] = {
-        NodeInterface(NodeInterface::exposedField,
+    node_type(nodeClass, "Script")
+{
+    static const node_interface interfaces[] = {
+        node_interface(node_interface::exposedfield_id,
                       field_value::mfstring_id,
                       "url"),
-        NodeInterface(NodeInterface::field,
+        node_interface(node_interface::field_id,
                       field_value::sfbool_id,
                       "directOutput"),
-        NodeInterface(NodeInterface::field,
+        node_interface(node_interface::field_id,
                       field_value::sfbool_id,
                       "mustEvaluate")
     };
-    this->interfaces.add(interfaces[0]);
-    this->interfaces.add(interfaces[1]);
-    this->interfaces.add(interfaces[2]);
+    this->interfaces_.add(interfaces[0]);
+    this->interfaces_.add(interfaces[1]);
+    this->interfaces_.add(interfaces[2]);
 }
 
 /**
  * @brief Destructor.
  */
-ScriptNode::ScriptNodeType::~ScriptNodeType() throw () {}
+ScriptNode::ScriptNodeType::~ScriptNodeType() throw ()
+{}
 
 /**
  * @brief Add an interface.
  */
-void ScriptNode::ScriptNodeType::addInterface(const NodeInterface & interface)
-        throw (std::invalid_argument) {
-    this->interfaces.add(interface);
+void ScriptNode::ScriptNodeType::addInterface(const node_interface & interface)
+    throw (std::invalid_argument)
+{
+    this->interfaces_.add(interface);
 }
 
 /**
  * @brief Get the interfaces for the node.
  */
-const NodeInterfaceSet & ScriptNode::ScriptNodeType::getInterfaces() const
-        throw () {
-    return this->interfaces;
+const node_interface_set & ScriptNode::ScriptNodeType::interfaces() const
+    throw ()
+{
+    return this->interfaces_;
 }
 
 namespace {
@@ -246,33 +254,33 @@ namespace {
  * with a call to the ScriptNode constructor.
  */
 const NodePtr
-ScriptNode::ScriptNodeType::createNode(const ScopePtr & scope) const
+ScriptNode::ScriptNodeType::create_node(const ScopePtr & scope) const
     throw (std::bad_alloc)
 {
     ScriptNodeClass & scriptNodeClass =
-        static_cast<ScriptNodeClass &>(this->nodeClass);
+        static_cast<ScriptNodeClass &>(this->_class);
     const NodePtr node(new ScriptNode(scriptNodeClass, scope));
     ScriptNode & scriptNode = dynamic_cast<ScriptNode &>(*node);
 
     //
     // Copy the interfaces.
     //
-    scriptNode.scriptNodeType.interfaces = this->interfaces;
+    scriptNode.scriptNodeType.interfaces_ = this->interfaces_;
 
     //
     // Add the default field and eventOut values.
     //
-    for (NodeInterfaceSet::const_iterator itr(this->interfaces.begin());
-            itr != this->interfaces.end(); ++itr) {
-        if (itr->type == NodeInterface::field) {
+    for (node_interface_set::const_iterator itr(this->interfaces_.begin());
+            itr != this->interfaces_.end(); ++itr) {
+        if (itr->type == node_interface::field_id) {
             const FieldValueMap::value_type
-                    value(itr->id, defaultFieldValue(itr->fieldType));
+                    value(itr->id, defaultFieldValue(itr->field_type));
             const bool succeeded =
                     scriptNode.fieldValueMap.insert(value).second;
             assert(succeeded);
-        } else if (itr->type == NodeInterface::eventOut) {
-            const PolledEventOutValue
-                    eventOutValue(defaultFieldValue(itr->fieldType), false);
+        } else if (itr->type == node_interface::eventout_id) {
+            const polled_eventout_value
+                    eventOutValue(defaultFieldValue(itr->field_type), false);
             const EventOutValueMap::value_type value(itr->id, eventOutValue);
             const bool succeeded =
                     scriptNode.eventOutValueMap.insert(value).second;
@@ -346,8 +354,8 @@ ScriptNode::ScriptNodeType::createNode(const ScopePtr & scope) const
  * @brief Constructor.
  */
 ScriptNode::ScriptNode(ScriptNodeClass & nodeClass, const ScopePtr & scope):
-    Node(this->scriptNodeType, scope),
-    ChildNode(this->scriptNodeType, scope),
+    node(this->scriptNodeType, scope),
+    child_node(this->scriptNodeType, scope),
     scriptNodeType(nodeClass),
     directOutput(false),
     mustEvaluate(false),
@@ -373,7 +381,7 @@ void ScriptNode::setUrl(const mfstring & value, const double timestamp)
     //
     // url is an exposedField.
     //
-    this->emitEvent("url_changed", this->url, timestamp);
+    this->emit_event("url_changed", this->url, timestamp);
 }
 
 const mfstring & ScriptNode::getUrl() const
@@ -385,7 +393,7 @@ void ScriptNode::addEventIn(const field_value::type_id type,
                             const std::string & id)
     throw (std::invalid_argument, std::bad_alloc)
 {
-    const NodeInterface interface(NodeInterface::eventIn, type, id);
+    const node_interface interface(node_interface::eventin_id, type, id);
     this->scriptNodeType.addInterface(interface);
 }
 
@@ -393,13 +401,13 @@ void ScriptNode::addEventOut(const field_value::type_id type,
                              const std::string & id)
     throw (std::invalid_argument, std::bad_alloc)
 {
-    const NodeInterface interface(NodeInterface::eventOut, type, id);
+    const node_interface interface(node_interface::eventout_id, type, id);
     this->scriptNodeType.addInterface(interface);
 
     //
     // eventOut value.
     //
-    const PolledEventOutValue eventOutValue(defaultFieldValue(type), 0.0);
+    const polled_eventout_value eventOutValue(defaultFieldValue(type), 0.0);
     EventOutValueMap::value_type value(id, eventOutValue);
     const bool succeeded = this->eventOutValueMap.insert(value).second;
     assert(succeeded);
@@ -409,9 +417,9 @@ void ScriptNode::addField(const std::string & id,
                           const FieldValuePtr & defaultVal)
     throw (std::invalid_argument, std::bad_alloc)
 {
-    const NodeInterface interface(NodeInterface::field,
-                                  defaultVal->type(),
-                                  id);
+    const node_interface interface(node_interface::field_id,
+                                   defaultVal->type(),
+                                   id);
     this->scriptNodeType.addInterface(interface);
 
     //
@@ -427,7 +435,7 @@ void ScriptNode::addField(const std::string & id,
  *
  * @return a pointer to this ScriptNode.
  */
-const ScriptNode * ScriptNode::toScript() const throw ()
+const ScriptNode * ScriptNode::to_script() const throw ()
 {
     return this;
 }
@@ -437,7 +445,7 @@ const ScriptNode * ScriptNode::toScript() const throw ()
  *
  * @return a pointer to this ScriptNode.
  */
-ScriptNode * ScriptNode::toScript() throw ()
+ScriptNode * ScriptNode::to_script() throw ()
 {
     return this;
 }
@@ -456,7 +464,7 @@ void ScriptNode::update(const double currentTime)
         for (EventOutValueMap::iterator itr = eventOutValueMap.begin();
                 itr != eventOutValueMap.end(); ++itr) {
             if (itr->second.modified) {
-                this->emitEvent(itr->first, *itr->second.value, currentTime);
+                this->emit_event(itr->first, *itr->second.value, currentTime);
                 itr->second.modified = false;
             }
         }
@@ -539,14 +547,12 @@ void ScriptNode::assignWithSelfRefCheck(const mfnode & inval,
  */
 void ScriptNode::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
-    assert(this->getScene());
-    this->getScene()->browser.addScript(*this);
+    assert(this->scene());
+    this->scene()->browser.addScript(*this);
 
     this->eventsReceived = 0;
     this->script = this->createScript();
-    if (this->script) {
-        this->script->initialize(timestamp);
-    }
+    if (this->script) { this->script->initialize(timestamp); }
 
     //
     // For each modified eventOut, send an event.
@@ -554,7 +560,7 @@ void ScriptNode::do_initialize(const double timestamp) throw (std::bad_alloc)
     for (EventOutValueMap::iterator itr(this->eventOutValueMap.begin());
             itr != this->eventOutValueMap.end(); ++itr) {
         if (itr->second.modified) {
-            this->emitEvent(itr->first, *itr->second.value, timestamp);
+            this->emit_event(itr->first, *itr->second.value, timestamp);
             itr->second.modified = false;
         }
     }
@@ -566,12 +572,12 @@ void ScriptNode::do_initialize(const double timestamp) throw (std::bad_alloc)
  * @param id    the name of the field to set.
  * @param value the new value.
  *
- * @exception UnsupportedInterface  if the node has no field @p id.
+ * @exception unsupported_interface if the node has no field @p id.
  * @exception std::bad_cast         if @p value is the wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-void ScriptNode::do_setField(const std::string & id, const field_value & value)
-    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+void ScriptNode::do_field(const std::string & id, const field_value & value)
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
     FieldValueMap::iterator itr;
     if (id == "url") {
@@ -595,7 +601,8 @@ void ScriptNode::do_setField(const std::string & id, const field_value & value)
             itr->second->assign(value); // Throws std::bad_cast.
         }
     } else {
-        throw UnsupportedInterface("Script node has no field \"" + id + "\".");
+        throw unsupported_interface("Script node has no field \"" + id
+                                    + "\".");
     }
 }
 
@@ -606,10 +613,10 @@ void ScriptNode::do_setField(const std::string & id, const field_value & value)
  *
  * @return the value for field @p id.
  *
- * @exception UnsupportedInterface  if the node has no field @p id.
+ * @exception unsupported_interface  if the node has no field @p id.
  */
-const field_value & ScriptNode::do_getField(const std::string & id) const
-    throw (UnsupportedInterface)
+const field_value & ScriptNode::do_field(const std::string & id) const
+    throw (unsupported_interface)
 {
     FieldValueMap::const_iterator itr;
     if (id == "url") {
@@ -622,16 +629,16 @@ const field_value & ScriptNode::do_getField(const std::string & id) const
             != this->fieldValueMap.end()) {
         return *itr->second;
     }
-    throw UnsupportedInterface("Script node has no field \"" + id + "\".");
+    throw unsupported_interface("Script node has no field \"" + id + "\".");
 }
 
-void ScriptNode::do_processEvent(const std::string & id,
-                                 const field_value & value,
-                                 const double timestamp)
-    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+void ScriptNode::do_process_event(const std::string & id,
+                                  const field_value & value,
+                                  const double timestamp)
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
-    if (!this->nodeType.hasEventIn(id)) {
-        throw UnsupportedInterface("Script node has no eventIn \"" + id
+    if (!this->type.has_eventin(id)) {
+        throw unsupported_interface("Script node has no eventIn \"" + id
                                    + "\".");
     }
 
@@ -651,7 +658,7 @@ void ScriptNode::do_processEvent(const std::string & id,
         for (EventOutValueMap::iterator itr(this->eventOutValueMap.begin());
                 itr != this->eventOutValueMap.end(); ++itr) {
             if (itr->second.modified) {
-                this->emitEvent(itr->first, *itr->second.value, timestamp);
+                this->emit_event(itr->first, *itr->second.value, timestamp);
                 itr->second.modified = false;
             }
         }
@@ -661,7 +668,7 @@ void ScriptNode::do_processEvent(const std::string & id,
     //
     // Script nodes shouldn't generate redraws.
     //
-    this->clearModified();
+    this->modified(false);
 }
 
 /**
@@ -671,11 +678,11 @@ void ScriptNode::do_processEvent(const std::string & id,
  * set the value of eventOuts in response to script code.
  */
 void ScriptNode::setEventOut(const std::string & id, const field_value & value)
-    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
     const EventOutValueMap::iterator itr(this->eventOutValueMap.find(id));
     if (itr == this->eventOutValueMap.end()) {
-        throw UnsupportedInterface("Script node has no eventOut \"" + id
+        throw unsupported_interface("Script node has no eventOut \"" + id
                                     + "\".");
     }
 
@@ -691,24 +698,25 @@ void ScriptNode::setEventOut(const std::string & id, const field_value & value)
     itr->second.modified = true;
 }
 
-const field_value & ScriptNode::do_getEventOut(const std::string & id) const
-    throw (UnsupportedInterface)
+const field_value & ScriptNode::do_eventout(const std::string & id) const
+    throw (unsupported_interface)
 {
     FieldValueMap::const_iterator itr;
     if (id == "url" || id == "url_changed") {
         return this->url;
-    } else if ((itr = this->fieldValueMap.find(id)) != this->fieldValueMap.end()
+    } else if ((itr = this->fieldValueMap.find(id))
+               != this->fieldValueMap.end()
             || (itr = this->fieldValueMap.find(id + "_changed"))
                 != this->fieldValueMap.end()) {
         return *itr->second;
     }
-    throw UnsupportedInterface("Script has no eventOut \"" + id + "\".");
+    throw unsupported_interface("Script has no eventOut \"" + id + "\".");
 }
 
 void ScriptNode::do_shutdown(const double timestamp) throw ()
 {
     if (this->script) { this->script->shutdown(timestamp); }
-    this->getScene()->browser.removeScript(*this);
+    this->scene()->browser.removeScript(*this);
 }
 
 } // namespace OpenVRML
@@ -794,7 +802,7 @@ Script * ScriptNode::createScript() {
                                this->url.value[i].end() - 6)
                     || std::equal(javaExtension2, javaExtension2 + 6,
                                   this->url.value[i].end() - 6))) {
-            Doc2 base(this->nodeType.nodeClass.browser.getWorldURI());
+            Doc2 base(this->type._class.browser.getWorldURI());
             Doc2 doc(this->url.value[i], &base);
             if (doc.localName()) {
                 return new ScriptJDK(*this,
@@ -1897,7 +1905,7 @@ JSBool eventOut_setProperty(JSContext * const cx, JSObject * const obj,
     ScriptNode & scriptNode = script->getScriptNode();
 
     const field_value::type_id field_type_id =
-            scriptNode.nodeType.hasEventOut(eventId);
+        scriptNode.type.has_eventout(eventId);
     //
     // If this assertion is false, then we accidentally gave this
     // setter to an object that doesn't correspond to an eventOut!
@@ -1940,7 +1948,7 @@ JSBool field_setProperty(JSContext * const cx, JSObject * const obj,
     ScriptNode & scriptNode = script->getScriptNode();
 
     const field_value::type_id field_type_id =
-            scriptNode.nodeType.hasField(fieldId);
+        scriptNode.type.has_field(fieldId);
     //
     // If this assertion is false, then we accidentally gave this
     // setter to an object that doesn't correspond to a field!
@@ -1953,7 +1961,7 @@ JSBool field_setProperty(JSContext * const cx, JSObject * const obj,
     try {
         std::auto_ptr<field_value> fieldValue =
                 createFieldValueFromJsval(cx, *val, field_type_id);
-        scriptNode.setField(fieldId, *fieldValue);
+        scriptNode.field(fieldId, *fieldValue);
     } catch (BadConversion & ex) {
         std::cout << ex.what() << std::endl;
         return JS_FALSE;
@@ -2079,9 +2087,9 @@ void errorReporter(JSContext * const cx,
             static_cast<Script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    OpenVRML::Browser & browser = script->getScriptNode().getScene()->browser;
+    OpenVRML::Browser & browser = script->getScriptNode().scene()->browser;
 
-    string nodeId = script->getScriptNode().getId();
+    string nodeId = script->getScriptNode().id();
     if (!nodeId.empty()) {
         browser.err << nodeId << ": ";
     }
@@ -2299,8 +2307,7 @@ JSBool getName(JSContext * const cx, JSObject *,
     assert(script);
 
     const char * const name =
-            script->getScriptNode().nodeType.nodeClass
-                .browser.getName();
+            script->getScriptNode().type._class.browser.getName();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, name));
     return JS_TRUE;
 }
@@ -2314,8 +2321,7 @@ JSBool getVersion(JSContext * const cx, JSObject *,
     assert(script);
 
     const char * const version =
-            script->getScriptNode().nodeType.nodeClass
-                .browser.getVersion();
+            script->getScriptNode().type._class.browser.getVersion();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, version));
     return JS_TRUE;
 }
@@ -2328,8 +2334,8 @@ JSBool getCurrentSpeed(JSContext * const cx, JSObject *,
             static_cast<Script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    float speed = script->getScriptNode().nodeType.nodeClass
-                      .browser.getCurrentSpeed();
+    float speed = script->getScriptNode().type._class
+                  .browser.getCurrentSpeed();
     *rval = DOUBLE_TO_JSVAL(JS_NewDouble( cx, speed ));
     return JS_TRUE;
 }
@@ -2343,7 +2349,7 @@ JSBool getCurrentFrameRate(JSContext * const cx, JSObject *,
     assert(script);
 
     *rval = DOUBLE_TO_JSVAL(JS_NewDouble(cx,
-                script->getScriptNode().nodeType.nodeClass
+                script->getScriptNode().type._class
                     .browser.getFrameRate()));
     return JS_TRUE;
 }
@@ -2357,7 +2363,7 @@ JSBool getWorldURL(JSContext * const cx, JSObject *,
     assert(script);
 
     const std::string url =
-            script->getScriptNode().nodeType.nodeClass
+            script->getScriptNode().type._class
                 .browser.getWorldURI();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, url.c_str()));
     return JS_TRUE;
@@ -2403,7 +2409,7 @@ JSBool loadURL(JSContext * const cx, JSObject *,
             MFString::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[1]));
     assert(parameters.get());
 
-    script->getScriptNode().getScene()
+    script->getScriptNode().scene()
             ->browser.loadURI(url->value, parameters->value);
     return JS_TRUE;
 }
@@ -2435,7 +2441,7 @@ JSBool replaceWorld(JSContext * const cx, JSObject *,
             MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[0]));
     assert(nodes.get());
 
-    script->getScriptNode().getScene()->browser.replaceWorld(nodes->value);
+    script->getScriptNode().scene()->browser.replaceWorld(nodes->value);
 
     *rval = JSVAL_VOID;
     return JS_TRUE;
@@ -2464,9 +2470,9 @@ JSBool createVrmlFromString(JSContext * const cx,
     try {
         std::istringstream in(JS_GetStringBytes(str));
 
-        assert(script->getScriptNode().getScene());
+        assert(script->getScriptNode().scene());
         OpenVRML::Browser & browser =
-                script->getScriptNode().getScene()->browser;
+                script->getScriptNode().scene()->browser;
         const std::vector<NodePtr> nodes = browser.createVrmlFromStream(in);
 
         if (nodes.empty()) {
@@ -2609,7 +2615,7 @@ JSBool addRoute(JSContext * const cx, JSObject *,
             JS_GetStringBytes(JSVAL_TO_STRING(argv[3]));
 
     try {
-        fromNode->value->addRoute(fromEventOut, toNode->value, toEventIn);
+        fromNode->value->add_route(fromEventOut, toNode->value, toEventIn);
     } catch (std::runtime_error & ex) {
         JS_ReportError(cx, ex.what());
         return JS_FALSE;
@@ -2668,7 +2674,7 @@ JSBool deleteRoute(JSContext * const cx, JSObject *,
     const char * const toEventIn =
             JS_GetStringBytes(JSVAL_TO_STRING(argv[3]));
 
-    fromNode->value->deleteRoute(fromEventOut, toNode->value, toEventIn);
+    fromNode->value->delete_route(fromEventOut, toNode->value, toEventIn);
 
     *rval = JSVAL_VOID;
     return JS_TRUE;
@@ -3294,8 +3300,8 @@ JSBool SFNode::initObject(JSContext * const cx, JSObject * const obj,
 
     istringstream in(JS_GetStringBytes(str));
 
-    assert(script->getScriptNode().getScene());
-    OpenVRML::Browser & browser = script->getScriptNode().getScene()->browser;
+    assert(script->getScriptNode().scene());
+    OpenVRML::Browser & browser = script->getScriptNode().scene()->browser;
     std::vector<NodePtr> nodes;
     try {
         nodes = browser.createVrmlFromStream(in);
@@ -3348,8 +3354,7 @@ JSBool SFNode::getProperty(JSContext * const cx, JSObject * const obj,
         JSString * str = 0;
         if (JSVAL_IS_STRING(id) && ((str = JSVAL_TO_STRING(id)))) {
             const char * eventOut = JS_GetStringBytes(str);
-            const field_value & fieldVal =
-                thisNode.value->getEventOut(eventOut);
+            const field_value & fieldVal = thisNode.value->eventout(eventOut);
 
             // convert event out value to jsval...
             *vp = script->vrmlFieldToJSVal(fieldVal);
@@ -3360,7 +3365,7 @@ JSBool SFNode::getProperty(JSContext * const cx, JSObject * const obj,
             // prop and an invalid eventOut...
             return JS_TRUE;
         }
-    } catch (UnsupportedInterface & ex) {}
+    } catch (unsupported_interface & ex) {}
     return JS_TRUE;
 }
 
@@ -3384,7 +3389,7 @@ JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
     // convert vp to field, send eventIn to node
     field_value::type_id expectType;
     std::auto_ptr<field_value> fieldValue;
-    if ((expectType = nodePtr->nodeType.hasEventIn(eventInId))) {
+    if ((expectType = nodePtr->type.has_eventin(eventInId))) {
         try {
             fieldValue =  createFieldValueFromJsval(cx, *vp, expectType);
         } catch (BadConversion & ex) {
@@ -3398,12 +3403,15 @@ JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
 
 	// the timestamp should be stored as a global property and
 	// looked up via obj somehow...
-	Script * const script = static_cast<Script *>(JS_GetContextPrivate(cx));
+	Script * const script =
+            static_cast<Script *>(JS_GetContextPrivate(cx));
         assert(script);
-        script->getScriptNode().getScene()->browser
-                .queueEvent(s_timeStamp, fieldValue.release(), nodePtr,
-                            eventInId);
-    } else if ((expectType = nodePtr->nodeType.hasField(eventInId))) {
+        script->getScriptNode().scene()->browser
+            .queueEvent(s_timeStamp,
+                        fieldValue.release(),
+                        nodePtr,
+                        eventInId);
+    } else if ((expectType = nodePtr->type.has_field(eventInId))) {
         try {
             fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
         } catch (BadConversion & ex) {
@@ -3417,10 +3425,13 @@ JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
 
 	// the timestamp should be stored as a global property and
 	// looked up via obj somehow...
-	Script * const script = static_cast<Script *>(JS_GetContextPrivate(cx));
+	Script * const script =
+            static_cast<Script *>(JS_GetContextPrivate(cx));
 	assert(script);
-	script->getScriptNode().getScene()->browser
-                .queueEvent(s_timeStamp, fieldValue.release(), nodePtr,
+	script->getScriptNode().scene()->browser
+                .queueEvent(s_timeStamp,
+                            fieldValue.release(),
+                            nodePtr,
                             eventInId);
     }
     sfdata->changed = true;

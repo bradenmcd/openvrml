@@ -43,52 +43,51 @@ namespace OpenVRML {
 
     namespace Vrml97Node {
 
-        class OPENVRML_SCOPE AbstractBase : public virtual Node {
+        class OPENVRML_SCOPE AbstractBase : public virtual node {
         public:
             virtual ~AbstractBase() throw () = 0;
 
         protected:
-            AbstractBase(const NodeType & nodeType, const ScopePtr & scope);
+            AbstractBase(const node_type & nodeType, const ScopePtr & scope);
 
         private:
-            virtual void do_setField(const std::string & id,
-                                     const field_value & value)
-                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+            virtual void do_field(const std::string & id,
+                                  const field_value & value)
+                throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+
+            virtual const field_value & do_field(const std::string & id) const
+                throw (unsupported_interface);
+
+            virtual void do_process_event(const std::string & id,
+                                          const field_value & value,
+                                          double timestamp)
+                throw (unsupported_interface, std::bad_cast, std::bad_alloc);
 
             virtual const field_value &
-            do_getField(const std::string & id) const
-                throw (UnsupportedInterface);
-
-            virtual void do_processEvent(const std::string & id,
-                                         const field_value & value,
-                                         double timestamp)
-                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-
-            virtual const field_value &
-            do_getEventOut(const std::string & id) const
-                throw (UnsupportedInterface);
+            do_eventout(const std::string & id) const
+                throw (unsupported_interface);
         };
 
 
         class OPENVRML_SCOPE AbstractChild : public AbstractBase,
-                                             public ChildNode {
+                                             public child_node {
         public:
             virtual ~AbstractChild() throw () = 0;
 
         protected:
-            AbstractChild(const NodeType & nodeType, const ScopePtr & scope);
+            AbstractChild(const node_type & nodeType, const ScopePtr & scope);
         };
 
 
         class OPENVRML_SCOPE AbstractGeometry : public AbstractBase,
-                                                public GeometryNode {
+                                                public geometry_node {
         public:
             virtual ~AbstractGeometry() throw () = 0;
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
         protected:
-            AbstractGeometry(const NodeType & nodeType, const ScopePtr & scope);
+            AbstractGeometry(const node_type & nodeType, const ScopePtr & scope);
 
             Viewer::Object d_viewerObject; // move to Node? ...
         };
@@ -96,7 +95,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE AbstractIndexedSet : public AbstractGeometry {
         protected:
-            sfnode color;
+            sfnode color_;
             mfint32 colorIndex;
             sfbool colorPerVertex;
             sfnode coord;
@@ -105,13 +104,13 @@ namespace OpenVRML {
         public:
             virtual ~AbstractIndexedSet() throw () = 0;
 
-            virtual bool isModified() const;
-            virtual void updateModified(NodePath & path, int flags = 0x003);
+            virtual bool modified() const;
+            virtual void update_modified(node_path & path, int flags = 0x003);
 
-            virtual const ColorNode * getColor() const throw ();
+            virtual const color_node * color() const throw ();
 
         protected:
-            AbstractIndexedSet(const NodeType & nodeType,
+            AbstractIndexedSet(const node_type & nodeType,
                                const ScopePtr & scope);
 
             //
@@ -141,7 +140,7 @@ namespace OpenVRML {
             virtual ~AbstractLight() throw () = 0;
 
             virtual void renderScoped(Viewer & viewer);
-            virtual AbstractLight * toLight() const;
+            virtual AbstractLight * to_light() const;
 
             float getAmbientIntensity() const
             {
@@ -164,7 +163,7 @@ namespace OpenVRML {
             }
 
         protected:
-            AbstractLight(const NodeType & nodeType, const ScopePtr & scope);
+            AbstractLight(const node_type & nodeType, const ScopePtr & scope);
 
             //
             // eventIn handlers
@@ -182,7 +181,7 @@ namespace OpenVRML {
 
 
         class OPENVRML_SCOPE AbstractTexture : public AbstractBase,
-                                               public TextureNode {
+                                               public texture_node {
         protected:
             sfbool repeatS;
             sfbool repeatT;
@@ -191,34 +190,34 @@ namespace OpenVRML {
             virtual ~AbstractTexture() throw () = 0;
 
             //
-            // TextureNode implementation.
+            // texture_node implementation.
             //
-            virtual bool getRepeatS() const throw ();
-            virtual bool getRepeatT() const throw ();
+            virtual bool repeat_s() const throw ();
+            virtual bool repeat_t() const throw ();
 
         protected:
-            AbstractTexture(const NodeType & nodeType, const ScopePtr & scope);
+            AbstractTexture(const node_type & nodeType, const ScopePtr & scope);
         };
 
 
-        class OPENVRML_SCOPE GroupClass : public NodeClass {
+        class OPENVRML_SCOPE GroupClass : public node_class {
         public:
             explicit GroupClass(Browser & browser);
             virtual ~GroupClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Group : public AbstractBase,
-                                     public virtual GroupingNode {
+                                     public virtual grouping_node {
             friend class GroupClass;
 
         protected:
             sfvec3f bboxCenter;
             sfvec3f bboxSize;
-            mfnode children;
+            mfnode children_;
             sfstring relative;
 
             Viewer::Object viewerObject;
@@ -229,21 +228,21 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            Group(const NodeType & nodeType,
+            Group(const node_type & nodeType,
                   const ScopePtr & scope);
             virtual ~Group() throw ();
 
-            virtual bool isModified() const;
-            virtual void updateModified(NodePath& path, int flags);
+            virtual bool modified() const;
+            virtual void update_modified(node_path& path, int flags);
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
-            virtual const std::vector<NodePtr> & getChildren() const throw ();
+            virtual const std::vector<NodePtr> & children() const throw ();
             virtual void activate(double timeStamp, bool isOver, bool isActive, double *p);
 
             void renderNoCull(Viewer & viewer, VrmlRenderContext context);
 
-            const BVolume * getBVolume() const;
+            const BVolume * bvolume() const;
 
         protected:
             //
@@ -266,14 +265,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE AnchorClass : public NodeClass {
+        class OPENVRML_SCOPE AnchorClass : public node_class {
         public:
             explicit AnchorClass(Browser & browser);
             virtual ~AnchorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Anchor : public Group {
@@ -284,17 +283,17 @@ namespace OpenVRML {
             mfstring url;
 
         public:
-            Anchor(const NodeType & nodeType,
+            Anchor(const node_type & nodeType,
                    const ScopePtr & scope);
             virtual ~Anchor() throw ();
 
-            virtual Anchor * toAnchor() const;
+            virtual Anchor * to_anchor() const;
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
             void activate();
 
-            const BVolume * getBVolume() const;
+            const BVolume * bvolume() const;
 
         private:
             //
@@ -321,40 +320,40 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE AppearanceClass : public NodeClass {
+        class OPENVRML_SCOPE AppearanceClass : public node_class {
         public:
             explicit AppearanceClass(Browser & browser);
             virtual ~AppearanceClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Appearance : public AbstractBase,
-                                          public AppearanceNode {
+                                          public appearance_node {
             friend class AppearanceClass;
 
-            sfnode material;
-            sfnode texture;
+            sfnode material_;
+            sfnode texture_;
             sfnode textureTransform;
 
         public:
-            Appearance(const NodeType & nodeType,
+            Appearance(const node_type & nodeType,
                        const ScopePtr & scope);
             virtual ~Appearance() throw ();
 
-            virtual bool isModified() const;
-            virtual void updateModified(NodePath & path, int flags = 0x003);
+            virtual bool modified() const;
+            virtual void update_modified(node_path & path, int flags = 0x003);
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
             //
-            // AppearanceNode implementation
+            // appearance_node implementation
             //
-            virtual const NodePtr & getMaterial() const throw ();
-            virtual const NodePtr & getTexture() const throw ();
-            virtual const NodePtr & getTextureTransform() const throw ();
+            virtual const NodePtr & material() const throw ();
+            virtual const NodePtr & texture() const throw ();
+            virtual const NodePtr & texture_transform() const throw ();
 
         private:
             //
@@ -372,14 +371,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE AudioClipClass : public NodeClass {
+        class OPENVRML_SCOPE AudioClipClass : public node_class {
         public:
             explicit AudioClipClass(Browser & browser);
             virtual ~AudioClipClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE AudioClip : public AbstractBase {
@@ -403,16 +402,17 @@ namespace OpenVRML {
             int audio_fd;
 
         public:
-            AudioClip(const NodeType & nodeType,
+            AudioClip(const node_type & nodeType,
                       const ScopePtr & scope);
             virtual ~AudioClip() throw ();
 
             void update(double time);
 
-            virtual AudioClip * toAudioClip() const;
+            virtual AudioClip * to_audio_clip() const;
 
         private:
-            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
+            virtual void do_initialize(double timestamp)
+                throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
 
             //
@@ -423,7 +423,8 @@ namespace OpenVRML {
                     throw (std::bad_cast, std::bad_alloc);
             void processSet_loop(const field_value & sfbool, double timestamp)
                     throw (std::bad_cast);
-            void processSet_pitch(const field_value & sffloat, double timestamp)
+            void processSet_pitch(const field_value & sffloat,
+                                  double timestamp)
                     throw (std::bad_cast);
             void processSet_startTime(const field_value & sftime,
                                       double timestamp)
@@ -438,7 +439,7 @@ namespace OpenVRML {
 
         class Background;
 
-        class OPENVRML_SCOPE BackgroundClass : public NodeClass {
+        class OPENVRML_SCOPE BackgroundClass : public node_class {
             typedef std::vector<Background *> BoundNodes;
 
             Background * first;
@@ -454,12 +455,12 @@ namespace OpenVRML {
                 throw (std::bad_alloc);
             void unbind(Background & background, double timestamp) throw ();
 
-            virtual void initialize(ViewpointNode * initialViewpoint,
+            virtual void initialize(viewpoint_node * initialViewpoint,
                                     double timestamp) throw ();
             virtual void render(Viewer & viewer) throw ();
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Background : public AbstractChild {
@@ -487,7 +488,7 @@ namespace OpenVRML {
             Viewer::Object viewerObject;
 
         public:
-            Background(const NodeType & nodeType,
+            Background(const node_type & nodeType,
                        const ScopePtr & scope);
             virtual ~Background() throw ();
 
@@ -533,14 +534,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE BillboardClass : public NodeClass {
+        class OPENVRML_SCOPE BillboardClass : public node_class {
         public:
             explicit BillboardClass(Browser & browser);
             virtual ~BillboardClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Billboard : public Group {
@@ -555,7 +556,7 @@ namespace OpenVRML {
                                             const mat4f & MV,
                                             mat4f & M);
 
-            Billboard(const NodeType & nodeType,
+            Billboard(const node_type & nodeType,
                       const ScopePtr & scope);
             virtual ~Billboard() throw ();
 
@@ -577,14 +578,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE BoxClass : public NodeClass {
+        class OPENVRML_SCOPE BoxClass : public node_class {
         public:
             explicit BoxClass(Browser & browser);
             virtual ~BoxClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Box : public AbstractGeometry {
@@ -595,24 +596,24 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            Box(const NodeType & nodeType,
+            Box(const node_type & nodeType,
                 const ScopePtr & scope);
             virtual ~Box() throw ();
 
-            virtual Viewer::Object insertGeometry(Viewer & viewer,
+            virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
-            virtual const BVolume * getBVolume() const;
+            virtual const BVolume * bvolume() const;
         };
 
 
-        class OPENVRML_SCOPE CollisionClass : public NodeClass {
+        class OPENVRML_SCOPE CollisionClass : public node_class {
         public:
             explicit CollisionClass(Browser & browser);
             virtual ~CollisionClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Collision : public Group {
@@ -623,11 +624,11 @@ namespace OpenVRML {
             sftime collideTime;  // eventOut
 
         public:
-            Collision(const NodeType & nodeType,
+            Collision(const node_type & nodeType,
                       const ScopePtr & scope);
             virtual ~Collision() throw ();
 
-            virtual bool isModified() const;
+            virtual bool modified() const;
 
         private:
             //
@@ -638,30 +639,30 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE ColorClass : public NodeClass {
+        class OPENVRML_SCOPE ColorClass : public node_class {
         public:
             explicit ColorClass(Browser & browser);
             virtual ~ColorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE Color : public AbstractBase, public ColorNode {
+        class OPENVRML_SCOPE Color : public AbstractBase, public color_node {
             friend class ColorClass;
 
-            mfcolor color;
+            mfcolor color_;
 
         public:
-            Color(const NodeType & nodeType,
+            Color(const node_type & nodeType,
                   const ScopePtr & scope);
             virtual ~Color() throw ();
 
             //
-            // ColorNode implementation
+            // color_node implementation
             //
-            virtual const std::vector<OpenVRML::color> & getColor() const
+            virtual const std::vector<OpenVRML::color> & color() const
                 throw ();
 
         private:
@@ -679,14 +680,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE ColorInterpolatorClass : public NodeClass {
+        class OPENVRML_SCOPE ColorInterpolatorClass : public node_class {
         public:
             explicit ColorInterpolatorClass(Browser & browser);
             virtual ~ColorInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE ColorInterpolator : public AbstractChild {
@@ -697,7 +698,7 @@ namespace OpenVRML {
             sfcolor value;
 
         public:
-            ColorInterpolator(const NodeType & nodeType,
+            ColorInterpolator(const node_type & nodeType,
                               const ScopePtr & scope);
             virtual ~ColorInterpolator() throw ();
 
@@ -724,14 +725,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE ConeClass : public NodeClass {
+        class OPENVRML_SCOPE ConeClass : public node_class {
         public:
             explicit ConeClass(Browser & browser);
             virtual ~ConeClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Cone : public AbstractGeometry {
@@ -743,40 +744,40 @@ namespace OpenVRML {
             sfbool side;
 
         public:
-            Cone(const NodeType & nodeType,
+            Cone(const node_type & nodeType,
                  const ScopePtr & scope);
             virtual ~Cone() throw ();
 
-            virtual Viewer::Object insertGeometry(Viewer & viewer,
+            virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
         };
 
 
-        class OPENVRML_SCOPE CoordinateClass : public NodeClass {
+        class OPENVRML_SCOPE CoordinateClass : public node_class {
         public:
             explicit CoordinateClass(Browser & browser);
             virtual ~CoordinateClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Coordinate : public AbstractBase,
-                                          public CoordinateNode {
+                                          public coordinate_node {
             friend class CoordinateClass;
 
-            mfvec3f point;
+            mfvec3f point_;
 
         public:
-            Coordinate(const NodeType & nodeType,
+            Coordinate(const node_type & nodeType,
                        const ScopePtr & scope);
             virtual ~Coordinate() throw ();
 
             //
-            // CoordinateNode implementation
+            // coordinate_node implementation
             //
-            virtual const std::vector<vec3f> & getPoint() const throw ();
+            virtual const std::vector<vec3f> & point() const throw ();
 
         private:
             //
@@ -793,14 +794,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE CoordinateInterpolatorClass : public NodeClass {
+        class OPENVRML_SCOPE CoordinateInterpolatorClass : public node_class {
         public:
             explicit CoordinateInterpolatorClass(Browser & browser);
             virtual ~CoordinateInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE CoordinateInterpolator : public AbstractChild {
@@ -811,7 +812,7 @@ namespace OpenVRML {
             mfvec3f value;
 
         public:
-            CoordinateInterpolator(const NodeType & nodeType,
+            CoordinateInterpolator(const node_type & nodeType,
                                    const ScopePtr & scope);
             virtual ~CoordinateInterpolator() throw ();
 
@@ -839,14 +840,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE CylinderClass : public NodeClass {
+        class OPENVRML_SCOPE CylinderClass : public node_class {
         public:
             explicit CylinderClass(Browser & browser);
             virtual ~CylinderClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Cylinder : public AbstractGeometry {
@@ -859,23 +860,23 @@ namespace OpenVRML {
             sfbool top;
 
         public:
-            Cylinder(const NodeType & nodeType,
+            Cylinder(const node_type & nodeType,
                      const ScopePtr & scope);
             virtual ~Cylinder() throw ();
 
-            virtual Viewer::Object insertGeometry(Viewer & viewer,
+            virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
         };
 
 
-        class OPENVRML_SCOPE CylinderSensorClass : public NodeClass {
+        class OPENVRML_SCOPE CylinderSensorClass : public node_class {
         public:
             explicit CylinderSensorClass(Browser & browser);
             virtual ~CylinderSensorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE CylinderSensor : public AbstractChild {
@@ -898,11 +899,11 @@ namespace OpenVRML {
             mat4f modelview;
 
         public:
-            CylinderSensor(const NodeType & nodeType,
+            CylinderSensor(const node_type & nodeType,
                            const ScopePtr & scope);
             virtual ~CylinderSensor() throw ();
 
-            virtual CylinderSensor * toCylinderSensor() const;
+            virtual CylinderSensor * to_cylinder_sensor() const;
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             void activate( double timeStamp, bool isActive, double *p );
@@ -928,14 +929,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE DirectionalLightClass : public NodeClass {
+        class OPENVRML_SCOPE DirectionalLightClass : public node_class {
         public:
             explicit DirectionalLightClass(Browser & browser);
             virtual ~DirectionalLightClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE DirectionalLight : public AbstractLight {
@@ -944,7 +945,7 @@ namespace OpenVRML {
             sfvec3f direction;
 
         public:
-            DirectionalLight(const NodeType & nodeType,
+            DirectionalLight(const node_type & nodeType,
                              const ScopePtr & scope);
             virtual ~DirectionalLight() throw ();
 
@@ -959,14 +960,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE ElevationGridClass : public NodeClass {
+        class OPENVRML_SCOPE ElevationGridClass : public node_class {
         public:
             explicit ElevationGridClass(Browser & browser);
             virtual ~ElevationGridClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE ElevationGrid : public AbstractGeometry {
@@ -987,13 +988,13 @@ namespace OpenVRML {
             sffloat zSpacing;
 
         public:
-            ElevationGrid(const NodeType & nodeType,
+            ElevationGrid(const node_type & nodeType,
                           const ScopePtr & scope);
             virtual ~ElevationGrid() throw ();
 
-            virtual bool isModified() const;
-            virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual Viewer::Object insertGeometry(Viewer & viewer,
+            virtual bool modified() const;
+            virtual void update_modified(node_path & path, int flags = 0x003);
+            virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
 
         private:
@@ -1012,14 +1013,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE ExtrusionClass : public NodeClass {
+        class OPENVRML_SCOPE ExtrusionClass : public node_class {
         public:
             explicit ExtrusionClass(Browser & browser);
             virtual ~ExtrusionClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Extrusion : public AbstractGeometry {
@@ -1037,11 +1038,11 @@ namespace OpenVRML {
             mfvec3f spine;
 
         public:
-            Extrusion(const NodeType & nodeType,
+            Extrusion(const node_type & nodeType,
                       const ScopePtr & scope);
             virtual ~Extrusion() throw ();
 
-            virtual Viewer::Object insertGeometry(Viewer & viewer,
+            virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
 
         private:
@@ -1065,7 +1066,7 @@ namespace OpenVRML {
 
         class Fog;
 
-        class OPENVRML_SCOPE FogClass : public NodeClass {
+        class OPENVRML_SCOPE FogClass : public node_class {
             typedef std::vector<Fog *> BoundNodes;
 
             Fog * first;
@@ -1080,12 +1081,12 @@ namespace OpenVRML {
             void bind(Fog & fog, double timestamp) throw (std::bad_alloc);
             void unbind(Fog & fog, double timestamp) throw ();
 
-            virtual void initialize(ViewpointNode * initialViewpoint,
+            virtual void initialize(viewpoint_node * initialViewpoint,
                                     double timestamp) throw ();
             virtual void render(Viewer & viewer) throw ();
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Fog : public AbstractChild {
@@ -1097,7 +1098,7 @@ namespace OpenVRML {
             sfbool bound;
 
         public:
-            Fog(const NodeType & nodeType,
+            Fog(const node_type & nodeType,
                 const ScopePtr & scope);
             virtual ~Fog() throw ();
 
@@ -1121,58 +1122,58 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE FontStyleClass : public NodeClass {
+        class OPENVRML_SCOPE FontStyleClass : public node_class {
         public:
             explicit FontStyleClass(Browser & browser);
             virtual ~FontStyleClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE FontStyle : public AbstractBase,
-                                         public FontStyleNode {
+                                         public font_style_node {
             friend class FontStyleClass;
 
-            mfstring family;
-            sfbool horizontal;
-            mfstring justify;
-            sfstring language;
+            mfstring family_;
+            sfbool horizontal_;
+            mfstring justify_;
+            sfstring language_;
             sfbool leftToRight;
-            sffloat size;
-            sffloat spacing;
-            sfstring style;
+            sffloat size_;
+            sffloat spacing_;
+            sfstring style_;
             sfbool topToBottom;
 
         public:
-            FontStyle(const NodeType & nodeType,
+            FontStyle(const node_type & nodeType,
                       const ScopePtr & scope);
             virtual ~FontStyle() throw ();
 
             //
-            // FontStyleNode implementation
+            // font_style_node implementation
             //
-            virtual const std::vector<std::string> & getFamily() const throw ();
-            virtual bool getHorizontal() const throw ();
-            virtual const std::vector<std::string> & getJustify() const throw ();
-            virtual const std::string & getLanguage() const throw ();
-            virtual bool getLeftToRight() const throw ();
-            virtual float getSize() const throw ();
-            virtual float getSpacing() const throw ();
-            virtual const std::string & getStyle() const throw ();
-            virtual bool getTopToBottom() const throw ();
+            virtual const std::vector<std::string> & family() const throw ();
+            virtual bool horizontal() const throw ();
+            virtual const std::vector<std::string> & justify() const throw ();
+            virtual const std::string & language() const throw ();
+            virtual bool left_to_right() const throw ();
+            virtual float size() const throw ();
+            virtual float spacing() const throw ();
+            virtual const std::string & style() const throw ();
+            virtual bool top_to_bottom() const throw ();
         };
 
 
-        class OPENVRML_SCOPE ImageTextureClass : public NodeClass {
+        class OPENVRML_SCOPE ImageTextureClass : public node_class {
         public:
             explicit ImageTextureClass(Browser & browser);
             virtual ~ImageTextureClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE ImageTexture : public AbstractTexture {
@@ -1185,7 +1186,7 @@ namespace OpenVRML {
             Viewer::TextureObject texObject;
 
         public:
-            ImageTexture(const NodeType & nodeType,
+            ImageTexture(const node_type & nodeType,
                          const ScopePtr & scope);
             virtual ~ImageTexture() throw ();
 
@@ -1206,14 +1207,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE IndexedFaceSetClass : public NodeClass {
+        class OPENVRML_SCOPE IndexedFaceSetClass : public node_class {
         public:
             explicit IndexedFaceSetClass(Browser & browser);
             virtual ~IndexedFaceSetClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE IndexedFaceSet : public AbstractIndexedSet {
@@ -1232,15 +1233,15 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            IndexedFaceSet(const NodeType & nodeType,
+            IndexedFaceSet(const node_type & nodeType,
                            const ScopePtr & scope);
             virtual ~IndexedFaceSet() throw ();
 
-            virtual bool isModified() const;
-            virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual Viewer::Object insertGeometry(Viewer & viewer,
+            virtual bool modified() const;
+            virtual void update_modified(node_path & path, int flags = 0x003);
+            virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
-            virtual const BVolume * getBVolume() const;
+            virtual const BVolume * bvolume() const;
 
         private:
             //
@@ -1262,41 +1263,41 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE IndexedLineSetClass : public NodeClass {
+        class OPENVRML_SCOPE IndexedLineSetClass : public node_class {
         public:
             explicit IndexedLineSetClass(Browser & browser);
             virtual ~IndexedLineSetClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE IndexedLineSet : public AbstractIndexedSet {
             friend class IndexedLineSetClass;
 
         public:
-            IndexedLineSet(const NodeType & nodeType,
+            IndexedLineSet(const node_type & nodeType,
                            const ScopePtr & scope);
             virtual ~IndexedLineSet() throw ();
 
-            virtual Viewer::Object insertGeometry(Viewer & viewer,
+            virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
         };
 
 
-        class OPENVRML_SCOPE InlineClass : public NodeClass {
+        class OPENVRML_SCOPE InlineClass : public node_class {
         public:
             explicit InlineClass(Browser & browser);
             virtual ~InlineClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Inline : public AbstractBase,
-                                      public GroupingNode {
+                                      public grouping_node {
             friend class InlineClass;
 
             sfvec3f bboxCenter;
@@ -1307,14 +1308,14 @@ namespace OpenVRML {
             bool hasLoaded;
 
         public:
-            Inline(const NodeType & nodeType,
+            Inline(const node_type & nodeType,
                    const ScopePtr & scope);
             virtual ~Inline() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-            virtual Inline * toInline() const;
+            virtual Inline * to_inline() const;
 
-            virtual const std::vector<NodePtr> & getChildren() const throw ();
+            virtual const std::vector<NodePtr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
@@ -1329,38 +1330,38 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE LODClass : public NodeClass {
+        class OPENVRML_SCOPE LODClass : public node_class {
         public:
             explicit LODClass(Browser & browser);
             virtual ~LODClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE LOD : public AbstractBase,
-                                   public GroupingNode {
+                                   public grouping_node {
             friend class LODClass;
 
             mfnode level;
             sfvec3f center;
             mffloat range;
 
-            mfnode children;
+            mfnode children_;
             BSphere bsphere;
 
         public:
-            LOD(const NodeType & nodeType,
+            LOD(const node_type & nodeType,
                 const ScopePtr & scope);
             virtual ~LOD() throw ();
 
-            virtual bool isModified() const;
-            virtual void updateModified(NodePath & path, int flags = 0x003);
+            virtual bool modified() const;
+            virtual void update_modified(node_path & path, int flags = 0x003);
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-            virtual const BVolume * getBVolume() const;
+            virtual const BVolume * bvolume() const;
 
-            virtual const std::vector<NodePtr> & getChildren() const throw ();
+            virtual const std::vector<NodePtr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
@@ -1375,41 +1376,41 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE MaterialClass : public NodeClass {
+        class OPENVRML_SCOPE MaterialClass : public node_class {
         public:
             explicit MaterialClass(Browser & browser);
             virtual ~MaterialClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Material : public AbstractBase,
-                                        public MaterialNode {
+                                        public material_node {
             friend class MaterialClass;
 
             sffloat ambientIntensity;
             sfcolor diffuseColor;
             sfcolor emissiveColor;
-            sffloat shininess;
+            sffloat shininess_;
             sfcolor specularColor;
-            sffloat transparency;
+            sffloat transparency_;
 
         public:
-            Material(const NodeType & nodeType,
+            Material(const node_type & nodeType,
                      const ScopePtr & scope);
             virtual ~Material() throw ();
 
             //
-            // MaterialNode implementation
+            // material_node implementation
             //
-            virtual float getAmbientIntensity() const throw ();
-            virtual const color & getDiffuseColor() const throw ();
-            virtual const color & getEmissiveColor() const throw ();
-            virtual float getShininess() const throw ();
-            virtual const color & getSpecularColor() const throw ();
-            virtual float getTransparency() const throw ();
+            virtual float ambient_intensity() const throw ();
+            virtual const color & diffuse_color() const throw ();
+            virtual const color & emissive_color() const throw ();
+            virtual float shininess() const throw ();
+            virtual const color & specular_color() const throw ();
+            virtual float transparency() const throw ();
 
         private:
             //
@@ -1436,14 +1437,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE MovieTextureClass : public NodeClass {
+        class OPENVRML_SCOPE MovieTextureClass : public node_class {
         public:
             explicit MovieTextureClass(Browser & browser);
             virtual ~MovieTextureClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE MovieTexture : public AbstractTexture {
@@ -1464,11 +1465,11 @@ namespace OpenVRML {
             Viewer::TextureObject texObject;
 
         public:
-            MovieTexture(const NodeType & nodeType,
+            MovieTexture(const node_type & nodeType,
                          const ScopePtr & scope);
             virtual ~MovieTexture() throw ();
 
-            virtual MovieTexture * toMovieTexture() const;
+            virtual MovieTexture * to_movie_texture() const;
 
             void update(double time);
 
@@ -1500,14 +1501,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE NavigationInfoClass : public NodeClass {
+        class OPENVRML_SCOPE NavigationInfoClass : public node_class {
         public:
             explicit NavigationInfoClass(Browser & browser);
             virtual ~NavigationInfoClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE NavigationInfo : public AbstractChild {
@@ -1521,11 +1522,11 @@ namespace OpenVRML {
             sfbool bound;
 
         public:
-            NavigationInfo(const NodeType & nodeType,
+            NavigationInfo(const node_type & nodeType,
                            const ScopePtr & scope);
             virtual ~NavigationInfo() throw ();
 
-            virtual NavigationInfo * toNavigationInfo() const;
+            virtual NavigationInfo * to_navigation_info() const;
 
             const float * getAvatarSize()
             {
@@ -1573,30 +1574,30 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE NormalClass : public NodeClass {
+        class OPENVRML_SCOPE NormalClass : public node_class {
         public:
             explicit NormalClass(Browser & browser);
             virtual ~NormalClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE Normal : public AbstractBase, public NormalNode {
+        class OPENVRML_SCOPE Normal : public AbstractBase, public normal_node {
             friend class NormalClass;
 
-            mfvec3f vector;
+            mfvec3f vector_;
 
         public:
-            Normal(const NodeType & nodeType,
+            Normal(const node_type & nodeType,
                    const ScopePtr & scope);
             virtual ~Normal() throw ();
 
             //
-            // NormalNode implementation.
+            // normal_node implementation.
             //
-            virtual const std::vector<vec3f> & getVector() const throw ();
+            virtual const std::vector<vec3f> & vector() const throw ();
 
         private:
             //
@@ -1607,14 +1608,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE NormalInterpolatorClass : public NodeClass {
+        class OPENVRML_SCOPE NormalInterpolatorClass : public node_class {
         public:
             explicit NormalInterpolatorClass(Browser & browser);
             virtual ~NormalInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE NormalInterpolator : public AbstractChild {
@@ -1625,7 +1626,7 @@ namespace OpenVRML {
             mfvec3f value;
 
         public:
-            NormalInterpolator(const NodeType & nodeType,
+            NormalInterpolator(const node_type & nodeType,
                                const ScopePtr & scope);
             virtual ~NormalInterpolator() throw ();
 
@@ -1644,14 +1645,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE OrientationInterpolatorClass : public NodeClass {
+        class OPENVRML_SCOPE OrientationInterpolatorClass : public node_class {
         public:
             explicit OrientationInterpolatorClass(Browser & browser);
             virtual ~OrientationInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE OrientationInterpolator : public AbstractChild {
@@ -1662,7 +1663,7 @@ namespace OpenVRML {
             sfrotation value;
 
         public:
-            OrientationInterpolator(const NodeType & nodeType,
+            OrientationInterpolator(const node_type & nodeType,
                                     const ScopePtr & scope);
             virtual ~OrientationInterpolator() throw ();
 
@@ -1681,14 +1682,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE PixelTextureClass : public NodeClass {
+        class OPENVRML_SCOPE PixelTextureClass : public node_class {
         public:
             explicit PixelTextureClass(Browser & browser);
             virtual ~PixelTextureClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE PixelTexture : public AbstractTexture {
@@ -1699,7 +1700,7 @@ namespace OpenVRML {
             Viewer::TextureObject texObject;
 
         public:
-            PixelTexture(const NodeType & nodeType,
+            PixelTexture(const node_type & nodeType,
                          const ScopePtr & scope);
             virtual ~PixelTexture() throw ();
 
@@ -1720,14 +1721,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE PlaneSensorClass : public NodeClass {
+        class OPENVRML_SCOPE PlaneSensorClass : public node_class {
         public:
             explicit PlaneSensorClass(Browser & browser);
             virtual ~PlaneSensorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE PlaneSensor : public AbstractChild {
@@ -1748,11 +1749,11 @@ namespace OpenVRML {
             mat4f modelview;
 
         public:
-            PlaneSensor(const NodeType & nodeType,
+            PlaneSensor(const node_type & nodeType,
                         const ScopePtr & scope);
             virtual ~PlaneSensor() throw ();
 
-            virtual PlaneSensor * toPlaneSensor() const;
+            virtual PlaneSensor * to_plane_sensor() const;
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             void activate( double timeStamp, bool isActive, double *p );
@@ -1776,14 +1777,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE PointLightClass : public NodeClass {
+        class OPENVRML_SCOPE PointLightClass : public node_class {
         public:
             explicit PointLightClass(Browser & browser);
             virtual ~PointLightClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE PointLight : public AbstractLight {
@@ -1794,11 +1795,11 @@ namespace OpenVRML {
             sffloat radius;
 
         public:
-            PointLight(const NodeType & nodeType,
+            PointLight(const node_type & nodeType,
                        const ScopePtr & scope);
             virtual ~PointLight() throw ();
 
-            virtual PointLight * toPointLight() const;
+            virtual PointLight * to_point_light() const;
 
             virtual void renderScoped(Viewer & viewer);
 
@@ -1818,14 +1819,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE PointSetClass : public NodeClass {
+        class OPENVRML_SCOPE PointSetClass : public node_class {
         public:
             explicit PointSetClass(Browser & browser);
             virtual ~PointSetClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE PointSet : public AbstractGeometry {
@@ -1837,15 +1838,15 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            PointSet(const NodeType & nodeType,
+            PointSet(const node_type & nodeType,
                      const ScopePtr & scope);
             virtual ~PointSet() throw ();
 
-            virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual bool isModified() const;
-            virtual Viewer::Object insertGeometry(Viewer & viewer,
+            virtual void update_modified(node_path & path, int flags = 0x003);
+            virtual bool modified() const;
+            virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
-            virtual const BVolume * getBVolume() const;
+            virtual const BVolume * bvolume() const;
 
         private:
             //
@@ -1860,14 +1861,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE PositionInterpolatorClass : public NodeClass {
+        class OPENVRML_SCOPE PositionInterpolatorClass : public node_class {
         public:
             explicit PositionInterpolatorClass(Browser & browser);
             virtual ~PositionInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE PositionInterpolator : public AbstractChild {
@@ -1878,7 +1879,7 @@ namespace OpenVRML {
             sfvec3f value;
 
         public:
-            PositionInterpolator(const NodeType & nodeType,
+            PositionInterpolator(const node_type & nodeType,
                                  const ScopePtr & scope);
             virtual ~PositionInterpolator() throw ();
 
@@ -1898,14 +1899,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE ProximitySensorClass : public NodeClass {
+        class OPENVRML_SCOPE ProximitySensorClass : public node_class {
         public:
             explicit ProximitySensorClass(Browser & browser);
             virtual ~ProximitySensorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE ProximitySensor : public AbstractChild {
@@ -1921,7 +1922,7 @@ namespace OpenVRML {
             sftime exitTime;
 
         public:
-            ProximitySensor(const NodeType & nodeType,
+            ProximitySensor(const node_type & nodeType,
                             const ScopePtr & scope);
             virtual ~ProximitySensor() throw ();
 
@@ -1940,14 +1941,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE ScalarInterpolatorClass : public NodeClass {
+        class OPENVRML_SCOPE ScalarInterpolatorClass : public node_class {
         public:
             explicit ScalarInterpolatorClass(Browser & browser);
             virtual ~ScalarInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE ScalarInterpolator : public AbstractChild {
@@ -1958,7 +1959,7 @@ namespace OpenVRML {
             sffloat value;
 
         public:
-            ScalarInterpolator(const NodeType & nodeType,
+            ScalarInterpolator(const node_type & nodeType,
                                const ScopePtr & scope);
             virtual ~ScalarInterpolator() throw ();
 
@@ -1978,14 +1979,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE ShapeClass : public NodeClass {
+        class OPENVRML_SCOPE ShapeClass : public node_class {
         public:
             explicit ShapeClass(Browser & browser);
             virtual ~ShapeClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Shape : public AbstractChild {
@@ -1997,13 +1998,13 @@ namespace OpenVRML {
             Viewer::Object viewerObject; // move to Node.h ? ...
 
         public:
-            Shape(const NodeType & nodeType,
+            Shape(const node_type & nodeType,
                   const ScopePtr & scope);
             virtual ~Shape() throw ();
 
-            virtual bool isModified() const;
-            virtual void updateModified(NodePath& path, int flags);
-            virtual const BVolume * getBVolume() const;
+            virtual bool modified() const;
+            virtual void update_modified(node_path& path, int flags);
+            virtual const BVolume * bvolume() const;
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
         private:
@@ -2019,14 +2020,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE SoundClass : public NodeClass {
+        class OPENVRML_SCOPE SoundClass : public node_class {
         public:
             explicit SoundClass(Browser & browser);
             virtual ~SoundClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Sound : public AbstractChild {
@@ -2044,11 +2045,11 @@ namespace OpenVRML {
             sfbool spatialize;
 
         public:
-            Sound(const NodeType & nodeType,
+            Sound(const node_type & nodeType,
                   const ScopePtr & scope);
             virtual ~Sound() throw ();
 
-            virtual void updateModified(NodePath & path, int flags = 0x003);
+            virtual void update_modified(node_path & path, int flags = 0x003);
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
         private:
@@ -2076,14 +2077,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE SphereClass : public NodeClass {
+        class OPENVRML_SCOPE SphereClass : public node_class {
         public:
             explicit SphereClass(Browser & browser);
             virtual ~SphereClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Sphere : public AbstractGeometry {
@@ -2093,24 +2094,24 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            Sphere(const NodeType & nodeType,
+            Sphere(const node_type & nodeType,
                    const ScopePtr & scope);
             virtual ~Sphere() throw ();
 
-            virtual Viewer::Object insertGeometry(Viewer & viewer,
+            virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
-            virtual const BVolume * getBVolume() const;
+            virtual const BVolume * bvolume() const;
         };
 
 
-        class OPENVRML_SCOPE SphereSensorClass : public NodeClass {
+        class OPENVRML_SCOPE SphereSensorClass : public node_class {
         public:
             explicit SphereSensorClass(Browser & browser);
             virtual ~SphereSensorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE SphereSensor : public AbstractChild {
@@ -2128,11 +2129,11 @@ namespace OpenVRML {
             mat4f modelview;
 
         public:
-            SphereSensor(const NodeType & nodeType,
+            SphereSensor(const node_type & nodeType,
                          const ScopePtr & scope);
             virtual ~SphereSensor() throw ();
 
-            virtual SphereSensor * toSphereSensor() const;
+            virtual SphereSensor * to_sphere_sensor() const;
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
@@ -2155,14 +2156,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE SpotLightClass : public NodeClass {
+        class OPENVRML_SCOPE SpotLightClass : public node_class {
         public:
             explicit SpotLightClass(Browser & browser);
             virtual ~SpotLightClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE SpotLight : public AbstractLight {
@@ -2176,11 +2177,11 @@ namespace OpenVRML {
             sffloat radius;
 
         public:
-            SpotLight(const NodeType & nodeType,
+            SpotLight(const node_type & nodeType,
                       const ScopePtr & scope);
             virtual ~SpotLight() throw ();
 
-            virtual SpotLight * toSpotLight() const;
+            virtual SpotLight * to_spot_light() const;
 
             virtual void renderScoped(Viewer & viewer);
 
@@ -2209,37 +2210,37 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE SwitchClass : public NodeClass {
+        class OPENVRML_SCOPE SwitchClass : public node_class {
         public:
             explicit SwitchClass(Browser & browser);
             virtual ~SwitchClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Switch : public AbstractBase,
-                                      public GroupingNode {
+                                      public grouping_node {
             friend class SwitchClass;
 
             mfnode choice;
             sfint32 whichChoice;
 
-            mfnode children;
+            mfnode children_;
             BSphere bsphere;
 
         public:
-            Switch(const NodeType & nodeType,
+            Switch(const node_type & nodeType,
                    const ScopePtr & scope);
             virtual ~Switch() throw ();
 
-            virtual bool isModified() const;
-            virtual void updateModified(NodePath & path, int flags = 0x003);
+            virtual bool modified() const;
+            virtual void update_modified(node_path & path, int flags = 0x003);
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-            virtual const BVolume * getBVolume() const;
+            virtual const BVolume * bvolume() const;
 
-            virtual const std::vector<NodePtr> & getChildren() const throw ();
+            virtual const std::vector<NodePtr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
@@ -2258,16 +2259,16 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE TextClass : public NodeClass {
+        class OPENVRML_SCOPE TextClass : public node_class {
         public:
             FT_Library freeTypeLibrary;
 
             explicit TextClass(Browser & browser);
             virtual ~TextClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Text : public AbstractGeometry {
@@ -2306,14 +2307,14 @@ namespace OpenVRML {
             TextGeometry textGeometry;
 
         public:
-            Text(const NodeType & nodeType,
+            Text(const node_type & nodeType,
                  const ScopePtr & scope);
             virtual ~Text() throw ();
 
-            virtual bool isModified() const;
-            virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual Viewer::Object insertGeometry(Viewer & viewer,
-                                                  VrmlRenderContext context);
+            virtual bool modified() const;
+            virtual void update_modified(node_path & path, int flags = 0x003);
+            virtual Viewer::Object insert_geometry(Viewer & viewer,
+                                                   VrmlRenderContext context);
 
         private:
             virtual void do_initialize(double timestamp)
@@ -2341,31 +2342,31 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE TextureCoordinateClass : public NodeClass {
+        class OPENVRML_SCOPE TextureCoordinateClass : public node_class {
         public:
             explicit TextureCoordinateClass(Browser & browser);
             virtual ~TextureCoordinateClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE TextureCoordinate : public AbstractBase,
-                                                 public TextureCoordinateNode {
+        class OPENVRML_SCOPE TextureCoordinate :
+                public AbstractBase, public texture_coordinate_node {
             friend class TextureCoordinateClass;
 
-            mfvec2f point;
+            mfvec2f point_;
 
         public:
-            TextureCoordinate(const NodeType & nodeType,
+            TextureCoordinate(const node_type & nodeType,
                               const ScopePtr & scope);
             virtual ~TextureCoordinate() throw ();
 
             //
-            // TextureCoordinateNode implementation.
+            // texture_coordinate_node implementation.
             //
-            virtual const std::vector<vec2f> & getPoint() const throw();
+            virtual const std::vector<vec2f> & point() const throw();
 
         private:
             //
@@ -2377,18 +2378,18 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE TextureTransformClass : public NodeClass {
+        class OPENVRML_SCOPE TextureTransformClass : public node_class {
         public:
             explicit TextureTransformClass(Browser & browser);
             virtual ~TextureTransformClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE TextureTransform : public AbstractBase,
-                                                public TextureTransformNode {
+                                                public texture_transform_node {
             friend class TextureTransformClass;
 
             sfvec2f center;
@@ -2397,7 +2398,7 @@ namespace OpenVRML {
             sfvec2f translation;
 
         public:
-            TextureTransform(const NodeType & nodeType,
+            TextureTransform(const node_type & nodeType,
                              const ScopePtr & scope);
             virtual ~TextureTransform() throw ();
 
@@ -2422,14 +2423,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE TimeSensorClass : public NodeClass {
+        class OPENVRML_SCOPE TimeSensorClass : public node_class {
         public:
             explicit TimeSensorClass(Browser & browser);
             virtual ~TimeSensorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE TimeSensor : public AbstractChild {
@@ -2448,12 +2449,12 @@ namespace OpenVRML {
             double lastTime;
 
         public:
-            TimeSensor(const NodeType & nodeType,
+            TimeSensor(const node_type & nodeType,
                        const ScopePtr & scope);
             virtual ~TimeSensor() throw ();
 
-            virtual TimeSensor * toTimeSensor() const;
-            virtual const BVolume * getBVolume() const;
+            virtual TimeSensor * to_time_sensor() const;
+            virtual const BVolume * bvolume() const;
 
             void update(double time);
 
@@ -2480,14 +2481,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE TouchSensorClass : public NodeClass {
+        class OPENVRML_SCOPE TouchSensorClass : public node_class {
         public:
             explicit TouchSensorClass(Browser & browser);
             virtual ~TouchSensorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE TouchSensor : public AbstractChild {
@@ -2502,11 +2503,11 @@ namespace OpenVRML {
             sftime touchTime;
 
         public:
-            TouchSensor(const NodeType & nodeType,
+            TouchSensor(const node_type & nodeType,
                         const ScopePtr & scope);
             virtual ~TouchSensor() throw ();
 
-            virtual TouchSensor * toTouchSensor() const;
+            virtual TouchSensor * to_touch_sensor() const;
 
             void activate( double timeStamp, bool isOver, bool isActive, double *p );
 
@@ -2522,18 +2523,18 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE TransformClass : public NodeClass {
+        class OPENVRML_SCOPE TransformClass : public node_class {
         public:
             explicit TransformClass(Browser & browser);
             virtual ~TransformClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Transform : public Group,
-                                         public TransformNode {
+                                         public transform_node {
             friend class TransformClass;
 
             sfvec3f center;
@@ -2542,20 +2543,20 @@ namespace OpenVRML {
             sfrotation scaleOrientation;
             sfvec3f translation;
 
-            mutable mat4f transform;
+            mutable mat4f transform_;
             mutable bool transformDirty;
             Viewer::Object xformObject;
 
         public:
-            Transform(const NodeType & nodeType,
+            Transform(const node_type & nodeType,
                       const ScopePtr & scope);
             virtual ~Transform() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
-            virtual const BVolume * getBVolume() const;
+            virtual const BVolume * bvolume() const;
 
-            virtual const mat4f & getTransform() const throw ();
+            virtual const mat4f & transform() const throw ();
 
         private:
             //
@@ -2584,7 +2585,7 @@ namespace OpenVRML {
 
         class Viewpoint;
 
-        class OPENVRML_SCOPE ViewpointClass : public NodeClass {
+        class OPENVRML_SCOPE ViewpointClass : public node_class {
             typedef std::vector<Viewpoint *> BoundNodes;
 
             Viewpoint * first;
@@ -2600,22 +2601,22 @@ namespace OpenVRML {
                 throw (std::bad_alloc);
             void unbind(Viewpoint & viewpoint, double timestamp) throw ();
 
-            virtual void initialize(ViewpointNode * initialViewpoint,
+            virtual void initialize(viewpoint_node * initialViewpoint,
                                     double timestamp) throw ();
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Viewpoint : public AbstractBase,
-                                         public ViewpointNode {
+                                         public viewpoint_node {
             friend class ViewpointClass;
 
             sffloat fieldOfView;
             sfbool jump;
-            sfrotation orientation;
-            sfvec3f position;
-            sfstring description;
+            sfrotation orientation_;
+            sfvec3f position_;
+            sfstring description_;
             sfbool bound;
             sftime bindTime;
 
@@ -2625,21 +2626,21 @@ namespace OpenVRML {
             mat4f userViewTransform;
 
         public:
-            Viewpoint(const NodeType & nodeType,
+            Viewpoint(const node_type & nodeType,
                       const ScopePtr & scope);
             virtual ~Viewpoint() throw ();
 
-            virtual const mat4f & getTransformation() const throw ();
-            virtual const mat4f & getUserViewTransform() const throw ();
-            virtual void setUserViewTransform(const mat4f & transform)
+            virtual const mat4f & transformation() const throw ();
+            virtual const mat4f & user_view_transform() const throw ();
+            virtual void user_view_transform(const mat4f & transform)
                 throw ();
-            virtual const std::string & getDescription() const throw ();
-            virtual float getFieldOfView() const throw ();
+            virtual const std::string & description() const throw ();
+            virtual float field_of_view() const throw ();
 
-            const sfrotation & getOrientation() const;
-            const sfvec3f & getPosition() const;
+            const sfrotation & orientation() const;
+            const sfvec3f & position() const;
 
-            const BVolume * getBVolume() const;
+            const BVolume * bvolume() const;
 
             void getFrustum(VrmlFrustum& frust) const; // get a copy
 
@@ -2669,14 +2670,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE VisibilitySensorClass : public NodeClass {
+        class OPENVRML_SCOPE VisibilitySensorClass : public node_class {
         public:
             explicit VisibilitySensorClass(Browser & browser);
             virtual ~VisibilitySensorClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE VisibilitySensor : public AbstractChild {
@@ -2690,7 +2691,7 @@ namespace OpenVRML {
             sftime exitTime;
 
         public:
-            VisibilitySensor(const NodeType & nodeType,
+            VisibilitySensor(const node_type & nodeType,
                              const ScopePtr & scope);
             virtual ~VisibilitySensor() throw ();
 
@@ -2711,14 +2712,14 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE WorldInfoClass : public NodeClass {
+        class OPENVRML_SCOPE WorldInfoClass : public node_class {
         public:
             explicit WorldInfoClass(Browser & browser);
             virtual ~WorldInfoClass() throw ();
 
-            virtual const NodeTypePtr createType(const std::string & id,
-                                                 const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual const NodeTypePtr create_type(const std::string & id,
+                                                 const node_interface_set &)
+                    throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE WorldInfo : public AbstractChild {
@@ -2728,7 +2729,7 @@ namespace OpenVRML {
             sfstring title;
 
         public:
-            WorldInfo(const NodeType & nodeType,
+            WorldInfo(const node_type & nodeType,
                       const ScopePtr & scope);
             virtual ~WorldInfo() throw ();
         };

@@ -166,15 +166,15 @@ namespace {
     }
 
     void lookatViewpointMenu(int item) {
-        typedef std::list<ViewpointNode *> ViewpointList;
+        typedef std::list<viewpoint_node *> ViewpointList;
         const ViewpointList & viewpoints = browser->getViewpoints();
         ViewpointList::const_iterator viewpoint = viewpoints.begin();
         while(std::distance(viewpoints.begin(), viewpoint) != item
                     && viewpoint != viewpoints.end()) {
             ++viewpoint;
         }
-        (*viewpoint)->processEvent("set_bind", sfbool(true),
-                                   Browser::getCurrentTime());
+        (*viewpoint)->process_event("set_bind", sfbool(true),
+                                    Browser::getCurrentTime());
     }
 
     void buildViewpointMenu() {
@@ -202,11 +202,11 @@ namespace {
         numberOfViewpoints = browser->getViewpoints().size();
         nvp = numberOfViewpoints;
 
-        typedef std::list<ViewpointNode *> ViewpointList;
+        typedef std::list<viewpoint_node *> ViewpointList;
         const ViewpointList & viewpoints = browser->getViewpoints();
         for (ViewpointList::const_iterator viewpoint(viewpoints.begin());
                 viewpoint != viewpoints.end(); ++viewpoint) {
-            const std::string & description = (*viewpoint)->getDescription();
+            const std::string & description = (*viewpoint)->description();
             if (!description.empty()) {
                 glutAddMenuEntry(description.c_str(),
                                  std::distance(viewpoints.begin(), viewpoint));

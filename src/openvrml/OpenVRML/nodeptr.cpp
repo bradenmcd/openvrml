@@ -28,7 +28,7 @@ namespace OpenVRML {
 /**
  * @class NodePtr
  *
- * @brief A reference-counted smart pointer for @link Node Nodes@endlink.
+ * @brief A reference-counted smart pointer for @link node nodes@endlink.
  */
 
 /**
@@ -39,7 +39,7 @@ namespace OpenVRML {
  */
 
 namespace {
-    typedef std::map<OpenVRML::Node *, size_t> CountMap;
+    typedef std::map<OpenVRML::node *, size_t> CountMap;
     CountMap countMap;
 }
 
@@ -48,7 +48,7 @@ namespace {
  *
  * @param node a pointer to a Node
  */
-NodePtr::NodePtr(Node * node):
+NodePtr::NodePtr(node * node):
     countPtr(0)
 {
     if (node) {
@@ -83,7 +83,7 @@ NodePtr::NodePtr(const NodePtr & nodePtr):
  *
  * @param node
  */
-void NodePtr::reset(Node * node)
+void NodePtr::reset(node * node)
 {
     if (this->countPtr && this->countPtr->first == node) {
         return;
@@ -143,7 +143,7 @@ void NodePtr::share(CountMap::value_type * countPtr) throw ()
  */
 
 /**
- * @fn Node & NodePtr::operator*() const
+ * @fn node & NodePtr::operator*() const
  *
  * @brief Dereference operator.
  *
@@ -151,13 +151,13 @@ void NodePtr::share(CountMap::value_type * countPtr) throw ()
  */
 
 /**
- * @fn Node * NodePtr::operator->() const
+ * @fn node * NodePtr::operator->() const
  *
  * @brief Access a method of the Node.
  */
 
 /**
- * @fn Node * NodePtr::get() const
+ * @fn node * NodePtr::get() const
  *
  * @brief Get a raw pointer to the Node.
  *

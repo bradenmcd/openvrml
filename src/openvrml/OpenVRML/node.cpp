@@ -35,15 +35,15 @@
 namespace OpenVRML {
 
 /**
- * @class UnsupportedInterface
+ * @class unsupported_interface
  *
  * @brief Exception to indicate that a node interface is not supported.
  *
  * This exception is thrown by Node::setField and Node::processEvent to
  * indicate that the node doesn't support the interface through which the
  * caller is trying to modify the node. It is also thrown by
- * NodeClass::createType if the class object doesn't support an interface
- * specified in the NodeInterfaceSet given to that method.
+ * node_class::createType if the class object doesn't support an interface
+ * specified in the node_interface_set given to that method.
  */
 
 /**
@@ -51,7 +51,7 @@ namespace OpenVRML {
  *
  * @param message   An informative error message.
  */
-UnsupportedInterface::UnsupportedInterface(const std::string & message):
+unsupported_interface::unsupported_interface(const std::string & message):
     std::runtime_error(message)
 {}
 
@@ -61,16 +61,17 @@ UnsupportedInterface::UnsupportedInterface(const std::string & message):
  * @param nodeType      the node type.
  * @param interfaceId   the name of the interface that is not available.
  */
-UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
-                                           const std::string & interfaceId):
-    std::runtime_error(nodeType.id + " has no interface \"" + interfaceId + '"')
+unsupported_interface::unsupported_interface(const node_type & nodeType,
+                                             const std::string & interfaceId):
+    std::runtime_error(nodeType.id + " has no interface \"" + interfaceId
+                       + '"')
 {}
 
 namespace {
-    const std::string toString(const NodeInterface::Type interfaceType)
+    const std::string to_string(const node_interface::type_id interface_type)
     {
         std::ostringstream out;
-        out << interfaceType;
+        out << interface_type;
         return out.str();
     }
 }
@@ -82,64 +83,65 @@ namespace {
  * @param interfaceType the type of the interface that is not available.
  * @param interfaceId   the name of the interface that is not available.
  */
-UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
-                                           const NodeInterface::Type interfaceType,
-                                           const std::string & interfaceId):
-    std::runtime_error(nodeType.id + " has no " + toString(interfaceType)
-                       + " \"" + interfaceId + '"')
+unsupported_interface::unsupported_interface(
+    const node_type & type,
+    const node_interface::type_id interface_type,
+    const std::string & interface_id):
+    std::runtime_error(type.id + " has no " + to_string(interface_type) + " \""
+                       + interface_id + '"')
 {}
 
 /**
  * @brief Destructor.
  */
-UnsupportedInterface::~UnsupportedInterface() throw ()
+unsupported_interface::~unsupported_interface() throw ()
 {}
 
 
 /**
- * @class NodeInterface
+ * @class node_interface
  *
  * @brief Type information for an interface of a node.
  */
 
 /**
- * @enum NodeInterface::Type
+ * @enum node_interface::type_id
  *
  * @brief Identify the type of interface.
  */
 
 /**
- * @var NodeInterface::Type NodeInterface::invalidType
+ * @var node_interface::type_id node_interface::invalid_type_id
  *
  * @brief Used to indicate an invalid or unknown interface type.
  */
 
 /**
- * @var NodeInterface::Type NodeInterface::eventIn
+ * @var node_interface::type_id node_interface::eventin_id
  *
  * @brief An eventIn.
  */
 
 /**
- * @var NodeInterface::Type NodeInterface::eventOut
+ * @var node_interface::type_id node_interface::eventout_id
  *
  * @brief An eventOut.
  */
 
 /**
- * @var NodeInterface::Type NodeInterface::exposedField
+ * @var node_interface::type_id node_interface::exposedfield_id
  *
  * @brief An exposedField.
  */
 
 /**
- * @var NodeInterface::Type NodeInterface::field
+ * @var node_interface::type_id node_interface::field_id
  *
  * @brief A field.
  */
 
 namespace {
-    const char * const nodeInterfaceTypeId_[] = {
+    const char * const node_interface_type_id_[] = {
         "<invalid interface type>",
         "eventIn",
         "eventOut",
@@ -151,21 +153,22 @@ namespace {
 /**
  * @brief Stream inserter.
  *
- * @relates NodeInterface
+ * @relates node_interface
  *
- * If @p type is NodeInterface::invalidType, @c failbit is set on @p out.
+ * If @p type is node_interface::invalidType, @c failbit is set on @p out.
  *
  * @param out   an output stream.
  * @param type  a node interface type.
  *
  * @return @p out.
  */
-std::ostream & operator<<(std::ostream & out, const NodeInterface::Type type)
+std::ostream & operator<<(std::ostream & out,
+                          const node_interface::type_id type)
 {
-    if (type == NodeInterface::invalidType) {
+    if (type == node_interface::invalid_type_id) {
         out.setstate(std::ios_base::failbit);
     } else {
-        out << nodeInterfaceTypeId_[type];
+        out << node_interface_type_id_[type];
     }
     return out;
 }
@@ -173,28 +176,28 @@ std::ostream & operator<<(std::ostream & out, const NodeInterface::Type type)
 /**
  * @brief Stream extractor.
  *
- * @relates NodeInterface
+ * @relates node_interface
  *
  * @param in    an input stream.
  * @param type  a node interface type.
  *
  * @return @p in.
  */
-std::istream & operator>>(std::istream & in, NodeInterface::Type & type)
+std::istream & operator>>(std::istream & in, node_interface::type_id & type)
 {
     using std::find;
     using std::string;
 
-    string interfaceTypeId;
-    in >> interfaceTypeId;
+    string interface_type_id;
+    in >> interface_type_id;
 
     static const char * const * const begin =
-            nodeInterfaceTypeId_ + NodeInterface::eventIn;
+            node_interface_type_id_ + node_interface::eventin_id;
     static const char * const * const end =
-            nodeInterfaceTypeId_ + NodeInterface::field + 1;
-    const char * const * const pos = find(begin, end, interfaceTypeId);
+            node_interface_type_id_ + node_interface::field_id + 1;
+    const char * const * const pos = find(begin, end, interface_type_id);
     if (pos != end) {
-        type = NodeInterface::Type(pos - begin);
+        type = node_interface::type_id(pos - begin);
     } else {
         in.setstate(std::ios_base::failbit);
     }
@@ -203,19 +206,19 @@ std::istream & operator>>(std::istream & in, NodeInterface::Type & type)
 
 
 /**
- * @var NodeInterface::type
+ * @var node_interface::type
  *
  * @brief The interface type.
  */
 
 /**
- * @var NodeInterface::fieldType
+ * @var node_interface::field_type
  *
  * @brief The field data type handled by this interface.
  */
 
 /**
- * @var NodeInterface::id
+ * @var node_interface::id
  *
  * @brief The name of this interface.
  */
@@ -223,69 +226,69 @@ std::istream & operator>>(std::istream & in, NodeInterface::Type & type)
 /**
  * @brief Constructor.
  *
- * @param type      the type of interface.
- * @param fieldType the field data type handled by the interface.
- * @param id        the name of the interface.
+ * @param type       the type of interface.
+ * @param field_type the field data type handled by the interface.
+ * @param id         the name of the interface.
  */
-NodeInterface::NodeInterface(const Type type,
-                             const field_value::type_id fieldType,
-                             const std::string & id):
+node_interface::node_interface(const type_id type,
+                               const field_value::type_id field_type,
+                               const std::string & id):
     type(type),
-    fieldType(fieldType),
+    field_type(field_type),
     id(id)
 {}
 
 /**
- * @fn bool operator==(const NodeInterface & lhs, const NodeInterface & rhs) throw ()
+ * @fn bool operator==(const node_interface & lhs, const node_interface & rhs) throw ()
  *
- * @relates NodeInterface
+ * @relates node_interface
  *
  * @brief Compare for equality.
  *
- * @param lhs   a NodeInterface.
- * @param rhs   a NodeInterface.
+ * @param lhs   a node_interface.
+ * @param rhs   a node_interface.
  *
- * @return @c true if the two NodeInterfaces are equal, @c false otherwise.
+ * @return @c true if the two node_interfaces are equal, @c false otherwise.
  */
 
 /**
- * @fn bool operator!=(const NodeInterface & lhs, const NodeInterface & rhs) throw ()
+ * @fn bool operator!=(const node_interface & lhs, const node_interface & rhs) throw ()
  *
- * @relates NodeInterface
+ * @relates node_interface
  *
  * @brief Compare for inequality.
  *
- * @param lhs   a NodeInterface.
- * @param rhs   a NodeInterface.
+ * @param lhs   a node_interface.
+ * @param rhs   a node_interface.
  *
- * @return @c true if the two NodeInterfaces are equal, @c false otherwise.
+ * @return @c true if the two node_interfaces are equal, @c false otherwise.
  */
 
 /**
- * @class NodeInterfaceSet
+ * @class node_interface_set
  *
- * @brief A group of unique @link NodeInterface NodeInterfaces@endlink.
+ * @brief A group of unique @link node_interface node_interfaces@endlink.
  *
- * NodeInterfaceSets are used to construct new @link NodeType NodeTypes@endlink.
- * NodeType objects also expose their interfaces as a NodeInterfaceSet.
- * The interfaces in a NodeInterfaceSet are guaranteed to be unique and
- * non-conflicting.
+ * node_interface_sets are used to construct new
+ * @link NodeType NodeTypes@endlink. NodeType objects also expose their
+ * interfaces as a node_interface_set. The interfaces in a node_interface_set
+ * are guaranteed to be unique and non-conflicting.
  */
 
 /**
  * @internal
  *
- * @struct NodeInterfaceSet::IdLess
+ * @struct node_interface_set::id_less
  *
- * @brief A functor for ordering @link NodeInterface NodeInterfaces@endlink in
- *      the set.
+ * @brief A functor for ordering @link node_interface node_interfaces@endlink
+ *        in the set.
  *
- * Compares the @a id's of two @link NodeInterface NodeInterfaces@endlink using
- * @c operator<.
+ * Compares the @a id's of two @link node_interface node_interfaces@endlink
+ * using @c operator<.
  */
 
 /**
- * @fn bool NodeInterfaceSet::IdLess::operator()(const NodeInterface & lhs, const NodeInterface & rhs) const
+ * @fn bool node_interface_set::id_less::operator()(const node_interface & lhs, const node_interface & rhs) const
  *
  * @brief Simple lexicographic comparison of the @a id's.
  *
@@ -294,7 +297,7 @@ NodeInterface::NodeInterface(const Type type,
  */
 
 /**
- * @typedef NodeInterfaceSet::const_iterator
+ * @typedef node_interface_set::const_iterator
  *
  * @brief An STL const_iterator.
  */
@@ -302,36 +305,36 @@ NodeInterface::NodeInterface(const Type type,
 /**
  * @brief Add an interface.
  *
- * @param nodeInterface a NodeInterface.
+ * @param interface a node_interface.
  *
  * @throw std::invalid argument if @p nodeInterface conflicts with an interface
- *                              already in the NodeInterfaceSet.
+ *                              already in the node_interface_set.
  * @throw std::bad_alloc        if memory allocation fails.
  */
-void NodeInterfaceSet::add(const NodeInterface & nodeInterface)
+void node_interface_set::add(const node_interface & interface)
     throw (std::invalid_argument, std::bad_alloc)
 {
-    if (!this->nodeInterfaceSet.insert(nodeInterface).second) {
+    if (!this->interfaces.insert(interface).second) {
         throw std::invalid_argument("Interface conflicts with an interface "
                                     "already in this set.");
     }
 }
 
 /**
- * @fn NodeInterfaceSet::const_iterator NodeInterfaceSet::begin() const throw ()
+ * @fn node_interface_set::const_iterator node_interface_set::begin() const throw ()
  *
- * @brief Returns an iterator to the beginning of the NodeInterfaceSet.
+ * @brief Returns an iterator to the beginning of the node_interface_set.
  *
- * @return a const_iterator pointing to the first NodeInterface in the set.
+ * @return a const_iterator pointing to the first node_interface in the set.
  */
 
 /**
- * @fn NodeInterfaceSet::const_iterator NodeInterfaceSet::end() const throw ()
+ * @fn node_interface_set::const_iterator node_interface_set::end() const throw ()
  *
- * @brief Returns an iterator to the end of the NodeInterfaceSet.
+ * @brief Returns an iterator to the end of the node_interface_set.
  *
  * @return a const_iterator pointing to one increment past the last
- *       NodeInterface in the set.
+ *       node_interface in the set.
  */
 
 namespace {
@@ -339,187 +342,188 @@ namespace {
     /**
      * @internal
      */
-    struct InterfaceIdMatches_ :
-            std::unary_function<OpenVRML::NodeInterface, bool> {
-        explicit InterfaceIdMatches_(const std::string & interfaceId):
-            interfaceId(&interfaceId)
+    struct interface_id_matches_ :
+            std::unary_function<OpenVRML::node_interface, bool> {
+        explicit interface_id_matches_(const std::string & interface_id):
+            interface_id(&interface_id)
         {}
 
-        bool operator()(const OpenVRML::NodeInterface & interface) const
+        bool operator()(const OpenVRML::node_interface & interface) const
         {
-            static const char eventInPrefix[] = "set_";
-            static const char eventOutSuffix[] = "_changed";
+            static const char eventin_prefix[] = "set_";
+            static const char eventout_suffix[] = "_changed";
 
-            return interface.id == *this->interfaceId
-                || (interface.type == NodeInterface::exposedField
-                    && (eventInPrefix + interface.id == *this->interfaceId
-                        || (interface.id + eventOutSuffix == *this->interfaceId)))
-                || (interface.type == NodeInterface::eventIn
-                    && interface.id == eventInPrefix + *this->interfaceId)
-                || (interface.type == NodeInterface::eventOut
-                    && interface.id == *this->interfaceId + eventOutSuffix);
+            return interface.id == *this->interface_id
+                || (interface.type == node_interface::exposedfield_id
+                    && (eventin_prefix + interface.id == *this->interface_id
+                        || (interface.id + eventout_suffix
+                            == *this->interface_id)))
+                || (interface.type == node_interface::eventin_id
+                    && interface.id == eventin_prefix + *this->interface_id)
+                || (interface.type == node_interface::eventout_id
+                    && interface.id == *this->interface_id + eventout_suffix);
         }
 
     private:
-        const std::string * interfaceId;
+        const std::string * interface_id;
     };
 }
 
 /**
- * @brief Find an interface matching @a interfaceId @p id.
+ * @brief Find an interface matching @p id.
  *
- * If no interface is found with an @a interfaceId that is an exact match for
- * @p id, this method will look for @c set_ and @c _changed variants.
+ * If no interface is found with an interface identifier that is an exact match
+ * for @p id, this method will look for @c set_ and @c _changed variants.
  *
  * @param id    the interface id to look for.
  *
- * @return a const_iterator to the interface, or NodeInterfaceSet::end if no
+ * @return a const_iterator to the interface, or node_interface_set::end if no
  *      interface is found.
  */
-NodeInterfaceSet::const_iterator
-NodeInterfaceSet::findInterface(const std::string & id) const throw ()
+node_interface_set::const_iterator
+node_interface_set::find(const std::string & id) const throw ()
 {
-    return std::find_if(this->begin(), this->end(), InterfaceIdMatches_(id));
+    return std::find_if(this->begin(), this->end(), interface_id_matches_(id));
 }
 
 
 /**
- * @class NodeClass
+ * @class node_class
  *
  * @brief A class object for Node instances.
  *
- * NodeClass can be thought of as a "supertype" of sorts. A given node
+ * node_class can be thought of as a "supertype" of sorts. A given node
  * implementation can support as many node types as there are unique
  * combinations of the interfaces it supports. The most readily apparent
- * role of the NodeClass object for a node implementation is to serve as
+ * role of the node_class object for a node implementation is to serve as
  * a factory for these @link NodeType NodeTypes@endlink.
  */
 
 /**
- * @var Browser & NodeClass::browser
+ * @var Browser & node_class::browser
  *
- * @brief The Browser associated with this NodeClass.
+ * @brief The Browser associated with this node_class.
  */
 
 /**
  * @brief Constructor.
  *
- * A NodeClass is constructed using a Browser. All Node instances that share
- * a particular NodeClass "belong to" the Browser associated with the NodeClass.
+ * A node_class is constructed using a Browser. All Node instances that share
+ * a particular node_class "belong to" the Browser associated with the node_class.
  *
- * @param browser   the Browser to be associated with the NodeClass.
+ * @param browser   the Browser to be associated with the node_class.
  */
-NodeClass::NodeClass(Browser & browser) throw ():
+node_class::node_class(Browser & browser) throw ():
     browser(browser)
 {}
 
 /**
  * @brief Destructor.
  */
-NodeClass::~NodeClass() throw ()
+node_class::~node_class() throw ()
 {}
 
 /**
- * @brief NodeClass-specific initialization.
+ * @brief node_class-specific initialization.
  *
  * This method is called during initialization of a Browser object with a new
  * root Scene. It is called after the individual node instances have been
  * initialized, and before the world starts running.
  *
- * @param initialViewpoint  the ViewpointNode that should be bound initially;
- *                          or 0 if the default ViewpointNode should be bound.
+ * @param initial_viewpoint the viewpoint_node that should be bound initially;
+ *                          or 0 if the default viewpoint_node should be bound.
  * @param time              the current time.
  */
-void NodeClass::initialize(ViewpointNode * initialViewpoint,
-                           const double time)
+void node_class::initialize(viewpoint_node * initial_viewpoint,
+                            const double time)
     throw ()
 {}
 
 /**
- * @brief NodeClass-specific rendering.
+ * @brief node_class-specific rendering.
  *
  * The default implementation of this method does nothing.
  *
  * @param viewer    the Viewer to render to.
  */
-void NodeClass::render(Viewer & viewer) throw ()
+void node_class::render(Viewer & viewer) throw ()
 {}
 
 /**
- * @fn const NodeTypePtr NodeClass::createType(const std::string & id, const NodeInterfaceSet & interfaces) throw (std::invalid_argument, std::bad_alloc)
+ * @fn const NodeTypePtr node_class::createType(const std::string & id, const node_interface_set & interfaces) throw (std::invalid_argument, std::bad_alloc)
  *
- * @brief Create a new NodeType.
+ * @brief Create a new node_type.
  *
- * @link NodeType NodeTypes@endlink can be said to subset the master type
- * provided by the NodeClass. Each NodeClass instance can support certain
- * node interfaces; the NodeInterfaceSet passed to createType must be a
+ * @link node_type node_types@endlink can be said to subset the master type
+ * provided by the node_class. Each node_class instance can support certain
+ * node interfaces; the node_interface_set passed to createType must be a
  * subset of those supported interfaces.
  *
- * @param id            the name for the new NodeType.
- * @param interfaces    a NodeInterfaceSet containing the interfaces
+ * @param id            the name for the new node_type.
+ * @param interfaces    a node_interface_set containing the interfaces
  *                      for the new type.
  *
- * @return a NodeTypePtr to the newly created NodeType.
+ * @return a NodeTypePtr to the newly created node_type.
  *
- * @throw std::invalid_argument if the NodeClass cannot support one of the
- *                              @link NodeInterface NodeInterfaces@endlink in
+ * @throw std::invalid_argument if the node_class cannot support one of the
+ *                              @link node_interface node_interfaces@endlink in
  *                              @p interfaces.
  * @throw std::bad_alloc        if memory allocation fails.
  */
 
 
 /**
- * @class NodeType
+ * @class node_type
  *
  * @brief Type information object for @link Node Nodes@endlink.
  */
 
 /**
- * @var NodeClass & NodeType::nodeClass
+ * @var node_class & node_type::nodeClass
  *
- * @brief The class object associated with the NodeType.
+ * @brief The class object associated with the node_type.
  */
 
 /**
- * @var const std::string NodeType::id
+ * @var const std::string node_type::id
  *
- * @brief The name of the NodeType.
+ * @brief The name of the node_type.
  */
 
 /**
  * @brief Constructor.
  *
- * @param nodeClass the class object associated with the NodeType.
- * @param id        the name for the NodeType.
+ * @param nodeClass the class object associated with the node_type.
+ * @param id        the name for the node_type.
  *
  * @throw std::bad_alloc    if memory allocation fails.
  */
-NodeType::NodeType(NodeClass & nodeClass, const std::string & id)
+node_type::node_type(node_class & _class, const std::string & id)
     throw (std::bad_alloc):
-    nodeClass(nodeClass),
+    _class(_class),
     id(id)
 {}
 
 /**
  * @brief Destructor.
  */
-NodeType::~NodeType() throw ()
+node_type::~node_type() throw ()
 {}
 
 namespace {
-    struct IsEventIn_ : public std::unary_function<NodeInterface, bool> {
+    struct IsEventIn_ : public std::unary_function<node_interface, bool> {
     private:
         const std::string & id;
 
     public:
         IsEventIn_(const std::string & id): id(id) {}
 
-        bool operator()(const NodeInterface & nodeInterface) const
+        bool operator()(const node_interface & nodeInterface) const
         {
-            return (nodeInterface.type == NodeInterface::eventIn
+            return (nodeInterface.type == node_interface::eventin_id
                         && (this->id == nodeInterface.id
                             || "set_" + this->id == nodeInterface.id))
-                    || (nodeInterface.type == NodeInterface::exposedField
+                    || (nodeInterface.type == node_interface::exposedfield_id
                         && (this->id == nodeInterface.id
                             || this->id == "set_" + nodeInterface.id));
         }
@@ -539,31 +543,31 @@ namespace {
  * @return the data type of the eventIn, or field_value::invalid_type_id if no
  *         such eventIn exists.
  */
-field_value::type_id NodeType::hasEventIn(const std::string & id) const
+field_value::type_id node_type::has_eventin(const std::string & id) const
     throw ()
 {
-    const NodeInterfaceSet & interfaces = this->getInterfaces();
-    const NodeInterfaceSet::const_iterator end = interfaces.end();
-    const NodeInterfaceSet::const_iterator pos =
+    const node_interface_set & interfaces = this->interfaces();
+    const node_interface_set::const_iterator end = interfaces.end();
+    const node_interface_set::const_iterator pos =
             std::find_if(interfaces.begin(), end, IsEventIn_(id));
     if (pos == end) { return field_value::invalid_type_id; }
-    return pos->fieldType;
+    return pos->field_type;
 }
 
 namespace {
-    struct IsEventOut_ : public std::unary_function<NodeInterface, bool> {
+    struct IsEventOut_ : public std::unary_function<node_interface, bool> {
     private:
         const std::string & id;
 
     public:
         IsEventOut_(const std::string & id): id(id) {}
 
-        bool operator()(const NodeInterface & nodeInterface) const
+        bool operator()(const node_interface & nodeInterface) const
         {
-            return (nodeInterface.type == NodeInterface::eventOut
+            return (nodeInterface.type == node_interface::eventout_id
                         && (this->id == nodeInterface.id
                             || this->id + "_changed" == nodeInterface.id))
-                    || (nodeInterface.type == NodeInterface::exposedField
+                    || (nodeInterface.type == node_interface::exposedfield_id
                         && (this->id == nodeInterface.id
                             || this->id == nodeInterface.id + "_changed"));
         }
@@ -583,28 +587,28 @@ namespace {
  * @return the data type of the eventOut, or field_value::invalid_type_id if no
  *         such eventOut exists.
  */
-field_value::type_id NodeType::hasEventOut(const std::string & id) const
+field_value::type_id node_type::has_eventout(const std::string & id) const
     throw ()
 {
-    const NodeInterfaceSet & interfaces = this->getInterfaces();
-    const NodeInterfaceSet::const_iterator end = interfaces.end();
-    const NodeInterfaceSet::const_iterator pos =
+    const node_interface_set & interfaces = this->interfaces();
+    const node_interface_set::const_iterator end = interfaces.end();
+    const node_interface_set::const_iterator pos =
             std::find_if(interfaces.begin(), end, IsEventOut_(id));
     if (pos == end) { return field_value::invalid_type_id; }
-    return pos->fieldType;
+    return pos->field_type;
 }
 
 namespace {
-    struct IsExposedField_ : public std::unary_function<NodeInterface, bool> {
+    struct IsExposedField_ : public std::unary_function<node_interface, bool> {
     private:
         const std::string & id;
 
     public:
         IsExposedField_(const std::string & id): id(id) {}
 
-        bool operator()(const NodeInterface & nodeInterface) const
+        bool operator()(const node_interface & nodeInterface) const
         {
-            return nodeInterface.type == NodeInterface::exposedField
+            return nodeInterface.type == node_interface::exposedfield_id
                     && this->id == nodeInterface.id;
         }
     };
@@ -622,28 +626,28 @@ namespace {
  * @return the data type of the exposedField, or field_value::invalid_type_id
  *         if no such exposedField exists.
  */
-field_value::type_id NodeType::hasExposedField(const std::string & id) const
+field_value::type_id node_type::has_exposedfield(const std::string & id) const
     throw ()
 {
-    const NodeInterfaceSet & interfaces = this->getInterfaces();
-    const NodeInterfaceSet::const_iterator end = interfaces.end();
-    const NodeInterfaceSet::const_iterator pos =
+    const node_interface_set & interfaces = this->interfaces();
+    const node_interface_set::const_iterator end = interfaces.end();
+    const node_interface_set::const_iterator pos =
             std::find_if(interfaces.begin(), end, IsExposedField_(id));
     if (pos == end) { return field_value::invalid_type_id; }
-    return pos->fieldType;
+    return pos->field_type;
 }
 
 namespace {
-    struct IsField_ : public std::unary_function<NodeInterface, bool> {
+    struct IsField_ : public std::unary_function<node_interface, bool> {
     private:
         const std::string & id;
 
     public:
         IsField_(const std::string & id): id(id) {}
 
-        bool operator()(const NodeInterface & nodeInterface) const
+        bool operator()(const node_interface & nodeInterface) const
         {
-            return nodeInterface.type == NodeInterface::field
+            return nodeInterface.type == node_interface::field_id
                     && this->id == nodeInterface.id;
         }
     };
@@ -660,28 +664,29 @@ namespace {
  * @return the data type of the field, or field_value::invalid_type_id if no
  *         such field exists.
  */
-field_value::type_id NodeType::hasField(const std::string & id) const throw ()
+field_value::type_id node_type::has_field(const std::string & id) const
+    throw ()
 {
-    const NodeInterfaceSet & interfaces = this->getInterfaces();
-    const NodeInterfaceSet::const_iterator end = interfaces.end();
-    const NodeInterfaceSet::const_iterator pos =
+    const node_interface_set & interfaces = this->interfaces();
+    const node_interface_set::const_iterator end = interfaces.end();
+    const node_interface_set::const_iterator pos =
             std::find_if(interfaces.begin(), end, IsField_(id));
     if (pos == end) { return field_value::invalid_type_id; }
-    return pos->fieldType;
+    return pos->field_type;
 }
 
 /**
- * @fn const NodeInterfaceSet & NodeType::getInterfaces() const throw ()
+ * @fn const node_interface_set & node_type::interfaces() const throw ()
  *
- * @brief Get the set of interfaces for the NodeType.
+ * @brief Get the set of interfaces for the node_type.
  *
  * @return the set of interfaces.
  */
 
 /**
- * @fn const NodePtr NodeType::createNode(const ScopePtr & scope) const throw (std::bad_alloc)
+ * @fn const NodePtr node_type::create_node(const ScopePtr & scope) const throw (std::bad_alloc)
  *
- * @brief Create a new Node with this NodeType.
+ * @brief Create a new Node with this node_type.
  *
  * @param scope         the Scope that the new node should belong to.
  *
@@ -692,7 +697,7 @@ field_value::type_id NodeType::hasField(const std::string & id) const throw ()
 
 
 /**
- * @class FieldValueTypeMismatch
+ * @class field_value_type_mismatch
  *
  * @brief Thrown when field value types do not match, generally in a @c ROUTE
  *      or @c IS.
@@ -701,19 +706,19 @@ field_value::type_id NodeType::hasField(const std::string & id) const throw ()
 /**
  * @brief Constructor.
  */
-FieldValueTypeMismatch::FieldValueTypeMismatch():
+field_value_type_mismatch::field_value_type_mismatch():
     std::runtime_error("Field value types do not match.")
 {}
 
 /**
  * @brief Destructor.
  */
-FieldValueTypeMismatch::~FieldValueTypeMismatch() throw ()
+field_value_type_mismatch::~field_value_type_mismatch() throw ()
 {}
 
 
 /**
- * @typedef NodePath
+ * @typedef node_path
  *
  * @brief A path to a node in the scene starting with one of the scene root
  *      nodes and ending with the objective node.
@@ -721,104 +726,104 @@ FieldValueTypeMismatch::~FieldValueTypeMismatch() throw ()
 
 
 /**
- * @class Node
+ * @class node
  *
  * @brief A node in the scene graph.
  */
 
 /**
- * @class Node::Route
+ * @class node::route
  *
  * @brief A route from one node to another through which events propagate.
  */
 
 /**
- * @var const std::string Node::Route::fromEventOut
+ * @var const std::string node::route::from_eventout
  *
  * @brief The name of the eventOut the route is coming from.
  */
 
 /**
- * @var const NodePtr Node::Route::toNode
+ * @var const NodePtr node::route::to_node
  *
  * @brief The node the route is going to.
  */
 
 /**
- * @var const std::string Node::Route::toEventIn
+ * @var const std::string node::route::to_eventin
  *
- * @brief The name of the eventIn on @a toNode that the route is going to.
+ * @brief The name of the eventIn on @a to_node that the route is going to.
  */
 
 /**
  * @brief Constructor.
  *
- * @param fromEventOut  the name of the eventOut the route is coming from.
- * @param toNode        the node the route is going to.
- * @param toEventIn     the name of an eventIn on @p toNode that the route is
+ * @param from_eventout the name of the eventOut the route is coming from.
+ * @param to_node       the node the route is going to.
+ * @param to_eventin    the name of an eventIn on @p toNode that the route is
  *                      going to.
  */
-Node::Route::Route(const std::string & fromEventOut,
-                   const NodePtr & toNode, const std::string & toEventIn):
-    fromEventOut(fromEventOut),
-    toNode(toNode),
-    toEventIn(toEventIn)
+node::route::route(const std::string & from_eventout,
+                   const NodePtr & to_node, const std::string & to_eventin):
+    from_eventout(from_eventout),
+    to_node(to_node),
+    to_eventin(to_eventin)
 {}
 
 /**
  * @brief Copy constructor.
  *
- * @param route the Route to copy.
+ * @param route the route to copy.
  */
-Node::Route::Route(const Route & route):
-    fromEventOut(route.fromEventOut),
-    toNode(route.toNode),
-    toEventIn(route.toEventIn)
+node::route::route(const route & route):
+    from_eventout(route.from_eventout),
+    to_node(route.to_node),
+    to_eventin(route.to_eventin)
 {}
 
 /**
- * @fn bool operator==(const Node::Route & lhs, const Node::Route & rhs)
+ * @fn bool operator==(const node::route & lhs, const node::route & rhs)
  *
- * @relates Node::Route
+ * @relates node::route
  *
- * @brief Compare two @link Route Routes@endlink for equality.
+ * @brief Compare two @link route routes@endlink for equality.
  *
- * @param lhs   a Route.
- * @param rhs   a Route.
+ * @param lhs   a route.
+ * @param rhs   a route.
  *
- * @return @c true if the @link Route Routes@link are identical, @c false
+ * @return @c true if the @link route routes@link are identical, @c false
  *      otherwise.
  */
 
 /**
- * @fn bool operator!=(const Node::Route & lhs, const Node::Route & rhs)
+ * @fn bool operator!=(const node::route & lhs, const node::route & rhs)
  *
- * @relates Node::Route
+ * @relates node::route
  *
- * @brief Compare two @link Route Routes@endlink for inequality.
+ * @brief Compare two @link route routes@endlink for inequality.
  *
- * @param lhs   a Route.
- * @param rhs   a Route.
+ * @param lhs   a route.
+ * @param rhs   a route.
  *
- * @return @c true if the @link Route Routes@link are not identical, @c false
+ * @return @c true if the @link route routes@link are not identical, @c false
  *      otherwise.
  */
 
 /**
- * @struct Node::PolledEventOutValue
+ * @struct node::polled_eventout_value
  *
  * @brief Simple struct for use in implementing nodes that are polled for
  *      pending events.
  */
 
 /**
- * @var const FieldValuePtr Node::PolledEventOutValue::value
+ * @var const FieldValuePtr Node::polled_eventout_value::value
  *
  * @brief The value.
  */
 
 /**
- * @var bool Node::PolledEventOutValue::modified
+ * @var bool node::polled_eventout_value::modified
  *
  * @brief A flag to indicate whether the eventOut has been modified.
  */
@@ -826,7 +831,7 @@ Node::Route::Route(const Route & route):
 /**
  * @brief Default constructor.
  */
-Node::PolledEventOutValue::PolledEventOutValue():
+node::polled_eventout_value::polled_eventout_value():
     modified(false)
 {}
 
@@ -836,80 +841,74 @@ Node::PolledEventOutValue::PolledEventOutValue():
  * @param value     the value.
  * @param modified  a flag to indicate whether the eventOut has been modified.
  */
-Node::PolledEventOutValue::PolledEventOutValue(const FieldValuePtr & value,
-                                               const bool modified):
-    value(value), modified(modified)
+node::polled_eventout_value::polled_eventout_value(const FieldValuePtr & value,
+                                                   const bool modified):
+    value(value),
+    modified(modified)
 {}
 
 /**
- * @var ScopePtr Node::scope
+ * @var ScopePtr node::scope_
  *
  * @brief The Scope to which the Node belongs.
  */
 
 /**
- * @var Scene * Node::scene
+ * @var Scene * node::scene_
  *
  * @brief The Scene with which the Node is associated.
  */
 
 /**
- * @var Node::RouteList Node::routes
+ * @var node::routes_t node::routes_
  *
  * @brief The list of routes from the Node.
  */
 
 /**
- * @var bool Node::visited
- *
- * @brief Flag used by a NodeVisitor to distinguish visited nodes.
- *
- * @see Node::accept
- * @see Node::resetVisitedFlag
- */
-
-/**
- * @var Node::nodeType
+ * @var node::type
  *
  * @brief The type information object for the node.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param type  the NodeType associated with the instance.
+ * @param type  the node_type associated with the instance.
  * @param scope the Scope associated with the instance.
  */
-Node::Node(const NodeType & type, const ScopePtr & scope):
-    scope(scope),
-    scene(0),
-    nodeType(type),
-    d_modified(false),
-    d_bvol_dirty(false)
+node::node(const node_type & type, const ScopePtr & scope):
+    scope_(scope),
+    scene_(0),
+    type(type),
+    modified_(false),
+    bvolume_dirty_(false)
 {}
 
 /**
  * @internal
  *
- * @fn Node::Node(const Node &)
+ * @fn node::node(const node &)
  *
- * @brief Copy constructor. (Not implemented--non-copyable.)
+ * @brief Construct a copy. (Not implemented--non-copyable.)
  */
 
-typedef std::map<std::string, Node *> NamedNodeMap;
+typedef std::map<std::string, node *> named_node_map;
 
 namespace {
 
-    struct NodeIs_ : std::unary_function<NamedNodeMap::value_type, bool> {
-        NodeIs_(const Node & node): node(&node) {}
+    struct node_is_ : std::unary_function<named_node_map::value_type, bool> {
+        node_is_(const node & n):
+            n(&n)
+        {}
 
-        bool operator()(const NamedNodeMap::value_type & value) const
+        bool operator()(const named_node_map::value_type & value) const
         {
-            return value.second == this->node;
+            return value.second == this->n;
         }
 
     private:
-        const Node * node;
+        const node * n;
     };
 }
 
@@ -918,69 +917,70 @@ namespace {
  *
  * Remove node name (if any) from the scope.
  */
-Node::~Node() throw ()
+node::~node() throw ()
 {
     //
     // If this is the primordial node in a prototype definition, this->scope
     // will be null.
     //
-    if (this->scope) {
+    if (this->scope_) {
         using std::find_if;
-        const NamedNodeMap::iterator end = this->scope->namedNodeMap.end();
-        const NamedNodeMap::iterator pos =
-                find_if(this->scope->namedNodeMap.begin(), end, NodeIs_(*this));
-        if (pos != end) { this->scope->namedNodeMap.erase(pos); }
+        const named_node_map::iterator end = this->scope_->namedNodeMap.end();
+        const named_node_map::iterator pos =
+                find_if(this->scope_->namedNodeMap.begin(), end,
+                        node_is_(*this));
+        if (pos != end) { this->scope_->namedNodeMap.erase(pos); }
     }
 }
 
 /**
  * @internal
  *
- * @fn Node & Node::operator=(const Node &)
+ * @fn node & node::operator=(const node &)
  *
- * @brief Assignment operator. (Not implemented--non-copyable.)
+ * @brief Assign. (Not implemented--non-copyable.)
  */
 
 /**
- * @brief Set the nodeId of the node.
+ * @brief Set the ID of the node.
  *
- * @param nodeId   the ID for the node.
+ * @param node_id the ID for the node.
  */
-void Node::setId(const std::string & nodeId)
+void node::id(const std::string & node_id)
 {
-    assert(this->scope);
-    this->scope->namedNodeMap[nodeId] = this;
+    assert(this->scope_);
+    this->scope_->namedNodeMap[node_id] = this;
 }
 
 /**
  * @brief Retrieve the nodeId of this node.
  *
- * @return the nodeId
+ * @return the node ID
  */
-const std::string Node::getId() const
+const std::string node::id() const
 {
     using std::find_if;
-    assert(this->scope);
-    const NamedNodeMap::iterator end = this->scope->namedNodeMap.end();
-    const NamedNodeMap::iterator pos =
-            find_if(this->scope->namedNodeMap.begin(), end, NodeIs_(*this));
+    assert(this->scope_);
+    const named_node_map::iterator end = this->scope_->namedNodeMap.end();
+    const named_node_map::iterator pos =
+            find_if(this->scope_->namedNodeMap.begin(), end, node_is_(*this));
     return (pos != end) ? pos->first : std::string();
 }
 
 /**
- * @fn const ScopePtr & Node::getScope() const throw ()
+ * @fn const ScopePtr & node::scope() const throw ()
  *
- * @brief Get the Scope to which the Node belongs.
+ * @brief Get the Scope to which the node belongs.
  *
- * @return the Scope to which the Node belongs.
+ * @return the Scope to which the node belongs.
  */
 
 /**
- * @fn Scene * Node::getScene() const throw ()
+ * @fn Scene * node::scene() const throw ()
  *
- * @brief Get the Scene with which the Node is associated.
+ * @brief Get the Scene with which the node is associated.
  *
- * @return the Scene with which the Node is associated.
+ * @return the Scene with which the node is associated.
  */
 
 /**
@@ -988,27 +988,27 @@ const std::string Node::getId() const
  *
  * Used internally by the PROTO implementation.
  *
- * @param eventOutId    eventOut name.
- * @param eventOutValue a PolledEventOutValue.
+ * @param eventout_id    eventOut name.
+ * @param eventout_value a polled_eventout_value.
  *
- * @exception UnsupportedInterface  if the node has no eventOut @p eventOutId.
+ * @exception unsupported_interface if the node has no eventOut @p eventout_id.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-void Node::addEventOutIS(const std::string & eventOutId,
-                         PolledEventOutValue & eventOutValue)
-    throw (UnsupportedInterface, std::bad_alloc)
+void node::add_eventout_is(const std::string & eventout_id,
+                           polled_eventout_value & eventout_value)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    if (!this->nodeType.hasEventOut(eventOutId)) {
-        throw UnsupportedInterface(this->nodeType,
-                                   NodeInterface::eventOut,
-                                   eventOutId);
+    if (!this->type.has_eventout(eventout_id)) {
+        throw unsupported_interface(this->type,
+                                    node_interface::eventout_id,
+                                    eventout_id);
     }
-    const EventOutISMap::value_type value(eventOutId, &eventOutValue);
-    this->eventOutISMap.insert(value);
+    const eventout_is_map_t::value_type value(eventout_id, &eventout_value);
+    this->eventout_is_map.insert(value);
 }
 
 /**
- * @brief Initialize the Node.
+ * @brief Initialize the node.
  *
  * This method works recursively, initializing any child nodes to the same
  * @p scene and @p timestamp. If the node has already been initialized, this
@@ -1021,29 +1021,29 @@ void Node::addEventOutIS(const std::string & eventOutId,
  *
  * @post @a scene points to @p scene.
  */
-void Node::initialize(Scene & scene, const double timestamp)
+void node::initialize(Scene & scene, const double timestamp)
     throw (std::bad_alloc)
 {
-    if (!this->scene) {
-        this->scene = &scene;
+    if (!this->scene_) {
+        this->scene_ = &scene;
         this->do_initialize(timestamp);
 
-        const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
-        for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
+        const node_interface_set & interfaces = this->type.interfaces();
+        for (node_interface_set::const_iterator interface(interfaces.begin());
                 interface != interfaces.end(); ++interface) {
-            if (interface->type == NodeInterface::exposedField
-                    || interface->type == NodeInterface::field) {
-                if (interface->fieldType == field_value::sfnode_id) {
+            if (interface->type == node_interface::exposedfield_id
+                    || interface->type == node_interface::field_id) {
+                if (interface->field_type == field_value::sfnode_id) {
                     assert(dynamic_cast<const sfnode *>
-                           (&this->getField(interface->id)));
+                           (&this->field(interface->id)));
                     const sfnode & sfn = static_cast<const sfnode &>
-                                         (this->getField(interface->id));
+                                         (this->field(interface->id));
                     if (sfn.value) { sfn.value->initialize(scene, timestamp); }
-                } else if (interface->fieldType == field_value::mfnode_id) {
+                } else if (interface->field_type == field_value::mfnode_id) {
                     assert(dynamic_cast<const mfnode *>
-                           (&this->getField(interface->id)));
+                           (&this->field(interface->id)));
                     const mfnode & mfn = static_cast<const mfnode &>
-                                         (this->getField(interface->id));
+                                         (this->field(interface->id));
                     for (size_t i = 0; i < mfn.value.size(); ++i) {
                         if (mfn.value[i]) {
                             mfn.value[i]->initialize(scene, timestamp);
@@ -1053,7 +1053,7 @@ void Node::initialize(Scene & scene, const double timestamp)
             }
         }
     }
-    assert(this->scene == &scene);
+    assert(this->scene_ == &scene);
 }
 
 /**
@@ -1065,11 +1065,11 @@ void Node::initialize(Scene & scene, const double timestamp)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Node::relocate() throw (std::bad_alloc)
+void node::relocate() throw (std::bad_alloc)
 {
-    typedef void (Node::* Do_relocate)();
+    typedef void (node::* Do_relocate)();
 
-    class RelocateTraverser : public NodeTraverser {
+    class RelocateTraverser : public node_traverser {
         Do_relocate do_relocate;
 
     public:
@@ -1081,13 +1081,13 @@ void Node::relocate() throw (std::bad_alloc)
         {}
 
     private:
-        virtual void onEntering(Node & node) throw (std::bad_alloc)
+        virtual void on_entering(node & n) throw (std::bad_alloc)
         {
-            (node.*this->do_relocate)();
+            (n.*this->do_relocate)();
         }
     };
 
-    Do_relocate do_reloc = &Node::do_relocate;
+    Do_relocate do_reloc = &node::do_relocate;
 
     RelocateTraverser(do_reloc).traverse(*this);
 }
@@ -1098,16 +1098,16 @@ void Node::relocate() throw (std::bad_alloc)
  * @param id    the name of the field.
  * @param value the new value.
  *
- * @throw UnsupportedInterface  if the node has no field named @p id.
+ * @throw unsupported_interface  if the node has no field named @p id.
  * @throw std::bad_cast         if @p value is not the correct type.
  * @throw std::bad_alloc        if memory allocation fails.
  *
  * @pre @p value must be the appropriate type for the interface.
  */
-void Node::setField(const std::string & id, const field_value & value)
-    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+void node::field(const std::string & id, const field_value & value)
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
-    this->do_setField(id, value);
+    this->do_field(id, value);
 }
 
 /**
@@ -1115,12 +1115,12 @@ void Node::setField(const std::string & id, const field_value & value)
  *
  * @param id    the name of the field.
  *
- * @throw UnsupportedInterface  if the node has no field named @p id.
+ * @throw unsupported_interface  if the node has no field named @p id.
  */
-const field_value & Node::getField(const std::string & id) const
-    throw (UnsupportedInterface)
+const field_value & node::field(const std::string & id) const
+    throw (unsupported_interface)
 {
-    return this->do_getField(id);
+    return this->do_field(id);
 }
 
 /**
@@ -1130,18 +1130,18 @@ const field_value & Node::getField(const std::string & id) const
  * @param value     the new value.
  * @param timestamp the current time.
  *
- * @throw UnsupportedInterface  if the node has no eventIn named @p id.
+ * @throw unsupported_interface  if the node has no eventIn named @p id.
  * @throw std::bad_cast         if @p value is not the correct type.
  * @throw std::bad_alloc        if memory allocation fails.
  *
  * @pre @p value must be the appropriate type for the interface.
  */
-void Node::processEvent(const std::string & id,
-                        const field_value & value,
-                        const double timestamp)
-    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+void node::process_event(const std::string & id,
+                         const field_value & value,
+                         const double timestamp)
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
-    this->do_processEvent(id, value, timestamp);
+    this->do_process_event(id, value, timestamp);
 }
 
 
@@ -1150,16 +1150,16 @@ void Node::processEvent(const std::string & id,
  *
  * @param id    the name of the eventOut.
  *
- * @throw UnsupportedInterface  if the node has no eventOut named @p id.
+ * @throw unsupported_interface  if the node has no eventOut named @p id.
  */
-const field_value & Node::getEventOut(const std::string & id) const
-    throw (UnsupportedInterface)
+const field_value & node::eventout(const std::string & id) const
+    throw (unsupported_interface)
 {
-    return this->do_getEventOut(id);
+    return this->do_eventout(id);
 }
 
 /**
- * @brief Shut down the Node.
+ * @brief Shut down the node.
  *
  * This method works recursively, shutting down any child nodes. If the node
  * has already been shut down, this method has no effect.
@@ -1168,28 +1168,28 @@ const field_value & Node::getEventOut(const std::string & id) const
  *
  * @post @a scene is 0.
  */
-void Node::shutdown(const double timestamp) throw ()
+void node::shutdown(const double timestamp) throw ()
 {
-    if (this->scene) {
+    if (this->scene_) {
         this->do_shutdown(timestamp);
-        this->scene = 0;
+        this->scene_ = 0;
 
-        const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
-        for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
+        const node_interface_set & interfaces = this->type.interfaces();
+        for (node_interface_set::const_iterator interface(interfaces.begin());
                 interface != interfaces.end(); ++interface) {
-            if (interface->type == NodeInterface::exposedField
-                    || interface->type == NodeInterface::field) {
-                if (interface->fieldType == field_value::sfnode_id) {
+            if (interface->type == node_interface::exposedfield_id
+                    || interface->type == node_interface::field_id) {
+                if (interface->field_type == field_value::sfnode_id) {
                     assert(dynamic_cast<const sfnode *>
-                           (&this->getField(interface->id)));
+                           (&this->field(interface->id)));
                     const sfnode & sfn = static_cast<const sfnode &>
-                                         (this->getField(interface->id));
+                                         (this->field(interface->id));
                     if (sfn.value) { sfn.value->shutdown(timestamp); }
-                } else if (interface->fieldType == field_value::mfnode_id) {
+                } else if (interface->field_type == field_value::mfnode_id) {
                     assert(dynamic_cast<const mfnode *>
-                           (&this->getField(interface->id)));
+                           (&this->field(interface->id)));
                     const mfnode & mfn = static_cast<const mfnode &>
-                                         (this->getField(interface->id));
+                                         (this->field(interface->id));
                     for (size_t i = 0; i < mfn.value.size(); ++i) {
                         if (mfn.value[i]) {
                             mfn.value[i]->shutdown(timestamp);
@@ -1199,7 +1199,7 @@ void Node::shutdown(const double timestamp) throw ()
             }
         }
     }
-    assert(!this->scene);
+    assert(!this->scene_);
 }
 
 /**
@@ -1209,7 +1209,7 @@ void Node::shutdown(const double timestamp) throw ()
  *
  * @return 0
  */
-const ScriptNode * Node::toScript() const throw ()
+const ScriptNode * node::to_script() const throw ()
 {
     return 0;
 }
@@ -1221,79 +1221,79 @@ const ScriptNode * Node::toScript() const throw ()
  *
  * @return 0
  */
-ScriptNode * Node::toScript() throw ()
+ScriptNode * node::to_script() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const AppearanceNode.
+ * @brief Cast to a const appearance_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const AppearanceNode * Node::toAppearance() const throw ()
+const appearance_node * node::to_appearance() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to an AppearanceNode.
+ * @brief Cast to an appearance_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-AppearanceNode * Node::toAppearance() throw ()
+appearance_node * node::to_appearance() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const ChildNode.
+ * @brief Cast to a const child_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const ChildNode * Node::toChild() const throw ()
+const child_node * node::to_child() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a ChildNode.
+ * @brief Cast to a child_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-ChildNode * Node::toChild() throw ()
+child_node * node::to_child() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const ColorNode.
+ * @brief Cast to a const color_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const ColorNode * Node::toColor() const throw ()
+const color_node * node::to_color() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a ColorNode.
+ * @brief Cast to a color_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-ColorNode * Node::toColor() throw ()
+color_node * node::to_color() throw ()
 {
     return 0;
 }
@@ -1305,19 +1305,19 @@ ColorNode * Node::toColor() throw ()
  *
  * @return 0
  */
-const CoordinateNode * Node::toCoordinate() const throw ()
+const coordinate_node * node::to_coordinate() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a CoordinateNode.
+ * @brief Cast to a coordinate_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-CoordinateNode * Node::toCoordinate() throw ()
+coordinate_node * node::to_coordinate() throw ()
 {
     return 0;
 }
@@ -1329,259 +1329,259 @@ CoordinateNode * Node::toCoordinate() throw ()
  *
  * @return 0
  */
-const FontStyleNode * Node::toFontStyle() const throw ()
+const font_style_node * node::to_font_style() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a FontStyleNode.
+ * @brief Cast to a font_style_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-FontStyleNode * Node::toFontStyle() throw ()
+font_style_node * node::to_font_style() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const GeometryNode.
+ * @brief Cast to a const geometry_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const GeometryNode * Node::toGeometry() const throw ()
+const geometry_node * node::to_geometry() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a GeometryNode.
+ * @brief Cast to a geometry_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-GeometryNode * Node::toGeometry() throw ()
+geometry_node * node::to_geometry() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const GroupingNode.
+ * @brief Cast to a const grouping_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const GroupingNode * Node::toGrouping() const throw ()
+const grouping_node * node::to_grouping() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a GroupingNode.
+ * @brief Cast to a grouping_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-GroupingNode * Node::toGrouping() throw ()
+grouping_node * node::to_grouping() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const MaterialNode.
+ * @brief Cast to a const material_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const MaterialNode * Node::toMaterial() const throw ()
+const material_node * node::to_material() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a MaterialNode.
+ * @brief Cast to a material_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-MaterialNode * Node::toMaterial() throw ()
+material_node * node::to_material() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const NormalNode.
+ * @brief Cast to a const normal_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const NormalNode * Node::toNormal() const throw ()
+const normal_node * node::to_normal() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a NormalNode.
+ * @brief Cast to a normal_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-NormalNode * Node::toNormal() throw ()
+normal_node * node::to_normal() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const SoundSourceNode.
+ * @brief Cast to a const sound_source_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const SoundSourceNode * Node::toSoundSource() const throw ()
+const sound_source_node * node::to_sound_source() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a SoundSourceNode.
+ * @brief Cast to a sound_source_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-SoundSourceNode * Node::toSoundSource() throw ()
+sound_source_node * node::to_sound_source() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const TextureNode.
+ * @brief Cast to a const texture_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const TextureNode * Node::toTexture() const throw ()
+const texture_node * node::to_texture() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a TextureNode.
+ * @brief Cast to a texture_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-TextureNode * Node::toTexture() throw ()
+texture_node * node::to_texture() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const TextureCoordinateNode.
+ * @brief Cast to a const texture_coordinate_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const TextureCoordinateNode * Node::toTextureCoordinate() const throw ()
+const texture_coordinate_node * node::to_texture_coordinate() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a TextureCoordinateNode.
+ * @brief Cast to a texture_coordinate_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-TextureCoordinateNode * Node::toTextureCoordinate() throw ()
+texture_coordinate_node * node::to_texture_coordinate() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const TextureTransformNode.
+ * @brief Cast to a const texture_transform_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const TextureTransformNode * Node::toTextureTransform() const throw ()
+const texture_transform_node * node::to_texture_transform() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a TextureTransformNode.
+ * @brief Cast to a texture_transform_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-TextureTransformNode * Node::toTextureTransform() throw ()
+texture_transform_node * node::to_texture_transform() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const TransformNode.
+ * @brief Cast to a const transform_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const TransformNode * Node::toTransform() const throw ()
+const transform_node * node::to_transform() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a TransformNode.
+ * @brief Cast to a transform_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-TransformNode * Node::toTransform() throw ()
+transform_node * node::to_transform() throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a const ViewpointNode.
+ * @brief Cast to a const viewpoint_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-const ViewpointNode * Node::toViewpoint() const throw ()
+const viewpoint_node * node::to_viewpoint() const throw ()
 {
     return 0;
 }
 
 /**
- * @brief Cast to a ViewpointNode.
+ * @brief Cast to a viewpoint_node.
  *
  * Default implementation returns 0.
  *
  * @return 0
  */
-ViewpointNode * Node::toViewpoint() throw ()
+viewpoint_node * node::to_viewpoint() throw ()
 {
     return 0;
 }
@@ -1593,29 +1593,29 @@ ViewpointNode * Node::toViewpoint() throw ()
 // Remember to also add new ones to NodeProto. Protos should
 // return their first implementation node (except toProto()).
 
-Vrml97Node::Anchor * Node::toAnchor() const { return 0; }
+Vrml97Node::Anchor * node::to_anchor() const { return 0; }
 
-Vrml97Node::AudioClip * Node::toAudioClip() const { return 0; }
+Vrml97Node::AudioClip * node::to_audio_clip() const { return 0; }
 
-Vrml97Node::AbstractLight * Node::toLight() const { return 0; }
+Vrml97Node::AbstractLight * node::to_light() const { return 0; }
 
-Vrml97Node::MovieTexture * Node::toMovieTexture() const { return 0; }
+Vrml97Node::MovieTexture * node::to_movie_texture() const { return 0; }
 
-Vrml97Node::NavigationInfo * Node::toNavigationInfo() const { return 0; }
+Vrml97Node::NavigationInfo * node::to_navigation_info() const { return 0; }
 
-Vrml97Node::PlaneSensor * Node::toPlaneSensor() const { return 0; }
+Vrml97Node::PlaneSensor * node::to_plane_sensor() const { return 0; }
 
-Vrml97Node::SphereSensor * Node::toSphereSensor() const { return 0; }
+Vrml97Node::SphereSensor * node::to_sphere_sensor() const { return 0; }
 
-Vrml97Node::CylinderSensor * Node::toCylinderSensor() const { return 0; }
+Vrml97Node::CylinderSensor * node::to_cylinder_sensor() const { return 0; }
 
-Vrml97Node::PointLight * Node::toPointLight() const { return 0; }
+Vrml97Node::PointLight * node::to_point_light() const { return 0; }
 
-Vrml97Node::SpotLight * Node::toSpotLight() const { return 0; }
+Vrml97Node::SpotLight * node::to_spot_light() const { return 0; }
 
-Vrml97Node::TimeSensor * Node::toTimeSensor() const { return 0; }
+Vrml97Node::TimeSensor * node::to_time_sensor() const { return 0; }
 
-Vrml97Node::TouchSensor * Node::toTouchSensor() const { return 0; }
+Vrml97Node::TouchSensor * node::to_touch_sensor() const { return 0; }
 
 
 /**
@@ -1624,55 +1624,57 @@ Vrml97Node::TouchSensor * Node::toTouchSensor() const { return 0; }
  *
  * If the route being added already exists, this method has no effect.
  *
- * @param fromEventOut  an eventOut of the node.
- * @param toNode        a node.
- * @param toEventIn     an eventIn of @p toNode.
+ * @param from_eventout an eventOut of the node.
+ * @param to_node       a node.
+ * @param to_eventin    an eventIn of @p to_node.
  *
- * @exception UnsupportedInterface      if the node has no eventOut
- *                                      @p fromEventOut; or if @p toNode has no
- *                                      eventIn @p toEventIn.
- * @exception FieldValueTypeMismatch    if @p fromEventOut and @p toEventIn
+ * @exception unsupported_interface     if the node has no eventOut
+ *                                      @p from_eventout; or if @p to_node has
+ *                                      no eventIn @p to_eventin.
+ * @exception field_value_type_mismatch if @p from_eventout and @p to_eventin
  *                                      have different field value types.
  *
- * @pre @p toNode is not null.
+ * @pre @p to_node is not null.
  */
-void Node::addRoute(const std::string & fromEventOut,
-                    const NodePtr & toNode,
-                    const std::string & toEventIn)
-    throw (UnsupportedInterface, FieldValueTypeMismatch)
+void node::add_route(const std::string & from_eventout,
+                     const NodePtr & to_node,
+                     const std::string & to_eventin)
+    throw (unsupported_interface, field_value_type_mismatch)
 {
-    assert(toNode);
+    assert(to_node);
 
-    const field_value::type_id fromInterfaceType =
-            this->nodeType.hasEventOut(fromEventOut);
-    if (fromInterfaceType == field_value::invalid_type_id) {
-        throw UnsupportedInterface(this->nodeType, NodeInterface::eventOut,
-                                   fromEventOut);
+    const field_value::type_id from_interface_type =
+        this->type.has_eventout(from_eventout);
+    if (from_interface_type == field_value::invalid_type_id) {
+        throw unsupported_interface(this->type,
+                                    node_interface::eventout_id,
+                                    from_eventout);
     }
 
-    const field_value::type_id toInterfaceType =
-            toNode->nodeType.hasEventIn(toEventIn);
-    if (toInterfaceType == field_value::invalid_type_id) {
-        throw UnsupportedInterface(toNode->nodeType, NodeInterface::eventIn,
-                                   toEventIn);
+    const field_value::type_id to_interface_type =
+        to_node->type.has_eventin(to_eventin);
+    if (to_interface_type == field_value::invalid_type_id) {
+        throw unsupported_interface(to_node->type,
+                                    node_interface::eventin_id,
+                                    to_eventin);
     }
 
-    if (fromInterfaceType != toInterfaceType) {
-        throw FieldValueTypeMismatch();
+    if (from_interface_type != to_interface_type) {
+        throw field_value_type_mismatch();
     }
 
-    const Route route(fromEventOut, toNode, toEventIn);
+    const route r(from_eventout, to_node, to_eventin);
 
     //
     // Is this route already here?
     //
-    const RouteList::iterator pos =
-            std::find(this->routes.begin(), this->routes.end(), route);
+    const routes_t::iterator pos =
+        std::find(this->routes_.begin(), this->routes_.end(), r);
 
     //
     // If not, add it.
     //
-    if (pos == this->routes.end()) { this->routes.push_back(route); }
+    if (pos == this->routes_.end()) { this->routes_.push_back(r); }
 }
 
 
@@ -1682,18 +1684,18 @@ void Node::addRoute(const std::string & fromEventOut,
  *
  * If no such route exists, this method has no effect.
  *
- * @param fromEventOut  an eventOut of the node.
- * @param toNode        a node.
- * @param toEventIn     an eventIn of @p toNode.
+ * @param from_eventout an eventOut of the node.
+ * @param to_node       a node.
+ * @param to_eventin    an eventIn of @p to_node.
  */
-void Node::deleteRoute(const std::string & fromEventOut,
-                       const NodePtr & toNode,
-                       const std::string & toEventIn) throw ()
+void node::delete_route(const std::string & from_eventout,
+                        const NodePtr & to_node,
+                        const std::string & to_eventin) throw ()
 {
-    const RouteList::iterator pos =
-            std::find(this->routes.begin(), this->routes.end(),
-                      Route(fromEventOut, toNode, toEventIn));
-    if (pos != this->routes.end()) { this->routes.erase(pos); }
+    const routes_t::iterator pos =
+        std::find(this->routes_.begin(), this->routes_.end(),
+                  route(from_eventout, to_node, to_eventin));
+    if (pos != this->routes_.end()) { this->routes_.erase(pos); }
 }
 
 /**
@@ -1701,20 +1703,22 @@ void Node::deleteRoute(const std::string & fromEventOut,
  *
  * @return an std::vector of Routes from this node.
  */
-const Node::RouteList & Node::getRoutes() const
+const node::routes_t & node::routes() const
 {
-    return this->routes;
+    return this->routes_;
 }
 
 /**
  * @brief Set the modified flag.
  *
  * Indicates the Node needs to be revisited for rendering.
+ *
+ * @param value
  */
-void Node::setModified()
+void node::modified(const bool value)
 {
-    this->d_modified = true;
-    this->nodeType.nodeClass.browser.setModified();
+    this->modified_ = value;
+    if (this->modified_) { this->type._class.browser.setModified(); }
 }
 
 /**
@@ -1726,38 +1730,32 @@ void Node::setModified()
  *
  * @return @c true if the node has been modified; @c false otherwise.
  */
-bool Node::isModified() const
+bool node::modified() const
 {
-    return this->d_modified;
+    return this->modified_;
 }
 
 /**
  * @brief Mark all the nodes in the path as (not) modified.
  *
- * Convenience function used by updateModified.
+ * Convenience function used by update_modified.
  *
  * @param path  stack of ancestor nodes.
  * @param mod   set modified flag to this value.
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Node::markPathModified(NodePath& path, bool mod, int flags)
+void node::mark_path_modified(node_path & path, bool mod, int flags)
 {
-    const NodePath::iterator end = path.end();
+    const node_path::iterator end = path.end();
     if (flags & 0x001) {
-        for (NodePath::iterator i = path.begin(); i != end; ++i) {
-            if (mod) {
-                // do the proof that our invarient shows that this short
-                // circuit is legal...
-                (*i)->setModified();
-            } else {
-                (*i)->clearModified();
-            }
+        for (node_path::iterator i = path.begin(); i != end; ++i) {
+            (*i)->modified(mod);
         }
     }
     if (flags & 0x002) {
-        for (NodePath::iterator i = path.begin(); i != end; ++i) {
-            (*i)->setBVolumeDirty(mod);
+        for (node_path::iterator i = path.begin(); i != end; ++i) {
+            (*i)->bvolume_dirty(mod);
         }
     }
 }
@@ -1773,43 +1771,20 @@ void Node::markPathModified(NodePath& path, bool mod, int flags)
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Node::updateModified(NodePath & path, int flags)
+void node::update_modified(node_path & path, int flags)
 {
-    if (this->d_modified || this->d_bvol_dirty) {
-        this->markPathModified(path, true, flags);
+    if (this->modified_ || this->bvolume_dirty_) {
+        node::mark_path_modified(path, true, flags);
     }
 }
 
 // note not virtual
 //
-void Node::updateModified(int flags)
+void node::update_modified(int flags)
 {
-    NodePath path;
-    updateModified(path, flags);
+    node_path path;
+    this->update_modified(path, flags);
 }
-
-// Render
-
-//bool Node::cull(Viewer *v, RenderContext* c)
-//{
-//if (c && c->getCullFlag()) {
-//VrmlBVolume* bv = this->getBVolume();
-//int r = v->isectViewVolume(*bv); // better not be null...
-//if (r == VrmlBVolume::BV_OUTSIDE) {
-//cout << "Node::render():OUTSIDE:culled" << endl;
-//return true;
-//} else if (r == VrmlBVolume::BV_INSIDE) {
-//cout << "Node::render():INSIDE:no more cull tests" << endl;
-//c->setCullFlag(false);
-//return false;
-//} else {
-//cout << "Node::render():PARTIAL:continue cull tests" << endl;
-//return false;
-//}
-//}
-//return false;
-//}
-
 
 /**
  * @brief Get this node's bounding volume.
@@ -1824,7 +1799,7 @@ void Node::updateModified(int flags)
  *
  * @todo Should this return a reference?
  */
-const BVolume * Node::getBVolume() const
+const BVolume * node::bvolume() const
 {
     static BSphere infBSphere;
     static BSphere * infBSpherePtr = 0;
@@ -1832,7 +1807,7 @@ const BVolume * Node::getBVolume() const
         infBSpherePtr = &infBSphere;
         infBSpherePtr->setMAX();
     }
-    const_cast<Node *>(this)->setBVolumeDirty(false);
+    const_cast<node *>(this)->bvolume_dirty(false);
     return infBSpherePtr;
 }
 
@@ -1842,7 +1817,7 @@ const BVolume * Node::getBVolume() const
  *
  * @todo Implement me!
  */
-void Node::setBVolume(const BVolume & v)
+void node::bvolume(const BVolume & v)
 {
     // XXX Implement me!
 }
@@ -1853,11 +1828,11 @@ void Node::setBVolume(const BVolume & v)
  * all that node's ancestors are also invalid. Normally, the node
  * itself will determine when its bvolume needs updating.
  */
-void Node::setBVolumeDirty(bool f)
+void node::bvolume_dirty(const bool value)
 {
-    this->d_bvol_dirty = f;
-    if (f) { // only if dirtying, not clearing
-        this->nodeType.nodeClass.browser.d_flags_need_updating = true;
+    this->bvolume_dirty_ = value;
+    if (value) { // only if dirtying, not clearing
+        this->type._class.browser.d_flags_need_updating = true;
     }
 }
 
@@ -1865,13 +1840,13 @@ void Node::setBVolumeDirty(bool f)
  * Return true if the node's bounding volume needs to be
  * recalculated.
  */
-bool Node::isBVolumeDirty() const
+bool node::bvolume_dirty() const
 {
-    if (this->nodeType.nodeClass.browser.d_flags_need_updating) {
-        this->nodeType.nodeClass.browser.updateFlags();
-        this->nodeType.nodeClass.browser.d_flags_need_updating = false;
+    if (this->type._class.browser.d_flags_need_updating) {
+        this->type._class.browser.updateFlags();
+        this->type._class.browser.d_flags_need_updating = false;
     }
-    return this->d_bvol_dirty;
+    return this->bvolume_dirty_;
 }
 
 /**
@@ -1889,33 +1864,34 @@ bool Node::isBVolumeDirty() const
  * @param context   generic context argument; holds things like the accumulated
  *                  modelview transform.
  */
-void Node::render(Viewer & viewer, VrmlRenderContext context)
+void node::render(Viewer & viewer, VrmlRenderContext context)
 {
-    //if (cull(v, c)) return;
-    clearModified();
+    this->modified(false);
 }
 
 /**
  * @brief Send an event from this node.
  */
-void Node::emitEvent(const std::string & id,
-                     const field_value & value,
-                     const double timestamp)
+void node::emit_event(const std::string & id,
+                      const field_value & value,
+                      const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    assert(this->getScene());
-    EventOutISMap::const_iterator pos = this->eventOutISMap.find(id);
-    if (pos != this->eventOutISMap.end()) {
+    assert(this->scene());
+    eventout_is_map_t::const_iterator pos = this->eventout_is_map.find(id);
+    if (pos != this->eventout_is_map.end()) {
         pos->second->value->assign(value);
         pos->second->modified = true;
     }
 
-    for (RouteList::const_iterator itr = this->routes.begin();
-            itr != this->routes.end(); ++itr) {
-        if (id == itr->fromEventOut) {
-            field_value * const eventValue = value.clone().release();
-            this->getScene()->browser.queueEvent(timestamp, eventValue,
-                                                 itr->toNode, itr->toEventIn);
+    for (routes_t::const_iterator itr = this->routes_.begin();
+            itr != this->routes_.end(); ++itr) {
+        if (id == itr->from_eventout) {
+            field_value * const event_value = value.clone().release();
+            this->scene()->browser.queueEvent(timestamp,
+                                              event_value,
+                                              itr->to_node,
+                                              itr->to_eventin);
         }
     }
 }
@@ -1923,37 +1899,39 @@ void Node::emitEvent(const std::string & id,
 namespace {
     const short indentIncrement_ = 4;
 
-    class PrintField_ : public std::unary_function<NodeInterface, void> {
-        const Node & node;
+    class PrintField_ : public std::unary_function<node_interface, void> {
+        const node & n;
         std::ostream & out;
         const size_t indent;
 
     public:
-        PrintField_(const Node & node,
+        PrintField_(const node & n,
                     std::ostream & out,
                     const size_t indent):
-            node(node), out(out), indent(indent)
+            n(n),
+            out(out),
+            indent(indent)
         {}
 
-        void operator()(const NodeInterface & interface) const
+        void operator()(const node_interface & interface) const
         {
-            if (interface.type == NodeInterface::exposedField
-                    || interface.type == NodeInterface::field) {
+            if (interface.type == node_interface::exposedfield_id
+                    || interface.type == node_interface::field_id) {
                 this->out << std::string(this->indent + indentIncrement_, ' ')
                           << interface.id << ' '
-                          << node.getField(interface.id);
+                          << n.field(interface.id);
             }
         }
     };
 }
 
-std::ostream & Node::print(std::ostream & out, const size_t indent) const
+std::ostream & node::print(std::ostream & out, const size_t indent) const
 {
     for (size_t i = 0; i < indent; ++i) { out << ' '; }
-    std::string nodeId = this->getId();
+    std::string nodeId = this->id();
     if (!nodeId.empty()) { out << "DEF " << nodeId << " "; }
-    out << this->nodeType.id << " { ";
-    const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
+    out << this->type.id << " { ";
+    const node_interface_set & interfaces = this->type.interfaces();
     std::for_each(interfaces.begin(), interfaces.end(),
                   PrintField_(*this, out, indent));
     return out << " }";
@@ -1963,19 +1941,19 @@ std::ostream & Node::print(std::ostream & out, const size_t indent) const
  * @brief Stream output.
  *
  * @param out   output stream.
- * @param node  a Node.
+ * @param n     a Node.
  *
  * @return @p out.
  */
-std::ostream & operator<<(std::ostream & out, const Node & node)
+std::ostream & operator<<(std::ostream & out, const node & n)
 {
-    return node.print(out, 0);
+    return n.print(out, 0);
 }
 
 /**
  * @brief Node subclass-specific initialization.
  *
- * This method is called by Node::initialize. Subclasses of Node should
+ * This method is called by node::initialize. Subclasses of Node should
  * override this method for any subclass-specific initialization.
  *
  * The default implementation of this method does nothing.
@@ -1984,27 +1962,27 @@ std::ostream & operator<<(std::ostream & out, const Node & node)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Node::do_initialize(const double timestamp) throw (std::bad_alloc)
+void node::do_initialize(const double timestamp) throw (std::bad_alloc)
 {}
 
 /**
  * @brief Node subclass-specific relocation update.
  *
- * This method is called by Node::relocate. Subclasses of Node should override
+ * This method is called by node::relocate. Subclasses of Node should override
  * this method for any subclass-specific updates that need to be performed
  * following relocation of a node to a new position in the scene graph (for
  * example, updating a NodePath).
  *
  * The default implementation of this method does nothing.
  */
-void Node::do_relocate() throw (std::bad_alloc)
+void node::do_relocate() throw (std::bad_alloc)
 {}
 
 
 /**
  * @brief Node subclass-specific shut down.
  *
- * This method is called by Node::shutdown. Subclasses of Node should
+ * This method is called by node::shutdown. Subclasses of Node should
  * override this method for any subclass-specific shut down. Note that
  * this method cannot throw.
  *
@@ -2012,80 +1990,80 @@ void Node::do_relocate() throw (std::bad_alloc)
  *
  * @param timestamp the current time.
  */
-void Node::do_shutdown(const double timestamp) throw ()
+void node::do_shutdown(const double timestamp) throw ()
 {}
 
 
 /**
- * @class AppearanceNode
+ * @class appearance_node
  *
  * @brief Abstract base class for appearance nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-AppearanceNode::AppearanceNode(const NodeType & nodeType,
-                               const ScopePtr & scope):
-    Node(nodeType, scope)
+appearance_node::appearance_node(const node_type & type,
+                                 const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-AppearanceNode::~AppearanceNode() throw ()
+appearance_node::~appearance_node() throw ()
 {}
 
 /**
- * @brief Cast to an AppearanceNode.
+ * @brief Cast to an appearance_node.
  *
- * @return a pointer to this AppearanceNode.
+ * @return a pointer to this appearance_node.
  */
-const AppearanceNode * AppearanceNode::toAppearance() const throw ()
+const appearance_node * appearance_node::to_appearance() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to an AppearanceNode.
+ * @brief Cast to an appearance_node.
  *
- * @return a pointer to this AppearanceNode.
+ * @return a pointer to this appearance_node.
  */
-AppearanceNode * AppearanceNode::toAppearance() throw ()
+appearance_node * appearance_node::to_appearance() throw ()
 {
     return this;
 }
 
 /**
- * @fn const NodePtr & AppearanceNode::getMaterial() const throw ()
+ * @fn const NodePtr & appearance_node::material() const throw ()
  *
  * @brief Get the material node associated with this appearance node.
  *
- * @return the MaterialNode associated with this AppearanceNode.
+ * @return the material_node associated with this appearance_node.
  */
 
 /**
- * @fn const NodePtr & AppearanceNode::getTexture() const throw ()
+ * @fn const NodePtr & appearance_node::texture() const throw ()
  *
  * @brief Get the texture node associated with this appearance node.
  *
- * @return the TextureNode associated with this AppearanceNode.
+ * @return the texture_node associated with this appearance_node.
  */
 
 /**
- * @fn const NodePtr & AppearanceNode::getTextureTransform() const throw ()
+ * @fn const NodePtr & appearance_node::texture_transform() const throw ()
  *
  * @brief Get the texture transform node associated with this appearance node.
  *
- * @return the TextureTransformNode associated with this AppearanceNode.
+ * @return the texture_transform_node associated with this appearance_node.
  */
 
 
 /**
- * @class ChildNode
+ * @class child_node
  *
  * @brief Abstract base class for child nodes.
  */
@@ -2093,84 +2071,84 @@ AppearanceNode * AppearanceNode::toAppearance() throw ()
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-ChildNode::ChildNode(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope)
+child_node::child_node(const node_type & type, const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
  * @brief Destructor.
  */
-ChildNode::~ChildNode() throw ()
+child_node::~child_node() throw ()
 {}
 
 /**
- * @brief Cast to a ChildNode.
+ * @brief Cast to a child_node.
  *
- * @return a pointer to this ChildNode.
+ * @return a pointer to this child_node.
  */
-const ChildNode * ChildNode::toChild() const throw ()
+const child_node * child_node::to_child() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a ChildNode.
+ * @brief Cast to a child_node.
  *
- * @return a pointer to this ChildNode.
+ * @return a pointer to this child_node.
  */
-ChildNode * ChildNode::toChild() throw ()
+child_node * child_node::to_child() throw ()
 {
     return this;
 }
 
 
 /**
- * @class ColorNode
+ * @class color_node
  *
  * @brief Abstract base class for color nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-ColorNode::ColorNode(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope)
+color_node::color_node(const node_type & type, const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-ColorNode::~ColorNode() throw ()
+color_node::~color_node() throw ()
 {}
 
 /**
- * @brief Cast to a ColorNode.
+ * @brief Cast to a color_node.
  *
- * @return a pointer to this ColorNode.
+ * @return a pointer to this color_node.
  */
-const ColorNode * ColorNode::toColor() const throw ()
+const color_node * color_node::to_color() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a ColorNode.
+ * @brief Cast to a color_node.
  *
- * @return a pointer to this ColorNode.
+ * @return a pointer to this color_node.
  */
-ColorNode * ColorNode::toColor() throw ()
+color_node * color_node::to_color() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<color> & ColorNode::getColor() const
+ * @fn const std::vector<OpenVRML::color> & color_node::color() const
  *
  * @brief Get the color array encapsulated by this node.
  *
@@ -2179,50 +2157,50 @@ ColorNode * ColorNode::toColor() throw ()
 
 
 /**
- * @class CoordinateNode
+ * @class coordinate_node
  *
  * @brief Abstract base class for coordinate nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-CoordinateNode::CoordinateNode(const NodeType & nodeType,
-                               const ScopePtr & scope):
-    Node(nodeType, scope)
+coordinate_node::coordinate_node(const node_type & type,
+                                 const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-CoordinateNode::~CoordinateNode() throw ()
+coordinate_node::~coordinate_node() throw ()
 {}
 
 /**
- * @brief Cast to a CoordinateNode.
+ * @brief Cast to a coordinate_node.
  *
- * @return a pointer to this CoordinateNode.
+ * @return a pointer to this coordinate_node.
  */
-const CoordinateNode * CoordinateNode::toCoordinate() const throw ()
+const coordinate_node * coordinate_node::to_coordinate() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a CoordinateNode.
+ * @brief Cast to a coordinate_node.
  *
- * @return a pointer to this CoordinateNode.
+ * @return a pointer to this coordinate_node.
  */
-CoordinateNode * CoordinateNode::toCoordinate() throw ()
+coordinate_node * coordinate_node::to_coordinate() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<vec3f> & CoordinateNode::getPoint() const
+ * @fn const std::vector<vec3f> & coordinate_node::point() const
  *
  * @brief Get the points encapsulated by this node.
  *
@@ -2231,77 +2209,76 @@ CoordinateNode * CoordinateNode::toCoordinate() throw ()
 
 
 /**
- * @class FontStyleNode
+ * @class font_style_node
  *
  * @brief Abstract base class for font style nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-FontStyleNode::FontStyleNode(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope)
+font_style_node::font_style_node(const node_type & type,
+                                 const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-FontStyleNode::~FontStyleNode() throw ()
+font_style_node::~font_style_node() throw ()
 {}
 
 /**
- * @brief Cast to a FontStyleNode.
+ * @brief Cast to a font_style_node.
  *
- * @return a pointer to this FontStyleNode.
+ * @return a pointer to this font_style_node.
  */
-const FontStyleNode * FontStyleNode::toFontStyle() const throw ()
+const font_style_node * font_style_node::to_font_style() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a FontStyleNode.
+ * @brief Cast to a font_style_node.
  *
- * @return a pointer to this FontStyleNode.
+ * @return a pointer to this font_style_node.
  */
-FontStyleNode * FontStyleNode::toFontStyle() throw ()
+font_style_node * font_style_node::to_font_style() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<std::string> & FontStyleNode::getFamily() const throw ()
+ * @fn const std::vector<std::string> & font_style_node::family() const throw ()
  *
  * @brief Get the list of font families.
  *
- * @return an MFString containing the font families that may be used for this
- *      FontStyle.
+ * @return the font families that may be used for this FontStyle.
  */
 
 /**
- * @fn bool FontStyleNode::getHorizontal() const throw ()
+ * @fn bool font_style_node::horizontal() const throw ()
  *
  * @brief Get the flag indicating whether the text should be horizontal or
  *      vertical.
  *
- * @return @c TRUE if the text should be horizontal, or @c FALSE if the text
+ * @return @c true if the text should be horizontal, or @c false if the text
  *      should be vertical.
  */
 
 /**
- * @fn const std::vector<std::string> & FontStyleNode::getJustify() const throw ()
+ * @fn const std::vector<std::string> & font_style_node::justify() const throw ()
  *
  * @brief Get the descriptor for the text justification.
  *
- * @return an MFString value describing the characteristics of the text
- *      justification.
+ * @return the characteristics of the text justification.
  */
 
 /**
- * @fn const std::string & FontStyleNode::getLanguage() const throw ()
+ * @fn const std::string & font_style_node::language() const throw ()
  *
  * @brief Get the language code.
  *
@@ -2309,17 +2286,17 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn bool FontStyleNode::getLeftToRight() const throw ()
+ * @fn bool font_style_node::left_to_right() const throw ()
  *
  * @brief Get the flag indicating whether the text should be rendered
  *      left-to-right.
  *
- * @return @c TRUE if the text should be rendered left-to-right, or @c FALSE if
+ * @return @c true if the text should be rendered left-to-right, or @c false if
  *      the text should be rendered right-to-left.
  */
 
 /**
- * @fn float FontStyleNode::getSize() const throw ()
+ * @fn float font_style_node::size() const throw ()
  *
  * @brief Get the size of the text.
  *
@@ -2327,7 +2304,7 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn float FontStyleNode::getSpacing() const throw ()
+ * @fn float font_style_node::spacing() const throw ()
  *
  * @brief Get the spacing for the text.
  *
@@ -2335,62 +2312,63 @@ FontStyleNode * FontStyleNode::toFontStyle() throw ()
  */
 
 /**
- * @fn const std::string & FontStyleNode::getStyle() const throw ()
+ * @fn const std::string & font_style_node::style() const throw ()
  *
  * @brief Get the style for the text.
  *
- * @return an SFString descriptor of the text style.
+ * @return the text style.
  */
 
 /**
- * @fn bool FontStyleNode::getTopToBottom() const throw ()
+ * @fn bool font_style_node::top_to_bottom() const throw ()
  *
  * @brief Get the flag indicating whether the text should be rendered
  *      top-to-bottom.
  *
- * @return @c TRUE if the text should be rendered top-to-bottom, or @c FALSE if
+ * @return @c true if the text should be rendered top-to-bottom, or @c false if
  *      the text should be rendered bottom-to-top.
  */
 
 
 /**
- * @class GeometryNode
+ * @class geometry_node
  *
  * @brief Abstract base class for geometry nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-GeometryNode::GeometryNode(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope)
+geometry_node::geometry_node(const node_type & type,
+                             const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-GeometryNode::~GeometryNode() throw ()
+geometry_node::~geometry_node() throw ()
 {}
 
 /**
- * @brief Cast to a GeometryNode.
+ * @brief Cast to a geometry_node.
  *
- * @return a pointer to this GeometryNode.
+ * @return a pointer to this geometry_node.
  */
-const GeometryNode * GeometryNode::toGeometry() const throw ()
+const geometry_node * geometry_node::to_geometry() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a GeometryNode.
+ * @brief Cast to a geometry_node.
  *
- * @return a pointer to this GeometryNode.
+ * @return a pointer to this geometry_node.
  */
-GeometryNode * GeometryNode::toGeometry() throw ()
+geometry_node * geometry_node::to_geometry() throw ()
 {
     return this;
 }
@@ -2398,63 +2376,64 @@ GeometryNode * GeometryNode::toGeometry() throw ()
 /**
  * @brief Get the color node (if any) associated with this geometry.
  *
- * @return the ColorNode associated associated with this geometry, or 0 if
+ * @return the color_node associated associated with this geometry, or 0 if
  *      there is no such node.
  *
  * @todo Reevaluate the way the renderer visits geometry nodes; potentially
  *      eliminate this method.
  */
-const ColorNode * GeometryNode::getColor() const throw ()
+const color_node * geometry_node::color() const throw ()
 {
     return 0;
 }
 
 
 /**
- * @class GroupingNode
+ * @class grouping_node
  *
  * @brief Abstract base class for grouping nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-GroupingNode::GroupingNode(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope),
-    ChildNode(nodeType, scope)
+grouping_node::grouping_node(const node_type & type,
+                             const ScopePtr & scope):
+    node(type, scope),
+    child_node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-GroupingNode::~GroupingNode() throw ()
+grouping_node::~grouping_node() throw ()
 {}
 
 /**
- * @brief Cast to a GroupingNode.
+ * @brief Cast to a grouping_node.
  *
- * @return a pointer to this GroupingNode.
+ * @return a pointer to this grouping_node.
  */
-const GroupingNode * GroupingNode::toGrouping() const throw ()
+const grouping_node * grouping_node::to_grouping() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a GroupingNode.
+ * @brief Cast to a grouping_node.
  *
- * @return a pointer to this GroupingNode.
+ * @return a pointer to this grouping_node.
  */
-GroupingNode * GroupingNode::toGrouping() throw ()
+grouping_node * grouping_node::to_grouping() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<NodePtr> & GroupingNode::getChildren() const throw ()
+ * @fn const std::vector<NodePtr> & grouping_node::children() const throw ()
  *
  * @brief Get the children in the scene graph.
  *
@@ -2463,49 +2442,49 @@ GroupingNode * GroupingNode::toGrouping() throw ()
 
 
 /**
- * @class MaterialNode
+ * @class material_node
  *
  * @brief Abstract base class for material nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-MaterialNode::MaterialNode(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope)
+material_node::material_node(const node_type & type, const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-MaterialNode::~MaterialNode() throw ()
+material_node::~material_node() throw ()
 {}
 
 /**
- * @brief Cast to a MaterialNode.
+ * @brief Cast to a material_node.
  *
- * @return a pointer to this MaterialNode.
+ * @return a pointer to this material_node.
  */
-const MaterialNode * MaterialNode::toMaterial() const throw ()
+const material_node * material_node::to_material() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a MaterialNode.
+ * @brief Cast to a material_node.
  *
- * @return a pointer to this MaterialNode.
+ * @return a pointer to this material_node.
  */
-MaterialNode * MaterialNode::toMaterial() throw ()
+material_node * material_node::to_material() throw ()
 {
     return this;
 }
 
 /**
- * @fn float MaterialNode::getAmbientIntensity() const throw ()
+ * @fn float material_node::ambient_intensity() const throw ()
  *
  * @brief Get the ambient intensity.
  *
@@ -2513,7 +2492,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
  */
 
 /**
- * @fn const color & MaterialNode::getDiffuseColor() const throw ()
+ * @fn const color & material_node::diffuse_color() const throw ()
  *
  * @brief Get the diffuse color.
  *
@@ -2521,7 +2500,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
  */
 
 /**
- * @fn const color & MaterialNode::getEmissiveColor() const throw ()
+ * @fn const color & material_node::emissive_color() const throw ()
  *
  * @brief Get the emissive color.
  *
@@ -2529,7 +2508,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
  */
 
 /**
- * @fn float MaterialNode::getShininess() const throw ()
+ * @fn float material_node::shininess() const throw ()
  *
  * @brief Get the shininess.
  *
@@ -2537,7 +2516,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
  */
 
 /**
- * @fn const color & MaterialNode::getSpecularColor() const throw ()
+ * @fn const color & material_node::specular_color() const throw ()
  *
  * @brief Get the specular color.
  *
@@ -2545,7 +2524,7 @@ MaterialNode * MaterialNode::toMaterial() throw ()
  */
 
 /**
- * @fn float MaterialNode::getTransparency() const throw ()
+ * @fn float material_node::transparency() const throw ()
  *
  * @brief Get the transparency.
  *
@@ -2554,49 +2533,49 @@ MaterialNode * MaterialNode::toMaterial() throw ()
 
 
 /**
- * @class NormalNode
+ * @class normal_node
  *
  * @brief Abstract base class for normal nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-NormalNode::NormalNode(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope)
+normal_node::normal_node(const node_type & type, const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-NormalNode::~NormalNode() throw ()
+normal_node::~normal_node() throw ()
 {}
 
 /**
- * @brief Cast to a NormalNode.
+ * @brief Cast to a normal_node.
  *
- * @return a pointer to this NormalNode.
+ * @return a pointer to this normal_node.
  */
-const NormalNode * NormalNode::toNormal() const throw ()
+const normal_node * normal_node::to_normal() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a NormalNode.
+ * @brief Cast to a normal_node.
  *
- * @return a pointer to this NormalNode.
+ * @return a pointer to this normal_node.
  */
-NormalNode * NormalNode::toNormal() throw ()
+normal_node * normal_node::to_normal() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<vec3f> & NormalNode::getVector() const throw ()
+ * @fn const std::vector<vec3f> & normal_node::vector() const throw ()
  *
  * @brief Get the array of normal vectors.
  *
@@ -2605,7 +2584,7 @@ NormalNode * NormalNode::toNormal() throw ()
 
 
 /**
- * @class SoundSourceNode
+ * @class sound_source_node
  *
  * @brief Abstract base class for sound source nodes.
  */
@@ -2613,43 +2592,43 @@ NormalNode * NormalNode::toNormal() throw ()
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-SoundSourceNode::SoundSourceNode(const NodeType & nodeType,
-                                 const ScopePtr & scope):
-    Node(nodeType, scope)
+sound_source_node::sound_source_node(const node_type & type,
+                                     const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
  * @brief Destructor.
  */
-SoundSourceNode::~SoundSourceNode() throw ()
+sound_source_node::~sound_source_node() throw ()
 {}
 
 /**
- * @brief Cast to a SoundSourceNode.
+ * @brief Cast to a sound_source_node.
  *
- * @return a pointer to this SoundSourceNode.
+ * @return a pointer to this sound_source_node.
  */
-const SoundSourceNode * SoundSourceNode::toSoundSource() const throw ()
+const sound_source_node * sound_source_node::to_sound_source() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a SoundSourceNode.
+ * @brief Cast to a sound_source_node.
  *
- * @return a pointer to this SoundSourceNode.
+ * @return a pointer to this sound_source_node.
  */
-SoundSourceNode * SoundSourceNode::toSoundSource() throw ()
+sound_source_node * sound_source_node::to_sound_source() throw ()
 {
     return this;
 }
 
 
 /**
- * @class TextureNode
+ * @class texture_node
  *
  * @brief Abstract base class for texture nodes.
  *
@@ -2658,43 +2637,43 @@ SoundSourceNode * SoundSourceNode::toSoundSource() throw ()
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-TextureNode::TextureNode(const NodeType & nodeType, const ScopePtr & scope):
-    Node(nodeType, scope)
+texture_node::texture_node(const node_type & type, const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-TextureNode::~TextureNode() throw ()
+texture_node::~texture_node() throw ()
 {}
 
 /**
- * @brief Cast to a TextureNode.
+ * @brief Cast to a texture_node.
  *
- * @return a pointer to this TextureNode.
+ * @return a pointer to this texture_node.
  */
-const TextureNode * TextureNode::toTexture() const throw ()
+const texture_node * texture_node::to_texture() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a TextureNode.
+ * @brief Cast to a texture_node.
  *
- * @return a pointer to this TextureNode.
+ * @return a pointer to this texture_node.
  */
-TextureNode * TextureNode::toTexture() throw ()
+texture_node * texture_node::to_texture() throw ()
 {
     return this;
 }
 
 /**
- * @fn size_t TextureNode::nComponents() const throw ()
+ * @fn size_t texture_node::nComponents() const throw ()
  *
  * @brief Get the number of components for the image.
  *
@@ -2702,7 +2681,7 @@ TextureNode * TextureNode::toTexture() throw ()
  */
 
 /**
- * @fn size_t TextureNode::width() const throw ()
+ * @fn size_t texture_node::width() const throw ()
  *
  * @brief Get width of the image in pixels.
  *
@@ -2710,7 +2689,7 @@ TextureNode * TextureNode::toTexture() throw ()
  */
 
 /**
- * @fn size_t TextureNode::height() const throw ()
+ * @fn size_t texture_node::height() const throw ()
  *
  * @brief Get height of the image in pixels.
  *
@@ -2718,7 +2697,7 @@ TextureNode * TextureNode::toTexture() throw ()
  */
 
 /**
- * @fn size_t TextureNode::nFrames() const throw ()
+ * @fn size_t texture_node::nFrames() const throw ()
  *
  * @brief Get the number of frames for a time-dependent texture.
  *
@@ -2729,7 +2708,7 @@ TextureNode * TextureNode::toTexture() throw ()
  */
 
 /**
- * @fn const unsigned char * TextureNode::pixels() const throw ()
+ * @fn const unsigned char * texture_node::pixels() const throw ()
  *
  * @brief Get the pixels.
  *
@@ -2737,163 +2716,165 @@ TextureNode * TextureNode::toTexture() throw ()
  */
 
 /**
- * @fn bool TextureNode::getRepeatS() const throw ()
+ * @fn bool texture_node::repeat_s() const throw ()
  *
  * @brief Get the flag indicating whether the texture should repeat in the
  *      <var>S</var> direction.
  *
- * @return @c TRUE if the image should repeat in the <var>S</var> direction,
- *      @c FALSE otherwise.
+ * @return @c true if the image should repeat in the <var>S</var> direction,
+ *      @c false otherwise.
  */
 
 /**
- * @fn bool TextureNode::getRepeatT() const throw ()
+ * @fn bool texture_node::repeat_t() const throw ()
  *
  * @brief Get the flag indicating whether the texture should repeat in the
  *      <var>T</var> direction.
  *
- * @return @c TRUE if the image should repeat in the <var>T</var> direction,
- *      @c FALSE otherwise.
+ * @return @c true if the image should repeat in the <var>T</var> direction,
+ *      @c false otherwise.
  */
 
 
 /**
- * @class TextureCoordinateNode
+ * @class texture_coordinate_node
  *
  * @brief Abstract base class for texture coordinate nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-TextureCoordinateNode::TextureCoordinateNode(const NodeType & nodeType,
-                                             const ScopePtr & scope):
-    Node(nodeType, scope)
+texture_coordinate_node::texture_coordinate_node(const node_type & type,
+                                                 const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-TextureCoordinateNode::~TextureCoordinateNode() throw ()
+texture_coordinate_node::~texture_coordinate_node() throw ()
 {}
 
 /**
- * @brief Cast to a TextureCoordinateNode.
+ * @brief Cast to a texture_coordinate_node.
  *
- * @return a pointer to this TextureCoordinateNode.
+ * @return a pointer to this texture_coordinate_node.
  */
-const TextureCoordinateNode *
-TextureCoordinateNode::toTextureCoordinate() const throw ()
+const texture_coordinate_node *
+texture_coordinate_node::to_texture_coordinate() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a TextureCoordinateNode.
+ * @brief Cast to a texture_coordinate_node.
  *
- * @return a pointer to this TextureCoordinateNode.
+ * @return a pointer to this texture_coordinate_node.
  */
-TextureCoordinateNode * TextureCoordinateNode::toTextureCoordinate() throw ()
+texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
+    throw ()
 {
     return this;
 }
 
 
 /**
- * @class TextureTransformNode
+ * @class texture_transform_node
  *
  * @brief Abstract base class for texture transform nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-TextureTransformNode::TextureTransformNode(const NodeType & nodeType,
-                                           const ScopePtr & scope):
-    Node(nodeType, scope)
+texture_transform_node::texture_transform_node(const node_type & type,
+                                               const ScopePtr & scope):
+    node(type, scope)
 {}
 
 /**
  * @brief Destructor.
  */
-TextureTransformNode::~TextureTransformNode() throw ()
+texture_transform_node::~texture_transform_node() throw ()
 {}
 
 /**
- * @brief Cast to a TextureTransformNode.
+ * @brief Cast to a texture_transform_node.
  *
- * @return a pointer to this TextureTransformNode.
+ * @return a pointer to this texture_transform_node.
  */
-const TextureTransformNode *
-TextureTransformNode::toTextureTransform() const throw ()
+const texture_transform_node *
+texture_transform_node::to_texture_transform() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a TextureTransformNode.
+ * @brief Cast to a texture_transform_node.
  *
- * @return a pointer to this TextureTransformNode.
+ * @return a pointer to this texture_transform_node.
  */
-TextureTransformNode * TextureTransformNode::toTextureTransform() throw ()
+texture_transform_node * texture_transform_node::to_texture_transform()
+    throw ()
 {
     return this;
 }
 
 
 /**
- * @class TransformNode
+ * @class transform_node
  *
  * @brief Abstract base class for texture transform nodes.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
  */
-TransformNode::TransformNode(const NodeType & nodeType,
-                             const ScopePtr & scope):
-    Node(nodeType, scope),
-    ChildNode(nodeType, scope),
-    GroupingNode(nodeType, scope)
+transform_node::transform_node(const node_type & type,
+                               const ScopePtr & scope):
+    node(type, scope),
+    child_node(type, scope),
+    grouping_node(type, scope)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-TransformNode::~TransformNode() throw ()
+transform_node::~transform_node() throw ()
 {}
 
 /**
- * @brief Cast to a TransformNode.
+ * @brief Cast to a transform_node.
  *
- * @return a pointer to this TransformNode.
+ * @return a pointer to this transform_node.
  */
-const TransformNode * TransformNode::toTransform() const throw ()
+const transform_node * transform_node::to_transform() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a TransformNode.
+ * @brief Cast to a transform_node.
  *
- * @return a pointer to this TransformNode.
+ * @return a pointer to this transform_node.
  */
-TransformNode * TransformNode::toTransform() throw ()
+transform_node * transform_node::to_transform() throw ()
 {
     return this;
 }
 
 /**
- * @fn const mat4f & TransformNode::getTransform() const throw ()
+ * @fn const mat4f & transform_node::transform() const throw ()
  *
  * @brief Get the transformation associated with the node as a matrix.
  *
@@ -2902,7 +2883,7 @@ TransformNode * TransformNode::toTransform() throw ()
 
 
 /**
- * @class ViewpointNode
+ * @class viewpoint_node
  *
  * @brief Abstract base class for texture transform nodes.
  */
@@ -2910,71 +2891,71 @@ TransformNode * TransformNode::toTransform() throw ()
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
+ * @param nodeType  the node_type associated with the node.
  * @param scope     the Scope the node belongs to.
  */
-ViewpointNode::ViewpointNode(const NodeType & nodeType,
+viewpoint_node::viewpoint_node(const node_type & nodeType,
                              const ScopePtr & scope):
-    Node(nodeType, scope),
-    ChildNode(nodeType, scope)
+    node(nodeType, scope),
+    child_node(nodeType, scope)
 {}
 
 /**
  * @brief Destructor.
  */
-ViewpointNode::~ViewpointNode() throw ()
+viewpoint_node::~viewpoint_node() throw ()
 {}
 
 /**
- * @brief Cast to a ViewpointNode.
+ * @brief Cast to a viewpoint_node.
  *
- * @return a pointer to this ViewpointNode.
+ * @return a pointer to this viewpoint_node.
  */
-const ViewpointNode * ViewpointNode::toViewpoint() const throw ()
+const viewpoint_node * viewpoint_node::to_viewpoint() const throw ()
 {
     return this;
 }
 
 /**
- * @brief Cast to a ViewpointNode.
+ * @brief Cast to a viewpoint_node.
  *
- * @return a pointer to this ViewpointNode.
+ * @return a pointer to this viewpoint_node.
  */
-ViewpointNode * ViewpointNode::toViewpoint() throw ()
+viewpoint_node * viewpoint_node::to_viewpoint() throw ()
 {
     return this;
 }
 
 /**
- * @fn const mat4f & ViewpointNode::getTransformation() const throw ()
+ * @fn const mat4f & viewpoint_node::transformation() const throw ()
  *
- * @brief Get the transformation of the ViewpointNode in the global coordinate
+ * @brief Get the transformation of the viewpoint_node in the global coordinate
  *      system.
  *
- * @return the transformation of the ViewpointNode in the global coordinate
+ * @return the transformation of the viewpoint_node in the global coordinate
  *      system.
  */
 
 /**
- * @fn const mat4f & ViewpointNode::getUserViewTransform() const throw ()
+ * @fn const mat4f & viewpoint_node::user_view_transform() const throw ()
  *
  * @brief Get the transformation of the user view relative to the
- *      ViewpointNode.
+ *      viewpoint_node.
  *
- * @return the transformation of the user view relative to the ViewpointNode.
+ * @return the transformation of the user view relative to the viewpoint_node.
  */
 
 /**
- * @fn void ViewpointNode::setUserViewTransform(const mat4f & transform) throw ()
+ * @fn void viewpoint_node::user_view_transform(const mat4f & transform) throw ()
  *
  * @brief Set the transformation of the user view relative to the
- *      ViewpointNode.
+ *      viewpoint_node.
  *
  * @param transform the new transformation.
  */
 
 /**
- * @fn const std::string & ViewpointNode::getDescription() const throw ()
+ * @fn const std::string & viewpoint_node::description() const throw ()
  *
  * @brief Get the description.
  *
@@ -2982,7 +2963,7 @@ ViewpointNode * ViewpointNode::toViewpoint() throw ()
  */
 
 /**
- * @fn float ViewpointNode::getFieldOfView() const throw ()
+ * @fn float viewpoint_node::field_of_view() const throw ()
  *
  * @brief Get the field of view.
  *
@@ -2991,7 +2972,7 @@ ViewpointNode * ViewpointNode::toViewpoint() throw ()
 
 
 /**
- * @class NodeTraverser
+ * @class node_traverser
  *
  * @brief Traverse the children of each Node in a Node hierarchy only once.
  *
@@ -3000,57 +2981,69 @@ ViewpointNode * ViewpointNode::toViewpoint() throw ()
  * multiple places in a branch, <b>the children of that Node will be visted in
  * the traversal only once</b>.
  *
- * For each Node encountered in the traversal, NodeTraverser::performAction
- * is called. Concrete subclasses of NodeTraverser implement this method in
+ * For each Node encountered in the traversal, node_traverser::performAction
+ * is called. Concrete subclasses of node_traverser implement this method in
  * order to perform some operation on each Node.
  */
 
 /**
- * @brief Constructor.
+ * @var std::set<node *> node_traverser::traversed_nodes
+ *
+ * @brief The set of nodes that have already been traversed.
+ */
+
+/**
+ * @var bool node_traverser::halt
+ *
+ * @brief Flag to indicate if the traversal should be halted.
+ */
+
+/**
+ * @brief Construct.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-NodeTraverser::NodeTraverser() throw (std::bad_alloc):
+node_traverser::node_traverser() throw (std::bad_alloc):
     halt(false)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-NodeTraverser::~NodeTraverser() throw ()
+node_traverser::~node_traverser() throw ()
 {}
 
 /**
- * @brief Traverse a Node.
+ * @brief Traverse a node.
  *
- * No guarantee is made about the state of the NodeTraverser instance in the
+ * No guarantee is made about the state of the node_traverser instance in the
  * event that this method throws.
  *
  * In addition to std::bad_alloc, this function throws any exception thrown
  * from onEntering or onLeaving.
  *
- * @param node  the root Node of the branch to traverse.
+ * @param n  the root node of the branch to traverse.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NodeTraverser::traverse(Node & node)
+void node_traverser::traverse(node & n)
 {
-    assert(this->traversedNodes.empty());
+    assert(this->traversed_nodes.empty());
     try {
-        this->do_traversal(node);
+        this->do_traversal(n);
     } catch (...) {
         this->halt = false;
-        this->traversedNodes.clear();
+        this->traversed_nodes.clear();
         throw;
     }
     this->halt = false;
-    this->traversedNodes.clear();
+    this->traversed_nodes.clear();
 }
 
 /**
  * @brief Traverse an sfnode.
  *
- * No guarantee is made about the state of the NodeTraverser instance in the
+ * No guarantee is made about the state of the node_traverser instance in the
  * event that this method throws.
  *
  * In addition to std::bad_alloc, this function throws any exception thrown
@@ -3060,29 +3053,29 @@ void NodeTraverser::traverse(Node & node)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NodeTraverser::traverse(const NodePtr & node)
+void node_traverser::traverse(const NodePtr & node)
 {
-    assert(this->traversedNodes.empty());
+    assert(this->traversed_nodes.empty());
     try {
         if (node) {
-            if (this->traversedNodes.find(node.get())
-                    == this->traversedNodes.end()) {
+            if (this->traversed_nodes.find(node.get())
+                    == this->traversed_nodes.end()) {
                 this->do_traversal(*node);
             }
         }
     } catch (...) {
         this->halt = false;
-        this->traversedNodes.clear();
+        this->traversed_nodes.clear();
         throw;
     }
     this->halt = false;
-    this->traversedNodes.clear();
+    this->traversed_nodes.clear();
 }
 
 /**
  * @brief Traverse an mfnode.
  *
- * No guarantee is made about the state of the NodeTraverser instance in the
+ * No guarantee is made about the state of the node_traverser instance in the
  * event that this method throws.
  *
  * In addition to std::bad_alloc, this function throws any exception thrown
@@ -3092,37 +3085,37 @@ void NodeTraverser::traverse(const NodePtr & node)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NodeTraverser::traverse(const std::vector<NodePtr> & nodes)
+void node_traverser::traverse(const std::vector<NodePtr> & nodes)
 {
-    assert(this->traversedNodes.empty());
+    assert(this->traversed_nodes.empty());
     try {
         for (std::vector<NodePtr>::const_iterator node(nodes.begin());
                 node != nodes.end(); ++node) {
             if (*node) {
-                if (this->traversedNodes.find(node->get())
-                        == this->traversedNodes.end()) {
+                if (this->traversed_nodes.find(node->get())
+                        == this->traversed_nodes.end()) {
                     this->do_traversal(**node);
                 }
             }
         }
     } catch (...) {
         this->halt = false;
-        this->traversedNodes.clear();
+        this->traversed_nodes.clear();
         throw;
     }
     this->halt = false;
-    this->traversedNodes.clear();
+    this->traversed_nodes.clear();
 }
 
 /**
  * @brief Halt the traversal.
  *
  * If this method is called during a traversal, no more descendent
- * @link Node Nodes@endlink will be traversed. Note that if haltTraversal
- * is called in the implementation of onEntering, onLeaving will still be
+ * @link node nodes@endlink will be traversed. Note that if halt_traversal
+ * is called in the implementation of on_entering, on_leaving will still be
  * called for the current node.
  */
-void NodeTraverser::haltTraversal() throw ()
+void node_traverser::halt_traversal() throw ()
 {
     this->halt = true;
 }
@@ -3130,38 +3123,36 @@ void NodeTraverser::haltTraversal() throw ()
 /**
  * @internal
  *
- * @brief Traverse a Node.
+ * @brief Traverse a node.
  *
- * @param node  the Node to traverse.
+ * @param n  the node to traverse.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void NodeTraverser::do_traversal(Node & node)
+void node_traverser::do_traversal(node & n)
 {
-    std::set<Node *>::iterator pos = this->traversedNodes.find(&node);
-    const bool alreadyTraversed = (pos != this->traversedNodes.end());
+    std::set<node *>::iterator pos = this->traversed_nodes.find(&n);
+    const bool alreadyTraversed = (pos != this->traversed_nodes.end());
 
     if (!alreadyTraversed) {
-        this->onEntering(node);
+        this->on_entering(n);
 
-        this->traversedNodes.insert(&node);
+        this->traversed_nodes.insert(&n);
 
-        const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
-        for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
+        const node_interface_set & interfaces = n.type.interfaces();
+        for (node_interface_set::const_iterator interface(interfaces.begin());
                 interface != interfaces.end() && !this->halt; ++interface) {
-            if (interface->type == NodeInterface::field
-                    || interface->type == NodeInterface::exposedField) {
-                if (interface->fieldType == field_value::sfnode_id) {
+            if (interface->type == node_interface::field_id
+                    || interface->type == node_interface::exposedfield_id) {
+                if (interface->field_type == field_value::sfnode_id) {
                     const sfnode & value =
-                            static_cast<const sfnode &>
-                                (node.getField(interface->id));
+                        static_cast<const sfnode &>(n.field(interface->id));
                     if (value.value) {
                         this->do_traversal(*value.value);
                     }
-                } else if (interface->fieldType == field_value::mfnode_id) {
+                } else if (interface->field_type == field_value::mfnode_id) {
                     const mfnode & children =
-                            static_cast<const mfnode &>
-                                (node.getField(interface->id));
+                        static_cast<const mfnode &>(n.field(interface->id));
                     for (size_t i = 0; i < children.value.size(); ++i) {
                         if (children.value[i]) {
                             this->do_traversal(*children.value[i]);
@@ -3170,26 +3161,26 @@ void NodeTraverser::do_traversal(Node & node)
                 }
             }
         }
-        this->onLeaving(node);
+        this->on_leaving(n);
     }
 }
 
 /**
- * @brief Called for each Node in the traversal <em>before</em>
+ * @brief Called for each node in the traversal <em>before</em>
  *      traversing the its descendants.
  *
- * @param node  the Node currently being traversed.
+ * @param n  the node currently being traversed.
  */
-void NodeTraverser::onEntering(Node & node)
+void node_traverser::on_entering(node & n)
 {}
 
 /**
- * @brief Called for each Node in the traversal <em>after</em>
+ * @brief Called for each node in the traversal <em>after</em>
  *      traversing the its descendants.
  *
- * @param node  the Node currently being traversed.
+ * @param n  the node currently being traversed.
  */
-void NodeTraverser::onLeaving(Node & node)
+void node_traverser::on_leaving(node & n)
 {}
 
 } // namespace OpenVRML

@@ -178,9 +178,9 @@ public:
 		const OpenVRML::ScopePtr & scope,
           OpenVRML::ProtoNodeClass & proto
 	);
-	public: OpenVRML::NodeInterface::Type  eventInterfaceType();
+	public: OpenVRML::node_interface::type_id  eventInterfaceType();
 	public: OpenVRML::field_value::type_id  fieldType();
-	public: OpenVRML::NodeInterface::Type  fieldInterfaceType();
+	public: OpenVRML::node_interface::type_id  fieldInterfaceType();
 	public: OpenVRML::FieldValuePtr  fieldValue(
 		OpenVRML::Browser & browser,
            const OpenVRML::ScopePtr & scope,
@@ -200,14 +200,14 @@ public:
           const std::string & nodeId
 	);
 	public: void externInterfaceDeclaration(
-		OpenVRML::NodeInterfaceSet & interfaces
+		OpenVRML::node_interface_set & interfaces
 	);
 	public: OpenVRML::mfstring  externprotoUrlList();
-	public: OpenVRML::NodeInterface::Type  interfaceType();
+	public: OpenVRML::node_interface::type_id  interfaceType();
 	public: std::string  stringValue();
 	public: void nodeBodyElement(
 		const OpenVRML::ScopePtr & scope,
-                OpenVRML::Node & node
+                OpenVRML::node & node
 	);
 	public: void scriptInterfaceDeclaration(
 		const OpenVRML::ScopePtr & scope,
@@ -220,7 +220,7 @@ public:
 	public: void protoNodeBodyElement(
 		OpenVRML::ProtoNodeClass & proto,
                      const OpenVRML::ScopePtr & scope,
-                     OpenVRML::Node & node
+                     OpenVRML::node & node
 	);
 	public: void protoScriptInterfaceDeclaration(
 		OpenVRML::ProtoNodeClass & proto,
@@ -233,7 +233,7 @@ public:
                 OpenVRML::field_value::type_id ft
 	);
 	public: void isStatement(
-		OpenVRML::ProtoNodeClass & proto, OpenVRML::Node & node,
+		OpenVRML::ProtoNodeClass & proto, OpenVRML::node & node,
             std::string const & nodeInterfaceId
 	);
 	public: void protoScriptFieldInterfaceDeclaration(
