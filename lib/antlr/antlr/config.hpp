@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/RIGHTS.html
  *
- * $Id: config.hpp,v 1.2 2003-04-07 00:38:00 braden Exp $
+ * $Id: config.hpp,v 1.3 2003-07-25 17:33:45 braden Exp $
  */
 
 /*
@@ -53,9 +53,8 @@
 # define NO_STATIC_CONSTS
 // Using vector<XXX> requires operator<(X,X) to be defined
 # define NEEDS_OPERATOR_LESS_THAN
-// No strcasecmp in the C library (so use stricmp instead)
-// - Anyone know which is in which standard?
-# define NO_STRCASECMP
+// No strcasecmp or stricmp in the C library
+# define ANTLR_REALLY_NO_STRCASECMP
 # undef ANTLR_CCTYPE_NEEDS_STD
 
 #endif	// End of Microsoft Visual C++

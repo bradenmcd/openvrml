@@ -309,7 +309,7 @@ void BaseAST::toStream( ANTLR_USE_NAMESPACE(std)ostream& out ) const
 
 // this is nasty, but it makes the code generation easier
 ANTLR_API RefAST nullAST;
-ANTLR_API AST* const nullASTptr=0;
+extern ANTLR_API AST* const nullASTptr=0;
 
 #ifdef ANTLR_CXX_SUPPORTS_NAMESPACE
 }

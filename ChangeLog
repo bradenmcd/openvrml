@@ -1,3 +1,12 @@
+2003-07-25  Braden McDaniel  <braden@endoframe.com>
+
+	Fixes to compile libantlr with cl.
+
+	* lib/antlr/antlr/config.hpp: Define ANTLR_REALLY_NO_STRCASECMP
+	for cl.
+	* lib/antlr/src/BaseAST.cpp:  nullASTptr must be extern.
+	* lib/antlr/src/GNUmakefile.am:  Define ANTLR_EXPORTS.
+
 2003-07-24  Braden McDaniel  <braden@endoframe.com>
 
 	Don't use deprecated C headers.
