@@ -148,7 +148,7 @@ namespace openvrml {
             explicit proto_eventin(proto_node & node);
             virtual ~proto_eventin() throw ();
             virtual void process_event(const FieldValue & value,
-                                        double timestamp)
+                                       double timestamp)
                 throw (std::bad_alloc);
 
             bool is(event_listener_type & listener) throw (std::bad_alloc);
@@ -180,7 +180,7 @@ namespace openvrml {
                 virtual ~listener_t() throw ();
 
                 virtual void process_event(const FieldValue & value,
-                                            double timestamp)
+                                           double timestamp)
                     throw (std::bad_alloc);
             } listener;
 
@@ -212,7 +212,7 @@ namespace openvrml {
 
         template <typename FieldValue>
         class proto_exposedfield : public proto_eventin<FieldValue>,
-                                    public proto_eventout<FieldValue> {
+                                   public proto_eventout<FieldValue> {
         public:
             proto_exposedfield(proto_node & node,
                                 const FieldValue & initial_value);
@@ -1113,6 +1113,7 @@ proto_node::proto_exposedfield<FieldValue>::
 process_event(const FieldValue & value, const double timestamp)
     throw (std::bad_alloc)
 {
+    this->proto_eventin<FieldValue>::process_event(value, timestamp);
     this->listener.value = value;
     node::emit_event(*this, timestamp);
 }
