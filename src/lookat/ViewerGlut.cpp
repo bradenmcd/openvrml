@@ -22,7 +22,11 @@
 #   include <config.h>
 # endif
 
-#include OPENVRML_GLUT_H
+# ifdef HAVE_OPENGL_GLUT_H
+#   include <OpenGL/glut.h>
+# else
+#   include <GL/glut.h>
+# endif
 #include <OpenVRML/System.h>
 
 #include "ViewerGlut.h"

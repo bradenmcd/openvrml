@@ -29,10 +29,24 @@
 #   include <wingdi.h>
 # endif
 
-# include OPENVRML_GL_H
-# include OPENVRML_GLU_H
+# ifdef HAVE_OPENGL_GL_H
+#   include <OpenGL/gl.h>
+# else
+#   include <GL/gl.h>
+# endif
+
+# ifdef HAVE_OPENGL_GLU_H
+#   include <OpenGL/glu.h>
+# else
+#   include <GL/glu.h>
+# endif
+
 # ifdef OPENVRML_HAVE_GLUT
-#   include OPENVRML_GLUT_H
+#   if defined(HAVE_GLUT_GLUT_H)
+#     include <GLUT/glut.h>
+#   elif defined(HAVE_GL_GLUT_H)
+#     include <GL/glut.h>
+#   endif
 # endif
 # include <stdio.h> // sprintf
 # include <math.h>

@@ -8,6 +8,12 @@
 
         * m4/jpeg.m4:  Fixed cut&paste error.
 
+        * configure.ac, m4/gl.m4, m4/glut.m4, src/lookat/ViewerGlut.cpp,
+          src/lookat/lookat.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Rewrote
+          OpenGL/GLUT autoconf macros.  The new macros should work under
+          Cygwin.
+
 2002-10-30  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp, 

@@ -1,5 +1,5 @@
 # Autoconf macro to check for OpenGL/Mesa
-# Copyright (C) 2001  Braden McDaniel
+# Copyright (C) 2001, 2002  Braden McDaniel
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,55 +16,99 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #
-# OV_CHECK_GL
+# OV_WITH_GL
 # -----------
-# Check for OpenGL/Mesa. Succeeds if both libGL and libGLU are found. If it
+# Check for OpenGL/Mesa. Succeeds if both GL and GLU are found.  If it
 # succeeds, the required linker flags are included in the output variable
-# `GL_LIBS', and the shell variable `no_gl' is set to the empty string. Also,
-# the proper OpenGL library header inclusion is defined in `OPENVRML_GL_H', and
-# the proper OpenGL Utility library header inclusion is defined in
-# `OPENVRML_GLU_H'. If neither OpenGL nor Mesa is found, `no_gl' is set to
-# `yes'.
+# "GL_LIBS".  If the headers "GL/gl.h" and "GL/glu.h" are found, the symbols
+# HAVE_GL_GL_H and HAVE_GL_GLU_H are defined, respectively.  Otherwise, if
+# "OpenGL/gl.h" and "OpenGL/glu.h" are found, HAVE_OPENGL_GL_H and
+# HAVE_OPENGL_GLU_H are defined.  If neither OpenGL nor Mesa is found, "no_gl"
+# is set to "yes".
 #
-AC_DEFUN(OV_CHECK_GL,
-[GL_LIBS="-lpthread"
-AC_LANG_PUSH(C)
-ov_have_gl=no
-AC_CHECK_LIB(GL, glAccum,
-             [GL_LIBS="-lGL ${GL_LIBS}"
-              AC_CHECK_HEADER(GL/gl.h,
-                              [ov_have_gl=yes
-                               AC_DEFINE(OPENVRML_GL_H, [<GL/gl.h>],
-                                         [Header for OpenGL])],
-                              [# Mac OS X thinks different
-                               AC_CHECK_HEADER(OpenGL/gl.h,
-                                               [ov_have_gl=yes
-                                                AC_DEFINE(OPENVRML_GL_H,
-                                                          [<OpenGL/gl.h>],
-                                                          [Header for OpenGL])])])],
-             , ${GL_LIBS})
-    
-AC_CHECK_LIB(GLU, gluBeginCurve,
-             [GL_LIBS="-lGLU -lm ${GL_LIBS}"
-              AC_CHECK_HEADER(GL/glu.h,
-                              [ov_have_gl=yes
-                               AC_DEFINE(OPENVRML_GLU_H, [<GL/glu.h>],
-                                         [Header for OpenGL Utility Library])],
-                              [# Mac OS X thinks different
-                               AC_CHECK_HEADER(OpenGL/glu.h,
-                                               [ov_have_gl=yes
-                                                AC_DEFINE(OPENVRML_GLU_H,
-                                                          [<OpenGL/glu.h>],
-                                                          [Header for OpenGL Utility Library])])])],
-             [ov_have_gl=no], -lm ${GL_LIBS})
-AC_LANG_POP(C)
-    
-if test "X${ov_have_gl}" = Xyes; then
-  no_gl=""
-else
+AC_DEFUN([OV_WITH_GL],
+[AC_REQUIRE([AC_PATH_XTRA])
+AC_ARG_WITH([gl], [  --with-gl               use OpenGL/Mesa])
+if test "X$with_gl" = "Xno"; then
   no_gl=yes
-  GL_LIBS=""
+else
+  GL_LIBS="-lpthread -lm"
+
+  #
+  # If X is present, use X_CFLAGS and X_LIBS.
+  #
+  if test "X${no_x}" != "Xyes"; then
+    GL_CFLAGS="${X_CFLAGS}"
+    GL_LIBS="${X_LIBS} ${GL_LIBS}"
+  fi
+
+  AC_LANG_PUSH(C)
+
+  ov_save_CPPFLAGS="${CPPFLAGS}"
+  CPPFLAGS="${GL_CFLAGS} ${CPPFLAGS}"
+
+  AC_CHECK_HEADERS([GL/gl.h OpenGL/gl.h], [break])
+
+  AC_CACHE_CHECK([for OpenGL library], [ov_cv_gl],
+  [ov_cv_gl="no"
+  ov_save_LIBS="${LIBS}"
+  LIBS=""
+  ov_check_libs="-lopengl32 -lGL"
+  for ov_lib in ${ov_check_libs}; do
+    LIBS="${ov_lib} ${GL_LIBS} ${ov_save_LIBS}"
+    AC_TRY_LINK([
+# ifdef _WIN32
+#   include <windows.h>
+# endif
+# ifdef HAVE_OPENGL_GL_H
+#   include <OpenGL/gl.h>
+# else
+#   include <GL/gl.h>
+# endif
+],
+    [glBegin(0)],
+    [ov_cv_gl="${ov_lib}" break])
+  done
+  LIBS=${ov_save_LIBS}])
+
+  if test "X${ov_cv_gl}" = "Xno"; then
+    no_gl="yes"
+  else
+    GL_LIBS="${ov_cv_gl} ${GL_LIBS}"
+
+    AC_CHECK_HEADERS([GL/glu.h OpenGL/glu.h], [break])
+
+    AC_CACHE_CHECK([for OpenGL Utility library], [ov_cv_glu],
+    [ov_cv_glu="no"
+    ov_save_LIBS="${LIBS}"
+    LIBS=""
+    ov_check_libs="-lglu32 -lGLU"
+    for ov_lib in ${ov_check_libs}; do
+      LIBS="${ov_lib} ${GL_LIBS} ${ov_save_LIBS}"
+      AC_TRY_LINK([
+# ifdef _WIN32
+#   include <windows.h>
+# endif
+# ifdef HAVE_OPENGL_GLU_H
+#   include <OpenGL/glu.h>
+# else
+#   include <GL/glu.h>
+# endif
+],
+      [gluBeginCurve(0)],
+      [ov_cv_glu="${ov_lib}" break])
+    done
+    LIBS=${ov_save_LIBS}])
+    if test "X${ov_cv_glu}" = "Xno"; then
+      no_gl="yes"
+    else
+      GL_LIBS="${ov_cv_glu} ${GL_LIBS}"
+    fi
+  fi
+  CPPFLAGS="${ov_save_CPPFLAGS}"
+  AC_LANG_POP(C)
 fi
 
+AC_SUBST([GL_CFLAGS])
 AC_SUBST([GL_LIBS])
 ])

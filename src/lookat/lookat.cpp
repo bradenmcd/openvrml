@@ -32,9 +32,13 @@
 #   include "SIOUX.h"
 # endif
 
-# include <stdio.h>
 # include <iostream>
-# include OPENVRML_GLUT_H
+# ifdef HAVE_OPENGL_GLUT_H
+#   include <OpenGL/glut.h>
+# else
+#   include <GL/glut.h>
+# endif
+# include <OpenVRML/doc2.hpp>
 # include <OpenVRML/browser.h>
 
 # include "ViewerGlut.h"

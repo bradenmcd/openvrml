@@ -20,12 +20,11 @@ OV_WITH_ZLIB
 OV_WITH_LIBPNG
 OV_WITH_LIBJPEG
 AC_PATH_XTRA
-AC_ARG_WITH(gl, [  --with-gl               use OpenGL/Mesa (required for GL renderer)], ,
-            [# Use OpenGL by default.
-             with_gl=yes])
-AC_ARG_WITH(glut, [  --with-glut             use GLUT (required for LookAt and Text node support)], ,
-            [# Use GLUT by default.
-             with_glut=yes])
+OV_WITH_GL
+AM_CONDITIONAL([WITH_GL], [test "X$no_gl" != "Xyes"])
+OV_WITH_GLUT
+AM_CONDITIONAL([WITH_GLUT], [test "X$no_glut" != "Xyes"])
+
 AC_ARG_WITH(spidermonkey, [  --with-spidermonkey     use SpiderMonkey (JavaScript support)], ,
             [# Use SpiderMonkey by default.
              with_spidermonkey=yes])
@@ -38,34 +37,6 @@ AC_ARG_WITH(ftflib, [  --with-ftflib           use ftflib (required for font sup
 AC_ARG_WITH(doxygen, [  --with-doxygen          use Doxygen to generate documentation], ,
             [# Use Doxygen by default.
              with_doxygen=yes])
-
-#
-# Check for OpenGL/Mesa, GLUT.
-#
-if test "X$with_gl" = "Xyes"; then
-  OV_CHECK_GL
-  if test "X$no_gl" = "Xyes"; then
-    AC_MSG_ERROR([OpenGL/Mesa not found.])
-  else
-    AC_DEFINE([OPENVRML_HAVE_GL], , [Defined if OpenGL/Mesa is a available and should be used.])
-    
-    if test "X$with_glut" = "Xyes"; then
-      OV_CHECK_GLUT
-      if test "X$no_glut" = "Xyes"; then
-        AC_MSG_ERROR([OpenGL/Mesa not found.])
-      else
-        AC_DEFINE([OPENVRML_HAVE_GLUT], , [Defined if GLUT is a available and should be used.])
-      fi
-    else
-      AC_MSG_WARN([Building without GLUT. Text node support and LookAt will not be built.])
-    fi
-  fi
-else
-  AC_MSG_WARN([Building without OpenGL/Mesa. The GL renderer and LookAt will not be built.])
-fi
-AM_CONDITIONAL([WITH_GL], [test "X$with_gl" = "Xyes"])
-AM_CONDITIONAL([WITH_GLUT], [test "X$with_gl" = "Xyes" -a "X$with_glut" = "Xyes"])
-dnl AM_CONDITIONAL([WITH_GLUT], [test "apple" = "orange"])
 
 #
 # Check for SpiderMonkey
