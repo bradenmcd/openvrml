@@ -349,6 +349,7 @@ namespace OpenVRML {
 
 
     class SFVec3f;
+    class Quaternion;
     
     class OPENVRML_SCOPE SFRotation : public FieldValue {
         float value[4];
@@ -363,6 +364,7 @@ namespace OpenVRML {
         explicit SFRotation(ConstArrayReference rot) throw ();
         SFRotation(float x, float y, float z, float angle) throw ();
         SFRotation(const SFVec3f & axis, float angle) throw ();
+        explicit SFRotation(const Quaternion & quat) throw ();
         SFRotation(const SFVec3f & fromVec, const SFVec3f & toVec) throw ();
         virtual ~SFRotation() throw ();
 

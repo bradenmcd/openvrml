@@ -4,6 +4,11 @@
           src/openvrml/OpenVRML/quaternion.cpp,
           src/openvrml/OpenVRML/quaternion.h:  Added Quaternion class.
 
+        * src/openvrml/OpenVRML/field.cpp,
+          src/openvrml/OpenVRML/field.h:  Construct an SFRotation from a
+          Quaternion.  Modified SFRotation::multiply and ::slerp to use
+          Quaternion class.
+
 2003-01-24  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp:  Convert backslashes in

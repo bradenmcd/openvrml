@@ -26,6 +26,7 @@
 # include <numeric>
 # include <assert.h>
 # include "field.h"
+# include "quaternion.h"
 # include "private.h"
 # include "node.h"
 
@@ -1380,6 +1381,32 @@ SFRotation::SFRotation(const SFVec3f & axis, const float angle) throw ()
 }
 
 /**
+ * @brief Construct from a quaternion.
+ *
+ * @param quat  a quaternion.
+ */
+SFRotation::SFRotation(const Quaternion & quat) throw ()
+{
+    using OpenVRML_::fpzero;
+    using OpenVRML_::normalize;
+
+    const float val = acos(quat.getW());
+    if (fpzero(val)) {
+        this->value[0] = 0.0;
+        this->value[1] = 0.0;
+        this->value[2] = 1.0;
+        this->value[3] = 0.0;
+    } else {
+        const float sin_val = sin(val);
+        this->value[0] = quat.getX() / sin_val;
+        this->value[1] = quat.getY() / sin_val;
+        this->value[2] = quat.getZ() / sin_val;
+        this->value[3] = 2 * val;
+        normalize(&this->value[0]);
+    }
+}
+
+/**
  * @brief Construct a rotation between two vectors.
  *
  * Construct a SFRotation equal to the rotation between two different
@@ -1612,56 +1639,6 @@ const SFRotation SFRotation::inverse() const throw ()
     return result;
 }
 
-namespace {
-    void multQuat(const float quat1[4], const float quat2[4], float result[4])
-        throw ()
-    {
-        result[3] = quat1[3] * quat2[3] - quat1[0] * quat2[0]
-                    - quat1[1] * quat2[1] - quat1[2] * quat2[2];
-
-        result[0] = quat1[3] * quat2[0] + quat1[0] * quat2[3]
-                    + quat1[1] * quat2[2] - quat1[2] * quat2[1];
-
-        result[1] = quat1[3] * quat2[1] + quat1[1] * quat2[3]
-                    + quat1[2] * quat2[0] - quat1[0] * quat2[2];
-
-        result[2] = quat1[3] * quat2[2] + quat1[2] * quat2[3]
-                    + quat1[0] * quat2[1] - quat1[1] * quat2[0];
-    }
-    
-    void sfrotToQuat(const SFRotation & rot, float quat[4]) throw ()
-    {
-        const float sintd2 = sin(rot.getAngle() * 0.5);
-        const float len = sqrt((rot.getX() * rot.getX())
-                             + (rot.getY() * rot.getY())
-                             + (rot.getZ() * rot.getZ()));
-        const float f = sintd2 / len;
-        quat[3] = cos(rot.getAngle() * 0.5);
-        quat[0] = rot.getX() * f;
-        quat[1] = rot.getY() * f;
-        quat[2] = rot.getZ() * f;
-    }
-    
-    void quatToSFRot(const float quat[4], SFRotation & rot) throw ()
-    {
-        double sina2 = sqrt(quat[0] * quat[0]
-                          + quat[1] * quat[1]
-                          + quat[2] * quat[2]);
-        const double angle = 2.0 * atan2(sina2, double(quat[3]));
-
-        if (sina2 >= 1e-8) {
-	    sina2 = 1.0 / sina2;
-            rot.setX(quat[0] * sina2);
-            rot.setY(quat[1] * sina2);
-            rot.setZ(quat[2] * sina2);
-            rot.setAngle(angle);
-        } else {
-            static const float r[4] = { 0.0, 1.0, 0.0, 0.0 };
-            rot.set(r);
-        }
-    }
-}
-
 /**
  * @brief Multiply two rotations.
  *
@@ -1672,17 +1649,8 @@ namespace {
 const SFRotation SFRotation::multiply(const SFRotation & rot) const throw ()
 {
     // convert to quaternions
-    float quatUS[4], quatVec[4];
-    sfrotToQuat(*this, quatUS);
-    sfrotToQuat(rot, quatVec);
-    
-    // multiply quaternions
-    float resultQuat[4];
-    multQuat(quatUS, quatVec, resultQuat);
-    
-    // now convert back to axis/angle
-    SFRotation result;
-    quatToSFRot(resultQuat, result);
+    const Quaternion quatUS(*this), quatVec(rot);
+    const SFRotation result(quatUS.multiply(quatVec));
     return result;
 }
 
@@ -1712,27 +1680,23 @@ const SFRotation SFRotation::slerp(const SFRotation & destRotation,
 {
     using OpenVRML_::fptolerance;
     
-    float fromQuat[4], toQuat[4];
-    sfrotToQuat(*this, fromQuat);
-    sfrotToQuat(destRotation, toQuat);
+    Quaternion fromQuat(*this), toQuat(destRotation);
     
     //
     // Calculate cosine.
     //
-    double cosom = std::inner_product(fromQuat, fromQuat + 4, toQuat, 0.0);
+    double cosom = std::inner_product(fromQuat.get(), fromQuat.get() + 4,
+                                      toQuat.get(), 0.0);
     
     //
     // Adjust signs (if necessary).
     //
-    float to1[4];
+    Quaternion to1;
     if (cosom < 0.0) {
         cosom = -cosom;
-        to1[0] = -toQuat[0];
-        to1[1] = -toQuat[1];
-        to1[2] = -toQuat[2];
-        to1[3] = -toQuat[3];
+        to1 = toQuat.multiply(-1);
     } else {
-        std::copy(toQuat, toQuat + 4, to1);
+        to1 = toQuat;
     }
     
     //
@@ -1756,14 +1720,9 @@ const SFRotation SFRotation::slerp(const SFRotation & destRotation,
     //
     // Calculate the final values.
     //
-    float resultQuat[4];
-    resultQuat[0] = (scale0 * fromQuat[0]) + (scale1 * to1[0]);
-    resultQuat[1] = (scale0 * fromQuat[1]) + (scale1 * to1[1]);
-    resultQuat[2] = (scale0 * fromQuat[2]) + (scale1 * to1[2]);
-    resultQuat[3] = (scale0 * fromQuat[3]) + (scale1 * to1[3]);
-    
-    SFRotation result;
-    quatToSFRot(resultQuat, result);
+    const Quaternion resultQuat = fromQuat.multiply(scale0)
+                                    .add(to1.multiply(scale1));
+    const SFRotation result(resultQuat);
     return result;
 }
 
