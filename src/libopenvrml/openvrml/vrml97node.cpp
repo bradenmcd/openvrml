@@ -2979,7 +2979,7 @@ billboard_class::create_type(const std::string & id,
  * @param node      a pointer to a billboard_node.
  * @param modelview input ModelView transformation matrix.
  *
- * @ return the bounding box transformation matrix.
+ * @return the bounding box transformation matrix.
  */
 const mat4f billboard_node::billboard_to_matrix(const billboard_node & node,
                                                 const mat4f & modelview)

@@ -353,7 +353,7 @@ namespace {
  *
  * @relates field_value
  *
- * If @p type is field_value::invalidType, @c failbit is set on @p out.
+ * If @p type is field_value::invalid_type, @c failbit is set on @p out.
  *
  * @param out       output stream.
  * @param type_id   field_value type identifier.

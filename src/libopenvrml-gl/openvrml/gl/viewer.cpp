@@ -3474,8 +3474,8 @@ viewer::insert_subtexture(size_t xoffset, size_t yoffset,
 /**
  * @brief Insert a texture into the display list from an existing handle.
  *
- * @param ref   texture handle.
- * @param nc    number of components.
+ * @param ref           texture handle.
+ * @param components    number of components.
  */
 void viewer::insert_texture_reference(const texture_object_t ref,
                                       const size_t components)
