@@ -1,3 +1,8 @@
+2004-04-04 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/doxygen-header:  Another fix to counteract idiosyncrasies
+	of the default doxygen style sheet.
+
 2004-04-03 Braden McDaniel  <braden@endoframe.com>
 
 	Changed frustrum constructor argument names from "near", "far",

@@ -23,6 +23,9 @@ div.qindex {
   background-color: transparent;
   border: none;
 }
+a {
+  color: inherit;
+}
 a.qindex {
   text-decoration: inherit;
   color: inherit;
