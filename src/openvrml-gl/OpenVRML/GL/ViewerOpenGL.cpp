@@ -39,7 +39,7 @@
 # ifdef OPENVRML_HAVE_GLUT
 #   include OPENVRML_GLUT_H
 # endif
-# include <stdio.h>		// sprintf
+# include <stdio.h> // sprintf
 # include <math.h>
 
 # include <OpenVRML/MathUtils.h>
@@ -453,10 +453,10 @@ void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
 // Generate a normal from 3 indexed points.
 
 static void indexFaceNormal(int i1,
-			    int i2,
-			    int i3,
-			    const float * p,
-			    float *N)
+                            int i2,
+                            int i3,
+                            const float * p,
+                            float *N)
 {
   float V1[3], V2[3];
 
@@ -779,7 +779,7 @@ Viewer::Object ViewerOpenGL::insertBox(float x, float y, float z)
     {0, 4, 5, 1}
   };
 
-  static GLfloat n[6][3] =	// normals
+  static GLfloat n[6][3] =        // normals
   {
     {-1.0, 0.0, 0.0},
     {0.0, 0.0, 1.0},
@@ -893,8 +893,8 @@ namespace {
 }
 
 Viewer::Object ViewerOpenGL::insertCone(float h,
-					float r,
-					bool bottom, bool side)
+                                        float r,
+                                        bool bottom, bool side)
 {
   GLuint glid = 0;
 
@@ -912,61 +912,61 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 
   if (bottom || side)
     {
-      const int nfacets = 11;		// Number of polygons for sides
+      const int nfacets = 11;                // Number of polygons for sides
       const int npts = 2 * nfacets;
       const int nfaces = nfacets * 5;
 
-      float c[ npts ][ 3 ];		// coordinates
-      float tc[ npts ][ 3 ];		// texture coordinates
-      int faces[ nfaces ];		// face lists
+      float c[ npts ][ 3 ];                // coordinates
+      float tc[ npts ][ 3 ];                // texture coordinates
+      int faces[ nfaces ];                // face lists
 
       // should only compute tc if a texture is present...
       computeCylinder( h, r, nfacets, c, tc, faces);
 
       for (int i=0; i<nfacets; ++i)
-	c[i][0] = c[i][2] = 0.0;
+        c[i][0] = c[i][2] = 0.0;
 
       if (side)
-	{
-	  float Ny = r * r / h;
-	  glBegin( GL_QUAD_STRIP );
-	  for (int i = 0; i < nfacets; ++i)
-	    {
-	      glNormal3f( c[i+nfacets][0], Ny, c[i+nfacets][2] );
-	      glTexCoord2fv( &tc[i+nfacets][0] );
-	      glVertex3fv(   &c [i+nfacets][0] );
-	      glTexCoord2fv( &tc[i][0] );
-	      glVertex3fv(   &c [i][0] );
-	    }
+        {
+          float Ny = r * r / h;
+          glBegin( GL_QUAD_STRIP );
+          for (int i = 0; i < nfacets; ++i)
+            {
+              glNormal3f( c[i+nfacets][0], Ny, c[i+nfacets][2] );
+              glTexCoord2fv( &tc[i+nfacets][0] );
+              glVertex3fv(   &c [i+nfacets][0] );
+              glTexCoord2fv( &tc[i][0] );
+              glVertex3fv(   &c [i][0] );
+            }
 
-	  glNormal3f( c[nfacets][0], Ny, c[nfacets][2] );
-	  glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
-	  glVertex3fv(   &c [nfacets][0] );
-	  glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
-	  glVertex3fv(   & c[0][0] );
-	  glEnd();
-	}
+          glNormal3f( c[nfacets][0], Ny, c[nfacets][2] );
+          glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
+          glVertex3fv(   &c [nfacets][0] );
+          glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
+          glVertex3fv(   & c[0][0] );
+          glEnd();
+        }
 
       if (bottom)
-	{
-	  glBegin( GL_TRIANGLE_FAN );
-	  glNormal3f( 0.0, -1.0, 0.0 );
-	  glTexCoord2f( 0.5, 0.5 );
-	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
+        {
+          glBegin( GL_TRIANGLE_FAN );
+          glNormal3f( 0.0, -1.0, 0.0 );
+          glTexCoord2f( 0.5, 0.5 );
+          glVertex3f( 0.0, - 0.5 * h, 0.0 );
 
-	  float angle = 0.5 * pi; // First v is at max x
-	  float aincr = 2.0 * pi / (float) nfacets;
-	  for (int i = 0; i < nfacets; ++i, angle+=aincr )
-	    {
-	      glTexCoord2f( 0.5*(1.0+sin( angle )),
-			    1.0-0.5*(1.+cos( angle )) );
-	      glVertex3fv( &c[i+nfacets][0] );
-	    }
-	  glTexCoord2f( 0.5*(1.0+sin( angle )),
-			1.0-0.5*(1.+cos( angle )) );
-	  glVertex3fv( &c[nfacets][0] );
-	  glEnd();
-	}
+          float angle = 0.5 * pi; // First v is at max x
+          float aincr = 2.0 * pi / (float) nfacets;
+          for (int i = 0; i < nfacets; ++i, angle+=aincr )
+            {
+              glTexCoord2f( 0.5*(1.0+sin( angle )),
+                            1.0-0.5*(1.+cos( angle )) );
+              glVertex3fv( &c[i+nfacets][0] );
+            }
+          glTexCoord2f( 0.5*(1.0+sin( angle )),
+                        1.0-0.5*(1.+cos( angle )) );
+          glVertex3fv( &c[nfacets][0] );
+          glEnd();
+        }
     }
 
   endGeometry();
@@ -977,8 +977,8 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 
 
 Viewer::Object ViewerOpenGL::insertCylinder(float h,
-					    float r,
-					    bool bottom, bool side, bool top)
+                                            float r,
+                                            bool bottom, bool side, bool top)
 {
   GLuint glid = 0;
 
@@ -996,78 +996,78 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 
   if (bottom || side || top)
     {
-      const int nfacets = 8;		// Number of polygons for sides
+      const int nfacets = 8;                // Number of polygons for sides
       const int npts = 2 * nfacets;
       const int nfaces = nfacets * 5;
 
-      float c[ npts ][ 3 ];		// coordinates
-      float tc[ npts ][ 3 ];		// texture coordinates
-      int faces[ nfaces ];		// face lists
+      float c[ npts ][ 3 ];                // coordinates
+      float tc[ npts ][ 3 ];                // texture coordinates
+      int faces[ nfaces ];                // face lists
 
       // should only compute tc if a texture is present...
       computeCylinder( h, r, nfacets, c, tc, faces);
 
       if (side)
-	{
-	  glBegin( GL_QUAD_STRIP );
-	  for (int i = 0; i < nfacets; ++i)
-	    {
-	      glNormal3f( c[i+nfacets][0], 0.0, c[i+nfacets][2] );
-	      glTexCoord2fv( &tc[i+nfacets][0] );
-	      glVertex3fv(   &c [i+nfacets][0] );
-	      glTexCoord2fv( &tc[i][0] );
-	      glVertex3fv(   &c [i][0] );
-	    }
+        {
+          glBegin( GL_QUAD_STRIP );
+          for (int i = 0; i < nfacets; ++i)
+            {
+              glNormal3f( c[i+nfacets][0], 0.0, c[i+nfacets][2] );
+              glTexCoord2fv( &tc[i+nfacets][0] );
+              glVertex3fv(   &c [i+nfacets][0] );
+              glTexCoord2fv( &tc[i][0] );
+              glVertex3fv(   &c [i][0] );
+            }
 
-	  glNormal3f( c[nfacets][0], 0.0, c[nfacets][2] );
-	  glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
-	  glVertex3fv(   &c [nfacets][0] );
-	  glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
-	  glVertex3fv(   & c[0][0] );
-	  glEnd();
-	}
+          glNormal3f( c[nfacets][0], 0.0, c[nfacets][2] );
+          glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
+          glVertex3fv(   &c [nfacets][0] );
+          glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
+          glVertex3fv(   & c[0][0] );
+          glEnd();
+        }
 
-      if (bottom)		// tex coords...
-	{
-	  glBegin( GL_TRIANGLE_FAN );
-	  glNormal3f( 0.0, -1.0, 0.0);
-	  glTexCoord2f( 0.5, 0.5 );
-	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
+      if (bottom)                // tex coords...
+        {
+          glBegin( GL_TRIANGLE_FAN );
+          glNormal3f( 0.0, -1.0, 0.0);
+          glTexCoord2f( 0.5, 0.5 );
+          glVertex3f( 0.0, - 0.5 * h, 0.0 );
 
-	  float angle = 0.5 * pi; // First v is at max x
-	  float aincr = 2.0 * pi / (float) nfacets;
-	  for (int i = 0; i < nfacets; ++i, angle+=aincr)
-	    {
-	      glTexCoord2f( 0.5*(1.+sin( angle )),
-			    1.0 - 0.5*(1.+cos( angle )) );
-	      glVertex3fv( &c[i+nfacets][0] );
-	    }
-	  glTexCoord2f( 0.5*(1.+sin( angle )),
-			1.0 - 0.5*(1.+cos( angle )) );
-	  glVertex3fv( &c[nfacets][0] );
-	  glEnd();
-	}
+          float angle = 0.5 * pi; // First v is at max x
+          float aincr = 2.0 * pi / (float) nfacets;
+          for (int i = 0; i < nfacets; ++i, angle+=aincr)
+            {
+              glTexCoord2f( 0.5*(1.+sin( angle )),
+                            1.0 - 0.5*(1.+cos( angle )) );
+              glVertex3fv( &c[i+nfacets][0] );
+            }
+          glTexCoord2f( 0.5*(1.+sin( angle )),
+                        1.0 - 0.5*(1.+cos( angle )) );
+          glVertex3fv( &c[nfacets][0] );
+          glEnd();
+        }
 
-      if (top)		// tex coords...
-	{
-	  glBegin( GL_TRIANGLE_FAN );
-	  glNormal3f( 0.0, 1.0, 0.0);
-	  glTexCoord2f( 0.5, 0.5 );
-	  glVertex3f( 0.0, 0.5 * h, 0.0 );
+      if (top)                // tex coords...
+        {
+          glBegin( GL_TRIANGLE_FAN );
+          glNormal3f( 0.0, 1.0, 0.0);
+          glTexCoord2f( 0.5, 0.5 );
+          glVertex3f( 0.0, 0.5 * h, 0.0 );
 
-	  float angle = 0.75 * pi;
-	  float aincr = 2.0 * pi / (float) nfacets;
-	  for (int i = nfacets-1; i >= 0; --i, angle+=aincr)
-	    {
-	      glTexCoord2f( 0.5*(1.+sin( angle )),
-			    1.0 - 0.5*(1.+cos( angle )) );
-	      glVertex3fv( &c[i][0] );
-	    }
-	  glTexCoord2f( 0.5*(1.+sin( angle )),
-			1.0 - 0.5*(1.+cos( angle )) );
-	  glVertex3fv( &c[nfacets-1][0] );
-	  glEnd();
-	}
+          float angle = 0.75 * pi;
+          float aincr = 2.0 * pi / (float) nfacets;
+          for (int i = nfacets-1; i >= 0; --i, angle+=aincr)
+            {
+              glTexCoord2f( 0.5*(1.+sin( angle )),
+                            1.0 - 0.5*(1.+cos( angle )) );
+              glVertex3fv( &c[i][0] );
+            }
+          glTexCoord2f( 0.5*(1.+sin( angle )),
+                        1.0 - 0.5*(1.+cos( angle )) );
+          glVertex3fv( &c[nfacets-1][0] );
+          glEnd();
+        }
     }
 
   endGeometry();
@@ -1079,10 +1079,10 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 // Compute a normal at vert i,j of an ElevationGrid.
 
 static void elevationVertexNormal(int i, int j,
-				  int nx, int nz,
-				  float dx, float dz,
-				  const float * height,
-				  float N[])
+                                  int nx, int nz,
+                                  float dx, float dz,
+                                  const float * height,
+                                  float N[])
 {
   float Vx[3], Vz[3];
 
@@ -1161,86 +1161,86 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 
       z = dz * j;
       if (! texture_coords)
-	{
-	  t0 = ((float) j) / (nz-1);
-	  t1 = ((float) j+1) / (nz-1);
-	}
+        {
+          t0 = ((float) j) / (nz-1);
+          t1 = ((float) j+1) / (nz-1);
+        }
 
       glBegin( GL_QUAD_STRIP );
 
       for (i=0; i<nx; ++i)
-	{
-	  x = dx * i;
+        {
+          x = dx * i;
 
-	  if (colors &&
-	      ((mask & MASK_COLOR_PER_VERTEX) || (i < nx-1)))
-	    {
-	      glColor3fv( colors );
-	    }
+          if (colors &&
+              ((mask & MASK_COLOR_PER_VERTEX) || (i < nx-1)))
+            {
+              glColor3fv( colors );
+            }
 
-	  if (normals &&
-	      ((mask & MASK_NORMAL_PER_VERTEX) || (i < nx-1)))
-	    {
-	      glNormal3fv( normals );
-	    }
-	  else if (! normals)
-	    {
-	      float N[3];
-	      if (mask & MASK_NORMAL_PER_VERTEX)
-		{
-		  elevationVertexNormal(i, j, nx, nz, dx, dz, height, N);
-		  glNormal3fv( N );
-		}
-	      else if (i < nx-1)		// Normal per face
-		{
-		  float Vx[3] = { dx, *(height+1) - *height, 0.0 };
-		  float Vz[3] = { 0.0, *(height+nx) - *height, dz };
-		  Vcross( N, Vx, Vz );
-		  glNormal3fv( N );
-		}
-	    }
+          if (normals &&
+              ((mask & MASK_NORMAL_PER_VERTEX) || (i < nx-1)))
+            {
+              glNormal3fv( normals );
+            }
+          else if (! normals)
+            {
+              float N[3];
+              if (mask & MASK_NORMAL_PER_VERTEX)
+                {
+                  elevationVertexNormal(i, j, nx, nz, dx, dz, height, N);
+                  glNormal3fv( N );
+                }
+              else if (i < nx-1)                // Normal per face
+                {
+                  float Vx[3] = { dx, *(height+1) - *height, 0.0 };
+                  float Vz[3] = { 0.0, *(height+nx) - *height, dz };
+                  Vcross( N, Vx, Vz );
+                  glNormal3fv( N );
+                }
+            }
 
-	  if (texture_coords)
-	    {
-	      s0 = *(texture_coords);
-	      t0 = *(texture_coords+1);
-	      s1 = *(texture_coords+(nx*2));
-	      t1 = *(texture_coords+(nx*2)+1);
+          if (texture_coords)
+            {
+              s0 = *(texture_coords);
+              t0 = *(texture_coords+1);
+              s1 = *(texture_coords+(nx*2));
+              t1 = *(texture_coords+(nx*2)+1);
               texture_coords+=2;
-	    }
-	  else
-	    s0 = s1 = ((float) i) / (nx-1);
+            }
+          else
+            s0 = s1 = ((float) i) / (nx-1);
 
-	  glTexCoord2f( s0, t0 );
-	  glVertex3f( x, *height, z );
+          glTexCoord2f( s0, t0 );
+          glVertex3f( x, *height, z );
 
-	  // Vertex from next row
-	  if (colors && (mask & MASK_COLOR_PER_VERTEX))
-	    {
-	      glColor3fv( colors+3*nx );
-	    }
+          // Vertex from next row
+          if (colors && (mask & MASK_COLOR_PER_VERTEX))
+            {
+              glColor3fv( colors+3*nx );
+            }
 
-	  if (mask & MASK_NORMAL_PER_VERTEX)
-	    {
-	      if (normals)
-		{
-		  glNormal3fv( normals+3*nx );
-		}
-	      else
-		{
-		  float N[3];
-		  elevationVertexNormal(i, j+1, nx, nz, dx, dz, height+nx, N);
-		  glNormal3fv( N );
-		}
-	    }
+          if (mask & MASK_NORMAL_PER_VERTEX)
+            {
+              if (normals)
+                {
+                  glNormal3fv( normals+3*nx );
+                }
+              else
+                {
+                  float N[3];
+                  elevationVertexNormal(i, j+1, nx, nz, dx, dz, height+nx, N);
+                  glNormal3fv( N );
+                }
+            }
 
-	  glTexCoord2f( s1, t1 );
-	  glVertex3f( x, *(height+nx), z+dz );
+          glTexCoord2f( s1, t1 );
+          glVertex3f( x, *(height+nx), z+dz );
 
-	  ++height;
-	  if ( colors ) colors += 3;
-	  if ( normals ) normals += 3;
-	}
+          ++height;
+          if ( colors ) colors += 3;
+          if ( normals ) normals += 3;
+        }
 
       glEnd();
     }
@@ -1268,12 +1268,12 @@ extern "C" {
 // Extrusion cap tessellation for non-convex shapes
 
 typedef struct {
-  const float * c;			// coordinates array [nVerts * 3]
-  const float * crossSection;		// crossSection coordinates [nCrossSection * 2]
+  const float * c;                        // coordinates array [nVerts * 3]
+  const float * crossSection;                // crossSection coordinates [nCrossSection * 2]
   float tcDeltaU, tcDeltaV;
   float tcScaleU, tcScaleV;
   int vOffset;
-  float N[3];			// Normal
+  float N[3];                        // Normal
 } TessExtrusion;
 
 static void WINAPI tessExtrusionBegin( GLenum type, void *pdata )
@@ -1290,7 +1290,7 @@ static void WINAPI tessExtrusionVertex( void *vdata, void *pdata )
   TessExtrusion *p = (TessExtrusion *)pdata;
 
   glTexCoord2f( (p->crossSection[2*j] - p->tcDeltaU) * p->tcScaleU,
-		(p->crossSection[2*j+1] - p->tcDeltaV) * p->tcScaleV );
+                (p->crossSection[2*j+1] - p->tcDeltaV) * p->tcScaleV );
   glVertex3fv( &(p->c[3 * (j + p->vOffset)]) );
 }
 
@@ -1298,10 +1298,10 @@ static void WINAPI tessExtrusionVertex( void *vdata, void *pdata )
 
 
 void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
-					size_t nSpine,
-					const float * c,
-					size_t nCrossSection,
-					const float * cs )
+                                        size_t nSpine,
+                                        const float * c,
+                                        size_t nCrossSection,
+                                        const float * cs )
 {
   // Determine x,z ranges for top & bottom tex coords
   float xz[4] = { cs[0], cs[0], cs[1], cs[1] };
@@ -1337,48 +1337,48 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
       gluTessCallback(this->d_tess, GLU_TESS_END, glEnd);
 
       if (mask & MASK_BOTTOM)
-	{
-	  TessExtrusion bottom = { c, cs, xz[0], xz[2], dx, dz, 0 };
-	  indexFaceNormal( 0, 1, 2, c, bottom.N );
+        {
+          TessExtrusion bottom = { c, cs, xz[0], xz[2], dx, dz, 0 };
+          indexFaceNormal( 0, 1, 2, c, bottom.N );
 
-	  gluTessBeginPolygon( d_tess, &bottom );
-	  gluTessBeginContour( d_tess );
-	  GLdouble v[3];
-	  // Mesa tesselator doesn;t like closed polys
-	  int j = equalEndpts ? nCrossSection-2 : nCrossSection-1;
-	  for ( ; j>=0; --j)
-	    {
-	      v[0] = c[3*j];
-	      v[1] = c[3*j+1];
-	      v[2] = c[3*j+2];
-	      gluTessVertex( d_tess, v, (void*)j );
-	    }
-	  gluTessEndContour( d_tess );
-	  gluTessEndPolygon( d_tess );
-	}
+          gluTessBeginPolygon( d_tess, &bottom );
+          gluTessBeginContour( d_tess );
+          GLdouble v[3];
+          // Mesa tesselator doesn;t like closed polys
+          int j = equalEndpts ? nCrossSection-2 : nCrossSection-1;
+          for ( ; j>=0; --j)
+            {
+              v[0] = c[3*j];
+              v[1] = c[3*j+1];
+              v[2] = c[3*j+2];
+              gluTessVertex( d_tess, v, (void*)j );
+            }
+          gluTessEndContour( d_tess );
+          gluTessEndPolygon( d_tess );
+        }
 
       if (mask & MASK_TOP)
-	{
-	  int n = (nSpine - 1) * nCrossSection;
-	  TessExtrusion top = { c, cs, xz[0], xz[2], dx, dz, n };
-	  indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, top.N );
+        {
+          int n = (nSpine - 1) * nCrossSection;
+          TessExtrusion top = { c, cs, xz[0], xz[2], dx, dz, n };
+          indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, top.N );
 
-	  gluTessBeginPolygon( d_tess, &top );
-	  gluTessBeginContour( d_tess );
+          gluTessBeginPolygon( d_tess, &top );
+          gluTessBeginContour( d_tess );
 
-	  GLdouble v[3];
-	  // Mesa tesselator doesn;t like closed polys
-	  size_t j = equalEndpts ? 1 : 0;
-	  for ( ; j < nCrossSection; ++j)
-	    {
-	      v[0] = c[3*(j+n)];
-	      v[1] = c[3*(j+n)+1];
-	      v[2] = c[3*(j+n)+2];
-	      gluTessVertex( d_tess, v, (void*)j );
-	    }
-	  gluTessEndContour( d_tess );
-	  gluTessEndPolygon( d_tess );
-	}
+          GLdouble v[3];
+          // Mesa tesselator doesn;t like closed polys
+          size_t j = equalEndpts ? 1 : 0;
+          for ( ; j < nCrossSection; ++j)
+            {
+              v[0] = c[3*(j+n)];
+              v[1] = c[3*(j+n)+1];
+              v[2] = c[3*(j+n)+2];
+              gluTessVertex( d_tess, v, (void*)j );
+            }
+          gluTessEndContour( d_tess );
+          gluTessEndPolygon( d_tess );
+        }
     }
 
   else
@@ -1386,36 +1386,36 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 
     // Convex (or not GLU1.2 ...)
     {
-      float N[3];			// Normal
+      float N[3];                        // Normal
 
       if (mask & MASK_BOTTOM)
-	{
-	  glBegin( GL_POLYGON );
-	  indexFaceNormal( 0, 1, 2, c, N );
-	  glNormal3fv( N );
+        {
+          glBegin( GL_POLYGON );
+          indexFaceNormal( 0, 1, 2, c, N );
+          glNormal3fv( N );
 
-	  for (int j = nCrossSection-1; j>=0; --j)
-	    {
-	      glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
-	      glVertex3fv( &c[3*j] );
-	    }
-	  glEnd();
-	}
+          for (int j = nCrossSection-1; j>=0; --j)
+            {
+              glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
+              glVertex3fv( &c[3*j] );
+            }
+          glEnd();
+        }
 
       if (mask & MASK_TOP)
-	{
-	  int n = (nSpine - 1) * nCrossSection;
-	  glBegin( GL_POLYGON );
-	  indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, N );
-	  glNormal3fv( N );
+        {
+          int n = (nSpine - 1) * nCrossSection;
+          glBegin( GL_POLYGON );
+          indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, N );
+          glNormal3fv( N );
 
-	  for (size_t j = 0; j < nCrossSection; ++j)
-	    {
-	      glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
-	      glVertex3fv( &c [3*(j+n)] );
-	    }
-	  glEnd();
-	}
+          for (size_t j = 0; j < nCrossSection; ++j)
+            {
+              glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
+              glVertex3fv( &c [3*(j+n)] );
+            }
+          glEnd();
+        }
     }
 }
 
@@ -1637,10 +1637,10 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
   float *tc = new float[nCrossSection * nSpine * 3];
 
   computeExtrusion( nOrientation, orientation,
-		    nScale, scale,
-		    nCrossSection, crossSection,
-		    nSpine, spine,
-		    c, tc, 0 );
+                    nScale, scale,
+                    nCrossSection, crossSection,
+                    nSpine, spine,
+                    c, tc, 0 );
 
   GLuint glid = 0;
 
@@ -1665,22 +1665,22 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
     {
       glBegin( GL_QUAD_STRIP );
       for (size_t j = 0; j < nCrossSection; ++j)
-	{
-	  // Compute normals
-	  float v1[3], v2[3];
-	  if (j < nCrossSection-1)
-	    Vdiff( v1, &c[3*(n+j+1)], &c[3*(n+j)] );
-	  else
-	    Vdiff( v1, &c[3*(n+j)], &c[3*(n+j-1)] );
-	  Vdiff( v2, &c[3*(n+j+nCrossSection)], &c[3*(n+j)] );
-	  Vcross( v1, v1, v2 );
-	  glNormal3fv( v1 );
+        {
+          // Compute normals
+          float v1[3], v2[3];
+          if (j < nCrossSection-1)
+            Vdiff( v1, &c[3*(n+j+1)], &c[3*(n+j)] );
+          else
+            Vdiff( v1, &c[3*(n+j)], &c[3*(n+j-1)] );
+          Vdiff( v2, &c[3*(n+j+nCrossSection)], &c[3*(n+j)] );
+          Vcross( v1, v1, v2 );
+          glNormal3fv( v1 );
 
-	  glTexCoord2fv( &tc[3*(n+j+nCrossSection)] );
-	  glVertex3fv(   &c [3*(n+j+nCrossSection)] );
-	  glTexCoord2fv( &tc[3*(n+j)] );
-	  glVertex3fv(   &c [3*(n+j)] );
-	}
+          glTexCoord2fv( &tc[3*(n+j+nCrossSection)] );
+          glVertex3fv(   &c [3*(n+j+nCrossSection)] );
+          glTexCoord2fv( &tc[3*(n+j)] );
+          glVertex3fv(   &c [3*(n+j)] );
+        }
       glEnd();
     }
 
@@ -1699,12 +1699,12 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
 
 Viewer::Object ViewerOpenGL::insertLineSet(size_t npoints,
                                            const float * points,
-					   size_t nlines,
-					   const long * lines,
-					   bool colorPerVertex,
+                                           size_t nlines,
+                                           const long * lines,
+                                           bool colorPerVertex,
                                            const float * color,
-					   size_t nci,
-					   const long * ci)
+                                           size_t nci,
+                                           const long * ci)
 {
   GLuint glid = 0;
 
@@ -1734,19 +1734,19 @@ Viewer::Object ViewerOpenGL::insertLineSet(size_t npoints,
   for (size_t i = 0; i<nlines; ++i)
     {
       if (lines[i] == -1)
-	{
-	  glEnd();
-	  glBegin( GL_LINE_STRIP );
-	  ++nl;
-	  if ((i < nlines-1) && color && ! colorPerVertex)
-	    glColor3fv( &color[ (nci > 0) ? 3*ci[nl] : 3*nl ] );
-	}
+        {
+          glEnd();
+          glBegin( GL_LINE_STRIP );
+          ++nl;
+          if ((i < nlines-1) && color && ! colorPerVertex)
+            glColor3fv( &color[ (nci > 0) ? 3*ci[nl] : 3*nl ] );
+        }
       else
-	{
-	  if (color && colorPerVertex)
-	    glColor3fv( &color[ (nci > 0) ? 3*ci[i] : 3*lines[i] ] );
-	  glVertex3fv( &points[3*lines[i]] );
-	}
+        {
+          if (color && colorPerVertex)
+            glColor3fv( &color[ (nci > 0) ? 3*ci[i] : 3*lines[i] ] );
+          glVertex3fv( &points[3*lines[i]] );
+        }
     }
 
   glEnd();
@@ -1757,8 +1757,8 @@ Viewer::Object ViewerOpenGL::insertLineSet(size_t npoints,
 }
 
 Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
-					    const float * points,
-					    const float * colors)
+                                            const float * points,
+                                            const float * colors)
 {
   GLuint glid = 0;
 
@@ -1781,10 +1781,10 @@ Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
   for (size_t i = 0; i<npoints; ++i)
     {
       if (colors)
-	{
-	  glColor3fv( colors );
-	  colors += 3;
-	}
+        {
+          glColor3fv( colors );
+          colors += 3;
+        }
       glVertex3fv( points );
       points += 3;
     }
@@ -1818,9 +1818,9 @@ static void computeBounds(size_t npoints, const float * points, float * bounds)
 
 
 void
-texGenParams( float bounds[],	// xmin,xmax, ymin,ymax, zmin,zmax
-	      int axes[2],	// s, t
-	      float params[4] ) // s0, 1/sSize, t0, 1/tSize
+texGenParams( float bounds[],        // xmin,xmax, ymin,ymax, zmin,zmax
+              int axes[2],        // s, t
+              float params[4] ) // s0, 1/sSize, t0, 1/tSize
 {
   axes[0] = 0;
   axes[1] = 1;
@@ -1830,20 +1830,20 @@ texGenParams( float bounds[],	// xmin,xmax, ymin,ymax, zmin,zmax
     {
       float db = bounds[2*nb+1]-bounds[2*nb];
       if ( db > params[1] )
-	{
-	  axes[1] = axes[0];
-	  axes[0] = nb;
-	  params[2] = params[0];
-	  params[3] = params[1];
-	  params[0] = bounds[2*nb];
-	  params[1] = db;
-	}
+        {
+          axes[1] = axes[0];
+          axes[0] = nb;
+          params[2] = params[0];
+          params[3] = params[1];
+          params[0] = bounds[2*nb];
+          params[1] = db;
+        }
       else if ( db > params[3] )
-	{
-	  axes[1] = nb;
-	  params[2] = bounds[2*nb];
-	  params[3] = db;
-	}
+        {
+          axes[1] = nb;
+          params[2] = bounds[2*nb];
+          params[3] = db;
+        }
     }
 
   // If two of the dimensions are zero, give up.
@@ -1866,79 +1866,79 @@ void
 ViewerOpenGL::insertShellConvex( ShellData *s )
 {
   float N[3];
-  size_t i, nf = 0;			// Number of faces
+  size_t i, nf = 0;                        // Number of faces
 
   for (i = 0; i<s->nfaces; ++i)
     {
       if (i == 0 || s->faces[i] == -1)
-	{
-	  if (i > 0) glEnd();
-	  if (i == s->nfaces-1) break;
+        {
+          if (i > 0) glEnd();
+          if (i == s->nfaces-1) break;
 
-	  glBegin(GL_POLYGON);
+          glBegin(GL_POLYGON);
 
-	  // Per-face attributes
-	  if (s->color.v && ! (s->mask & MASK_COLOR_PER_VERTEX))
-	    glColor3fv( INDEX_VAL(s->color, nf) );
+          // Per-face attributes
+          if (s->color.v && ! (s->mask & MASK_COLOR_PER_VERTEX))
+            glColor3fv( INDEX_VAL(s->color, nf) );
 
-	  if (! (s->mask & MASK_NORMAL_PER_VERTEX))
-	    {
-	      int i1 = (i == 0) ? 0 : i+1;
-	      if (s->normal.v)
-		glNormal3fv( INDEX_VAL(s->normal, nf) );
-	      else if (i < s->nfaces - 4 &&
-		       s->faces[i1] >= 0 &&
-		       s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
-		{
-		  indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
-				   3*s->faces[i1+2], s->points, N );
+          if (! (s->mask & MASK_NORMAL_PER_VERTEX))
+            {
+              int i1 = (i == 0) ? 0 : i+1;
+              if (s->normal.v)
+                glNormal3fv( INDEX_VAL(s->normal, nf) );
+              else if (i < s->nfaces - 4 &&
+                       s->faces[i1] >= 0 &&
+                       s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
+                {
+                  indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
+                                   3*s->faces[i1+2], s->points, N );
 
-		  // Lukas: flip normal if primitiv-orientation is clockwise
-		  if (!(s->mask & MASK_CCW))
-		    for (int k=0;k<3;k++) // flip Normal
-		      N[k] = -N[k];
-      		  glNormal3fv( N );
-		}
-	    }
+                  // Lukas: flip normal if primitiv-orientation is clockwise
+                  if (!(s->mask & MASK_CCW))
+                    for (int k=0;k<3;k++) // flip Normal
+                      N[k] = -N[k];
+                        glNormal3fv( N );
+                }
+            }
 
-	  ++nf;			//
-	}
+          ++nf;                        //
+        }
 
       if (s->faces[i] >= 0)
-	{
-	  // Per-vertex attributes
-	  if (s->color.v && (s->mask & MASK_COLOR_PER_VERTEX) )
-	    glColor3fv( INDEX_VTX_VAL(s->color, s->faces, i) );
+        {
+          // Per-vertex attributes
+          if (s->color.v && (s->mask & MASK_COLOR_PER_VERTEX) )
+            glColor3fv( INDEX_VTX_VAL(s->color, s->faces, i) );
 
-	  if (s->mask & MASK_NORMAL_PER_VERTEX)
-	    {
-	      if (s->normal.v)
-		glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
-	      else
-		; // Generate per-vertex normal here...
-	    }
+          if (s->mask & MASK_NORMAL_PER_VERTEX)
+            {
+              if (s->normal.v)
+                glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
+              else
+                ; // Generate per-vertex normal here...
+            }
 
-	  const float * v = &s->points[3*s->faces[i]];
-	  if (s->texCoord.v)
-	    {
-	      int tcindex;
-	      if (s->texCoord.ni > 0)
-		tcindex = 2 * s->texCoord.i[i];
-	      else
-		tcindex = 2 * s->faces[i];
-	      glTexCoord2f( s->texCoord.v[ tcindex ],
-			    s->texCoord.v[ tcindex+1 ] );
-	    }
-	  else
-	    {
-	      float c0, c1;
-	      c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
-	      c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
-	      glTexCoord2f( c0, c1 );
-	    }
+          const float * v = &s->points[3*s->faces[i]];
+          if (s->texCoord.v)
+            {
+              int tcindex;
+              if (s->texCoord.ni > 0)
+                tcindex = 2 * s->texCoord.i[i];
+              else
+                tcindex = 2 * s->faces[i];
+              glTexCoord2f( s->texCoord.v[ tcindex ],
+                            s->texCoord.v[ tcindex+1 ] );
+            }
+          else
+            {
+              float c0, c1;
+              c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
+              c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
+              glTexCoord2f( c0, c1 );
+            }
 
-	  glVertex3fv( v );
-	}
+          glVertex3fv( v );
+        }
     }
 
   // Watch out for no terminating -1 in face list
@@ -1971,19 +1971,19 @@ static void WINAPI tessShellBegin( GLenum type, void *pdata )
     {
       int i1 = s->i == 0 ? 0 : s->i-1;
       if (s->normal.v)
-	glNormal3fv( INDEX_VAL(s->normal, s->nf) );
+        glNormal3fv( INDEX_VAL(s->normal, s->nf) );
       else if (s->i < s->nfaces - 4 &&
-	       s->faces[i1] >= 0 &&
-	       s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
-	{
-	  indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
-			   3*s->faces[i1+2], s->points, N );
-	  // Lukas: flip normal if primitiv-orientation is clockwise
-	  if (!(s->mask & Viewer::MASK_CCW))
-	    for (int k=0;k<3;k++) // flip Normal
-	      N[k] = -N[k];
-	  glNormal3fv( N );
-	}
+               s->faces[i1] >= 0 &&
+               s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
+        {
+          indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
+                           3*s->faces[i1+2], s->points, N );
+          // Lukas: flip normal if primitiv-orientation is clockwise
+          if (!(s->mask & Viewer::MASK_CCW))
+            for (int k=0;k<3;k++) // flip Normal
+              N[k] = -N[k];
+          glNormal3fv( N );
+        }
     }
 }
 
@@ -2000,9 +2000,9 @@ static void WINAPI tessShellVertex( void *vdata, void *pdata )
   if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX)
     {
       if (s->normal.v)
-	glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
+        glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
       else
-	; // Generate per-vertex normal here...
+        ; // Generate per-vertex normal here...
     }
 
   const float * v = &s->points[3*s->faces[i]];
@@ -2010,11 +2010,11 @@ static void WINAPI tessShellVertex( void *vdata, void *pdata )
     {
       int tcindex;
       if (s->texCoord.ni > 0)
-	tcindex = 2 * s->texCoord.i[i];
+        tcindex = 2 * s->texCoord.i[i];
       else
-	tcindex = 2 * s->faces[i];
+        tcindex = 2 * s->faces[i];
       glTexCoord2f( s->texCoord.v[ tcindex ],
-		    s->texCoord.v[ tcindex+1 ] );
+                    s->texCoord.v[ tcindex+1 ] );
     }
   else
     {
@@ -2043,27 +2043,27 @@ ViewerOpenGL::insertShellTess(ShellData *s)
   for (i = 0; i<s->nfaces; ++i)
     {
       if (i == 0 || s->faces[i] == -1)
-	{
-	  if (i > 0)
-	    {
-	      gluTessEndContour( d_tess );
-	      gluTessEndPolygon( d_tess );
-	      ++ s->nf;
-	    }
-	  if (i == s->nfaces-1) break;
-	  gluTessBeginPolygon( d_tess, s );
-	  gluTessBeginContour( d_tess );
-	  s->i = i;
-	}
+        {
+          if (i > 0)
+            {
+              gluTessEndContour( d_tess );
+              gluTessEndPolygon( d_tess );
+              ++ s->nf;
+            }
+          if (i == s->nfaces-1) break;
+          gluTessBeginPolygon( d_tess, s );
+          gluTessBeginContour( d_tess );
+          s->i = i;
+        }
 
       if (s->faces[i] >= 0)
-	{
-	  GLdouble v[3];
-	  v[0] = s->points[3*s->faces[i]+0];
-	  v[1] = s->points[3*s->faces[i]+1];
-	  v[2] = s->points[3*s->faces[i]+2];
-	  gluTessVertex( d_tess, v, (void*)i );
-	}
+        {
+          GLdouble v[3];
+          v[0] = s->points[3*s->faces[i]+0];
+          v[1] = s->points[3*s->faces[i]+1];
+          v[2] = s->points[3*s->faces[i]+2];
+          gluTessVertex( d_tess, v, (void*)i );
+        }
     }
 
   // Watch out for no terminating -1 in face list
@@ -2081,30 +2081,30 @@ ViewerOpenGL::insertShellTess(ShellData *s)
 
 Viewer::Object
 ViewerOpenGL::insertShell(unsigned int mask,
-			  size_t npoints,
-			  const float * points,
-			  size_t nfaces,
-			  const long * faces,    // face list (-1 ends each face)
-			  const float * tc,     // texture coordinates
-			  size_t ntci,      // # of texture coordinate indices
-			  const long * tci,      // texture coordinate indices
-			  const float * normal, // normals
-			  size_t nni,       // # of normal indices
-			  const long * ni,       // normal indices
-			  const float *color,  // colors
-			  size_t nci,
-			  const long * ci)
+                          size_t npoints,
+                          const float * points,
+                          size_t nfaces,
+                          const long * faces,    // face list (-1 ends each face)
+                          const float * tc,     // texture coordinates
+                          size_t ntci,      // # of texture coordinate indices
+                          const long * tci,      // texture coordinate indices
+                          const float * normal, // normals
+                          size_t nni,       // # of normal indices
+                          const long * ni,       // normal indices
+                          const float *color,  // colors
+                          size_t nci,
+                          const long * ci)
 {
-  if (nfaces < 4) return 0;	// 3 pts and a trailing -1
+  if (nfaces < 4) return 0;        // 3 pts and a trailing -1
 
   // Texture coordinate generation parameters.
-  int texAxes[2];			// Map s,t to x,y,z
-  float texParams[4];		// s0, 1/sSize, t0, 1/tSize
+  int texAxes[2];                        // Map s,t to x,y,z
+  float texParams[4];                // s0, 1/sSize, t0, 1/tSize
 
   // Compute bounding box for texture coord generation and lighting.
   if ( ! tc )  // || any positional lights are active...
     {
-      float bounds[6];		// xmin,xmax, ymin,ymax, zmin,zmax
+      float bounds[6];                // xmin,xmax, ymin,ymax, zmin,zmax
       computeBounds( npoints, points, bounds );
 
       // do the bounds intersect the radius of any active positional lights...
@@ -2244,15 +2244,15 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
       glBegin( GL_QUAD_STRIP );
 
       for ( int j = 0; j < numLatLong; ++j )
-	{
-	  glTexCoord2f( tc[n+j+numLatLong][0], tc[n+j+numLatLong][1] );
-	  glNormal3fv( &c[n+j+numLatLong][0] );
-	  glVertex3fv( &c[n+j+numLatLong][0] );
+        {
+          glTexCoord2f( tc[n+j+numLatLong][0], tc[n+j+numLatLong][1] );
+          glNormal3fv( &c[n+j+numLatLong][0] );
+          glVertex3fv( &c[n+j+numLatLong][0] );
 
-	  glTexCoord2f( tc[n+j][0], tc[n+j][1] );
-	  glNormal3fv( &c[n+j][0] );
-	  glVertex3fv( &c[n+j][0] );
-	}
+          glTexCoord2f( tc[n+j][0], tc[n+j][1] );
+          glNormal3fv( &c[n+j][0] );
+          glVertex3fv( &c[n+j][0] );
+        }
 
       glTexCoord2f( 1.0, tc[n+numLatLong][1] );
       glNormal3fv( &c[n+numLatLong][0] );
@@ -2275,8 +2275,8 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
 // Not fully implemented... need font, extents
 
 Viewer::Object ViewerOpenGL::insertText(int *justify,
-					float size,
-					int n, char const * const * s)
+                                        float size,
+                                        int n, char const * const * s)
 {
   GLuint glid = 0;
 
@@ -2302,18 +2302,18 @@ Viewer::Object ViewerOpenGL::insertText(int *justify,
 // Lights
 
 Viewer::Object ViewerOpenGL::insertDirLight(float ambient,
-					    float intensity,
-					    const float rgb[],
-					    const float direction[])
+                                            float intensity,
+                                            const float rgb[],
+                                            const float direction[])
 {
   float amb[4] = { ambient * rgb[0],
-		   ambient * rgb[1],
-		   ambient * rgb[2],
-		   1.0 };
+                   ambient * rgb[1],
+                   ambient * rgb[2],
+                   1.0 };
   float dif[4] = { intensity * rgb[0],
-		   intensity * rgb[1],
-		   intensity * rgb[2],
-		   1.0 };
+                   intensity * rgb[1],
+                   intensity * rgb[2],
+                   1.0 };
   float pos[4] = { direction[0], direction[1], -direction[2], 0.0 };
 
   // Find an unused light, give up if none left.
@@ -2352,20 +2352,20 @@ Viewer::Object ViewerOpenGL::insertDirLight(float ambient,
 //
 
 Viewer::Object ViewerOpenGL::insertPointLight(float ambient,
-					      const float attenuation[],
-					      const float rgb[],
-					      float intensity,
-					      const float location[],
-					      float radius)
+                                              const float attenuation[],
+                                              const float rgb[],
+                                              float intensity,
+                                              const float location[],
+                                              float radius)
 {
   float amb[4] = { ambient * rgb[0],
-		   ambient * rgb[1],
-		   ambient * rgb[2],
-		   1.0 };
+                   ambient * rgb[1],
+                   ambient * rgb[2],
+                   1.0 };
   float dif[4] = { intensity * rgb[0],
-		   intensity * rgb[1],
-		   intensity * rgb[2],
-		   1.0 };
+                   intensity * rgb[1],
+                   intensity * rgb[2],
+                   1.0 };
   float pos[4] = { location[0], location[1], location[2], 1.0 };
 
   // Find an unused light, give up if none left.
@@ -2414,13 +2414,13 @@ OpenVRML::Viewer::Object
                                                     float radius)
 {
   float amb[4] = { ambient * rgb[0],
-		   ambient * rgb[1],
-		   ambient * rgb[2],
-		   1.0 };
+                   ambient * rgb[1],
+                   ambient * rgb[2],
+                   1.0 };
   float dif[4] = { intensity * rgb[0],
-		   intensity * rgb[1],
-		   intensity * rgb[2],
-		   1.0 };
+                   intensity * rgb[1],
+                   intensity * rgb[2],
+                   1.0 };
   float pos[4] = { location[0], location[1], location[2], 1.0 };
 
 
@@ -2493,14 +2493,14 @@ void ViewerOpenGL::setColor(float r, float g, float b, float a)
 }
 
 void ViewerOpenGL::setFog(const float * color,
-			  float   visibilityRange,
-			  const char * fogType)
+                          float   visibilityRange,
+                          const char * fogType)
 {
   GLfloat fogColor[4] = { color[0], color[1], color[2], 1.0 };
   GLint fogMode = (strcmp(fogType,"EXPONENTIAL") == 0) ? GL_EXP : GL_LINEAR;
 
   glEnable( GL_FOG );
-  glFogf( GL_FOG_START, 1.5 );	// What should this be?...
+  glFogf( GL_FOG_START, 1.5 );        // What should this be?...
   glFogf( GL_FOG_END, visibilityRange );
   glFogi( GL_FOG_MODE, fogMode );
   glFogfv( GL_FOG_COLOR, fogColor );
@@ -2508,30 +2508,30 @@ void ViewerOpenGL::setFog(const float * color,
 }
 
 void ViewerOpenGL::setMaterial(float ambientIntensity,
-			       const float diffuseColor[3],
-			       const float emissiveColor[3],
-			       float shininess,
-			       const float specularColor[3],
-			       float transparency)
+                               const float diffuseColor[3],
+                               const float emissiveColor[3],
+                               float shininess,
+                               const float specularColor[3],
+                               float transparency)
 {
   float alpha = 1.0 - transparency;
 
   float ambient[4] = { ambientIntensity*diffuseColor[0],
-		       ambientIntensity*diffuseColor[1],
-		       ambientIntensity*diffuseColor[2],
-		       alpha };
+                       ambientIntensity*diffuseColor[1],
+                       ambientIntensity*diffuseColor[2],
+                       alpha };
   float diffuse[4] = { diffuseColor[0],
-		       diffuseColor[1],
-		       diffuseColor[2],
-		       alpha };
+                       diffuseColor[1],
+                       diffuseColor[2],
+                       alpha };
   float emission[4] = { emissiveColor[0],
-			emissiveColor[1],
-			emissiveColor[2],
-			alpha };
+                        emissiveColor[1],
+                        emissiveColor[2],
+                        alpha };
   float specular[4] = { specularColor[0],
-			specularColor[1],
-			specularColor[2],
-			alpha };
+                        specularColor[1],
+                        specularColor[2],
+                        alpha };
 
   // doesn't work right yet (need alpha render pass...)
   if (d_blend && ! fpzero(transparency))
@@ -2567,7 +2567,7 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
 // USE'd with a different context.
 
 void ViewerOpenGL::setMaterialMode (int textureComponents,
-				    bool colors)
+                                    bool colors)
 {
   if (textureComponents && d_texture && ! d_wireframe)
     {
@@ -2577,9 +2577,9 @@ void ViewerOpenGL::setMaterialMode (int textureComponents,
       // they take precedence over textures with GL_MODULATE. The
       // textures won't be lit this way but at least they show up...
       if (textureComponents > 2 && colors)
-	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
       else
-	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
     }
   else
     glDisable( GL_TEXTURE_2D );
@@ -2612,14 +2612,14 @@ void ViewerOpenGL::setSensitive(Node * object) {
 // into the memory pointed to by pixels, so there better be enough.
 
 void ViewerOpenGL::scaleTexture(size_t w, size_t h,
-				size_t newW, size_t newH,
-				size_t nc,
-				unsigned char* pixels)
+                                size_t newW, size_t newH,
+                                size_t nc,
+                                unsigned char* pixels)
 {
-  GLenum fmt[] = { GL_LUMINANCE,	// single component
-		   GL_LUMINANCE_ALPHA,	// 2 components
-		   GL_RGB,		// 3 components
-		   GL_RGBA		// 4 components
+  GLenum fmt[] = { GL_LUMINANCE,        // single component
+                   GL_LUMINANCE_ALPHA,        // 2 components
+                   GL_RGB,                // 3 components
+                   GL_RGBA                // 4 components
   };
 
   unsigned char *newpix = new unsigned char[nc*newW*newH];
@@ -2627,7 +2627,7 @@ void ViewerOpenGL::scaleTexture(size_t w, size_t h,
   glPixelStorei( GL_PACK_ALIGNMENT, 1 );
   glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
   if (0 == gluScaleImage( fmt[nc-1], w, h, GL_UNSIGNED_BYTE, pixels,
-			  newW, newH, GL_UNSIGNED_BYTE, newpix))
+                          newW, newH, GL_UNSIGNED_BYTE, newpix))
     memcpy(pixels, newpix, nc*newW*newH);
 
   delete [] newpix;
@@ -2639,15 +2639,15 @@ void ViewerOpenGL::scaleTexture(size_t w, size_t h,
 //
 Viewer::TextureObject
 ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
-			    bool repeat_s,
-			    bool repeat_t,
-			    const unsigned char * pixels,
-			    bool retainHint)
+                            bool repeat_s,
+                            bool repeat_t,
+                            const unsigned char * pixels,
+                            bool retainHint)
 {
-  GLenum fmt[] = { GL_LUMINANCE,	// single component
-		   GL_LUMINANCE_ALPHA,	// 2 components
-		   GL_RGB,		// 3 components
-		   GL_RGBA		// 4 components
+  GLenum fmt[] = { GL_LUMINANCE,        // single component
+                   GL_LUMINANCE_ALPHA,        // 2 components
+                   GL_RGB,                // 3 components
+                   GL_RGBA                // 4 components
   };
 
   GLuint glid = 0;
@@ -2667,12 +2667,12 @@ ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
   glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
   glTexImage2D( GL_TEXTURE_2D, 0, nc, w, h, 0,
-		fmt[nc-1], GL_UNSIGNED_BYTE, pixels);
+                fmt[nc-1], GL_UNSIGNED_BYTE, pixels);
 
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-		   repeat_s ? GL_REPEAT : GL_CLAMP );
+                   repeat_s ? GL_REPEAT : GL_CLAMP );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-		   repeat_t ? GL_REPEAT : GL_CLAMP );
+                   repeat_t ? GL_REPEAT : GL_CLAMP );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
@@ -2688,16 +2688,16 @@ Viewer::TextureObject
 ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
                             size_t w, size_t h,
                             size_t whole_w,size_t whole_h,size_t nc,
-			    bool repeat_s,
-			    bool repeat_t,
-			    const unsigned char *pixels,
-			    bool retainHint)
+                            bool repeat_s,
+                            bool repeat_t,
+                            const unsigned char *pixels,
+                            bool retainHint)
 {
 
-  GLenum fmt[] = { GL_LUMINANCE,	// single component
-		   GL_LUMINANCE_ALPHA,	// 2 components
-		   GL_RGB,		// 3 components
-		   GL_RGBA		// 4 components
+  GLenum fmt[] = { GL_LUMINANCE,        // single component
+                   GL_LUMINANCE_ALPHA,        // 2 components
+                   GL_RGB,                // 3 components
+                   GL_RGBA                // 4 components
   };
 
   GLuint glid = 0;
@@ -2721,13 +2721,13 @@ ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
     memcpy(texturepart+i*w*nc,pixels+(i+yoffset)*whole_w*nc+xoffset*nc, w*nc);
 
   glTexImage2D( GL_TEXTURE_2D, 0, nc, w, h, 0,
-		fmt[nc-1], GL_UNSIGNED_BYTE, texturepart);
+                fmt[nc-1], GL_UNSIGNED_BYTE, texturepart);
 
   delete [] texturepart;
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-		   repeat_s ? GL_REPEAT : GL_CLAMP );
+                   repeat_s ? GL_REPEAT : GL_CLAMP );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-		   repeat_t ? GL_REPEAT : GL_CLAMP );
+                   repeat_t ? GL_REPEAT : GL_CLAMP );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
@@ -2759,9 +2759,9 @@ void ViewerOpenGL::removeTextureObject(TextureObject t)
 // Tc' = -C x S x R x C x T x Tc
 
 void ViewerOpenGL::setTextureTransform(const float center[2],
-				       float rotation,
-				       const float scale[2],
-				       const float translation[2]) {
+                                       float rotation,
+                                       const float scale[2],
+                                       const float translation[2]) {
   glMatrixMode(GL_TEXTURE);
   glLoadIdentity();
 
@@ -2816,10 +2816,10 @@ namespace {
 }
 
 void ViewerOpenGL::setViewpoint(const float position[3],
-				const float orientation[4],
-				const float fieldOfView,
-				const float avatarSize,
-				const float visibilityLimit)
+                                const float orientation[4],
+                                const float fieldOfView,
+                                const float avatarSize,
+                                const float visibilityLimit)
 {
   glMatrixMode( GL_PROJECTION );
   if (! d_selectMode) glLoadIdentity();
@@ -2848,8 +2848,8 @@ void ViewerOpenGL::setViewpoint(const float position[3],
   d_position[2] = position[2] + d_translatez;
 
   gluLookAt(position[0], position[1], position[2],
-	    target[0]+d_target[0], target[1]+d_target[1], target[2]+d_target[2],
-	    up[0], up[1], up[2]);
+            target[0]+d_target[0], target[1]+d_target[1], target[2]+d_target[2],
+            up[0], up[1], up[2]);
 
 #if 0
   double MV[4][4];
@@ -2922,7 +2922,7 @@ void ViewerOpenGL::redraw()
   double start = theSystem->time();
 
 
-  glDisable( GL_FOG );		// this is a global attribute
+  glDisable( GL_FOG );                // this is a global attribute
   glDisable( GL_TEXTURE_2D );
 
   glEnable( GL_CULL_FACE );
@@ -2957,9 +2957,9 @@ void ViewerOpenGL::redraw()
   if (d_reportFPS)
     {
       if (d_background[0]+d_background[1]+d_background[2] > 2.0)
-	glColor3f(0.0, 0.0, 0.0);
+        glColor3f(0.0, 0.0, 0.0);
       else
-	glColor3f(1.0, 1.0, 1.0);
+        glColor3f(1.0, 1.0, 1.0);
 
       // Report average of last 2 frame times (can't report this
       // frame time because we want to count swapBuffers time).
@@ -3171,7 +3171,7 @@ void ViewerOpenGL::handleKey(int key)
     case KEY_PAGE_UP:
       this->browser.prevViewpoint(); wsPostRedraw(); break;
 
-    case '/':			// Frames/second
+    case '/':                        // Frames/second
       d_reportFPS = ! d_reportFPS;
       wsPostRedraw();
       break;
@@ -3180,7 +3180,7 @@ void ViewerOpenGL::handleKey(int key)
       d_blend = ! d_blend;
       wsPostRedraw();
       theSystem->inform(" Alpha blending %sabled.",
-		     d_blend ? "en" : "dis");
+                     d_blend ? "en" : "dis");
       break;
 
     case 'd':
@@ -3202,7 +3202,7 @@ void ViewerOpenGL::handleKey(int key)
       break;
 
     case KEY_HOME:
-    case 'r':			// Reset view
+    case 'r':                        // Reset view
       resetUserNavigation();
       break;
 
@@ -3210,10 +3210,10 @@ void ViewerOpenGL::handleKey(int key)
       d_texture = ! d_texture;
       wsPostRedraw();
       theSystem->inform(" Texture mapping %sabled.",
-		     d_texture ? "en" : "dis");
+                     d_texture ? "en" : "dis");
       break;
 
-    case 'w':			// Wireframe (should disable texturing)
+    case 'w':                        // Wireframe (should disable texturing)
       d_wireframe = ! d_wireframe;
       glPolygonMode(GL_FRONT_AND_BACK, d_wireframe ? GL_LINE : GL_FILL);
       wsPostRedraw();
@@ -3221,7 +3221,7 @@ void ViewerOpenGL::handleKey(int key)
       break;
 # if 0
     case 'q':
-      this->browser.destroyWorld();	// may not return
+      this->browser.destroyWorld();        // may not return
       break;
 # endif
     default:
@@ -3246,28 +3246,28 @@ void ViewerOpenGL::handleButton( EventInfo *e)
   if (e->event == EVENT_MOUSE_RELEASE)
     wsSetCursor( CURSOR_INHERIT );
   else
-    switch (e->what)		// button
+    switch (e->what)                // button
       {
       case 0:
-	wsSetCursor( CURSOR_CYCLE );
-	d_rotating = true;
-	d_beginx = e->x;
-	d_beginy = e->y;
-	break;
+        wsSetCursor( CURSOR_CYCLE );
+        d_rotating = true;
+        d_beginx = e->x;
+        d_beginy = e->y;
+        break;
 
       case 1:
-	wsSetCursor( CURSOR_UP_DOWN );
-	d_scaling = true;
-	d_beginx = e->x;
-	d_beginy = e->y;
-	break;
+        wsSetCursor( CURSOR_UP_DOWN );
+        d_scaling = true;
+        d_beginx = e->x;
+        d_beginy = e->y;
+        break;
 
       case 2:
-	wsSetCursor( CURSOR_CROSSHAIR );
-	d_translating = true;
-	d_beginx = e->x;
-	d_beginy = e->y;
-	break;
+        wsSetCursor( CURSOR_CROSSHAIR );
+        d_translating = true;
+        d_beginx = e->x;
+        d_beginy = e->y;
+        break;
       }
 }
 
@@ -3330,7 +3330,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     glPushMatrix();
     glLoadIdentity();
     gluPickMatrix(GLdouble(x), GLdouble(viewport[3] - y),
-		  2.0, 2.0, viewport);
+                  2.0, 2.0, viewport);
 
     // Set up the global attributes
     glDisable(GL_FOG);
@@ -3451,15 +3451,15 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
                                          selected == this->d_activeSensitive,
                                          false,
                                          selectCoord);
-	    this->d_activeSensitive = 0;
+            this->d_activeSensitive = 0;
         } else {
             // _DRAG
-	    this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
+            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
                                          timeNow,
                                          selected == this->d_activeSensitive,
                                          true,
                                          selectCoord);
-	}
+        }
         wasActive = true;
     } else if (mouseEvent == EVENT_MOUSE_CLICK && selected) {
         //
@@ -3471,7 +3471,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
                                          timeNow,
                                          false, false, // isOver, isActive
                                          selectCoord);
-	    this->d_overSensitive = 0;
+            this->d_overSensitive = 0;
         }
         this->d_activeSensitive = selected;
         this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
@@ -3572,14 +3572,14 @@ void ViewerOpenGL::text3(int *justify, float size, int n, const char * const *s)
     {
       const char *textLine = s[i];
       if ( textLine )
-	{
-	  this->modelviewMatrixStack.push();
-	  glTranslatef(x, y, 0.0);
-	  glScalef(font_scale, font_scale, font_scale);
-	  while (*textLine)
-	    glutStrokeCharacter(GLUT_STROKE_ROMAN, *textLine++);
-	  this->modelviewMatrixStack.pop();
-	}
+        {
+          this->modelviewMatrixStack.push();
+          glTranslatef(x, y, 0.0);
+          glScalef(font_scale, font_scale, font_scale);
+          while (*textLine)
+            glutStrokeCharacter(GLUT_STROKE_ROMAN, *textLine++);
+          this->modelviewMatrixStack.pop();
+        }
     }
 
   glPopAttrib();

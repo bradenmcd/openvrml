@@ -20,6 +20,9 @@
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Source
           formatting changes.
 
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: More source
+          formatting changes.
+
 2002-10-17  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,
