@@ -1,3 +1,10 @@
+2000-03-26  Chris Morley  <cmorley@vermontel.net>
+
+	* Finished implementing getField for Nodes so Scripts
+	  can access exposedFields.
+
+	* Fixed the upside down textures on some IFSs.
+
 2000-03-13    <chris@quiller.morley.com>
 
 	* Put in S K Bose's Billboard code and the MathUtils
