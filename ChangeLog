@@ -1,5 +1,10 @@
 2003-10-08  Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac:  Removed useless checks for zlib, libpng, and
+	libjpeg.
+
+2003-10-08  Braden McDaniel  <braden@endoframe.com>
+
 	Moved relocate member function from node to child_node.
 
 	* src/libopenvrml/openvrml/browser.cpp

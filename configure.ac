@@ -53,25 +53,6 @@ OV_PROG_JAR
 #
 # Checks for libraries/headers.
 #
-AC_CHECK_LIB([z], [zlibVersion],
-             [Z_LIBS="-lz"],
-             [have_zlib=no])
-AC_CHECK_HEADER([zlib.h], ,
-                [have_zlib=no])
-
-AC_CHECK_LIB([png], [png_read_info],
-             [PNG_LIBS="-lpng -lz -lm"],
-             [have_libpng=no],
-             [-lz -lm])
-AC_CHECK_HEADER([png.h], ,
-                [have_libpng=no])
-
-AC_CHECK_LIB([jpeg], [jpeg_read_header],
-             [JPEG_LIBS="-ljpeg"],
-             [have_libjpeg=no])
-AC_CHECK_HEADER([jpeglib.h], ,
-                [have_libjpeg=no])
-
 PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
 AC_PATH_PROG([FREETYPE_CONFIG], [freetype-config])
 
@@ -91,9 +72,7 @@ AC_ARG_ENABLE([gzip],
 if test "X$enable_gzip" = "Xno"; then
   Z_LIBS=""
 else
-  if test "X$have_zlib" = "Xno"; then
-    AC_MSG_ERROR([zlib is required for gzipped world support.])
-  fi
+  Z_LIBS="-lz"
   AC_DEFINE([OPENVRML_ENABLE_GZIP], [1],
             [Defined if support for gzipped worlds is enabled.])
 fi
@@ -109,9 +88,8 @@ if test "X$enable_imagetexture_node" = "Xno"; then
   PNG_LIBS=""
   JPEG_LIBS=""
 else
-  if test "X$have_libpng" = "Xno" -o "X$have_libjpeg" = "Xno"; then
-    AC_MSG_ERROR([libjpeg and libpng are required for ImageTexture node support.])
-  fi
+  PNG_LIBS="-lpng -lz"
+  JPEG_LIBS="-ljpeg"
   AC_DEFINE([OPENVRML_ENABLE_IMAGETEXTURE_NODE], [1],
             [Defined if ImageTexture node support is enabled.])
 fi
