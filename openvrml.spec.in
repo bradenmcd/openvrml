@@ -91,7 +91,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
-* Tue Jan 25 2001  Braden McDaniel  <braden@endoframe.com>
+* Thu Jan 25 2001  Braden McDaniel  <braden@endoframe.com>
 - Fixed location of lookat icon in %files section for lookat
 - Added Mesa >= 3.2 as a requirement for openvrml-gl.
 
