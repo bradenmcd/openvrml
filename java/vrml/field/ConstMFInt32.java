@@ -22,17 +22,55 @@ package vrml.field;
 
 import vrml.ConstMField;
 
+/**
+ * Represents a read-only VRML MFInt32 field in Java.
+ */
 public class ConstMFInt32 extends ConstMField
 {
   public native int getSize();
 
+  /**
+   * Construct a new MFInt32 field in OpenVRML using the given params.
+   *
+   * @param size Number of SFInt32 values passed in.
+   * @param values List of integers to initialize object with.
+   */
   private native void CreateObject(int size, int values[]);
 
-  public ConstMFInt32(int size, int values[]) { CreateObject(size, values); }
-  public ConstMFInt32(int values[]) { CreateObject(values.length, values); }
+  /**
+   * Construct a read-only MFInt32 field.
+   *
+   * @param size Number of integers to initialize object with.
+   * @param values List of integers to initialize object with.
+   */
+  public ConstMFInt32(int size, int values[])
+  {
+    CreateObject(size, values);
+  }
 
+  /**
+   * Construct a read-only MFInt32 field.
+   *
+   * @param values List of integers to initialize object with.
+   */
+  public ConstMFInt32(int values[])
+  {
+    CreateObject(values.length, values);
+  }
+
+  /**
+   * Retrieves the complete list of integers making up an MFInt32 field.
+   *
+   * @param values List of integers to initialize object with.
+   */
   public native void getValue(int values[]);
 
+  /**
+   * Retrieve a particular element from an MFInt32 field.
+   *
+   * @param index Position of desired element.
+   * @return Value at specified position.
+   */
   public native int get1Value(int index);
 
   public native String toString();
