@@ -1912,12 +1912,12 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
             URI testURI(uri.getElement(i));
 
             //
-            // If parent is 0, then it must be an absolute URI.
+            // If we have a relative URI and parent is not 0, try to resolve
+            // the relative reference against the parent's URI.
             //
             const bool isAbsolute = !testURI.getScheme().empty();
             std::string absoluteURI;
-            if (!isAbsolute) {
-                if (!parent) { throw InvalidURI(); }
+            if (!isAbsolute && parent) {
                 absoluteURI = testURI.resolveAgainst(URI(parent->getURI()));
             } else {
                 absoluteURI = testURI;

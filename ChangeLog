@@ -1,3 +1,11 @@
+2002-08-17  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp: If the Scene's parent is 0,
+          then a relative reference will simply be passed to the stream
+          loader as-is.  This should accommodate references that refer
+          to the local file system. (The reference must still parse as
+          a URI, so DOS-style file system references won't work.)
+
 2002-08-16  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/doc2.cpp,
