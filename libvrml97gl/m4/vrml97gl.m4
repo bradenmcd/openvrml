@@ -186,15 +186,25 @@ AC_DEFUN(VRMLGL_PATH_GLUT,
       glut__Ldir="-L${with_glut_prefix}/lib"
     fi
     
+    ac_save_LDFLAGS="${LFDLAGS}"
+    LDFLAGS="${glut__Ldir} ${LDFLAGS}"
+    
     AC_CHECK_LIB(glut, glutMainLoop,
-      AC_CHECK_HEADER(GL/glut.h,
-        have_glut=yes,
-        have_glut=no
-      ),
+      [
+        ac_save_CPPFLAGS="${CPPFLAGS}"
+        CPPFLAGS="${CPPFLAGS} ${glut__Idir}"
+        AC_CHECK_HEADER(GL/glut.h,
+          have_glut=yes,
+          have_glut=no
+        )
+        CPPFLAGS="${ac_save_CPPFLAGS}"
+      ],
       have_glut=no,
       $xmu_libs $xi_libs $GL_LIBS -lm
     )
 
+    LDFLAGS="${ac_save_LDFLAGS}"
+    
     if test $have_glut = yes; then
       GLUT_CFLAGS="${glut__Idir} $GL_CFLAGS"
       GLUT_LIBS="${glut__Ldir} -lglut $xmu_libs $xi_libs $GL_LIBS"
