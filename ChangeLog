@@ -1,7 +1,7 @@
 2001-02-05  Braden McDaniel  <braden@endoframe.com>
 
-        * Removed dynamic_cast in assertions in VrmlNodeAppearance's
-          setters in favor of toNode() methods.
+        * Removed dynamic_cast in assertions in VrmlNodeAppearance's and
+          VrmlNodeElevationGrid's setters in favor of toNode() methods.
 
         * Fixed problem with VrmlNodeBillboard::accumulateTransform()
           where a null pointer could potentially be dereferenced.

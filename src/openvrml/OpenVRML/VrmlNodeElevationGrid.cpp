@@ -277,7 +277,7 @@ const VrmlSFNode & VrmlNodeElevationGrid::getColor() const {
  * @param color an SFNode value containing a Color node.
  */
 void VrmlNodeElevationGrid::setColor(const VrmlSFNode & color) {
-    assert(!color.get() || dynamic_cast<VrmlNodeColor *>(color.get()));
+    assert(!color.get() || color.get()->toColor());
     this->d_color = color;
 }
 
@@ -297,7 +297,7 @@ const VrmlSFNode & VrmlNodeElevationGrid::getNormal() const {
  * @param normal an SFNode value containing a Normal node.
  */
 void VrmlNodeElevationGrid::setNormal(const VrmlSFNode & normal) {
-    assert(!normal.get() || dynamic_cast<VrmlNodeNormal *>(normal.get()));
+    assert(!normal.get() || normal.get()->toNormal());
     this->d_normal = normal;
 }
 
@@ -317,8 +317,7 @@ const VrmlSFNode & VrmlNodeElevationGrid::getTexCoord() const {
  * @param texCoord an SFNode value containing a TextureCoordinate node.
  */
 void VrmlNodeElevationGrid::setTexCoord(const VrmlSFNode & texCoord) {
-    assert(!texCoord.get()
-            || dynamic_cast<VrmlNodeTextureCoordinate *>(texCoord.get()));
+    assert(!texCoord.get() || texCoord.get()->toTextureCoordinate());
     this->d_texCoord = texCoord;
 }
 
