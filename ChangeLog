@@ -1,4 +1,10 @@
-2004-01-14 Braden McDaniel  <braden@endoframe.com>
+2004-01-19 Braden McDaniel  <braden@endoframe.com>
+
+	Added "Doxyfile" as a dependency of the "doc" target.
+
+	* doc/Makefile.am
+
+2004-01-19 Braden McDaniel  <braden@endoframe.com>
 
 	Made "script_node::to_script" private.
 

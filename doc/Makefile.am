@@ -8,7 +8,7 @@ EXTRA_DIST = \
         conformance.doc \
         manual
 
-doc:
+doc: Doxyfile
 	$(DOXYGEN)
 
 install-data-local:
