@@ -18,6 +18,7 @@
 
 #include "Audio.h"
 #include "Doc.h"
+#include "System.h"
 
 
 /*=========================================================================
@@ -180,8 +181,8 @@ bool Audio::setURL(const char *url, Doc *relative)
             break;
 
           default:
-            fprintf (stderr,
-                     "Error: unrecognized audio file format (%s).\n", url);
+            theSystem->warn("Unrecognized audio file format (%s).\n", url);
+
 
             // Suppress the error message below
             success = true;
@@ -189,15 +190,15 @@ bool Audio::setURL(const char *url, Doc *relative)
         }
 
         if (success == false)
-            fprintf (stderr,
-                     "Error: unable to read audio file (%s).\n", url);
+            theSystem->warn("Unable to read audio file (%s).\n", url);
+            
         
         _doc->fclose ();
     }
 
     else
-        fprintf (stderr,
-                 "Error: unable to find audio file (%s).\n", url);
+        theSystem->warn("Unable to find audio file (%s).\n", url);
+ 
 
     return (_num_samples > 0);
 }
