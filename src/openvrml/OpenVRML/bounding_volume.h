@@ -64,8 +64,6 @@ namespace OpenVRML {
         bounding_sphere();
         virtual ~bounding_sphere();
 
-        void reset();
-
         virtual intersection
         intersect_frustum(const OpenVRML::frustum & frustum) const;
 

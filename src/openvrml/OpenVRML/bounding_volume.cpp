@@ -232,20 +232,12 @@ bounding_volume::~bounding_volume() {}
  * @brief The radius of the sphere.
  */
 
-bounding_sphere::bounding_sphere()
-{
-    this->reset();
-}
+bounding_sphere::bounding_sphere():
+    radius_(-1.0)
+{}
 
 bounding_sphere::~bounding_sphere()
 {}
-
-void bounding_sphere::reset()
-{
-    this->radius_ = -1.0f;
-    this->center_ = vec3f(0.0, 0.0, 0.0);
-}
-
 
 namespace {
     float sphere_plane_distance(const bounding_sphere & bs,
@@ -468,7 +460,7 @@ void bounding_sphere::enclose(const std::vector<vec3f> & points)
     // this->extend(&p[i]);
     //
 
-    this->reset();
+    *this = bounding_sphere();
 
     if (points.size() < 1) { return; }
 

@@ -1,3 +1,20 @@
+2003-07-09  Braden McDaniel  <braden@endoframe.com>
+
+	Removed unnecessary function bounding_sphere::reset.
+
+	* src/openvrml/OpenVRML/bounding_volume.h
+	(bounding_volume::reset):  Removed function.
+	* src/openvrml/OpenVRML/bounding_volume.cpp
+	(bounding_volume::reset, bounding_sphere::enclose):  Removed
+	function bounding_sphere::reset.
+	* src/openvrml/OpenVRML/vrml97node.cpp
+	(group_node::recalc_bsphere,
+	indexed_face_set_node::recalcBSphere, lod_node::recalcBSphere,
+	point_set_node::recalcBSphere, switch_node::recalcBSphere,
+	transform_node::recalcBSphere):  Replaced calls to
+	bounding_sphere::reset with assignments to the default
+	bounding_sphere.
+
 2003-07-06  Braden McDaniel  <braden@endoframe.com>
 
 	Applied naming convention changes to VRML97 node implementation

@@ -6362,7 +6362,7 @@ const bounding_volume & group_node::bounding_volume() const
  */
 void group_node::recalc_bsphere()
 {
-    this->bsphere.reset();
+    this->bsphere = bounding_sphere();
     for (size_t i = 0; i < this->children_.value.size(); ++i) {
         const node_ptr & node = this->children_.value[i];
         if (node) {
@@ -6941,7 +6941,7 @@ void indexed_face_set_node::recalcBSphere()
         : 0;
     if (coordinateNode) {
         const std::vector<vec3f> & coord = coordinateNode->point();
-        this->bsphere.reset();
+        this->bsphere = bounding_sphere();
         this->bsphere.enclose(coord);
     }
     this->bounding_volume_dirty(false);
@@ -7649,7 +7649,7 @@ void lod_node::activate(double time, bool isOver, bool isActive, double *p)
  * @brief Recalculate the bounding volume.
  */
 void lod_node::recalcBSphere() {
-    this->bsphere.reset();
+    this->bsphere = bounding_sphere();
 
     // let's say our bsphere is the union of the bspheres of all the
     // levels. we could have said it was just the bsphere of the current
@@ -10530,7 +10530,7 @@ viewer::object_t point_set_node::insert_geometry(OpenVRML::viewer & viewer,
  */
 void point_set_node::recalcBSphere()
 {
-    this->bsphere.reset();
+    this->bsphere = bounding_sphere();
     OpenVRML::coordinate_node * const coordinateNode = this->coord.value
         ? this->coord.value->to_coordinate()
         : 0;
@@ -13145,7 +13145,7 @@ void switch_node::activate(double time, bool isOver, bool isActive, double *p)
  */
 void switch_node::recalcBSphere()
 {
-    this->bsphere.reset();
+    this->bsphere = bounding_sphere();
     long w = this->whichChoice.value;
     if (w >= 0 && size_t(w) < this->choice.value.size()) {
         const node_ptr & node = this->choice.value[w];
@@ -16113,7 +16113,7 @@ const bounding_volume & transform_node::bounding_volume() const
  */
 void transform_node::recalc_bsphere()
 {
-    this->bsphere.reset();
+    this->bsphere = bounding_sphere();
     for (size_t i = 0; i < this->children_.value.size(); ++i) {
         const node_ptr & node = this->children_.value[i];
         if (node) {
