@@ -1,3 +1,8 @@
+2001-07-18  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Win32 GL declarations are taken out from 
+          ViewerOpenGL.h and put it into ViewerOpenGL.cpp
+
 2001-07-14  Braden McDaniel  <braden@endoframe.com>
 
         * Fixed a bug in the JavaScript binding where
