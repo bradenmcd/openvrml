@@ -214,12 +214,7 @@ void ScriptJDK::activate( double timeStamp,
 {
   if (argc == 2 && d_processEventID != 0)
   {
-    jclass clazz;
-    jfieldID fid;
-    jobject jEvent;
-    VrmlEvent* pEvent;    
-
-    clazz = d_env->FindClass("vrml/Event");
+    jclass clazz = d_env->FindClass("vrml/Event");
 
     if (clazz == 0)
     {
@@ -227,9 +222,9 @@ void ScriptJDK::activate( double timeStamp,
       return;
     }
 
-    jEvent = d_env->AllocObject(clazz);
-    fid = getFid(d_env, jEvent, "EventPtr", "I");
-    pEvent = new VrmlEvent(timeStamp, fname.c_str(), argv[0]);
+    jobject jEvent = d_env->AllocObject(clazz);
+    jfieldID fid = getFid(d_env, jEvent, "EventPtr", "I");
+    VrmlEvent* pEvent = new VrmlEvent(timeStamp, fname.c_str(), argv[0]);
     d_env->SetIntField(jEvent, fid, (int) pEvent);
     d_env->CallVoidMethod(d_object, d_processEventID, jEvent);
     d_env->DeleteLocalRef(jEvent);
@@ -245,10 +240,8 @@ void ScriptJDK::activate( double timeStamp,
   {
     // Call initialize()
     jmethodID initID = d_env->GetMethodID(d_class, fname.c_str(),"()V");
-    
     if (initID != 0)
       d_env->CallVoidMethod(d_object, initID);
-    
     if (d_env->ExceptionOccurred())
     {
       d_env->ExceptionDescribe();
@@ -2154,9 +2147,18 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFNode_getSize
 JNIEXPORT void JNICALL Java_vrml_field_ConstMFNode_getValue
   (JNIEnv *env, jobject obj, jobjectArray basenode)
 {
-  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  VrmlMFNode* pMFNode = (VrmlMFNode*) getVrmlField(env, obj);
+  int arraySize = pMFNode->getLength();
+  jclass clazz = env->FindClass("vrml/node/Node");
+  jobject jNode;
+  jfieldID fid = env->GetFieldID(clazz, "NodePtr", "I");
 
-  cout << "TODO: Implement ScriptJDK::Java_vrml_field_ConstMFNode_getValue" << endl;
+  for (int pos = 0; pos < arraySize; pos++)
+  {
+    jNode = env->AllocObject(clazz);
+    env->SetIntField(jNode, fid, (int) pMFNode->getElement(pos).get());    
+    env->SetObjectArrayElement(basenode, pos, jNode);
+  }
 }
 
 JNIEXPORT jobject JNICALL Java_vrml_field_ConstMFNode_get1Value
@@ -2230,29 +2232,33 @@ JNIEXPORT void JNICALL Java_vrml_field_MFNode_setValue__Lvrml_field_MFNode_2
   (JNIEnv *env, jobject obj, jobject value)
 {
   VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
-  jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlMFNode* pNewMFNode = (VrmlMFNode*) env->GetIntField(value, fid);
+  VrmlMFNode* pNewMFNode = (VrmlMFNode*) getVrmlField(env, value);
   *pMFNode = *pNewMFNode;
 }
 
 JNIEXPORT void JNICALL 
 Java_vrml_field_MFNode_setValue__Lvrml_field_ConstMFNode_2
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *env, jobject obj, jobject value)
 {
-  cout << "TODO: Implement Java_vrml_field_MFNode_setValue" << endl;
+  Java_vrml_field_MFNode_setValue__Lvrml_field_MFNode_2(env, obj, value);
 }
 
 JNIEXPORT void JNICALL Java_vrml_field_MFNode_set1Value__ILvrml_BaseNode_2
-  (JNIEnv *, jobject, jint, jobject)
+  (JNIEnv *env, jobject obj, jint pos, jobject value)
 {
-  cout << "TODO: Implement Java_vrml_field_MFNode_set1Value" << endl;
+  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  jfieldID fid = getFid(env, value, "NodePtr", "I");
+  VrmlNode* pNewNode = (VrmlNode*) env->GetIntField(value, fid);
+  pMFNode->setElement(pos, VrmlNodePtr(pNewNode)); 
 }
 
 JNIEXPORT void JNICALL 
 Java_vrml_field_MFNode_set1Value__ILvrml_field_ConstSFNode_2
   (JNIEnv *env, jobject obj, jint index, jobject sfnode)
 {
-  cout << "TODO: Implement Java_vrml_field_MFNode_set1Value__ILvrml_field_ConstSFNode_2" << endl;
+  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  VrmlSFNode* pSFNode = (VrmlSFNode*)getVrmlField(env, sfnode);
+  pMFNode->setElement(index, pSFNode->get()); 
 }
 
 JNIEXPORT void JNICALL 
@@ -2265,14 +2271,19 @@ Java_vrml_field_MFNode_set1Value__ILvrml_field_SFNode_2
 JNIEXPORT void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_BaseNode_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  cout << "TODO: Implement Java_vrml_field_MFNode_addValue__Lvrml_BaseNode_2" << endl;
+  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  jfieldID fid = getFid(env, value, "NodePtr", "I");
+  VrmlNode* pNewNode = (VrmlNode*) env->GetIntField(value, fid);
+  pMFNode->addNode(*pNewNode); 
 }
 
 JNIEXPORT void JNICALL 
 Java_vrml_field_MFNode_addValue__Lvrml_field_ConstSFNode_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  cout << "TODO: Implement Java_vrml_field_MFNode_addValue__Lvrml_field_ConstSFNode_2" << endl;
+  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  VrmlSFNode* pSFNode = (VrmlSFNode*)getVrmlField(env, value);
+  pMFNode->addNode(*(pSFNode->get().get())); 
 }
 
 JNIEXPORT void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_field_SFNode_2
@@ -2284,14 +2295,19 @@ JNIEXPORT void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_field_SFNode_2
 JNIEXPORT void JNICALL Java_vrml_field_MFNode_insertValue__ILvrml_BaseNode_2
   (JNIEnv *env, jobject obj, jint index, jobject value)
 {
-  cout << "TODO: Implement Java_vrml_field_MFNode_insertValue__ILvrml_BaseNode_2" << endl;
+  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  jfieldID fid = getFid(env, value, "NodePtr", "I");
+  VrmlNode* pNewNode = (VrmlNode*) env->GetIntField(value, fid);
+  pMFNode->insertElement(index, VrmlNodePtr(pNewNode)); 
 }
 
 JNIEXPORT void JNICALL 
 Java_vrml_field_MFNode_insertValue__ILvrml_field_ConstSFNode_2
   (JNIEnv *env, jobject obj, jint index, jobject value)
 {
-  cout << "TODO: Implement Java_vrml_field_MFNode_insertValue__ILvrml_field_ConstSFNode_2" << endl;
+  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  VrmlSFNode* pSFNode = (VrmlSFNode*)getVrmlField(env, value);
+  pMFNode->insertElement(index, pSFNode->get()); 
 }
 
 JNIEXPORT void JNICALL 
@@ -3722,22 +3738,18 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
   (JNIEnv *env, jobject obj, jstring jstrEventOutName)
 {
-  jfieldID fid;
-  VrmlNodeScript* pScript;
-  jobject eventOut;
-  jclass clazz;
   VrmlField::VrmlFieldType eventOutType;
   const VrmlNodeScript::ScriptField* fieldPtr;
   char clazzName[256];
 
   const char *eventOutName = env->GetStringUTFChars(jstrEventOutName , 0);
-  fid = getFid(env, obj, "NodePtr", "I");
-  pScript = (VrmlNodeScript*) env->GetIntField(obj, fid);
+  jfieldID fid = getFid(env, obj, "NodePtr", "I");
+  VrmlNodeScript* pScript = (VrmlNodeScript*) env->GetIntField(obj, fid);
   eventOutType = pScript->hasEventOut(eventOutName);
   sprintf(clazzName, "vrml/field/%s", VrmlField::getFieldName(eventOutType));
   
-  clazz = env->FindClass(clazzName);
-  eventOut = env->AllocObject(clazz);
+  jclass clazz = env->FindClass(clazzName);
+  jobject eventOut = env->AllocObject(clazz);
   fid = getFid(env, eventOut, "FieldPtr", "I");
 
   // What you really want to do here is get a pointer to a ScriptField in the
@@ -3808,18 +3820,28 @@ JNIEXPORT jobject JNICALL Java_vrml_BaseNode_getBrowser
 JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventIn
   (JNIEnv *env, jobject obj, jstring jstrEventInName)
 {
-  jobject eventIn;
-  jfieldID fid;
-  VrmlNode* pNode;
-  char clazzName[256];
-  jclass clazz;
-
   const char *eventInName = env->GetStringUTFChars(jstrEventInName , 0);
-  fid = getFid(env, obj, "NodePtr", "I");
-  pNode = (VrmlNode*) env->GetIntField(obj, fid);
+  jfieldID fid = getFid(env, obj, "NodePtr", "I");
+  VrmlNode* pNode = (VrmlNode*) env->GetIntField(obj, fid);
+  
+  /* Uncomment when getEventIn implementation is added to VrmlNode
+  const VrmlField* field = pNode->getEventIn(eventInName);
 
-  cout << "TODO: Implement Java_vrml_node_Node_getEventIn" << endl;
+  if (field == 0)
+  {
+    // throw exception as given eventIn name doesn't exist
+    return 0;
+  } 
 
+  char clazzName[256];
+  sprintf(clazzName, "vrml/field/%s", field->fieldTypeName());
+  jclass clazz = env->FindClass(clazzName);
+  jobject eventIn = env->AllocObject(clazz);
+  fid = env->GetFieldID(clazz, "FieldPtr", "I");;
+  env->SetIntField(eventIn, fid, (int) field);
+  env->ReleaseStringUTFChars(jstrEventInName, eventInName);
+  */
+  jobject eventIn;
   return eventIn;
 }
 
@@ -3827,15 +3849,9 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventIn
 JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventOut
   (JNIEnv *env, jobject obj, jstring jstrEventOutName)
 {
-  jobject eventOut;
-  jfieldID fid;
-  VrmlNode* pNode;
-  char clazzName[256];
-  jclass clazz;
-
   const char *eventOutName = env->GetStringUTFChars(jstrEventOutName , 0);
-  fid = getFid(env, obj, "NodePtr", "I");
-  pNode = (VrmlNode*) env->GetIntField(obj, fid);
+  jfieldID fid = getFid(env, obj, "NodePtr", "I");
+  VrmlNode* pNode = (VrmlNode*) env->GetIntField(obj, fid);
   const VrmlField* field = pNode->getEventOut(eventOutName);
 
   if (field == 0)
@@ -3844,9 +3860,10 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventOut
     return 0;
   }
 
+  char clazzName[256];
   sprintf(clazzName, "vrml/field/%s", field->fieldTypeName());
-  clazz = env->FindClass(clazzName);
-  eventOut = env->AllocObject(clazz);
+  jclass clazz = env->FindClass(clazzName);
+  jobject eventOut = env->AllocObject(clazz);
   fid = env->GetFieldID(clazz, "FieldPtr", "I");;
   env->SetIntField(eventOut, fid, (int) field);
   env->ReleaseStringUTFChars(jstrEventOutName, eventOutName);
@@ -3857,16 +3874,10 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventOut
 JNIEXPORT jobject JNICALL Java_vrml_node_Node_getExposedField
   (JNIEnv *env, jobject obj, jstring jstrExposedFieldName)
 {
-  jobject exposedField;
-  jfieldID fid;
-  VrmlNode* pNode;
-  char clazzName[256];
-  jclass clazz;
-
   const char *exposedFieldName = 
     env->GetStringUTFChars(jstrExposedFieldName , 0);
-  fid = getFid(env, obj, "NodePtr", "I");
-  pNode = (VrmlNode*) env->GetIntField(obj, fid);
+  jfieldID fid = getFid(env, obj, "NodePtr", "I");
+  VrmlNode* pNode = (VrmlNode*) env->GetIntField(obj, fid);
   const VrmlField* field = pNode->getField(exposedFieldName);
 
   if (field == 0)
@@ -3875,9 +3886,10 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getExposedField
     return 0;
   }
 
+  char clazzName[256];
   sprintf(clazzName, "vrml/field/%s", field->fieldTypeName());
-  clazz = env->FindClass(clazzName);
-  exposedField = env->AllocObject(clazz);
+  jclass clazz = env->FindClass(clazzName);
+  jobject exposedField = env->AllocObject(clazz);
   fid = env->GetFieldID(clazz, "FieldPtr", "I");;
   env->SetIntField(exposedField, fid, (int) field);
   env->ReleaseStringUTFChars(jstrExposedFieldName, exposedFieldName);
@@ -3886,11 +3898,17 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getExposedField
 }
 
 JNIEXPORT jstring JNICALL Java_vrml_node_Node_toString
-  (JNIEnv *, jobject)
+  (JNIEnv *env, jobject obj)
 {
-  cout << "TODO: Implement Java_vrml_node_Node_toString" << endl;
-
-  return 0;
+  ostrstream os;
+  jfieldID fid = getFid(env, obj, "NodePtr", "I");
+  VrmlNode* pNode = (VrmlNode*) env->GetIntField(obj, fid);
+  pNode->printFields(os, 0);
+  os << ends;
+  char* szString = os.str();
+  jstring result = env->NewStringUTF(szString); 
+  os.rdbuf()->freeze(0);
+  return result;
 }
 
 //
@@ -4034,11 +4052,8 @@ JNIEXPORT void JNICALL Java_vrml_Browser_replaceWorld
 JNIEXPORT jobjectArray JNICALL Java_vrml_Browser_createVrmlFromString
   (JNIEnv *env, jobject obj, jstring vrmlSyntax)
 {
-  jfieldID fid;
-  VrmlScene* pBrowser;
-  
-  fid = getFid(env, obj, "BrowserPtr", "I");
-  pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
+  jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+  VrmlScene* pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
   return 0;
 }
 
@@ -4050,36 +4065,90 @@ JNIEXPORT void JNICALL Java_vrml_Browser_createVrmlFromURL
 }
 
 JNIEXPORT void JNICALL Java_vrml_Browser_addRoute
-  (JNIEnv *, jobject, jobject, jstring, jobject, jstring)
+  (JNIEnv *env, jobject obj, jobject fromNode, jstring fromEventOut, 
+   jobject toNode, jstring toEventIn)
 {
-  // First check if directOutput is set, if not then method
+  // TODO: First check if directOutput is set, if not then method
   // should not continue
-
-  cout << "TODO: Implement Java_vrml_Browser_addRoute" << endl;
+  
+  jfieldID fid = getFid(env, fromNode, "NodePtr", "I");
+  VrmlNode* pFromNode = (VrmlNode*) env->GetIntField(fromNode, fid);
+  fid = getFid(env, toNode, "NodePtr", "I");
+  VrmlNode* pToNode = (VrmlNode*) env->GetIntField(toNode, fid);
+  const char* str = env->GetStringUTFChars(fromEventOut, 0);
+  std::string eventOut(str);
+  env->ReleaseStringUTFChars(fromEventOut, str);
+  str = env->GetStringUTFChars(toEventIn, 0);
+  std::string eventIn(str);
+  env->ReleaseStringUTFChars(toEventIn, str);
+  pFromNode->addRoute(eventOut, VrmlNodePtr(pToNode), eventIn);
 }
 
 JNIEXPORT void JNICALL Java_vrml_Browser_deleteRoute
-  (JNIEnv *, jobject, jobject, jstring, jobject, jstring)
+  (JNIEnv *env, jobject obj, jobject fromNode, jstring fromEventOut,
+   jobject toNode, jstring toEventIn)
 {
   // First check if directOutput is set, if not then method
   // should not continue
 
-  cout << "TODO: Implement Java_vrml_Browser_deleteRoute" << endl;
+  jfieldID fid = getFid(env, fromNode, "NodePtr", "I");
+  VrmlNode* pFromNode = (VrmlNode*) env->GetIntField(fromNode, fid);
+  fid = getFid(env, toNode, "NodePtr", "I");
+  VrmlNode* pToNode = (VrmlNode*) env->GetIntField(toNode, fid);
+  const char* str = env->GetStringUTFChars(fromEventOut, 0);
+  std::string eventOut(str);
+  env->ReleaseStringUTFChars(fromEventOut, str);
+  str = env->GetStringUTFChars(toEventIn, 0);
+  std::string eventIn(str);
+  env->ReleaseStringUTFChars(toEventIn, str);
+  pFromNode->deleteRoute(eventOut, VrmlNodePtr(pToNode), eventIn);
 }
 
 JNIEXPORT void JNICALL Java_vrml_Browser_loadURL
-  (JNIEnv *, jobject, jobjectArray, jobjectArray)
+  (JNIEnv *env, jobject obj, jobjectArray jUrlArray, 
+   jobjectArray jParameterArray)
 {
-  // First check if mustEvaluate is set, if not then method
+  int pos;
+
+  // TODO: First check if mustEvaluate is set, if not then method
   // should not continue.
 
-  cout << "TODO: Implement Java_vrml_Browser_loadURL" << endl;
+  jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+  VrmlScene* browser = (VrmlScene*) env->GetIntField(obj, fid);
+
+  jsize entries = env->GetArrayLength(jUrlArray);
+  std::string urlArray[entries];
+  for (pos = 0; pos < entries; pos++)
+  {
+    jstring jstr = (jstring) env->GetObjectArrayElement(jUrlArray, pos);
+    const char *str = env->GetStringUTFChars(jstr, 0);
+    std::string newString(str);
+    urlArray[pos] = newString;
+    env->ReleaseStringUTFChars(jstr, str);
+  }
+  VrmlMFString urls(entries, urlArray);
+
+  entries = env->GetArrayLength(jParameterArray);
+  std::string parameterArray[entries];
+  for (pos = 0; pos < entries; pos++)
+  {
+    jstring jstr = (jstring) env->GetObjectArrayElement(jParameterArray, pos);
+    const char *str = env->GetStringUTFChars(jstr, 0);
+    std::string newString(str);
+    parameterArray[pos] = newString;
+    env->ReleaseStringUTFChars(jstr, str);
+  }
+  VrmlMFString parameters(entries, parameterArray);
+
+  browser->loadUrl(urls, parameters);
 }
 
 JNIEXPORT void JNICALL Java_vrml_Browser_setDescription
-  (JNIEnv *, jobject, jstring)
+  (JNIEnv *env, jobject obj, jstring jDescription)
 {
-  cout << "TODO: Implement Java_vrml_Browser_setDescription" << endl;
+  const char *description = env->GetStringUTFChars(jDescription, 0);
+  theSystem->inform("%s", description);
+  env->ReleaseStringUTFChars(jDescription, description);
 }
 
 } // extern "C"
