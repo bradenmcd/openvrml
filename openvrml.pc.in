@@ -1,0 +1,5 @@
+Name: openvrml
+Description: VRML97 run-time library.
+Version: @VERSION@
+Libs: -L@libdir@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @JS_LIBS@ @JNI_LIBS@
+Cflags: -I@includedir@ @JS_CFLAGS@ @JNI_CFLAGS@

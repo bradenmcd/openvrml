@@ -1,4 +1,4 @@
-Name:           @PACKAGE@
+Name:           @PACKAGE_TARNAME@
 Version:        @VERSION@
 Release:        1
 Summary:        VRML support library. 
@@ -67,7 +67,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %doc AUTHORS COPYING COPYING.LIB ChangeLog NEWS README THANKS
 %doc doc/conformance.html
 %{prefix}/lib/libopenvrml.so.*
-%{prefix}/share/aclocal/vrml.m4
+%{prefix}/lib/pkgconfig/openvrml.m4
 
 %files devel
 %{prefix}/include/OpenVRML
@@ -77,7 +77,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %files gl
 %{prefix}/lib/libopenvrml-gl.so.*
-%{prefix}/share/aclocal/vrml-gl.m4
+%{prefix}/lib/pkgconfig/openvrml-gl.m4
 
 %files gl-devel
 %{prefix}/include/OpenVRML/GL
@@ -91,6 +91,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Thu Jan 24 2001  Braden McDaniel  <braden@endoframe.com>
+- Added package metafiles for pkgconfig.
+- Removed autoconf macros for use by client packages.
+
 * Fri Jun 29 2001  Braden McDaniel  <braden@endoframe.com>
 - Removed MPL-1.1.txt from %doc. File nolonger distributed.
 - Prefer the shorter "sf.net" to "sourceforge.net".

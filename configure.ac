@@ -1,13 +1,13 @@
-AC_INIT(src/openvrml/OpenVRML/VrmlScene.cpp)
-
-AC_PREREQ(2.52)
-
-PACKAGE=openvrml
 OPENVRML_MAJOR_VERSION="0"
 OPENVRML_MINOR_VERSION="12"
 OPENVRML_MICRO_VERSION="0"
-VERSION="${OPENVRML_MAJOR_VERSION}.${OPENVRML_MINOR_VERSION}.${OPENVRML_MICRO_VERSION}"
-AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+OPENVRML_VERSION="${OPENVRML_MAJOR_VERSION}.${OPENVRML_MINOR_VERSION}.${OPENVRML_MICRO_VERSION}"
+
+AC_INIT(OpenVRML, OPENVRML_VERSION, openvrml-develop@lists.sourceforge.net)
+
+AC_PREREQ(2.52)
+
+AM_INIT_AUTOMAKE($PACKAGE_TARNAME, $VERSION)
 
 AM_CONFIG_HEADER(config.h)
 
@@ -158,4 +158,6 @@ java/vrml/Makefile \
 java/vrml/node/Makefile \
 java/vrml/field/Makefile \
 Doxyfile \
+openvrml.pc \
+openvrml-gl.pc \
 openvrml.spec])

@@ -3,6 +3,13 @@
         * Minor fix to JDK/JNI autoconf macro: just check for the
           "client" libjvm, not "classic".
 
+        * Provide meta-data files for pkg-config instead of providing
+          our own dodgy autoconf macros. Client apps should use the
+          pkg-config autoconf macro PKG_CHECK_MODULES to check for the
+          presence/location of OpenVRML.
+
+        * Updated AC_INIT usage for autoconf 2.52.
+
 2002-01-28  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * In "NodeLOD", accumulated modelview matrix within 
