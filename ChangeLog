@@ -1,5 +1,11 @@
 2002-06-04  Braden McDaniel  <braden@endoframe.com>
 
+        * Doxygen love for VrmlScene.
+
+        * Made scene callback IDs enumerants instead of ints.
+
+2002-06-04  Braden McDaniel  <braden@endoframe.com>
+
         * Made zlib an optional dependency.
 
 2002-05-31  Braden McDaniel  <braden@endoframe.com>

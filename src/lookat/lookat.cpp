@@ -45,7 +45,7 @@
 using OpenVRML::VrmlScene;
 using OpenVRML::Doc2;
 
-static void worldChangedCB(int);
+static void worldChangedCB(VrmlScene::CBReason);
 static void buildViewpointMenu();
 
 VrmlScene *vrmlScene = 0;
@@ -147,7 +147,7 @@ main(int argc, char **argv)
 }
 
 
-static void worldChangedCB(int reason)
+static void worldChangedCB(const VrmlScene::CBReason reason)
 {
   switch (reason)
     {
