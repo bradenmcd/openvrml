@@ -8,6 +8,7 @@
 	* src/libopenvrml/openvrml/basetypes.h
 	* src/libopenvrml/openvrml/frustum.cpp
 	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 
 2004-01-24 Braden McDaniel  <braden@endoframe.com>
