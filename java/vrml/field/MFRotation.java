@@ -132,7 +132,7 @@ public class MFRotation extends MField
    */
   public void setValue(float rotations[])
   {
-    setValue(rotations.length, rotations);
+    setValue(rotations.length / 4, rotations);
   }
 
   /**
