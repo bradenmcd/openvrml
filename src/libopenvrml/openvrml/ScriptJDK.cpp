@@ -385,7 +385,7 @@ namespace {
  *
  * @param timestamp Time at which script is being initialized.
  */
-void ScriptJDK::initialize(const double timestamp)
+void ScriptJDK::do_initialize(const double timestamp)
 {
   const sftime arg(timestamp);
   const field_value * argv[] = { &arg };
@@ -399,9 +399,9 @@ void ScriptJDK::initialize(const double timestamp)
  * @param value Value of the event.
  * @param timestamp Time at which event occurred.
  */
-void ScriptJDK::process_event(const std::string & id,
-                              const field_value & value,
-                              const double timestamp)
+void ScriptJDK::do_process_event(const std::string & id,
+                                 const field_value & value,
+                                 const double timestamp)
 {
   const sftime timestampArg(timestamp);
   const field_value * argv[] = { &value, &timestampArg };
@@ -413,7 +413,7 @@ void ScriptJDK::process_event(const std::string & id,
  *
  * @param timestamp Time at which last event occurred.
  */
-void ScriptJDK::events_processed(const double timestamp)
+void ScriptJDK::do_events_processed(const double timestamp)
 {
   const sftime arg(timestamp);
   const field_value * argv[] = { &arg };
@@ -426,7 +426,7 @@ void ScriptJDK::events_processed(const double timestamp)
  *
  * @param timestamp Time at which script is being destroyed.
  */
-void ScriptJDK::shutdown(const double timestamp)
+void ScriptJDK::do_shutdown(const double timestamp)
 {
   const sftime arg(timestamp);
   const field_value * argv[] = { &arg };

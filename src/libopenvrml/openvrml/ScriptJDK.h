@@ -50,14 +50,14 @@ namespace openvrml {
                   const char * className, const char * classDir);
         virtual ~ScriptJDK();
 
-        virtual void initialize(double timestamp);
-        virtual void process_event(const std::string & id,
-                                   const field_value & value,
-                                   double timestamp);
-        virtual void events_processed(double timestamp);
-        virtual void shutdown(double timestamp);
-
     private:
+        virtual void do_initialize(double timestamp);
+        virtual void do_process_event(const std::string & id,
+                                      const field_value & value,
+                                      double timestamp);
+        virtual void do_events_processed(double timestamp);
+        virtual void do_shutdown(double timestamp);
+
         void activate(double timeStamp, const std::string & fname,
                       size_t argc, const field_value * const argv[]);
     };

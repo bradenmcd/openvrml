@@ -63,27 +63,89 @@ script::~script()
 {}
 
 /**
- * @fn void script::initialize(double timestamp)
+ * @brief Initialize the Script node.
+ *
+ * Delegates to <code>script::do_initialize</code>.
+ *
+ * @param timestamp the current time.
+ */
+void script::initialize(double timestamp)
+{
+    this->do_initialize(timestamp);
+}
+
+/**
+ * @fn void script::do_initialize(double timestamp)
  *
  * @brief Initialize the Script node.
+ *
+ * @param timestamp the current time.
  */
 
 /**
- * @fn void script::process_event(const std::string & id, const field_value & value, double timestamp)
+ * @brief Process an event.
+ *
+ * Delegates to <code>script::do_process_event</script>.
+ *
+ * @param id        eventIn identifier.
+ * @param value     event value.
+ * @param timestamp the current time.
+ */
+void script::process_event(const std::string & id,
+                           const field_value & value,
+                           double timestamp)
+{
+    this->do_process_event(id, value, timestamp);
+}
+
+/**
+ * @fn void script::do_process_event(const std::string & id, const field_value & value, double timestamp)
  *
  * @brief Process an event.
+ *
+ * @param id        eventIn identifier.
+ * @param value     event value.
+ * @param timestamp the current time.
  */
 
 /**
- * @fn void script::events_processed(double timestamp)
+ * @brief Execute script code after processing events.
+ *
+ * Delegates to <code>script::do_events_processed</code>.
+ *
+ * @param timestamp the current time.
+ */
+void script::events_processed(double timestamp)
+{
+    this->do_events_processed(timestamp);
+}
+
+/**
+ * @fn void script::do_events_processed(double timestamp)
  *
  * @brief Execute script code after processing events.
+ *
+ * @param timestamp the current time.
  */
 
 /**
- * @fn void script::shutdown(double timestamp)
+ * @brief Shut down the Script node.
+ *
+ * Delegates to <code>script::do_shutdown</code>.
+ *
+ * @param timestamp the current time.
+ */
+void script::shutdown(double timestamp)
+{
+    this->do_shutdown(timestamp);
+}
+
+/**
+ * @fn void script::do_shutdown(double timestamp)
  *
  * @brief Shut down the Script node.
+ *
+ * @param timestamp the current time.
  */
 
 /**
@@ -1395,13 +1457,6 @@ public:
         throw (std::bad_alloc);
     virtual ~script();
 
-    virtual void initialize(double timeStamp);
-    virtual void process_event(const std::string & id,
-                              const openvrml::field_value & value,
-                              double timestamp);
-    virtual void events_processed(double timeStamp);
-    virtual void shutdown(double timeStamp);
-
     openvrml::script_node & script_node();
 
     jsval vrmlFieldToJSVal(const openvrml::field_value & value) throw ();
@@ -1410,6 +1465,13 @@ private:
     static JSBool field_setProperty(JSContext * cx, JSObject * obj,
                                     jsval id, jsval * val)
         throw ();
+
+    virtual void do_initialize(double timeStamp);
+    virtual void do_process_event(const std::string & id,
+                                  const openvrml::field_value & value,
+                                  double timestamp);
+    virtual void do_events_processed(double timeStamp);
+    virtual void do_shutdown(double timeStamp);
 
     void initVrmlClasses(bool direct_output) throw (std::bad_alloc);
     void defineBrowserObject() throw (std::bad_alloc);
@@ -2234,30 +2296,30 @@ script::~script()
     }
 }
 
-void script::initialize(const double timestamp)
+void script::do_initialize(const double timestamp)
 {
     const sftime arg(timestamp);
     const field_value * argv[] = { &arg };
     this->activate(timestamp, "initialize", 1, argv);
 }
 
-void script::process_event(const std::string & id,
-                           const field_value & value,
-                           const double timestamp)
+void script::do_process_event(const std::string & id,
+                              const field_value & value,
+                              const double timestamp)
 {
     const sftime timestampArg(timestamp);
     const field_value * argv[] = { &value, &timestampArg };
     this->activate(timestamp, id, 2, argv);
 }
 
-void script::events_processed(const double timestamp)
+void script::do_events_processed(const double timestamp)
 {
     const sftime arg(timestamp);
     const field_value * argv[] = { &arg };
     this->activate(timestamp, "eventsProcessed", 1, argv);
 }
 
-void script::shutdown(const double timestamp)
+void script::do_shutdown(const double timestamp)
 {
     const sftime arg(timestamp);
     const field_value * argv[] = { &arg };

@@ -34,12 +34,12 @@ namespace openvrml {
     class script : boost::noncopyable {
     public:
         virtual ~script() = 0;
-        virtual void initialize(double timestamp) = 0;
-        virtual void process_event(const std::string & id,
-                                   const field_value & value,
-                                   double timestamp) = 0;
-        virtual void events_processed(double timestamp) = 0;
-        virtual void shutdown(double timestamp) = 0;
+        void initialize(double timestamp);
+        void process_event(const std::string & id,
+                           const field_value & value,
+                           double timestamp);
+        void events_processed(double timestamp);
+        void shutdown(double timestamp);
 
     protected:
         script_node & node;
@@ -48,6 +48,14 @@ namespace openvrml {
 
         void field(const std::string & id, const field_value & value)
             throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+
+    private:
+        virtual void do_initialize(double timestamp) = 0;
+        virtual void do_process_event(const std::string & id,
+                                      const field_value & value,
+                                      double timestamp) = 0;
+        virtual void do_events_processed(double timestamp) = 0;
+        virtual void do_shutdown(double timestamp) = 0;        
     };
 
 
