@@ -15,7 +15,9 @@
  */
 
 
+#ifndef macintosh
 class ostream;
+#endif
 class VrmlFrustum;
 class VrmlAABox;
 class VrmlBSphere;
