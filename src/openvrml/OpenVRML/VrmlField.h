@@ -82,8 +82,6 @@ public:
     MFVEC3F
   };
 
-  // Constructors/destructor
-  VrmlField();
   virtual ~VrmlField() = 0;
 
   // Copy self

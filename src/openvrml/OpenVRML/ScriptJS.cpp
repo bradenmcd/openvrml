@@ -1300,8 +1300,9 @@ vec2f_normalize(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
 static JSBool
 vec2f_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-  VrmlSFVec2f *v1 = (VrmlSFVec2f *)JS_GetPrivate( cx, obj );
-  VrmlSFVec2f *v2 = 0;
+  const VrmlSFVec2f * const v1 =
+          reinterpret_cast<const VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+  const VrmlSFVec2f * v2 = 0;
   JSObject *v3obj = 0;
 
   // Verify that we have 2 SFVec2f's && create a result
@@ -1313,9 +1314,7 @@ vec2f_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
       (v3obj = JS_NewObject( cx, &SFVec2fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec2f *v3 = (VrmlSFVec2f*) (v1->clone());
-      v3->subtract( v2 );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec2f(v1->subtract(*v2)));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }

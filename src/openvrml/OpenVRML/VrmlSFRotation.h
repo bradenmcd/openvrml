@@ -59,37 +59,15 @@ class VrmlSFRotation : public VrmlField {
         float getAngle() const;
         void setAngle(float);
         
-        /**
-         * Get the axis of rotation.
-         */
         const VrmlSFVec3f getAxis() const;
-        
-        /**
-         * Get the inverse of this rotation.
-         */
-        const VrmlSFRotation inverse() const;
-        
-        /**
-         * Return the result of multiplying this rotation by rotation.
-         */
-        const VrmlSFRotation multiply(const VrmlSFRotation & rotation) const;
-        
-        /**
-         * Returns a vector that is the result of multiplying vec by the matrix
-         * corresponding to this rotation.
-         */
-        const VrmlSFVec3f multVec(const VrmlSFVec3f & vec) const;
-        
-        /**
-         * Set the axis of rotation.
-         */
         void setAxis(const VrmlSFVec3f & vec);
         
-        /**
-         * Perform a Spherical Linear IntERPolation.
-         * @param destRotation the destination rotation
-         * @param t the interval fraction
-         */
+        const VrmlSFRotation inverse() const;
+        
+        const VrmlSFRotation multiply(const VrmlSFRotation & rot) const;
+        
+        const VrmlSFVec3f multVec(const VrmlSFVec3f & vec) const;
+        
         const VrmlSFRotation slerp(const VrmlSFRotation & destRotation,
                                    float t) const;  
         

@@ -17,22 +17,17 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
-//  VrmlField.cpp
-//  The VrmlField class is the base field class.
-//
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-# include "VrmlField.h"
-# include <algorithm>
-# include <numeric>
-# include <assert.h>
-#include <string.h>		// memcpy
-#include <iostream.h>
-
+#include "VrmlField.h"
 #include "MathUtils.h"
+#include <algorithm>
+#include <numeric>
+#include <assert.h>
+#include <string.h>
 
 namespace {
     ::ostream & mffprint(::ostream &, float const * c, int n, int eltsize);
@@ -63,10 +58,34 @@ namespace {
     };
 }
 
-VrmlField::VrmlField() {}
+/**
+ * @class VrmlField
+ * Abstract base class for the VRML field types.
+ */
 
+/**
+ * Destructor.
+ */
 VrmlField::~VrmlField() {}
 
+/**
+ * @fn VrmlField * VrmlField::clone() const
+ * Virtual copy constructor.
+ * @return a new VrmlField identical to this one.
+ */
+
+/**
+ * @fn ostream& VrmlField::print(ostream& os) const
+ * Print the value of this VrmlField.
+ * @param os an ostream
+ * @return the ostream
+ */
+
+/**
+ * @fn VrmlField::VrmlFieldType VrmlField::fieldType() const
+ * Get the field type.
+ * @return the VrmlFieldType enumerant corresponding to this VrmlField's type
+ */
 
 /**
  * A static method to convert a type name to an ID.
@@ -90,6 +109,195 @@ char const * VrmlField::fieldTypeName() const {
     return ftn[this->fieldType()];
 }
 
+/**
+ * @fn const VrmlSFBool * VrmlField::toSFBool() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlSFColor * VrmlField::toSFColor() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlSFFloat * VrmlField::toSFFloat() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlSFImage * VrmlField::toSFImage() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlSFInt32 * VrmlField::toSFInt32() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlSFNode * VrmlField::toSFNode() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlSFRotation * VrmlField::toSFRotation() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlSFString * VrmlField::toSFString() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlSFTime * VrmlField::toSFTime() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlSFVec2f * VrmlField::toSFVec2f() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlSFVec3f * VrmlField::toSFVec3f() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlMFColor * VrmlField::toMFColor() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlMFFloat * VrmlField::toMFFloat() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlMFInt32 * VrmlField::toMFInt32() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlMFNode * VrmlField::toMFNode() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlMFRotation * VrmlField::toMFRotation() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlMFString * VrmlField::toMFString() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlMFVec2f * VrmlField::toMFVec2f() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn const VrmlMFVec3f * VrmlField::toMFVec3f() const
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFBool * VrmlField::toSFBool() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFColor * VrmlField::toSFColor() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFFloat * VrmlField::toSFFloat() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFImage * VrmlField::toSFImage() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFInt32 * VrmlField::toSFInt32() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFNode * VrmlField::toSFNode() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFRotation * VrmlField::toSFRotation() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFString * VrmlField::toSFString() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFTime * VrmlField::toSFTime() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFVec2f * VrmlField::toSFVec2f() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlSFVec3f * VrmlField::toSFVec3f() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlMFColor * VrmlField::toMFColor() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlMFFloat * VrmlField::toMFFloat() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlMFInt32 * VrmlField::toMFInt32() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlMFNode * VrmlField::toMFNode() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlMFRotation * VrmlField::toMFRotation() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlMFString * VrmlField::toMFString() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlMFVec2f * VrmlField::toMFVec2f() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
+
+/**
+ * @fn  VrmlMFVec3f * VrmlField::toMFVec3f() 
+ * @deprecated use <code>dynamic_cast</code>
+ */
 
 // Printing methods
 
@@ -97,35 +305,58 @@ ostream& operator<<(ostream& os, const VrmlField& f)
 { return f.print(os); }
 
 
-// SFBool
-
+/**
+ * @class VrmlSFBool
+ * Encapsulates an SFBool value.
+ */
 #include "VrmlSFBool.h"
 
+/**
+ * Construct a VrmlSFBool.
+ * @param value initial value
+ */
 VrmlSFBool::VrmlSFBool(bool value) : d_value(value) {}
 
 ostream& VrmlSFBool::print(ostream& os) const
 { return (os << (d_value ? "TRUE" : "FALSE")); }
 
-VrmlField *VrmlSFBool::clone() const { return new VrmlSFBool(d_value); }
+VrmlField * VrmlSFBool::clone() const {
+    return new VrmlSFBool(*this);
+}
 
 VrmlField::VrmlFieldType VrmlSFBool::fieldType() const { return SFBOOL; }
 
-// SFColor
-
+/**
+ * @class VrmlSFColor
+ * Encapsulates an SFColor value.
+ */
 #include "VrmlSFColor.h"
 
+/**
+ * Construct a VrmlSFColor with the default value, (0, 0, 0).
+ */
 VrmlSFColor::VrmlSFColor() {
     this->d_rgb[0] = 0.0f;
     this->d_rgb[1] = 0.0f;
     this->d_rgb[2] = 0.0f;
 }
 
+/**
+ * Construct a VrmlSFColor.
+ * @param rgb a 3-element array
+ */
 VrmlSFColor::VrmlSFColor(const float rgb[3]) {
     this->d_rgb[0] = rgb[0];
     this->d_rgb[1] = rgb[1];
     this->d_rgb[2] = rgb[2];
 }
 
+/**
+ * Construct a VrmlSFColor
+ * @param r red component
+ * @param g green component
+ * @param b blue component
+ */
 VrmlSFColor::VrmlSFColor(float r, float g, float b)
 { d_rgb[0] = r; d_rgb[1] = g; d_rgb[2] = b; }
 
@@ -137,11 +368,19 @@ VrmlField *VrmlSFColor::clone() const
 
 VrmlField::VrmlFieldType VrmlSFColor::fieldType() const { return SFCOLOR; }
 
+/**
+ * Array element dereference operator (const version).
+ * @param index an index from 0 - 2
+ */
 float VrmlSFColor::operator[](size_t index) const {
     assert(index < 3);
     return this->d_rgb[index];
 }
 
+/**
+ * Array element dereference operator (non-const version).
+ * @param index an index from 0 - 2
+ */
 float & VrmlSFColor::operator[](size_t index) {
     assert(index < 3);
     return this->d_rgb[index];
@@ -415,10 +654,15 @@ void VrmlSFNode::set(VrmlNode *value)
 }
 
 
-// SFRotation
-
+/**
+ * @class VrmlSFRotation
+ * Encapsulates an SFRotation.
+ */
 #include "VrmlSFRotation.h"
 
+/**
+ * Construct with the default value, (0, 0, 1, 0).
+ */
 VrmlSFRotation::VrmlSFRotation() {
     this->d_x[0] = 0.0; // x
     this->d_x[1] = 0.0; // y
@@ -426,10 +670,21 @@ VrmlSFRotation::VrmlSFRotation() {
     this->d_x[3] = 0.0; // angle
 }
 
+/**
+ * Constructor.
+ * @param rotation a 4-element array.
+ */
 VrmlSFRotation::VrmlSFRotation(const float rotation[4]) {
     std::copy(rotation, rotation + 4, this->d_x);
 }
 
+/**
+ * Constructor.
+ * @param x the <var>x</var>-component of the axis of rotation
+ * @param y the <var>y</var>-component of the axis of rotation
+ * @param z the <var>z</var>-component of the axis of rotation
+ * @param angle the rotation angle
+ */
 VrmlSFRotation::VrmlSFRotation(float x, float y, float z, float angle) {
     this->d_x[0] = x;
     this->d_x[1] = y;
@@ -437,11 +692,22 @@ VrmlSFRotation::VrmlSFRotation(float x, float y, float z, float angle) {
     this->d_x[3] = angle;
 }
 
+/**
+ * Constructor.
+ * @param axis the axis of rotation
+ * @param angle the rotation angle
+ */
 VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & axis, float angle) {
     std::copy(axis.get(), axis.get() + 3, this->d_x);
     this->d_x[3] = angle;
 }
 
+/**
+ * Construct a VrmlSFRotation equal to the rotation between two different
+ * vectors.
+ * @param fromVector the starting vector
+ * @param toVector the ending vector
+ */
 VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & fromVector,
                                const VrmlSFVec3f & toVector) {
     this->setAxis(fromVector.cross(toVector));
@@ -449,11 +715,27 @@ VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & fromVector,
                         (fromVector.length() * toVector.length()));
 }
 
+/**
+ * Array element dereference operator (const version).
+ * @param index a value from 0 - 3. 0 corresponds to the
+ *              <var>x</var>-component of the rotation axis, 1 corresponds to
+ *              the <var>y</var>-component of the rotation axis, 2 corresponds
+ *              to the <var>z</var>-component of the rotation axis, and 3
+ *              corresponds to the rotation angle.
+ */
 float VrmlSFRotation::operator[](size_t index) const {
     assert(index < 4);
     return this->d_x[index];
 }
 
+/**
+ * Array element dereference operator (non-const version).
+ * @param index a value from 0 - 3. 0 corresponds to the
+ *              <var>x</var>-component of the rotation axis, 1 corresponds to
+ *              the <var>y</var>-component of the rotation axis, 2 corresponds
+ *              to the <var>z</var>-component of the rotation axis, and 3
+ *              corresponds to the rotation angle.
+ */
 float & VrmlSFRotation::operator[](size_t index) {
     assert(index < 4);
     return this->d_x[index];
@@ -468,54 +750,106 @@ VrmlField *VrmlSFRotation::clone() const
 VrmlField::VrmlFieldType VrmlSFRotation::fieldType() const 
 { return SFROTATION; }
 
+/**
+ * Get the <var>x</var>-component of the rotation axis.
+ * @return the <var>x</var>-component of the rotation axis.
+ */
 float VrmlSFRotation::getX() const {
     return this->d_x[0];
 }
 
+/**
+ * Set the <var>x</var>-component of the rotation axis.
+ * @param value
+ */
 void VrmlSFRotation::setX(float value) {
     this->d_x[0] = value;
 }
 
+/**
+ * Get the <var>y</var>-component of the rotation axis.
+ * @return the <var>y</var>-component of the rotation axis
+ */
 float VrmlSFRotation::getY() const {
     return this->d_x[1];
 }
 
+/**
+ * Set the <var>y</var>-component of the rotation axis.
+ * @param value
+ */
 void VrmlSFRotation::setY(float value) {
     this->d_x[1] = value;
 }
 
+/**
+ * Get the <var>z</var>-component of the rotation axis.
+ * @return the <var>z</var>-component of the rotation axis
+ */
 float VrmlSFRotation::getZ() const {
     return this->d_x[2];
 }
 
+/**
+ * Set the <var>z</var>-component of the rotation axis
+ * @param value
+ */
 void VrmlSFRotation::setZ(float value) {
     this->d_x[2] = value;
 }
 
+/**
+ * Get the rotation angle.
+ * @return the rotation angle
+ */
 float VrmlSFRotation::getAngle() const {
     return this->d_x[3];
 }
 
+/**
+ * Set the rotation angle.
+ * @param value
+ */
 void VrmlSFRotation::setAngle(float value) {
     this->d_x[3] = value;
 }
 
+/**
+ * Get the value of this rotation.
+ * @return a pointer to a 4-element array.
+ */
 const float * VrmlSFRotation::get() const {
     return this->d_x;
 }
 
+/**
+ * Set the value of this rotation.
+ * @param rotation a 4-element array
+ */
 void VrmlSFRotation::set(const float rotation[4]) {
     std::copy(rotation, rotation + 4, this->d_x);
 }
 
+/**
+ * Get the axis of rotation as a VrmlSFVec3f.
+ * @return the axis of rotation
+ */
 const VrmlSFVec3f VrmlSFRotation::getAxis() const {
     return VrmlSFVec3f(this->d_x[0], this->d_x[1], this->d_x[2]);
 }
 
+/**
+ * Set the axis of rotation using a VrmlSFVec3f.
+ * @param axis the new rotation axis
+ */
 void VrmlSFRotation::setAxis(const VrmlSFVec3f & axis) {
     std::copy(axis.get(), axis.get() + 3, this->d_x);
 }
 
+/**
+ * Get the inverse.
+ * @return a VrmlSFRotation that is the inverse of this one
+ */
 const VrmlSFRotation VrmlSFRotation::inverse() const {
     VrmlSFRotation result(*this);
     result.d_x[3] = -d_x[3];
@@ -538,12 +872,17 @@ namespace {
     }
 }
 
-const VrmlSFRotation VrmlSFRotation::multiply(const VrmlSFRotation & rotVec)
+/**
+ * Multiply two rotations.
+ * @param rotation the rotation by which to multiply this one
+ * @return the result rotation
+ */
+const VrmlSFRotation VrmlSFRotation::multiply(const VrmlSFRotation & rot)
         const {
     // convert to quaternions
     float quatUS[4], quatVec[4];
     this->toQuaternion(quatUS);
-    rotVec.toQuaternion(quatVec);
+    rot.toQuaternion(quatVec);
     
     // multiply quaternions
     float resultQuat[4];
@@ -585,13 +924,23 @@ void VrmlSFRotation::fromQuaternion(const float theQuat[4]) {
     }
 }
 
+/**
+ * Multiply the matrix corresponding to this rotation by a vector.
+ * @param vec vector by which to multiply this rotation
+ * @return the result of multiplying this rotation by vec
+ */
 const VrmlSFVec3f VrmlSFRotation::multVec(const VrmlSFVec3f & vec) const {
-    //
-    // IMPLEMENT ME!
-    //
+    /**
+     * @todo implement VrmlSFRotation::multVec()
+     */
     return VrmlSFVec3f();
 }
 
+/**
+ * Perform a <b>S</b>pherical <b>L</b>inear Int<b>ERP</b>olation.
+ * @param destRotation the destination rotation
+ * @param t the interval fraction
+ */
 const VrmlSFRotation VrmlSFRotation::slerp(const VrmlSFRotation & destRotation,
                                            float t) const {
     float fromQuat[4], toQuat[4];
@@ -651,22 +1000,46 @@ const VrmlSFRotation VrmlSFRotation::slerp(const VrmlSFRotation & destRotation,
 }
 
 
-// SFString
-
+/**
+ * @class VrmlSFString
+ * Encapsulates an SFString.
+ */
 #include "VrmlSFString.h"
 
-
+/**
+ * Constructor
+ * @param s a C-style string
+ */
 VrmlSFString::VrmlSFString(const char *s)
 { if (s) { d_s = new char[strlen(s)+1]; strcpy(d_s,s); } else d_s = 0; }
 
+/**
+ * Copy constructor.
+ * @param sfs the VrmlSFString to copy
+ */
 VrmlSFString::VrmlSFString(const VrmlSFString &sfs)
 {
   const char *s = sfs.get();
   if (s) { d_s = new char[strlen(s)+1]; strcpy(d_s,s); } else d_s = 0; 
 }
 
+/**
+ * Destructor.
+ */
 VrmlSFString::~VrmlSFString() { if (d_s) delete [] d_s; }
 
+/**
+ * Get value.
+ * @return a C-style string
+ */
+const char * VrmlSFString::get() const {
+    return this->d_s;
+}
+
+/**
+ * Set value.
+ * @param s a C-style string
+ */
 void VrmlSFString::set(const char *s)
 {
   if (d_s) delete [] d_s;
@@ -674,7 +1047,10 @@ void VrmlSFString::set(const char *s)
   else d_s = 0;
 }
 
-// Assignment. Just reallocate for now...
+/**
+ * Assignment.
+ * @param rhs value to assign to this object
+ */
 VrmlSFString& VrmlSFString::operator=(const VrmlSFString& rhs)
 { if (this != &rhs) set(rhs.d_s); return *this; }
 
@@ -686,49 +1062,93 @@ VrmlField *VrmlSFString::clone() const { return new VrmlSFString(d_s); }
 VrmlField::VrmlFieldType VrmlSFString::fieldType() const { return SFSTRING; }
 
 
-// SFTime
-
+/**
+ * @class VrmlSFTime
+ * Encapsulates an SFTime value.
+ */
 #include "VrmlSFTime.h"
 
+/**
+ * Constructor
+ * @param value initial value
+ */
 VrmlSFTime::VrmlSFTime(double value) : d_value(value) {}
-VrmlSFTime::VrmlSFTime(const VrmlSFTime& c) : d_value(c.d_value) {}
 
 ostream& VrmlSFTime::print(ostream& os) const
 { return (os << d_value); }
 
-VrmlField *VrmlSFTime::clone() const	{ return new VrmlSFTime(d_value); }
+VrmlField * VrmlSFTime::clone() const {
+    return new VrmlSFTime(*this);
+}
 
 VrmlField::VrmlFieldType VrmlSFTime::fieldType() const { return SFTIME; }
 
-VrmlSFTime& VrmlSFTime::operator=(const VrmlSFTime& rhs)
-{ if (this != &rhs) set(rhs.d_value); return *this; }
+/**
+ * Get value.
+ * @return the value.
+ */
+double VrmlSFTime::get() const {
+    return this->d_value;
+}
 
-VrmlSFTime& VrmlSFTime::operator=(double rhs)
-{ set(rhs); return *this; }
+/**
+ * Set value.
+ * @param value the new value
+ */
+void VrmlSFTime::set(double value) {
+    this->d_value = value;
+}
 
-// SFVec2f
 
+/**
+ * @class VrmlSFVec2f
+ * Encapsulates a SFVec2f value.
+ */
 #include "VrmlSFVec2f.h"
 
+/**
+ * Construct a VrmlSFVec2f with the default values, (0, 0).
+ */
 VrmlSFVec2f::VrmlSFVec2f() {
     this->d_x[0] = this->d_x[1] = 0;
 }
-
+        
+/**
+ * Construct a VrmlSFVec2f.
+ * @param vec a 2-element array
+ */
 VrmlSFVec2f::VrmlSFVec2f(const float vec[2]) {
     this->d_x[0] = vec[0];
     this->d_x[1] = vec[1];
 }
-
+        
+/**
+ * Construct a VrmlSFVec2f.
+ * @param x the <var>x</var>-component
+ * @param y the <var>y</var>-component
+ */
 VrmlSFVec2f::VrmlSFVec2f(float x, float y) {
     this->d_x[0] = x;
     this->d_x[1] = y;
 }
 
+/**
+ * Array element dereference operator (const version).
+ * @param index a value from 0 - 1. 0 corresponds to the
+ *              <var>x</var>-component, and 1 corresponds to the
+ *              <var>y</var>-component.
+ */
 float VrmlSFVec2f::operator[](size_t index) const {
     assert(index < 2);
     return this->d_x[index];
 }
 
+/**
+ * Array element dereference operator (non-const version).
+ * @param index a value from 0 - 1. 0 corresponds to the
+ *              <var>x</var>-component, and 1 corresponds to the
+ *              <var>y</var>-component.
+ */
 float & VrmlSFVec2f::operator[](size_t index) {
     assert(index < 2);
     return this->d_x[index];
@@ -737,36 +1157,69 @@ float & VrmlSFVec2f::operator[](size_t index) {
 ostream& VrmlSFVec2f::print(ostream& os) const
 { return (os << d_x[0] << " " << d_x[1]); }
 
-VrmlField *VrmlSFVec2f::clone() const 
-{ return new VrmlSFVec2f(d_x[0],d_x[1]); }
+VrmlField * VrmlSFVec2f::clone() const {
+    return new VrmlSFVec2f(*this);
+}
 
-VrmlField::VrmlFieldType VrmlSFVec2f::fieldType() const { return SFVEC2F; }
+/**
+ * Get the field type.
+ * @return the VrmlFieldType enumerant corresponding to this field type
+ */
+VrmlField::VrmlFieldType VrmlSFVec2f::fieldType() const {
+    return SFVEC2F;
+}
 
+/**
+ * Get the x component.
+ */
 float VrmlSFVec2f::getX() const {
     return this->d_x[0];
 }
-
+    
+/**
+ * Set the x component.
+ */
 void VrmlSFVec2f::setX(float value) {
     this->d_x[0] = value;
 }
 
+/**
+ * Get the y component.
+ */
 float VrmlSFVec2f::getY() const {
     return this->d_x[1];
 }
-
+        
+/**
+ * Set the y component.
+ */
 void VrmlSFVec2f::setY(float value) {
     this->d_x[1] = value;
 }
 
+/**
+ * Get the value of this vector.
+ * @returns a pointer to a 2-element array.
+ */
 const float * VrmlSFVec2f::get() const {
     return this->d_x;
 }
 
+/**
+ * Set the value of this vector.
+ * @param vec a 2-element array.
+ */
 void VrmlSFVec2f::set(const float vec[2]) {
     this->d_x[0] = vec[0];
     this->d_x[1] = vec[1];
 }
 
+/**
+ * Add two vectors.
+ * @param vec the vector to add to this one.
+ * @return a VrmlSFVec2f with a value that is the passed SFVec2f added,
+ *         componentwise, to this object.
+ */
 const VrmlSFVec2f VrmlSFVec2f::add(const VrmlSFVec2f & vec) const {
     VrmlSFVec2f result(*this);
     result.d_x[0] += this->d_x[0];
@@ -774,6 +1227,12 @@ const VrmlSFVec2f VrmlSFVec2f::add(const VrmlSFVec2f & vec) const {
     return result;
 }
 
+/**
+ * Divide this vector by a scalar.
+ * @param number a scalar value.
+ * @return a VrmlSFVec2f with a value that is the object divided by the
+ *         passed numeric value.
+ */
 const VrmlSFVec2f VrmlSFVec2f::divide(float number) const {
     VrmlSFVec2f result(*this);
     result.d_x[0] /= number;
@@ -781,15 +1240,30 @@ const VrmlSFVec2f VrmlSFVec2f::divide(float number) const {
     return result;
 }
 
+/**
+ * Dot product.
+ * @param vec
+ * @return the dot product of this vector and vec.
+ */
 double VrmlSFVec2f::dot(const VrmlSFVec2f & vec) const {
     return (this->d_x[0] * vec.d_x[0]) + (this->d_x[1] * vec.d_x[1]);
 }
 
+/**
+ * Geometric length.
+ * @return the length of this vector.
+ */
 double VrmlSFVec2f::length() const
 {
   return sqrt(d_x[0] * d_x[0] + d_x[1] * d_x[1]);
 }
 
+/**
+ * Multiply by a scalar.
+ * @param number a scalar value
+ * @return a VrmlSFVec2f with a value that is the object multiplied by the
+ *         passed numeric value.
+ */
 const VrmlSFVec2f VrmlSFVec2f::multiply(float number) const {
     VrmlSFVec2f result(*this);
     result.d_x[0] *= number;
@@ -797,6 +1271,10 @@ const VrmlSFVec2f VrmlSFVec2f::multiply(float number) const {
     return result;
 }
 
+/**
+ * Negate.
+ * @return a VrmlSFVec2f that the result of negating this vector.
+ */
 const VrmlSFVec2f VrmlSFVec2f::negate() const {
     VrmlSFVec2f result;
     result.d_x[0] = -this->d_x[0];
@@ -804,6 +1282,10 @@ const VrmlSFVec2f VrmlSFVec2f::negate() const {
     return result;
 }
 
+/**
+ * Normalize.
+ * @return a VrmlSFVec2f that is this vector normalized.
+ */
 const VrmlSFVec2f VrmlSFVec2f::normalize() const {
     const double len = this->length();
     if (FPZERO(len)) {
@@ -815,30 +1297,66 @@ const VrmlSFVec2f VrmlSFVec2f::normalize() const {
     return result;
 }
 
-void VrmlSFVec2f::subtract( VrmlSFVec2f *v )
-{
-  d_x[0] -= v->getX(); d_x[1] -= v->getY();
+/**
+ * Take the difference of two vectors.
+ * @param vec the vector to subtract from this one
+ * @return a VrmlSFVec2f that is the difference between this vector and vec
+ */
+const VrmlSFVec2f VrmlSFVec2f::subtract(const VrmlSFVec2f & vec) const {
+    VrmlSFVec2f result(*this);
+    result.d_x[0] -= vec.d_x[0];
+    result.d_x[1] -= vec.d_x[1];
+    return result;
 }
 
 
-// SFVec3f
-
+/**
+ * @class VrmlSFVec3f
+ * Encapsulates a SFVec3f value.
+ */
 #include "VrmlSFVec3f.h"
 
+/**
+ * Construct a VrmlSFVec3f with the default value, (0, 0, 0).
+ */
 VrmlSFVec3f::VrmlSFVec3f() {}
 
+/**
+ * Construct a VrmlSFVec3f.
+ * @param vec a 3-element array
+ */
 VrmlSFVec3f::VrmlSFVec3f(const float vec[3]) {
     std::copy(vec, vec + 3, this->d_x);
 }
 
+/**
+ * Construct a VrmlSFVec3f.
+ * @param x the <var>x</var>-component
+ * @param y the <var>y</var>-component
+ * @param z the <var>z</var>-component
+ */
 VrmlSFVec3f::VrmlSFVec3f(float x, float y, float z)
 { d_x[0] = x; d_x[1] = y; d_x[2] = z; }
 
+/**
+ * Array element dereference operator (const version).
+ * @param index a value from 0 - 2. 0 corresponds to the
+ *              <var>x</var>-component, 1 corresponds to the
+ *              <var>y</var>-component, and 2 corresponds to the
+ *              <var>z</var>-component.
+ */
 float VrmlSFVec3f::operator[](size_t index) const {
     assert(index < 3);
     return this->d_x[index];
 }
 
+/**
+ * Array element dereference operator (non-const version).
+ * @param index a value from 0 - 2. 0 corresponds to the
+ *              <var>x</var>-component, 1 corresponds to the
+ *              <var>y</var>-component, and 2 corresponds to the
+ *              <var>z</var>-component.
+ */
 float & VrmlSFVec3f::operator[](size_t index) {
     assert(index < 3);
     return this->d_x[index];
@@ -852,38 +1370,76 @@ VrmlField *VrmlSFVec3f::clone() const
 
 VrmlField::VrmlFieldType VrmlSFVec3f::fieldType() const { return SFVEC3F; }
 
+/**
+ * Get the <var>x</var>-component
+ * @return the <var>x</var>-component of this vector
+ */
 float VrmlSFVec3f::getX() const {
     return this->d_x[0];
 }
 
+/**
+ * Set the <var>x</var>-component
+ * @param value
+ */
 void VrmlSFVec3f::setX(float value) {
     this->d_x[0] = value;
 }
 
+/**
+ * Get the <var>y</var>-component
+ * @return the <var>y</var>-component of this vector
+ */
 float VrmlSFVec3f::getY() const {
     return this->d_x[1];
 }
 
+/**
+ * Set the <var>y</var>-component
+ * @param value
+ */
 void VrmlSFVec3f::setY(float value) {
     this->d_x[1] = value;
 }
 
+/**
+ * Get the <var>z</var>-component
+ * @return the <var>z</var>-component of this vector
+ */
 float VrmlSFVec3f::getZ() const {
     return this->d_x[2];
 }
 
+/**
+ * Set the <var>z</var>-component
+ * @param value
+ */
 void VrmlSFVec3f::setZ(float value) {
     this->d_x[2] = value;
 }
 
+/**
+ * Get the vector value.
+ * @return a pointer to a 3-element array
+ */
 const float * VrmlSFVec3f::get() const {
     return this->d_x;
 }
 
+/**
+ * Set the vector value.
+ * @param vec a 3-element array
+ */
 void VrmlSFVec3f::set(const float vec[3]) {
-    std::copy(vec, vec + 3, this->d_x);
+    this->d_x[0] = vec[0];
+    this->d_x[1] = vec[1];
+    this->d_x[2] = vec[2];
 }
 
+/**
+ * Add this vector and vec component-wise.
+ * @param vec
+ */
 const VrmlSFVec3f VrmlSFVec3f::add(const VrmlSFVec3f & vec) const {
     VrmlSFVec3f result(*this);
     result.d_x[0] += vec.d_x[0];
@@ -892,6 +1448,10 @@ const VrmlSFVec3f VrmlSFVec3f::add(const VrmlSFVec3f & vec) const {
     return result;
 }
 
+/**
+ * Get the cross product of this vector and vec.
+ * @param vec
+ */
 const VrmlSFVec3f VrmlSFVec3f::cross(const VrmlSFVec3f & vec) const {
     VrmlSFVec3f result;
     result.d_x[0] = (this->d_x[1] * vec.d_x[2]) - (this->d_x[2] * vec.d_x[1]);
@@ -900,6 +1460,10 @@ const VrmlSFVec3f VrmlSFVec3f::cross(const VrmlSFVec3f & vec) const {
     return result;
 }
 
+/**
+ * Get the result of dividing this vector by number.
+ * @param number
+ */
 const VrmlSFVec3f VrmlSFVec3f::divide(float number) const {
     VrmlSFVec3f result(*this);
     result.d_x[0] /= number;
@@ -908,11 +1472,18 @@ const VrmlSFVec3f VrmlSFVec3f::divide(float number) const {
     return result;
 }
 
+/**
+ * Get the dot product of this vector and vec.
+ * @param vec
+ */
 double VrmlSFVec3f::dot(const VrmlSFVec3f & vec) const {
     return ((this->d_x[0] * vec.d_x[0]) + (this->d_x[1] * vec.d_x[1])
             + (this->d_x[2] * vec.d_x[2]));
 }
 
+/**
+ * Get the length of this vector.
+ */
 double VrmlSFVec3f::length() const {
     const double len = sqrt((d_x[0] * d_x[0])
                           + (d_x[1] * d_x[1])
@@ -920,6 +1491,10 @@ double VrmlSFVec3f::length() const {
     return FPZERO(len) ? 0.0 : len;
 }
 
+/**
+ * Get the product of this vector by number.
+ * @param number
+ */
 const VrmlSFVec3f VrmlSFVec3f::multiply(float number) const {
     VrmlSFVec3f result(*this);
     result.d_x[0] *= number;
@@ -928,6 +1503,9 @@ const VrmlSFVec3f VrmlSFVec3f::multiply(float number) const {
     return result;
 }
 
+/**
+ * Return this vector negated.
+ */
 const VrmlSFVec3f VrmlSFVec3f::negate() const {
     VrmlSFVec3f result(*this);
     result.d_x[0] = -result.d_x[0];
@@ -936,6 +1514,9 @@ const VrmlSFVec3f VrmlSFVec3f::negate() const {
     return result;
 }
 
+/**
+ * Get this vector normalized.
+ */
 const VrmlSFVec3f VrmlSFVec3f::normalize() const {
     const double len = this->length();
     VrmlSFVec3f result(*this);
@@ -948,6 +1529,10 @@ const VrmlSFVec3f VrmlSFVec3f::normalize() const {
     return result;
 }
 
+/**
+ * Get the result of subtracting vec from this vector.
+ * @param vec
+ */
 const VrmlSFVec3f VrmlSFVec3f::subtract(const VrmlSFVec3f & vec) const {
     VrmlSFVec3f result(*this);
     result.d_x[0] -= vec.d_x[0];

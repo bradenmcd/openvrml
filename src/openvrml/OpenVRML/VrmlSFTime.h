@@ -17,6 +17,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
+
 #ifndef VRMLSFTIME
 #define VRMLSFTIME
 
@@ -27,7 +28,6 @@ class VrmlSFTime : public VrmlField {
 public:
 
   VrmlSFTime(double value = 0.0);
-  VrmlSFTime(const VrmlSFTime& );
 
   virtual ostream& print(ostream& os) const;
 
@@ -37,12 +37,8 @@ public:
   virtual const VrmlSFTime* toSFTime() const;
   virtual VrmlSFTime* toSFTime();
 
-  // Assignment.
-  VrmlSFTime& operator=(const VrmlSFTime& rhs);
-  VrmlSFTime& operator=(double rhs);
-
-  double get(void) const	{ return d_value; }
-  void set(double value)	{ d_value = value; }
+  double get() const;
+  void set(double value);
 
 private:
   double d_value;

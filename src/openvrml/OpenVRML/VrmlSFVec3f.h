@@ -52,55 +52,22 @@ class VrmlSFVec3f : public VrmlField {
         const float * get() const;
         void set(const float vec[3]);
         
-        /**
-         * Add this vector and vec component-wise.
-         * @param vec
-         */
         const VrmlSFVec3f add(const VrmlSFVec3f & vec) const;
         
-        /**
-         * Get the cross product of this vector and vec.
-         * @param vec
-         */
         const VrmlSFVec3f cross(const VrmlSFVec3f & vec) const;
         
-        /**
-         * Get the result of dividing this vector by number.
-         * @param number
-         */
         const VrmlSFVec3f divide(float number) const;
         
-        /**
-         * Get the dot product of this vector and vec.
-         * @param vec
-         */
         double dot(const VrmlSFVec3f & vec) const;
         
-        /**
-         * Get the length of this vector.
-         */
         double length() const;
         
-        /**
-         * Get the product of this vector by number.
-         * @param number
-         */
         const VrmlSFVec3f multiply(float number) const;
         
-        /**
-         * Return this vector negated.
-         */
         const VrmlSFVec3f negate() const;
         
-        /**
-         * Get this vector normalized.
-         */
         const VrmlSFVec3f normalize() const;
         
-        /**
-         * Get the result of subtracting vec from this vector.
-         * @param vec
-         */
         const VrmlSFVec3f subtract(const VrmlSFVec3f & vec) const;
         
     private:

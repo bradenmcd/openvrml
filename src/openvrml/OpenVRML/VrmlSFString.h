@@ -41,7 +41,7 @@ public:
   virtual const VrmlSFString* toSFString() const;
   virtual VrmlSFString* toSFString();
 
-  const char *get(void) const		{ return d_s; }
+  const char * get() const;
 
 private:
 

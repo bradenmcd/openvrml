@@ -25,19 +25,8 @@
 
 class VrmlSFVec2f : public VrmlField {
     public:
-        /**
-         * Construct an SFVec2f with the default values, (0, 0).
-         */
         VrmlSFVec2f();
-        
-        /**
-         * Construct an SFVec2f from a 2-element array.
-         */
         VrmlSFVec2f(const float vec[2]);
-        
-        /**
-         * Construct an SFVec2f from two floats.
-         */
         VrmlSFVec2f(float x, float y);
         
         float operator[](size_t index) const;
@@ -51,72 +40,33 @@ class VrmlSFVec2f : public VrmlField {
         virtual const VrmlSFVec2f* toSFVec2f() const;
         virtual VrmlSFVec2f* toSFVec2f();
         
-        /**
-         * Get the x component.
-         */
         float getX() const;
-        
-        /**
-         * Set the x component.
-         */
         void setX(float);
         
-        /**
-         * Get the y component.
-         */
         float getY() const;
-        
-        /**
-         * Set the y component.
-         */
         void setY(float);
         
-        /**
-         * Get the value of this vector as a 2-element array.
-         */
         const float * get() const;
-        
-        /**
-         * Set the value of this vector using a 2-element array.
-         */
         void set(const float vec[2]);
 
-        /**
-         * Returns an SFVec2f with a value that is the passed SFVec2f added,
-         * componentwise, to the object.
-         */
         const VrmlSFVec2f add(const VrmlSFVec2f & vec) const;
         
-        /**
-         * Returns an SFVec2f with a value that is the object divided by the
-         * passed numeric value.
-         */
         const VrmlSFVec2f divide(float number) const;
         
-        /**
-         * Returns the dot product of this vector and vec.
-         */
         double dot(const VrmlSFVec2f & vec) const;
         
-        /**
-         * Returns the geometric length of this vector.
-         */
         double length() const;
         
-        /**
-         * Returns an SFVec2f with a value that is the object multiplied by the
-         * passed numeric value.
-         */
         const VrmlSFVec2f multiply(float number) const;
         
         const VrmlSFVec2f negate() const;
+        
         const VrmlSFVec2f normalize() const;
         
-        void subtract( VrmlSFVec2f * );
+        const VrmlSFVec2f subtract(const VrmlSFVec2f & vec) const;
 
-private:
-  float d_x[2];
-
+    private:
+        float d_x[2];
 };
 
 #endif
