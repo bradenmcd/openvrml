@@ -6,6 +6,8 @@
  * <p>
  * ANTLR 2.6.0 MageLang Insitute, 1999
  * <p>
+ * $Id: CharScanner.hpp,v 1.1.1.2 2000-12-16 08:26:16 braden Exp $
+ * <p>
  * We reserve no legal rights to the ANTLR--it is fully in the
  * public domain. An individual or company may do whatever
  * they wish with source code distributed with ANTLR or the
@@ -33,12 +35,12 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "TokenStream.hpp"
-#include "RecognitionException.hpp"
-#include "InputBuffer.hpp"
-#include "BitSet.hpp"
-#include "LexerSharedInputState.hpp"
+#include "antlr/config.hpp"
+#include "antlr/TokenStream.hpp"
+#include "antlr/RecognitionException.hpp"
+#include "antlr/InputBuffer.hpp"
+#include "antlr/BitSet.hpp"
+#include "antlr/LexerSharedInputState.hpp"
 #include <map>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
@@ -54,6 +56,9 @@ public:
 #endif
 	CharScannerLiteralsLess(const CharScanner* theScanner);
 	bool operator() (const ANTLR_USE_NAMESPACE(std)string& x,const ANTLR_USE_NAMESPACE(std)string& y) const;
+private:
+//	CharScannerLiteralsLess(const CharScannerLiteralsLess&);
+//	CharScannerLiteralsLess& operator=(const CharScannerLiteralsLess&);
 };
 
 class CharScanner : public TokenStream {
@@ -76,7 +81,7 @@ public:
 #endif
 
 protected:
-	ANTLR_USE_NAMESPACE(std)string text;			// text of current token
+	ANTLR_USE_NAMESPACE(std)string text;		// text of current token
 
 	bool saveConsumedInput; // does consume() save characters?
 
@@ -95,7 +100,7 @@ protected:
 	 *  A subsequent scan error will report an error as usual if acceptPath=true;
 	 */
 	bool commitToPath;
-
+	
 public:
 	CharScanner();
 
@@ -126,6 +131,8 @@ public:
 
 	virtual int getColumn() const;
 
+	virtual void setColumn(int c);
+
 	virtual bool getCommitToPath() const;
 
 	virtual const ANTLR_USE_NAMESPACE(std)string& getFilename() const;
@@ -136,7 +143,7 @@ public:
 
 	virtual int getLine() const;
 
-	// return a copy of the current text buffer
+	/** return a copy of the current text buffer */
 	virtual const ANTLR_USE_NAMESPACE(std)string& getText() const;
 
 	virtual RefToken getTokenObject() const;
@@ -160,6 +167,8 @@ public:
 	virtual void matchRange(int c1, int c2);
 
 	virtual void newline();
+
+	virtual void tab();
 
 	void panic();
 
@@ -203,7 +212,7 @@ public:
 	virtual int testLiteralsTable(const ANTLR_USE_NAMESPACE(std)string& text,int ttype) const;
 
 	// Override this method to get more specific case handling
-	virtual char toLower(char c) const;
+	virtual int toLower(int c) const;
 
 protected:
 	class Tracer {
@@ -217,9 +226,10 @@ protected:
 			{ parser->traceOut(text); }
 	};
 
+	int traceDepth;
 public:
+	virtual void traceIndent();
 	virtual void traceIn(const ANTLR_USE_NAMESPACE(std)string& rname);
-
 	virtual void traceOut(const ANTLR_USE_NAMESPACE(std)string& rname);
 
 	/* This method is called by YourLexer::nextToken() when the lexer has
@@ -239,6 +249,15 @@ public:
 	*/
 	virtual void uponEOF();
 };
+
+inline int CharScanner::LA(int i)
+{
+	if ( caseSensitive ) {
+		return inputState->getInput().LA(i);
+	} else {
+		return toLower(inputState->getInput().LA(i));
+	}
+}
 
 ANTLR_END_NAMESPACE
 

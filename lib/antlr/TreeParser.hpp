@@ -32,12 +32,12 @@
  * @author <br>John Lilley, <a href=http://www.Empathy.com>Empathy Software</a>
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
-#include "config.hpp"
-#include "AST.hpp"
-#include "ASTFactory.hpp"
-#include "BitSet.hpp"
-#include "RecognitionException.hpp"
-#include "TreeParserSharedInputState.hpp"
+#include "antlr/config.hpp"
+#include "antlr/AST.hpp"
+#include "antlr/ASTFactory.hpp"
+#include "antlr/BitSet.hpp"
+#include "antlr/RecognitionException.hpp"
+#include "antlr/TreeParserSharedInputState.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -61,15 +61,15 @@ public:
 protected:
 	/** Where did this rule leave off parsing; avoids a return parameter */
 	RefAST _retTree;
-	
+
 	/** guessing nesting level; guessing==0 implies not guessing */
 	// int guessing; // = 0;
-	
+
 	/** Nesting level of registered handlers */
 	// int exceptionLevel; // = 0;
 
 	TreeParserSharedInputState inputState;
-	
+
 	/** Table of token type to token names */
 	ANTLR_USE_NAMESPACE(std)vector<ANTLR_USE_NAMESPACE(std)string> tokenNames;
 
@@ -79,7 +79,8 @@ protected:
 	/** AST support code; parser and treeparser delegate to this object */
 	ASTFactory astFactory; // = new ASTFactory();
 
-
+	/** Used to keep track of indent depth with -traceTreeParser */
+	int traceDepth;
 
 public:
 	/** Get the AST return value squirreled away in the parser */
@@ -125,6 +126,9 @@ public:
 	void setASTNodeFactory(ASTFactory::factory_type factory);
 
 protected:
+	/** Utility class which allows tracing to work even when exceptions are
+	 * thrown.
+	 */
 	class Tracer {
 	private:
 		TreeParser* parser;
@@ -135,11 +139,14 @@ protected:
 			: parser(p), text(t), tree(a) { parser->traceIn(text,tree); }
 		~Tracer()
 			{ parser->traceOut(text,tree); }
+	private:
+		Tracer(const Tracer&);							// undefined
+		const Tracer& operator=(const Tracer&);	// undefined
 	};
 
 public:
+	void traceIndent();
 	void traceIn(const ANTLR_USE_NAMESPACE(std)string& rname, RefAST t);
-
 	void traceOut(const ANTLR_USE_NAMESPACE(std)string& rname, RefAST t);
 
 private:

@@ -33,29 +33,30 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "RecognitionException.hpp"
-#include "CharScanner.hpp"
+#include "antlr/config.hpp"
+#include "antlr/RecognitionException.hpp"
+#include "antlr/CharScanner.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
 class NoViableAltForCharException : public RecognitionException {
 public:
 	int foundChar;
-	
+
 	NoViableAltForCharException(int c, CharScanner* scanner);
 
 	NoViableAltForCharException(int c, const ANTLR_USE_NAMESPACE(std)string& fileName_, int line_);
+	~NoViableAltForCharException() throw() {}
 
 	/**
 	 * @deprecated As of ANTLR 2.7.0
 	 */
-	ANTLR_USE_NAMESPACE(std)string getErrorMessage() const;
+	virtual ANTLR_USE_NAMESPACE(std)string getErrorMessage() const;
 
 	/**
 	 * Returns a clean error message (no line number/column information)
 	 */
-	ANTLR_USE_NAMESPACE(std)string getMessage() const;
+	virtual ANTLR_USE_NAMESPACE(std)string getMessage() const;
 };
 
 ANTLR_END_NAMESPACE

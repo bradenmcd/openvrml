@@ -33,31 +33,26 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "BaseAST.hpp"
+#include "antlr/config.hpp"
+#include "antlr/BaseAST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
 class CommonAST : public BaseAST {
 public:
-	CommonAST()
-		{ ttype=Token::INVALID_TYPE; }
-	CommonAST(RefToken t)
-		{ initialize(t); }
+	CommonAST();
+	CommonAST(RefToken t);
+	virtual ~CommonAST();
 
-	ANTLR_USE_NAMESPACE(std)string getText() const
-		{ return text; }
-	int getType() const
-		{ return ttype; }
+	virtual ANTLR_USE_NAMESPACE(std)string getText() const;
+	virtual int getType() const;
 
-	void initialize(int t,const ANTLR_USE_NAMESPACE(std)string& txt);
-	void initialize(RefAST t);
-	void initialize(RefToken t);
+	virtual void initialize(int t,const ANTLR_USE_NAMESPACE(std)string& txt);
+	virtual void initialize(RefAST t);
+	virtual void initialize(RefToken t);
 
-	void setText(const ANTLR_USE_NAMESPACE(std)string& txt)
-		{ text=txt; }
-	void setType(int type)
-		{ ttype=type; }
+	virtual void setText(const ANTLR_USE_NAMESPACE(std)string& txt);
+	virtual void setType(int type);
 
 	static RefAST factory();
 

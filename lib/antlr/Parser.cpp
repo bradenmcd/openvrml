@@ -30,15 +30,16 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "Parser.hpp"
+#include "antlr/Parser.hpp"
 
-#include "BitSet.hpp"
-#include "TokenBuffer.hpp"
-#include "MismatchedTokenException.hpp"
+#include "antlr/BitSet.hpp"
+#include "antlr/TokenBuffer.hpp"
+#include "antlr/MismatchedTokenException.hpp"
 //#include "antlr/ASTFactory.hpp"
 #include <iostream>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
+ANTLR_C_USING(exit)
 
 /**A generic ANTLR parser (LL(k) for k>=1) containing a bunch of
  * utility routines useful at any lookahead depth.  We distinguish between
@@ -77,17 +78,17 @@ ANTLR_BEGIN_NAMESPACE(antlr)
 bool DEBUG_PARSER=false;
 
 Parser::Parser(TokenBuffer& input)
-: inputState(new ParserInputState(input))
+: inputState(new ParserInputState(input)), traceDepth(0)
 {
 }
 
 Parser::Parser(TokenBuffer* input)
-: inputState(new ParserInputState(input))
+: inputState(new ParserInputState(input)), traceDepth(0)
 {
 }
 
 Parser::Parser(const ParserSharedInputState& state)
-: inputState(state)
+: inputState(state), traceDepth(0)
 {
 }
 
@@ -160,10 +161,16 @@ int Parser::mark()
 void Parser::match(int t)
 {
 	if ( DEBUG_PARSER )
+	{
+		traceIndent();
 		ANTLR_USE_NAMESPACE(std)cout << "enter match(" << t << ") with LA(1)=" << LA(1) << ANTLR_USE_NAMESPACE(std)endl;
+	}
 	if ( LA(1)!=t ) {
 		if ( DEBUG_PARSER )
+		{
+			traceIndent();
 			ANTLR_USE_NAMESPACE(std)cout << "token mismatch: " << LA(1) << "!=" << t << ANTLR_USE_NAMESPACE(std)endl;
+		}
 		throw MismatchedTokenException(tokenNames, LT(1), t, false, getFilename());
 	} else {
 		// mark token as consumed -- fetch next token deferred until LA/LT
@@ -178,12 +185,18 @@ void Parser::match(int t)
 void Parser::match(const BitSet& b)
 {
 	if ( DEBUG_PARSER )
+	{
+		traceIndent();
 		ANTLR_USE_NAMESPACE(std)cout << "enter match(" << "bitset" /*b.toString()*/
 			  << ") with LA(1)=" << LA(1) << ANTLR_USE_NAMESPACE(std)endl;
+	}
 	if ( !b.member(LA(1)) ) {
 		if ( DEBUG_PARSER )
+		{
+			traceIndent();
 			ANTLR_USE_NAMESPACE(std)cout << "token mismatch: " << LA(1) << " not member of "
 				  << "bitset" /*b.toString()*/ << ANTLR_USE_NAMESPACE(std)endl;
+		}
 		throw MismatchedTokenException(tokenNames, LT(1), b, false, getFilename());
 	} else {
 		// mark token as consumed -- fetch next token deferred until LA/LT
@@ -259,17 +272,32 @@ void Parser::setInputState(ParserSharedInputState state)
 /** Set or change the input token buffer */
 //	void setTokenBuffer(TokenBuffer<Token>* t);
 
+void Parser::traceIndent()
+{
+	for( int i = 0; i < traceDepth; i++ )
+		ANTLR_USE_NAMESPACE(std)cout << " ";
+}
+
 void Parser::traceIn(const ANTLR_USE_NAMESPACE(std)string& rname)
 {
-	ANTLR_USE_NAMESPACE(std)cout << "enter " << rname.c_str() << "; LA(1)==" << LT(1)->getText().c_str() <<
+	traceDepth++;
+
+	for( int i = 0; i < traceDepth; i++ )
+		ANTLR_USE_NAMESPACE(std)cout << " ";
+
+	ANTLR_USE_NAMESPACE(std)cout << "> " << rname.c_str() << "; LA(1)==" << LT(1)->getText().c_str() <<
 			((inputState->guessing>0)?" [guessing]":"") << ANTLR_USE_NAMESPACE(std)endl;
 }
 
 void Parser::traceOut(const ANTLR_USE_NAMESPACE(std)string& rname)
 {
-	ANTLR_USE_NAMESPACE(std)cout << "exit " << rname.c_str() << "; LA(1)==" << LT(1)->getText().c_str() <<
+	for( int i = 0; i < traceDepth; i++ )
+		ANTLR_USE_NAMESPACE(std)cout << " ";
+
+	ANTLR_USE_NAMESPACE(std)cout << "< " << rname.c_str() << "; LA(1)==" << LT(1)->getText().c_str() <<
 			((inputState->guessing>0)?" [guessing]":"") << ANTLR_USE_NAMESPACE(std)endl;
+
+	traceDepth--;
 }
 
 ANTLR_END_NAMESPACE
-

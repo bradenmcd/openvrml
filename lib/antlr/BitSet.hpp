@@ -1,9 +1,9 @@
 #ifndef INC_BitSet_hpp__
 #define INC_BitSet_hpp__
 
-#include "config.hpp"
+#include "antlr/config.hpp"
 #include <vector>
-#include <sys/types.h>
+#include <stdexcept>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

@@ -33,22 +33,24 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "ANTLRException.hpp"
+#include "antlr/config.hpp"
+#include "antlr/ANTLRException.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
 class RecognitionException : public ANTLRException {
 public:
 	ANTLR_USE_NAMESPACE(std)string fileName; // not used by treeparsers
-	int line; // not used by treeparsers
-	int column; // not used by treeparsers
+	int line;    // not used by treeparsers
+	int column;  // not used by treeparsers
 
 	RecognitionException();
 
 	RecognitionException(const ANTLR_USE_NAMESPACE(std)string& s);
 
 	RecognitionException(const ANTLR_USE_NAMESPACE(std)string& s,const ANTLR_USE_NAMESPACE(std)string& fileName_,int line);
+	RecognitionException(const ANTLR_USE_NAMESPACE(std)string& s,const ANTLR_USE_NAMESPACE(std)string& fileName_,int line,int column);
+	~RecognitionException() throw() {}
 
 	/**
 	 * @return the column number that this exception happened on.

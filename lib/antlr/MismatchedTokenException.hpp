@@ -33,11 +33,11 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "RecognitionException.hpp"
-#include "BitSet.hpp"
-#include "Token.hpp"
-#include "AST.hpp"
+#include "antlr/config.hpp"
+#include "antlr/RecognitionException.hpp"
+#include "antlr/BitSet.hpp"
+#include "antlr/Token.hpp"
+#include "antlr/AST.hpp"
 #include <vector>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
@@ -141,6 +141,7 @@ public:
 		bool matchNot,
 		const ANTLR_USE_NAMESPACE(std)string& fileName_
 	);
+	~MismatchedTokenException() throw() {}
 
 	/**
 	 * @deprecated As of ANTLR 2.7.0

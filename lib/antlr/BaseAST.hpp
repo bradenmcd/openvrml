@@ -33,8 +33,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "AST.hpp"
+#include "antlr/config.hpp"
+#include "antlr/AST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -42,6 +42,9 @@ class BaseAST;
 typedef ASTRefCount<BaseAST> RefBaseAST;
 
 class BaseAST : public AST {
+public:
+	BaseAST() : AST() {}
+	virtual ~BaseAST() {}
 protected:
 	RefBaseAST down;
 	RefBaseAST right;
@@ -51,51 +54,51 @@ protected:
 //	static ANTLR_USE_NAMESPACE(std)vector<ANTLR_USE_NAMESPACE(std)string> tokenNames;
 
 public:
-	void addChild(RefAST c);
+	virtual void addChild(RefAST c);
 
 private:
 	void doWorkForFindAll(ANTLR_USE_NAMESPACE(std)vector<RefAST>& v,
 			RefAST target,bool partialMatch);
 
 public:
-	bool equals(RefAST t) const;
-	bool equalsList(RefAST t) const;
-	bool equalsListPartial(RefAST t) const;
-	bool equalsTree(RefAST t) const;
-	bool equalsTreePartial(RefAST t) const;
+	virtual bool equals(RefAST t) const;
+	virtual bool equalsList(RefAST t) const;
+	virtual bool equalsListPartial(RefAST t) const;
+	virtual bool equalsTree(RefAST t) const;
+	virtual bool equalsTreePartial(RefAST t) const;
 
-	ANTLR_USE_NAMESPACE(std)vector<RefAST> findAll(RefAST t);
-	ANTLR_USE_NAMESPACE(std)vector<RefAST> findAllPartial(RefAST t);
+	virtual ANTLR_USE_NAMESPACE(std)vector<RefAST> findAll(RefAST t);
+	virtual ANTLR_USE_NAMESPACE(std)vector<RefAST> findAllPartial(RefAST t);
 
 	/** Get the first child of this node; null if no children */
-	RefAST getFirstChild() const;
+	virtual RefAST getFirstChild() const;
 	/** Get  the next sibling in line after this one */
-	RefAST getNextSibling() const;
+	virtual RefAST getNextSibling() const;
 
 	/** Get the token text for this node */
-	ANTLR_USE_NAMESPACE(std)string getText() const;
+	virtual ANTLR_USE_NAMESPACE(std)string getText() const;
 	/** Get the token type for this node */
-	int getType() const;
+	virtual int getType() const;
 
 	/** Remove all children */
-	void removeChildren();
+	virtual void removeChildren();
 
 	/** Set the first child of a node. */
-	void setFirstChild(RefAST c);
+	virtual void setFirstChild(RefAST c);
 	/** Set the next sibling after this one. */
 	void setNextSibling(RefAST n);
 
 	/** Set the token text for this node */
-	void setText(const ANTLR_USE_NAMESPACE(std)string& txt);
+	virtual void setText(const ANTLR_USE_NAMESPACE(std)string& txt);
 	/** Set the token type for this node */
-	void setType(int type);
+	virtual void setType(int type);
 
 //	static void setVerboseStringConversion(bool verbose,
 //			const ANTLR_USE_NAMESPACE(std)vector<ANTLR_USE_NAMESPACE(std)string>& names);
 
-	ANTLR_USE_NAMESPACE(std)string toString() const;
-	ANTLR_USE_NAMESPACE(std)string toStringList() const;
-	ANTLR_USE_NAMESPACE(std)string toStringTree() const;
+	virtual ANTLR_USE_NAMESPACE(std)string toString() const;
+	virtual ANTLR_USE_NAMESPACE(std)string toStringList() const;
+	virtual ANTLR_USE_NAMESPACE(std)string toStringTree() const;
 };
 
 ANTLR_END_NAMESPACE

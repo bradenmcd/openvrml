@@ -33,10 +33,10 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "RecognitionException.hpp"
-#include "Token.hpp"
-#include "AST.hpp"
+#include "antlr/config.hpp"
+#include "antlr/RecognitionException.hpp"
+#include "antlr/Token.hpp"
+#include "antlr/AST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -48,6 +48,7 @@ public:
 	NoViableAltException(RefAST t);
 
 	NoViableAltException(RefToken t,const ANTLR_USE_NAMESPACE(std)string& fileName_);
+	~NoViableAltException() throw() {}
 
 	/**
 	 * @deprecated As of ANTLR 2.7.0

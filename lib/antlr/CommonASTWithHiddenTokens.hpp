@@ -5,21 +5,31 @@
  *  information from the Token used to create a node.
  */
 
-#include "config.hpp"
-#include "CommonAST.hpp"
+#include "antlr/config.hpp"
+#include "antlr/CommonAST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
 class CommonASTWithHiddenTokens : public CommonAST {
+public:
+	CommonASTWithHiddenTokens() : CommonAST() 
+	{
+	}
+	virtual ~CommonASTWithHiddenTokens()
+	{
+	}
 protected:
 	RefToken hiddenBefore,hiddenAfter; // references to hidden tokens
 public:
-	RefToken getHiddenAfter() const
+	virtual RefToken getHiddenAfter() const
 		{ return hiddenAfter; }
-	RefToken getHiddenBefore() const
+	virtual RefToken getHiddenBefore() const
 		{ return hiddenBefore; }
 
-	void initialize(RefToken t);
+	// Borland C++ builder seems to need the decl's of the first two...
+	virtual void initialize(int t,const ANTLR_USE_NAMESPACE(std)string& txt);
+	virtual void initialize(RefAST t);
+	virtual void initialize(RefToken t);
 
 	static RefAST factory();
 };

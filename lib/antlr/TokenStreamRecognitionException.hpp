@@ -1,8 +1,8 @@
 #ifndef INC_TokenStreamRecognitionException_hpp__
 #define INC_TokenStreamRecognitionException_hpp__
 
-#include "config.hpp"
-#include "TokenStreamException.hpp"
+#include "antlr/config.hpp"
+#include "antlr/TokenStreamException.hpp"
 #include <exception>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
@@ -13,6 +13,7 @@ public:
 
 	TokenStreamRecognitionException(RecognitionException& re)
 		: TokenStreamException(re.getMessage()), recog(re) {}
+	~TokenStreamRecognitionException() throw() {}
 };
 
 ANTLR_END_NAMESPACE

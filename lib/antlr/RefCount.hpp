@@ -33,7 +33,7 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
+#include "antlr/config.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -48,28 +48,31 @@ private:
 		~Ref() {delete ptr;}
 		Ref* increment() {++count;return this;}
 		bool decrement() {return (--count==0);}
+	private:
+		Ref(const Ref&);
+		Ref& operator=(const Ref&);
 	}* ref;
 
 public:
-	explicit RefCount(T* p=0)
-		{
-			ref=p ? new Ref(p) : 0;
-		}
-	RefCount(const RefCount<T>& other)
-		{
-			ref=other.ref ? other.ref->increment() : 0;
-		}
+	explicit RefCount(T* p=0) 
+		: ref(p ? new Ref(p) : 0)
+	{
+	}
+	RefCount(const RefCount<T>& other) 
+		: ref(other.ref ? other.ref->increment() : 0)
+	{
+	}
 	~RefCount()
-		{
-			if (ref && ref->decrement()) delete ref;
-		}
+	{
+		if (ref && ref->decrement()) delete ref;
+	}
 	RefCount<T>& operator=(const RefCount<T>& other)
-		{
-			Ref* tmp=other.ref ? other.ref->increment() : 0;
-			if (ref && ref->decrement()) delete ref;
-			ref=tmp;
-			return *this;
-		}
+	{
+		Ref* tmp=other.ref ? other.ref->increment() : 0;
+		if (ref && ref->decrement()) delete ref;
+		ref=tmp;
+		return *this;
+	}
 
 	operator T* () const
 		{ return ref ? ref->ptr : 0; }

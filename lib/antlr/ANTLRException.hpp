@@ -33,7 +33,7 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
+#include "antlr/config.hpp"
 #include <exception>
 #include <string>
 
@@ -50,7 +50,7 @@ public:
 
 	virtual ANTLR_USE_NAMESPACE(std)string toString() const;
 
-	ANTLR_USE_NAMESPACE(std)string getMessage() const;
+	virtual ANTLR_USE_NAMESPACE(std)string getMessage() const;
 
 	virtual const char* what() const throw();
 };

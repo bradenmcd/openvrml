@@ -1,5 +1,5 @@
-#include "TokenStreamSelector.hpp"
-#include "TokenStreamRetryException.hpp"
+#include "antlr/TokenStreamSelector.hpp"
+#include "antlr/TokenStreamRetryException.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

@@ -30,10 +30,9 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "CharScanner.hpp"
-#include "CommonToken.hpp"
-#include "MismatchedCharException.hpp"
-#include "TokenStream.hpp"
+#include "antlr/CharScanner.hpp"
+#include "antlr/CommonToken.hpp"
+#include "antlr/MismatchedCharException.hpp"
 #include <map>
 
 #ifdef HAS_NOT_CCTYPE_H
@@ -51,6 +50,30 @@
 #endif
 
 ANTLR_BEGIN_NAMESPACE(antlr)
+ANTLR_C_USING(exit)
+ANTLR_C_USING(tolower)
+
+#ifdef ANTLR_REALLY_NO_STRCASECMP
+// Apparently, neither strcasecmp nor stricmp is standard, and Codewarrior
+// on the mac has neither...
+inline int strcasecmp(const char *s1, const char *s2)
+{
+	while (true)
+	{
+		char  c1 = tolower(*s1++),
+				c2 = tolower(*s2++);
+		if (c1 < c2) return -1;
+		if (c1 > c2) return 1;
+		if (c1 == 0) return 0;
+	}
+}
+#else
+#ifdef NO_STRCASECMP
+ANTLR_C_USING(stricmp)
+#else
+ANTLR_C_USING(strcasecmp)
+#endif
+#endif
 
 CharScannerLiteralsLess::CharScannerLiteralsLess(const CharScanner* theScanner)
 : scanner(theScanner)
@@ -74,6 +97,7 @@ CharScanner::CharScanner(InputBuffer& cb)
 	, literals(CharScannerLiteralsLess(this))
 	, inputState(new LexerInputState(cb))
 	, commitToPath(false)
+	, traceDepth(0)
 {
 	setTokenObjectFactory(&CommonToken::factory);
 }
@@ -83,6 +107,7 @@ CharScanner::CharScanner(InputBuffer* cb)
 	, literals(CharScannerLiteralsLess(this))
 	, inputState(new LexerInputState(cb))
 	, commitToPath(false)
+	, traceDepth(0)
 {
 	setTokenObjectFactory(&CommonToken::factory);
 }
@@ -92,6 +117,7 @@ CharScanner::CharScanner(const LexerSharedInputState& state)
 	, literals(CharScannerLiteralsLess(this))
 	, inputState(state)
 	, commitToPath(false)
+	, traceDepth(0)
 {
 	setTokenObjectFactory(&CommonToken::factory);
 }
@@ -102,8 +128,11 @@ CharScanner::~CharScanner()
 
 void CharScanner::append(char c)
 {
-	if (saveConsumedInput)
-		text+=c;
+	if (saveConsumedInput) {
+		int l = text.length();
+		if ((l%256) == 0) text.reserve(l+256);
+		text.replace(l,0,&c,1);
+	}
 }
 
 void CharScanner::append(const ANTLR_USE_NAMESPACE(std)string& s)
@@ -120,12 +149,19 @@ void CharScanner::commit()
 void CharScanner::consume()
 {
 	if (inputState->guessing == 0) {
+		int c = LA(1);
 		if (caseSensitive) {
-			append(LA(1));
+			append(c);
 		} else {
 			// use input.LA(), not LA(), to get original case
 			// CharScanner.LA() would toLower it.
 			append(inputState->getInput().LA(1));
+		}
+		if (c == '\t') {
+			tab();
+		}
+		else {
+			inputState->column++;
 		}
 	}
 	inputState->getInput().consume();
@@ -157,6 +193,9 @@ bool CharScanner::getCaseSensitive() const
 int CharScanner::getColumn() const
 { return inputState->column; }
 
+void CharScanner::setColumn(int c)
+{ inputState->column = c; }
+
 bool CharScanner::getCommitToPath() const
 { return commitToPath; }
 
@@ -172,27 +211,19 @@ LexerSharedInputState CharScanner::getInputState()
 int CharScanner::getLine() const
 { return inputState->line; }
 
-// return a copy of the current text buffer
+/** return a copy of the current text buffer */
 const ANTLR_USE_NAMESPACE(std)string& CharScanner::getText() const
 { return text; }
 
 RefToken CharScanner::getTokenObject() const
 { return _returnToken; }
 
-int CharScanner::LA(int i)
-{
-	if ( caseSensitive ) {
-		return inputState->getInput().LA(i);
-	} else {
-		return toLower(inputState->getInput().LA(i));
-	}
-}
-
 RefToken CharScanner::makeToken(int t)
 {
 	RefToken tok=tokenFactory();
 	tok->setType(t);
-	tok->setLine(inputState->line);
+	tok->setColumn(inputState->tokenStartColumn);
+	tok->setLine(inputState->tokenStartLine);
 	return tok;
 }
 
@@ -245,7 +276,23 @@ void CharScanner::matchRange(int c1, int c2)
 }
 
 void CharScanner::newline()
-{ ++inputState->line; }
+{
+	++inputState->line;
+	inputState->column=1;
+}
+
+/** advance the current column number by an appropriate amount.
+ *  If you do not override this to specify how much to jump for
+ *  a tab, then tabs are counted as one char.  This method is
+ *  called from consume().
+ */
+void CharScanner::tab() {
+	// update inputState->column as function of
+	// inputState->column and tab stops.
+	// For example, if tab stops are columns 1 and 5 etc...
+	// and column is 3, then add 2 to column.
+	++inputState->column;
+}
 
 void CharScanner::panic()
 {
@@ -284,7 +331,11 @@ void CharScanner::reportWarning(const ANTLR_USE_NAMESPACE(std)string& s)
 }
 
 void CharScanner::resetText()
-{ text=""; }
+{
+	text="";
+	inputState->tokenStartColumn = inputState->column;
+	inputState->tokenStartLine = inputState->line;
+}
 
 void CharScanner::rewind(int pos)
 {
@@ -316,8 +367,8 @@ void CharScanner::setText(const ANTLR_USE_NAMESPACE(std)string& s)
 void CharScanner::setTokenObjectFactory(factory_type factory)
 { tokenFactory=factory; }
 
-// Test the token text against the literals table
-// Override this method to perform a different literals test
+/** Test the token text against the literals table
+ * Override this method to perform a different literals test */
 int CharScanner::testLiteralsTable(int ttype) const
 {
 	ANTLR_USE_NAMESPACE(std)map<ANTLR_USE_NAMESPACE(std)string,int,CharScannerLiteralsLess>::const_iterator i = literals.find(text);
@@ -326,10 +377,11 @@ int CharScanner::testLiteralsTable(int ttype) const
 	return ttype;
 }
 
-// Test the text passed in against the literals table
-// Override this method to perform a different literals test
-// This is used primarily when you want to test a portion of
-// a token.
+/** Test the text passed in against the literals table
+ * Override this method to perform a different literals test
+ * This is used primarily when you want to test a portion of
+ * a token.
+ */
 int CharScanner::testLiteralsTable(const ANTLR_USE_NAMESPACE(std)string& text_, int ttype) const
 {
 	ANTLR_USE_NAMESPACE(std)map<ANTLR_USE_NAMESPACE(std)string,int,CharScannerLiteralsLess>::const_iterator i = literals.find(text_);
@@ -338,20 +390,30 @@ int CharScanner::testLiteralsTable(const ANTLR_USE_NAMESPACE(std)string& text_, 
 	return ttype;
 }
 
-// Override this method to get more specific case handling
-char CharScanner::toLower(char c) const
+/** Override this method to get more specific case handling */
+int CharScanner::toLower(int c) const
 {
 	return tolower(c);
 }
 
+void CharScanner::traceIndent()
+{
+	for( int i = 0; i < traceDepth; i++ )
+		ANTLR_USE_NAMESPACE(std)cout << " ";
+}
+
 void CharScanner::traceIn(const ANTLR_USE_NAMESPACE(std)string& rname)
 {
-	ANTLR_USE_NAMESPACE(std)cout << "enter lexer " << rname.c_str() << "; c==" << LA(1) << ANTLR_USE_NAMESPACE(std)endl;
+	traceDepth++;
+	traceIndent();
+	ANTLR_USE_NAMESPACE(std)cout << "> lexer " << rname.c_str() << "; c==" << LA(1) << ANTLR_USE_NAMESPACE(std)endl;
 }
 
 void CharScanner::traceOut(const ANTLR_USE_NAMESPACE(std)string& rname)
 {
-	ANTLR_USE_NAMESPACE(std)cout << "exit lexer " << rname.c_str() << "; c==" << LA(1) << ANTLR_USE_NAMESPACE(std)endl;
+	traceIndent();
+	ANTLR_USE_NAMESPACE(std)cout << "< lexer " << rname.c_str() << "; c==" << LA(1) << ANTLR_USE_NAMESPACE(std)endl;
+	traceDepth--;
 }
 
 void CharScanner::uponEOF()

@@ -1,8 +1,8 @@
-#include "BitSet.hpp"
+#include "antlr/BitSet.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
-/**A BitSet to replace java.util.BitSet.
+/** A BitSet to replace java.util.BitSet.
  * Primary differences are that most set operators return new sets
  * as opposed to oring and anding "in place".  Further, a number of
  * operations were added.  I cannot contain a BitSet because there
@@ -13,7 +13,6 @@ ANTLR_BEGIN_NAMESPACE(antlr)
  *
  * Also seems like or() from util is wrong when size of incoming set is bigger
  * than this.length.
- *
  *
  * This is a C++ version of the Java class described above, with only
  * a handful of the methods implemented, because we don't need the
@@ -35,7 +34,7 @@ BitSet::BitSet(int nbits)
 BitSet::BitSet(const unsigned long* bits_,int nlongs)
 	: storage(nlongs*32)
 {
-	for (int i=0;i<nlongs*32;i++) {
+	for ( int i = 0 ; i < nlongs*32; i++) {
 		storage[i] = (bits_[i>>5] & (1UL << (i&31))) ? true : false;
 	}
 }
@@ -46,6 +45,12 @@ BitSet::~BitSet()
 
 void BitSet::add(int el)
 {
+	if ( el < 0 )
+		throw ANTLR_USE_NAMESPACE(std)out_of_range(ANTLR_USE_NAMESPACE(std)string("antlr::BitSet.cpp line 49"));
+
+	if( static_cast<unsigned int>(el) >= storage.size() )
+		storage.resize( el+1, false );
+
 	storage[el] = true;
 }
 
@@ -69,4 +74,3 @@ ANTLR_USE_NAMESPACE(std)vector<int> BitSet::toArray() const
 }
 
 ANTLR_END_NAMESPACE
-

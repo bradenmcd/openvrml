@@ -33,8 +33,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "Token.hpp"
+#include "antlr/config.hpp"
+#include "antlr/Token.hpp"
 #include <string>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
@@ -43,6 +43,7 @@ class CommonToken : public Token {
 protected:
 	// most tokens will want line and text information
 	int line;
+	int col;
 	ANTLR_USE_NAMESPACE(std)string text;
 
 public:
@@ -56,6 +57,11 @@ public:
 	void setText(const ANTLR_USE_NAMESPACE(std)string& s);
 
 	ANTLR_USE_NAMESPACE(std)string toString() const;
+
+	/** Return token's start column */
+	int getColumn() const;
+
+	void setColumn(int c);
 
 	bool isInvalid() const;
 

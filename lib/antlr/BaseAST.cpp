@@ -30,13 +30,7 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "BaseAST.hpp"
-
-#ifdef HAS_NOT_CASSERT_H
-#include <assert.h>
-#else
-#include <cassert>
-#endif
+#include "antlr/BaseAST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

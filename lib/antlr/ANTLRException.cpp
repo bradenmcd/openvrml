@@ -30,11 +30,11 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "ANTLRException.hpp"
+#include "antlr/ANTLRException.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
-ANTLRException::ANTLRException()
+ANTLRException::ANTLRException() : text("")
 {}
 
 ANTLRException::ANTLRException(const ANTLR_USE_NAMESPACE(std)string& s)

@@ -30,8 +30,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "MismatchedCharException.hpp"
-#include "String.hpp"
+#include "antlr/MismatchedCharException.hpp"
+#include "antlr/String.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -46,19 +46,17 @@ MismatchedCharException::MismatchedCharException(
 	int upper_,
 	bool matchNot,
 	CharScanner* scanner_
-) : RecognitionException("Mismatched char")
+) : RecognitionException("Mismatched char",
+								 scanner_->getFilename(),
+								 scanner_->getLine(),
+								 scanner_->getColumn())
+  , mismatchType(matchNot ? NOT_RANGE : RANGE)
   , foundChar(c)
   , expecting(lower)
   , upper(upper_)
+  , scanner(scanner_)
 {
-	// get instantaneous values of file/line/column
-	scanner = scanner_;
-	line = scanner->getLine();
-	fileName = scanner->getFilename();
-	column = scanner->getColumn();
-	mismatchType = matchNot ? NOT_RANGE : RANGE;
 }
-
 
 // Expected token / not token
 MismatchedCharException::MismatchedCharException(
@@ -66,16 +64,15 @@ MismatchedCharException::MismatchedCharException(
 	int expecting_,
 	bool matchNot,
 	CharScanner* scanner_
-) : RecognitionException("Mismatched char")
+) : RecognitionException("Mismatched char",
+								 scanner_->getFilename(),
+								 scanner_->getLine(),
+								 scanner_->getColumn())
+  , mismatchType(matchNot ? NOT_CHAR : CHAR)
   , foundChar(c)
   , expecting(expecting_)
+  , scanner(scanner_)
 {
-	// get instantaneous values of file/line/column
-	scanner = scanner_;
-	line = scanner->getLine();
-	fileName = scanner->getFilename();
-	column = scanner->getColumn();
-	mismatchType = matchNot ? NOT_CHAR : CHAR;
 }
 
 // Expected BitSet / not BitSet
@@ -84,16 +81,15 @@ MismatchedCharException::MismatchedCharException(
 	BitSet set_,
 	bool matchNot,
 	CharScanner* scanner_
-) : RecognitionException("Mismatched char")
+) : RecognitionException("Mismatched char",
+								 scanner_->getFilename(),
+								 scanner_->getLine(),
+								 scanner_->getColumn())
+  , mismatchType(matchNot ? NOT_SET : SET)
   , foundChar(c)
   , set(set_)
+  , scanner(scanner_)
 {
-	// get instantaneous values of file/line/column
-	scanner = scanner_;
-	line = scanner->getLine();
-	fileName = scanner->getFilename();
-	column = scanner->getColumn();
-	mismatchType = matchNot ? NOT_SET : SET;
 }
 
 MismatchedCharException::MismatchedCharException(
@@ -145,5 +141,13 @@ ANTLR_USE_NAMESPACE(std)string MismatchedCharException::getMessage() const
 	return s;
 }
 
-ANTLR_END_NAMESPACE
+#ifndef NO_STATIC_CONSTS
+const int MismatchedCharException::CHAR;
+const int MismatchedCharException::NOT_CHAR;
+const int MismatchedCharException::RANGE;
+const int MismatchedCharException::NOT_RANGE;
+const int MismatchedCharException::SET;
+const int MismatchedCharException::NOT_SET;
+#endif
 
+ANTLR_END_NAMESPACE

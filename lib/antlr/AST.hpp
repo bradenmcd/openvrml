@@ -33,9 +33,9 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "ASTRefCount.hpp"
-#include "Token.hpp"
+#include "antlr/config.hpp"
+#include "antlr/ASTRefCount.hpp"
+#include "antlr/Token.hpp"
 #include <vector>
 #include <string>
 
@@ -45,7 +45,7 @@ struct ASTRef;
 
 class AST {
 public:
-	AST() {ref=0;}
+	AST() : ref(0) {}
 	virtual ~AST() {}
 
 	virtual void addChild(RefAST c)=0;
@@ -90,7 +90,9 @@ private:
 	friend struct ASTRef;
 	ASTRef* ref;
 
+	AST(const AST& other);
 	AST(RefAST other);
+	AST& operator=(const AST& other);
 	AST& operator=(RefAST other);
 };
 

@@ -30,26 +30,26 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "Token.hpp"
-#include "String.hpp"
+#include "antlr/Token.hpp"
+#include "antlr/String.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
 RefToken Token::badToken(new Token(Token::INVALID_TYPE, "<no text>"));
 
-Token::Token()
+Token::Token() : type(INVALID_TYPE)
 {
-	type=INVALID_TYPE;
 }
 
-Token::Token(int t)
+Token::Token(int t) : type(t)
 {
-	type=t;
 }
 
 Token::Token(int t, const ANTLR_USE_NAMESPACE(std)string& txt)
+	: type(t)
 {
-	type=t; setText(txt);
+	type=t;
+	setText(txt);
 }
 
 int Token::getColumn() const

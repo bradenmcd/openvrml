@@ -46,8 +46,9 @@
  * @see antlr.CharQueue
  */
 
-#include "config.hpp"
-#include "InputBuffer.hpp"
+#include "antlr/config.hpp"
+#include "antlr/InputBuffer.hpp"
+#include <iostream>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -64,8 +65,9 @@ public:
 	int getChar();
 
 private:
-	CharBuffer(const CharBuffer& other);
-	CharBuffer& operator=(const CharBuffer& other);
+// Not implemented.
+//	CharBuffer(const CharBuffer& other);
+//	CharBuffer& operator=(const CharBuffer& other);
 };
 
 ANTLR_END_NAMESPACE

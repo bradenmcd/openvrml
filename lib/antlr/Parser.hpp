@@ -33,12 +33,12 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "BitSet.hpp"
-#include "TokenBuffer.hpp"
-#include "RecognitionException.hpp"
-#include "ASTFactory.hpp"
-#include "ParserSharedInputState.hpp"
+#include "antlr/config.hpp"
+#include "antlr/BitSet.hpp"
+#include "antlr/TokenBuffer.hpp"
+#include "antlr/RecognitionException.hpp"
+#include "antlr/ASTFactory.hpp"
+#include "antlr/ParserSharedInputState.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -179,10 +179,16 @@ public:
 	/** Set or change the input token buffer */
 //	void setTokenBuffer(TokenBuffer<Token>* t);
 
+	virtual void traceIndent();
 	virtual void traceIn(const ANTLR_USE_NAMESPACE(std)string& rname);
 	virtual void traceOut(const ANTLR_USE_NAMESPACE(std)string& rname);
+protected:
+	int traceDepth;		// used to keep track of the indentation for the trace
 
 protected:
+	/** Utility class which allows tracing to work even when exceptions are
+	 * thrown.
+	 */
 	class Tracer {
 	private:
 		Parser* parser;
@@ -192,11 +198,14 @@ protected:
 			: parser(p), text(t) { parser->traceIn(text); }
 		~Tracer()
 			{ parser->traceOut(text); }
+	private:
+		Tracer(const Tracer&);							// undefined
+		const Tracer& operator=(const Tracer&);	// undefined
 	};
 
 private:
-	Parser(const Parser&);
-	const Parser& operator=(const Parser&);
+	Parser(const Parser&);								// undefined
+	const Parser& operator=(const Parser&);		// undefined
 };
 
 ANTLR_END_NAMESPACE

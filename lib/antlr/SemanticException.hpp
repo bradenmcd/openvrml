@@ -33,8 +33,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "RecognitionException.hpp"
+#include "antlr/config.hpp"
+#include "antlr/RecognitionException.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -44,6 +44,7 @@ public:
 		: RecognitionException(s) {}
 	SemanticException(const ANTLR_USE_NAMESPACE(std)string& s,const ANTLR_USE_NAMESPACE(std)string& fileName_,int line_)
 		: RecognitionException(s,fileName_,line_) {}
+	~SemanticException() throw() {}
 };
 
 ANTLR_END_NAMESPACE

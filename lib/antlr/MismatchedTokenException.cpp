@@ -30,17 +30,16 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "MismatchedTokenException.hpp"
-#include "String.hpp"
+#include "antlr/MismatchedTokenException.hpp"
+#include "antlr/String.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
 MismatchedTokenException::MismatchedTokenException()
-: RecognitionException("Mismatched Token: expecting any AST node")
+: RecognitionException("Mismatched Token: expecting any AST node","<AST>",1)
 , token(0)
 , node(nullASTptr)
 {
-	fileName = "<AST>";
 }
 
 // Expected range / not range
@@ -51,20 +50,15 @@ MismatchedTokenException::MismatchedTokenException(
 	int upper_,
 	bool matchNot
 ) : RecognitionException("Mismatched Token")
+  , tokenNames(tokenNames_)
   , token(0)
   , node(node_)
+  , tokenText( (node_ ? node_->toString(): ANTLR_USE_NAMESPACE(std)string("<empty tree>")) )
+  , mismatchType(matchNot ? NOT_RANGE : RANGE)
+  , expecting(lower)
+  , upper(upper_)
 {
-	tokenNames = tokenNames_;
-	if (!node) {
-		tokenText = "<empty tree>";
-	}
-	else {
-		tokenText = node->toString();
-	}
-	expecting = lower;
-	upper = upper_;
 	fileName = "<AST>";
-	mismatchType = matchNot ? NOT_RANGE : RANGE;
 }
 
 // Expected token / not token
@@ -74,19 +68,14 @@ MismatchedTokenException::MismatchedTokenException(
 	int expecting_,
 	bool matchNot
 ) : RecognitionException("Mismatched Token")
+  , tokenNames(tokenNames_)
   , token(0)
   , node(node_)
+  , tokenText( (node_ ? node_->toString(): ANTLR_USE_NAMESPACE(std)string("<empty tree>")) )
+  , mismatchType(matchNot ? NOT_TOKEN : TOKEN)
+  , expecting(expecting_)
 {
-	tokenNames = tokenNames_;
-	if (!node) {
-		tokenText = "<empty tree>";
-	}
-	else {
-		tokenText = node->toString();
-	}
-	expecting = expecting_;
 	fileName = "<AST>";
-	mismatchType = matchNot ? NOT_TOKEN : TOKEN;
 }
 
 // Expected BitSet / not BitSet
@@ -96,19 +85,14 @@ MismatchedTokenException::MismatchedTokenException(
 	BitSet set_,
 	bool matchNot
 ) : RecognitionException("Mismatched Token")
+  , tokenNames(tokenNames_)
   , token(0)
   , node(node_)
+  , tokenText( (node_ ? node_->toString(): ANTLR_USE_NAMESPACE(std)string("<empty tree>")) )
+  , mismatchType(matchNot ? NOT_SET : SET)
   , set(set_)
 {
-	tokenNames = tokenNames_;
-	if (!node) {
-		tokenText = "<empty tree>";
-	}
-	else {
-		tokenText = node->toString();
-	}
 	fileName = "<AST>";
-	mismatchType = matchNot ? NOT_SET : SET;
 }
 
 // Expected range / not range
@@ -119,18 +103,15 @@ MismatchedTokenException::MismatchedTokenException(
 	int upper_,
 	bool matchNot,
 	const ANTLR_USE_NAMESPACE(std)string& fileName_
-) : RecognitionException("Mismatched Token")
+) : RecognitionException("Mismatched Token",fileName_,token_->getLine(),token_->getColumn())
+  , tokenNames(tokenNames_)
   , token(token_)
   , node(nullASTptr)
+  , tokenText(token_->getText())																
+  , mismatchType(matchNot ? NOT_RANGE : RANGE)
+  , expecting(lower)
+  , upper(upper_)
 {
-	tokenNames = tokenNames_;
-	line = token->getLine();
-	column = token->getColumn();
-	tokenText = token->getText();
-	expecting = lower;
-	upper = upper_;
-	fileName = fileName_;
-	mismatchType = matchNot ? NOT_RANGE : RANGE;
 }
 
 // Expected token / not token
@@ -140,17 +121,14 @@ MismatchedTokenException::MismatchedTokenException(
 	int expecting_,
 	bool matchNot,
 	const ANTLR_USE_NAMESPACE(std)string& fileName_
-) : RecognitionException("Mismatched Token")
+) : RecognitionException("Mismatched Token",fileName_,token_->getLine(),token_->getColumn())
+  , tokenNames(tokenNames_)
   , token(token_)
   , node(nullASTptr)
+  , tokenText(token_->getText())
+  , mismatchType(matchNot ? NOT_TOKEN : TOKEN)
+  , expecting(expecting_)
 {
-	tokenNames = tokenNames_;
-	line = token->getLine();
-	column = token->getColumn();
-	tokenText = token->getText();
-	expecting = expecting_;
-	fileName = fileName_;
-	mismatchType = matchNot ? NOT_TOKEN : TOKEN;
 }
 
 // Expected BitSet / not BitSet
@@ -160,17 +138,14 @@ MismatchedTokenException::MismatchedTokenException(
 	BitSet set_,
 	bool matchNot,
 	const ANTLR_USE_NAMESPACE(std)string& fileName_
-) : RecognitionException("Mismatched Token")
+) : RecognitionException("Mismatched Token",fileName_,token_->getLine(),token_->getColumn())
+  , tokenNames(tokenNames_)
   , token(token_)
   , node(nullASTptr)
+  , tokenText(token_->getText())
+  , mismatchType(matchNot ? NOT_SET : SET)
   , set(set_)
 {
-	tokenNames = tokenNames_;
-	line = token->getLine();
-	column = token->getColumn();
-	tokenText = token->getText();
-	fileName = fileName_;
-	mismatchType = matchNot ? NOT_SET : SET;
 }
 
 // deprecated As of ANTLR 2.7.0

@@ -1,35 +1,42 @@
+
 if DEBUG
+DEBUG_CXXFLAGS =
 else
-DEBUG_CPPFLAGS = -DNDEBUG
+DEBUG_CXXFLAGS = -DNDEBUG
 endif
 
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
+# I actually want CXXFLAGS defined in toplevel but docs of automake suck
+# beyond belief... Currently thinking of scratching automake alltogether...
+CXXFLAGS= @CXXFLAGS@ $(DEBUG_CXXFLAGS)
+
+# Make #include <antlr/xxx> work..
+INCLUDES=-I$(top_srcdir)
 
 lib_LTLIBRARIES = libantlr.la
-libantlr_la_LDFLAGS = -version-info $(ANTLR_LIBRARY_VERSION)
+libantlr_la_LDFLAGS = -version-info $(LIBANTLR_SO_VERSION)
 
 libantlr_la_SOURCES = \
 	ANTLRException.cpp \
 	ASTFactory.cpp \
-        ASTRefCount.cpp \
-        BaseAST.cpp \
+	ASTRefCount.cpp \
+	BaseAST.cpp \
 	BitSet.cpp \
 	CharBuffer.cpp \
 	CharScanner.cpp \
-        CommonAST.cpp \
-        CommonASTWithHiddenTokens.cpp \
+	CommonAST.cpp \
+	CommonASTWithHiddenTokens.cpp \
 	CommonHiddenStreamToken.cpp \
 	CommonToken.cpp \
 	InputBuffer.cpp \
 	LLkParser.cpp \
 	LexerSharedInputState.cpp \
-        MismatchedCharException.cpp \
+	MismatchedCharException.cpp \
 	MismatchedTokenException.cpp \
 	NoViableAltException.cpp \
-        NoViableAltForCharException.cpp \
+	NoViableAltForCharException.cpp \
 	Parser.cpp \
 	ParserSharedInputState.cpp \
-        RecognitionException.cpp \
+	RecognitionException.cpp \
 	String.cpp \
 	Token.cpp \
 	TokenBuffer.cpp \
@@ -37,39 +44,39 @@ libantlr_la_SOURCES = \
 	TokenStreamHiddenTokenFilter.cpp \
 	TokenStreamSelector.cpp \
 	TreeParser.cpp \
-        TreeParserSharedInputState.cpp
+	TreeParserSharedInputState.cpp
 
-antlrincludedir = $(includedir)/antlr
+includedir = $(prefix)/include/antlr
 
-antlrinclude_HEADERS = \
+include_HEADERS = \
 	ANTLRException.hpp \
 	AST.hpp \
 	ASTArray.hpp \
 	ASTFactory.hpp \
 	ASTNULLType.hpp \
 	ASTPair.hpp \
-        ASTRefCount.hpp \
-        BaseAST.hpp \
+	ASTRefCount.hpp \
+	BaseAST.hpp \
 	BitSet.hpp \
 	CharBuffer.hpp \
 	CharScanner.hpp \
-        CharStreamException.hpp \
-        CharStreamIOException.hpp \
-        CircularQueue.hpp \
-        CommonAST.hpp \
-        CommonASTWithHiddenTokens.hpp \
+	CharStreamException.hpp \
+	CharStreamIOException.hpp \
+	CircularQueue.hpp \
+	CommonAST.hpp \
+	CommonASTWithHiddenTokens.hpp \
 	CommonHiddenStreamToken.hpp \
 	CommonToken.hpp \
 	InputBuffer.hpp \
 	LLkParser.hpp \
 	LexerSharedInputState.hpp \
-        MismatchedCharException.hpp \
+	MismatchedCharException.hpp \
 	MismatchedTokenException.hpp \
 	NoViableAltException.hpp \
-        NoViableAltForCharException.hpp \
+	NoViableAltForCharException.hpp \
 	Parser.hpp \
 	ParserSharedInputState.hpp \
-        RecognitionException.hpp \
+	RecognitionException.hpp \
 	RefCount.hpp \
 	SemanticException.hpp \
 	String.hpp \
@@ -77,12 +84,12 @@ antlrinclude_HEADERS = \
 	TokenBuffer.hpp \
 	TokenStream.hpp \
 	TokenStreamBasicFilter.hpp \
-        TokenStreamException.hpp \
+	TokenStreamException.hpp \
 	TokenStreamHiddenTokenFilter.hpp \
-        TokenStreamIOException.hpp \
-        TokenStreamRecognitionException.hpp \
-        TokenStreamRetryException.hpp \
+	TokenStreamIOException.hpp \
+	TokenStreamRecognitionException.hpp \
+	TokenStreamRetryException.hpp \
 	TokenStreamSelector.hpp \
 	TreeParser.hpp \
-        TreeParserSharedInputState.hpp \
+	TreeParserSharedInputState.hpp \
 	config.hpp
