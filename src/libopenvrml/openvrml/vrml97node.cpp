@@ -705,36 +705,7 @@ event_emitter & abstract_base::do_event_emitter(const std::string & id)
 }
 
 
-/**
- * @class abstract_child_node
- *
- * @brief Base class for all child nodes.
- *
- * VRML97 defines "child" nodes as those that may occur at the root of the
- * scene, in the "children" field of a Group, Transform, Anchor, or Billboard
- * node, in the "level" field of a LOD node, or in the "choice" field of a
- * Switch node.
- */
-
-/**
- * @brief Construct.
- *
- * @param type  the node_type for the node.
- * @param scope     the scope the new node should belong to.
- */
-abstract_child_node::abstract_child_node(const node_type & type,
-                                         const scope_ptr & scope):
-    node(type, scope),
-    abstract_base(type, scope),
-    child_node(type, scope)
-{}
-
-/**
- * @brief Destroy.
- */
-abstract_child_node::~abstract_child_node() throw ()
-{}
-
+# if 0
 /**
  * @class abstract_geometry_node
  *
@@ -761,6 +732,8 @@ abstract_geometry_node::~abstract_geometry_node() throw ()
 {
     /* Need access to viewer to delete viewerObject...*/
 }
+# endif
+
 
 /**
  * @class abstract_indexed_set_node
@@ -915,7 +888,8 @@ process_event(const mfint32 & coord_index,
 abstract_indexed_set_node::abstract_indexed_set_node(const node_type & type,
                                                      const scope_ptr & scope):
     node(type, scope),
-    abstract_geometry_node(type, scope),
+    abstract_base(type, scope),
+    geometry_node(type, scope),
     set_color_index_(*this),
     set_coord_index_(*this),
     color_(*this),
@@ -994,7 +968,8 @@ const openvrml::color_node * abstract_indexed_set_node::color() const throw ()
 abstract_light_node::abstract_light_node(const node_type & type,
                                          const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     ambient_intensity_(*this, 0.0),
     color_(*this, openvrml::color(1.0, 1.0, 1.0)),
     intensity_(*this, 1.0),
@@ -2932,7 +2907,8 @@ do_process_event(const mfstring & value,
 background_node::background_node(const node_type & type,
                                  const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_bind_listener_(*this),
     ground_angle_(*this),
     ground_color_(*this),
@@ -3528,7 +3504,8 @@ box_class::create_type(const std::string & id,
 box_node::box_node(const node_type & type,
                    const scope_ptr & scope):
     node(type, scope),
-    abstract_geometry_node(type, scope),
+    abstract_base(type, scope),
+    geometry_node(type, scope),
     size(vec3f(2.0, 2.0, 2.0))
 {
     this->bounding_volume_dirty(true); // lazy calc of bvolume
@@ -4168,7 +4145,8 @@ process_event(const sffloat & value, const double timestamp)
 color_interpolator_node::color_interpolator_node(const node_type & type,
                                                  const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
     key_value_(*this),
@@ -4321,7 +4299,8 @@ cone_class::create_type(const std::string & id,
 cone_node::cone_node(const node_type & type,
                      const scope_ptr & scope):
     node(type, scope),
-    abstract_geometry_node(type, scope),
+    abstract_base(type, scope),
+    geometry_node(type, scope),
     bottom(true),
     bottomRadius(1.0),
     height(2.0),
@@ -4720,7 +4699,8 @@ coordinate_interpolator_node::coordinate_interpolator_node(
     const node_type & type,
     const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
     key_value_(*this),
@@ -4888,7 +4868,8 @@ cylinder_class::create_type(const std::string & id,
 cylinder_node::cylinder_node(const node_type & type,
                              const scope_ptr & scope):
     node(type, scope),
-    abstract_geometry_node(type, scope),
+    abstract_base(type, scope),
+    geometry_node(type, scope),
     bottom(true),
     height(2.0),
     radius(1.0),
@@ -5229,7 +5210,8 @@ cylinder_sensor_class::create_type(const std::string & id,
 cylinder_sensor_node::cylinder_sensor_node(const node_type & type,
                                            const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     auto_offset_(*this, true),
     disk_angle_(*this, 0.262f),
     enabled_(*this, true),
@@ -5940,7 +5922,8 @@ elevation_grid_node::set_height_listener::process_event(const mffloat & height,
 elevation_grid_node::elevation_grid_node(const node_type & type,
                                          const scope_ptr & scope):
     node(type, scope),
-    abstract_geometry_node(type, scope),
+    abstract_base(type, scope),
+    geometry_node(type, scope),
     set_height_listener_(*this),
     color_(*this),
     normal_(*this),
@@ -6555,7 +6538,8 @@ namespace {
 extrusion_node::extrusion_node(const node_type & type,
                                const scope_ptr & scope):
     node(type, scope),
-    abstract_geometry_node(type, scope),
+    abstract_base(type, scope),
+    geometry_node(type, scope),
     set_cross_section_listener_(*this),
     set_orientation_listener_(*this),
     set_scale_listener_(*this),
@@ -6988,7 +6972,8 @@ void fog_node::set_bind_listener::process_event(const sfbool & bind,
  */
 fog_node::fog_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_bind_listener_(*this),
     color_(*this, openvrml::color(1.0, 1.0, 1.0)),
     fog_type_(*this, "LINEAR"),
@@ -10732,7 +10717,8 @@ namespace {
 navigation_info_node::navigation_info_node(const node_type & type,
                                            const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_bind_listener_(*this),
     avatar_size_(*this, std::vector<float>(navigation_avatar_size_,
                                            navigation_avatar_size_ + 3)),
@@ -11211,7 +11197,8 @@ process_event(const sffloat & fraction, const double timestamp)
 normal_interpolator_node::normal_interpolator_node(const node_type & type,
                                                    const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
     key_value_(*this),
@@ -11496,7 +11483,8 @@ orientation_interpolator_node::
 orientation_interpolator_node(const node_type & type,
                               const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
     key_value_(*this),
@@ -11957,7 +11945,8 @@ plane_sensor_class::create_type(const std::string & id,
 plane_sensor_node::plane_sensor_node(const node_type & type,
                                      const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     auto_offset_(*this, true),
     enabled_(*this, true),
     max_position_(*this, vec2f(-1.0, -1.0)),
@@ -12501,7 +12490,8 @@ point_set_class::create_type(const std::string & id,
 point_set_node::point_set_node(const node_type & type,
                    const scope_ptr & scope):
     node(type, scope),
-    abstract_geometry_node(type, scope),
+    abstract_base(type, scope),
+    geometry_node(type, scope),
     color_(*this),
     coord_(*this)
 {
@@ -12844,7 +12834,8 @@ position_interpolator_node::position_interpolator_node(
     const node_type & type,
     const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
     key_value_(*this),
@@ -13111,7 +13102,8 @@ proximity_sensor_class::create_type(const std::string & id,
 proximity_sensor_node::proximity_sensor_node(const node_type & type,
                                              const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     center_(*this, vec3f(0.0, 0.0, 0.0)),
     enabled_(*this, true),
     size_(*this, vec3f(0.0, 0.0, 0.0)),
@@ -13457,7 +13449,8 @@ process_event(const sffloat & fraction, const double timestamp)
 scalar_interpolator_node::scalar_interpolator_node(const node_type & type,
                                                    const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
     key_value_(*this),
@@ -13600,7 +13593,8 @@ shape_class::create_type(const std::string & id,
  */
 shape_node::shape_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     appearance_(*this),
     geometry_(*this),
     viewerObject(0)
@@ -13991,7 +13985,8 @@ sound_class::create_type(const std::string & id,
  */
 sound_node::sound_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     direction_(*this, vec3f(0, 0, 1)),
     intensity_(*this, 1.0f),
     location_(*this),
@@ -14122,7 +14117,8 @@ sphere_class::create_type(const std::string & id,
  */
 sphere_node::sphere_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
-    abstract_geometry_node(type, scope),
+    abstract_base(type, scope),
+    geometry_node(type, scope),
     radius(1.0)
 {
     this->bounding_volume_dirty(true); // lazy calc of bvolumes
@@ -14389,7 +14385,8 @@ sphere_sensor_class::create_type(const std::string & id,
 sphere_sensor_node::sphere_sensor_node(const node_type & type,
                                        const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     auto_offset_(*this, true),
     enabled_(*this, true),
     offset_(*this, openvrml::rotation(0.0, 1.0, 0.0, 0.0)),
@@ -16081,7 +16078,8 @@ text_node::glyph_geometry::glyph_geometry(
 text_node::text_node(const node_type & type,
                      const scope_ptr & scope):
     node(type, scope),
-    abstract_geometry_node(type, scope),
+    abstract_base(type, scope),
+    geometry_node(type, scope),
     string_(*this),
     font_style_(*this),
     length_(*this),
@@ -17795,7 +17793,8 @@ process_event(const sftime & start_time, const double timestamp)
 time_sensor_node::time_sensor_node(const node_type & type,
                                    const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_cycle_interval_listener_(*this),
     cycle_interval_(1.0),
     cycle_interval_changed_emitter_(this->cycle_interval_),
@@ -18187,7 +18186,8 @@ touch_sensor_class::create_type(const std::string & id,
 touch_sensor_node::touch_sensor_node(const node_type & type,
                                      const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     enabled_(*this, true),
     hit_normal_changed_emitter_(this->hit_normal_changed_),
     hit_point_changed_emitter_(this->hit_point_changed_),
@@ -19840,7 +19840,8 @@ visibility_sensor_class::create_type(const std::string & id,
 visibility_sensor_node::visibility_sensor_node(const node_type & type,
                                                const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     center_(*this, vec3f(0.0, 0.0, 0.0)),
     enabled_(*this, true),
     size_(*this, vec3f(0.0, 0.0, 0.0)),
@@ -20038,7 +20039,8 @@ world_info_class::create_type(const std::string & id,
 world_info_node::world_info_node(const node_type & type,
                                  const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope)
+    abstract_base(type, scope),
+    child_node(type, scope)
 {}
 
 /**

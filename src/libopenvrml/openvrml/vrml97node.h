@@ -63,29 +63,8 @@ namespace openvrml {
         };
 
 
-        class abstract_child_node : public abstract_base,
-                                    public child_node {
-        public:
-            virtual ~abstract_child_node() throw () = 0;
-
-        protected:
-            abstract_child_node(const node_type & type,
-                                const scope_ptr & scope);
-        };
-
-
-        class abstract_geometry_node : public abstract_base,
-                                       public geometry_node {
-        public:
-            virtual ~abstract_geometry_node() throw () = 0;
-
-        protected:
-            abstract_geometry_node(const node_type & type,
-                                   const scope_ptr & scope);
-        };
-
-
-        class abstract_indexed_set_node : public abstract_geometry_node {
+        class abstract_indexed_set_node : public abstract_base,
+                                          public geometry_node {
         protected:
             class set_color_index_listener : public mfint32_listener {
             public:
@@ -130,7 +109,8 @@ namespace openvrml {
         };
 
 
-        class abstract_light_node : public abstract_child_node {
+        class abstract_light_node : public abstract_base,
+                                    public child_node {
         protected:
             exposedfield<sffloat> ambient_intensity_;
             exposedfield<sfcolor> color_;
@@ -391,7 +371,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class background_node : public abstract_child_node {
+        class background_node : public abstract_base,
+                                public child_node {
             friend class background_class;
 
             class set_bind_listener : public sfbool_listener {
@@ -558,7 +539,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class box_node : public abstract_geometry_node {
+        class box_node : public abstract_base,
+                         public geometry_node {
             friend class box_class;
 
             sfvec3f size;
@@ -643,7 +625,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class color_interpolator_node : public abstract_child_node {
+        class color_interpolator_node : public abstract_base,
+                                        public child_node {
             friend class color_interpolator_class;
 
             class set_fraction_listener : public sffloat_listener {
@@ -679,7 +662,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class cone_node : public abstract_geometry_node {
+        class cone_node : public abstract_base,
+                          public geometry_node {
             friend class cone_class;
 
             sfbool bottom;
@@ -739,7 +723,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class coordinate_interpolator_node : public abstract_child_node {
+        class coordinate_interpolator_node : public abstract_base,
+                                             public child_node {
             friend class coordinate_interpolator_class;
 
             class set_fraction_listener : public sffloat_listener {
@@ -776,7 +761,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class cylinder_node : public abstract_geometry_node {
+        class cylinder_node : public abstract_base,
+                              public geometry_node {
             friend class cylinder_class;
 
             sfbool bottom;
@@ -807,8 +793,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class cylinder_sensor_node : public abstract_child_node {
-
+        class cylinder_sensor_node : public abstract_base,
+                                     public child_node {
             friend class cylinder_sensor_class;
 
             exposedfield<sfbool> auto_offset_;
@@ -883,7 +869,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class elevation_grid_node : public abstract_geometry_node {
+        class elevation_grid_node : public abstract_base,
+                                    public geometry_node {
             friend class elevation_grid_class;
 
             class set_height_listener : public mffloat_listener {
@@ -935,7 +922,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class extrusion_node : public abstract_geometry_node {
+        class extrusion_node : public abstract_base,
+                               public geometry_node {
             friend class extrusion_class;
 
             class set_cross_section_listener : public mfvec2f_listener {
@@ -1029,7 +1017,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class fog_node : public abstract_child_node {
+        class fog_node : public abstract_base,
+                         public child_node {
             friend class fog_class;
 
             class set_bind_listener : public sfbool_listener {
@@ -1426,7 +1415,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class navigation_info_node : public abstract_child_node {
+        class navigation_info_node : public abstract_base,
+                                     public child_node {
             friend class navigation_info_class;
 
             class set_bind_listener : public sfbool_listener {
@@ -1505,7 +1495,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class normal_interpolator_node : public abstract_child_node {
+        class normal_interpolator_node : public abstract_base,
+                                         public child_node {
             friend class normal_interpolator_class;
 
             class set_fraction_listener : public sffloat_listener {
@@ -1543,7 +1534,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class orientation_interpolator_node : public abstract_child_node {
+        class orientation_interpolator_node : public abstract_base,
+                                              public child_node {
             friend class orientation_interpolator_class;
 
             class set_fraction_listener : public sffloat_listener {
@@ -1609,7 +1601,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class plane_sensor_node : public abstract_child_node {
+        class plane_sensor_node : public abstract_base,
+                                  public child_node {
             friend class plane_sensor_class;
 
             exposedfield<sfbool> auto_offset_;
@@ -1688,7 +1681,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class point_set_node : public abstract_geometry_node {
+        class point_set_node : public abstract_base,
+                               public geometry_node {
             friend class point_set_class;
 
             exposedfield<sfnode> color_;
@@ -1722,7 +1716,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class position_interpolator_node : public abstract_child_node {
+        class position_interpolator_node : public abstract_base,
+                                           public child_node {
             friend class position_interpolator_class;
 
             class set_fraction_listener : public sffloat_listener {
@@ -1759,8 +1754,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class proximity_sensor_node : public abstract_child_node {
-
+        class proximity_sensor_node : public abstract_base,
+                                      public child_node {
             friend class proximity_sensor_class;
 
             exposedfield<sfvec3f> center_;
@@ -1798,7 +1793,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class scalar_interpolator_node : public abstract_child_node {
+        class scalar_interpolator_node : public abstract_base,
+                                         public child_node {
             friend class scalar_interpolator_class;
 
             class set_fraction_listener : public sffloat_listener {
@@ -1835,7 +1831,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class shape_node : public abstract_child_node {
+        class shape_node : public abstract_base,
+                           public child_node {
             friend class shape_class;
 
             exposedfield<sfnode> appearance_;
@@ -1866,7 +1863,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class sound_node : public abstract_child_node {
+        class sound_node : public abstract_base,
+                           public child_node {
             friend class sound_class;
 
             exposedfield<sfvec3f> direction_;
@@ -1900,7 +1898,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class sphere_node : public abstract_geometry_node {
+        class sphere_node : public abstract_base,
+                            public geometry_node {
             friend class sphere_class;
 
             sffloat radius;
@@ -1930,7 +1929,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class sphere_sensor_node : public abstract_child_node {
+        class sphere_sensor_node : public abstract_base,
+                                   public child_node {
             friend class sphere_sensor_class;
 
             exposedfield<sfbool> auto_offset_;
@@ -2070,7 +2070,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class text_node : public abstract_geometry_node {
+        class text_node : public abstract_base,
+                          public geometry_node {
             friend class text_class;
 
             class string_exposedfield : public exposedfield<mfstring> {
@@ -2240,7 +2241,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class time_sensor_node : public abstract_child_node {
+        class time_sensor_node : public abstract_base,
+                                 public child_node {
             friend class time_sensor_class;
 
             class set_cycle_interval_listener : public sftime_listener {
@@ -2320,7 +2322,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class touch_sensor_node : public abstract_child_node {
+        class touch_sensor_node : public abstract_base,
+                                  public child_node {
             friend class touch_sensor_class;
 
             exposedfield<sfbool> enabled_;
@@ -2561,7 +2564,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class visibility_sensor_node : public abstract_child_node {
+        class visibility_sensor_node : public abstract_base,
+                                       public child_node {
             friend class visibility_sensor_class;
 
             exposedfield<sfvec3f> center_;
@@ -2596,7 +2600,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class world_info_node : public abstract_child_node {
+        class world_info_node : public abstract_base,
+                                public child_node {
             friend class world_info_class;
 
             mfstring info;

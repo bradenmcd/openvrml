@@ -1,5 +1,13 @@
 2004-03-08 Braden McDaniel  <braden@endoframe.com>
 
+	Removed unnecessary abstract_child_node and
+	abstract_geometry_node classes.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
+2004-03-08 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp (proto_node::proto_node):
 	Initialize PROTO exposedFields with the initial value from the
 	constructor.
