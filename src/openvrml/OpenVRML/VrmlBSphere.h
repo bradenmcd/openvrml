@@ -23,9 +23,7 @@
 
 #include "common.h"
 #include "VrmlBVolume.h"
-class VrmlSFVec3f;
-
-
+#include "VrmlMatrix.h"
 /**
  * A bounding sphere. Bounding spheres are very fast to intersect
  * test, but they are fairly loose. If asked to choose just one
@@ -69,8 +67,8 @@ class OPENVRML_SCOPE VrmlBSphere : public VrmlBVolume {
   virtual bool isMAX() const;
   virtual void setMAX();
 
-  virtual void orthoTransform(const double M[4][4]);
-  virtual void transform(const double M[4][4]);
+  virtual void orthoTransform(const VrmlMatrix & M);
+  virtual void transform(const VrmlMatrix & M);
 
   const float* getCenter() const;
   void setCenter(const VrmlSFVec3f& c);

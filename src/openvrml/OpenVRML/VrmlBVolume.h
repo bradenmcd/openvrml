@@ -27,7 +27,7 @@
 class VrmlFrustum;
 class VrmlAABox;
 class VrmlBSphere;
-
+class VrmlMatrix;
 
 
 /**
@@ -179,11 +179,11 @@ class VrmlBVolume {
    * orthogonal, otherwise the results are undefined. If in doubt,
    * call <code>transform</code> instead and take the speed hit.
    *
-   * @param M orthonormal transformation matrix in MathUtils format
+   * @param M orthonormal transformation matrix in VrmlMatrix format
    *
    * @see MathUtils
    */
-  virtual void orthoTransform(const double M[4][4]) = 0;
+  virtual void orthoTransform(const VrmlMatrix & M) = 0;
 
   /**
    * Transform this bounding volume using an affine transfom.
@@ -197,11 +197,11 @@ class VrmlBVolume {
    * affine transformations, so unless you're doing something tricky
    * this routine should always be safe.
    *
-   * @param M affine transformation matrix in MathUtils format
+   * @param M affine transformation matrix in VrmlMatrix format
    *
    * @see MathUtils
    */
-  virtual void transform(const double M[4][4]) = 0;
+  virtual void transform(const VrmlMatrix & M) = 0;
 
 
   /** 

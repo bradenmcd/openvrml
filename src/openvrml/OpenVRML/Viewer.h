@@ -32,6 +32,8 @@ class VrmlScene;
 class VrmlBVolume;
 class VrmlBSphere;
 class VrmlAABox;
+class VrmlSFVec3f;
+class VrmlMatrix;
 
 class OPENVRML_SCOPE Viewer {
 public:
@@ -77,12 +79,12 @@ public:
 
     /**
      * Return user's navigation from the last bound viewpoint as a
-     * MathUtils-format matrix. The navigation transformation should be
+     * VrmlMatrix-format matrix. The navigation transformation should be
      * orthonormal.
      *
-     * @param M returns navigation matrix in MathUtils format
+     * @param M returns navigation matrix in VrmlMatrix format
      */
-    virtual void getUserNavigation(double M[4][4]) = 0;
+    virtual void getUserNavigation(VrmlMatrix & M) = 0;
 
     // Open/close display lists
     virtual Object beginObject(const char *, bool = false) = 0;
@@ -234,6 +236,13 @@ public:
     // The viewer knows the current viewpoint
     virtual void transformPoints(int nPoints, float *points) = 0;
 
+  /**
+   * Multiply current ModelView Matrix with Given Matrix M
+   *
+   * @param M matrix in VrmlMatrix format (Same as OGL)
+   */
+  // 
+  virtual void MatrixMultiply(const float M[4][4]) = 0;
 
     // still working on some navigation api issues, so don't depend on
     // thses yet. there's a default implementation in any case, so you

@@ -90,6 +90,7 @@ class VrmlNodeScalarInt;
 class VrmlNodeOrientationInt;
 class VrmlNodePositionInt;
 class VrmlNodeProto;
+class VrmlMatrix;
 
 class OPENVRML_SCOPE VrmlNode {
 
@@ -221,7 +222,7 @@ public:
 
     virtual void inverseTransform(Viewer *);
 
-    virtual void inverseTransform(double [4][4]);
+    virtual void inverseTransform(VrmlMatrix &);
 
     VrmlScene *scene() { return d_scene; }
 

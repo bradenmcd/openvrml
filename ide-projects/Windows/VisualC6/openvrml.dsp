@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 .\tplib\antlr\release\libantlr.lib js32.lib opengl32.lib glu32.lib glut32.lib libpng.lib libjpeg.lib zlib.lib  wsock32.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Release\openvrml.dll"
+# ADD LINK32 .\tplib\antlr\release\libantlr.lib js32.lib opengl32.lib glu32.lib glut32.lib libpng.lib libjpeg.lib zlib.lib wsock32.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Release\openvrml.dll"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
@@ -134,6 +134,10 @@ SOURCE="..\..\..\src\openvrml-gl\OpenVRML\GL\OpenGLEvent.h"
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\src\openvrml\OpenVRML\private.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\src\openvrml\OpenVRML\Route.h
 # End Source File
 # Begin Source File
@@ -191,6 +195,10 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlEvent.h
 # Begin Source File
 
 SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlFrustum.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlMatrix.h
 # End Source File
 # Begin Source File
 
@@ -552,6 +560,19 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlFrustum.cpp
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
 # ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlMatrix.cpp
+
+!IF  "$(CFG)" == "openvrml - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
+
+# ADD CPP /w /W0
 
 !ENDIF 
 

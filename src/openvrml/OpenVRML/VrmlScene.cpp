@@ -69,7 +69,6 @@ VrmlScene::VrmlScene(const std::string & sceneUrl,
         d_pendingScope(0), d_frameRate(0.0), d_firstEvent(0), d_lastEvent(0) {
     for (size_t i = 0; i < this->nodes.getLength(); ++i) {
         this->nodes.getElement(i)->addToScene(this, sceneUrl);
-
     }
 
     if (sceneUrl.length() > 0)
@@ -833,22 +832,17 @@ void VrmlScene::render(Viewer *viewer)
   // sure that the new modelview transform code exactly shadows the
   // old code.
   //
-  double mat[4][4]; // the modelview transform
- 
-  if (vp)  // viewpoint is optional
-    vp->inverseTransform(viewer); // put back nested viewpoint. skb
- 
-  double temp_mat[4][4];
-  Midentity(mat);
+  VrmlMatrix MV; // the modelview transform
   if(vp)
   {
-  vp->getInverseMatrix(temp_mat);
-  MM(mat,temp_mat);
-  viewer->getUserNavigation(temp_mat);
-  MM(mat,temp_mat);
-  Midentity(temp_mat);
-  vp->inverseTransform(temp_mat);
-  MM(mat,temp_mat);                      
+   VrmlMatrix IM,NMAT;
+   IM.makeIdentity();
+   vp->inverseTransform(IM);   // put back nested viewpoint. skb
+   viewer->MatrixMultiply(IM.get());
+   vp->getInverseMatrix(MV);
+   viewer->getUserNavigation(NMAT);
+   MV = MV.MMleft(NMAT);
+   MV = MV.MMleft(IM);
   }
   else
   {
@@ -856,12 +850,13 @@ void VrmlScene::render(Viewer *viewer)
     // as indicated in the vrml spec (section 6.53 Viewpoint).
     //
     float t[3] = { 0.0f, 0.0f, -10.0f };
-    Mtranslation(mat, t);
-    viewer->getUserNavigation(temp_mat);
-    MM(mat,temp_mat);
+    VrmlMatrix NMAT;
+    MV.setTranslate(t);
+    viewer->getUserNavigation(NMAT);
+    MV = MV.MMleft(NMAT);
   }     
 
-  VrmlRenderContext rc(VrmlBVolume::BV_PARTIAL, mat);
+  VrmlRenderContext rc(VrmlBVolume::BV_PARTIAL, MV);
   rc.setDrawBSpheres(true);
 
   // Do the scene-level lights (Points and Spots)

@@ -593,15 +593,14 @@ void VrmlNode::inverseTransform(Viewer *v)
  * @see accumulateTransform
  * @see getParentTransform
  */
-void VrmlNode::inverseTransform(double m[4][4])
+void VrmlNode::inverseTransform(VrmlMatrix & m)
 {
   VrmlNode *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(m);
   else
-    Midentity(m);
+    m.identity();
 }
-
 
 /**
  * Pass a named event to this node. This method needs to be overridden

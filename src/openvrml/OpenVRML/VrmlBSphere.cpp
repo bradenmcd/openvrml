@@ -457,7 +457,7 @@ VrmlBSphere::isMAX() const
 
 
 void
-VrmlBSphere::orthoTransform(const double M[4][4]) 
+VrmlBSphere::orthoTransform(const VrmlMatrix & M) 
 {
   if (this->isMAX())
     return;
@@ -470,21 +470,21 @@ VrmlBSphere::orthoTransform(const double M[4][4])
   old_c[0] = c[0];
   old_c[1] = c[1];
   old_c[2] = c[2];
-  VM(new_c, M, old_c);
+  M.VecXMatrix(old_c,new_c);
   c[0] = new_c[0];
   c[1] = new_c[1];
   c[2] = new_c[2];
 
   // uniform scale means we can pick any of the scale elements? wait:
   // can we really do this? 
-  float tmp_r[3] = { M[0][0], M[0][1], M[0][2] };
+  float tmp_r[3] = { M[0][0], M[1][0], M[2][0] };
   float new_r = Vlength(tmp_r);
   r = new_r*r;
 }
 
 
 void
-VrmlBSphere::transform(const double M[4][4])
+VrmlBSphere::transform(const VrmlMatrix & M)
 {
   if (this->isMAX())
     return;
@@ -495,14 +495,14 @@ VrmlBSphere::transform(const double M[4][4])
   old_c[0] = c[0];
   old_c[1] = c[1];
   old_c[2] = c[2];
-  VM(new_c, M, old_c);
+  M.VecXMatrix(old_c,new_c);
   c[0] = new_c[0];
   c[1] = new_c[1];
   c[2] = new_c[2];
 
-  float x_scale_v[3] = { M[0][0], M[0][1], M[0][2] };
-  float y_scale_v[3] = { M[1][0], M[1][1], M[1][2] };
-  float z_scale_v[3] = { M[2][0], M[2][1], M[2][2] };
+  float x_scale_v[3] = { M[0][0], M[1][0], M[2][0] };
+  float y_scale_v[3] = { M[0][1], M[1][1], M[2][1] };
+  float z_scale_v[3] = { M[0][2], M[1][2], M[2][2] };
 
   float scale_x = Vlength(x_scale_v);
   float scale_y = Vlength(y_scale_v);
@@ -520,8 +520,6 @@ VrmlBSphere::transform(const double M[4][4])
   //cout << "VrmlBSphere::transform():r=(" << r << "," << max_scale*r << ")" << endl;
   r = max_scale*r;
 }
-
-
 
 ostream&
 VrmlBSphere::dump(ostream& o) const

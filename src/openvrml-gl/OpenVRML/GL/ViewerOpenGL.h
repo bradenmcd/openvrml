@@ -62,7 +62,7 @@ public:
 
   //
   virtual void resetUserNavigation();
-  virtual void getUserNavigation(double M[4][4]);
+  virtual void getUserNavigation(VrmlMatrix & M);
 
   // Scope dirlights, open/close display lists
   virtual Object beginObject(const char *name, bool retain);
@@ -80,6 +80,7 @@ public:
 
 
   virtual Object insertBox(float x, float y, float z);
+
   virtual Object insertCone(float h, float r, bool bottom, bool side);
   virtual Object insertCylinder(float h, float r, bool, bool, bool);
 
@@ -215,6 +216,13 @@ public:
 			    float fieldOfView,
 			    float avatarSize,
 			    float visLimit);
+
+ /**
+   * Multiply current ModelView Matrix with Given Matrix M
+   *
+   * @param M matrix in VrmlMatrix format
+   */
+  virtual void MatrixMultiply(const float M[4][4]);
 
   // The viewer knows the current viewpoint
   virtual void transformPoints(int nPoints, float *points);

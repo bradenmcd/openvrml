@@ -30,6 +30,7 @@
 #   include "Viewer.h"
 #   include "Image.h"
 #   include "VrmlBSphere.h"
+#   include "VrmlMatrix.h"
 
 class OPENVRML_SCOPE VrmlNodeChild : public VrmlNode {
 public:
@@ -179,6 +180,7 @@ public:
     virtual void renderNoCull(Viewer *, VrmlRenderContext rc);
 
     virtual void accumulateTransform(VrmlNode*);
+
 
     void activate( double timeStamp, bool isOver, bool isActive, double *p );
 
@@ -394,6 +396,8 @@ class OPENVRML_SCOPE VrmlNodeBillboard : public VrmlNodeGroup {
 public:
     // Define the fields of Billboard nodes
     static const NodeTypePtr defineType();
+    static void billboard_to_matrix(const VrmlNodeBillboard* t_arg,
+		                            const VrmlMatrix & MV, VrmlMatrix & M);
 
     VrmlNodeBillboard(VrmlScene *);
     virtual ~VrmlNodeBillboard();
@@ -410,9 +414,10 @@ public:
     virtual void accumulateTransform(VrmlNode*);
     virtual VrmlNode* getParentTransform();
     virtual void inverseTransform(Viewer *);
-    virtual void inverseTransform(double [4][4]);
+    virtual void inverseTransform(VrmlMatrix &);
 
     virtual VrmlNodeBillboard * toBillboard() const;
+
 };
 
 
@@ -439,6 +444,7 @@ public:
     const VrmlSFVec3f& getSize() const;
 
     const VrmlBVolume* getBVolume() const;
+
 };
 
 
@@ -646,6 +652,7 @@ class OPENVRML_SCOPE VrmlNodeCylinderSensor : public VrmlNodeChild {
     VrmlSFBool d_isActive;
     VrmlSFRotation d_rotation;
     VrmlSFVec3f d_trackPoint;
+	VrmlMatrix M;
 
 public:
     // Define the fields of CylinderSensor nodes
@@ -663,9 +670,14 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
+    virtual void render(Viewer* v, VrmlRenderContext rc);
     void activate( double timeStamp, bool isActive, double *p );
 
     bool isEnabled() { return d_enabled.get(); }
+
+private:
+    void setMVMatrix(const VrmlMatrix & M_in);
+    const VrmlMatrix & getMVMatrix()const;
 };
 
 
@@ -1337,7 +1349,7 @@ class OPENVRML_SCOPE VrmlNodePlaneSensor : public VrmlNodeChild {
     VrmlSFVec3f d_activationPoint;
 
     VrmlNode *d_parentTransform;
-
+    VrmlMatrix M;
 
 public:
     // Define the fields of PlaneSensor nodes
@@ -1355,12 +1367,18 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
+    virtual void render(Viewer* v, VrmlRenderContext rc);
     void activate( double timeStamp, bool isActive, double *p );
 
     virtual void accumulateTransform( VrmlNode* );
     virtual VrmlNode* getParentTransform();
 
     bool isEnabled() { return d_enabled.get(); }
+
+private:
+    void setMVMatrix(const VrmlMatrix & M_in);
+    const VrmlMatrix & getMVMatrix()const;
+
 };
 
 
@@ -1653,6 +1671,7 @@ class OPENVRML_SCOPE VrmlNodeSphereSensor : public VrmlNodeChild {
 
     VrmlSFVec3f d_activationPoint;
     VrmlSFVec3f d_centerPoint;
+	VrmlMatrix M;
 
 public:
     // Define the fields of SphereSensor nodes
@@ -1670,9 +1689,14 @@ public:
 
     virtual ostream& printFields(ostream& os, int indent);
 
+    virtual void render(Viewer* v, VrmlRenderContext rc);
     void activate( double timeStamp, bool isActive, double *p );
 
     bool isEnabled() { return d_enabled.get(); }
+
+private:
+    void setMVMatrix(const VrmlMatrix & M_in);
+    const VrmlMatrix & getMVMatrix()const;
 };
 
 
@@ -1938,14 +1962,13 @@ class OPENVRML_SCOPE VrmlNodeTransform : public VrmlNodeGroup {
     VrmlSFRotation d_scaleOrientation;
     VrmlSFVec3f d_translation;
     Viewer::Object d_xformObject;
-    double M[4][4];
+    VrmlMatrix M;
     bool M_dirty;
 
 public:
     // Define the fields of Transform nodes
     static const NodeTypePtr defineType();
-    static void transform_to_matrix(const VrmlNodeTransform* t_arg, int flag,
-                                    double M[4][4]);
+    static void transform_to_matrix(const VrmlNodeTransform* t_arg,VrmlMatrix & M);
 
     VrmlNodeTransform(VrmlScene *);
     virtual ~VrmlNodeTransform();
@@ -1962,7 +1985,7 @@ public:
 
     virtual void accumulateTransform(VrmlNode*);
     virtual void inverseTransform(Viewer *);
-    virtual void inverseTransform(double [4][4]);
+    virtual void inverseTransform(VrmlMatrix &);
 
     virtual VrmlNodeTransform* toTransform() const;
     const VrmlSFVec3f& getCenter() const;
@@ -1973,7 +1996,7 @@ public:
 
     const VrmlBVolume* getBVolume() const;
 
-    void getMatrix(double M[4][4]) const;
+    void getMatrix(VrmlMatrix & M) const;
 
 private:
     void recalcBSphere();
@@ -2023,7 +2046,7 @@ public:
 
     const VrmlBVolume* getBVolume() const;
 
-    void getInverseMatrix(double IM[4][4]) const;
+    void getInverseMatrix(VrmlMatrix & M) const;
 
     // XXX not implemented
     void getFrustum(VrmlFrustum& frust) const; // get a copy

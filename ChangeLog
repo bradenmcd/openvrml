@@ -1,3 +1,29 @@
+2001-10-04 S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * A New Class VrmlMatrix is implemented. Here the format
+          is same as OpenGL standard. So this matrix can be used
+          transparently as OpenGL matrix.
+
+        * All matrix operations in core (some in gl) are replaced
+          by objects of this class.
+
+        * In "Transformation node" set and unsetTransform are replaced
+          by its own calculated transformation matrix for improving
+          performance.
+
+        * In "Billboard node", the transformation matrix is 
+          calculated in core by using modelview matrix accumulated
+          during render traversal. So this transformation matrix is
+          also accumulated in modelview matrix.
+
+        * For calculating local coord. from world coord. in sensor
+          nodes (PlaneSensor, CylinderSensor and SphereSensor) during
+          activation, the accumulated transformation matrix is used.
+          Though by this "DEF/USE" problem is not solved unless 
+          someday "Ray based picking" is implemented. 
+
+        * Fix for bug #230460 
+          
 2001-09-27 Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Update VrmlNodeScript::addToScene to use std::string instead of

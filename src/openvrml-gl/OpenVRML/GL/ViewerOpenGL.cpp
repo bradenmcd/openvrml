@@ -479,29 +479,23 @@ void ViewerOpenGL::resetUserNavigation()
   wsPostRedraw();
 }
 
-
-void ViewerOpenGL::getUserNavigation(double M[4][4])
+void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
 {
   //cout << "ViewerOpenGL::getuserNavigation()" << endl;
-  Midentity(M);
+  M.makeIdentity();
+  VrmlMatrix tmp,rot(d_rotationMatrix); 
   float pos_vec[3];
-  double pos_mat[4][4];
   pos_vec[0] = d_zoom[0];
   pos_vec[1] = d_zoom[1];
   pos_vec[2] = d_zoom[2];
-  Mtranslation(pos_mat, pos_vec);
-  MM(M,pos_mat); // M = M * T
+  tmp.setTranslate(pos_vec);
+  M = M.MMleft(tmp);
+  M = M.MMleft(rot);
   pos_vec[0] = d_translatex;
   pos_vec[1] = d_translatey;
   pos_vec[2] = d_translatez;
-  Mtranslation(pos_mat, pos_vec);
-  double rot_mat[4][4];
-  for(int i=0; i<4; i++) // oh good grief.
-    for(int j=0; j<4; j++)
-      rot_mat[i][j] = d_rotationMatrix[j][i];
-  MM(M,rot_mat);  // M = M * R
-  MM(M,pos_mat); // M = R * T
-  //Mdump(cout, M) << endl;                
+  tmp.setTranslate(pos_vec);
+  M = M.MMleft(tmp);             
 }
 
 // Generate a normal from 3 indexed points.
@@ -890,6 +884,7 @@ Viewer::Object ViewerOpenGL::insertBox(float x, float y, float z)
 
   return (Object) glid;
 }
+
 
 
 Viewer::Object ViewerOpenGL::insertCone(float h,
@@ -2743,6 +2738,16 @@ void ViewerOpenGL::transformPoints(int np, float *p)
 
 }
 
+//   
+// Multiply current ModelView Matrix with Given Matrix M
+// @param M matrix in OpenGL format
+//
+// 
+void ViewerOpenGL::MatrixMultiply(const float M[4][4])
+{
+   glMultMatrixf(&M[0][0]);
+}
+
 //
 //  Viewer callbacks (called from window system specific functions)
 //
@@ -3254,41 +3259,23 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
       GLdouble modelview[16], projection[16];
       glGetIntegerv (GL_VIEWPORT, viewport);
       glGetDoublev (GL_PROJECTION_MATRIX, projection);
-      glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
+//      glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
+
+//   make modelview as an unit matrix as this is taken care in the core side
+//   during render traversal.
+
+      for (int i=0; i<4; ++i)
+        for (int j=0; j<4; ++j)
+          modelview[4*i+j] = (i == j) ? 1.0 : 0.0;
 
       GLdouble dx, dy, dz;
       gluUnProject( (GLdouble) x, (GLdouble) (viewport[3] - y), d_selectZ,
 		    modelview, projection, viewport,
 		    &dx, &dy, &dz);
-// I have to invert the Navigation Matrix.... SKB
-  double rot_mat[4][4];
-  for(int i=0; i<4; i++)
-    for(int j=0; j<4; j++)
-      rot_mat[i][j] = d_rotationMatrix[i][j];
-  double pos_mat[4][4],M[4][4];
-  float pos_vec[3];
-  pos_vec[0] = -d_translatex;
-  pos_vec[1] = -d_translatey;
-  pos_vec[2] = -d_translatez;
-  Mtranslation(pos_mat, pos_vec);
-  MM(M, pos_mat, rot_mat);
-  pos_vec[0] = -d_zoom[0];
-  pos_vec[1] = -d_zoom[1];
-  pos_vec[2] = -d_zoom[2];
-  Mtranslation(pos_mat, pos_vec);
-  MM(M,pos_mat);
-  float vx[3],d[3];
-  vx[0] = dx;
-  vx[1] = dy;
-  vx[2] = dz;
-  VM(d, M, vx);
-  selectCoord[0] = d[0];
-  selectCoord[1] = d[1];
-  selectCoord[2] = d[2];
-                                       
-//      selectCoord[0] = dx;
-//      selectCoord[1] = dy;
-//      selectCoord[2] = dz;
+
+      selectCoord[0] = dx;
+      selectCoord[1] = dy;
+      selectCoord[2] = dz;
     }
 
   bool wasActive = false;

@@ -130,6 +130,10 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\nodetypeptr.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\private.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\Route.h
 # End Source File
 # Begin Source File
@@ -171,6 +175,10 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlEvent.h
 # Begin Source File
 
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlFrustum.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlMatrix.h
 # End Source File
 # Begin Source File
 
@@ -522,6 +530,19 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlFrustum.cpp
 
 # ADD CPP /D "DLL_EXPORT"
 # SUBTRACT CPP /D "DLLLIB_EXPORTS"
+
+!ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
+
+# ADD CPP /w /W0
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlMatrix.cpp
+
+!IF  "$(CFG)" == "openvrmlcore - Win32 Release"
 
 !ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
 
