@@ -1,3 +1,8 @@
+2003-11-08  Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/img.cpp (img::~img):  Initialize
+	img::nframes_ to 0.  Fixes crash in img destruction.
+
 2003-10-19  Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.14.2 release.
