@@ -2137,8 +2137,6 @@ script::script(openvrml::script_node & node, const std::string & source)
     openvrml::script(node),
     cx(0)
 {
-    std::cout << source << std::endl;
-
     //
     // Initialize the runtime.
     //

@@ -1,5 +1,10 @@
 2004-04-23 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/script.cpp:  Removed erroneously
+	committed debugging output.
+
+2004-04-23 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed incorrect assertion in Vrml97Parser::protoBodyStatement.
 
 	* src/libopenvrml/openvrml/Vrml97Parser.cpp
