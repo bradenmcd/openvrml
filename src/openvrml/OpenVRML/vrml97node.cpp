@@ -6195,9 +6195,9 @@ const NodeTypePtr VrmlNodePlaneSensor::defineType() {
 VrmlNodePlaneSensor::VrmlNodePlaneSensor(VrmlScene * const scene):
         VrmlNodeChild(*defineType(), scene), d_autoOffset(true),
         d_enabled(true), d_maxPosition(-1.0, -1.0), d_isActive(false),
+        d_minPosition(0.0,0.0), d_offset(0.0,0.0,0.0), 
         d_parentTransform(0) {
     this->setModified();
-    Midentity(d_activationMatrix);
 }
 
 // need copy constructor for d_parentTransform ...
@@ -6264,9 +6264,10 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
       d_isActive.set(isActive);
 
       float V[3] = { p[0], p[1], p[2] };
-      //double M[4][4];
-      inverseTransform( d_activationMatrix );
-      VM( V, d_activationMatrix, V );
+      double M[4][4];
+      Midentity(M);
+      inverseTransform(M);
+      VM( V, M, V );
       d_activationPoint.set(V);
 #if 0
       theSystem->warn(" planesensor: activate at (%g %g %g)\n",
@@ -6298,9 +6299,10 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
   else if ( isActive )
     {
       float V[3] = { p[0], p[1], p[2] };
-      //double M[4][4];
-      //inverseTransform( M );
-      VM( V, d_activationMatrix, V );
+      double M[4][4];
+      Midentity(M);
+      inverseTransform( M );
+      VM( V, M, V );
       d_trackPoint.set(V);
       eventOut( timeStamp, "trackPoint_changed", d_trackPoint );
 
@@ -7817,6 +7819,7 @@ void VrmlNodeSphereSensor::activate( double timeStamp,
             // calculate the center of the object in world coords
         float V[3] = { 0.0, 0.0, 0.0 };
         double M[4][4];
+        Midentity(M);
         inverseTransform( M );
         VM( V, M, V );
         d_centerPoint.set(V);
@@ -7843,6 +7846,7 @@ void VrmlNodeSphereSensor::activate( double timeStamp,
         // get local coord for touch point
         float V[3] = { p[0], p[1], p[2] };
         double M[4][4];
+        Midentity(M);
         inverseTransform( M );
         VM( V, M, V );
         d_trackPoint.set(V);
@@ -7860,6 +7864,7 @@ void VrmlNodeSphereSensor::activate( double timeStamp,
         
         Vcross(tempv, dir1.get(), dir2.get());
                 VrmlSFVec3f cx(tempv);
+        cx = cx.normalize();     
 
         VrmlSFRotation newRot(cx, dist * acos(dir1.dot(dir2)));
         if ( d_autoOffset.get() )
@@ -9300,64 +9305,27 @@ void VrmlNodeTransform::accumulateTransform(VrmlNode * parent) {
 
 void VrmlNodeTransform::inverseTransform(Viewer *viewer)
 {
+   viewer->unsetTransform(d_center.get(),
+                             d_rotation.get(),
+                             d_scale.get(),
+                             d_scaleOrientation.get(),
+                             d_translation.get());
   VrmlNode *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(viewer);
-
-  // Build the inverse
-  float trans[3] = { - d_translation.getX(),
-             - d_translation.getY(),
-             - d_translation.getZ() };
-  float rot[4] = { d_rotation.getX(),
-           d_rotation.getY(),
-           d_rotation.getZ(),
-           -  d_rotation.getAngle() };
-
-  // Invert scale (1/x)
-  float scale[3] = { d_scale.getX(), d_scale.getY(), d_scale.getZ() };
-  if (! fpzero(scale[0])) scale[0] = 1.0 / scale[0];
-  if (! fpzero(scale[1])) scale[1] = 1.0 / scale[1];
-  if (! fpzero(scale[2])) scale[2] = 1.0 / scale[2];
-
-  // Apply transforms (this may need to be broken into separate
-  // calls to perform the ops in reverse order...)
-  viewer->setTransform( d_center.get(),
-            rot,
-            scale,
-            d_scaleOrientation.get(),
-            trans );
-}
+} 
 
 void VrmlNodeTransform::inverseTransform(double m[4][4])
 {
-  //cout << "VrmlNodeTransform::inverseTransform()" << endl;
-  VrmlNode *parentTransform = getParentTransform();
-  if (parentTransform)
-    parentTransform->inverseTransform(m);
-  else
-    Midentity(m);
-
-  //// Invert this transform
-  //float rot[4] = { d_rotation.x(),
-  //d_rotation.y(),
-  //d_rotation.z(),
-  //- d_rotation.r() };
-  //double M[4][4];
-  //Mrotation( M, rot );
-  //MM( m, M );
-  //// Invert scale (1/x)
-  //float scale[3] = { d_scale.x(), d_scale.y(), d_scale.z() };
-  //if (! fpzero(scale[0])) scale[0] = 1.0 / scale[0];
-  //if (! fpzero(scale[1])) scale[1] = 1.0 / scale[1];
-  //if (! fpzero(scale[2])) scale[2] = 1.0 / scale[2];
-  //Mscale( M, scale );
-
+// It is calling program's responsibility to pass m as an unit matrix. skb
   double IM[4][4];
   synch_cached_matrix();
   transform_to_matrix(this, 1, IM);
   MM( m, IM );
-}
-
+  VrmlNode *parentTransform = getParentTransform();
+  if (parentTransform)
+    parentTransform->inverseTransform(m);
+}        
 
 const VrmlBVolume*
 VrmlNodeTransform::getBVolume() const

@@ -1,3 +1,18 @@
+2001-09-04  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Fixed Navigation problems in "Examine Mode", as it was
+          mentioned in <http://groups.yahoo.com/group/libvrml97/message/1451>
+
+        * Fixed some issues for bug #447971 (Navigation problems)
+
+        * Fix for bug #213579 (Backgrounds appear to move)
+
+        * Fix for bug #213970 (Headlight doesn't follow Viewpoint)
+
+        * Fix for shininess component in Material node.
+
+        * Fix for getOrientation(). In some cases it was failing.
+ 
 2001-08-31  Braden McDaniel  <braden@endoframe.com>
 
         * Removed VrmlNode::toProto() method; use dynamic_cast instead.

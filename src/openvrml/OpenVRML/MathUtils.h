@@ -65,7 +65,9 @@ ostream& Mdump(ostream& o, const double M[4][4]);
 
 
 void axis_aligned_bbox(float M[4][4], float *min, float *max);
-bool InvertMatrix3x3of4x4(float In[],float Out[]);
+bool InvertMatrix3x3of4x4(float In[], float Out[]);
+void build_quaternion(float m[4][4], float quat[4]);
+void quat_to_axis(float quat[4], float axisAngle[4]);
 
 
 #endif

@@ -318,6 +318,9 @@ protected:
   // User interaction
   void step(float, float, float);
   void rot(float x , float y, float z, float a);
+  void zoom(float);
+  void rot_trackball(float x1, float y1, float x2, float y2);  
+
 #ifndef macintosh
   void handleKey(int);
 #endif
@@ -371,6 +374,7 @@ protected:
 
   // View manipulation
   float d_position[3];
+  float d_zoom[3];
   float d_target[3];
   float d_orientation[4];
 

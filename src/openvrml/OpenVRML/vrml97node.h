@@ -1338,13 +1338,6 @@ class OPENVRML_SCOPE VrmlNodePlaneSensor : public VrmlNodeChild {
 
     VrmlNode *d_parentTransform;
 
-    /**
-     * Track the inverse transform matrix at the time of sensor
-     * activation. Mouse deltas are relative to the original
-     * transform. This matters because the transform stack on top of the
-     * sensor may be modified by the output of the sensor.
-     */
-    double d_activationMatrix[4][4];
 
 public:
     // Define the fields of PlaneSensor nodes

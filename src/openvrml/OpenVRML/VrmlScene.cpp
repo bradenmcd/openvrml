@@ -769,12 +769,6 @@ void VrmlScene::render(Viewer *viewer)
   float avatarSize = 0.25;
   float visibilityLimit = 0.0;
 
-  // since opengl post multiples the matrix, we need to do the user
-  // navigation transform first. this needs to be fixed so it doesn't
-  // depend on a special arg to beginObject.
-  //
-  viewer->beginObject(0);
-
   VrmlNodeViewpoint *vp = bindableViewpointTop();
   if (vp)
     {
@@ -782,7 +776,6 @@ void VrmlScene::render(Viewer *viewer)
       std::copy(vp->getOrientation().get(), vp->getOrientation().get() + 4,
                 orientation);
       field = vp->getFieldOfView().get();
-      vp->inverseTransform(viewer); // put back!
     }
 
   VrmlNodeNavigationInfo *ni = bindableNavigationInfoTop();
@@ -792,89 +785,24 @@ void VrmlScene::render(Viewer *viewer)
       visibilityLimit = ni->visibilityLimit();
     }
 
+    // Activate the headlight.
+  // ambient is supposed to be 0 according to the spec...
+  if ( headlightOn() )
+  {
+    float rgb[3] = { 1.0, 1.0, 1.0 };
+    float xyz[3] = { 0.0, 0.0, -1.0 };
+    float ambient = 0.3;
+ 
+    viewer->insertDirLight( ambient, 1.0, rgb, xyz );
+  }                         
+
   // sets the viewpoint transformation
   //
   viewer->setViewpoint(position, orientation, field, avatarSize, visibilityLimit);
 
-  //
-  // Hack alert: Right now the rendering code uses the old-style
-  // set/unset Transform code, but the culling code accumulates the
-  // modelview matrix on the core side using modifications to
-  // VrmlTransform and the new VrmlRenderContext class.
-  //
-  // However, that means we need to jump through some hoops to make
-  // sure that the new modelview transform code exactly shadows the
-  // old code.
-  //
-  double M[4][4]; // the modelview transform
-  Midentity(M);
-  if (vp) {       // viewpoint is optional
-
-    // find the inverse of the transform stack above the viewpoint.
-    //
-    vp->inverseTransform(M);
-
-    // find where the viewpoint itself points (the viewpoint has its
-    // own built-in transformation, in addition to the transformations
-    // of any parent nodes. yes, that is redundant, but that's what the
-    // vrml97 spec says)
-    //
-    double vp_IM[4][4];
-    vp->getInverseMatrix(vp_IM);
-
-    MM(M, vp_IM);
-
-  } else {
-
-    // if there's no viewpoint, then set us up arbitrarily at 0,0,-10,
-    // as indicated in the vrml spec (section 6.53 Viewpoint).
-    //
-    float t[3] = { 0.0f, 0.0f, -10.0f };
-    Mtranslation(M, t);
-  }
-
-  // ok, at this point our matrix M should exactly match the results
-  // of the glGet(MODELVIEW) that we printed out in the call to
-  // setViewpoint above.
-  //
-  //cout << "VrmlScene::render():match:" << endl;
-  //float tmp[16];
-  //matrix_to_glmatrix(M, tmp);
-  //for(int i=0; i<4; i++) {
-  //for(int j=0; j<4; j++)
-  //cout << tmp[i+j*4] << " ";
-  //cout << endl;
-  //}
-  //cout << endl;
-
-  // the user can navigate away from the viewpoint. that part is
-  // handled entirely by the viewer.
-  //
-  double UN[4][4];
-  viewer->getUserNavigation(UN);
-  double M_tmp[4][4];
-  Mcopy(M_tmp, M);
-  //MM(M, M_tmp, UN);
-  MM(M, UN, M_tmp);
-
-  // ok: at this point our calculated modelview transform should exactly
-  // match what we get at ViewerOpenGL::beginObject(). print it out and
-  // see...
-  //
-  //cout << "VrmlScene::render():mv match:" << endl;
-  //float tmp[16];
-  //matrix_to_glmatrix(M, tmp);
-  //for(int i=0; i<4; i++) {
-  //for(int j=0; j<4; j++)
-  //cout << tmp[i+j*4] << " ";
-  //cout << endl;
-  //}
-  //cout << endl;
-
-  VrmlRenderContext rc(VrmlBVolume::BV_PARTIAL, M);
-  rc.setDrawBSpheres(true);
 
   // Set background.
+
   VrmlNodeBackground *bg = bindableBackgroundTop();
   if (bg)
     { // Should be transformed by the accumulated rotations above ...
@@ -890,19 +818,49 @@ void VrmlScene::render(Viewer *viewer)
       viewer->setFog(f->color(), f->visibilityRange(), f->fogType().c_str());
     }
 
-  // Activate the headlight.
-  // ambient is supposed to be 0 according to the spec...
-  if ( headlightOn() )
-  {
-    float rgb[3] = { 1.0, 1.0, 1.0 };
-    float xyz[3] = { 0.0, 0.0, -1.0 };
-    float ambient = 0.3;
-
-    viewer->insertDirLight( ambient, 1.0, rgb, xyz );
-  }
-
   // Top level object
-  //viewer->beginObject(0);
+  
+    viewer->beginObject(0);
+  //
+  // Hack alert: Right now the rendering code uses the old-style
+  // set/unset Transform code, but the culling code accumulates the
+  // modelview matrix on the core side using modifications to
+  // VrmlTransform and the new VrmlRenderContext class.
+  //
+  // However, that means we need to jump through some hoops to make
+  // sure that the new modelview transform code exactly shadows the
+  // old code.
+  //
+  double mat[4][4]; // the modelview transform
+ 
+  if (vp)  // viewpoint is optional
+    vp->inverseTransform(viewer); // put back nested viewpoint. skb
+ 
+  double temp_mat[4][4];
+  Midentity(mat);
+  if(vp)
+  {
+  vp->getInverseMatrix(temp_mat);
+  MM(mat,temp_mat);
+  viewer->getUserNavigation(temp_mat);
+  MM(mat,temp_mat);
+  Midentity(temp_mat);
+  vp->inverseTransform(temp_mat);
+  MM(mat,temp_mat);                      
+  }
+  else
+  {
+    // if there's no viewpoint, then set us up arbitrarily at 0,0,-10,
+    // as indicated in the vrml spec (section 6.53 Viewpoint).
+    //
+    float t[3] = { 0.0f, 0.0f, -10.0f };
+    Mtranslation(mat, t);
+    viewer->getUserNavigation(temp_mat);
+    MM(mat,temp_mat);
+  }     
+
+  VrmlRenderContext rc(VrmlBVolume::BV_PARTIAL, mat);
+  rc.setDrawBSpheres(true);
 
   // Do the scene-level lights (Points and Spots)
   std::list<VrmlNode *>::iterator li, end = this->d_scopedLights.end();

@@ -132,6 +132,7 @@ ViewerOpenGL::ViewerOpenGL(VrmlScene & scene): Viewer(scene) {
   d_translating = false;
   trackball(d_curquat, 0.0, 0.0, 0.0, 0.0);
   d_position[0] = d_position[1] = d_position[2] = 0.0;
+  d_zoom[0] = d_zoom[1] = d_zoom[2] = 0.0;
   d_target[0] = d_target[1] = d_target[2] = 0.0;
 
   d_orientation[0] = 0;
@@ -222,9 +223,9 @@ Viewer::Object ViewerOpenGL::beginObject(const char *,
       //cout << "ViewerOpenGL::beginObject():rot/trans:match" << endl;
       // Finish specifying the view (postponed to make Background easier)
       glPushMatrix();
-      //glLoadIdentity();
-      glMultMatrixf(&d_rotationMatrix[0][0]);                  // M = M * R
-      glTranslatef(d_translatex, d_translatey, d_translatez);  // M = M * T = (M * R) * T = R * T
+      glTranslatef(d_zoom[0], d_zoom[1], d_zoom[2]); // M = M * T
+      glMultMatrixf(&d_rotationMatrix[0][0]);                  // M = M * R 
+      glTranslatef(d_translatex, d_translatey, d_translatez);  // M = M * T 
       if (!d_lit) glDisable(GL_LIGHTING);
 
       //GLfloat actual_gl_mv[16];
@@ -319,6 +320,21 @@ void ViewerOpenGL::getPosition( float *x, float *y, float *z )
 
 void ViewerOpenGL::getOrientation( float *orientation )
 {
+#if 1
+
+  float modelview[4][4],mat[4][4];
+  float q[4];
+  glGetFloatv (GL_MODELVIEW_MATRIX, &modelview[0][0]);
+    for(int i=0; i<4; i++)
+    for(int j=0; j<4; j++)
+      mat[i][j] = modelview[j][i];
+  build_quaternion(mat,q);
+  quat_to_axis(q,orientation);
+  Vnorm( orientation );    
+
+#endif
+
+#if 0
   //cout << "ViewerOpenGL::getOrientation()" << endl;
   GLint viewport[4];
   GLdouble modelview[16], projection[16];
@@ -359,6 +375,7 @@ void ViewerOpenGL::getOrientation( float *orientation )
       orientation[2] = V[2];
       orientation[3] = acos( Vdot( L, Z ) );
     }
+#endif
 }
 
 
@@ -452,6 +469,7 @@ void ViewerOpenGL::resetUserNavigation()
 {
   d_translatex = d_translatey = d_translatez = 0.0;
   d_target[0] = d_target[1] = d_target[2] = 0.0;
+  d_zoom[0] = d_zoom[1] = d_zoom[2] = 0.0;
 
   trackball(d_curquat, 0.0, 0.0, 0.0, 0.0);
   //d_rotationChanged = true;
@@ -465,24 +483,25 @@ void ViewerOpenGL::resetUserNavigation()
 void ViewerOpenGL::getUserNavigation(double M[4][4])
 {
   //cout << "ViewerOpenGL::getuserNavigation()" << endl;
-
   Midentity(M);
   float pos_vec[3];
+  double pos_mat[4][4];
+  pos_vec[0] = d_zoom[0];
+  pos_vec[1] = d_zoom[1];
+  pos_vec[2] = d_zoom[2];
+  Mtranslation(pos_mat, pos_vec);
+  MM(M,pos_mat); // M = M * T
   pos_vec[0] = d_translatex;
   pos_vec[1] = d_translatey;
   pos_vec[2] = d_translatez;
-  double pos_mat[4][4];
   Mtranslation(pos_mat, pos_vec);
-  //cout << "(" << d_translatex << "," << d_translatey << "," << d_translatez << ")" << endl;
-
   double rot_mat[4][4];
   for(int i=0; i<4; i++) // oh good grief.
     for(int j=0; j<4; j++)
       rot_mat[i][j] = d_rotationMatrix[j][i];
-
-  //MM((double[4][4])M, pos_mat, rot_mat);
-  MM(M, rot_mat, pos_mat); // M = R * T
-  //Mdump(cout, M) << endl;
+  MM(M,rot_mat);  // M = M * R
+  MM(M,pos_mat); // M = R * T
+  //Mdump(cout, M) << endl;                
 }
 
 // Generate a normal from 3 indexed points.
@@ -555,7 +574,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
       glLoadIdentity();
 
       // Undo translation
-      glTranslatef( d_position[0], d_position[1], d_position[2] );
+//      glTranslatef( d_position[0], d_position[1], d_position[2] );
 
       // Apply current view rotation
       glMultMatrixf( &d_rotationMatrix[0][0] );
@@ -2279,7 +2298,9 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
 
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
-  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+// In OGL standard range of shininess is [0.0,128.0]
+// In VRML97 the range is [0.0,1.0] 
+  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess*128);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
   if (ambientIntensity == 0. &&
@@ -2851,33 +2872,46 @@ ViewerOpenGL::rot(float x, float y, float z, float a)
   wsPostRedraw();
 }
 
+void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
+{
+   trackball(d_lastquat, x1, y1, x2, y2);
+   float vx[4],rot_vec[4];
+   double rot_mat[4][4];
+   quat_to_axis(d_lastquat,vx);
+   getOrientation(rot_vec);
+   Mrotation(rot_mat,rot_vec);
+   float d[3],q[4];
+   VM(d, rot_mat, vx);
+   axis_to_quat(d,vx[3],q);
+   add_quats(q, d_curquat, d_curquat);
+   d_rotationChanged = true;
+   wsPostRedraw();
+}                
 
 void ViewerOpenGL::step( float x, float y, float z )
 {
   //cout << "ViewerOpenGL::step(" << x << "," << y << "," << z << ")" << endl;
 
 #if 1
-
   double rot_mat[4][4];
   for(int i=0; i<4; i++) // oh good grief.
     for(int j=0; j<4; j++)
-      rot_mat[i][j] = d_rotationMatrix[i][j];
-
+     rot_mat[i][j] = d_rotationMatrix[i][j];
+  double sco_mat[4][4];
+  float rot_vec[4];
   float vx[3];
   vx[0] = x;
   vx[1] = y;
   vx[2] = z;
   Vnorm(vx);
-  Vscale(vx, 0.5);
-  
+  getOrientation(rot_vec);
+  Mrotation(sco_mat,rot_vec);
   float d[3];
-  VM(d, rot_mat, vx);
-
-  //cout << "(" << d[0] << "," << d[1] << "," << d[2] << ")" << endl;
-
+  VM(d, sco_mat, vx);
+  VM(d, rot_mat, d);
   this->d_translatex += d[0];
   this->d_translatey += d[1];
-  this->d_translatez += d[2];
+  this->d_translatez += d[2];             
 #endif
 
 #if 0
@@ -2915,60 +2949,69 @@ void ViewerOpenGL::step( float x, float y, float z )
   wsPostRedraw();
 }
 
+void ViewerOpenGL::zoom( float z )
+{
+  double sco_mat[4][4];
+  float rot_vec[4];
+  float vx[3];
+  vx[0] = 0;
+  vx[1] = 0;
+  vx[2] = z;
+  Vnorm(vx);
+  getOrientation(rot_vec);
+  Mrotation(sco_mat,rot_vec);
+  float d[3];
+  VM(d, sco_mat, vx);
+  this->d_zoom[0] += d[0];
+  this->d_zoom[1] += d[1];
+  this->d_zoom[2] += d[2];
+  wsPostRedraw();
+}                                
+
 void ViewerOpenGL::handleKey(int key)
 {
   switch (key)
     {
-    case KEY_LEFT: // look left
-      rot(0, 1, 0, -1);
+    case KEY_LEFT:
+          step(-1, 0, 0);
       break;
-
-    case KEY_RIGHT: // look right
-      rot(0, 1, 0, 1);
-      break;
-
+ 
+    case KEY_RIGHT:
+          step(1, 0, 0);
+     break;
+ 
     case KEY_UP:  // move forward along line of sight
-      step(0, 0, 1);
+      zoom(1);
       break;
-
+ 
     case KEY_DOWN: // move backwards along line of sight
-      step(0, 0, -1);
+      zoom(-1);
       break;
-
+ 
     case 'a':  // look up
-      rot(1, 0, 0, -1);
+      rot_trackball(0.0, 0.45, 0.0, 0.55);
       break;
-
+ 
     case 'z':  // look down
-      rot(1, 0, 0, 1);
+      rot_trackball(0.0, 0.55, 0.0, 0.45);
       break;
-
+ 
     case 'A':  // translate up
-      d_translatey-=0.5;
-      wsPostRedraw();
+      step(0,1,0);
       break;
-
+ 
     case 'Z':  // translate down
-      d_translatey+=0.5;
-      wsPostRedraw();
+      step(0,-1,0);                              
       break;
-
-    case ',':			// Look left
-      //trackball(d_lastquat, 0.65, 0.0, 0.45, 0.0);
-      //add_quats(d_lastquat, d_curquat, d_curquat);
-      //d_rotationChanged = true;
-      d_target[0] -= 1.0;
-      wsPostRedraw();
+ 
+    case ',':                   // Look left
+      rot_trackball(0.55, 0.0, 0.45, 0.0);
       break;
-
-    case '.':			// Look right
-      //trackball(d_lastquat, 0.45, 0.0, 0.65, 0.0);
-      //add_quats(d_lastquat, d_curquat, d_curquat);
-      //d_rotationChanged = true;
-      d_target[0] += 1.0;
-      wsPostRedraw();
+ 
+    case '.':                   // Look right
+      rot_trackball(0.45, 0.0, 0.55, 0.0);
       break;
-
+               
     case KEY_PAGE_DOWN:
       this->scene.nextViewpoint(); wsPostRedraw(); break;
 
@@ -3080,43 +3123,33 @@ void ViewerOpenGL::handleButton( EventInfo *e)
 
 void ViewerOpenGL::handleMouseDrag(int x, int y)
 {
-  if (d_activeSensitive)
+ if (d_activeSensitive)
     {
       (void) checkSensitive( x, y, EVENT_MOUSE_DRAG );
     }
   else if (d_rotating)
     {
-      trackball(d_lastquat,
-		(2.0 * d_beginx - d_winWidth) / d_winWidth,
-		(d_winHeight - 2.0 * d_beginy) / d_winHeight,
-		(2.0 * x - d_winWidth) / d_winWidth,
-		(d_winHeight - 2.0 * y) / d_winHeight);
+      rot_trackball((2.0 * d_beginx - d_winWidth) / d_winWidth,
+                (d_winHeight - 2.0 * d_beginy) / d_winHeight,
+                (2.0 * x - d_winWidth) / d_winWidth,
+                (d_winHeight - 2.0 * y) / d_winHeight);
       d_beginx = x;
       d_beginy = y;
-      add_quats(d_lastquat, d_curquat, d_curquat);
-      d_rotationChanged = true;
-      wsPostRedraw();
     }
   // This is not scaling, it is now moving in screen Z coords
   else if (d_scaling)
     {
-      //d_scale = d_scale * (1.0 - (((float) (d_beginy - y)) / d_winHeight));
-      //d_translatez += 2.0 * ((float) (d_beginy - y)) / d_winHeight;
-      step( 0.0, 0.0, 0.2 * ((float) (d_beginy - y)) / d_winHeight );
+      zoom(0.02 * ((float) (d_beginy - y)) / d_winHeight );
       d_beginx = x;
       d_beginy = y;
-      wsPostRedraw();
     }
   else if (d_translating)
     {
-      //d_translatex += 2.0 * ((float) (x - d_beginx)) / d_winWidth;
-      //d_translatey += 2.0 * ((float) (d_beginy - y)) / d_winHeight;
-      step( 0.2 * ((float) (x - d_beginx)) / d_winWidth,
-	    0.2 * ((float) (d_beginy - y)) / d_winHeight,
-	    0.0 );
+      step( 0.02 * ((float) (x - d_beginx)) / d_winWidth,
+            0.02 * ((float) (d_beginy - y)) / d_winHeight,
+            0.0 );
       d_beginx = x;
       d_beginy = y;
-      wsPostRedraw();
     }
 
 }
@@ -3227,10 +3260,35 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
       gluUnProject( (GLdouble) x, (GLdouble) (viewport[3] - y), d_selectZ,
 		    modelview, projection, viewport,
 		    &dx, &dy, &dz);
-
-      selectCoord[0] = dx;
-      selectCoord[1] = dy;
-      selectCoord[2] = dz;
+// I have to invert the Navigation Matrix.... SKB
+  double rot_mat[4][4];
+  for(int i=0; i<4; i++)
+    for(int j=0; j<4; j++)
+      rot_mat[i][j] = d_rotationMatrix[i][j];
+  double pos_mat[4][4],M[4][4];
+  float pos_vec[3];
+  pos_vec[0] = -d_translatex;
+  pos_vec[1] = -d_translatey;
+  pos_vec[2] = -d_translatez;
+  Mtranslation(pos_mat, pos_vec);
+  MM(M, pos_mat, rot_mat);
+  pos_vec[0] = -d_zoom[0];
+  pos_vec[1] = -d_zoom[1];
+  pos_vec[2] = -d_zoom[2];
+  Mtranslation(pos_mat, pos_vec);
+  MM(M,pos_mat);
+  float vx[3],d[3];
+  vx[0] = dx;
+  vx[1] = dy;
+  vx[2] = dz;
+  VM(d, M, vx);
+  selectCoord[0] = d[0];
+  selectCoord[1] = d[1];
+  selectCoord[2] = d[2];
+                                       
+//      selectCoord[0] = dx;
+//      selectCoord[1] = dy;
+//      selectCoord[2] = dz;
     }
 
   bool wasActive = false;
