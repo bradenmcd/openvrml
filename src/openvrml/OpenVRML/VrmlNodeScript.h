@@ -89,7 +89,7 @@ public:
 
     // Script processing methods
     void initialize( double timeStamp );
-    void update( VrmlSFTime &now );
+    void update(const VrmlSFTime & now);
     void shutdown( double timeStamp );
 
     // Methods for adding eventIns/Outs/fields to this script

@@ -22,6 +22,7 @@
 # ifndef OPENVRML_FIELD_H
 #   define OPENVRML_FIELD_H
 
+#   include <vector>
 #   include <iostream.h>
 #   include "common.h"
 #   include "VrmlNodePtr.h"
@@ -468,19 +469,17 @@ public:
 
 
 class OPENVRML_SCOPE VrmlMFNode : public VrmlField {
-    VrmlNodePtr * nodes;
-    size_t allocated;
-    size_t size;
+    std::vector<VrmlNodePtr> nodes;
+
 public:
     explicit VrmlMFNode(size_t length = 0, const VrmlNodePtr * nodes = 0);
-    VrmlMFNode(const VrmlMFNode & mfnode);
     virtual ~VrmlMFNode();
 
-    VrmlMFNode & operator=(const VrmlMFNode & mfnode);
+    // Use compiler-defined copy ctor and operator=
 
-    const VrmlNodePtr & getElement(size_t index) const;
+    const VrmlNodePtr & getElement(size_t index) const throw ();
     void setElement(size_t index, const VrmlNodePtr & node);
-    size_t getLength() const;
+    size_t getLength() const throw ();
     void setLength(size_t length);
     bool exists(const VrmlNode & node) const;
     bool addNode(VrmlNode & node);
@@ -491,9 +490,6 @@ public:
     virtual VrmlFieldType fieldType() const;
     virtual const VrmlMFNode* toMFNode() const;
     virtual VrmlMFNode* toMFNode();
-
-private:
-    void realloc(size_t newSize);
 };
 
 

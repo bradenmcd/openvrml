@@ -1,3 +1,14 @@
+2001-08-09  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed JavaScript binding to use a wrapper class to track
+          meta-data about values corresponding to Script node fields/
+          eventOuts, rather than storing this data as properties on the
+          JavaScript objects.
+
+        * Minor const-correctness changed to ScriptObject::activate().
+
+        * Changed VrmlMFNode implementation to use std::vector<>.
+
 2001-08-08  Braden McDaniel  <braden@endoframe.com>
 
         * VrmlScene now stores the root nodes as a VrmlMFNode rather than

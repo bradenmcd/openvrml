@@ -31,7 +31,7 @@ class OPENVRML_SCOPE ScriptObject {
 public:
     virtual ~ScriptObject() = 0;
     virtual void activate(double timeStamp, const char * fname,
-                          size_t argc, const VrmlField * argv[]) = 0;
+                          size_t argc, const VrmlField * const argv[]) = 0;
 
 protected:
     ScriptObject(VrmlNodeScript & scriptNode);
