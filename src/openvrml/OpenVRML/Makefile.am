@@ -30,9 +30,7 @@ libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
 libopenvrml_la_SOURCES = \
         basetypes.cpp \
         doc.cpp \
-        dummysound.cpp \
         Image.cpp \
-        Audio.cpp \
         system.cpp \
         field.cpp \
         field_value_ptr.cpp \
@@ -59,7 +57,6 @@ OpenVRMLinclude_HEADERS = \
         basetypes.h \
         doc.h \
         Image.h \
-        Audio.h \
         system.h \
         field.h \
         field_value_ptr.h \
@@ -81,7 +78,6 @@ noinst_HEADERS = \
         Vrml97Parser.hpp \
         Vrml97ParserTokenTypes.hpp \
         private.h \
-        sound.h \
         ScriptJDK.h
 
 EXTRA_DIST = \

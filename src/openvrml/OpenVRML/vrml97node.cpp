@@ -43,8 +43,6 @@ extern "C" {
 # include "vrml97node.h"
 # include "doc.h"
 # include "browser.h"
-# include "Audio.h"
-# include "sound.h"
 # include "private.h"
 
 /**
@@ -1645,9 +1643,9 @@ AudioClipClass::create_type(const std::string & id,
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param type  the node_type associated with the node instance.
+ * @param type      the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
 AudioClip::AudioClip(const node_type & type,
@@ -1655,21 +1653,14 @@ AudioClip::AudioClip(const node_type & type,
     node(type, scope),
     AbstractBase(type, scope),
     pitch(1.0),
-    active(false),
-    audio(0),
-    url_modified(false),
-    audio_index(0),
-    audio_intensity(1.0),
-    audio_fd(-1)
+    active(false)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
 AudioClip::~AudioClip() throw ()
-{
-    delete this->audio;
-}
+{}
 
 /**
  * @brief Cast to an AudioClip node.
@@ -1682,92 +1673,7 @@ AudioClip* AudioClip::to_audio_clip() const
 }
 
 void AudioClip::update(const double currentTime)
-{
-    // If the URL has been modified, update the audio object
-    if (this->url_modified) {
-        doc relDoc(this->relativeUrl.value, static_cast<doc const *>(0));
-        delete this->audio;
-        std::string emptyUrl;
-        this->audio = new Audio(emptyUrl);
-        if (this->audio->tryURLs(this->url, &relDoc)) {
-            this->duration.value = this->audio->duration();
-            this->emit_event("duration_changed", this->duration, currentTime);
-        } else {
-#if HAVE_SOUND
-            cerr << "Error: couldn't read AudioClip from URL "
-                 << this->url << endl;
-#endif
-            delete this->audio;
-            this->audio = 0;
-        }
-
-        this->url_modified = false;
-    }
-
-    // If there's no audio or START <= 0, we don't play anything
-    if (this->audio == 0 || this->startTime.value <= 0)
-        return;
-
-    // Determine if this clip should be playing right now
-    bool audible = false;
-
-    // If START < STOP  and  START <= NOW < STOP
-    if (this->stopTime.value > this->startTime.value)
-        audible = (this->startTime.value <= currentTime &&
-                   currentTime < this->stopTime.value);
-
-    // If STOP < START  and  START <= NOW
-    else
-        audible = (currentTime >= this->startTime.value);
-
-    // If the clip is not looping, it's not audible after
-    // its duration has expired.
-    if (!this->loop.value) {
-        if (currentTime - this->startTime.value > this->audio->duration()) {
-            audible = false;
-        }
-    }
-
-    // If the clip is audible, play it.  Otherwise, stop it.
-    if (audible) {
-        // If the sound device is not already open, open it.
-        if (this->audio_fd < 0) {
-            this->audio_fd = openSound(this->audio->channels(),
-                                       this->audio->bitsPerSample(),
-                                       this->audio->samplesPerSec());
-
-            // If we can't get a sound device, silently return
-            if (this->audio_fd < 0) {
-                return;
-            }
-
-            this->audio_index =
-                this->audio->getByteIndex(currentTime
-                                          - this->startTime.value);
-
-            this->active.value = true;
-            this->emit_event("isActive", this->active, currentTime);
-        }
-
-        // Send out a sound buffer
-        this->audio_index = outputSoundChunk(this->audio->numBytes(),
-                                             this->audio->samples(),
-                                             this->audio->bitsPerSample(),
-                                             this->audio_index,
-                                             this->loop.value,
-                                             this->audio_intensity,
-                                             this->audio_fd);
-    }
-
-    // Otherwise, close the sound device
-    else {
-        if (this->audio_fd >= 0) {
-            this->audio_fd = closeSound(this->audio_fd);
-            this->active.value = false;
-            this->emit_event("isActive", this->active, currentTime);
-        }
-    }
-}
+{}
 
 /**
  * @brief Initialize.

@@ -1,3 +1,23 @@
+2003-06-05  Braden McDaniel  <braden@endoframe.com>
+
+	Removed bitrotted sound support code.  The old code is not the
+	approach we need to take; and it's been allowed to rot long
+	enough.
+
+	* src/openvrml/OpenVRML/Audio.cpp:  Removed file.
+	* src/openvrml/OpenVRML/Audio.h:  Removed file.
+	* src/openvrml/OpenVRML/Makefile.am:  Removed Audio.cpp,
+	Audio.h, dummysound.cpp, sound.c, sound.h.
+	* src/openvrml/OpenVRML/dummysound.cpp:  Removed file.
+	* src/openvrml/OpenVRML/sound-esd.c:  Removed file.
+	* src/openvrml/OpenVRML/sound.c:  Removed file.
+	* src/openvrml/OpenVRML/sound.h:  Removed file.
+	* src/openvrml/OpenVRML/vrml97node.cpp (AudioClip::AudioClip,
+	AudioClip::~AudioClip, AudioClip::update): Removed AudioClip
+	implementation.
+	* src/openvrml/OpenVRML/vrml97node.h:  Removed AudioClip
+	implementation.
+
 2003-06-04  Braden McDaniel  <braden@endoframe.com>
 
 	Cleaned up remaining "macintosh" #ifdef overlooked previously.

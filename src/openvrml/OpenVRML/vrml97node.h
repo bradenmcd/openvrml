@@ -36,8 +36,6 @@ typedef unsigned int FcChar32;
 
 namespace OpenVRML {
 
-    class Audio;
-
     namespace Vrml97Node {
 
         class OPENVRML_SCOPE AbstractBase : public virtual node {
@@ -387,12 +385,6 @@ namespace OpenVRML {
             sfbool active;
 
             sfstring relativeUrl;
-
-            Audio * audio;
-            bool url_modified;
-            int audio_index;
-            double audio_intensity;
-            int audio_fd;
 
         public:
             AudioClip(const node_type & type,
