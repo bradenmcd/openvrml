@@ -51,7 +51,7 @@ namespace OpenVRML {
         unsigned char * _samples;
 
     public:
-        Audio (const std::string & url, Doc *relative = 0);
+        explicit Audio(const std::string & url, Doc * relative = 0);
         ~Audio ();
 
         bool setURL(const std::string & url, Doc * relative = 0);

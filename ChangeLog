@@ -18,6 +18,10 @@
         * src/openvrml/OpenVRML/browser.cpp:  Added doc-comments for
           constants pi and friends.
 
+        * src/openvrml/OpenVRML/Audio.cpp,
+          src/openvrml/OpenVRML/Audio.h:  Reformatted comments as doc-
+          comments.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,

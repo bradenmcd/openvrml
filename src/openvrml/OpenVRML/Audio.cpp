@@ -2,29 +2,22 @@
 // OpenVRML
 //
 // Copyright (C) 1999  Kumaran Santhanam
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
-/*=========================================================================
-| CONSTANTS
- ========================================================================*/
-
-/*=========================================================================
-| INCLUDES
- ========================================================================*/
 #include <stdio.h>
 #include <string.h>
 
@@ -33,30 +26,24 @@
 #include "System.h"
 #include "field.h"
 
+namespace OpenVRML {
 
-/*=========================================================================
-| TYPES
- ========================================================================*/
+/**
+ * @class Audio
+ *
+ * @brief Play audio clips.
+ */
+
 typedef unsigned char   byte;
 typedef unsigned short  two_bytes;
 typedef unsigned int    four_bytes;
 
-
-/*=========================================================================
-| TYPES
- ========================================================================*/
-enum AudioFileType
-{
+enum AudioFileType {
     AudioFile_UNKNOWN,
     AudioFile_WAV
 };
 
-
-/*=========================================================================
-| TYPES
- ========================================================================*/
-struct WaveHeader
-{
+struct WaveHeader {
     byte           riff_id[4];
     four_bytes     riff_size;
     byte           wave_id[4];
@@ -74,70 +61,39 @@ struct WaveHeader
 
 #define WAVE_FORMAT_PCM   1
 
+namespace {
+    /**
+     * @brief Determine the audio file type.
+     *
+     * @param url   URL string.
+     * @param file  included in case this function is updated to peek at the
+     *              file header.
+     *
+     * @return the audio file type.
+     */
+    AudioFileType audioFileType(const std::string & url, FILE * file)
+    {
+        using std::string;
+        string::size_type dotPos = url.find_last_of('.');
+        if (dotPos != string::npos) {
+            ++dotPos;
+        }
 
-/*=========================================================================
-| audioFileType
-|
-|--------------------------------------------------------------------------
-| Determine the audio file type
-|
-|--------------------------------------------------------------------------
-| ARGUMENTS
-|     1. URL string
-|     2. File handle
-|
-| RETURNS
-|     AudioFileType
-|
-|--------------------------------------------------------------------------
-| REVISION HISTORY:
-| Rev     Date      Who         Description
-| 0.8     11Nov98   kumaran     Created
- ========================================================================*/
-// FILE * is included in case this function is to be updated to
-// peek at the file header.  - ks 11Nov98
-static AudioFileType audioFileType(const std::string & url, FILE *) {
-    using std::string;
-    string::size_type dotPos = url.find_last_of('.');
-    if (dotPos != string::npos) {
-        ++dotPos;
-    }
-    
-    const string ext(url.substr(dotPos));
-    if (ext == "wav" || ext == "WAV") {
-        return AudioFile_WAV;
-    } else {
-        return AudioFile_UNKNOWN;
+        const string ext(url.substr(dotPos));
+        if (ext == "wav" || ext == "WAV") {
+            return AudioFile_WAV;
+        } else {
+            return AudioFile_UNKNOWN;
+        }
     }
 }
 
-using namespace OpenVRML;
-
-/*=========================================================================
-| PUBLIC METHODS
- ========================================================================*/
-
-/*=========================================================================
-| Audio::Audio
-| Audio::~Audio
-|
-|--------------------------------------------------------------------------
-| CONSTRUCTOR
-| DESTRUCTOR
-|
-|--------------------------------------------------------------------------
-| ARGUMENTS
-|     1. URL string
-|     2. Doc object
-|
-| RETURNS
-|     None
-|
-|--------------------------------------------------------------------------
-| REVISION HISTORY:
-| Rev     Date      Who         Description
-| 0.8     11Nov98   kumaran     Created
- ========================================================================*/
+/**
+ * @brief Constructor.
+ *
+ * @param url       URL string.
+ * @param relative  Doc object.
+ */
 Audio::Audio(const std::string & url, Doc *relative)
     : _doc(0),
       _encoding(AUDIO_LINEAR),
@@ -151,33 +107,23 @@ Audio::Audio(const std::string & url, Doc *relative)
     setURL (url, relative);
 }
 
-
+/**
+ * @brief Destructor.
+ */
 Audio::~Audio()
 {
     delete _doc;
     delete _samples;
 }
 
-
-/*=========================================================================
-| Audio::setURL
-|
-|--------------------------------------------------------------------------
-| Set the URL of the audio file and read it from the document object.
-|
-|--------------------------------------------------------------------------
-| ARGUMENTS
-|     1. URL string
-|     2. Doc object
-|
-| RETURNS
-|     True if the URL was read, false if it was not
-|
-|--------------------------------------------------------------------------
-| REVISION HISTORY:
-| Rev     Date      Who         Description
-| 0.8     11Nov98   kumaran     Created
- ========================================================================*/
+/**
+ * @brief Set the URL of the audio file and read it from the document object.
+ *
+ * @param url       URL string.
+ * @param relative  Doc object.
+ *
+ * @return @c true if the URL was read; @c false otherwise.
+ */
 bool Audio::setURL(const std::string & url, Doc *relative)
 {
 #if HAVE_SOUND
@@ -211,39 +157,26 @@ bool Audio::setURL(const std::string & url, Doc *relative)
 
         if (success == false)
             theSystem->warn("Unable to read audio file (%s).\n", url.c_str());
-            
-        
+
+
         _doc->fclose ();
     }
 
     else
         theSystem->warn("Unable to find audio file (%s).\n", url.c_str());
- 
+
 
     return (_num_samples > 0);
 }
 
-
-/*=========================================================================
-| Audio::tryURLs
-|
-|--------------------------------------------------------------------------
-| Try a list of URLs
-|
-|--------------------------------------------------------------------------
-| ARGUMENTS
-|     1. List of URLs
-|     2. Document object
-|
-| RETURNS
-|     True if one of the URLs succeeded, false if they all failed
-|
-|--------------------------------------------------------------------------
-| REVISION HISTORY:
-| Rev     Date      Who         Description
-| 0.8     11Nov98   kumaran     Created
- ========================================================================*/
-bool Audio::tryURLs(const MFString & urls, Doc * relative) {
+/**
+ * @brief Try a list of URLs.
+ *
+ * @param urls      list of URLs.
+ * @param relative  Doc object.
+ */
+bool Audio::tryURLs(const MFString & urls, Doc * relative)
+{
     for (size_t i = 0; i < urls.getLength(); ++i) {
         if (this->setURL(urls.getElement(i), relative)) {
             return true;
@@ -252,53 +185,23 @@ bool Audio::tryURLs(const MFString & urls, Doc * relative) {
     return false;
 }
 
-
-/*=========================================================================
-| Audio::url
-|
-|--------------------------------------------------------------------------
-| Return the url of this clip
-|
-|--------------------------------------------------------------------------
-| ARGUMENTS
-|     None
-|
-| RETURNS
-|     URL if one exists
-|
-|--------------------------------------------------------------------------
-| REVISION HISTORY:
-| Rev     Date      Who         Description
-| 0.8     11Nov98   kumaran     Created
- ========================================================================*/
+/**
+ * @brief Get the URL of the clip.
+ *
+ * @return the URL, or 0 if none exists.
+ */
 const char *Audio::url() const
 {
     return (_doc ? _doc->url() : 0);
 }
 
-
-/*=========================================================================
-| PRIVATE METHODS
- ========================================================================*/
-
-/*=========================================================================
-| Audio::wavread
-|
-|--------------------------------------------------------------------------
-| Read a WAV file
-|
-|--------------------------------------------------------------------------
-| ARGUMENTS
-|     1. File handle
-|
-| RETURNS
-|     True if the read succeeded, false if not
-|
-|--------------------------------------------------------------------------
-| REVISION HISTORY:
-| Rev     Date      Who         Description
-| 0.8     11Nov98   kumaran     Created
- ========================================================================*/
+/**
+ * @brief Read a WAV file.
+ *
+ * @param fp    file handle.
+ *
+ * @return @c true if the read succeeded; @c false otherwise.
+ */
 bool Audio::wavread (FILE *fp)
 {
     WaveHeader wave_header;
@@ -343,3 +246,5 @@ bool Audio::wavread (FILE *fp)
 
     return true;
 }
+
+} // namespace OpenVRML
