@@ -499,26 +499,26 @@ VrmlNodeType* VrmlScene::readPROTO( VrmlMFString *urls, Doc *relative )
   // that refers back to this namespace (protos), which will be invalid
   // after we exit this function. I guess it needs to be allocated and
   // ref counted too...
-  VrmlNamespace protos;
+  //VrmlNamespace protos;
+  VrmlNamespace *protos = new VrmlNamespace();  // leak...
   Doc urlDoc;
   VrmlNodeType* def = 0;
   int i, n = urls->size();
 
-  theSystem->debug("readPROTO\n");
-
   for (i=0; i<n; ++i)
     {
-      //theSystem->debug("Trying to read url '%s'\n", urls->get(i));
+      theSystem->inform("Trying to read EXTERNPROTO from url '%s'\n",
+			urls->get(i));
       urlDoc.seturl( urls->get(i), relative );
-      VrmlMFNode *kids = VrmlScene::readWrl( &urlDoc, &protos );
+      VrmlMFNode *kids = VrmlScene::readWrl( &urlDoc, protos );
       if ( kids ) delete kids;
 
       // Grab the specified PROTO, or the first one.
       const char *whichProto = urlDoc.urlModifier();
-      if (*whichProto)
-	def = (VrmlNodeType*) protos.findType( whichProto+1 );
+      if (whichProto && *whichProto)
+	def = (VrmlNodeType*) protos->findType( whichProto+1 );
       else
-	def = (VrmlNodeType*) protos.firstType();
+	def = (VrmlNodeType*) protos->firstType();
 
       if (def)
 	{
