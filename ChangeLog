@@ -1,3 +1,7 @@
+2000-04-19  Chris Morley  <cmorley@vermontel.net>
+
+	* Added -title arg to lookat for multiple viewers under xswallow.
+
 2000-04-09  Michael Louka <Michael.Louka@hrp.no>
 
   * Modified System::time() for the Mac OS to provide VRML97 compliancy
