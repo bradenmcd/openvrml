@@ -101,13 +101,13 @@ are provided for convenience:
    parsers, along with the ANTLR-generated sources.  Most users will not
    need to install ANTLR in order to compile and use OpenVRML; however,
    ANTLR is required to regenerate the parser sources if you wish to
-   modify the parser. ANTLR can be obtained from <http://antlr.org>.
+   modify the parser.  ANTLR can be obtained from <http://antlr.org>.
 
  * zlib
 
    OpenVRML uses zlib for reading gzipped VRML worlds.  If your system
    does not include zlib, you can obtain it from
-   <http://www.gzip.org/zlib/index.html>. The GNU build includes
+   <http://www.gzip.org/zlib/index.html>.  The GNU build includes
    configuration options to allow the build either to locate zlib on
    your system, or to build OpenVRML without support for gzipped worlds.
    These arguments can be passed to "configure":
