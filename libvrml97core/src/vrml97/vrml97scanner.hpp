@@ -28,55 +28,56 @@
 
 class Vrml97Utf8Scanner : public antlr::TokenStream {
     public:
-        static int const EOF_;
+        static const int EOF_;
         //
         // The following identifiers for constants must match those in the file
         // Vrml97TokenTypes.txt.
         //
-        static int const PERIOD;
-        static int const LBRACKET;
-        static int const RBRACKET;
-        static int const LBRACE;
-        static int const RBRACE;
-        static int const ID;
-        static int const INTEGER;
-        static int const REAL;
-        static int const STRING;
-        static int const KEYWORD_DEF;
-        static int const KEYWORD_EVENTIN;
-        static int const KEYWORD_EVENTOUT;
-        static int const KEYWORD_EXPOSEDFIELD;
-        static int const KEYWORD_EXTERNPROTO;
-        static int const KEYWORD_FALSE;
-        static int const KEYWORD_FIELD;
-        static int const KEYWORD_IS;
-        static int const KEYWORD_NULL;
-        static int const KEYWORD_PROTO;
-        static int const KEYWORD_ROUTE;
-        static int const KEYWORD_TO;
-        static int const KEYWORD_TRUE;
-        static int const KEYWORD_USE;
-        static int const NODE_SCRIPT;
-        static int const FIELDTYPE_SFBOOL;
-        static int const FIELDTYPE_SFCOLOR;
-        static int const FIELDTYPE_SFFLOAT;
-        static int const FIELDTYPE_SFIMAGE;
-        static int const FIELDTYPE_SFINT32;
-        static int const FIELDTYPE_SFNODE;
-        static int const FIELDTYPE_SFROTATION;
-        static int const FIELDTYPE_SFSTRING;
-        static int const FIELDTYPE_SFTIME;
-        static int const FIELDTYPE_SFVEC2F;
-        static int const FIELDTYPE_SFVEC3F;
-        static int const FIELDTYPE_MFCOLOR;
-        static int const FIELDTYPE_MFFLOAT;
-        static int const FIELDTYPE_MFINT32;
-        static int const FIELDTYPE_MFNODE;
-        static int const FIELDTYPE_MFROTATION;
-        static int const FIELDTYPE_MFSTRING;
-        static int const FIELDTYPE_MFTIME;
-        static int const FIELDTYPE_MFVEC2F;
-        static int const FIELDTYPE_MFVEC3F;
+        static const int PERIOD;
+        static const int LBRACKET;
+        static const int RBRACKET;
+        static const int LBRACE;
+        static const int RBRACE;
+        static const int ID;
+        static const int INTEGER;
+        static const int HEX_INTEGER;
+        static const int REAL;
+        static const int STRING;
+        static const int KEYWORD_DEF;
+        static const int KEYWORD_EVENTIN;
+        static const int KEYWORD_EVENTOUT;
+        static const int KEYWORD_EXPOSEDFIELD;
+        static const int KEYWORD_EXTERNPROTO;
+        static const int KEYWORD_FALSE;
+        static const int KEYWORD_FIELD;
+        static const int KEYWORD_IS;
+        static const int KEYWORD_NULL;
+        static const int KEYWORD_PROTO;
+        static const int KEYWORD_ROUTE;
+        static const int KEYWORD_TO;
+        static const int KEYWORD_TRUE;
+        static const int KEYWORD_USE;
+        static const int NODE_SCRIPT;
+        static const int FIELDTYPE_SFBOOL;
+        static const int FIELDTYPE_SFCOLOR;
+        static const int FIELDTYPE_SFFLOAT;
+        static const int FIELDTYPE_SFIMAGE;
+        static const int FIELDTYPE_SFINT32;
+        static const int FIELDTYPE_SFNODE;
+        static const int FIELDTYPE_SFROTATION;
+        static const int FIELDTYPE_SFSTRING;
+        static const int FIELDTYPE_SFTIME;
+        static const int FIELDTYPE_SFVEC2F;
+        static const int FIELDTYPE_SFVEC3F;
+        static const int FIELDTYPE_MFCOLOR;
+        static const int FIELDTYPE_MFFLOAT;
+        static const int FIELDTYPE_MFINT32;
+        static const int FIELDTYPE_MFNODE;
+        static const int FIELDTYPE_MFROTATION;
+        static const int FIELDTYPE_MFSTRING;
+        static const int FIELDTYPE_MFTIME;
+        static const int FIELDTYPE_MFVEC2F;
+        static const int FIELDTYPE_MFVEC3F;
         
         Vrml97Utf8Scanner(istream &);
         
@@ -91,8 +92,8 @@ class Vrml97Utf8Scanner : public antlr::TokenStream {
         void _identifyTerminalSymbol(antlr::Token &);
         
         istream &   _istm;
-        size_t _line;
-        size_t _col;
+        size_t      _line;
+        size_t      _col;
         int         _c;
         int         _prevChar;
         int         _prevTokenType;

@@ -32,11 +32,6 @@ class Doc2;
 header "post_include_cpp" {
 # include <memory>
 # include <assert.h>
-# if defined(_WIN32) && ! defined(__CYGWIN__)
-#   include <strstrea.h>
-# else
-#   include <strstream.h>
-# endif
 # include "doc2.hpp"
 # include "VrmlNamespace.h"
 # include "VrmlNodeType.h"
@@ -891,21 +886,8 @@ colorValue[float c[3]]
 // colorComponent is defined separately from floatValue since, at some point, it
 // might be useful to issue a warning if a color component is not in [0, 1].
 //
-colorComponent returns [float f = 0.0f]
-    :   c0:REAL     { istrstream(
-# ifdef _WIN32
-                                 const_cast<char *>(c0->getText().c_str())
-# else
-                                 c0->getText().c_str()
-# endif
-                                 ) >> f; }
-    |   c1:INTEGER  { istrstream(
-# ifdef _WIN32
-                                 const_cast<char *>(c1->getText().c_str())
-# else
-                                 c1->getText().c_str()
-# endif
-                                 ) >> f; }
+colorComponent returns [float val = 0.0f]
+    :   val=floatValue
     ;
 
 sfFloatValue returns [VrmlSFFloat * sfv = new VrmlSFFloat(0.0f)]
@@ -941,21 +923,9 @@ mfFloatValue returns [VrmlMFFloat * mfv = new VrmlMFFloat()]
         }
     ;
 
-floatValue returns [float f = 0.0f]
-    :   f0:REAL     { istrstream(
-# ifdef _WIN32
-                                 const_cast<char *>(f0->getText().c_str())
-# else
-                                 f0->getText().c_str()
-# endif
-                                 ) >> f; }
-    |   f1:INTEGER  { istrstream(
-# ifdef _WIN32
-                                 const_cast<char *>(f1->getText().c_str())
-# else
-                                 f1->getText().c_str()
-# endif
-                                 ) >> f; }
+floatValue returns [float val = 0.0f]
+    :   f0:REAL     { val = atof(f0->getText().c_str()); }
+    |   f1:INTEGER  { val = atof(f1->getText().c_str()); }
     ;
 
 sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
@@ -1042,24 +1012,8 @@ mfInt32Value returns [VrmlMFInt * miv = new VrmlMFInt()]
     ;
 
 intValue returns [long val = 0]
-    :   i:INTEGER { istrstream istr(
-# ifdef _WIN32
-                               const_cast<char *>(i->getText().c_str())
-# else
-                               i->getText().c_str()
-# endif
-                               );
-        // default for istr is ios:dec for basefield, we have to clear
-        // the flag entirely to force istr to recognize the "0x"
-        // syntax as meaning hex while still reading decimal. (we also
-        // mistakenly recognize octal). depending on obscure iostream
-        // features worries me, as it's error prone. better to have
-        // the lexer specifically handle cases like this.
-   	//
-	istr.setf(0, ios::basefield);
-	istr >> val; 
-	//cout << "intValue:" << val << endl;
-	}
+    :   i0:INTEGER { val = atol(i0->getText().c_str()); }
+    |  	i1:HEX_INTEGER { val = strtol(i1->getText().c_str(), 0, 16); }
     ;
 
 sfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlSFNode * snv = new VrmlSFNode(0)]
@@ -1257,21 +1211,9 @@ mfTimeValue returns [VrmlMFTime * mtv = new VrmlMFTime()]
         }
     ;
 
-doubleValue returns [double d = 0]
-    :   d0:REAL     { istrstream(
-# ifdef _WIN32
-                                 const_cast<char *>(d0->getText().c_str())
-# else
-                                 d0->getText().c_str()
-# endif
-                                 ) >> d; }
-    |   d1:INTEGER  { istrstream(
-# ifdef _WIN32
-                                 const_cast<char *>(d1->getText().c_str())
-# else
-                                 d1->getText().c_str()
-# endif
-                                 ) >> d; }
+doubleValue returns [double val = 0.0]
+    :   d0:REAL     { val = atof(d0->getText().c_str()); }
+    |   d1:INTEGER  { val = atof(d1->getText().c_str()); }
     ;
 
 sfVec2fValue returns [VrmlSFVec2f * svv = new VrmlSFVec2f()]

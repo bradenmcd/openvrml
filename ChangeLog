@@ -1,3 +1,12 @@
+2000-12-06  Braden McDaniel  <braden@endoframe.com>
+
+        * Applied patch to fix
+          
+          <http://sourceforge.net/bugs/?func=detailbug&bug_id=124439&group_id=7151>
+          
+          This adds identification of hexadecimal integers to the lexer,
+          and removes use of istrstream from the parser.
+
 2000-12-05  Braden McDaniel  <braden@endoframe.com>
 
         * Reverted 26 Nov change to VrmlField.h. CodeWarrior 5/Mac is

@@ -5,11 +5,6 @@
 
 # include <memory>
 # include <assert.h>
-# if defined(_WIN32) && ! defined(__CYGWIN__)
-#   include <strstrea.h>
-# else
-#   include <strstream.h>
-# endif
 # include "doc2.hpp"
 # include "VrmlNamespace.h"
 # include "VrmlNodeType.h"
@@ -1462,6 +1457,7 @@ void Vrml97Parser::protoNodeBodyElement(
 				case LBRACKET:
 				case ID:
 				case INTEGER:
+				case HEX_INTEGER:
 				case REAL:
 				case STRING:
 				case KEYWORD_DEF:
@@ -1679,6 +1675,7 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 		case LBRACKET:
 		case ID:
 		case INTEGER:
+		case HEX_INTEGER:
 		case REAL:
 		case STRING:
 		case KEYWORD_DEF:
@@ -1754,10 +1751,10 @@ VrmlField *  Vrml97Parser::nonNodeFieldValue(
 		else if (((LA(1)==INTEGER||LA(1)==REAL))&&( ft == VrmlField::SFFLOAT )) {
 			fv=sfFloatValue();
 		}
-		else if (((LA(1)==INTEGER))&&( ft == VrmlField::SFIMAGE )) {
+		else if (((LA(1)==INTEGER||LA(1)==HEX_INTEGER))&&( ft == VrmlField::SFIMAGE )) {
 			fv=sfImageValue();
 		}
-		else if (((LA(1)==INTEGER))&&( ft == VrmlField::SFINT32 )) {
+		else if (((LA(1)==INTEGER||LA(1)==HEX_INTEGER))&&( ft == VrmlField::SFINT32 )) {
 			fv=sfInt32Value();
 		}
 		else if (((LA(1)==INTEGER||LA(1)==REAL))&&( ft == VrmlField::SFROTATION )) {
@@ -1781,7 +1778,7 @@ VrmlField *  Vrml97Parser::nonNodeFieldValue(
 		else if (((LA(1)==LBRACKET||LA(1)==INTEGER||LA(1)==REAL))&&( ft == VrmlField::MFFLOAT )) {
 			fv=mfFloatValue();
 		}
-		else if (((LA(1)==LBRACKET||LA(1)==INTEGER))&&( ft == VrmlField::MFINT32 )) {
+		else if (((LA(1)==LBRACKET||LA(1)==INTEGER||LA(1)==HEX_INTEGER))&&( ft == VrmlField::MFINT32 )) {
 			fv=mfInt32Value();
 		}
 		else if (((LA(1)==LBRACKET||LA(1)==INTEGER||LA(1)==REAL))&&( ft == VrmlField::MFROTATION )) {
@@ -1916,7 +1913,7 @@ VrmlSFImage *  Vrml97Parser::sfImageValue() {
 		
 		{
 		for (;;) {
-			if ((LA(1)==INTEGER)) {
+			if ((LA(1)==INTEGER||LA(1)==HEX_INTEGER)) {
 				pixel=intValue();
 				
 				// need to confirm the cross-platform-ness of this, it
@@ -2222,6 +2219,7 @@ VrmlMFInt *  Vrml97Parser::mfInt32Value() {
 	try {      // for error handling
 		switch ( LA(1)) {
 		case INTEGER:
+		case HEX_INTEGER:
 		{
 			i=intValue();
 			
@@ -2241,7 +2239,7 @@ VrmlMFInt *  Vrml97Parser::mfInt32Value() {
 			
 			{
 			for (;;) {
-				if ((LA(1)==INTEGER)) {
+				if ((LA(1)==INTEGER||LA(1)==HEX_INTEGER)) {
 					i=intValue();
 					
 					intVector.add(i);
@@ -2833,55 +2831,22 @@ void Vrml97Parser::colorValue(
 }
 
 float  Vrml97Parser::colorComponent() {
-	float f = 0.0f;
+	float val = 0.0f;
 	
-	ANTLR_USE_NAMESPACE(antlr)RefToken  c0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
-	ANTLR_USE_NAMESPACE(antlr)RefToken  c1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
 	try {      // for error handling
-		switch ( LA(1)) {
-		case REAL:
-		{
-			c0 = LT(1);
-			match(REAL);
-			istrstream(
-			# ifdef _WIN32
-			const_cast<char *>(c0->getText().c_str())
-			# else
-			c0->getText().c_str()
-			# endif
-			) >> f;
-			break;
-		}
-		case INTEGER:
-		{
-			c1 = LT(1);
-			match(INTEGER);
-			istrstream(
-			# ifdef _WIN32
-			const_cast<char *>(c1->getText().c_str())
-			# else
-			c1->getText().c_str()
-			# endif
-			) >> f;
-			break;
-		}
-		default:
-		{
-			throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
-		}
-		}
+		val=floatValue();
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
 		consume();
 		consumeUntil(_tokenSet_18);
 	}
-	return f;
+	return val;
 }
 
 float  Vrml97Parser::floatValue() {
-	float f = 0.0f;
+	float val = 0.0f;
 	
 	ANTLR_USE_NAMESPACE(antlr)RefToken  f0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  f1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -2892,26 +2857,14 @@ float  Vrml97Parser::floatValue() {
 		{
 			f0 = LT(1);
 			match(REAL);
-			istrstream(
-			# ifdef _WIN32
-			const_cast<char *>(f0->getText().c_str())
-			# else
-			f0->getText().c_str()
-			# endif
-			) >> f;
+			val = atof(f0->getText().c_str());
 			break;
 		}
 		case INTEGER:
 		{
 			f1 = LT(1);
 			match(INTEGER);
-			istrstream(
-			# ifdef _WIN32
-			const_cast<char *>(f1->getText().c_str())
-			# else
-			f1->getText().c_str()
-			# endif
-			) >> f;
+			val = atof(f1->getText().c_str());
 			break;
 		}
 		default:
@@ -2925,35 +2878,36 @@ float  Vrml97Parser::floatValue() {
 		consume();
 		consumeUntil(_tokenSet_18);
 	}
-	return f;
+	return val;
 }
 
 long  Vrml97Parser::intValue() {
 	long val = 0;
 	
-	ANTLR_USE_NAMESPACE(antlr)RefToken  i = ANTLR_USE_NAMESPACE(antlr)nullToken;
+	ANTLR_USE_NAMESPACE(antlr)RefToken  i0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
+	ANTLR_USE_NAMESPACE(antlr)RefToken  i1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
 	try {      // for error handling
-		i = LT(1);
-		match(INTEGER);
-		istrstream istr(
-		# ifdef _WIN32
-		const_cast<char *>(i->getText().c_str())
-		# else
-		i->getText().c_str()
-		# endif
-		);
-		// default for istr is ios:dec for basefield, we have to clear
-		// the flag entirely to force istr to recognize the "0x"
-		// syntax as meaning hex while still reading decimal. (we also
-		// mistakenly recognize octal). depending on obscure iostream
-		// features worries me, as it's error prone. better to have
-		// the lexer specifically handle cases like this.
-			//
-			istr.setf(0, ios::basefield);
-			istr >> val; 
-			//cout << "intValue:" << val << endl;
-			
+		switch ( LA(1)) {
+		case INTEGER:
+		{
+			i0 = LT(1);
+			match(INTEGER);
+			val = atol(i0->getText().c_str());
+			break;
+		}
+		case HEX_INTEGER:
+		{
+			i1 = LT(1);
+			match(HEX_INTEGER);
+			val = strtol(i1->getText().c_str(), 0, 16);
+			break;
+		}
+		default:
+		{
+			throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
+		}
+		}
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
@@ -2991,7 +2945,7 @@ void Vrml97Parser::rotationValue(
 }
 
 double  Vrml97Parser::doubleValue() {
-	double d = 0;
+	double val = 0.0;
 	
 	ANTLR_USE_NAMESPACE(antlr)RefToken  d0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  d1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -3002,26 +2956,14 @@ double  Vrml97Parser::doubleValue() {
 		{
 			d0 = LT(1);
 			match(REAL);
-			istrstream(
-			# ifdef _WIN32
-			const_cast<char *>(d0->getText().c_str())
-			# else
-			d0->getText().c_str()
-			# endif
-			) >> d;
+			val = atof(d0->getText().c_str());
 			break;
 		}
 		case INTEGER:
 		{
 			d1 = LT(1);
 			match(INTEGER);
-			istrstream(
-			# ifdef _WIN32
-			const_cast<char *>(d1->getText().c_str())
-			# else
-			d1->getText().c_str()
-			# endif
-			) >> d;
+			val = atof(d1->getText().c_str());
 			break;
 		}
 		default:
@@ -3035,7 +2977,7 @@ double  Vrml97Parser::doubleValue() {
 		consume();
 		consumeUntil(_tokenSet_18);
 	}
-	return d;
+	return val;
 }
 
 void Vrml97Parser::vec2fValue(
@@ -3098,6 +3040,7 @@ const char* Vrml97Parser::_tokenNames[] = {
 	"}",
 	"an identifier",
 	"an integer value",
+	"an integer value",
 	"a floating point value",
 	"a string",
 	"\"DEF\"",
@@ -3138,45 +3081,45 @@ const char* Vrml97Parser::_tokenNames[] = {
 	0
 };
 
-const unsigned long Vrml97Parser::_tokenSet_0_data_[] = { 79831552UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_0_data_[] = { 159662592UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_0(_tokenSet_0_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_1_data_[] = { 2UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_1(_tokenSet_1_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_2_data_[] = { 79831554UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_2_data_[] = { 159662594UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_2(_tokenSet_2_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_3_data_[] = { 80405250UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_3_data_[] = { 160809730UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_3(_tokenSet_3_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_4_data_[] = { 12714496UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_4_data_[] = { 25428480UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_4(_tokenSet_4_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_5_data_[] = { 638976UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_5_data_[] = { 1277952UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_5(_tokenSet_5_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_6_data_[] = { 639040UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_6_data_[] = { 1278016UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_6(_tokenSet_6_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_7_data_[] = { 256UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_7(_tokenSet_7_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_8_data_[] = { 4026531840UL, 65535UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_8_data_[] = { 3758096384UL, 131071UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_8(_tokenSet_8_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_9_data_[] = { 512UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_9(_tokenSet_9_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_10_data_[] = { 69214752UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_10_data_[] = { 138428960UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_10(_tokenSet_10_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_11_data_[] = { 33823776UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_11_data_[] = { 67648544UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_11(_tokenSet_11_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_12_data_[] = { 13353792UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_12_data_[] = { 26706752UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_12(_tokenSet_12_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_13_data_[] = { 79831808UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_13_data_[] = { 159662848UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_13(_tokenSet_13_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_14_data_[] = { 80474946UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_14_data_[] = { 160949058UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_14(_tokenSet_14_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_15_data_[] = { 13288192UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_15_data_[] = { 26575616UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_15(_tokenSet_15_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_16_data_[] = { 69214720UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_16_data_[] = { 138428928UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_16(_tokenSet_16_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_17_data_[] = { 67117600UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_17_data_[] = { 134234656UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_17(_tokenSet_17_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_18_data_[] = { 13356864UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_18_data_[] = { 26711872UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_18(_tokenSet_18_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_19_data_[] = { 13354816UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_19_data_[] = { 26709824UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_19(_tokenSet_19_data_,4);
 
 
