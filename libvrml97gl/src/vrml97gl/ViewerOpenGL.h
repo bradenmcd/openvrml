@@ -112,22 +112,22 @@ public:
 				 int   nSpine,
 				 float *spine );
 
-  virtual Object insertLineSet(int, float *, int, int *,
+  virtual Object insertLineSet(int, float *, size_t, const long *,
 			       bool colorPerVertex,
 			       float *color,
-			       int nColorIndex,
-			       int *colorIndex);
+			       size_t nColorIndex,
+			       const long * colorIndex);
 
   virtual Object insertPointSet(int npts, float *points, float *colors);
   virtual Object insertShell(unsigned int mask,
 			     int npoints, float *points,
-			     int nfaces, int *faces,
+			     size_t nfaces, const long * faces,
 			     float *tc,
-			     int ntci, int *tci,
+			     int ntci, const long * tci,
 			     float *normal,
-			     int nni, int *ni,
+			     int nni, const long * ni,
 			     float *color,
-			     int nci, int *ci);
+			     int nci, const long * ci);
 
   virtual Object insertSphere(float radius);
 
@@ -268,20 +268,20 @@ public:
 
   // Structs used in tesselator callbacks
   typedef struct IndexData {
-    float *v;			// data values
-    int ni, *i;			// number of indices, index pointer
+    const float * v;			// data values
+    size_t ni; const long * i;			// number of indices, index pointer
   } IndexData;
 
   typedef struct ShellData {
     unsigned int mask;
     float *points;
-    int nfaces, *faces;		// face list
+    size_t nfaces; const long * faces;		// face list
     IndexData texCoord;		// texture coordinates and indices
     IndexData normal;		// normals and indices
     IndexData color;		// colors and indices
     int *texAxes;
     float *texParams;
-    int nf, i;
+    size_t nf, i;
   } ShellData;
 
 

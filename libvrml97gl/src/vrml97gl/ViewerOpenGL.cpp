@@ -1383,12 +1383,12 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
 
 Viewer::Object ViewerOpenGL::insertLineSet(int npoints,
 					   float *points,
-					   int nlines,
-					   int *lines,
+					   size_t nlines,
+					   const long * lines,
 					   bool colorPerVertex,
 					   float *color,
-					   int nci,
-					   int *ci)
+					   size_t nci,
+					   const long * ci)
 {
   GLuint glid = 0;
 
@@ -1415,7 +1415,7 @@ Viewer::Object ViewerOpenGL::insertLineSet(int npoints,
     glColor3fv( &color[ (nci > 0) ? 3*ci[0] : 0 ] );
 
   int nl = 0;
-  for (int i = 0; i<nlines; ++i)
+  for (size_t i = 0; i<nlines; ++i)
     {
       if (lines[i] == -1)
 	{
@@ -1552,7 +1552,7 @@ void
 ViewerOpenGL::insertShellConvex( ShellData *s )
 {
   float N[3];
-  int i, nf = 0;			// Number of faces
+  size_t i, nf = 0;			// Number of faces
 
   for (i = 0; i<s->nfaces; ++i)
     {
@@ -1726,7 +1726,7 @@ ViewerOpenGL::insertShellTess(ShellData *s)
   gluTessCallback( d_tess, (GLenum) GLU_TESS_END,
 		   (TessCB) glEnd );
 
-  int i;
+  size_t i;
   for (i = 0; i<s->nfaces; ++i)
     {
       if (i == 0 || s->faces[i] == -1)
@@ -1770,17 +1770,17 @@ Viewer::Object
 ViewerOpenGL::insertShell(unsigned int mask,
 			  int npoints,
 			  float *points,
-			  int nfaces,
-			  int *faces,    // face list (-1 ends each face)
+			  size_t nfaces,
+			  const long * faces,    // face list (-1 ends each face)
 			  float *tc,     // texture coordinates
 			  int ntci,      // # of texture coordinate indices
-			  int *tci,      // texture coordinate indices
+			  const long * tci,      // texture coordinate indices
 			  float *normal, // normals
 			  int nni,       // # of normal indices
-			  int *ni,       // normal indices
+			  const long * ni,       // normal indices
 			  float *color,  // colors
 			  int nci,
-			  int *ci)
+			  const long * ci)
 {
   if (nfaces < 4) return 0;	// 3 pts and a trailing -1
 

@@ -1,3 +1,10 @@
+2000-12-09  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed type used to represent SFInt32 and MFInt32 from int to
+          long.
+
+        * Miscellaneous const- and signed-correctness changes.
+
 2000-12-08  Braden McDaniel  <braden@endoframe.com>
 
         * Fixed viewpoint cockeyed-ness introduced by patch on 6 Dec.

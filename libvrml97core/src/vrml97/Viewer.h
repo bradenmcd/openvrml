@@ -132,23 +132,23 @@ public:
 				 float * /*spine*/) = 0;
 
   virtual Object insertLineSet(int nCoords, float *coord,
-			       int nCoordIndex, int *coordIndex,
+			       size_t nCoordIndex, const long * coordIndex,
 			       bool colorPerVertex,
 			       float *color,
-			       int nColorIndex,
-			       int *colorIndex) = 0;
+			       size_t nColorIndex,
+			       const long * colorIndex) = 0;
 
   virtual Object insertPointSet(int nv, float *v, float *c) = 0;
 
   virtual Object insertShell(unsigned int mask,
 			     int npoints, float *points,
-			     int nfaces, int *faces,
+			     size_t nfaces, const long * faces,
 			     float *tc,
-			     int ntci, int *tci,
+			     int ntci, const long * tci,
 			     float *normal,
-			     int nni, int *ni,
+			     int nni, const long * ni,
 			     float *color,
-			     int nci, int *ci) = 0;
+			     int nci, const long * ci) = 0;
 
   virtual Object insertSphere(float /*radius*/) = 0;
 

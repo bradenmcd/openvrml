@@ -35,15 +35,15 @@ private:
 
   class IData {			// reference counted int data
   public:
-    IData(int n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new int[n] : 0) {}
+    IData(long n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new long[n] : 0) {}
     ~IData() { delete [] d_v; }
 
     IData *ref() { ++d_refs; return this; }
     void deref() { if (--d_refs == 0) delete this; }
 
-    int d_refs;			// number of MFInt objects using this data
-    int d_n;			// size (in ints) of d_v
-    int *d_v;			// data vector
+    long d_refs;    // number of MFInt objects using this data
+    size_t d_n;     // size (in ints) of d_v
+    long * d_v;     // data vector
   };
 
   IData *d_data;
@@ -51,15 +51,15 @@ private:
 public:
 
   VrmlMFInt();
-  VrmlMFInt(int value);
-  VrmlMFInt(int n, int const *v);
+  VrmlMFInt(long);
+  VrmlMFInt(size_t n, const long * v);
   VrmlMFInt(const VrmlMFInt &src);
 
   ~VrmlMFInt();
 
   virtual ostream& print(ostream& os) const;
 
-  void set(int n, int *v);
+  void set(size_t, const long *);
   VrmlMFInt& operator=(const VrmlMFInt& rhs);
 
   virtual VrmlField *clone() const;
@@ -68,9 +68,9 @@ public:
   virtual const VrmlMFInt* toMFInt() const;
   virtual VrmlMFInt* toMFInt();
 
-  int size() const			{ return d_data->d_n; }
-  int *get() const			{ return d_data->d_v; }
-  int &operator[](int i) const		{ return d_data->d_v[i]; }
+  size_t size() const;
+  const long * get() const;
+  const long & operator[](size_t) const;
 
 };
 

@@ -994,20 +994,16 @@ mfInt32Value returns [VrmlMFInt * miv = new VrmlMFInt()]
         }
     |   LBRACKET
         {
-            //
-            // VrmlMFInt wants an int, but int is not guaranteed to be 32 bits
-            // by C++. VrmlMFInt should probably use a long instead.
-            //
-            SimpleVector<int> intVector;
+            SimpleVector<long> longVector;
         }
         (
             i=intValue
             {
-                intVector.add(i);
+                longVector.add(i);
             }
         )* RBRACKET
         {
-            *miv = VrmlMFInt(intVector.size(), intVector.data());
+            *miv = VrmlMFInt(longVector.size(), longVector.data());
         }
     ;
 

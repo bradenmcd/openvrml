@@ -25,7 +25,7 @@
 class VrmlSFInt : public VrmlField {
 public:
 
-  VrmlSFInt(int value = 0);
+  VrmlSFInt(long = 0);
 
   virtual ostream& print(ostream& os) const;
 
@@ -35,11 +35,11 @@ public:
   virtual const VrmlSFInt* toSFInt() const;
   virtual VrmlSFInt* toSFInt();
 
-  int  get(void) const		{ return d_value; }
-  void set(int value)		{ d_value = value; }
+  long get() const;
+  void set(long);
 
 private:
-  int d_value;
+  long d_value;
 
 };
 

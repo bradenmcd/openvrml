@@ -293,7 +293,7 @@ VrmlField::VrmlFieldType VrmlSFImage::fieldType() const { return SFIMAGE; }
 
 #include "VrmlSFInt.h"
 
-VrmlSFInt::VrmlSFInt(int value) : d_value(value) {}
+VrmlSFInt::VrmlSFInt(long value): d_value(value) {}
 
 ostream& VrmlSFInt::print(ostream& os) const
 { return (os << d_value); }
@@ -302,6 +302,13 @@ VrmlField *VrmlSFInt::clone() const { return new VrmlSFInt(d_value); }
 
 VrmlField::VrmlFieldType VrmlSFInt::fieldType() const { return SFINT32; }
 
+long VrmlSFInt::get() const {
+    return this->d_value;
+}
+
+void VrmlSFInt::set(long value) {
+    this->d_value = value;
+}
 
 // SFNode
 
@@ -686,22 +693,27 @@ VrmlField::VrmlFieldType VrmlMFFloat::fieldType() const { return MFFLOAT; }
 VrmlMFInt::VrmlMFInt() : d_data(new IData(0)) 
 {}
 
-VrmlMFInt::VrmlMFInt(int value) : d_data(new IData(1)) 
-{ d_data->d_v[0] = value; }
+VrmlMFInt::VrmlMFInt(long value): d_data(new IData(1)) {
+    d_data->d_v[0] = value;
+}
 
-VrmlMFInt::VrmlMFInt(int n, int const * v) : d_data(new IData(n))
-{ if (v) memcpy(d_data->d_v, v, n*sizeof(int)); }
+VrmlMFInt::VrmlMFInt(size_t n, const long * v): d_data(new IData(n)) {
+    if (v) {
+        memcpy(d_data->d_v, v, n*sizeof(long));
+    }
+}
 
 VrmlMFInt::VrmlMFInt(const VrmlMFInt &src) : d_data(src.d_data->ref()) 
 {}
 
 VrmlMFInt::~VrmlMFInt() { d_data->deref(); }
 
-void VrmlMFInt::set(int n, int *v)
-{
-  d_data->deref();
-  d_data = new IData(n);
-  if (v) memcpy(d_data->d_v, v, n*sizeof(int));
+void VrmlMFInt::set(size_t n, const long * v) {
+    d_data->deref();
+    d_data = new IData(n);
+    if (v) {
+        memcpy(d_data->d_v, v, n*sizeof(long));
+    }
 }
 
 VrmlMFInt& VrmlMFInt::operator=(const VrmlMFInt& rhs)
@@ -716,6 +728,39 @@ VrmlMFInt& VrmlMFInt::operator=(const VrmlMFInt& rhs)
 VrmlField *VrmlMFInt::clone() const	{ return new VrmlMFInt(*this); }
 
 VrmlField::VrmlFieldType VrmlMFInt::fieldType() const { return MFINT32; }
+
+size_t VrmlMFInt::size() const {
+    return this->d_data->d_n;
+}
+
+const long * VrmlMFInt::get() const {
+    return this->d_data->d_v;
+}
+
+const long & VrmlMFInt::operator[](size_t index) const {
+    return this->d_data->d_v[index];
+}
+
+ostream& VrmlMFInt::print(ostream& os) const
+{
+  size_t n = this->size();
+  const long * c = get();
+
+  if (n == 1)
+    os << *c;
+  else
+    {
+      os << '[';
+      for (size_t i=0; i<n; ++i, ++c)
+	{
+	  os << *c;
+	  os << ((i < n-1) ? ", " : " ");
+	}
+      os << ']';
+    }
+
+  return os;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1285,27 +1330,6 @@ ostream& VrmlMFVec2f::print(ostream& os) const
 
 ostream& VrmlMFVec3f::print(ostream& os) const
 { return mffprint(os, get(), size(), 3); }
-
-ostream& VrmlMFInt::print(ostream& os) const
-{
-  int n = size();
-  int *c = get();
-
-  if (n == 1)
-    os << *c;
-  else
-    {
-      os << '[';
-      for (int i=0; i<n; ++i, ++c)
-	{
-	  os << *c;
-	  os << ((i < n-1) ? ", " : " ");
-	}
-      os << ']';
-    }
-
-  return os;
-}
 
 ostream& VrmlMFNode::print(ostream& os) const
 {

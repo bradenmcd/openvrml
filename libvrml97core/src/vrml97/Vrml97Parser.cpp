@@ -2231,18 +2231,14 @@ VrmlMFInt *  Vrml97Parser::mfInt32Value() {
 		{
 			match(LBRACKET);
 			
-			//
-			// VrmlMFInt wants an int, but int is not guaranteed to be 32 bits
-			// by C++. VrmlMFInt should probably use a long instead.
-			//
-			SimpleVector<int> intVector;
+			SimpleVector<long> longVector;
 			
 			{
 			for (;;) {
 				if ((LA(1)==INTEGER||LA(1)==HEX_INTEGER)) {
 					i=intValue();
 					
-					intVector.add(i);
+					longVector.add(i);
 					
 				}
 				else {
@@ -2254,7 +2250,7 @@ VrmlMFInt *  Vrml97Parser::mfInt32Value() {
 			}
 			match(RBRACKET);
 			
-			*miv = VrmlMFInt(intVector.size(), intVector.data());
+			*miv = VrmlMFInt(longVector.size(), longVector.data());
 			
 			break;
 		}
