@@ -30,7 +30,7 @@ import vrml.InvalidExposedFieldException;
 /**
  * The general node class.
  */
-public abstract class Node extends BaseNode
+public class Node extends BaseNode
 { 
    /**
     * Get an EventIn by name. Return value is write-only.
