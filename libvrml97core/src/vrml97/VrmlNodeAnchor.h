@@ -13,6 +13,7 @@
 
 class VrmlNodeType;
 class VrmlScene;
+class VrmlRenderContext;
 
 class VrmlNodeAnchor : public VrmlNodeGroup {
 
@@ -33,18 +34,19 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   void activate();
 
-  // Get a field or eventOut by name.
   virtual const VrmlField *getField(const char *fieldName) const;
-  
+
   virtual void setField(const char *fieldName,
 			const VrmlField &fieldValue);
 
   const char *description() { return d_description.get(); }
   const char *url() { return d_url.size() > 0 ? d_url[0] : 0; }
+
+  const VrmlBVolume* getBVolume() const;
 
 protected:
 
@@ -54,4 +56,5 @@ protected:
   
 };
 
-#endif
+#endif // VRMLNODEANCHOR_H
+

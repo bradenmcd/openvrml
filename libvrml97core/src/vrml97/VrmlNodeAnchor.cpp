@@ -42,6 +42,7 @@ VrmlNodeType & VrmlNodeAnchor::nodeType() const
 
 VrmlNodeAnchor::VrmlNodeAnchor(VrmlScene *scene) : VrmlNodeGroup(scene)
 {
+  this->setBVolumeDirty(true);
 }
 
 VrmlNodeAnchor::VrmlNodeAnchor(const VrmlNodeAnchor &n) : VrmlNodeGroup(n)
@@ -49,6 +50,7 @@ VrmlNodeAnchor::VrmlNodeAnchor(const VrmlNodeAnchor &n) : VrmlNodeGroup(n)
   d_description = n.d_description;
   d_parameter = n.d_parameter;
   d_url = n.d_url;
+  this->setBVolumeDirty(true);
 }
 
 VrmlNodeAnchor::~VrmlNodeAnchor()
@@ -76,12 +78,12 @@ ostream& VrmlNodeAnchor::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeAnchor::render(Viewer *viewer)
+void VrmlNodeAnchor::render(Viewer *viewer, VrmlRenderContext rc)
 {
   viewer->setSensitive( this );
 
   // Render children
-  VrmlNodeGroup::render(viewer);
+  VrmlNodeGroup::render(viewer, rc);
 
   viewer->setSensitive( 0 );
 }
@@ -125,5 +127,15 @@ void VrmlNodeAnchor::setField(const char *fieldName,
   else if TRY_FIELD(url, MFString)
   else
     VrmlNodeGroup::setField(fieldName, fieldValue);
+  this->setBVolumeDirty(true);
 }
 
+const VrmlBVolume*
+VrmlNodeAnchor::getBVolume() const
+{
+  //cout << "VrmlNodeAnchor::getBVolume() {" << endl;
+  VrmlBVolume* bv = VrmlNodeGroup::getBVolume();
+  //cout << "}:";
+  //bv->dump(cout) << endl;
+  return bv;
+}
