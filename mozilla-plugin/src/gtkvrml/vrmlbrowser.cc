@@ -318,7 +318,6 @@ void GtkGLViewer::set_timer(const double t)
                                     GtkFunction(timeout_callback),
                                     this);
     }
-    while (gtk_events_pending()) { gtk_main_iteration(); }
 }
 
 void GtkGLViewer::timer_update()
