@@ -58,6 +58,9 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
+  
+  const VrmlSFNode & getFontStyle() const;
+  void setFontStyle(const VrmlSFNode & fontStyle);
 
 protected:
 

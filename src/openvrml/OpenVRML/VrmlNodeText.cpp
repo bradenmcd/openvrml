@@ -179,3 +179,21 @@ void VrmlNodeText::setField(const char *fieldName,
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
 }
+
+/**
+ * @brief Get the FontStyle associated with this Text node.
+ *
+ * @return fontStyle
+ */
+const VrmlSFNode & VrmlNodeText::getFontStyle() const {
+    return this->d_fontStyle;
+}
+
+/**
+ * @brief Set the FontStyle associated with this Text node.
+ *
+ * @param fontStyle
+ */
+void VrmlNodeText::setFontStyle(const VrmlSFNode & fontStyle) {
+    this->d_fontStyle = fontStyle;
+}
