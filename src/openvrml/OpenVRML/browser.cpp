@@ -739,6 +739,8 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     if (this->scene) { this->scene->shutdown(now); }
     delete this->scene;
     this->scene = 0;
+    this->d_navigationInfoStack.clear();
+    this->d_viewpointStack.clear();
     assert(this->d_navigationInfos.empty());
     assert(this->d_viewpoints.empty());
     assert(this->d_scopedLights.empty());
