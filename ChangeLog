@@ -14,6 +14,8 @@
 
         * Moved ProtoNode implementation to `proto.[h,cpp]'.
 
+        * Moved NodePtr implementation to `nodeptr.[h,cpp]'.
+
 2001-11-24  Braden McDaniel  <braden@endoframe.com>
 
         * Placed libopenvrml members in OpenVRML namespace. Placed

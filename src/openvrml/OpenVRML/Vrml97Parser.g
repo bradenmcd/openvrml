@@ -21,7 +21,7 @@
 header "post_include_hpp" {
 # include <memory>
 # include "field.h"
-# include "VrmlNodePtr.h"
+# include "nodeptr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }
 

@@ -26,7 +26,7 @@
 #   include <vector>
 #   include <iostream.h>
 #   include "common.h"
-#   include "VrmlNodePtr.h"
+#   include "nodeptr.h"
 
 namespace OpenVRML {
     class FieldValue;

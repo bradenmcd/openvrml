@@ -18,10 +18,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-# include "VrmlNodePtr.h"
+# include "nodeptr.h"
 # include "node.h"
-
-using namespace OpenVRML;
 
 /**
  * @class OpenVRML::NodePtr

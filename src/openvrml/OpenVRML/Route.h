@@ -23,7 +23,7 @@
 
 #   include <string>
 #   include "common.h"
-#   include "VrmlNodePtr.h"
+#   include "nodeptr.h"
 
 namespace OpenVRML {
 

@@ -29,7 +29,6 @@
 #   include <iostream.h>
 #   include "common.h"
 #   include "field.h"
-#   include "VrmlNodePtr.h"
 #   include "System.h" // error
 #   include "VrmlRenderContext.h"
 
