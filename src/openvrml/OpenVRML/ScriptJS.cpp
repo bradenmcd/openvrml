@@ -1514,7 +1514,6 @@ vec3f_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
   return JS_FALSE;
 }
 
-
 // Create class objects for the non-scalar field types.
 // Move toString to a prototype object?
 
@@ -1824,7 +1823,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
     // MF*
     case VrmlField::MFCOLOR:
       {
-	const VrmlMFColor * const mf = dynamic_cast<const VrmlMFColor *>(f);
+	assert(!f || dynamic_cast<const VrmlMFColor *>(f));
+        const VrmlMFColor * const mf = static_cast<const VrmlMFColor *>(f);
 	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1846,7 +1846,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFFLOAT:
       {
-	const VrmlMFFloat * const mf = dynamic_cast<const VrmlMFFloat *>(f);
+	assert(!f || dynamic_cast<const VrmlMFFloat *>(f));
+        const VrmlMFFloat * const mf = static_cast<const VrmlMFFloat *>(f);
 	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1866,7 +1867,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFINT32:
       {
-	const VrmlMFInt32 * const mf = dynamic_cast<const VrmlMFInt32 *>(f);
+	assert(!f || dynamic_cast<const VrmlMFInt32 *>(f));
+        const VrmlMFInt32 * const mf = static_cast<const VrmlMFInt32 *>(f);
 	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1883,7 +1885,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFNODE:
       {
-	const VrmlMFNode * const mf = dynamic_cast<const VrmlMFNode *>(f);
+	assert(!f || dynamic_cast<const VrmlMFNode *>(f));
+        const VrmlMFNode * const mf = static_cast<const VrmlMFNode *>(f);
 	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1893,7 +1896,7 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 	    JSObject *elt = JS_NewObject( d_cx, &SFNodeClass,
 					  0, d_globalObj );
 	    if (! elt) break;
-	    JS_SetPrivate( d_cx, elt, new VrmlSFNode( mf->get(i) ) );
+	    JS_SetPrivate(d_cx, elt, new VrmlSFNode((*mf)[i]));
 	    JS_DefineElement( d_cx, obj, (jsint)i, OBJECT_TO_JSVAL(elt),
 			      JS_PropertyStub, JS_PropertyStub,
 			      JSPROP_ENUMERATE );
@@ -1904,8 +1907,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFROTATION:
       {
-	const VrmlMFRotation * const mf =
-                dynamic_cast<const VrmlMFRotation *>(f);
+	assert(!f || dynamic_cast<const VrmlMFRotation *>(f));
+        const VrmlMFRotation * const mf = static_cast<const VrmlMFRotation *>(f);
 	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1932,8 +1935,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 	int i, n = 0;
 	if (f)
 	  {
-	    const VrmlMFString * const mf =
-                    dynamic_cast<const VrmlMFString *>(f);
+            assert(dynamic_cast<const VrmlMFString *>(f));
+	    const VrmlMFString * const mf = static_cast<const VrmlMFString *>(f);
 	    n = mf ? mf->getLength() : 0;
 	    if (n > 0) jsvec = new jsval[n];
 	    for (i=0; i<n; ++i)
@@ -1951,7 +1954,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
       
     case VrmlField::MFVEC2F:
       {
-	const VrmlMFVec2f * const mf = dynamic_cast<const VrmlMFVec2f *>(f);
+	assert(!f || dynamic_cast<const VrmlMFVec2f *>(f));
+        const VrmlMFVec2f * const mf = static_cast<const VrmlMFVec2f *>(f);
 	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1973,7 +1977,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFVEC3F:
       {
-	const VrmlMFVec3f * const mf = dynamic_cast<const VrmlMFVec3f *>(f);
+        assert(!f || dynamic_cast<const VrmlMFVec3f *>(f));
+        const VrmlMFVec3f * const mf = static_cast<const VrmlMFVec3f *>(f);
 	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
