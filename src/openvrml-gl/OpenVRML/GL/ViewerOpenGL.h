@@ -25,7 +25,7 @@
 #include <config.h>
 #endif
 
-#include <vrml97/Viewer.h>
+#include <OpenVRML/Viewer.h>
 
 
 // Use the stencil buffer to set the SHAPE mask.

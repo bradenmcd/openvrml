@@ -11,8 +11,6 @@ LIBRARY_VERSION = 0:0:0
 #          |           Set to zero if current is incremented
 #          +- Increment if interfaces have been added, removed or changed
 
-SUBDIRS = @OPENVRML_CORE_SUBDIRS@
-
 #
 # Blow off "std" if the compiler doesn't support namespaces
 #
@@ -34,16 +32,16 @@ else
 # JS doesn't include config.h, so we have to do this here.
 #
 JS_CPPFLAGS = -DXP_UNIX
-INCLUDES = -I./javascript
 JAVASCRIPT_SUPPORT_LIBOBJ = scriptjs-prelinked.lo
-
+JAVASCRIPT_INCLUDES = -I$(top_builddir)/lib/js
 ScriptJS.o ScriptJS.lo: ScriptJS.cpp ScriptJS.h
 	$(LTCXXCOMPILE) -c $<
 
-$(JAVASCRIPT_SUPPORT_LIBOBJ): ScriptJS.lo javascript/libjs.la
+$(JAVASCRIPT_SUPPORT_LIBOBJ): ScriptJS.lo $(top_builddir)/lib/js/libjs.la
 	$(CXXLINK) $^
 endif
 
+INCLUDES = -I$(top_srcdir)/lib $(JAVASCRIPT_INCLUDES)
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF) $(JS_CPPFLAGS)
 AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@
 
@@ -144,7 +142,8 @@ libopenvrml_la_SOURCES = \
         VrmlScene.cpp
 
 
-antlr-prelinked.lo: vrml97scanner.lo Vrml97Parser.lo antlr/libantlr.la
+antlr-prelinked.lo: vrml97scanner.lo Vrml97Parser.lo \
+$(top_builddir)/lib/antlr/libantlr.la
 	$(CXXLINK) $^
 
 libopenvrml_la_LIBADD = antlr-prelinked.lo $(JAVASCRIPT_SUPPORT_LIBOBJ)
@@ -154,7 +153,7 @@ OpenVRMLinclude_HEADERS = \
 	Audio.h \
 	Doc.h \
 	Image.h \
-	ScriptJS.h \
+        MathUtils.h \
 	ScriptObject.h \
 	System.h \
 	Viewer.h \
@@ -251,7 +250,7 @@ OpenVRMLinclude_HEADERS = \
         VrmlScene.h \
 	doc2.hpp
 
-noinst_HEADERS = MathUtils.h Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp \
+noinst_HEADERS = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp ScriptJS.h \
 gifread.h jpgread.h mpgread.h pngread.h sound.h vrml97scanner.hpp
 
 EXTRA_DIST = vrml97scanner.cpp Vrml97TokenTypes.txt Vrml97Parser.cpp \

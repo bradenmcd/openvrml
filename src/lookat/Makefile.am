@@ -6,14 +6,14 @@ else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
-INCLUDES = -I$(top_srcdir)/libvrml97core/src -I$(top_srcdir)/libvrml97gl/src
+INCLUDES = -I$(top_srcdir)/src/openvrml -I$(top_srcdir)/src/openvrml-gl
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 AM_CXXFLAGS = -Wall @GLUT_CFLAGS@
 
 bin_PROGRAMS = lookat
 lookat_SOURCES = lookat.cpp ViewerGlut.cpp
 lookat_LDFLAGS = @GLUT_LIBS@
-lookat_LDADD = ../../libvrml97gl/src/vrml97gl/libopenvrml-gl.la \
-../../libvrml97core/src/vrml97/libopenvrml.la
+lookat_LDADD = $(top_builddir)/src/openvrml-gl/OpenVRML/GL/libopenvrml-gl.la \
+$(top_builddir)/src/openvrml/OpenVRML/libopenvrml.la
 
 noinst_HEADERS = ViewerGlut.h glutint.h

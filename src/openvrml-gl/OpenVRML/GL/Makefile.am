@@ -19,7 +19,7 @@ else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
-INCLUDES = -I$(top_srcdir)/libvrml97core/src
+INCLUDES = -I$(top_srcdir)/src/openvrml
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 AM_CXXFLAGS = -Wall @GLUT_CFLAGS@
 

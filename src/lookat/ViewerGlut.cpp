@@ -19,7 +19,7 @@
 // 
 
 #include <GL/glut.h>
-#include <vrml97/System.h>
+#include <OpenVRML/System.h>
 
 #include "ViewerGlut.h"
 

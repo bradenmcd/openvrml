@@ -26,9 +26,9 @@
 
 #include <stdio.h>
 #include <GL/glut.h>
-#include <vrml97/doc2.hpp>
-#include <vrml97/System.h>
-#include <vrml97/VrmlScene.h>
+#include <OpenVRML/doc2.hpp>
+#include <OpenVRML/System.h>
+#include <OpenVRML/VrmlScene.h>
 
 #include "ViewerGlut.h"
 

@@ -21,7 +21,7 @@
 #ifndef VIEWERGLUT_H
 #define VIEWERGLUT_H
 
-#include <vrml97gl/ViewerOpenGL.h>
+#include <OpenVRML/GL/ViewerOpenGL.h>
 
 /**
  * GLUT version of OpenGL class for display of VRML models.

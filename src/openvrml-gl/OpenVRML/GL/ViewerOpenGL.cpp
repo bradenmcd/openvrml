@@ -33,12 +33,12 @@
 #include <stdio.h>		// sprintf
 #include <math.h>
 
-#include <vrml97/MathUtils.h>
-#include <vrml97/System.h>
-#include <vrml97/VrmlScene.h>
-#include <vrml97/VrmlNodeNavigationInfo.h>
-#include <vrml97/VrmlBSphere.h>
-#include <vrml97/VrmlFrustum.h>
+#include <OpenVRML/MathUtils.h>
+#include <OpenVRML/System.h>
+#include <OpenVRML/VrmlScene.h>
+#include <OpenVRML/VrmlNodeNavigationInfo.h>
+#include <OpenVRML/VrmlBSphere.h>
+#include <OpenVRML/VrmlFrustum.h>
 
 #include "OpenGLEvent.h"
 

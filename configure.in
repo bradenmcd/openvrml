@@ -1,4 +1,4 @@
-AC_INIT(libvrml97core/src/vrml97/VrmlScene.cpp)
+AC_INIT(src/openvrml/OpenVRML/VrmlScene.cpp)
 
 PACKAGE=openvrml
 OPENVRML_MAJOR_VERSION="0"
@@ -111,9 +111,9 @@ AC_ARG_ENABLE(javascript,
 )
 if test "X$enable_javascript" = "Xno"; then
   AC_DEFINE(OPENVRML_DISABLE_JAVASCRIPT)
-  OPENVRML_CORE_SUBDIRS="antlr"
+  OPENVRML_LIB_SUBDIRS="antlr"
 else
-  OPENVRML_CORE_SUBDIRS="antlr javascript"
+  OPENVRML_LIB_SUBDIRS="antlr js"
   dnl
   dnl JavaScript doesn't include config.h, so we have to use automake
   dnl conditionals.
@@ -136,24 +136,24 @@ else
   AM_CONDITIONAL(AIX, test x$aix = xtrue)
   AM_CONDITIONAL(AIX4_3, test x$aix4_3 = xtrue)
 fi
-AC_SUBST(OPENVRML_CORE_SUBDIRS)
+AC_SUBST(OPENVRML_LIB_SUBDIRS)
 AM_CONDITIONAL(DISABLE_JAVASCRIPT, test X$enable_javascript = Xno)
 
-AC_OUTPUT(openvrml.spec \
-          Makefile \
+AC_OUTPUT(Makefile \
           doc/Makefile \
           macros/Makefile \
           models/Makefile \
           models/audio/Makefile \
           models/textures/Makefile \
-          libvrml97core/Makefile \
-          libvrml97core/src/Makefile \
-          libvrml97core/src/vrml97/Makefile \
-          libvrml97core/src/vrml97/antlr/Makefile \
-          libvrml97core/src/vrml97/javascript/Makefile \
-          libvrml97core/src/vrml97/javascript/fdlibm/Makefile \
-          libvrml97gl/Makefile \
-          libvrml97gl/src/Makefile \
-          libvrml97gl/src/vrml97gl/Makefile \
-          lookat/Makefile \
-          lookat/src/Makefile)
+          lib/Makefile \
+          lib/antlr/Makefile \
+          lib/js/Makefile \
+          lib/js/fdlibm/Makefile \
+          src/Makefile \
+          src/openvrml/Makefile \
+          src/openvrml/OpenVRML/Makefile \
+          src/openvrml-gl/Makefile \
+          src/openvrml-gl/OpenVRML/Makefile \
+          src/openvrml-gl/OpenVRML/GL/Makefile \
+          src/lookat/Makefile \
+          openvrml.spec)
