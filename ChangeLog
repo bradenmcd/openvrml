@@ -1,3 +1,22 @@
+2000-09-09  Christopher St. John <cstjohn@acm.org>
+
+	* vrml97parser.g fixed the intValue production. It was not
+	correctly parsing hex values starting with "0x". Generally not a
+	good idea to use iostreams as a lexer, its too error prone. Also
+	fixed the sfImageValue production, it was not correctly unpacking
+	longs into the byte array that a pixel texture expects. 
+
+	* VrmlField.cpp fixed VrmlSFImage constructors to take the "num
+	components" specification into account when computing the length
+	of the image byte array, to go with the parser fix above. Taken
+	together, these changes appear to fix bug # 109949.
+
+	* VrmlSFImage.h added javadoc style comments detailing the way
+	nComponents interacts with how the image byte array is
+	interpreted.
+
+	* VrmlNodePixelTexture.cpp commented out some debug messages.
+
 2000-09-05  Christopher St. John <cstjohn@acm.org>
 
 	* gifread.cpp, jpgread.cpp, mpgread.cpp, pngread.cpp Modified to
