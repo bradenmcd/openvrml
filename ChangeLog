@@ -1,5 +1,14 @@
 2004-11-27 Braden McDaniel  <braden@endoframe.com>
 
+	Updated version number for 0.15.1 release.
+
+	* NEWS:  Updated for 0.15.1.
+	* configure.ac:  Updated package version.
+	* doc/Doxyfile:  Updated package version.
+	* mozilla-plugin/configure.ac:  Updated package version.
+
+2004-11-27 Braden McDaniel  <braden@endoframe.com>
+
 	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
 	Project file updates.
 

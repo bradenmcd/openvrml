@@ -1,3 +1,10 @@
+Changes new in version 0.15.1, 27 November, 2004
+================================================
+
+- Fixed problems compiling with Microsoft Visual C++ 7.1.  This release
+  really does compile with that compiler. Honest.
+
+
 Changes new in version 0.15.0, 26 November, 2004
 ================================================
 
