@@ -162,7 +162,7 @@ namespace OpenVRML {
         ProtoNode(const ProtoNode &);
         ProtoNode & operator=(const ProtoNode &);
 
-        virtual void do_initialize(double timestamp) throw ();
+        virtual void do_initialize(double timestamp) throw (std::bad_alloc);
         virtual void do_setField(const std::string & id,
                                  const FieldValue & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
@@ -174,6 +174,7 @@ namespace OpenVRML {
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
         virtual const FieldValue & do_getEventOut(const std::string & id) const
                 throw (UnsupportedInterface);
+        virtual void do_shutdown(double timestamp) throw ();
     };
 
 
@@ -653,7 +654,24 @@ Browser::Browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc):
 /**
  * @brief Destructor.
  */
-Browser::~Browser() throw () {}
+Browser::~Browser() throw ()
+{
+    const double now = Browser::getCurrentTime();
+
+    if (this->scene) { this->scene->shutdown(now); }
+    delete this->scene;
+    this->scene = 0;
+    this->d_navigationInfoStack.clear();
+    assert(this->viewpointList.empty());
+    assert(this->d_navigationInfos.empty());
+    assert(this->d_scopedLights.empty());
+    assert(this->d_scripts.empty());
+    assert(this->d_timers.empty());
+    assert(this->d_audioClips.empty());
+    assert(this->d_movies.empty());
+    assert(this->protoNodeList.empty());
+    this->nodeClassMap.clear();
+}
 
 /**
  * @brief Get the root nodes for the browser.
@@ -928,7 +946,6 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     //
     if (this->scene) { this->scene->shutdown(now); }
     delete this->scene;
-    this->nodeClassMap.clear();
     this->scene = 0;
     this->d_navigationInfoStack.clear();
     assert(this->viewpointList.empty());
@@ -2583,14 +2600,8 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
 /**
  * @brief Destructor.
  */
-ProtoNode::~ProtoNode() throw () {
-    //
-    // Remove from the browser.
-    //
-    if (this->getScene()) {
-        this->getScene()->browser.removeProto(*this);
-    }
-}
+ProtoNode::~ProtoNode() throw ()
+{}
 
 /**
  * @brief Cast to a ScriptNode.
@@ -3074,8 +3085,10 @@ void ProtoNode::update(const double currentTime) {
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void ProtoNode::do_initialize(const double timestamp) throw ()
+void ProtoNode::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
 
@@ -3242,6 +3255,22 @@ const FieldValue & ProtoNode::do_getEventOut(const std::string & id) const
                                        "eventOut \"" + id + "\".");
         }
         return pos->second.node.getEventOut(id);
+    }
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void ProtoNode::do_shutdown(const double timestamp) throw ()
+{
+    assert(this->getScene());
+    this->getScene()->browser.removeProto(*this);
+
+    for (size_t i = 0; i < this->implNodes.getLength(); ++i) {
+        assert(this->implNodes.getElement(i));
+        this->implNodes.getElement(i)->shutdown(timestamp);
     }
 }
 
