@@ -66,12 +66,18 @@ libopenvrml_la_SOURCES = \
 	mpgread.cpp \
 	pngread.cpp \
         dummysound.cpp \
-	VrmlScene.cpp VrmlNodeType.cpp VrmlNamespace.cpp \
+	VrmlNodeType.cpp VrmlNamespace.cpp \
 	Image.cpp Audio.cpp System.cpp \
-	ScriptObject.cpp \
 	Viewer.cpp \
+	VrmlBVolume.cpp \
+	VrmlBSphere.cpp \
+	VrmlAABox.cpp \
+	VrmlFrustum.cpp \
+        VrmlScene.cpp \
+	VrmlRenderContext.cpp \
 	VrmlField.cpp \
 	VrmlNode.cpp \
+	VrmlNodeProto.cpp \
 	VrmlNodeAnchor.cpp \
 	VrmlNodeAppearance.cpp \
 	VrmlNodeAudioClip.cpp \
@@ -113,6 +119,7 @@ libopenvrml_la_SOURCES = \
 	VrmlNodePositionInt.cpp \
 	VrmlNodeProximitySensor.cpp \
 	VrmlNodeScalarInt.cpp \
+	ScriptObject.cpp \
 	VrmlNodeScript.cpp \
 	VrmlNodeShape.cpp \
 	VrmlNodeSound.cpp \
@@ -128,13 +135,7 @@ libopenvrml_la_SOURCES = \
 	VrmlNodeTransform.cpp \
 	VrmlNodeViewpoint.cpp \
 	VrmlNodeVisibilitySensor.cpp \
-	VrmlNodeWorldInfo.cpp \
-	VrmlNodeProto.cpp \
-	VrmlBVolume.cpp \
-	VrmlBSphere.cpp \
-	VrmlAABox.cpp \
-	VrmlFrustum.cpp \
-	VrmlRenderContext.cpp
+	VrmlNodeWorldInfo.cpp
 
 
 antlr-prelinked.lo: vrml97scanner.lo Vrml97Parser.lo antlr/libantlr.la
