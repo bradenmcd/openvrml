@@ -1,8 +1,34 @@
-AC_PREREQ([2.53])
 AC_INIT([OpenVRML], [0.13.99], [openvrml-develop@lists.sourceforge.net])
-AM_INIT_AUTOMAKE([$PACKAGE_TARNAME], [$PACKAGE_VERSION])
+AC_PREREQ([2.53])
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([Makefile]
+                [doc/Makefile]
+                [m4/Makefile]
+                [ide-projects/Makefile]
+                [models/Makefile]
+                [models/audio/Makefile]
+                [models/textures/Makefile]
+                [lib/Makefile]
+                [lib/antlr/GNUmakefile]
+                [lib/antlr/antlr/GNUmakefile]
+                [lib/antlr/src/GNUmakefile]
+                [lib/regex/Makefile]
+                [src/Makefile]
+                [src/libopenvrml/Makefile]
+                [src/libopenvrml/openvrml/Makefile]
+                [src/libopenvrml-gl/Makefile]
+                [src/libopenvrml-gl/openvrml/Makefile]
+                [src/libopenvrml-gl/openvrml/gl/Makefile]
+                [src/lookat/Makefile]
+                [java/Makefile]
+                [java/vrml/Makefile]
+                [java/vrml/node/Makefile]
+                [java/vrml/field/Makefile]
+                [openvrml.pc]
+                [openvrml-gl.pc]
+                [openvrml.spec])
 
-AM_CONFIG_HEADER([config.h])
+AM_INIT_AUTOMAKE
 
 REQUIRE_FONTCONFIG="fontconfig"
 REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
@@ -10,8 +36,6 @@ REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
 #
 # Checks for programs.
 #
-AC_ENABLE_STATIC(yes)
-enable_static=yes
 AC_PROG_LIBTOOL
 AC_PROG_CXX
 AC_PROG_CXXCPP
@@ -190,29 +214,4 @@ AM_CONDITIONAL([ENABLE_LOOKAT],
 
 AC_SUBST([OPENVRML_PKG_REQUIRES])
 
-AC_OUTPUT([Makefile \
-doc/Makefile \
-m4/Makefile \
-ide-projects/Makefile \
-models/Makefile \
-models/audio/Makefile \
-models/textures/Makefile \
-lib/Makefile \
-lib/antlr/GNUmakefile \
-lib/antlr/antlr/GNUmakefile \
-lib/antlr/src/GNUmakefile \
-lib/regex/Makefile \
-src/Makefile \
-src/libopenvrml/Makefile \
-src/libopenvrml/openvrml/Makefile \
-src/libopenvrml-gl/Makefile \
-src/libopenvrml-gl/openvrml/Makefile \
-src/libopenvrml-gl/openvrml/gl/Makefile \
-src/lookat/Makefile \
-java/Makefile \
-java/vrml/Makefile \
-java/vrml/node/Makefile \
-java/vrml/field/Makefile \
-openvrml.pc \
-openvrml-gl.pc \
-openvrml.spec])
+AC_OUTPUT

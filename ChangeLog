@@ -1,3 +1,9 @@
+2003-09-08  Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac:  Modernize usage of AC_OUTPUT; use
+	AC_CONFIG_FILES.
+	* Makefile.am:  Require Automake 1.7.
+
 2003-09-02  Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac:  Provide help text for DOXYGEN variable.
