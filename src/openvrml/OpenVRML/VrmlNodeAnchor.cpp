@@ -25,11 +25,8 @@
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
 
-#ifdef macintosh
-#include "OpenVRML/doc2.hpp"
-#else
 #include "doc2.hpp"
-#endif
+
 
 static VrmlNode *creator( VrmlScene *scene ) 
 {
