@@ -30,6 +30,11 @@ class VrmlSFRotation : public VrmlField {
         VrmlSFRotation(const float rotation[4]);
         VrmlSFRotation(float x, float y, float z, float angle);
         VrmlSFRotation(const VrmlSFVec3f & axis, float angle);
+        VrmlSFRotation(const VrmlSFVec3f & fromVector,
+                       const VrmlSFVec3f & toVector);
+        
+        float operator[](size_t index) const;
+        float & operator[](size_t index);
         
         virtual ostream& print(ostream& os) const;
         

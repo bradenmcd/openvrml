@@ -85,22 +85,22 @@ ostream& VrmlNodeMaterial::printFields(ostream& os, int indent)
   if (! FPEQUAL(d_ambientIntensity.get(), 0.2))
     PRINT_FIELD(ambientIntensity);
 
-  if (! FPEQUAL(d_diffuseColor.r(), 0.8) ||
-      ! FPEQUAL(d_diffuseColor.g(), 0.8) ||
-      ! FPEQUAL(d_diffuseColor.b(), 0.8) )
+  if (! FPEQUAL(d_diffuseColor.getR(), 0.8) ||
+      ! FPEQUAL(d_diffuseColor.getG(), 0.8) ||
+      ! FPEQUAL(d_diffuseColor.getB(), 0.8) )
     PRINT_FIELD(diffuseColor);
 
-  if (! FPZERO(d_emissiveColor.r()) ||
-      ! FPZERO(d_emissiveColor.g()) ||
-      ! FPZERO(d_emissiveColor.b()) )
+  if (! FPZERO(d_emissiveColor.getR()) ||
+      ! FPZERO(d_emissiveColor.getG()) ||
+      ! FPZERO(d_emissiveColor.getB()) )
     PRINT_FIELD(emissiveColor);
 
   if (! FPEQUAL(d_shininess.get(), 0.2))
     PRINT_FIELD(shininess);
 
-  if (! FPZERO(d_specularColor.r()) ||
-      ! FPZERO(d_specularColor.g()) ||
-      ! FPZERO(d_specularColor.b()) )
+  if (! FPZERO(d_specularColor.getR()) ||
+      ! FPZERO(d_specularColor.getG()) ||
+      ! FPZERO(d_specularColor.getB()) )
     PRINT_FIELD(specularColor);
 
   if (! FPZERO(d_transparency.get()) )

@@ -82,18 +82,18 @@ VrmlNodeTextureTransform* VrmlNodeTextureTransform::toTextureTransform() const
 
 ostream& VrmlNodeTextureTransform::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_center.x()) ||
-      ! FPZERO(d_center.y()))
+  if (! FPZERO(d_center.getX()) ||
+      ! FPZERO(d_center.getY()))
     PRINT_FIELD(center);
 
   if (! FPZERO(d_rotation.get()))
     PRINT_FIELD(rotation);
 
-  if (! FPEQUAL(d_scale.x(), 1.0) ||
-      ! FPEQUAL(d_scale.y(), 1.0))
+  if (! FPEQUAL(d_scale.getX(), 1.0) ||
+      ! FPEQUAL(d_scale.getY(), 1.0))
     PRINT_FIELD(scale);
-  if (! FPZERO(d_translation.x()) ||
-      ! FPZERO(d_translation.y()))
+  if (! FPZERO(d_translation.getX()) ||
+      ! FPZERO(d_translation.getY()))
     PRINT_FIELD(translation);
       
   return os;
@@ -137,4 +137,20 @@ void VrmlNodeTextureTransform::setField(const char *fieldName,
   else if TRY_FIELD(translation, SFVec2f)
   else
     VrmlNode::setField(fieldName, fieldValue);
+}
+
+const VrmlSFVec2f & VrmlNodeTextureTransform::getCenter() const {
+    return this->d_center;
+}
+
+const VrmlSFFloat & VrmlNodeTextureTransform::getRotation() const {
+    return this->d_rotation;
+}
+
+const VrmlSFVec2f & VrmlNodeTextureTransform::getScale() const {
+    return this->d_scale;
+}
+
+const VrmlSFVec2f & VrmlNodeTextureTransform::getTranslation() const {
+    return this->d_translation;
 }

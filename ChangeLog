@@ -1,3 +1,8 @@
+2000-12-14  Braden McDaniel  <braden@endoframe.com>
+
+        * API cleanup and improvements to VrmlSFColor, VrmlSFRotation,
+          VrmlSFVec2f, VrmlSFVec3f.
+
 2000-12-12  Braden McDaniel  <braden@endoframe.com>
 
         * API improvements (including const-correctness) to VrmlSFVec3f and

@@ -48,11 +48,11 @@ public:
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
-
-  float *center()	{ return d_center.get(); }
-  float  rotation()	{ return d_rotation.get(); }
-  float *scale()	{ return d_scale.get(); }
-  float *translation()	{ return d_translation.get(); }
+  
+  const VrmlSFVec2f & getCenter() const;
+  const VrmlSFFloat & getRotation() const;
+  const VrmlSFVec2f & getScale() const;
+  const VrmlSFVec2f & getTranslation() const;
 
 private:
 

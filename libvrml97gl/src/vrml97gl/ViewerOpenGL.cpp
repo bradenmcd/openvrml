@@ -2353,11 +2353,10 @@ void ViewerOpenGL::removeTextureObject(TextureObject t)
 // Texture coordinate transform
 // Tc' = -C x S x R x C x T x Tc
 
-void ViewerOpenGL::setTextureTransform( float *center,
-					float rotation,
-					float *scale,
-					float *translation ) 
-{
+void ViewerOpenGL::setTextureTransform(const float center[2],
+				       float rotation,
+				       const float scale[2],
+				       const float translation[2]) {
   glMatrixMode(GL_TEXTURE);
   glLoadIdentity();
 

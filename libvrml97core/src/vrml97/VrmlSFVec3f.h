@@ -29,6 +29,9 @@ class VrmlSFVec3f : public VrmlField {
         VrmlSFVec3f(const float vec[3]);
         VrmlSFVec3f(float x, float y, float z);
         
+        float operator[](size_t index) const;
+        float & operator[](size_t index);
+        
         virtual ostream& print(ostream& os) const;
         
         virtual VrmlField * clone() const;

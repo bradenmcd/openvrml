@@ -102,11 +102,11 @@ ostream& VrmlNodePlaneSensor::printFields(ostream& os, int indent)
 {
   if (! d_autoOffset.get()) PRINT_FIELD(autoOffset);
   if (! d_enabled.get())    PRINT_FIELD(enabled);
-  if (! FPEQUAL(d_maxPosition.x(), -1.0) ||
-      ! FPEQUAL(d_maxPosition.y(), -1.0))
+  if (! FPEQUAL(d_maxPosition.getX(), -1.0) ||
+      ! FPEQUAL(d_maxPosition.getY(), -1.0))
     PRINT_FIELD(maxPosition);
-  if (! FPEQUAL(d_minPosition.x(), -1.0) ||
-      ! FPEQUAL(d_minPosition.y(), -1.0))
+  if (! FPEQUAL(d_minPosition.getX(), -1.0) ||
+      ! FPEQUAL(d_minPosition.getY(), -1.0))
     PRINT_FIELD(minPosition);
 
   if (! FPZERO(d_offset.getX()) ||
@@ -187,24 +187,24 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
       t[1] = V[1] - d_activationPoint.getY() + d_offset.getY();
       t[2] = 0.0;
 
-      if ( d_minPosition.x() == d_maxPosition.x() )
-	t[0] = d_minPosition.x();
-      else if ( d_minPosition.x() < d_maxPosition.x() )
+      if ( d_minPosition.getX() == d_maxPosition.getX() )
+	t[0] = d_minPosition.getX();
+      else if ( d_minPosition.getX() < d_maxPosition.getX() )
 	{
-	  if (t[0] < d_minPosition.x())
-	    t[0] = d_minPosition.x();
-	  else if (t[0] > d_maxPosition.x())
-	    t[0] = d_maxPosition.x();
+	  if (t[0] < d_minPosition.getX())
+	    t[0] = d_minPosition.getX();
+	  else if (t[0] > d_maxPosition.getX())
+	    t[0] = d_maxPosition.getX();
 	}
 
-      if ( d_minPosition.y() == d_maxPosition.y() )
-	t[1] = d_minPosition.y();
-      else if ( d_minPosition.y() < d_maxPosition.y() )
+      if ( d_minPosition.getY() == d_maxPosition.getY() )
+	t[1] = d_minPosition.getY();
+      else if ( d_minPosition.getY() < d_maxPosition.getY() )
 	{
-	  if (t[1] < d_minPosition.y())
-	    t[1] = d_minPosition.y();
-	  else if (t[1] > d_maxPosition.y())
-	    t[1] = d_maxPosition.y();
+	  if (t[1] < d_minPosition.getY())
+	    t[1] = d_minPosition.getY();
+	  else if (t[1] > d_maxPosition.getY())
+	    t[1] = d_maxPosition.getY();
 	}
 
       d_translation.set(t);

@@ -209,10 +209,10 @@ public:
   virtual void insertTextureReference(TextureObject, int) = 0;
   virtual void removeTextureObject(TextureObject) = 0;
 
-  virtual void setTextureTransform( float * /*center*/,
-				    float /*rotation*/,
-				    float * /*scale*/,
-				    float * /*translation*/ ) = 0;
+  virtual void setTextureTransform(const float center[2],
+				   float rotation,
+				   const float scale[2],
+				   const float translation[2]) = 0;
 
   virtual void setTransform(const float center[3],
 			    const float rotation[4],

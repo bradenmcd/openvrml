@@ -97,9 +97,9 @@ void VrmlNodeFog::addToScene(VrmlScene *s, const char *)
 
 ostream& VrmlNodeFog::printFields(ostream& os, int indent)
 {
-  if (d_color.r() != 1.0 ||
-      d_color.g() != 1.0 ||
-      d_color.b() != 1.0 )
+  if (d_color.getR() != 1.0 ||
+      d_color.getG() != 1.0 ||
+      d_color.getB() != 1.0 )
     PRINT_FIELD(color);
   if (strcmp(d_fogType.get(),"LINEAR") != 0)
     PRINT_FIELD(fogType);

@@ -114,6 +114,18 @@ VrmlField::VrmlFieldType VrmlSFBool::fieldType() const { return SFBOOL; }
 
 #include "VrmlSFColor.h"
 
+VrmlSFColor::VrmlSFColor() {
+    this->d_rgb[0] = 0.0f;
+    this->d_rgb[1] = 0.0f;
+    this->d_rgb[2] = 0.0f;
+}
+
+VrmlSFColor::VrmlSFColor(const float rgb[3]) {
+    this->d_rgb[0] = rgb[0];
+    this->d_rgb[1] = rgb[1];
+    this->d_rgb[2] = rgb[2];
+}
+
 VrmlSFColor::VrmlSFColor(float r, float g, float b)
 { d_rgb[0] = r; d_rgb[1] = g; d_rgb[2] = b; }
 
@@ -125,76 +137,105 @@ VrmlField *VrmlSFColor::clone() const
 
 VrmlField::VrmlFieldType VrmlSFColor::fieldType() const { return SFCOLOR; }
 
+float VrmlSFColor::operator[](size_t index) const {
+    assert(index < 3);
+    return this->d_rgb[index];
+}
+
+float & VrmlSFColor::operator[](size_t index) {
+    assert(index < 3);
+    return this->d_rgb[index];
+}
+
+float VrmlSFColor::getR() const {
+    return this->d_rgb[0];
+}
+
+float VrmlSFColor::getG() const {
+    return this->d_rgb[1];
+}
+
+float VrmlSFColor::getB() const {
+    return this->d_rgb[2];
+}
+
+const float * VrmlSFColor::get() const {
+    return this->d_rgb;
+}
+
+void VrmlSFColor::set(const float rgb[3]) {
+    this->d_rgb[0] = rgb[0];
+    this->d_rgb[1] = rgb[1];
+    this->d_rgb[2] = rgb[2];
+}
 
 // Conversion functions between RGB each in [0,1] and HSV with  
 // h in [0,360), s,v in [0,1]. From Foley, van Dam p615-616.
 
-void VrmlSFColor::HSVtoRGB( float h, float s, float v,
-			    float &r, float &g, float &b)
+void VrmlSFColor::HSVtoRGB(const float hsv[3], float rgb[3])
 {
-  if ( s == 0.0 )
-    {
-      r = g = b = v;
-    }
-  else
-    {
-      if ( h >= 360.0 ) h -= 360.0;
-      h /= 60.0;
-      double i = floor(h);
-      double f = h - i;
-      float p = v * ( 1.0 - s );
-      float q = v * ( 1.0 - s * f );
-      float t = v * ( 1.0 - s * (1.0 - f) );
-      switch ((int) i)
-	{
-	default:
-	case 0: r = v; g = t; b = p; break;
-	case 1: r = q; g = v; b = p; break;
-	case 2: r = p; g = v; b = t; break;
-	case 3: r = p; g = q; b = v; break;
-	case 4: r = t; g = p; b = v; break;
-	case 5: r = v; g = p; b = q; break;
+    float h = hsv[0];
+    if (hsv[1] == 0.0) {
+        rgb[0] = rgb[1] = rgb[2] = hsv[2];
+    } else {
+        if (h >= 360.0) {
+            h -= 360.0;
+        }
+        h /= 60.0;
+        const double i = floor(h);
+        const double f = h - i;
+        const float p = hsv[2] * (1.0 - hsv[1]);
+        const float q = hsv[2] * (1.0 - hsv[1] * f);
+        const float t = hsv[2] * (1.0 - hsv[1] * (1.0 - f));
+        switch (static_cast<int>(i)) {
+	    default:
+	    case 0: rgb[0] = hsv[2]; rgb[1] = t; rgb[2] = p; break;
+	    case 1: rgb[0] = q; rgb[1] = hsv[2]; rgb[2] = p; break;
+	    case 2: rgb[0] = p; rgb[1] = hsv[2]; rgb[2] = t; break;
+	    case 3: rgb[0] = p; rgb[1] = q; rgb[2] = hsv[2]; break;
+	    case 4: rgb[0] = t; rgb[1] = p; rgb[2] = hsv[2]; break;
+	    case 5: rgb[0] = hsv[2]; rgb[1] = p; rgb[2] = q; break;
 	}
     }
 }
 
 
-void VrmlSFColor::RGBtoHSV( float r, float g, float b,
-			    float &h, float &s, float &v)
-{
-  float maxrgb = (r > g) ? ((r > b) ? r : b) : ((g > b) ? g : b);
-  float minrgb = (r < g) ? ((r < b) ? r : b) : ((g < b) ? g : b);
-
-  h = 0.0;
-  v = maxrgb;
-  if ( maxrgb > 0.0 )
-    s = (maxrgb - minrgb) / maxrgb;
-  else
-    s = 0.0;
-
-  if ( s != 0.0 )
-    {
-      float rc = (maxrgb - r) / (maxrgb - minrgb);
-      float gc = (maxrgb - g) / (maxrgb - minrgb);
-      float bc = (maxrgb - b) / (maxrgb - minrgb);
-      if ( r == maxrgb ) h = bc - gc;
-      else if ( g == maxrgb ) h = 2 + rc - bc;
-      else if ( b == maxrgb ) h = 4 + gc - rc;
-
-      h *= 60.0;
-      if ( h < 0.0 ) h += 360.0;
+void VrmlSFColor::RGBtoHSV(const float rgb[3], float hsv[3]) {
+    const float maxrgb = *std::max_element(rgb, rgb + 3);
+    const float minrgb = *std::min_element(rgb, rgb + 3);
+    
+    hsv[0] = 0.0;
+    hsv[1] = (maxrgb > 0.0) ? ((maxrgb - minrgb) / maxrgb) : 0.0;
+    hsv[2] = maxrgb;
+    
+    if (hsv[1] != 0.0) {
+        const float rc = (maxrgb - rgb[0]) / (maxrgb - minrgb);
+        const float gc = (maxrgb - rgb[1]) / (maxrgb - minrgb);
+        const float bc = (maxrgb - rgb[2]) / (maxrgb - minrgb);
+        
+        if (rgb[0] == maxrgb) {
+            hsv[0] = bc - gc;
+        } else if (rgb[1] == maxrgb) {
+            hsv[0] = 2 + rc - bc;
+        } else {
+            hsv[0] = 4 + gc - rc;
+        }
+        
+        hsv[0] *= 60.0;
+        if (hsv[0] < 0.0) {
+            hsv[0] += 360.0;
+        }
     }
 }
 
-
 void VrmlSFColor::setHSV(float h, float s, float v)
 {
-  HSVtoRGB( h, s, v, d_rgb[0], d_rgb[1], d_rgb[2] );
+    const float hsv[3] = { h, s, v };
+    HSVtoRGB(hsv, this->d_rgb);
 }
 
-void VrmlSFColor::getHSV(float& h, float& s, float& v)
-{
-  RGBtoHSV( d_rgb[0], d_rgb[1], d_rgb[2], h, s, v );
+void VrmlSFColor::getHSV(float hsv[3]) const {
+    RGBtoHSV(this->d_rgb, hsv);
 }
 
 
@@ -399,6 +440,23 @@ VrmlSFRotation::VrmlSFRotation(float x, float y, float z, float angle) {
 VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & axis, float angle) {
     std::copy(axis.get(), axis.get() + 3, this->d_x);
     this->d_x[3] = angle;
+}
+
+VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & fromVector,
+                               const VrmlSFVec3f & toVector) {
+    this->setAxis(fromVector.cross(toVector));
+    this->d_x[3] = acos(fromVector.dot(toVector) /
+                        (fromVector.length() * toVector.length()));
+}
+
+float VrmlSFRotation::operator[](size_t index) const {
+    assert(index < 4);
+    return this->d_x[index];
+}
+
+float & VrmlSFRotation::operator[](size_t index) {
+    assert(index < 4);
+    return this->d_x[index];
 }
 
 ostream& VrmlSFRotation::print(ostream& os) const
@@ -652,7 +710,29 @@ VrmlSFTime& VrmlSFTime::operator=(double rhs)
 
 #include "VrmlSFVec2f.h"
 
-VrmlSFVec2f::VrmlSFVec2f(float x, float y) { d_x[0] = x; d_x[1] = y; }
+VrmlSFVec2f::VrmlSFVec2f() {
+    this->d_x[0] = this->d_x[1] = 0;
+}
+
+VrmlSFVec2f::VrmlSFVec2f(const float vec[2]) {
+    this->d_x[0] = vec[0];
+    this->d_x[1] = vec[1];
+}
+
+VrmlSFVec2f::VrmlSFVec2f(float x, float y) {
+    this->d_x[0] = x;
+    this->d_x[1] = y;
+}
+
+float VrmlSFVec2f::operator[](size_t index) const {
+    assert(index < 2);
+    return this->d_x[index];
+}
+
+float & VrmlSFVec2f::operator[](size_t index) {
+    assert(index < 2);
+    return this->d_x[index];
+}
 
 ostream& VrmlSFVec2f::print(ostream& os) const
 { return (os << d_x[0] << " " << d_x[1]); }
@@ -662,41 +742,82 @@ VrmlField *VrmlSFVec2f::clone() const
 
 VrmlField::VrmlFieldType VrmlSFVec2f::fieldType() const { return SFVEC2F; }
 
-double VrmlSFVec2f::dot( VrmlSFVec2f *v )
-{
-  return d_x[0] * v->x() + d_x[1] * v->y();
+float VrmlSFVec2f::getX() const {
+    return this->d_x[0];
 }
 
-double VrmlSFVec2f::length()
+void VrmlSFVec2f::setX(float value) {
+    this->d_x[0] = value;
+}
+
+float VrmlSFVec2f::getY() const {
+    return this->d_x[1];
+}
+
+void VrmlSFVec2f::setY(float value) {
+    this->d_x[1] = value;
+}
+
+const float * VrmlSFVec2f::get() const {
+    return this->d_x;
+}
+
+void VrmlSFVec2f::set(const float vec[2]) {
+    this->d_x[0] = vec[0];
+    this->d_x[1] = vec[1];
+}
+
+const VrmlSFVec2f VrmlSFVec2f::add(const VrmlSFVec2f & vec) const {
+    VrmlSFVec2f result(*this);
+    result.d_x[0] += this->d_x[0];
+    result.d_x[1] += this->d_x[1];
+    return result;
+}
+
+const VrmlSFVec2f VrmlSFVec2f::divide(float number) const {
+    VrmlSFVec2f result(*this);
+    result.d_x[0] /= number;
+    result.d_x[1] /= number;
+    return result;
+}
+
+double VrmlSFVec2f::dot(const VrmlSFVec2f & vec) const {
+    return (this->d_x[0] * vec.d_x[0]) + (this->d_x[1] * vec.d_x[1]);
+}
+
+double VrmlSFVec2f::length() const
 {
   return sqrt(d_x[0] * d_x[0] + d_x[1] * d_x[1]);
 }
 
-void VrmlSFVec2f::normalize()
-{
-  double len = length();
-  if ( FPZERO(len)) return;
-  d_x[0] /= len; d_x[1] /= len;
+const VrmlSFVec2f VrmlSFVec2f::multiply(float number) const {
+    VrmlSFVec2f result(*this);
+    result.d_x[0] *= number;
+    result.d_x[1] *= number;
+    return result;
 }
 
-void VrmlSFVec2f::add( VrmlSFVec2f *v )
-{
-  d_x[0] += v->x(); d_x[1] += v->y();
+const VrmlSFVec2f VrmlSFVec2f::negate() const {
+    VrmlSFVec2f result;
+    result.d_x[0] = -this->d_x[0];
+    result.d_x[1] = -this->d_x[1];
+    return result;
 }
 
-void VrmlSFVec2f::divide( float f )
-{
-  d_x[0] /= f; d_x[1] /= f;
-}
-
-void VrmlSFVec2f::multiply( float f )
-{
-  d_x[0] *= f; d_x[1] *= f;
+const VrmlSFVec2f VrmlSFVec2f::normalize() const {
+    const double len = this->length();
+    if (FPZERO(len)) {
+        return *this;
+    }
+    VrmlSFVec2f result(*this);
+    result.d_x[0] /= len;
+    result.d_x[1] /= len;
+    return result;
 }
 
 void VrmlSFVec2f::subtract( VrmlSFVec2f *v )
 {
-  d_x[0] -= v->x(); d_x[1] -= v->y();
+  d_x[0] -= v->getX(); d_x[1] -= v->getY();
 }
 
 
@@ -712,6 +833,16 @@ VrmlSFVec3f::VrmlSFVec3f(const float vec[3]) {
 
 VrmlSFVec3f::VrmlSFVec3f(float x, float y, float z)
 { d_x[0] = x; d_x[1] = y; d_x[2] = z; }
+
+float VrmlSFVec3f::operator[](size_t index) const {
+    assert(index < 3);
+    return this->d_x[index];
+}
+
+float & VrmlSFVec3f::operator[](size_t index) {
+    assert(index < 3);
+    return this->d_x[index];
+}
 
 ostream& VrmlSFVec3f::print(ostream& os) const
 { return (os << d_x[0] << " " << d_x[1] << " " << d_x[2]); }

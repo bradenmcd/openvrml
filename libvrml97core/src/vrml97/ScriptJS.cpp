@@ -31,7 +31,7 @@
 #include <winconfig.h>
 #endif
 
-#if HAVE_JAVASCRIPT
+//#if HAVE_JAVASCRIPT
 # include <stdio.h>
 # include <string.h>
 
@@ -312,9 +312,9 @@ static void checkEventOut( JSContext *cx, JSObject *obj, VrmlField *val )
 
 // data converters
 
-static JSBool floatsToJSArray( int n, float *f, JSContext *cx, jsval *rval )
+static JSBool floatsToJSArray( int n, const float *f, JSContext *cx, jsval *rval )
 {
-  const int MAX_FIXED = 20;
+  static const int MAX_FIXED = 20;
   jsval jsfixed[MAX_FIXED];
   jsval *jsvec = (n > MAX_FIXED) ? new jsval[n] : jsfixed;
 
@@ -402,9 +402,9 @@ color_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 
   if (c && JSVAL_IS_INT(id))
     switch (JSVAL_TO_INT(id)) {
-    case 0: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, c->r())); break;
-    case 1: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, c->g())); break;
-    case 2: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, c->b())); break;
+    case 0: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, c->getR())); break;
+    case 1: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, c->getG())); break;
+    case 2: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, c->getB())); break;
     default: return JS_FALSE;
     }
   return JS_TRUE;
@@ -414,15 +414,16 @@ color_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 static JSBool
 color_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-  VrmlSFColor *c = (VrmlSFColor *)JS_GetPrivate( cx, obj );
+  VrmlSFColor * const sfColor =
+          reinterpret_cast<VrmlSFColor *>(JS_GetPrivate(cx, obj));
   jsdouble d;
 
-  if (c && JSVAL_IS_INT(id) &&
+  if (sfColor && JSVAL_IS_INT(id) &&
       JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3 &&
       JS_ValueToNumber( cx, *vp, &d ))
     {
-      c->get()[ JSVAL_TO_INT(id) ] = d;	// very nice...
-      checkEventOut( cx, obj, c );
+      (*sfColor)[JSVAL_TO_INT(id)] = d;
+      checkEventOut(cx, obj, sfColor);
       return JS_TRUE;
     }
 
@@ -494,9 +495,9 @@ image_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
   if (! c) return JS_FALSE;
   if (JSVAL_IS_INT(id))
     switch (JSVAL_TO_INT(id)) {
-    case 0: *vp = INT_TO_JSVAL( c->width() ); break;
-    case 1: *vp = INT_TO_JSVAL( c->height() ); break;
-    case 2: *vp = INT_TO_JSVAL( c->nComponents() ); break;
+    case 0: *vp = INT_TO_JSVAL( c->getWidth() ); break;
+    case 1: *vp = INT_TO_JSVAL( c->getHeight() ); break;
+    case 2: *vp = INT_TO_JSVAL( c->getComponents() ); break;
     case 3: break; // *vp = convert pixels to MFInt...
     default: return JS_FALSE;
     }
@@ -659,8 +660,8 @@ vec2f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
   VrmlSFVec2f *v = (VrmlSFVec2f *)JS_GetPrivate( cx, obj );
   if (v && JSVAL_IS_INT(id))
     switch (JSVAL_TO_INT(id)) {
-    case 0: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->x())); break;
-    case 1: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->y())); break;
+    case 0: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->getX())); break;
+    case 1: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->getY())); break;
     default: return JS_FALSE;
     }
   return JS_TRUE;
@@ -669,15 +670,16 @@ vec2f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 static JSBool
 vec2f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-  VrmlSFVec2f *v = (VrmlSFVec2f *)JS_GetPrivate( cx, obj );
+  VrmlSFVec2f * const sfVec2f =
+          reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
   jsdouble d;
 
-  if (v && JSVAL_IS_INT(id) &&
+  if (sfVec2f && JSVAL_IS_INT(id) &&
       JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2 &&
       JS_ValueToNumber( cx, *vp, &d ))
     {
-      v->get()[ JSVAL_TO_INT(id) ] = d;
-      checkEventOut( cx, obj, v );
+      (*sfVec2f)[JSVAL_TO_INT(id)] = d;
+      checkEventOut(cx, obj, sfVec2f);
       return JS_TRUE;
     }
 
@@ -713,9 +715,9 @@ vec3f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
   VrmlSFVec3f *v = (VrmlSFVec3f *)JS_GetPrivate( cx, obj );
   if (v && JSVAL_IS_INT(id))
     switch (JSVAL_TO_INT(id)) {
-    case 0: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->x())); break;
-    case 1: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->y())); break;
-    case 2: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->z())); break;
+    case 0: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->getX())); break;
+    case 1: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->getY())); break;
+    case 2: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->getZ())); break;
     default: return JS_FALSE;
     }
   return JS_TRUE;
@@ -731,7 +733,7 @@ vec3f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
       JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3 &&
       JS_ValueToNumber( cx, *vp, &d ))
     {
-      v->get()[ JSVAL_TO_INT(id) ] = d;
+      (*v)[JSVAL_TO_INT(id)] = d;
       checkEventOut( cx, obj, v );
       return JS_TRUE;
     }
@@ -771,9 +773,9 @@ SFRotationCons(JSContext *cx, JSObject *obj,
 	  VrmlSFVec3f *v1 = (VrmlSFVec3f *)JS_GetPrivate( cx, v1obj );
 	  if (JSVAL_IS_NUMBER( argv[1] ))
 	    {
-	      x = v1->x();	// axis/angle
-	      y = v1->y();
-	      z = v1->z();
+	      x = v1->getX();	// axis/angle
+	      y = v1->getY();
+	      z = v1->getZ();
 	      JS_ValueToNumber( cx, argv[1], &angle );
 	    }
 	  else if ( JSVAL_IS_OBJECT(argv[1]) &&
@@ -782,11 +784,11 @@ SFRotationCons(JSContext *cx, JSObject *obj,
 	      JSObject *v2obj = JSVAL_TO_OBJECT(argv[1]);
 	      VrmlSFVec3f *v2 = (VrmlSFVec3f *)JS_GetPrivate( cx, v2obj );
 	      VrmlSFVec3f v3(*v1);  // find rotation that takes v1 to v2
-	      v3.cross(v2);    
-	      x = v3.x();
-	      y = v3.y();
-	      z = v3.z();
-	      angle = acos( v1->dot(v2) / (v1->length() * v2->length()) );
+	      v3 = v3.cross(*v2);    
+	      x = v3.getX();
+	      y = v3.getY();
+	      z = v3.getZ();
+	      angle = acos( v1->dot(*v2) / (v1->length() * v2->length()) );
 	    }
 	  else
 	    return JS_FALSE;
@@ -806,10 +808,10 @@ rot_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
   VrmlSFRotation *v = (VrmlSFRotation *)JS_GetPrivate( cx, obj );
   if (v && JSVAL_IS_INT(id))
     switch (JSVAL_TO_INT(id)) {
-    case 0: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->x())); break;
-    case 1: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->y())); break;
-    case 2: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->z())); break;
-    case 3: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->r())); break;
+    case 0: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->getX())); break;
+    case 1: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->getY())); break;
+    case 2: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->getZ())); break;
+    case 3: *vp = DOUBLE_TO_JSVAL(JS_NewDouble( cx, v->getAngle())); break;
     default: return JS_FALSE;
     }
   return JS_TRUE;
@@ -825,7 +827,7 @@ rot_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
       JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 4 &&
       JS_ValueToNumber( cx, *vp, &d ))
     {
-      v->get()[ JSVAL_TO_INT(id) ] = d;
+      (*v)[ JSVAL_TO_INT(id) ] = d;
       checkEventOut( cx, obj, v );
       return JS_TRUE;
     }
@@ -1011,7 +1013,7 @@ color_getHSV(JSContext *cx, JSObject *obj, uintN , jsval *,
   if ( c )
     {
       float hsv[3];
-      c->getHSV( hsv[0], hsv[1], hsv[2] );
+      c->getHSV(hsv);
       return floatsToJSArray( 3, hsv, cx, rval );
     }
   return JS_FALSE;
@@ -1023,9 +1025,10 @@ static JSBool
 rot_getAxis(JSContext *cx, JSObject *obj, uintN , jsval *,
 	    jsval *rval)
 {
-  VrmlSFRotation *r = (VrmlSFRotation *)JS_GetPrivate( cx, obj );
-  if ( r ) return floatsToJSArray( 3, r->get(), cx, rval );
-  return JS_FALSE;
+    const VrmlSFRotation * const rot =
+            reinterpret_cast<const VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+    assert(rot);
+    return floatsToJSArray(3, rot->get(), cx, rval);
 }
 
 static JSBool
@@ -1039,9 +1042,7 @@ rot_inverse(JSContext *cx, JSObject *obj, uintN , jsval *,
       (robj = JS_NewObject( cx, &SFRotationClass, 0,
 			    JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFRotation *r2 = (VrmlSFRotation*) (r->clone());
-      r2->invert();
-      JS_SetPrivate( cx, robj, r2 );
+      JS_SetPrivate(cx, robj, new VrmlSFRotation(r->inverse()));
       *rval = OBJECT_TO_JSVAL(robj);
       return JS_TRUE;
     }
@@ -1067,7 +1068,7 @@ rot_multiply(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
       (r3obj = JS_NewObject( cx, &SFRotationClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      JS_SetPrivate( cx, r3obj, new VrmlSFRotation(r1->multiply(*r2));
+      JS_SetPrivate(cx, r3obj, new VrmlSFRotation(r1->multiply(*r2)));
       *rval = OBJECT_TO_JSVAL(r3obj);
       return JS_TRUE;
     }
@@ -1120,7 +1121,7 @@ rot_setAxis(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
       (v2 = (VrmlSFVec3f *)JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[0]))) &&
       (((VrmlField*)v2)->fieldType() == VrmlField::SFVEC3F) )
     {
-      r1->set( v2->x(), v2->y(), v2->z(), r1->r() );
+      r1->setAxis(*v2);
       *rval = OBJECT_TO_JSVAL(obj); // return the same object
       return JS_TRUE;
     }
@@ -1146,11 +1147,9 @@ rot_slerp(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
       (r3obj = JS_NewObject( cx, &SFRotationClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFRotation *r3 = (VrmlSFRotation*) (r1->clone());
       jsdouble factor;
       JS_ValueToNumber( cx, argv[1], &factor );
-      r3->slerp( r2, factor );
-      JS_SetPrivate( cx, r3obj, r3 );
+      JS_SetPrivate( cx, r3obj, new VrmlSFRotation(r1->slerp(*r2, factor)));
       *rval = OBJECT_TO_JSVAL(r3obj);
       return JS_TRUE;
     }
@@ -1177,9 +1176,7 @@ vec2f_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
       (v3obj = JS_NewObject( cx, &SFVec2fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec2f *v3 = (VrmlSFVec2f*) (v1->clone());
-      v3->add( v2 );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec2f(v1->add(*v2)));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1200,9 +1197,7 @@ vec2f_divide(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
       (v3obj = JS_NewObject( cx, &SFVec2fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec2f *v3 = (VrmlSFVec2f*) (v1->clone());
-      v3->divide( d );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec2f(v1->divide(d)));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1210,30 +1205,26 @@ vec2f_divide(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   return JS_FALSE;
 }
 
-static JSBool
-vec2f_dot(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-  VrmlSFVec2f *v1 = (VrmlSFVec2f *)JS_GetPrivate( cx, obj );
-  VrmlSFVec2f *v2 = 0;
-  JSObject *v3obj = 0;
+static JSBool vec2f_dot(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
+                        jsval *rval) {
+    if (argc > 0 && JSVAL_IS_OBJECT(argv[0])
+            && (&SFVec2fClass == JS_GetClass(JSVAL_TO_OBJECT(argv[0])))) {
+        
+        const VrmlSFVec2f * const thisVec =
+                reinterpret_cast<const VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+        assert(thisVec);
+        
+        const VrmlSFVec2f * const argVec =
+                reinterpret_cast<const VrmlSFVec2f *>
+                    (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+        assert(argVec);
+        
+        *rval = DOUBLE_TO_JSVAL(thisVec->dot(*argVec));
 
-  // Verify that we have 2 SFVec2f's && create a result
-  if (v1 && argc > 0 &&
-      JSVAL_IS_OBJECT(argv[0]) &&
-      &SFVec2fClass == JS_GetClass( JSVAL_TO_OBJECT(argv[0]) ) &&
-      (v2 = (VrmlSFVec2f *)JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[0]))) &&
-      (((VrmlField*)v2)->fieldType() == VrmlField::SFVEC2F) &&
-      (v3obj = JS_NewObject( cx, &SFVec2fClass, 0,
-			     JS_GetParent( cx, obj ) )) != 0)
-    {
-      VrmlSFVec2f *v3 = (VrmlSFVec2f*) (v1->clone());
-      v3->dot( v2 );
-      JS_SetPrivate( cx, v3obj, v3 );
-      *rval = OBJECT_TO_JSVAL(v3obj);
-      return JS_TRUE;
+        return JS_TRUE;
     }
-
-  return JS_FALSE;
+    
+    return JS_FALSE;
 }
 
 static JSBool
@@ -1261,9 +1252,7 @@ vec2f_multiply(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
       (v3obj = JS_NewObject( cx, &SFVec2fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec2f *v3 = (VrmlSFVec2f*) (v1->clone());
-      v3->multiply( d );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec2f(v1->multiply(d)));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1281,9 +1270,7 @@ vec2f_negate(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
       (v3obj = JS_NewObject( cx, &SFVec2fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec2f *v3 = (VrmlSFVec2f*) (v1->clone());
-      v3->multiply( -1.0 );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec2f(v1->negate()));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1301,9 +1288,7 @@ vec2f_normalize(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
       (v3obj = JS_NewObject( cx, &SFVec2fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec2f *v3 = (VrmlSFVec2f*) (v1->clone());
-      v3->normalize();
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec2f(v1->normalize()));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1381,9 +1366,7 @@ vec3f_cross(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
       (v3obj = JS_NewObject( cx, &SFVec3fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec3f *v3 = (VrmlSFVec3f*) (v1->clone());
-      v3->cross( v2 );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec3f(v1->cross(*v2)));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1412,30 +1395,26 @@ vec3f_divide(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
   return JS_FALSE;
 }
 
-static JSBool
-vec3f_dot(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
-{
-  VrmlSFVec3f *v1 = (VrmlSFVec3f *)JS_GetPrivate( cx, obj );
-  VrmlSFVec3f *v2 = 0;
-  JSObject *v3obj = 0;
-
-  // Verify that we have 2 SFVec3f's && create a result
-  if (v1 && argc > 0 &&
-      JSVAL_IS_OBJECT(argv[0]) &&
-      &SFVec3fClass == JS_GetClass( JSVAL_TO_OBJECT(argv[0]) ) &&
-      (v2 = (VrmlSFVec3f *)JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[0]))) &&
-      (((VrmlField*)v2)->fieldType() == VrmlField::SFVEC3F) &&
-      (v3obj = JS_NewObject( cx, &SFVec3fClass, 0,
-			     JS_GetParent( cx, obj ) )) != 0)
-    {
-      VrmlSFVec3f *v3 = (VrmlSFVec3f*) (v1->clone());
-      v3->dot( v2 );
-      JS_SetPrivate( cx, v3obj, v3 );
-      *rval = OBJECT_TO_JSVAL(v3obj);
-      return JS_TRUE;
+static JSBool vec3f_dot(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
+                        jsval *rval) {
+    if (argc > 0 && JSVAL_IS_OBJECT(argv[0])
+            && (&SFVec3fClass == JS_GetClass(JSVAL_TO_OBJECT(argv[0])))) {
+        
+        const VrmlSFVec3f * const thisVec =
+                reinterpret_cast<const VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+        assert(thisVec);
+        
+        const VrmlSFVec3f * const argVec =
+                reinterpret_cast<const VrmlSFVec3f *>
+                    (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+        assert(argVec);
+        
+        *rval = DOUBLE_TO_JSVAL(thisVec->dot(*argVec));
+        
+        return JS_TRUE;
     }
 
-  return JS_FALSE;
+    return JS_FALSE;
 }
 
 static JSBool
@@ -1502,7 +1481,7 @@ vec3f_normalize(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
       (v3obj = JS_NewObject( cx, &SFVec3fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      JS_SetPrivate(cx, v3obj, new VrmlSFVec3f(v1->normalize());
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec3f(v1->normalize()));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1527,7 +1506,7 @@ vec3f_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
       (v3obj = JS_NewObject( cx, &SFVec3fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      JS_SetPrivate(cx, v3obj, new VrmlSFVec3f(v1->subtract(*v2));
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec3f(v1->subtract(*v2)));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1892,7 +1871,7 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
 	if (protect) JS_AddRoot( d_cx, obj );
-	int *fn = mf ? mf->get() : 0;
+	const long *fn = mf ? mf->get() : 0;
 	for (i=0; i<n; ++i, ++fn)
 	  {
 	    JS_DefineElement( d_cx, obj, (jsint)i, INT_TO_JSVAL(*fn),
@@ -2136,20 +2115,20 @@ static VrmlField *jsvalToVrmlField( JSContext *cx,
     {
       jsuint len;
       JS_GetArrayLength( cx, JSVAL_TO_OBJECT(v), &len );
-      int *data = new int[ len ];
-      memset(data, 0, len*sizeof(int));
+      long *data = new long[ len ];
+      memset(data, 0, len*sizeof(long));
 
-      for (int i=0; i<(int)len; ++i)
+      for (size_t i = 0; i < len; ++i)
 	{
 	  jsval elt;
 	  JS_GetElement( cx, JSVAL_TO_OBJECT(v), (jsint) i, &elt );
 	  if (JSVAL_IS_NUMBER(elt)) {
 	    jsdouble factor;
 	    JS_ValueToNumber( cx, elt, &factor );
-	    data[i] = (int) factor;
+	    data[i] = static_cast<long>(factor);
 	  }
 	}
-      VrmlMFInt *f = new VrmlMFInt( (int)len, data );
+      VrmlMFInt *f = new VrmlMFInt(len, data);
       delete [] data;
       return f;
     }
@@ -2769,4 +2748,4 @@ ErrorReporter(JSContext *, const char *message, JSErrorReport *report)
     }
     theSystem->error("\n");
 }
-#endif // HAVE_JAVASCRIPT
+//#endif // HAVE_JAVASCRIPT

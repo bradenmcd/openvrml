@@ -71,9 +71,9 @@ ostream& VrmlNodeLight::printFields(ostream& os, int indent)
 {
   if (! FPZERO(d_ambientIntensity.get()))
     PRINT_FIELD(ambientIntensity);
-  if (! FPEQUAL(d_color.r(), 1.0) ||
-      ! FPEQUAL(d_color.g(), 1.0) ||
-      ! FPEQUAL(d_color.b(), 1.0) )
+  if (! FPEQUAL(d_color.getR(), 1.0) ||
+      ! FPEQUAL(d_color.getG(), 1.0) ||
+      ! FPEQUAL(d_color.getB(), 1.0) )
     PRINT_FIELD(color);
   if (! FPEQUAL(d_intensity.get(), 1.0))
     PRINT_FIELD(intensity);

@@ -103,9 +103,9 @@ void VrmlNodeColorInt::eventIn(double timeStamp,
 
       int n = d_key.size() - 1;
       if (f < d_key[0])
-	d_value.set( d_keyValue[0][0], d_keyValue[0][1], d_keyValue[0][2] );
+	d_value.set(d_keyValue[0]);
       else if (f > d_key[n])
-	d_value.set( d_keyValue[n][0], d_keyValue[n][1], d_keyValue[n][2] );
+	d_value.set(d_keyValue[n]);
       else
 	{
 	  //  convert to HSV for the interpolation...
@@ -116,27 +116,24 @@ void VrmlNodeColorInt::eventIn(double timeStamp,
 		float *rgb2 = d_keyValue[i+1];
 
 		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
-		float h1, s1, v1, h2, s2, v2;
-		VrmlSFColor::RGBtoHSV( rgb1[0], rgb1[1], rgb1[2],
-				       h1, s1, v1 );
-		VrmlSFColor::RGBtoHSV( rgb2[0], rgb2[1], rgb2[2],
-				       h2, s2, v2 );
+		float hsv1[3], hsv2[3];
+		VrmlSFColor::RGBtoHSV(rgb1, hsv1);
+		VrmlSFColor::RGBtoHSV(rgb2, hsv2);
 
 		// Interpolate angles via the shortest direction
-		if (fabs(h2 - h1) > 180.0)
+		if (fabs(hsv2[0] - hsv1[0]) > 180.0)
 		  {
-		    if (h2 > h1) h1 += 360.0;
-		    else         h2 += 360.0;
+		    if (hsv2[0] > hsv1[0]) hsv1[0] += 360.0;
+		    else         hsv2[0] += 360.0;
 		  }
-		float h = h1 + f * (h2 - h1);
-		if (h >= 360.0) h -= 360.0;
-		else if (h < 0.0) h += 360.0;
-
-		float s = s1 + f * (s2 - s1);
-		float v = v1 + f * (v2 - v1);
-		float r, g, b;
-		VrmlSFColor::HSVtoRGB( h, s, v, r, g, b);
-		d_value.set( r, g, b);
+                float hsv[3] = { hsv1[0] + f * (hsv2[0] - hsv1[0]),
+                                 hsv1[1] + f * (hsv2[1] - hsv1[1]),
+                                 hsv1[2] + f * (hsv2[2] - hsv1[2]) };
+		if (hsv[0] >= 360.0) hsv[0] -= 360.0;
+		else if (hsv[0] < 0.0) hsv[0] += 360.0;
+		float rgb[3];
+		VrmlSFColor::HSVtoRGB(hsv, rgb);
+		d_value.set(rgb);
 		break;
 	      }
 	}

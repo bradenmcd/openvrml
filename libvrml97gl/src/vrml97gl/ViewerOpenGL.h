@@ -32,8 +32,8 @@
 #define USE_STENCIL_SHAPE 0
 
 
-#if defined(WIN32)
 // Win32 needs to know that GL stuff lives in a DLL (OPENGL32.DLL)
+#if defined(WIN32)
 #include <wtypes.h>
 #include <winbase.h>
 #include <windef.h>
@@ -191,10 +191,10 @@ public:
   virtual void insertTextureReference(TextureObject, int);
   virtual void removeTextureObject(TextureObject);
 
-  virtual void setTextureTransform( float * /*center*/,
-				    float /*rotation*/,
-				    float * /*scale*/,
-				    float * /*translation*/ );
+  virtual void setTextureTransform(const float center[2],
+				   float rotation,
+				   const float scale[2],
+				   const float translation[2]);
 
   virtual void setTransform(const float center[3],
 			    const float rotation[4],
