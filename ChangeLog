@@ -3,6 +3,9 @@
         * src/openvrml/OpenVRML/browser.cpp: Fixed crash when calling
           Browser::loadURI.
 
+        * src/openvrml/OpenVRML/field.cpp: Fixed const correctness
+          issue in array_vector copy ctor.
+
 2002-08-19  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * Continue upating conformance test results.

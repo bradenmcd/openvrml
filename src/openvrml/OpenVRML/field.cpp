@@ -2245,7 +2245,9 @@ namespace {
             size_(av.size_),
             capacity_(av.capacity_)
         {
-            for (iterator i(av.begin()), j(this->begin()); i != av.end(); ++i, ++j) {
+            const_iterator i(av.begin());
+            iterator j(this->begin());
+            for (; i != av.end(); ++i, ++j) {
                 std::copy(*i, *i + ArraySize, *j);
             }
         }
