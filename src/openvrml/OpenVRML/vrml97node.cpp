@@ -20,6 +20,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 # include <iostream>
 # include <algorithm>
 # include "vrml97node.h"
@@ -31,6 +35,7 @@
 # include "private.h"
 # include "MathUtils.h"
 # include "System.h"
+# include "font.h"
 
 namespace OpenVRML {
 
@@ -3541,9 +3546,13 @@ void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
     size_t n = this->key.getLength() - 1;
 
     if (f < this->key.getElement(0)) {
-        this->value = MFVec3f(nCoords, &this->keyValue.getElement(0));
+        this->value = MFVec3f(nCoords, 
+                              &static_cast<SFVec3f::ConstArrayReference>
+                              (this->keyValue.getElement(0)));
     } else if (f > this->key.getElement(n)) {
-        this->value = MFVec3f(nCoords, &this->keyValue.getElement(n * nCoords));
+        this->value = MFVec3f(nCoords, 
+                              &static_cast<SFVec3f::ConstArrayReference>
+                              (this->keyValue.getElement(n * nCoords)));
     } else {
         // Reserve enough space for the new value
         this->value.setLength(nCoords);
@@ -3552,9 +3561,11 @@ void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
             if (this->key.getElement(i) <= f
                     && f <= this->key.getElement(i + 1)) {
                 SFVec3f::ConstArrayPointer v1 =
-                        &this->keyValue.getElement(i * nCoords);
+                        &static_cast<SFVec3f::ConstArrayReference>
+                        (this->keyValue.getElement(i * nCoords));
                 SFVec3f::ConstArrayPointer v2 =
-                        &this->keyValue.getElement((i + 1) * nCoords);
+                        &static_cast<SFVec3f::ConstArrayReference>
+                        (this->keyValue.getElement((i + 1) * nCoords));
 
                 f = (f - this->key.getElement(i))
                     / (this->key.getElement(i + 1) - this->key.getElement(i));
@@ -5281,7 +5292,7 @@ const NodeTypePtr
 
 namespace {
     const std::string fontStyleInitFamily_[] = { "SERIF" };
-    const std::string fontStyleInitJustify_[] = { "BEGIN" };
+    const std::string fontStyleInitJustify_[] = { "BEGIN", "FIRST" };
 }
 
 /**
@@ -5302,12 +5313,19 @@ FontStyle::FontStyle(const NodeType & nodeType,
         size(1.0),
         spacing(1.0),
         style("PLAIN"),
-        topToBottom(true) {}
+        topToBottom(true), 
+        ftface(0){}
 
 /**
  * @brief Destructor.
  */
-FontStyle::~FontStyle() throw () {}
+FontStyle::~FontStyle() throw () {
+
+#ifdef OPENVRML_HAVE_FREETYPEFONTS
+        if(ftface) delete []ftface;
+#endif
+
+}
 
 /**
  * @brief Get the list of font families.
@@ -5390,6 +5408,42 @@ const SFBool & FontStyle::getTopToBottom() const throw () {
     return this->topToBottom;
 }
 
+/**
+ * @brief Set parameters of FontFace object and initialize FontFace lib.
+ *
+ * @return FontFace object
+ *
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+const FontFace & FontStyle::getFtFace() throw (std::bad_alloc) { 
+
+#ifdef OPENVRML_HAVE_FREETYPEFONTS
+
+  if ( !this->ftface) {
+    size_t i;
+    this->ftface = new FontFace();
+    this->ftface->setHorizontal(this->horizontal.get());
+    this->ftface->setLeftToRight(this->leftToRight.get());
+    this->ftface->setSpacing(this->spacing.get());
+    this->ftface->setTopToBottom(this->topToBottom.get());
+    this->ftface->setLanguage(this->language.get());
+    std::string* justify = new std::string[this->justify.getLength()]; 
+    for (i = 0; i < this->justify.getLength(); ++i)
+      justify[i] = this->justify.getElement(i);
+    this->ftface->setJustify(this->justify.getLength(), justify);
+    std::string* family = new std::string[this->family.getLength()]; 
+    for (i = 0; i < this->family.getLength(); ++i)
+      family[i] = this->family.getElement(i);
+    this->ftface->openFace(this->family.getLength(), family, this->style.get(),
+                      this->size.get());
+    delete []justify;
+    delete []family;
+  }
+
+#endif          // HAVE_OPENVRML_FREETYPEFONTS
+
+  return *this->ftface;
+}
 
 /**
  * @class GroupClass
@@ -5513,7 +5567,7 @@ void Group::processAddChildren(const FieldValue & mfnode,
                                const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    const MFNode & newChildren(dynamic_cast<const MFNode &>(mfnode));
+    const MFNode & newChildren = dynamic_cast<const MFNode &>(mfnode);
     size_t nNow = this->children.getLength();
     size_t n = newChildren.getLength();
 
@@ -8079,9 +8133,13 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
     int n = this->key.getLength() - 1;
 
     if (f < this->key.getElement(0)) {
-        this->value = MFVec3f(nNormals, &this->keyValue.getElement(0));
+        this->value = MFVec3f(nNormals, 
+                              &static_cast<SFVec3f::ConstArrayReference>
+                              (this->keyValue.getElement(0)));
     } else if (f > this->key.getElement(n)) {
-        this->value = MFVec3f(nNormals, &this->keyValue.getElement(n * nNormals));
+        this->value = MFVec3f(nNormals, 
+                              &static_cast<SFVec3f::ConstArrayReference>
+                              (this->keyValue.getElement(n * nNormals)));
     } else {
         // Reserve enough space for the new value
         this->value.setLength(nNormals);
@@ -8090,9 +8148,11 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
             if (this->key.getElement(i) <= f
                     && f <= this->key.getElement(i + 1)) {
                 SFVec3f::ConstArrayPointer v1 =
-                        &this->keyValue.getElement(i * nNormals);
+                        &static_cast<SFVec3f::ConstArrayReference>
+                        (this->keyValue.getElement(i * nNormals));
                 SFVec3f::ConstArrayPointer v2 =
-                        &this->keyValue.getElement((i + 1) * nNormals);
+                        &static_cast<SFVec3f::ConstArrayReference>
+                        (this->keyValue.getElement((i + 1) * nNormals));
 
                 f = (f - this->key.getElement(i))
                     / (this->key.getElement(i + 1) - this->key.getElement(i));
@@ -11455,38 +11515,40 @@ void Text::clearFlags() {
 }
 
 Viewer::Object Text::insertGeometry(Viewer *viewer, VrmlRenderContext rc) {
-    char * * strs = new char *[this->string.getLength()];
-    size_t i;
-    for (i = 0; i < this->string.getLength(); ++i) {
-        const std::string & currentString = this->string.getElement(i);
-        strs[i] = new char[currentString.length() + 1];
-        std::copy(currentString.begin(), currentString.end(), strs[i]);
-        strs[i][currentString.length()] = '\0';
-    }
 
     Viewer::Object retval(0);
 
-    int justify[2] = { 1, 1 };
-    SFFloat size(1.0);
-    FontStyleNode * f = 0;
+#ifdef OPENVRML_HAVE_FREETYPEFONTS
+    FontFace ftface_ ;   
+    FontStyleNode *f = 0;
     if (this->fontStyle.get()) {
         f = this->fontStyle.get()->toFontStyle();
     }
 
     if (f) {
-        const MFString & j = f->getJustify();
-
-        for (size_t i = 0; i < j.getLength(); ++i) {
-            if (j.getElement(i) == "END")         { justify[i] = -1; }
-            else if (j.getElement(i) == "MIDDLE") { justify[i] = 0; }
-        }
-        size = f->getSize();
+        ftface_ = f->getFtFace();
     }
-    retval = viewer->insertText(justify, size.get(), this->string.getLength(), strs);
+    else {
+        ftface_ = ftface_.getDefFontFace();
+    }
 
-    for (i = 0; i < this->string.getLength(); i++) { delete [] strs[i]; }
+    std::string * strs = new std::string [this->string.getLength()];
+    size_t i;
+    for (i = 0; i < this->string.getLength(); ++i) 
+        strs[i] = this->string.getElement(i);
+    if(!ftface_.getError()) {
+      for (i = 0; i < this->string.getLength(); ++i)
+        ftface_.ProcessText(this->string.getElement(i));
+        retval = viewer->insertText(ftface_,this->string.getLength(), 
+                                    strs,
+                                    this->length.getLength(),
+                                    (this->length.getLength() > 0)
+                                    ? &this->length.getElement(0) : 0,
+                                    this->maxExtent.get());
+    }
     delete [] strs;
-
+#endif                // HAVE_OPENVRML_FREETYPEFONTS
+    
     return retval;
 }
 

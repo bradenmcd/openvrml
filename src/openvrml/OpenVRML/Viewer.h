@@ -25,6 +25,7 @@
 #   define OPENVRML_VIEWER_H
 
 #   include <stddef.h>
+#   include <string>
 #   include "bvolume.h"
 #   include "VrmlFrustum.h"
 
@@ -35,6 +36,8 @@ namespace OpenVRML {
     class AABox;
     class SFVec3f;
     class VrmlMatrix;
+    class FontFace;
+    class FontVectoriser;
     class Browser;
 
     class OPENVRML_SCOPE Viewer {
@@ -121,7 +124,10 @@ namespace OpenVRML {
 			           const float * color,
 			           size_t nci, const long * ci) = 0;
         virtual Object insertSphere(float radius) = 0;
-        virtual Object insertText(int*, float size, int n, char const * const *s) = 0;
+        virtual Object insertText(FontFace & fface, 
+                                  size_t strarraysize, const std::string * string,
+                                  size_t lsize, const float length[], 
+                                  float maxextent) = 0;
         virtual Object insertDirLight(float, float, const float [], const float []) = 0;
         virtual Object insertPointLight(float, const float [], const float [],
 				        float, const float [], float) = 0;

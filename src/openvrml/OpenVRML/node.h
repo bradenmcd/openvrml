@@ -174,6 +174,7 @@ namespace OpenVRML {
     class TextureNode;
     class TextureCoordinateNode;
     class TextureTransformNode;
+    class FontFace;
     
     namespace Vrml97Node {
         class Anchor;
@@ -474,6 +475,8 @@ namespace OpenVRML {
         virtual const SFFloat & getSpacing() const throw () = 0;
         virtual const SFString & getStyle() const throw () = 0;
         virtual const SFBool & getTopToBottom() const throw () = 0;
+
+        virtual const FontFace & getFtFace(void) throw (std::bad_alloc) = 0;
         
     protected:
         FontStyleNode(const NodeType & nodeType, const ScopePtr & scope);

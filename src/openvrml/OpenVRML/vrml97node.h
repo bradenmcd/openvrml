@@ -35,6 +35,7 @@
 namespace OpenVRML {
 
     class Audio;
+    class FontFace;
 
     namespace Vrml97Node {
 
@@ -1123,7 +1124,6 @@ namespace OpenVRML {
         class OPENVRML_SCOPE FontStyle : public AbstractBase,
                                          public FontStyleNode {
             friend class FontStyleClass;
-
             MFString family;
             SFBool horizontal;
             MFString justify;
@@ -1133,6 +1133,8 @@ namespace OpenVRML {
             SFFloat spacing;
             SFString style;
             SFBool topToBottom;
+
+            FontFace * ftface;
 
         public:
             FontStyle(const NodeType & nodeType,
@@ -1151,6 +1153,7 @@ namespace OpenVRML {
             virtual const SFFloat & getSpacing() const throw ();
             virtual const SFString & getStyle() const throw ();
             virtual const SFBool & getTopToBottom() const throw ();
+            virtual const FontFace & getFtFace(void) throw(std::bad_alloc);
         };
 
 

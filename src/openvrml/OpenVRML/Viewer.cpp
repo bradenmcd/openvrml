@@ -224,10 +224,23 @@ Viewer::~Viewer() {}
  * @brief Insert a sphere into a display list.
  */
 
+
 /**
- * @fn Viewer::Object Viewer::insertText(int*, float size, int n, char const * const *s)
+ * @fn Viewer::Object Viewer::insertText(FontFace & fface, 
+ *                                       size_t strarraysize, 
+ *                                       const std::string * string
+ *                                       size_t lsize, const float length[], 
+ *                                       float maxextent)
+ *                
  *
  * @brief Insert text into a display list.
+ *
+ * @param ftface FontFace object
+ * @param strarraysize size of string array
+ * @param string pointer to string array
+ * @param lsize size of length array
+ * @param length length array for the length of each text string
+ * @param maxextent maxextent of all text strings
  */
 
 /**
