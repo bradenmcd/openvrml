@@ -1,3 +1,11 @@
+2003-12-14 Braden McDaniel  <braden@endoframe.com>
+
+	Added value_type typedef to field_value subclasses.  Added
+	constructor that takes a value_type to the mf* types.
+
+	* src/libopenvrml/openvrml/field.h
+	* src/libopenvrml/openvrml/field.cpp
+
 2003-12-09 Braden McDaniel  <braden@endoframe.com>
 
 	Modifed "viewer::insert_background" to use the "image" class.

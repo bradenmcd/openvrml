@@ -2,7 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
+// Copyright 1998 Chris Morley
+// Copyright 2003 Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -407,6 +408,12 @@ std::istream & operator>>(std::istream & in, field_value::type_id & type_id)
  */
 
 /**
+ * @typedef sfbool::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var sfbool::value
  *
  * @brief Boolean value.
@@ -508,6 +515,12 @@ field_value::type_id sfbool::type() const throw ()
  * @ingroup fieldvalues
  *
  * @brief A color node field value.
+ */
+
+/**
+ * @typedef sfcolor::value_type
+ *
+ * @brief Type of @a value.
  */
 
 /**
@@ -615,6 +628,12 @@ field_value::type_id sfcolor::type() const throw ()
  */
 
 /**
+ * @typedef sffloat::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var sffloat::value
  *
  * @brief Single precision floating point value.
@@ -719,6 +738,12 @@ field_value::type_id sffloat::type() const throw ()
  */
 
 /**
+ * @typedef sfimage::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var image sfimage::value
  *
  * @brief Image data.
@@ -796,6 +821,12 @@ field_value::type_id sfimage::type() const throw ()
  * @ingroup fieldvalues
  *
  * @brief A 32-bit integer node field value.
+ */
+
+/**
+ * @typedef sfint32::value_type
+ *
+ * @brief Type of @a value.
  */
 
 /**
@@ -900,6 +931,12 @@ field_value::type_id sfint32::type() const throw ()
  * @ingroup fieldvalues
  *
  * @brief A node field value to hold a single node reference.
+ */
+
+/**
+ * @typedef sfnode::value_type
+ *
+ * @brief Type of @a value.
  */
 
 /**
@@ -1024,6 +1061,12 @@ field_value::type_id sfnode::type() const throw ()
  */
 
 /**
+ * @typedef sfrotation::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var sfrotation::value
  *
  * @brief Rotation value.
@@ -1125,6 +1168,12 @@ void sfrotation::print(std::ostream & out) const
  * @ingroup fieldvalues
  *
  * @brief A string node field value.
+ */
+
+/**
+ * @typedef sfstring::value_type
+ *
+ * @brief Type of @a value.
  */
 
 /**
@@ -1236,6 +1285,12 @@ field_value::type_id sfstring::type() const throw ()
  */
 
 /**
+ * @typedef sftime::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var sftime::value
  *
  * @brief Double precision floating point value.
@@ -1337,6 +1392,12 @@ field_value::type_id sftime::type() const throw ()
  * @ingroup fieldvalues
  *
  * @brief A 2-component vector node field value.
+ */
+
+/**
+ * @typedef sfvec2f::value_type
+ *
+ * @brief Type of @a value.
  */
 
 /**
@@ -1444,6 +1505,12 @@ void sfvec2f::print(std::ostream & out) const
  */
 
 /**
+ * @typedef sfvec3f::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var sfvec3f::value
  *
  * @brief 3-component vector value.
@@ -1548,6 +1615,12 @@ void sfvec3f::print(std::ostream & out) const
  */
 
 /**
+ * @typedef mfcolor::value_type
+ *
+ * @brief The type of @a value.
+ */
+
+/**
  * @var std::vector<color> mfcolor::value
  *
  * @brief Color values.
@@ -1568,6 +1641,17 @@ void sfvec3f::print(std::ostream & out) const
 mfcolor::mfcolor(const std::vector<color>::size_type n, const color & value)
     throw (std::bad_alloc):
     value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+mfcolor::mfcolor(const std::vector<color> & value) throw (std::bad_alloc):
+    value(value)
 {}
 
 /**
@@ -1685,6 +1769,12 @@ void mfcolor::print(std::ostream & out) const
  */
 
 /**
+ * @typedef mffloat::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var std::vector<float> mffloat::value
  *
  * @brief Single precision floating point values.
@@ -1705,6 +1795,17 @@ void mfcolor::print(std::ostream & out) const
 mffloat::mffloat(const std::vector<float>::size_type n, const float value)
     throw (std::bad_alloc):
     value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+mffloat::mffloat(const std::vector<float> & value) throw (std::bad_alloc):
+    value(value)
 {}
 
 /**
@@ -1822,6 +1923,12 @@ void mffloat::print(std::ostream & out) const
  */
 
 /**
+ * @typedef mfint32::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var std::vector<int32> mfint32::value
  *
  * @brief Signed 32-bit integer values.
@@ -1842,6 +1949,17 @@ void mffloat::print(std::ostream & out) const
 mfint32::mfint32(const std::vector<int32>::size_type n, const int32 value)
     throw (std::bad_alloc):
     value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+mfint32::mfint32(const std::vector<int32> & value) throw (std::bad_alloc):
+    value(value)
 {}
 
 /**
@@ -1959,6 +2077,12 @@ void mfint32::print(std::ostream & out) const
  */
 
 /**
+ * @typedef mfnode::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var std::vector<node_ptr> mfnode::value
  *
  * @brief Node references.
@@ -1976,9 +2100,21 @@ void mfint32::print(std::ostream & out) const
  *
  * @post size is @p n. Every element is a copy of @p value.
  */
-mfnode::mfnode(const std::vector<node_ptr>::size_type n, const node_ptr & value)
+mfnode::mfnode(const std::vector<node_ptr>::size_type n,
+               const node_ptr & value)
     throw (std::bad_alloc):
     value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+mfnode::mfnode(const std::vector<node_ptr> & value) throw (std::bad_alloc):
+    value(value)
 {}
 
 /**
@@ -2099,6 +2235,12 @@ void mfnode::print(std::ostream & out) const
  */
 
 /**
+ * @typedef mfrotation::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var std::vector<rotation> mfrotation::value
  *
  * @brief Rotation values.
@@ -2120,6 +2262,18 @@ mfrotation::mfrotation(const std::vector<rotation>::size_type n,
                        const rotation & value)
     throw (std::bad_alloc):
     value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+mfrotation::mfrotation(const std::vector<rotation> & value)
+    throw (std::bad_alloc):
+    value(value)
 {}
 
 /**
@@ -2237,6 +2391,12 @@ void mfrotation::print(std::ostream & out) const
  */
 
 /**
+ * @typedef mfstring::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var std::vector<std::string> mfstring::value
  *
  * @brief String values.
@@ -2259,6 +2419,18 @@ mfstring::mfstring(const std::vector<std::string>::size_type n,
                    const std::string & value)
     throw (std::bad_alloc):
     value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+mfstring::mfstring(const std::vector<std::string> & value)
+    throw (std::bad_alloc):
+    value(value)
 {}
 
 /**
@@ -2289,7 +2461,8 @@ mfstring::~mfstring() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<field_value> mfstring::clone() const throw (std::bad_alloc) {
+std::auto_ptr<field_value> mfstring::clone() const throw (std::bad_alloc)
+{
     return std::auto_ptr<field_value>(new mfstring(*this));
 }
 
@@ -2302,7 +2475,8 @@ std::auto_ptr<field_value> mfstring::clone() const throw (std::bad_alloc) {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 field_value & mfstring::assign(const field_value & value)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     return (*this = dynamic_cast<const mfstring &>(value));
 }
 
@@ -2374,6 +2548,12 @@ void mfstring::print(std::ostream & out) const
  */
 
 /**
+ * @typedef mftime::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var std::vector<double> mftime::value
  *
  * @brief Double precision floating point values.
@@ -2395,6 +2575,17 @@ void mfstring::print(std::ostream & out) const
 mftime::mftime(const std::vector<double>::size_type n, const double value)
     throw (std::bad_alloc):
     value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+mftime::mftime(const std::vector<double> & value) throw (std::bad_alloc):
+    value(value)
 {}
 
 /**
@@ -2512,6 +2703,12 @@ void mftime::print(std::ostream & out) const
  */
 
 /**
+ * @typedef mfvec2f::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var std::vector<vec2f> mfvec2f::value
  *
  * @brief 2-component vector values.
@@ -2533,6 +2730,17 @@ void mftime::print(std::ostream & out) const
 mfvec2f::mfvec2f(const std::vector<vec2f>::size_type n, const vec2f & value)
     throw (std::bad_alloc):
     value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+mfvec2f::mfvec2f(const std::vector<vec2f> & value) throw (std::bad_alloc):
+    value(value)
 {}
 
 /**
@@ -2650,6 +2858,12 @@ void mfvec2f::print(std::ostream & out) const
  */
 
 /**
+ * @typedef mfvec3f::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
  * @var std::vector<vec3f> mfvec3f::value
  *
  * @brief 3-component vector values.
@@ -2671,6 +2885,17 @@ void mfvec2f::print(std::ostream & out) const
 mfvec3f::mfvec3f(const std::vector<vec3f>::size_type n, const vec3f & value)
     throw (std::bad_alloc):
     value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+mfvec3f::mfvec3f(const std::vector<vec3f> & value) throw (std::bad_alloc):
+    value(value)
 {}
 
 /**

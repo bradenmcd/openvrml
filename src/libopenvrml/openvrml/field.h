@@ -97,6 +97,8 @@ namespace openvrml {
 
     class sfbool : public field_value {
     public:
+        typedef bool value_type;
+
         bool value;
 
         explicit sfbool(bool value = false) throw ();
@@ -127,6 +129,8 @@ namespace openvrml {
 
     class sfcolor : public field_value {
     public:
+        typedef color value_type;
+
         color value;
 
         explicit sfcolor(const color & value = color()) throw ();
@@ -157,6 +161,8 @@ namespace openvrml {
 
     class sffloat : public field_value {
     public:
+        typedef float value_type;
+
         float value;
 
         explicit sffloat(float value = 0.0) throw ();
@@ -187,6 +193,8 @@ namespace openvrml {
 
     class sfimage : public field_value {
     public:
+        typedef image value_type;
+
         image value;
 
         explicit sfimage(const image & value = image()) throw (std::bad_alloc);
@@ -217,6 +225,8 @@ namespace openvrml {
 
     class sfint32 : public field_value {
     public:
+        typedef int32 value_type;
+
         int32 value;
 
         explicit sfint32(int32 value = 0) throw ();
@@ -247,6 +257,8 @@ namespace openvrml {
 
     class sfnode : public field_value {
     public:
+        typedef node_ptr value_type;
+
         node_ptr value;
 
         explicit sfnode(const node_ptr & node = node_ptr(0)) throw ();
@@ -277,6 +289,8 @@ namespace openvrml {
 
     class sfrotation : public field_value {
     public:
+        typedef rotation value_type;
+
         rotation value;
 
         explicit sfrotation(const rotation & rot = rotation()) throw ();
@@ -309,6 +323,8 @@ namespace openvrml {
 
     class sfstring : public field_value {
     public:
+        typedef std::string value_type;
+
         std::string value;
 
         explicit sfstring(const std::string & value = std::string())
@@ -340,6 +356,8 @@ namespace openvrml {
 
     class sftime : public field_value {
     public:
+        typedef double value_type;
+
         double value;
 
         explicit sftime(double value = 0.0) throw ();
@@ -370,6 +388,8 @@ namespace openvrml {
 
     class sfvec2f : public field_value {
     public:
+        typedef vec2f value_type;
+
         vec2f value;
 
         explicit sfvec2f(const vec2f & vec = vec2f()) throw ();
@@ -400,6 +420,8 @@ namespace openvrml {
 
     class sfvec3f : public field_value {
     public:
+        typedef vec3f value_type;
+
         vec3f value;
 
         explicit sfvec3f(const vec3f & vec = vec3f()) throw ();
@@ -430,10 +452,14 @@ namespace openvrml {
 
     class mfcolor : public field_value {
     public:
+        typedef std::vector<color> value_type;
+
         std::vector<color> value;
 
         explicit mfcolor(std::vector<color>::size_type n = 0,
                          const color & value = color())
+            throw (std::bad_alloc);
+        explicit mfcolor(const value_type & value)
             throw (std::bad_alloc);
         template <typename InputIterator>
         mfcolor(InputIterator first, InputIterator last);
@@ -469,10 +495,14 @@ namespace openvrml {
 
     class mffloat : public field_value {
     public:
+        typedef std::vector<float> value_type;
+
         std::vector<float> value;
 
         explicit mffloat(std::vector<float>::size_type n = 0,
                          float value = 0.0f)
+            throw (std::bad_alloc);
+        explicit mffloat(const std::vector<float> & value)
             throw (std::bad_alloc);
         template <typename InputIterator>
         mffloat(InputIterator first, InputIterator last);
@@ -508,9 +538,13 @@ namespace openvrml {
 
     class mfint32 : public field_value {
     public:
+        typedef std::vector<int32> value_type;
+
         std::vector<int32> value;
 
         explicit mfint32(std::vector<int32>::size_type n = 0, int32 value = 0)
+            throw (std::bad_alloc);
+        explicit mfint32(const std::vector<int32> & value)
             throw (std::bad_alloc);
         template <typename InputIterator>
         mfint32(InputIterator first, InputIterator last);
@@ -546,10 +580,14 @@ namespace openvrml {
 
     class mfnode : public field_value {
     public:
+        typedef std::vector<node_ptr> value_type;
+
         std::vector<node_ptr> value;
 
         explicit mfnode(std::vector<node_ptr>::size_type n = 0,
                         const node_ptr & value = node_ptr())
+            throw (std::bad_alloc);
+        explicit mfnode(const std::vector<node_ptr> & value)
             throw (std::bad_alloc);
         template <typename InputIterator>
         mfnode(InputIterator first, InputIterator last);
@@ -585,10 +623,14 @@ namespace openvrml {
 
     class mfrotation : public field_value {
     public:
+        typedef std::vector<rotation> value_type;
+
         std::vector<rotation> value;
 
         explicit mfrotation(std::vector<rotation>::size_type n = 0,
                             const rotation & value = rotation())
+            throw (std::bad_alloc);
+        explicit mfrotation(const std::vector<rotation> & value)
             throw (std::bad_alloc);
         template <typename InputIterator>
         mfrotation(InputIterator first, InputIterator last);
@@ -626,10 +668,14 @@ namespace openvrml {
 
     class mfstring : public field_value {
     public:
+        typedef std::vector<std::string> value_type;
+
         std::vector<std::string> value;
 
         explicit mfstring(std::vector<std::string>::size_type n = 0,
                           const std::string & value = std::string())
+            throw (std::bad_alloc);
+        explicit mfstring(const std::vector<std::string> & value)
             throw (std::bad_alloc);
         template <typename InputIterator>
         mfstring(InputIterator first, InputIterator last);
@@ -665,10 +711,14 @@ namespace openvrml {
 
     class mftime : public field_value {
     public:
+        typedef std::vector<double> value_type;
+
         std::vector<double> value;
 
         explicit mftime(std::vector<double>::size_type n = 0,
                         double value = 0.0)
+            throw (std::bad_alloc);
+        explicit mftime(const std::vector<double> & value)
             throw (std::bad_alloc);
         template <typename InputIterator>
         mftime(InputIterator first, InputIterator last);
@@ -704,10 +754,14 @@ namespace openvrml {
 
     class mfvec2f : public field_value {
     public:
+        typedef std::vector<vec2f> value_type;
+
         std::vector<vec2f> value;
 
         explicit mfvec2f(std::vector<vec2f>::size_type n = 0,
                          const vec2f & value = vec2f())
+            throw (std::bad_alloc);
+        explicit mfvec2f(const std::vector<vec2f> & value)
             throw (std::bad_alloc);
         template <typename InputIterator>
         mfvec2f(InputIterator first, InputIterator last);
@@ -743,10 +797,14 @@ namespace openvrml {
 
     class mfvec3f : public field_value {
     public:
+        typedef std::vector<vec3f> value_type;
+
         std::vector<vec3f> value;
 
         explicit mfvec3f(std::vector<vec3f>::size_type n = 0,
                          const vec3f & value = vec3f())
+            throw (std::bad_alloc);
+        explicit mfvec3f(const std::vector<vec3f> & value)
             throw (std::bad_alloc);
         template <typename InputIterator>
         mfvec3f(InputIterator first, InputIterator last);
