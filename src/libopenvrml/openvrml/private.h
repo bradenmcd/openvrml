@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2001  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -60,6 +60,7 @@
 #   include <cstddef>
 #   include <functional>
 #   include <limits>
+#   include <boost/concept_check.hpp>
 
 namespace {
     namespace openvrml_ {
@@ -99,6 +100,64 @@ namespace {
                 return a > b || fequal<Float>()(a, b);
             }
         };
+
+        template <typename AdaptableBinaryFunction,
+                  typename AdaptableUnaryFunction1,
+                  typename AdaptableUnaryFunction2>
+        struct binary_compose :
+            std::unary_function<
+            typename AdaptableUnaryFunction1::argument_type,
+            typename AdaptableBinaryFunction::result_type> {
+
+            binary_compose(const AdaptableBinaryFunction & f,
+                           const AdaptableUnaryFunction1 & g1,
+                           const AdaptableUnaryFunction2 & g2):
+                f(f),
+                g1(g1),
+                g2(g2)
+            {}
+
+            typename AdaptableBinaryFunction::result_type
+            operator()(
+                const typename AdaptableUnaryFunction1::argument_type & arg)
+            {
+                return this->f(this->g1(arg), this->g2(arg));
+            }
+
+        private:
+            AdaptableBinaryFunction f;
+            AdaptableUnaryFunction1 g1;
+            AdaptableUnaryFunction2 g2;
+        };
+
+        template <typename AdaptableBinaryFunction,
+                  typename AdaptableUnaryFunction1,
+                  typename AdaptableUnaryFunction2>
+        binary_compose<AdaptableBinaryFunction,
+                       AdaptableUnaryFunction1,
+                       AdaptableUnaryFunction2>
+        compose2(const AdaptableBinaryFunction & f,
+                 const AdaptableUnaryFunction1 & g1,
+                 const AdaptableUnaryFunction2 & g2)
+        {
+            using boost::function_requires;
+            function_requires<boost::AdaptableBinaryFunctionConcept<
+                AdaptableBinaryFunction,
+                typename AdaptableBinaryFunction::result_type,
+                typename AdaptableBinaryFunction::first_argument_type,
+                typename AdaptableBinaryFunction::second_argument_type> >();
+            function_requires<boost::AdaptableUnaryFunctionConcept<
+                AdaptableUnaryFunction1,
+                typename AdaptableUnaryFunction1::result_type,
+                typename AdaptableUnaryFunction1::argument_type> >();
+            function_requires<boost::AdaptableUnaryFunctionConcept<
+                AdaptableUnaryFunction2,
+                typename AdaptableUnaryFunction1::result_type,
+                typename AdaptableUnaryFunction1::argument_type> >();
+            return binary_compose<AdaptableBinaryFunction,
+                                  AdaptableUnaryFunction1,
+                                  AdaptableUnaryFunction2>(f, g1, g2);
+        }
 
         template <typename Arg, typename Result>
         struct unary_function_base : std::unary_function<Arg, Result> {

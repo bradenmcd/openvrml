@@ -1368,6 +1368,7 @@ options { defaultErrorHandler=false; }
                 }
             |   isStatement[impl_node_interface->id, is_mappings]
             )
+        | isStatement[impl_node_interface->id, is_mappings]
         )
     |   protoRouteStatement[*scope, routes]
     |   protoStatement[browser, scope]

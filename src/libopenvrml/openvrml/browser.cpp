@@ -25,6 +25,7 @@
 # endif
 
 # include <algorithm>
+# include <functional>
 # include <sstream>
 # include <stack>
 # include <regex.h>
@@ -47,6 +48,10 @@
 
 namespace openvrml {
 
+    namespace {
+        class proto_impl_cloner;
+    }
+
     class Vrml97RootScope : public scope {
     public:
         Vrml97RootScope(const browser & browser,
@@ -57,6 +62,7 @@ namespace openvrml {
 
     class proto_node_class : public node_class {
         friend class proto_node;
+        friend class proto_impl_cloner;
 
     public:
         class is_target {
@@ -1520,35 +1526,28 @@ namespace {
     // Clone the implementation nodes.
     //
     class proto_impl_cloner : public field_value_cloner {
-        const std::vector<node_ptr> & source_nodes;
-        const proto_node_class::is_map_t & is_map_;
+        const proto_node_class & node_class;
         const initial_value_map & initial_values_;
-        const proto_node_class::default_value_map_t & default_values_;
 
     public:
-        proto_impl_cloner(
-            const std::vector<node_ptr> & source_nodes,
-            const proto_node_class::is_map_t & is_map,
-            const initial_value_map & initial_values,
-            const proto_node_class::default_value_map_t & default_values,
-            const scope_ptr & target_scope):
+        proto_impl_cloner(const proto_node_class & node_class,
+                          const initial_value_map & initial_values,
+                          const scope_ptr & target_scope):
             field_value_cloner(target_scope),
-            source_nodes(source_nodes),
-            is_map_(is_map),
-            initial_values_(initial_values),
-            default_values_(default_values)
+            node_class(node_class),
+            initial_values_(initial_values)
         {}
 
         const std::vector<node_ptr> clone() throw (std::bad_alloc)
         {
             using std::vector;
 
-            vector<node_ptr> result(this->source_nodes.size());
+            vector<node_ptr> result(this->node_class.impl_nodes.size());
 
             for (vector<node_ptr>::size_type i = 0;
-                 i < this->source_nodes.size();
+                 i < this->node_class.impl_nodes.size();
                  ++i) {
-                result[i] = this->clone_node(this->source_nodes[i]);
+                result[i] = this->clone_node(this->node_class.impl_nodes[i]);
                 assert(result[i]);
             }
             return result;
@@ -1624,22 +1623,52 @@ namespace {
                             default_value_map;
 
                         is_map::const_iterator is_mapping =
-                            find_if(this->is_map_.begin(), this->is_map_.end(),
+                            find_if(this->node_class.is_map.begin(),
+                                    this->node_class.is_map.end(),
                                     matches_is_target(
                                         is_target(*n, interface->id)));
-                        if (is_mapping != this->is_map_.end()) {
-                            initial_value_map::const_iterator initial_value =
-                                this->initial_values_.find(is_mapping->first);
-                            if (initial_value != this->initial_values_.end()) {
-                                src_val = initial_value->second.get();
-                            } else {
-                                default_value_map::const_iterator
-                                    default_value =
-                                    this->default_values_.find(
+                        if (is_mapping != this->node_class.is_map.end()) {
+                            using openvrml_::compose2;
+                            using std::logical_or;
+                            //
+                            // If an exposedField in the implementation is IS'd
+                            // to an eventIn or an eventOut in the interface,
+                            // we'll still get here.  So if the implementation
+                            // node interface is an exposedField, we need to
+                            // check to see if the PROTO interface is an
+                            // eventIn or an eventOut.
+                            //
+                            node_interface_set::const_iterator
+                                proto_interface =
+                                find_if(this->node_class.interfaces.begin(),
+                                        this->node_class.interfaces.end(),
+                                        compose2(logical_or<bool>(),
+                                                 bind2nd(node_interface_matches_exposedfield(),
+                                                         is_mapping->first),
+                                                 bind2nd(node_interface_matches_field(),
+                                                         is_mapping->first)));
+
+                            if (proto_interface
+                                != this->node_class.interfaces.end()) {
+                                initial_value_map::const_iterator
+                                    initial_value =
+                                    this->initial_values_.find(
                                         is_mapping->first);
-                                assert(default_value
-                                       != this->default_values_.end());
-                                src_val = default_value->second.get();
+                                if (initial_value
+                                    != this->initial_values_.end()) {
+                                    src_val = initial_value->second.get();
+                                } else {
+                                    default_value_map::const_iterator
+                                        default_value =
+                                        this->node_class.default_value_map
+                                        .find(is_mapping->first);
+                                    assert(default_value
+                                           != this->node_class
+                                           .default_value_map.end());
+                                    src_val = default_value->second.get();
+                                }
+                            } else {
+                                src_val = &n->field(id);
                             }
                         } else {
                             src_val = &n->field(id);
@@ -1703,10 +1732,8 @@ proto_node::proto_node(const node_type & type,
     proto_node_class & node_class =
         static_cast<proto_node_class &>(type.node_class);
 
-    this->impl_nodes = proto_impl_cloner(node_class.impl_nodes,
-                                         node_class.is_map,
+    this->impl_nodes = proto_impl_cloner(node_class,
                                          initial_values,
-                                         node_class.default_value_map,
                                          this->proto_scope).clone();
 
     //

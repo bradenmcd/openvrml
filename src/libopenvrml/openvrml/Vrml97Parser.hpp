@@ -386,6 +386,8 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_5;
 	static const unsigned long _tokenSet_6_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_6;
+	static const unsigned long _tokenSet_7_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_7;
 };
 
 #endif /*INC_Vrml97Parser_hpp_*/
