@@ -126,13 +126,15 @@ namespace OpenVRML {
 
     class Browser;
     class Viewer;
+    class ViewpointNode;
 
     class OPENVRML_SCOPE NodeClass {
     public:
         Browser & browser;
 
         virtual ~NodeClass() throw () = 0;
-        virtual void initialize(double time) throw ();
+        virtual void initialize(ViewpointNode * initialViewpoint,
+                                double time) throw ();
         virtual void render(Viewer & viewer) throw ();
         virtual const NodeTypePtr createType(const std::string & id,
                                              const NodeInterfaceSet & interfaces)
@@ -192,6 +194,8 @@ namespace OpenVRML {
     class TextureNode;
     class TextureCoordinateNode;
     class TextureTransformNode;
+    class TransformNode;
+    class ViewpointNode;
 
     namespace Vrml97Node {
         class Anchor;
@@ -206,7 +210,6 @@ namespace OpenVRML {
         class SpotLight;
         class TimeSensor;
         class TouchSensor;
-        class Viewpoint;
     }
 
     class Scene;
@@ -270,6 +273,7 @@ namespace OpenVRML {
             throw (UnsupportedInterface, std::bad_alloc);
 
         void initialize(Scene & scene, double timestamp) throw (std::bad_alloc);
+        void relocate() throw ();
 
         void setField(const std::string & id, const FieldValue & value)
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
@@ -313,6 +317,10 @@ namespace OpenVRML {
         virtual const TextureTransformNode * toTextureTransform() const
             throw ();
         virtual TextureTransformNode * toTextureTransform() throw ();
+        virtual const TransformNode * toTransform() const throw ();
+        virtual TransformNode * toTransform() throw ();
+        virtual const ViewpointNode * toViewpoint() const throw ();
+        virtual ViewpointNode * toViewpoint() throw ();
 
         virtual Vrml97Node::Anchor * toAnchor() const;
         virtual Vrml97Node::AudioClip * toAudioClip() const;
@@ -326,7 +334,6 @@ namespace OpenVRML {
         virtual Vrml97Node::SpotLight * toSpotLight() const;
         virtual Vrml97Node::TimeSensor * toTimeSensor() const;
         virtual Vrml97Node::TouchSensor * toTouchSensor() const;
-        virtual Vrml97Node::Viewpoint * toViewpoint() const;
 
         // Indicate that the node state has changed, need to re-render
         void setModified();
@@ -386,6 +393,8 @@ namespace OpenVRML {
         Node & operator=(const Node &);
 
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
+        virtual void do_relocate() throw (std::bad_alloc);
+
         virtual void do_setField(const std::string & id,
                                  const FieldValue & value)
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
@@ -519,7 +528,7 @@ namespace OpenVRML {
     };
 
 
-    class OPENVRML_SCOPE GroupingNode : public ChildNode {
+    class OPENVRML_SCOPE GroupingNode : public virtual ChildNode {
     public:
         virtual ~GroupingNode() throw () = 0;
 
@@ -624,6 +633,39 @@ namespace OpenVRML {
 
     protected:
         TextureTransformNode(const NodeType & nodeType, const ScopePtr & scope);
+    };
+
+
+    class OPENVRML_SCOPE TransformNode : public virtual GroupingNode {
+    public:
+        virtual ~TransformNode() throw () = 0;
+
+        virtual const TransformNode * toTransform() const throw ();
+        virtual TransformNode * toTransform() throw ();
+
+        virtual const VrmlMatrix & getTransform() const throw () = 0;
+
+    protected:
+        TransformNode(const NodeType & nodeType, const ScopePtr & scope);
+    };
+
+
+    class OPENVRML_SCOPE ViewpointNode : public virtual ChildNode {
+    public:
+        virtual ~ViewpointNode() throw () = 0;
+
+        virtual const ViewpointNode * toViewpoint() const throw ();
+        virtual ViewpointNode * toViewpoint() throw ();
+
+        virtual const VrmlMatrix & getTransformation() const throw () = 0;
+        virtual const VrmlMatrix & getUserViewTransform() const throw () = 0;
+        virtual void setUserViewTransform(const VrmlMatrix & transform)
+            throw () = 0;
+        virtual const SFString & getDescription() const throw () = 0;
+        virtual const SFFloat & getFieldOfView() const throw () = 0;
+
+    protected:
+        ViewpointNode(const NodeType & nodeType, const ScopePtr & scope);
     };
 
 

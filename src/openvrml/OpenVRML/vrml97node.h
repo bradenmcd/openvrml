@@ -194,7 +194,7 @@ namespace OpenVRML {
         };
 
         class OPENVRML_SCOPE Group : public AbstractBase,
-                                     public GroupingNode {
+                                     public virtual GroupingNode {
             friend class GroupClass;
 
         protected:
@@ -215,8 +215,6 @@ namespace OpenVRML {
             Group(const NodeType & nodeType,
                   const ScopePtr & scope);
             virtual ~Group() throw ();
-
-            virtual Group * toGroup() const;
 
             virtual bool isModified() const;
             virtual void updateModified(NodePath& path, int flags);
@@ -443,7 +441,8 @@ namespace OpenVRML {
                 throw (std::bad_alloc);
             void unbind(Background & background, double timestamp) throw ();
 
-            virtual void initialize(double timestamp) throw ();
+            virtual void initialize(ViewpointNode * initialViewpoint,
+                                    double timestamp) throw ();
             virtual void render(Viewer & viewer) throw ();
             virtual const NodeTypePtr createType(const std::string & id,
                                                  const NodeInterfaceSet &)
@@ -1072,7 +1071,8 @@ namespace OpenVRML {
             void bind(Fog & fog, double timestamp) throw (std::bad_alloc);
             void unbind(Fog & fog, double timestamp) throw ();
 
-            virtual void initialize(double timestamp) throw ();
+            virtual void initialize(ViewpointNode * initialViewpoint,
+                                    double timestamp) throw ();
             virtual void render(Viewer & viewer) throw ();
             virtual const NodeTypePtr createType(const std::string & id,
                                                  const NodeInterfaceSet &)
@@ -2496,7 +2496,8 @@ namespace OpenVRML {
                     throw (UnsupportedInterface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE Transform : public Group {
+        class OPENVRML_SCOPE Transform : public Group,
+                                         public TransformNode {
             friend class TransformClass;
 
             SFVec3f center;
@@ -2505,9 +2506,9 @@ namespace OpenVRML {
             SFRotation scaleOrientation;
             SFVec3f translation;
 
+            mutable VrmlMatrix transform;
+            mutable bool transformDirty;
             Viewer::Object xformObject;
-            VrmlMatrix M;
-            bool M_dirty;
 
         public:
             Transform(const NodeType & nodeType,
@@ -2520,7 +2521,7 @@ namespace OpenVRML {
             virtual void inverseTransform(VrmlMatrix &);
             virtual const BVolume * getBVolume() const;
 
-            void getMatrix(VrmlMatrix & M) const;
+            virtual const VrmlMatrix & getTransform() const throw ();
 
         private:
             //
@@ -2539,21 +2540,37 @@ namespace OpenVRML {
                                         double timestamp) throw (std::bad_cast);
 
             void recalcBSphere();
-            void synch_cached_matrix();
+            void updateTransform() const throw ();
         };
 
 
+        class Viewpoint;
+
         class OPENVRML_SCOPE ViewpointClass : public NodeClass {
+            typedef std::vector<Viewpoint *> BoundNodes;
+
+            Viewpoint * first;
+            BoundNodes boundNodes;
+
         public:
             explicit ViewpointClass(Browser & browser);
             virtual ~ViewpointClass() throw ();
 
+            void setFirst(Viewpoint & viewpoint) throw ();
+            bool hasFirst() const throw ();
+            void bind(Viewpoint & viewpoint, double timestamp)
+                throw (std::bad_alloc);
+            void unbind(Viewpoint & viewpoint, double timestamp) throw ();
+
+            virtual void initialize(ViewpointNode * initialViewpoint,
+                                    double timestamp) throw ();
             virtual const NodeTypePtr createType(const std::string & id,
                                                  const NodeInterfaceSet &)
                     throw (UnsupportedInterface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE Viewpoint : public AbstractChild {
+        class OPENVRML_SCOPE Viewpoint : public AbstractBase,
+                                         public ViewpointNode {
             friend class ViewpointClass;
 
             SFFloat fieldOfView;
@@ -2564,22 +2581,25 @@ namespace OpenVRML {
             SFBool bound;
             SFTime bindTime;
 
-            Node * parentTransform;
+            VrmlMatrix parentTransform;
+            mutable bool finalTransformationDirty;
+            mutable VrmlMatrix finalTransformation;
+            VrmlMatrix userViewTransform;
 
         public:
             Viewpoint(const NodeType & nodeType,
                       const ScopePtr & scope);
             virtual ~Viewpoint() throw ();
 
-            virtual Viewpoint * toViewpoint() const;
+            virtual const VrmlMatrix & getTransformation() const throw ();
+            virtual const VrmlMatrix & getUserViewTransform() const throw ();
+            virtual void setUserViewTransform(const VrmlMatrix & transform)
+                throw ();
+            virtual const SFString & getDescription() const throw ();
+            virtual const SFFloat & getFieldOfView() const throw ();
 
-            virtual void accumulateTransform( Node* );
-            virtual Node* getParentTransform();
-
-            const SFFloat & getFieldOfView() const;
             const SFRotation & getOrientation() const;
             const SFVec3f & getPosition() const;
-            const SFString & getDescription() const;
 
             const BVolume * getBVolume() const;
 
@@ -2588,7 +2608,8 @@ namespace OpenVRML {
             void getFrustum(VrmlFrustum& frust) const; // get a copy
 
         private:
-            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
+            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_relocate() throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
 
             //
@@ -2604,6 +2625,8 @@ namespace OpenVRML {
                                         double timestamp) throw (std::bad_cast);
             void processSet_position(const FieldValue & sfvec3f,
                                      double timestamp) throw (std::bad_cast);
+
+            void updateFinalTransformation() const throw ();
         };
 
 

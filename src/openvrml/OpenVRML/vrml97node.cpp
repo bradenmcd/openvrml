@@ -1129,6 +1129,8 @@ const NodeTypePtr AnchorClass::createType(const std::string & id,
 Anchor::Anchor(const NodeType & nodeType,
                const ScopePtr & scope):
     Node(nodeType, scope),
+    ChildNode(nodeType, scope),
+    GroupingNode(nodeType, scope),
     Group(nodeType, scope)
 {
     this->setBVolumeDirty(true);
@@ -1938,6 +1940,7 @@ void BackgroundClass::bind(Background & background, const double timestamp)
     throw (std::bad_alloc)
 {
     using std::find;
+
     //
     // If the node is already the active node, do nothing.
     //
@@ -2001,9 +2004,12 @@ void BackgroundClass::unbind(Background & background, const double timestamp)
 /**
  * @brief NodeClass-specific initialization.
  *
- * @param timestamp the current time.
+ * @param initialViewpoint  the ViewpointNode that should be bound initially.
+ * @param timestamp         the current time.
  */
-void BackgroundClass::initialize(const double timestamp) throw ()
+void BackgroundClass::initialize(ViewpointNode * initialViewpoint,
+                                 const double timestamp)
+    throw ()
 {
     if (this->first) {
         this->first->processEvent("set_bind", SFBool(true), timestamp);
@@ -2087,8 +2093,8 @@ namespace {
 void BackgroundClass::render(Viewer & viewer) throw ()
 {
     if (!this->boundNodes.empty()) {
-        Background & background =
-                dynamic_cast<Background &>(*this->boundNodes.back());
+        assert(this->boundNodes.back());
+        Background & background = *this->boundNodes.back();
 
         // Background isn't selectable, so don't waste the time.
         if (viewer.getRenderMode() == Viewer::RENDER_MODE_PICK) { return; }
@@ -2316,6 +2322,7 @@ Background::~Background() throw ()
  */
 void Background::do_initialize(const double timestamp) throw ()
 {
+    assert(dynamic_cast<BackgroundClass *>(&this->nodeType.nodeClass));
     BackgroundClass & nodeClass =
             static_cast<BackgroundClass &>(this->nodeType.nodeClass);
     if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
@@ -2349,6 +2356,7 @@ void Background::processSet_bind(const FieldValue & sfbool,
     throw (std::bad_cast, std::bad_alloc)
 {
     const SFBool & value = dynamic_cast<const SFBool &>(sfbool);
+    assert(dynamic_cast<BackgroundClass *>(&this->nodeType.nodeClass));
     BackgroundClass & nodeClass =
             static_cast<BackgroundClass &>(this->nodeType.nodeClass);
     if (value.get()) {
@@ -2646,6 +2654,8 @@ BillboardClass::createType(const std::string & id,
 Billboard::Billboard(const NodeType & nodeType,
                      const ScopePtr & scope):
     Node(nodeType, scope),
+    ChildNode(nodeType, scope),
+    GroupingNode(nodeType, scope),
     Group(nodeType, scope),
     axisOfRotation(0.0, 1.0, 0.0),
     xformObject(0)
@@ -3036,9 +3046,12 @@ const NodeTypePtr
  */
 Collision::Collision(const NodeType & nodeType,
                      const ScopePtr & scope):
-        Node(nodeType, scope),
-        Group(nodeType, scope),
-        collide(true) {}
+    Node(nodeType, scope),
+    ChildNode(nodeType, scope),
+    GroupingNode(nodeType, scope),
+    Group(nodeType, scope),
+    collide(true)
+{}
 
 /**
  * @brief Destructor.
@@ -5156,9 +5169,12 @@ void FogClass::unbind(Fog & fog, const double timestamp) throw ()
 /**
  * @brief NodeClass-specific initialization.
  *
- * @param timestamp the current time.
+ * @param initialViewpoint  the ViewpointNode that should be bound initially.
+ * @param timestamp         the current time.
  */
-void FogClass::initialize(const double timestamp) throw ()
+void FogClass::initialize(ViewpointNode * initialViewpoint,
+                          const double timestamp)
+    throw ()
 {
     if (this->first) {
         this->first->processEvent("set_bind", SFBool(true), timestamp);
@@ -5694,12 +5710,14 @@ const NodeTypePtr GroupClass::createType(const std::string & id,
  */
 Group::Group(const NodeType & nodeType,
              const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        GroupingNode(nodeType, scope),
-        bboxSize(-1.0, -1.0, -1.0),
-        parentTransform(0),
-        viewerObject(0) {
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    ChildNode(nodeType, scope),
+    GroupingNode(nodeType, scope),
+    bboxSize(-1.0, -1.0, -1.0),
+    parentTransform(0),
+    viewerObject(0)
+{
     this->setBVolumeDirty(true);
 }
 
@@ -5797,8 +5815,6 @@ void Group::processSet_children(const FieldValue & mfnode,
     this->setBVolumeDirty(true);
     this->emitEvent("children_changed", this->children, timestamp);
 }
-
-Group * Group::toGroup() const { return const_cast<Group *>(this); }
 
 /**
  * @brief Determine whether the node has been modified.
@@ -6884,11 +6900,13 @@ const NodeTypePtr InlineClass::createType(const std::string & id,
  */
 Inline::Inline(const NodeType & nodeType,
                const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        GroupingNode(nodeType, scope),
-        inlineScene(0),
-        hasLoaded(false) {
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    ChildNode(nodeType, scope),
+    GroupingNode(nodeType, scope),
+    inlineScene(0),
+    hasLoaded(false)
+{
     this->setBVolumeDirty(true);
 }
 
@@ -7082,6 +7100,7 @@ LOD::LOD(const NodeType & nodeType,
          const ScopePtr & scope):
     Node(nodeType, scope),
     AbstractBase(nodeType, scope),
+    ChildNode(nodeType, scope),
     GroupingNode(nodeType, scope),
     children(1)
 {
@@ -12361,11 +12380,12 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
  */
 Switch::Switch(const NodeType & nodeType,
                const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        GroupingNode(nodeType, scope),
-        whichChoice(-1),
-        children(1)
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    ChildNode(nodeType, scope),
+    GroupingNode(nodeType, scope),
+    whichChoice(-1),
+    children(1)
 {
     this->setBVolumeDirty(true);
 }
@@ -15149,15 +15169,18 @@ TransformClass::createType(const std::string & id,
 Transform::Transform(const NodeType & nodeType,
                      const ScopePtr & scope):
     Node(nodeType, scope),
+    ChildNode(nodeType, scope),
+    GroupingNode(nodeType, scope),
     Group(nodeType, scope),
+    TransformNode(nodeType, scope),
     center(0.0, 0.0, 0.0),
     rotation(0.0, 0.0, 1.0, 0.0),
     scale(1.0, 1.0, 1.0),
     scaleOrientation(0.0, 0.0, 1.0, 0.0),
     translation(0.0, 0.0, 0.0),
+    transformDirty(true),
     xformObject(0)
 {
-    this->M_dirty = true;
     this->setBVolumeDirty(true);
 }
 
@@ -15167,6 +15190,17 @@ Transform::Transform(const NodeType & nodeType,
 Transform::~Transform() throw ()
 {
     // delete xformObject...
+}
+
+/**
+ * @brief Get the transformation associated with the node as a matrix.
+ *
+ * @return the transformation associated with the node.
+ */
+const VrmlMatrix & Transform::getTransform() const throw ()
+{
+    this->updateTransform();
+    return this->transform;
 }
 
 /**
@@ -15190,9 +15224,7 @@ void Transform::render(Viewer & viewer, VrmlRenderContext context)
         //context.setCullFlag(BVolume::BV_PARTIAL);
     }
 
-    VrmlMatrix LM;
-    synch_cached_matrix();
-    this->getMatrix(LM);
+    VrmlMatrix LM = this->getTransform();
     VrmlMatrix new_LM = context.getMatrix();
     new_LM = new_LM.multLeft(LM);
     context.setMatrix(new_LM);
@@ -15208,9 +15240,7 @@ void Transform::render(Viewer & viewer, VrmlRenderContext context)
         this->xformObject = viewer.beginObject(this->getId().c_str());
 
         // Apply transforms
-        VrmlMatrix M;
-        this->getMatrix(M);
-        viewer.transform(M);
+        viewer.transform(this->getTransform());
         // Render children
         this->Group::renderNoCull(viewer, context);
 
@@ -15243,9 +15273,7 @@ void Transform::accumulateTransform(Node * parent)
  */
 void Transform::inverseTransform(VrmlMatrix & m)
 {
-    VrmlMatrix M;
-    synch_cached_matrix();
-    this->getMatrix(M);
+    VrmlMatrix M = this->getTransform();
     M = M.affine_inverse();
     m = m.multLeft(M);
     Node * parentTransform = getParentTransform();
@@ -15278,10 +15306,7 @@ void Transform::recalcBSphere()
             if (ci_bv) { this->bsphere.extend(*ci_bv); }
         }
     }
-    synch_cached_matrix();
-
-    //d_bsphere.orthoTransform(M);
-    this->bsphere.transform(M);
+    this->bsphere.transform(this->getTransform());
 
     this->setBVolumeDirty(false);
 }
@@ -15293,7 +15318,7 @@ void
 Transform::recalcBSphere()
 {
   cout << "Transform[" << this << "]::recalcBSphere()" << endl;
-  synch_cached_matrix();
+  updateTransform();
   d_bsphere.reset();
   for (int i = 0; i<d_children.size(); ++i) {
     Node* ci = d_children[i];
@@ -15313,31 +15338,21 @@ Transform::recalcBSphere()
 // P' = T × C × R × SR × S × -SR × -C × P
 //
 /**
- * Resynchronize the cached matrix <code>M</code> with the node
- * fields, but only if M_dirty is true. Think logical const.
- */
-void Transform::synch_cached_matrix()
-{
-    if (M_dirty) {
-        M.setTransform(this->translation,
-                       this->rotation,
-                       this->scale,
-                       this->scaleOrientation,
-                       this->center);
-        M_dirty = false;
-    }
-}
-
-/**
- * Get a matrix representation (in VrmlMatrix format, same as OGL) of the
- * transformation stored in the node fields.
+ * @brief Update @a transform.
  *
- * @return a copy of the cached transformation matrix
+ * If @a transformDirty is @c true, resynchronize the cached matrix
+ * @a transform with the node fields.
  */
-void Transform::getMatrix(VrmlMatrix & M_out) const
+void Transform::updateTransform() const throw ()
 {
-    ((Transform*)this)->synch_cached_matrix();
-    M_out = M;
+    if (this->transformDirty) {
+        this->transform.setTransform(this->translation,
+                                     this->rotation,
+                                     this->scale,
+                                     this->scaleOrientation,
+                                     this->center);
+        this->transformDirty = false;
+    }
 }
 
 /**
@@ -15355,7 +15370,7 @@ void Transform::processSet_center(const FieldValue & sfvec3f,
     this->center = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->setBVolumeDirty(true);
-    this->M_dirty = true;
+    this->transformDirty = true;
     this->emitEvent("center_changed", this->center, timestamp);
 }
 
@@ -15374,7 +15389,7 @@ void Transform::processSet_rotation(const FieldValue & sfrotation,
     this->rotation = dynamic_cast<const SFRotation &>(sfrotation);
     this->setModified();
     this->setBVolumeDirty(true);
-    this->M_dirty = true;
+    this->transformDirty = true;
     this->emitEvent("rotation_changed", this->rotation, timestamp);
 }
 
@@ -15393,7 +15408,7 @@ void Transform::processSet_scale(const FieldValue & sfvec3f,
     this->scale = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->setBVolumeDirty(true);
-    this->M_dirty = true;
+    this->transformDirty = true;
     this->emitEvent("scale_changed", this->scale, timestamp);
 }
 
@@ -15412,7 +15427,7 @@ void Transform::processSet_scaleOrientation(const FieldValue & sfrotation,
     this->scaleOrientation = dynamic_cast<const SFRotation &>(sfrotation);
     this->setModified();
     this->setBVolumeDirty(true);
-    this->M_dirty = true;
+    this->transformDirty = true;
     this->emitEvent("scaleOrientation_changed", this->scaleOrientation,
                     timestamp);
 }
@@ -15432,7 +15447,7 @@ void Transform::processSet_translation(const FieldValue & sfvec3f,
     this->translation = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->setBVolumeDirty(true);
-    this->M_dirty = true;
+    this->transformDirty = true;
     this->emitEvent("translation_changed", this->translation, timestamp);
 }
 
@@ -15449,7 +15464,8 @@ void Transform::processSet_translation(const FieldValue & sfvec3f,
  * @param browser the Browser associated with this NodeClass.
  */
 ViewpointClass::ViewpointClass(Browser & browser):
-    NodeClass(browser)
+    NodeClass(browser),
+    first(0)
 {}
 
 /**
@@ -15457,6 +15473,122 @@ ViewpointClass::ViewpointClass(Browser & browser):
  */
 ViewpointClass::~ViewpointClass() throw ()
 {}
+
+/**
+ * @brief Set the first Viewpoint node in the world.
+ *
+ * The first Viewpoint node in the world is used as the initial viewpoint.
+ * This method is used by Viewpoint::do_initialize.
+ *
+ * @param viewpoint    a Viewpoint node.
+ */
+void ViewpointClass::setFirst(Viewpoint & viewpoint) throw ()
+{
+    this->first = &viewpoint;
+}
+
+/**
+ * @brief Check to see if the first node has been set.
+ *
+ * This method is used by Viewpoint::do_initialize.
+ *
+ * @return @c true if the first node has already been set; @c false otherwise.
+ */
+bool ViewpointClass::hasFirst() const throw ()
+{
+    return this->first;
+}
+
+/**
+ * @brief Push a Viewpoint on the top of the bound node stack.
+ *
+ * @param viewpoint    the node to bind.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void ViewpointClass::bind(Viewpoint & viewpoint, const double timestamp)
+    throw (std::bad_alloc)
+{
+    //
+    // If the node is already the active node, do nothing.
+    //
+    if (!this->boundNodes.empty() && &viewpoint == this->boundNodes.back()) {
+        return;
+    }
+
+    //
+    // If the node is already on the stack, remove it.
+    //
+    const BoundNodes::iterator pos =
+        std::find(this->boundNodes.begin(), this->boundNodes.end(), &viewpoint);
+    if (pos != this->boundNodes.end()) { this->boundNodes.erase(pos); }
+
+    //
+    // Send FALSE from the currently active node's isBound.
+    //
+    if (!this->boundNodes.empty()) {
+        Viewpoint & current =
+                dynamic_cast<Viewpoint &>(*this->boundNodes.back());
+        current.bound.set(false);
+        current.emitEvent("isBound", current.bound, timestamp);
+    }
+
+    //
+    // Push the node to the top of the stack, and have it send isBound TRUE.
+    //
+    this->boundNodes.push_back(&viewpoint);
+    viewpoint.bound.set(true);
+    viewpoint.emitEvent("isBound", viewpoint.bound, timestamp);
+
+    this->browser.setActiveViewpoint(viewpoint);
+}
+
+/**
+ * @brief Remove a Viewpoint from the bound node stack.
+ *
+ * @param viewpoint    the node to unbind.
+ * @param timestamp     the current time.
+ */
+void ViewpointClass::unbind(Viewpoint & viewpoint, const double timestamp)
+    throw ()
+{
+    const BoundNodes::iterator pos =
+        std::find(this->boundNodes.begin(), this->boundNodes.end(), &viewpoint);
+    if (pos != this->boundNodes.end()) {
+        viewpoint.bound.set(false);
+        viewpoint.emitEvent("isBound", viewpoint.bound, timestamp);
+
+        if (pos == this->boundNodes.end() - 1
+                && this->boundNodes.size() > 1) {
+            Viewpoint & newActive =
+                    dynamic_cast<Viewpoint &>(**(this->boundNodes.end() - 2));
+            newActive.bound.set(true);
+            newActive.emitEvent("isBound", newActive.bound, timestamp);
+
+            this->browser.setActiveViewpoint(viewpoint);
+        } else {
+            this->browser.resetDefaultViewpoint();
+        }
+        this->boundNodes.erase(pos);
+    }
+}
+
+/**
+ * @brief NodeClass-specific initialization.
+ *
+ * @param initialViewpoint  the ViewpointNode that should be bound initially.
+ * @param timestamp         the current time.
+ */
+void ViewpointClass::initialize(ViewpointNode * initialViewpoint,
+                                const double timestamp)
+    throw ()
+{
+    if (!initialViewpoint) { initialViewpoint = this->first; }
+    if (initialViewpoint) {
+        initialViewpoint->processEvent("set_bind", SFBool(true), timestamp);
+    }
+}
 
 /**
  * @brief Create a NodeType.
@@ -15621,14 +15753,15 @@ namespace {
 Viewpoint::Viewpoint(const NodeType & nodeType,
                      const ScopePtr & scope):
     Node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    ChildNode(nodeType, scope),
+    ViewpointNode(nodeType, scope),
     fieldOfView(DEFAULT_FIELD_OF_VIEW),
     jump(true),
     orientation(0.0, 0.0, 1.0, 0.0),
     position(0.0, 0.0, 10.0),
     bound(false),
-    bindTime(0),
-    parentTransform(0)
+    bindTime(0)
 {}
 
 /**
@@ -15638,35 +15771,58 @@ Viewpoint::~Viewpoint() throw ()
 {}
 
 /**
- * @brief Viewpoint cast implementation.
+ * @brief Get the transformation of the ViewpointNode in the global coordinate
+ *      system.
  *
- * @return a pointer to this Viewpoint.
+ * @return the transformation of the ViewpointNode in the global coordinate
+ *      system.
  */
-Viewpoint* Viewpoint::toViewpoint() const
+const VrmlMatrix & Viewpoint::getTransformation() const throw ()
 {
-    return (Viewpoint*) this;
+    this->updateFinalTransformation();
+    return this->finalTransformation;
 }
 
 /**
- * Cache a pointer to (one of the) parent transforms for proper
- * rendering of bindables.
+ * @brief Get the transformation of the user view relative to the
+ *      ViewpointNode.
+ *
+ * @return the transformation of the user view relative to the ViewpointNode.
  */
-void Viewpoint::accumulateTransform(Node * parent)
+const VrmlMatrix & Viewpoint::getUserViewTransform() const throw ()
 {
-    this->parentTransform = parent;
+    return this->userViewTransform;
 }
 
 /**
- * @brief Get the parent Transform.
+ * @brief Set the transformation of the user view relative to the
+ *      ViewpointNode.
  *
- * Since Viewpoint nodes should never be instanced, they should not have
- * multiple parent Transform nodes.
- *
- * @return the most immediate parent Transform node.
+ * @param transform the new transformation.
  */
-Node * Viewpoint::getParentTransform()
+void Viewpoint::setUserViewTransform(const VrmlMatrix & transform) throw ()
 {
-    return this->parentTransform;
+    this->userViewTransform = transform;
+}
+
+/**
+ * @brief description accessor.
+ *
+ * @return the description.
+ */
+const SFString & Viewpoint::getDescription() const throw ()
+{
+    return this->description;
+}
+
+/**
+ * @brief Get the field of view.
+ *
+ * @return the field of view in radians.
+ */
+const SFFloat & Viewpoint::getFieldOfView() const throw ()
+{
+    return this->fieldOfView;
 }
 
 /**
@@ -15717,16 +15873,6 @@ const BVolume * Viewpoint::getBVolume() const
 }
 
 /**
- * @brief fieldOfView accessor.
- *
- * @return the fieldOfView.
- */
-const SFFloat & Viewpoint::getFieldOfView() const
-{
-    return this->fieldOfView;
-}
-
-/**
  * @brief orientation accessor.
  *
  * @return the orientation.
@@ -15747,26 +15893,55 @@ const SFVec3f & Viewpoint::getPosition() const
 }
 
 /**
- * @brief description accessor.
- *
- * @return the description.
- */
-const SFString & Viewpoint::getDescription() const
-{
-    return this->description;
-}
-
-/**
  * @brief Initialize.
  *
  * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
  */
-void Viewpoint::do_initialize(const double timestamp) throw (std::bad_alloc)
+void Viewpoint::do_initialize(const double timestamp) throw ()
 {
     assert(this->getScene());
     this->getScene()->browser.addViewpoint(*this);
+    assert(dynamic_cast<ViewpointClass *>(&this->nodeType.nodeClass));
+    ViewpointClass & nodeClass =
+            static_cast<ViewpointClass &>(this->nodeType.nodeClass);
+    if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
+}
+
+namespace {
+
+    struct AccumulateTransform : std::unary_function<const Node *, void> {
+        AccumulateTransform(VrmlMatrix & transform):
+            transform(&transform)
+        {}
+
+        void operator()(const Node * node) const throw ()
+        {
+            assert(node);
+            const TransformNode * transformNode = node->toTransform();
+            if (transformNode) {
+                *this->transform =
+                    this->transform->multLeft(transformNode->getTransform());
+            }
+        }
+
+    private:
+        VrmlMatrix * transform;
+    };
+}
+
+/**
+ * @brief Relocate.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void Viewpoint::do_relocate() throw (std::bad_alloc)
+{
+    assert(this->getScene());
+    NodePath path = this->getScene()->browser.findNode(*this);
+    this->parentTransform = VrmlMatrix();
+    std::for_each(path.begin(), path.end(),
+                  AccumulateTransform(this->parentTransform));
+    this->finalTransformationDirty = true;
 }
 
 /**
@@ -15793,44 +15968,15 @@ void Viewpoint::processSet_bind(const FieldValue & sfbool,
                                 const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    Viewpoint * current =
-            this->nodeType.nodeClass.browser.bindableViewpointTop();
-    const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
-    if (b.get()) {      // set_bind TRUE
-        if (this != current) {
-            if (current) {
-                current->bound.set(false);
-                current->emitEvent("isBound", current->bound, timestamp);
-            }
-            this->nodeType.nodeClass.browser.bindablePush(this);
-            this->bound.set(true);
-            this->emitEvent("isBound", this->bound, timestamp);
-            const std::string & n = this->getId();
-            const std::string & d = this->description.get();
-            if (!n.empty() && !d.empty()) {
-                theSystem->inform("%s: %s", n.c_str(), d.c_str());
-            } else if (!d.empty()) {
-                theSystem->inform("%s", d.c_str());
-            } else if (!n.empty()) {
-                theSystem->inform("%s", n.c_str());
-            }
-        }
-    } else {          // set_bind FALSE
-        this->nodeType.nodeClass.browser.bindableRemove(this);
-        if (this == current) {
-            this->bound.set(false);
-            this->emitEvent("isBound", this->bound, timestamp);
-            current =
-                    this->nodeType.nodeClass.browser.bindableViewpointTop();
-            if (current) {
-                current->bound.set(true);
-                current->emitEvent("isBound", current->bound, timestamp);
-            }
-        }
+    const SFBool & value = dynamic_cast<const SFBool &>(sfbool);
+    assert(dynamic_cast<ViewpointClass *>(&this->nodeType.nodeClass));
+    ViewpointClass & nodeClass =
+            static_cast<ViewpointClass &>(this->nodeType.nodeClass);
+    if (value.get()) {
+        nodeClass.bind(*this, timestamp);
+    } else {
+        nodeClass.unbind(*this, timestamp);
     }
-
-    this->bindTime.set(timestamp);
-    this->emitEvent("bindTime", this->bindTime, timestamp);
 }
 
 /**
@@ -15884,6 +16030,7 @@ void Viewpoint::processSet_orientation(const FieldValue & sfrotation,
 {
     this->orientation = dynamic_cast<const SFRotation &>(sfrotation);
     this->setModified();
+    this->finalTransformationDirty = true;
     this->emitEvent("orientation_changed", this->orientation, timestamp);
 }
 
@@ -15902,7 +16049,25 @@ void Viewpoint::processSet_position(const FieldValue & sfvec3f,
 {
     this->position = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
+    this->finalTransformationDirty = true;
     this->emitEvent("position_changed", this->position, timestamp);
+}
+
+void Viewpoint::updateFinalTransformation() const throw ()
+{
+    if (this->finalTransformationDirty) {
+        static const SFVec3f scale(1.0, 1.0, 1.0);
+        static const SFRotation scaleOrientation;
+        static const SFVec3f center;
+        VrmlMatrix t;
+        t.setTransform(this->position,
+                       this->orientation,
+                       scale,
+                       scaleOrientation,
+                       center);
+        this->finalTransformation = parentTransform.multLeft(t);
+        this->finalTransformationDirty = false;
+    }
 }
 
 

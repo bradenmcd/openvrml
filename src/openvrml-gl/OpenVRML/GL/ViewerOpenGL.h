@@ -135,20 +135,11 @@ namespace OpenVRML {
             // Lights
             LightInfo d_lightInfo[MAX_LIGHTS];
 
-            // View manipulation
-            float d_position[3];
-            float d_zoom[3];
-            float d_target[3];
-            float d_orientation[4];
-
             int d_beginx, d_beginy;
-            float d_scale;
-            float d_translatex, d_translatey, d_translatez;
 
             // quaternion representations of last, current rotation
             Quaternion lastquat, curquat;
             bool d_rotationChanged;
-            float rotationMatrix[16];
 
             bool d_rotating, d_scaling, d_translating;
             bool d_drawBSpheres;
@@ -173,9 +164,9 @@ namespace OpenVRML {
 
             // User interaction
             void step(float, float, float);
-            void rot(float x , float y, float z, float a);
             void zoom(float);
             void rot_trackball(float x1, float y1, float x2, float y2);
+            void rotate(const SFRotation & rotation) throw ();
 
 #ifndef macintosh
             void handleKey(int);

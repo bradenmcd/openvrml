@@ -425,9 +425,13 @@ NodeClass::~NodeClass() throw ()
  * root Scene. It is called after the individual node instances have been
  * initialized, and before the world starts running.
  *
- * @param time  the current time.
+ * @param initialViewpoint  the ViewpointNode that should be bound initially;
+ *                          or 0 if the default ViewpointNode should be bound.
+ * @param time              the current time.
  */
-void NodeClass::initialize(const double time) throw ()
+void NodeClass::initialize(ViewpointNode * initialViewpoint,
+                           const double time)
+    throw ()
 {}
 
 /**
@@ -1125,6 +1129,18 @@ void Node::initialize(Scene & scene, const double timestamp)
 }
 
 /**
+ * @brief Called when the node is relocated to a new position in the scene
+ *      graph.
+ *
+ * This function delegates to the virtual function do_relocate. relocate 
+ * should be called by eventIn handlers that receive nodes.
+ */
+void Node::relocate() throw ()
+{
+    this->do_relocate();
+}
+
+/**
  * @brief Generalized field mutator.
  *
  * @param id    the name of the field.
@@ -1203,8 +1219,8 @@ const FieldValue & Node::getEventOut(const std::string & id) const
 void Node::shutdown(const double timestamp) throw ()
 {
     if (this->scene) {
-        this->scene = 0;
         this->do_shutdown(timestamp);
+        this->scene = 0;
 
         const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
         for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
@@ -1572,6 +1588,54 @@ TextureTransformNode * Node::toTextureTransform() throw ()
     return 0;
 }
 
+/**
+ * @brief Cast to a const TransformNode.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const TransformNode * Node::toTransform() const throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a TransformNode.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+TransformNode * Node::toTransform() throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a const ViewpointNode.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const ViewpointNode * Node::toViewpoint() const throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a ViewpointNode.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+ViewpointNode * Node::toViewpoint() throw ()
+{
+    return 0;
+}
+
 
 // Safe node downcasts. These avoid the dangerous casts of Node* (esp in
 // presence of protos), but are ugly in that this class must know about all
@@ -1602,8 +1666,6 @@ Vrml97Node::SpotLight * Node::toSpotLight() const { return 0; }
 Vrml97Node::TimeSensor * Node::toTimeSensor() const { return 0; }
 
 Vrml97Node::TouchSensor * Node::toTouchSensor() const { return 0; }
-
-Vrml97Node::Viewpoint * Node::toViewpoint() const { return 0; }
 
 
 /**
@@ -2015,6 +2077,19 @@ std::ostream & operator<<(std::ostream & out, const Node & node)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void Node::do_initialize(const double timestamp) throw (std::bad_alloc)
+{}
+
+/**
+ * @brief Node subclass-specific relocation update.
+ *
+ * This method is called by Node::relocate. Subclasses of Node should override
+ * this method for any subclass-specific updates that need to be performed
+ * following relocation of a node to a new position in the scene graph (for
+ * example, updating a NodePath).
+ *
+ * The default implementation of this method does nothing.
+ */
+void Node::do_relocate() throw (std::bad_alloc)
 {}
 
 
@@ -2833,7 +2908,8 @@ TextureCoordinateNode * TextureCoordinateNode::toTextureCoordinate() throw ()
  */
 TextureTransformNode::TextureTransformNode(const NodeType & nodeType,
                                            const ScopePtr & scope):
-    Node(nodeType, scope) {}
+    Node(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
@@ -2861,6 +2937,149 @@ TextureTransformNode * TextureTransformNode::toTextureTransform() throw ()
 {
     return this;
 }
+
+
+/**
+ * @class TransformNode
+ *
+ * @brief Abstract base class for texture transform nodes.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
+ */
+TransformNode::TransformNode(const NodeType & nodeType,
+                             const ScopePtr & scope):
+    Node(nodeType, scope),
+    ChildNode(nodeType, scope),
+    GroupingNode(nodeType, scope)
+{}
+
+/**
+ * @brief Destructor.
+ */
+TransformNode::~TransformNode() throw ()
+{}
+
+/**
+ * @brief Cast to a TransformNode.
+ *
+ * @return a pointer to this TransformNode.
+ */
+const TransformNode * TransformNode::toTransform() const throw ()
+{
+    return this;
+}
+
+/**
+ * @brief Cast to a TransformNode.
+ *
+ * @return a pointer to this TransformNode.
+ */
+TransformNode * TransformNode::toTransform() throw ()
+{
+    return this;
+}
+
+/**
+ * @fn const VrmlMatrix & TransformNode::getTransform() const throw ()
+ *
+ * @brief Get the transformation associated with the node as a matrix.
+ *
+ * @return the transformation associated with the node.
+ */
+
+
+/**
+ * @class ViewpointNode
+ *
+ * @brief Abstract base class for texture transform nodes.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
+ */
+ViewpointNode::ViewpointNode(const NodeType & nodeType,
+                             const ScopePtr & scope):
+    Node(nodeType, scope),
+    ChildNode(nodeType, scope)
+{}
+
+/**
+ * @brief Destructor.
+ */
+ViewpointNode::~ViewpointNode() throw ()
+{}
+
+/**
+ * @brief Cast to a ViewpointNode.
+ *
+ * @return a pointer to this ViewpointNode.
+ */
+const ViewpointNode * ViewpointNode::toViewpoint() const throw ()
+{
+    return this;
+}
+
+/**
+ * @brief Cast to a ViewpointNode.
+ *
+ * @return a pointer to this ViewpointNode.
+ */
+ViewpointNode * ViewpointNode::toViewpoint() throw ()
+{
+    return this;
+}
+
+/**
+ * @fn const VrmlMatrix & ViewpointNode::getTransformation() const throw ()
+ *
+ * @brief Get the transformation of the ViewpointNode in the global coordinate
+ *      system.
+ *
+ * @return the transformation of the ViewpointNode in the global coordinate
+ *      system.
+ */
+
+/**
+ * @fn const VrmlMatrix & ViewpointNode::getUserViewTransform() const throw ()
+ *
+ * @brief Get the transformation of the user view relative to the
+ *      ViewpointNode.
+ *
+ * @return the transformation of the user view relative to the ViewpointNode.
+ */
+
+/**
+ * @fn void ViewpointNode::setUserViewTransform(const VrmlMatrix & transform) throw ()
+ *
+ * @brief Set the transformation of the user view relative to the
+ *      ViewpointNode.
+ *
+ * @param transform the new transformation.
+ */
+
+/**
+ * @fn const SFString & ViewpointNode::getDescription() const throw ()
+ *
+ * @brief Get the description.
+ *
+ * @return the description.
+ */
+
+/**
+ * @fn const SFFloat & ViewpointNode::getFieldOfView() const throw ()
+ *
+ * @brief Get the field of view.
+ *
+ * @return the field of view in radians.
+ */
 
 
 /**

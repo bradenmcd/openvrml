@@ -43,8 +43,7 @@
 
 # include "ViewerGlut.h"
 
-using OpenVRML::Browser;
-using OpenVRML::MFString;
+using namespace OpenVRML;
 
 extern "C" {
     typedef void (*GlutMenu)(int);
@@ -165,11 +164,15 @@ namespace {
     }
 
     void lookatViewpointMenu(int item) {
-        if (item == 0) {
-            viewer->resetUserNavigation(); // ...
-        } else {
-            browser->setViewpoint(item - 1);
+        typedef std::list<ViewpointNode *> ViewpointList;
+        const ViewpointList & viewpoints = browser->getViewpoints();
+        ViewpointList::const_iterator viewpoint = viewpoints.begin();
+        while(std::distance(viewpoints.begin(), viewpoint) != item
+                    && viewpoint != viewpoints.end()) {
+            ++viewpoint;
         }
+        (*viewpoint)->processEvent("set_bind", SFBool(true),
+                                   Browser::getCurrentTime());
     }
 
     void buildViewpointMenu() {
@@ -193,22 +196,17 @@ namespace {
         glutSetMenu(vpmenu);
         //glutAddMenuEntry( "Reset", 0 );
 
-        numberOfViewpoints = browser->nViewpoints();
+        numberOfViewpoints = browser->getViewpoints().size();
         nvp = numberOfViewpoints;
 
-        if (numberOfViewpoints > 0) {
-            for (int i = 0; i < numberOfViewpoints; i++) {
-                std::string name, description;
-                browser->getViewpoint(i, name, description);
-                if (description.length() > 0) {
-                    glutAddMenuEntry(description.c_str(), i + 1);
-                } else if (name.length() > 0) {
-                    glutAddMenuEntry(name.c_str(), i + 1);
-                } else {
-                    char buf[25];
-                    sprintf(buf,"Viewpoint %d", i + 1);
-                    glutAddMenuEntry(buf, i + 1);
-                }
+        typedef std::list<ViewpointNode *> ViewpointList;
+        const ViewpointList & viewpoints = browser->getViewpoints();
+        for (ViewpointList::const_iterator viewpoint(viewpoints.begin());
+                viewpoint != viewpoints.end(); ++viewpoint) {
+            const SFString & description = (*viewpoint)->getDescription();
+            if (!description.get().empty()) {
+                glutAddMenuEntry(description.get().c_str(),
+                                 std::distance(viewpoints.begin(), viewpoint));
             }
         }
 

@@ -2,21 +2,21 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # ifndef OPENVRML_BROWSER_H
 #   define OPENVRML_BROWSER_H
@@ -35,18 +35,20 @@ namespace OpenVRML {
         InvalidVrml();
         virtual ~InvalidVrml() throw ();
     };
-    
+
     class Doc2;
     class Viewer;
     class ProtoNode;
     class Scene;
     class Vrml97RootScope;
+    class NullNodeClass;
+    class NullNodeType;
 
     class OPENVRML_SCOPE Browser {
         friend class Vrml97Parser;
         friend class ProtoNodeClass;
         friend class Vrml97RootScope;
-        
+
     public:
         enum CBReason {
             DESTROY_WORLD,
@@ -56,15 +58,18 @@ namespace OpenVRML {
         typedef void (*SceneCB)(CBReason reason);
 
     private:
+        std::auto_ptr<NullNodeClass> nullNodeClass;
+        std::auto_ptr<NullNodeType> nullNodeType;
         typedef std::map<std::string, NodeClassPtr> NodeClassMap;
         NodeClassMap nodeClassMap;
         ScriptNodeClass scriptNodeClass;
         Scene * scene;
+        NodePtr defaultViewpoint;
+        ViewpointNode * activeViewpoint;
+        std::list<ViewpointNode *> viewpointList;
         typedef std::list<NodePtr> BindStack;
         BindStack d_navigationInfoStack;
-        BindStack d_viewpointStack;
         std::list<Node *> d_navigationInfos;
-        std::list<Node *> d_viewpoints;
         std::list<Node *> d_scopedLights;
         std::list<ScriptNode *> d_scripts;
         std::list<Node *> d_timers;
@@ -77,7 +82,7 @@ namespace OpenVRML {
 
     protected:
         typedef std::list < SceneCB > SceneCBList;
-    
+
         struct Event {
             double timeStamp;
             FieldValue * value;
@@ -93,7 +98,7 @@ namespace OpenVRML {
         Event d_eventMem[MAXEVENTS];
         size_t d_firstEvent;
         size_t d_lastEvent;
-        
+
     public:
         static double getCurrentTime() throw ();
 
@@ -105,6 +110,13 @@ namespace OpenVRML {
         virtual ~Browser() throw ();
 
         const MFNode & getRootNodes() const throw ();
+        const NodePath findNode(const Node & node) const throw (std::bad_alloc);
+        ViewpointNode & getActiveViewpoint() const throw ();
+        void setActiveViewpoint(ViewpointNode & viewpoint) throw ();
+        void resetDefaultViewpoint() throw ();
+        void addViewpoint(ViewpointNode & viewpoint) throw (std::bad_alloc);
+        void removeViewpoint(ViewpointNode & viewpoint) throw ();
+        const std::list<ViewpointNode *> & getViewpoints() const throw ();
 
         virtual const char * getName() const throw ();
         virtual const char * getVersion() const throw ();
@@ -119,7 +131,7 @@ namespace OpenVRML {
                                const std::string & event);
 
         void addWorldChangedCallback(SceneCB);
-        
+
         void sensitiveEvent(Node * object, double timeStamp,
 		            bool isOver, bool isActive, double *point );
 
@@ -149,20 +161,6 @@ namespace OpenVRML {
         void bindablePush(Vrml97Node::NavigationInfo *);
         void bindableRemove(Vrml97Node::NavigationInfo *);
 
-        void addViewpoint(Vrml97Node::Viewpoint &);
-        void removeViewpoint(Vrml97Node::Viewpoint &);
-        Vrml97Node::Viewpoint *bindableViewpointTop();
-        void bindablePush(Vrml97Node::Viewpoint *);
-        void bindableRemove(Vrml97Node::Viewpoint *);
-
-        void nextViewpoint();
-        void prevViewpoint();  
-        size_t nViewpoints();
-        void getViewpoint(size_t index,
-                          std::string & name, std::string & description);
-        void setViewpoint(const std::string & name);
-        void setViewpoint(size_t index);
-
         void addScopedLight(Vrml97Node::AbstractLight &);
         void removeScopedLight(Vrml97Node::AbstractLight &);
 
@@ -174,7 +172,7 @@ namespace OpenVRML {
 
         void addMovie(Vrml97Node::MovieTexture &);
         void removeMovie(Vrml97Node::MovieTexture &);
-        
+
         void addProto(ProtoNode & node);
         void removeProto(ProtoNode & node);
         void addScript(ScriptNode &);
@@ -194,7 +192,7 @@ namespace OpenVRML {
         // Not copyable.
         Browser(const Browser &);
         Browser & operator=(const Browser &);
-        
+
         void initNodeClassMap();
     };
 
@@ -204,49 +202,47 @@ namespace OpenVRML {
         BadURI(const std::string & message);
         virtual ~BadURI() throw ();
     };
-    
-    
+
+
     class OPENVRML_SCOPE InvalidURI : public BadURI {
     public:
         InvalidURI();
         virtual ~InvalidURI() throw ();
     };
-    
-    
+
+
     class OPENVRML_SCOPE UnreachableURI : public BadURI {
     public:
         UnreachableURI();
         virtual ~UnreachableURI() throw ();
     };
-    
-    
+
+
     class OPENVRML_SCOPE Scene {
         MFNode nodes;
         std::string uri;
-        
+
     public:
         Browser & browser;
         Scene * const parent;
-    
+
         Scene(Browser & browser, const MFString & uri, Scene * parent = 0)
             throw (InvalidVrml, std::bad_alloc);
 
+        void initialize(double timestamp) throw (std::bad_alloc);
         const MFNode & getNodes() const throw ();
         const std::string getURI() const throw (std::bad_alloc);
-        
-        void initialize(double timestamp) throw (std::bad_alloc);
         void render(Viewer & viewer, VrmlRenderContext context);
-        
         void loadURI(const MFString & uri, const MFString & parameter)
                 throw (std::bad_alloc);
         void shutdown(double timestamp) throw ();
-    
+
     private:
         // Noncopyable.
         Scene(const Scene &);
         Scene & operator=(const Scene &);
     };
-    
+
     inline const MFNode & Scene::getNodes() const throw() {
         return this->nodes;
     }

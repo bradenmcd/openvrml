@@ -83,25 +83,6 @@ namespace {
         }
     }
 
-    void matrix_to_glmatrix(const float M[4][4], float GLM[16]) {
-        GLM[0]  = M[0][0];
-        GLM[1]  = M[1][0];
-        GLM[2]  = M[2][0];
-        GLM[3]  = M[3][0];
-        GLM[4]  = M[0][1];
-        GLM[5]  = M[1][1];
-        GLM[6]  = M[2][1];
-        GLM[7]  = M[3][1];
-        GLM[8]  = M[0][2];
-        GLM[9]  = M[1][2];
-        GLM[10] = M[2][2];
-        GLM[11] = M[3][2];
-        GLM[12] = M[0][3];
-        GLM[13] = M[1][3];
-        GLM[14] = M[2][3];
-        GLM[15] = M[3][3];
-    }
-
     class GLCapabilities {
     public:
         GLint maxModelviewStackDepth;
@@ -373,21 +354,10 @@ ViewerOpenGL::ViewerOpenGL(Browser & browser):
     for (int i=0; i<MAX_LIGHTS; ++i)
       d_lightInfo[i].lightType = LIGHT_UNUSED;
 
-    d_scale = 1.0;
-    d_translatex = d_translatey = d_translatez = 0.0;
-    //d_rotationChanged = true;
     d_rotating = false;
     d_scaling = false;
     d_translating = false;
     this->curquat = Quaternion(trackball(0.0, 0.0, 0.0, 0.0));
-    d_position[0] = d_position[1] = d_position[2] = 0.0;
-    d_zoom[0] = d_zoom[1] = d_zoom[2] = 0.0;
-    d_target[0] = d_target[1] = d_target[2] = 0.0;
-
-    d_orientation[0] = 0;
-    d_orientation[1] = 1;
-    d_orientation[2] = 0;
-    d_orientation[3] = 0;
 
     d_renderTime = 1.0;
     d_renderTime1 = 1.0;
@@ -468,13 +438,6 @@ Viewer::Object ViewerOpenGL::beginObject(const char *,
     if (1 == ++this->d_nObjects) {
         // Finish specifying the view (postponed to make Background easier)
         this->modelviewMatrixStack.push();
-        glTranslatef(this->d_zoom[0],
-                     this->d_zoom[1],
-                     this->d_zoom[2]); // M = M * T
-        glMultMatrixf(this->rotationMatrix); // M = M * R
-        glTranslatef(this->d_translatex,
-                     this->d_translatey,
-                     this->d_translatez); // M = M * T
         if (!this->d_lit) { glDisable(GL_LIGHTING); }
     }
 
@@ -553,32 +516,21 @@ double ViewerOpenGL::getFrameRate()
 
 void ViewerOpenGL::resetUserNavigation()
 {
-    d_translatex = d_translatey = d_translatez = 0.0;
-    d_target[0] = d_target[1] = d_target[2] = 0.0;
-    d_zoom[0] = d_zoom[1] = d_zoom[2] = 0.0;
+    std::cout << "ViewerOpenGL::resetUserNavigation" << std::endl;
+    ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
+    activeViewpoint.setUserViewTransform(VrmlMatrix());
 
     this->curquat = Quaternion(trackball(0.0, 0.0, 0.0, 0.0));
     this->d_rotationChanged = true;
-    matrix_to_glmatrix(VrmlMatrix().get(), this->rotationMatrix);
+
     wsPostRedraw();
 }
 
 void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
 {
-  // The Matrix M should be a unit matrix
-  VrmlMatrix tmp,rot(this->rotationMatrix);
-  float pos_vec[3];
-  pos_vec[0] = d_zoom[0];
-  pos_vec[1] = d_zoom[1];
-  pos_vec[2] = d_zoom[2];
-  tmp.setTranslate(pos_vec);
-  M = M.multLeft(tmp);
-  M = M.multLeft(rot);
-  pos_vec[0] = d_translatex;
-  pos_vec[1] = d_translatey;
-  pos_vec[2] = d_translatez;
-  tmp.setTranslate(pos_vec);
-  M = M.multLeft(tmp);
+    // The Matrix M should be a unit matrix
+    ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
+    M = M.multLeft(activeViewpoint.getUserViewTransform());
 }
 
 namespace {
@@ -647,9 +599,6 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
         glDisable(GL_LIGHTING);
 
         this->modelviewMatrixStack.push();
-
-        // Apply current view rotation
-        glMultMatrixf(this->rotationMatrix);
 
         glScalef(1000.0, 1000.0, 1000.0);
 
@@ -2593,10 +2542,10 @@ void ViewerOpenGL::setFog(const float * color,
 }
 
 void ViewerOpenGL::setMaterial(float ambientIntensity,
-                               const float diffuseColor[3],
-                               const float emissiveColor[3],
+                               const float * diffuseColor,
+                               const float * emissiveColor,
                                float shininess,
-                               const float specularColor[3],
+                               const float * specularColor,
                                float transparency)
 {
   float alpha = 1.0 - transparency;
@@ -2866,8 +2815,8 @@ namespace {
     /**
      * Compute a target and up vector from position/orientation/distance.
      */
-    void computeView(const float position[3],
-                     const float orientation[4],
+    void computeView(const float * position,
+                     const float * orientation,
                      const float distance,
                      float target[3],
                      float up[3])
@@ -2900,8 +2849,8 @@ namespace {
     }
 }
 
-void ViewerOpenGL::setViewpoint(const float position[3],
-                                const float orientation[4],
+void ViewerOpenGL::setViewpoint(const float * position,
+                                const float * orientation,
                                 const float fieldOfView,
                                 const float avatarSize,
                                 const float visibilityLimit)
@@ -2927,24 +2876,9 @@ void ViewerOpenGL::setViewpoint(const float position[3],
     float target[3], up[3];
     computeView(position, orientation, d, target, up);
 
-    // Save position for use when drawing background
-    d_position[0] = position[0] + d_translatex;
-    d_position[1] = position[1] + d_translatey;
-    d_position[2] = position[2] + d_translatez;
-
     gluLookAt(position[0], position[1], position[2],
-              target[0]+d_target[0], target[1]+d_target[1], target[2]+d_target[2],
+              target[0], target[1], target[2],
               up[0], up[1], up[2]);
-
-    // View modifiers are applied in first beginObject
-    if (this->d_rotationChanged) {
-        VrmlMatrix newRotation;
-        newRotation.setRotate(this->curquat);
-        newRotation = newRotation.transpose();
-        std::copy(&newRotation[0][0], &newRotation[0][0] + 16,
-                  this->rotationMatrix);
-        this->d_rotationChanged = false;
-    }
 }
 
 
@@ -3066,49 +3000,49 @@ void ViewerOpenGL::input( EventInfo *e )
     }
 }
 
-void
-ViewerOpenGL::rot(float x, float y, float z, float a)
-{
-  VrmlMatrix rot_mat;
-  SFRotation rotation(x, y, z, a * 0.01);
-  rot_mat.setRotate(rotation);
-
-  VrmlMatrix curr_rot_mat(this->rotationMatrix);
-  curr_rot_mat = curr_rot_mat.transpose(); // this->rotationMatrix is column major.
-
-  matrix_to_glmatrix(curr_rot_mat.multRight(rot_mat).get(),
-                     this->rotationMatrix);
-
-  wsPostRedraw();
-}
-
-namespace {
-    /*
-     *  Given quaternion, compute axis and angle.
-     */
-    void quat_to_axis(const float q[4], float axisAngle[4])
-    {
-        const float val = acos(q[3]);
-        if (fpzero(val)) {
-            axisAngle[0] = 0.0;
-            axisAngle[1] = 1.0;
-            axisAngle[2] = 0.0;
-            axisAngle[3] = 0.0;
-        } else {
-            axisAngle[0] = q[0] / sin(val);
-            axisAngle[1] = q[1] / sin(val);
-            axisAngle[2] = q[2] / sin(val);
-            axisAngle[3] = 2 * val;
-            normalize(&axisAngle[0]);
-        }
-    }                 
-}
-
 void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
 {
-    SFRotation rotation = trackball(x1, y1, x2, y2);
+    std::cout << "ViewerOpenGL::rot_trackball" << std::endl;
+    const SFRotation rotation = trackball(x1, y1, x2, y2);
+    this->rotate(rotation);
+}
+
+void ViewerOpenGL::rotate(const SFRotation & rotation) throw ()
+{
     this->lastquat = Quaternion(rotation);
     if (fpzero(rotation.getAngle())) { return; }
+
+    ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
+    const VrmlMatrix & viewpointTransformation =
+            activeViewpoint.getTransformation();
+    const VrmlMatrix & currentUserViewTransform =
+            activeViewpoint.getUserViewTransform();
+
+    VrmlMatrix oldCameraTransform =
+            viewpointTransformation.multLeft(currentUserViewTransform);
+
+    SFVec3f currentTranslation, currentScale;
+    SFRotation currentRotation;
+    oldCameraTransform.getTransform(currentTranslation,
+                                    currentRotation,
+                                    currentScale);
+
+    VrmlMatrix r;
+    r.setRotate(rotation);
+    
+    VrmlMatrix prevOrientation;
+    prevOrientation.setRotate(currentRotation);
+    
+    VrmlMatrix t;
+    t.setTranslate(currentTranslation);
+
+    VrmlMatrix newCameraTransform = viewpointTransformation.affine_inverse()
+                                    .multLeft(r)
+                                    .multLeft(t)
+                                    .multLeft(prevOrientation);
+
+    activeViewpoint
+            .setUserViewTransform(newCameraTransform);
 
     VrmlMatrix rotationMatrix;
     glGetFloatv(GL_MODELVIEW_MATRIX, &rotationMatrix[0][0]);
@@ -3125,55 +3059,21 @@ void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
     wsPostRedraw();
 }
 
-void ViewerOpenGL::step(float x, float y, float z) {
-    GLint viewport[4];
-    GLdouble modelview[16], projection[16];
-    glGetIntegerv (GL_VIEWPORT, viewport);
-    glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
-    glGetDoublev (GL_PROJECTION_MATRIX, projection);
-    Vrml97Node::NavigationInfo * nav =
-            this->browser.bindableNavigationInfoTop();
-    GLdouble x_c = d_winWidth/2;
-    GLdouble y_c = d_winHeight/2;
-    GLdouble z_c = 0.5;
-    float visibilityLimit=0.0;
-    if (nav) { visibilityLimit = nav->getVisibilityLimit(); }
-    if (fpzero(visibilityLimit)) { visibilityLimit = 30000.0; }
-    GLdouble ox, oy, oz;
-    gluUnProject(x_c, y_c, z_c, modelview, projection, viewport, &ox, &oy, &oz);
-    GLdouble dx, dy, dz;
-    x_c = x_c + 100.0 * x;
-    y_c = y_c + 100.0 * y;
-    z_c = z_c + 100.0 * z / visibilityLimit;
-    gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
-                  &dx, &dy, &dz);
-    dx -= ox;
-    dy -= oy;
-    dz -= oz;
-    VrmlMatrix rot_mat(this->rotationMatrix);
-    float vx[3];
-    vx[0] = dx;
-    vx[1] = dy;
-    vx[2] = dz;
-    float d[3];
-    rot_mat.multMatrixVec(vx, d);
-    double dist = d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
-    if (dist < 1.0e-25) { return; }
-    dist = sqrt(dist);
-    float speed = 1.0;
-    if (nav) { speed = nav->getSpeed(); }
-    dist = speed / dist;
-    if (fpzero(dist)) { return; }
-    d[0] *= dist;
-    d[1] *= dist;
-    d[2] *= dist;
-    this->d_translatex += d[0];
-    this->d_translatey += d[1];
-    this->d_translatez += d[2];
+void ViewerOpenGL::step(float x, float y, float z)
+{
+    std::cout << "ViewerOpenGL::step" << std::endl;
+    const SFVec3f translation(x, y, z);
+    VrmlMatrix t;
+    t.setTranslate(translation);
+    ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
+    activeViewpoint.setUserViewTransform(activeViewpoint.getUserViewTransform()
+                                            .multLeft(t));
     wsPostRedraw();
 }
 
-void ViewerOpenGL::zoom(float z) {
+void ViewerOpenGL::zoom(float z)
+{
+    std::cout << "ViewerOpenGL::zoom" << std::endl;
     GLint viewport[4];
     GLdouble modelview[16], projection[16];
     glGetIntegerv (GL_VIEWPORT, viewport);
@@ -3205,16 +3105,25 @@ void ViewerOpenGL::zoom(float z) {
     dx *= dist;
     dy *= dist;
     dz *= dist;
-    this->d_zoom[0] += dx;
-    this->d_zoom[1] += dy;
-    this->d_zoom[2] += dz;
+    const SFVec3f translation(dx, dy, dz);
+    std::cout << "translation = " << translation << std::endl;
+    VrmlMatrix t;
+    t.setTranslate(translation);
+    std::cout << "t = " << t << std::endl;
+    ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
+    const VrmlMatrix & userViewTransform =
+            activeViewpoint.getUserViewTransform();
+    std::cout << "userViewTransform = " << userViewTransform << std::endl;
+    activeViewpoint.setUserViewTransform(userViewTransform.multLeft(t));
     wsPostRedraw();
 }
 
 void ViewerOpenGL::handleKey(int key)
 {
-  switch (key)
-    {
+    using std::find;
+    using std::list;
+
+    switch (key) {
     case KEY_LEFT:
           step(-1, 0, 0);
       break;
@@ -3255,11 +3164,52 @@ void ViewerOpenGL::handleKey(int key)
       rot_trackball(0.45, 0.0, 0.55, 0.0);
       break;
 
+    //
+    // XXX This can't work well. The list of Viewpoints in the world could
+    // XXX change, and the resulting ordering would give unexpected results.
+    // XXX The ordering of Viewpoints in the list should be the same as the
+    // XXX order in which the nodes are encountered in a normal traversal of
+    // XXX the scene graph.
+    //
     case KEY_PAGE_DOWN:
-      this->browser.nextViewpoint(); wsPostRedraw(); break;
+        {
+            ViewpointNode & currentViewpoint =
+                    this->browser.getActiveViewpoint();
+            const list<ViewpointNode *> & viewpoints =
+                    this->browser.getViewpoints();
+            list<ViewpointNode *>::const_iterator pos =
+                    find(viewpoints.begin(), viewpoints.end(),
+                         &currentViewpoint);
+            if (pos != viewpoints.end()) {
+                ++pos;
+                if (pos == viewpoints.end()) { pos = viewpoints.begin(); }
+                (*pos)->processEvent("set_bind", SFBool(true),
+                                     Browser::getCurrentTime());
+            }
+        }
+        wsPostRedraw();
+        break;
 
     case KEY_PAGE_UP:
-      this->browser.prevViewpoint(); wsPostRedraw(); break;
+        {
+            ViewpointNode & currentViewpoint =
+                    this->browser.getActiveViewpoint();
+            const list<ViewpointNode *> & viewpoints =
+                    this->browser.getViewpoints();
+            list<ViewpointNode *>::const_iterator pos =
+                    find(viewpoints.begin(), viewpoints.end(),
+                         &currentViewpoint);
+            if (pos != viewpoints.end()) {
+                if (pos == viewpoints.begin()) {
+                    pos = viewpoints.end();
+                }
+                --pos;
+                (*pos)->processEvent("set_bind", SFBool(true),
+                                     Browser::getCurrentTime());
+            }
+        }
+        wsPostRedraw();
+        break;
 
     case 'b':
       d_blend = ! d_blend;
@@ -3304,11 +3254,7 @@ void ViewerOpenGL::handleKey(int key)
       wsPostRedraw();
       theSystem->inform(" Drawing polygons in %s mode.", d_wireframe ? "wireframe" : "filled");
       break;
-# if 0
-    case 'q':
-      this->browser.destroyWorld();        // may not return
-      break;
-# endif
+
     default:
       break;
     }
@@ -3361,6 +3307,8 @@ void ViewerOpenGL::handleButton( EventInfo *e)
 
 void ViewerOpenGL::handleMouseDrag(int x, int y)
 {
+    std::cout << "ViewerOpenGL::handleMouseDrag" << std::endl
+              << "x = " << x << ", y = " << y << std::endl;
  if (d_activeSensitive)
     {
       (void) checkSensitive( x, y, EVENT_MOUSE_DRAG );

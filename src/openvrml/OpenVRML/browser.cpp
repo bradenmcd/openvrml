@@ -163,6 +163,8 @@ namespace OpenVRML {
                   const ProtoNode & node) throw (std::bad_alloc);
         virtual ~ProtoNode() throw ();
 
+        const MFNode & getImplNodes() const throw ();
+
         void addRootNode(const NodePtr & node) throw (std::bad_alloc);
         void addIS(Node & implNode,
                    const std::string & implNodeInterfaceId,
@@ -200,6 +202,10 @@ namespace OpenVRML {
         virtual const TextureTransformNode * toTextureTransform() const
                 throw ();
         virtual TextureTransformNode * toTextureTransform() throw ();
+        virtual const TransformNode * toTransform() const throw ();
+        virtual TransformNode * toTransform() throw ();
+        virtual const ViewpointNode * toViewpoint() const throw ();
+        virtual ViewpointNode * toViewpoint() throw ();
 
         virtual Vrml97Node::Anchor * toAnchor() const;
         virtual Vrml97Node::AudioClip * toAudioClip() const;
@@ -213,7 +219,6 @@ namespace OpenVRML {
         virtual Vrml97Node::SpotLight * toSpotLight() const;
         virtual Vrml97Node::TimeSensor * toTimeSensor() const;
         virtual Vrml97Node::TouchSensor * toTouchSensor() const;
-        virtual Vrml97Node::Viewpoint * toViewpoint() const;
 
         virtual void render(Viewer & viewer, VrmlRenderContext context);
 
@@ -322,6 +327,54 @@ namespace OpenVRML {
  */
 namespace OpenVRML {
 
+class NullNodeClass : public NodeClass {
+public:
+    explicit NullNodeClass(Browser & browser) throw ();
+    virtual ~NullNodeClass() throw ();
+
+    virtual const NodeTypePtr createType(const std::string & id,
+                                         const NodeInterfaceSet & interfaces)
+        throw ();
+};
+
+
+class NullNodeType : public NodeType {
+public:
+    explicit NullNodeType(NullNodeClass & nodeClass) throw ();
+    virtual ~NullNodeType() throw ();
+
+    virtual const NodeInterfaceSet & getInterfaces() const throw ();
+    virtual const NodePtr createNode(const ScopePtr & scope) const throw ();
+};
+
+
+class DefaultViewpoint : public ViewpointNode {
+    VrmlMatrix userViewTransform;
+
+public:
+    explicit DefaultViewpoint(const NullNodeType & nodeType) throw ();
+    virtual ~DefaultViewpoint() throw ();
+
+    virtual const VrmlMatrix & getTransformation() const throw ();
+    virtual const VrmlMatrix & getUserViewTransform() const throw ();
+    virtual void setUserViewTransform(const VrmlMatrix & transform) throw ();
+    virtual const SFString & getDescription() const throw ();
+    virtual const SFFloat & getFieldOfView() const throw ();
+
+private:
+    virtual void do_setField(const std::string & id, const FieldValue & value)
+        throw ();
+    virtual const FieldValue & do_getField(const std::string & id) const
+        throw ();
+    virtual void do_processEvent(const std::string & id,
+                                 const FieldValue & value,
+                                 double timestamp)
+        throw ();
+    virtual const FieldValue & do_getEventOut(const std::string & id) const
+        throw ();
+};
+
+
 /**
  * @var const double pi
  *
@@ -365,6 +418,7 @@ InvalidVrml::InvalidVrml():
  */
 InvalidVrml::~InvalidVrml() throw ()
 {}
+
 
 /**
  * @class Browser
@@ -641,17 +695,23 @@ double Browser::getCurrentTime() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 Browser::Browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc):
-        scriptNodeClass(*this),
-        scene(0),
-        d_modified(false),
-        d_newView(false),
-        d_deltaTime(DEFAULT_DELTA),
-        d_frameRate(0.0),
-        d_firstEvent(0),
-        d_lastEvent(0),
-        out(out),
-        err(err),
-        d_flags_need_updating(false) {
+    nullNodeClass(new NullNodeClass(*this)),
+    nullNodeType(new NullNodeType(*nullNodeClass)),
+    scriptNodeClass(*this),
+    scene(0),
+    defaultViewpoint(new DefaultViewpoint(*nullNodeType)),
+    activeViewpoint(defaultViewpoint->toViewpoint()),
+    d_modified(false),
+    d_newView(false),
+    d_deltaTime(DEFAULT_DELTA),
+    d_frameRate(0.0),
+    d_firstEvent(0),
+    d_lastEvent(0),
+    out(out),
+    err(err),
+    d_flags_need_updating(false)
+{
+    assert(this->activeViewpoint);
     this->Browser::loadURI(MFString(), MFString());
 }
 
@@ -659,6 +719,204 @@ Browser::Browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc):
  * @brief Destructor.
  */
 Browser::~Browser() throw () {}
+
+/**
+ * @brief Get the root nodes for the browser.
+ *
+ * @return the root nodes for the browser.
+ */
+const MFNode & Browser::getRootNodes() const throw () {
+    assert(this->scene);
+    return this->scene->getNodes();
+}
+
+namespace {
+
+    class FindNodeVisitor : public NodeVisitor {
+
+        struct VisitNodes : std::unary_function<NodeInterface, void> {
+            VisitNodes(Node & node, NodeVisitor & visitor):
+                node(&node),
+                visitor(&visitor)
+            {}
+
+            void operator()(const NodeInterface & interface) const
+            {
+                if (interface.type == NodeInterface::field
+                        || interface.type == NodeInterface::exposedField) {
+                    if (interface.fieldType == FieldValue::sfnode) {
+                        const SFNode & value =
+                                static_cast<const SFNode &>
+                                    (this->node->getField(interface.id));
+                        if (value.get()) {
+                            value.get()->accept(*this->visitor);
+                        }
+                    } else if (interface.fieldType == FieldValue::mfnode) {
+                        const MFNode & children =
+                                static_cast<const MFNode &>
+                                    (this->node->getField(interface.id));
+                        for (size_t i = 0; i < children.getLength(); ++i) {
+                            if (children.getElement(i)) {
+                                children.getElement(i)->accept(*this->visitor);
+                            }
+                        }
+                    }
+                }
+            }
+
+        private:
+            Node * node;
+            NodeVisitor * visitor;
+        };
+
+        const Node * objectiveNode;
+        NodePath path;
+
+    public:
+        explicit FindNodeVisitor(const Node & node) throw ();
+        virtual ~FindNodeVisitor() throw ();
+
+        const NodePath findIn(const MFNode & nodes);
+
+        virtual void visit(Node & node);
+    };
+
+    FindNodeVisitor::FindNodeVisitor(const Node & node) throw ():
+        objectiveNode(&node)
+    {}
+
+    FindNodeVisitor::~FindNodeVisitor() throw ()
+    {}
+
+    const NodePath FindNodeVisitor::findIn(const MFNode & nodes)
+    {
+        assert(path.empty());
+        for (size_t i = 0; i < nodes.getLength(); ++i) {
+            if (nodes.getElement(i)) {
+                Node & element = *nodes.getElement(i);
+                element.accept(*this);
+                if (!path.empty() && path.back() == this->objectiveNode) {
+                    break;
+                }
+            }
+        }
+        return this->path;
+    }
+
+    void FindNodeVisitor::visit(Node & node)
+    {
+        this->path.push_back(&node);
+        if (&node != this->objectiveNode) {
+            const NodeInterfaceSet * interfaces = 0;
+            ProtoNode * protoNode = dynamic_cast<ProtoNode *>(&node);
+            if (protoNode) {
+                interfaces = &protoNode->getImplNodes().getElement(0)
+                                ->nodeType.getInterfaces();
+            } else {
+                interfaces = &node.nodeType.getInterfaces();
+            }
+            assert(interfaces);
+            std::for_each(interfaces->begin(), interfaces->end(),
+                          VisitNodes(node, *this));
+        }
+    }
+}
+
+/**
+ * @brief Get the path to a Node in the scene graph.
+ *
+ * @param node  the objective Node.
+ *
+ * @return the path to @p node, starting with a root Node, and ending with
+ *      @p node. If @p node is not in the scene graph, the returned NodePath is
+ *      empty.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+const NodePath Browser::findNode(const Node & node) const throw (std::bad_alloc)
+{
+    assert(this->scene);
+    return FindNodeVisitor(node).findIn(this->scene->getNodes());
+}
+
+/**
+ * @brief Get the active ViewpointNode.
+ *
+ * The active ViewpointNode is the one currently associated with the user view.
+ *
+ * @return the active ViewpointNode.
+ */
+ViewpointNode & Browser::getActiveViewpoint() const throw ()
+{
+    return *this->activeViewpoint;
+}
+
+/**
+ * @brief Set the active ViewpointNode.
+ *
+ * @param viewpoint a ViewpointNode.
+ */
+void Browser::setActiveViewpoint(ViewpointNode & viewpoint) throw ()
+{
+    this->activeViewpoint = &viewpoint;
+}
+
+/**
+ * @brief Reset the active ViewpointNode to the default.
+ */
+void Browser::resetDefaultViewpoint() throw ()
+{
+    assert(this->defaultViewpoint);
+    assert(this->defaultViewpoint->toViewpoint());
+    this->activeViewpoint = this->defaultViewpoint->toViewpoint();
+}
+
+/**
+ * @brief Add a ViewpointNode to the list of ViewpointNodes for the Browser.
+ *
+ * @param viewpoint a ViewpointNode.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p viewpoint is not in the list of ViewpointNodes for the Browser.
+ */
+void Browser::addViewpoint(ViewpointNode & viewpoint) throw (std::bad_alloc)
+{
+    assert(std::find(this->viewpointList.begin(), this->viewpointList.end(),
+                     &viewpoint) == this->viewpointList.end());
+    this->viewpointList.push_back(&viewpoint);
+}
+
+/**
+ * @brief Remove a ViewpointNode from the list of ViewpointNodes for the
+ *      Browser.
+ *
+ * @param viewpoint a ViewpointNode.
+ *
+ * @pre @p viewpoint is in the list of ViewpointNodes for the Browser.
+ */
+void Browser::removeViewpoint(ViewpointNode & viewpoint) throw ()
+{
+    assert(!this->viewpointList.empty());
+    typedef std::list<ViewpointNode *> ViewpointList;
+    const ViewpointList::iterator end = this->viewpointList.end();
+    const ViewpointList::iterator pos =
+            std::find(this->viewpointList.begin(), end, &viewpoint);
+    assert(pos != end);
+    this->viewpointList.erase(pos);
+}
+
+/**
+ * @brief Get the list of @link ViewpointNode ViewpointNodes@endlink for the
+ *      world.
+ *
+ * @return the list of @link ViewpointNode ViewpointNodes@endlink for the
+ *      world.
+ */
+const std::list<ViewpointNode *> & Browser::getViewpoints() const throw ()
+{
+    return this->viewpointList;
+}
 
 /**
  * @brief Get the browser name.
@@ -698,18 +956,62 @@ namespace {
     typedef std::map<std::string, NodeClassPtr> NodeClassMap;
 
     struct InitNodeClass : std::unary_function<void, NodeClassMap::value_type> {
-        explicit InitNodeClass(const double time):
+        explicit InitNodeClass(ViewpointNode * initialViewpoint,
+                               const double time)
+            throw ():
+            initialViewpoint(initialViewpoint),
             time(time)
         {}
 
-        void operator()(const NodeClassMap::value_type & value) const
+        void operator()(const NodeClassMap::value_type & value) const throw ()
         {
             assert(value.second);
-            value.second->initialize(this->time);
+            value.second->initialize(this->initialViewpoint, this->time);
         }
 
     private:
+        ViewpointNode * initialViewpoint;
         double time;
+    };
+
+
+    struct HasId_ : std::unary_function<bool, ViewpointNode *> {
+        explicit HasId_(const std::string & nodeId) throw ():
+            nodeId(&nodeId)
+        {}
+
+        bool operator()(ViewpointNode * const node) const throw ()
+        {
+            return node->getId() == *this->nodeId;
+        }
+
+    private:
+        const std::string * nodeId;
+    };
+
+
+    class URI {
+        std::string str;
+        enum { nmatch = 11 };
+        regmatch_t regmatch[nmatch];
+
+    public:
+        URI(const std::string & str) throw (InvalidURI, std::bad_alloc);
+
+        operator std::string() const throw (std::bad_alloc);
+
+        const std::string getScheme() const throw (std::bad_alloc);
+        const std::string getSchemeSpecificPart() const throw (std::bad_alloc);
+        const std::string getAuthority() const throw (std::bad_alloc);
+        const std::string getUserinfo() const throw (std::bad_alloc);
+        const std::string getHost() const throw (std::bad_alloc);
+        const std::string getPort() const throw (std::bad_alloc);
+        const std::string getPath() const throw (std::bad_alloc);
+        const std::string getQuery() const throw (std::bad_alloc);
+        const std::string getFragment() const throw (std::bad_alloc);
+
+        const URI resolveAgainst(const URI & absoluteURI) const
+                throw (std::bad_alloc);
     };
 }
 
@@ -731,6 +1033,10 @@ namespace {
 void Browser::loadURI(const MFString & uri, const MFString & parameter)
     throw (std::bad_alloc)
 {
+    using std::for_each;
+    using std::list;
+    using std::string;
+
     const double now = Browser::getCurrentTime();
 
     //
@@ -738,11 +1044,11 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     //
     if (this->scene) { this->scene->shutdown(now); }
     delete this->scene;
+    this->nodeClassMap.clear();
     this->scene = 0;
     this->d_navigationInfoStack.clear();
-    this->d_viewpointStack.clear();
+    assert(this->viewpointList.empty());
     assert(this->d_navigationInfos.empty());
-    assert(this->d_viewpoints.empty());
     assert(this->d_scopedLights.empty());
     assert(this->d_scripts.empty());
     assert(this->d_timers.empty());
@@ -756,10 +1062,28 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     //
     this->initNodeClassMap();
     this->scene = new Scene(*this, uri);
-
     this->scene->initialize(now);
-    std::for_each(this->nodeClassMap.begin(), this->nodeClassMap.end(),
-                  InitNodeClass(now));
+
+    //
+    // Get the initial ViewpointNode, if any was specified.
+    //
+    ViewpointNode * initialViewpoint = 0;
+    const string viewpointNodeId = URI(this->scene->getURI()).getFragment();
+    if (!viewpointNodeId.empty()) {
+        if (this->scene->getNodes().getLength() > 0) {
+            const NodePtr & node = this->scene->getNodes().getElement(0);
+            if (node) {
+                Node * const vp = node->getScope()->findNode(viewpointNodeId);
+                initialViewpoint = dynamic_cast<ViewpointNode *>(vp);
+            }
+        }
+    }
+    
+    //
+    // Initialize the NodeClasses.
+    //
+    for_each(this->nodeClassMap.begin(), this->nodeClassMap.end(),
+             InitNodeClass(initialViewpoint, now));
 
     //
     // Send initial bind events to bindable nodes.
@@ -770,10 +1094,8 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
                 ->processEvent("set_bind", SFBool(true), now);
     }
 
-    if (!this->d_viewpoints.empty()) {
-        assert(this->d_viewpoints.front());
-        this->d_viewpoints.front()
-                ->processEvent("set_bind", SFBool(true), now);
+    if (this->activeViewpoint != this->defaultViewpoint->toViewpoint()) {
+        this->activeViewpoint->processEvent("set_bind", SFBool(true), now);
     }
 
     this->setModified();
@@ -937,16 +1259,6 @@ void Browser::initNodeClassMap() {
             NodeClassPtr(new VisibilitySensorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:WorldInfo"] =
             NodeClassPtr(new WorldInfoClass(*this));
-}
-
-/**
- * @brief Get the root nodes for the browser.
- *
- * @return the root nodes for the browser.
- */
-const MFNode & Browser::getRootNodes() const throw () {
-    assert(this->scene);
-    return this->scene->getNodes();
 }
 
 /**
@@ -1158,27 +1470,14 @@ namespace {
 /**
  * @brief Draw this browser into the specified viewer
  */
-void Browser::render(Viewer & viewer) {
+void Browser::render(Viewer & viewer)
+{
     if (d_newView) {
         viewer.resetUserNavigation();
         d_newView = false;
     }
-
-    // Default viewpoint parameters
-    float position[3] = { 0.0, 0.0, 10.0 };
-    float orientation[4] = { 0.0, 0.0, 1.0, 0.0 };
-    float field = 0.785398;
     float avatarSize = 0.25;
     float visibilityLimit = 0.0;
-
-    Vrml97Node::Viewpoint * vp = bindableViewpointTop();
-    if (vp) {
-        std::copy(vp->getPosition().get(), vp->getPosition().get() + 3, position);
-        std::copy(vp->getOrientation().get(), vp->getOrientation().get() + 4,
-                  orientation);
-        field = vp->getFieldOfView().get();
-    }
-
     Vrml97Node::NavigationInfo * ni = bindableNavigationInfoTop();
     if (ni) {
         avatarSize = ni->getAvatarSize()[0];
@@ -1197,7 +1496,17 @@ void Browser::render(Viewer & viewer) {
 
     // sets the viewpoint transformation
     //
-    viewer.setViewpoint(position, orientation, field, avatarSize, visibilityLimit);
+    const VrmlMatrix t =
+            this->activeViewpoint->getTransformation()
+            .multLeft(this->activeViewpoint->getUserViewTransform());
+    SFVec3f position, scale;
+    SFRotation orientation;
+    t.getTransform(position, orientation, scale);
+    viewer.setViewpoint(position.get(),
+                        orientation.get(),
+                        activeViewpoint->getFieldOfView().get(),
+                        avatarSize,
+                        visibilityLimit);
 
     std::for_each(this->nodeClassMap.begin(), this->nodeClassMap.end(),
                   RenderNodeClass(viewer));
@@ -1205,37 +1514,8 @@ void Browser::render(Viewer & viewer) {
     // Top level object
 
     viewer.beginObject(0);
-    //
-    // Hack alert: Right now the rendering code uses the old-style
-    // set/unset Transform code, but the culling code accumulates the
-    // modelview matrix on the core side using modifications to
-    // VrmlTransform and the new VrmlRenderContext class.
-    //
-    // However, that means we need to jump through some hoops to make
-    // sure that the new modelview transform code exactly shadows the
-    // old code.
-    //
-    VrmlMatrix MV; // the modelview transform
-    if (vp) {
-        VrmlMatrix IM,NMAT;
-        vp->inverseTransform(IM);   // put back nested viewpoint. skb
-        viewer.transform(IM);
-        vp->getInverseMatrix(MV);
-        viewer.getUserNavigation(NMAT);
-        MV = MV.multLeft(NMAT);
-        MV = MV.multLeft(IM);
-    } else {
-        // if there's no viewpoint, then set us up arbitrarily at 0,0,-10,
-        // as indicated in the vrml spec (section 6.53 Viewpoint).
-        //
-        float t[3] = { 0.0f, 0.0f, -10.0f };
-        VrmlMatrix NMAT;
-        MV.setTranslate(t);
-        viewer.getUserNavigation(NMAT);
-        MV = MV.multLeft(NMAT);
-    }
-
-    VrmlRenderContext rc(BVolume::partial, MV);
+    VrmlMatrix modelview = t.affine_inverse();
+    VrmlRenderContext rc(BVolume::partial, modelview);
     rc.setDrawBSpheres(true);
 
     // Do the browser-level lights (Points and Spots)
@@ -1386,182 +1666,6 @@ void Browser::bindablePush(Vrml97Node::NavigationInfo * n) {
  */
 void Browser::bindableRemove(Vrml97Node::NavigationInfo * n) {
     bindableRemove(d_navigationInfoStack, NodePtr(n));
-}
-
-/**
- * @brief Add a Viewpoint node to the list of Viewpoint nodes for the browser.
- *
- * @param node a Viewpoint node.
- *
- * @pre @p node is not in the list of Viewpoint nodes for the browser.
- */
-void Browser::addViewpoint(Vrml97Node::Viewpoint & node) {
-    assert(std::find(this->d_viewpoints.begin(), this->d_viewpoints.end(),
-                     &node) == this->d_viewpoints.end());
-    this->d_viewpoints.push_back(&node);
-}
-
-/**
- * @brief Remove a Viewpoint node from the list of Viewpoint nodes for the
- *      browser.
- *
- * @param node  a Viewpoint node.
- *
- * @pre @p node is in the list of Viewpoint nodes for the browser.
- */
-void Browser::removeViewpoint(Vrml97Node::Viewpoint & node) {
-    assert(!this->d_viewpoints.empty());
-    const std::list<Node *>::iterator end = this->d_viewpoints.end();
-    const std::list<Node *>::iterator pos =
-            std::find(this->d_viewpoints.begin(), end, &node);
-    assert(pos != end);
-    this->d_viewpoints.erase(pos);
-}
-
-/**
- * @brief Get the active node on the bound Viewpoint stack.
- *
- * @return the active node on the bound Viewpoint stack.
- */
-Vrml97Node::Viewpoint * Browser::bindableViewpointTop() {
-    Node * const t = bindableTop(d_viewpointStack).get();
-    return t ? t->toViewpoint() : 0;
-}
-
-/**
- * @brief Push a Viewpoint node onto the bound Viewpoint node stack.
- *
- * @param n a Viewpoint node.
- */
-void Browser::bindablePush(Vrml97Node::Viewpoint * n) {
-    bindablePush(d_viewpointStack, NodePtr(n));
-    d_newView = true;
-}
-
-/**
- * @brief Remove a Viewpoint node from the bound Viewpoint node stack.
- *
- * @param n a Viewpoint node.
- */
-void Browser::bindableRemove(Vrml97Node::Viewpoint * n) {
-    bindableRemove(d_viewpointStack, NodePtr(n));
-    d_newView = true;
-}
-
-/**
- * @brief Bind to the next Viewpoint in the list.
- */
-void Browser::nextViewpoint() {
-    Vrml97Node::Viewpoint *vp = bindableViewpointTop();
-    std::list<Node *>::iterator i;
-
-    for (i = d_viewpoints.begin(); i != d_viewpoints.end(); ++i ) {
-        if (*i == vp) {
-            if (++i == d_viewpoints.end())
-              i = d_viewpoints.begin();
-
-            if (*i && (vp = (*i)->toViewpoint())) {
-                vp->processEvent("set_bind",
-                                 SFBool(true),
-                                 Browser::getCurrentTime());
-            }
-            return;
-        }
-    }
-}
-
-/**
- * @brief Bind to the previous Viewpoint in the list.
- */
-void Browser::prevViewpoint() {
-    Vrml97Node::Viewpoint *vp = bindableViewpointTop();
-    std::list<Node *>::iterator i;
-
-    for (i = d_viewpoints.begin(); i != d_viewpoints.end(); ++i) {
-        if (*i == vp) {
-            if (i == d_viewpoints.begin()) {
-                i = d_viewpoints.end();
-            }
-            if (*(--i) && (vp = (*i)->toViewpoint())) {
-                vp->processEvent("set_bind",
-                                 SFBool(true),
-                                 Browser::getCurrentTime());
-            }
-            return;
-        }
-    }
-}
-
-/**
- * @brief Get the number of Viewpoint nodes in the browser.
- *
- * @return the number of Viewpoint nodes in the browser.
- */
-size_t Browser::nViewpoints() { return d_viewpoints.size(); }
-
-/**
- * @brief Get the name and description of a Viewpoint.
- *
- * @param index         the index of the Viewpoint.
- * @retval name         the name of the Viewpoint.
- * @retval description  the description of the Viewpoint.
- */
-void Browser::getViewpoint(const size_t index,
-                           std::string & name,
-                           std::string & description)
-{
-    size_t n = 0;
-    for (std::list<Node *>::const_iterator i = this->d_viewpoints.begin();
-            i != this->d_viewpoints.end(); ++i, ++n ) {
-        if (n == index) {
-            name = (*i)->getId();
-            description = (*i)->toViewpoint()->getDescription().get();
-            return;
-        }
-    }
-}
-
-/**
- * @brief Bind to a specific Viewpoint.
- *
- * @param name  the nodeId of the Viewpoint to bind to.
- *
- * This method will bind to a Viewpoint with the nodeId @p name. If no such
- * Viewpoint is available, this method has no effect.
- */
-void Browser::setViewpoint(const std::string & name)
-{
-    for (std::list<Node *>::iterator i = this->d_viewpoints.begin();
-            i != this->d_viewpoints.end(); ++i) {
-        if (name == (*i)->getId()) {
-            assert((*i)->toViewpoint());
-            (*i)->processEvent("set_bind",
-                               SFBool(true),
-                               Browser::getCurrentTime());
-            return;
-        }
-    }
-}
-
-/**
- * @brief Bind to a Viewpoint with a particular index.
- *
- * @param index the index of the Viewpoint to bind to.
- *
- * If @p index is not a valid index, this method has no effect.
- */
-void Browser::setViewpoint(const size_t index) {
-    size_t j = 0;
-    for (std::list<Node *>::iterator i = this->d_viewpoints.begin();
-            i != this->d_viewpoints.end(); ++i, ++j) {
-        if (j == index) {
-            assert((*i)->toViewpoint());
-            (*i)->processEvent("set_bind",
-                               SFBool(true),
-                               Browser::getCurrentTime());
-	    return;
-        }
-    }
 }
 
 /**
@@ -1759,33 +1863,6 @@ void Browser::updateFlags()
 //  root->updateModified(0x002);
 }
 
-
-namespace {
-
-    class URI {
-        std::string str;
-        enum { nmatch = 11 };
-        regmatch_t regmatch[nmatch];
-
-    public:
-        URI(const std::string & str) throw (InvalidURI, std::bad_alloc);
-
-        operator std::string() const throw (std::bad_alloc);
-
-        const std::string getScheme() const throw (std::bad_alloc);
-        const std::string getSchemeSpecificPart() const throw (std::bad_alloc);
-        const std::string getAuthority() const throw (std::bad_alloc);
-        const std::string getUserinfo() const throw (std::bad_alloc);
-        const std::string getHost() const throw (std::bad_alloc);
-        const std::string getPort() const throw (std::bad_alloc);
-        const std::string getPath() const throw (std::bad_alloc);
-        const std::string getQuery() const throw (std::bad_alloc);
-        const std::string getFragment() const throw (std::bad_alloc);
-
-        const URI resolveAgainst(const URI & absoluteURI) const
-                throw (std::bad_alloc);
-    };
-}
 
 /**
  * @class BadURI
@@ -2021,12 +2098,17 @@ const std::string Scene::getURI() const throw (std::bad_alloc) {
 
 /**
  * @brief Initialize the scene.
+ *
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void Scene::initialize(const double timestamp) throw (std::bad_alloc)
 {
     for (size_t i = 0; i < this->nodes.getLength(); ++i) {
         assert(this->nodes.getElement(i));
         this->nodes.getElement(i)->initialize(*this, timestamp);
+        this->nodes.getElement(i)->relocate();
     }
 }
 
@@ -2071,19 +2153,23 @@ void Scene::render(Viewer & viewer, VrmlRenderContext context) {
 void Scene::loadURI(const MFString & uri, const MFString & parameter)
     throw (std::bad_alloc)
 {
+    using std::string;
+
     if (uri.getLength() > 0) {
         if (uri.getElement(0)[0] == '#') {
+# if 0
             //
             // If the first element in uri is a Viewpoint name, bind the
             // Viewpoint.
             //
             this->browser.setViewpoint(uri.getElement(0).substr(1));
+# endif
         } else {
             MFString absoluteURIs(uri.getLength());
             for (size_t i = 0; i < absoluteURIs.getLength(); ++i) {
                 try {
                     const URI uriElement(uri.getElement(i));
-                    const std::string value =
+                    const string value =
                         uriElement.getScheme().empty()
                             ? uriElement.resolveAgainst(URI(this->getURI()))
                             : uriElement;
@@ -3108,6 +3194,64 @@ TextureTransformNode * ProtoNode::toTextureTransform() throw () {
 }
 
 /**
+ * @brief Cast to a TransformNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a TransformNode, or 0 otherwise.
+ */
+const TransformNode * ProtoNode::toTransform() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toTransform();
+}
+
+/**
+ * @brief Cast to a TransformNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a TransformNode, or 0 otherwise.
+ */
+TransformNode * ProtoNode::toTransform() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toTransform();
+}
+
+/**
+ * @brief Cast to a ViewpointNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a ViewpointNode, or 0 otherwise.
+ */
+const ViewpointNode * ProtoNode::toViewpoint() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toViewpoint();
+}
+
+/**
+ * @brief Cast to a ViewpointNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a ViewpointNode, or 0 otherwise.
+ */
+ViewpointNode * ProtoNode::toViewpoint() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toViewpoint();
+}
+
+/**
+ * @brief Get the implementation nodes.
+ *
+ * @return the implementation Nodes
+ */
+const MFNode & ProtoNode::getImplNodes() const throw ()
+{
+    return this->implNodes;
+}
+
+/**
  * @brief Add a root node to the prototype definition.
  */
 void ProtoNode::addRootNode(const NodePtr & node) throw (std::bad_alloc) {
@@ -3436,10 +3580,6 @@ Vrml97Node::TimeSensor * ProtoNode::toTimeSensor() const {
 
 Vrml97Node::TouchSensor * ProtoNode::toTouchSensor() const {
     return this->implNodes.getElement(0)->toTouchSensor();
-}
-
-Vrml97Node::Viewpoint * ProtoNode::toViewpoint() const {
-    return this->implNodes.getElement(0)->toViewpoint();
 }
 
 void ProtoNode::render(Viewer & viewer, const VrmlRenderContext context) {
@@ -4794,6 +4934,140 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
 }
 
 Vrml97RootScope::~Vrml97RootScope() throw () {}
+
+
+NullNodeClass::NullNodeClass(Browser & browser) throw ():
+    NodeClass(browser)
+{}
+
+NullNodeClass::~NullNodeClass() throw ()
+{}
+
+const NodeTypePtr NullNodeClass::createType(const std::string & id,
+                                            const NodeInterfaceSet & interfaces)
+    throw ()
+{
+    assert(false);
+    static const NodeTypePtr nodeType;
+    return nodeType;
+}
+
+
+NullNodeType::NullNodeType(NullNodeClass & nodeClass) throw ():
+    NodeType(nodeClass, std::string())
+{}
+
+NullNodeType::~NullNodeType() throw ()
+{}
+
+const NodeInterfaceSet & NullNodeType::getInterfaces() const throw ()
+{
+    assert(false);
+    static const NodeInterfaceSet interfaces;
+    return interfaces;
+}
+
+const NodePtr NullNodeType::createNode(const ScopePtr & scope) const throw ()
+{
+    assert(false);
+    static const NodePtr node;
+    return node;
+}
+
+
+/**
+ * @brief Constructor.
+ *
+ * @param nodeType  the Browser's NullNodeType instance.
+ */
+DefaultViewpoint::DefaultViewpoint(const NullNodeType & nodeType) throw ():
+    Node(nodeType, ScopePtr()),
+    ChildNode(nodeType, ScopePtr()),
+    ViewpointNode(nodeType, ScopePtr())
+{}
+
+/**
+ * @brief Destructor.
+ */
+DefaultViewpoint::~DefaultViewpoint() throw ()
+{}
+
+const VrmlMatrix & DefaultViewpoint::getTransformation() const throw ()
+{
+    class DefaultTransformation : public VrmlMatrix {
+    public:
+        DefaultTransformation() throw ()
+        {
+            static const SFVec3f position(0.0, 0.0, 10.0);
+            static const SFRotation orientation;
+            static const SFVec3f scale(1.0, 1.0, 1.0);
+            static const SFRotation scaleOrientation;
+            static const SFVec3f center;
+            this->setTransform(position,
+                               orientation,
+                               scale,
+                               scaleOrientation,
+                               center);
+        }
+    };
+    static const DefaultTransformation t;
+    return t;
+}
+
+const VrmlMatrix & DefaultViewpoint::getUserViewTransform() const throw ()
+{
+    return this->userViewTransform;
+}
+
+void DefaultViewpoint::setUserViewTransform(const VrmlMatrix & transform)
+    throw ()
+{
+    this->userViewTransform = transform;
+}
+
+const SFString & DefaultViewpoint::getDescription() const throw ()
+{
+    static const SFString description;
+    return description;
+}
+
+const SFFloat & DefaultViewpoint::getFieldOfView() const throw ()
+{
+    static const SFFloat fieldOfView(0.785398);
+    return fieldOfView;
+}
+
+void DefaultViewpoint::do_setField(const std::string & id,
+                                   const FieldValue & value)
+    throw ()
+{
+    assert(false);
+}
+
+const FieldValue & DefaultViewpoint::do_getField(const std::string & id) const
+    throw ()
+{
+    assert(false);
+    static const SFBool value;
+    return value;
+}
+
+void DefaultViewpoint::do_processEvent(const std::string & id,
+                                       const FieldValue & value,
+                                       double timestamp)
+    throw ()
+{
+    assert(false);
+}
+
+const FieldValue &
+DefaultViewpoint::do_getEventOut(const std::string & id) const throw ()
+{
+    assert(false);
+    static const SFBool value;
+    return value;
+}
+
 
 namespace {
 
