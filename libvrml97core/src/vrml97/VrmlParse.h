@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1999 Chris Morley
+//  See the file COPYING for license details.
 //
 //  %W% %G%
 //  VrmlParse.h

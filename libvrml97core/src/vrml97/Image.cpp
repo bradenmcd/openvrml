@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
+//  See the file COPYING for license details.
 //
 //  Image.cpp
 //  The Image class is a format-independent API for loading textures.

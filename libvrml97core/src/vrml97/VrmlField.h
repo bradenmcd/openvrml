@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
+//  See the file COPYING for license details.
 //
 //  VrmlField.h
 //  Each field type should support clone, get, and set methods. (Most of these

@@ -1,3 +1,8 @@
+//  LibVRML97: a library for loading and viewing VRML
+//  This software is copyright (C) the Open VRML Advancement League
+//  All Rights Reserved
+//  See the file COPYING for license details.
+//
 #ifndef MATHUTILS_H
 #define MATHUTILS_H
 

@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
+//  See the file COPYING for license details.
 //
 //  ScriptObject.cpp
 //  An abstract class to encapsulate the interface between the VRML97

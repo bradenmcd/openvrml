@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
+//  See the file COPYING for license details.
 //
 #ifndef VRMLSFCOLOR_H
 #define VRMLSFCOLOR_H

@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
+//  See the file COPYING for license details.
 //
 //  VrmlNodeSwitch.cpp
 
@@ -76,7 +77,7 @@ bool VrmlNodeSwitch::isModified() const
 
   int w = d_whichChoice.get();
 
-  return (w >= 0 && w < d_choice.size() && d_choice[w]->isModified());
+  return (w >= 0 && w < (int) d_choice.size() && d_choice[w]->isModified());
 }
 
 
@@ -139,7 +140,7 @@ void VrmlNodeSwitch::render(Viewer *viewer, VrmlRenderContext rc)
 {
   int w = d_whichChoice.get();
 
-  if (w >= 0 && w < d_choice.size())
+  if (w >= 0 && w < (int) d_choice.size())
     d_choice[w]->render(viewer, rc);
 
   clearModified();
@@ -186,7 +187,7 @@ VrmlNodeSwitch::recalcBSphere()
   //cout << "VrmlNodeSwitch[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
   int w = d_whichChoice.get();
-  if (w >= 0 && w < d_choice.size()) {
+  if (w >= 0 && w < (int) d_choice.size()) {
     const VrmlBVolume* ci_bv = d_choice[w]->getBVolume();
     if (ci_bv)
       d_bsphere.extend(*ci_bv);

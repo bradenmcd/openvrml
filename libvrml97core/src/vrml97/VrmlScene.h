@@ -1,8 +1,8 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
+//  See the file COPYING for license details.
 //
-//  %W% %G%
 //  VrmlScene.h
 //  Construct a VRML scene graph from a VRML file or string
 //

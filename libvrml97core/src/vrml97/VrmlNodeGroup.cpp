@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
+//  See the file COPYING for license details.
 //
 //  VrmlNodeGroup.cpp
 //
@@ -339,7 +340,7 @@ void VrmlNodeGroup::addChildren( const VrmlMFNode &children )
 	      child->nodeType().getName(), nodeType().getName());
     }
 
-  if (nNow != d_children.size())
+  if (nNow != (int) d_children.size())
     {
       //??eventOut( d_scene->timeNow(), "children_changed", d_children );
       setModified();
@@ -356,7 +357,7 @@ void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
   for (int i=0; i<n; ++i)
     d_children.removeNode(children[i]);
 
-  if (nNow != d_children.size())
+  if (nNow != (int) d_children.size())
     {
       //??eventOut( d_scene->timeNow(), "children_changed", d_children );
       setModified();
@@ -436,7 +437,7 @@ int VrmlNodeGroup::size()
 
 VrmlNode *VrmlNodeGroup::child(int index)
 {
-  if (index >= 0 && index < d_children.size())
+  if (index >= 0 && index < (int) d_children.size())
     return d_children[index];
 
   return 0;
@@ -461,7 +462,7 @@ VrmlNodeGroup::recalcBSphere()
 {
   //cout << "VrmlNodeGroup[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
-  for (int i = 0; i<d_children.size(); ++i) {
+  for (int i = 0; i< (int) d_children.size(); ++i) {
     VrmlNode* ci = d_children[i];
     const VrmlBVolume* ci_bv = ci->getBVolume();
     if (ci_bv)

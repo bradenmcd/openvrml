@@ -1,6 +1,7 @@
 //
 //  Vrml97 library
 //  Copyright (C) 1998 Chris Morley
+//  See the file COPYING for license details.
 //
 //  VrmlNodeCylinder.h
 

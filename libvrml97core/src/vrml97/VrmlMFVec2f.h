@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
+//  See the file COPYING for license details.
 //
 #ifndef VRMLMFVEC2F_H
 #define VRMLMFVEC2F_H

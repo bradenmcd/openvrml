@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
+//  See the file COPYING for license details.
 //
 //  VrmlNodeLOD.cpp
 
@@ -163,7 +164,7 @@ void VrmlNodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
   if (d_range.size() == 0) i = d_level.size() - 1;
 
   // Not enough levels...
-  if (i >= d_level.size()) i = d_level.size() - 1;
+  if (i >= (int) d_level.size()) i = d_level.size() - 1;
 
   //printf("LOD d2 %g level %d\n", d2, i);
 
@@ -233,7 +234,7 @@ VrmlNodeLOD::recalcBSphere()
   // switch in delayed-load inlines. this would necessarily switch
   // them in all at once. live with it for now.
   //
-  for(int i=0; i<d_level.size(); i++) {
+  for(int i=0; i<(int) d_level.size(); i++) {
     const VrmlBVolume* ci_bv = d_level[i]->getBVolume();
     d_bsphere.extend(*ci_bv);
 
