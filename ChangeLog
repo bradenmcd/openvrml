@@ -1,3 +1,8 @@
+2001-06-29  Braden McDaniel <braden@endoframe.com>
+
+        * Added ommitted class initializations for the MFString and MFTime
+          JavaScript types.
+
 2001-06-25  Braden McDaniel <braden@endoframe.com>
 
         * Moved ScriptObject's factory method from the static method on

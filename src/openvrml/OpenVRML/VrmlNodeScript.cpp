@@ -1616,6 +1616,8 @@ namespace {
                     && MFInt32::initClass(this->cx, globalObj)
                     && MFNode::initClass(this->cx, globalObj)
                     && MFRotation::initClass(this->cx, globalObj)
+                    && MFString::initClass(this->cx, globalObj)
+                    && MFTime::initClass(this->cx, globalObj)
                     && MFVec2f::initClass(this->cx, globalObj)
                     && MFVec3f::initClass(this->cx, globalObj));
         }
@@ -3193,7 +3195,7 @@ namespace {
                     reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
             assert(thisRot);
 
-            if (JSVAL_IS_INT(id)) {
+            if (!JSVAL_IS_INT(id)) {
                 return JS_FALSE;
             }
             
@@ -4317,6 +4319,9 @@ namespace {
 
         JSBool MField::getElement(JSContext * const cx, JSObject * const obj,
                                   const jsval id, jsval * const vp) throw () {
+            assert(cx);
+            assert(obj);
+            assert(vp);
             MFData * const mfdata = reinterpret_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -4335,6 +4340,9 @@ namespace {
 
         JSBool MField::getLength(JSContext * const cx, JSObject * const obj,
                                  const jsval id, jsval * const vp) throw () {
+            assert(cx);
+            assert(obj);
+            assert(vp);
             MFData * const mfdata = reinterpret_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -4348,6 +4356,9 @@ namespace {
             JSObject * MFJSObject<Subclass>::initClass(JSContext * const cx,
                                                        JSObject * const obj)
                     throw () {
+                assert(cx);
+                assert(obj);
+                
                 static JSPropertySpec properties[] =
                         { { "length", 0, JSPROP_PERMANENT, getLength, setLength },
                           { 0, 0, 0, 0, 0 } };
@@ -4373,6 +4384,10 @@ namespace {
 	                                           const uintN argc,
                                                    jsval * const argv,
                                                    jsval * const rval) throw () {
+                assert(cx);
+                assert(obj);
+                assert(rval);
+                
                 //
                 // If called without new, replace obj with a new object.
                 //
@@ -4393,6 +4408,9 @@ namespace {
                                                     const uintN argc,
                                                     jsval * const argv)
                     throw () {
+                assert(cx);
+                assert(obj);
+                
                 try {
                     MFData * const mfdata = new MFData(argc);
                     if (!JS_SetPrivate(cx, obj, mfdata)) {
@@ -4434,6 +4452,10 @@ namespace {
                                                     JSObject * const obj,
                                                     const jsval id,
                                                     jsval * const vp) throw () {
+                assert(cx);
+                assert(obj);
+                assert(vp);
+                
                 MFData * const mfdata = reinterpret_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
@@ -4488,6 +4510,10 @@ namespace {
                                                    JSObject * const obj,
                                                    const jsval id,
                                                    jsval * const vp) throw () {
+                assert(cx);
+                assert(obj);
+                assert(vp);
+                
                 MFData * const mfdata = reinterpret_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
@@ -4551,6 +4577,10 @@ namespace {
                                                   JSObject * const obj,
                                                   uintN, jsval *,
                                                   jsval * const rval) throw () {
+                assert(cx);
+                assert(obj);
+                assert(rval);
+                
                 MFData * const mfdata = reinterpret_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
                 assert(mfdata);
@@ -4589,6 +4619,9 @@ namespace {
         template <typename Subclass>
             void MFJSObject<Subclass>::finalize(JSContext * const cx,
                                                 JSObject * const obj) throw () {
+                assert(cx);
+                assert(obj);
+                
                 MFData * const mfdata = reinterpret_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
@@ -4905,7 +4938,10 @@ namespace {
 
         VrmlMFColor * MFColor::createFromJSObject(JSContext * const cx,
                                                   JSObject * const obj) {
+            assert(cx);
+            assert(obj);
             assert(JS_InstanceOf(cx, obj, &MFColor::jsclass, 0));
+            
             MField::MFData * const mfdata =
                     reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -5185,6 +5221,10 @@ namespace {
         JSBool MFFloat::toJsval(const VrmlMFFloat & mffloat, const bool protect,
                                 JSContext * const cx, JSObject * const obj,
                                 jsval * const rval) throw () {
+            assert(cx);
+            assert(obj);
+            assert(rval);
+            
             JSObject * const mffloatObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mffloatObj) {
@@ -5218,6 +5258,8 @@ namespace {
 
         VrmlMFFloat * MFFloat::createFromJSObject(JSContext * const cx,
                                                   JSObject * const obj) {
+            assert(cx);
+            assert(obj);
             assert(JS_InstanceOf(cx, obj, &MFFloat::jsclass, 0));
             MField::MFData * const mfdata =
                     reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
@@ -5243,6 +5285,9 @@ namespace {
         
         JSObject * MFInt32::initClass(JSContext * const cx,
                                       JSObject * const obj) {
+            assert(cx);
+            assert(obj);
+            
             static JSPropertySpec properties[] =
                     { { "length", 0, JSPROP_PERMANENT, getLength, setLength },
                       { 0, 0, 0, 0, 0 } };
@@ -5265,6 +5310,10 @@ namespace {
         JSBool MFInt32::toJsval(const VrmlMFInt32 & mfint32, const bool protect,
                                 JSContext * const cx, JSObject * const obj,
                                 jsval * const rval) throw () {
+            assert(cx);
+            assert(obj);
+            assert(rval);
+            
             JSObject * const mfint32Obj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mfint32Obj) {
@@ -5292,6 +5341,8 @@ namespace {
 
         VrmlMFInt32 * MFInt32::createFromJSObject(JSContext * const cx,
                                                   JSObject * const obj) {
+            assert(cx);
+            assert(obj);
             assert(JS_InstanceOf(cx, obj, &MFInt32::jsclass, 0));
             MField::MFData * const mfdata =
                     reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
@@ -5309,7 +5360,11 @@ namespace {
         
         JSBool MFInt32::construct(JSContext * const cx, JSObject * obj,
 	                          const uintN argc, jsval * const argv,
-                                  jsval * rval) {
+                                  jsval * const rval) {
+            assert(cx);
+            assert(obj);
+            assert(rval);
+            
             //
             // If called without new, replace obj with a new object.
             //
@@ -5326,6 +5381,9 @@ namespace {
 
         JSBool MFInt32::initObject(JSContext * const cx, JSObject * const obj,
                                    const uintN argc, jsval * const argv) {
+            assert(cx);
+            assert(obj);
+            
             try {
                 MFData * const mfdata =
                         new MFData(argc);
@@ -5356,6 +5414,10 @@ namespace {
 
         JSBool MFInt32::setElement(JSContext * const cx, JSObject * const obj,
                                    const jsval id, jsval * const vp) {
+            assert(cx);
+            assert(obj);
+            assert(vp);
+            
             MFData * const mfdata =
                     reinterpret_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -5391,6 +5453,10 @@ namespace {
 
         JSBool MFInt32::setLength(JSContext * const cx, JSObject * const obj,
                                   const jsval id, jsval * const vp) {
+            assert(cx);
+            assert(obj);
+            assert(vp);
+            
             MFData * const mfdata =
                     reinterpret_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -5418,6 +5484,9 @@ namespace {
 
         JSBool MFInt32::toString(JSContext * const cx, JSObject * const obj,
                                  uintN, jsval *, jsval * const rval) {
+            assert(cx);
+            assert(obj);
+            
             MFData * const mfdata = reinterpret_cast<MFData *>
                                         (JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -5616,6 +5685,9 @@ namespace {
                                  const bool protect,
                                  JSContext * const cx, JSObject * const obj,
                                  jsval * const rval) throw () {
+            assert(cx);
+            assert(obj);
+            assert(rval);
             JSObject * const mfstringObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mfstringObj) {
@@ -5671,7 +5743,11 @@ namespace {
 
         JSBool MFString::construct(JSContext * const cx, JSObject * obj,
 	                           const uintN argc, jsval * const argv,
-                                   jsval * rval) throw () {
+                                   jsval * const rval) throw () {
+            assert(cx);
+            assert(obj);
+            assert(rval);
+            
             //
             // If called without new, replace obj with a new object.
             //
@@ -5689,6 +5765,9 @@ namespace {
         JSBool MFString::initObject(JSContext * const cx, JSObject * const obj,
                                     const uintN argc, jsval * const argv)
                 throw () {
+            assert(cx);
+            assert(obj);
+            
             try {
                 MFData * const mfdata =
                         new MFData(argc);
