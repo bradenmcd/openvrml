@@ -337,7 +337,11 @@ const char *System::httpFetch( const char *url )
   if (sockfd != -1 && (result = tempnam(0, "VR")))
     {
 
+# ifdef _WIN32
+      int fd = open(result, O_BINARY|O_RDWR|O_CREAT, 0777);
+#else
       int fd = open(result, O_RDWR|O_CREAT, 0777);
+#endif
 
       if (fd != -1)
 	{
