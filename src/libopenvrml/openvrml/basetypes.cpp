@@ -207,7 +207,7 @@ void color::hsv(float h, const float s, const float v) throw ()
 }
 
 /**
- * @relates openvrml::color
+ * @relatesalso color
  *
  * @brief Compare for equality.
  *
@@ -226,7 +226,7 @@ bool operator==(const color & lhs, const color & rhs) throw ()
 /**
  * @fn bool operator!=(const color & lhs, const color & rhs) throw ()
  *
- * @relates openvrml::color
+ * @relatesalso color
  *
  * @brief Compare for inequality.
  *
@@ -238,7 +238,7 @@ bool operator==(const color & lhs, const color & rhs) throw ()
  */
 
 /**
- * @relates color
+ * @relatesalso color
  *
  * @brief Stream output.
  *
@@ -305,7 +305,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
 /**
  * @fn const vec2f operator*(const vec2f & lhs, float rhs) throw ()
  *
- * @relates openvrml::vec2f
+ * @relatesalso vec2f
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -318,7 +318,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
 /**
  * @fn const vec2f operator*(float lhs, const vec2f & rhs) throw ()
  *
- * @relates openvrml::vec2f
+ * @relatesalso vec2f
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -341,7 +341,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
 /**
  * @fn const vec2f operator/(const vec2f & lhs, float rhs) throw ()
  *
- * @relates openvrml::vec2f
+ * @relatesalso vec2f
  *
  * @brief Divide a vector by a scalar.
  *
@@ -364,7 +364,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
 /**
  * @fn const vec2f operator+(const vec2f & lhs, const vec2f & rhs) throw ()
  *
- * @relates openvrml::vec2f
+ * @relatesalso vec2f
  *
  * @brief Add two vectors.
  *
@@ -387,7 +387,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
 /**
  * @fn const vec2f operator-(const vec2f & lhs, const vec2f & rhs) throw ()
  *
- * @relates openvrml::vec2f
+ * @relatesalso vec2f
  *
  * @brief Subtract two vectors.
  *
@@ -496,7 +496,7 @@ const vec2f vec2f::normalize() const throw ()
 }
 
 /**
- * @relates vec2f
+ * @relatesalso vec2f
  *
  * @brief Compare for equality.
  *
@@ -515,7 +515,7 @@ bool operator==(const vec2f & lhs, const vec2f & rhs) throw ()
 /**
  * @fn bool operator!=(const vec2f & lhs, const vec2f & rhs) throw ()
  *
- * @relates openvrml::vec2f
+ * @relatesalso vec2f
  *
  * @brief Compare for inequality.
  *
@@ -527,7 +527,7 @@ bool operator==(const vec2f & lhs, const vec2f & rhs) throw ()
  */
 
 /**
- * @relates vec2f
+ * @relatesalso vec2f
  *
  * @brief Stream output.
  *
@@ -595,7 +595,7 @@ std::ostream & operator<<(std::ostream & out, const vec2f & v)
 /**
  * @fn const vec3f operator*(const vec3f & lhs, const vec3f & rhs) throw ()
  *
- * @relates openvrml::vec3f
+ * @relatesalso vec3f
  *
  * @brief Cross multiply two vectors.
  *
@@ -631,7 +631,7 @@ vec3f & vec3f::operator*=(const mat4f & mat) throw ()
 /**
  * @fn const vec3f operator*(const vec3f & vec, const mat4f & mat) throw ()
  *
- * @relates openvrml::vec3f
+ * @relatesalso vec3f
  *
  * @brief Multiply a vector by a matrix.
  *
@@ -642,7 +642,7 @@ vec3f & vec3f::operator*=(const mat4f & mat) throw ()
  */
 
 /**
- * @relates vec3f
+ * @relatesalso vec3f
  *
  * @brief Multiply a matrix by a vector.
  *
@@ -677,7 +677,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
 /**
  * @fn const vec3f operator*(const vec2f & lhs, float rhs) throw ()
  *
- * @relates openvrml::vec3f
+ * @relatesalso vec3f
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -690,7 +690,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
 /**
  * @fn const vec3f operator*(float lhs, const vec2f & rhs) throw ()
  *
- * @relates openvrml::vec3f
+ * @relatesalso vec3f
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -713,7 +713,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
 /**
  * @fn const vec3f operator/(const vec3f & lhs, float rhs) throw ()
  *
- * @relates openvrml::vec3f
+ * @relatesalso vec3f
  *
  * @brief Divide a vector by a scalar.
  *
@@ -736,7 +736,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
 /**
  * @fn const vec3f operator+(const vec3f & lhs, const vec3f & rhs) throw ()
  *
- * @relates openvrml::vec3f
+ * @relatesalso vec3f
  *
  * @brief Add two vectors.
  *
@@ -759,7 +759,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
 /**
  * @fn const vec3f operator-(const vec3f & lhs, const vec3f & rhs) throw ()
  *
- * @relates openvrml::vec3f
+ * @relatesalso vec3f
  *
  * @brief Subtract two vectors.
  *
@@ -884,14 +884,15 @@ const vec3f vec3f::normalize() const throw ()
 }
 
 /**
- * @relates vec3f
+ * @relatesalso vec3f
  *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 bool operator==(const vec3f & lhs, const vec3f & rhs) throw ()
 {
@@ -902,7 +903,7 @@ bool operator==(const vec3f & lhs, const vec3f & rhs) throw ()
 /**
  * @fn bool operator!=(const vec3f & lhs, const vec3f & rhs) throw ()
  *
- * @relates openvrml::vec3f
+ * @relatesalso vec3f
  *
  * @brief Compare for inequality.
  *
@@ -914,7 +915,7 @@ bool operator==(const vec3f & lhs, const vec3f & rhs) throw ()
  */
 
 /**
- * @relates vec3f
+ * @relatesalso vec3f
  *
  * @brief Stream output.
  *
@@ -1080,7 +1081,7 @@ rotation & rotation::operator*=(const rotation & rot) throw ()
 /**
  * @fn const rotation operator*(const rotation & lhs, const rotation & rhs) throw ()
  *
- * @relates openvrml::rotation
+ * @relatesalso rotation
  *
  * @brief Multiply rotations.
  *
@@ -1296,7 +1297,7 @@ const rotation rotation::slerp(const rotation & dest_rot, const float t) const
 }
 
 /**
- * @relates rotation
+ * @relatesalso rotation
  *
  * @brief Compare for equality.
  *
@@ -1314,7 +1315,7 @@ bool operator==(const rotation & lhs, const rotation & rhs) throw ()
 /**
  * @fn bool operator!=(const rotation & lhs, const rotation & rhs) throw ()
  *
- * @relates openvrml::rotation
+ * @relatesalso rotation
  *
  * @brief Compare for inequality.
  *
@@ -1325,7 +1326,7 @@ bool operator==(const rotation & lhs, const rotation & rhs) throw ()
  */
 
 /**
- * @relates rotation
+ * @relatesalso rotation
  *
  * @brief Stream output.
  *
@@ -1643,7 +1644,7 @@ mat4f & mat4f::operator*=(const float scalar) throw ()
 /**
  * @fn const mat4f operator*(const mat4f & mat, const float scalar) throw ()
  *
- * @relates openvrml::mat4f
+ * @relatesalso mat4f
  *
  * @brief Multiply a matrix by a scalar value.
  *
@@ -1656,7 +1657,7 @@ mat4f & mat4f::operator*=(const float scalar) throw ()
 /**
  * @fn const mat4f operator*(const float scalar, const mat4f & mat) throw ()
  *
- * @relates openvrml::mat4f
+ * @relatesalso mat4f
  *
  * @brief Multiply a scalar value by matrix.
  *
@@ -1710,7 +1711,7 @@ mat4f & mat4f::operator*=(const mat4f & mat) throw ()
 /**
  * @fn const mat4f operator*(const mat4f & lhs, const mat4f & rhs) throw ()
  *
- * @relates openvrml::mat4f
+ * @relatesalso mat4f
  *
  * @brief Multiply two matrices.
  *
@@ -2103,7 +2104,7 @@ float mat4f::det() const throw ()
  */
 
 /**
- * @relates mat4f
+ * @relatesalso mat4f
  *
  * @brief Stream output.
  *
@@ -2130,7 +2131,7 @@ std::ostream & operator<<(std::ostream & out, const mat4f & mat)
 
 
 /**
- * @relates mat4f
+ * @relatesalso mat4f
  *
  * @brief Equality comparison operator.
  *
@@ -2148,7 +2149,7 @@ bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
 /**
  * @fn bool operator!=(const mat4f & lhs, const mat4f & rhs) throw ()
  *
- * @relates openvrml::mat4f
+ * @relatesalso mat4f
  *
  * @brief Inequality comparison operator.
  *
@@ -2304,7 +2305,7 @@ quatf & quatf::operator*=(const quatf & quat) throw ()
 /**
  * @fn const quatf operator*(const quatf & lhs, const quatf & rhs) throw ()
  *
- * @relates openvrml::quatf
+ * @relatesalso quatf
  *
  * @brief Multiply two quaternions.
  *
@@ -2333,7 +2334,7 @@ quatf & quatf::operator*=(const float scalar) throw ()
 /**
  * @fn const quatf operator*(const quatf & quat, float scalar) throw ()
  *
- * @relates openvrml::quatf
+ * @relatesalso quatf
  *
  * @brief Multiply a quaternion by a scalar.
  *
@@ -2346,7 +2347,7 @@ quatf & quatf::operator*=(const float scalar) throw ()
 /**
  * @fn const quatf operator*(float scalar, const quatf & quat) throw ()
  *
- * @relates openvrml::quatf
+ * @relatesalso quatf
  *
  * @brief Multiply a scalar by a quaternion.
  *
@@ -2375,7 +2376,7 @@ quatf & quatf::operator/=(const float scalar) throw ()
 /**
  * @fn const quatf operator/(const quatf & quat, float scalar) throw ()
  *
- * @relates openvrml::quatf
+ * @relatesalso quatf
  *
  * @brief Divide a quaternion by a scalar.
  *
@@ -2404,7 +2405,7 @@ quatf & quatf::operator+=(const quatf & quat) throw ()
 /**
  * @fn const quatf operator+(const quatf & lhs, const quatf & rhs) throw ()
  *
- * @relates openvrml::quatf
+ * @relatesalso quatf
  *
  * @brief Add two quaternions.
  *
@@ -2433,7 +2434,7 @@ quatf & quatf::operator-=(const quatf & quat) throw ()
 /**
  * @fn const quatf operator-(const quatf & lhs, const quatf & rhs) throw ()
  *
- * @relates openvrml::quatf
+ * @relatesalso quatf
  *
  * @brief Take the difference between two quaternions.
  *
@@ -2590,7 +2591,7 @@ const quatf quatf::normalize() const throw ()
 }
 
 /**
- * @relates quatf
+ * @relatesalso quatf
  *
  * @brief Stream output.
  *
@@ -2606,7 +2607,7 @@ std::ostream & operator<<(std::ostream & out, const quatf & quat)
 }
 
 /**
- * @relates quatf
+ * @relatesalso quatf
  *
  * @brief Compare for equality.
  *
@@ -2624,7 +2625,7 @@ bool operator==(const quatf & lhs, const quatf & rhs) throw ()
 /**
  * @fn bool operator!=(const quatf & lhs, const quatf & rhs) throw ()
  *
- * @relates openvrml::quatf
+ * @relatesalso quatf
  *
  * @brief Compare for inequality.
  *
@@ -2907,7 +2908,7 @@ void image::resize(const size_t x, const size_t y) throw (std::bad_alloc)
  */
 
 /**
- * @relates image
+ * @relatesalso image
  *
  * @brief Compare for equality.
  *
@@ -2927,7 +2928,7 @@ bool operator==(const image & lhs, const image & rhs) throw ()
 /**
  * @fn bool operator!=(const image & lhs, const image & rhs) throw ()
  *
- * @relates openvrml::image
+ * @relatesalso image
  *
  * @brief Compare for inequality.
  *
@@ -2938,7 +2939,7 @@ bool operator==(const image & lhs, const image & rhs) throw ()
  */
 
 /**
- * @relates image
+ * @relatesalso image
  *
  * @brief Stream output.
  *

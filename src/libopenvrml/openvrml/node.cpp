@@ -149,7 +149,7 @@ namespace {
 /**
  * @brief Stream inserter.
  *
- * @relates node_interface
+ * @relatesalso node_interface
  *
  * If @p type is node_interface::invalidType, @c failbit is set on @p out.
  *
@@ -172,7 +172,7 @@ std::ostream & operator<<(std::ostream & out,
 /**
  * @brief Stream extractor.
  *
- * @relates node_interface
+ * @relatesalso node_interface
  *
  * @param in    an input stream.
  * @param type  a node interface type.
@@ -237,7 +237,7 @@ node_interface::node_interface(const type_id type,
 /**
  * @fn bool operator==(const node_interface & lhs, const node_interface & rhs) throw ()
  *
- * @relates openvrml::node_interface
+ * @relatesalso node_interface
  *
  * @brief Compare for equality.
  *
@@ -250,7 +250,7 @@ node_interface::node_interface(const type_id type,
 /**
  * @fn bool operator!=(const node_interface & lhs, const node_interface & rhs) throw ()
  *
- * @relates openvrml::node_interface
+ * @relatesalso node_interface
  *
  * @brief Compare for openvrml::inequality.
  *
@@ -801,7 +801,7 @@ node::route::route(const route & route):
 /**
  * @fn bool operator==(const node::route & lhs, const node::route & rhs)
  *
- * @relates openvrml::node::route
+ * @relatesalso node::route
  *
  * @brief Compare two @link node::route routes@endlink for equality.
  *
@@ -815,7 +815,7 @@ node::route::route(const route & route):
 /**
  * @fn bool operator!=(const node::route & lhs, const node::route & rhs)
  *
- * @relates openvrml::node::route
+ * @relatesalso node::route
  *
  * @brief Compare two @link node::route routes@endlink for inequality.
  *

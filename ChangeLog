@@ -1,5 +1,12 @@
 2004-01-19 Braden McDaniel  <braden@endoframe.com>
 
+	Replaced uses of "@relates" with "@relatesalso".
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/node.cpp
+
+2004-01-19 Braden McDaniel  <braden@endoframe.com>
+
 	Set DETAILS_AT_TOP to YES.
 
 	* doc/Doxyfile.in
