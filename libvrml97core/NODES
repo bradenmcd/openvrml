@@ -1,0 +1,63 @@
+LibVRML97 0.8
+
+Details of the implemented VRML97 nodes, using the OpenGL renderer.
+All valid VRML97 files will read in.
+
+
+Anchor - Completed.
+Appearance - Completed.
+AudioClip - Support for 8 and 16bit PCM WAV files on Open Sound System platforms.
+Background - Doesn't respect rotations above it in the scene graph.
+Billboard - Completed (not sure if I interpreted it correctly, though).
+Box - Completed.
+Collision - No collision detection (functionally the same as a Group).
+Color - Completed.
+ColorInterpolator - Completed.
+Cone - Completed.
+Coordinate - Completed.
+CoordinateInterpolator - Completed.
+Cylinder - Completed.
+CylinderSensor - Not implemented.
+DirectionalLight - Completed.
+ElevationGrid - creaseAngle is ignored.
+Extrusion - creaseAngle is ignored.
+Fog - Completed.
+FontStyle - Not implemented.
+Group - Completed.
+ImageTexture - Completed.
+IndexedFaceSet - Generated normals are always per face despite normalPerVertex,
+creaseAngle is ignored.
+IndexedLineSet - Completed.
+Inline - Completed.
+LOD - Completed.
+Material - Completed.
+MovieTexture - Only GIF89a files until I find a decent MPEG decoder.
+NavigationInfo - avatarSize, speed, type all ignored. No decent navigation or
+gravity.
+Normal - Completed.
+NormalInterpolator - Completed.
+OrientationInterpolator - Completed.
+PixelTexture - Completed.
+PlaneSensor - Mostly completed. USEd PlaneSensors misbehave.
+PointLight - No scoping (each PointLight lights the entire scene).
+PointSet - Completed.
+PositionInterpolator - Completed.
+ProximitySensor - No interpolation of entry/exit times and positions.
+ScalarInterpolator - Completed.
+Script - javascript: and vrmlscript: protocols only, SFImage not supported.
+Shape - Completed.
+Sound - Completed (see AudioClip).
+Sphere - Completed.
+SphereSensor - Not implemented.
+SpotLight - Scoping is wrong (illuminates all objects), cutoff is wrong.
+Switch - Completed.
+Text - Only available if you compile with -DHAVE_GLUT (even with non-GLUT viewer).
+TextureCoordinate - Completed.
+TextureTransform - Completed.
+TimeSensor - Completed.
+TouchSensor - Doesn't send hitPoint_changed, hitNormal_changed or
+hitTexCoord_changed eventOuts.
+Transform - Completed.
+Viewpoint - Completed.
+VisibilitySensor - USE'd sensors behave oddly - SPEC?
+WorldInfo - Completed.

@@ -1,0 +1,59 @@
+#!nmake
+#
+# The contents of this file are subject to the Netscape Public License
+# Version 1.0 (the "NPL"); you may not use this file except in
+# compliance with the NPL.  You may obtain a copy of the NPL at
+# http://www.mozilla.org/NPL/
+#
+# Software distributed under the NPL is distributed on an "AS IS" basis,
+# WITHOUT WARRANTY OF ANY KIND, either express or implied. See the NPL
+# for the specific language governing rights and limitations under the
+# NPL.
+#
+# The Initial Developer of this code under the NPL is Netscape
+# Communications Corporation.  Portions created by Netscape are
+# Copyright (C) 1998 Netscape Communications Corporation.  All Rights
+# Reserved.
+
+DEPTH=..\..\..\..
+
+
+
+DIRS	= components
+
+MAKE_OBJ_TYPE	= EXE
+PROG1 = .\$(OBJDIR)\TestXPC.exe
+PROGRAMS = $(PROG1)
+TESTCASES = \
+	testxpc.js \
+	simpletest.js \
+	xpctest_array.js \
+	xpctest_echo.js \
+	xpctest_ids.js \
+	xpctest_overloaded.js \
+	xpctest_enum_create.js \
+	xpctest_primitives.js 
+
+LCFLAGS=-DUSE_NSREG -DWIN32_LEAN_AND_MEAN -DJS_THREADSAFE -DJSFILE
+
+REQUIRES=xpcom js xpconnect
+
+LINCS=-I$(PUBLIC)\xpcom -I$(PUBLIC)\js -I$(PUBLIC)\xpconnect \
+      -I$(PUBLIC)\raptor
+
+LLIBS=					\
+ $(DIST)\lib\xpcom.lib		\
+ $(LIBNSPR)				\
+ $(DIST)\lib\js3250.lib \
+ $(NULL)
+
+include <$(DEPTH)\config\rules.mak>
+
+install:: $(PROGRAMS)
+	-for %p in ($(PROGRAMS)) do $(MAKE_INSTALL) %p $(DIST)\bin
+	-for %p in ($(TESTCASES)) do $(MAKE_INSTALL) %p $(DIST)\bin
+
+clobber::
+	-for %p in ($(PROGRAMS)) do $(RM) %p $(DIST)\bin\%p
+
+$(PROG1): $(OBJDIR) TestXPC.cpp

@@ -1,0 +1,40 @@
+1999-10-19  Braden McDaniel <braden@endoframe.com>
+
+        * Displaced lookat, xmlookat, and gtklookat to their own packages. This
+          removed the files:
+          
+          lookat.cpp
+          ViewerGlut.cpp
+          ViewerGlut.h
+          ViewerXt.cpp
+          ViewerXt.h
+          ViewerXm.h
+          gtklookat.cpp
+          ViewerGtk.cpp
+          ViewerGtk.h
+          gtkglarea.c
+          gtkglarea.h
+          gdkgl.c
+          gdkgl.h
+          
+          This eliminated dependence on X, Motif, and GTK+ from the build.
+
+        * Displaced ViewerOpenGL.* and OpenGLEvent.* to libvrml97gl, eliminating
+          dependence on OpenGL and glut.
+
+        * Removed ViewerHOOPS.* and HOOPSEvent.*. These could potentially be
+          made into their own package and provide an alternative to the OpenGL
+          renderer.
+        
+        * Displaced plugin to its own package.
+
+        * Removed win32Lookat. This, too, belongs in its own package. But I'll
+          leave the specifics of that package to the Win32 developers.
+        
+        * Removed the javascript subtree and added a newer version of libjs to
+          src/vrml97/libjs, and incorporated it into the automake build.
+
+        * Nuked the OLD directory. These build scripts certainly would need a
+          good deal of reworking after the reorg I've done, and hopefully the
+          use of automake means they are nolonger necessary. If anyone needs
+          they can be found in an older tarball.
