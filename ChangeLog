@@ -12,6 +12,8 @@
 
         * Broke VrmlNode::toChild() into const and non-const versions.
 
+        * Added getter/setter for proxy on VrmlNodeCollision.
+
 2001-01-20  Braden McDaniel  <braden@endoframe.com>
 
         * Added getRoutes() method to VrmlNode, per patch from Joe

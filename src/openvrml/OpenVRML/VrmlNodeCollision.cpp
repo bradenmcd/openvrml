@@ -138,3 +138,21 @@ void VrmlNodeCollision::setField(const char *fieldName,
   else
     VrmlNodeGroup::setField(fieldName, fieldValue);
 }
+
+/**
+ * @brief Get the proxy geometry for this Collision node.
+ *
+ * @return proxy
+ */
+const VrmlSFNode & VrmlNodeCollision::getProxy() const {
+    return this->d_proxy;
+}
+
+/**
+ * @brief Set the proxy geometry for this Collision node.
+ *
+ * @param proxy
+ */
+void VrmlNodeCollision::setProxy(const VrmlSFNode & proxy) {
+    this->d_proxy = proxy;
+}
