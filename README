@@ -1,4 +1,4 @@
-OpenVRML library version 0.11.1, 5 August, 2001
+OpenVRML library version 0.11.2, 18 October, 2001
 Copyright (C) 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
 Copyright (C) 2000, 2001 Braden McDaniel <braden@endoframe.com>
 Portions Copyright SGI and others
@@ -31,6 +31,7 @@ reuse) under other terms is as follows:
    which are in the public domain.
 
  * OpenVRML includes GIF reading code by David Koblas:
+ 
      Copyright 1990, David Koblas.
      Permission to use, copy, modify, and distribute this software
      and its documentation for any purpose and without fee is hereby
@@ -40,6 +41,7 @@ reuse) under other terms is as follows:
      provided "as is" without express or implied warranty.
 
  * OpenVRML's OpenGL renderer includes code from Silicon Graphics, Inc.:
+ 
      (c) Copyright 1993, 1994, Silicon Graphics, Inc.
      ALL RIGHTS RESERVED
      Permission to use, copy, modify, and distribute this software for
@@ -82,17 +84,21 @@ Required libraries
    OpenVRML requires zlib, OpenGL/Mesa, and GLUT to build.  If any
 of these are not already present on your system, first consult your
 operating system vendor for packages tailored to your particular
-operating system/distribution.  Mac users can find the Apple OpenGL SDK
-here
+operating system/distribution.
+
+   Mac users can find the Apple OpenGL SDK here
      <http://developer.apple.com/opengl/>
-and compiled versions of the remaining dependencies here (courtesy of
-Michael Louka):
-     <ftp://openvrml.sf.net/pub/openvrml/macos_required_libs.sit>
+and compiled versions of the remaining dependencies here:
+     <http://openvrml.org/dist/macos_required_libs.sit>
+
+   Compiled versions of the depenencies for Windows users are available
+here:
+     <http://openvrml.org/dist/win32_required_libs.zip>
 
 Otherwise, consult the following URLs:
-     zlib:          <http://www.info-zip.org/pub/infozip/zlib/>
-     Mesa:          <http://www.mesa3d.org>
-     GLUT:          <http://reality.sgi.com/mjk_asd/glut3/>
+     zlib:  <http://www.info-zip.org/pub/infozip/zlib/>
+     Mesa:  <http://www.mesa3d.org>
+     GLUT:  <http://reality.sgi.com/mjk_asd/glut3/>
 
 
    OpenVRML also uses the ANTLR parser generator.  The generated sources
