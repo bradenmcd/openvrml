@@ -28,9 +28,9 @@
 # include <openvrml/browser.h>
 # include <openvrml/gl/viewer.h>
 
-namespace {
+extern "C" Uint32 update_timer_callback(Uint32 interval, void * param);
 
-    extern "C" Uint32 update_timer_callback(Uint32 interval, void * param);
+namespace {
 
     class sdl_error : std::runtime_error {
     public:
@@ -166,9 +166,12 @@ namespace {
     {
         this->update();
         bool done = false;
+        bool need_update = false;
+        bool need_redraw = false;
         do {
             SDL_Event event;
             sdl_viewer::event_info viewer_event_info;
+            SDL_WaitEvent(0);
             while (SDL_PollEvent(&event)) {
                 switch (event.type) {
                 case SDL_VIDEOEXPOSE:
@@ -230,12 +233,14 @@ namespace {
                         for (Uint8 button = SDL_BUTTON_LEFT;
                              button < 4;
                              ++button) {
-                            viewer_event_info.event =
-                                sdl_viewer::event_mouse_drag;
-                            viewer_event_info.what = button - 1;
-                            viewer_event_info.x = event.motion.x;
-                            viewer_event_info.y = event.motion.y;
-                            this->input(&viewer_event_info);
+                            if (event.motion.state & SDL_BUTTON(button)) {
+                                viewer_event_info.event =
+                                    sdl_viewer::event_mouse_drag;
+                                viewer_event_info.what = button - 1;
+                                viewer_event_info.x = event.motion.x;
+                                viewer_event_info.y = event.motion.y;
+                                this->input(&viewer_event_info);
+                            }
                         }
                     }
                     break;
@@ -245,16 +250,24 @@ namespace {
                 case SDL_USEREVENT:
                     switch (event.user.code) {
                     case redraw_event_code:
-                        this->redraw();
+                        need_redraw = true;
                         break;
                     case update_event_code:
-                        this->update();
+                        need_update = true;
                         break;
                     }
                     break;
                 default:
                     break;
                 }
+            }
+            if (need_update) {
+                this->update();
+                need_update = false;
+            }
+            if (need_redraw) {
+                this->redraw();
+                need_redraw = false;
             }
         } while (!done);
     }
