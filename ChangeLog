@@ -1,3 +1,7 @@
+2002-01-04  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Apply fixes for bugs #492363, #494210 and #498903
+
 2001-12-13  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Remove java.library.path option while creating JavaVM

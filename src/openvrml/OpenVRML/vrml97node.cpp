@@ -2982,13 +2982,16 @@ namespace {
             { 1.0, 1.0 };
     const float extrusionDefaultSpine_[] =
             { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 };
+    const float extrusionDefaultRotation_[] =
+            { 0.0, 0.0, 1.0, 0.0 };
 }
 
 NodeExtrusion::NodeExtrusion(VrmlScene * const scene):
         NodeGeometry(*defineType(), scene), d_beginCap(true), d_ccw(true),
         d_convex(true), d_creaseAngle(0),
         d_crossSection(5, extrusionDefaultCrossSection_),
-        d_endCap(true), d_orientation(1), d_scale(1, extrusionDefaultScale_),
+        d_endCap(true), d_orientation(1, extrusionDefaultRotation_), 
+        d_scale(1, extrusionDefaultScale_),
         d_solid(true), d_spine(2, extrusionDefaultSpine_) {}
 
 NodeExtrusion::~NodeExtrusion() {}
@@ -3595,25 +3598,13 @@ void NodeGroup::activate( double time,
       const NodePtr & kid = d_children.getElement(i);
 
       if ( kid->toTouchSensor() && kid->toTouchSensor()->isEnabled() )
-    {
       kid->toTouchSensor()->activate( time, isOver, isActive, p );
-      break;
-    }
       else if ( kid->toPlaneSensor() && kid->toPlaneSensor()->isEnabled() )
-    {
       kid->toPlaneSensor()->activate( time, isActive, p );
-      break;
-    }
       else if ( kid->toCylinderSensor() && kid->toCylinderSensor()->isEnabled() )
-    {
       kid->toCylinderSensor()->activate( time, isActive, p );
-      break;
-    }
-      else if ( kid->toSphereSensor() && kid->toSphereSensor()->isEnabled() )
-    {
+      else if ( kid->toSphereSensor() && kid->toSphereSensor()->isEnabled() ) 
       kid->toSphereSensor()->activate( time, isActive, p );
-      break;
-    }
     }          
 
 }
@@ -5782,9 +5773,9 @@ void NodeNormalInt::eventIn(double timeStamp, const std::string & eventName,
           {
                     float alpha, beta;
                     float dotval = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
-                    if ((dotval+1.0) > FPTOLERANCE) // Vectors are opposite
+                    if ((dotval+1.0) > FPTOLERANCE) // Vectors are not opposite
               {
-            if ((1.0-dotval) > FPTOLERANCE)  // Vectors coincide
+            if ((1.0-dotval) > FPTOLERANCE)  // Vectors are not coincide
               {
                 float omega = acos(dotval);
                 float sinomega = sin(omega);
@@ -5980,11 +5971,10 @@ void NodeOrientationInt::eventIn(double timeStamp,
         float angle = r1 + f * (r2 - r1);
         if (angle >= 2.0 * PI) angle -= 2.0 * PI;
         else if (angle < 0.0)    angle += 2.0 * PI;
-        
-        //printf(" %g between (%d,%d) [%g %g %g %g]\n", f, i, i+1,
-        //x, y, z, r);
-                const float rotation[4] = { x, y, z, angle };
-        d_value.set(rotation);
+        SFVec3f Vec(x,y,z);
+        Vec = Vec.normalize();
+        d_value.setAxis(Vec);
+        d_value.setAngle(angle);
         break;
           }
     }
