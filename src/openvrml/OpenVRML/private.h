@@ -45,6 +45,14 @@
             std::cerr << __FILE__ << ":" << __LINE__ << ": " \
                       << ex_.what() << std::endl
 #   endif
+
+#   ifdef NDEBUG
+#     define OPENVRML_PRINT_MESSAGE_(message_)
+#   else
+#     define OPENVRML_PRINT_MESSAGE_(message_) \
+            std::cerr << __FILE__ << ":" << __LINE__ << ": " \
+                      << message_ << std::endl
+#   endif
             
 #   include <assert.h>
 #   include <math.h>
