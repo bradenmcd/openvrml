@@ -31,6 +31,11 @@ public abstract class BaseNode
   private int NodePtr;
 
   /**
+   * Is this a script node?
+   */
+  private boolean isScript = false;
+
+  /**
    * Returns the type of the node.  If the node is a prototype
    * it returns the name of the prototype.
    *

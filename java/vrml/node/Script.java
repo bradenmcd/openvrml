@@ -41,6 +41,11 @@ public abstract class Script extends BaseNode
   }
 
   /**
+   * Is this a script node?
+   */
+  private boolean isScript = true;
+
+  /**
    * This method is called before any event is generated.
    */
   public void initialize() { }
