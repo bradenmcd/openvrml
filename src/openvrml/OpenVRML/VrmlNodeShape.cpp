@@ -221,7 +221,7 @@ const VrmlBVolume* VrmlNodeShape::getBVolume() const
 {
   //cout << "VrmlNodeShape::getBVolume() {" << endl;
   const VrmlBVolume* r = (VrmlBVolume*)0;
-  VrmlNode* geom = d_geometry.get();
+  const VrmlNodePtr & geom(d_geometry.get());
   if (geom) {
     r = geom->getBVolume();
   }

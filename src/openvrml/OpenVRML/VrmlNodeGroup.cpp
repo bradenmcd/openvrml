@@ -92,8 +92,8 @@ void VrmlNodeGroup::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->d_children.getLength(); ++i) {
-            if (this->d_children[i]) {
-                this->d_children[i]->resetVisitedFlag();
+            if (this->d_children.getElement(i)) {
+                this->d_children.getElement(i)->resetVisitedFlag();
             }
         }
     }
@@ -110,7 +110,7 @@ bool VrmlNodeGroup::isModified() const
   int n = d_children.getLength();
 
   for (int i = 0; i<n; ++i)
-    if (d_children[i]->isModified())
+    if (d_children.getElement(i)->isModified())
       return true;
 
   return false;
@@ -129,7 +129,7 @@ VrmlNodeGroup::updateModified(VrmlNodePath& path, int flags)
   //cout << "VrmlNodeGroup[" << this << "]::updateModified():n=" << n << endl;
   for (int i=0; i<n; ++i) {
     //cout << "VrmlNodeGroup[" << this << "]::updateModified():" << d_children[i] << endl;
-    d_children[i]->updateModified(path, flags);
+    d_children.getElement(i)->updateModified(path, flags);
   }
   path.pop_front();
 }
@@ -141,7 +141,7 @@ void VrmlNodeGroup::clearFlags()
   VrmlNode::clearFlags();
   int n = d_children.getLength();
   for (int i=0; i<n; ++i)
-    d_children[i]->clearFlags();
+    d_children.getElement(i)->clearFlags();
 }
 
 
@@ -159,7 +159,7 @@ void VrmlNodeGroup::addToScene(VrmlScene *s, const char *relativeUrl)
   int n = d_children.getLength();
 
   for (int i = 0; i<n; ++i)
-    d_children[i]->addToScene(s, d_relative.get());
+    d_children.getElement(i)->addToScene(s, d_relative.get());
 }
 
 
@@ -239,7 +239,7 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
       // TouchSensors, any others? ...)
       for (i = 0; i<n; ++i)
 	{
-	  VrmlNode *kid = d_children[i];
+	  const VrmlNodePtr & kid(d_children.getElement(i));
 
 	  if ( kid->toLight() && ! (kid->toPointLight() || kid->toSpotLight()) )
 	    kid->render(viewer, rc);
@@ -254,13 +254,15 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
 	}	      
 
       // Do the rest of the children (except the scene-level lights)
-      for (i = 0; i<n; ++i)
-	if (! (d_children[i]->toLight() ||
-	       d_children[i]->toPlaneSensor() ||
-	       d_children[i]->toCylinderSensor() ||
-	       d_children[i]->toSphereSensor() ||
-	       d_children[i]->toTouchSensor()) )
-	  d_children[i]->render(viewer, rc);
+      for (i = 0; i<n; ++i) {
+        const VrmlNodePtr & child(this->d_children.getElement(i));
+	if (! (child->toLight() ||
+	       child->toPlaneSensor() ||
+	       child->toCylinderSensor() ||
+	       child->toSphereSensor() ||
+	       child->toTouchSensor()) )
+	  child->render(viewer, rc);
+      }
 
       // Turn off sensitivity
       if (nSensors > 0)
@@ -278,19 +280,15 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
 // Cache a pointer to (one of the) parent transforms for proper
 // rendering of bindables.
 
-void VrmlNodeGroup::accumulateTransform(VrmlNode *parent)
-{
-  d_parentTransform = parent;
-
-  int i, n = d_children.getLength();
-
-  for (i = 0; i<n; ++i)
-    {
-      VrmlNode *kid = d_children[i];
-      kid->accumulateTransform(parent);
+void VrmlNodeGroup::accumulateTransform(VrmlNode * parent) {
+    d_parentTransform = parent;
+    for (size_t i = 0; i < this->d_children.getLength(); ++i) {
+        if (this->d_children.getElement(i)) {
+            this->d_children.getElement(i)->accumulateTransform(parent);
+        }
     }
-
 }
+
 
 // Pass on to enabled touchsensor child.
 
@@ -302,7 +300,7 @@ void VrmlNodeGroup::activate( double time,
 
   for (i = 0; i<n; ++i)
     {
-      VrmlNode *kid = d_children[i];
+      const VrmlNodePtr & kid(d_children.getElement(i));
 
       if ( kid->toTouchSensor() && kid->toTouchSensor()->isEnabled() )
 	{
@@ -350,14 +348,15 @@ void VrmlNodeGroup::setChildren(const VrmlMFNode & children) {
     
     for (size_t i = 0; i < children.getLength(); ++i) {
         VrmlNodeProto * p = 0;
-        if (children[i] && (children[i]->toChild() ||
-	        ((p = children[i]->toProto()) != 0 && p->getImplNodes().getLength() == 0))) {
-	    children[i]->addToScene(d_scene, d_relative.get());
-	    children[i]->accumulateTransform(d_parentTransform);
+        const VrmlNodePtr & child(children.getElement(i));
+        if (child && (child->toChild() ||
+	        ((p = child->toProto()) != 0 && p->getImplNodes().getLength() == 0))) {
+	    child->addToScene(d_scene, d_relative.get());
+	    child->accumulateTransform(d_parentTransform);
 	} else {
 	    theSystem->error(
                 "Error: Attempt to add a %s node as a child of a %s node.\n",
-	        children[i]->nodeType().getName(), nodeType().getName());
+	        child->nodeType().getName(), nodeType().getName());
         }
     }
     
@@ -384,7 +383,7 @@ void VrmlNodeGroup::addChildren(const VrmlMFNode & children) {
     size_t n = children.getLength();
     
     for (size_t i = 0; i < n; ++i) {
-        VrmlNode * child = children[i];
+        const VrmlNodePtr & child(children.getElement(i));
         VrmlNodeProto *p = 0;
         
         if (child && (child->toChild() ||
@@ -411,8 +410,8 @@ void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
     const size_t oldLength = d_children.getLength();
     
     for (size_t i = 0; i < children.getLength(); ++i) {
-        if (children[i]) {
-            this->d_children.removeNode(*children[i]);
+        if (children.getElement(i)) {
+            this->d_children.removeNode(*children.getElement(i));
         }
     }
     
@@ -429,8 +428,8 @@ void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
  */
 void VrmlNodeGroup::removeChildren() {
     for (size_t i = this->d_children.getLength(); i > 0; --i) {
-        if (this->d_children[i - 1]) {
-            d_children.removeNode(*d_children[i - 1]);
+        if (this->d_children.getElement(i - 1)) {
+            d_children.removeNode(*d_children.getElement(i - 1));
         }
     }
     
@@ -502,8 +501,8 @@ const VrmlBVolume* VrmlNodeGroup::getBVolume() const
 void VrmlNodeGroup::recalcBSphere() {
     d_bsphere.reset();
     for (size_t i = 0; i< d_children.getLength(); ++i) {
-        if (this->d_children[i]) {
-            const VrmlBVolume * const ci_bv = d_children[i]->getBVolume();
+        if (this->d_children.getElement(i)) {
+            const VrmlBVolume * const ci_bv = d_children.getElement(i)->getBVolume();
             if (ci_bv) {
                 d_bsphere.extend(*ci_bv);
             }

@@ -20,36 +20,30 @@
 
 # ifndef VRMLSFNODE_H
 # define VRMLSFNODE_H
-
-# include "VrmlField.h"
+#   include "VrmlField.h"
+#   include "VrmlNodePtr.h"
 
 class VrmlNode;
 
 class VrmlSFNode : public VrmlField {
+    
+    VrmlNodePtr node;
+
 public:
+    VrmlSFNode(const VrmlNodePtr & node = VrmlNodePtr(0));
+    VrmlSFNode(const VrmlSFNode & sfnode);
+    ~VrmlSFNode();
 
-  VrmlSFNode(VrmlNode * node = 0);
-  VrmlSFNode(const VrmlSFNode &n);
-  ~VrmlSFNode();
+    VrmlSFNode & operator=(const VrmlSFNode & sfnode);
 
-  // Assignment.
-  VrmlSFNode& operator=(const VrmlSFNode& rhs);
+    const VrmlNodePtr & get() const;
+    void set(const VrmlNodePtr & node);
 
-  virtual ostream& print(ostream& os) const;
-
-  virtual VrmlField *clone() const;
-
-  virtual VrmlFieldType fieldType() const;
-  virtual const VrmlSFNode* toSFNode() const;
-  virtual VrmlSFNode* toSFNode();
-
-  VrmlNode * get() const;
-
-  void set(VrmlNode * node);
-
-private:
-  VrmlNode *d_value;
-
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFNode* toSFNode() const;
+    virtual VrmlSFNode* toSFNode();
 };
 
 # endif

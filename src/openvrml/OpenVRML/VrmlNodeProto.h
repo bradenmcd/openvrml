@@ -124,7 +124,7 @@ public:
 
 private:
 
-  VrmlNode *firstNode() const;
+  const VrmlNodePtr firstNode() const;
 
   // Instantiate the proto by cloning the node type implementation nodes.
   void instantiate();

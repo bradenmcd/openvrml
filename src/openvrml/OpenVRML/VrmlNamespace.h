@@ -27,6 +27,7 @@
 #include <list>
 #include "VrmlMFNode.h"
 
+class VrmlNode;
 class VrmlNodeType;
 
 class VrmlNamespace {
@@ -50,8 +51,8 @@ public:
   // are not available outside of the PROTO they are defined in,
   // nor are they available inside of nested PROTOs.
 
-  void addNodeName(VrmlNode *);
-  void removeNodeName(VrmlNode *);
+  void addNodeName(const VrmlNodePtr &);
+  void removeNodeName(const VrmlNode &);
 
   // Find a node type, given a type name. Returns NULL if type is not defined.
   const VrmlNodeType *findType(const char *nm);
@@ -63,7 +64,7 @@ public:
   const VrmlNodeType *firstType();
   
   // Find a node by name.
-  VrmlNode *findNode(const char *name) const;
+  const VrmlNodePtr findNode(const char * name) const;
   
   const VrmlMFNode cloneNodes(const VrmlMFNode & mfnode);
   
@@ -82,7 +83,7 @@ private:
   std::list< VrmlNodeType* > d_typeList;
 
   // Defined node names for this namespace
-  std::list< VrmlNode* > d_nameList;
+  std::list<VrmlNodePtr> d_nameList;
 
   // Parent namespace
   VrmlNamespace *d_parent;

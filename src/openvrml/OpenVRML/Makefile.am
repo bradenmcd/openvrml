@@ -82,6 +82,7 @@ libopenvrml_la_SOURCES = \
 	VrmlField.cpp \
         VrmlNamespace.cpp \
 	VrmlNodeType.cpp \
+        VrmlNodePtr.cpp \
         Route.cpp \
         VrmlNodeVisitor.cpp \
 	VrmlNode.cpp \
@@ -191,6 +192,7 @@ OpenVRMLinclude_HEADERS = \
         VrmlMFVec2f.h \
         VrmlMFVec3f.h \
         VrmlNamespace.h \
+        VrmlNodePtr.h \
 	VrmlNode.h \
 	VrmlNodeType.h \
 	VrmlNodeAnchor.h \

@@ -80,8 +80,8 @@ void VrmlNodeSwitch::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->d_choice.getLength(); ++i) {
-            if (this->d_choice[i]) {
-                this->d_choice[i]->resetVisitedFlag();
+            if (this->d_choice.getElement(i)) {
+                this->d_choice.getElement(i)->resetVisitedFlag();
             }
         }
     }
@@ -93,7 +93,7 @@ bool VrmlNodeSwitch::isModified() const
 
   int w = d_whichChoice.get();
 
-  return (w >= 0 && w < (int) d_choice.getLength() && d_choice[w]->isModified());
+  return (w >= 0 && w < (int) d_choice.getLength() && d_choice.getElement(w)->isModified());
 }
 
 
@@ -108,7 +108,7 @@ void VrmlNodeSwitch::updateModified(VrmlNodePath& path)
   path.push_front(this);
   int n = d_choice.getLength();
   for (int i=0; i<n; ++i)
-    d_choice[i]->updateModified(path);
+    d_choice.getElement(i)->updateModified(path);
   path.pop_front();
 }
 
@@ -119,7 +119,7 @@ void VrmlNodeSwitch::clearFlags()
   
   int n = d_choice.getLength();
   for (int i = 0; i<n; ++i)
-    d_choice[i]->clearFlags();
+    d_choice.getElement(i)->clearFlags();
 }
 
 void VrmlNodeSwitch::addToScene( VrmlScene *s, const char *rel )
@@ -129,7 +129,7 @@ void VrmlNodeSwitch::addToScene( VrmlScene *s, const char *rel )
   int n = d_choice.getLength();
 
   for (int i = 0; i<n; ++i)
-    d_choice[i]->addToScene(s, rel);
+    d_choice.getElement(i)->addToScene(s, rel);
 }
 
 ostream& VrmlNodeSwitch::printFields(ostream& os, int indent)
@@ -147,7 +147,7 @@ void VrmlNodeSwitch::render(Viewer *viewer, VrmlRenderContext rc)
   int w = d_whichChoice.get();
 
   if (w >= 0 && w < (int) d_choice.getLength())
-    d_choice[w]->render(viewer, rc);
+    d_choice.getElement(w)->render(viewer, rc);
 
   clearModified();
 }
@@ -194,7 +194,7 @@ VrmlNodeSwitch::recalcBSphere()
   d_bsphere.reset();
   int w = d_whichChoice.get();
   if (w >= 0 && w < (int) d_choice.getLength()) {
-    const VrmlBVolume* ci_bv = d_choice[w]->getBVolume();
+    const VrmlBVolume* ci_bv = d_choice.getElement(w)->getBVolume();
     if (ci_bv)
       d_bsphere.extend(*ci_bv);
   }

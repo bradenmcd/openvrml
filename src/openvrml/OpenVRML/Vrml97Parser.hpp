@@ -11,6 +11,7 @@
 #line 21 "Vrml97Parser.g"
 
 # include "VrmlField.h"
+# include "VrmlNodePtr.h"
 class VrmlNamespace;
 class VrmlNode;
 class VrmlNodeScript;
@@ -19,16 +20,16 @@ class VrmlMFTime;
 class VrmlMFNode;
 class Doc2;
 
-#line 23 "Vrml97Parser.hpp"
+#line 24 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
-#line 152 "Vrml97Parser.g"
+#line 153 "Vrml97Parser.g"
 
     public:
         enum NodeInterfaceType {
             INVALID_NODE_INTERFACE_TYPE, EVENTIN, EVENTOUT, FIELD, EXPOSEDFIELD
         };
-#line 27 "Vrml97Parser.hpp"
+#line 28 "Vrml97Parser.hpp"
 protected:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);
 public:
@@ -44,7 +45,7 @@ public:
 	public: void statement(
 		VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc
 	);
-	public: VrmlNode *  nodeStatement(
+	public: VrmlNodePtr  nodeStatement(
 		VrmlNamespace & vrmlNamespace, Doc2 const * doc
 	);
 	public: void protoStatement(
@@ -53,7 +54,7 @@ public:
 	public: void routeStatement(
 		VrmlNamespace const & vrmlNamespace
 	);
-	public: VrmlNode *  node(
+	public: VrmlNodePtr  node(
 		VrmlNamespace & vrmlNamespace, Doc2 const * doc, std::string const & nodeId
 	);
 	public: void externproto(
@@ -74,14 +75,16 @@ public:
 	public: VrmlField *  fieldValue(
 		VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlField::VrmlFieldType ft
 	);
-	public: VrmlNode *  protoNodeStatement(
+	public: VrmlNodePtr  protoNodeStatement(
 		Doc2 const * doc, VrmlNodeType & protoNodeType
 	);
 	public: void protoBodyStatement(
 		Doc2 const * doc, VrmlNodeType & nodeType
 	);
-	public: VrmlNode *  protoNode(
-		Doc2 const * doc, VrmlNodeType & protoNodeType, std::string const & nodeId
+	public: VrmlNodePtr  protoNode(
+		Doc2 const * doc,
+          VrmlNodeType & protoNodeType,
+          std::string const & nodeId
 	);
 	public: void externInterfaceDeclaration(
 		VrmlNodeType & nodeType
@@ -90,22 +93,32 @@ public:
 	public: Vrml97Parser::NodeInterfaceType  interfaceType();
 	public: std::string  stringValue();
 	public: void nodeBodyElement(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNode & node
+		VrmlNamespace & vrmlNamespace,
+                Doc2 const * doc,
+                VrmlNode & node
 	);
 	public: void scriptInterfaceDeclaration(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNodeScript & node
+		VrmlNamespace & vrmlNamespace,
+                           Doc2 const * doc,
+                           VrmlNodeScript & node
 	);
 	public: void scriptFieldInterfaceDeclaration(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNodeScript & node
+		VrmlNamespace & vrmlNamespace,
+                                Doc2 const * doc,
+                                VrmlNodeScript & node
 	);
 	public: void protoNodeBodyElement(
-		Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNode & node
+		Doc2 const * doc,
+                     VrmlNodeType & protoNodeType,
+                     VrmlNode & node
 	);
 	public: void protoScriptInterfaceDeclaration(
 		Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNodeScript & node
 	);
 	public: void isStatement(
-		VrmlNodeType & protoNodeType, VrmlNode & node, std::string const & nodeInterfaceId
+		VrmlNodeType & protoNodeType,
+            VrmlNode & node,
+            std::string const & nodeInterfaceId
 	);
 	public: VrmlField *  protoFieldValue(
 		Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlField::VrmlFieldType ft
@@ -141,13 +154,15 @@ public:
 	public: VrmlMFVec2f *  mfVec2fValue();
 	public: VrmlMFVec3f *  mfVec3fValue();
 	public: VrmlSFNode *  sfNodeValue(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc
+		VrmlNamespace & vrmlNamespace,
+            Doc2 const * doc
 	);
 	public: VrmlMFNode *  mfNodeValue(
 		VrmlNamespace & vrmlNamespace, Doc2 const * doc
 	);
 	public: VrmlSFNode *  protoSfNodeValue(
-		Doc2 const * doc, VrmlNodeType & protoNodeType
+		Doc2 const * doc,
+                 VrmlNodeType & protoNodeType
 	);
 	public: VrmlMFNode *  protoMfNodeValue(
 		Doc2 const * doc, VrmlNodeType & protoNodeType

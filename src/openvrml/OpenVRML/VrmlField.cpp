@@ -806,6 +806,7 @@ void VrmlSFInt32::set(long value) {
 
 /**
  * @class VrmlSFNode
+ *
  * @brief Encapsulates an SFNode.
  */
 #include "VrmlSFNode.h"
@@ -813,60 +814,63 @@ void VrmlSFInt32::set(long value) {
 
 /**
  * @brief Constructor.
- * @param node a pointer to a VrmlNode
+ * @param node a VrmlNodePtr
  */
-VrmlSFNode::VrmlSFNode(VrmlNode * node) : d_value(node)
-{ if (d_value) d_value->reference(); }
+VrmlSFNode::VrmlSFNode(const VrmlNodePtr & node): node(node) {}
 
 /**
  * @brief Copy constructor.
- * @param rhs the VrmlSFNode to copy
+ *
+ * @param sfnode the object to copy
  */
-VrmlSFNode::VrmlSFNode(const VrmlSFNode & rhs): d_value(rhs.d_value)
-{ if (d_value) d_value->reference(); }
+VrmlSFNode::VrmlSFNode(const VrmlSFNode & sfnode): node(sfnode.node) {}
 
 /**
  * @brief Destructor.
  */
-VrmlSFNode::~VrmlSFNode() { if (d_value) d_value->dereference(); }
+VrmlSFNode::~VrmlSFNode() {}
 
 /**
  * @brief Assignment operator.
+ *
  * @param rhs the VrmlSFNode to copy into this object
  */
-VrmlSFNode& VrmlSFNode::operator=(const VrmlSFNode& rhs)
-{
-  if (this == &rhs) return *this;
-  if (d_value) d_value->dereference();
-  d_value = rhs.d_value;
-  if (d_value) d_value->reference();
-  return *this;
+VrmlSFNode & VrmlSFNode::operator=(const VrmlSFNode & sfnode) {
+    if (this != &sfnode) {
+        this->node = sfnode.node;
+    }
+    return *this;
 }
 
-ostream& VrmlSFNode::print(ostream& os) const
-{ return os << *(d_value) << endl; }
+ostream & VrmlSFNode::print(ostream & os) const {
+    return os << *(this->node) << endl;
+}
 
-VrmlField *VrmlSFNode::clone() const { return new VrmlSFNode(d_value); }
+VrmlField * VrmlSFNode::clone() const {
+    return new VrmlSFNode(*this);
+}
 
-VrmlField::VrmlFieldType VrmlSFNode::fieldType() const { return SFNODE; }
+VrmlField::VrmlFieldType VrmlSFNode::fieldType() const {
+    return VrmlField::SFNODE;
+}
 
 /**
  * @brief Get value.
- * @return a pointer to this object's VrmlNode
+ *
+ * @return a smart pointer to this object's VrmlNode
  */
-VrmlNode * VrmlSFNode::get() const {
-    return this->d_value;
+const VrmlNodePtr & VrmlSFNode::get() const {
+    return this->node;
 }
 
 /**
  * @brief Set value.
- * @param node a pointer to a VrmlNode, or 0 if setting this SFNode to
- *             <code>NULL</code>
+ *
+ * @param node a smart pointer to a VrmlNode, or to 0 if setting this
+ *             SFNode to <code>NULL</code>
  */
-void VrmlSFNode::set(VrmlNode * node)
-{
-  if (d_value) d_value->dereference();
-  if ((d_value = node) != 0) d_value->reference();
+void VrmlSFNode::set(const VrmlNodePtr & node) {
+    this->node = VrmlNodePtr(node);
 }
 
 
@@ -2187,14 +2191,13 @@ ostream& VrmlMFInt32::print(ostream& os) const
  * @param length the length of the array
  * @param nodes a pointer to an array of VrmlNode pointers
  */
-VrmlMFNode::VrmlMFNode(size_t length, VrmlNode * const * nodes):
-        d_v(new VrmlNode *[length]), d_allocated(length), d_size(length) {
+VrmlMFNode::VrmlMFNode(size_t length, const VrmlNodePtr * nodes):
+        nodes(length ? new VrmlNodePtr[length] : 0), allocated(length),
+        size(length) {
     if (nodes) {
-        for (size_t i(0); i < length; ++i) {
-            d_v[i] = nodes[i] ? nodes[i]->reference() : 0;
-        }
+        std::copy(nodes, nodes + length, this->nodes);
     } else {
-        std::fill(d_v, d_v + length, static_cast<VrmlNode *>(0));
+        std::fill(this->nodes, this->nodes + length, VrmlNodePtr(0));
     }
 }
 
@@ -2204,72 +2207,69 @@ VrmlMFNode::VrmlMFNode(size_t length, VrmlNode * const * nodes):
  * @param mfNode the object to copy
  */
 VrmlMFNode::VrmlMFNode(VrmlMFNode const & mfnode):
-        d_v(new VrmlNode * [mfnode.d_size]), d_allocated(mfnode.d_size),
-        d_size(mfnode.d_size) {
-    for (size_t i(0); i < mfnode.d_size; ++i) {
-        d_v[i] = mfnode.d_v[i] ? (mfnode.d_v[i]->reference()) : 0;
-    }
+        nodes(new VrmlNodePtr[mfnode.size]), allocated(mfnode.size),
+        size(mfnode.size) {
+    std::copy(mfnode.nodes, mfnode.nodes + this->size, this->nodes);
 }
 
 /**
  * @brief Destructor.
  */
-VrmlMFNode::~VrmlMFNode()
-{ 
-    for (size_t i(0); i < d_size; ++i) {
-        if (d_v[i]) d_v[i]->dereference();
-    }
-    delete [] d_v;
+VrmlMFNode::~VrmlMFNode() {
+    delete [] this->nodes;
 }
 
 /**
  * @brief Assignment operator.
  *
  * @param mfNode the object to copy into this one
+ * @return this object
  */
 VrmlMFNode & VrmlMFNode::operator=(const VrmlMFNode & mfnode) {
     if (this != &mfnode) {
-        size_t i(0);
-        for (; i < d_size; ++i) {
-            if (d_v[i]) {
-                d_v[i]->dereference();
-            }
+        //
+        // We really only need to reallocate if the argument MFNode has
+        // more values than we have allocated space to hold here.
+        //
+        if (this->allocated < mfnode.size) {
+            delete [] this->nodes;
+            this->nodes = new VrmlNodePtr[this->allocated = mfnode.size];
         }
         
-        if (d_allocated < mfnode.d_size) {
-            delete [] d_v;
-            d_size = d_allocated = 0;
-            d_v = 0;
-            d_v = new VrmlNode*[mfnode.d_size];
-            d_allocated = mfnode.d_size;
-        }
+        std::copy(mfnode.nodes, mfnode.nodes + mfnode.size, this->nodes);
         
-        d_size = mfnode.d_size;
-        
-        for (i = 0; i < d_size; ++i) {
-            d_v[i] = mfnode.d_v[i] ? mfnode.d_v[i]->reference() : 0;
+        //
+        // If the current length is greater than the argument length,
+        // set the spare values to null.
+        //
+        if (this->size > mfnode.size) {
+            std::fill(this->nodes + this->size, this->nodes + mfnode.size,
+                      VrmlNodePtr(0));
         }
+        this->size = mfnode.size;
     }
     
     return *this;
 }
 
 /**
- * @brief Array element dereference operator (const version).
+ * @brief Get element.
  *
  * @param index
+ * @return a smart pointer to a VrmlNode
  */
-VrmlNode * VrmlMFNode::operator[](size_t index) const {
-    return this->d_v[index];
+const VrmlNodePtr & VrmlMFNode::getElement(size_t index) const {
+    return this->nodes[index];
 }
 
 /**
- * @brief Array element dereference operator (non-const version).
+ * @brief Set element.
  *
  * @param index
+ * @param node
  */
-VrmlNode * & VrmlMFNode::operator[](size_t index) {
-    return this->d_v[index];
+void VrmlMFNode::setElement(size_t index, const VrmlNodePtr & node) {
+    this->nodes[index] = node;
 }
 
 /**
@@ -2278,7 +2278,7 @@ VrmlNode * & VrmlMFNode::operator[](size_t index) {
  * @return the number of nodes in the array
  */
 size_t VrmlMFNode::getLength() const {
-    return this->d_size;
+    return this->size;
 }
 
 /**
@@ -2292,26 +2292,28 @@ size_t VrmlMFNode::getLength() const {
  * @param length the new length
  */
 void VrmlMFNode::setLength(size_t length) {
-    if (length < this->d_size) {
-        for (size_t i = length; i < this->d_size; ++i) {
-            this->d_v[i]->dereference();
-            this->d_v[i] = 0;
+    if (length < this->size) {
+        std::fill(this->nodes + length, this->nodes + this->size,
+                  VrmlNodePtr(0));
+    } else {
+        if (length > this->allocated) {
+            this->realloc(length);
         }
-    } else if (length > this->d_allocated) {
-        this->realloc(length);
+        if (length > this->size) {
+            std::fill(this->nodes + this->size, this->nodes + length,
+                      VrmlNodePtr(0));
+        }
     }
-    for (size_t i = this->d_size; i < length; ++i) {
-        this->d_v[i] = 0;
-    }
-    this->d_size = length;
+    this->size = length;
 }
 
 void VrmlMFNode::realloc(size_t newSize) {
-    VrmlNode * * newNodes = new VrmlNode *[newSize];
-    std::copy(this->d_v, this->d_v + this->d_size, newNodes);
-    delete [] this->d_v;
-    this->d_v = newNodes;
-    this->d_allocated = newSize;
+    assert(newSize > this->allocated);
+    VrmlNodePtr * newNodes = new VrmlNodePtr[newSize];
+    std::copy(this->nodes, this->nodes + this->size, newNodes);
+    delete [] this->nodes;
+    this->nodes = newNodes;
+    this->allocated = newSize;
 }
 
 /**
@@ -2320,8 +2322,8 @@ void VrmlMFNode::realloc(size_t newSize) {
  * @param node
  */
 bool VrmlMFNode::exists(const VrmlNode & node) const {
-    for (size_t i(0); i < this->d_size; ++i) {
-        if (this->d_v[i] == &node) {
+    for (size_t i(0); i < this->size; ++i) {
+        if (this->nodes[i].get() == &node) {
             return true;
         }
     }
@@ -2341,11 +2343,11 @@ bool VrmlMFNode::exists(const VrmlNode & node) const {
  */
 bool VrmlMFNode::addNode(VrmlNode & node) {
     if (!exists(node)) {
-        if (this->d_allocated < d_size + 1) {
-            this->realloc(this->d_allocated + 10);
+        if (this->allocated < this->size + 1) {
+            this->realloc(this->allocated + 10);
         }
         
-        this->d_v[this->d_size++] = node.reference();
+        this->nodes[this->size++] = VrmlNodePtr(&node);
         
         return true;
     }
@@ -2364,13 +2366,12 @@ bool VrmlMFNode::addNode(VrmlNode & node) {
  *         otherwise
  */
 bool VrmlMFNode::removeNode(const VrmlNode & node) {
-    for (size_t i = 0; i < this->d_size; ++i) {
-        if (this->d_v[i] == &node) {
-	    d_v[i]->dereference();
-            for (size_t j = i; j < this->d_size - 1; ++j) {
-                this->d_v[j] = this->d_v[j + 1];
+    for (size_t i = 0; i < this->size; ++i) {
+        if (this->nodes[i].get() == &node) {
+            for (size_t j = i; j < this->size - 1; ++j) {
+                this->nodes[j] = this->nodes[j + 1];
             }
-	    --this->d_size;
+	    --this->size;
 	    return true;
         }
     }
@@ -2382,16 +2383,18 @@ VrmlField *VrmlMFNode::clone() const
 
 VrmlField::VrmlFieldType VrmlMFNode::fieldType() const { return MFNODE; }
 
-ostream& VrmlMFNode::print(ostream& os) const
-{
-  int n = getLength();
-
-  if (n != 1) os << '[';
-  for (int i=0; i<n; ++i)
-    os << *(d_v[i]) << endl;
-  if (n != 1) os << ']';
-
-  return os;
+ostream & VrmlMFNode::print(ostream & os) const {
+    if (this->size != 1) {
+        os << '[';
+    }
+    for (size_t i = 0; i < this->size; ++i) {
+        os << *(this->nodes[i]) << endl;
+    }
+    if (this->size != 1) {
+        os << ']';
+    }
+    
+    return os;
 }
 
 

@@ -243,7 +243,7 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      VrmlNode *n = (*j)->node;
+	      const VrmlNodePtr & n((*j)->node);
 	      if (strcmp(n->name(),"") == 0)
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
@@ -263,7 +263,7 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      VrmlNode *n = (*j)->node;
+	      const VrmlNodePtr & n((*j)->node);
 	      if (strcmp(n->name(),"") == 0)
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
@@ -277,7 +277,7 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      VrmlNode *n = (*j)->node;
+	      const VrmlNodePtr & n((*j)->node);
 	      if (strcmp(n->name(),"") == 0)
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
@@ -299,11 +299,11 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 // of EXTERNPROTOs is deferred until the implementation is
 // actually downloaded. (not actually done yet...)
 
-VrmlNode *VrmlNodeType::firstNode()
+const VrmlNodePtr VrmlNodeType::firstNode() const
 {
     return (this->implNodes.getLength() > 0)
-            ? this->implNodes[0]
-            : 0;
+            ? this->implNodes.getElement(0)
+            : VrmlNodePtr(0);
 }
   
 VrmlField::VrmlFieldType
@@ -391,7 +391,7 @@ void VrmlNodeType::addNode(VrmlNode & node) {
 }
 
 void VrmlNodeType::addIS(const char *isFieldName,
-			 const VrmlNode *implNode,
+			 VrmlNode & implNode,
 			 const char *implFieldName)
 {
   FieldList::iterator i;
@@ -399,8 +399,8 @@ void VrmlNodeType::addIS(const char *isFieldName,
   theSystem->debug("%s::addIS(%s, %s::%s.%s)\n",
 		   getName(),
 		   isFieldName,
-		   implNode->nodeType().getName(),
-		   implNode->name(),
+		   implNode.nodeType().getName(),
+		   implNode.name(),
 		   implFieldName);
 
   // Fields
@@ -409,7 +409,7 @@ void VrmlNodeType::addIS(const char *isFieldName,
       if (strcmp((*i)->name, isFieldName) == 0)
 	{
 	  NodeFieldRec *nf = new NodeFieldRec;
-	  nf->node = (VrmlNode*) implNode; // oops...
+	  nf->node.reset(&implNode);
 	  nf->fieldName = strdup(implFieldName);
 	  (*i)->thisIS.push_front(nf);
 	  break;
@@ -422,7 +422,7 @@ void VrmlNodeType::addIS(const char *isFieldName,
       if (strcmp((*i)->name, isFieldName) == 0)
 	{
 	  NodeFieldRec *nf = new NodeFieldRec;
-	  nf->node = (VrmlNode*) implNode; // oops...
+	  nf->node.reset(&implNode);
 	  nf->fieldName = strdup(implFieldName);
 	  (*i)->thisIS.push_front(nf);
 	  break;
@@ -435,7 +435,7 @@ void VrmlNodeType::addIS(const char *isFieldName,
       if (strcmp((*i)->name, isFieldName) == 0)
 	{
 	  NodeFieldRec *nf = new NodeFieldRec;
-	  nf->node = (VrmlNode*) implNode; // oops...
+	  nf->node.reset(&implNode);
 	  nf->fieldName = strdup(implFieldName);
 	  (*i)->thisIS.push_front(nf);
 	  break;
@@ -453,7 +453,7 @@ VrmlNodeType::ISMap *VrmlNodeType::getFieldISMap( const char *fieldName )
       return & ((*i)->thisIS);
   return 0;
 }
-  
+
 
 // VrmlNode factory: create a new instance of a node of this type.
 // Built in nodes have a creator function specified, while instances

@@ -121,8 +121,8 @@ void VrmlNodeBillboard::render(Viewer *viewer, VrmlRenderContext rc)
 void VrmlNodeBillboard::accumulateTransform(VrmlNode * parent) {
     d_parentTransform = parent;
     for (size_t i = 0; i < this->d_children.getLength(); ++i) {
-        if (this->d_children[i]) {
-            this->d_children[i]->accumulateTransform(this);
+        if (this->d_children.getElement(i)) {
+            this->d_children.getElement(i)->accumulateTransform(this);
         }
     }
 }

@@ -24,6 +24,7 @@
 #include <string.h>
 #include <list>
 #include <iostream.h>
+#include "VrmlNodePtr.h"
 #include "System.h"		// error
 
 class Route;
@@ -111,9 +112,6 @@ public:
 
   virtual bool accept(VrmlNodeVisitor & visitor) = 0;
   virtual void resetVisitedFlag();
-
-  VrmlNode *reference();
-  void dereference();
 
   // Safe node downcasts. These avoid the dangerous casts of VrmlNode* (esp in
   // presence of protos), but are ugly in that this class must know about all
@@ -216,10 +214,10 @@ public:
   bool isFlagSet() { return d_flag; }
 
   // Add a ROUTE from a field in this node
-  void addRoute(const char *fromField, VrmlNode *toNode, const char *toField);
+  void addRoute(const char *fromField, const VrmlNodePtr & toNode, const char *toField);
 
   // Delete a ROUTE from a field in this node
-  void deleteRoute(const char *fromField, VrmlNode *toNode, const char *toField);
+  void deleteRoute(const char *fromField, const VrmlNodePtr & toNode, const char *toField);
   
   Route * getRoutes();
 
@@ -272,7 +270,6 @@ protected:
 
 private:
 
-  int d_refCount;		// Number of active references
   char *d_name;
 
 };

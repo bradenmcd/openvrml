@@ -80,8 +80,8 @@ void VrmlNodeLOD::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->d_level.getLength(); ++i) {
-            if (this->d_level[i]) {
-                this->d_level[i]->resetVisitedFlag();
+            if (this->d_level.getElement(i)) {
+                this->d_level.getElement(i)->resetVisitedFlag();
             }
         }
     }
@@ -95,7 +95,7 @@ bool VrmlNodeLOD::isModified() const
 
   // This should really check which range is being rendered...
   for (int i = 0; i<n; ++i)
-    if (d_level[i]->isModified())
+    if (d_level.getElement(i)->isModified())
       return true;
 
   return false;
@@ -111,7 +111,7 @@ void VrmlNodeLOD::updateModified(VrmlNodePath& path)
   path.push_front(this);
  int n = d_level.getLength();
   for (int i = 0; i<n; ++i)
-    d_level[i]->updateModified(path);
+    d_level.getElement(i)->updateModified(path);
   path.pop_front();
 }
 
@@ -120,7 +120,7 @@ void VrmlNodeLOD::clearFlags()
   VrmlNode::clearFlags();
   int n = d_level.getLength();
   for (int i = 0; i<n; ++i)
-    d_level[i]->clearFlags();
+    d_level.getElement(i)->clearFlags();
 }
 
 void VrmlNodeLOD::addToScene( VrmlScene *s, const char *rel )
@@ -130,7 +130,7 @@ void VrmlNodeLOD::addToScene( VrmlScene *s, const char *rel )
   int n = d_level.getLength();
 
   for (int i = 0; i<n; ++i)
-    d_level[i]->addToScene(s, rel);
+    d_level.getElement(i)->addToScene(s, rel);
 }
 
 ostream& VrmlNodeLOD::printFields(ostream& os, int indent)
@@ -175,12 +175,12 @@ void VrmlNodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
 
   //printf("LOD d2 %g level %d\n", d2, i);
 
-  d_level[i]->render(viewer, rc);
+  d_level.getElement(i)->render(viewer, rc);
 
   // Don't re-render on their accounts
   n = d_level.getLength();
   for (i = 0; i<n; ++i)
-    d_level[i]->clearModified();
+    d_level.getElement(i)->clearModified();
 }
 
 // Get the value of one of the node fields.
@@ -242,7 +242,7 @@ VrmlNodeLOD::recalcBSphere()
   // them in all at once. live with it for now.
   //
   for(int i=0; i<(int) d_level.getLength(); i++) {
-    const VrmlBVolume* ci_bv = d_level[i]->getBVolume();
+    const VrmlBVolume* ci_bv = d_level.getElement(i)->getBVolume();
     d_bsphere.extend(*ci_bv);
 
   }

@@ -77,8 +77,8 @@ void VrmlNodeCollision::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->d_children.getLength(); ++i) {
-            if (this->d_children[i]) {
-                this->d_children[i]->resetVisitedFlag();
+            if (this->d_children.getElement(i)) {
+                this->d_children.getElement(i)->resetVisitedFlag();
             }
         }
         if (this->d_proxy.get()) {

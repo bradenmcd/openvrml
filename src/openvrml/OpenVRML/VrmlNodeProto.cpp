@@ -152,8 +152,8 @@ void VrmlNodeProto::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->implNodes.getLength(); ++i) {
-            if (this->implNodes[i]) {
-                this->implNodes[i]->resetVisitedFlag();
+            if (this->implNodes.getElement(i)) {
+                this->implNodes.getElement(i)->resetVisitedFlag();
             }
         }
     }
@@ -220,7 +220,7 @@ void VrmlNodeProto::instantiate()
 	      ismap = &(*ev)->thisIS;
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  VrmlNode *n = d_scope->findNode((*j)->node->name());
+		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->name()));
 		  if (n)
 		    n->addRoute((*j)->fieldName,
 				r->toNode(), r->toEventIn() );
@@ -247,7 +247,7 @@ void VrmlNodeProto::instantiate()
 	    {
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  VrmlNode *n = d_scope->findNode((*j)->node->name());
+		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->name()));
 #ifdef VRML_NODE_PROTO_DEBUG
 		  cerr << " on " << n->name() << "::" << (*j)->fieldName << endl;
 #endif
@@ -278,7 +278,7 @@ void VrmlNodeProto::addToScene(VrmlScene *s, const char *relUrl)
       const char *rel = d_nodeType->url();
       int j, n = this->implNodes.getLength();
       for (j=0; j<n; ++j)
-	this->implNodes[j]->addToScene(s, rel ? rel : relUrl);
+	this->implNodes.getElement(j)->addToScene(s, rel ? rel : relUrl);
     }
 }
 
@@ -297,7 +297,7 @@ void VrmlNodeProto::accumulateTransform( VrmlNode *n )
     {
       int i, j = this->implNodes.getLength();
       for (i=0; i<j; ++i)
-	this->implNodes[i]->accumulateTransform(n);
+	this->implNodes.getElement(i)->accumulateTransform(n);
     }
 }
 
@@ -313,10 +313,9 @@ ostream& VrmlNodeProto::printFields(ostream& os, int )
 
 // Use the first node to check the type
 
-VrmlNode *VrmlNodeProto::firstNode() const 
-{
+const VrmlNodePtr VrmlNodeProto::firstNode() const {
     return (this->implNodes.getLength() > 0)
-            ? this->implNodes[0]
+            ? this->implNodes.getElement(0)
             : d_nodeType->firstNode();
 }
 
@@ -473,7 +472,7 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
       // render the nodes with the new values
       int n = this->implNodes.getLength();
       for (int j = 0; j<n; ++j)
-	this->implNodes[j]->render(viewer, rc);
+	this->implNodes.getElement(j)->render(viewer, rc);
 
       viewer->endObject();
     }
@@ -588,7 +587,7 @@ VrmlNodeProto::getBVolume() const
     cout << "VrmlNodeProto::getBVolume():WARNING:not instantiated" << endl;
     return (VrmlBVolume*)0; // shouldn't happen
   }
-  VrmlNode* base = firstNode();
+  const VrmlNodePtr base(firstNode());
   if (!base) {
     cout << "VrmlNodeProto::getBVolume():WARNING:!base" << endl;
     return (VrmlBVolume*)0; // shouldn't happen
@@ -605,7 +604,7 @@ VrmlNodeProto::updateModified(VrmlNodePath& path, int flags)
   //cout << "VrmlNodeProto::updateModified()" << endl;
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
-  VrmlNode* base = firstNode();
+  const VrmlNodePtr base(firstNode());
   if (base) base->updateModified(path, flags);    
   path.pop_front();
 }

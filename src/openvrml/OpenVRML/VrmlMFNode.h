@@ -21,21 +21,26 @@
 # ifndef VRMLMFNODE_H
 #   define VRMLMFNODE_H
 #   include "VrmlField.h"
-#   include <stddef.h>
 
 class VrmlNode;
+class VrmlNodePtr;
 
 class VrmlMFNode : public VrmlField {
+    
+    VrmlNodePtr * nodes;
+    size_t allocated;
+    size_t size;
+
 public:
-    explicit VrmlMFNode(size_t length = 0, VrmlNode * const * nodes = 0);
-    VrmlMFNode(VrmlMFNode const & mfnode);
+    explicit VrmlMFNode(size_t length = 0, const VrmlNodePtr * nodes = 0);
+    VrmlMFNode(const VrmlMFNode & mfnode);
 
     ~VrmlMFNode();
 
-    VrmlMFNode& operator=(const VrmlMFNode & mfnode);
+    VrmlMFNode & operator=(const VrmlMFNode & mfnode);
 
-    VrmlNode * operator[](size_t index) const;
-    VrmlNode * & operator[](size_t index);
+    const VrmlNodePtr & getElement(size_t index) const;
+    void setElement(size_t index, const VrmlNodePtr & node);
 
     size_t getLength() const;
     void setLength(size_t length);
@@ -53,10 +58,6 @@ public:
 
 private:
     void realloc(size_t newSize);
-    
-    VrmlNode * * d_v;
-    size_t d_allocated;
-    size_t d_size;
 };
 
 # endif

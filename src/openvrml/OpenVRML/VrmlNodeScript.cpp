@@ -159,7 +159,7 @@ void VrmlNodeScript::resetVisitedFlag() {
                 assert(dynamic_cast<VrmlMFNode *>((*itr)->value));
                 VrmlMFNode & mfnode(static_cast<VrmlMFNode &>(*(*itr)->value));
                 for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                    mfnode[i]->resetVisitedFlag();
+                    mfnode.getElement(i)->resetVisitedFlag();
                 }
             }
         }
@@ -447,19 +447,78 @@ VrmlNodeScript::setEventOut(const char *fname, const VrmlField & value)
   set(d_eventOuts, fname, value);
 }
 
-void
-VrmlNodeScript::set(const FieldList &recs,
-		    const char *fname,
-		    const VrmlField & value)
-{
-  FieldList::const_iterator i;
-  for (i = recs.begin(); i != recs.end(); ++i) {
-    if (strcmp((*i)->name, fname) == 0)
-      {
-	delete ((*i)->value);
-	(*i)->value = value.clone();
-	(*i)->modified = true;
-	return;
-      }
-  }
+void VrmlNodeScript::set(const FieldList & recs, const char * fname,
+                         const VrmlField & value) {
+    for (FieldList::const_iterator itr = recs.begin(); itr != recs.end();
+            ++itr) {
+        if (strcmp((*itr)->name, fname) == 0) {
+            //
+            // Script nodes can be self referential! Check this condition,
+            // and "undo" the refcounting: decrement the refcount on any
+            // self-references we acquire ownership of, and increment the
+            // refcount on any self-references for which we relinquish
+            // ownership.
+            //
+            const VrmlField::VrmlFieldType fieldType(value.fieldType());
+            if (fieldType == VrmlField::SFNODE) {
+                const VrmlNodePtr & oldNode
+                        (static_cast<VrmlSFNode *>((*itr)->value)->get());
+                //
+                // About to relinquish ownership of a SFNode value. If the
+                // SFNode value is this Script node, then we need to
+                // *increment* its refcount, since we previously
+                // *decremented* it to accommodate creating a cycle between
+                // refcounted objects.
+                //
+                if (oldNode && (oldNode.countPtr->first == this)) {
+                    ++(oldNode.countPtr->second);
+                }
+                
+	        delete (*itr)->value;
+	        (*itr)->value = value.clone();
+                
+                //
+                // Now, check to see if the new SFNode value is a self-
+                // reference. If it is, we need to *decrement* the refcount.
+                // A self-reference creates a cycle. If a Script node with
+                // a self-reference were completely removed from the scene,
+                // it still wouldn't be deleted (if we didn't do this)
+                // because the reference it held to itself would prevent the
+                // refcount from ever dropping to zero.
+                //
+                const VrmlNodePtr & newNode
+                        (static_cast<VrmlSFNode *>((*itr)->value)->get());
+                if (newNode && (newNode.countPtr->first == this)) {
+                    --(newNode.countPtr->second);
+                }
+            } else if (fieldType == VrmlField::MFNODE) {
+                const VrmlMFNode & oldNodes
+                        (static_cast<VrmlMFNode &>(*(*itr)->value));
+                for (size_t i = 0; i < oldNodes.getLength(); ++i) {
+                    const VrmlNodePtr & node(oldNodes.getElement(i));
+                    if (node && (node.countPtr->first == this)) {
+                        ++(node.countPtr->second);
+                    }
+                }
+                
+                delete (*itr)->value;
+                (*itr)->value = value.clone();
+                
+                const VrmlMFNode & newNodes
+                        (static_cast<VrmlMFNode &>(*(*itr)->value));
+                for (size_t i = 0; i < newNodes.getLength(); ++i) {
+                    const VrmlNodePtr & node(newNodes.getElement(i));
+                    if (node && (node.countPtr->first == this)) {
+                        --(node.countPtr->second);
+                    }
+                }
+            } else {
+	        delete (*itr)->value;
+	        (*itr)->value = value.clone();
+            }
+            
+	    (*itr)->modified = true;
+	    return;
+        }
+    }
 }

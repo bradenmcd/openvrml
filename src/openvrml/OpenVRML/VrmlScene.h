@@ -31,7 +31,7 @@ class VrmlNode;
 // List of nodes
 //class VrmlNodeList; Why doesn't this work? 
 // I would rather not include <list> in here.
-typedef std::list< VrmlNode* > VrmlNodeList;
+typedef std::list<VrmlNodePtr> VrmlNodeList;
 
 
 class Doc2;
@@ -63,7 +63,8 @@ public:
   static VrmlMFNode * readWrl(VrmlMFString * url, Doc2 * relative,
                               VrmlNamespace * ns);
   static VrmlMFNode * readWrl(Doc2 * url, VrmlNamespace * ns );
-  static VrmlMFNode * readString(char const * vrmlString, VrmlNamespace * ns);
+  static const VrmlMFNode readString(char const * vrmlString,
+                                     VrmlNamespace * ns);
 
 //
 // Disabling the LoadCB stuff for now. We probably want to replace this with
@@ -132,7 +133,7 @@ public:
   // Queue an event for a given node
   void queueEvent(double timeStamp,
 		  VrmlField *value,
-		  VrmlNode *toNode, const char *toEventIn);
+		  const VrmlNodePtr & toNode, const char *toEventIn);
 
   bool eventsPending();
 
@@ -225,7 +226,6 @@ public:
 
 
   VrmlNode* getRoot();
-  void setRoot(VrmlNode* root);
 
   /**
    * True if the bvolume dirty flag has been set on a node in the
@@ -291,9 +291,9 @@ protected:
   typedef VrmlNodeList* BindStack;
 
   // Generic bindable children stack operations
-  VrmlNode *bindableTop( BindStack );
-  void bindablePush( BindStack, VrmlNode* );
-  void bindableRemove( BindStack, VrmlNode* );
+  const VrmlNodePtr bindableTop(BindStack);
+  void bindablePush(BindStack, const VrmlNodePtr &);
+  void bindableRemove(BindStack, const VrmlNodePtr &);
   void bindableRemoveAll( BindStack );
 
   //   Background
@@ -313,12 +313,12 @@ protected:
   BindStack d_viewpointStack;		// Viewpoint stack
 
   // An event has a value and a destination, and is associated with a time
-  typedef struct {
+  struct Event{
     double timeStamp;
     VrmlField *value;
-    VrmlNode *toNode;
+    VrmlNodePtr toNode;
     const char *toEventIn;
-  } Event;
+  };
 
   // For each scene can have a limited number of pending events.
   // Repeatedly allocating/freeing events is slow (it would be

@@ -536,24 +536,22 @@ SFNodeCons(JSContext *cx, JSObject *obj,
       // If the nodes created contain scripts, they might want to access the
       // namespace...
       VrmlNamespace ns;
-      VrmlMFNode *nodes = VrmlScene::readString( JS_GetStringBytes(str), &ns );
-      if (! nodes || nodes->getLength() == 0)
+      VrmlMFNode nodes = VrmlScene::readString(JS_GetStringBytes(str), &ns);
+      if (nodes.getLength() == 0)
 	return JS_FALSE;
 
       // If there are multiple top-level nodes, wrap them in a Group. SPEC?
-      VrmlNode *n;
-      if (nodes->getLength() == 1)
-	n = (*nodes)[0];
+      VrmlNodePtr n;
+      if (nodes.getLength() == 1)
+	n = nodes.getElement(0);
       else
 	{
-	  VrmlNodeGroup *g = new VrmlNodeGroup();
-	  g->addChildren( *nodes);
-	  n = g;
+	  n.reset(new VrmlNodeGroup());
+	  n->toGroup()->addChildren(nodes);
 	}
 
       VrmlSFNode *sfnode = new VrmlSFNode(n);
       JS_SetPrivate(cx, obj, sfnode);
-      delete nodes;
       return JS_TRUE;
     }
 
@@ -597,8 +595,10 @@ node_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 static JSBool
 node_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-  VrmlSFNode *sfn = (VrmlSFNode *)JS_GetPrivate( cx, obj );
-  VrmlNode *n = sfn ? sfn->get() : 0;
+  VrmlSFNode * const sfn =
+          reinterpret_cast<VrmlSFNode *>(JS_GetPrivate(cx, obj));
+  assert(sfn);
+  VrmlNodePtr n = sfn->get();
 
   if (n && JSVAL_IS_STRING(id))
     {
@@ -1897,7 +1897,7 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 	    JSObject *elt = JS_NewObject( d_cx, &SFNodeClass,
 					  0, d_globalObj );
 	    if (! elt) break;
-	    JS_SetPrivate(d_cx, elt, new VrmlSFNode((*mf)[i]));
+	    JS_SetPrivate(d_cx, elt, new VrmlSFNode(mf->getElement(i)));
 	    JS_DefineElement( d_cx, obj, (jsint)i, OBJECT_TO_JSVAL(elt),
 			      JS_PropertyStub, JS_PropertyStub,
 			      JSPROP_ENUMERATE );
@@ -2157,7 +2157,7 @@ static VrmlField *jsvalToVrmlField( JSContext *cx,
 	  if (JSVAL_IS_OBJECT(elt) &&
 	      &SFNodeClass == JS_GetClass( JSVAL_TO_OBJECT(elt) ))
 	    child = static_cast<VrmlSFNode *>(JS_GetPrivate(cx, JSVAL_TO_OBJECT(elt)));
-	  (*f)[i] = child ? child->get()->reference() : 0;
+	  f->setElement(i, child ? child->get() : VrmlNodePtr(0));
 	}
       return f;
     }
@@ -2540,14 +2540,14 @@ static JSBool createVrmlFromString(JSContext *cx, JSObject* bobj,
     {
       char *vrmlString = JS_GetStringBytes(str);
       VrmlNamespace ns;
-      VrmlMFNode *kids;
+      VrmlMFNode kids(VrmlScene::readString(vrmlString, &ns));
 
-      if (! (kids = VrmlScene::readString( vrmlString, &ns )) )
+      if (kids.getLength() == 0)
 	return JS_FALSE;
       
       // Put the children from g into an MFNode and return in rval.
       // should store the namespace as well...
-      int i, n = kids->getLength();
+      size_t i, n = kids.getLength();
       jsval *jsvec = new jsval[n];
 
       for (i=0; i<n; ++i)
@@ -2555,12 +2555,11 @@ static JSBool createVrmlFromString(JSContext *cx, JSObject* bobj,
 	  JSObject *obj = JS_NewObject( cx, &SFNodeClass, 0, bobj );
 	  if (! obj) return JS_FALSE;
 	  //uwe JS_SetPrivate( cx, obj, k[i] ? k[i]->reference() : 0);
-	  JS_SetPrivate( cx, obj, new VrmlSFNode((*kids)[i] ? (*kids)[i]->reference() : 0));
+	  JS_SetPrivate(cx, obj, new VrmlSFNode(kids.getElement(i)));
 	  jsvec[i] = OBJECT_TO_JSVAL(obj);
 	}
       *rval = OBJECT_TO_JSVAL(JS_NewArrayObject(cx, (jsint)n, jsvec));
       delete [] jsvec;
-      delete kids;
       return JS_TRUE;
     }
 
@@ -2612,7 +2611,7 @@ static JSBool createVrmlFromURL(JSContext* cx, JSObject* b,
 	  
 	  VrmlNamespace ns;	// this is a problem...
 	  VrmlMFNode *kids = VrmlScene::readWrl( url, relative, &ns );
-	  VrmlNode *nn = node->get();
+	  VrmlNodePtr nn = node->get();
 
 	  if ( ! kids )
 	    {

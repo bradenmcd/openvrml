@@ -28,6 +28,7 @@
 
 #include <list>
 
+#include "VrmlNodePtr.h"
 #include "VrmlField.h"
 #include "VrmlMFNode.h"
 #include "VrmlSFString.h"
@@ -89,17 +90,17 @@ public:
   
   // Add an IS linkage to one of the PROTO interface fields/events.
   void addIS(const char *isFieldName,
-	     const VrmlNode *implNode,
+	     VrmlNode & implNode,
 	     const char *implFieldName);
 
   const char *getName() const { return d_name; }
 
   const VrmlMFNode & getImplementationNodes();
 
-  VrmlNode *firstNode();
+  const VrmlNodePtr firstNode() const;
 
   struct NodeFieldRec {
-    VrmlNode *node;
+    VrmlNodePtr node;
     char *fieldName;
   };
 

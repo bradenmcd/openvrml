@@ -20,6 +20,7 @@
 
 header "post_include_hpp" {
 # include "VrmlField.h"
+# include "VrmlNodePtr.h"
 class VrmlNamespace;
 class VrmlNode;
 class VrmlNodeScript;
@@ -162,7 +163,7 @@ vrmlScene[VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc]
 
 statement[VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc]
         {
-            VrmlNode * node = 0;
+            VrmlNodePtr node;
         }
     :   node=nodeStatement[vrmlNamespace, doc]
         {
@@ -173,7 +174,8 @@ statement[VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc]
     |   routeStatement[vrmlNamespace]
     ;
 
-nodeStatement[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlNode * n = 0]
+nodeStatement[VrmlNamespace & vrmlNamespace, Doc2 const * doc] 
+returns [VrmlNodePtr n]
 options {
     defaultErrorHandler=false;
 }
@@ -270,7 +272,7 @@ fieldInterfaceType returns [Vrml97Parser::NodeInterfaceType it = INVALID_NODE_IN
 
 protoBody[Doc2 const * doc, VrmlNodeType & nodeType]
         {
-            VrmlNode * n = 0;
+            VrmlNodePtr n;
         }
     :   (protoStatement[*nodeType.scope(), doc])* n=protoNodeStatement[doc, nodeType]
         {
@@ -282,7 +284,7 @@ protoBody[Doc2 const * doc, VrmlNodeType & nodeType]
 
 protoBodyStatement[Doc2 const * doc, VrmlNodeType & nodeType]
         {
-            VrmlNode * n = 0;
+            VrmlNodePtr n;
         }
     :   n=protoNodeStatement[doc, nodeType]
         {
@@ -293,7 +295,8 @@ protoBodyStatement[Doc2 const * doc, VrmlNodeType & nodeType]
     |   routeStatement[*nodeType.scope()]
     ;
 
-protoNodeStatement[Doc2 const * doc, VrmlNodeType & protoNodeType] returns [VrmlNode * n = 0]
+protoNodeStatement[Doc2 const * doc, VrmlNodeType & protoNodeType]
+returns [VrmlNodePtr n]
 options {
     defaultErrorHandler=false;
 }
@@ -405,7 +408,7 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
     :   KEYWORD_ROUTE fromNodeId:ID PERIOD fromInterfaceId:ID
         KEYWORD_TO toNodeId:ID PERIOD toInterfaceId:ID
         {
-            VrmlNode * const fromNode = vrmlNamespace.findNode(fromNodeId->getText().c_str());
+            const VrmlNodePtr fromNode = vrmlNamespace.findNode(fromNodeId->getText().c_str());
             if (!fromNode) {
                 throw antlr::SemanticException("Node \"" + fromNodeId->getText() + "\" has not been defined in this scope.");
             }
@@ -417,7 +420,7 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
                 && ((fromInterfaceType = fromNodeType.hasExposedField(fromInterfaceId->getText().c_str())) == VrmlField::NO_FIELD)) {
                 
                 VrmlNodeScript * fromScriptNode = 0;
-                if ((fromScriptNode = dynamic_cast<VrmlNodeScript *>(fromNode))) {
+                if ((fromScriptNode = fromNode->toScript())) {
                     fromInterfaceType = fromScriptNode->hasEventOut(fromInterfaceId->getText().c_str());
                 }
                 
@@ -426,7 +429,7 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
                 }
             }
             
-            VrmlNode * const toNode = vrmlNamespace.findNode(toNodeId->getText().c_str());
+            const VrmlNodePtr toNode = vrmlNamespace.findNode(toNodeId->getText().c_str());
             if (!toNode) {
                 throw antlr::SemanticException("Node \"" + toNodeId->getText() + "\" has not been defined in this scope.");
             }
@@ -438,7 +441,7 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
                 && ((toInterfaceType = toNodeType.hasExposedField(toInterfaceId->getText().c_str())) == VrmlField::NO_FIELD)) {
                 
                 VrmlNodeScript * toScriptNode = 0;
-                if ((toScriptNode = dynamic_cast<VrmlNodeScript *>(toNode))) {
+                if ((toScriptNode = toNode->toScript())) {
                     toInterfaceType = toScriptNode->hasEventIn(toInterfaceId->getText().c_str());
                 }
                 
@@ -455,7 +458,8 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
         }
     ;
 
-node[VrmlNamespace & vrmlNamespace, Doc2 const * doc, std::string const & nodeId] returns [VrmlNode * n = 0]
+node[VrmlNamespace & vrmlNamespace, Doc2 const * doc, std::string const & nodeId]
+returns [VrmlNodePtr n]
 options {
     defaultErrorHandler = false;
 }
@@ -469,13 +473,13 @@ options {
             nodeType = vrmlNamespace.findType("Script");
             assert(nodeType);
             
-            n = nodeType->newNode();
+            n = VrmlNodePtr(nodeType->newNode());
             
             if (nodeId.size() > 0) {
                 n->setName(nodeId.c_str(), &vrmlNamespace);
             }
             
-            VrmlNodeScript * const scriptNode = dynamic_cast<VrmlNodeScript *>(n);
+            VrmlNodeScript * const scriptNode = n->toScript();
             assert(scriptNode);
         }
         LBRACE (
@@ -490,7 +494,7 @@ options {
                 throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
             }
             
-            n = nodeType->newNode();
+            n = VrmlNodePtr(nodeType->newNode());
             
             if (nodeId.size() > 0) {
                 n->setName(nodeId.c_str(), &vrmlNamespace);
@@ -499,7 +503,9 @@ options {
         LBRACE (nodeBodyElement[vrmlNamespace, doc, *n])* RBRACE
     ;
 
-nodeBodyElement[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNode & node]
+nodeBodyElement[VrmlNamespace & vrmlNamespace,
+                Doc2 const * doc,
+                VrmlNode & node]
         {
             VrmlNodeType const & nodeType = node.nodeType();
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
@@ -524,7 +530,9 @@ nodeBodyElement[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNode & node
     |   protoStatement[vrmlNamespace, doc]
     ;
 
-scriptInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNodeScript & node]
+scriptInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
+                           Doc2 const * doc,
+                           VrmlNodeScript & node]
         {
             NodeInterfaceType it(INVALID_NODE_INTERFACE_TYPE);
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
@@ -551,7 +559,9 @@ scriptInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc, Vrml
     |   scriptFieldInterfaceDeclaration[vrmlNamespace, doc, node]
     ;
 
-scriptFieldInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNodeScript & node]
+scriptFieldInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
+                                Doc2 const * doc,
+                                VrmlNodeScript & node]
         {
             VrmlField::VrmlFieldType ft = VrmlField::NO_FIELD;
             VrmlField * fv = 0;
@@ -575,7 +585,10 @@ scriptFieldInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc,
         }
     ;
 
-protoNode[Doc2 const * doc, VrmlNodeType & protoNodeType, std::string const & nodeId] returns [VrmlNode * n = 0]
+protoNode[Doc2 const * doc,
+          VrmlNodeType & protoNodeType,
+          std::string const & nodeId]
+returns [VrmlNodePtr n]
 options {
     defaultErrorHandler=false;
 }
@@ -589,13 +602,13 @@ options {
             nodeType = protoNodeType.scope()->findType("Script");
             assert(nodeType);
             
-            n = nodeType->newNode();
+            n.reset(nodeType->newNode());
             
             if (nodeId.size() > 0) {
                 n->setName(nodeId.c_str(), protoNodeType.scope());
             }
             
-            VrmlNodeScript * const scriptNode = dynamic_cast<VrmlNodeScript *>(n);
+            VrmlNodeScript * const scriptNode = n->toScript();
             assert(scriptNode);
         }
         LBRACE (
@@ -610,7 +623,7 @@ options {
                 throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
             }
             
-            n = nodeType->newNode();
+            n = VrmlNodePtr(nodeType->newNode());
             
             if (nodeId.size() > 0) {
                 n->setName(nodeId.c_str(), protoNodeType.scope());
@@ -619,7 +632,9 @@ options {
         LBRACE (protoNodeBodyElement[doc, protoNodeType, *n])* RBRACE
     ;
 
-protoNodeBodyElement[Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNode & node]
+protoNodeBodyElement[Doc2 const * doc,
+                     VrmlNodeType & protoNodeType,
+                     VrmlNode & node]
         {
             VrmlNodeType const & nodeType = node.nodeType();
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
@@ -659,7 +674,9 @@ protoNodeBodyElement[Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNode & 
 // implementation of VrmlNodeType.
 // -- Braden McDaniel <braden@endoframe.com>, 8 Apr, 2000
 //
-isStatement[VrmlNodeType & protoNodeType, VrmlNode & node, std::string const & nodeInterfaceId]
+isStatement[VrmlNodeType & protoNodeType,
+            VrmlNode & node,
+            std::string const & nodeInterfaceId]
     :   KEYWORD_IS id:ID
         {
             //
@@ -674,7 +691,7 @@ isStatement[VrmlNodeType & protoNodeType, VrmlNode & node, std::string const & n
             // -- Braden McDaniel <braden@endoframe.com>, 8 Apr, 2000
             //
             
-            protoNodeType.addIS(id->getText().c_str(), &node, nodeInterfaceId.c_str());
+            protoNodeType.addIS(id->getText().c_str(), node, nodeInterfaceId.c_str());
         }
     ;
 
@@ -1003,9 +1020,11 @@ intValue returns [long val = 0]
     |  	i1:HEX_INTEGER { val = strtol(i1->getText().c_str(), 0, 16); }
     ;
 
-sfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlSFNode * snv = new VrmlSFNode(0)]
+sfNodeValue[VrmlNamespace & vrmlNamespace,
+            Doc2 const * doc]
+returns [VrmlSFNode * snv = new VrmlSFNode()]
         {
-            VrmlNode * n = 0;
+            VrmlNodePtr n;
         }
     :   n=nodeStatement[vrmlNamespace, doc]
         {
@@ -1014,9 +1033,11 @@ sfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlSFNode
     |   KEYWORD_NULL
     ;
 
-protoSfNodeValue[Doc2 const * doc, VrmlNodeType & protoNodeType] returns [VrmlSFNode * snv = new VrmlSFNode(0)]
+protoSfNodeValue[Doc2 const * doc,
+                 VrmlNodeType & protoNodeType]
+returns [VrmlSFNode * snv = new VrmlSFNode()]
         {
-            VrmlNode * n = 0;
+            VrmlNodePtr n;
         }
     :   n=protoNodeStatement[doc, protoNodeType]
         {
@@ -1027,7 +1048,7 @@ protoSfNodeValue[Doc2 const * doc, VrmlNodeType & protoNodeType] returns [VrmlSF
 
 mfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlMFNode * mnv = new VrmlMFNode()]
         {
-            VrmlNode * n = 0;
+            VrmlNodePtr n;
         }
     :   n=nodeStatement[vrmlNamespace, doc]
         {
@@ -1045,7 +1066,7 @@ mfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlMFNode
 
 protoMfNodeValue[Doc2 const * doc, VrmlNodeType & protoNodeType] returns [VrmlMFNode * mnv = new VrmlMFNode()]
         {
-            VrmlNode * n = 0;
+            VrmlNodePtr n;
         }
     :   n=protoNodeStatement[doc, protoNodeType]
         {

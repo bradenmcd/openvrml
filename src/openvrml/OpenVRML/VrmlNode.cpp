@@ -69,7 +69,7 @@
 VrmlNodeType *VrmlNode::defineType(VrmlNodeType *t) { return t; }
 
 VrmlNode::VrmlNode(VrmlScene * scene): d_scene(scene), d_modified(false),
-        visited(false), d_routes(0), d_refCount(0), d_name(0) {
+        visited(false), d_routes(0), d_name(0) {
   this->setBVolumeDirty(true);
 }
 
@@ -77,7 +77,6 @@ VrmlNode::VrmlNode(const VrmlNode & node):
   d_scene(0),
   d_modified(true),
   d_routes(0),
-  d_refCount(0),
   d_name(node.d_name ? new char[strlen(node.d_name) + 1] : 0)
 {
   if (this->d_name) {
@@ -98,7 +97,7 @@ VrmlNode::~VrmlNode()
   if (d_name)
     {
       if (d_scene && d_scene->scope())
-	d_scene->scope()->removeNodeName(this);
+	d_scene->scope()->removeNodeName(*this);
       delete [] d_name;
     }
 
@@ -151,27 +150,6 @@ void VrmlNode::resetVisitedFlag() {
 }
 
 /**
- * @brief Increment the reference count.
- *
- * @return a pointer to this VrmlNode
- */
-VrmlNode *VrmlNode::reference()
-{
- ++d_refCount;
- return this; 
-}
-
-/**
- * @brief Decrement the reference count; delete this node if the count
- *        drops to 0.
- */
-void VrmlNode::dereference()
-{
-  if (--d_refCount == 0) delete this;
-}
-
-
-/**
  * @brief Set the name of the node.
  *
  * Some one else (the parser) needs to tell the scene about the name for
@@ -189,7 +167,7 @@ void VrmlNode::setName(const char *nodeName, VrmlNamespace *ns)
     {
       d_name = new char[strlen(nodeName)+1];
       strcpy(d_name, nodeName);
-      if (ns) ns->addNodeName( this );
+      if (ns) ns->addNodeName(VrmlNodePtr(this));
     }
   else
     d_name = 0;
@@ -304,7 +282,7 @@ VrmlNodeProto*		VrmlNode::toProto() const { return 0; }
 // Add a route from an eventOut of this node to an eventIn of another node.
 
 void VrmlNode::addRoute(const char *fromEventOut,
-			VrmlNode *toNode,
+			const VrmlNodePtr & toNode,
 			const char *toEventIn)
 {
 #ifdef VRML_NODE_DEBUG
@@ -339,7 +317,7 @@ void VrmlNode::addRoute(const char *fromEventOut,
 // Remove a route from an eventOut of this node to an eventIn of another node.
 
 void VrmlNode::deleteRoute(const char *fromEventOut,
-			   VrmlNode *toNode,
+			   const VrmlNodePtr & toNode,
 			   const char *toEventIn)
 {
   Route *r;

@@ -90,8 +90,8 @@ void VrmlNodeTransform::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->d_children.getLength(); ++i) {
-            if (this->d_children[i]) {
-                this->d_children[i]->resetVisitedFlag();
+            if (this->d_children.getElement(i)) {
+                this->d_children.getElement(i)->resetVisitedFlag();
             }
         }
     }
@@ -252,8 +252,8 @@ void VrmlNodeTransform::setField(const char *fieldName,
 void VrmlNodeTransform::accumulateTransform(VrmlNode * parent) {
     d_parentTransform = parent;
     for (size_t i = 0; i < this->d_children.getLength(); ++i) {
-        if (this->d_children[i]) {
-            this->d_children[i]->accumulateTransform(this);
+        if (this->d_children.getElement(i)) {
+            this->d_children.getElement(i)->accumulateTransform(this);
         }
     }
 }
@@ -339,7 +339,7 @@ VrmlNodeTransform::recalcBSphere()
   //cout << "VrmlNodeTransform[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
   for (size_t i=0; i<d_children.getLength(); ++i) {
-    const VrmlBVolume* ci_bv = d_children[i]->getBVolume();
+    const VrmlBVolume* ci_bv = d_children.getElement(i)->getBVolume();
     if (ci_bv)
       d_bsphere.extend(*ci_bv);
   }

@@ -258,7 +258,7 @@ void VrmlScene::replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
   // Send initial set_binds to bindable nodes
   double timeNow = theSystem->time();
   VrmlSFBool flag(true);
-  VrmlNode *bindable = 0;	// compiler warning
+  VrmlNodePtr bindable;
 
   if (d_backgrounds->size() > 0 &&
       (bindable = d_backgrounds->front()) != 0)
@@ -305,7 +305,9 @@ bool VrmlScene::load(const char *url, const char *localCopy)
     // scene if this format is used.
     VrmlSFBool flag(true);
     if (*url == '#') {
-        VrmlNode *vp = d_namespace ? d_namespace->findNode(url+1) : 0;
+        const VrmlNodePtr & vp(d_namespace
+                                    ? d_namespace->findNode(url+1)
+                                    : VrmlNodePtr(0));
         
         // spec: ignore if named viewpoint not found
         if (vp) {
@@ -340,7 +342,7 @@ bool VrmlScene::load(const char *url, const char *localCopy)
         
         // Look for '#Viewpoint' syntax
         if (sourceUrl->urlModifier()) {
-            VrmlNode * vp = d_namespace->findNode(sourceUrl->urlModifier() + 1);
+            const VrmlNodePtr & vp(d_namespace->findNode(sourceUrl->urlModifier() + 1));
             double timeNow = theSystem->time();
             if (vp) {
                 vp->eventIn(timeNow, "set_bind", flag);
@@ -419,20 +421,18 @@ VrmlMFNode * VrmlScene::readWrl(Doc2 * tryUrl, VrmlNamespace * ns)
 
 bool VrmlScene::loadFromString( const char *vrmlString )
 {
-  VrmlNamespace *newScope = new VrmlNamespace();
-  VrmlMFNode *newNodes = readString( vrmlString, newScope );
-  if ( newNodes )
-    {
-      replaceWorld( *newNodes, newScope, 0, 0 );
-      delete newNodes;
-      return true;
+    VrmlNamespace * newScope = new VrmlNamespace();
+    VrmlMFNode newNodes = readString(vrmlString, newScope);
+    if (newNodes.getLength() > 0) {
+        replaceWorld(newNodes, newScope, 0, 0);
+        return true;
     }
-  return false;
+    return false;
 }
 
 // Read VRML from a string and return the (valid) nodes.
 
-VrmlMFNode * VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
+const VrmlMFNode VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
 {
     //
     // Hmm. It looks like passing a zero pointer for the namespace argument of
@@ -441,7 +441,7 @@ VrmlMFNode * VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
     // -- Braden McDaniel <braden@endoframe.com> 1 Apr, 2000
     //
     
-    VrmlMFNode * result = 0;
+    VrmlMFNode result;
     
     if (vrmlString) {
         istrstream istrstm(
@@ -453,9 +453,7 @@ VrmlMFNode * VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
                            );
         Vrml97Scanner scanner(istrstm);
         Vrml97Parser parser(scanner);
-        
-        result = new VrmlMFNode();
-        parser.vrmlScene(*result, *ns, 0);
+        parser.vrmlScene(result, *ns, 0);
     }
     
     return result;
@@ -615,7 +613,7 @@ void VrmlScene::queueReplaceNodes( VrmlMFNode *nodes, VrmlNamespace *ns )
 
 void VrmlScene::queueEvent(double timeStamp,
 			   VrmlField *value,
-			   VrmlNode *toNode,
+			   const VrmlNodePtr & toNode,
 			   const char *toEventIn)
 {
   Event *e = &d_eventMem[d_lastEvent];
@@ -761,7 +759,7 @@ bool VrmlScene::update( double timeStamp )
       d_firstEvent = (d_firstEvent+1) % MAXEVENTS;
 
       // Ensure that the node is in the scene graph
-      VrmlNode *n = e->toNode;
+      const VrmlNodePtr & n(e->toNode);
       if (this != n->scene())
 	{
 	  theSystem->debug("VrmlScene::update: %s::%s is not in the scene graph yet.\n",
@@ -1011,20 +1009,17 @@ void VrmlScene::render(Viewer *viewer)
 //  (not just the top).
 //
 
-VrmlNode *VrmlScene::bindableTop( BindStack stack )
-{
-  return (stack == 0 || stack->empty()) ? 0 : stack->front();
+const VrmlNodePtr VrmlScene::bindableTop(BindStack stack) {
+    return (stack == 0 || stack->empty()) ? VrmlNodePtr(0) : stack->front();
 }
 
-void VrmlScene::bindablePush( BindStack stack, VrmlNode *node )
-{
+void VrmlScene::bindablePush(BindStack stack, const VrmlNodePtr & node) {
   bindableRemove( stack, node ); // Remove any existing reference
-  stack->push_front( node->reference() );
+  stack->push_front(node);
   setModified();
 }
 
-void VrmlScene::bindableRemove( BindStack stack, VrmlNode *node )
-{
+void VrmlScene::bindableRemove(BindStack stack, const VrmlNodePtr & node) {
   if (stack)
     {
       VrmlNodeList::iterator i;
@@ -1032,7 +1027,6 @@ void VrmlScene::bindableRemove( BindStack stack, VrmlNode *node )
       for (i = stack->begin(); i != stack->end(); ++i )
 	if ( *i == node )
 	  {
-	    (*i)->dereference();
 	    stack->erase( i );
 	    setModified();
 	    break;
@@ -1045,10 +1039,6 @@ void VrmlScene::bindableRemove( BindStack stack, VrmlNode *node )
 
 void VrmlScene::bindableRemoveAll( BindStack stack )
 {
-  VrmlNodeList::iterator i;
-
-  for (i = stack->begin(); i != stack->end(); ++i )
-    (*i)->dereference();
   stack->erase(stack->begin(), stack->end());
 }
 
@@ -1067,113 +1057,111 @@ void VrmlScene::bindableRemoveAll( BindStack stack )
 
 // Background
 
-void VrmlScene::addBackground( VrmlNodeBackground *n )
-{
-  d_backgrounds->push_back( n );
+void VrmlScene::addBackground(VrmlNodeBackground * node) {
+    this->d_backgrounds->push_back(VrmlNodePtr(node));
 }
 
-void VrmlScene::removeBackground( VrmlNodeBackground *n )
-{
-  d_backgrounds->remove( n );
+void VrmlScene::removeBackground(VrmlNodeBackground * node) {
+    this->d_backgrounds->remove(VrmlNodePtr(node));
 }
 
 VrmlNodeBackground *VrmlScene::bindableBackgroundTop()
 {
-  VrmlNode *b = bindableTop( d_backgroundStack );
+  VrmlNode * const b = bindableTop(d_backgroundStack).get();
   return b ? b->toBackground() : 0;
 }
 
 void VrmlScene::bindablePush( VrmlNodeBackground *n )
 {
-  bindablePush( d_backgroundStack, n );
+    bindablePush(d_backgroundStack, VrmlNodePtr(n));
 }
 
 void VrmlScene::bindableRemove( VrmlNodeBackground *n )
 {
-  bindableRemove( d_backgroundStack, n );
+    bindableRemove(d_backgroundStack, VrmlNodePtr(n));
 }
 
 // Fog
 
 void VrmlScene::addFog( VrmlNodeFog *n )
 {
-  d_fogs->push_back( n );
+    d_fogs->push_back(VrmlNodePtr(n));
 }
 
 void VrmlScene::removeFog( VrmlNodeFog *n )
 {
-  d_fogs->remove( n );
+    d_fogs->remove(VrmlNodePtr(n));
 }
 
 VrmlNodeFog *VrmlScene::bindableFogTop()
 {
-  VrmlNode *f =  bindableTop( d_fogStack );
+  VrmlNode * const f = bindableTop(d_fogStack).get();
   return f ? f->toFog() : 0;
 }
 
 void VrmlScene::bindablePush( VrmlNodeFog *n )  
 {
-  bindablePush( d_fogStack, n );
+    bindablePush(d_fogStack, VrmlNodePtr(n));
 }
 
 void VrmlScene::bindableRemove( VrmlNodeFog *n )  
 {
-  bindableRemove( d_fogStack, n );
+    bindableRemove(d_fogStack, VrmlNodePtr(n));
 }
 
 // NavigationInfo
 void VrmlScene::addNavigationInfo( VrmlNodeNavigationInfo *n )
 {
-  d_navigationInfos->push_back( n );
+    d_navigationInfos->push_back(VrmlNodePtr(n));
 }
 
 void VrmlScene::removeNavigationInfo( VrmlNodeNavigationInfo *n )
 {
-  d_navigationInfos->remove( n );
+    d_navigationInfos->remove(VrmlNodePtr(n));
 }
 
 VrmlNodeNavigationInfo *VrmlScene::bindableNavigationInfoTop()
 {
-  VrmlNode *n = bindableTop( d_navigationInfoStack );
+  VrmlNode * const n = bindableTop(d_navigationInfoStack).get();
   return n ? n->toNavigationInfo() : 0;
 }
 
 void VrmlScene::bindablePush( VrmlNodeNavigationInfo *n )
 {
-  bindablePush( d_navigationInfoStack, n );
+    bindablePush(d_navigationInfoStack, VrmlNodePtr(n));
 }
 
 void VrmlScene::bindableRemove( VrmlNodeNavigationInfo *n )
 {
-  bindableRemove( d_navigationInfoStack, n );
+    bindableRemove(d_navigationInfoStack, VrmlNodePtr(n));
 }
 
 // Viewpoint
 void VrmlScene::addViewpoint( VrmlNodeViewpoint *n )
 {
-  d_viewpoints->push_back( n );
+    d_viewpoints->push_back(VrmlNodePtr(n));
 }
 
 void VrmlScene::removeViewpoint( VrmlNodeViewpoint *n )
 {
-  d_viewpoints->remove( n );
+    d_viewpoints->remove(VrmlNodePtr(n));
 }
 
 VrmlNodeViewpoint *VrmlScene::bindableViewpointTop()
 {
-  VrmlNode *t = bindableTop( d_viewpointStack );
+  VrmlNode * const t = bindableTop(d_viewpointStack).get();
   return t ? t->toViewpoint() : 0;
 }
 
 void VrmlScene::bindablePush( VrmlNodeViewpoint *n )
 {
-  bindablePush( d_viewpointStack, n );
+  bindablePush(d_viewpointStack, VrmlNodePtr(n));
   d_newView = true;
 }
 
 void VrmlScene::bindableRemove( VrmlNodeViewpoint *n )
 {
-  bindableRemove( d_viewpointStack, n );
+  bindableRemove(d_viewpointStack, VrmlNodePtr(n));
   d_newView = true;
 }
 
@@ -1185,7 +1173,7 @@ void VrmlScene::nextViewpoint()
   VrmlNodeList::iterator i;
 
   for (i = d_viewpoints->begin(); i != d_viewpoints->end(); ++i )
-    if ((*i) == vp)
+    if (i->get() == vp)
       {
 	if (++i == d_viewpoints->end())
 	  i = d_viewpoints->begin();
@@ -1205,7 +1193,7 @@ void VrmlScene::prevViewpoint()
   VrmlNodeList::iterator i;
 
   for (i = d_viewpoints->begin(); i != d_viewpoints->end(); ++i )
-    if ((*i) == vp)
+    if (i->get() == vp)
       {
 	if (i == d_viewpoints->begin())
 	  i = d_viewpoints->end();
@@ -1230,7 +1218,7 @@ void VrmlScene::getViewpoint(int nvp, const char **namep, const char **descripti
     if (n == nvp)
       {
 	*namep = (*i)->name();
-	*descriptionp = ((VrmlNodeViewpoint*)(*i))->description();
+	*descriptionp = (*i)->toViewpoint()->description();
 	return;
       }
 }
@@ -1241,11 +1229,11 @@ void VrmlScene::setViewpoint(const char *name, const char *description)
 
   for (i = d_viewpoints->begin(); i != d_viewpoints->end(); ++i)
     if (strcmp(name, (*i)->name()) == 0 &&
-	strcmp(description, ((VrmlNodeViewpoint*)(*i))->description()) == 0)
+	strcmp(description, (*i)->toViewpoint()->description()) == 0)
       {
 	VrmlNodeViewpoint *vp;
 	VrmlSFBool flag(true);
-	if ((vp = (VrmlNodeViewpoint*) *i) != 0)
+	if ((vp = (*i)->toViewpoint()) != 0)
 	  vp->eventIn(theSystem->time(), "set_bind", flag);
 	return;
       }
@@ -1261,7 +1249,7 @@ void VrmlScene::setViewpoint(int nvp)
       {
 	VrmlNodeViewpoint *vp;
 	VrmlSFBool flag(true);
-	if ((vp = (VrmlNodeViewpoint*) *i) != 0)
+	if ((vp = (*i)->toViewpoint()) != 0)
 	  vp->eventIn(theSystem->time(), "set_bind", flag);
 	return;
       }
@@ -1278,12 +1266,12 @@ void VrmlScene::setViewpoint(int nvp)
 
 void VrmlScene::addScopedLight( VrmlNodeLight *light )
 {
-  d_scopedLights->push_back( light );
+    d_scopedLights->push_back(VrmlNodePtr(light));
 }
 
 void VrmlScene::removeScopedLight( VrmlNodeLight *light )
 {
-  d_scopedLights->remove( light );
+    d_scopedLights->remove(VrmlNodePtr(light));
 }
 
 
@@ -1291,36 +1279,36 @@ void VrmlScene::removeScopedLight( VrmlNodeLight *light )
 
 void VrmlScene::addMovie( VrmlNodeMovieTexture *movie )
 {
-  d_movies->push_back( movie );
+    d_movies->push_back(VrmlNodePtr(movie));
 }
 
 void VrmlScene::removeMovie( VrmlNodeMovieTexture *movie )
 {
-  d_movies->remove( movie );
+    d_movies->remove(VrmlNodePtr(movie));
 }
 
 // Scripts
 
 void VrmlScene::addScript( VrmlNodeScript *script )
 {
-  d_scripts->push_back( script );
+    d_scripts->push_back(VrmlNodePtr(script));
 }
 
 void VrmlScene::removeScript( VrmlNodeScript *script )
 {
-  d_scripts->remove( script );
+    d_scripts->remove(VrmlNodePtr(script));
 }
 
 // TimeSensors
 
 void VrmlScene::addTimeSensor( VrmlNodeTimeSensor *timer )
 {
-  d_timers->push_back( timer );
+    d_timers->push_back(VrmlNodePtr(timer));
 }
 
 void VrmlScene::removeTimeSensor( VrmlNodeTimeSensor *timer )
 {
-  d_timers->remove( timer );
+    d_timers->remove(VrmlNodePtr(timer));
 }
 
 
@@ -1328,12 +1316,12 @@ void VrmlScene::removeTimeSensor( VrmlNodeTimeSensor *timer )
 
 void VrmlScene::addAudioClip( VrmlNodeAudioClip *audio_clip )
 {
-  d_audioClips->push_back( audio_clip );
+    d_audioClips->push_back(VrmlNodePtr(audio_clip));
 }
 
 void VrmlScene::removeAudioClip( VrmlNodeAudioClip *audio_clip )
 {
-  d_audioClips->remove( audio_clip );
+    d_audioClips->remove(VrmlNodePtr(audio_clip));
 }
 
 
@@ -1348,11 +1336,4 @@ void VrmlScene::updateFlags()
 VrmlNode* VrmlScene::getRoot()
 {
   return &d_nodes;
-}
-
-void VrmlScene::setRoot(VrmlNode* root)
-{
-  if (!root) return;
-  // safe: addChildren copies args...
-  d_nodes.addChildren(VrmlMFNode(1, &root));
 }

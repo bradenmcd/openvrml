@@ -21,17 +21,18 @@
 # ifndef ROUTE_H
 #   define ROUTE_H
 
-class VrmlNode;
+#   include "VrmlNodePtr.h"
 
 class Route {
 public:
-  Route(const char *fromEventOut, VrmlNode *toNode, const char *toEventIn);
+  Route(const char * fromEventOut, const VrmlNodePtr & toNode,
+        const char * toEventIn);
   Route(const Route&);
   ~Route();
 
   char *fromEventOut() { return d_fromEventOut; }
   char *toEventIn() { return d_toEventIn; }
-  VrmlNode *toNode() { return d_toNode; }
+  const VrmlNodePtr & toNode() { return d_toNode; }
 
   Route *prev() { return d_prev; }
   Route *next() { return d_next; }
@@ -40,7 +41,7 @@ public:
   
 private:
   char *d_fromEventOut;
-  VrmlNode *d_toNode;
+  const VrmlNodePtr d_toNode;
   char *d_toEventIn;
   Route *d_prev, *d_next;
 };
