@@ -148,7 +148,7 @@ copyvrmldll :
 
 copydll :
 !IF "$(WITH_JAVASCRIPT)" == "YES"
-	-@echo Copying libjs.dll to $(MAKEDIR)\bin
+	-@echo Copying js32.dll to $(MAKEDIR)\bin
  if exist $(MOZILLALIB_DIR)\js32.dll copy $(MOZILLALIB_DIR)\js32.dll $(BINOUTDIR)
 !ENDIF
 	-@echo Copying glut32.dll to $(MAKEDIR)\bin
