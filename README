@@ -141,9 +141,30 @@ System-specific notes
 Bug reports
 ===========
 
-   Please send bug reports to the OpenVRML mailing list,
-openvrml-develop@sourceforge.net.  Subscription instructions are at
-<http://lists.sourceforge.net/mailman/listinfo/openvrml-develop>.
+   Please report any bugs you encounter via the SourceForge bug tracking
+system:
+
+     <http://sourceforge.net/bugs/?group_id=7151>
+
+Note that you will need to log into SourceForge before reporting a bug
+if you would like to be notified (via e-mail) when the bug's status is
+updated.
+
+
+Mailing Lists
+=============
+
+   Two mailing lists are maintained:
+
+ * <openvrml-announce@sourceforge.net> is a low-traffic list for
+   announcments, typically regarding new releases. Subscription
+   instructions are at
+     <http://lists.sourceforge.net/mailman/listinfo/openvrml-announce>
+
+ * <openvrml-develop@sourceforge.net> is a forum for developers using
+   and working on the libraries.  User feedback is welcome in this
+   channel. Subscription instructions are at
+     <http://lists.sourceforge.net/mailman/listinfo/openvrml-develop>
 
 
 Design
