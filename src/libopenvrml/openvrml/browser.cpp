@@ -55,6 +55,31 @@ namespace openvrml {
             throw (std::bad_alloc);
         virtual ~Vrml97RootScope() throw ();
     };
+
+
+    class null_node_class : public node_class {
+    public:
+        explicit null_node_class(openvrml::browser & browser) throw ();
+        virtual ~null_node_class() throw ();
+
+        virtual const node_type_ptr
+        create_type(const std::string & id,
+                    const node_interface_set & interfaces)
+            throw ();
+    };
+
+
+    class null_node_type : public node_type {
+    public:
+        explicit null_node_type(null_node_class & nodeClass) throw ();
+        virtual ~null_node_type() throw ();
+
+        virtual const node_interface_set & interfaces() const throw ();
+        virtual const node_ptr
+        create_node(const scope_ptr & scope,
+                    const initial_value_map & initial_values) const
+            throw ();
+    };
 }
 
 namespace {
@@ -2341,6 +2366,149 @@ namespace {
         return node_type_ptr(new proto_node_type(*this, id, interfaces));
     }
 
+
+    class default_viewpoint : public viewpoint_node {
+        mat4f userViewTransform;
+
+    public:
+        explicit default_viewpoint(const null_node_type & nodeType) throw ();
+        virtual ~default_viewpoint() throw ();
+
+        virtual const mat4f & transformation() const throw ();
+        virtual const mat4f & user_view_transform() const throw ();
+        virtual void user_view_transform(const mat4f & transform) throw ();
+        virtual const std::string & description() const throw ();
+        virtual float field_of_view() const throw ();
+
+    private:
+        virtual void do_field(const std::string & id,
+                              const field_value & value)
+            throw ();
+        virtual const field_value & do_field(const std::string & id) const
+            throw ();
+        virtual void do_process_event(const std::string & id,
+                                      const field_value & value,
+                                      double timestamp)
+            throw ();
+        virtual const field_value & do_eventout(const std::string & id) const
+            throw ();
+
+        virtual openvrml::event_listener &
+        do_event_listener(const std::string & id)
+            throw (unsupported_interface);
+        virtual openvrml::event_emitter &
+        do_event_emitter(const std::string & id)
+            throw (unsupported_interface);
+    };
+
+    static const scope_ptr null_scope_ptr;
+
+    /**
+     * @brief Constructor.
+     *
+     * @param type  the browser's null_node_type instance.
+     */
+    default_viewpoint::default_viewpoint(const null_node_type & type)
+        throw ():
+        node(type, null_scope_ptr),
+        child_node(type, null_scope_ptr),
+        viewpoint_node(type, null_scope_ptr)
+    {}
+
+    /**
+     * @brief Destructor.
+     */
+    default_viewpoint::~default_viewpoint() throw ()
+    {}
+
+    const mat4f & default_viewpoint::transformation() const throw ()
+    {
+        static const vec3f position(0.0, 0.0, 10.0);
+        static const rotation orientation;
+        static const vec3f scale(1.0, 1.0, 1.0);
+        static const rotation scaleOrientation;
+        static const vec3f center;
+        static const mat4f t(mat4f::transformation(position,
+                                                   orientation,
+                                                   scale,
+                                                   scaleOrientation,
+                                                   center));
+        return t;
+    }
+
+    const mat4f & default_viewpoint::user_view_transform() const throw ()
+    {
+        return this->userViewTransform;
+    }
+
+    void default_viewpoint::user_view_transform(const mat4f & transform)
+        throw ()
+    {
+        this->userViewTransform = transform;
+    }
+
+    const std::string & default_viewpoint::description() const throw ()
+    {
+        static const std::string desc;
+        return desc;
+    }
+
+    float default_viewpoint::field_of_view() const throw ()
+    {
+        static const float fieldOfView = 0.785398f;
+        return fieldOfView;
+    }
+
+    void default_viewpoint::do_field(const std::string & id,
+                                     const field_value & value)
+        throw ()
+    {
+        assert(false);
+    }
+
+    const field_value &
+    default_viewpoint::do_field(const std::string & id) const
+        throw ()
+    {
+        assert(false);
+        static const sfbool value;
+        return value;
+    }
+
+    void default_viewpoint::do_process_event(const std::string & id,
+                                             const field_value & value,
+                                             double timestamp)
+        throw ()
+    {
+        assert(false);
+    }
+
+    const field_value &
+    default_viewpoint::do_eventout(const std::string & id) const throw ()
+    {
+        assert(false);
+        static const sfbool value;
+        return value;
+    }
+
+    event_listener &
+    default_viewpoint::do_event_listener(const std::string & id)
+        throw (unsupported_interface)
+    {
+        assert(false);
+        throw unsupported_interface(this->type, id);
+        return *static_cast<openvrml::event_listener *>(0);
+    }
+
+    event_emitter &
+    default_viewpoint::do_event_emitter(const std::string & id)
+        throw (unsupported_interface)
+    {
+        assert(false);
+        throw unsupported_interface(this->type, id);
+        return *static_cast<openvrml::event_emitter *>(0);
+    }
+
 } // namespace
 
 //
@@ -2362,65 +2530,6 @@ namespace {
  * @brief The OpenVRML Runtime Library
  */
 namespace openvrml {
-
-class null_node_class : public node_class {
-public:
-    explicit null_node_class(openvrml::browser & browser) throw ();
-    virtual ~null_node_class() throw ();
-
-    virtual const node_type_ptr
-    create_type(const std::string & id,
-                const node_interface_set & interfaces)
-        throw ();
-};
-
-
-class null_node_type : public node_type {
-public:
-    explicit null_node_type(null_node_class & nodeClass) throw ();
-    virtual ~null_node_type() throw ();
-
-    virtual const node_interface_set & interfaces() const throw ();
-    virtual const node_ptr
-    create_node(const scope_ptr & scope,
-                const initial_value_map & initial_values) const
-        throw ();
-};
-
-
-class DefaultViewpoint : public viewpoint_node {
-    mat4f userViewTransform;
-
-public:
-    explicit DefaultViewpoint(const null_node_type & nodeType) throw ();
-    virtual ~DefaultViewpoint() throw ();
-
-    virtual const mat4f & transformation() const throw ();
-    virtual const mat4f & user_view_transform() const throw ();
-    virtual void user_view_transform(const mat4f & transform) throw ();
-    virtual const std::string & description() const throw ();
-    virtual float field_of_view() const throw ();
-
-private:
-    virtual void do_field(const std::string & id, const field_value & value)
-        throw ();
-    virtual const field_value & do_field(const std::string & id) const
-        throw ();
-    virtual void do_process_event(const std::string & id,
-                                  const field_value & value,
-                                  double timestamp)
-        throw ();
-    virtual const field_value & do_eventout(const std::string & id) const
-        throw ();
-
-    virtual openvrml::event_listener &
-    do_event_listener(const std::string & id)
-        throw (unsupported_interface);
-    virtual openvrml::event_emitter &
-    do_event_emitter(const std::string & id)
-        throw (unsupported_interface);
-};
-
 
 /**
  * @var const double pi
@@ -2817,8 +2926,8 @@ browser::browser(std::ostream & out, std::ostream & err)
     null_node_type_(new null_node_type(*null_node_class_)),
     script_node_class_(*this),
     scene_(0),
-    default_viewpoint(new DefaultViewpoint(*null_node_type_)),
-    active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint.get())),
+    default_viewpoint_(new default_viewpoint(*null_node_type_)),
+    active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
     modified_(false),
     new_view(false),
     delta_time(DEFAULT_DELTA),
@@ -2942,9 +3051,9 @@ void browser::active_viewpoint(viewpoint_node & viewpoint) throw ()
  */
 void browser::reset_default_viewpoint() throw ()
 {
-    assert(this->default_viewpoint);
+    assert(this->default_viewpoint_);
     this->active_viewpoint_ =
-        node_cast<viewpoint_node *>(this->default_viewpoint.get());
+        node_cast<viewpoint_node *>(this->default_viewpoint_.get());
     assert(this->active_viewpoint_);
 }
 
@@ -3175,7 +3284,7 @@ void browser::load_url(const std::vector<std::string> & url,
     delete this->scene_;
     this->scene_ = 0;
     this->active_viewpoint_ =
-        node_cast<viewpoint_node *>(this->default_viewpoint.get());
+        node_cast<viewpoint_node *>(this->default_viewpoint_.get());
     this->navigation_info_stack.clear();
     assert(this->viewpoint_list.empty());
     assert(this->navigation_infos.empty());
@@ -3228,7 +3337,7 @@ void browser::load_url(const std::vector<std::string> & url,
         }
 
         if (this->active_viewpoint_
-            != node_cast<viewpoint_node *>(this->default_viewpoint.get())) {
+            != node_cast<viewpoint_node *>(this->default_viewpoint_.get())) {
             event_listener & listener =
                 this->active_viewpoint_->event_listener("set_bind");
             assert(dynamic_cast<sfbool_listener *>(&listener));
@@ -6241,110 +6350,6 @@ null_node_type::create_node(const scope_ptr & scope,
     assert(false);
     static const node_ptr node;
     return node;
-}
-
-
-/**
- * @brief Constructor.
- *
- * @param nodeType  the browser's null_node_type instance.
- */
-DefaultViewpoint::DefaultViewpoint(const null_node_type & nodeType) throw ():
-    node(nodeType, scope_ptr()),
-    child_node(nodeType, scope_ptr()),
-    viewpoint_node(nodeType, scope_ptr())
-{}
-
-/**
- * @brief Destructor.
- */
-DefaultViewpoint::~DefaultViewpoint() throw ()
-{}
-
-const mat4f & DefaultViewpoint::transformation() const throw ()
-{
-    static const vec3f position(0.0, 0.0, 10.0);
-    static const rotation orientation;
-    static const vec3f scale(1.0, 1.0, 1.0);
-    static const rotation scaleOrientation;
-    static const vec3f center;
-    static const mat4f t(mat4f::transformation(position,
-                                               orientation,
-                                               scale,
-                                               scaleOrientation,
-                                               center));
-    return t;
-}
-
-const mat4f & DefaultViewpoint::user_view_transform() const throw ()
-{
-    return this->userViewTransform;
-}
-
-void DefaultViewpoint::user_view_transform(const mat4f & transform)
-    throw ()
-{
-    this->userViewTransform = transform;
-}
-
-const std::string & DefaultViewpoint::description() const throw ()
-{
-    static const std::string desc;
-    return desc;
-}
-
-float DefaultViewpoint::field_of_view() const throw ()
-{
-    static const float fieldOfView = 0.785398f;
-    return fieldOfView;
-}
-
-void DefaultViewpoint::do_field(const std::string & id,
-                                const field_value & value)
-    throw ()
-{
-    assert(false);
-}
-
-const field_value & DefaultViewpoint::do_field(const std::string & id) const
-    throw ()
-{
-    assert(false);
-    static const sfbool value;
-    return value;
-}
-
-void DefaultViewpoint::do_process_event(const std::string & id,
-                                        const field_value & value,
-                                        double timestamp)
-    throw ()
-{
-    assert(false);
-}
-
-const field_value &
-DefaultViewpoint::do_eventout(const std::string & id) const throw ()
-{
-    assert(false);
-    static const sfbool value;
-    return value;
-}
-
-event_listener & DefaultViewpoint::do_event_listener(const std::string & id)
-    throw (unsupported_interface)
-{
-    assert(false);
-    throw unsupported_interface(this->type, id);
-    return *static_cast<openvrml::event_listener *>(0);
-}
-
-event_emitter &
-DefaultViewpoint::do_event_emitter(const std::string & id)
-    throw (unsupported_interface)
-{
-    assert(false);
-    throw unsupported_interface(this->type, id);
-    return *static_cast<openvrml::event_emitter *>(0);
 }
 
 

@@ -75,7 +75,7 @@ namespace openvrml {
         node_class_map_t node_class_map;
         script_node_class script_node_class_;
         scene * scene_;
-        const node_ptr default_viewpoint;
+        const node_ptr default_viewpoint_;
         viewpoint_node * active_viewpoint_;
         std::list<viewpoint_node *> viewpoint_list;
         typedef std::list<node_ptr> bind_stack_t;
