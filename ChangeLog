@@ -3,6 +3,14 @@
         * src/openvrml/OpenVRML/node.cpp:  Work around an apparent
           gcc 3.2.2 bug with pointer-to-member syntax.
 
+        * src/openvrml/OpenVRML/Viewer.cpp,
+          src/openvrml/OpenVRML/Viewer.h,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Use basetypes in
+          Viewer interface.
+
 2003-03-21  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/System.cpp,

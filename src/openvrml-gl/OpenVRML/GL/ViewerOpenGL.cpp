@@ -261,7 +261,7 @@ namespace {
     {
         static const float sqrt2 = sqrt(2.0);
         static const float sqrt2_2 = sqrt2 / 2.0;
-        
+
         float d, t, z;
 
         d = sqrt(x * x + y * y);
@@ -298,7 +298,7 @@ namespace {
         static const float trackballSize = 0.8;
 
         rotation result;
-        
+
         if (p1x == p2x && p1y == p2y) {
             /* Zero rotation */
             return result;
@@ -556,26 +556,33 @@ namespace {
     }
 }
 
-//
-//  Geometry insertion.
-//
-
-Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
-                                              const float * groundAngle,
-                                              const float * groundColor,
-                                              size_t nSkyAngles,
-                                              const float * skyAngle,
-                                              const float * skyColor,
-                                              int * whc,
-                                              unsigned char ** pixels)
+/**
+ * @brief Insert a background into a display list.
+ *
+ * @param groundAngle   ground angles.
+ * @param groundColor   ground colors.
+ * @param skyAngle      sky angles.
+ * @param skyColor      sky colors.
+ * @param whc           texture width, height, and number of components.
+ * @param pixels        texture pixel data.
+ *
+ * @return display object identifier.
+ */
+Viewer::Object
+ViewerOpenGL::insertBackground(const std::vector<float> & groundAngle,
+                               const std::vector<color> & groundColor,
+                               const std::vector<float> & skyAngle,
+                               const std::vector<color> & skyColor,
+                               int * whc,
+                               unsigned char ** pixels)
 {
     float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
 
     // Clear to last sky color
-    if (skyColor != 0) {
-        r = skyColor[3 * nSkyAngles + 0];
-        g = skyColor[3 * nSkyAngles + 1];
-        b = skyColor[3 * nSkyAngles + 2];
+    if (!skyColor.empty()) {
+        r = skyColor.back().r();
+        g = skyColor.back().g();
+        b = skyColor.back().b();
     }
 
     GLuint glid = 0;
@@ -585,7 +592,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 # if 0
     // Don't bother with a dlist if we aren't drawing anything
     if (!this->d_selectMode
-            && (nSkyAngles > 0 || nGroundAngles > 0 || pixels)) {
+            && (!skyAngle.empty() || !groundAngle.empty() || pixels)) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
@@ -601,7 +608,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 
     // Draw the background as big spheres centered at the view position
     if (!this->d_selectMode
-            && (nSkyAngles > 0 || nGroundAngles > 0 || pixels)) {
+            && (!skyAngle.empty() || !groundAngle.empty() || pixels)) {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);
 
@@ -614,13 +621,13 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
         const double cd = 2.0 * pi / nCirc;
 
         double heightAngle0, heightAngle1 = 0.0;
-        const float *c0, *c1 = skyColor;
+        std::vector<color>::const_iterator c0, c1 = skyColor.begin();
 
-        for (size_t nSky = 0; nSky < nSkyAngles; ++nSky) {
+        for (size_t nSky = 0; nSky < skyAngle.size(); ++nSky) {
             heightAngle0 = heightAngle1;
             heightAngle1 = skyAngle[nSky];
             c0 = c1;
-            c1 += 3;
+            ++c1;
 
             double circAngle0, circAngle1 = 0.0;
             double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
@@ -637,10 +644,10 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
                 cca0 = cca1;
                 cca1 = cos(circAngle1);
 
-                glColor3fv(c1);
+                glColor3fv(&(*c1)[0]);
                 glVertex3f(sha1 * cca0, cha1, sha1 * sca0);
                 glVertex3f(sha1 * cca1, cha1, sha1 * sca1);
-                glColor3fv(c0);
+                glColor3fv(&(*c0)[0]);
                 glVertex3f(sha0 * cca1, cha0, sha0 * sca1);
                 glVertex3f(sha0 * cca0, cha0, sha0 * sca0);
             }
@@ -649,13 +656,13 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 
         // Ground
         heightAngle1 = pi;
-        c1 = groundColor;
+        c1 = groundColor.begin();
 
-        for (size_t nGround = 0; nGround < nGroundAngles; ++nGround) {
+        for (size_t nGround = 0; nGround < groundAngle.size(); ++nGround) {
             heightAngle0 = heightAngle1;
             heightAngle1 = pi - groundAngle[nGround];
             c0 = c1;
-            c1 += 3;
+            ++c1;
 
             double circAngle0, circAngle1 = 0.0;
             double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
@@ -672,10 +679,10 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
                 cca0 = cca1;
                 cca1 = cos(circAngle1);
 
-                glColor3fv(c1);
+                glColor3fv(&(*c1)[0]);
                 glVertex3f(sha1 * cca1, cha1, sha1 * sca1);
                 glVertex3f(sha1 * cca0, cha1, sha1 * sca0);
-                glColor3fv(c0);
+                glColor3fv(&(*c0)[0]);
                 glVertex3f(sha0 * cca0, cha0, sha0 * sca0);
                 glVertex3f(sha0 * cca1, cha0, sha0 * sca1);
             }
@@ -843,78 +850,81 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
     return Object(glid);
 }
 
-
-
-Viewer::Object ViewerOpenGL::insertBox(float x, float y, float z)
+/**
+ * @brief Insert a box into a display list.
+ *
+ * @param size  box dimensions.
+ *
+ * @return display object identifier.
+ */
+Viewer::Object ViewerOpenGL::insertBox(const vec3f & size)
 {
-  GLuint glid = 0;
+    GLuint glid = 0;
 
-  if (! d_selectMode)
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
+    if (!this->d_selectMode) {
+        glid = glGenLists(1);
+        glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
-  static GLint faces[6][4] =
-  {
-    {0, 1, 2, 3},
-    {1, 5, 6, 2},
-    {5, 4, 7, 6},
-    {4, 0, 3, 7},
-    {2, 6, 7, 3},
-    {0, 4, 5, 1}
-  };
-
-  static GLfloat n[6][3] =        // normals
-  {
-    {-1.0, 0.0, 0.0},
-    {0.0, 0.0, 1.0},
-    {1.0, 0.0, 0.0},
-    {0.0, 0.0, -1.0},
-    {0.0, 1.0, 0.0},
-    {0.0, -1.0, 0.0}
-  };
-
-  GLfloat v[8][3];
-  GLint i;
-
-  v[0][0] = v[1][0] = v[2][0] = v[3][0] = -x / 2;
-  v[4][0] = v[5][0] = v[6][0] = v[7][0] = x / 2;
-  v[0][1] = v[1][1] = v[4][1] = v[5][1] = -y / 2;
-  v[2][1] = v[3][1] = v[6][1] = v[7][1] = y / 2;
-  v[0][2] = v[3][2] = v[4][2] = v[7][2] = -z / 2;
-  v[1][2] = v[2][2] = v[5][2] = v[6][2] = z / 2;
-
-  beginGeometry();
-  glShadeModel( GL_FLAT );
-
-  glBegin( GL_QUADS );
-  for (i = 0; i < 6; ++i)
+    static const GLint faces[6][4] =
     {
-      glNormal3fv(&n[i][0]);
+        {0, 1, 2, 3},
+        {1, 5, 6, 2},
+        {5, 4, 7, 6},
+        {4, 0, 3, 7},
+        {2, 6, 7, 3},
+        {0, 4, 5, 1}
+    };
 
-      //glTexCoord2f( 0.0, 1.0 );
-      glTexCoord2f( 0.0, 0.0 );
-      glVertex3fv(&v[faces[i][0]][0]);
+    static const GLfloat n[6][3] =        // normals
+    {
+        {-1.0, 0.0, 0.0},
+        {0.0, 0.0, 1.0},
+        {1.0, 0.0, 0.0},
+        {0.0, 0.0, -1.0},
+        {0.0, 1.0, 0.0},
+        {0.0, -1.0, 0.0}
+    };
 
-      //glTexCoord2f( 1.0, 1.0 );
-      glTexCoord2f( 1.0, 0.0 );
-      glVertex3fv(&v[faces[i][1]][0]);
+    GLfloat v[8][3];
+    GLint i;
 
-      //glTexCoord2f( 1.0, 0.0 );
-      glTexCoord2f( 1.0, 1.0 );
-      glVertex3fv(&v[faces[i][2]][0]);
+    v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size.x() / 2;
+    v[4][0] = v[5][0] = v[6][0] = v[7][0] = size.x() / 2;
+    v[0][1] = v[1][1] = v[4][1] = v[5][1] = -size.y() / 2;
+    v[2][1] = v[3][1] = v[6][1] = v[7][1] = size.y() / 2;
+    v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size.z() / 2;
+    v[1][2] = v[2][2] = v[5][2] = v[6][2] = size.z() / 2;
 
-      //glTexCoord2f( 0.0, 0.0 );
-      glTexCoord2f( 0.0, 1.0 );
-      glVertex3fv(&v[faces[i][3]][0]);
+    beginGeometry();
+    glShadeModel(GL_FLAT);
+
+    glBegin(GL_QUADS);
+    for (i = 0; i < 6; ++i) {
+        glNormal3fv(&n[i][0]);
+
+        //glTexCoord2f(0.0, 1.0);
+        glTexCoord2f(0.0, 0.0);
+        glVertex3fv(&v[faces[i][0]][0]);
+
+        //glTexCoord2f(1.0, 1.0);
+        glTexCoord2f(1.0, 0.0);
+        glVertex3fv(&v[faces[i][1]][0]);
+
+        //glTexCoord2f(1.0, 0.0);
+        glTexCoord2f(1.0, 1.0);
+        glVertex3fv(&v[faces[i][2]][0]);
+
+        //glTexCoord2f(0.0, 0.0);
+        glTexCoord2f(0.0, 1.0);
+        glVertex3fv(&v[faces[i][3]][0]);
     }
-  glEnd();
+    glEnd();
 
-  endGeometry();
-  if (glid) glEndList();
+    endGeometry();
+    if (glid) { glEndList(); }
 
-  return (Object) glid;
+    return Object(glid);
 }
 
 namespace {
@@ -978,184 +988,190 @@ namespace {
     }
 }
 
-Viewer::Object ViewerOpenGL::insertCone(float h,
-                                        float r,
-                                        bool bottom, bool side)
+/**
+ * @brief Insert a cone into a display list.
+ *
+ * @param height    height.
+ * @param radius    radius at base.
+ * @param bottom    show the bottom.
+ * @param side      show the side.
+ *
+ * @return display object identifier.
+ */
+Viewer::Object ViewerOpenGL::insertCone(const float height,
+                                        const float radius,
+                                        const bool bottom,
+                                        const bool side)
 {
-  GLuint glid = 0;
+    GLuint glid = 0;
 
-  if (! d_selectMode)
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
+    if (!this->d_selectMode) {
+        glid = glGenLists(1);
+        glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
 
-  beginGeometry();
-  if (! bottom || ! side )
-    glDisable( GL_CULL_FACE );
+    beginGeometry();
+    if (!bottom || !side) { glDisable(GL_CULL_FACE); }
 
-  if (bottom || side)
-    {
-      const int nfacets = 11;                // Number of polygons for sides
-      const int npts = 2 * nfacets;
-      const int nfaces = nfacets * 5;
+    if (bottom || side) {
+        const int nfacets = 11;                // Number of polygons for sides
+        const int npts = 2 * nfacets;
+        const int nfaces = nfacets * 5;
 
-      float c[ npts ][ 3 ];                // coordinates
-      float tc[ npts ][ 3 ];                // texture coordinates
-      int faces[ nfaces ];                // face lists
+        float c[npts][3];                // coordinates
+        float tc[npts][3];                // texture coordinates
+        int faces[nfaces];                // face lists
 
-      // should only compute tc if a texture is present...
-      computeCylinder( h, r, nfacets, c, tc, faces);
+        // should only compute tc if a texture is present...
+        computeCylinder(height, radius, nfacets, c, tc, faces);
 
-      for (int i=0; i<nfacets; ++i)
-        c[i][0] = c[i][2] = 0.0;
+        for (int i = 0; i < nfacets; ++i) { c[i][0] = c[i][2] = 0.0; }
 
-      if (side)
-        {
-          float Ny = r * r / h;
-          glBegin( GL_QUAD_STRIP );
-          for (int i = 0; i < nfacets; ++i)
-            {
-              glNormal3f( c[i+nfacets][0], Ny, c[i+nfacets][2] );
-              glTexCoord2fv( &tc[i+nfacets][0] );
-              glVertex3fv(   &c [i+nfacets][0] );
-              glTexCoord2fv( &tc[i][0] );
-              glVertex3fv(   &c [i][0] );
+        if (side) {
+            float Ny = radius * radius / height;
+            glBegin(GL_QUAD_STRIP);
+            for (int i = 0; i < nfacets; ++i) {
+                glNormal3f(c[i + nfacets][0], Ny, c[i + nfacets][2]);
+                glTexCoord2fv(&tc[i + nfacets][0]);
+                glVertex3fv(&c[i + nfacets][0]);
+                glTexCoord2fv(&tc[i][0]);
+                glVertex3fv(&c[i][0]);
             }
 
-          glNormal3f( c[nfacets][0], Ny, c[nfacets][2] );
-          glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
-          glVertex3fv(   &c [nfacets][0] );
-          glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
-          glVertex3fv(   & c[0][0] );
-          glEnd();
+            glNormal3f(c[nfacets][0], Ny, c[nfacets][2]);
+            glTexCoord2f(tc[nfacets][0] - 1.0, tc[nfacets][1]);
+            glVertex3fv(&c[nfacets][0]);
+            glTexCoord2f(tc[0][0] - 1.0, tc[0][1]);
+            glVertex3fv(&c[0][0]);
+            glEnd();
         }
 
-      if (bottom)
-        {
-          glBegin( GL_TRIANGLE_FAN );
-          glNormal3f( 0.0, -1.0, 0.0 );
-          glTexCoord2f( 0.5, 0.5 );
-          glVertex3f( 0.0, - 0.5 * h, 0.0 );
+        if (bottom) {
+            glBegin(GL_TRIANGLE_FAN);
+            glNormal3f(0.0, -1.0, 0.0);
+            glTexCoord2f(0.5, 0.5);
+            glVertex3f(0.0, - 0.5 * height, 0.0);
 
-          float angle = 0.5 * pi; // First v is at max x
-          float aincr = 2.0 * pi / (float) nfacets;
-          for (int i = 0; i < nfacets; ++i, angle+=aincr )
-            {
-              glTexCoord2f( 0.5*(1.0+sin( angle )),
-                            1.0-0.5*(1.+cos( angle )) );
-              glVertex3fv( &c[i+nfacets][0] );
+            float angle = 0.5 * pi; // First v is at max x
+            float aincr = 2.0 * pi / float(nfacets);
+            for (int i = 0; i < nfacets; ++i, angle += aincr) {
+                glTexCoord2f(      0.5 * (1.0 + sin(angle)),
+                             1.0 - 0.5 * (1.0 + cos(angle)));
+                glVertex3fv(&c[i + nfacets][0]);
             }
-          glTexCoord2f( 0.5*(1.0+sin( angle )),
-                        1.0-0.5*(1.+cos( angle )) );
-          glVertex3fv( &c[nfacets][0] );
-          glEnd();
+            glTexCoord2f(      0.5 * (1.0 + sin(angle)),
+                         1.0 - 0.5 * (1.0 + cos(angle)));
+            glVertex3fv(&c[nfacets][0]);
+            glEnd();
         }
     }
 
-  endGeometry();
-  if (glid) glEndList();
+    endGeometry();
+    if (glid) { glEndList(); }
 
-  return (Object) glid;
+    return Object(glid);
 }
 
-
-Viewer::Object ViewerOpenGL::insertCylinder(float h,
-                                            float r,
-                                            bool bottom, bool side, bool top)
+/**
+ * @brief Insert a cylinder into a display list.
+ *
+ * @param height    height.
+ * @param radius    radius.
+ * @param bottom    show the bottom.
+ * @param side      show the side.
+ * @param top       show the top.
+ *
+ * @return display object identifier.
+ */
+Viewer::Object ViewerOpenGL::insertCylinder(const float height,
+                                            const float radius,
+                                            const bool bottom,
+                                            const bool side,
+                                            const bool top)
 {
-  GLuint glid = 0;
+    GLuint glid = 0;
 
-  if (! d_selectMode)
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
+    if (!this->d_selectMode) {
+        glid = glGenLists(1);
+        glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
-  beginGeometry();
-  if (! bottom || ! side || ! top)
-    glDisable( GL_CULL_FACE );
+    beginGeometry();
+    if (!bottom || !side || !top) { glDisable(GL_CULL_FACE); }
 
-  if (bottom || side || top)
-    {
-      const int nfacets = 8;                // Number of polygons for sides
-      const int npts = 2 * nfacets;
-      const int nfaces = nfacets * 5;
+    if (bottom || side || top) {
+        const int nfacets = 8;                // Number of polygons for sides
+        const int npts = 2 * nfacets;
+        const int nfaces = nfacets * 5;
 
-      float c[ npts ][ 3 ];                // coordinates
-      float tc[ npts ][ 3 ];                // texture coordinates
-      int faces[ nfaces ];                // face lists
+        float c[npts][3];                // coordinates
+        float tc[npts][3];                // texture coordinates
+        int faces[nfaces];                // face lists
 
-      // should only compute tc if a texture is present...
-      computeCylinder( h, r, nfacets, c, tc, faces);
+        // should only compute tc if a texture is present...
+        computeCylinder(height, radius, nfacets, c, tc, faces);
 
-      if (side)
-        {
-          glBegin( GL_QUAD_STRIP );
-          for (int i = 0; i < nfacets; ++i)
-            {
-              glNormal3f( c[i+nfacets][0], 0.0, c[i+nfacets][2] );
-              glTexCoord2fv( &tc[i+nfacets][0] );
-              glVertex3fv(   &c [i+nfacets][0] );
-              glTexCoord2fv( &tc[i][0] );
-              glVertex3fv(   &c [i][0] );
+        if (side) {
+            glBegin(GL_QUAD_STRIP);
+            for (int i = 0; i < nfacets; ++i) {
+                glNormal3f(c[i + nfacets][0], 0.0, c[i + nfacets][2]);
+                glTexCoord2fv(&tc[i + nfacets][0]);
+                glVertex3fv(&c[i + nfacets][0]);
+                glTexCoord2fv(&tc[i][0]);
+                glVertex3fv(&c[i][0]);
             }
 
-          glNormal3f( c[nfacets][0], 0.0, c[nfacets][2] );
-          glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
-          glVertex3fv(   &c [nfacets][0] );
-          glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
-          glVertex3fv(   & c[0][0] );
-          glEnd();
+            glNormal3f(c[nfacets][0], 0.0, c[nfacets][2]);
+            glTexCoord2f(tc[nfacets][0] - 1.0, tc[nfacets][1]);
+            glVertex3fv(&c[nfacets][0]);
+            glTexCoord2f(tc[0][0]-1.0, tc[0][1]);
+            glVertex3fv(&c[0][0]);
+            glEnd();
         }
 
-      if (bottom)                // tex coords...
-        {
-          glBegin( GL_TRIANGLE_FAN );
-          glNormal3f( 0.0, -1.0, 0.0);
-          glTexCoord2f( 0.5, 0.5 );
-          glVertex3f( 0.0, - 0.5 * h, 0.0 );
+        if (bottom) {                // tex coords...
+            glBegin(GL_TRIANGLE_FAN);
+            glNormal3f(0.0, -1.0, 0.0);
+            glTexCoord2f(0.5, 0.5);
+            glVertex3f(0.0, -0.5 * height, 0.0);
 
-          float angle = 0.5 * pi; // First v is at max x
-          float aincr = 2.0 * pi / (float) nfacets;
-          for (int i = 0; i < nfacets; ++i, angle+=aincr)
-            {
-              glTexCoord2f( 0.5*(1.+sin( angle )),
-                            1.0 - 0.5*(1.+cos( angle )) );
-              glVertex3fv( &c[i+nfacets][0] );
+            float angle = 0.5 * pi; // First v is at max x
+            float aincr = 2.0 * pi / float(nfacets);
+            for (int i = 0; i < nfacets; ++i, angle += aincr) {
+                glTexCoord2f(      0.5 * (1.0 + sin(angle)),
+                             1.0 - 0.5 * (1.0 + cos(angle)));
+                glVertex3fv(&c[i + nfacets][0]);
             }
-          glTexCoord2f( 0.5*(1.+sin( angle )),
-                        1.0 - 0.5*(1.+cos( angle )) );
-          glVertex3fv( &c[nfacets][0] );
-          glEnd();
+            glTexCoord2f(      0.5 * (1.0 + sin(angle)),
+                         1.0 - 0.5 * (1.0 + cos(angle)));
+            glVertex3fv(&c[nfacets][0]);
+            glEnd();
         }
 
-      if (top)                // tex coords...
-        {
-          glBegin( GL_TRIANGLE_FAN );
-          glNormal3f( 0.0, 1.0, 0.0);
-          glTexCoord2f( 0.5, 0.5 );
-          glVertex3f( 0.0, 0.5 * h, 0.0 );
+        if (top) {                // tex coords...
+            glBegin(GL_TRIANGLE_FAN);
+            glNormal3f(0.0, 1.0, 0.0);
+            glTexCoord2f(0.5, 0.5);
+            glVertex3f(0.0, 0.5 * height, 0.0);
 
-          float angle = 0.75 * pi;
-          float aincr = 2.0 * pi / (float) nfacets;
-          for (int i = nfacets-1; i >= 0; --i, angle+=aincr)
-            {
-              glTexCoord2f( 0.5*(1.+sin( angle )),
-                            1.0 - 0.5*(1.+cos( angle )) );
-              glVertex3fv( &c[i][0] );
+            float angle = 0.75 * pi;
+            float aincr = 2.0 * pi / float(nfacets);
+            for (int i = nfacets-1; i >= 0; --i, angle += aincr) {
+                glTexCoord2f(      0.5 * (1.0 + sin(angle)),
+                             1.0 - 0.5 * (1.0 + cos(angle)));
+                glVertex3fv(&c[i][0]);
             }
-          glTexCoord2f( 0.5*(1.+sin( angle )),
-                        1.0 - 0.5*(1.+cos( angle )) );
-          glVertex3fv( &c[nfacets-1][0] );
-          glEnd();
+            glTexCoord2f(      0.5 * (1.0 + sin(angle)),
+                         1.0 - 0.5 * (1.0 + cos(angle)));
+            glVertex3fv(&c[nfacets - 1][0]);
+            glEnd();
         }
     }
 
-  endGeometry();
-  if (glid) glEndList();
+    endGeometry();
+    if (glid) { glEndList(); }
 
-  return (Object) glid;
+    return Object(glid);
 }
 
 namespace {
@@ -1165,7 +1181,7 @@ namespace {
     void elevationVertexNormal(const int i, const int j,
                                const int nx, const int nz,
                                const float dx, const float dz,
-                               const float * const height,
+                               const std::vector<float>::const_iterator height,
                                float N[])
     {
         float Vx[3], Vz[3];
@@ -1199,128 +1215,139 @@ namespace {
 }
 
 
-Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
-                                                 size_t nx,
-                                                 size_t nz,
-                                                 const float * height,
-                                                 float dx,
-                                                 float dz,
-                                                 const float * texture_coords,
-                                                 const float * normals,
-                                                 const float * colors)
+/**
+ * @brief Insert an elevation grid into a display list.
+ *
+ * @param mask
+ * @param height        height field.
+ * @param xDimension    vertices in the x direction.
+ * @param zDimension    vertices in the z direction.
+ * @param xSpacing      distance between vertices in the x direction.
+ * @param zSpacing      distance between vertices in the z direction.
+ * @param color         colors.
+ * @param normal        normals.
+ * @param texCoord      texture coordinates.
+ */
+Viewer::Object
+ViewerOpenGL::insertElevationGrid(const unsigned int mask,
+                                  const std::vector<float> & height,
+                                  const int32 xDimension,
+                                  const int32 zDimension,
+                                  const float xSpacing,
+                                  const float zSpacing,
+                                  const std::vector<color> & color,
+                                  const std::vector<vec3f> & normal,
+                                  const std::vector<vec2f> & texCoord)
 {
-  size_t i, j;
-  float x, z;
+    size_t i, j;
+    float x, z;
 
-  GLuint glid = 0;
+    GLuint glid = 0;
 
-  if (! d_selectMode)
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
+    if (!this->d_selectMode) {
+        glid = glGenLists(1);
+        glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
 
-  beginGeometry();
+    this->beginGeometry();
 
-  // Face orientation & culling
-  glFrontFace( (mask & MASK_CCW) ? GL_CCW : GL_CW );
-  if (! (mask & MASK_SOLID) )
-    glDisable( GL_CULL_FACE );
+    // Face orientation & culling
+    glFrontFace((mask & MASK_CCW) ? GL_CCW : GL_CW);
+    if (!(mask & MASK_SOLID)) { glDisable(GL_CULL_FACE); }
 
-  // x varies fastest
-  for (j=0; j<nz-1; ++j)
-    {
-      float s0, s1, t0 = 0.0, t1 = 0.0;
+    std::vector<float>::const_iterator h = height.begin();
+    std::vector<OpenVRML::color>::const_iterator c = color.begin();
+    std::vector<vec3f>::const_iterator n = normal.begin();
+    std::vector<vec2f>::const_iterator tc = texCoord.begin();
 
-      z = dz * j;
-      if (! texture_coords)
-        {
-          t0 = ((float) j) / (nz-1);
-          t1 = ((float) j+1) / (nz-1);
+    // x varies fastest
+    for (j = 0; j < zDimension - 1; ++j) {
+        float s0, s1, t0 = 0.0, t1 = 0.0;
+
+        z = zSpacing * j;
+        if (texCoord.empty()) {
+            t0 = float(j)     / (zDimension - 1);
+            t1 = float(j + 1) / (zDimension - 1);
         }
 
-      glBegin( GL_QUAD_STRIP );
+        glBegin(GL_QUAD_STRIP);
 
-      for (i=0; i<nx; ++i)
-        {
-          x = dx * i;
+        for (i = 0; i < xDimension; ++i) {
+            x = xSpacing * i;
 
-          if (colors &&
-              ((mask & MASK_COLOR_PER_VERTEX) || (i < nx-1)))
-            {
-              glColor3fv( colors );
+            if (!color.empty() && ((mask & MASK_COLOR_PER_VERTEX)
+                                    || (i < xDimension - 1))) {
+                glColor3fv(&(*c)[0]);
             }
 
-          if (normals &&
-              ((mask & MASK_NORMAL_PER_VERTEX) || (i < nx-1)))
-            {
-              glNormal3fv( normals );
-            }
-          else if (! normals)
-            {
-              float N[3];
-              if (mask & MASK_NORMAL_PER_VERTEX)
-                {
-                  elevationVertexNormal(i, j, nx, nz, dx, dz, height, N);
-                  glNormal3fv( N );
-                }
-              else if (i < nx-1)                // Normal per face
-                {
-                  float Vx[3] = { dx, *(height+1) - *height, 0.0 };
-                  float Vz[3] = { 0.0, *(height+nx) - *height, dz };
-                  Vcross( N, Vx, Vz );
-                  glNormal3fv( N );
+            if (!normal.empty() && ((mask & MASK_NORMAL_PER_VERTEX)
+                                    || (i < xDimension - 1))) {
+                glNormal3fv(&(*n)[0]);
+            } else if (normal.empty()) {
+                if (mask & MASK_NORMAL_PER_VERTEX) {
+                    float N[3];
+                    elevationVertexNormal(i, j,
+                                          xDimension, zDimension,
+                                          xSpacing, zSpacing,
+                                          h,
+                                          N);
+                    glNormal3fv(N);
+                } else if (i < xDimension - 1) {
+                    //
+                    // Normal per face.
+                    //
+                    const vec3f vx(xSpacing, *(h + 1) - *h, 0.0);
+                    const vec3f vz(0.0, *(h + xDimension) - *h, zSpacing);
+                    glNormal3fv(&(vx * vz)[0]);
                 }
             }
 
-          if (texture_coords)
-            {
-              s0 = *(texture_coords);
-              t0 = *(texture_coords+1);
-              s1 = *(texture_coords+(nx*2));
-              t1 = *(texture_coords+(nx*2)+1);
-              texture_coords+=2;
-            }
-          else
-            s0 = s1 = ((float) i) / (nx-1);
-
-          glTexCoord2f( s0, t0 );
-          glVertex3f( x, *height, z );
-
-          // Vertex from next row
-          if (colors && (mask & MASK_COLOR_PER_VERTEX))
-            {
-              glColor3fv( colors+3*nx );
+            if (!texCoord.empty()) {
+                s0 = tc->x();
+                t0 = tc->y();
+                s1 = (tc + xDimension * 2)->x();
+                t1 = (tc + xDimension * 2)->y();
+                ++tc;
+            } else {
+                s0 = s1 = float(i) / (xDimension - 1);
             }
 
-          if (mask & MASK_NORMAL_PER_VERTEX)
-            {
-              if (normals)
-                {
-                  glNormal3fv( normals+3*nx );
-                }
-              else
-                {
-                  float N[3];
-                  elevationVertexNormal(i, j+1, nx, nz, dx, dz, height+nx, N);
-                  glNormal3fv( N );
+            glTexCoord2f(s0, t0);
+            glVertex3f(x, *h, z);
+
+            // Vertex from next row
+            if (!color.empty() && (mask & MASK_COLOR_PER_VERTEX)) {
+                glColor3fv(&(*(c + xDimension))[0]);
+            }
+
+            if (mask & MASK_NORMAL_PER_VERTEX) {
+                if (!normal.empty()) {
+                    glNormal3fv(&(*(n + xDimension))[0]);
+                } else {
+                    float N[3];
+                    elevationVertexNormal(i, j + 1,
+                                          xDimension, zDimension,
+                                          xSpacing, zSpacing,
+                                          h + xDimension,
+                                          N);
+                    glNormal3fv(N);
                 }
             }
 
-          glTexCoord2f( s1, t1 );
-          glVertex3f( x, *(height+nx), z+dz );
+            glTexCoord2f(s1, t1);
+            glVertex3f(x, *(h + xDimension), z + zSpacing);
 
-          ++height;
-          if ( colors ) colors += 3;
-          if ( normals ) normals += 3;
+            ++h;
+            if (!color.empty()) { ++c; }
+            if (!normal.empty()) { ++n; }
         }
 
-      glEnd();
+        glEnd();
     }
 
-  endGeometry();
-  if (glid) glEndList();
-  return (Object) glid;
+    this->endGeometry();
+    if (glid) { glEndList(); }
+    return Object(glid);
 }
 
 
@@ -1368,120 +1395,121 @@ namespace {
     }
 }
 
-void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
-                                        size_t nSpine,
-                                        const float * c,
-                                        size_t nCrossSection,
-                                        const float * cs )
+void ViewerOpenGL::insertExtrusionCaps(const unsigned int mask,
+                                       const size_t nSpine,
+                                       const std::vector<vec3f> & c,
+                                       const std::vector<vec2f> & cs)
 {
-  // Determine x,z ranges for top & bottom tex coords
-  float xz[4] = { cs[0], cs[0], cs[1], cs[1] };
-  const float * csp = cs;
-
-  for (size_t nn=1; nn<nCrossSection; ++nn, csp += 2)
-    {
-      if (csp[0] < xz[0])      xz[0] = csp[0];
-      else if (csp[0] > xz[1]) xz[1] = csp[0];
-      if (csp[1] < xz[2])      xz[2] = csp[1];
-      else if (csp[1] > xz[3]) xz[3] = csp[1];
-    }
-
-  float dx = xz[1] - xz[0];
-  float dz = xz[3] - xz[2];
-  if (! fpzero(dx)) dx = 1.0 / dx;
-  if (! fpzero(dz)) dz = 1.0 / dz;
-
-  // If geometry is in dlists, should just always use the tesselator...
-
-  int last = 2*(nCrossSection-1);
-  bool equalEndpts = fpequal(cs[0], cs[last]) && fpequal(cs[1], cs[last+1]);
-
-  if (! (mask & MASK_CONVEX))
-    {
-      gluTessCallback(this->tesselator, GLU_TESS_BEGIN_DATA,
-                      reinterpret_cast<TessCB>(tessExtrusionBegin));
-      gluTessCallback(this->tesselator, GLU_TESS_VERTEX_DATA,
-                      reinterpret_cast<TessCB>(tessExtrusionVertex));
-      gluTessCallback(this->tesselator, GLU_TESS_END, glEnd);
-
-      if (mask & MASK_BOTTOM)
-        {
-          TessExtrusion bottom = { c, cs, xz[0], xz[2], dx, dz, 0 };
-          indexFaceNormal( 0, 1, 2, c, bottom.N );
-
-          gluTessBeginPolygon(this->tesselator, &bottom);
-          gluTessBeginContour(this->tesselator);
-          GLdouble v[3];
-          // Mesa tesselator doesn;t like closed polys
-          int j = equalEndpts ? nCrossSection-2 : nCrossSection-1;
-          for ( ; j>=0; --j)
-            {
-              v[0] = c[3*j];
-              v[1] = c[3*j+1];
-              v[2] = c[3*j+2];
-              gluTessVertex(this->tesselator, v, (void*)j);
-            }
-          gluTessEndContour(this->tesselator);
-          gluTessEndPolygon(this->tesselator);
+    // Determine x,z ranges for top & bottom tex coords
+    float xz[4] = { cs[0].x(), cs[0].x(), cs[0].y(), cs[0].y() };
+    std::vector<vec2f>::const_iterator csp = cs.begin();
+    for (size_t nn = 1; nn < cs.size(); ++nn, ++csp) {
+        if (csp->x() < xz[0]) {
+            xz[0] = csp->x();
+        } else if (csp->x() > xz[1]) {
+            xz[1] = csp->x();
         }
-
-      if (mask & MASK_TOP)
-        {
-          int n = (nSpine - 1) * nCrossSection;
-          TessExtrusion top = { c, cs, xz[0], xz[2], dx, dz, n };
-          indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, top.N );
-
-          gluTessBeginPolygon(this->tesselator, &top);
-          gluTessBeginContour(this->tesselator);
-
-          GLdouble v[3];
-          // Mesa tesselator doesn;t like closed polys
-          size_t j = equalEndpts ? 1 : 0;
-          for ( ; j < nCrossSection; ++j)
-            {
-              v[0] = c[3*(j+n)];
-              v[1] = c[3*(j+n)+1];
-              v[2] = c[3*(j+n)+2];
-              gluTessVertex(this->tesselator, v, (void*)j);
-            }
-          gluTessEndContour(this->tesselator);
-          gluTessEndPolygon(this->tesselator);
+        if (csp->y() < xz[2]) {
+            xz[2] = csp->y();
+        } else if (csp->y() > xz[3]) {
+            xz[3] = csp->y();
         }
     }
 
-  else
+    float dx = xz[1] - xz[0];
+    float dz = xz[3] - xz[2];
+    if (!fpzero(dx)) { dx = 1.0 / dx; }
+    if (!fpzero(dz)) { dz = 1.0 / dz; }
 
-    // Convex (or not GLU1.2 ...)
-    {
-      float N[3];                        // Normal
+    // If geometry is in dlists, should just always use the tesselator...
 
-      if (mask & MASK_BOTTOM)
-        {
-          glBegin( GL_POLYGON );
-          indexFaceNormal( 0, 1, 2, c, N );
-          glNormal3fv( N );
+    const bool equalEndpts = cs.front() == cs.back();
 
-          for (int j = nCrossSection-1; j>=0; --j)
-            {
-              glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
-              glVertex3fv( &c[3*j] );
+    if (!(mask & MASK_CONVEX)) {
+        gluTessCallback(this->tesselator, GLU_TESS_BEGIN_DATA,
+                        reinterpret_cast<TessCB>(tessExtrusionBegin));
+        gluTessCallback(this->tesselator, GLU_TESS_VERTEX_DATA,
+                        reinterpret_cast<TessCB>(tessExtrusionVertex));
+        gluTessCallback(this->tesselator, GLU_TESS_END, glEnd);
+
+        if (mask & MASK_BOTTOM) {
+            TessExtrusion bottom = { &c[0][0],
+                                     &cs[0][0],
+                                     xz[0], xz[2],
+                                     dx, dz,
+                                     0 };
+            indexFaceNormal(0, 1, 2, &c[0][0], bottom.N);
+
+            gluTessBeginPolygon(this->tesselator, &bottom);
+            gluTessBeginContour(this->tesselator);
+            GLdouble v[3];
+            // Mesa tesselator doesn;t like closed polys
+            int j = equalEndpts ? cs.size() - 2 : cs.size() - 1;
+            for (; j >= 0; --j) {
+                v[0] = c[j].x();
+                v[1] = c[j].y();
+                v[2] = c[j].z();
+                gluTessVertex(this->tesselator, v, reinterpret_cast<void *>(j));
             }
-          glEnd();
+            gluTessEndContour(this->tesselator);
+            gluTessEndPolygon(this->tesselator);
         }
 
-      if (mask & MASK_TOP)
-        {
-          int n = (nSpine - 1) * nCrossSection;
-          glBegin( GL_POLYGON );
-          indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, N );
-          glNormal3fv( N );
+        if (mask & MASK_TOP) {
+            int n = (nSpine - 1) * cs.size();
+            TessExtrusion top = { &c[0][0],
+                                  &cs[0][0],
+                                  xz[0], xz[2],
+                                  dx, dz,
+                                  n };
+            indexFaceNormal(3 * n + 2, 3 * n + 1, 3 * n, &c[0][0], top.N);
 
-          for (size_t j = 0; j < nCrossSection; ++j)
-            {
-              glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
-              glVertex3fv( &c [3*(j+n)] );
+            gluTessBeginPolygon(this->tesselator, &top);
+            gluTessBeginContour(this->tesselator);
+
+            GLdouble v[3];
+            // Mesa tesselator doesn;t like closed polys
+            size_t j = equalEndpts ? 1 : 0;
+            for (; j < cs.size(); ++j) {
+                v[0] = c[j + n].x();
+                v[1] = c[j + n].y();
+                v[2] = c[j + n].z();
+                gluTessVertex(this->tesselator, v, reinterpret_cast<void *>(j));
             }
-          glEnd();
+            gluTessEndContour(this->tesselator);
+            gluTessEndPolygon(this->tesselator);
+        }
+    } else {
+        //
+        // Convex (or not GLU1.2 ...)
+        //
+        float N[3];                        // Normal
+
+        if (mask & MASK_BOTTOM) {
+            glBegin(GL_POLYGON);
+            indexFaceNormal(0, 1, 2, &c[0][0], N);
+            glNormal3fv(N);
+
+            for (int j = cs.size() - 1; j >= 0; --j) {
+                glTexCoord2f((cs[j].x() - xz[0]) * dx,
+                             (cs[j].y() - xz[2]) * dz);
+                glVertex3fv(&c[j][0]);
+            }
+            glEnd();
+        }
+
+        if (mask & MASK_TOP) {
+            int n = (nSpine - 1) * cs.size();
+            glBegin(GL_POLYGON);
+            indexFaceNormal(3 * n + 2, 3 * n + 1, 3 * n, &c[0][0], N);
+            glNormal3fv( N );
+
+            for (size_t j = 0; j < cs.size(); ++j) {
+                glTexCoord2f((cs[j].x() - xz[0]) * dx,
+                             (cs[j].y() - xz[2]) * dz);
+                glVertex3fv(&c[j + n][0]);
+            }
+            glEnd();
         }
     }
 }
@@ -1490,64 +1518,58 @@ namespace {
 
     /**
      * @brief Build an extrusion.
+     *
+     * @param orientation
+     * @param scale
+     * @param crossSection
+     * @param spine
+     * @retval c
+     * @retval tc
      */
-    void computeExtrusion(int nOrientation,
-                          const float *orientation,
-                          int nScale,
-                          const float *scale,
-                          int nCrossSection,
-                          const float *crossSection,
-                          int nSpine,
-                          const float *spine,
-                          float *c,   // OUT: coordinates
-                          float *tc,  // OUT: texture coords
-                          int *faces)   // OUT: face list
+    void computeExtrusion_(const std::vector<rotation> & orientation,
+                           const std::vector<vec2f> & scale,
+                           const std::vector<vec2f> & crossSection,
+                           const std::vector<vec3f> & spine,
+                           std::vector<vec3f> & c,
+                           std::vector<vec2f> & tc)
     {
         int i, j, ci;
 
         // Xscp, Yscp, Zscp- columns of xform matrix to align cross section
         // with spine segments.
-        float Xscp[3] = { 1.0, 0.0, 0.0};
-        float Yscp[3] = { 0.0, 1.0, 0.0};
-        float Zscp[3] = { 0.0, 0.0, 1.0};
-        float lastZ[3];
+        vec3f Xscp(1.0, 0.0, 0.0);
+        vec3f Yscp(0.0, 1.0, 0.0);
+        vec3f Zscp(0.0, 0.0, 1.0);
+        vec3f lastZ;
 
         // Is the spine a closed curve (last pt == first pt)?
-        bool spineClosed = (fpzero(spine[ 3*(nSpine-1)+0 ] - spine[0])
-                            && fpzero(spine[ 3*(nSpine-1)+1 ] - spine[1])
-                            && fpzero(spine[ 3*(nSpine-1)+2 ] - spine[2]));
+        bool spineClosed = spine.back() == spine.front();
 
         // Is the spine a straight line?
         bool spineStraight = true;
-        for (i = 1; i < nSpine-1; ++i) {
-            float v1[3], v2[3];
-            v1[0] = spine[3*(i-1)+0] - spine[3*(i)+0];
-            v1[1] = spine[3*(i-1)+1] - spine[3*(i)+1];
-            v1[2] = spine[3*(i-1)+2] - spine[3*(i)+2];
-            v2[0] = spine[3*(i+1)+0] - spine[3*(i)+0];
-            v2[1] = spine[3*(i+1)+1] - spine[3*(i)+1];
-            v2[2] = spine[3*(i+1)+2] - spine[3*(i)+2];
-            Vcross(v1, v2, v1);
-            if (length(v1) != 0.0) {
+        for (i = 1; i < spine.size() - 1; ++i) {
+            const vec3f v = (spine[i - 1] - spine[i])
+                            * (spine[i + 1] - spine[i]);
+            if (!fpzero(v.length())) {
                 spineStraight = false;
-                normalize(v1);
-                Vset(lastZ, v1);
+                lastZ = v.normalize();
                 break;
             }
         }
 
         // If the spine is a straight line, compute a constant SCP xform
         if (spineStraight) {
-            vec3f V1(0.0, 1.0, 0.0), V2, V3;
-            V2[0] = spine[3*(nSpine-1)+0] - spine[0];
-            V2[1] = spine[3*(nSpine-1)+1] - spine[1];
-            V2[2] = spine[3*(nSpine-1)+2] - spine[2];
-            V3 = V2 * V1;
-            double len = V3.length();
-            if (len != 0.0) {                // Not aligned with Y axis
-                V3 *= (1.0 / len);
+            const vec3f v1(0.0, 1.0, 0.0);
+            const vec3f v2 = spine.back() - spine.front();
+            vec3f v3 = v2 * v1;
+            double len = v3.length();
+            if (!fpzero(len)) {
+                //
+                // Not aligned with Y axis.
+                //
+                v3 *= (1.0 / len);
 
-                rotation orient(V3, acos(V1.dot(V2))); // Axis/angle
+                const rotation orient(v3, acos(v1.dot(v2))); // Axis/angle
                 const mat4f scp = mat4f::rotation(orient); // xform matrix
                 for (size_t k = 0; k < 3; ++k) {
                     Xscp[k] = scp[0][k];
@@ -1559,309 +1581,356 @@ namespace {
 
         // Orientation matrix
         mat4f om;
-        if (nOrientation == 1 && ! fpzero(orientation[3])) {
-            om = mat4f::rotation(rotation(orientation[0],
-                                          orientation[1],
-                                          orientation[2],
-                                          orientation[3]));
+        if (orientation.size() == 1 && !fpzero(orientation.front().angle())) {
+            om = mat4f::rotation(orientation.front());
         }
 
+        using std::vector;
+        vector<vec2f>::const_iterator s = scale.begin();
+        vector<rotation>::const_iterator r = orientation.begin();
         // Compute coordinates, texture coordinates:
-        for (i = 0, ci = 0; i < nSpine; ++i, ci+=nCrossSection) {
+        for (i = 0, ci = 0; i < spine.size(); ++i, ci += crossSection.size()) {
 
             // Scale cross section
-            for (j = 0; j < nCrossSection; ++j) {
-                c[3*(ci+j)+0] = scale[0] * crossSection[ 2*j ];
-                c[3*(ci+j)+1] = 0.0;
-                c[3*(ci+j)+2] = scale[1] * crossSection[ 2*j+1 ];
+            for (j = 0; j < crossSection.size(); ++j) {
+                c[ci + j].x(s->x() * crossSection[j].x());
+                c[ci + j].y(0.0);
+                c[ci + j].z(s->y() * crossSection[j].y());
             }
 
             // Compute Spine-aligned Cross-section Plane (SCP)
             if (!spineStraight) {
-                float S1[3], S2[3];        // Spine vectors [i,i-1] and [i,i+1]
+                vec3f S1, S2; // Spine vectors [i,i-1] and [i,i+1]
                 int yi1, yi2, si1, s1i2, s2i2;
 
-                if (spineClosed && (i == 0 || i == nSpine-1)) {
-                    yi1 = 3*(nSpine-2);
-                    yi2 = 3;
+                if (spineClosed && (i == 0 || i == spine.size() - 1)) {
+                    yi1 = spine.size() - 2;
+                    yi2 = 1;
                     si1 = 0;
-                    s1i2 = 3*(nSpine-2);
-                    s2i2 = 3;
+                    s1i2 = spine.size() - 2;
+                    s2i2 = 1;
                 } else if (i == 0) {
                     yi1 = 0;
-                    yi2 = 3;
-                    si1 = 3;
+                    yi2 = 1;
+                    si1 = 1;
                     s1i2 = 0;
-                    s2i2 = 6;
-                } else if (i == nSpine-1) {
-                    yi1 = 3*(nSpine-2);
-                    yi2 = 3*(nSpine-1);
-                    si1 = 3*(nSpine-2);
-                    s1i2 = 3*(nSpine-3);
-                    s2i2 = 3*(nSpine-1);
+                    s2i2 = 2;
+                } else if (i == spine.size() - 1) {
+                    yi1 = spine.size() - 2;
+                    yi2 = spine.size() - 1;
+                    si1 = spine.size() - 2;
+                    s1i2 = spine.size() - 3;
+                    s2i2 = spine.size() - 1;
                 } else {
-                    yi1 = 3*(i-1);
-                    yi2 = 3*(i+1);
-                    si1 = 3*i;
-                    s1i2 = 3*(i-1);
-                    s2i2 = 3*(i+1);
+                    yi1 = i - 1;
+                    yi2 = i + 1;
+                    si1 = i;
+                    s1i2 = i - 1;
+                    s2i2 = i + 1;
                 }
 
-                Vdiff(Yscp, &spine[yi2], &spine[yi1]);
-                Vdiff(S1, &spine[s1i2], &spine[si1]);
-                Vdiff(S2, &spine[s2i2], &spine[si1]);
+                Yscp = (spine[yi2] - spine[yi1]).normalize();
 
-                normalize(Yscp);
-                Vset(lastZ, Zscp);        // Save last Zscp
-                Vcross(Zscp, S2, S1);
+                lastZ = Zscp; // Save last Zscp.
+                Zscp = (spine[s1i2] - spine[si1]) * (spine[s2i2] - spine[si1]);
 
-                float VlenZ = length(Zscp);
-                if (VlenZ == 0.0) {
-                    Vset(Zscp, lastZ);
+                float VlenZ = Zscp.length();
+                if (fpzero(VlenZ)) {
+                    Zscp = lastZ;
                 } else {
-                    Vscale(Zscp, 1.0 / VlenZ);
+                    Zscp *= (1.0 / VlenZ);
                 }
 
-                if ((i > 0) && (Vdot( Zscp, lastZ ) < 0.0)) {
-                    Vscale( Zscp, -1.0 );
-                }
+                if (i > 0 && Zscp.dot(lastZ) < 0.0) { Zscp *= -1.0; }
 
-                Vcross(Xscp, Yscp, Zscp);
+                Xscp = Yscp * Zscp;
             }
 
             // Rotate cross section into SCP
-            for (j = 0; j < nCrossSection; ++j) {
+            for (j = 0; j < crossSection.size(); ++j) {
                 float cx, cy, cz;
-                cx = c[3*(ci+j)+0]*Xscp[0]+c[3*(ci+j)+1]*Yscp[0]+c[3*(ci+j)+2]*Zscp[0];
-                cy = c[3*(ci+j)+0]*Xscp[1]+c[3*(ci+j)+1]*Yscp[1]+c[3*(ci+j)+2]*Zscp[1];
-                cz = c[3*(ci+j)+0]*Xscp[2]+c[3*(ci+j)+1]*Yscp[2]+c[3*(ci+j)+2]*Zscp[2];
-                c[3*(ci+j)+0] = cx;
-                c[3*(ci+j)+1] = cy;
-                c[3*(ci+j)+2] = cz;
+                cx = c[ci + j].x() * Xscp.x()
+                   + c[ci + j].y() * Yscp.x()
+                   + c[ci + j].z() * Zscp.x();
+                cy = c[ci + j].x() * Xscp.y()
+                   + c[ci + j].y() * Yscp.y()
+                   + c[ci + j].z() * Zscp.y();
+                cz = c[ci + j].x() * Xscp.z()
+                   + c[ci + j].y() * Yscp.z()
+                   + c[ci + j].z() * Zscp.z();
+                c[ci + j].x(cx);
+                c[ci + j].y(cy);
+                c[ci + j].z(cz);
             }
 
-            // Apply orientation
-            if (!fpzero(orientation[3])) {
-                if (nOrientation > 1) {
-                    om = mat4f::rotation(rotation(orientation[0],
-                                                  orientation[1],
-                                                  orientation[2],
-                                                  orientation[3]));
-                }
+            //
+            // Apply orientation.
+            //
+            if (!fpzero(r->angle())) {
+                if (orientation.size() > 1) { om = mat4f::rotation(*r); }
 
-                for (j = 0; j < nCrossSection; ++j) {
+                for (j = 0; j < crossSection.size(); ++j) {
                     float cx, cy, cz;
-                    cx = c[3*(ci+j)+0]*om[0][0]+c[3*(ci+j)+1]*om[1][0]+c[3*(ci+j)+2]*om[2][0];
-                    cy = c[3*(ci+j)+0]*om[0][1]+c[3*(ci+j)+1]*om[1][1]+c[3*(ci+j)+2]*om[2][1];
-                    cz = c[3*(ci+j)+0]*om[0][2]+c[3*(ci+j)+1]*om[1][2]+c[3*(ci+j)+2]*om[2][2];
-                    c[3*(ci+j)+0] = cx;
-                    c[3*(ci+j)+1] = cy;
-                    c[3*(ci+j)+2] = cz;
+                    cx = c[ci + j].x() * om[0][0]
+                       + c[ci + j].y() * om[1][0]
+                       + c[ci + j].z() * om[2][0];
+                    cy = c[ci + j].x() * om[0][1]
+                       + c[ci + j].y() * om[1][1]
+                       + c[ci + j].z() * om[2][1];
+                    cz = c[ci + j].x() * om[0][2]
+                       + c[ci + j].y() * om[1][2]
+                       + c[ci + j].z() * om[2][2];
+                    c[ci + j].x(cx);
+                    c[ci + j].y(cy);
+                    c[ci + j].z(cz);
                 }
             }
 
-            // Translate cross section
-            for (j = 0; j < nCrossSection; ++j) {
-                c[3*(ci+j)+0] += spine[3*i+0];
-                c[3*(ci+j)+1] += spine[3*i+1];
-                c[3*(ci+j)+2] += spine[3*i+2];
+            //
+            // Translate cross section.
+            //
+            for (j = 0; j < crossSection.size(); ++j) {
+                c[ci + j] += spine[i];
 
                 // Texture coords
-                tc[3*(ci+j)+0] = ((float) j) / (nCrossSection-1);
-                tc[3*(ci+j)+1] = ((float) i) / (nSpine-1);
-                tc[3*(ci+j)+2] = 0.0;
+                tc[ci + j].x(float(j) / (crossSection.size() - 1));
+                tc[ci + j].y(float(i) / (spine.size() - 1));
             }
 
-            if (nScale > 1) { scale += 2; }
-            if (nOrientation > 1) { orientation += 4; }
+            if (scale.size() > 1) { ++s; }
+            if (orientation.size() > 1) { ++r; }
         }
+    }
 
-        // And compute face indices:
-        if (faces) {
-            int polyIndex = 0;
-            for (i = 0, ci = 0; i < nSpine-1; ++i, ci+=nCrossSection) {
-                for (j = 0; j < nCrossSection-1; ++j) {
-                    faces[polyIndex + 0] = ci+j;
-                    faces[polyIndex + 1] = ci+j+1;
-                    faces[polyIndex + 2] = ci+j+1 + nCrossSection;
-                    faces[polyIndex + 3] = ci+j + nCrossSection;
-                    faces[polyIndex + 4] = -1;
-                    polyIndex += 5;
+    /**
+     * @brief Build an extrusion.
+     *
+     * @param orientation
+     * @param scale
+     * @param crossSection
+     * @param spine
+     * @retval c
+     * @retval tc
+     * @retval faces
+     */
+    void computeExtrusion_(const std::vector<rotation> & orientation,
+                           const std::vector<vec2f> & scale,
+                           const std::vector<vec2f> & crossSection,
+                           const std::vector<vec3f> & spine,
+                           std::vector<vec3f> & c,
+                           std::vector<vec2f> & tc,
+                           std::vector<int32> & faces)
+    {
+        computeExtrusion_(orientation, scale, crossSection, spine, c, tc);
+
+        //
+        // Compute face indices.
+        //
+        size_t polyIndex = 0;
+        for (size_t i = 0, ci = 0; i < spine.size() - 1;
+                ++i, ci += crossSection.size()) {
+            for (size_t j = 0; j < crossSection.size() - 1; ++j) {
+                faces[polyIndex + 0] = ci + j;
+                faces[polyIndex + 1] = ci + j + 1;
+                faces[polyIndex + 2] = ci + j + 1 + crossSection.size();
+                faces[polyIndex + 3] = ci + j + crossSection.size();
+                faces[polyIndex + 4] = -1;
+                polyIndex += 5;
+            }
+        }
+    }
+}
+
+/**
+ * @fn Viewer::Object Viewer::insertExtrusion(unsigned int mask, const std::vector<vec3f> & spine, const std::vector<vec2f> & crossSection, const std::vector<rotation> & orientation, const std::vector<vec2f> & scale)
+ *
+ * @brief Insert an extrusion into a display list.
+ *
+ * @param mask
+ * @param spine         spine points.
+ * @param crossSection  cross-sections.
+ * @param orientation   cross-section orientations.
+ * @param scale         cross-section scales.
+ *
+ * @return display object identifier.
+ */
+Viewer::Object
+ViewerOpenGL::insertExtrusion(unsigned int mask,
+                              const std::vector<vec3f> & spine,
+                              const std::vector<vec2f> & crossSection,
+                              const std::vector<rotation> & orientation,
+                              const std::vector<vec2f> & scale)
+{
+    using std::vector;
+    vector<vec3f> c(crossSection.size() * spine.size());
+    vector<vec2f> tc(crossSection.size() * spine.size());
+
+    computeExtrusion_(orientation, scale, crossSection, spine, c, tc);
+
+    GLuint glid = 0;
+
+    if (!this->d_selectMode) {
+        glid = glGenLists(1);
+        glNewList(glid, GL_COMPILE_AND_EXECUTE);
+    }
+
+    this->beginGeometry();
+
+    // Face orientation & culling
+    glFrontFace((mask & MASK_CCW) ? GL_CCW : GL_CW);
+    if (!(mask & MASK_SOLID)) { glDisable(GL_CULL_FACE); }
+
+    // Handle creaseAngle, correct normals, ...
+    int n = 0;
+    for (size_t i = 0; i < spine.size() - 1; ++i, n += crossSection.size()) {
+        glBegin(GL_QUAD_STRIP);
+        for (size_t j = 0; j < crossSection.size(); ++j) {
+            // Compute normals
+            vec3f v1 = j < crossSection.size() - 1
+                     ? c[n + j + 1] - c[n + j]
+                     : c[n + j] - c[n + j - 1];
+            vec3f v2 = c[n + j + crossSection.size()] - c[n + j];
+            v1 *= v2;
+            glNormal3fv(&v1[0]);
+
+            glTexCoord2fv(&tc[n + j + crossSection.size()][0]);
+            glVertex3fv(&c[n + j + crossSection.size()][0]);
+            glTexCoord2fv(&tc[n + j][0]);
+            glVertex3fv(&c[n + j][0]);
+          }
+          glEnd();
+      }
+
+    // Draw caps. Convex can only impact the caps of an extrusion.
+    if (mask & (MASK_BOTTOM | MASK_TOP)) {
+        this->insertExtrusionCaps(mask,
+                                  spine.size(), c,
+                                  crossSection);
+    }
+
+    this->endGeometry();
+    if (glid) { glEndList(); }
+    return Object(glid);
+}
+
+/**
+ * @brief Insert a line set into a display list.
+ *
+ * @param coord             coordinates.
+ * @param coordIndex        coordinate indices.
+ * @param colorPerVertex    whether colors are applied per-vertex or per-face.
+ * @param color             colors.
+ * @param colorIndex        color indices.
+ *
+ * @return display object identifier.
+ */
+Viewer::Object
+ViewerOpenGL::insertLineSet(const std::vector<vec3f> & coord,
+                            const std::vector<int32> & coordIndex,
+                            bool colorPerVertex,
+                            const std::vector<color> & color,
+                            const std::vector<int32> & colorIndex)
+{
+    GLuint glid = 0;
+
+    if (coord.size() < 2) { return 0; }
+
+    if (!this->d_selectMode) {
+        glid = glGenLists(1);
+        glNewList(glid, GL_COMPILE_AND_EXECUTE);
+    }
+
+    this->beginGeometry();
+
+    // Lighting, texturing don't apply to line sets
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    if (!color.empty() && !colorPerVertex) { glShadeModel(GL_FLAT); }
+
+    glBegin(GL_LINE_STRIP);
+    if (!color.empty() && !colorPerVertex) {
+        glColor3fv(&color[!colorIndex.empty() ? colorIndex[0] : 0][0]);
+    }
+
+    size_t nl = 0;
+    for (size_t i = 0; i < coordIndex.size(); ++i) {
+        if (coordIndex[i] == -1) {
+            glEnd();
+            glBegin(GL_LINE_STRIP);
+            ++nl;
+            if (i < coordIndex.size() - 1
+                    && !color.empty() && !colorPerVertex) {
+                const int32 index = !colorIndex.empty()
+                                  ? colorIndex[nl]
+                                  : nl;
+                if (index < color.size()) {
+                    glColor3fv(&color[index][0]);
                 }
             }
+        } else {
+            if (!color.empty() && colorPerVertex) {
+                const int32 index = !colorIndex.empty()
+                                  ? colorIndex[i]
+                                  : coordIndex[i];
+                if (index < color.size()) {
+                    glColor3fv(&color[index][0]);
+                }
+            }
+            if (coordIndex[i] < coord.size()) {
+                glVertex3fv(&coord[coordIndex[i]][0]);
+            }
         }
     }
+
+    glEnd();
+
+    this->endGeometry();
+
+    if (glid) { glEndList(); }
+
+    return Object(glid);
 }
 
-Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
-                                             size_t nOrientation,
-                                             const float * orientation,
-                                             size_t nScale,
-                                             const float * scale,
-                                             size_t nCrossSection,
-                                             const float * crossSection,
-                                             size_t nSpine,
-                                             const float * spine)
+/**
+ * @brief Insert a point set into a display list.
+ *
+ * @param coord     points.
+ * @param color     colors.
+ *
+ * @return display object identifier.
+ */
+Viewer::Object ViewerOpenGL::insertPointSet(const std::vector<vec3f> & coord,
+                                            const std::vector<color> & color)
 {
-  float *c  = new float[nCrossSection * nSpine * 3];
-  float *tc = new float[nCrossSection * nSpine * 3];
+    GLuint glid = 0;
 
-  computeExtrusion( nOrientation, orientation,
-                    nScale, scale,
-                    nCrossSection, crossSection,
-                    nSpine, spine,
-                    c, tc, 0 );
-
-  GLuint glid = 0;
-
-  if (! d_selectMode)
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
+    if (!this->d_selectMode) {
+        glid = glGenLists(1);
+        glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
-  beginGeometry();
+    this->beginGeometry();
 
-  // Face orientation & culling
-  glFrontFace( (mask & MASK_CCW) ? GL_CCW : GL_CW );
-  if (! (mask & MASK_SOLID) )
-    glDisable( GL_CULL_FACE );
+    // Lighting, texturing don't apply to points
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
 
-  // Handle creaseAngle, correct normals, ...
-  int n = 0;
-  for (size_t i = 0; i < nSpine-1; ++i, n+=nCrossSection)
-    {
-      glBegin( GL_QUAD_STRIP );
-      for (size_t j = 0; j < nCrossSection; ++j)
-        {
-          // Compute normals
-          float v1[3], v2[3];
-          if (j < nCrossSection-1)
-            Vdiff( v1, &c[3*(n+j+1)], &c[3*(n+j)] );
-          else
-            Vdiff( v1, &c[3*(n+j)], &c[3*(n+j-1)] );
-          Vdiff( v2, &c[3*(n+j+nCrossSection)], &c[3*(n+j)] );
-          Vcross( v1, v1, v2 );
-          glNormal3fv( v1 );
+    glBegin(GL_POINTS);
 
-          glTexCoord2fv( &tc[3*(n+j+nCrossSection)] );
-          glVertex3fv(   &c [3*(n+j+nCrossSection)] );
-          glTexCoord2fv( &tc[3*(n+j)] );
-          glVertex3fv(   &c [3*(n+j)] );
-        }
-      glEnd();
+    for (size_t i = 0; i < coord.size(); ++i) {
+        if (i < color.size()) { glColor3fv(&color[i][0]); }
+        glVertex3fv(&coord[i][0]);
     }
 
-  // Draw caps. Convex can only impact the caps of an extrusion.
-  if (mask & (MASK_BOTTOM | MASK_TOP))
-    insertExtrusionCaps( mask, nSpine, c, nCrossSection, crossSection );
+    glEnd();
+    this->endGeometry();
+    if (glid) { glEndList(); }
 
-  delete [] c;
-  delete [] tc;
-
-  endGeometry();
-  if (glid) glEndList();
-  return (Object) glid;
-}
-
-
-Viewer::Object ViewerOpenGL::insertLineSet(size_t npoints,
-                                           const float * points,
-                                           size_t nlines,
-                                           const int32 * lines,
-                                           bool colorPerVertex,
-                                           const float * color,
-                                           size_t nci,
-                                           const int32 * ci)
-{
-  GLuint glid = 0;
-
-  if (npoints < 2) return 0;
-
-  if (! d_selectMode)
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
-    }
-
-  beginGeometry();
-
-  // Lighting, texturing don't apply to line sets
-  glDisable( GL_LIGHTING );
-  glDisable( GL_TEXTURE_2D );
-  if (color && ! colorPerVertex )
-    glShadeModel( GL_FLAT );
-
-  glBegin( GL_LINE_STRIP );
-  if (color && ! colorPerVertex)
-    glColor3fv( &color[ (nci > 0) ? 3*ci[0] : 0 ] );
-
-  int nl = 0;
-  for (size_t i = 0; i<nlines; ++i)
-    {
-      if (lines[i] == -1)
-        {
-          glEnd();
-          glBegin( GL_LINE_STRIP );
-          ++nl;
-          if ((i < nlines-1) && color && ! colorPerVertex)
-            glColor3fv( &color[ (nci > 0) ? 3*ci[nl] : 3*nl ] );
-        }
-      else
-        {
-          if (color && colorPerVertex)
-            glColor3fv( &color[ (nci > 0) ? 3*ci[i] : 3*lines[i] ] );
-          glVertex3fv( &points[3*lines[i]] );
-        }
-    }
-
-  glEnd();
-
-  endGeometry();
-  if (glid) glEndList();
-  return (Object) glid;
-}
-
-Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
-                                            const float * points,
-                                            const float * colors)
-{
-  GLuint glid = 0;
-
-  if (! d_selectMode)
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
-    }
-
-  beginGeometry();
-
-  // Lighting, texturing don't apply to points
-  glDisable( GL_LIGHTING );
-  glDisable( GL_TEXTURE_2D );
-
-  glBegin( GL_POINTS );
-
-  for (size_t i = 0; i<npoints; ++i)
-    {
-      if (colors)
-        {
-          glColor3fv( colors );
-          colors += 3;
-        }
-      glVertex3fv( points );
-      points += 3;
-    }
-
-  glEnd();
-  endGeometry();
-  if (glid) glEndList();
-
-  return (Object) glid;
+    return Object(glid);
 }
 
 namespace {
-    
+
     void computeBounds(size_t npoints, const float * points, float (&bounds)[6])
     {
         if (npoints == 0) {
@@ -2150,34 +2219,42 @@ namespace {
 }
 
 
-// There are too many arguments to this...
-
+/**
+ * @brief Insert a shell into a display list.
+ *
+ * @param mask
+ * @param coord         coordinates.
+ * @param coordIndex    coordinate indices.
+ * @param color         colors.
+ * @param colorIndex    color indices.
+ * @param normal        normals.
+ * @param normalIndex   normal indices.
+ * @param texCoord      texture coordinates.
+ * @param texCoordIndex texture coordinate indices.
+ *
+ * @return display object identifier.
+ */
 Viewer::Object
 ViewerOpenGL::insertShell(unsigned int mask,
-                          size_t npoints,
-                          const float * points,
-                          size_t nfaces,
-                          const int32 * faces,    // face list (-1 ends each face)
-                          const float * tc,     // texture coordinates
-                          size_t ntci,      // # of texture coordinate indices
-                          const int32 * tci,      // texture coordinate indices
-                          const float * normal, // normals
-                          size_t nni,       // # of normal indices
-                          const int32 * ni,       // normal indices
-                          const float *color,  // colors
-                          size_t nci,
-                          const int32 * ci)
+                          const std::vector<vec3f> & coord,
+                          const std::vector<int32> & coordIndex,
+                          const std::vector<color> & color,
+                          const std::vector<int32> & colorIndex,
+                          const std::vector<vec3f> & normal,
+                          const std::vector<int32> & normalIndex,
+                          const std::vector<vec2f> & texCoord,
+                          const std::vector<int32> & texCoordIndex)
 {
-    if (nfaces < 4) { return 0; } // 3 pts and a trailing -1
+    if (coordIndex.size() < 4) { return 0; } // 3 pts and a trailing -1
 
     // Texture coordinate generation parameters.
     int texAxes[2];                        // Map s,t to x,y,z
     float texParams[4];                // s0, 1/sSize, t0, 1/tSize
 
     // Compute bounding box for texture coord generation and lighting.
-    if (!tc) { // || any positional lights are active...
+    if (texCoord.empty()) { // || any positional lights are active...
         float bounds[6]; // xmin,xmax, ymin,ymax, zmin,zmax
-        computeBounds(npoints, points, bounds);
+        computeBounds(coord.size(), &coord[0][0], bounds);
 
         // do the bounds intersect the radius of any active positional lights...
 
@@ -2189,22 +2266,24 @@ ViewerOpenGL::insertShell(unsigned int mask,
 
     if (!this->d_selectMode) {
         glid = glGenLists(1);
-        glNewList( glid, GL_COMPILE_AND_EXECUTE );
+        glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
-    beginGeometry();
+    this->beginGeometry();
 
     // Face orientation & culling
     glFrontFace((mask & MASK_CCW) ? GL_CCW : GL_CW);
     if (!(mask & MASK_SOLID)) { glDisable(GL_CULL_FACE); }
 
     // Color per face
-    if (color && ! (mask & MASK_COLOR_PER_VERTEX)) { glShadeModel(GL_FLAT); }
+    if (!color.empty() && ! (mask & MASK_COLOR_PER_VERTEX)) {
+        glShadeModel(GL_FLAT);
+    }
 
     // -------------------------------------------------------
 
     // Generation of per vertex normals isn't implemented yet...
-    if (!normal && (mask & MASK_NORMAL_PER_VERTEX)) {
+    if (normal.empty() && (mask & MASK_NORMAL_PER_VERTEX)) {
         mask &= ~MASK_NORMAL_PER_VERTEX;
     }
 
@@ -2213,10 +2292,10 @@ ViewerOpenGL::insertShell(unsigned int mask,
     // Should build tri strips (probably at the VrmlNode level)...
 
     ShellData s = {
-        mask, points, nfaces, faces,
-        { tc, ntci, tci },
-        { normal, nni, ni },
-        { color, nci, ci },
+        mask, &coord[0][0], coordIndex.size(), &coordIndex[0],
+        { &texCoord[0][0], texCoordIndex.size(), &texCoordIndex[0] },
+        { &normal[0][0], normalIndex.size(), &normalIndex[0] },
+        { &color[0][0], colorIndex.size(), &colorIndex[0] },
         texAxes, texParams, 0
     };
 
@@ -2281,7 +2360,14 @@ namespace {
     }
 }
 
-Viewer::Object ViewerOpenGL::insertSphere(float radius)
+/**
+ * @brief Insert a sphere into a display list.
+ *
+ * @param radius    sphere radius.
+ *
+ * @return display object identifier.
+ */
+Viewer::Object ViewerOpenGL::insertSphere(const float radius)
 {
   GLuint glid = 0;
 
@@ -2336,163 +2422,189 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
   return (Object) glid;
 }
 
-// Lights
-
-Viewer::Object ViewerOpenGL::insertDirLight(float ambient,
-                                            float intensity,
-                                            const float rgb[],
-                                            const float direction[])
+/**
+ * @brief Insert a directional light into a display list.
+ *
+ * @param ambientIntensity  ambient intensity.
+ * @param intensity         intensity.
+ * @param color             color.
+ * @param direction         direction.
+ *
+ * @return display object identifier.
+ */
+Viewer::Object ViewerOpenGL::insertDirLight(const float ambientIntensity,
+                                            const float intensity,
+                                            const color & color,
+                                            const vec3f & direction)
 {
-  float amb[4] = { ambient * rgb[0],
-                   ambient * rgb[1],
-                   ambient * rgb[2],
-                   1.0 };
-  float dif[4] = { intensity * rgb[0],
-                   intensity * rgb[1],
-                   intensity * rgb[2],
-                   1.0 };
-  float pos[4] = { direction[0], direction[1], -direction[2], 0.0 };
+    float amb[4] = { ambientIntensity * color.r(),
+                     ambientIntensity * color.g(),
+                     ambientIntensity * color.b(),
+                     1.0 };
+    float dif[4] = { intensity * color.r(),
+                     intensity * color.g(),
+                     intensity * color.b(),
+                     1.0 };
+    float pos[4] = { direction.x(), direction.y(), -direction.z(), 0.0 };
 
-  // Find an unused light, give up if none left.
-  int i;
-  for (i=0; i<MAX_LIGHTS; ++i)
-    if (d_lightInfo[i].lightType == LIGHT_UNUSED)
-      break;
-  if (i == MAX_LIGHTS)
+    // Find an unused light, give up if none left.
+    int i;
+    for (i = 0; i < MAX_LIGHTS; ++i) {
+        if (this->d_lightInfo[i].lightType == LIGHT_UNUSED) { break; }
+    }
+    if (i == MAX_LIGHTS) { return 0; }
+
+    this->d_lightInfo[i].lightType = LIGHT_DIRECTIONAL;
+    this->d_lightInfo[i].nestingLevel = 0;
+    GLenum light = GLenum(GL_LIGHT0 + i);
+
+    glEnable(light);
+    glLightfv(light, GL_AMBIENT, amb);
+    glLightfv(light, GL_DIFFUSE, dif);
+    glLightfv(light, GL_POSITION, pos);
+
+    // Disable any old point/spot settings
+    glLightf(light, GL_CONSTANT_ATTENUATION, 1.0);
+    glLightf(light, GL_LINEAR_ATTENUATION, 0.0);
+    glLightf(light, GL_QUADRATIC_ATTENUATION, 0.0);
+
+    glLightf(light, GL_SPOT_CUTOFF, 180.0);
+    glLightf(light, GL_SPOT_EXPONENT, 0.0);
+
     return 0;
-
-  d_lightInfo[i].lightType = LIGHT_DIRECTIONAL;
-  d_lightInfo[i].nestingLevel = 0;
-  GLenum light = (GLenum) (GL_LIGHT0 + i);
-
-  glEnable(light);
-  glLightfv(light, GL_AMBIENT, amb);
-  glLightfv(light, GL_DIFFUSE, dif);
-  glLightfv(light, GL_POSITION, pos);
-
-  // Disable any old point/spot settings
-  glLightf(light, GL_CONSTANT_ATTENUATION, 1.0);
-  glLightf(light, GL_LINEAR_ATTENUATION, 0.0);
-  glLightf(light, GL_QUADRATIC_ATTENUATION, 0.0);
-
-  glLightf(light, GL_SPOT_CUTOFF, 180.0);
-  glLightf(light, GL_SPOT_EXPONENT, 0.0);
-
-  return 0;
 }
 
-//
-//  Only objects within radius should be lit by each PointLight.
-//  Test each object drawn against each point light and enable
-//  the lights accordingly? Get light and geometry into consistent
-//  coordinates first...
-//
-
-Viewer::Object ViewerOpenGL::insertPointLight(float ambient,
-                                              const float attenuation[],
-                                              const float rgb[],
-                                              float intensity,
-                                              const float location[],
-                                              float radius)
+/**
+ * @brief Insert a point light into a display list.
+ *
+ * @param ambientIntensity  ambient intensity.
+ * @param attenuation       attenuation.
+ * @param color             color.
+ * @param intensity         intensity.
+ * @param location          location.
+ * @param radius            radius.
+ *
+ * @return display object identifier.
+ *
+ * @todo Only objects within radius should be lit by each PointLight.
+ *      Test each object drawn against each point light and enable
+ *      the lights accordingly? Get light and geometry into consistent
+ *      coordinates first.
+ */
+Viewer::Object ViewerOpenGL::insertPointLight(const float ambientIntensity,
+                                              const vec3f & attenuation,
+                                              const color & color,
+                                              const float intensity,
+                                              const vec3f & location,
+                                              const float radius)
 {
-  float amb[4] = { ambient * rgb[0],
-                   ambient * rgb[1],
-                   ambient * rgb[2],
-                   1.0 };
-  float dif[4] = { intensity * rgb[0],
-                   intensity * rgb[1],
-                   intensity * rgb[2],
-                   1.0 };
-  float pos[4] = { location[0], location[1], location[2], 1.0 };
+    float amb[4] = { ambientIntensity * color.r(),
+                     ambientIntensity * color.g(),
+                     ambientIntensity * color.b(),
+                     1.0 };
+    float dif[4] = { intensity * color.r(),
+                     intensity * color.g(),
+                     intensity * color.b(),
+                     1.0 };
+    float pos[4] = { location.x(), location.y(), location.z(), 1.0 };
 
-  // Find an unused light, give up if none left.
-  int i;
-  for (i=0; i<MAX_LIGHTS; ++i)
-    if (d_lightInfo[i].lightType == LIGHT_UNUSED)
-      break;
-  if (i == MAX_LIGHTS)
+    // Find an unused light, give up if none left.
+    int i;
+    for (i = 0; i < MAX_LIGHTS; ++i) {
+        if (this->d_lightInfo[i].lightType == LIGHT_UNUSED) { break; }
+    }
+    if (i == MAX_LIGHTS) { return 0; }
+
+    this->d_lightInfo[i].lightType = LIGHT_POSITIONAL;
+    this->d_lightInfo[i].location = location;
+    this->d_lightInfo[i].radiusSquared = radius * radius;
+
+    GLenum light(GL_LIGHT0 + i);
+
+    // should be enabled/disabled per geometry based on distance & radius...
+    glEnable(light);
+    glLightfv(light, GL_AMBIENT, amb);
+    glLightfv(light, GL_DIFFUSE, dif);
+    glLightfv(light, GL_POSITION, pos);
+
+    glLightf(light, GL_CONSTANT_ATTENUATION, attenuation[0]);
+    glLightf(light, GL_LINEAR_ATTENUATION, attenuation[1]);
+    glLightf(light, GL_QUADRATIC_ATTENUATION, attenuation[2]);
+
+    // Disable old spot settings
+    glLightf(light, GL_SPOT_CUTOFF, 180.0);
+    glLightf(light, GL_SPOT_EXPONENT, 0.0);
+
     return 0;
-
-  d_lightInfo[i].lightType = LIGHT_POSITIONAL;
-  d_lightInfo[i].location[0] = location[0];
-  d_lightInfo[i].location[1] = location[1];
-  d_lightInfo[i].location[2] = location[2];
-  d_lightInfo[i].radiusSquared = radius * radius;
-
-  GLenum light = (GLenum) (GL_LIGHT0 + i);
-
-  // should be enabled/disabled per geometry based on distance & radius...
-  glEnable(light);
-  glLightfv(light, GL_AMBIENT, amb);
-  glLightfv(light, GL_DIFFUSE, dif);
-  glLightfv(light, GL_POSITION, pos);
-
-  glLightf(light, GL_CONSTANT_ATTENUATION, attenuation[0]);
-  glLightf(light, GL_LINEAR_ATTENUATION, attenuation[1]);
-  glLightf(light, GL_QUADRATIC_ATTENUATION, attenuation[2]);
-
-  // Disable old spot settings
-  glLightf(light, GL_SPOT_CUTOFF, 180.0);
-  glLightf(light, GL_SPOT_EXPONENT, 0.0);
-
-  return 0;
 }
 
-// same comments as for PointLight apply here...
-OpenVRML::Viewer::Object
-        OpenVRML::GL::ViewerOpenGL::insertSpotLight(float ambient,
-                                                    const float attenuation[],
-                                                    float beamWidth,
-                                                    const float rgb[],
-                                                    float cutOffAngle,
-                                                    const float direction[],
-                                                    float intensity,
-                                                    const float location[],
-                                                    float radius)
+/**
+ * @brief Insert a point light into a display list.
+ *
+ * @param ambientIntensity  ambient intensity.
+ * @param attenuation       attenuation.
+ * @param beamWidth         beam width.
+ * @param color             color.
+ * @param cutOffAngle       cut-off angle.
+ * @param direction         direction.
+ * @param intensity         intensity.
+ * @param location          location.
+ * @param radius            radius.
+ *
+ * @return display object identifier.
+ *
+ * @todo Same comments as for PointLight apply here.
+ */
+Viewer::Object ViewerOpenGL::insertSpotLight(const float ambientIntensity,
+                                             const vec3f & attenuation,
+                                             const float beamWidth,
+                                             const color & color,
+                                             const float cutOffAngle,
+                                             const vec3f & direction,
+                                             const float intensity,
+                                             const vec3f & location,
+                                             const float radius)
 {
-  float amb[4] = { ambient * rgb[0],
-                   ambient * rgb[1],
-                   ambient * rgb[2],
-                   1.0 };
-  float dif[4] = { intensity * rgb[0],
-                   intensity * rgb[1],
-                   intensity * rgb[2],
-                   1.0 };
-  float pos[4] = { location[0], location[1], location[2], 1.0 };
+    float amb[4] = { ambientIntensity * color.r(),
+                     ambientIntensity * color.g(),
+                     ambientIntensity * color.b(),
+                     1.0 };
+    float dif[4] = { intensity * color.r(),
+                     intensity * color.g(),
+                     intensity * color.b(),
+                     1.0 };
+    float pos[4] = { location.x(), location.y(), location.z(), 1.0 };
 
 
-  // Find an unused light, give up if none left.
-  int i;
-  for (i=0; i<MAX_LIGHTS; ++i)
-    if (d_lightInfo[i].lightType == LIGHT_UNUSED)
-      break;
-  if (i == MAX_LIGHTS)
+    // Find an unused light, give up if none left.
+    int i;
+    for (i = 0; i < MAX_LIGHTS; ++i) {
+        if (this->d_lightInfo[i].lightType == LIGHT_UNUSED) { break; }
+    }
+    if (i == MAX_LIGHTS) { return 0; }
+
+    this->d_lightInfo[i].lightType = LIGHT_POSITIONAL;
+    this->d_lightInfo[i].location = location;
+    this->d_lightInfo[i].radiusSquared = radius * radius;
+
+    GLenum light(GL_LIGHT0 + i);
+
+    // should be enabled/disabled per geometry based on distance & radius...
+    glEnable(light);
+    glLightfv(light, GL_AMBIENT, amb);
+    glLightfv(light, GL_DIFFUSE, dif);
+    glLightfv(light, GL_POSITION, pos);
+
+    glLightf(light, GL_CONSTANT_ATTENUATION, attenuation[0]);
+    glLightf(light, GL_LINEAR_ATTENUATION, attenuation[1]);
+    glLightf(light, GL_QUADRATIC_ATTENUATION, attenuation[2]);
+
+    glLightfv(light, GL_SPOT_DIRECTION, &direction[0]);
+    glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / pi);
+    // The exponential dropoff is not right/spec compliant...
+    glLightf(light, GL_SPOT_EXPONENT, beamWidth < cutOffAngle ? 1.0 : 0.0);
+
     return 0;
-
-  d_lightInfo[i].lightType = LIGHT_POSITIONAL;
-  d_lightInfo[i].location[0] = location[0];
-  d_lightInfo[i].location[1] = location[1];
-  d_lightInfo[i].location[2] = location[2];
-  d_lightInfo[i].radiusSquared = radius * radius;
-
-  GLenum light = (GLenum) (GL_LIGHT0 + i);
-
-  // should be enabled/disabled per geometry based on distance & radius...
-  glEnable(light);
-  glLightfv(light, GL_AMBIENT, amb);
-  glLightfv(light, GL_DIFFUSE, dif);
-  glLightfv(light, GL_POSITION, pos);
-
-  glLightf(light, GL_CONSTANT_ATTENUATION, attenuation[0]);
-  glLightf(light, GL_LINEAR_ATTENUATION, attenuation[1]);
-  glLightf(light, GL_QUADRATIC_ATTENUATION, attenuation[2]);
-
-  glLightfv(light, GL_SPOT_DIRECTION, direction);
-  glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / pi);
-  // The exponential dropoff is not right/spec compliant...
-  glLightf(light, GL_SPOT_EXPONENT, beamWidth < cutOffAngle ? 1.0 : 0.0);
-
-  return 0;
 }
 
 
@@ -2522,77 +2634,96 @@ void ViewerOpenGL::enableLighting(bool lightsOn)
     glDisable(GL_LIGHTING);
 }
 
-// Set attributes
-
-void ViewerOpenGL::setColor(float r, float g, float b, float a)
+/**
+ * @brief Set the color.
+ *
+ * @param rgb   red, green, and blue components.
+ * @param a     alpha (transparency) component.
+ */
+void ViewerOpenGL::setColor(const color & rgb, const float a)
 {
-  glColor4f(r,g,b,a);
+    glColor4f(rgb.r(), rgb.g(), rgb.b(), a);
 }
 
-void ViewerOpenGL::setFog(const float * color,
-                          float   visibilityRange,
-                          const char * fogType)
+/**
+ * @brief Set the fog.
+ *
+ * @param color             fog color.
+ * @param visibilityRange   the distance at which objects are fully obscured by
+ *                          fog.
+ * @param fogType           fog type.
+ */
+void ViewerOpenGL::setFog(const color & color,
+                          const float visibilityRange,
+                          const char * const fogType)
 {
-  GLfloat fogColor[4] = { color[0], color[1], color[2], 1.0 };
-  GLint fogMode = (strcmp(fogType,"EXPONENTIAL") == 0) ? GL_EXP : GL_LINEAR;
+    static const std::string exponential("EXPONENTIAL");
+    const GLfloat fogColor[4] = { color.r(), color.g(), color.b(), 1.0 };
+    const GLint fogMode = (fogType == exponential) ? GL_EXP : GL_LINEAR;
 
-  glEnable( GL_FOG );
-  glFogf( GL_FOG_START, 1.5 );        // What should this be?...
-  glFogf( GL_FOG_END, visibilityRange );
-  glFogi( GL_FOG_MODE, fogMode );
-  glFogfv( GL_FOG_COLOR, fogColor );
-
+    glEnable(GL_FOG);
+    glFogf(GL_FOG_START, 1.5); // XXX What should this be?
+    glFogf(GL_FOG_END, visibilityRange);
+    glFogi(GL_FOG_MODE, fogMode);
+    glFogfv(GL_FOG_COLOR, fogColor);
 }
 
-void ViewerOpenGL::setMaterial(float ambientIntensity,
-                               const float * diffuseColor,
-                               const float * emissiveColor,
-                               float shininess,
-                               const float * specularColor,
-                               float transparency)
+/**
+ * @brief Set the material.
+ *
+ * @param ambientIntensity  ambient intensity.
+ * @param diffuseColor      diffuse color.
+ * @param emissiveColor     emissive color.
+ * @param shininess         shininess.
+ * @param specularColor     specular color.
+ * @param transparency      transparency.
+ */
+void ViewerOpenGL::setMaterial(const float ambientIntensity,
+                               const color & diffuseColor,
+                               const color & emissiveColor,
+                               const float shininess,
+                               const color & specularColor,
+                               const float transparency)
 {
-  float alpha = 1.0 - transparency;
+    const float alpha = 1.0 - transparency;
 
-  float ambient[4] = { ambientIntensity*diffuseColor[0],
-                       ambientIntensity*diffuseColor[1],
-                       ambientIntensity*diffuseColor[2],
-                       alpha };
-  float diffuse[4] = { diffuseColor[0],
-                       diffuseColor[1],
-                       diffuseColor[2],
-                       alpha };
-  float emission[4] = { emissiveColor[0],
-                        emissiveColor[1],
-                        emissiveColor[2],
-                        alpha };
-  float specular[4] = { specularColor[0],
-                        specularColor[1],
-                        specularColor[2],
-                        alpha };
+    const float ambient[4] = { ambientIntensity * diffuseColor.r(),
+                               ambientIntensity * diffuseColor.g(),
+                               ambientIntensity * diffuseColor.b(),
+                               alpha };
+    const float diffuse[4] = { diffuseColor.r(),
+                               diffuseColor.g(),
+                               diffuseColor.b(),
+                               alpha };
+    const float emission[4] = { emissiveColor.r(),
+                                emissiveColor.g(),
+                                emissiveColor.b(),
+                                alpha };
+    const float specular[4] = { specularColor.r(),
+                                specularColor.g(),
+                                specularColor.b(),
+                                alpha };
 
-  // doesn't work right yet (need alpha render pass...)
-  if (d_blend && ! fpzero(transparency))
-    glEnable(GL_BLEND);
+    // XXX doesn't work right yet (need alpha render pass...)
+    if (this->d_blend && ! fpzero(transparency)) { glEnable(GL_BLEND); }
 
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+    //
+    // In OGL standard range of shininess is [0.0,128.0]
+    // In VRML97 the range is [0.0,1.0]
+    //
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess * 128);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
-  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
-// In OGL standard range of shininess is [0.0,128.0]
-// In VRML97 the range is [0.0,1.0]
-  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess*128);
-  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-
-  if (diffuse[0] == 0. && diffuse[1] == 0. && diffuse[2] == 0. &&
-      specularColor[0] == 0. && specularColor[1] == 0. && specularColor[2] == 0.)
-    {
-      glDisable(GL_LIGHTING);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, diffuse);
-      glColor4fv( emission );
-    }
-  else
-    {
-      glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emission);
-      glColor4fv( diffuse );
+    if (diffuseColor == color(0.0, 0.0, 0.0)
+            && specularColor == color(0.0, 0.0, 0.0)) {
+        glDisable(GL_LIGHTING);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, diffuse);
+        glColor4fv(emission);
+    } else {
+        glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emission);
+        glColor4fv(diffuse);
     }
 }
 
@@ -2723,12 +2854,12 @@ ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
 
 Viewer::TextureObject
 ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
-                            size_t w, size_t h,
-                            size_t whole_w,size_t whole_h,size_t nc,
-                            bool repeat_s,
-                            bool repeat_t,
-                            const unsigned char *pixels,
-                            bool retainHint)
+                               size_t w, size_t h,
+                               size_t whole_w,size_t whole_h,size_t nc,
+                               bool repeat_s,
+                               bool repeat_t,
+                               const unsigned char *pixels,
+                               bool retainHint)
 {
 
   GLenum fmt[] = { GL_LUMINANCE,        // single component
@@ -2792,25 +2923,35 @@ void ViewerOpenGL::removeTextureObject(TextureObject t)
 #endif
 }
 
-// Texture coordinate transform
-// Tc' = -C x S x R x C x T x Tc
-
-void ViewerOpenGL::setTextureTransform(const float center[2],
+/**
+ * @fn void Viewer::setTextureTransform(const vec2f & center, float rotation, const vec2f & scale, const vec2f & translation)
+ *
+ * @brief Set the texture transform.
+ *
+ * Texture coordinate transform
+ * Tc' = -C x S x R x C x T x Tc
+ *
+ * @param center        center.
+ * @param rotation      rotation.
+ * @param scale         scale.
+ * @param translation   translation.
+ */
+void ViewerOpenGL::setTextureTransform(const vec2f & center,
                                        float rotation,
-                                       const float scale[2],
-                                       const float translation[2]) {
-  glMatrixMode(GL_TEXTURE);
-  glLoadIdentity();
+                                       const vec2f & scale,
+                                       const vec2f & translation)
+{
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
 
-  if (center) glTranslatef(-center[0], -center[1], 0.0);
-  if (scale) glScalef(scale[0], scale[1], 1.0);
-  if (rotation != 0.0)
-    glRotatef(rotation * 180.0 / pi, 0.0, 0.0, 1.0);
+    glTranslatef(-center.x(), -center.y(), 0.0);
+    glScalef(scale.x(), scale.y(), 1.0);
+    if (!fpzero(rotation)) { glRotatef(rotation * 180.0 / pi, 0.0, 0.0, 1.0); }
 
-  if (center) glTranslatef(center[0], center[1], 0.0);
-  if (translation) glTranslatef(translation[0], translation[1], 0.0);
+    glTranslatef(center.x(), center.y(), 0.0);
+    glTranslatef(translation.x(), translation.y(), 0.0);
 
-  glMatrixMode(GL_MODELVIEW);
+    glMatrixMode(GL_MODELVIEW);
 }
 
 namespace {
@@ -2818,53 +2959,61 @@ namespace {
     /**
      * Compute a target and up vector from position/orientation/distance.
      */
-    void computeView(const float * position,
-                     const float * orientation,
+    void computeView(const vec3f & position,
+                     const rotation & orientation,
                      const float distance,
-                     float target[3],
-                     float up[3])
+                     vec3f & target,
+                     vec3f & up)
     {
         // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
 
-        //
-        // orientation axis should be normalized.
-        //
-        assert(fpequal(length(&orientation[0]), 1.0));
-
-        double s = sin(orientation[3]);
-        double c = cos(orientation[3]);
-        double t = 1.0 - c;
+        const double s = sin(orientation.angle());
+        const double c = cos(orientation.angle());
+        const double t = 1.0 - c;
 
         // Transform [0,0,1] by the orientation to determine sight line
-        target[0] = t * orientation[0] * orientation[2] + s * orientation[1];
-        target[1] = t * orientation[1] * orientation[2] - s * orientation[0];
-        target[2] = t * orientation[2] * orientation[2] + c;
+        target.x(t * orientation.x() * orientation.z() + s * orientation.y());
+        target.y(t * orientation.y() * orientation.z() - s * orientation.x());
+        target.z(t * orientation.z() * orientation.z() + c);
 
         // Move along that vector the specified distance away from position[]
-        target[0] = -distance*target[0] + position[0];
-        target[1] = -distance*target[1] + position[1];
-        target[2] = -distance*target[2] + position[2];
+        target = target * -distance + position;
 
         // Transform [0,1,0] by the orientation to determine up vector
-        up[0] = t * orientation[0] * orientation[1] - s * orientation[2];
-        up[1] = t * orientation[1] * orientation[1] + c;
-        up[2] = t * orientation[1] * orientation[2] + s * orientation[0];
+        up.x(t * orientation.x() * orientation.y() - s * orientation.z());
+        up.y(t * orientation.y() * orientation.y() + c);
+        up.z(t * orientation.y() * orientation.z() + s * orientation.x());
     }
 }
 
-void ViewerOpenGL::setViewpoint(const float * position,
-                                const float * orientation,
+/**
+ * @fn void Viewer::setViewpoint(const vec3f & position, const rotation & orientation, float fieldOfView, float avatarSize, float visLimit)
+ *
+ * @brief Set the viewpoint.
+ *
+ * @param position          position.
+ * @param orienation        orientation.
+ * @param fieldOfView       field of view.
+ * @param avatarSize        avatar size.
+ * @param visibilityLimit   visiblity limit.
+ */
+void ViewerOpenGL::setViewpoint(const vec3f & position,
+                                const rotation & orientation,
                                 const float fieldOfView,
                                 const float avatarSize,
                                 const float visibilityLimit)
 {
     glMatrixMode( GL_PROJECTION );
-    if (! d_selectMode) glLoadIdentity();
+    if (!this->d_selectMode) { glLoadIdentity(); }
 
     float field_of_view = fieldOfView * 180.0 / pi;
-    float aspect = ((float) d_winWidth) / d_winHeight;
-    float znear = (avatarSize > 0.0) ? (0.5 * avatarSize) : 0.01;
-    float zfar = (visibilityLimit > 0.0) ? visibilityLimit : 30000.0;
+    float aspect = float(this->d_winWidth) / this->d_winHeight;
+    float znear = (avatarSize > 0.0)
+                ? 0.5 * avatarSize
+                : 0.01;
+    float zfar = (visibilityLimit > 0.0)
+               ? visibilityLimit
+               : 30000.0;
     gluPerspective(field_of_view, aspect, znear, zfar);
 
     VrmlFrustum frust(field_of_view, aspect, znear, zfar);
@@ -2874,14 +3023,14 @@ void ViewerOpenGL::setViewpoint(const float * position,
 
     // Guess some distance along the sight line to use as a target...
     float d = 10.0 * avatarSize;
-    if (d < znear || d > zfar) d = 0.2 * (avatarSize + zfar);
+    if (d < znear || d > zfar) { d = 0.2 * (avatarSize + zfar); }
 
-    float target[3], up[3];
+    vec3f target, up;
     computeView(position, orientation, d, target, up);
 
-    gluLookAt(position[0], position[1], position[2],
-              target[0], target[1], target[2],
-              up[0], up[1], up[2]);
+    gluLookAt(position.x(), position.y(), position.z(),
+              target.x(), target.y(), target.z(),
+              up.x(), up.y(), up.z());
 }
 
 
@@ -3031,7 +3180,7 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
     const mat4f r = mat4f::rotation(rot);
 
     const mat4f prevOrientation = mat4f::rotation(currentRotation);
-    
+
     const mat4f t = mat4f::translation(currentTranslation);
 
     const mat4f newCameraTransform =

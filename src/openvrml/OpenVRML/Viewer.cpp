@@ -165,94 +165,186 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertBackground(size_t nGroundAngles, const float * groundAngle, const float * groundColor, size_t nSkyAngles, const float * skyAngle, const float * skyColor, int * whc, unsigned char ** pixels)
+ * @fn Viewer::Object Viewer::insertBackground(const std::vector<float> & groundAngle, const std::vector<color> & groundColor, const std::vector<float> & skyAngle, const std::vector<color> & skyColor, int * whc, unsigned char ** pixels)
  *
  * @brief Insert a background into a display list.
+ *
+ * @param groundAngle   ground angles.
+ * @param groundColor   ground colors.
+ * @param skyAngle      sky angles.
+ * @param skyColor      sky colors.
+ * @param whc           texture width, height, and number of components.
+ * @param pixels        texture pixel data.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertBox(float, float, float)
+ * @fn Viewer::Object Viewer::insertBox(const vec3f & size)
  *
  * @brief Insert a box into a display list.
+ *
+ * @param size  box dimensions.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertCone(float, float, bool, bool)
+ * @fn Viewer::Object Viewer::insertCone(float height, float radius, bool bottom, bool side)
  *
  * @brief Insert a cone into a display list.
+ *
+ * @param height    height.
+ * @param radius    radius at base.
+ * @param bottom    show the bottom.
+ * @param side      show the side.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertCylinder(float, float, bool, bool, bool)
+ * @fn Viewer::Object Viewer::insertCylinder(float height, float radius, bool bottom, bool side, bool top)
  *
  * @brief Insert a cylinder into a display list.
+ *
+ * @param height    height.
+ * @param radius    radius.
+ * @param bottom    show the bottom.
+ * @param side      show the side.
+ * @param top       show the top.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertElevationGrid(unsigned int mask, size_t nx, size_t nz, const float * height, float dx, float dz, const float * tc, const float * normals, const float * colors)
+ * @fn Viewer::Object Viewer::insertElevationGrid(unsigned int mask, const std::vector<float> & height, int32 xDimension, int32 zDimension, float xSpacing, float zSpacing, const std::vector<color> & color, const std::vector<vec3f> & normal, const std::vector<vec2f> & texCoord)
  *
  * @brief Insert an elevation grid into a display list.
+ *
+ * @param mask
+ * @param height        height field.
+ * @param xDimension    vertices in the x direction.
+ * @param zDimension    vertices in the z direction.
+ * @param xSpacing      distance between vertices in the x direction.
+ * @param zSpacing      distance between vertices in the z direction.
+ * @param color         colors.
+ * @param normal        normals.
+ * @param texCoord      texture coordinates.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertExtrusion(unsigned int, size_t nOrientation, const float * orientation, size_t nScale, const float * scale, size_t nCrossSection, const float * crossSection, size_t nSpine, const float * spine)
+ * @fn Viewer::Object Viewer::insertExtrusion(unsigned int mask, const std::vector<vec3f> & spine, const std::vector<vec2f> & crossSection, const std::vector<rotation> & orientation, const std::vector<vec2f> & scale)
  *
  * @brief Insert an extrusion into a display list.
+ *
+ * @param mask
+ * @param spine         spine points.
+ * @param crossSection  cross-sections.
+ * @param orientation   cross-section orientations.
+ * @param scale         cross-section scales.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertLineSet(size_t nCoords, const float * coord, size_t nCoordIndex, const long * coordIndex, bool colorPerVertex, const float * color, size_t nColorIndex, const long * colorIndex)
+ * @fn Viewer::Object Viewer::insertLineSet(const std::vector<vec3f> & coord, const std::vector<int32> & coordIndex, bool colorPerVertex, const std::vector<color> & color, const std::vector<int32> & colorIndex)
  *
  * @brief Insert a line set into a display list.
+ *
+ * @param coord             coordinates.
+ * @param coordIndex        coordinate indices.
+ * @param colorPerVertex    whether colors are applied per-vertex or per-face.
+ * @param color             colors.
+ * @param colorIndex        color indices.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertPointSet(size_t nv, const float * v, const float * c)
+ * @fn Viewer::Object Viewer::insertPointSet(const std::vector<vec3f> & coord, const std::vector<color> & color)
  *
  * @brief Insert a point set into a display list.
+ *
+ * @param coord     points.
+ * @param color     colors.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertShell(unsigned int mask, size_t npoints, const float * points, size_t nfaces, const long * faces, const float * tc, size_t ntci, const long * tci, const float * normal, size_t nni, const long * ni, const float * color, size_t nci, const long * ci)
+ * @fn Viewer::Object Viewer::insertShell(unsigned int mask, const std::vector<vec3f> & coord, const std::vector<int32> & coordIndex, const std::vector<color> & color, const std::vector<int32> & colorIndex, const std::vector<vec3f> & normal, const std::vector<int32> & normalIndex, const std::vector<vec2f> & texCoord, const std::vector<int32> & texCoordIndex)
  *
  * @brief Insert a shell into a display list.
+ *
+ * @param mask
+ * @param coord         coordinates.
+ * @param coordIndex    coordinate indices.
+ * @param color         colors.
+ * @param colorIndex    color indices.
+ * @param normal        normals.
+ * @param normalIndex   normal indices.
+ * @param texCoord      texture coordinates.
+ * @param texCoordIndex texture coordinate indices.
+ *
+ * @return display object identifier.
  */
 
 /**
  * @fn Viewer::Object Viewer::insertSphere(float radius)
  *
  * @brief Insert a sphere into a display list.
+ *
+ * @param radius    sphere radius.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertText(FontFace & fface, size_t strarraysize, const std::string * stringsize_t lsize, const float length[], float maxextent)
- *
- * @brief Insert text into a display list.
- *
- * @param ftface        FontFace object
- * @param strarraysize  size of string array
- * @param string        pointer to string array
- * @param lsize         size of length array
- * @param length        length array for the length of each text string
- * @param maxextent     maxextent of all text strings
- */
-
-/**
- * @fn Viewer::Object Viewer::insertDirLight(float, float, const float [], const float [])
+ * @fn Viewer::Object Viewer::insertDirLight(float ambientIntensity, float intensity , const color & color, const vec3f & direction)
  *
  * @brief Insert a directional light into a display list.
+ *
+ * @param ambientIntensity  ambient intensity.
+ * @param intensity         intensity.
+ * @param color             color.
+ * @param direction         direction.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertPointLight(float, const float [], const float [], float, const float [], float)
+ * @fn Viewer::Object Viewer::insertPointLight(float ambientIntensity, const vec3f & attenuation, const color & color, float intensity, const vec3f & location, float radius)
  *
  * @brief Insert a point light into a display list.
+ *
+ * @param ambientIntensity  ambient intensity.
+ * @param attenuation       attenuation.
+ * @param color             color.
+ * @param intensity         intensity.
+ * @param location          location.
+ * @param radius            radius.
+ *
+ * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertSpotLight(float ambientIntensity, const float attenuation[], float beamWidth, const float color[], float cutOffAngle, const float direction[], float intensity, const float location[], float radius)
+ * @fn Viewer::Object Viewer::insertSpotLight(float ambientIntensity, const vec3f & attenuation, float beamWidth, const color & color, float cutOffAngle, const vec3f & direction, float intensity, const vec3f & location, float radius)
  *
  * @brief Insert a point light into a display list.
+ *
+ * @param ambientIntensity  ambient intensity.
+ * @param attenuation       attenuation.
+ * @param beamWidth         beam width.
+ * @param color             color.
+ * @param cutOffAngle       cut-off angle.
+ * @param direction         direction.
+ * @param intensity         intensity.
+ * @param location          location.
+ * @param radius            radius.
+ *
+ * @return display object identifier.
  */
 
 /**
@@ -262,22 +354,71 @@ Viewer::~Viewer() {}
  */
 
 /**
+ * @fn void Viewer::setFog(const color & color, float visibilityRange, const char * fogType)
+ *
+ * @brief Set the fog.
+ *
+ * @param color             fog color.
+ * @param visibilityRange   the distance at which objects are fully obscured by
+ *                          fog.
+ * @param fogType           fog type.
+ */
+
+/**
+ * @fn void Viewer::setColor(const color & rgb, float a)
+ *
+ * @brief Set the color.
+ *
+ * @param rgb   red, green, and blue components.
+ * @param a     alpha (transparency) component.
+ */
+
+/**
+ * @fn void Viewer::setMaterial(float ambientIntensity, const color & diffuseColor, const color & emissiveColor, float shininess, const color & specularColor, float transparency)
+ *
+ * @brief Set the material.
+ *
+ * @param ambientIntensity  ambient intensity.
+ * @param diffuseColor      diffuse color.
+ * @param emissiveColor     emissive color.
+ * @param shininess         shininess.
+ * @param specularColor     specular color.
+ * @param transparency      transparency.
+ */
+
+/**
+ * @fn void Viewer::setTextureTransform(const vec2f & center, float rotation, const vec2f & scale, const vec2f & translation)
+ *
+ * @brief Set the texture transform.
+ *
+ * @param center        center.
+ * @param rotation      rotation.
+ * @param scale         scale.
+ * @param translation   translation.
+ */
+
+/**
+ * @fn void Viewer::setViewpoint(const vec3f & position, const rotation & orientation, float fieldOfView, float avatarSize, float visLimit)
+ *
+ * @brief Set the viewpoint.
+ *
+ * @param position          position.
+ * @param orienation        orientation.
+ * @param fieldOfView       field of view.
+ * @param avatarSize        avatar size.
+ * @param visibilityLimit   visiblity limit.
+ */
+
+/**
  * @fn void Viewer::transform(const mat4f & mat)
  *
  * @brief Transform the modelview.
  *
- * Multiply the current modelview matrix by @p mat; the result is the new
+ * Make the modelview matrix the result of multiplying @p mat by the current
  * modelview matrix.
  *
- * @param mat transformation matrix.
+ * @param mat   transformation matrix.
  */
-
-/**
- * @brief Set the color.
- *
- * The default implementation is a nop.
- */
-void Viewer::setColor(float, float, float, float) {}
 
 /**
  * Intersect the given bounding volume with the view volume. This
@@ -315,8 +456,6 @@ BVolume::Intersection Viewer::intersectViewVolume(const BVolume & bvolume) const
  * @param intersection  one of the bvolume intersection test constants, or 4
  *                      to draw in unique way. (useful for debugging)
  */
-
-
 
 /**
  * @todo We're forcing everybody to carry around a frust

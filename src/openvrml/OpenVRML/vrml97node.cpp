@@ -1445,23 +1445,22 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
 
     if (material) {
         float trans = material->getTransparency();
-        const color & diff = material->getDiffuseColor();
-        float diffuse[3] = { diff[0], diff[1], diff[2] };
+        color diffuse = material->getDiffuseColor();
         size_t nTexComponents = texture ? texture->nComponents() : 0;
         if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
-        if (nTexComponents >= 3) { diffuse[0] = diffuse[1] = diffuse[2] = 1.0; }
+        if (nTexComponents >= 3) { diffuse = color(1.0, 1.0, 1.0); }
 
         viewer.enableLighting(true);   // turn lighting on for this object
         viewer.setMaterial(material->getAmbientIntensity(),
                            diffuse,
-                           &material->getEmissiveColor()[0],
+                           material->getEmissiveColor(),
                            material->getShininess(),
-                           &material->getSpecularColor()[0],
+                           material->getSpecularColor(),
                            trans);
 
         material->clearModified();
     } else {
-        viewer.setColor(1.0, 1.0, 1.0); // default color
+        viewer.setColor(color(1.0, 1.0, 1.0)); // default color
         viewer.enableLighting(false);   // turn lighting off for this object
     }
 
@@ -1469,7 +1468,11 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
         if (this->textureTransform.value) {
             this->textureTransform.value->render(viewer, context);
         } else {
-            viewer.setTextureTransform(0, 0, 0, 0);
+            static const vec2f center(0.0, 0.0);
+            static const float rotation = 0.0;
+            static const vec2f scale(1.0, 1.0);
+            static const vec2f translation(0.0, 0.0);
+            viewer.setTextureTransform(center, rotation, scale, translation);
         }
         texture->render(viewer, context);
     }
@@ -2138,27 +2141,25 @@ void BackgroundClass::render(Viewer & viewer) throw ()
             }
 
             background.viewerObject =
-                    viewer.insertBackground(background.groundAngle.value.size(),
-                                            (background.groundAngle.value.size() > 0)
-                                               ? &background.groundAngle.value[0]
-                                               : 0,
-                                            (background.groundColor.value.size() > 0)
-                                               ? &background.groundColor.value[0][0]
-                                               : 0,
-                                            background.skyAngle.value.size(),
-                                            (background.skyAngle.value.size() > 0)
-                                               ? &background.skyAngle.value[0]
-                                               : 0,
-                                            (background.skyColor.value.size() > 0)
-                                               ? &background.skyColor.value[0][0]
-                                               : 0,
+                    viewer.insertBackground(background.groundAngle.value,
+                                            background.groundColor.value,
+                                            background.skyAngle.value,
+                                            background.skyColor.value,
                                             whc,
                                             (nPix > 0) ? pixels : 0);
 
             background.clearModified();
         }
     } else {
-        viewer.insertBackground(); // Default background
+        //
+        // Default background.
+        //
+        using std::vector;
+        static const vector<float> groundAngle;
+        static const vector<color> groundColor;
+        static const vector<float> skyAngle;
+        static const vector<color> skyColor;
+        viewer.insertBackground(groundAngle, groundColor, skyAngle, skyColor);
     }
 }
 
@@ -2871,13 +2872,13 @@ Box::~Box() throw ()
  *
  * @param viewer    a Viewer.
  * @param context   the rendering context.
+ *
+ * @return display object identifier.
  */
 Viewer::Object Box::insertGeometry(Viewer & viewer,
                                    const VrmlRenderContext context)
 {
-    return viewer.insertBox(this->size.value.x(),
-                            this->size.value.y(),
-                            this->size.value.z());
+    return viewer.insertBox(this->size.value);
 }
 
 /**
@@ -4382,8 +4383,8 @@ void DirectionalLight::render(Viewer & viewer, const VrmlRenderContext rc)
     if (this->on.value) {
         viewer.insertDirLight(this->ambientIntensity.value,
                               this->intensity.value,
-                              &this->color.value[0],
-                              &this->direction.value[0]);
+                              this->color.value,
+                              this->direction.value);
     }
     this->clearModified();
 }
@@ -4626,23 +4627,24 @@ Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
 {
     Viewer::Object obj = 0;
 
-    if (this->height.value.size() > 0) {
-        const float * tc = 0;
-        const float * normals = 0;
-        const float * colors = 0;
+    if (!this->height.value.empty()) {
+        using std::vector;
 
-        if (this->texCoord.value) {
-            tc = &this->texCoord.value->toTextureCoordinate()->getPoint()[0][0];
-        }
+        ColorNode * const colorNode = this->color.value->toColor();
+        const vector<OpenVRML::color> & color = colorNode
+                                              ? colorNode->getColor()
+                                              : vector<OpenVRML::color>();
 
-        if (this->normal.value) {
-            normals = &this->normal.value->toNormal()->getVector()[0][0];
-        }
+        NormalNode * const normalNode = this->normal.value->toNormal();
+        const vector<vec3f> & normal = normalNode
+                                     ? normalNode->getVector()
+                                     : vector<vec3f>();
 
-        if (this->color.value) {
-            colors = &this->color.value->toColor()->getColor()[0][0];
-        }
-
+        TextureCoordinateNode * const texCoordNode =
+                this->texCoord.value->toTextureCoordinate();
+        const vector<vec2f> & texCoord = texCoordNode
+                                       ? texCoordNode->getPoint()
+                                       : vector<vec2f>();
         // insert geometry
         unsigned int optMask = 0;
         if (this->ccw.value) {
@@ -4659,14 +4661,14 @@ Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
         }
 
         obj = viewer.insertElevationGrid(optMask,
+                                         this->height.value,
                                          this->xDimension.value,
                                          this->zDimension.value,
-                                         &this->height.value[0],
                                          this->xSpacing.value,
                                          this->zSpacing.value,
-                                         tc,
-                                         normals,
-                                         colors);
+                                         color,
+                                         normal,
+                                         texCoord);
     }
 
     if (this->color.value) { this->color.value->clearModified(); }
@@ -4940,8 +4942,7 @@ Viewer::Object Extrusion::insertGeometry(Viewer & viewer,
                                          const VrmlRenderContext context)
 {
     Viewer::Object obj = 0;
-    if (this->crossSection.value.size() > 0
-            && this->spine.value.size() > 1) {
+    if (this->crossSection.value.size() > 0 && this->spine.value.size() > 1) {
 
         unsigned int optMask = 0;
         if (this->ccw.value)        { optMask |= Viewer::MASK_CCW; }
@@ -4951,14 +4952,10 @@ Viewer::Object Extrusion::insertGeometry(Viewer & viewer,
         if (this->endCap.value)     { optMask |= Viewer::MASK_TOP; }
 
         obj = viewer.insertExtrusion(optMask,
-                                     this->orientation.value.size(),
-                                     &this->orientation.value[0][0],
-                                     this->scale.value.size(),
-                                     &this->scale.value[0][0],
-                                     this->crossSection.value.size(),
-                                     &this->crossSection.value[0][0],
-                                     this->spine.value.size(),
-                                     &this->spine.value[0][0]);
+                                     this->spine.value,
+                                     this->crossSection.value,
+                                     this->orientation.value,
+                                     this->scale.value);
     }
 
     return obj;
@@ -5167,7 +5164,7 @@ void FogClass::render(Viewer & viewer) throw ()
 {
     if (!this->boundNodes.empty()) {
         Fog & fog = dynamic_cast<Fog &>(*this->boundNodes.back());
-        viewer.setFog(&fog.color.value[0],
+        viewer.setFog(fog.color.value,
                       fog.visibilityRange.value,
                       fog.fogType.value.c_str());
     }
@@ -6441,87 +6438,64 @@ void IndexedFaceSet::updateModified(NodePath& path, int flags) {
 Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
                                               const VrmlRenderContext context)
 {
-    Viewer::Object obj = 0;
+    using std::vector;
 
     if (context.getDrawBSpheres()) {
         const BSphere* bs = (BSphere*)this->getBVolume();
         viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
     }
 
-    if (this->coord.value && this->coordIndex.value.size() > 0) {
-        const std::vector<vec3f> & coord =
-                this->coord.value->toCoordinate()->getPoint();
-        size_t nvert = coord.size();
-        const float *tc = 0, *color = 0, *normal = 0;
-        int ntc = 0;
-        size_t ntci = 0; const int32 * tci = 0;    // texture coordinate indices
-        int nci = 0; const int32 * ci = 0;    // color indices
-        int nni = 0; const int32 * ni = 0;    // normal indices
+    CoordinateNode * const coordinateNode = this->coord.value
+                                          ? this->coord.value->toCoordinate()
+                                          : 0;
+    const vector<vec3f> & coord = coordinateNode
+                                ? coordinateNode->getPoint()
+                                : vector<vec3f>();
 
-        // Get texture coordinates and texCoordIndex
-        if (this->texCoord.value) {
-            const std::vector<vec2f> & texcoord =
-                    this->texCoord.value->toTextureCoordinate()->getPoint();
-            tc = &texcoord[0][0];
-            ntc = texcoord.size();
-            ntci = this->texCoordIndex.value.size();
-            if (ntci) { tci = &this->texCoordIndex.value[0]; }
-        }
+    ColorNode * const colorNode = this->color.value
+                                ? this->color.value->toColor()
+                                : 0;
+    const vector<OpenVRML::color> & color = colorNode
+                                          ? colorNode->getColor()
+                                          : vector<OpenVRML::color>();
 
-        // check #tc is consistent with #coords/max texCoordIndex...
-        if (tci && ntci < this->coordIndex.value.size()) {
-            theSystem->error("IndexedFaceSet: not enough texCoordIndex values (there should be at least as many as coordIndex values).\n");
-            theSystem->error("IndexedFaceSet: #coord %d, #coordIndex %d, #texCoord %d, #texCoordIndex %d\n", nvert, this->coordIndex.value.size(), ntc, ntci);
-            tci = 0;
-            ntci = 0;
-        }
+    NormalNode * const normalNode = this->normal.value
+                                  ? this->normal.value->toNormal()
+                                  : 0;
+    const vector<vec3f> & normal = normalNode
+                                 ? normalNode->getVector()
+                                 : vector<vec3f>();
 
-        // check #colors is consistent with colorPerVtx, colorIndex...
-        ColorNode * const colorNode = this->color.value
-                                    ? this->color.value->toColor()
-                                    : 0;
-        if (colorNode) {
-            const std::vector<OpenVRML::color> & c = colorNode->getColor();
+    TextureCoordinateNode * const texCoordNode = this->texCoord.value
+                                ? this->texCoord.value->toTextureCoordinate()
+                                : 0;
+    const vector<vec2f> & texCoord = texCoordNode
+                                   ? texCoordNode->getPoint()
+                                   : vector<vec2f>();
 
-            color = &c[0][0];
-            nci = this->colorIndex.value.size();
-            if (nci) { ci = &this->colorIndex.value[0]; }
-        }
-
-        // check #normals is consistent with normalPerVtx, normalIndex...
-        if (this->normal.value) {
-            const std::vector<vec3f> & n =
-                    this->normal.value->toNormal()->getVector();
-            normal = &n[0][0];
-            nni = this->normalIndex.value.size();
-            if (nni) { ni = &this->normalIndex.value[0]; }
-        }
-
-        unsigned int optMask = 0;
-        if (this->ccw.value) {
-            optMask |= Viewer::MASK_CCW;
-        }
-        if (this->convex.value) {
-            optMask |= Viewer::MASK_CONVEX;
-        }
-        if (this->solid.value) {
-            optMask |= Viewer::MASK_SOLID;
-        }
-        if (this->colorPerVertex.value) {
-            optMask |= Viewer::MASK_COLOR_PER_VERTEX;
-        }
-        if (this->normalPerVertex.value) {
-            optMask |= Viewer::MASK_NORMAL_PER_VERTEX;
-        }
-
-        obj = viewer.insertShell(optMask,
-                                 nvert, &coord[0][0],
-                                 this->coordIndex.value.size(),
-                                 &this->coordIndex.value[0],
-                                 tc, ntci, tci,
-                                 normal, nni, ni,
-                                 color, nci, ci);
+    unsigned int optMask = 0;
+    if (this->ccw.value) {
+        optMask |= Viewer::MASK_CCW;
     }
+    if (this->convex.value) {
+        optMask |= Viewer::MASK_CONVEX;
+    }
+    if (this->solid.value) {
+        optMask |= Viewer::MASK_SOLID;
+    }
+    if (this->colorPerVertex.value) {
+        optMask |= Viewer::MASK_COLOR_PER_VERTEX;
+    }
+    if (this->normalPerVertex.value) {
+        optMask |= Viewer::MASK_NORMAL_PER_VERTEX;
+    }
+
+    const Viewer::Object obj =
+            viewer.insertShell(optMask,
+                               coord, this->coordIndex.value,
+                               color, this->colorIndex.value,
+                               normal, this->normalIndex.value,
+                               texCoord, this->texCoordIndex.value);
 
     if (this->color.value)      { this->color.value->clearModified(); }
     if (this->coord.value)      { this->coord.value->clearModified(); }
@@ -6761,34 +6735,25 @@ IndexedLineSet::~IndexedLineSet() throw () {}
 Viewer::Object IndexedLineSet::insertGeometry(Viewer & viewer,
                                               const VrmlRenderContext context)
 {
-    Viewer::Object obj = 0;
-    if (this->coord.value && this->coordIndex.value.size() > 0) {
-        const std::vector<vec3f> & coord =
-                this->coord.value->toCoordinate()->getPoint();
-        int nvert = coord.size();
-        const float * color = 0;
-        int nci = 0; const int32 * ci = 0;
+    using std::vector;
 
-        // check #colors is consistent with colorPerVtx, colorIndex...
-        if (this->color.value) {
-            const std::vector<OpenVRML::color> & c =
-                    this->color.value->toColor()->getColor();
-            color = & c[0][0];
-            nci = this->colorIndex.value.size();
-            if (nci) { ci = &this->colorIndex.value[0]; }
-        }
+    CoordinateNode * const coordinateNode = this->coord.value
+                                          ? this->coord.value->toCoordinate()
+                                          : 0;
+    const vector<vec3f> & coord = coordinateNode
+                                ? coordinateNode->getPoint()
+                                : vector<vec3f>();
 
-        obj =  viewer.insertLineSet(nvert,
-                                    !coord.empty() ? &coord[0][0] : 0,
-                                    this->coordIndex.value.size(),
-                                    (this->coordIndex.value.size() > 0)
-                                        ? &this->coordIndex.value[0]
-                                        : 0,
-                                    this->colorPerVertex.value,
-                                    color,
-                                    nci, ci);
+    ColorNode * const colorNode = this->color.value
+                                ? this->color.value->toColor()
+                                : 0;
+    const vector<OpenVRML::color> & color = colorNode
+                                          ? colorNode->getColor()
+                                          : vector<OpenVRML::color>();
 
-    }
+    Viewer::Object obj = viewer.insertLineSet(coord, this->coordIndex.value,
+                                              this->colorPerVertex.value,
+                                              color, this->colorIndex.value);
 
     if (this->color.value) { this->color.value->clearModified(); }
     if (this->coord.value) { this->coord.value->clearModified(); }
@@ -9600,10 +9565,10 @@ void PointLight::renderScoped(Viewer & viewer)
 {
     if (this->on.value && this->radius.value > 0.0) {
         viewer.insertPointLight(this->ambientIntensity.value,
-                                &this->attenuation.value[0],
-                                &this->color.value[0],
+                                this->attenuation.value,
+                                this->color.value,
                                 this->intensity.value,
-                                &this->location.value[0],
+                                this->location.value,
                                 this->radius.value);
     }
     this->clearModified();
@@ -9841,30 +9806,28 @@ void PointSet::updateModified(NodePath & path, int flags)
 Viewer::Object PointSet::insertGeometry(Viewer & viewer,
                                         const VrmlRenderContext context)
 {
-    Viewer::Object obj = 0;
-
+    using std::vector;
+    
     if (context.getDrawBSpheres()) {
         const BSphere * bs = (const BSphere*)this->getBVolume();
         viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
     }
 
-    if (this->coord.value) {
-        const float * color = 0;
-        if (this->color.value) {
-            const std::vector<OpenVRML::color> & c =
-                    this->color.value->toColor()->getColor();
-            color = (c.size() > 0)
-                  ? &c[0][0]
-                  : 0;
-        }
+    CoordinateNode * const coordinateNode = this->coord.value
+                                          ? this->coord.value->toCoordinate()
+                                          : 0;
+    const vector<vec3f> & coord = coordinateNode
+                                ? coordinateNode->getPoint()
+                                : vector<vec3f>();
 
-        const std::vector<vec3f> & coord =
-                this->coord.value->toCoordinate()->getPoint();
+    ColorNode * const colorNode = this->color.value
+                                ? this->color.value->toColor()
+                                : 0;
+    const vector<OpenVRML::color> & color = colorNode
+                                          ? colorNode->getColor()
+                                          : vector<OpenVRML::color>();
 
-        obj = viewer.insertPointSet(coord.size(),
-                                    !coord.empty() ? &coord[0][0] : 0,
-                                    color);
-    }
+    Viewer::Object obj = viewer.insertPointSet(coord, color);
 
     if (this->color.value) { this->color.value->clearModified(); }
     if (this->coord.value) { this->coord.value->clearModified(); }
@@ -10886,7 +10849,7 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
                             a->getTexture()->toTexture()->nComponents();
                 }
             } else {
-                viewer.setColor(1.0, 1.0, 1.0); // default object color
+                viewer.setColor(color(1.0, 1.0, 1.0)); // default object color
                 viewer.enableLighting(false);  // turn lighting off
             }
 
@@ -12063,26 +12026,26 @@ SpotLight * SpotLight::toSpotLight() const
 /**
  * @brief Render the scoped light.
  *
- * This should be called before rendering any geometry in the scene.
- * Since this is called from Scene::render before traversing the
- * scene graph, the proper transformation matrix hasn't been set up.
- * Somehow it needs to figure out the accumulated xforms of its
- * parents and apply them before rendering. This is not easy with
- * DEF/USEd nodes...
- *
  * @param viewer    a Viewer.
+ *
+ * @todo This should be called before rendering any geometry in the scene.
+ *      Since this is called from Scene::render before traversing the
+ *      scene graph, the proper transformation matrix hasn't been set up.
+ *      Somehow it needs to figure out the accumulated xforms of its
+ *      parents and apply them before rendering. This is not easy with
+ *      DEF/USEd nodes...
  */
 void SpotLight::renderScoped(Viewer & viewer)
 {
     if (this->on.value && this->radius.value > 0.0) {
         viewer.insertSpotLight(this->ambientIntensity.value,
-                               &this->attenuation.value[0],
+                               this->attenuation.value,
                                this->beamWidth.value,
-                               &this->color.value[0],
+                               this->color.value,
                                this->cutOffAngle.value,
-                               &this->direction.value[0],
+                               this->direction.value,
                                this->intensity.value,
-                               &this->location.value[0],
+                               this->location.value,
                                this->radius.value);
     }
     this->clearModified();
@@ -13044,20 +13007,14 @@ Viewer::Object Text::insertGeometry(Viewer & viewer,
 {
     const Viewer::Object retval =
             viewer.insertShell(Viewer::MASK_CCW,
-                               this->textGeometry.coord.value.size(),
-                               (this->textGeometry.coord.value.size() > 0)
-                                    ? &this->textGeometry.coord.value[0][0]
-                                    : 0,
-                               this->textGeometry.coordIndex.value.size(),
-                               (this->textGeometry.coordIndex.value.size() > 0)
-                                    ? &this->textGeometry.coordIndex.value[0]
-                                    : 0,
-                               0, 0, 0,
-                               (this->textGeometry.normal.value.size() > 0)
-                                    ? &this->textGeometry.normal.value[0][0]
-                                    : 0,
-                               0, 0,
-                               0, 0, 0);
+                               this->textGeometry.coord.value,
+                               this->textGeometry.coordIndex.value,
+                               std::vector<color>(), // color
+                               std::vector<int32>(), // colorIndex
+                               this->textGeometry.normal.value,
+                               std::vector<int32>(), // normalIndex
+                               std::vector<vec2f>(), // texCoord
+                               std::vector<int32>()); // texCoordIndex
     if (this->fontStyle.value) { this->fontStyle.value->clearModified(); }
     return retval;
 }
@@ -14112,10 +14069,10 @@ TextureTransform::~TextureTransform() throw ()
  */
 void TextureTransform::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    viewer.setTextureTransform(&this->center.value[0],
+    viewer.setTextureTransform(this->center.value,
                                this->rotation.value,
-                               &this->scale.value[0],
-                               &this->translation.value[0]);
+                               this->scale.value,
+                               this->translation.value);
     this->clearModified();
 }
 

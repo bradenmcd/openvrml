@@ -22,6 +22,7 @@
 #   define OPENVRML_VIEWER_H
 
 #   include <stddef.h>
+#   include <vector>
 #   include <OpenVRML/bvolume.h>
 #   include <OpenVRML/VrmlFrustum.h>
 
@@ -68,64 +69,70 @@ namespace OpenVRML {
         virtual Object beginObject(const char *, bool = false) = 0;
         virtual void endObject() = 0;
 
-        virtual Object insertBackground(size_t nGroundAngles = 0,
-                                        const float * groundAngle = 0,
-                                        const float * groundColor = 0,
-                                        size_t nSkyAngles = 0,
-                                        const float * skyAngle = 0,
-                                        const float * skyColor = 0,
+        virtual Object insertBackground(const std::vector<float> & groundAngle,
+                                        const std::vector<color> & groundColor,
+                                        const std::vector<float> & skyAngle,
+                                        const std::vector<color> & skyColor,
                                         int* whc = 0,
                                         unsigned char ** pixels = 0) = 0;
 
-        virtual Object insertBox(float, float, float ) = 0;
-        virtual Object insertCone(float, float, bool, bool) = 0;
-        virtual Object insertCylinder(float, float, bool, bool, bool) = 0;
-        virtual Object insertElevationGrid(unsigned int mask,
-                                           size_t nx,
-                                           size_t nz,
-                                           const float * height,
-                                           float dx,
-                                           float dz,
-                                           const float * tc,
-                                           const float * normals,
-                                           const float * colors) = 0;
-        virtual Object insertExtrusion(unsigned int,
-                                       size_t nOrientation,
-                                       const float * orientation,
-                                       size_t nScale,
-                                       const float * scale,
-                                       size_t nCrossSection,
-                                       const float * crossSection,
-                                       size_t nSpine,
-                                       const float * spine) = 0;
-        virtual Object insertLineSet(size_t nCoords, const float * coord,
-                                     size_t nCoordIndex, const int32 * coordIndex,
-                                     bool colorPerVertex,
-                                     const float * color,
-                                     size_t nColorIndex,
-                                     const int32 * colorIndex) = 0;
-        virtual Object insertPointSet(size_t nv, const float * v, const float * c) = 0;
-        virtual Object insertShell(unsigned int mask,
-                                   size_t npoints, const float * points,
-                                   size_t nfaces, const int32 * faces,
-                                   const float * tc,
-                                   size_t ntci, const int32 * tci,
-                                   const float * normal,
-                                   size_t nni, const int32 * ni,
-                                   const float * color,
-                                   size_t nci, const int32 * ci) = 0;
+        virtual Object insertBox(const vec3f & size) = 0;
+        virtual Object insertCone(float height, float radius, bool bottom,
+                                  bool side) = 0;
+        virtual Object
+        insertCylinder(float height, float radius, bool bottom, bool side,
+                       bool top) = 0;
+        virtual Object
+        insertElevationGrid(unsigned int mask,
+                            const std::vector<float> & height,
+                            int32 xDimension, int32 zDimension,
+                            float xSpacing, float zSpacing,
+                            const std::vector<color> & color,
+                            const std::vector<vec3f> & normal,
+                            const std::vector<vec2f> & texCoord) = 0;
+        virtual Object
+        insertExtrusion(unsigned int,
+                        const std::vector<vec3f> & spine,
+                        const std::vector<vec2f> & crossSection,
+                        const std::vector<rotation> & orientation,
+                        const std::vector<vec2f> & scale) = 0;
+        virtual Object
+        insertLineSet(const std::vector<vec3f> & coord,
+                      const std::vector<int32> & coordIndex,
+                      bool colorPerVertex,
+                      const std::vector<color> & color,
+                      const std::vector<int32> & colorIndex) = 0;
+        virtual Object
+        insertPointSet(const std::vector<vec3f> & coord,
+                       const std::vector<color> & color) = 0;
+        virtual Object
+        insertShell(unsigned int mask,
+                    const std::vector<vec3f> & coord,
+                    const std::vector<int32> & coordIndex,
+                    const std::vector<color> & color,
+                    const std::vector<int32> & colorIndex,
+                    const std::vector<vec3f> & normal,
+                    const std::vector<int32> & normalIndex,
+                    const std::vector<vec2f> & texCoord,
+                    const std::vector<int32> & texCoordIndex) = 0;
         virtual Object insertSphere(float radius) = 0;
-        virtual Object insertDirLight(float, float, const float [], const float []) = 0;
-        virtual Object insertPointLight(float, const float [], const float [],
-                                        float, const float [], float) = 0;
+        virtual Object insertDirLight(float ambientIntensity, float intensity,
+                                      const color & color,
+                                      const vec3f & direction) = 0;
+        virtual Object insertPointLight(float ambientIntensity,
+                                        const vec3f & attenuation,
+                                        const color & color,
+                                        float intensity,
+                                        const vec3f & location,
+                                        float radius) = 0;
         virtual Object insertSpotLight(float ambientIntensity,
-                                       const float attenuation[],
+                                       const vec3f & attenuation,
                                        float beamWidth,
-                                       const float color[],
+                                       const color & color,
                                        float cutOffAngle,
-                                       const float direction[],
+                                       const vec3f & direction,
                                        float intensity,
-                                       const float location[],
+                                       const vec3f & location,
                                        float radius) = 0;
         virtual Object insertReference(Object existingObject) = 0;
 
@@ -133,20 +140,20 @@ namespace OpenVRML {
 
         virtual void enableLighting(bool) = 0;
 
-        virtual void setFog(const float * color,
+        virtual void setFog(const color & color,
                             float visibilityRange,
                             const char * fogType) = 0;
 
-        virtual void setColor(float r, float g, float b, float a = 1.0) = 0;
+        virtual void setColor(const color & rgb, float a = 1.0) = 0;
 
         virtual void setMaterial(float ambientIntensity,
-                                 const float diffuseColor[3],
-                                 const float emissiveColor[3],
+                                 const color & diffuseColor,
+                                 const color & emissiveColor,
                                  float shininess,
-                                 const float specularColor[3],
+                                 const color & specularColor,
                                  float transparency) = 0;
 
-        virtual void setMaterialMode( int nTexComponents, bool geometryColor ) = 0;
+        virtual void setMaterialMode(int nTexComponents, bool geometryColor) = 0;
 
         virtual void setSensitive(Node * object) = 0;
 
@@ -166,16 +173,16 @@ namespace OpenVRML {
         virtual void insertTextureReference(TextureObject, int) = 0;
         virtual void removeTextureObject(TextureObject) = 0;
 
-        virtual void setTextureTransform(const float center[2],
+        virtual void setTextureTransform(const vec2f & center,
                                          float rotation,
-                                         const float scale[2],
-                                         const float translation[2]) = 0;
+                                         const vec2f & scale,
+                                         const vec2f & translation) = 0;
 
-        virtual void setViewpoint(const float position[3],
-                                  const float orientation[4],
+        virtual void setViewpoint(const vec3f & position,
+                                  const rotation & orientation,
                                   float fieldOfView,
                                   float avatarSize,
-                                  float visLimit) = 0;
+                                  float visibilityLimit) = 0;
 
         virtual void transform(const mat4f & mat) = 0;
 

@@ -1393,11 +1393,12 @@ void Browser::render(Viewer & viewer)
     // Activate the headlight.
     // ambient is supposed to be 0 according to the spec...
     if (headlightOn()) {
-        float rgb[3] = { 1.0, 1.0, 1.0 };
-        float xyz[3] = { 0.0, 0.0, -1.0 };
-        float ambient = 0.3;
+        const color color(1.0, 1.0, 1.0);
+        const vec3f direction(0.0, 0.0, -1.0);
+        const float ambientIntensity = 0.3;
+        const float intensity = 1.0;
 
-        viewer.insertDirLight(ambient, 1.0, rgb, xyz);
+        viewer.insertDirLight(ambientIntensity, intensity, color, direction);
     }
 
     // sets the viewpoint transformation
@@ -1407,8 +1408,8 @@ void Browser::render(Viewer & viewer)
     vec3f position, scale;
     rotation orientation;
     t.transformation(position, orientation, scale);
-    viewer.setViewpoint(&position[0],
-                        &orientation[0],
+    viewer.setViewpoint(position,
+                        orientation,
                         activeViewpoint->getFieldOfView(),
                         avatarSize,
                         visibilityLimit);
