@@ -61,7 +61,7 @@ public class ConstMFInt32 extends ConstMField
   /**
    * Retrieves the complete list of integers making up an MFInt32 field.
    *
-   * @param values List of integers to initialize object with.
+   * @param values Array to put resulting list of integers in.
    */
   public native void getValue(int values[]);
 
