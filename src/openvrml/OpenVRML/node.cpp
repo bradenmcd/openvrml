@@ -1505,12 +1505,6 @@ void Node::updateModified(int flags)
   updateModified(path, flags);
 }
 
-
-void Node::clearFlags()
-{
-  d_flag = false;
-}
-
 // Render
 
 //bool Node::cull(Viewer *v, RenderContext* c)

@@ -754,13 +754,6 @@ void AbstractIndexedSet::updateModified(NodePath & path, int flags)
     path.pop_front();
 }
 
-void AbstractIndexedSet::clearFlags()
-{
-    Node::clearFlags();
-    if (this->color.get()) { this->color.get()->clearFlags(); }
-    if (this->coord.get()) { this->coord.get()->clearFlags(); }
-}
-
 const ColorNode * AbstractIndexedSet::getColor() const throw ()
 {
     return this->color.get()
@@ -1411,16 +1404,6 @@ void Appearance::updateModified(NodePath & path, int flags)
     path.pop_front();
 }
 
-void Appearance::clearFlags()
-{
-    Node::clearFlags();
-    if (this->material.get()) { this->material.get()->clearFlags(); }
-    if (this->texture.get()) { this->texture.get()->clearFlags(); }
-    if (this->textureTransform.get()) {
-        this->textureTransform.get()->clearFlags();
-    }
-}
-
 void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
 {
     MaterialNode * const material = this->material.get()
@@ -1915,21 +1898,21 @@ void BackgroundClass::bind(Background & background, const double timestamp)
     throw (std::bad_alloc)
 {
     const NodePtr node(&background);
-    
+
     //
     // If the node is already the active node, do nothing.
     //
     if (!this->boundNodes.empty() && node == this->boundNodes.back()) {
         return;
     }
-    
+
     //
     // If the node is already on the stack, remove it.
     //
     const std::vector<NodePtr>::iterator pos =
             std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
     if (pos != this->boundNodes.end()) { this->boundNodes.erase(pos); }
-    
+
     //
     // Send FALSE from the currently active node's isBound.
     //
@@ -1939,7 +1922,7 @@ void BackgroundClass::bind(Background & background, const double timestamp)
         current.bound.set(false);
         current.emitEvent("isBound", current.bound, timestamp);
     }
-    
+
     //
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
@@ -1958,7 +1941,7 @@ void BackgroundClass::unbind(Background & background, const double timestamp)
     throw ()
 {
     const NodePtr node(&background);
-    
+
     const std::vector<NodePtr>::iterator pos =
             std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
     if (pos != this->boundNodes.end()) {
@@ -2862,7 +2845,7 @@ Viewer::Object Box::insertGeometry(Viewer & viewer,
 const BVolume * Box::getBVolume() const
 {
     using OpenVRML_::length;
-    
+
     if (this->isBVolumeDirty()) {
         const float corner[3] = { this->size.getX() / 2.0f,
                                   this->size.getY() / 2.0f,
@@ -3007,11 +2990,6 @@ Collision::~Collision() throw () {}
 bool Collision::isModified() const {
   return ((this->proxy.get() && this->proxy.get()->isModified())
           || this->Group::isModified());
-}
-
-void Collision::clearFlags() {
-    this->Group::clearFlags();
-    if (this->proxy.get()) { this->proxy.get()->clearFlags(); }
 }
 
 /**
@@ -3670,11 +3648,11 @@ void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
     size_t n = this->key.getLength() - 1;
 
     if (f < this->key.getElement(0)) {
-        this->value = MFVec3f(nCoords, 
+        this->value = MFVec3f(nCoords,
                               &static_cast<SFVec3f::ConstArrayReference>
                               (this->keyValue.getElement(0)));
     } else if (f > this->key.getElement(n)) {
-        this->value = MFVec3f(nCoords, 
+        this->value = MFVec3f(nCoords,
                               &static_cast<SFVec3f::ConstArrayReference>
                               (this->keyValue.getElement(n * nCoords)));
     } else {
@@ -4569,13 +4547,6 @@ void ElevationGrid::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
-void ElevationGrid::clearFlags() {
-    Node::clearFlags();
-    if (this->color.get()) { this->color.get()->clearFlags(); }
-    if (this->normal.get()) { this->normal.get()->clearFlags(); }
-    if (this->texCoord.get()) { this->texCoord.get()->clearFlags(); }
-}
-
 Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
                                              const VrmlRenderContext context)
 {
@@ -5040,21 +5011,21 @@ bool FogClass::hasFirst() const throw ()
 void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
 {
     const NodePtr node(&fog);
-    
+
     //
     // If the node is already the active node, do nothing.
     //
     if (!this->boundNodes.empty() && node == this->boundNodes.back()) {
         return;
     }
-    
+
     //
     // If the node is already on the stack, remove it.
     //
     const std::vector<NodePtr>::iterator pos =
             std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
     if (pos != this->boundNodes.end()) { this->boundNodes.erase(pos); }
-    
+
     //
     // Send FALSE from the currently active node's isBound.
     //
@@ -5063,7 +5034,7 @@ void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
         current.bound.set(false);
         current.emitEvent("isBound", current.bound, timestamp);
     }
-    
+
     //
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
@@ -5081,7 +5052,7 @@ void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
 void FogClass::unbind(Fog & fog, const double timestamp) throw ()
 {
     const NodePtr node(&fog);
-    
+
     const std::vector<NodePtr>::iterator pos =
             std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
     if (pos != this->boundNodes.end()) {
@@ -5754,13 +5725,6 @@ void Group::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
-void Group::clearFlags() {
-    this->Node::clearFlags();
-    for (size_t i = 0; i < this->children.getLength(); ++i) {
-        this->children.getElement(i)->clearFlags();
-    }
-}
-
 Node * Group::getParentTransform() { return this->parentTransform; }
 
 /**
@@ -6314,14 +6278,6 @@ void IndexedFaceSet::updateModified(NodePath& path, int flags) {
     if (this->normal.get()) { this->normal.get()->updateModified(path, flags); }
     if (this->texCoord.get()) { this->texCoord.get()->updateModified(path, flags); }
     path.pop_front();
-}
-
-void IndexedFaceSet::clearFlags() {
-    Node::clearFlags();
-    if (this->color.get()) { this->color.get()->clearFlags(); }
-    if (this->coord.get()) { this->coord.get()->clearFlags(); }
-    if (this->normal.get()) { this->normal.get()->clearFlags(); }
-    if (this->texCoord.get()) { this->texCoord.get()->clearFlags(); }
 }
 
 /**
@@ -6934,13 +6890,6 @@ void LOD::updateModified(NodePath & path, int flags) {
         this->level.getElement(i)->updateModified(path);
     }
     path.pop_front();
-}
-
-void LOD::clearFlags() {
-    this->Node::clearFlags();
-    for (size_t i = 0; i < this->level.getLength(); ++i) {
-        this->level.getElement(i)->clearFlags();
-    }
 }
 
 /**
@@ -7576,9 +7525,9 @@ void MovieTexture::update(const double currentTime) {
     else if (this->active.get()
              && this->lastFrameTime + fabs(1 / this->speed.get())
                 <= currentTime) {
-        if (this->speed.get() < 0.0) 
+        if (this->speed.get() < 0.0)
           --this->frame;
-        else 
+        else
           ++this->frame;
 
         this->lastFrameTime = currentTime;
@@ -8262,11 +8211,11 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
     int n = this->key.getLength() - 1;
 
     if (f < this->key.getElement(0)) {
-        this->value = MFVec3f(nNormals, 
+        this->value = MFVec3f(nNormals,
                               &static_cast<SFVec3f::ConstArrayReference>
                               (this->keyValue.getElement(0)));
     } else if (f > this->key.getElement(n)) {
-        this->value = MFVec3f(nNormals, 
+        this->value = MFVec3f(nNormals,
                               &static_cast<SFVec3f::ConstArrayReference>
                               (this->keyValue.getElement(n * nNormals)));
     } else {
@@ -9414,12 +9363,6 @@ void PointSet::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
-void PointSet::clearFlags() {
-    this->Node::clearFlags();
-    if (this->color.get()) { this->color.get()->clearFlags(); }
-    if (this->coord.get()) { this->coord.get()->clearFlags(); }
-}
-
 Viewer::Object PointSet::insertGeometry(Viewer & viewer,
                                         const VrmlRenderContext context)
 {
@@ -10242,12 +10185,6 @@ void Shape::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
-void Shape::clearFlags() {
-    this->Node::clearFlags();
-    if (this->appearance.get()) { this->appearance.get()->clearFlags(); }
-    if (this->geometry.get()) { this->geometry.get()->clearFlags(); }
-}
-
 void Shape::render(Viewer & viewer, const VrmlRenderContext context)
 {
     if (this->viewerObject && isModified()) {
@@ -10505,11 +10442,6 @@ void Sound::updateModified(NodePath & path, int flags) {
     path.push_front(this);
     if (this->source.get()) { this->source.get()->updateModified(path); }
     path.pop_front();
-}
-
-void Sound::clearFlags() {
-    this->Node::clearFlags();
-    if (this->source.get()) { this->source.get()->clearFlags(); }
 }
 
 void Sound::render(Viewer & viewer, const VrmlRenderContext context) {
@@ -11421,13 +11353,6 @@ void Switch::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
-void Switch::clearFlags() {
-    this->Node::clearFlags();
-    for (size_t i = 0; i < this->choice.getLength(); ++i) {
-        this->choice.getElement(i)->clearFlags();
-    }
-}
-
 /**
  * @brief Render the selected child
  */
@@ -11697,7 +11622,7 @@ namespace {
         assert(result);
         return result;
     }
-    
+
     bool insideContour_(const MFVec2f & contour, const float (&point)[2])
         throw ()
     {
@@ -11715,7 +11640,7 @@ namespace {
         }
         return result;
     }
-    
+
     enum ContourType_ { exterior_, interior_ };
 
     ContourType_ getType(const MFVec2f & contour,
@@ -11723,10 +11648,10 @@ namespace {
         throw ()
     {
         using std::vector;
-        
+
         assert(contour.getLength() > 0);
         const float (&vertex)[2] = contour.getElement(0);
-        
+
         bool isInterior = false;
         for (vector<MFVec2f>::const_iterator testContour = contours.begin();
                 testContour != contours.end(); ++testContour) {
@@ -11737,12 +11662,12 @@ namespace {
         }
         return isInterior ? interior_ : exterior_;
     }
-    
+
     struct Polygon_ {
         const MFVec2f * exterior;
         std::vector<const MFVec2f *> interiors;
     };
-    
+
     struct Inside_ : std::binary_function {
         bool operator()(const MFVec2f * const lhs,
                         const MFVec2f * const rhs) const
@@ -11757,14 +11682,14 @@ namespace {
             return insideContour_(*rhs, lhs->getElement(0));
         }
     };
-    
+
     const std::vector<Polygon_>
     getPolygons_(const std::vector<MFVec2f> & contours)
         throw (std::bad_alloc)
     {
         using std::vector;
         typedef std::multiset<const MFVec2f *, Inside_> Contours;
-        
+
         //
         // First, divide the contours into interior and exterior contours.
         //
@@ -11810,7 +11735,7 @@ namespace {
         }
         return polygons;
     }
-    
+
     long getVertexIndex_(const MFVec2f & vertices, const float (&vertex)[2])
         throw ()
     {
@@ -11878,7 +11803,7 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
             const ConnectionMap::value_type value(exteriorVertex, *interior);
             connectionMap.insert(value);
         }
-        
+
         //
         // Finally, draw the polygon.
         //
@@ -12026,11 +11951,6 @@ void Text::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
-void Text::clearFlags() {
-    this->Node::clearFlags();
-    if (this->fontStyle.get()) { this->fontStyle.get()->clearFlags(); }
-}
-
 /**
  * @brief Insert this geometry into @p viewer's display list.
  *
@@ -12159,15 +12079,15 @@ void Text::updateUcs4() throw (std::bad_alloc)
 # ifdef OPENVRML_ENABLE_TEXT_NODE
     this->ucs4String.clear();
     this->ucs4String.resize(this->string.getLength());
-    
+
     for (size_t i = 0; i < this->string.getLength(); ++i) {
         using std::string;
         using std::vector;
-        
+
         const string & element = this->string.getElement(i);
-        
+
         vector<FcChar32> & ucs4Element = this->ucs4String[i];
-        
+
         //
         // First, we need to convert the characters from UTF-8 to UCS-4.
         //
@@ -12201,17 +12121,17 @@ void Text::updateFace() throw (std::bad_alloc)
                                                     "no match",
                                                     "type mismatch",
                                                     "no id" };
-    
+
     class FontconfigError : public std::runtime_error {
     public:
         explicit FontconfigError(const FcResult result):
             std::runtime_error(fcResultMessage[result])
         {}
-        
+
         virtual ~FontconfigError() throw ()
         {}
     };
-    
+
     class FreeTypeError : public std::runtime_error {
     public:
         //
@@ -12223,21 +12143,21 @@ void Text::updateFace() throw (std::bad_alloc)
         explicit FreeTypeError(const FT_Error error):
             std::runtime_error("FreeType error.")
         {}
-        
+
         virtual ~FreeTypeError() throw ()
         {}
     };
-    
+
     using std::string;
     typedef std::basic_string<FcChar8> FcChar8String;
-    
+
     FcChar8String language;
-    
+
     MFString family;
     family.addElement("SERIF");
-    
+
     string style;
-    
+
     FontStyleNode * const fontStyle = this->fontStyle.get()
                                     ? this->fontStyle.get()->toFontStyle()
                                     : 0;
@@ -12249,14 +12169,14 @@ void Text::updateFace() throw (std::bad_alloc)
                             fontStyle->getLanguage().get().end());
         }
     }
-    
+
     try {
         FcPattern * initialPattern = 0;
         FcPattern * matchedPattern = 0;
 
         try {
             using std::vector;
-            
+
             string fontName;
             //
             // Set the family.
@@ -12274,14 +12194,14 @@ void Text::updateFace() throw (std::bad_alloc)
                 }
                 if (i + 1 < family.getLength()) { fontName += ", "; }
             }
-            
+
             //
             // Set the weight.
             //
             if (style.find("BOLD") != string::npos) {
                 fontName += ":bold";
             }
-            
+
             //
             // Set the slant.
             //
@@ -12293,11 +12213,11 @@ void Text::updateFace() throw (std::bad_alloc)
             // For now, at least, we only want outline fonts.
             //
             fontName += ":outline=True";
-            
+
             initialPattern = FcNameParse(FcChar8String(fontName.begin(),
                                                        fontName.end()).c_str());
             if (!initialPattern) { throw std::bad_alloc(); }
-            
+
             //
             // Set the language.
             //
@@ -12320,29 +12240,29 @@ void Text::updateFace() throw (std::bad_alloc)
             int id = 0;
             result = FcPatternGetInteger(matchedPattern, FC_INDEX, 0, &id);
             if (result != FcResultMatch) { throw FontconfigError(result); }
-            
+
             TextClass & nodeClass =
                     static_cast<TextClass &>(this->nodeType.nodeClass);
-            
+
             size_t filenameLen = 0;
             for (; filename[filenameLen]; ++filenameLen);
-            
+
             const vector<char> ftFilename(filename, filename + filenameLen + 1);
-            
+
             FT_Face newFace = 0;
             FT_Error ftError = FT_Err_Ok;
             ftError = FT_New_Face(nodeClass.freeTypeLibrary,
                                   &ftFilename[0], id, &newFace);
             if (ftError) { throw FreeTypeError(ftError); }
-            
+
             if (this->face) {
                 ftError = FT_Done_Face(this->face);
                 assert(ftError == FT_Err_Ok); // Surely this can't fail.
             }
-            
+
             this->face = newFace;
             this->glyphGeometryMap.clear();
-            
+
             FcPatternDestroy(initialPattern);
             FcPatternDestroy(matchedPattern);
         } catch (std::runtime_error & ex) {
@@ -12366,7 +12286,7 @@ namespace {
     struct GlyphContours_ {
         const float scale;
         std::vector<MFVec2f> contours;
-        
+
         explicit GlyphContours_(float scale);
     };
 
@@ -12461,12 +12381,12 @@ namespace {
         assert(to);
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
-        
+
         assert(!c.contours.empty());
         MFVec2f & contour = c.contours.back();
         const float (&lastVertex)[2] =
                 contour.getElement(contour.getLength() - 1);
-        
+
         assert(contour.getLength() > 0);
         const size_t npoints = 3;
         float buffer[npoints * npoints][2] = {
@@ -12474,7 +12394,7 @@ namespace {
             { control->x * c.scale, control->y * c.scale },
             { to->x * c.scale, to->y * c.scale }
         };
-        
+
         try {
             evaluateCurve_(buffer, npoints, contour);
         } catch (std::bad_alloc & ex) {
@@ -12493,12 +12413,12 @@ namespace {
         assert(to);
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
-        
+
         assert(!c.contours.empty());
         MFVec2f & contour = c.contours.back();
         const float (&lastVertex)[2] =
                 contour.getElement(contour.getLength() - 1);
-        
+
         assert(contour.getLength() > 0);
         const size_t npoints = 4;
         float buffer[npoints * npoints][2] = {
@@ -12507,7 +12427,7 @@ namespace {
             { control2->x * c.scale, control2->y * c.scale },
             { to->x * c.scale, to->y * c.scale }
         };
-        
+
         try {
             evaluateCurve_(buffer, npoints, contour);
         } catch (std::bad_alloc & ex) {
@@ -12530,7 +12450,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
     using std::pair;
     using std::string;
     using std::vector;
-    
+
     bool horizontal = true;
     string justify[2] = { "BEGIN", "FIRST" };
     bool leftToRight = true;
@@ -12552,7 +12472,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
         size = fontStyle->getSize().get();
         spacing = fontStyle->getSpacing().get();
     }
-    
+
     TextGeometry newGeometry;
     float geometryXMin = 0.0, geometryXMax = 0.0;
     float geometryYMin = 0.0, geometryYMax = 0.0;
@@ -12575,7 +12495,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
                 penPos[0] -= lineAdvance;
             }
         }
-        
+
         struct LineGeometry {
             MFVec2f coord;
             MFInt32 coordIndex;
@@ -12589,7 +12509,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
             assert(this->face);
             const FT_UInt glyphIndex =
                     FcFreeTypeCharIndex(this->face, *character);
-            
+
             const GlyphGeometry * glyphGeometry = 0;
             const GlyphGeometryMap::iterator pos =
                     this->glyphGeometryMap.find(glyphIndex);
@@ -12613,13 +12533,13 @@ void Text::updateGeometry() throw (std::bad_alloc)
                                        : 1.0;
                 GlyphContours_ glyphContours(glyphScale);
                 assert(glyph->format == ft_glyph_format_outline);
-                const FT_OutlineGlyph outlineGlyph = 
+                const FT_OutlineGlyph outlineGlyph =
                         reinterpret_cast<FT_OutlineGlyph>(glyph);
                 error = FT_Outline_Decompose(&outlineGlyph->outline,
                                              &outlineFuncs,
                                              &glyphContours);
                 assert(error == FT_Err_Ok);
-                
+
                 assert(this->face->glyph);
                 const float advanceWidth =
                         FT_HAS_HORIZONTAL(this->face)
@@ -12629,7 +12549,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
                         FT_HAS_VERTICAL(this->face)
                         ? this->face->glyph->metrics.vertAdvance * glyphScale
                         : 0.0;
-                
+
                 const GlyphGeometryMap::value_type
                         value(glyphIndex, GlyphGeometry(glyphContours.contours,
                                                         advanceWidth,
@@ -12659,7 +12579,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
                                   ? lineGeometry.yMax
                                   : textVertex[1];
             }
-            
+
             for (size_t i = 0; i < glyphGeometry->coordIndex.getLength(); ++i) {
                 const long index = glyphGeometry->coordIndex.getElement(i);
                 if (index > -1) {
@@ -12687,7 +12607,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
                 }
             }
         }
-        
+
         //
         // Scale to length.
         //
@@ -12705,7 +12625,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
                 lineGeometry.coord.setElement(i, scaledVertex);
             }
         }
-        
+
         //
         // Add the line to the text geometry. We need to adjust for the major
         // alignment.
@@ -12755,7 +12675,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
             }
         }
     }
-    
+
     //
     // Scale to maxExtent.
     //
@@ -12810,7 +12730,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
                                           vertex[2] };
         newGeometry.coord.setElement(i, adjustedVertex);
     }
-    
+
     //
     // Create the normals.
     //
@@ -12819,7 +12739,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
         static const float normal[3] = { 0.0, 1.0, 0.0 };
         newGeometry.normal.setElement(i, normal);
     }
-    
+
     this->textGeometry = newGeometry;
 # endif // OPENVRML_ENABLE_TEXT_NODE
 }

@@ -4,21 +4,21 @@
 // Copyright (C) 1998  Chris Morley
 // Copyright (C) 1999  Kumaran Santhanam
 // Copyright (C) 2001  Braden McDaniel
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # ifndef OPENVRML_VRML97NODE_H
 #   define OPENVRML_VRML97NODE_H
@@ -49,7 +49,7 @@ namespace OpenVRML {
 
         protected:
             AbstractBase(const NodeType & nodeType, const ScopePtr & scope);
-        
+
         private:
             virtual void setFieldImpl(const std::string & id,
                                       const FieldValue & value)
@@ -74,7 +74,7 @@ namespace OpenVRML {
                                              public ChildNode {
         public:
             virtual ~AbstractChild() throw () = 0;
-        
+
         protected:
             AbstractChild(const NodeType & nodeType, const ScopePtr & scope);
         };
@@ -107,7 +107,6 @@ namespace OpenVRML {
 
             virtual bool isModified() const;
             virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual void clearFlags();
 
             virtual const ColorNode * getColor() const throw ();
 
@@ -172,7 +171,7 @@ namespace OpenVRML {
         protected:
             SFBool repeatS;
             SFBool repeatT;
-        
+
         public:
             virtual ~AbstractTexture() throw () = 0;
 
@@ -181,7 +180,7 @@ namespace OpenVRML {
             //
             virtual const SFBool & getRepeatS() const throw ();
             virtual const SFBool & getRepeatT() const throw ();
-            
+
         protected:
             AbstractTexture(const NodeType & nodeType, const ScopePtr & scope);
         };
@@ -205,7 +204,7 @@ namespace OpenVRML {
             SFVec3f bboxSize;
             MFNode children;
             SFString relative;
-            
+
             Node * parentTransform;
             Viewer::Object viewerObject;
 
@@ -213,17 +212,16 @@ namespace OpenVRML {
              * Cached copy of the bsphere enclosing this node's children.
              */
             BSphere bsphere;
-        
+
         public:
             Group(const NodeType & nodeType,
                   const ScopePtr & scope);
             virtual ~Group() throw ();
-            
+
             virtual Group * toGroup() const;
 
             virtual bool isModified() const;
             virtual void updateModified(NodePath& path, int flags);
-            virtual void clearFlags();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
@@ -278,7 +276,7 @@ namespace OpenVRML {
             Anchor(const NodeType & nodeType,
                    const ScopePtr & scope);
             virtual ~Anchor() throw ();
-            
+
             virtual Anchor * toAnchor() const;
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
@@ -286,7 +284,7 @@ namespace OpenVRML {
             void activate();
 
             const BVolume * getBVolume() const;
-        
+
         private:
             //
             // field mutators
@@ -297,7 +295,7 @@ namespace OpenVRML {
                     throw (std::bad_cast, std::bad_alloc);
             void setUrl(const FieldValue & mfstring)
                     throw (std::bad_cast, std::bad_alloc);
-            
+
             //
             // eventIn handlers
             //
@@ -325,7 +323,7 @@ namespace OpenVRML {
         class OPENVRML_SCOPE Appearance : public AbstractBase,
                                           public AppearanceNode {
             friend class AppearanceClass;
-            
+
             SFNode material;
             SFNode texture;
             SFNode textureTransform;
@@ -334,10 +332,9 @@ namespace OpenVRML {
             Appearance(const NodeType & nodeType,
                        const ScopePtr & scope);
             virtual ~Appearance() throw ();
-            
+
             virtual bool isModified() const;
             virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual void clearFlags();	// Clear childrens flags too.
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
@@ -347,7 +344,7 @@ namespace OpenVRML {
             virtual const SFNode & getMaterial() const throw ();
             virtual const SFNode & getTexture() const throw ();
             virtual const SFNode & getTextureTransform() const throw ();
-        
+
         private:
             //
             // eventIn handlers
@@ -398,14 +395,14 @@ namespace OpenVRML {
             AudioClip(const NodeType & nodeType,
                       const ScopePtr & scope);
             virtual ~AudioClip() throw ();
-            
+
             void update(double time);
 
             virtual AudioClip * toAudioClip() const;
-        
+
         private:
             virtual void initializeImpl(double timestamp) throw ();
-                
+
             //
             // eventIn handlers
             //
@@ -478,10 +475,10 @@ namespace OpenVRML {
             Background(const NodeType & nodeType,
                        const ScopePtr & scope);
             virtual ~Background() throw ();
-            
+
         private:
             virtual void initializeImpl(double timestamp) throw ();
-            
+
             //
             // eventIn handlers
             //
@@ -534,7 +531,7 @@ namespace OpenVRML {
             friend class BillboardClass;
 
             SFVec3f axisOfRotation;
-            
+
             Node * parentTransform;
             Viewer::Object xformObject;
 
@@ -546,20 +543,20 @@ namespace OpenVRML {
             Billboard(const NodeType & nodeType,
                       const ScopePtr & scope);
             virtual ~Billboard() throw ();
-            
+
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
             virtual void accumulateTransform(Node*);
             virtual Node* getParentTransform();
             virtual void inverseTransform(VrmlMatrix &);
-        
+
         private:
             //
             // field mutators
             //
             void setAxisOfRotation(const FieldValue & sfvec3f)
                     throw (std::bad_cast);
-            
+
             //
             // eventIn handlers
             //
@@ -583,14 +580,14 @@ namespace OpenVRML {
             friend class BoxClass;
 
             SFVec3f size;
-            
+
             BSphere bsphere;
 
         public:
             Box(const NodeType & nodeType,
                 const ScopePtr & scope);
             virtual ~Box() throw ();
-            
+
             virtual Viewer::Object insertGeometry(Viewer & viewer,
                                                   VrmlRenderContext context);
             virtual const BVolume * getBVolume() const;
@@ -619,10 +616,8 @@ namespace OpenVRML {
                       const ScopePtr & scope);
             virtual ~Collision() throw ();
 
-
             virtual bool isModified() const;
-            virtual void clearFlags();	// Clear childrens flags too.
-        
+
         private:
             //
             // eventIn handlers
@@ -656,14 +651,14 @@ namespace OpenVRML {
             // ColorNode implementation
             //
             virtual const MFColor & getColor() const throw ();
-        
+
         private:
             //
             // field mutators
             //
             void setColor(const FieldValue & mfcolor)
                     throw (std::bad_cast, std::bad_alloc);
-            
+
             //
             // eventIn handlers
             //
@@ -770,14 +765,14 @@ namespace OpenVRML {
             // CoordinateNode implementation
             //
             virtual const MFVec3f & getPoint() const throw ();
-        
+
         private:
             //
             // field mutators
             //
             void setPoint(const FieldValue & mfvec3f)
                 throw (std::bad_cast, std::bad_alloc);
-            
+
             //
             // eventIn handlers
             //
@@ -816,7 +811,7 @@ namespace OpenVRML {
                     throw (std::bad_cast, std::bad_alloc);
             void setKeyValue(const FieldValue & mfvec3f)
                     throw (std::bad_cast, std::bad_alloc);
-            
+
             //
             // eventIn handlers
             //
@@ -855,7 +850,7 @@ namespace OpenVRML {
             Cylinder(const NodeType & nodeType,
                      const ScopePtr & scope);
             virtual ~Cylinder() throw ();
-            
+
             virtual Viewer::Object insertGeometry(Viewer & viewer,
                                                   VrmlRenderContext context);
         };
@@ -918,7 +913,7 @@ namespace OpenVRML {
                                      double timestamp) throw (std::bad_cast);
             void processSet_offset(const FieldValue & sffloat,
                                    double timestamp) throw (std::bad_cast);
-            
+
             void setMVMatrix(const VrmlMatrix & M_in);
             const VrmlMatrix & getMVMatrix()const;
         };
@@ -945,7 +940,7 @@ namespace OpenVRML {
             virtual ~DirectionalLight() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-        
+
         private:
             //
             // eventIn handlers
@@ -989,10 +984,9 @@ namespace OpenVRML {
 
             virtual bool isModified() const;
             virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual void clearFlags();
             virtual Viewer::Object insertGeometry(Viewer & viewer,
                                                   VrmlRenderContext context);
-        
+
         private:
             //
             // eventIn handlers
@@ -1097,7 +1091,7 @@ namespace OpenVRML {
 
         private:
             virtual void initializeImpl(double timestamp) throw ();
-            
+
             //
             // eventIn handlers
             //
@@ -1189,7 +1183,7 @@ namespace OpenVRML {
             virtual size_t height() const throw ();
             virtual size_t nFrames() const throw ();
             virtual const unsigned char * pixels() const throw ();
-        
+
         private:
             //
             // eventIn handlers
@@ -1231,8 +1225,6 @@ namespace OpenVRML {
 
             virtual bool isModified() const;
             virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual void clearFlags();
-
             virtual Viewer::Object insertGeometry(Viewer & viewer,
                                                   VrmlRenderContext context);
             virtual const BVolume * getBVolume() const;
@@ -1296,7 +1288,7 @@ namespace OpenVRML {
             SFVec3f bboxCenter;
             SFVec3f bboxSize;
             MFString url;
-            
+
             Scene * inlineScene;
             bool hasLoaded;
 
@@ -1310,7 +1302,7 @@ namespace OpenVRML {
 
         private:
             void load();
-        
+
             //
             // eventIn handlers
             //
@@ -1345,7 +1337,6 @@ namespace OpenVRML {
 
             virtual bool isModified() const;
             virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual void clearFlags();
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             virtual const BVolume * getBVolume() const;
 
@@ -1395,7 +1386,7 @@ namespace OpenVRML {
             virtual const SFFloat & getShininess() const throw ();
             virtual const SFColor & getSpecularColor() const throw ();
             virtual const SFFloat & getTransparency() const throw ();
-        
+
         private:
             //
             // eventIn handlers
@@ -1464,10 +1455,10 @@ namespace OpenVRML {
             virtual size_t height() const throw ();
             virtual size_t nFrames() const throw ();
             virtual const unsigned char * pixels() const throw ();
-        
+
         private:
             virtual void initializeImpl(double timestamp) throw ();
-            
+
             //
             // eventIn handlers
             //
@@ -1520,10 +1511,10 @@ namespace OpenVRML {
             bool getHeadlightOn() { return this->headlight.get(); }
             float getSpeed() { return this->speed.get(); }
             float getVisibilityLimit() { return this->visibilityLimit.get(); }
-        
+
         private:
             virtual void initializeImpl(double timestamp) throw ();
-            
+
             //
             // eventIn handlers
             //
@@ -1568,7 +1559,7 @@ namespace OpenVRML {
             // NormalNode implementation.
             //
             virtual const MFVec3f & getVector() const throw ();
-        
+
         private:
             //
             // eventIn handlers
@@ -1599,7 +1590,7 @@ namespace OpenVRML {
             NormalInterpolator(const NodeType & nodeType,
                                const ScopePtr & scope);
             virtual ~NormalInterpolator() throw ();
-        
+
         private:
             //
             // eventIn handlers
@@ -1636,7 +1627,7 @@ namespace OpenVRML {
             OrientationInterpolator(const NodeType & nodeType,
                                     const ScopePtr & scope);
             virtual ~OrientationInterpolator() throw ();
-        
+
         private:
             //
             // eventIn handlers
@@ -1681,7 +1672,7 @@ namespace OpenVRML {
             virtual size_t height() const throw ();
             virtual size_t nFrames() const throw ();
             virtual const unsigned char * pixels() const throw ();
-        
+
         private:
             //
             // eventIn handlers
@@ -1779,10 +1770,10 @@ namespace OpenVRML {
             virtual PointLight * toPointLight() const;
 
             virtual void renderScoped(Viewer *);
-        
+
         private:
             virtual void initializeImpl(double timestamp) throw ();
-            
+
             //
             // eventIn handlers
             //
@@ -1820,7 +1811,6 @@ namespace OpenVRML {
 
             virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual bool isModified() const;
-            virtual void clearFlags();
             virtual Viewer::Object insertGeometry(Viewer & viewer,
                                                   VrmlRenderContext context);
             virtual const BVolume * getBVolume() const;
@@ -1904,7 +1894,7 @@ namespace OpenVRML {
             virtual ~ProximitySensor() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-        
+
         private:
             //
             // eventIn handlers
@@ -1981,10 +1971,9 @@ namespace OpenVRML {
 
             virtual bool isModified() const;
             virtual void updateModified(NodePath& path, int flags);
-            virtual void clearFlags();
             virtual const BVolume * getBVolume() const;
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-        
+
         private:
             //
             // eventIn handlers
@@ -2028,9 +2017,8 @@ namespace OpenVRML {
             virtual ~Sound() throw ();
 
             virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual void clearFlags();
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-        
+
         private:
             //
             // eventIn handlers
@@ -2163,10 +2151,10 @@ namespace OpenVRML {
             virtual SpotLight * toSpotLight() const;
 
             virtual void renderScoped(Viewer *);
-        
+
         private:
             virtual void initializeImpl(double timestamp) throw ();
-            
+
             //
             // eventIn handlers
             //
@@ -2210,10 +2198,7 @@ namespace OpenVRML {
 
             virtual bool isModified() const;
             virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual void clearFlags();
-
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-
             virtual const BVolume * getBVolume() const;
 
         private:
@@ -2254,21 +2239,21 @@ namespace OpenVRML {
                 MFInt32 coordIndex;
                 float advanceWidth;
                 float advanceHeight;
-                
+
                 GlyphGeometry(const std::vector<MFVec2f> & contours,
                               float advanceWidth, float advanceHeight)
                     throw (std::bad_alloc);
             };
-            
+
             struct TextGeometry {
                 MFVec3f coord;
                 MFInt32 coordIndex;
                 MFVec3f normal;
             };
-            
+
             typedef std::vector<std::vector<FcChar32> > Ucs4String;
             typedef std::map<FT_UInt, GlyphGeometry> GlyphGeometryMap;
-            
+
             Ucs4String ucs4String;
             FT_Face face;
             GlyphGeometryMap glyphGeometryMap;
@@ -2281,14 +2266,12 @@ namespace OpenVRML {
 
             virtual bool isModified() const;
             virtual void updateModified(NodePath & path, int flags = 0x003);
-            virtual void clearFlags();
-
             virtual Viewer::Object insertGeometry(Viewer & viewer,
                                                   VrmlRenderContext context);
-        
+
         private:
             virtual void initializeImpl(double timestamp) throw ();
-            
+
             //
             // eventIn handlers
             //
@@ -2335,7 +2318,7 @@ namespace OpenVRML {
             // TextureCoordinateNode implementation.
             //
             virtual const MFVec2f & getPoint() const throw();
-        
+
         private:
             //
             // eventIn handlers
@@ -2370,7 +2353,7 @@ namespace OpenVRML {
             virtual ~TextureTransform() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-        
+
         private:
             //
             // eventIn handlers
@@ -2408,7 +2391,7 @@ namespace OpenVRML {
             SFFloat fraction;
             SFBool active;
             SFTime time;
-            
+
             double lastTime;
 
         public:
@@ -2420,10 +2403,10 @@ namespace OpenVRML {
             virtual const BVolume * getBVolume() const;
 
             void update(double time);
-        
+
         private:
             virtual void initializeImpl(double timestamp) throw ();
-            
+
             //
             // eventIn handlers
             //
@@ -2472,7 +2455,7 @@ namespace OpenVRML {
             void activate( double timeStamp, bool isOver, bool isActive, double *p );
 
             bool isEnabled() const;
-        
+
         private:
             //
             // eventIn handlers
@@ -2500,7 +2483,7 @@ namespace OpenVRML {
             SFVec3f scale;
             SFRotation scaleOrientation;
             SFVec3f translation;
-            
+
             Viewer::Object xformObject;
             VrmlMatrix M;
             bool M_dirty;
@@ -2582,10 +2565,10 @@ namespace OpenVRML {
             void getInverseMatrix(VrmlMatrix & M) const;
 
             void getFrustum(VrmlFrustum& frust) const; // get a copy
-        
+
         private:
             virtual void initializeImpl(double timestamp) throw ();
-            
+
             //
             // eventIn handlers
             //
@@ -2628,7 +2611,7 @@ namespace OpenVRML {
             virtual ~VisibilitySensor() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-        
+
         private:
             //
             // eventIn handlers

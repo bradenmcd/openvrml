@@ -342,12 +342,6 @@ namespace OpenVRML {
 
         virtual bool isBVolumeDirty() const;
 
-
-        // A generic flag (typically used to find USEd nodes).
-        void setFlag() { d_flag = true; }
-        virtual void clearFlags();	// Clear childrens flags too.
-        bool isFlagSet() { return d_flag; }
-
         // Add a ROUTE from a field in this node
         void addRoute(const std::string & fromEventOut,
                       const NodePtr & toNode, const std::string & toEventIn)
@@ -378,7 +372,6 @@ namespace OpenVRML {
 
         // True if a field changed since last render
         bool d_modified;
-        bool d_flag;
         bool d_bvol_dirty;
         bool visited;
 

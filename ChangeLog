@@ -24,6 +24,11 @@
 
         * src/openvrml/OpenVRML/field.cpp:  Doc-comment fixes.
 
+        * src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h:  Removed unused
+          Node::d_flag and related methods.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
