@@ -126,7 +126,7 @@ libvrml97_la_SOURCES = \
 	parser.cpp lexer.cpp \
 	MathUtils.cpp \
 	gifread.c \
-	jpgread.cpp \
+	jpgread.c \
 	pngread.c \
         dummysound.cpp \
 	VrmlScene.cpp VrmlNodeType.cpp VrmlNamespace.cpp \
