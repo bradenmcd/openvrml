@@ -543,6 +543,7 @@ public:
     const std::string & getElement(size_t index) const;
     void setElement(size_t index, const std::string & value);
     size_t getLength() const;
+    void setLength(const size_t length);
     void insertElement(size_t index, const std::string & value);
     void removeElement(size_t index);
 
