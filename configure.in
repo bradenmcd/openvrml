@@ -62,6 +62,7 @@ OV_PATH_MOZJS(
   AC_DEFINE(OPENVRML_HAVE_JS, , [defined if libmozjs is available and should be used]),
   AC_MSG_ERROR([SpiderMonkey (libmozjs) not found.  Use '--with-mozjs=PREFIX' to locate the library or '--without-mozjs' to build without JavaScript support.])
 )
+OV_PATH_JAVA(, AC_MSG_ERROR([JDK not found. Use '--with-java=PREFIX' to locate the JDK or '--without-java' to build without java support.]))
 
 dnl
 dnl Check for X, GL/Mesa, glut
@@ -100,5 +101,9 @@ AC_OUTPUT(Makefile \
           src/openvrml-gl/OpenVRML/Makefile \
           src/openvrml-gl/OpenVRML/GL/Makefile \
           src/lookat/Makefile \
+          java/Makefile \
+          java/vrml/Makefile \
+          java/vrml/node/Makefile \
+          java/vrml/field/Makefile \
           Doxyfile \
           openvrml.spec)
