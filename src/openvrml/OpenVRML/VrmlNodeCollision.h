@@ -22,10 +22,6 @@
 #define VRMLNODECOLLISION_H
 
 #include "VrmlNodeGroup.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFNode.h"
-#include "VrmlSFTime.h"
-
 
 class VrmlNodeCollision : public VrmlNodeGroup {
 

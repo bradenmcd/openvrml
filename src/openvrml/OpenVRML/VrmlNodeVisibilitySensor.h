@@ -22,10 +22,7 @@
 #define  _VRMLNODEVISIBILITYSENSOR_
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFRotation.h"
-#include "VrmlSFTime.h"
-#include "VrmlSFVec3f.h"
+#include "field.h"
 
 class VrmlScene;
 

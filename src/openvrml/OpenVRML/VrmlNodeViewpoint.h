@@ -22,13 +22,7 @@
 #define VRMLNODEVIEWPOINT_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlField.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFRotation.h"
-#include "VrmlSFString.h"
-#include "VrmlSFTime.h"
-#include "VrmlSFVec3f.h"
+#include "field.h"
 
 class VrmlScene;
 class VrmlFrustum;

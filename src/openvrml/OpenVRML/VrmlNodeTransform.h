@@ -22,8 +22,7 @@
 #define  _VRMLNODETRANSFORM_
 
 #include "VrmlNodeGroup.h"
-#include "VrmlSFRotation.h"
-#include "VrmlSFVec3f.h"
+#include "field.h"
 #include "VrmlBSphere.h"
 
 /**

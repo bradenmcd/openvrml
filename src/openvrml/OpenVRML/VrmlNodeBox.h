@@ -22,7 +22,7 @@
 #define VRMLNODEBOX_H
 
 #include "VrmlNodeGeometry.h"
-#include "VrmlSFVec3f.h"
+#include "field.h"
 #include "VrmlBSphere.h"
 
 class VrmlScene;

@@ -22,9 +22,7 @@
 #define VRMLNODENORMALINT_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFFloat.h"
-#include "VrmlMFFloat.h"
-#include "VrmlMFVec3f.h"
+#include "field.h"
 
 class VrmlScene;
 

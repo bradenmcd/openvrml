@@ -22,10 +22,7 @@
 #define VRMLNODEPLANESENSOR_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFVec2f.h"
-#include "VrmlSFVec3f.h"
+#include "field.h"
 
 class VrmlScene;
 

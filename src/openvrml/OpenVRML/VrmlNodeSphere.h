@@ -22,7 +22,7 @@
 #define  _VRMLNODESPHERE_
 
 #include "VrmlNodeGeometry.h"
-#include "VrmlSFFloat.h"
+#include "field.h"
 #include "VrmlBSphere.h"
 
 class VrmlNodeSphere : public VrmlNodeGeometry {

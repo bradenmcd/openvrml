@@ -22,10 +22,7 @@
 #define VRMLNODEFONTSTYLE_H
 
 #include "VrmlNode.h"
-#include "VrmlMFString.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFString.h"
-#include "VrmlSFFloat.h"
+#include "field.h"
 
 class VrmlNodeFontStyle : public VrmlNode {
 

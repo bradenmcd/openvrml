@@ -21,7 +21,7 @@
 #define SCRIPTJS_H
 
 #include "ScriptObject.h"
-#include "VrmlField.h"
+#include "field.h"
 
 class VrmlNodeScript;
 class VrmlScene;

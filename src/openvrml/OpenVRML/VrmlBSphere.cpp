@@ -25,7 +25,7 @@
 #include "VrmlAABox.h"
 #include "VrmlBSphere.h"
 #include "MathUtils.h"
-#include "VrmlSFVec3f.h"
+#include "field.h"
 
 
 

@@ -22,7 +22,7 @@
 #define VRMLNODENORMAL_H
 
 #include "VrmlNode.h"
-#include "VrmlMFVec3f.h"
+#include "field.h"
 
 class VrmlNodeNormal : public VrmlNode {
 

@@ -25,7 +25,7 @@
 //
 
 #include <list>
-#include "VrmlMFNode.h"
+#include "field.h"
 
 class VrmlNode;
 class VrmlNodeType;

@@ -22,11 +22,7 @@
 #define VRMLNODEAUDIOCLIP_H
 
 #include "VrmlNode.h"
-#include "VrmlMFString.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFString.h"
-#include "VrmlSFTime.h"
+#include "field.h"
 
 class Audio;
 

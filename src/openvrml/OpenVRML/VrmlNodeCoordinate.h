@@ -22,7 +22,7 @@
 #define VRMLNODECOORDINATE_H
 
 #include "VrmlNode.h"
-#include "VrmlMFVec3f.h"
+#include "field.h"
 
 class VrmlNodeCoordinate : public VrmlNode {
 

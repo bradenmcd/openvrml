@@ -23,8 +23,7 @@
 #define VRMLNODEANCHOR_H
 
 #include "VrmlNodeGroup.h"
-#include "VrmlMFString.h"
-#include "VrmlSFString.h"
+#include "field.h"
 
 class VrmlNodeType;
 class VrmlScene;

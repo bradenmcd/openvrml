@@ -22,9 +22,6 @@
 #define VRMLNODESPOTLIGHT_H
 
 #include "VrmlNodeLight.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFVec3f.h"
-
 
 class VrmlNodeSpotLight : public VrmlNodeLight {
 

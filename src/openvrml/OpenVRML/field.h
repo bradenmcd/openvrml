@@ -1,0 +1,621 @@
+//
+// OpenVRML
+//
+// Copyright (C) 1998  Chris Morley
+// Copyright (C) 2001  Braden McDaniel
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// 
+
+# ifndef OPENVRML_FIELD_H
+#   define OPENVRML_FIELD_H
+
+#   include <iostream.h>
+#   include "VrmlNodePtr.h"
+
+class VrmlSFBool;
+class VrmlSFColor;
+class VrmlSFFloat;
+class VrmlSFImage;
+class VrmlSFInt32;
+class VrmlSFNode;
+class VrmlSFRotation;
+class VrmlSFString;
+class VrmlSFTime;
+class VrmlSFVec2f;
+class VrmlSFVec3f;
+class VrmlMFColor;
+class VrmlMFFloat;
+class VrmlMFInt32;
+class VrmlMFNode;
+class VrmlMFRotation;
+class VrmlMFString;
+class VrmlMFVec2f;
+class VrmlMFVec3f;
+
+class VrmlField {
+    friend ostream & operator<<(ostream &, const VrmlField &);
+public:
+    enum VrmlFieldType {
+        NO_FIELD, SFBOOL, SFCOLOR, SFFLOAT, SFIMAGE, SFINT32, SFNODE,
+        SFROTATION, SFSTRING, SFTIME, SFVEC2F, SFVEC3F, MFCOLOR, MFFLOAT,
+        MFINT32, MFNODE, MFROTATION, MFSTRING, MFTIME, MFVEC2F, MFVEC3F
+    };
+
+    static VrmlFieldType fieldType(const char *fieldTypeName);
+    
+    const char * fieldTypeName() const;
+    
+    virtual ~VrmlField() = 0;
+    virtual VrmlField * clone() const = 0;
+    virtual ostream& print(ostream& os) const = 0;
+    virtual VrmlFieldType fieldType() const = 0;
+
+    // safe downcasts, const and non-const versions.
+    // These avoid casts of VrmlField* but are ugly in that this class
+    // must know of the existence of all of its subclasses...
+    virtual const VrmlSFBool *toSFBool() const;
+    virtual const VrmlSFColor *toSFColor() const;
+    virtual const VrmlSFFloat *toSFFloat() const;
+    virtual const VrmlSFImage *toSFImage() const;
+    virtual const VrmlSFInt32 *toSFInt32() const;
+    virtual const VrmlSFNode *toSFNode() const;
+    virtual const VrmlSFRotation *toSFRotation() const;
+    virtual const VrmlSFString *toSFString() const;
+    virtual const VrmlSFTime *toSFTime() const;
+    virtual const VrmlSFVec2f *toSFVec2f() const;
+    virtual const VrmlSFVec3f *toSFVec3f() const;
+    virtual const VrmlMFColor *toMFColor() const;
+    virtual const VrmlMFFloat *toMFFloat() const;
+    virtual const VrmlMFInt32 *toMFInt32() const;
+    virtual const VrmlMFNode *toMFNode() const;
+    virtual const VrmlMFRotation *toMFRotation() const;
+    virtual const VrmlMFString *toMFString() const;
+    virtual const VrmlMFVec2f *toMFVec2f() const;
+    virtual const VrmlMFVec3f *toMFVec3f() const;
+    virtual VrmlSFBool *toSFBool();
+    virtual VrmlSFColor *toSFColor();
+    virtual VrmlSFFloat *toSFFloat();
+    virtual VrmlSFImage *toSFImage();
+    virtual VrmlSFInt32 *toSFInt32();
+    virtual VrmlSFNode *toSFNode();
+    virtual VrmlSFRotation *toSFRotation();
+    virtual VrmlSFString *toSFString();
+    virtual VrmlSFTime *toSFTime();
+    virtual VrmlSFVec2f *toSFVec2f();
+    virtual VrmlSFVec3f *toSFVec3f();
+    virtual VrmlMFColor *toMFColor();
+    virtual VrmlMFFloat *toMFFloat();
+    virtual VrmlMFInt32 *toMFInt32();
+    virtual VrmlMFNode *toMFNode();
+    virtual VrmlMFRotation *toMFRotation();
+    virtual VrmlMFString *toMFString();
+    virtual VrmlMFVec2f *toMFVec2f();
+    virtual VrmlMFVec3f *toMFVec3f();
+};
+
+
+class VrmlSFBool : public VrmlField {
+    bool d_value;
+public:
+    VrmlSFBool(bool value = false);
+    virtual ~VrmlSFBool();
+
+    bool get() const;
+    void set(bool value);
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFBool* toSFBool() const;
+    virtual VrmlSFBool* toSFBool();
+};
+
+
+class VrmlSFColor : public VrmlField {
+    float d_rgb[3];
+public:
+    static void HSVtoRGB(const float hsv[3], float rgb[3]);
+    static void RGBtoHSV(const float rgb[3], float hsv[3]);
+
+    VrmlSFColor();
+    VrmlSFColor(const float rgb[3]);
+    VrmlSFColor(float r, float g, float b);
+    virtual ~VrmlSFColor();
+
+    float operator[](size_t index) const;
+    float & operator[](size_t index);
+    float getR() const;
+    float getG() const;
+    float getB() const;
+    const float * get() const;
+    void set(const float rgb[3]);
+    void setHSV(float h, float s, float v);
+    void getHSV(float hsv[3]) const;
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFColor* toSFColor() const;
+    virtual VrmlSFColor* toSFColor();
+};
+
+
+class VrmlSFFloat : public VrmlField {
+    float d_value;
+public:
+    VrmlSFFloat(float value = 0.0);
+    virtual ~VrmlSFFloat();
+
+    float get() const;
+    void set(float value);
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFFloat* toSFFloat() const;
+    virtual VrmlSFFloat* toSFFloat();
+};
+
+
+class VrmlSFImage : public VrmlField {
+    size_t d_w, d_h, d_nc;
+    unsigned char * d_pixels;	// nc bytes/pixel, lower left to upper right
+public:
+    VrmlSFImage();
+    VrmlSFImage(size_t w, size_t h, size_t nc, const unsigned char * pixels = 0);
+    VrmlSFImage(const VrmlSFImage&);
+    virtual ~VrmlSFImage();
+
+    VrmlSFImage & operator=(const VrmlSFImage & rhs);
+
+    size_t getWidth() const;
+    size_t getHeight() const;
+    size_t getComponents() const;
+    const unsigned char * getPixels() const;
+    void set(size_t width, size_t height, size_t components,
+             const unsigned char * pixels);
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFImage* toSFImage() const;
+    virtual VrmlSFImage* toSFImage();
+};
+
+
+class VrmlSFInt32 : public VrmlField {
+    long d_value;
+public:
+    VrmlSFInt32(long = 0);
+    virtual ~VrmlSFInt32();
+
+    long get() const;
+    void set(long);
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFInt32* toSFInt32() const;
+    virtual VrmlSFInt32* toSFInt32();
+};
+
+
+class VrmlSFNode : public VrmlField {
+    VrmlNodePtr node;
+public:
+    VrmlSFNode(const VrmlNodePtr & node = VrmlNodePtr(0));
+    VrmlSFNode(const VrmlSFNode & sfnode);
+    virtual ~VrmlSFNode();
+
+    VrmlSFNode & operator=(const VrmlSFNode & sfnode);
+
+    const VrmlNodePtr & get() const;
+    void set(const VrmlNodePtr & node);
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFNode* toSFNode() const;
+    virtual VrmlSFNode* toSFNode();
+};
+
+
+class VrmlSFRotation : public VrmlField {
+    float d_x[4];
+public:
+    VrmlSFRotation();
+    VrmlSFRotation(const float rotation[4]);
+    VrmlSFRotation(float x, float y, float z, float angle);
+    VrmlSFRotation(const VrmlSFVec3f & axis, float angle);
+    VrmlSFRotation(const VrmlSFVec3f & fromVector,
+                   const VrmlSFVec3f & toVector);
+    virtual ~VrmlSFRotation();
+
+    float operator[](size_t index) const;
+    float & operator[](size_t index);
+    const float * get() const;
+    void set(const float rotation[4]);
+    float getX() const;
+    void setX(float);
+    float getY() const;
+    void setY(float);
+    float getZ() const;
+    void setZ(float);
+    float getAngle() const;
+    void setAngle(float);
+    const VrmlSFVec3f getAxis() const;
+    void setAxis(const VrmlSFVec3f & vec);
+    const VrmlSFRotation inverse() const;
+    const VrmlSFRotation multiply(const VrmlSFRotation & rot) const;
+    const VrmlSFVec3f multVec(const VrmlSFVec3f & vec) const;
+    const VrmlSFRotation slerp(const VrmlSFRotation & destRotation,
+                               float t) const;  
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFRotation* toSFRotation() const;
+    virtual VrmlSFRotation* toSFRotation();
+
+private:
+    void toQuaternion(float theQuat[4]) const;
+    void fromQuaternion(const float theQuat[4]);
+};
+
+
+class VrmlSFString : public VrmlField {
+    char * d_s;
+public:
+    VrmlSFString(const char *s = 0);
+    VrmlSFString(const VrmlSFString&);
+    virtual ~VrmlSFString();
+
+    VrmlSFString& operator=(const VrmlSFString& rhs);
+
+    void set(const char *s);
+    const char * get() const;
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFString* toSFString() const;
+    virtual VrmlSFString* toSFString();
+};
+
+
+class VrmlSFTime : public VrmlField {
+    double d_value;
+public:
+    VrmlSFTime(double value = 0.0);
+    virtual ~VrmlSFTime();
+
+    double get() const;
+    void set(double value);
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFTime* toSFTime() const;
+    virtual VrmlSFTime* toSFTime();
+};
+
+
+class VrmlSFVec2f : public VrmlField {
+    float d_x[2];
+public:
+    VrmlSFVec2f();
+    VrmlSFVec2f(const float vec[2]);
+    VrmlSFVec2f(float x, float y);
+    virtual ~VrmlSFVec2f();
+
+    float operator[](size_t index) const;
+    float & operator[](size_t index);
+    float getX() const;
+    void setX(float);
+    float getY() const;
+    void setY(float);
+    const float * get() const;
+    void set(const float vec[2]);
+    const VrmlSFVec2f add(const VrmlSFVec2f & vec) const;
+    const VrmlSFVec2f divide(float number) const;
+    double dot(const VrmlSFVec2f & vec) const;
+    double length() const;
+    const VrmlSFVec2f multiply(float number) const;
+    const VrmlSFVec2f negate() const;
+    const VrmlSFVec2f normalize() const;
+    const VrmlSFVec2f subtract(const VrmlSFVec2f & vec) const;
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFVec2f* toSFVec2f() const;
+    virtual VrmlSFVec2f* toSFVec2f();
+};
+
+
+class VrmlSFVec3f : public VrmlField {
+    float d_x[3];
+public:
+    VrmlSFVec3f();
+    VrmlSFVec3f(const float vec[3]);
+    VrmlSFVec3f(float x, float y, float z);
+    virtual ~VrmlSFVec3f();
+
+    float operator[](size_t index) const;
+    float & operator[](size_t index);
+    float getX() const;
+    void setX(float);
+    float getY() const;
+    void setY(float);
+    float getZ() const;
+    void setZ(float);
+    const float * get() const;
+    void set(const float vec[3]);
+    const VrmlSFVec3f add(const VrmlSFVec3f & vec) const;
+    const VrmlSFVec3f cross(const VrmlSFVec3f & vec) const;
+    const VrmlSFVec3f divide(float number) const;
+    double dot(const VrmlSFVec3f & vec) const;
+    double length() const;
+    const VrmlSFVec3f multiply(float number) const;
+    const VrmlSFVec3f negate() const;
+    const VrmlSFVec3f normalize() const;
+    const VrmlSFVec3f subtract(const VrmlSFVec3f & vec) const;
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField * clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlSFVec3f* toSFVec3f() const;
+    virtual VrmlSFVec3f* toSFVec3f();
+};
+
+
+class VrmlMFColor : public VrmlField {
+    class FData;
+    FData * d_data;
+public:
+    explicit VrmlMFColor(size_t length = 0, float const * colors = 0);
+    VrmlMFColor(const VrmlMFColor &source);
+    virtual ~VrmlMFColor();
+
+    VrmlMFColor & operator=(const VrmlMFColor & mfColor);
+
+    const float * operator[](size_t index) const;
+    const float * get() const;
+    void set(size_t length, const float * colors = 0);
+    size_t getLength() const;
+    void setLength(size_t length);
+
+    //
+    // VrmlField implementation
+    //
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlMFColor* toMFColor() const;
+    virtual VrmlMFColor* toMFColor();
+};
+
+
+class VrmlMFFloat : public VrmlField {
+    class FData;
+    FData * d_data;
+public:
+    explicit VrmlMFFloat(size_t length = 0, float const * numbers = 0);
+    VrmlMFFloat(const VrmlMFFloat & mfFloat);
+    virtual ~VrmlMFFloat();
+
+    VrmlMFFloat& operator=(const VrmlMFFloat & mfFloat);
+
+    const float operator[](size_t index) const;
+    const float * get() const;
+    void set(size_t length, const float * numbers);
+    size_t getLength() const;
+    void setLength(size_t length);
+
+    //
+    // VrmlField implementation
+    //
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlMFFloat* toMFFloat() const;
+    virtual VrmlMFFloat* toMFFloat();
+};
+
+
+class VrmlMFInt32 : public VrmlField {
+    class IData;
+    IData *d_data;
+public:
+    explicit VrmlMFInt32(size_t length = 0, const long * numbers = 0);
+    VrmlMFInt32(const VrmlMFInt32 & mfInt32);
+    virtual ~VrmlMFInt32();
+
+    VrmlMFInt32 & operator=(const VrmlMFInt32 & mfInt32);
+
+    long operator[](size_t) const;
+    const long * get() const;
+    void set(size_t length, const long * numbers);
+    size_t getLength() const;
+    void setLength(size_t length);
+
+    //
+    // VrmlField implementation
+    //
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlMFInt32 * toMFInt32() const;
+    virtual VrmlMFInt32 * toMFInt32();
+};
+
+
+class VrmlMFNode : public VrmlField {
+    VrmlNodePtr * nodes;
+    size_t allocated;
+    size_t size;
+public:
+    explicit VrmlMFNode(size_t length = 0, const VrmlNodePtr * nodes = 0);
+    VrmlMFNode(const VrmlMFNode & mfnode);
+    virtual ~VrmlMFNode();
+
+    VrmlMFNode & operator=(const VrmlMFNode & mfnode);
+
+    const VrmlNodePtr & getElement(size_t index) const;
+    void setElement(size_t index, const VrmlNodePtr & node);
+    size_t getLength() const;
+    void setLength(size_t length);
+    bool exists(const VrmlNode & node) const;
+    bool addNode(VrmlNode & node);
+    bool removeNode(const VrmlNode & node);
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlMFNode* toMFNode() const;
+    virtual VrmlMFNode* toMFNode();
+
+private:
+    void realloc(size_t newSize);
+};
+
+
+class VrmlMFRotation : public VrmlField {
+    class FData;
+    FData *d_data;
+public:
+    explicit VrmlMFRotation(size_t length = 0, const float * rotations = 0);
+    VrmlMFRotation(const VrmlMFRotation & mfrotation);
+    virtual ~VrmlMFRotation();
+
+    VrmlMFRotation & operator=(const VrmlMFRotation & mfrotation);
+
+    const float * operator[](size_t index) const;
+    const float * get() const;
+    void set(size_t length, const float * rotations);
+    size_t getLength() const;
+    void setLength(size_t length);
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlMFRotation* toMFRotation() const;
+    virtual VrmlMFRotation* toMFRotation();
+};
+
+
+class VrmlMFString : public VrmlField {
+    char * * d_v;
+    size_t d_allocated;
+    size_t d_size;
+public:
+    VrmlMFString(size_t n = 0, char const * const * values = 0);
+    VrmlMFString(const VrmlMFString&);
+
+    virtual ~VrmlMFString();
+
+    VrmlMFString& operator=(const VrmlMFString& rhs);
+
+    void set(size_t n, char const * const v[]);
+    size_t getLength() const;
+    char const * const * get() const;
+    char const * get(size_t) const;
+    void set(size_t, const char *);
+
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlMFString* toMFString() const;
+    virtual VrmlMFString* toMFString();
+    virtual ostream& print(ostream& os) const;
+};
+
+
+class VrmlMFTime : public VrmlField {
+    class DData;
+    DData * d_data;
+public:
+    explicit VrmlMFTime(size_t length = 0, const double * times = 0);
+    VrmlMFTime(const VrmlMFTime & mftime);
+    virtual ~VrmlMFTime();
+
+    VrmlMFTime & operator=(const VrmlMFTime & mftime);
+
+    double operator[](size_t index) const;
+    double & operator[](size_t index);
+    const double * get() const;
+    void set(size_t length, const double * times);
+    size_t getLength() const;
+    void setLength(size_t length);
+
+    //
+    // Override from VrmlField
+    //
+    virtual ostream & print(ostream &) const;
+    virtual VrmlField * clone() const;
+    virtual VrmlFieldType fieldType() const;
+};
+
+
+class VrmlMFVec2f : public VrmlField {
+    class FData;
+    FData * d_data;
+public:
+    explicit VrmlMFVec2f(size_t length = 0, const float * vecs = 0);
+    VrmlMFVec2f(const VrmlMFVec2f & mfvec2f);
+    virtual ~VrmlMFVec2f();
+
+    VrmlMFVec2f & operator=(const VrmlMFVec2f & mfvec2f);
+
+    const float * operator[](size_t index) const;
+    float * operator[](size_t index);
+    const float * get() const;
+    void set(size_t length, const float * vecs);
+    size_t getLength() const;
+    void setLength(size_t length);
+
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual ostream& print(ostream& os) const;
+    virtual const VrmlMFVec2f* toMFVec2f() const;
+    virtual VrmlMFVec2f* toMFVec2f();
+};
+
+
+class VrmlMFVec3f : public VrmlField {
+    class FData;
+    FData * d_data;
+public:
+    explicit VrmlMFVec3f(size_t length = 0, const float * vecs = 0);
+    VrmlMFVec3f(const VrmlMFVec3f & mfvec3f);
+    virtual ~VrmlMFVec3f();
+
+    VrmlMFVec3f & operator=(const VrmlMFVec3f & mfvec3f);
+
+    const float * operator[](size_t index) const;
+    float * operator[](size_t index);
+    const float * get() const;
+    void set(size_t length, const float * vecs);
+    size_t getLength() const;
+    void setLength(size_t length);
+
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual ostream& print(ostream& os) const;
+    virtual const VrmlMFVec3f* toMFVec3f() const;
+    virtual VrmlMFVec3f* toMFVec3f();
+};
+
+# endif

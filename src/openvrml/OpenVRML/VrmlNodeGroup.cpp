@@ -26,8 +26,6 @@
 #include "VrmlNodeSphereSensor.h"
 #include "VrmlNodeCylinderSensor.h"
 #include "VrmlNodeTouchSensor.h"
-#include "VrmlMFNode.h"
-#include "VrmlSFVec3f.h"
 
 
 // Return a new VrmlNodeGroup

@@ -27,9 +27,7 @@
 
 #include <list>
 #include "VrmlNodeChild.h"
-#include "VrmlMFString.h"
-#include "VrmlSFString.h"
-#include "VrmlSFBool.h"
+#include "field.h"
 
 class Doc;
 class ScriptObject;

@@ -22,9 +22,7 @@
 #define VRMLNODEWORLDINFO_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlMFString.h"
-#include "VrmlSFString.h"
-
+#include "field.h"
 
 class VrmlNodeWorldInfo : public VrmlNodeChild {
 

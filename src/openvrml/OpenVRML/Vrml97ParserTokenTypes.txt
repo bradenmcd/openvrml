@@ -1,4 +1,4 @@
-// $ANTLR 2.7.1: Vrml97Parser.g -> Vrml97ParserTokenTypes.txt$
+// $ANTLR 2.7.0: Vrml97Parser.g -> Vrml97ParserTokenTypes.txt$
 Vrml97Parser    // output token vocab name
 PERIOD(".")=4
 LBRACKET("[")=5

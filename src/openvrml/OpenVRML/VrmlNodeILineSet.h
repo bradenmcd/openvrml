@@ -22,9 +22,6 @@
 #define  _VRMLNODEILINESET_
 
 #include "VrmlNodeIndexedSet.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlMFInt32.h"
 
 class VrmlNodeILineSet : public VrmlNodeIndexedSet {
 

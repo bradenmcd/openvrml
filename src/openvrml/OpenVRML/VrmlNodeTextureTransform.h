@@ -22,8 +22,7 @@
 #define  _VRMLNODETEXTURETRANSFORM_
 
 #include "VrmlNode.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFVec2f.h"
+#include "field.h"
 
 class Viewer;
 

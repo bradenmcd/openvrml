@@ -22,8 +22,7 @@
 #define VRMLNODETEXTURECOORDINATE_H
 
 #include "VrmlNode.h"
-#include "VrmlMFVec2f.h"
-
+#include "field.h"
 
 class VrmlNodeTextureCoordinate : public VrmlNode {
 

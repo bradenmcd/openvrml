@@ -22,9 +22,7 @@
 #define  _VRMLNODETIMESENSOR_
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFTime.h"
+#include "field.h"
 
 class VrmlScene;
 

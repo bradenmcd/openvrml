@@ -22,8 +22,7 @@
 #define  _VRMLNODEMATERIAL_
 
 #include "VrmlNode.h"
-#include "VrmlSFColor.h"
-#include "VrmlSFFloat.h"
+#include "field.h"
 
 class VrmlNodeMaterial : public VrmlNode {
 

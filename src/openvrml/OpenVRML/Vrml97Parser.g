@@ -19,7 +19,7 @@
 // 
 
 header "post_include_hpp" {
-# include "VrmlField.h"
+# include "field.h"
 # include "VrmlNodePtr.h"
 class VrmlNamespace;
 class VrmlNode;
@@ -38,25 +38,6 @@ header "post_include_cpp" {
 # include "VrmlNodeType.h"
 # include "VrmlNode.h"
 # include "VrmlNodeScript.h"
-# include "VrmlSFBool.h"
-# include "VrmlSFColor.h"
-# include "VrmlSFFloat.h"
-# include "VrmlSFImage.h"
-# include "VrmlSFInt32.h"
-# include "VrmlSFNode.h"
-# include "VrmlSFRotation.h"
-# include "VrmlSFTime.h"
-# include "VrmlSFVec2f.h"
-# include "VrmlSFVec3f.h"
-# include "VrmlMFColor.h"
-# include "VrmlMFFloat.h"
-# include "VrmlMFInt32.h"
-# include "VrmlMFNode.h"
-# include "VrmlMFRotation.h"
-# include "VrmlMFString.h"
-# include "VrmlMFTime.h"
-# include "VrmlMFVec2f.h"
-# include "VrmlMFVec3f.h"
 
 namespace {
 

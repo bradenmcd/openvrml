@@ -22,10 +22,7 @@
 #define VRMLNODEFOG_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFColor.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFString.h"
+#include "field.h"
 
 class VrmlScene;
 

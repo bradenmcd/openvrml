@@ -22,7 +22,7 @@
 #define VRMLNODEAPPEARANCE_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFNode.h"
+#include "field.h"
 
 class VrmlNodeType;
 class VrmlScene;

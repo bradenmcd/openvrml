@@ -22,7 +22,7 @@
 #define VRMLNODECOLOR_H
 
 #include "VrmlNode.h"
-#include "VrmlMFColor.h"
+#include "field.h"
 
 class VrmlScene;
 

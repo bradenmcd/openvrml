@@ -26,7 +26,6 @@
 #include "Image.h"
 #include "VrmlNodeType.h"
 #include "VrmlNodeVisitor.h"
-#include "VrmlSFBool.h"
 #include "VrmlScene.h"
 #include "Viewer.h"
 

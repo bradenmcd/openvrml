@@ -32,7 +32,6 @@
 #include "VrmlNamespace.h"
 #include "VrmlNodeVisitor.h"
 #include "Route.h"
-#include "VrmlMFNode.h"
 #include "VrmlBSphere.h"
 
 #include <string.h>

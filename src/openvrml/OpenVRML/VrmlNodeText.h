@@ -22,10 +22,7 @@
 #define  _VRMLNODETEXT_
 
 #include "VrmlNodeGeometry.h"
-#include "VrmlMFString.h"
-#include "VrmlMFFloat.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFNode.h"
+#include "field.h"
 
 class VrmlScene;
 

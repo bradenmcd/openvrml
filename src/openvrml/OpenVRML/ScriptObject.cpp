@@ -35,7 +35,7 @@
 
 #include "ScriptObject.h"
 #include "Doc.h"
-#include "VrmlMFString.h"
+#include "field.h"
 #include "VrmlNodeScript.h"
 #include "VrmlScene.h"
 #include <string.h>

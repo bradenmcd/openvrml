@@ -29,9 +29,7 @@
 #include <list>
 
 #include "VrmlNodePtr.h"
-#include "VrmlField.h"
-#include "VrmlMFNode.h"
-#include "VrmlSFString.h"
+#include "field.h"
 
 class Doc2;
 class VrmlNamespace;

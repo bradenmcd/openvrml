@@ -22,9 +22,7 @@
 #define VRMLNODELIGHT_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFColor.h"
-#include "VrmlSFFloat.h"
+#include "field.h"
 
 class VrmlNodeLight : public VrmlNodeChild {
 

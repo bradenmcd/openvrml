@@ -23,7 +23,6 @@
 #define VRMLNODEBILLBOARD_H
 
 #include "VrmlNodeGroup.h"
-#include "VrmlSFVec3f.h"
 
 
 class VrmlNodeBillboard : public VrmlNodeGroup {

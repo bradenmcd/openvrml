@@ -21,10 +21,8 @@
 #ifndef  _VRMLNODELOD_
 #define  _VRMLNODELOD_
 
-#include "VrmlMFNode.h"
-#include "VrmlMFFloat.h"
-#include "VrmlSFVec3f.h"
 #include "VrmlNodeChild.h"
+#include "field.h"
 #include "VrmlBSphere.h"
 
 

@@ -22,8 +22,6 @@
 #define  VRMLNODEIMAGETEXTURE_H
 
 #include "VrmlNodeTexture.h"
-#include "VrmlMFString.h"
-#include "VrmlSFBool.h"
 #include "Viewer.h"
 
 class Image;

@@ -22,10 +22,6 @@
 #define VRMLNODEMOVIETEXTURE_H
 
 #include "VrmlNodeTexture.h"
-#include "VrmlMFString.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFTime.h"
 #include "Viewer.h"
 
 class Image;

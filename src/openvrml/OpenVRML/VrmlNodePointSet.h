@@ -22,9 +22,8 @@
 #define  _VRMLNODEPOINTSET_
 
 #include "VrmlNodeGeometry.h"
-#include "VrmlSFNode.h"
 #include "VrmlBSphere.h"
-
+#include "field.h"
 
 class VrmlNodePointSet : public VrmlNodeGeometry {
 

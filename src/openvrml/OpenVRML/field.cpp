@@ -22,7 +22,7 @@
 #include <config.h>
 #endif
 
-#include "VrmlField.h"
+#include "field.h"
 #include "MathUtils.h"
 #include <algorithm>
 #include <numeric>
@@ -312,13 +312,18 @@ ostream& operator<<(ostream& os, const VrmlField& f)
  * @class VrmlSFBool
  * @brief Encapsulates an SFBool value.
  */
-#include "VrmlSFBool.h"
 
 /**
  * @brief Constructor.
+ *
  * @param value initial value
  */
 VrmlSFBool::VrmlSFBool(bool value) : d_value(value) {}
+
+/**
+ * @brief Destructor.
+ */
+VrmlSFBool::~VrmlSFBool() {}
 
 ostream& VrmlSFBool::print(ostream& os) const
 { return (os << (d_value ? "TRUE" : "FALSE")); }
@@ -350,7 +355,6 @@ void VrmlSFBool::set(bool value) {
  * @class VrmlSFColor
  * @brief Encapsulates an SFColor value.
  */
-#include "VrmlSFColor.h"
 
 /**
  * @brief Construct with the default value, (0, 0, 0).
@@ -379,6 +383,11 @@ VrmlSFColor::VrmlSFColor(const float rgb[3]) {
  */
 VrmlSFColor::VrmlSFColor(float r, float g, float b)
 { d_rgb[0] = r; d_rgb[1] = g; d_rgb[2] = b; }
+
+/**
+ * @brief Destructor.
+ */
+VrmlSFColor::~VrmlSFColor() {}
 
 ostream& VrmlSFColor::print(ostream& os) const
 { return (os << d_rgb[0] << ' ' << d_rgb[1] << ' ' << d_rgb[2]); }
@@ -549,13 +558,17 @@ void VrmlSFColor::getHSV(float hsv[3]) const {
  * @class VrmlSFFloat
  * @brief Encapsulates an SFFloat value.
  */
-#include "VrmlSFFloat.h"
 
 /**
  * @brief Constructor.
  * @param value initial value
  */
 VrmlSFFloat::VrmlSFFloat(float value) : d_value(value) {}
+
+/**
+ * @brief Destructor.
+ */
+VrmlSFFloat::~VrmlSFFloat() {}
 
 ostream& VrmlSFFloat::print(ostream& os) const
 { return (os << d_value); }
@@ -594,7 +607,6 @@ void VrmlSFFloat::set(float value) {
  * red/green/blue.
  *
  */
-#include "VrmlSFImage.h"
 
 /**
  * Construct the default SFImage.
@@ -772,13 +784,17 @@ void VrmlSFImage::set(size_t width, size_t height, size_t components,
  * @class VrmlSFInt32
  * @brief Encapsulates an SFInt32 value.
  */
-#include "VrmlSFInt32.h"
 
 /**
  * @brief Constructor.
  * @param value initial value
  */
 VrmlSFInt32::VrmlSFInt32(long value): d_value(value) {}
+
+/**
+ * @brief Destructor.
+ */
+VrmlSFInt32::~VrmlSFInt32() {}
 
 ostream& VrmlSFInt32::print(ostream& os) const
 { return (os << d_value); }
@@ -809,7 +825,6 @@ void VrmlSFInt32::set(long value) {
  *
  * @brief Encapsulates an SFNode.
  */
-#include "VrmlSFNode.h"
 #include "VrmlNode.h"
 
 /**
@@ -878,7 +893,6 @@ void VrmlSFNode::set(const VrmlNodePtr & node) {
  * @class VrmlSFRotation
  * @brief Encapsulates an SFRotation.
  */
-#include "VrmlSFRotation.h"
 
 /**
  * @brief Default constructor.
@@ -939,6 +953,11 @@ VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & fromVector,
     this->d_x[3] = acos(fromVector.dot(toVector) /
                         (fromVector.length() * toVector.length()));
 }
+
+/**
+ * @brief Destructor.
+ */
+VrmlSFRotation::~VrmlSFRotation() {}
 
 /**
  * @brief Array element dereference operator (const version).
@@ -1230,7 +1249,6 @@ const VrmlSFRotation VrmlSFRotation::slerp(const VrmlSFRotation & destRotation,
  * @class VrmlSFString
  * @brief Encapsulates an SFString.
  */
-#include "VrmlSFString.h"
 
 /**
  * @brief Constructor
@@ -1292,13 +1310,17 @@ VrmlField::VrmlFieldType VrmlSFString::fieldType() const { return SFSTRING; }
  * @class VrmlSFTime
  * @brief Encapsulates an SFTime value.
  */
-#include "VrmlSFTime.h"
 
 /**
  * @brief Constructor
  * @param value initial value
  */
 VrmlSFTime::VrmlSFTime(double value) : d_value(value) {}
+
+/**
+ * @brief Destructor.
+ */
+VrmlSFTime::~VrmlSFTime() {}
 
 ostream& VrmlSFTime::print(ostream& os) const
 { return (os << d_value); }
@@ -1330,7 +1352,6 @@ void VrmlSFTime::set(double value) {
  * @class VrmlSFVec2f
  * @brief Encapsulates a SFVec2f value.
  */
-#include "VrmlSFVec2f.h"
 
 /**
  * @brief Construct a VrmlSFVec2f with the default values, (0, 0).
@@ -1357,6 +1378,11 @@ VrmlSFVec2f::VrmlSFVec2f(float x, float y) {
     this->d_x[0] = x;
     this->d_x[1] = y;
 }
+
+/**
+ * @brief Destructor.
+ */
+VrmlSFVec2f::~VrmlSFVec2f() {}
 
 /**
  * @brief Array element dereference operator (const version).
@@ -1540,7 +1566,6 @@ const VrmlSFVec2f VrmlSFVec2f::subtract(const VrmlSFVec2f & vec) const {
  * @class VrmlSFVec3f
  * @brief Encapsulates a SFVec3f value.
  */
-#include "VrmlSFVec3f.h"
 
 /**
  * @brief Construct a VrmlSFVec3f with the default value, (0, 0, 0).
@@ -1563,6 +1588,11 @@ VrmlSFVec3f::VrmlSFVec3f(const float vec[3]) {
  */
 VrmlSFVec3f::VrmlSFVec3f(float x, float y, float z)
 { d_x[0] = x; d_x[1] = y; d_x[2] = z; }
+
+/**
+ * @brief Destructor.
+ */
+VrmlSFVec3f::~VrmlSFVec3f() {}
 
 /**
  * @brief Array element dereference operator (const version).
@@ -1777,7 +1807,6 @@ const VrmlSFVec3f VrmlSFVec3f::subtract(const VrmlSFVec3f & vec) const {
  * @class VrmlMFColor
  * @brief Encapsulates a MFColor.
  */
-#include "VrmlMFColor.h"
 
 class VrmlMFColor::FData {			// reference counted float data
 public:
@@ -1910,7 +1939,6 @@ ostream& VrmlMFColor::print(ostream& os) const
  * @class VrmlMFFloat
  * Encapsulates a MFFloat.
  */
-#include "VrmlMFFloat.h"
 
 class VrmlMFFloat::FData {			// reference counted float data
 public:
@@ -2034,7 +2062,6 @@ ostream& VrmlMFFloat::print(ostream& os) const
  * @class VrmlMFInt32
  * @brief Encapsulates a MFInt32.
  */
-#include "VrmlMFInt32.h"
 
 class VrmlMFInt32::IData {			// reference counted int data
 public:
@@ -2183,7 +2210,6 @@ ostream& VrmlMFInt32::print(ostream& os) const
  * Since individual nodes are refcounted, no attempt is made to refcount
  * MFNode.
  */
-#include "VrmlMFNode.h"
 
 /**
  * @brief Construct from an array of VrmlNode pointers.
@@ -2402,7 +2428,6 @@ ostream & VrmlMFNode::print(ostream & os) const {
  * @class VrmlMFRotation
  * @brief Encapsulates an MFRotation.
  */
-#include "VrmlMFRotation.h"
 
 class VrmlMFRotation::FData {			// reference counted float data
 public:
@@ -2541,7 +2566,6 @@ ostream& VrmlMFRotation::print(ostream& os) const
  *
  * @brief Encapsulates a MFString.
  */
-#include "VrmlMFString.h"
 
 VrmlMFString::VrmlMFString(size_t n, char const * const * v)
   : d_v(n ? new char *[n] : 0), d_allocated(n), d_size(n)
@@ -2659,7 +2683,6 @@ ostream& VrmlMFString::print(ostream& os) const
  * @class VrmlMFTime
  * @brief Encapsulates a MFTime.
  */
-# include "VrmlMFTime.h"
 
 //
 // Reference-counted double data
@@ -2838,7 +2861,6 @@ ostream & VrmlMFTime::print(ostream & os) const {
  *
  * @brief Encapsulates an MFVec2f.
  */
-#include "VrmlMFVec2f.h"
 
 class VrmlMFVec2f::FData {			// reference counted float data
 public:
@@ -2982,7 +3004,6 @@ ostream& VrmlMFVec2f::print(ostream& os) const
  *
  * @brief Encapsulates an MFVec3f.
  */
-#include "VrmlMFVec3f.h"
 
 class VrmlMFVec3f::FData {			// reference counted float data
 public:

@@ -21,11 +21,8 @@
 #ifndef  _VRMLNODEGROUP_
 #define  _VRMLNODEGROUP_
 
-#include "VrmlMFNode.h"
-#include "VrmlSFString.h"
-#include "VrmlSFVec3f.h"
+#include "field.h"
 #include "VrmlBSphere.h"
-
 #include "VrmlNodeChild.h"
 #include "Viewer.h"
 

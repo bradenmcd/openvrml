@@ -22,11 +22,9 @@
 #define VRMLNODESCALARINT_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFFloat.h"
-#include "VrmlMFFloat.h"
+#include "field.h"
 
 class VrmlScene;
-
 
 class VrmlNodeScalarInt : public VrmlNodeChild {
 

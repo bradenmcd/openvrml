@@ -21,9 +21,8 @@
 #ifndef  _VRMLNODESWITCH_
 #define  _VRMLNODESWITCH_
 
-#include "VrmlMFNode.h"
-#include "VrmlSFInt32.h"
 #include "VrmlNodeChild.h"
+#include "field.h"
 #include "VrmlBSphere.h"
 
 class VrmlNodeSwitch : public VrmlNodeChild {

@@ -22,11 +22,7 @@
 #define  _VRMLNODEELEVATIONGRID_
 
 #include "VrmlNodeGeometry.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFInt32.h"
-#include "VrmlSFNode.h"
-#include "VrmlMFFloat.h"
+#include "field.h"
 
 class VrmlNodeElevationGrid : public VrmlNodeGeometry {
 

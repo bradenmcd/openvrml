@@ -22,11 +22,7 @@
 #define  _VRMLNODEEXTRUSION_
 
 #include "VrmlNodeGeometry.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlMFRotation.h"
-#include "VrmlMFVec2f.h"
-#include "VrmlMFVec3f.h"
+#include "field.h"
 
 class VrmlNodeExtrusion : public VrmlNodeGeometry {
 

@@ -24,14 +24,11 @@
 //
 
 #include "VrmlNodeType.h"
-#include "VrmlField.h"
-#include "VrmlMFNode.h"
 #include "VrmlNode.h"
 #include "VrmlNamespace.h"
 
 #include "doc2.hpp"
 #include "VrmlNodeProto.h"	// Instances of PROTOtyped nodes
-#include "VrmlMFString.h"
 #include "VrmlScene.h"
 
 #include <stdio.h>

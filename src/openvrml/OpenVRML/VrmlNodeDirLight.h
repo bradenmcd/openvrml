@@ -22,8 +22,6 @@
 #define  _VRMLNODEDIRLIGHT_
 
 #include "VrmlNodeLight.h"
-#include "VrmlSFVec3f.h"
-
 
 class VrmlNodeDirLight : public VrmlNodeLight {
 

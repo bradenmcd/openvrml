@@ -22,8 +22,7 @@
 #define  _VRMLNODECONE_
 
 #include "VrmlNodeGeometry.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
+#include "field.h"
 
 class VrmlScene;
 

@@ -22,10 +22,7 @@
 #define VRMLNODENAVIGATIONINFO_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlMFFloat.h"
-#include "VrmlMFString.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
+#include "field.h"
 
 class VrmlNodeNavigationInfo : public VrmlNodeChild {
 

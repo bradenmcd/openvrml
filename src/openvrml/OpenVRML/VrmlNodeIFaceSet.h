@@ -22,10 +22,6 @@
 #define  _VRMLNODEIFACESET_
 
 #include "VrmlNodeIndexedSet.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFNode.h"
-#include "VrmlMFInt32.h"
 #include "VrmlBSphere.h"
 
 class VrmlNodeIFaceSet : public VrmlNodeIndexedSet {

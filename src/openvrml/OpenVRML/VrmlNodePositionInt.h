@@ -22,13 +22,9 @@
 #define VRMLNODEPOSITIONINT_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFFloat.h"
-#include "VrmlMFFloat.h"
-#include "VrmlSFVec3f.h"
-#include "VrmlMFVec3f.h"
+#include "field.h"
 
 class VrmlScene;
-
 
 class VrmlNodePositionInt : public VrmlNodeChild {
 

@@ -29,7 +29,7 @@
 #include "Image.h"
 #include "Doc.h"
 #include "System.h"
-#include "VrmlMFString.h"
+#include "field.h"
 
 #include <stdarg.h>
 #include <stdio.h>

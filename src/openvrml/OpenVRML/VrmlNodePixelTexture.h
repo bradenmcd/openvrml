@@ -22,8 +22,6 @@
 #define VRMLNODEPIXELTEXTURE_H
 
 #include "VrmlNodeTexture.h"
-#include "VrmlSFImage.h"
-#include "VrmlSFBool.h"
 #include "Viewer.h"
 
 class VrmlNodePixelTexture : public VrmlNodeTexture {

@@ -22,10 +22,7 @@
 #define VRMLNODECOLORINT_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFFloat.h"
-#include "VrmlMFFloat.h"
-#include "VrmlSFColor.h"
-#include "VrmlMFColor.h"
+#include "field.h"
 
 class VrmlScene;
 

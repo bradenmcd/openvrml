@@ -22,7 +22,6 @@
 #define  _VRMLNODEINLINE_
 
 #include "VrmlNodeGroup.h"
-#include "VrmlMFString.h"
 
 class VrmlNamespace;
 class VrmlNodeType;

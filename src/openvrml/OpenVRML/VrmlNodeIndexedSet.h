@@ -22,10 +22,7 @@
 #define  _VRMLNODEINDEXEDSET_
 
 #include "VrmlNodeGeometry.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFNode.h"
-#include "VrmlMFInt32.h"
+#include "field.h"
 
 class VrmlNodeIndexedSet : public VrmlNodeGeometry {
 

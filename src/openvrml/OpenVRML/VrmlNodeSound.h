@@ -22,10 +22,7 @@
 #define  _VRMLNODESOUND_
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFNode.h"
-#include "VrmlSFVec3f.h"
+#include "field.h"
 
 class VrmlScene;
 

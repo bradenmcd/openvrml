@@ -22,7 +22,7 @@
 #define  _VRMLNODESHAPE_
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFNode.h"
+#include "field.h"
 #include "Viewer.h"
 
 class VrmlNodeShape : public VrmlNodeChild {

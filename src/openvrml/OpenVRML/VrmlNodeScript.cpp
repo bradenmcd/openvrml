@@ -23,9 +23,6 @@
 #include "VrmlNodeScript.h"
 #include "VrmlNodeType.h"
 #include "VrmlNodeVisitor.h"
-#include "VrmlSFTime.h"
-#include "VrmlSFNode.h"
-#include "VrmlMFNode.h"
 #include "ScriptObject.h"
 #include "VrmlScene.h"
 

@@ -28,7 +28,7 @@
 #include "VrmlNode.h"
 #include "VrmlNodeType.h"
 #include "Viewer.h"
-#include "VrmlMFNode.h"
+#include "field.h"
 
 class VrmlNodeProto : public VrmlNode {
 

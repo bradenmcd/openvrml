@@ -34,14 +34,10 @@ else
 JS_CPPFLAGS = -DXP_UNIX
 JAVASCRIPT_SUPPORT_LIBOBJ = scriptjs-prelinked.lo
 JAVASCRIPT_INCLUDES = -I$(top_builddir)/lib/js
-ScriptJS.o ScriptJS.lo: ScriptJS.cpp ScriptJS.h ScriptObject.h VrmlField.h \
+ScriptJS.o ScriptJS.lo: ScriptJS.cpp ScriptJS.h ScriptObject.h field.h \
 doc2.hpp MathUtils.h System.h VrmlNodeScript.h VrmlNodeChild.h VrmlNode.h \
-VrmlRenderContext.h VrmlMFString.h VrmlSFString.h VrmlSFBool.h VrmlNamespace.h \
-VrmlNodeType.h VrmlMFNode.h VrmlScene.h VrmlNodeGroup.h VrmlSFVec3f.h \
-VrmlBSphere.h VrmlBVolume.h Viewer.h VrmlFrustum.h VrmlSFColor.h VrmlSFFloat.h \
-VrmlSFImage.h VrmlSFInt32.h VrmlSFNode.h VrmlSFRotation.h VrmlSFTime.h \
-VrmlSFVec2f.h VrmlMFColor.h VrmlMFFloat.h VrmlMFInt32.h VrmlMFRotation.h \
-VrmlMFString.h VrmlMFVec2f.h VrmlMFVec3f.h
+VrmlRenderContext.h VrmlNamespace.h VrmlNodeType.h VrmlScene.h VrmlNodeGroup.h \
+VrmlBSphere.h VrmlBVolume.h Viewer.h VrmlFrustum.h
 	$(LTCXXCOMPILE) -c $<
 
 $(JAVASCRIPT_SUPPORT_LIBOBJ): ScriptJS.lo $(top_builddir)/lib/js/libjs.la
@@ -58,13 +54,9 @@ libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@
 Vrml97Scanner.o Vrml97Scanner.lo: Vrml97Scanner.cpp Vrml97Scanner.h
 	$(LTCXXCOMPILE) -c $<
 
-Vrml97Parser.o Vrml97Parser.lo: Vrml97Parser.cpp Vrml97Parser.hpp VrmlField.h \
-doc2.hpp VrmlNamespace.h VrmlNodeType.h VrmlMFNode.h VrmlSFString.h VrmlNode.h \
-System.h VrmlNodeScript.h VrmlNodeChild.h VrmlMFString.h VrmlSFBool.h \
-VrmlSFColor.h VrmlSFFloat.h VrmlSFImage.h VrmlSFInt32.h VrmlSFNode.h \
-VrmlSFRotation.h VrmlSFTime.h VrmlSFVec2f.h VrmlSFVec3f.h VrmlMFColor.h \
-VrmlMFFloat.h VrmlMFInt32.h VrmlMFNode.h VrmlMFRotation.h VrmlMFString.h \
-VrmlMFTime.h VrmlMFVec2f.h VrmlMFVec3f.h
+Vrml97Parser.o Vrml97Parser.lo: Vrml97Parser.cpp Vrml97Parser.hpp field.h \
+doc2.hpp VrmlNamespace.h VrmlNodeType.h VrmlNode.h System.h VrmlNodeScript.h \
+VrmlNodeChild.h
 	$(LTCXXCOMPILE) -c $<
 
 libopenvrml_la_SOURCES = \
@@ -79,7 +71,7 @@ libopenvrml_la_SOURCES = \
 	VrmlAABox.cpp \
 	VrmlFrustum.cpp \
 	VrmlRenderContext.cpp \
-	VrmlField.cpp \
+	field.cpp \
         VrmlNamespace.cpp \
 	VrmlNodeType.cpp \
         VrmlNodePtr.cpp \
@@ -170,27 +162,7 @@ OpenVRMLinclude_HEADERS = \
 	VrmlBSphere.h \
 	VrmlEvent.h \
 	VrmlFrustum.h \
-	VrmlField.h \
-	VrmlSFBool.h \
-        VrmlSFColor.h \
-        VrmlSFFloat.h \
-        VrmlSFImage.h \
-        VrmlSFInt32.h \
-        VrmlSFNode.h \
-	VrmlSFRotation.h \
-        VrmlSFString.h \
-        VrmlSFTime.h \
-        VrmlSFVec2f.h \
-        VrmlSFVec3f.h \
-	VrmlMFColor.h \
-        VrmlMFFloat.h \
-        VrmlMFInt32.h \
-        VrmlMFNode.h \
-        VrmlMFRotation.h \
-	VrmlMFString.h \
-        VrmlMFTime.h \
-        VrmlMFVec2f.h \
-        VrmlMFVec3f.h \
+	field.h \
         VrmlNamespace.h \
         VrmlNodePtr.h \
 	VrmlNode.h \

@@ -22,7 +22,7 @@
 #define VRMLNODETEXTURE_H
 
 #include "VrmlNode.h"
-#include "VrmlSFString.h"
+#include "field.h"
 
 class VrmlNodePixelTexture;
 class VrmlNodeImageTexture;

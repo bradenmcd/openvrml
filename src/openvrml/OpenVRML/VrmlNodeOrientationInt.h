@@ -22,13 +22,9 @@
 #define VRMLNODEORIENTATIONINT_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlSFFloat.h"
-#include "VrmlMFFloat.h"
-#include "VrmlSFRotation.h"
-#include "VrmlMFRotation.h"
+#include "field.h"
 
 class VrmlScene;
-
 
 class VrmlNodeOrientationInt : public VrmlNodeChild {
 

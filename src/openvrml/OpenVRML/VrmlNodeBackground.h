@@ -23,14 +23,8 @@
 #define VRMLNODEBACKGROUND_H
 
 #include "VrmlNodeChild.h"
-#include "VrmlField.h"
-
+#include "field.h"
 #include "Image.h"
-#include "VrmlMFColor.h"
-#include "VrmlMFFloat.h"
-#include "VrmlMFString.h"
-#include "VrmlSFBool.h"
-#include "VrmlSFString.h"
 #include "Viewer.h"
 
 //class Viewer;
