@@ -47,8 +47,14 @@ extern "C" {
 # include "MathUtils.h"
 # include "System.h"
 
+/**
+ * @internal
+ */
 namespace std {
 
+    /**
+     * @internal
+     */
     template <>
     struct char_traits<unsigned char> {
 
@@ -685,18 +691,18 @@ AbstractGeometry::~AbstractGeometry() throw ()
  * @param viewer a renderer
  * @param context the renderer context
  */
-void AbstractGeometry::render(Viewer * viewer, VrmlRenderContext context)
+void AbstractGeometry::render(Viewer & viewer, VrmlRenderContext context)
 {
-    if (d_viewerObject && isModified()) {
-        viewer->removeObject(d_viewerObject);
-        d_viewerObject = 0;
+    if (this->d_viewerObject && this->isModified()) {
+        viewer.removeObject(this->d_viewerObject);
+        this->d_viewerObject = 0;
     }
 
-    if (d_viewerObject) {
-        viewer->insertReference(d_viewerObject);
+    if (this->d_viewerObject) {
+        viewer.insertReference(this->d_viewerObject);
     } else {
-        d_viewerObject = insertGeometry(viewer, context);
-        clearModified();
+        this->d_viewerObject = this->insertGeometry(viewer, context);
+        this->clearModified();
     }
 }
 
@@ -1199,16 +1205,16 @@ Anchor * Anchor::toAnchor() const
  * @brief Render the node.
  *
  * @param viewer
- * @param rc
+ * @param context
  */
-void Anchor::render(Viewer *viewer, VrmlRenderContext rc)
+void Anchor::render(Viewer & viewer, VrmlRenderContext context)
 {
-    viewer->setSensitive( this );
+    viewer.setSensitive(this);
 
     // Render children
-    this->Group::render(viewer, rc);
+    this->Group::render(viewer, context);
 
-    viewer->setSensitive( 0 );
+    viewer.setSensitive(0);
 }
 
 /**
@@ -1415,7 +1421,7 @@ void Appearance::clearFlags()
     }
 }
 
-void Appearance::render(Viewer * const viewer, const VrmlRenderContext rc)
+void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
 {
     MaterialNode * const material = this->material.get()
                                   ? this->material.get()->toMaterial()
@@ -1432,29 +1438,29 @@ void Appearance::render(Viewer * const viewer, const VrmlRenderContext rc)
         if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
         if (nTexComponents >= 3) { diffuse[0] = diffuse[1] = diffuse[2] = 1.0; }
 
-        viewer->enableLighting(true);   // turn lighting on for this object
-        viewer->setMaterial(material->getAmbientIntensity().get(),
-                            diffuse,
-                            material->getEmissiveColor().get(),
-                            material->getShininess().get(),
-                            material->getSpecularColor().get(),
-                            trans);
+        viewer.enableLighting(true);   // turn lighting on for this object
+        viewer.setMaterial(material->getAmbientIntensity().get(),
+                           diffuse,
+                           material->getEmissiveColor().get(),
+                           material->getShininess().get(),
+                           material->getSpecularColor().get(),
+                           trans);
 
         material->clearModified();
     } else {
-        viewer->setColor(1.0, 1.0, 1.0); // default color
-        viewer->enableLighting(false);   // turn lighting off for this object
+        viewer.setColor(1.0, 1.0, 1.0); // default color
+        viewer.enableLighting(false);   // turn lighting off for this object
     }
 
     if (texture) {
         if (this->textureTransform.get()) {
-            this->textureTransform.get()->render(viewer, rc);
+            this->textureTransform.get()->render(viewer, context);
         } else {
-            viewer->setTextureTransform(0, 0, 0, 0);
+            viewer.setTextureTransform(0, 0, 0, 0);
         }
-        texture->render(viewer, rc);
+        texture->render(viewer, context);
     }
-    clearModified();
+    this->clearModified();
 }
 
 /**
@@ -2621,35 +2627,35 @@ Billboard::~Billboard() throw ()
  * @brief Render the node.
  *
  * @param viewer    a Viewer.
- * @param rv        the rendering context.
+ * @param context   the rendering context.
  */
-void Billboard::render(Viewer * const viewer, VrmlRenderContext rc)
+void Billboard::render(Viewer & viewer, VrmlRenderContext context)
 {
     VrmlMatrix LM;
-    VrmlMatrix new_LM = rc.getMatrix();
+    VrmlMatrix new_LM = context.getMatrix();
     billboard_to_matrix(this, new_LM, LM);
     new_LM = new_LM.multLeft(LM);
-    rc.setMatrix(new_LM);
+    context.setMatrix(new_LM);
 
     if (this->xformObject && this->isModified()) {
-        viewer->removeObject(this->xformObject);
+        viewer.removeObject(this->xformObject);
         this->xformObject = 0;
     }
 
     if (this->xformObject) {
-        viewer->insertReference(this->xformObject);
+        viewer.insertReference(this->xformObject);
     } else if (this->children.getLength() > 0) {
-        this->xformObject = viewer->beginObject(this->getId().c_str());
+        this->xformObject = viewer.beginObject(this->getId().c_str());
 
-        viewer->transform(LM);
+        viewer.transform(LM);
 
         // Render children
-        this->Group::render(viewer, rc);
+        this->Group::render(viewer, context);
 
-        viewer->endObject();
+        viewer.endObject();
     }
 
-    clearModified();
+    this->clearModified();
 }
 
 /**
@@ -2842,11 +2848,12 @@ Box::~Box() throw ()
 /**
  * @brief Insert the geometry when rendering.
  */
-Viewer::Object Box::insertGeometry(Viewer * const viewer,
-                                   const VrmlRenderContext rc)
+Viewer::Object Box::insertGeometry(Viewer & viewer,
+                                   const VrmlRenderContext context)
 {
-    return viewer->insertBox(this->size.getX(), this->size.getY(),
-                             this->size.getZ());
+    return viewer.insertBox(this->size.getX(),
+                            this->size.getY(),
+                            this->size.getZ());
 }
 
 /**
@@ -3427,14 +3434,15 @@ Cone::~Cone() throw () {}
  * @brief Insert geometry when rendering.
  *
  * @param viewer    a Viewer.
- * @param rc        the rendering context.
+ * @param context   the rendering context.
  */
-Viewer::Object Cone::insertGeometry(Viewer * const viewer,
-                                    const VrmlRenderContext rc) {
-    return viewer->insertCone(this->height.get(),
-                              this->bottomRadius.get(),
-                              this->bottom.get(),
-                              this->side.get());
+Viewer::Object Cone::insertGeometry(Viewer & viewer,
+                                    const VrmlRenderContext context)
+{
+    return viewer.insertCone(this->height.get(),
+                             this->bottomRadius.get(),
+                             this->bottom.get(),
+                             this->side.get());
 }
 
 
@@ -3854,15 +3862,16 @@ Cylinder::~Cylinder() throw () {
  * @brief Insert geometry for rendering.
  *
  * @param viewer    a Viewer.
- * @param rc        the rendering context.
+ * @param context   the rendering context.
  */
-Viewer::Object Cylinder::insertGeometry(Viewer * const viewer,
-                                        const VrmlRenderContext rc) {
-    return viewer->insertCylinder(this->height.get(),
-                                  this->radius.get(),
-                                  this->bottom.get(),
-                                  this->side.get(),
-                                  this->top.get());
+Viewer::Object Cylinder::insertGeometry(Viewer & viewer,
+                                        const VrmlRenderContext context)
+{
+    return viewer.insertCylinder(this->height.get(),
+                                 this->radius.get(),
+                                 this->bottom.get(),
+                                 this->side.get(),
+                                 this->top.get());
 }
 
 
@@ -4026,8 +4035,8 @@ CylinderSensor* CylinderSensor::toCylinderSensor() const {   // mgiger 6/16/00
  * Store the ModelView matrix which is calculated at the time of rendering
  * in render-context. This matrix will be in use at the time of activation
  */
-void CylinderSensor::render(Viewer* v, VrmlRenderContext rc) {
-    setMVMatrix(rc.getMatrix());
+void CylinderSensor::render(Viewer & viewer, VrmlRenderContext context) {
+    this->setMVMatrix(context.getMatrix());
 }
 
 void CylinderSensor::activate(double timeStamp, bool isActive, double *p) {
@@ -4337,13 +4346,13 @@ DirectionalLight::~DirectionalLight() throw () {}
 /**
  * This should be called before rendering any sibling nodes.
  */
-void DirectionalLight::render(Viewer * const viewer,
-                              const VrmlRenderContext rc) {
+void DirectionalLight::render(Viewer & viewer, const VrmlRenderContext rc)
+{
     if (this->on.get()) {
-        viewer->insertDirLight(this->ambientIntensity.get(),
-                               this->intensity.get(),
-                               this->color.get(),
-                               this->direction.get());
+        viewer.insertDirLight(this->ambientIntensity.get(),
+                              this->intensity.get(),
+                              this->color.get(),
+                              this->direction.get());
     }
     this->clearModified();
 }
@@ -4567,8 +4576,9 @@ void ElevationGrid::clearFlags() {
     if (this->texCoord.get()) { this->texCoord.get()->clearFlags(); }
 }
 
-Viewer::Object ElevationGrid::insertGeometry(Viewer * const viewer,
-                                             const VrmlRenderContext rc) {
+Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
+                                             const VrmlRenderContext context)
+{
     Viewer::Object obj = 0;
 
     if (this->height.getLength() > 0) {
@@ -4605,15 +4615,15 @@ Viewer::Object ElevationGrid::insertGeometry(Viewer * const viewer,
             optMask |= Viewer::MASK_NORMAL_PER_VERTEX;
         }
 
-        obj = viewer->insertElevationGrid(optMask,
-                                          this->xDimension.get(),
-                                          this->zDimension.get(),
-                                          &this->height.getElement(0),
-                                          this->xSpacing.get(),
-                                          this->zSpacing.get(),
-                                          tc,
-                                          normals,
-                                          colors);
+        obj = viewer.insertElevationGrid(optMask,
+                                         this->xDimension.get(),
+                                         this->zDimension.get(),
+                                         &this->height.getElement(0),
+                                         this->xSpacing.get(),
+                                         this->zSpacing.get(),
+                                         tc,
+                                         normals,
+                                         colors);
     }
 
     if (this->color.get()) { this->color.get()->clearModified(); }
@@ -4882,8 +4892,9 @@ Extrusion::Extrusion(const NodeType & nodeType,
  */
 Extrusion::~Extrusion() throw () {}
 
-Viewer::Object Extrusion::insertGeometry(Viewer * const viewer,
-                                         const VrmlRenderContext rc) {
+Viewer::Object Extrusion::insertGeometry(Viewer & viewer,
+                                         const VrmlRenderContext context)
+{
     Viewer::Object obj = 0;
     if (this->crossSection.getLength() > 0
             && this->spine.getLength() > 1) {
@@ -4895,15 +4906,15 @@ Viewer::Object Extrusion::insertGeometry(Viewer * const viewer,
         if (this->beginCap.get())   { optMask |= Viewer::MASK_BOTTOM; }
         if (this->endCap.get())     { optMask |= Viewer::MASK_TOP; }
 
-        obj = viewer->insertExtrusion(optMask,
-                                      this->orientation.getLength(),
-                                      &this->orientation.getElement(0)[0],
-                                      this->scale.getLength(),
-                                      &this->scale.getElement(0)[0],
-                                      this->crossSection.getLength(),
-                                      &this->crossSection.getElement(0)[0],
-                                      this->spine.getLength(),
-                                      &this->spine.getElement(0)[0]);
+        obj = viewer.insertExtrusion(optMask,
+                                     this->orientation.getLength(),
+                                     &this->orientation.getElement(0)[0],
+                                     this->scale.getLength(),
+                                     &this->scale.getElement(0)[0],
+                                     this->crossSection.getLength(),
+                                     &this->crossSection.getElement(0)[0],
+                                     this->spine.getLength(),
+                                     &this->spine.getElement(0)[0]);
     }
 
     return obj;
@@ -5755,17 +5766,17 @@ Node * Group::getParentTransform() { return this->parentTransform; }
 /**
  * Render each of the children.
  */
-void Group::render(Viewer *viewer, VrmlRenderContext rc) {
-    if (rc.getCullFlag() != BVolume::inside) {
+void Group::render(Viewer & viewer, VrmlRenderContext context) {
+    if (context.getCullFlag() != BVolume::inside) {
         const BSphere * bs = static_cast<const BSphere *>(this->getBVolume());
         BSphere bv_copy(*bs);
-        bv_copy.transform(rc.getMatrix());
-        BVolume::Intersection r = viewer->intersectViewVolume(bv_copy);
-        if (rc.getDrawBSpheres()) { viewer->drawBSphere(*bs, r); }
+        bv_copy.transform(context.getMatrix());
+        BVolume::Intersection r = viewer.intersectViewVolume(bv_copy);
+        if (context.getDrawBSpheres()) { viewer.drawBSphere(*bs, r); }
         if (r == BVolume::outside) { return; }
-        if (r == BVolume::inside) { rc.setCullFlag(BVolume::inside); }
+        if (r == BVolume::inside) { context.setCullFlag(BVolume::inside); }
     }
-    renderNoCull(viewer, rc);
+    this->renderNoCull(viewer, context);
 }
 
 
@@ -5773,19 +5784,19 @@ void Group::render(Viewer *viewer, VrmlRenderContext rc) {
  * because children will already have done the culling, we don't need
  * to repeat it here.
  */
-void Group::renderNoCull(Viewer * viewer, VrmlRenderContext rc) {
-    if (this->viewerObject && isModified()) {
-        viewer->removeObject(this->viewerObject);
+void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
+    if (this->viewerObject && this->isModified()) {
+        viewer.removeObject(this->viewerObject);
         this->viewerObject = 0;
     }
 
     if (this->viewerObject) {
-        viewer->insertReference(this->viewerObject);
+        viewer.insertReference(this->viewerObject);
     } else if (this->children.getLength() > 0) {
         int i, n = this->children.getLength();
         int nSensors = 0;
 
-        this->viewerObject = viewer->beginObject(this->getId().c_str());
+        this->viewerObject = viewer.beginObject(this->getId().c_str());
 
         // Draw nodes that impact their siblings (DirectionalLights,
         // TouchSensors, any others? ...)
@@ -5794,7 +5805,7 @@ void Group::renderNoCull(Viewer * viewer, VrmlRenderContext rc) {
 
             if (kid->toLight()
                     && !(kid->toPointLight() || kid->toSpotLight())) {
-                kid->render(viewer, rc);
+                kid->render(viewer, context);
             } else if ((kid->toTouchSensor()
                         && kid->toTouchSensor()->isEnabled())
                     || (kid->toPlaneSensor()
@@ -5803,7 +5814,7 @@ void Group::renderNoCull(Viewer * viewer, VrmlRenderContext rc) {
                         && kid->toCylinderSensor()->isEnabled())
                     || (kid->toSphereSensor()
                         && kid->toSphereSensor()->isEnabled())) {
-                if (++nSensors == 1) { viewer->setSensitive(this); }
+                if (++nSensors == 1) { viewer.setSensitive(this); }
             }
         }
 
@@ -5815,17 +5826,17 @@ void Group::renderNoCull(Viewer * viewer, VrmlRenderContext rc) {
 //                    || child->toCylinderSensor()
 //                    || child->toSphereSensor()
                     || child->toTouchSensor())) {
-                child->render(viewer, rc);
+                child->render(viewer, context);
             }
         }
 
         // Turn off sensitivity
-        if (nSensors > 0) { viewer->setSensitive(0); }
+        if (nSensors > 0) { viewer.setSensitive(0); }
 
-        viewer->endObject();
+        viewer.endObject();
     }
 
-    clearModified();
+    this->clearModified();
 }
 
 
@@ -5983,14 +5994,14 @@ ImageTexture::~ImageTexture() throw () {
     // delete texObject...
 }
 
-void ImageTexture::render(Viewer *viewer, VrmlRenderContext rc) {
+void ImageTexture::render(Viewer & viewer, VrmlRenderContext context) {
     if (isModified()) {
         if (this->image) {
             delete this->image;        // URL is the only modifiable bit
             this->image = 0;
         }
         if (this->texObject) {
-            viewer->removeTextureObject(this->texObject);
+            viewer.removeTextureObject(this->texObject);
             this->texObject = 0;
         }
     }
@@ -6010,7 +6021,7 @@ void ImageTexture::render(Viewer *viewer, VrmlRenderContext rc) {
 
     // Check texture cache
     if (this->texObject && this->image) {
-        viewer->insertTextureReference(this->texObject, this->image->nc());
+        viewer.insertTextureReference(this->texObject, this->image->nc());
     } else {
         unsigned char *pix;
 
@@ -6028,23 +6039,23 @@ void ImageTexture::render(Viewer *viewer, VrmlRenderContext rc) {
                 // Always scale images down in size and reuse the same pixel
                 // memory. This can cause some ugliness...
                 if (w != sizes[i - 1] || h != sizes[j - 1]) {
-                    viewer->scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
-                                         this->image->nc(), pix);
+                    viewer.scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
+                                        this->image->nc(), pix);
                     this->image->setSize(sizes[i - 1], sizes[j - 1]);
                 }
 
-                this->texObject = viewer->insertTexture(this->image->w(),
-                                                        this->image->h(),
-                                                        this->image->nc(),
-                                                        this->repeatS.get(),
-                                                        this->repeatT.get(),
-                                                        pix,
-                                                        true);
+                this->texObject = viewer.insertTexture(this->image->w(),
+                                                       this->image->h(),
+                                                       this->image->nc(),
+                                                       this->repeatS.get(),
+                                                       this->repeatT.get(),
+                                                       pix,
+                                                       true);
             }
         }
     }
 
-    clearModified();
+    this->clearModified();
 }
 
 size_t ImageTexture::nComponents() const throw () {
@@ -6316,13 +6327,14 @@ void IndexedFaceSet::clearFlags() {
 /**
  * @todo stripify, crease angle, generate normals ...
  */
-Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
-                                              VrmlRenderContext rc) {
+Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
+                                              const VrmlRenderContext context)
+{
     Viewer::Object obj = 0;
 
-    if (rc.getDrawBSpheres()) {
+    if (context.getDrawBSpheres()) {
         const BSphere* bs = (BSphere*)this->getBVolume();
-        viewer->drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
+        viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
     }
 
     if (this->coord.get() && this->coordIndex.getLength() > 0) {
@@ -6389,13 +6401,13 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
             optMask |= Viewer::MASK_NORMAL_PER_VERTEX;
         }
 
-        obj = viewer->insertShell(optMask,
-                                  nvert, &coord.getElement(0)[0],
-                                  this->coordIndex.getLength(),
-                                  &this->coordIndex.getElement(0),
-                                  tc, ntci, tci,
-                                  normal, nni, ni,
-                                  color, nci, ci);
+        obj = viewer.insertShell(optMask,
+                                 nvert, &coord.getElement(0)[0],
+                                 this->coordIndex.getLength(),
+                                 &this->coordIndex.getElement(0),
+                                 tc, ntci, tci,
+                                 normal, nni, ni,
+                                 color, nci, ci);
     }
 
     if (this->color.get())      { this->color.get()->clearModified(); }
@@ -6619,8 +6631,9 @@ IndexedLineSet::~IndexedLineSet() throw () {}
 /**
  * @todo colors
  */
-Viewer::Object IndexedLineSet::insertGeometry(Viewer * viewer,
-                                              VrmlRenderContext rc) {
+Viewer::Object IndexedLineSet::insertGeometry(Viewer & viewer,
+                                              const VrmlRenderContext context)
+{
     Viewer::Object obj = 0;
     if (this->coord.get() && this->coordIndex.getLength() > 0) {
         const MFVec3f & coord = this->coord.get()->toCoordinate()->getPoint();
@@ -6636,17 +6649,17 @@ Viewer::Object IndexedLineSet::insertGeometry(Viewer * viewer,
             if (nci) { ci = &this->colorIndex.getElement(0); }
         }
 
-        obj =  viewer->insertLineSet(nvert,
-                                     (coord.getLength() > 0)
+        obj =  viewer.insertLineSet(nvert,
+                                    (coord.getLength() > 0)
                                         ? &coord.getElement(0)[0]
                                         : 0,
-                                     this->coordIndex.getLength(),
-                                     (this->coordIndex.getLength() > 0)
+                                    this->coordIndex.getLength(),
+                                    (this->coordIndex.getLength() > 0)
                                         ? &this->coordIndex.getElement(0)
                                         : 0,
-                                     this->colorPerVertex.get(),
-                                     color,
-                                     nci, ci);
+                                    this->colorPerVertex.get(),
+                                    color,
+                                    nci, ci);
 
     }
 
@@ -6756,9 +6769,9 @@ Inline::~Inline() throw () {}
 /**
  * @brief Render the node.
  */
-void Inline::render(Viewer * const viewer, const VrmlRenderContext rc) {
+void Inline::render(Viewer & viewer, const VrmlRenderContext context) {
     this->load();
-    if (this->inlineScene) { this->inlineScene->render(*viewer, rc); }
+    if (this->inlineScene) { this->inlineScene->render(viewer, context); }
 }
 
 Inline * Inline::toInline() const { return const_cast<Inline *>(this); }
@@ -6933,15 +6946,14 @@ void LOD::clearFlags() {
 /**
  * Render one of the children
  */
-void LOD::render(Viewer *viewer, VrmlRenderContext rc) {
-    clearModified();
+void LOD::render(Viewer & viewer, const VrmlRenderContext context)
+{
+    this->clearModified();
     if (this->level.getLength() <= 0) { return; }
 
     float x, y, z;
 
-// viewer position w.r.t local coordinate system
-//  viewer->getPosition( &x, &y, &z );
-    VrmlMatrix MV = rc.getMatrix();
+    VrmlMatrix MV = context.getMatrix();
     MV = MV.affine_inverse();
     x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
     float dx = x - this->center.getX();
@@ -6962,7 +6974,7 @@ void LOD::render(Viewer *viewer, VrmlRenderContext rc) {
     // Not enough levels...
     if (i >= this->level.getLength()) { i = this->level.getLength() - 1; }
 
-    this->level.getElement(i)->render(viewer, rc);
+    this->level.getElement(i)->render(viewer, context);
 
     // Don't re-render on their accounts
     for (i = 0; i < this->level.getLength(); ++i) {
@@ -7584,20 +7596,21 @@ void MovieTexture::update(const double currentTime) {
 /**
  * Render a frame if there is one available.
  */
-void MovieTexture::render(Viewer * const viewer, VrmlRenderContext rc) {
+void MovieTexture::render(Viewer & viewer, const VrmlRenderContext context)
+{
     if (!this->image || this->frame < 0) { return; }
 
     unsigned char * pix = this->image->pixels(this->frame);
 
     if (this->frame != this->lastFrame && this->texObject) {
-        viewer->removeTextureObject(this->texObject);
+        viewer.removeTextureObject(this->texObject);
         this->texObject = 0;
     }
 
     if (!pix) {
         this->frame = -1;
     } else if (this->texObject) {
-        viewer->insertTextureReference(this->texObject, this->image->nc());
+        viewer.insertTextureReference(this->texObject, this->image->nc());
     } else {
         // Ensure image dimensions are powers of 2 (move to NodeTexture...)
         int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
@@ -7611,23 +7624,23 @@ void MovieTexture::render(Viewer * const viewer, VrmlRenderContext rc) {
         if (i > 0 && j > 0) {
             // Always scale images down in size and reuse the same pixel memory.
             if (w != sizes[i - 1] || h != sizes[j - 1]) {
-                viewer->scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
-                                     this->image->nc(), pix);
+                viewer.scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
+                                    this->image->nc(), pix);
                 this->image->setSize(sizes[i - 1], sizes[j - 1]);
             }
 
-            this->texObject = viewer->insertTexture(this->image->w(),
-                                                    this->image->h(),
-                                                    this->image->nc(),
-                                                    this->repeatS.get(),
-                                                    this->repeatT.get(),
-                                                    pix,
-                                                    !this->active.get());
+            this->texObject = viewer.insertTexture(this->image->w(),
+                                                   this->image->h(),
+                                                   this->image->nc(),
+                                                   this->repeatS.get(),
+                                                   this->repeatT.get(),
+                                                   pix,
+                                                   !this->active.get());
         }
     }
 
     this->lastFrame = this->frame;
-    clearModified();
+    this->clearModified();
 }
 
 size_t MovieTexture::nComponents() const throw () {
@@ -8648,22 +8661,24 @@ PixelTexture::PixelTexture(const NodeType & nodeType,
 /**
  * @brief Destructor.
  */
-PixelTexture::~PixelTexture() throw () {
-    // viewer->removeTextureObject(this->texObject); ...
+PixelTexture::~PixelTexture() throw ()
+{
+    // viewer.removeTextureObject(this->texObject); ...
 }
 
-void PixelTexture::render(Viewer * const viewer, VrmlRenderContext rc) {
+void PixelTexture::render(Viewer & viewer, const VrmlRenderContext context)
+{
     if (isModified()) {
         if (this->texObject) {
-            viewer->removeTextureObject(this->texObject);
+            viewer.removeTextureObject(this->texObject);
             this->texObject = 0;
         }
     }
 
     if (this->image.getPixels()) {
         if (this->texObject) {
-            viewer->insertTextureReference(this->texObject,
-                                           this->image.getComponents());
+            viewer.insertTextureReference(this->texObject,
+                                          this->image.getComponents());
         } else {
             // Ensure the image dimensions are powers of two
             const int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
@@ -8691,26 +8706,25 @@ void PixelTexture::render(Viewer * const viewer, VrmlRenderContext rc) {
                               this->image.getPixels() + numBytes,
                               pixels);
 
-                    viewer->scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
-                                         this->image.getComponents(), pixels);
+                    viewer.scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
+                                        this->image.getComponents(), pixels);
                     this->image.set(sizes[i - 1], sizes[j - 1],
                                     this->image.getComponents(), pixels);
                     delete [] pixels;
                 }
 
                 this->texObject =
-                        viewer->insertTexture(this->image.getWidth(),
-                                              this->image.getHeight(),
-                                              this->image.getComponents(),
-                                              this->repeatS.get(),
-                                              this->repeatT.get(),
-                                              this->image.getPixels(),
-                                              true);
+                        viewer.insertTexture(this->image.getWidth(),
+                                             this->image.getHeight(),
+                                             this->image.getComponents(),
+                                             this->repeatS.get(),
+                                             this->repeatT.get(),
+                                             this->image.getPixels(),
+                                             true);
             }
         }
     }
-
-    clearModified();
+    this->clearModified();
 }
 
 size_t PixelTexture::nComponents() const throw () {
@@ -8910,8 +8924,9 @@ Node* PlaneSensor::getParentTransform() { return this->parentTransform; }
  * Store the ModelView matrix which is calculated at the time of rendering
  * in render-context. This matrix will be in use at the time of activation.
  */
-void PlaneSensor::render(Viewer* v, VrmlRenderContext rc) {
-    setMVMatrix(rc.getMatrix());
+void PlaneSensor::render(Viewer & viewer, const VrmlRenderContext context)
+{
+    this->setMVMatrix(context.getMatrix());
 }
 
 /**
@@ -9405,13 +9420,14 @@ void PointSet::clearFlags() {
     if (this->coord.get()) { this->coord.get()->clearFlags(); }
 }
 
-Viewer::Object PointSet::insertGeometry(Viewer * const viewer,
-                                        VrmlRenderContext rc) {
+Viewer::Object PointSet::insertGeometry(Viewer & viewer,
+                                        const VrmlRenderContext context)
+{
     Viewer::Object obj = 0;
 
-    if (rc.getDrawBSpheres()) {
+    if (context.getDrawBSpheres()) {
         const BSphere * bs = (const BSphere*)this->getBVolume();
-        viewer->drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
+        viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
     }
 
     if (this->coord.get()) {
@@ -9425,11 +9441,11 @@ Viewer::Object PointSet::insertGeometry(Viewer * const viewer,
 
         const MFVec3f & coord = this->coord.get()->toCoordinate()->getPoint();
 
-        obj = viewer->insertPointSet(coord.getLength(),
-                                     (coord.getLength() > 0)
+        obj = viewer.insertPointSet(coord.getLength(),
+                                    (coord.getLength() > 0)
                                         ? &coord.getElement(0)[0]
                                         : 0,
-                                     color);
+                                    color);
     }
 
     if (this->color.get()) { this->color.get()->clearModified(); }
@@ -9830,20 +9846,20 @@ ProximitySensor::~ProximitySensor() throw () {}
  * coordinate system and it could be transformed all the way down the
  * scenegraph, but that sounds painful.
  */
-void ProximitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
+void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
+{
     using OpenVRML_::fpequal;
 
     if (this->enabled.get()
             && this->size.getX() > 0.0
             && this->size.getY() > 0.0
             && this->size.getZ() > 0.0
-            && viewer->getRenderMode() == Viewer::RENDER_MODE_DRAW) {
+            && viewer.getRenderMode() == Viewer::RENDER_MODE_DRAW) {
         SFTime timeNow(theSystem->time());
         float x, y, z;
 
-      // Is viewer inside the box?
-//      viewer->getPosition( &x, &y, &z );
-        VrmlMatrix MV = rc.getMatrix();
+        // Is viewer inside the box?
+        VrmlMatrix MV = context.getMatrix();
         MV = MV.affine_inverse();
         x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
         bool inside = (fabs(x - this->center.getX()) <= 0.5 * this->size.getX()
@@ -9893,7 +9909,7 @@ void ProximitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
             }
         }
     } else {
-        clearModified();
+        this->clearModified();
     }
 }
 
@@ -10232,9 +10248,10 @@ void Shape::clearFlags() {
     if (this->geometry.get()) { this->geometry.get()->clearFlags(); }
 }
 
-void Shape::render(Viewer * const viewer, VrmlRenderContext rc) {
+void Shape::render(Viewer & viewer, const VrmlRenderContext context)
+{
     if (this->viewerObject && isModified()) {
-        viewer->removeObject(this->viewerObject);
+        viewer.removeObject(this->viewerObject);
         this->viewerObject = 0;
     }
 
@@ -10243,19 +10260,19 @@ void Shape::render(Viewer * const viewer, VrmlRenderContext rc) {
                      : 0;
 
     if (this->viewerObject) {
-        viewer->insertReference(this->viewerObject);
+        viewer.insertReference(this->viewerObject);
     } else if (g) {
-        this->viewerObject = viewer->beginObject(this->getId().c_str());
+        this->viewerObject = viewer.beginObject(this->getId().c_str());
 
         // Don't care what color it is if we are picking
-        bool picking = (Viewer::RENDER_MODE_PICK == viewer->getRenderMode());
+        bool picking = (Viewer::RENDER_MODE_PICK == viewer.getRenderMode());
         if (!picking) {
             int nTexComponents = 0;
 
             if (!picking && this->appearance.get()
                     && this->appearance.get()->toAppearance()) {
                 AppearanceNode * a = this->appearance.get()->toAppearance();
-                a->render(viewer, rc);
+                a->render(viewer, context);
 
                 if (a->getTexture().get()
                         && a->getTexture().get()->toTexture()) {
@@ -10263,22 +10280,21 @@ void Shape::render(Viewer * const viewer, VrmlRenderContext rc) {
                                         ->nComponents();
                 }
             } else {
-                viewer->setColor(1.0, 1.0, 1.0); // default object color
-                viewer->enableLighting(false);  // turn lighting off
+                viewer.setColor(1.0, 1.0, 1.0); // default object color
+                viewer.enableLighting(false);  // turn lighting off
             }
 
             // hack for opengl material mode
-            viewer->setMaterialMode(nTexComponents, g->getColor());
+            viewer.setMaterialMode(nTexComponents, g->getColor());
         }
 
-        g->render(viewer, rc);
+        g->render(viewer, context);
 
-        viewer->endObject();
+        viewer.endObject();
     } else if (this->appearance.get()) {
         this->appearance.get()->clearModified();
     }
-
-    clearModified();
+    this->clearModified();
 }
 
 /**
@@ -10496,10 +10512,10 @@ void Sound::clearFlags() {
     if (this->source.get()) { this->source.get()->clearFlags(); }
 }
 
-void Sound::render(Viewer * const viewer, const VrmlRenderContext rc) {
+void Sound::render(Viewer & viewer, const VrmlRenderContext context) {
     // If this clip has been modified, update the internal data
     if (this->source.get() && this->source.get()->isModified()) {
-        this->source.get()->render(viewer, rc);
+        this->source.get()->render(viewer, context);
     }
 }
 
@@ -10719,9 +10735,10 @@ Sphere::Sphere(const NodeType & nodeType,
  */
 Sphere::~Sphere() throw () {}
 
-Viewer::Object Sphere::insertGeometry(Viewer * const viewer,
-                                      const VrmlRenderContext rc) {
-    return viewer->insertSphere(this->radius.get());
+Viewer::Object Sphere::insertGeometry(Viewer & viewer,
+                                      const VrmlRenderContext context)
+{
+    return viewer.insertSphere(this->radius.get());
 }
 
 const BVolume * Sphere::getBVolume() const {
@@ -10860,11 +10877,13 @@ SphereSensor* SphereSensor::toSphereSensor() const {    // mgiger 6/16/00
     return (SphereSensor*) this;
 }
 
-// Store the ModelView matrix which is calculated at the time of rendering
-// in render-context. This matrix will be in use at the time of activation
-
-void SphereSensor::render(Viewer* v, VrmlRenderContext rc) {
-    setMVMatrix(rc.getMatrix());
+/**
+ * Store the ModelView matrix which is calculated at the time of rendering
+ * in render-context. This matrix will be in use at the time of activation
+ */
+void SphereSensor::render(Viewer & viewer, const VrmlRenderContext context)
+{
+    this->setMVMatrix(context.getMatrix());
 }
 
 void SphereSensor::activate(double timeStamp, bool isActive, double *p) {
@@ -11412,12 +11431,13 @@ void Switch::clearFlags() {
 /**
  * @brief Render the selected child
  */
-void Switch::render(Viewer * const viewer, const VrmlRenderContext rc) {
+void Switch::render(Viewer & viewer, const VrmlRenderContext context)
+{
     long w = this->whichChoice.get();
     if (w >= 0 && size_t(w) < this->choice.getLength()) {
-        this->choice.getElement(w)->render(viewer, rc);
+        this->choice.getElement(w)->render(viewer, context);
     }
-    clearModified();
+    this->clearModified();
 }
 
 const BVolume* Switch::getBVolume() const {
@@ -11484,6 +11504,14 @@ void Switch::processSet_whichChoice(const FieldValue & sfint32,
  * @class TextClass
  *
  * @brief Class object for Text nodes.
+ */
+
+/**
+ * @var FT_Library TextClass::freeTypeLibrary
+ *
+ * @brief FreeType library handle.
+ *
+ * @see http://freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_Library
  */
 
 /**
@@ -11616,6 +11644,351 @@ const NodeTypePtr TextClass::createType(const std::string & id,
  */
 
 /**
+ * @struct Text::GlyphGeometry
+ *
+ * @brief Used to hold the geometry of individual glyphs.
+ */
+
+/**
+ * @var MFVec2f Text::GlyphGeometry::coord
+ *
+ * @brief Glyph coordinates.
+ */
+
+/**
+ * @var MFInt32 Text::GlyphGeometry::coordIndex
+ *
+ * @brief Glyph coordinate indices.
+ */
+
+/**
+ * @var float Text::GlyphGeometry::advanceWidth
+ *
+ * @brief The distance the pen should advance horizontally after drawing the
+ *      glyph.
+ */
+
+/**
+ * @var float Text::GlyphGeometry::advanceHeight
+ *
+ * @brief The distance the pen should advance vertically after drawing the
+ *      glyph.
+ */
+
+# ifdef OPENVRML_ENABLE_TEXT_NODE
+namespace {
+
+    const float (* getClosestVertex_(const MFVec2f & contour,
+                                     const float (&point)[2]) throw ())[2]
+    {
+        assert(contour.getLength() > 1);
+        const float (*result)[2] = 0;
+        float shortestDistance = std::numeric_limits<float>::max();
+        for (size_t i = 0; i < contour.getLength(); ++i) {
+            const float (&element)[2] = contour.getElement(i);
+            const float x = point[0] - element[0];
+            const float y = point[1] - element[1];
+            const float distance = sqrt(x * x + y * y);
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                result = &element;
+            }
+        }
+        assert(result);
+        return result;
+    }
+    
+    bool insideContour_(const MFVec2f & contour, const float (&point)[2])
+        throw ()
+    {
+        bool result = false;
+        const size_t nvert = contour.getLength();
+        for (size_t i = 0, j = nvert - 1; i < nvert; j = i++) {
+            const float (&vi)[2] = contour.getElement(i);
+            const float (&vj)[2] = contour.getElement(j);
+            if ((((vi[1] <= point[1]) && (point[1] < vj[1]))
+                        || ((vj[1] <= point[1]) && (point[1] < vi[1])))
+                    && (point[0] < (vj[0] - vi[0])
+                        * (point[1] - vi[1]) / (vj[1] - vi[1]) + vi[0])) {
+                result = !result;
+            }
+        }
+        return result;
+    }
+    
+    enum ContourType_ { exterior_, interior_ };
+
+    ContourType_ getType(const MFVec2f & contour,
+                         const std::vector<MFVec2f> & contours)
+        throw ()
+    {
+        using std::vector;
+        
+        assert(contour.getLength() > 0);
+        const float (&vertex)[2] = contour.getElement(0);
+        
+        bool isInterior = false;
+        for (vector<MFVec2f>::const_iterator testContour = contours.begin();
+                testContour != contours.end(); ++testContour) {
+            if (&*testContour == &contour) { continue; }
+            if (insideContour_(*testContour, vertex)) {
+                isInterior = !isInterior;
+            }
+        }
+        return isInterior ? interior_ : exterior_;
+    }
+    
+    struct Polygon_ {
+        const MFVec2f * exterior;
+        std::vector<const MFVec2f *> interiors;
+    };
+    
+    struct Inside_ : std::binary_function {
+        bool operator()(const MFVec2f * const lhs,
+                        const MFVec2f * const rhs) const
+        {
+            assert(lhs);
+            assert(rhs);
+            assert(lhs->getLength() > 0);
+            //
+            // Assume contours don't intersect. So if one point on lhs is
+            // inside rhs, then assume all of lhs is inside rhs.
+            //
+            return insideContour_(*rhs, lhs->getElement(0));
+        }
+    };
+    
+    const std::vector<Polygon_>
+    getPolygons_(const std::vector<MFVec2f> & contours)
+        throw (std::bad_alloc)
+    {
+        using std::vector;
+        typedef std::multiset<const MFVec2f *, Inside_> Contours;
+        
+        //
+        // First, divide the contours into interior and exterior contours.
+        //
+        Contours interiors, exteriors;
+        for (vector<MFVec2f>::const_iterator contour = contours.begin();
+                contour != contours.end(); ++contour) {
+            switch (getType(*contour, contours)) {
+            case interior_:
+                interiors.insert(&*contour);
+                break;
+            case exterior_:
+                exteriors.insert(&*contour);
+                break;
+            default:
+                assert(false);
+            }
+        }
+
+        //
+        // For each exterior, find its associated interiors and group them in
+        // a Polygon_.
+        //
+        vector<Polygon_> polygons;
+        while (!exteriors.empty()) {
+            Polygon_ polygon;
+            polygon.exterior = *exteriors.begin();
+            Contours::iterator interior = interiors.begin();
+            while (interior != interiors.end()) {
+                assert((*interior)->getLength() > 0);
+                if (insideContour_(*polygon.exterior,
+                                   (*interior)->getElement(0))) {
+                    polygon.interiors.push_back(*interior);
+                    Contours::iterator next = interior;
+                    ++next;
+                    interiors.erase(interior);
+                    interior = next;
+                } else {
+                    ++interior;
+                }
+            }
+            polygons.push_back(polygon);
+            exteriors.erase(exteriors.begin());
+        }
+        return polygons;
+    }
+    
+    long getVertexIndex_(const MFVec2f & vertices, const float (&vertex)[2])
+        throw ()
+    {
+        using OpenVRML_::fpequal;
+        for (size_t i = 0; i < vertices.getLength(); ++i) {
+            const float (&element)[2] = vertices.getElement(i);
+            if (fpequal(vertex[0], element[0])
+                    && fpequal(vertex[1], element[1])) {
+                return i;
+            }
+        }
+        return -1;
+    }
+}
+# endif // OPENVRML_ENABLE_TEXT_NODE
+
+/**
+ * @brief Construct from a set of contours.
+ *
+ * @param contours      a vector of closed contours that make up the glyph's
+ *                      outline.
+ * @param advanceWidth  the distance the pen should advance horizontally after
+ *                      drawing the glyph.
+ * @param advanceHeight the distance the pen should advance vertically after
+ *                      drawing the glyph.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
+                                   const float advanceWidth,
+                                   const float advanceHeight)
+    throw (std::bad_alloc):
+    advanceWidth(advanceWidth),
+    advanceHeight(advanceHeight)
+{
+# ifdef OPENVRML_ENABLE_TEXT_NODE
+    using std::vector;
+
+    const vector<Polygon_> polygons = getPolygons_(contours);
+    for (vector<Polygon_>::const_iterator polygon = polygons.begin();
+            polygon != polygons.end(); ++polygon) {
+        //
+        // connectionMap is keyed on a pointer to a vertex on the exterior
+        // contour, and maps to a pointer to the interior contour whose
+        // first vertex is closest to the exterior vertex.
+        //
+        typedef std::multimap<const float (*)[2], const MFVec2f *> ConnectionMap;
+        ConnectionMap connectionMap;
+
+        //
+        // Fill connectionMap. For each interior contour, find the exterior
+        // vertex that is closes to the first vertex in the interior
+        // contour, and the put the pair in the map.
+        //
+        for (vector<const MFVec2f *>::const_iterator interior =
+                polygon->interiors.begin();
+                interior != polygon->interiors.end();
+                ++interior) {
+            assert(*interior);
+            assert((*interior)->getLength() > 0);
+            const float (* const exteriorVertex)[2] =
+                    getClosestVertex_(*polygon->exterior,
+                                      (*interior)->getElement(0));
+            assert(exteriorVertex);
+            const ConnectionMap::value_type value(exteriorVertex, *interior);
+            connectionMap.insert(value);
+        }
+        
+        //
+        // Finally, draw the polygon.
+        //
+        for (size_t i = 0; i < polygon->exterior->getLength(); ++i) {
+            const float (&exteriorVertex)[2] = polygon->exterior->getElement(i);
+            long index = getVertexIndex_(this->coord, exteriorVertex);
+            if (index > -1) {
+                this->coordIndex.addElement(index);
+            } else {
+                this->coord.addElement(exteriorVertex);
+                assert(this->coord.getLength() > 0);
+                index = this->coord.getLength() - 1;
+                this->coordIndex.addElement(index);
+            }
+            ConnectionMap::iterator pos;
+            while ((pos = connectionMap.find(&exteriorVertex))
+                    != connectionMap.end()) {
+                for (int i = pos->second->getLength() - 1; i > -1; --i) {
+                    const float (&interiorVertex)[2] =
+                            pos->second->getElement(i);
+                    const long index = getVertexIndex_(this->coord,
+                                                       interiorVertex);
+                    if (index > -1) {
+                        this->coordIndex.addElement(index);
+                    } else {
+                        this->coord.addElement(interiorVertex);
+                        assert(this->coord.getLength() > 0);
+                        this->coordIndex
+                            .addElement(this->coord.getLength() - 1);
+                    }
+                }
+                this->coordIndex.addElement(index);
+                connectionMap.erase(pos);
+            }
+        }
+        assert(connectionMap.empty());
+        this->coordIndex.addElement(-1);
+    }
+# endif // OPENVRML_ENABLE_TEXT_NODE
+}
+
+/**
+ * @struct Text::TextGeometry
+ *
+ * @brief Holds the text geometry.
+ */
+
+/**
+ * @var MFVec3f Text::TextGeometry::coord
+ *
+ * @brief Text geometry coordinates.
+ */
+
+/**
+ * @var MFInt32 Text::TextGeometry::coordIndex
+ *
+ * @brief Text geometry coordinate indices.
+ */
+
+/**
+ * @var MFVec3f Text::TextGeometry::normal
+ *
+ * @brief Text geometry normals.
+ */
+
+/**
+ * @typedef Text::Ucs4String
+ *
+ * @brief A vector of FcChar32 vectors.
+ */
+
+/**
+ * @typedef Text::GlyphGeometryMap
+ *
+ * @brief Maps FT_UInts to GlyphGeometry.
+ *
+ * @see http://freetype.org/freetype2/docs/reference/ft2-basic_types.html#FT_UInt
+ */
+
+/**
+ * @var Text::Ucs4String Text::ucs4String
+ *
+ * @brief UCS-4 equivalent of the (UTF-8) data in @a string.
+ */
+
+/**
+ * @var FT_Face Text::face
+ *
+ * @brief Handle to the font face.
+ *
+ * @see http://freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_Face
+ */
+
+/**
+ * @var Text::GlyphGeometryMap Text::glyphGeometryMap
+ *
+ * @brief Map of glyph indices to GlyphGeometry.
+ *
+ * GlyphGeometry instances are created as needed, as new glyphs are encountered.
+ * Once they are created, they are cached in the glyphGeometryMap for rapid
+ * retrieval the next time the glyph is encountered.
+ */
+
+/**
+ * @var Text::TextGeometry Text::textGeometry
+ *
+ * @brief The text geometry.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType      the NodeType associated with the instance.
@@ -11658,28 +12031,40 @@ void Text::clearFlags() {
     if (this->fontStyle.get()) { this->fontStyle.get()->clearFlags(); }
 }
 
-Viewer::Object Text::insertGeometry(Viewer * const viewer, VrmlRenderContext rc)
+/**
+ * @brief Insert this geometry into @p viewer's display list.
+ *
+ * @param viewer    a Viewer.
+ * @param context   the rendering context.
+ */
+Viewer::Object Text::insertGeometry(Viewer & viewer,
+                                    const VrmlRenderContext context)
 {
     const Viewer::Object retval =
-            viewer->insertShell(Viewer::MASK_CCW,
-                                this->textGeometry.coord.getLength(),
-                                (this->textGeometry.coord.getLength() > 0)
+            viewer.insertShell(Viewer::MASK_CCW,
+                               this->textGeometry.coord.getLength(),
+                               (this->textGeometry.coord.getLength() > 0)
                                     ? &this->textGeometry.coord.getElement(0)[0]
                                     : 0,
-                                this->textGeometry.coordIndex.getLength(),
-                                (this->textGeometry.coordIndex.getLength() > 0)
+                               this->textGeometry.coordIndex.getLength(),
+                               (this->textGeometry.coordIndex.getLength() > 0)
                                     ? &this->textGeometry.coordIndex.getElement(0)
                                     : 0,
-                                0, 0, 0,
-                                (this->textGeometry.normal.getLength() > 0)
+                               0, 0, 0,
+                               (this->textGeometry.normal.getLength() > 0)
                                     ? &this->textGeometry.normal.getElement(0)[0]
                                     : 0,
-                                0, 0,
-                                0, 0, 0);
+                               0, 0,
+                               0, 0, 0);
     if (this->fontStyle.get()) { this->fontStyle.get()->clearModified(); }
     return retval;
 }
 
+/**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
 void Text::initializeImpl(const double timestamp) throw ()
 {
     this->updateUcs4();
@@ -11764,6 +12149,11 @@ void Text::processSet_maxExtent(const FieldValue & sffloat,
     this->emitEvent("maxExtent_changed", this->maxExtent, timestamp);
 }
 
+/**
+ * @brief Called when @a string changes to update the UCS-4 text.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
 void Text::updateUcs4() throw (std::bad_alloc)
 {
 # ifdef OPENVRML_ENABLE_TEXT_NODE
@@ -11799,6 +12189,11 @@ void Text::updateUcs4() throw (std::bad_alloc)
 # endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
+/**
+ * @brief Called when @a fontStyle changes to update the font face.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
 void Text::updateFace() throw (std::bad_alloc)
 {
 # ifdef OPENVRML_ENABLE_TEXT_NODE
@@ -12124,6 +12519,11 @@ namespace {
 }
 # endif // OPENVRML_ENABLE_TEXT_NODE
 
+/**
+ * @brief Called to update @a textGeometry.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
 void Text::updateGeometry() throw (std::bad_alloc)
 {
 # ifdef OPENVRML_ENABLE_TEXT_NODE
@@ -12424,239 +12824,6 @@ void Text::updateGeometry() throw (std::bad_alloc)
 # endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
-# ifdef OPENVRML_ENABLE_TEXT_NODE
-namespace {
-
-    const float (* getClosestVertex_(const MFVec2f & contour,
-                                     const float (&point)[2]) throw ())[2]
-    {
-        assert(contour.getLength() > 1);
-        const float (*result)[2] = 0;
-        float shortestDistance = std::numeric_limits<float>::max();
-        for (size_t i = 0; i < contour.getLength(); ++i) {
-            const float (&element)[2] = contour.getElement(i);
-            const float x = point[0] - element[0];
-            const float y = point[1] - element[1];
-            const float distance = sqrt(x * x + y * y);
-            if (distance < shortestDistance) {
-                shortestDistance = distance;
-                result = &element;
-            }
-        }
-        assert(result);
-        return result;
-    }
-    
-    bool insideContour_(const MFVec2f & contour, const float (&point)[2])
-        throw ()
-    {
-        bool result = false;
-        const size_t nvert = contour.getLength();
-        for (size_t i = 0, j = nvert - 1; i < nvert; j = i++) {
-            const float (&vi)[2] = contour.getElement(i);
-            const float (&vj)[2] = contour.getElement(j);
-            if ((((vi[1] <= point[1]) && (point[1] < vj[1]))
-                        || ((vj[1] <= point[1]) && (point[1] < vi[1])))
-                    && (point[0] < (vj[0] - vi[0])
-                        * (point[1] - vi[1]) / (vj[1] - vi[1]) + vi[0])) {
-                result = !result;
-            }
-        }
-        return result;
-    }
-    
-    enum ContourType_ { exterior_, interior_ };
-
-    ContourType_ getType(const MFVec2f & contour,
-                         const std::vector<MFVec2f> & contours)
-        throw ()
-    {
-        using std::vector;
-        
-        assert(contour.getLength() > 0);
-        const float (&vertex)[2] = contour.getElement(0);
-        
-        bool isInterior = false;
-        for (vector<MFVec2f>::const_iterator testContour = contours.begin();
-                testContour != contours.end(); ++testContour) {
-            if (&*testContour == &contour) { continue; }
-            if (insideContour_(*testContour, vertex)) {
-                isInterior = !isInterior;
-            }
-        }
-        return isInterior ? interior_ : exterior_;
-    }
-    
-    struct Polygon_ {
-        const MFVec2f * exterior;
-        std::vector<const MFVec2f *> interiors;
-    };
-    
-    struct Inside_ : std::binary_function {
-        bool operator()(const MFVec2f * const lhs,
-                        const MFVec2f * const rhs) const
-        {
-            assert(lhs);
-            assert(rhs);
-            assert(lhs->getLength() > 0);
-            //
-            // Assume contours don't intersect. So if one point on lhs is
-            // inside rhs, then assume all of lhs is inside rhs.
-            //
-            return insideContour_(*rhs, lhs->getElement(0));
-        }
-    };
-    
-    const std::vector<Polygon_>
-    getPolygons_(const std::vector<MFVec2f> & contours)
-        throw (std::bad_alloc)
-    {
-        using std::vector;
-        typedef std::multiset<const MFVec2f *, Inside_> Contours;
-        
-        //
-        // First, divide the contours into interior and exterior contours.
-        //
-        Contours interiors, exteriors;
-        for (vector<MFVec2f>::const_iterator contour = contours.begin();
-                contour != contours.end(); ++contour) {
-            switch (getType(*contour, contours)) {
-            case interior_:
-                interiors.insert(&*contour);
-                break;
-            case exterior_:
-                exteriors.insert(&*contour);
-                break;
-            default:
-                assert(false);
-            }
-        }
-
-        //
-        // For each exterior, find its associated interiors and group them in
-        // a Polygon_.
-        //
-        vector<Polygon_> polygons;
-        while (!exteriors.empty()) {
-            Polygon_ polygon;
-            polygon.exterior = *exteriors.begin();
-            Contours::iterator interior = interiors.begin();
-            while (interior != interiors.end()) {
-                assert((*interior)->getLength() > 0);
-                if (insideContour_(*polygon.exterior,
-                                   (*interior)->getElement(0))) {
-                    polygon.interiors.push_back(*interior);
-                    Contours::iterator next = interior;
-                    ++next;
-                    interiors.erase(interior);
-                    interior = next;
-                } else {
-                    ++interior;
-                }
-            }
-            polygons.push_back(polygon);
-            exteriors.erase(exteriors.begin());
-        }
-        return polygons;
-    }
-    
-    long getVertexIndex_(const MFVec2f & vertices, const float (&vertex)[2])
-        throw ()
-    {
-        using OpenVRML_::fpequal;
-        for (size_t i = 0; i < vertices.getLength(); ++i) {
-            const float (&element)[2] = vertices.getElement(i);
-            if (fpequal(vertex[0], element[0])
-                    && fpequal(vertex[1], element[1])) {
-                return i;
-            }
-        }
-        return -1;
-    }
-}
-# endif // OPENVRML_ENABLE_TEXT_NODE
-
-Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
-                                   const float advanceWidth,
-                                   const float advanceHeight)
-    throw (std::bad_alloc):
-    advanceWidth(advanceWidth),
-    advanceHeight(advanceHeight)
-{
-# ifdef OPENVRML_ENABLE_TEXT_NODE
-    using std::vector;
-
-    const vector<Polygon_> polygons = getPolygons_(contours);
-    for (vector<Polygon_>::const_iterator polygon = polygons.begin();
-            polygon != polygons.end(); ++polygon) {
-        //
-        // connectionMap is keyed on a pointer to a vertex on the exterior
-        // contour, and maps to a pointer to the interior contour whose
-        // first vertex is closest to the exterior vertex.
-        //
-        typedef std::multimap<const float (*)[2], const MFVec2f *> ConnectionMap;
-        ConnectionMap connectionMap;
-
-        //
-        // Fill connectionMap. For each interior contour, find the exterior
-        // vertex that is closes to the first vertex in the interior
-        // contour, and the put the pair in the map.
-        //
-        for (vector<const MFVec2f *>::const_iterator interior =
-                polygon->interiors.begin();
-                interior != polygon->interiors.end();
-                ++interior) {
-            assert(*interior);
-            assert((*interior)->getLength() > 0);
-            const float (* const exteriorVertex)[2] =
-                    getClosestVertex_(*polygon->exterior,
-                                      (*interior)->getElement(0));
-            assert(exteriorVertex);
-            const ConnectionMap::value_type value(exteriorVertex, *interior);
-            connectionMap.insert(value);
-        }
-        
-        //
-        // Finally, draw the polygon.
-        //
-        for (size_t i = 0; i < polygon->exterior->getLength(); ++i) {
-            const float (&exteriorVertex)[2] = polygon->exterior->getElement(i);
-            long index = getVertexIndex_(this->coord, exteriorVertex);
-            if (index > -1) {
-                this->coordIndex.addElement(index);
-            } else {
-                this->coord.addElement(exteriorVertex);
-                assert(this->coord.getLength() > 0);
-                index = this->coord.getLength() - 1;
-                this->coordIndex.addElement(index);
-            }
-            ConnectionMap::iterator pos;
-            while ((pos = connectionMap.find(&exteriorVertex))
-                    != connectionMap.end()) {
-                for (int i = pos->second->getLength() - 1; i > -1; --i) {
-                    const float (&interiorVertex)[2] =
-                            pos->second->getElement(i);
-                    const long index = getVertexIndex_(this->coord,
-                                                       interiorVertex);
-                    if (index > -1) {
-                        this->coordIndex.addElement(index);
-                    } else {
-                        this->coord.addElement(interiorVertex);
-                        assert(this->coord.getLength() > 0);
-                        this->coordIndex
-                            .addElement(this->coord.getLength() - 1);
-                    }
-                }
-                this->coordIndex.addElement(index);
-                connectionMap.erase(pos);
-            }
-        }
-        assert(connectionMap.empty());
-        this->coordIndex.addElement(-1);
-    }
-# endif // OPENVRML_ENABLE_TEXT_NODE
-}
-
 
 /**
  * @class TextureCoordinateClass
@@ -12927,15 +13094,15 @@ TextureTransform::~TextureTransform() throw ()
  * @brief Render the node.
  *
  * @param viewer    a Viewer.
- * @param rc        a rendering context.
+ * @param context   a rendering context.
  */
-void TextureTransform::render(Viewer * const viewer, VrmlRenderContext rc)
+void TextureTransform::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    viewer->setTextureTransform(this->center.get(),
-                                this->rotation.get(),
-                                this->scale.get(),
-                                this->translation.get() );
-    clearModified();
+    viewer.setTextureTransform(this->center.get(),
+                               this->rotation.get(),
+                               this->scale.get(),
+                               this->translation.get());
+    this->clearModified();
 }
 
 /**
@@ -13942,51 +14109,50 @@ Transform::~Transform() throw ()
  * @brief Render the Transform.
  *
  * @param viewer    a Viewer.
- * @param rc        the rendering context.
+ * @param context   the rendering context.
  */
-void Transform::render(Viewer * const viewer, VrmlRenderContext rc)
+void Transform::render(Viewer & viewer, VrmlRenderContext context)
 {
-    if (rc.getCullFlag() != BVolume::inside) {
+    if (context.getCullFlag() != BVolume::inside) {
         const BSphere * bs = (BSphere*)this->getBVolume();
         BSphere bv_copy(*bs);
-        bv_copy.transform(rc.getMatrix());
-        BVolume::Intersection r = viewer->intersectViewVolume(bv_copy);
-        if (rc.getDrawBSpheres()) { viewer->drawBSphere(*bs, r); }
+        bv_copy.transform(context.getMatrix());
+        BVolume::Intersection r = viewer.intersectViewVolume(bv_copy);
+        if (context.getDrawBSpheres()) { viewer.drawBSphere(*bs, r); }
 
         if (r == BVolume::outside) { return; }
-        if (r == BVolume::inside) { rc.setCullFlag(BVolume::inside); }
+        if (r == BVolume::inside) { context.setCullFlag(BVolume::inside); }
 
-        //rc.setCullFlag(BVolume::BV_PARTIAL);
+        //context.setCullFlag(BVolume::BV_PARTIAL);
     }
 
     VrmlMatrix LM;
     synch_cached_matrix();
     this->getMatrix(LM);
-    VrmlMatrix new_LM = rc.getMatrix();
+    VrmlMatrix new_LM = context.getMatrix();
     new_LM = new_LM.multLeft(LM);
-    rc.setMatrix(new_LM);
+    context.setMatrix(new_LM);
 
     if (this->xformObject && isModified()) {
-        viewer->removeObject(this->xformObject);
+        viewer.removeObject(this->xformObject);
         this->xformObject = 0;
     }
 
     if (this->xformObject) {
-        viewer->insertReference(this->xformObject);
+        viewer.insertReference(this->xformObject);
     } else if (this->children.getLength() > 0) {
-        this->xformObject = viewer->beginObject(this->getId().c_str());
+        this->xformObject = viewer.beginObject(this->getId().c_str());
 
         // Apply transforms
         VrmlMatrix M;
         this->getMatrix(M);
-        viewer->transform(M);
+        viewer.transform(M);
         // Render children
-        this->Group::renderNoCull(viewer, rc);
+        this->Group::renderNoCull(viewer, context);
 
-        viewer->endObject();
+        viewer.endObject();
     }
-
-    clearModified();
+    this->clearModified();
 }
 
 /**
@@ -14847,12 +15013,12 @@ VisibilitySensor::~VisibilitySensor() throw ()
  * with respect to the accumulated transformations above it in the
  * scene graph. Move to update() when xforms are accumulated in Groups...
  */
-void VisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
+void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
 {
     using OpenVRML_::fpzero;
 
     if (this->enabled.get()) {
-        SFTime timeNow( theSystem->time() );
+        SFTime timeNow(theSystem->time());
         float xyz[2][3];
 
         // hack: enclose box in a sphere...
@@ -14862,7 +15028,7 @@ void VisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
         xyz[1][0] = this->center.getX() + this->size.getX();
         xyz[1][1] = this->center.getY() + this->size.getY();
         xyz[1][2] = this->center.getZ() + this->size.getZ();
-        viewer->transformPoints( 2, &xyz[0][0] );
+        viewer.transformPoints(2, &xyz[0][0]);
         float dx = xyz[1][0] - xyz[0][0];
         float dy = xyz[1][1] - xyz[0][1];
         float dz = xyz[1][2] - xyz[0][2];
@@ -14909,7 +15075,7 @@ void VisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
             this->emitEvent("exitTime", this->exitTime, timeNow.get());
         }
     } else {
-        clearModified();
+        this->clearModified();
     }
 }
 

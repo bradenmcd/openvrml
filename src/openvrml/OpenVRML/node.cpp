@@ -1603,12 +1603,12 @@ bool Node::isBVolumeDirty() const {
  * on some nodes. Alternative would be to break render out into a seperate
  * mixins class, but that's probably overkill.
  *
- * @param v     viewer implementation responsible for actually doing the
- *              drawing.
- * @param rc    generic context argument, holds things like the
- *              accumulated modelview transform.
+ * @param viewer    viewer implementation responsible for actually doing the
+ *                  drawing.
+ * @param context   generic context argument; holds things like the accumulated
+ *                  modelview transform.
  */
-void Node::render(Viewer* v, VrmlRenderContext rc)
+void Node::render(Viewer & viewer, VrmlRenderContext context)
 {
   //if (cull(v, c)) return;
   clearModified();

@@ -7,6 +7,14 @@
 
         * src/openvrml/OpenVRML/vrml97node.cpp:  More const fixes.
 
+        * src/openvrml/OpenVRML/VrmlRenderContext.cpp,
+          src/openvrml/OpenVRML/VrmlRenderContext.h,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h:  Changed Node::render to
+          take a Viewer & instead of a Viewer *.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,

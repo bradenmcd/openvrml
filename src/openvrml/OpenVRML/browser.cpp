@@ -228,7 +228,7 @@ namespace OpenVRML {
         virtual Vrml97Node::TouchSensor * toTouchSensor() const;
         virtual Vrml97Node::Viewpoint * toViewpoint() const;
 
-        virtual void render(Viewer *, VrmlRenderContext rc);
+        virtual void render(Viewer & viewer, VrmlRenderContext context);
 
     private:
         // Not copyable.
@@ -1974,7 +1974,7 @@ void Scene::initialize(const double timestamp) {
  */
 void Scene::render(Viewer & viewer, VrmlRenderContext context) {
     for (size_t i = 0; i < this->nodes.getLength(); ++i) {
-        this->nodes.getElement(i)->render(&viewer, context);
+        this->nodes.getElement(i)->render(viewer, context);
     }
 }
 
@@ -3356,9 +3356,9 @@ Vrml97Node::Viewpoint * ProtoNode::toViewpoint() const {
     return this->implNodes.getElement(0)->toViewpoint();
 }
 
-void ProtoNode::render(Viewer * const viewer, const VrmlRenderContext rc) {
+void ProtoNode::render(Viewer & viewer, const VrmlRenderContext context) {
     assert(this->implNodes.getElement(0));
-    this->implNodes.getElement(0)->render(viewer, rc);
+    this->implNodes.getElement(0)->render(viewer, context);
 }
 
 

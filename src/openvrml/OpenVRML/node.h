@@ -31,6 +31,7 @@
 #   include "fieldvalueptr.h"
 #   include "nodetypeptr.h"
 #   include "scopeptr.h"
+#   include "Viewer.h"
 #   include "VrmlRenderContext.h"
 
 namespace OpenVRML {
@@ -359,7 +360,7 @@ namespace OpenVRML {
 
         const RouteList & getRoutes() const;
 
-        virtual void render(Viewer *, VrmlRenderContext rc);
+        virtual void render(Viewer & viewer, VrmlRenderContext context);
 
 
         virtual void accumulateTransform(Node*);
@@ -514,6 +515,8 @@ namespace OpenVRML {
         virtual const GeometryNode * toGeometry() const throw ();
         virtual GeometryNode * toGeometry() throw ();
 
+        virtual Viewer::Object insertGeometry(Viewer & viewer,
+                                              VrmlRenderContext context) = 0;
         virtual const ColorNode * getColor() const throw ();
 
     protected:

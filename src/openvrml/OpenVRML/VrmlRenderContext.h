@@ -44,7 +44,7 @@ namespace OpenVRML {
         const VrmlMatrix & getMatrix() const;
         void setMatrix(VrmlMatrix & modelview);
         void setDrawBSpheres(bool f);
-        bool getDrawBSpheres();
+        bool getDrawBSpheres() const;
     };
 }
 

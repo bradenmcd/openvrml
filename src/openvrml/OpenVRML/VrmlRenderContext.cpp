@@ -184,10 +184,9 @@ VrmlRenderContext::getMatrix()const
  *
  * @returns the bounding volume debug flag. 
  */
-bool
-VrmlRenderContext::getDrawBSpheres()
+bool VrmlRenderContext::getDrawBSpheres() const
 {
-  return draw_bspheres;
+    return this->draw_bspheres;
 }
 
 /**
