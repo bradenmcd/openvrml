@@ -66,7 +66,8 @@ script::script(script_node & node):
 /**
  * @brief Destroy.
  */
-script::~script() {}
+script::~script()
+{}
 
 /**
  * @fn script & script::operator=(const script &)
@@ -5239,19 +5240,20 @@ MField::MFData::MFData(JsvalArray::size_type size):
     array(size)
 {}
 
-MField::MFData::~MFData() {}
+MField::MFData::~MFData()
+{}
 
 void MField::AddRoots(JSContext * const cx, JsvalArray & jsvalArray)
     throw (std::bad_alloc)
 {
+    using std::bad_alloc;
+
     size_t i;
     try {
         for (i = 0; i < jsvalArray.size(); ++i) {
-            if (!JS_AddRoot(cx, &jsvalArray[i])) {
-                throw std::bad_alloc();
-            }
+            if (!JS_AddRoot(cx, &jsvalArray[i])) { throw bad_alloc(); }
         }
-    } catch (std::bad_alloc &) {
+    } catch (bad_alloc &) {
         for (size_t j = 0; j < i - 1; ++j) {
             JS_RemoveRoot(cx, &jsvalArray[j]);
         }
@@ -5259,7 +5261,8 @@ void MField::AddRoots(JSContext * const cx, JsvalArray & jsvalArray)
     }
 }
 
-void MField::RemoveRoots(JSContext * const cx, JsvalArray & jsvalArray) throw ()
+void MField::RemoveRoots(JSContext * const cx, JsvalArray & jsvalArray)
+    throw ()
 {
     for (size_t i = 0; i < jsvalArray.size(); ++i) {
         const JSBool ok = JS_RemoveRoot(cx, &jsvalArray[i]);
@@ -5598,12 +5601,14 @@ JSBool MFJSDouble<Subclass>::initObject(JSContext * const cx,
         }
 
         if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
-        mfdata.release();
 
         //
-        // Protect array values from gc. Does not throw.
+        // Protect array values from gc.
         //
         AddRoots(cx, mfdata->array);
+
+        mfdata.release();
+
     } catch (std::bad_alloc &) {
         JS_ReportOutOfMemory(cx);
         return JS_FALSE;
