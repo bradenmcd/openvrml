@@ -25,7 +25,7 @@ endif
 
 AM_CFLAGS = -Wall -Wno-format
 INCLUDES = -I.
-libvrml97js_la_LDFLAGS = -version-info @LIBVRML97JS_SO_VERSION@
+libvrml97js_la_LDFLAGS = -version-info @VRML97JS_LIBRARY_VERSION@
 
 noinst_PROGRAMS = jscpucfg
 jscpucfg_SOURCES = jscpucfg.c
