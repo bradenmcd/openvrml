@@ -663,36 +663,6 @@ event_emitter & abstract_base::do_event_emitter(const std::string & id)
 }
 
 
-# if 0
-/**
- * @class abstract_geometry_node
- *
- * @brief Base class for all geometry nodes.
- */
-
-/**
- * @brief Construct.
- *
- * @param type  the node_type for the node.
- * @param scope     the scope the new node should belong to.
- */
-abstract_geometry_node::abstract_geometry_node(const node_type & type,
-                                               const scope_ptr & scope):
-    node(type, scope),
-    abstract_base(type, scope),
-    geometry_node(type, scope)
-{}
-
-/**
- * @brief Destroy.
- */
-abstract_geometry_node::~abstract_geometry_node() throw ()
-{
-    /* Need access to viewer to delete viewerObject...*/
-}
-# endif
-
-
 /**
  * @class abstract_indexed_set_node
  *
