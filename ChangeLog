@@ -1,6 +1,6 @@
 2002-06-17  Braden McDaniel  <braden@endoframe.com>
 
-        * configure.ac, README: Incremented version number to 0.13.0.
+        * configure.ac, README: Incremented version number to 0.12.1.
 
         * src/openvrml/OpenVRML/private.h,
           src/openvrml/OpenVRML/VrmlMatrix.h: #include <stddef.h>.
@@ -11,6 +11,13 @@
           src/openvrml/OpenVRML/node.cpp,
           src/openvrml/OpenVRML/vrml97node.cpp: Removed vestigal
           '#include "proto.h"'.
+
+        * src/openvrml/OpenVRML/Makefile.am: Updated libopenvrml
+          library version to 2:1:0.
+
+        * NEWS: Updates for 0.12.1 release.
+
+        * doc/openvrml.css: Changes for consistency with Web site.
 
 2002-06-16  Braden McDaniel  <braden@endoframe.com>
 

@@ -38,7 +38,6 @@ hr {
   background-color: red;
   color: red;
   height: 3px;
-  border-style: outset;
 }
 
 .sitenav, .body, .body th, .body td, .body caption {
@@ -85,7 +84,6 @@ hr {
   background-color: black;
   color: rgb(85%, 85%, 85%);
   display: block;
-  color: white;
   margin: 0;
   border: 0;
   padding: 0.25em;
