@@ -684,7 +684,7 @@ namespace {
 
     namespace JavaScript_ {
         
-        class Script : public ::Script {
+        class Script : public OpenVRML::Script {
             static JSRuntime * rt;
             static size_t nInstances;
 
@@ -1351,7 +1351,7 @@ namespace {
 
         Script::Script(ScriptNode & scriptNode, const std::string & source)
                 throw (std::bad_alloc):
-                ::Script(scriptNode), cx(0) {
+                OpenVRML::Script(scriptNode), cx(0) {
 
             //
             // Initialize the runtime.

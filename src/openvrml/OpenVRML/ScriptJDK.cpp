@@ -4236,7 +4236,7 @@ JNIEXPORT void JNICALL Java_vrml_Browser_loadURL
   VrmlScene* browser = (VrmlScene*) env->GetIntField(obj, fid);
 
   jsize entries = env->GetArrayLength(jUrlArray);
-  std::string urlArray[entries];
+  std::string *urlArray = new std::string[entries];
   for (pos = 0; pos < entries; pos++)
   {
     jstring jstr = (jstring) env->GetObjectArrayElement(jUrlArray, pos);
@@ -4248,7 +4248,7 @@ JNIEXPORT void JNICALL Java_vrml_Browser_loadURL
   MFString urls(entries, urlArray);
 
   entries = env->GetArrayLength(jParameterArray);
-  std::string parameterArray[entries];
+  std::string *parameterArray = new std::string[entries];
   for (pos = 0; pos < entries; pos++)
   {
     jstring jstr = (jstring) env->GetObjectArrayElement(jParameterArray, pos);

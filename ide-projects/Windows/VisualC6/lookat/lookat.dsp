@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MDd /w /W0 /Gm /GX /ZI /Od /I "..\..\..\..\src\openvrml-gl" /I "..\..\..\..\src\openvrml" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /YX /FD /c
+# ADD CPP /nologo /MDd /w /W0 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -98,11 +98,11 @@ SOURCE=..\..\..\..\src\lookat\lookat.cpp
 
 !IF  "$(CFG)" == "lookat - Win32 Release"
 
-# ADD CPP /w /W0 /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl"
+# ADD CPP /w /W0 /I "..\\" /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl"
 
 !ELSEIF  "$(CFG)" == "lookat - Win32 Debug"
 
-# ADD CPP /MDd /Ze /Gm /GR- /Od /D "OPENVRML_DLL_IMPORT"
+# ADD CPP /MDd /Ze /Gm /GR- /Od /I "..\..\..\..\src\openvrml" /D "OPENVRML_DLL_IMPORT"
 
 !ENDIF 
 
@@ -113,11 +113,13 @@ SOURCE=..\..\..\..\src\lookat\ViewerGlut.cpp
 
 !IF  "$(CFG)" == "lookat - Win32 Release"
 
-# ADD CPP /w /W0 /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl"
+# ADD CPP /w /W0 /I "..\\" /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl"
+# SUBTRACT CPP /YX
 
 !ELSEIF  "$(CFG)" == "lookat - Win32 Debug"
 
-# ADD CPP /D "OPENVRML_DLL_IMPORT"
+# ADD CPP /I "..\\" /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl" /D "OPENVRML_DLL_IMPORT"
+# SUBTRACT CPP /YX
 
 !ENDIF 
 

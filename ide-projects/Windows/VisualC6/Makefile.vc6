@@ -53,71 +53,90 @@ where: [target] may be any one of the following ...
 
    WITH_PNG = YES .................... - If it is YES, 
                then you must have libpng in your system and in 
-               winconfig.h you must define HAVE_LIBPNG. This is default. 
-               Otherwise build without PNG support (if you don't have 
-               libpng or don't want PNG support),by giving WITH_PNG = NO. 
-               You must undefine HAVE_LIBPNG in winconfig.h for this option.
+               winconfig.h you must define OPENVRML_HAVE_LIBPNG. 
+               This is default. Otherwise build without PNG support
+               (if you don't have libpng or don't want PNG support),
+               by giving WITH_PNG = NO. You must undefine 
+               OPENVRML_HAVE_LIBPNG in winconfig.h for this option.
 
    PNGLIB_DIR  .................... - required to be defined as 
-			the path where your PNGLIB is installed. 
-		   Default path is C:\User\lpng105, however you may provide 
-		   it as an environment variable by doing something like 
-		   this prior to execute nmake:
+               the path where your PNGLIB is installed. 
+               Default path is C:\User\lpng105, however you may provide 
+               it as an environment variable by doing something like 
+               this prior to execute nmake:
 
-			 set PNGLIB_DIR=C:\lpng105
+               set PNGLIB_DIR=C:\lpng105
                However it is not needed, if you give option WITH_PNG=NO
 
    WITH_JPEG = YES .................... - If it is YES, 
                then you must have libjpeg in your system and in
-               winconfig.h you must define HAVE_LIBJPEG. This is default.
-               Otherwise build without JPEG support (if you don't have 
-               libjpeg or don't want JPEG support), by giving 
-               WITH_JPEG = NO. You must undefine HAVE_LIBJPEG in 
-               winconfig.h for this option.
+               winconfig.h you must define OPENVRML_HAVE_LIBJPEG. 
+               This is default. Otherwise build without JPEG support
+               (if you don't have libjpeg or don't want JPEG support),
+               by giving WITH_JPEG = NO. You must undefine 
+               OPENVRML_HAVE_LIBJPEG in winconfig.h for this option.
 
 
-   JPEGLIB_DIR  .................... - required to be defined as the path
-		   where your JPEGLIB is installed. 
-		   Default path is C:\User\jpeg-6b, however you may provide
-		   it as an environment variable by doing something like 
-		   this prior to execute nmake:
+   JPEGLIB_DIR  .................... - required to be defined as the 
+               path where your JPEGLIB is installed. 
+               Default path is C:\User\jpeg-6b, however you may provide
+               it as an environment variable by doing something like 
+               this prior to execute nmake:
 
-			 set JPEGLIB_DIR=C:\jpeg-6b
+               set JPEGLIB_DIR=C:\jpeg-6b
                However it is not needed, if you give option WITH_JPEG=NO
 
    WITH_JAVASCRIPT = YES .................... - If it is YES, 
-               then you must have js32.lib and js32.dll from mozilla in your 
-               system and in winconfig.h you must define HAVE_MOZJS. This is 
-               default. Otherwise build without JAVASCRIPT support (if you 
-               don't have SpiderMonkey or don't want JAVASCRIPT support),
-               by giving WITH_JAVASCRIPT = NO. You must undefine HAVE_MOZJS in 
-               winconfig.h for this option.
+               then you must have js32.lib and js32.dll from mozilla 
+               in your system and in winconfig.h you must define 
+               OPENVRML_HAVE_SPIDERMONKEY. This is default. Otherwise 
+               build without JAVASCRIPT support (if you don't have 
+               SpiderMonkey or don't want JAVASCRIPT support),
+               by giving WITH_JAVASCRIPT = NO. You must undefine 
+               OPENVRML_HAVE_SPIDERMONKEY in winconfig.h for this option.
 
+   MOZILLALIB_DIR  .................... - required to be defined as 
+               the path where your MOZILLALIB is installed. 
+               Default path is C:\User\mozilla, however you may provide
+               it as an environment variable by doing something like 
+               this prior to execute nmake:
 
-   MOZILLALIB_DIR  .................... - required to be defined as the path
-		   where your MOZILLALIB is installed. 
-		   Default path is C:\User\mozilla, however you may provide
-		   it as an environment variable by doing something like 
-		   this prior to execute nmake:
-
-			 set MOZILLALIB_DIR=C:\mozilla
+               set MOZILLALIB_DIR=C:\mozilla
                However it is not needed, if you give option WITH_JAVASCRIPT=NO
+
+   WITH_JNI =  YES .................... - If it is YES, 
+               then you must have jvm.lib and jvm.dll from SUN  
+               Microsystems in your system and in winconfig.h you must 
+               define OPENVRML_HAVE_JNI. This is default. Otherwise 
+               build without JAVA support (if you don't have 
+               Java SDK from SUN or don't want JAVA support),
+               by giving WITH_JNI = NO. You must undefine 
+               OPENVRML_HAVE_JNI in winconfig.h for this option.
+
+   JAVA_DIR  .................... - required to be defined as 
+               the path where your Java SDK is installed. 
+               Default path is C:\User\jdk1.2.2, however you may provide
+               it as an environment variable by doing something like 
+               this prior to execute nmake:
+
+               set java_DIR=C:\jdk1.2.2
+               However it is not needed, if you give option WITH_JNI=NO
 
 
    GLUTLIB_DIR  .................... - required to be defined as the path
-		   where your GLUT is installed. 
-		   Default path is C:\User\glut, however you may provide
-		   it as an environment variable by doing something like 
-		   this prior to execute nmake:
+               where your GLUT is installed. Default path is 
+               C:\User\glut, however you may provide it as an 
+               environment variable by doing something like this prior 
+               to execute nmake:
 
-			 set GLUTLIB_DIR=C:\glut
+               set GLUTLIB_DIR=C:\glut
 
    ZLIB_DIR  .................... - required to be defined as the path
-		   where your ZLIB is installed. Default path is C:\User\zlib,
-		   however you may provide it as an environment variable by
-		   doing something like this prior to execute nmake:
+               where your ZLIB is installed. Default path is C:\User\zlib,
+               however you may provide it as an environment variable by
+               doing something like this prior to execute nmake:
 
-			 set ZLIB_DIR=C:\zlib
+               set ZLIB_DIR=C:\zlib
 
  
 
@@ -144,7 +163,7 @@ where: [target] may be any one of the following ...
          OpenVRML was originally written by Chris Morley
 	 (http://www.vermontel.net/~cmorley/. He has donated it 
 	 as a foundation for OVAL development and is currently 
-	 maintained at http://openvrml.sourceforge.net
+	 maintained at http://sourceforge.net/projects/openvrml
 
     This makefile suite built against MS Visual C++ 6.0 and tested on
     WindowsNT 4.0, Windows95, and Windows98.
@@ -205,6 +224,14 @@ WITH_JAVASCRIPT = YES
 MOZILLALIB_DIR = c:\User\mozilla
 !ENDIF
 
+!IF "$(WITH_JNI)" == ""
+WITH_JNI = YES
+!ENDIF
+
+!IF "$(JAVA_DIR)" == ""
+JAVA_DIR = c:\User\jdk1.2.2
+!ENDIF
+
 
 !IF "$(ZLIB_DIR)" == ""
 ZLIB_DIR = c:\User\zlib
@@ -238,6 +265,9 @@ COMMONLIB = $(ZLIB_DIR)\zlib.lib\
 !IF "$(WITH_JAVASCRIPT)" == "YES"
  $(MOZILLALIB_DIR)\js32.lib\
 !ENDIF
+!IF "$(WITH_JNI)" == "YES"
+ $(JAVA_DIR)\lib\jvm.lib\
+!ENDIF
 !IF "$(WITH_JPEG)" == "YES"
  $(JPEGLIB_DIR)\libjpeg.lib\
 !ENDIF
@@ -264,22 +294,19 @@ $(LIBDIR) :
 
 OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOUTDIR)\dummysound$(O)\
        $(BINOUTDIR)\field$(O) $(BINOUTDIR)\Image$(O) $(BINOUTDIR)\MathUtils$(O) \
-       $(BINOUTDIR)\Vrml97Parser$(O)\
-       $(BINOUTDIR)\ScriptObject$(O)\
-      $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
-      $(BINOUTDIR)\VrmlNamespace$(O) $(BINOUTDIR)\VrmlNode$(O)\
-      $(BINOUTDIR)\VrmlNodeProto$(O) $(BINOUTDIR)\VrmlNodePtr$(O) $(BINOUTDIR)\Route$(O) \
-       $(BINOUTDIR)\VrmlNodeScript$(O) $(BINOUTDIR)\nodetype$(O) $(BINOUTDIR)\VrmlScene$(O)\
-	$(BINOUTDIR)\VrmlAABox$(O) $(BINOUTDIR)\nodetypeptr$(O) $(BINOUTDIR)\VrmlBSphere$(O)\
-      $(BINOUTDIR)\VrmlBVolume$(O) $(BINOUTDIR)\VrmlFrustum$(O) $(BINOUTDIR)\VrmlRenderContext$(O) \
-	$(BINOUTDIR)\VrmlNodeVisitor$(O) $(BINOUTDIR)\vrml97node$(O)
+       $(BINOUTDIR)\script$(O) $(BINOUTDIR)\ScriptJDK$(O) $(BINOUTDIR)\VrmlMatrix$(O) \
+       $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
+       $(BINOUTDIR)\VrmlNamespace$(O)\
+       $(BINOUTDIR)\proto$(O) $(BINOUTDIR)\nodeptr$(O) $(BINOUTDIR)\Route$(O) \
+       $(BINOUTDIR)\node$(O) $(BINOUTDIR)\VrmlScene$(O)\
+	 $(BINOUTDIR)\nodetypeptr$(O) $(BINOUTDIR)\bvolume$(O)\
+       $(BINOUTDIR)\VrmlFrustum$(O) $(BINOUTDIR)\VrmlRenderContext$(O) \
+	$(BINOUTDIR)\vrml97node$(O)
 
 OBJ2 = $(BINOUTDIR)\OpenGLEvent$(O) $(BINOUTDIR)\ViewerOpenGL$(O)
 
 clean :
 !IF "$(WITH_ANTLR)" == "YES"
-      if exist Vrml97Parser.cpp del Vrml97Parser.cpp
-      if exist Vrml97Parser.hpp del Vrml97Parser.hpp
       if exist Vrml97ParserTokenTypes.hpp del Vrml97ParserTokenTypes.hpp
       if exist Vrml97ParserTokenTypes.txt del Vrml97ParserTokenTypes.txt
       if exist vrml97tokentypes.txt del vrml97tokentypes.txt
@@ -323,6 +350,7 @@ core-static:
   nmake /F Makefile.vc6 WITH_PNG=$(WITH_PNG) PNGLIB_DIR=$(PNGLIB_DIR)\
   WITH_JPEG=$(WITH_JPEG) JPEGLIB_DIR=$(JPEGLIB_DIR)\
   WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLALIB_DIR=$(MOZILLALIB_DIR)\
+  WITH_JNI=$(WITH_JNI) JAVA_DIR=$(JAVA_DIR)\
   ZLIB_DIR=$(ZLIB_DIR) LIBTYPE=STATIC\
   ANTLRLIB_DIR=$(ANTLRLIB_DIR) WITH_ANTLR=$(WITH_ANTLR) core
   cd $(MAKEDIR)
@@ -332,6 +360,7 @@ core-dynamic:
   nmake /F Makefile.vc6 PNGLIB_DIR=$(PNGLIB_DIR)\
   WITH_JPEG=$(WITH_JPEG) JPEGLIB_DIR=$(JPEGLIB_DIR)\
   WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLALIB_DIR=$(MOZILLALIB_DIR)\
+  WITH_JNI=$(WITH_JNI) JAVA_DIR=$(JAVA_DIR)\
   ZLIB_DIR=$(ZLIB_DIR)\
   ANTLRLIB_DIR=$(ANTLRLIB_DIR) WITH_ANTLR=$(WITH_ANTLR) core
   cd $(MAKEDIR)
@@ -351,6 +380,7 @@ lookat-static:
   cd $(LOOKATDIR)
   nmake /F Makefile.vc6\
   WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLALIB_DIR=$(MOZILLALIB_DIR) \
+  WITH_JNI=$(WITH_JNI) JAVA_DIR=$(JAVA_DIR)\
   GLUTLIB_DIR=$(GLUTLIB_DIR) lookat-static
   cd $(MAKEDIR)
 
@@ -358,6 +388,7 @@ lookat-dynamic:
   cd $(LOOKATDIR)
   nmake /F Makefile.vc6\
   WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLALIB_DIR=$(MOZILLALIB_DIR) \
+  WITH_JNI=$(WITH_JNI) JAVA_DIR=$(JAVA_DIR)\
   GLUTLIB_DIR=$(GLUTLIB_DIR) lookat-dynamic
   cd $(MAKEDIR)
 
@@ -379,7 +410,7 @@ $(BINOUTDIR)\dummysound.obj : $(CORESOURCE)\dummysound.cpp $(CORESOURCE)\sound.h
 
 $(BINOUTDIR)\field.obj :    $(CORESOURCE)\field.cpp $(CORESOURCE)\field.h \
 								$(CORESOURCE)\MathUtils.h \
-								$(CORESOURCE)\VrmlNodePtr.h\
+								$(CORESOURCE)\nodeptr.h\
 								$(CORESOURCE)\common.h 
 								$(CPP) $(CFLAGS) $(CORESOURCE)\field.cpp
 
@@ -399,12 +430,43 @@ $(BINOUTDIR)\MathUtils.obj : $(CORESOURCE)\MathUtils.cpp $(CORESOURCE)\MathUtils
 							$(CPP) $(CFLAGS) $(CORESOURCE)\MathUtils.cpp
 
 $(BINOUTDIR)\Route.obj : $(CORESOURCE)\Route.cpp $(CORESOURCE)\Route.h $(CORESOURCE)\common.h \
- 						$(CORESOURCE)\VrmlNodePtr.h 
+ 						$(CORESOURCE)\nodeptr.h 
 	                    	$(CPP) $(CFLAGS) $(CORESOURCE)\Route.cpp
 
-$(BINOUTDIR)\ScriptObject.obj : $(CORESOURCE)\ScriptObject.cpp $(CORESOURCE)\ScriptObject.h\
-	             		$(CORESOURCE)\common.h
-					$(CPP) $(CFLAGS) $(CORESOURCE)\ScriptObject.cpp
+$(BINOUTDIR)\script.obj : $(CORESOURCE)\script.cpp $(CORESOURCE)\script.h\
+	             		$(CORESOURCE)\common.h\
+                              $(CORESOURCE)\private.h\
+                              $(CORESOURCE)\VrmlNamespace.h\
+                              $(CORESOURCE)\VrmlScene.h\
+                              $(CORESOURCE)\doc2.hpp\
+                              $(CORESOURCE)\vrml97node.h\
+                              $(CORESOURCE)\ScriptJDK.h
+					$(CPP) $(CFLAGS)\
+!IF "$(WITH_JAVASCRIPT)" == "YES"
+					   /I $(MOZILLALIB_DIR)\
+!ENDIF
+!IF "$(WITH_JNI)" == "YES"
+					   /I $(JAVA_DIR)\include /I $(JAVA_DIR)\include\win32\
+!ENDIF
+					    /I $(ZLIB_DIR) /I .\ \
+					    /D XP_PC $(CORESOURCE)\script.cpp
+ 
+
+$(BINOUTDIR)\ScriptJDK.obj : $(CORESOURCE)\ScriptJDK.cpp $(CORESOURCE)\ScriptJDK.h\
+	             		$(CORESOURCE)\common.h\
+                              $(CORESOURCE)\doc2.hpp\
+                              $(CORESOURCE)\MathUtils.h\
+                              $(CORESOURCE)\System.h\
+                              $(CORESOURCE)\script.h\
+                              $(CORESOURCE)\VrmlNamespace.h\
+                              $(CORESOURCE)\node.h\
+                              $(CORESOURCE)\VrmlScene.h\
+                              $(CORESOURCE)\VrmlEvent.h\
+                              $(CORESOURCE)\nodeptr.h\
+                              $(CORESOURCE)\Field.h\
+                              .\winconfig.h
+					$(CPP) $(CFLAGS) /I .\ /I $(JAVA_DIR)\include\
+                              /I $(JAVA_DIR)\include\win32 $(CORESOURCE)\ScriptJDK.cpp
 
 $(BINOUTDIR)\System.obj : $(CORESOURCE)\System.cpp $(CORESOURCE)\System.h $(CORESOURCE)\common.h 
 						 $(CPP) $(CFLAGS) $(CORESOURCE)\System.cpp
@@ -413,19 +475,16 @@ $(BINOUTDIR)\Viewer.obj :   $(CORESOURCE)\Viewer.cpp $(CORESOURCE)\Viewer.h\
 							$(CORESOURCE)\MathUtils.h\
 							$(CORESOURCE)\VrmlFrustum.h\
 							$(CORESOURCE)\field.h\
-							$(CORESOURCE)\VrmlBVolume.h\
-							$(CORESOURCE)\VrmlBSphere.h\
-							$(CORESOURCE)\VrmlAABox.h\
+							$(CORESOURCE)\bvolume.h\
 							$(CORESOURCE)\VrmlScene.h\
 							$(CORESOURCE)\common.h \
 							.\winconfig.h
 							$(CPP) $(CFLAGS) /I .\ $(CORESOURCE)\Viewer.cpp
 
 $(BINOUTDIR)\vrml97node.obj :   $(CORESOURCE)\vrml97node.cpp $(CORESOURCE)\vrml97node.h \
-									$(CORESOURCE)\nodetype.h\
+									$(CORESOURCE)\node.h\
 									$(CORESOURCE)\VrmlNamespace.h\
-									$(CORESOURCE)\VrmlNodeVisitor.h\
-									$(CORESOURCE)\VrmlNodeProto.h\
+									$(CORESOURCE)\proto.h\
 									$(CORESOURCE)\Doc.h\
 									$(CORESOURCE)\doc2.hpp\
 									$(CORESOURCE)\Audio.h\
@@ -433,7 +492,6 @@ $(BINOUTDIR)\vrml97node.obj :   $(CORESOURCE)\vrml97node.cpp $(CORESOURCE)\vrml9
 									$(CORESOURCE)\MathUtils.h\
 									$(CORESOURCE)\Viewer.h\
 									$(CORESOURCE)\field.h\
-									$(CORESOURCE)\VrmlNode.h\
 									$(CORESOURCE)\Image.h\
 									$(CORESOURCE)\VrmlScene.h\
 									$(CORESOURCE)\common.h \
@@ -441,42 +499,23 @@ $(BINOUTDIR)\vrml97node.obj :   $(CORESOURCE)\vrml97node.cpp $(CORESOURCE)\vrml9
 									$(CPP) $(CFLAGS) /I .\ $(CORESOURCE)\vrml97node.cpp
 
 
-!IF "$(WITH_ANTLR)" == "YES"
 
-Vrml97Parser.cpp     :                $(CORESOURCE)\vrml97parser.g $(CORESOURCE)\Vrml97TokenTypes.txt 
+Vrml97Parser       :                   $(CORESOURCE)\vrml97parser.g $(CORESOURCE)\Vrml97TokenTypes.txt 
 						   copy $(CORESOURCE)\Vrml97TokenTypes.txt vrml97tokentypes.txt
 						   SET CLASSPATH=$(ANTLRLIB_DIR)
-						   java antlr.Tool $(CORESOURCE)\vrml97parser.g
+						   java antlr.Tool -o $(CORESOURCE) $(CORESOURCE)\vrml97parser.g
 
-$(BINOUTDIR)\Vrml97Parser.obj  :       Vrml97Parser.cpp $(CORESOURCE)\Doc2.hpp\
-                                       $(CORESOURCE)\field.h $(CORESOURCE)\common.h \
-						   $(CORESOURCE)\VrmlNamespace.h $(CORESOURCE)\VrmlNode.h\
-						   $(CORESOURCE)\VrmlNodeScript.h $(CORESOURCE)\nodetype.h
-						   $(CPP) $(CFLAGS) /GR /I $(LIBINCLUDE) /I $(CORESOURCE) /I . Vrml97Parser.cpp
-
-!ELSE
-$(BINOUTDIR)\Vrml97Parser.obj  :       $(CORESOURCE)\Vrml97Parser.cpp $(CORESOURCE)\Doc2.hpp\
-                                       $(CORESOURCE)\field.h $(CORESOURCE)\common.h \
-						   $(CORESOURCE)\VrmlNamespace.h $(CORESOURCE)\VrmlNode.h\
-						   $(CORESOURCE)\VrmlNodeScript.h $(CORESOURCE)\nodetype.h
-						   $(CPP) $(CFLAGS) /GR /I $(LIBINCLUDE) /I $(CORESOURCE) $(CORESOURCE)\Vrml97Parser.cpp
-
-!ENDIF
+$(BINOUTDIR)\VrmlMatrix.obj  :         $(CORESOURCE)\VrmlMatrix.cpp \
+                                       $(CORESOURCE)\field.h $(CORESOURCE)\private.h \
+						   $(CORESOURCE)\VrmlMatrix.h 
+						   $(CPP) $(CFLAGS) $(CORESOURCE)\VrmlMatrix.cpp
 
 
-$(BINOUTDIR)\VrmlAABox.obj : $(CORESOURCE)\VrmlAABox.cpp $(CORESOURCE)\VrmlAABox.h\
-							 $(CORESOURCE)\VrmlFrustum.h $(CORESOURCE)\VrmlBVolume.h\
-							 $(CORESOURCE)\VrmlBSphere.h $(CORESOURCE)\common.h 							
-								$(CPP) $(CFLAGS) $(CORESOURCE)\VrmlAABox.cpp
-
-$(BINOUTDIR)\VrmlBSphere.obj : $(CORESOURCE)\VrmlBSphere.cpp $(CORESOURCE)\VrmlBSphere.h\
-								$(CORESOURCE)\VrmlFrustum.h $(CORESOURCE)\VrmlBVolume.h\
-								$(CORESOURCE)\VrmlBSphere.h $(CORESOURCE)\common.h\
-								$(CORESOURCE)\VrmlAABox.h $(CORESOURCE)\field.h $(CORESOURCE)\MathUtils.h  							
-								$(CPP) $(CFLAGS) $(CORESOURCE)\VrmlBSphere.cpp
-
-$(BINOUTDIR)\VrmlBVolume.obj : $(CORESOURCE)\VrmlBVolume.cpp $(CORESOURCE)\VrmlBVolume.h							
-								$(CPP) $(CFLAGS) $(CORESOURCE)\VrmlBVolume.cpp
+$(BINOUTDIR)\bvolume.obj : $(CORESOURCE)\bvolume.cpp $(CORESOURCE)\bvolume.h\
+                           $(CORESOURCE)\private.h $(CORESOURCE)\field.h\
+                           $(CORESOURCE)\VrmlMatrix.h $(CORESOURCE)\VrmlFrustum.h\
+                           $(CORESOURCE)\MathUtils.h                							
+				   $(CPP) $(CFLAGS) $(CORESOURCE)\bvolume.cpp
 
 $(BINOUTDIR)\VrmlFrustum.obj : $(CORESOURCE)\VrmlFrustum.cpp $(CORESOURCE)\VrmlFrustum.h\
 								$(CORESOURCE)\MathUtils.h $(CORESOURCE)\common.h 							
@@ -484,111 +523,71 @@ $(BINOUTDIR)\VrmlFrustum.obj : $(CORESOURCE)\VrmlFrustum.cpp $(CORESOURCE)\VrmlF
 
     
 $(BINOUTDIR)\VrmlNamespace.obj :  $(CORESOURCE)\VrmlNamespace.cpp $(CORESOURCE)\VrmlNamespace.h\
-								$(CORESOURCE)\nodetype.h\
+								$(CORESOURCE)\node.h\
 								$(CORESOURCE)\VrmlNamespace.h\
-								$(CORESOURCE)\VrmlNodeVisitor.h\
 								$(CORESOURCE)\field.h\
-								$(CORESOURCE)\VrmlNode.h\
 								$(CORESOURCE)\Route.h\
-								$(CORESOURCE)\VrmlNodeScript.h\
-								$(CORESOURCE)\VrmlNodeProto.h\
+								$(CORESOURCE)\script.h\
+								$(CORESOURCE)\proto.h\
 								$(CORESOURCE)\common.h 
 								$(CPP) $(CFLAGS) $(CORESOURCE)\VrmlNamespace.cpp
 
 
-$(BINOUTDIR)\VrmlNode.obj :  $(CORESOURCE)\VrmlNode.cpp $(CORESOURCE)\VrmlNode.h\
+$(BINOUTDIR)\node.obj :  $(CORESOURCE)\node.cpp $(CORESOURCE)\node.h\
+                                                $(CORESOURCE)\field.h\
+                                                $(CORESOURCE)\doc2.hpp\
 								$(CORESOURCE)\MathUtils.h\
-								$(CORESOURCE)\VrmlNodePtr.h\
+								$(CORESOURCE)\nodeptr.h\
 								$(CORESOURCE)\Route.h\
-								$(CORESOURCE)\VrmlBVolume.h\
-								$(CORESOURCE)\VrmlBSphere.h\
+								$(CORESOURCE)\bvolume.h\
 								$(CORESOURCE)\VrmlNamespace.h\
-								$(CORESOURCE)\VrmlNode.h\
-								$(CORESOURCE)\nodetype.h\
+								$(CORESOURCE)\system.h\
 								$(CORESOURCE)\VrmlScene.h\
 								$(CORESOURCE)\VrmlRenderContext.h\
+                                                $(CORESOURCE)\proto.h\
 								$(CORESOURCE)\common.h
-								$(CPP) $(CFLAGS) $(CORESOURCE)\VrmlNode.cpp
+								$(CPP) $(CFLAGS) $(CORESOURCE)\node.cpp
 
-$(BINOUTDIR)\VrmlNodeProto.obj: $(CORESOURCE)\VrmlNodeProto.cpp\
-								$(CORESOURCE)\VrmlNodeVisitor.h\
+$(BINOUTDIR)\proto.obj:                         $(CORESOURCE)\proto.cpp\
 								$(CORESOURCE)\Viewer.h\
-								$(CORESOURCE)\field.h\
 								$(CORESOURCE)\VrmlNamespace.h\
-								$(CORESOURCE)\VrmlNode.h\
-								$(CORESOURCE)\VrmlNodeProto.h\
-								$(CORESOURCE)\nodetype.h\
+								$(CORESOURCE)\node.h\
+								$(CORESOURCE)\proto.h\
 								$(CORESOURCE)\Route.h\
-								$(CORESOURCE)\VrmlBSphere.h\
+								$(CORESOURCE)\bvolume.h\
 								$(CORESOURCE)\common.h
-								$(CPP) $(CFLAGS) $(CORESOURCE)\VrmlNodeProto.cpp
+								$(CPP) $(CFLAGS) $(CORESOURCE)\proto.cpp
 
-$(BINOUTDIR)\VrmlNodePtr.obj: $(CORESOURCE)\VrmlNodePtr.cpp\
-								$(CORESOURCE)\VrmlNode.h\
-								$(CORESOURCE)\VrmlNodePtr.h\
+$(BINOUTDIR)\nodeptr.obj: $(CORESOURCE)\nodeptr.cpp\
+								$(CORESOURCE)\node.h\
+								$(CORESOURCE)\nodeptr.h\
 								$(CORESOURCE)\common.h
-								$(CPP) $(CFLAGS) $(CORESOURCE)\VrmlNodePtr.cpp
+								$(CPP) $(CFLAGS) $(CORESOURCE)\nodeptr.cpp
 
 
-$(BINOUTDIR)\VrmlNodeScript.obj: $(CORESOURCE)\VrmlNodeScript.cpp\
-					   $(CORESOURCE)\VrmlNodeScript.h\
-                                 $(CORESOURCE)\doc2.hpp \
-	                           $(CORESOURCE)\common.h \
-					   $(CORESOURCE)\VrmlNode.h \
-					   $(CORESOURCE)\VrmlNodeScript.h \
-                                 $(CORESOURCE)\VrmlNamespace.h\
-					   $(CORESOURCE)\nodetype.h\
-					   $(CORESOURCE)\ScriptObject.h\
-					   $(CORESOURCE)\VrmlScene.h\
-					   .\winconfig.h
-					   $(CPP) $(CFLAGS)\
-!IF "$(WITH_JAVASCRIPT)" == "YES"
-					   /I $(MOZILLALIB_DIR)\
-!ENDIF
-					    /I $(ZLIB_DIR) /I .\ \
-					    /D XP_PC $(CORESOURCE)\VrmlNodeScript.cpp
-
-$(BINOUTDIR)\nodetype.obj : $(CORESOURCE)\nodetype.cpp\
-                                                $(CORESOURCE)\nodetype.h\
-								$(CORESOURCE)\Doc2.hpp\
-								$(CORESOURCE)\field.h\
-								$(CORESOURCE)\VrmlNamespace.h\
-								$(CORESOURCE)\VrmlNode.h\
-								$(CORESOURCE)\VrmlNodePtr.h\
-								$(CORESOURCE)\VrmlNodeProto.h\
-								$(CORESOURCE)\VrmlScene.h\
-								$(CORESOURCE)\common.h
-								$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
-							      $(CORESOURCE)\nodetype.cpp
 
 $(BINOUTDIR)\nodetypeptr.obj : $(CORESOURCE)\nodetypeptr.cpp\
                                                 $(CORESOURCE)\nodetypeptr.h\
-								$(CORESOURCE)\nodetype.h\
+								$(CORESOURCE)\node.h\
 								$(CORESOURCE)\common.h
 								$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
 							      $(CORESOURCE)\nodetypeptr.cpp
 
-$(BINOUTDIR)\VrmlNodeVisitor.obj : $(CORESOURCE)\VrmlNodeVisitor.cpp\
-								$(CORESOURCE)\VrmlNodeVisitor.h\
-								$(CORESOURCE)\vrml97node.h\
-								$(CORESOURCE)\field.h\
-								$(CORESOURCE)\common.h
-								$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
-							      $(CORESOURCE)\VrmlNodeVisitor.cpp
-
 $(BINOUTDIR)\VrmlRenderContext.obj : $(CORESOURCE)\VrmlRenderContext.cpp $(CORESOURCE)\VrmlRenderContext.h\
-								$(CORESOURCE)\VrmlBVolume.h 							
+								$(CORESOURCE)\bvolume.h 							
 								$(CPP) $(CFLAGS) $(CORESOURCE)\VrmlRenderContext.cpp
 
-$(BINOUTDIR)\VrmlScene.obj : $(CORESOURCE)\VrmlScene.cpp\
-								$(CORESOURCE)\Doc2.hpp $(CORESOURCE)\System.h\
+$(BINOUTDIR)\VrmlScene.obj :		            $(CORESOURCE)\VrmlScene.cpp $(CORESOURCE)\VrmlScene.h\
+!IF "$(WITH_ANTLR)" == "YES"
+				                       Vrml97Parser\
+!ENDIF
+                                                $(CORESOURCE)\Doc2.hpp $(CORESOURCE)\System.h\
 								$(CORESOURCE)\Viewer.h\
 								$(CORESOURCE)\MathUtils.h\
 								$(CORESOURCE)\vrml97node.h $(CORESOURCE)\VrmlNamespace.h\
 								$(CORESOURCE)\Vrml97Parser.hpp \
 								$(CORESOURCE)\VrmlRenderContext.h\
-								$(CORESOURCE)\nodetype.h\
-								$(CORESOURCE)\VrmlScene.h\
+								$(CORESOURCE)\node.h\
 								$(CORESOURCE)\common.h\
 								.\winconfig.h
 								$(CPP) $(CFLAGS)  /GR /I $(LIBINCLUDE) /I .\ /I $(ZLIB_DIR) $(CORESOURCE)\VrmlScene.cpp
@@ -607,7 +606,7 @@ $(BINOUTDIR)\ViewerOpenGL.obj :  $(GLSOURCE)\ViewerOpenGL.cpp\
 						$(CORESOURCE)\MathUtils.h\
 						$(CORESOURCE)\VrmlScene.h\
 						$(CORESOURCE)\vrml97node.h\
-						$(CORESOURCE)\VrmlBSphere.h\
+						$(CORESOURCE)\bvolume.h\
 						$(CORESOURCE)\VrmlFrustum.h\
 						.\winconfig.h\
 						$(GLSOURCE)\OpenGLEvent.h\

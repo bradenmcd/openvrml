@@ -124,7 +124,7 @@ $(GLBINOUTDIR)\ViewerOpenGL.obj :  $(GLSOURCE)\ViewerOpenGL.cpp\
 						$(CORESOURCE)\MathUtils.h\
 						$(CORESOURCE)\VrmlScene.h\
 						$(CORESOURCE)\vrml97node.h\
-						$(CORESOURCE)\VrmlBSphere.h\
+						$(CORESOURCE)\bvolume.h\
 						$(CORESOURCE)\VrmlFrustum.h\
 						..\winconfig.h\
 						$(GLSOURCE)\OpenGLEvent.h\
