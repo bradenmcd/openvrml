@@ -1,3 +1,23 @@
+2004-12-29 Braden McDaniel  <braden@endoframe.com>
+
+	Merged changes from 0.15.4 release.
+
+	Refactored GtkGLExt usage to eliminate GtkVrmlBrowser widget.
+	Since OpenVRML is a C++ library, this widget would probably
+	never support a useful (C) API.  So it needlessly complicated
+	the code.
+
+	* NEWS:  Updates for 0.15.4 release.
+	* openvrml.spec.in:  Fixed name of xorg-x11-devel prerequisite
+	for the openvrml-gl-devel package.
+	* mozilla-plugin/src/Makefile.am:  Removed references to
+	GtkVrmlBrowser widget sources.
+	* mozilla-plugin/src/openvrml.cpp:  Add GL capabilities and
+	event callbacks to a GtkDrawingArea widget rather than use the
+	GtkVrmlBrowser widget.
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc:  Removed file.
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.h:  Removed file.
+
 2004-12-28 Braden McDaniel  <braden@endoframe.com>
 
 	Added abstract navigation_info_node to the core API.
