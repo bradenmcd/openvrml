@@ -198,6 +198,7 @@ lib/Makefile \
 lib/antlr/GNUmakefile \
 lib/antlr/antlr/GNUmakefile \
 lib/antlr/src/GNUmakefile \
+lib/regex/Makefile \
 src/Makefile \
 src/libopenvrml/Makefile \
 src/libopenvrml/openvrml/Makefile \
