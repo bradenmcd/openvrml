@@ -3990,7 +3990,7 @@ namespace {
                 if (!JSVAL_IS_NUMBER(argv[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_ValueToNumber(cx, argv[0], vec + i)) {
+                if (!JS_ValueToNumber(cx, argv[i], vec + i)) {
                     return JS_FALSE;
                 }
             }
