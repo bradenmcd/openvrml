@@ -122,7 +122,7 @@ void VrmlNodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
 
     const VrmlBSphere* bs = (VrmlBSphere*)this->getBVolume();
     VrmlBSphere bv_copy(*bs);
-    bv_copy.transform((double[4][4])rc.getMatrix());
+    bv_copy.transform(rc.getMatrix());
     int r = viewer->isectViewVolume(bv_copy);
     if (rc.getDrawBSpheres())
       viewer->drawBSphere(*bs, r);
@@ -139,7 +139,7 @@ void VrmlNodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
   synch_cached_matrix();
   this->getMatrix(LM);
   double new_LM[4][4];
-  Mcopy(new_LM, (double[4][4])rc.getMatrix());
+  Mcopy(new_LM, rc.getMatrix());
   MM(new_LM, LM);
   rc.setMatrix(new_LM);
 
@@ -311,7 +311,7 @@ VrmlNodeTransform::recalcBSphere()
 {
   //cout << "VrmlNodeTransform[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
-  for (int i=0; i<d_children.size(); ++i) {
+  for (size_t i=0; i<d_children.size(); ++i) {
     const VrmlBVolume* ci_bv = d_children[i]->getBVolume();
     if (ci_bv)
       d_bsphere.extend(*ci_bv);

@@ -14,6 +14,8 @@
  *
  */
 
+
+
 /**
  * Information needed during a render traversal. The members could be
  * arguments to the <code>VrmlNode::render()</code> method, but there
@@ -51,6 +53,16 @@
  */
 class VrmlRenderContext {
 
+ public:
+
+  /**
+   * encapsulte some ugliness. see comments on getMatrix()
+   * below. (does this really need to be in a public area? be safe and
+   * guess yes)
+   */
+  typedef double (*MatrixPtr)[4];
+
+
  protected:
 
   /**
@@ -61,13 +73,13 @@ class VrmlRenderContext {
    * @see VrmlBVolume
    */
   int cull_flag;
-
+  
   /**
    * The current modelview matrix in MathUtils-format.
    *
    * @see MathUtils
    */
-  double* M;
+  MatrixPtr M;
 
   /**
    * Draw the bounding volumes or not.
@@ -153,12 +165,11 @@ class VrmlRenderContext {
   /**
    * Returns a pointer to the modelview matrix. Unlike most of the
    * matrix accessor routines, it does not return a copy. Because C++
-   * inherits C's array-uglies, the returned value will most likely
-   * have to be cast to <code>double[4][4]</code> before use.
+   * inherits C's array-uglies, we need the MatrixPtr typedef.
    *
    * @return a pointer to the modelview matrix in MathUtils format.
    */
-  double* getMatrix();
+  MatrixPtr getMatrix();
 
   /**
    * Sets the modelview matrix. Don't set it to null. Make sure that
