@@ -200,14 +200,14 @@ AC_DEFUN(VRMLGL_PATH_GLUT,
         CPPFLAGS="${ac_save_CPPFLAGS}"
       ],
       have_glut=no,
-      $xmu_libs $xi_libs $GL_LIBS -lm
+      $xmu_libs $xi_libs ${X__libs} ${GL_LIBS} -lm
     )
 
     LDFLAGS="${ac_save_LDFLAGS}"
     
     if test $have_glut = yes; then
-      GLUT_CFLAGS="${glut__Idir} $GL_CFLAGS"
-      GLUT_LIBS="${glut__Ldir} -lglut $xmu_libs $xi_libs $GL_LIBS"
+      GLUT_CFLAGS="${glut__Idir} ${X__cflags} ${GL_CFLAGS}"
+      GLUT_LIBS="${glut__Ldir} -lglut $xmu_libs $xi_libs ${X__libs} $GL_LIBS -lm"
       ifelse([$1], , :, [$1])
     else
       GLUT_LIBS=""

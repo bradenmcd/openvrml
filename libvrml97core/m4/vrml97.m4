@@ -191,7 +191,7 @@ AC_DEFUN(AM_PATH_VRML,
         VRML_LIBS="${vrml__Ldir} -lvrml97js ${VRML_LIBS}"
       ],
       ,
-      ${vrml__Ldir}
+      ${vrml__Ldir} -lm
     )
     
     AC_LANG_SAVE
