@@ -49,27 +49,47 @@ if test "X$no_zlib" = "Xyes"; then
   AC_MSG_ERROR([zlib not found.])
 fi
 
-OV_CHECK_GL
-if test "X$no_gl" = "Xyes"; then
-  AC_MSG_ERROR([OpenGL/Mesa not found.])
-fi
-
 AC_PATH_XTRA
 if test "X$no_x" = "Xyes"; then
   AC_MSG_ERROR([X not found.])
 fi
 
-OV_CHECK_GLUT
-if test "X$no_glut" = "Xyes"; then
-  AC_MSG_ERROR([GLUT not found.])
-fi
-
 #
 # Optional packages.
 #
+AC_ARG_WITH(gl, [  --with-gl               use OpenGL/Mesa], ,
+            [# Use OpenGL by default.
+             with_gl=yes])
+AC_ARG_WITH(glut, [  --with-glut             use GLUT], ,
+            [# Use GLUT by default.
+             with_glut=yes])
+if test "X$with_gl" = "Xyes"; then
+  OV_CHECK_GL
+  if test "X$no_gl" = "Xyes"; then
+    AC_MSG_ERROR([OpenGL/Mesa not found.])
+  else
+    AC_SUBST([OPENVRML_GL_SUBDIR], [openvrml-gl])
+    AC_DEFINE([OPENVRML_HAVE_GL], , [Defined if OpenGL/Mesa is a available and should be used.])
+    
+    if test "X$with_glut" = "Xyes"; then
+      OV_CHECK_GLUT
+      if test "X$no_glut" = "Xyes"; then
+        AC_MSG_ERROR([OpenGL/Mesa not found.])
+      else
+        AC_SUBST([LOOKAT_SUBDIR], [lookat])
+        AC_DEFINE([OPENVRML_HAVE_GLUT], , [Defined if GLUT is a available and should be used.])
+      fi
+    else
+      AC_MSG_WARN([Building without GLUT. Text node support and LookAt will not be built.])
+    fi
+  fi
+else
+  AC_MSG_WARN([Building without OpenGL/Mesa. The GL renderer and LookAt will not be built.])
+fi
+
 AC_ARG_WITH(libjpeg, [  --with-libjpeg          use libjpeg (JPEG image support)], ,
-             [# Use libjpeg by default.
-              with_libjpeg=yes])
+            [# Use libjpeg by default.
+             with_libjpeg=yes])
 if test "X$with_libjpeg" = "Xyes"; then
   OV_CHECK_LIBJPEG
   if test "X$no_libjpeg" = "Xyes"; then

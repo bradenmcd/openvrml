@@ -36,6 +36,9 @@
 
 # include OPENVRML_GL_H
 # include OPENVRML_GLU_H
+# ifdef OPENVRML_HAVE_GLUT
+#   include OPENVRML_GLUT_H
+# endif
 # include <stdio.h>		// sprintf
 # include <math.h>
 
@@ -3234,12 +3237,6 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
 
 /* From smooth.c by Nate Robins, 1997 in the glut dist */
 
-#if defined(__MACH__)&&defined(__APPLE__)
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
-
 /* text: general purpose text routine.  draws a string according to
  * format in a stroke font at x, y after scaling it by the scale
  * specified (scale is in window-space (lower-left origin) pixels).  
@@ -3252,7 +3249,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
 
 void ViewerOpenGL::text2( int x, int y, float scale, char* text )
 {
-
+# ifdef OPENVRML_HAVE_GLUT
   GLfloat font_scale = scale / (119.05 + 33.33); // ???
 
   glMatrixMode(GL_PROJECTION);
@@ -3281,10 +3278,12 @@ void ViewerOpenGL::text2( int x, int y, float scale, char* text )
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
   glMatrixMode(GL_MODELVIEW);
+# endif
 }
 
 void ViewerOpenGL::text3(int *justify, float size, int n, const char * const *s)
 {
+# ifdef OPENVRML_HAVE_GLUT
   float font_scale = 0.005 * size;
 
   glPushAttrib(GL_ENABLE_BIT);
@@ -3314,7 +3313,7 @@ void ViewerOpenGL::text3(int *justify, float size, int n, const char * const *s)
     }
 
   glPopAttrib();
-
+# endif
 }
 
 
