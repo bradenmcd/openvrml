@@ -124,8 +124,8 @@ frustum::frustum():
  *
  */
 frustum::frustum(float fovy, float aspect, double near, double far):
-    fovy((fovy / 360.0) * 2.0 * pi),
-    fovx(2.0 * atan(float(tan(this->fovy / 2.0)) * aspect)),
+    fovy(float((fovy / 360.0) * 2.0 * pi)),
+    fovx(float(2.0 * atan(float(tan(this->fovy / 2.0)) * aspect))),
     z_near(near),
     z_far(far)
 {
@@ -166,20 +166,20 @@ void frustum::update()
     float cy = float(tan(fovy / 2.0));
     float cx = float(tan(fovx / 2.0));
 
-    float NL = -z_near * cx;
+    float NL = float(-z_near * cx);
     float NR = -NL;
-    float NT =  z_near * cy;
+    float NT = float(z_near * cy);
     float NB = -NT;
 
     vec3f tmp0, tmp1;
 
     tmp0[0] = NL;
     tmp0[1] = NB;
-    tmp0[2] = -z_near;
+    tmp0[2] = float(-z_near);
 
     tmp1[0] = NL;
     tmp1[1] = NT;
-    tmp1[2] = -z_near;
+    tmp1[2] = float(-z_near);
 
     vec3f v;
     v = (tmp0 * tmp1).normalize();
@@ -195,11 +195,11 @@ void frustum::update()
 
     tmp0[0] = NL;
     tmp0[1] = NT;
-    tmp0[2] = -z_near;
+    tmp0[2] = float(-z_near);
 
     tmp1[0] = NR;
     tmp1[1] = NT;
-    tmp1[2] = -z_near;
+    tmp1[2] = float(-z_near);
 
     v = (tmp0 * tmp1).normalize();
     top_plane[0] = v.x();

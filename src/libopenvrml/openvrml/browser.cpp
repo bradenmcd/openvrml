@@ -1036,7 +1036,7 @@ const std::vector<node_ptr> browser::create_vrml_from_stream(std::istream & in)
         Vrml97Scanner scanner(in);
         Vrml97Parser parser(scanner, "");
         parser.vrmlScene(*this, nodes);
-    } catch (antlr::RecognitionException & ex) {
+    } catch (antlr::RecognitionException &) {
         throw invalid_vrml();
     }
     return nodes;
@@ -1402,10 +1402,10 @@ void browser::render(openvrml::viewer & viewer)
     // Activate the headlight.
     // ambient is supposed to be 0 according to the spec...
     if (this->headlight_on()) {
-        const color color(1.0, 1.0, 1.0);
-        const vec3f direction(0.0, 0.0, -1.0);
-        const float ambientIntensity = 0.3;
-        const float intensity = 1.0;
+        static const color color(1.0, 1.0, 1.0);
+        static const vec3f direction(0.0, 0.0, -1.0);
+        static const float ambientIntensity = 0.3f;
+        static const float intensity = 1.0;
 
         viewer.insert_dir_light(ambientIntensity,
                                 intensity,
@@ -2016,7 +2016,7 @@ scene::scene(openvrml::browser & browser,
                 Vrml97Scanner scanner(in);
                 Vrml97Parser parser(scanner, this->url());
                 parser.vrmlScene(browser, this->nodes_);
-            } catch (antlr::RecognitionException & ex) {
+            } catch (antlr::RecognitionException &) {
                 throw invalid_vrml();
             } catch (std::bad_alloc &) {
                 throw;
@@ -5366,7 +5366,7 @@ const std::string & DefaultViewpoint::description() const throw ()
 
 float DefaultViewpoint::field_of_view() const throw ()
 {
-    static const float fieldOfView = 0.785398;
+    static const float fieldOfView = 0.785398f;
     return fieldOfView;
 }
 

@@ -275,7 +275,7 @@ namespace openvrml {
 
     inline float vec2f::length() const throw ()
     {
-        return sqrt(this->dot(*this));
+        return float(sqrt(this->dot(*this)));
     }
 
     bool operator==(const vec2f & lhs, const vec2f & rhs)
@@ -482,7 +482,7 @@ namespace openvrml {
 
     inline float vec3f::length() const throw ()
     {
-        return sqrt(this->dot(*this));
+        return float(sqrt(this->dot(*this)));
     }
 
     bool operator==(const vec3f & lhs, const vec3f & rhs)

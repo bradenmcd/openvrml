@@ -79,7 +79,7 @@ field_value_ptr::field_value_ptr(field_value * const value)
 {
     try {
         this->count = new size_t(1); // prevent leak if new throws
-    } catch (std::bad_alloc & ex) {
+    } catch (std::bad_alloc &) {
         delete value;
         throw;
     }
@@ -186,7 +186,7 @@ void field_value_ptr::reset(field_value * const value) throw (std::bad_alloc)
     } else {
         try {
             this->count = new size_t;
-        } catch (std::bad_alloc & ex) {
+        } catch (std::bad_alloc &) {
             ++*this->count;
             delete value;
             throw;

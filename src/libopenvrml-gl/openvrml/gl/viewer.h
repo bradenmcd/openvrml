@@ -186,7 +186,7 @@ namespace openvrml {
                               const std::vector<color> & groundColor,
                               const std::vector<float> & skyAngle,
                               const std::vector<color> & skyColor,
-                              int* whc = 0,
+                              size_t * whc = 0,
                               unsigned char ** pixels = 0);
 
 
@@ -276,7 +276,7 @@ namespace openvrml {
                                       const color & specularColor,
                                       float transparency);
 
-            virtual void set_material_mode(int tex_components,
+            virtual void set_material_mode(size_t tex_components,
                                            bool geometry_color);
 
             virtual void set_sensitive(node * object);
@@ -293,7 +293,8 @@ namespace openvrml {
                            bool retainHint = false);
 
             // Reference/remove a texture object
-            virtual void insert_texture_reference(texture_object_t, int);
+            virtual void insert_texture_reference(texture_object_t ref,
+                                                  size_t components);
             virtual void remove_texture_object(texture_object_t);
 
             virtual void set_texture_transform(const vec2f & center,

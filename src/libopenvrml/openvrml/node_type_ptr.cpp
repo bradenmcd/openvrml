@@ -74,7 +74,7 @@ node_type_ptr::node_type_ptr(node_type * const type) throw (std::bad_alloc):
 {
     try {
         this->count = new size_t(1); // prevent leak if new throws
-    } catch (std::bad_alloc & ex) {
+    } catch (std::bad_alloc &) {
         delete type;
         throw;
     }
@@ -158,7 +158,7 @@ void node_type_ptr::reset(node_type * const type) throw (std::bad_alloc)
     } else {
         try {
             this->count = new size_t;
-        } catch (std::bad_alloc & ex) {
+        } catch (std::bad_alloc &) {
             ++*this->count;
             delete type;
             throw;

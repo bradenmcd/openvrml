@@ -154,7 +154,7 @@ void color::hsv(float (&result)[3]) const throw ()
     const float minrgb = *std::min_element(this->rgb, this->rgb + 3);
 
     result[0] = 0.0;
-    result[1] = (maxrgb > 0.0) ? ((maxrgb - minrgb) / maxrgb) : 0.0;
+    result[1] = (maxrgb > 0.0) ? ((maxrgb - minrgb) / maxrgb) : 0.0f;
     result[2] = maxrgb;
 
     if (result[1] != 0.0) {
@@ -191,9 +191,9 @@ void color::hsv(float h, const float s, const float v) throw ()
         h /= 60.0;
         const double i = floor(h);
         const double f = h - i;
-        const float p = v * (1.0 - s);
-        const float q = v * (1.0 - s * f);
-        const float t = v * (1.0 - s * (1.0 - f));
+        const float p = float(v * (1.0 - s));
+        const float q = float(v * (1.0 - s * f));
+        const float t = float(v * (1.0 - s * (1.0 - f)));
         switch (int(i)) {
 	default:
 	case 0: this->rgb[0] = v; this->rgb[1] = t; this->rgb[2] = p; break;
@@ -1001,8 +1001,8 @@ rotation::rotation(const vec3f & from_vec, const vec3f & to_vec)
     throw ()
 {
     this->axis(from_vec * to_vec);
-    this->rot[3] =
-            acos(from_vec.dot(to_vec) / (from_vec.length() * to_vec.length()));
+    this->rot[3] = float(acos(from_vec.dot(to_vec)
+                              / (from_vec.length() * to_vec.length())));
 }
 
 /**
@@ -1014,14 +1014,14 @@ rotation::rotation(const quatf & quat) throw ()
 {
     using openvrml_::fequal;
 
-    const float val = acos(quat.w());
+    const float val = float(acos(quat.w()));
     if (fequal<float>()(val, 0.0f)) {
         this->rot[0] = 0.0;
         this->rot[1] = 0.0;
         this->rot[2] = 1.0;
         this->rot[3] = 0.0;
     } else {
-        const float sin_val = sin(val);
+        const float sin_val = float(sin(val));
         const vec3f axis(quat.x() / sin_val,
                          quat.y() / sin_val,
                          quat.z() / sin_val);
@@ -1125,7 +1125,7 @@ namespace {
     void normalize_axis_(float axis[3]) throw ()
     {
         using openvrml_::fequal;
-        const float axis_length = length_(axis);
+        const float axis_length = float(length_(axis));
         if (fequal<float>()(axis_length, 0.0)) {
             axis[2] = 1.0;
         } else {
@@ -1235,7 +1235,7 @@ const rotation rotation::slerp(const rotation & dest_rot, const float t) const
     // Calculate coefficients.
     //
     double scale0, scale1;
-    if (!fequal<float>()(cosom, 0.0f)) {
+    if (!fequal<double>()(cosom, 0.0)) {
         const double omega = acos(cosom);
         const double sinom = sin(omega);
         scale0 = sin((1.0 - t) * omega) / sinom;
@@ -1252,7 +1252,8 @@ const rotation rotation::slerp(const rotation & dest_rot, const float t) const
     //
     // Calculate the final values.
     //
-    const quatf result_quat = (from_quat * scale0) + (to1 * scale1);
+    const quatf result_quat =
+        (from_quat * float(scale0)) + (to1 * float(scale1));
     return rotation(result_quat);
 }
 
@@ -1335,10 +1336,22 @@ const mat4f mat4f::rotation(const openvrml::rotation & rot) throw ()
     const float y = rot.y();
     const float z = rot.z();
 
-    return mat4f(t * x * x + c,     t * x * y + s * z, t * x * z - s * y, 0.0,
-                 t * x * y - s * z, t * y * y + c,     t * y * z + s * x, 0.0,
-                 t * x * z + s * y, t * y * z - s * x, t * z * z + c,     0.0,
-                 0.0,               0.0,               0.0,               1.0);
+    return mat4f(float(t * x * x + c),
+                 float(t * x * y + s * z),
+                 float(t * x * z - s * y),
+                 0.0f,
+                 float(t * x * y - s * z),
+                 float(t * y * y + c),
+                 float(t * y * z + s * x),
+                 0.0f,
+                 float(t * x * z + s * y),
+                 float(t * y * z - s * x),
+                 float(t * z * z + c),
+                 0.0f,
+                 0.0f,
+                 0.0f,
+                 0.0f,
+                 1.0f);
 }
 
 /**
@@ -1355,22 +1368,22 @@ const mat4f mat4f::rotation(const quatf & quat) throw ()
     const float z = quat.z();
     const float w = quat.w();
 
-    return mat4f(1.0 - 2.0 * (y * y + z * z),
-                 2.0 * (x * y + z * w),
-                 2.0 * (z * x - y * w),
-                 0.0,
-                 2.0 * (x * y - z * w),
-                 1.0 - 2.0 * (z * z + x * x),
-                 2.0 * (y * z + x * w),
-                 0.0,
-                 2.0 * (z * x + y * w),
-                 2.0 * (y * z - x * w),
-                 1.0 - 2.0 * (y * y + x * x),
-                 0.0,
-                 0.0,
-                 0.0,
-                 0.0,
-                 1.0);
+    return mat4f(float(1.0 - 2.0 * (y * y + z * z)),
+                 float(2.0 * (x * y + z * w)),
+                 float(2.0 * (z * x - y * w)),
+                 0.0f,
+                 float(2.0 * (x * y - z * w)),
+                 float(1.0 - 2.0 * (z * z + x * x)),
+                 float(2.0 * (y * z + x * w)),
+                 0.0f,
+                 float(2.0 * (z * x + y * w)),
+                 float(2.0 * (y * z - x * w)),
+                 float(1.0 - 2.0 * (y * y + x * x)),
+                 0.0f,
+                 0.0f,
+                 0.0f,
+                 0.0f,
+                 1.0f);
 }
 
 /**
@@ -1948,7 +1961,7 @@ namespace {
 
         // Is the submatrix A singular?
 
-        if(det*det < PRECISION_LIMIT){
+        if (det * det < PRECISION_LIMIT){
             OPENVRML_PRINT_MESSAGE_("Warning : Matrix is singular");
             return;
         }
@@ -1956,15 +1969,15 @@ namespace {
         // Calculate inverse(A) = adj(A) / det(A)
 
         det = 1.0 / det;
-        out[0][0] =  (in[1][1] * in[2][2] - in[1][2] * in[2][1]) * det;
-        out[1][0] = -(in[1][0] * in[2][2] - in[1][2] * in[2][0]) * det;
-        out[2][0] =  (in[1][0] * in[2][1] - in[1][1] * in[2][0]) * det;
-        out[0][1] = -(in[0][1] * in[2][2] - in[0][2] * in[2][1]) * det;
-        out[1][1] =  (in[0][0] * in[2][2] - in[0][2] * in[2][0]) * det;
-        out[2][1] = -(in[0][0] * in[2][1] - in[0][1] * in[2][0]) * det;
-        out[0][2] =  (in[0][1] * in[1][2] - in[0][2] * in[1][1]) * det;
-        out[1][2] = -(in[0][0] * in[1][2] - in[0][2] * in[1][0]) * det;
-        out[2][2] =  (in[0][0] * in[1][1] - in[0][1] * in[1][0]) * det;
+        out[0][0] =  float((in[1][1] * in[2][2] - in[1][2] * in[2][1]) * det);
+        out[1][0] = -float((in[1][0] * in[2][2] - in[1][2] * in[2][0]) * det);
+        out[2][0] =  float((in[1][0] * in[2][1] - in[1][1] * in[2][0]) * det);
+        out[0][1] = -float((in[0][1] * in[2][2] - in[0][2] * in[2][1]) * det);
+        out[1][1] =  float((in[0][0] * in[2][2] - in[0][2] * in[2][0]) * det);
+        out[2][1] = -float((in[0][0] * in[2][1] - in[0][1] * in[2][0]) * det);
+        out[0][2] =  float((in[0][1] * in[1][2] - in[0][2] * in[1][1]) * det);
+        out[1][2] = -float((in[0][0] * in[1][2] - in[0][2] * in[1][0]) * det);
+        out[2][2] =  float((in[0][0] * in[1][1] - in[0][1] * in[1][0]) * det);
 
         // Calculate -B * inverse(A) Do the translation part
 
@@ -2176,13 +2189,14 @@ quatf::quatf(const mat4f & mat) throw ()
     diagonal = mat[0][0] + mat[1][1] + mat[2][2];
     // check the diagonal
     if (diagonal > 0.0) {
-        s = sqrt(diagonal + 1.0);
-        this->quat[3] = s / 2.0;
-        s = 0.5 / s;
+        s = float(sqrt(diagonal + 1.0));
+        this->quat[3] = s / 2.0f;
+        s = 0.5f / s;
         this->quat[0] = (mat[1][2] - mat[2][1]) * s;
         this->quat[1] = (mat[2][0] - mat[0][2]) * s;
         this->quat[2] = (mat[0][1] - mat[1][0]) * s;
     } else {
+        using openvrml_::fequal;
         size_t i, j, k;
         static const size_t next[3] = { 1, 2, 0 };
         // diagonal is negative
@@ -2191,10 +2205,10 @@ quatf::quatf(const mat4f & mat) throw ()
         if (mat[2][2] > mat[i][i]) { i = 2; }
         j = next[i];
         k = next[j];
-        s = sqrt ((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0);
-        this->quat[i] = s * 0.5;
+        s = float(sqrt((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0));
+        this->quat[i] = s * 0.5f;
 
-        if (s != 0.0) { s = 0.5 / s; }
+        if (!fequal<float>()(s, 0.0f)) { s = 0.5f / s; }
         this->quat[3] = (mat[j][k] - mat[k][j]) * s;
         this->quat[j] = (mat[i][j] + mat[j][i]) * s;
         this->quat[k] = (mat[i][k] + mat[k][i]) * s;
@@ -2211,11 +2225,11 @@ quatf::quatf(const rotation & rot) throw ()
     using openvrml_::fequal;
     assert(fequal<float>()(rot.axis().length(), 1.0));
 
-    const float sin_angle = sin(rot.angle() / 2.0);
+    const float sin_angle = float(sin(rot.angle() / 2.0));
     this->quat[0] = rot.x() * sin_angle;
     this->quat[1] = rot.y() * sin_angle;
     this->quat[2] = rot.z() * sin_angle;
-    this->quat[3] = cos(rot.angle() / 2.0);
+    this->quat[3] = float(cos(rot.angle() / 2.0));
 }
 
 /**

@@ -292,7 +292,7 @@ bounding_sphere::intersect_frustum(const openvrml::frustum & frustum) const
     //
     // Distance from the center of the sphere to the near plane.
     //
-    float znear = -frustum.z_near;
+    float znear = -float(frustum.z_near);
     float d = znear - this->center_.z();
     if (d < -this->radius_) { return bounding_volume::outside; }
     if (d < this->radius_) { code = bounding_volume::partial; }
@@ -301,7 +301,7 @@ bounding_sphere::intersect_frustum(const openvrml::frustum & frustum) const
     // Distance from the sphere center to the far plane. Same logic as
     // above.
     //
-    float zfar = -frustum.z_far;
+    float zfar = -float(frustum.z_far);
     d = this->center_.z() - zfar;
     if (d < -this->radius_) { return bounding_volume::outside; }
     if (d < this->radius_) { code = bounding_volume::partial; }
@@ -398,7 +398,7 @@ void bounding_sphere::extend(const vec3f & p)
     float xn = x1 - x0;
     float yn = y1 - y0;
     float zn = z1 - z0;
-    float dn = sqrt(xn * xn + yn * yn + zn * zn);
+    float dn = float(sqrt(xn * xn + yn * yn + zn * zn));
 
     if (fequal<float>()(dn, 0.0f)) { return; }
 
@@ -407,7 +407,7 @@ void bounding_sphere::extend(const vec3f & p)
         return;
     }
 
-    float cr = (dn + r0) / 2.0;
+    float cr = float((dn + r0) / 2.0);
     float tmp = (cr - r0) / dn;
     float cx = x0 + xn * tmp;
     float cy = y0 + yn * tmp;
@@ -475,7 +475,7 @@ void bounding_sphere::extend(const bounding_sphere & b)
     float xn = x1 - x0;
     float yn = y1 - y0;
     float zn = z1 - z0;
-    float dn = sqrt(xn * xn + yn * yn + zn * zn);
+    float dn = float(sqrt(xn * xn + yn * yn + zn * zn));
 
     if (fequal<float>()(dn, 0.0f)) { return; }
 
@@ -487,7 +487,7 @@ void bounding_sphere::extend(const bounding_sphere & b)
         return;
     }
 
-    float cr = (dn + r0 + r1) / 2.0;
+    float cr = float((dn + r0 + r1) / 2.0);
     float tmp = (cr - r0) / dn;
     float cx = x0 + xn * tmp;
     float cy = y0 + yn * tmp;

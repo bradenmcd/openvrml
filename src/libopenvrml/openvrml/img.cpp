@@ -119,7 +119,7 @@ namespace {
                             unsigned char ***frames)
     {
       unsigned char* image[MAXIMAGE];
-      int i;
+      size_t i;
 
       error = FALSE;
 
@@ -575,11 +575,15 @@ namespace {
 	    /*
 	    **  Initialize the Compression routines
 	    */
-	    if (! ReadOK(fd,&c,1))
-		    return (unsigned char*)pm_error("EOF / read error on image data" );
+        if (! ReadOK(fd,&c,1)) {
+		    pm_error("EOF / read error on image data");
+            return 0;
+        }
 
-	    if (LWZReadByte(fd, TRUE, c) < 0)
-		    return (unsigned char*)pm_error("error reading image" );
+        if (LWZReadByte(fd, TRUE, c) < 0) {
+		    pm_error("error reading image");
+            return 0;
+        }
 
 	    /*
 	    **  If this is an "uninteresting picture" ignore it.
@@ -1269,7 +1273,7 @@ namespace {
       *h = MPEGImageHeight(m);
       *nc = 3;
 
-      int nfalloc = FRAMES_PER_ALLOC;
+      size_t nfalloc = FRAMES_PER_ALLOC;
       *frames = (unsigned char**)malloc(nfalloc * sizeof(unsigned char*));
       if ( ! *frames ) return 0;
 
@@ -3308,7 +3312,7 @@ namespace {
 
     int get_more_data(MPEG *m)
     {
-      int num_read, i, request;
+      size_t num_read, i, request;
       unsigned char *mark;
       unsigned int *lmark;
 
@@ -3324,7 +3328,7 @@ namespace {
         }
 
       request = (m->max_buf_length - m->buf_length) * 4;
-      num_read = fread( mark, 1, request, m->fp);
+      num_read = fread(mark, 1, request, m->fp);
 
       if (num_read < 0)
         {
@@ -3344,9 +3348,9 @@ namespace {
         }
 
       /* Paulo Villegas - 26/1/1993: Correction for 4-byte alignment */
-      else if (num_read < request)
+      else if (num_read < int(request))
         {
-          int num_read_rounded;
+          size_t num_read_rounded;
           unsigned char *index;
 
           num_read_rounded = 4*(num_read/4);
@@ -3368,7 +3372,7 @@ namespace {
         *lmark = htonl(*lmark);
 
       m->buffer = m->buf_start;
-      m->buf_length += num_read;
+      m->buf_length += int(num_read);
       m->cur_bits = *m->buffer << m->bit_offset;
 
       return 1;
@@ -6713,10 +6717,10 @@ namespace {
 
     void
     ColorDitherImage(unsigned char *lum,
-		     unsigned char *cr,
-		     unsigned char *cb,
-		     unsigned char *out,
-		     int rows, int cols, int alpha)
+                     unsigned char *cr,
+                     unsigned char *cb,
+                     unsigned char *out,
+                     int rows, int cols, int alpha)
     {
         unsigned char *row1, *row2;
         unsigned char *lum2;
@@ -6745,22 +6749,22 @@ namespace {
 	    float fl, fcr, fcb;
 	    float fr, fg, fb;
 
-	    fcr = ((float) *cr++) - 128.0;
-	    fcb = ((float) *cb++) - 128.0;
+	    fcr = ((float) *cr++) - 128.0f;
+	    fcb = ((float) *cb++) - 128.0f;
 
 	    fl = (float) *lum++;
-	    fr = fl + (1.40200 * fcb);
-	    fg = fl - (0.71414 * fcb) - (0.34414 * fcr);
-	    fb = fl + (1.77200 * fcr);
+	    fr = fl + (1.40200f * fcb);
+	    fg = fl - (0.71414f * fcb) - (0.34414f * fcr);
+	    fb = fl + (1.77200f * fcr);
 	    *row1++ = (unsigned char) CLAMP(0., fr, 255.);
 	    *row1++ = (unsigned char) CLAMP(0., fg, 255.);
 	    *row1++ = (unsigned char) CLAMP(0., fb, 255.);
 	    if (alpha) *row1++ = 255;
 
 	    fl = (float) *lum++;
-	    fr = fl + (1.40200 * fcb);
-	    fg = fl - (0.71414 * fcb) - (0.34414 * fcr);
-	    fb = fl + (1.77200 * fcr);
+	    fr = fl + (1.40200f * fcb);
+	    fg = fl - (0.71414f * fcb) - (0.34414f * fcr);
+	    fb = fl + (1.77200f * fcr);
 	    *row1++ = (unsigned char) CLAMP(0., fr, 255.);
 	    *row1++ = (unsigned char) CLAMP(0., fg, 255.);
 	    *row1++ = (unsigned char) CLAMP(0., fb, 255.);
@@ -6770,18 +6774,18 @@ namespace {
 	     * Now, do second row.
 	     */
 	    fl = (float) *lum2++;
-	    fr = fl + (1.40200 * fcb);
-	    fg = fl - (0.71414 * fcb) - (0.34414 * fcr);
-	    fb = fl + (1.77200 * fcr);
+	    fr = fl + (1.40200f * fcb);
+	    fg = fl - (0.71414f * fcb) - (0.34414f * fcr);
+	    fb = fl + (1.77200f * fcr);
 	    *row2++ = (unsigned char) CLAMP(0., fr, 255.);
 	    *row2++ = (unsigned char) CLAMP(0., fg, 255.);
 	    *row2++ = (unsigned char) CLAMP(0., fb, 255.);
 	    if (alpha) *row2++ = 255;
 
 	    fl = (float) *lum2++;
-	    fr = fl + (1.40200 * fcb);
-	    fg = fl - (0.71414 * fcb) - (0.34414 * fcr);
-	    fb = fl + (1.77200 * fcr);
+	    fr = fl + (1.40200f * fcb);
+	    fg = fl - (0.71414f * fcb) - (0.34414f * fcr);
+	    fb = fl + (1.77200f * fcr);
 	    *row2++ = (unsigned char) CLAMP(0., fr, 255.);
 	    *row2++ = (unsigned char) CLAMP(0., fg, 255.);
 	    *row2++ = (unsigned char) CLAMP(0., fb, 255.);

@@ -315,8 +315,8 @@ antlr::RefToken Vrml97Scanner::nextToken()
         this->identifyTerminalSymbol(*token);
     }
 
-    token->setLine(this->line_);
-    token->setColumn(this->col_);
+    token->setLine(int(this->line_));
+    token->setColumn(int(this->col_));
     this->prev_token_type_ = token->getType();
 
     return token;
@@ -1773,14 +1773,14 @@ openvrml::node_interface::type_id  Vrml97Parser::interfaceType() {
 }
 
 std::string  Vrml97Parser::stringValue() {
-#line 1664 "Vrml97Parser.g"
+#line 1665 "Vrml97Parser.g"
 	std::string str;
 #line 1779 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  s = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
 	s = LT(1);
 	match(STRING);
-#line 1667 "Vrml97Parser.g"
+#line 1668 "Vrml97Parser.g"
 	
 	const std::string temp(s->getText());
 	str = std::string(temp.begin() + 1, temp.end() - 1);
@@ -2231,7 +2231,7 @@ void Vrml97Parser::isStatement(
 		
 		try {
 		proto.addIS(node, nodeInterfaceId, id->getText());
-		} catch (std::bad_alloc & ex) {
+		} catch (std::bad_alloc &) {
 		throw;
 		} catch (std::runtime_error & ex) {
 		//
@@ -2358,7 +2358,7 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 			try {
 			proto.addIS(node, id->getText(),
 			protoFieldId->getText());
-			} catch (std::bad_alloc & ex) {
+			} catch (std::bad_alloc &) {
 			throw;
 			} catch (std::runtime_error & ex) {
 			//
@@ -2590,11 +2590,12 @@ openvrml::field_value_ptr  Vrml97Parser::sfImageValue() {
 			// we read the value as an integer, then strip off the
 			// bytes one by one.
 			for (int32 i = com - 1; i >= 0; i--) {
-			const unsigned char component = pixel >> (8 * i) & 0xff;
+			const unsigned char component =
+			static_cast<unsigned char>(pixel >> (8 * i) & 0xff);
 			pixelVector.push_back(component);
 			}
 			
-#line 2598 "Vrml97Parser.cpp"
+#line 2599 "Vrml97Parser.cpp"
 		}
 		else {
 			goto _loop73;
@@ -2603,7 +2604,7 @@ openvrml::field_value_ptr  Vrml97Parser::sfImageValue() {
 	}
 	_loop73:;
 	} // ( ... )*
-#line 1504 "Vrml97Parser.g"
+#line 1505 "Vrml97Parser.g"
 	
 	// if somebody gives us a really, really, really big
 	// pixeltexture, then we will crash. in the age of dos
@@ -2622,40 +2623,40 @@ openvrml::field_value_ptr  Vrml97Parser::sfImageValue() {
 	}
 	siv.reset(new sfimage(w, h, com, &pixelVector[0]));
 	
-#line 2626 "Vrml97Parser.cpp"
+#line 2627 "Vrml97Parser.cpp"
 	return siv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfInt32Value() {
-#line 1524 "Vrml97Parser.g"
+#line 1525 "Vrml97Parser.g"
 	openvrml::field_value_ptr siv;
-#line 2633 "Vrml97Parser.cpp"
-#line 1524 "Vrml97Parser.g"
+#line 2634 "Vrml97Parser.cpp"
+#line 1525 "Vrml97Parser.g"
 	
 	long i;
 	
-#line 2638 "Vrml97Parser.cpp"
+#line 2639 "Vrml97Parser.cpp"
 	
 	i=intValue();
-#line 1529 "Vrml97Parser.g"
+#line 1530 "Vrml97Parser.g"
 	siv.reset(new sfint32(i));
-#line 2643 "Vrml97Parser.cpp"
+#line 2644 "Vrml97Parser.cpp"
 	return siv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfRotationValue() {
-#line 1602 "Vrml97Parser.g"
+#line 1603 "Vrml97Parser.g"
 	openvrml::field_value_ptr srv;
-#line 2650 "Vrml97Parser.cpp"
-#line 1602 "Vrml97Parser.g"
+#line 2651 "Vrml97Parser.cpp"
+#line 1603 "Vrml97Parser.g"
 	rotation r;
-#line 2653 "Vrml97Parser.cpp"
+#line 2654 "Vrml97Parser.cpp"
 	
 	try {      // for error handling
 		rotationValue(r);
-#line 1604 "Vrml97Parser.g"
+#line 1605 "Vrml97Parser.g"
 		srv.reset(new sfrotation(r));
-#line 2659 "Vrml97Parser.cpp"
+#line 2660 "Vrml97Parser.cpp"
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
@@ -2666,64 +2667,64 @@ openvrml::field_value_ptr  Vrml97Parser::sfRotationValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfStringValue() {
-#line 1646 "Vrml97Parser.g"
+#line 1647 "Vrml97Parser.g"
 	openvrml::field_value_ptr ssv;
-#line 2672 "Vrml97Parser.cpp"
-#line 1646 "Vrml97Parser.g"
+#line 2673 "Vrml97Parser.cpp"
+#line 1647 "Vrml97Parser.g"
 	std::string s;
-#line 2675 "Vrml97Parser.cpp"
+#line 2676 "Vrml97Parser.cpp"
 	
 	s=stringValue();
-#line 1649 "Vrml97Parser.g"
+#line 1650 "Vrml97Parser.g"
 	ssv.reset(new sfstring(s));
-#line 2680 "Vrml97Parser.cpp"
+#line 2681 "Vrml97Parser.cpp"
 	return ssv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfTimeValue() {
-#line 1673 "Vrml97Parser.g"
+#line 1674 "Vrml97Parser.g"
 	openvrml::field_value_ptr stv;
-#line 2687 "Vrml97Parser.cpp"
-#line 1673 "Vrml97Parser.g"
+#line 2688 "Vrml97Parser.cpp"
+#line 1674 "Vrml97Parser.g"
 	double t(0.0);
-#line 2690 "Vrml97Parser.cpp"
+#line 2691 "Vrml97Parser.cpp"
 	
 	t=doubleValue();
-#line 1676 "Vrml97Parser.g"
+#line 1677 "Vrml97Parser.g"
 	stv.reset(new sftime(t));
-#line 2695 "Vrml97Parser.cpp"
+#line 2696 "Vrml97Parser.cpp"
 	return stv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfVec2fValue() {
-#line 1696 "Vrml97Parser.g"
+#line 1697 "Vrml97Parser.g"
 	openvrml::field_value_ptr svv;
-#line 2702 "Vrml97Parser.cpp"
-#line 1696 "Vrml97Parser.g"
+#line 2703 "Vrml97Parser.cpp"
+#line 1697 "Vrml97Parser.g"
 	vec2f v;
-#line 2705 "Vrml97Parser.cpp"
+#line 2706 "Vrml97Parser.cpp"
 	
 	vec2fValue(v);
-#line 1699 "Vrml97Parser.g"
+#line 1700 "Vrml97Parser.g"
 	svv.reset(new sfvec2f(v));
-#line 2710 "Vrml97Parser.cpp"
+#line 2711 "Vrml97Parser.cpp"
 	return svv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfVec3fValue() {
-#line 1723 "Vrml97Parser.g"
+#line 1724 "Vrml97Parser.g"
 	openvrml::field_value_ptr svv;
-#line 2717 "Vrml97Parser.cpp"
-#line 1723 "Vrml97Parser.g"
+#line 2718 "Vrml97Parser.cpp"
+#line 1724 "Vrml97Parser.g"
 	
 	vec3f v;
 	
-#line 2722 "Vrml97Parser.cpp"
+#line 2723 "Vrml97Parser.cpp"
 	
 	vec3fValue(v);
-#line 1728 "Vrml97Parser.g"
+#line 1729 "Vrml97Parser.g"
 	svv.reset(new sfvec3f(v));
-#line 2727 "Vrml97Parser.cpp"
+#line 2728 "Vrml97Parser.cpp"
 	return svv;
 }
 
@@ -2731,13 +2732,13 @@ openvrml::field_value_ptr  Vrml97Parser::mfColorValue() {
 #line 1418 "Vrml97Parser.g"
 	openvrml::field_value_ptr mcv =
             openvrml::field_value_ptr(new mfcolor);
-#line 2735 "Vrml97Parser.cpp"
+#line 2736 "Vrml97Parser.cpp"
 #line 1418 "Vrml97Parser.g"
 	
 	color c;
 	mfcolor & colors = static_cast<mfcolor &>(*mcv);
 	
-#line 2741 "Vrml97Parser.cpp"
+#line 2742 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
@@ -2746,7 +2747,7 @@ openvrml::field_value_ptr  Vrml97Parser::mfColorValue() {
 		colorValue(c);
 #line 1426 "Vrml97Parser.g"
 		colors.value.push_back(c);
-#line 2750 "Vrml97Parser.cpp"
+#line 2751 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -2758,7 +2759,7 @@ openvrml::field_value_ptr  Vrml97Parser::mfColorValue() {
 				colorValue(c);
 #line 1427 "Vrml97Parser.g"
 				colors.value.push_back(c);
-#line 2762 "Vrml97Parser.cpp"
+#line 2763 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop63;
@@ -2782,13 +2783,13 @@ openvrml::field_value_ptr  Vrml97Parser::mfFloatValue() {
 #line 1466 "Vrml97Parser.g"
 	openvrml::field_value_ptr mfv =
             openvrml::field_value_ptr(new mffloat);
-#line 2786 "Vrml97Parser.cpp"
+#line 2787 "Vrml97Parser.cpp"
 #line 1466 "Vrml97Parser.g"
 	
 	float f;
 	mffloat & floats = static_cast<mffloat &>(*mfv);
 	
-#line 2792 "Vrml97Parser.cpp"
+#line 2793 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
@@ -2797,7 +2798,7 @@ openvrml::field_value_ptr  Vrml97Parser::mfFloatValue() {
 		f=floatValue();
 #line 1474 "Vrml97Parser.g"
 		floats.value.push_back(f);
-#line 2801 "Vrml97Parser.cpp"
+#line 2802 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -2809,7 +2810,7 @@ openvrml::field_value_ptr  Vrml97Parser::mfFloatValue() {
 				f=floatValue();
 #line 1475 "Vrml97Parser.g"
 				floats.value.push_back(f);
-#line 2813 "Vrml97Parser.cpp"
+#line 2814 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop69;
@@ -2830,25 +2831,25 @@ openvrml::field_value_ptr  Vrml97Parser::mfFloatValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfInt32Value() {
-#line 1532 "Vrml97Parser.g"
+#line 1533 "Vrml97Parser.g"
 	openvrml::field_value_ptr miv =
             openvrml::field_value_ptr(new mfint32);
-#line 2837 "Vrml97Parser.cpp"
-#line 1532 "Vrml97Parser.g"
+#line 2838 "Vrml97Parser.cpp"
+#line 1533 "Vrml97Parser.g"
 	
 	long i;
 	mfint32 & int32s = static_cast<mfint32 &>(*miv);
 	
-#line 2843 "Vrml97Parser.cpp"
+#line 2844 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case HEX_INTEGER:
 	{
 		i=intValue();
-#line 1540 "Vrml97Parser.g"
+#line 1541 "Vrml97Parser.g"
 		int32s.value.push_back(i);
-#line 2852 "Vrml97Parser.cpp"
+#line 2853 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -2858,9 +2859,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfInt32Value() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == HEX_INTEGER)) {
 				i=intValue();
-#line 1541 "Vrml97Parser.g"
+#line 1542 "Vrml97Parser.g"
 				int32s.value.push_back(i);
-#line 2864 "Vrml97Parser.cpp"
+#line 2865 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop77;
@@ -2881,16 +2882,16 @@ openvrml::field_value_ptr  Vrml97Parser::mfInt32Value() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfRotationValue() {
-#line 1607 "Vrml97Parser.g"
+#line 1608 "Vrml97Parser.g"
 	openvrml::field_value_ptr mrv =
          openvrml::field_value_ptr(new mfrotation);
-#line 2888 "Vrml97Parser.cpp"
-#line 1607 "Vrml97Parser.g"
+#line 2889 "Vrml97Parser.cpp"
+#line 1608 "Vrml97Parser.g"
 	
 	rotation r;
 	mfrotation & rotations = static_cast<mfrotation &>(*mrv);
 	
-#line 2894 "Vrml97Parser.cpp"
+#line 2895 "Vrml97Parser.cpp"
 	
 	try {      // for error handling
 		switch ( LA(1)) {
@@ -2898,9 +2899,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfRotationValue() {
 		case REAL:
 		{
 			rotationValue(r);
-#line 1614 "Vrml97Parser.g"
+#line 1615 "Vrml97Parser.g"
 			rotations.value.push_back(r);
-#line 2904 "Vrml97Parser.cpp"
+#line 2905 "Vrml97Parser.cpp"
 			break;
 		}
 		case LBRACKET:
@@ -2910,9 +2911,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfRotationValue() {
 			for (;;) {
 				if ((LA(1) == INTEGER || LA(1) == REAL)) {
 					rotationValue(r);
-#line 1615 "Vrml97Parser.g"
+#line 1616 "Vrml97Parser.g"
 					rotations.value.push_back(r);
-#line 2916 "Vrml97Parser.cpp"
+#line 2917 "Vrml97Parser.cpp"
 				}
 				else {
 					goto _loop90;
@@ -2939,24 +2940,24 @@ openvrml::field_value_ptr  Vrml97Parser::mfRotationValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfStringValue() {
-#line 1652 "Vrml97Parser.g"
+#line 1653 "Vrml97Parser.g"
 	openvrml::field_value_ptr msv =
          openvrml::field_value_ptr(new mfstring);
-#line 2946 "Vrml97Parser.cpp"
-#line 1652 "Vrml97Parser.g"
+#line 2947 "Vrml97Parser.cpp"
+#line 1653 "Vrml97Parser.g"
 	
 	std::string s;
 	mfstring & strings = static_cast<mfstring &>(*msv);
 	
-#line 2952 "Vrml97Parser.cpp"
+#line 2953 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case STRING:
 	{
 		s=stringValue();
-#line 1660 "Vrml97Parser.g"
+#line 1661 "Vrml97Parser.g"
 		strings.value.push_back(s);
-#line 2960 "Vrml97Parser.cpp"
+#line 2961 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -2966,9 +2967,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfStringValue() {
 		for (;;) {
 			if ((LA(1) == STRING)) {
 				s=stringValue();
-#line 1661 "Vrml97Parser.g"
+#line 1662 "Vrml97Parser.g"
 				strings.value.push_back(s);
-#line 2972 "Vrml97Parser.cpp"
+#line 2973 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop95;
@@ -2989,24 +2990,24 @@ openvrml::field_value_ptr  Vrml97Parser::mfStringValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfTimeValue() {
-#line 1679 "Vrml97Parser.g"
+#line 1680 "Vrml97Parser.g"
 	openvrml::field_value_ptr mtv = openvrml::field_value_ptr(new mftime);
-#line 2995 "Vrml97Parser.cpp"
-#line 1679 "Vrml97Parser.g"
+#line 2996 "Vrml97Parser.cpp"
+#line 1680 "Vrml97Parser.g"
 	
 	double t;
 	mftime & times = static_cast<mftime &>(*mtv);
 	
-#line 3001 "Vrml97Parser.cpp"
+#line 3002 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		t=doubleValue();
-#line 1686 "Vrml97Parser.g"
+#line 1687 "Vrml97Parser.g"
 		times.value.push_back(t);
-#line 3010 "Vrml97Parser.cpp"
+#line 3011 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -3016,9 +3017,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfTimeValue() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				t=doubleValue();
-#line 1687 "Vrml97Parser.g"
+#line 1688 "Vrml97Parser.g"
 				times.value.push_back(t);
-#line 3022 "Vrml97Parser.cpp"
+#line 3023 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop100;
@@ -3039,25 +3040,25 @@ openvrml::field_value_ptr  Vrml97Parser::mfTimeValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfVec2fValue() {
-#line 1702 "Vrml97Parser.g"
+#line 1703 "Vrml97Parser.g"
 	openvrml::field_value_ptr mvv =
          openvrml::field_value_ptr(new mfvec2f);
-#line 3046 "Vrml97Parser.cpp"
-#line 1702 "Vrml97Parser.g"
+#line 3047 "Vrml97Parser.cpp"
+#line 1703 "Vrml97Parser.g"
 	
 	vec2f v;
 	mfvec2f & vec2fs = static_cast<mfvec2f &>(*mvv);
 	
-#line 3052 "Vrml97Parser.cpp"
+#line 3053 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		vec2fValue(v);
-#line 1710 "Vrml97Parser.g"
+#line 1711 "Vrml97Parser.g"
 		vec2fs.value.push_back(v);
-#line 3061 "Vrml97Parser.cpp"
+#line 3062 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -3067,9 +3068,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfVec2fValue() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				vec2fValue(v);
-#line 1711 "Vrml97Parser.g"
+#line 1712 "Vrml97Parser.g"
 				vec2fs.value.push_back(v);
-#line 3073 "Vrml97Parser.cpp"
+#line 3074 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop105;
@@ -3090,25 +3091,25 @@ openvrml::field_value_ptr  Vrml97Parser::mfVec2fValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfVec3fValue() {
-#line 1731 "Vrml97Parser.g"
+#line 1732 "Vrml97Parser.g"
 	openvrml::field_value_ptr mvv =
          openvrml::field_value_ptr(new mfvec3f);
-#line 3097 "Vrml97Parser.cpp"
-#line 1731 "Vrml97Parser.g"
+#line 3098 "Vrml97Parser.cpp"
+#line 1732 "Vrml97Parser.g"
 	
 	vec3f v;
 	mfvec3f & vec3fs = static_cast<mfvec3f &>(*mvv);
 	
-#line 3103 "Vrml97Parser.cpp"
+#line 3104 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		vec3fValue(v);
-#line 1739 "Vrml97Parser.g"
+#line 1740 "Vrml97Parser.g"
 		vec3fs.value.push_back(v);
-#line 3112 "Vrml97Parser.cpp"
+#line 3113 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -3118,9 +3119,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfVec3fValue() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				vec3fValue(v);
-#line 1740 "Vrml97Parser.g"
+#line 1741 "Vrml97Parser.g"
 				vec3fs.value.push_back(v);
-#line 3124 "Vrml97Parser.cpp"
+#line 3125 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop110;
@@ -3144,14 +3145,14 @@ openvrml::field_value_ptr  Vrml97Parser::sfNodeValue(
 	openvrml::browser & browser,
             const openvrml::scope_ptr & scope
 ) {
-#line 1550 "Vrml97Parser.g"
+#line 1551 "Vrml97Parser.g"
 	openvrml::field_value_ptr snv;
-#line 3150 "Vrml97Parser.cpp"
-#line 1550 "Vrml97Parser.g"
+#line 3151 "Vrml97Parser.cpp"
+#line 1551 "Vrml97Parser.g"
 	
 	openvrml::node_ptr n;
 	
-#line 3155 "Vrml97Parser.cpp"
+#line 3156 "Vrml97Parser.cpp"
 	
 	try {      // for error handling
 		switch ( LA(1)) {
@@ -3160,17 +3161,17 @@ openvrml::field_value_ptr  Vrml97Parser::sfNodeValue(
 		case KEYWORD_USE:
 		{
 			n=nodeStatement(browser, scope);
-#line 1556 "Vrml97Parser.g"
+#line 1557 "Vrml97Parser.g"
 			snv.reset(new sfnode(n));
-#line 3166 "Vrml97Parser.cpp"
+#line 3167 "Vrml97Parser.cpp"
 			break;
 		}
 		case KEYWORD_NULL:
 		{
 			match(KEYWORD_NULL);
-#line 1557 "Vrml97Parser.g"
+#line 1558 "Vrml97Parser.g"
 			snv.reset(new sfnode);
-#line 3174 "Vrml97Parser.cpp"
+#line 3175 "Vrml97Parser.cpp"
 			break;
 		}
 		default:
@@ -3191,15 +3192,15 @@ openvrml::field_value_ptr  Vrml97Parser::mfNodeValue(
 	openvrml::browser & browser,
             const openvrml::scope_ptr & scope
 ) {
-#line 1570 "Vrml97Parser.g"
+#line 1571 "Vrml97Parser.g"
 	openvrml::field_value_ptr mnv = openvrml::field_value_ptr(new mfnode);
-#line 3197 "Vrml97Parser.cpp"
-#line 1570 "Vrml97Parser.g"
+#line 3198 "Vrml97Parser.cpp"
+#line 1571 "Vrml97Parser.g"
 	
 	openvrml::node_ptr n;
 	mfnode & nodes = static_cast<mfnode &>(*mnv);
 	
-#line 3203 "Vrml97Parser.cpp"
+#line 3204 "Vrml97Parser.cpp"
 	
 	try {      // for error handling
 		switch ( LA(1)) {
@@ -3208,9 +3209,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfNodeValue(
 		case KEYWORD_USE:
 		{
 			n=nodeStatement(browser, scope);
-#line 1577 "Vrml97Parser.g"
+#line 1578 "Vrml97Parser.g"
 			if (n) { nodes.value.push_back(n); }
-#line 3214 "Vrml97Parser.cpp"
+#line 3215 "Vrml97Parser.cpp"
 			break;
 		}
 		case LBRACKET:
@@ -3220,11 +3221,11 @@ openvrml::field_value_ptr  Vrml97Parser::mfNodeValue(
 			for (;;) {
 				if ((LA(1) == ID || LA(1) == KEYWORD_DEF || LA(1) == KEYWORD_USE)) {
 					n=nodeStatement(browser, scope);
-#line 1579 "Vrml97Parser.g"
+#line 1580 "Vrml97Parser.g"
 					
 					if (n) { nodes.value.push_back(n); }
 					
-#line 3228 "Vrml97Parser.cpp"
+#line 3229 "Vrml97Parser.cpp"
 				}
 				else {
 					goto _loop83;
@@ -3254,14 +3255,14 @@ openvrml::field_value_ptr  Vrml97Parser::protoSfNodeValue(
 	openvrml::ProtoNodeClass & proto,
                  const openvrml::scope_ptr & scope
 ) {
-#line 1560 "Vrml97Parser.g"
+#line 1561 "Vrml97Parser.g"
 	openvrml::field_value_ptr snv;
-#line 3260 "Vrml97Parser.cpp"
-#line 1560 "Vrml97Parser.g"
+#line 3261 "Vrml97Parser.cpp"
+#line 1561 "Vrml97Parser.g"
 	
 	openvrml::node_ptr n;
 	
-#line 3265 "Vrml97Parser.cpp"
+#line 3266 "Vrml97Parser.cpp"
 	
 	try {      // for error handling
 		switch ( LA(1)) {
@@ -3270,17 +3271,17 @@ openvrml::field_value_ptr  Vrml97Parser::protoSfNodeValue(
 		case KEYWORD_USE:
 		{
 			n=protoNodeStatement(proto, scope);
-#line 1566 "Vrml97Parser.g"
+#line 1567 "Vrml97Parser.g"
 			snv.reset(new sfnode(n));
-#line 3276 "Vrml97Parser.cpp"
+#line 3277 "Vrml97Parser.cpp"
 			break;
 		}
 		case KEYWORD_NULL:
 		{
 			match(KEYWORD_NULL);
-#line 1567 "Vrml97Parser.g"
+#line 1568 "Vrml97Parser.g"
 			snv.reset(new sfnode);
-#line 3284 "Vrml97Parser.cpp"
+#line 3285 "Vrml97Parser.cpp"
 			break;
 		}
 		default:
@@ -3301,15 +3302,15 @@ openvrml::field_value_ptr  Vrml97Parser::protoMfNodeValue(
 	openvrml::ProtoNodeClass & proto,
                  const openvrml::scope_ptr & scope
 ) {
-#line 1585 "Vrml97Parser.g"
+#line 1586 "Vrml97Parser.g"
 	openvrml::field_value_ptr mnv = openvrml::field_value_ptr(new mfnode);
-#line 3307 "Vrml97Parser.cpp"
-#line 1585 "Vrml97Parser.g"
+#line 3308 "Vrml97Parser.cpp"
+#line 1586 "Vrml97Parser.g"
 	
 	openvrml::node_ptr n;
 	mfnode & nodes = static_cast<mfnode &>(*mnv);
 	
-#line 3313 "Vrml97Parser.cpp"
+#line 3314 "Vrml97Parser.cpp"
 	
 	try {      // for error handling
 		switch ( LA(1)) {
@@ -3318,11 +3319,11 @@ openvrml::field_value_ptr  Vrml97Parser::protoMfNodeValue(
 		case KEYWORD_USE:
 		{
 			n=protoNodeStatement(proto, scope);
-#line 1592 "Vrml97Parser.g"
+#line 1593 "Vrml97Parser.g"
 			
 			if (n) { nodes.value.push_back(n); }
 			
-#line 3326 "Vrml97Parser.cpp"
+#line 3327 "Vrml97Parser.cpp"
 			break;
 		}
 		case LBRACKET:
@@ -3332,11 +3333,11 @@ openvrml::field_value_ptr  Vrml97Parser::protoMfNodeValue(
 			for (;;) {
 				if ((LA(1) == ID || LA(1) == KEYWORD_DEF || LA(1) == KEYWORD_USE)) {
 					n=protoNodeStatement(proto, scope);
-#line 1596 "Vrml97Parser.g"
+#line 1597 "Vrml97Parser.g"
 					
 					if (n) { nodes.value.push_back(n); }
 					
-#line 3340 "Vrml97Parser.cpp"
+#line 3341 "Vrml97Parser.cpp"
 				}
 				else {
 					goto _loop86;
@@ -3365,7 +3366,7 @@ openvrml::field_value_ptr  Vrml97Parser::protoMfNodeValue(
 bool  Vrml97Parser::boolValue() {
 #line 1404 "Vrml97Parser.g"
 	bool val = false;
-#line 3369 "Vrml97Parser.cpp"
+#line 3370 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_TRUE:
@@ -3373,7 +3374,7 @@ bool  Vrml97Parser::boolValue() {
 		match(KEYWORD_TRUE);
 #line 1406 "Vrml97Parser.g"
 		val = true;
-#line 3377 "Vrml97Parser.cpp"
+#line 3378 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_FALSE:
@@ -3381,7 +3382,7 @@ bool  Vrml97Parser::boolValue() {
 		match(KEYWORD_FALSE);
 #line 1407 "Vrml97Parser.g"
 		val = false;
-#line 3385 "Vrml97Parser.cpp"
+#line 3386 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -3399,7 +3400,7 @@ void Vrml97Parser::colorValue(
 	
 	float r, g, b;
 	
-#line 3403 "Vrml97Parser.cpp"
+#line 3404 "Vrml97Parser.cpp"
 	
 	r=colorComponent();
 	g=colorComponent();
@@ -3408,13 +3409,13 @@ void Vrml97Parser::colorValue(
 	c.r(r);
 	c.g(g);
 	c.b(b);
-#line 3412 "Vrml97Parser.cpp"
+#line 3413 "Vrml97Parser.cpp"
 }
 
 float  Vrml97Parser::colorComponent() {
 #line 1443 "Vrml97Parser.g"
 	float val = 0.0f;
-#line 3418 "Vrml97Parser.cpp"
+#line 3419 "Vrml97Parser.cpp"
 	
 	val=floatValue();
 #line 1445 "Vrml97Parser.g"
@@ -3429,14 +3430,14 @@ float  Vrml97Parser::colorComponent() {
 	}
 	}
 	
-#line 3433 "Vrml97Parser.cpp"
+#line 3434 "Vrml97Parser.cpp"
 	return val;
 }
 
 float  Vrml97Parser::floatValue() {
 #line 1478 "Vrml97Parser.g"
 	float val;
-#line 3440 "Vrml97Parser.cpp"
+#line 3441 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  f0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  f1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
@@ -3447,7 +3448,7 @@ float  Vrml97Parser::floatValue() {
 		match(REAL);
 #line 1480 "Vrml97Parser.g"
 		std::istringstream(f0->getText()) >> val;
-#line 3451 "Vrml97Parser.cpp"
+#line 3452 "Vrml97Parser.cpp"
 		break;
 	}
 	case INTEGER:
@@ -3456,7 +3457,7 @@ float  Vrml97Parser::floatValue() {
 		match(INTEGER);
 #line 1481 "Vrml97Parser.g"
 		std::istringstream(f1->getText()) >> val;
-#line 3460 "Vrml97Parser.cpp"
+#line 3461 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -3468,9 +3469,9 @@ float  Vrml97Parser::floatValue() {
 }
 
 long  Vrml97Parser::intValue() {
-#line 1544 "Vrml97Parser.g"
+#line 1545 "Vrml97Parser.g"
 	long val;
-#line 3474 "Vrml97Parser.cpp"
+#line 3475 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  i0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  i1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
@@ -3479,18 +3480,18 @@ long  Vrml97Parser::intValue() {
 	{
 		i0 = LT(1);
 		match(INTEGER);
-#line 1546 "Vrml97Parser.g"
+#line 1547 "Vrml97Parser.g"
 		std::istringstream(i0->getText()) >> val;
-#line 3485 "Vrml97Parser.cpp"
+#line 3486 "Vrml97Parser.cpp"
 		break;
 	}
 	case HEX_INTEGER:
 	{
 		i1 = LT(1);
 		match(HEX_INTEGER);
-#line 1547 "Vrml97Parser.g"
+#line 1548 "Vrml97Parser.g"
 		std::istringstream(i1->getText()) >> val;
-#line 3494 "Vrml97Parser.cpp"
+#line 3495 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -3504,18 +3505,18 @@ long  Vrml97Parser::intValue() {
 void Vrml97Parser::rotationValue(
 	rotation & r
 ) {
-#line 1621 "Vrml97Parser.g"
+#line 1622 "Vrml97Parser.g"
 	
 	using openvrml_::fequal;
 	float x, y, z, angle;
 	
-#line 3513 "Vrml97Parser.cpp"
+#line 3514 "Vrml97Parser.cpp"
 	
 	x=floatValue();
 	y=floatValue();
 	z=floatValue();
 	angle=floatValue();
-#line 1627 "Vrml97Parser.g"
+#line 1628 "Vrml97Parser.g"
 	
 	r.x(x);
 	r.y(y);
@@ -3533,13 +3534,13 @@ void Vrml97Parser::rotationValue(
 	}
 	}
 	
-#line 3537 "Vrml97Parser.cpp"
+#line 3538 "Vrml97Parser.cpp"
 }
 
 double  Vrml97Parser::doubleValue() {
-#line 1690 "Vrml97Parser.g"
+#line 1691 "Vrml97Parser.g"
 	double val = 0.0;
-#line 3543 "Vrml97Parser.cpp"
+#line 3544 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  d0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  d1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
@@ -3548,18 +3549,18 @@ double  Vrml97Parser::doubleValue() {
 	{
 		d0 = LT(1);
 		match(REAL);
-#line 1692 "Vrml97Parser.g"
+#line 1693 "Vrml97Parser.g"
 		std::istringstream(d0->getText()) >> val;
-#line 3554 "Vrml97Parser.cpp"
+#line 3555 "Vrml97Parser.cpp"
 		break;
 	}
 	case INTEGER:
 	{
 		d1 = LT(1);
 		match(INTEGER);
-#line 1693 "Vrml97Parser.g"
+#line 1694 "Vrml97Parser.g"
 		std::istringstream(d1->getText()) >> val;
-#line 3563 "Vrml97Parser.cpp"
+#line 3564 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -3573,37 +3574,37 @@ double  Vrml97Parser::doubleValue() {
 void Vrml97Parser::vec2fValue(
 	vec2f & v
 ) {
-#line 1714 "Vrml97Parser.g"
+#line 1715 "Vrml97Parser.g"
 	
 	float x, y;
 	
-#line 3581 "Vrml97Parser.cpp"
+#line 3582 "Vrml97Parser.cpp"
 	
 	x=floatValue();
 	y=floatValue();
-#line 1719 "Vrml97Parser.g"
+#line 1720 "Vrml97Parser.g"
 	v.x(x);
 	v.y(y);
-#line 3588 "Vrml97Parser.cpp"
+#line 3589 "Vrml97Parser.cpp"
 }
 
 void Vrml97Parser::vec3fValue(
 	vec3f & v
 ) {
-#line 1743 "Vrml97Parser.g"
+#line 1744 "Vrml97Parser.g"
 	
 	float x, y, z;
 	
-#line 3598 "Vrml97Parser.cpp"
+#line 3599 "Vrml97Parser.cpp"
 	
 	x=floatValue();
 	y=floatValue();
 	z=floatValue();
-#line 1748 "Vrml97Parser.g"
+#line 1749 "Vrml97Parser.g"
 	v.x(x);
 	v.y(y);
 	v.z(z);
-#line 3607 "Vrml97Parser.cpp"
+#line 3608 "Vrml97Parser.cpp"
 }
 
 void Vrml97Parser::initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory )

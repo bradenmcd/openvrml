@@ -72,7 +72,7 @@ scope_ptr::scope_ptr(openvrml::scope * const scope) throw (std::bad_alloc):
 {
     try {
         this->count_ = new size_t(1); // prevent leak if new throws
-    } catch (std::bad_alloc & ex) {
+    } catch (std::bad_alloc &) {
         delete scope;
         throw;
     }

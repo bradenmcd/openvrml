@@ -2163,10 +2163,13 @@ namespace {
         // Check whether the url has already been loaded
         if (!urls.empty()) {
             for (int index = thisIndex - 1; index >= 0; --index) {
+                using std::string;
                 const char * currentTex = tex[index].url();
-                const std::string relPath = baseDoc.url_path();
-                int currentLen = currentTex ? strlen(currentTex) : 0;
-                int relPathLen = relPath.length();
+                const string relPath = baseDoc.url_path();
+                size_t currentLen = currentTex
+                                  ? strlen(currentTex)
+                                  : 0;
+                string::size_type relPathLen = relPath.length();
                 if (relPathLen >= currentLen) { relPathLen = 0; }
 
                 if (currentTex) {
@@ -2276,7 +2279,7 @@ void background_class::render(openvrml::viewer & viewer) throw ()
                                                   viewer);
             }
 
-            int i, whc[18];    // Width, height, and nComponents for 6 tex
+            size_t i, whc[18];    // Width, height, and nComponents for 6 tex
             unsigned char *pixels[6];
             int nPix = 0;
 
@@ -3040,7 +3043,7 @@ const mat4f billboard_node::billboard_to_matrix(const billboard_node & node,
 
         // calculate the angle by which the Z axis vector of current coordinate
         // system has to be rotated around the Y axis to new coordinate system.
-        float angle = acos(nz[2]);
+        float angle = float(acos(nz[2]));
         if(nz[0] > 0) { angle = -angle; }
         result = mat4f::rotation(rotation(Y, angle));
     }
@@ -3763,16 +3766,18 @@ void color_interpolator_node::process_set_fraction(const field_value & value,
                                                    const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
+    using std::vector;
+
     float f = dynamic_cast<const sffloat &>(value).value;
 
-    int n = this->key.value.size() - 1;
+    vector<float>::size_type n = this->key.value.size() - 1;
     if (f < this->key.value[0]) {
         this->value.value = this->keyValue.value[0];
     } else if (f > this->key.value[n]) {
         this->value.value = this->keyValue.value[n];
     } else {
         // convert to HSV for the interpolation...
-        for (int i = 0; i < n; ++i) {
+        for (vector<float>::size_type i = 0; i < n; ++i) {
             if (this->key.value[i] <= f
                     && f <= this->key.value[i + 1]) {
                 const color & rgb1 = this->keyValue.value[i];
@@ -4817,13 +4822,13 @@ cylinder_sensor_node::cylinder_sensor_node(const node_type & type,
     node(type, scope),
     abstract_child_node(type, scope),
     autoOffset(true),
-    diskAngle(0.262),
+    diskAngle(0.262f),
     enabled_(true),
-    maxAngle(-1.0),
-    minAngle(0.0),
-    offset(0.0),
+    maxAngle(-1.0f),
+    minAngle(0.0f),
+    offset(0.0f),
     active(false),
-    rotation_val(0.0),
+    rotation_val(0.0f),
     disk(false)
 {
     this->node::modified(true);
@@ -4873,7 +4878,9 @@ void cylinder_sensor_node::activate(double timeStamp,
         this->active.value = isActive;
 
         // set activation point in local coords
-        vec3f v(p[0], p[1], p[2]);
+        vec3f v(static_cast<float>(p[0]),
+                static_cast<float>(p[1]),
+                static_cast<float>(p[2]));
         this->activationMatrix = this->modelview.inverse();
         v *= this->activationMatrix;
         this->activationPoint = v;
@@ -4907,7 +4914,9 @@ void cylinder_sensor_node::activate(double timeStamp,
         using openvrml_::fequal;
 
         // get local coord for touch point
-        vec3f Vec(p[0], p[1], p[2]);
+        vec3f Vec(static_cast<float>(p[0]),
+                  static_cast<float>(p[1]),
+                  static_cast<float>(p[2]));
         Vec = Vec * this->activationMatrix;
         this->trackPoint.value = Vec;
         this->emit_event("trackPoint_changed", this->trackPoint, timeStamp);
@@ -4915,7 +4924,7 @@ void cylinder_sensor_node::activate(double timeStamp,
         float rot, radius;
         vec3f dir1(Vec[0], 0, Vec[2]);
         radius = this->disk
-               ? 1.0
+               ? 1.0f
                : dir1.length();
         dir1 = dir1.normalize();
         vec3f dir2(this->activationPoint.x(), 0, this->activationPoint.z());
@@ -4924,7 +4933,7 @@ void cylinder_sensor_node::activate(double timeStamp,
         vec3f cx(tempv);
         cx = cx.normalize();
         if (cx.length() == 0.0) { return; }
-        rot = radius * acos(dir2.dot(dir1));
+        rot = radius * float(acos(dir2.dot(dir1)));
         if (fequal<float>()(cx.y(), -1.0f)) { rot = -rot; }
         if (this->autoOffset.value) {
             rot = this->offset.value + rot;
@@ -7038,6 +7047,8 @@ void group_node::render(openvrml::viewer & viewer, rendering_context context)
  */
 void group_node::render_nocull(openvrml::viewer & viewer, rendering_context context)
 {
+    using std::vector;
+
     if (this->viewerObject && this->modified()) {
         viewer.remove_object(this->viewerObject);
         this->viewerObject = 0;
@@ -7046,8 +7057,8 @@ void group_node::render_nocull(openvrml::viewer & viewer, rendering_context cont
     if (this->viewerObject) {
         viewer.insert_reference(this->viewerObject);
     } else if (this->children_.value.size() > 0) {
-        int i, n = this->children_.value.size();
-        int nSensors = 0;
+        vector<node_ptr>::size_type i, n = this->children_.value.size();
+        size_t nSensors = 0;
 
         this->viewerObject = viewer.begin_object(this->id().c_str());
 
@@ -7333,11 +7344,11 @@ void image_texture_node::render(openvrml::viewer & viewer,
 
         if (this->image && (pix = this->image->pixels())) {
             // Ensure the image dimensions are powers of two
-            int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-            int nSizes = sizeof(sizes) / sizeof(int);
-            int w = this->image->w();
-            int h = this->image->h();
-            int i, j;
+            const size_t sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
+            const size_t nSizes = sizeof(sizes) / sizeof(int);
+            const size_t w = this->image->w();
+            const size_t h = this->image->h();
+            size_t i, j;
             for (i = 0; i < nSizes; ++i) { if (w < sizes[i]) { break; } }
             for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
 
@@ -8802,10 +8813,10 @@ material_node::material_node(const node_type & type,
     node(type, scope),
     abstract_base(type, scope),
     openvrml::material_node(type, scope),
-    ambientIntensity(0.2),
-    diffuseColor(color(0.8, 0.8, 0.8)),
+    ambientIntensity(0.2f),
+    diffuseColor(color(0.8f, 0.8f, 0.8f)),
     emissiveColor(color(0.0, 0.0, 0.0)),
-    shininess_(0.2),
+    shininess_(0.2f),
     specularColor(color(0.0, 0.0, 0.0)),
     transparency_(0.0)
 {}
@@ -9280,10 +9291,14 @@ void movie_texture_node::update(const double time)
                       << this->url << std::endl;
         }
 
-        int nFrames = this->image->nframes();
-        this->duration = sftime((nFrames >= 0) ? double(nFrames) : double(-1));
+        const size_t nFrames = this->image->nframes();
+        this->duration.value = (nFrames >= 0)
+                             ? double(nFrames)
+                             : -1.0;
         this->emit_event("duration_changed", this->duration, time);
-        this->frame = (this->speed.value >= 0) ? 0 : nFrames-1;
+        this->frame = (this->speed.value >= 0)
+                    ? 0
+                    : nFrames - 1;
         // Set the last frame equal to the start time.
         // This is needed to properly handle the case where the startTime
         // and stopTime are set at runtime to the same value (spec says
@@ -9304,15 +9319,17 @@ void movie_texture_node::update(const double time)
                         this->active.value = true;
                         this->emit_event("isActive", this->active, time);
                         this->lastFrameTime = time;
-                        this->frame = (this->speed.value >= 0) ? 0 :
-                                         this->image->nframes() - 1;
+                        this->frame = (this->speed.value >= 0)
+                                    ? 0
+                                    : this->image->nframes() - 1;
                         this->modified(true);
 	            } else if (this->startTime.value > this->lastFrameTime) {
                         this->active.value = true;
                         this->emit_event("isActive", this->active, time);
                         this->lastFrameTime = time;
-                        this->frame = (this->speed.value >= 0) ? 0 :
-                                         this->image->nframes() - 1;
+                        this->frame = (this->speed.value >= 0)
+                                    ? 0
+                                    : this->image->nframes() - 1;
                         this->modified(true);
 	            }
 	        }
@@ -9387,11 +9404,11 @@ void movie_texture_node::render(openvrml::viewer & viewer,
         viewer.insert_texture_reference(this->texObject, this->image->nc());
     } else {
         // Ensure image dimensions are powers of 2 (move to NodeTexture...)
-        int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-        int nSizes = sizeof(sizes) / sizeof(int);
-        int w = this->image->w();
-        int h = this->image->h();
-        int i, j;
+        const size_t sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
+        const size_t nSizes = sizeof(sizes) / sizeof(int);
+        const size_t w = this->image->w();
+        const size_t h = this->image->h();
+        size_t i, j;
         for (i = 0; i < nSizes; ++i) { if (w < sizes[i]) { break; } }
         for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
 
@@ -9689,7 +9706,7 @@ navigation_info_class::create_type(const std::string & id,
 }
 
 namespace {
-    const float avatarSize_[] = { 0.25, 1.6, 0.75 };
+    const float avatarSize_[] = { 0.25f, 1.6f, 0.75f };
     const std::string type_[] = { "WALK", "ANY" };
 }
 
@@ -10278,13 +10295,13 @@ void normal_interpolator_node::process_set_fraction(const field_value & value,
                     if (!fequal<float>()(dot_product, 1.0f)
                             && v1->normalize() != v2->normalize()) {
                         // Vectors are not opposite and not coincident.
-                        const float omega = acos(dot_product);
-                        const float sinomega = sin(omega);
-                        alpha = sin((1.0 - f) * omega) / sinomega;
-                        beta = sin(f * omega) / sinomega;
+                        const float omega = float(acos(dot_product));
+                        const float sinomega = float(sin(omega));
+                        alpha = float(sin((1.0 - f) * omega)) / sinomega;
+                        beta = float(sin(f * omega)) / sinomega;
                     } else {
                         // Do linear interpolation.
-                        alpha = 1.0 -f;
+                        alpha = 1.0f - f;
                         beta = f;
                     }
                     const vec3f vec(alpha * v1->x() + beta * v2->x(),
@@ -10538,16 +10555,16 @@ orientation_interpolator_node::process_set_fraction(const field_value & value,
                 // Interpolate angles via the shortest direction
                 if (fabs(r2 - r1) > pi) {
                     if (r2 > r1) {
-                        r1 += 2.0 * pi;
+                        r1 += float(2.0 * pi);
                     } else {
-                        r2 += 2.0 * pi;
+                        r2 += float(2.0 * pi);
                     }
                 }
                 float angle = r1 + f * (r2 - r1);
                 if (angle >= 2.0 * pi) {
-                    angle -= 2.0 * pi;
+                    angle -= float(2.0 * pi);
                 } else if (angle < 0.0) {
-                    angle += 2.0 * pi;
+                    angle += float(2.0 * pi);
                 }
                 vec3f Vec(x,y,z);
                 Vec = Vec.normalize();
@@ -10744,11 +10761,11 @@ void pixel_texture_node::render(openvrml::viewer & viewer,
                                             this->image.comp());
         } else {
             // Ensure the image dimensions are powers of two
-            const int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-            const int nSizes = sizeof(sizes) / sizeof(int);
-            int w = this->image.x();
-            int h = this->image.y();
-            int i, j;
+            const size_t sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
+            const size_t nSizes = sizeof sizes / sizeof(int);
+            const size_t w = this->image.x();
+            const size_t h = this->image.y();
+            size_t i, j;
             for (i = 0; i < nSizes; ++i) { if (w < sizes[i]) { break; } }
             for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
 
@@ -11119,7 +11136,9 @@ void plane_sensor_node::activate(double timeStamp, bool isActive, double * p)
     if (isActive && !this->active.value) {
         this->active.value = isActive;
 
-        vec3f V(p[0], p[1], p[2]);
+        vec3f V(static_cast<float>(p[0]),
+                static_cast<float>(p[1]),
+                static_cast<float>(p[2]));
         this->activationMatrix = this->modelview.inverse();
         V *= this->activationMatrix;
         this->activationPoint.value = V;
@@ -11140,7 +11159,9 @@ void plane_sensor_node::activate(double timeStamp, bool isActive, double * p)
 
     // Tracking
     else if (isActive) {
-        vec3f V(p[0], p[1], p[2]);
+        vec3f V(static_cast<float>(p[0]),
+                static_cast<float>(p[1]),
+                static_cast<float>(p[2]));
         V *= this->activationMatrix;
         this->trackPoint.value = V;
         this->emit_event("trackPoint_changed", this->trackPoint, timeStamp);
@@ -11933,20 +11954,23 @@ position_interpolator_node::~position_interpolator_node() throw ()
  * @exception std::bad_cast     if @p value is not an sffloat.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void position_interpolator_node::process_set_fraction(const field_value & value,
-                                               const double timestamp)
+void
+position_interpolator_node::process_set_fraction(const field_value & value,
+                                                 const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
+    using std::vector;
+
     float f = dynamic_cast<const sffloat &>(value).value;
 
-    int n = this->key.value.size() - 1;
+    vector<float>::size_type n = this->key.value.size() - 1;
     if (f < this->key.value[0]) {
         this->value.value = this->keyValue.value[0];
     } else if (f > this->key.value[n]) {
         this->value.value = this->keyValue.value[n];
     } else {
         // should cache the last index used...
-        for (int i = 0; i < n; ++i) {
+        for (vector<float>::size_type i = 0; i < n; ++i) {
             if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
                 const vec3f & v1 = this->keyValue.value[i];
                 const vec3f & v2 = this->keyValue.value[i + 1];
@@ -12233,6 +12257,7 @@ void proximity_sensor_node::render(openvrml::viewer & viewer,
             && this->size.value.y() > 0.0
             && this->size.value.z() > 0.0
             && viewer.mode() == viewer::draw_mode) {
+        using openvrml_::fabs;
         using openvrml_::fless_equal;
 
         sftime timeNow(browser::current_time());
@@ -12243,11 +12268,11 @@ void proximity_sensor_node::render(openvrml::viewer & viewer,
         MV = MV.inverse();
         x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
         bool inside = fless_equal<float>()(fabs(x - this->center.value.x()),
-                                           0.5 * this->size.value.x())
+                                           0.5f * this->size.value.x())
                    && fless_equal<float>()(fabs(y - this->center.value.y()),
-                                           0.5 * this->size.value.y())
+                                           0.5f * this->size.value.y())
                    && fless_equal<float>()(fabs(z - this->center.value.z()),
-                                           0.5 * this->size.value.z());
+                                           0.5f * this->size.value.z());
         bool wasIn = this->active.value;
 
         // Check if viewer has entered the box
@@ -12487,15 +12512,17 @@ void scalar_interpolator_node::process_set_fraction(const field_value & value,
                                                     const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
+    using std::vector;
+
     float f = dynamic_cast<const sffloat &>(value).value;
 
-    int n = this->key.value.size() - 1;
+    vector<float>::size_type n = this->key.value.size() - 1;
     if (f < this->key.value[0]) {
         this->value.value = this->keyValue.value[0];
     } else if (f > this->key.value[n]) {
         this->value.value = this->keyValue.value[n];
     } else {
-        for (int i=0; i<n; ++i) {
+        for (vector<float>::size_type i = 0; i < n; ++i) {
             if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
                 float v1 = this->keyValue.value[i];
                 float v2 = this->keyValue.value[i + 1];
@@ -12709,7 +12736,7 @@ void shape_node::render(openvrml::viewer & viewer, const rendering_context conte
         // Don't care what color it is if we are picking
         bool picking = (viewer::pick_mode == viewer.mode());
         if (!picking) {
-            int nTexComponents = 0;
+            size_t nTexComponents = 0;
 
             if (!picking && this->appearance.value
                     && this->appearance.value->to_appearance()) {
@@ -13554,7 +13581,9 @@ void sphere_sensor_node::activate(double timeStamp, bool isActive, double * p)
         this->active.value = isActive;
 
         // set activation point in world coords
-        const vec3f floatVec(p[0], p[1], p[2]);
+        const vec3f floatVec(static_cast<float>(p[0]),
+                             static_cast<float>(p[1]),
+                             static_cast<float>(p[2]));
         this->activationPoint.value = floatVec;
 
         if (this->autoOffset.value) { this->rotation = this->offset; }
@@ -13582,16 +13611,20 @@ void sphere_sensor_node::activate(double timeStamp, bool isActive, double * p)
     // Tracking
     else if (isActive) {
         // get local coord for touch point
-        vec3f V(p[0], p[1], p[2]);
+        vec3f V(static_cast<float>(p[0]),
+                static_cast<float>(p[1]),
+                static_cast<float>(p[2]));
         mat4f M = this->modelview.inverse();
         V = V * M;
         this->trackPoint.value = V;
         this->emit_event("trackPoint_changed", this->trackPoint, timeStamp);
 
-        vec3f V2(p[0], p[1], p[2]);
+        vec3f V2(static_cast<float>(p[0]),
+                 static_cast<float>(p[1]),
+                 static_cast<float>(p[2]));
         vec3f tempv = V2 - this->centerPoint.value;
         vec3f dir1(tempv);
-        double dist = dir1.length();                // get the length of the pre-normalized vector
+        float dist = dir1.length(); // get the length of the pre-normalized vector
         dir1 = dir1.normalize();
         tempv = this->activationPoint.value - this->centerPoint.value;
         vec3f dir2(tempv);
@@ -13601,7 +13634,7 @@ void sphere_sensor_node::activate(double timeStamp, bool isActive, double * p)
         vec3f cx(tempv);
         cx = cx.normalize();
 
-        openvrml::rotation newRot(cx, dist * acos(dir1.dot(dir2)));
+        openvrml::rotation newRot(cx, dist * float(acos(dir1.dot(dir2))));
         if (this->autoOffset.value) {
             newRot = newRot * this->offset.value;
         }
@@ -13882,8 +13915,8 @@ spot_light_node::spot_light_node(const node_type & type,
     node(type, scope),
     abstract_light_node(type, scope),
     attenuation(vec3f(1.0, 0.0, 0.0)),
-    beamWidth(1.570796),
-    cutOffAngle(0.785398),
+    beamWidth(1.570796f),
+    cutOffAngle(0.785398f),
     direction(vec3f(0.0, 0.0, -1.0)),
     location(vec3f(0.0, 0.0, 0.0)),
     radius(100)
@@ -16590,12 +16623,12 @@ void time_sensor_node::update(const double currentTime)
 
             // Are we done? Choose min of stopTime or start + single cycle.
             if ((this->stopTime.value > this->startTime.value
-                        && fless_equal<float>()(this->stopTime.value,
-                                                timeNow.value))
+                        && fless_equal<double>()(this->stopTime.value,
+                                                 timeNow.value))
                     || (!this->loop.value
-                        && fless_equal<float>()(this->startTime.value
-                                                + cycleInt,
-                                                timeNow.value))) {
+                        && fless_equal<double>()(this->startTime.value
+                                                 + cycleInt,
+                                                 timeNow.value))) {
                 this->active.value = false;
 
                 // Must respect stopTime/cycleInterval exactly
@@ -16615,7 +16648,9 @@ void time_sensor_node::update(const double currentTime)
             }
 
             // Fraction of cycle message
-            sffloat fraction_changed(fequal<double>()(f, 0.0) ? 1.0 : (f / cycleInt));
+            sffloat fraction_changed(fequal<double>()(f, 0.0)
+                                     ? 1.0f
+                                     : float(f / cycleInt));
             this->emit_event("fraction_changed", fraction_changed, timeNow.value);
 
             // Current time message
@@ -16712,7 +16747,8 @@ void time_sensor_node::process_set_enabled(const field_value & value,
                      : 0.0;
 
             // Fraction of cycle message
-            this->fraction.value = fequal<double>()(f, 0.0) ? 1.0 : (f / cycleInt);
+            this->fraction.value =
+                float(fequal<double>()(f, 0.0) ? 1.0 : (f / cycleInt));
         } else {
             //
             // Was inactive; startup.
@@ -17837,7 +17873,7 @@ viewpoint_class::create_type(const std::string & id,
  */
 
 namespace {
-    const float DEFAULT_FIELD_OF_VIEW = 0.785398;
+    const float DEFAULT_FIELD_OF_VIEW = 0.785398f;
 }
 
 /**
@@ -17847,7 +17883,7 @@ namespace {
  * @param scope         the scope that the new node will belong to.
  */
 viewpoint_node::viewpoint_node(const node_type & type,
-                     const scope_ptr & scope):
+                               const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),

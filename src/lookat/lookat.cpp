@@ -164,12 +164,12 @@ namespace {
     void buildViewpointMenu() {
         static int topmenu = 0;
         static int vpmenu = 0;
-        static int nvp = 0;
-        int numberOfViewpoints = 0;
+        static size_t nvp = 0;
+        size_t numberOfViewpoints = 0;
 
         if (vpmenu) {
             glutSetMenu(vpmenu);
-            for (int i = nvp; i > 0; --i) { glutRemoveMenuItem(i); }
+            for (int i = int(nvp); i > 0; --i) { glutRemoveMenuItem(i); }
         } else {
             topmenu = glutCreateMenu(0);
             vpmenu = glutCreateMenu(reinterpret_cast<GlutMenu>

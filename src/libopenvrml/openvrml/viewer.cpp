@@ -185,7 +185,7 @@ viewer::~viewer() {}
  */
 
 /**
- * @fn viewer::object_t viewer::insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, int * whc, unsigned char ** pixels)
+ * @fn viewer::object_t viewer::insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, size_t * whc, unsigned char ** pixels)
  *
  * @brief Insert a background into a display list.
  *
@@ -425,7 +425,7 @@ viewer::~viewer() {}
  */
 
 /**
- * @fn void viewer::set_material_mode(int tex_components, bool geometry_color)
+ * @fn void viewer::set_material_mode(size_t tex_components, bool geometry_color)
  *
  * @brief Set the material mode.
  *
@@ -471,12 +471,12 @@ viewer::~viewer() {}
  */
 
 /**
- * @fn void viewer::insert_texture_reference(texture_object_t ref, int nc)
+ * @fn void viewer::insert_texture_reference(texture_object_t ref, size_t components)
  *
  * @brief Insert a texture into the display list from an existing handle.
  *
- * @param ref   texture handle.
- * @param nc    number of components.
+ * @param ref           texture handle.
+ * @param components    number of components.
  */
 
 /**

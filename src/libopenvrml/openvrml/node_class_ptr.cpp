@@ -75,7 +75,7 @@ node_class_ptr::node_class_ptr(node_class * const class_)
 {
     try {
         this->count = new size_t(1); // prevent leak if new throws
-    } catch (std::bad_alloc & ex) {
+    } catch (std::bad_alloc &) {
         delete class_;
         throw;
     }
@@ -163,7 +163,7 @@ void node_class_ptr::reset(node_class * const class_) throw (std::bad_alloc)
     } else {
         try {
             this->count = new size_t;
-        } catch (std::bad_alloc & ex) {
+        } catch (std::bad_alloc &) {
             ++*this->count;
             delete class_;
             throw;

@@ -1,5 +1,36 @@
 2003-09-01  Braden McDaniel  <braden@endoframe.com>
 
+	Fixed a bunch of warnings from cl 13.00.9466.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/basetypes.h
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/field.cpp
+	* src/libopenvrml/openvrml/field_value_ptr.cpp
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/img.cpp
+	* src/libopenvrml/openvrml/node_class_ptr.cpp
+	* src/libopenvrml/openvrml/node_type_ptr.cpp
+	* src/libopenvrml/openvrml/scope_ptr.cpp
+	* src/libopenvrml/openvrml/system.cpp
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/viewer.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	* src/lookat/lookat.cpp
+
+2003-09-01  Braden McDaniel  <braden@endoframe.com>
+
+	* ide-projects/Windows/VisualC7/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
+	Removed obsolete file "common.h" from project.
+
+2003-09-01  Braden McDaniel  <braden@endoframe.com>
+
 	Calculate floating point error tolerance from
 	std::numeric_limits<T>::epsilon().
 

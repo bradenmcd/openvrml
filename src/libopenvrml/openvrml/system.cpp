@@ -114,7 +114,7 @@ int system::connect_socket(const char * host, int port)
 
     if (he) {
         std::copy(he->h_addr, he->h_addr + he->h_length, (char*)&sin.sin_addr);
-        sockfd = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP );
+        sockfd = int(socket(PF_INET, SOCK_STREAM, IPPROTO_TCP));
         if (sockfd != -1) {
               if (connect(sockfd, (sockaddr *)&sin, sizeof(sin)) == -1) {
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -196,9 +196,9 @@ const char *system::http_fetch(const char * url)
             char request[1024];
             sprintf(request,"GET %s HTTP/1.0\nAccept: */*\n\r\n", abspath);
 
-            int nbytes = strlen(request);
+            size_t nbytes = strlen(request);
 #if defined(_WIN32) && !defined(__CYGWIN__)
-            if (send(sockfd, request, nbytes, 0) != nbytes) {
+            if (send(sockfd, request, int(nbytes), 0) != nbytes) {
 #else
             if (write(sockfd, request, nbytes) != nbytes) {
 #endif
@@ -240,7 +240,7 @@ const char *system::http_fetch(const char * url)
                         gothdr = 1;
                     }
 
-                    nmore -= (start - request);
+                    nmore -= int(start - request);
 # if defined(_WIN32) && !defined(__CYGWIN__)
                     if (_write(fd, start, nmore) != nmore) {
 # else

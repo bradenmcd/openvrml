@@ -74,7 +74,7 @@ namespace openvrml {
                           const std::vector<color> & ground_color,
                           const std::vector<float> & sky_angle,
                           const std::vector<color> & sky_color,
-                          int* whc = 0,
+                          size_t * whc = 0,
                           unsigned char ** pixels = 0) = 0;
 
         virtual object_t insert_box(const vec3f & size) = 0;
@@ -154,7 +154,7 @@ namespace openvrml {
                                   const color & specular_color,
                                   float transparency) = 0;
 
-        virtual void set_material_mode(int tex_components,
+        virtual void set_material_mode(size_t tex_components,
                                        bool geometry_color) = 0;
 
         virtual void set_sensitive(node * object) = 0;
@@ -170,7 +170,8 @@ namespace openvrml {
                                                 const unsigned char * pixels,
                                                 bool retainHint = false) = 0;
 
-        virtual void insert_texture_reference(texture_object_t ref, int) = 0;
+        virtual void insert_texture_reference(texture_object_t ref,
+                                              size_t components) = 0;
         virtual void remove_texture_object(texture_object_t ref) = 0;
 
         virtual void set_texture_transform(const vec2f & center,

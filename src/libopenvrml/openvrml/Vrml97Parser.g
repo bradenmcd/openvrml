@@ -420,8 +420,8 @@ antlr::RefToken Vrml97Scanner::nextToken()
         this->identifyTerminalSymbol(*token);
     }
 
-    token->setLine(this->line_);
-    token->setColumn(this->col_);
+    token->setLine(int(this->line_));
+    token->setColumn(int(this->col_));
     this->prev_token_type_ = token->getType();
 
     return token;
@@ -1158,7 +1158,7 @@ isStatement[openvrml::ProtoNodeClass & proto, openvrml::node & node,
     : KEYWORD_IS id:ID {
             try {
                 proto.addIS(node, nodeInterfaceId, id->getText());
-            } catch (std::bad_alloc & ex) {
+            } catch (std::bad_alloc &) {
                 throw;
             } catch (std::runtime_error & ex) {
                 //
@@ -1274,7 +1274,7 @@ protoScriptFieldInterfaceDeclaration[openvrml::ProtoNodeClass & proto,
                     try {
                         proto.addIS(node, id->getText(),
                                     protoFieldId->getText());
-                    } catch (std::bad_alloc & ex) {
+                    } catch (std::bad_alloc &) {
                         throw;
                     } catch (std::runtime_error & ex) {
                         //
@@ -1496,7 +1496,8 @@ options { defaultErrorHandler=false; }
                 // we read the value as an integer, then strip off the
                 // bytes one by one.
                 for (int32 i = com - 1; i >= 0; i--) {
-                    const unsigned char component = pixel >> (8 * i) & 0xff;
+                    const unsigned char component =
+                        static_cast<unsigned char>(pixel >> (8 * i) & 0xff);
                     pixelVector.push_back(component);
                 }
             }

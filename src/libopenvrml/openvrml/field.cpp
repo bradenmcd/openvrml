@@ -850,7 +850,9 @@ sfimage & sfimage::operator=(const sfimage & sfimage) throw (std::bad_alloc)
  */
 void sfimage::print(std::ostream & out) const
 {
-    out << d_w << " " << d_h << " " << d_nc;
+    out << static_cast<unsigned int>(this->d_w) << " "
+        << static_cast<unsigned int>(this->d_h) << " "
+        << static_cast<unsigned int>(this->d_nc);
 
     size_t np = d_w * d_h;
     unsigned char * p = d_pixels;

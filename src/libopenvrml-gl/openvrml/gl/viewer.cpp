@@ -600,17 +600,16 @@ namespace {
     //
     float tb_project_to_sphere(float r, float x, float y)
     {
-        static const float sqrt2 = sqrt(2.0);
-        static const float sqrt2_2 = sqrt2 / 2.0;
+        static const double sqrt2 = sqrt(2.0);
+        static const double sqrt2_2 = sqrt2 / 2.0;
 
-        float d, t, z;
-
-        d = sqrt(x * x + y * y);
+        float z;
+        const double d = sqrt(x * x + y * y);
         if (d < r * sqrt2_2) { /* Inside sphere */
-            z = sqrt(r * r - d * d);
+            z = float(sqrt(r * r - d * d));
         } else { /* On hyperbola */
-            t = r / sqrt2;
-            z = t * t / d;
+            const double t = r / sqrt2;
+            z = float(t * t / d);
         }
         return z;
     }
@@ -636,7 +635,7 @@ namespace {
         // simple example, though, so that is left as an Exercise for the
         // Programmer.
         //
-        static const float trackballSize = 0.8;
+        static const float trackballSize = 0.8f;
 
         rotation result;
 
@@ -658,7 +657,7 @@ namespace {
         // Figure out how much to rotate around that axis.
         //
         vec3f d = p1 - p2;
-        float t = d.length() / (2.0 * trackballSize);
+        float t = float(d.length() / (2.0 * trackballSize));
 
         //
         // Avoid problems with out-of-control values...
@@ -666,7 +665,7 @@ namespace {
         if (t > 1.0) { t = 1.0; }
         if (t < -1.0) { t = -1.0; }
 
-        result.angle(2.0 * asin(t));
+        result.angle(float(2.0 * asin(t)));
 
         return result;
     }
@@ -923,9 +922,9 @@ void viewer::reset_user_navigation()
 
 namespace {
     // Generate a normal from 3 indexed points.
-    const vec3f indexFaceNormal(const int i1,
-                                const int i2,
-                                const int i3,
+    const vec3f indexFaceNormal(const size_t i1,
+                                const size_t i2,
+                                const size_t i3,
                                 const std::vector<vec3f> & points)
     {
         const vec3f v1 = points[i2] - points[i3];
@@ -951,7 +950,7 @@ viewer::insert_background(const std::vector<float> & groundAngle,
                           const std::vector<color> & groundColor,
                           const std::vector<float> & skyAngle,
                           const std::vector<color> & skyColor,
-                          int * whc,
+                          size_t * whc,
                           unsigned char ** pixels)
 {
     float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
@@ -1023,11 +1022,19 @@ viewer::insert_background(const std::vector<float> & groundAngle,
                 cca1 = cos(circAngle1);
 
                 glColor3fv(&(*c1)[0]);
-                glVertex3f(sha1 * cca0, cha1, sha1 * sca0);
-                glVertex3f(sha1 * cca1, cha1, sha1 * sca1);
+                glVertex3f(GLfloat(sha1 * cca0),
+                           GLfloat(cha1),
+                           GLfloat(sha1 * sca0));
+                glVertex3f(GLfloat(sha1 * cca1),
+                           GLfloat(cha1),
+                           GLfloat(sha1 * sca1));
                 glColor3fv(&(*c0)[0]);
-                glVertex3f(sha0 * cca1, cha0, sha0 * sca1);
-                glVertex3f(sha0 * cca0, cha0, sha0 * sca0);
+                glVertex3f(GLfloat(sha0 * cca1),
+                           GLfloat(cha0),
+                           GLfloat(sha0 * sca1));
+                glVertex3f(GLfloat(sha0 * cca0),
+                           GLfloat(cha0),
+                           GLfloat(sha0 * sca0));
             }
             glEnd();
         }
@@ -1058,11 +1065,19 @@ viewer::insert_background(const std::vector<float> & groundAngle,
                 cca1 = cos(circAngle1);
 
                 glColor3fv(&(*c1)[0]);
-                glVertex3f(sha1 * cca1, cha1, sha1 * sca1);
-                glVertex3f(sha1 * cca0, cha1, sha1 * sca0);
+                glVertex3f(GLfloat(sha1 * cca1),
+                           GLfloat(cha1),
+                           GLfloat(sha1 * sca1));
+                glVertex3f(GLfloat(sha1 * cca0),
+                           GLfloat(cha1),
+                           GLfloat(sha1 * sca0));
                 glColor3fv(&(*c0)[0]);
-                glVertex3f(sha0 * cca0, cha0, sha0 * sca0);
-                glVertex3f(sha0 * cca1, cha0, sha0 * sca1);
+                glVertex3f(GLfloat(sha0 * cca0),
+                           GLfloat(cha0),
+                           GLfloat(sha0 * sca0));
+                glVertex3f(GLfloat(sha0 * cca1),
+                           GLfloat(cha0),
+                           GLfloat(sha0 * sca1));
             }
             glEnd();
         }
@@ -1084,15 +1099,13 @@ viewer::insert_background(const std::vector<float> & groundAngle,
             int number_vertices;
             const size_t NUM_SPLITS = 4;
             float v[NUM_SPLITS * NUM_SPLITS * 6][4][3];
-            float size_x;
-            float size_y;
             int number_splits_x;
             int number_splits_y;
             number_splits_x = NUM_SPLITS;
             number_splits_y = NUM_SPLITS;
             number_tiles = number_splits_x * number_splits_y;
-            size_x = 2.0 / float(number_splits_x);
-            size_y = 2.0 / float(number_splits_y);
+            float size_x = float(2.0 / number_splits_x);
+            float size_y = float(2.0 / number_splits_y);
             int i, j, k;
             for (j = 0; j < 16 * 6; j++) {
                 for (k = 0; k < 4; k++) {
@@ -1321,9 +1334,12 @@ namespace {
      * It might be smarter to do just one, and reference it with scaling (but the
      * world creator could just as easily do that with DEF/USE ...).
      */
-    void computeCylinder(const double height, const double radius,
-                         const int numFacets, float c[][3],
-                         float tc[][3], int faces[])
+    void computeCylinder(const double height,
+                         const double radius,
+                         const int numFacets,
+                         float c[][3],
+                         float tc[][3],
+                         int faces[])
     {
         using openvrml::pi;
 
@@ -1335,15 +1351,15 @@ namespace {
             angle = i * 2 * pi / numFacets;
             x = cos(angle);
             y = sin(angle);
-            c[i][0] = radius * x;
-            c[i][1] = 0.5 * height;
-            c[i][2] = radius * y;
-            c[numFacets+i][0] = radius * x;
-            c[numFacets+i][1] = -0.5 * height;
-            c[numFacets+i][2] = radius * y;
+            c[i][0] = float(radius * x);
+            c[i][1] = float(0.5 * height);
+            c[i][2] = float(radius * y);
+            c[numFacets+i][0] = float(radius * x);
+            c[numFacets+i][1] = float(-0.5 * height);
+            c[numFacets+i][2] = float(radius * y);
 
             if (tc) {
-                double u = 0.75 - ((float) i) / numFacets;
+                float u = float(0.75 - float(i) / numFacets);
                 //double u = ((float) i) / numFacets + 0.25;
                 //if ( u > 1.0 ) u -= 1.0;
                 tc[i][0] = u; // ((float) i) / numFacets;
@@ -1393,9 +1409,9 @@ viewer::object_t viewer::insert_cone(const float height,
     if (!bottom || !side) { glDisable(GL_CULL_FACE); }
 
     if (bottom || side) {
-        const int nfacets = 11;                // Number of polygons for sides
-        const int npts = 2 * nfacets;
-        const int nfaces = nfacets * 5;
+        static const size_t nfacets = 11; // Number of polygons for sides
+        static const size_t npts = 2 * nfacets;
+        static const size_t nfaces = nfacets * 5;
 
         float c[npts][3];                // coordinates
         float tc[npts][3];                // texture coordinates
@@ -1404,7 +1420,7 @@ viewer::object_t viewer::insert_cone(const float height,
         // should only compute tc if a texture is present...
         computeCylinder(height, radius, nfacets, c, tc, faces);
 
-        for (int i = 0; i < nfacets; ++i) { c[i][0] = c[i][2] = 0.0; }
+        for (size_t i = 0; i < nfacets; ++i) { c[i][0] = c[i][2] = 0.0; }
 
         if (side) {
             float Ny = radius * radius / height;
@@ -1418,9 +1434,9 @@ viewer::object_t viewer::insert_cone(const float height,
             }
 
             glNormal3f(c[nfacets][0], Ny, c[nfacets][2]);
-            glTexCoord2f(tc[nfacets][0] - 1.0, tc[nfacets][1]);
+            glTexCoord2f(tc[nfacets][0] - 1.0f, tc[nfacets][1]);
             glVertex3fv(&c[nfacets][0]);
-            glTexCoord2f(tc[0][0] - 1.0, tc[0][1]);
+            glTexCoord2f(tc[0][0] - 1.0f, tc[0][1]);
             glVertex3fv(&c[0][0]);
             glEnd();
         }
@@ -1429,17 +1445,17 @@ viewer::object_t viewer::insert_cone(const float height,
             glBegin(GL_TRIANGLE_FAN);
             glNormal3f(0.0, -1.0, 0.0);
             glTexCoord2f(0.5, 0.5);
-            glVertex3f(0.0, - 0.5 * height, 0.0);
+            glVertex3f(0.0, GLfloat(-0.5 * height), 0.0);
 
-            float angle = 0.5 * pi; // First v is at max x
-            float aincr = 2.0 * pi / float(nfacets);
+            float angle = float(0.5 * pi); // First v is at max x
+            float aincr = float(2.0 * pi / nfacets);
             for (int i = 0; i < nfacets; ++i, angle += aincr) {
-                glTexCoord2f(      0.5 * (1.0 + sin(angle)),
-                             1.0 - 0.5 * (1.0 + cos(angle)));
+                glTexCoord2f(GLfloat(0.5 * (1.0 + sin(angle))),
+                             GLfloat(1.0 - 0.5 * (1.0 + cos(angle))));
                 glVertex3fv(&c[i + nfacets][0]);
             }
-            glTexCoord2f(      0.5 * (1.0 + sin(angle)),
-                         1.0 - 0.5 * (1.0 + cos(angle)));
+            glTexCoord2f(GLfloat(0.5 * (1.0 + sin(angle))),
+                         GLfloat(1.0 - 0.5 * (1.0 + cos(angle))));
             glVertex3fv(&c[nfacets][0]);
             glEnd();
         }
@@ -1501,9 +1517,9 @@ viewer::object_t viewer::insert_cylinder(const float height,
             }
 
             glNormal3f(c[nfacets][0], 0.0, c[nfacets][2]);
-            glTexCoord2f(tc[nfacets][0] - 1.0, tc[nfacets][1]);
+            glTexCoord2f(tc[nfacets][0] - 1.0f, tc[nfacets][1]);
             glVertex3fv(&c[nfacets][0]);
-            glTexCoord2f(tc[0][0]-1.0, tc[0][1]);
+            glTexCoord2f(tc[0][0] - 1.0f, tc[0][1]);
             glVertex3fv(&c[0][0]);
             glEnd();
         }
@@ -1512,17 +1528,17 @@ viewer::object_t viewer::insert_cylinder(const float height,
             glBegin(GL_TRIANGLE_FAN);
             glNormal3f(0.0, -1.0, 0.0);
             glTexCoord2f(0.5, 0.5);
-            glVertex3f(0.0, -0.5 * height, 0.0);
+            glVertex3f(0.0, GLfloat(-0.5 * height), 0.0);
 
-            float angle = 0.5 * pi; // First v is at max x
-            float aincr = 2.0 * pi / float(nfacets);
-            for (int i = 0; i < nfacets; ++i, angle += aincr) {
-                glTexCoord2f(      0.5 * (1.0 + sin(angle)),
-                             1.0 - 0.5 * (1.0 + cos(angle)));
+            float angle = float(0.5 * pi); // First v is at max x
+            float aincr = float(2.0 * pi / nfacets);
+            for (size_t i = 0; i < nfacets; ++i, angle += aincr) {
+                glTexCoord2f(GLfloat(0.5 * (1.0 + sin(angle))),
+                             GLfloat(1.0 - 0.5 * (1.0 + cos(angle))));
                 glVertex3fv(&c[i + nfacets][0]);
             }
-            glTexCoord2f(      0.5 * (1.0 + sin(angle)),
-                         1.0 - 0.5 * (1.0 + cos(angle)));
+            glTexCoord2f(GLfloat(0.5 * (1.0 + sin(angle))),
+                         GLfloat(1.0 - 0.5 * (1.0 + cos(angle))));
             glVertex3fv(&c[nfacets][0]);
             glEnd();
         }
@@ -1531,17 +1547,17 @@ viewer::object_t viewer::insert_cylinder(const float height,
             glBegin(GL_TRIANGLE_FAN);
             glNormal3f(0.0, 1.0, 0.0);
             glTexCoord2f(0.5, 0.5);
-            glVertex3f(0.0, 0.5 * height, 0.0);
+            glVertex3f(0.0, GLfloat(0.5 * height), 0.0);
 
-            float angle = 0.75 * pi;
-            float aincr = 2.0 * pi / float(nfacets);
-            for (int i = nfacets-1; i >= 0; --i, angle += aincr) {
-                glTexCoord2f(      0.5 * (1.0 + sin(angle)),
-                             1.0 - 0.5 * (1.0 + cos(angle)));
+            float angle = float(0.75 * pi);
+            float aincr = float(2.0 * pi / nfacets);
+            for (size_t i = nfacets-1; i >= 0; --i, angle += aincr) {
+                glTexCoord2f(GLfloat(0.5 * (1.0 + sin(angle))),
+                             GLfloat(1.0 - 0.5 * (1.0 + cos(angle))));
                 glVertex3fv(&c[i][0]);
             }
-            glTexCoord2f(      0.5 * (1.0 + sin(angle)),
-                         1.0 - 0.5 * (1.0 + cos(angle)));
+            glTexCoord2f(GLfloat(0.5 * (1.0 + sin(angle))),
+                         GLfloat(1.0 - 0.5 * (1.0 + cos(angle))));
             glVertex3fv(&c[nfacets - 1][0]);
             glEnd();
         }
@@ -1566,7 +1582,7 @@ namespace {
         vec3f Vx, Vz;
 
         if (i > 0 && i < nx - 1) {
-            Vx[0] = 2.0 * dx;
+            Vx[0] = float(2.0 * dx);
             Vx[1] = *(height + 1) - *(height - 1);
         } else if (i == 0) {
             Vx[0] = dx;
@@ -1580,7 +1596,7 @@ namespace {
         Vz[0] = 0.0;
         if (j > 0 && j < nz - 1) {
             Vz[1] = *(height + nx) - *(height - nx);
-            Vz[2] = 2.0 * dz;
+            Vz[2] = float(2.0 * dz);
         } else if (j == 0) {
             Vz[1] = *(height+nx) - *(height);
             Vz[2] = dz;
@@ -1737,13 +1753,13 @@ namespace {
         const float * crossSection; // crossSection coordinates [nCrossSection * 2]
         float tcDeltaU, tcDeltaV;
         float tcScaleU, tcScaleV;
-        int vOffset;
+        size_t vOffset;
         vec3f N; // Normal
 
         TessExtrusion(const float * c, const float * crossSection,
                       float tcDeltaU, float tcDeltaV,
                       float tcScaleU, float tcScaleV,
-                      int vOffset, const vec3f & N);
+                      size_t vOffset, const vec3f & N);
     };
 
     TessExtrusion::TessExtrusion(const float * const c,
@@ -1752,7 +1768,7 @@ namespace {
                                  const float tcDeltaV,
                                  const float tcScaleU,
                                  const float tcScaleV,
-                                 const int vOffset,
+                                 const size_t vOffset,
                                  const vec3f & N):
         c(c),
         crossSection(crossSection),
@@ -1800,7 +1816,7 @@ extern "C" {
     void OPENVRML_GL_CALLBACK_ tessExtrusionVertex(void * const vdata,
                                                    void * const pdata)
     {
-        const int j = reinterpret_cast<int>(vdata);
+        const size_t j = *static_cast<size_t *>(vdata);
         TessExtrusion * const p = static_cast<TessExtrusion *>(pdata);
 
         glTexCoord2f((p->crossSection[2 * j] - p->tcDeltaU) * p->tcScaleU,
@@ -1837,8 +1853,8 @@ namespace {
 
         float dx = xz[1] - xz[0];
         float dz = xz[3] - xz[2];
-        if (!fequal<float>()(dx, 0.0f)) { dx = 1.0 / dx; }
-        if (!fequal<float>()(dz, 0.0f)) { dz = 1.0 / dz; }
+        if (!fequal<float>()(dx, 0.0f)) { dx = float(1.0 / dx); }
+        if (!fequal<float>()(dz, 0.0f)) { dz = float(1.0 / dz); }
 
         // If geometry is in dlists, should just always use the tesselator...
 
@@ -1863,19 +1879,19 @@ namespace {
                 gluTessBeginContour(&tesselator);
                 GLdouble v[3];
                 // Mesa tesselator doesn;t like closed polys
-                int j = equalEndpts ? cs.size() - 2 : cs.size() - 1;
+                size_t j = equalEndpts ? cs.size() - 2 : cs.size() - 1;
                 for (; j >= 0; --j) {
                     v[0] = c[j].x();
                     v[1] = c[j].y();
                     v[2] = c[j].z();
-                    gluTessVertex(&tesselator, v, reinterpret_cast<void *>(j));
+                    gluTessVertex(&tesselator, v, &j);
                 }
                 gluTessEndContour(&tesselator);
                 gluTessEndPolygon(&tesselator);
             }
 
             if (mask & viewer::mask_top) {
-                int n = (nSpine - 1) * cs.size();
+                size_t n = (nSpine - 1) * cs.size();
                 TessExtrusion top(&c[0][0],
                                   &cs[0][0],
                                   xz[0], xz[2],
@@ -1893,7 +1909,7 @@ namespace {
                     v[0] = c[j + n].x();
                     v[1] = c[j + n].y();
                     v[2] = c[j + n].z();
-                    gluTessVertex(&tesselator, v, reinterpret_cast<void *>(j));
+                    gluTessVertex(&tesselator, v, &j);
                 }
                 gluTessEndContour(&tesselator);
                 gluTessEndPolygon(&tesselator);
@@ -1909,7 +1925,7 @@ namespace {
                 N = indexFaceNormal(0, 1, 2, c);
                 glNormal3fv(&N[0]);
 
-                for (int j = cs.size() - 1; j >= 0; --j) {
+                for (size_t j = cs.size() - 1; j >= 0; --j) {
                     glTexCoord2f((cs[j].x() - xz[0]) * dx,
                                  (cs[j].y() - xz[2]) * dz);
                     glVertex3fv(&c[j][0]);
@@ -1918,7 +1934,7 @@ namespace {
             }
 
             if (mask & viewer::mask_top) {
-                int n = (nSpine - 1) * cs.size();
+                size_t n = (nSpine - 1) * cs.size();
                 glBegin(GL_POLYGON);
                 N = indexFaceNormal(n + 2, n + 1, n, c);
                 glNormal3fv(&N[0]);
@@ -1979,14 +1995,14 @@ namespace {
             const vec3f v1(0.0, 1.0, 0.0);
             const vec3f v2 = spine.back() - spine.front();
             vec3f v3 = v2 * v1;
-            double len = v3.length();
+            float len = v3.length();
             if (!fequal<float>()(len, 0.0f)) {
                 //
                 // Not aligned with Y axis.
                 //
-                v3 *= (1.0 / len);
+                v3 *= float(1.0 / len);
 
-                const rotation orient(v3, acos(v1.dot(v2))); // Axis/angle
+                const rotation orient(v3, float(acos(v1.dot(v2)))); // Axis/angle
                 const mat4f scp = mat4f::rotation(orient); // xform matrix
                 for (size_t k = 0; k < 3; ++k) {
                     Xscp[k] = scp[0][k];
@@ -2018,7 +2034,7 @@ namespace {
 
             // Compute Spine-aligned Cross-section Plane (SCP)
             if (!spineStraight) {
-                int yi1, yi2, si1, s1i2, s2i2;
+                size_t yi1, yi2, si1, s1i2, s2i2;
 
                 if (spineClosed && (i == 0 || i == spine.size() - 1)) {
                     yi1 = spine.size() - 2;
@@ -2055,7 +2071,7 @@ namespace {
                 if (fequal<float>()(VlenZ, 0.0f)) {
                     Zscp = lastZ;
                 } else {
-                    Zscp *= (1.0 / VlenZ);
+                    Zscp *= float(1.0 / VlenZ);
                 }
 
                 if (i > 0 && Zscp.dot(lastZ) < 0.0) { Zscp *= -1.0; }
@@ -2147,10 +2163,11 @@ namespace {
         for (size_t i = 0, ci = 0; i < spine.size() - 1;
                 ++i, ci += crossSection.size()) {
             for (size_t j = 0; j < crossSection.size() - 1; ++j) {
-                faces[polyIndex + 0] = ci + j;
-                faces[polyIndex + 1] = ci + j + 1;
-                faces[polyIndex + 2] = ci + j + 1 + crossSection.size();
-                faces[polyIndex + 3] = ci + j + crossSection.size();
+                using openvrml::int32;
+                faces[polyIndex + 0] = int32(ci + j);
+                faces[polyIndex + 1] = int32(ci + j + 1);
+                faces[polyIndex + 2] = int32(ci + j + 1 + crossSection.size());
+                faces[polyIndex + 3] = int32(ci + j + crossSection.size());
                 faces[polyIndex + 4] = -1;
                 polyIndex += 5;
             }
@@ -2196,8 +2213,10 @@ viewer::insert_extrusion(unsigned int mask,
     if (!(mask & mask_solid)) { glDisable(GL_CULL_FACE); }
 
     // Handle creaseAngle, correct normals, ...
-    int n = 0;
-    for (size_t i = 0; i < spine.size() - 1; ++i, n += crossSection.size()) {
+    size_t n = 0;
+    for (vector<vec3f>::size_type i = 0;
+         i < spine.size() - 1;
+         ++i, n += crossSection.size()) {
         glBegin(GL_QUAD_STRIP);
         for (size_t j = 0; j < crossSection.size(); ++j) {
             // Compute normals
@@ -2278,8 +2297,8 @@ viewer::insert_line_set(const std::vector<vec3f> & coord,
             if (i < coordIndex.size() - 1
                     && !color.empty() && !colorPerVertex) {
                 const int32 index = !colorIndex.empty()
-                                  ? colorIndex[nl]
-                                  : nl;
+                                  ? int32(colorIndex[nl])
+                                  : int32(nl);
                 if (size_t(index) < color.size()) {
                     glColor3fv(&color[index][0]);
                 }
@@ -2354,7 +2373,7 @@ namespace {
                        float (&bounds)[6])
     {
         if (npoints == 0) {
-            std::fill(bounds, bounds + 6, 0.0);
+            std::fill(bounds, bounds + 6, 0.0f);
         } else {
             bounds[0] = bounds[1] = points[0]; // xmin, xmax
             bounds[2] = bounds[3] = points[1]; // ymin, ymax
@@ -2380,7 +2399,7 @@ namespace {
         axes[1] = 1;
         params[0] = params[1] = params[2] = params[3] = 0.0;
 
-        for (size_t nb = 0; nb < 3; ++nb) {
+        for (int nb = 0; nb < 3; ++nb) {
             float db = bounds[2 * nb + 1] - bounds[2 * nb];
             if (db > params[1]) {
                 axes[1] = axes[0];
@@ -2402,8 +2421,8 @@ namespace {
             return;
         }
 
-        params[1] = 1.0 / params[1];
-        params[3] = 1.0 / params[3];
+        params[1] = float(1.0 / params[1]);
+        params[3] = float(1.0 / params[3]);
     }
 
     /**
@@ -2485,7 +2504,7 @@ namespace {
                 }
 
                 if (! (s->mask & viewer::mask_normal_per_vertex)) {
-                    int i1 = (i == 0)
+                    size_t i1 = (i == 0)
                            ? 0
                            : i + 1;
                     if (!s->normal.empty()) {
@@ -2578,9 +2597,9 @@ namespace {
         }
 
         if (!(s->mask & viewer::mask_normal_per_vertex)) {
-            int i1 = (s->i == 0)
-                   ? 0
-                   : s->i - 1;
+            size_t i1 = (s->i == 0)
+                      ? 0
+                      : s->i - 1;
             if (!s->normal.empty()) {
                 const size_t index = !s->normalIndex.empty()
                                    ? s->normalIndex[s->nf]
@@ -2603,7 +2622,7 @@ namespace {
 
     void OPENVRML_GL_CALLBACK_ tessShellVertex(void * vdata, void * pdata)
     {
-        int i = int(vdata);
+        const size_t i = *static_cast<size_t *>(vdata);
         ShellData * s = static_cast<ShellData *>(pdata);
 
         // Per-vertex attributes
@@ -2667,7 +2686,7 @@ namespace {
                 GLdouble v[3] = { s->coord[s->coordIndex[i]].x(),
                                   s->coord[s->coordIndex[i]].y(),
                                   s->coord[s->coordIndex[i]].z() };
-                gluTessVertex(tesselator, v, (void*)i);
+                gluTessVertex(tesselator, v, &i);
             }
         }
 
@@ -2798,12 +2817,12 @@ namespace {
                 angle = 2 * pi * ((double)j) / numLatLong;
                 x = - sin(angle)*r;
                 z = - cos(angle)*r;
-                c[i * numLatLong + j][0] = radius * x;
-                c[i * numLatLong + j][1] = radius * y;
-                c[i * numLatLong + j][2] = radius * z;
+                c[i * numLatLong + j][0] = float(radius * x);
+                c[i * numLatLong + j][1] = float(radius * y);
+                c[i * numLatLong + j][2] = float(radius * z);
                 if (tc) {
-                    tc[i * numLatLong + j][0] = ((float) j)/(numLatLong);
-                    tc[i * numLatLong + j][1] = ((float) i)/(numLatLong);
+                    tc[i * numLatLong + j][0] = float(j) / numLatLong;
+                    tc[i * numLatLong + j][1] = float(i) / numLatLong;
                     tc[i * numLatLong + j][2] = 0.0;
                 }
             }
@@ -3064,9 +3083,9 @@ viewer::object_t viewer::insert_spot_light(const float ambientIntensity,
     glLightf(light, GL_QUADRATIC_ATTENUATION, attenuation[2]);
 
     glLightfv(light, GL_SPOT_DIRECTION, &direction[0]);
-    glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / pi);
+    glLightf(light, GL_SPOT_CUTOFF, GLfloat(cutOffAngle * 180.0 / pi));
     // The exponential dropoff is not right/spec compliant...
-    glLightf(light, GL_SPOT_EXPONENT, beamWidth < cutOffAngle ? 1.0 : 0.0);
+    glLightf(light, GL_SPOT_EXPONENT, beamWidth < cutOffAngle ? 1.0f : 0.0f);
 
     return 0;
 }
@@ -3162,7 +3181,7 @@ void viewer::set_material(const float ambientIntensity,
                           const color & specularColor,
                           const float transparency)
 {
-    const float alpha = 1.0 - transparency;
+    const float alpha = 1.0f - transparency;
 
     const float ambient[4] = { ambientIntensity * diffuseColor.r(),
                                ambientIntensity * diffuseColor.g(),
@@ -3218,7 +3237,8 @@ void viewer::set_material(const float ambientIntensity,
  * @param tex_components    texture components.
  * @param geometry_color    geometry color.
  */
-void viewer::set_material_mode(int tex_components, bool geometry_color)
+void viewer::set_material_mode(const size_t tex_components,
+                               const bool geometry_color)
 {
     if (tex_components && this->texture && !this->wireframe) {
         glEnable(GL_TEXTURE_2D);
@@ -3259,7 +3279,7 @@ void viewer::set_sensitive(node * object)
 
         // push name, increment object count
         this->sensitive_object[this->sensitive] = object;
-        glPushName(++this->sensitive); // array index + 1
+        glPushName(GLuint(++this->sensitive)); // array index + 1
     } else {
         glPopName();
     }
@@ -3283,21 +3303,29 @@ void viewer::scale_texture(size_t w, size_t h,
                            size_t nc,
                            unsigned char* pixels)
 {
-  GLenum fmt[] = { GL_LUMINANCE,        // single component
-                   GL_LUMINANCE_ALPHA,        // 2 components
-                   GL_RGB,                // 3 components
-                   GL_RGBA                // 4 components
-  };
+    const GLenum fmt[] = {
+        GL_LUMINANCE,        // single component
+        GL_LUMINANCE_ALPHA,        // 2 components
+        GL_RGB,                // 3 components
+        GL_RGBA                // 4 components
+    };
 
-  unsigned char *newpix = new unsigned char[nc*newW*newH];
+    std::vector<unsigned char> newpix(nc * newW * newH);
 
-  glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-  glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-  if (0 == gluScaleImage( fmt[nc-1], w, h, GL_UNSIGNED_BYTE, pixels,
-                          newW, newH, GL_UNSIGNED_BYTE, newpix))
-    memcpy(pixels, newpix, nc*newW*newH);
-
-  delete [] newpix;
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    const GLint result = gluScaleImage(fmt[nc - 1],
+                                       GLsizei(w),
+                                       GLsizei(h),
+                                       GL_UNSIGNED_BYTE,
+                                       pixels,
+                                       GLsizei(newW),
+                                       GLsizei(newH),
+                                       GL_UNSIGNED_BYTE,
+                                       &newpix[0]);
+    if (result == GL_NO_ERROR) {
+        std::copy(newpix.begin(), newpix.end(), pixels);
+    }
 }
 
 
@@ -3324,10 +3352,11 @@ viewer::insert_texture(size_t w, size_t h, size_t nc,
     //
     // Pixels are lower left to upper right by row.
     //
-    GLenum fmt[] = { GL_LUMINANCE,        // single component
-                     GL_LUMINANCE_ALPHA,        // 2 components
-                     GL_RGB,                // 3 components
-                     GL_RGBA                // 4 components
+    static const GLenum fmt[] = {
+        GL_LUMINANCE,       // single component
+        GL_LUMINANCE_ALPHA, // 2 components
+        GL_RGB,             // 3 components
+        GL_RGBA             // 4 components
     };
 
     GLuint glid = 0;
@@ -3345,12 +3374,19 @@ viewer::insert_texture(size_t w, size_t h, size_t nc,
     // Texturing is enabled in setMaterialMode
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, nc, w, h, 0,
-                 fmt[nc - 1], GL_UNSIGNED_BYTE, pixels);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GLint(nc),
+                 GLsizei(w),
+                 GLsizei(h),
+                 0,
+                 fmt[nc - 1],
+                 GL_UNSIGNED_BYTE,
+                 pixels);
 
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
                     repeat_s ? GL_REPEAT : GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                     repeat_t ? GL_REPEAT : GL_CLAMP);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -3414,12 +3450,19 @@ viewer::insert_subtexture(size_t xoffset, size_t yoffset,
                   pixels + ((i + yoffset) * whole_w + xoffset + w) * nc,
                   texturepart.begin() + (i * w * nc));
     }
-    glTexImage2D(GL_TEXTURE_2D, 0, nc, w, h, 0,
-                 fmt[nc - 1], GL_UNSIGNED_BYTE, &texturepart[0]);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GLint(nc),
+                 GLsizei(w),
+                 GLsizei(h),
+                 0,
+                 fmt[nc - 1],
+                 GL_UNSIGNED_BYTE,
+                 &texturepart[0]);
 
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
                     repeat_s ? GL_REPEAT : GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                     repeat_t ? GL_REPEAT : GL_CLAMP);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -3434,12 +3477,14 @@ viewer::insert_subtexture(size_t xoffset, size_t yoffset,
  * @param ref   texture handle.
  * @param nc    number of components.
  */
-void viewer::insert_texture_reference(const texture_object_t ref, const int nc)
+void viewer::insert_texture_reference(const texture_object_t ref,
+                                      const size_t components)
 {
 #if USE_TEXTURE_DISPLAY_LISTS
     // Enable blending if needed
-    if (this->blend && (nc == 2 || nc == 4)) { glEnable(GL_BLEND); }
-
+    if (this->blend && (components == 2 || components == 4)) {
+        glEnable(GL_BLEND);
+    }
     glBindTexture(GL_TEXTURE_2D, GLuint(ref));
 #endif
 }
@@ -3480,7 +3525,7 @@ void viewer::set_texture_transform(const vec2f & center,
     glTranslatef(-center.x(), -center.y(), 0.0);
     glScalef(scale.x(), scale.y(), 1.0);
     if (!fequal<float>()(rotation, 0.0f)) {
-        glRotatef(rotation * 180.0 / pi, 0.0, 0.0, 1.0);
+        glRotatef(GLfloat(rotation * 180.0 / pi), 0.0, 0.0, 1.0);
     }
 
     glTranslatef(center.x(), center.y(), 0.0);
@@ -3507,17 +3552,21 @@ namespace {
         const double t = 1.0 - c;
 
         // Transform [0,0,1] by the orientation to determine sight line
-        target.x(t * orientation.x() * orientation.z() + s * orientation.y());
-        target.y(t * orientation.y() * orientation.z() - s * orientation.x());
-        target.z(t * orientation.z() * orientation.z() + c);
+        target.x(float(t * orientation.x() * orientation.z()
+                       + s * orientation.y()));
+        target.y(float(t * orientation.y() * orientation.z()
+                       - s * orientation.x()));
+        target.z(float(t * orientation.z() * orientation.z() + c));
 
         // Move along that vector the specified distance away from position[]
         target = target * -distance + position;
 
         // Transform [0,1,0] by the orientation to determine up vector
-        up.x(t * orientation.x() * orientation.y() - s * orientation.z());
-        up.y(t * orientation.y() * orientation.y() + c);
-        up.z(t * orientation.y() * orientation.z() + s * orientation.x());
+        up.x(float(t * orientation.x() * orientation.y()
+                   - s * orientation.z()));
+        up.y(float(t * orientation.y() * orientation.y() + c));
+        up.z(float(t * orientation.y() * orientation.z()
+                   + s * orientation.x()));
     }
 }
 
@@ -3539,14 +3588,14 @@ void viewer::set_viewpoint(const vec3f & position,
     glMatrixMode( GL_PROJECTION );
     if (!this->select_mode) { glLoadIdentity(); }
 
-    float field_of_view = fieldOfView * 180.0 / pi;
+    float field_of_view = float(fieldOfView * 180.0 / pi);
     float aspect = float(this->win_width) / this->win_height;
     float znear = (avatarSize > 0.0)
-                ? 0.5 * avatarSize
-                : 0.01;
+                ? float(0.5 * avatarSize)
+                : 0.01f;
     float zfar = (visibilityLimit > 0.0)
                ? visibilityLimit
-               : 30000.0;
+               : 30000.0f;
     gluPerspective(field_of_view, aspect, znear, zfar);
 
     this->frustum(openvrml::frustum(field_of_view, aspect, znear, zfar));
@@ -3554,8 +3603,8 @@ void viewer::set_viewpoint(const vec3f & position,
     glMatrixMode(GL_MODELVIEW);
 
     // Guess some distance along the sight line to use as a target...
-    float d = 10.0 * avatarSize;
-    if (d < znear || d > zfar) { d = 0.2 * (avatarSize + zfar); }
+    float d = float(10.0 * avatarSize);
+    if (d < znear || d > zfar) { d = float(0.2 * (avatarSize + zfar)); }
 
     vec3f target, up;
     computeView(position, orientation, d, target, up);
@@ -3663,7 +3712,7 @@ void viewer::resize(size_t width, size_t height)
 {
     if (width < 2) { width = 2; }
     if (height < 2) { height = 2; }
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, GLsizei(width), GLsizei(height));
     this->win_width = width;
     this->win_height = height;
 }
@@ -3798,11 +3847,13 @@ void viewer::zoom(const float z)
     float speed = 1.0;
     if (nav) { speed = nav->speed(); }
     dist = speed / dist;
-    if (fequal<float>()(dist, 0.0f)) { return; }
+    if (fequal<float>()(float(dist), 0.0f)) { return; }
     dx *= dist;
     dy *= dist;
     dz *= dist;
-    const vec3f translation(dx, dy, dz);
+    const vec3f translation(static_cast<float>(dx),
+                            static_cast<float>(dy),
+                            static_cast<float>(dz));
     mat4f t = mat4f::translation(translation);
     viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
     const mat4f & userViewTransform = activeViewpoint.user_view_transform();
@@ -3838,11 +3889,11 @@ void viewer::handleKey(int key)
         break;
 
     case 'a':  // look up
-        this->rotate(trackball(0.0, 0.45, 0.0, 0.55));
+        this->rotate(trackball(0.0, 0.45f, 0.0, 0.55f));
         break;
 
     case 'z':  // look down
-        this->rotate(trackball(0.0, 0.55, 0.0, 0.45));
+        this->rotate(trackball(0.0, 0.55f, 0.0, 0.45f));
         break;
 
     case 'A':  // translate up
@@ -3854,11 +3905,11 @@ void viewer::handleKey(int key)
         break;
 
     case ',':                   // Look left
-        this->rotate(trackball(0.55, 0.0, 0.45, 0.0));
+        this->rotate(trackball(0.55f, 0.0, 0.45f, 0.0));
         break;
 
     case '.':                   // Look right
-        this->rotate(trackball(0.45, 0.0, 0.55, 0.0));
+        this->rotate(trackball(0.45f, 0.0, 0.55f, 0.0));
         break;
 
     // XXX
@@ -4019,11 +4070,13 @@ void viewer::handleMouseDrag(int x, int y)
     if (this->active_sensitive) {
         this->checkSensitive(x, y, event_mouse_drag);
     } else if (this->rotating) {
-        const float x1 = (2.0 * this->beginx - this->win_width) / this->win_width;
-        const float y1 = (this->win_height - 2.0 * this->beginy)
-                         / this->win_height;
-        const float x2 = (2.0 * x - this->win_width) / this->win_width;
-        const float y2 = (this->win_height - 2.0 * y) / this->win_height;
+        const float x1 = float((2.0 * this->beginx - this->win_width)
+                               / this->win_width);
+        const float y1 = float((this->win_height - 2.0 * this->beginy)
+                               / this->win_height);
+        const float x2 = float((2.0 * x - this->win_width) / this->win_width);
+        const float y2 = float((this->win_height - 2.0 * y)
+                               / this->win_height);
         this->rotate(trackball(x1, y1, x2, y2));
         this->beginx = x;
         this->beginy = y;
