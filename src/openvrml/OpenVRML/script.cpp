@@ -237,11 +237,12 @@ namespace {
  * a call to the ScriptNode constructor.
  */
 const NodePtr
-        ScriptNode::ScriptNodeType::createNode(const ScopePtr & scope) const
+        ScriptNode::ScriptNodeType::createNode(const ScopePtr & scope,
+                                               const bool inProtoDef) const
         throw (std::bad_alloc) {
     ScriptNodeClass & scriptNodeClass =
             static_cast<ScriptNodeClass &>(this->nodeClass);
-    const NodePtr node(new ScriptNode(scriptNodeClass, scope));
+    const NodePtr node(new ScriptNode(scriptNodeClass, scope, inProtoDef));
     ScriptNode & scriptNode = dynamic_cast<ScriptNode &>(*node);
     
     //
@@ -335,12 +336,18 @@ const NodePtr
 /**
  * @brief Constructor.
  */
-ScriptNode::ScriptNode(ScriptNodeClass & nodeClass, const ScopePtr & scope):
+ScriptNode::ScriptNode(ScriptNodeClass & nodeClass,
+                       const ScopePtr & scope,
+                       const bool inProtoDef):
         Node(this->scriptNodeType, scope),
         ChildNode(this->scriptNodeType, scope),
-        scriptNodeType(nodeClass), directOutput(false), mustEvaluate(false),
-        script(0), eventsReceived(0) {
-    this->nodeType.nodeClass.scene.addScript(*this);
+        scriptNodeType(nodeClass),
+        inProtoDef(inProtoDef),
+        directOutput(false),
+        mustEvaluate(false),
+        script(0),
+        eventsReceived(0) {
+    if (!inProtoDef) { this->nodeType.nodeClass.scene.addScript(*this); }
 }
 
 /**
@@ -348,10 +355,9 @@ ScriptNode::ScriptNode(ScriptNodeClass & nodeClass, const ScopePtr & scope):
  */
 ScriptNode::~ScriptNode() throw () {
     this->shutdown(theSystem->time());
-
-    // removeScript ought to call shutdown...
-    this->nodeType.nodeClass.scene.removeScript(*this);
-
+    if (!this->inProtoDef) {
+        this->nodeType.nodeClass.scene.removeScript(*this);
+    }
     delete script;
 }
 

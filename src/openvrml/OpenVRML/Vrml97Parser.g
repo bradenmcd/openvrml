@@ -1070,7 +1070,7 @@ options { defaultErrorHandler=false; }
     NodeTypePtr nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
-            n.reset(new ScriptNode(proto.scene.scriptNodeClass, scope));
+            n.reset(new ScriptNode(proto.scene.scriptNodeClass, scope, true));
             if (!nodeId.empty()) { n->setId(nodeId); }
             
             ScriptNode * const scriptNode = n->toScript();
@@ -1088,7 +1088,7 @@ options { defaultErrorHandler=false; }
                                         + nodeTypeId->getText() + "\".",
                                         std::string(), LT(0)->getLine());
             }
-            n = nodeType->createNode(scope);
+            n = nodeType->createNode(scope, true);
             if (!nodeId.empty()) { n->setId(nodeId); }
         }
         LBRACE (protoNodeBodyElement[proto, scope, doc, *n])* RBRACE

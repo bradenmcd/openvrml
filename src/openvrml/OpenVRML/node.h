@@ -125,7 +125,8 @@ namespace OpenVRML {
         FieldValue::Type hasInterface(const std::string & id) const throw ();
         
         virtual const NodeInterfaceSet & getInterfaces() const throw () = 0;
-        virtual const NodePtr createNode(const ScopePtr & scope) const
+        virtual const NodePtr createNode(const ScopePtr & scope,
+                                         bool inProtoDef = false) const
                 throw (std::bad_alloc) = 0;
     
     protected:

@@ -1557,7 +1557,7 @@ OpenVRML::NodePtr  Vrml97Parser::protoNode(
 		match(ID);
 #line 1072 "Vrml97Parser.g"
 		
-		n.reset(new ScriptNode(proto.scene.scriptNodeClass, scope));
+		n.reset(new ScriptNode(proto.scene.scriptNodeClass, scope, true));
 		if (!nodeId.empty()) { n->setId(nodeId); }
 		
 		ScriptNode * const scriptNode = n->toScript();
@@ -1604,7 +1604,7 @@ OpenVRML::NodePtr  Vrml97Parser::protoNode(
 		+ nodeTypeId->getText() + "\".",
 		std::string(), LT(0)->getLine());
 		}
-		n = nodeType->createNode(scope);
+		n = nodeType->createNode(scope, true);
 		if (!nodeId.empty()) { n->setId(nodeId); }
 		
 #line 1611 "Vrml97Parser.cpp"

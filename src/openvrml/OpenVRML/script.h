@@ -86,13 +86,15 @@ namespace OpenVRML {
                     throw (std::invalid_argument);
 
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
-            virtual const NodePtr createNode(const ScopePtr & scope) const
+            virtual const NodePtr createNode(const ScopePtr & scope,
+                                             bool inProtoDef = false) const
                     throw (std::bad_alloc);
         };
         
         friend class ScriptNodeType;
     
         ScriptNodeType scriptNodeType;
+        const bool inProtoDef;
         SFBool directOutput;
         SFBool mustEvaluate;
         MFString url;
@@ -102,7 +104,9 @@ namespace OpenVRML {
         int eventsReceived;
     
     public:
-        ScriptNode(ScriptNodeClass & nodeClass, const ScopePtr & scope);
+        ScriptNode(ScriptNodeClass & nodeClass,
+                   const ScopePtr & scope,
+                   bool inProtoDef = false);
         virtual ~ScriptNode() throw ();
         
         void setUrl(const MFString & value, double timestamp);

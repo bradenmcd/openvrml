@@ -451,6 +451,28 @@ FieldValue::Type NodeType::hasInterface(const std::string & id) const throw () {
     return (retval = this->hasField(id));
 }
 
+/**
+ * @fn const NodeInterfaceSet & NodeType::getInterfaces() const throw ()
+ *
+ * @brief Get the set of interfaces for the NodeType.
+ *
+ * @return the set of interfaces.
+ */
+
+/**
+ * @fn const NodePtr NodeType::createNode(const ScopePtr & scope, bool inProtoDef) const throw (std::bad_alloc)
+ *
+ * @brief Create a new Node with this NodeType.
+ *
+ * @param scope         the Scope that the new node should belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
+ *
+ * @return a NodePtr to a new Node.
+ *
+ * @excpetion std::bad_alloc    if memory allocation fails.
+ */
+
 
 /**
  * @class Node

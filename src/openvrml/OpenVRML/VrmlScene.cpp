@@ -117,13 +117,16 @@ namespace OpenVRML {
         typedef std::map<std::string, PolledEventOutValue> EventOutValueMap;
 
     private:
+        const bool inProtoDef;
         ISMap isMap;
         EventOutValueMap eventOutValueMap;
         MFNode implNodes;
 
     public:
         explicit ProtoNode(const NodeType & nodeType);
-        ProtoNode(const NodeType & nodeType, const ScopePtr & scope,
+        ProtoNode(const NodeType & nodeType,
+                  const ScopePtr & scope,
+                  bool inProtoDef,
                   const ProtoNode & node);
         virtual ~ProtoNode() throw ();
 
@@ -220,7 +223,8 @@ namespace OpenVRML {
             virtual ~ProtoNodeType() throw ();
 
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
-            virtual const NodePtr createNode(const ScopePtr & scope) const
+            virtual const NodePtr createNode(const ScopePtr & scope,
+                                             bool inProtoDef = false) const
                     throw (std::bad_alloc);
             
             void addInterface(const NodeInterface & interface)
@@ -687,9 +691,6 @@ const char * VrmlScene::getVersion() { return PACKAGE_VERSION; }
  * @brief Initialize the NodeClass map with the available node implementations.
  */
 void VrmlScene::initNodeClassMap() {
-    this->nodeClassMap["urn:openvrml:node:Script"] =
-            NodeClassPtr(new ScriptNodeClass(*this));
-
     using namespace Vrml97Node;
     this->nodeClassMap["urn:X-openvrml:node:Anchor"] =
             NodeClassPtr(new AnchorClass(*this));
@@ -2254,7 +2255,8 @@ namespace {
  * @param nodeType  the NodeType associated with the node.
  */
 ProtoNode::ProtoNode(const NodeType & nodeType):
-        Node(nodeType, ScopePtr(0)) {
+        Node(nodeType, ScopePtr(0)),
+        inProtoDef(true) {
     //
     // For each exposedField and eventOut in the prototype interface, add
     // a value to the eventOutValueMap.
@@ -2271,9 +2273,12 @@ ProtoNode::ProtoNode(const NodeType & nodeType):
  * @param scope     the scope the new node belongs to.
  * @param node      the ProtoNode to clone when creating the instance.
  */
-ProtoNode::ProtoNode(const NodeType & nodeType, const ScopePtr & scope,
+ProtoNode::ProtoNode(const NodeType & nodeType,
+                     const ScopePtr & scope,
+                     const bool inProtoDef,
                      const ProtoNode & node):
-        Node(nodeType, scope) {
+        Node(nodeType, scope),
+        inProtoDef(inProtoDef) {
     assert(node.implNodes.getLength() > 0);
     assert(node.implNodes.getElement(0));
 
@@ -2314,7 +2319,7 @@ ProtoNode::~ProtoNode() throw () {
     // NodeClass) from the scene, because it was never added. It so happens
     // that the NodeType for that instance isn't given a name.
     //
-    if (!nodeType.id.empty()) {
+    if (!this->nodeType.id.empty()) {
         this->nodeType.nodeClass.scene.removeProto(*this);
     }
 }
@@ -2907,9 +2912,10 @@ const NodeInterfaceSet & ProtoNodeClass::ProtoNodeType::getInterfaces() const
  * @return a NodePtr to a new Node.
  */
 const NodePtr
-        ProtoNodeClass::ProtoNodeType::createNode(const ScopePtr & scope) const
+        ProtoNodeClass::ProtoNodeType::createNode(const ScopePtr & scope,
+                                                  const bool inProtoDef) const
         throw (std::bad_alloc) {
-    return NodePtr(new ProtoNode(*this, scope,
+    return NodePtr(new ProtoNode(*this, scope, inProtoDef,
                                  static_cast<ProtoNodeClass &>(this->nodeClass)
                                     .protoNode));
 }

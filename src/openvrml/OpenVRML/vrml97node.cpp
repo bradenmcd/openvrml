@@ -162,7 +162,8 @@ namespace {
 
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
             
-            virtual const NodePtr createNode(const ScopePtr & scope) const
+            virtual const NodePtr createNode(const ScopePtr & scope,
+                                             bool inProtoDef = false) const
                     throw (std::bad_alloc);
         
         private:
@@ -306,9 +307,9 @@ namespace {
 
     template <typename NodeT>
         const NodePtr Vrml97NodeTypeImpl<NodeT>::
-                createNode(const ScopePtr & scope) const
+                createNode(const ScopePtr & scope, const bool inProtoDef) const
                 throw (std::bad_alloc) {
-            return NodePtr(new NodeT(*this, scope));
+            return NodePtr(new NodeT(*this, scope, inProtoDef));
         }
 
     template <typename NodeT>
@@ -550,7 +551,10 @@ void AbstractGeometry::render(Viewer * viewer, VrmlRenderContext context) {
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the instance.
+ * @param nodeType      the NodeType associated with the instance.
+ * @param scope         the Scope that the new node will belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
  */
 AbstractIndexedSet::AbstractIndexedSet(const NodeType & nodeType,
                                        const ScopePtr & scope):
@@ -921,8 +925,10 @@ const NodeTypePtr AnchorClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this node.
  */
-Anchor::Anchor(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), Group(nodeType, scope) {
+Anchor::Anchor(const NodeType & nodeType,
+               const ScopePtr & scope,
+               const bool inProtoDef):
+        Node(nodeType, scope), Group(nodeType, scope, inProtoDef) {
     this->setBVolumeDirty(true);
 }
 
@@ -1119,7 +1125,9 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-Appearance::Appearance(const NodeType & nodeType, const ScopePtr & scope):
+Appearance::Appearance(const NodeType & nodeType,
+                       const ScopePtr & scope,
+                       const bool inProtoDef):
         Node(nodeType, scope), AbstractBase(nodeType, scope),
         AppearanceNode(nodeType, scope) {}
 
@@ -1409,11 +1417,20 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-AudioClip::AudioClip(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope), pitch(1.0), active(false),
-        audio(0), url_modified(false), audio_index(0),
-        audio_intensity(1.0), audio_fd(-1) {
-    this->nodeType.nodeClass.scene.addAudioClip(*this);
+AudioClip::AudioClip(const NodeType & nodeType,
+                     const ScopePtr & scope,
+                     const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractBase(nodeType, scope),
+        inProtoDef(inProtoDef),
+        pitch(1.0),
+        active(false),
+        audio(0),
+        url_modified(false),
+        audio_index(0),
+        audio_intensity(1.0),
+        audio_fd(-1) {
+    if (!inProtoDef) { this->nodeType.nodeClass.scene.addAudioClip(*this); }
 }
 
 /**
@@ -1421,7 +1438,9 @@ AudioClip::AudioClip(const NodeType & nodeType, const ScopePtr & scope):
  */
 AudioClip::~AudioClip() throw () {
     delete this->audio;
-    this->nodeType.nodeClass.scene.removeAudioClip(*this);
+    if (!this->inProtoDef) {
+        this->nodeType.nodeClass.scene.removeAudioClip(*this);
+    }
 }
 
 /**
@@ -1766,17 +1785,27 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-Background::Background(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), bound(false), viewerObject(0) {
+Background::Background(const NodeType & nodeType,
+                       const ScopePtr & scope,
+                       const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        inProtoDef(inProtoDef),
+        bound(false),
+        viewerObject(0) {
     std::fill(this->texPtr, this->texPtr + 6, static_cast<Image *>(0));
-    this->nodeType.nodeClass.scene.addBackground(*this);
+    if (!inProtoDef) {
+        this->nodeType.nodeClass.scene.addBackground(*this);
+    }
 }
 
 /**
  * @brief Destructor.
  */
 Background::~Background() throw () {
-    this->nodeType.nodeClass.scene.removeBackground(*this);
+    if (!this->inProtoDef) {
+        this->nodeType.nodeClass.scene.removeBackground(*this);
+    }
     // remove d_viewerObject...
 }
 
@@ -2226,8 +2255,12 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-Billboard::Billboard(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), Group(nodeType, scope), axisOfRotation(0.0, 1.0, 0.0),
+Billboard::Billboard(const NodeType & nodeType,
+                     const ScopePtr & scope,
+                     const bool inProtoDef):
+        Node(nodeType, scope),
+        Group(nodeType, scope, inProtoDef),
+        axisOfRotation(0.0, 1.0, 0.0),
 	xformObject(0) {}
 
 /**
@@ -2445,8 +2478,12 @@ const NodeTypePtr BoxClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with the node instance.
  */
-Box::Box(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractGeometry(nodeType, scope), size(2.0, 2.0, 2.0) {
+Box::Box(const NodeType & nodeType,
+         const ScopePtr & scope,
+         const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractGeometry(nodeType, scope),
+        size(2.0, 2.0, 2.0) {
     this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
@@ -2594,8 +2631,12 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-Collision::Collision(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), Group(nodeType, scope), collide(true) {}
+Collision::Collision(const NodeType & nodeType,
+                     const ScopePtr & scope,
+                     const bool inProtoDef):
+        Node(nodeType, scope),
+        Group(nodeType, scope, inProtoDef),
+        collide(true) {}
 
 /**
  * @brief Destructor.
@@ -2694,8 +2735,11 @@ const NodeTypePtr ColorClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this node.
  */
-Color::Color(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
+Color::Color(const NodeType & nodeType,
+             const ScopePtr & scope,
+             const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractBase(nodeType, scope),
         ColorNode(nodeType, scope) {}
 
 /**
@@ -2818,8 +2862,11 @@ const NodeTypePtr ColorInterpolatorClass::
  *
  * @param type  the NodeType associated with the node instance.
  */
-ColorInterpolator::ColorInterpolator(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope) {}
+ColorInterpolator::ColorInterpolator(const NodeType & nodeType,
+                                     const ScopePtr & scope,
+                                     const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -3007,9 +3054,15 @@ const NodeTypePtr ConeClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with the node instance.
  */
-Cone::Cone(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractGeometry(nodeType, scope), bottom(true),
-        bottomRadius(1.0), height(2.0), side(true) {}
+Cone::Cone(const NodeType & nodeType,
+           const ScopePtr & scope,
+           const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractGeometry(nodeType, scope),
+        bottom(true),
+        bottomRadius(1.0),
+        height(2.0),
+        side(true) {}
 
 /**
  * @brief Destructor.
@@ -3098,8 +3151,11 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with this node.
  */
-Coordinate::Coordinate(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
+Coordinate::Coordinate(const NodeType & nodeType,
+                       const ScopePtr & scope,
+                       const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractBase(nodeType, scope),
         CoordinateNode(nodeType, scope) {}
 
 /**
@@ -3223,8 +3279,11 @@ const NodeTypePtr CoordinateInterpolatorClass::
  *
  * @param type  the NodeType associated with the node instance.
  */
-CoordinateInterpolator::CoordinateInterpolator(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope) {}
+CoordinateInterpolator::CoordinateInterpolator(const NodeType & nodeType,
+                                               const ScopePtr & scope,
+                                               const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -3409,9 +3468,16 @@ const NodeTypePtr CylinderClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with the node instance.
  */
-Cylinder::Cylinder(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractGeometry(nodeType, scope), bottom(true), height(2.0),
-        radius(1.0), side(true), top(true) {}
+Cylinder::Cylinder(const NodeType & nodeType,
+                   const ScopePtr & scope,
+                   const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractGeometry(nodeType, scope),
+        bottom(true),
+        height(2.0),
+        radius(1.0),
+        side(true),
+        top(true) {}
 
 /**
  * @brief Destructor.
@@ -3565,9 +3631,17 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-CylinderSensor::CylinderSensor(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), autoOffset(true), diskAngle(0.262),
-        enabled(true), maxAngle(-1.0), minAngle(0.0), offset(0.0),
+CylinderSensor::CylinderSensor(const NodeType & nodeType,
+                               const ScopePtr & scope,
+                               const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        autoOffset(true),
+        diskAngle(0.262),
+        enabled(true),
+        maxAngle(-1.0),
+        minAngle(0.0),
+        offset(0.0),
         active(false) {
     this->setModified();
 }
@@ -3887,8 +3961,10 @@ const NodeTypePtr
  * @param type  the NodeType associated with the node instance.
  */
 DirectionalLight::DirectionalLight(const NodeType & nodeType,
-                                   const ScopePtr & scope):
-        Node(nodeType, scope), AbstractLight(nodeType, scope),
+                                   const ScopePtr & scope,
+                                   const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractLight(nodeType, scope),
         direction(0.0, 0.0, -1.0) {}
 
 /**
@@ -4087,10 +4163,19 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-ElevationGrid::ElevationGrid(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractGeometry(nodeType, scope), ccw(true), colorPerVertex(true),
-        normalPerVertex(true), solid(true), xDimension(0), xSpacing(1.0f),
-        zDimension(0), zSpacing(1.0f) {}
+ElevationGrid::ElevationGrid(const NodeType & nodeType,
+                             const ScopePtr & scope,
+                             const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractGeometry(nodeType, scope),
+        ccw(true),
+        colorPerVertex(true),
+        normalPerVertex(true),
+        solid(true),
+        xDimension(0),
+        xSpacing(1.0f),
+        zDimension(0),
+        zSpacing(1.0f) {}
 
 /**
  * @brief Destructor.
@@ -4405,13 +4490,21 @@ namespace {
  *
  * @param type  the NodeType associated with the node instance.
  */
-Extrusion::Extrusion(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractGeometry(nodeType, scope), beginCap(true),
-        ccw(true), convex(true), creaseAngle(0),
+Extrusion::Extrusion(const NodeType & nodeType,
+                     const ScopePtr & scope,
+                     const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractGeometry(nodeType, scope),
+        beginCap(true),
+        ccw(true),
+        convex(true),
+        creaseAngle(0),
         crossSection(5, extrusionDefaultCrossSection_),
-        endCap(true), orientation(1, extrusionDefaultRotation_),
+        endCap(true),
+        orientation(1, extrusionDefaultRotation_),
         scale(1, extrusionDefaultScale_),
-        solid(true), spine(2, extrusionDefaultSpine_) {}
+        solid(true),
+        spine(2, extrusionDefaultSpine_) {}
 
 /**
  * @brief Destructor.
@@ -4605,16 +4698,25 @@ const NodeTypePtr FogClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with the node instance.
  */
-Fog::Fog(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), color(1.0, 1.0, 1.0),
-        fogType("LINEAR"), visibilityRange(0.0), bound(false) {
-    this->nodeType.nodeClass.scene.addFog(*this);
+Fog::Fog(const NodeType & nodeType,
+         const ScopePtr & scope,
+         const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        inProtoDef(inProtoDef),
+        color(1.0, 1.0, 1.0),
+        fogType("LINEAR"),
+        visibilityRange(0.0),
+        bound(false) {
+    if (!inProtoDef) { this->nodeType.nodeClass.scene.addFog(*this); }
 }
 
 /**
  * @brief Destructor.
  */
-Fog::~Fog() throw () { this->nodeType.nodeClass.scene.removeFog(*this); }
+Fog::~Fog() throw () {
+    if (!this->inProtoDef) { this->nodeType.nodeClass.scene.removeFog(*this); }
+}
 
 Fog * Fog::toFog() const { return const_cast<Fog *>(this); }
 
@@ -4831,11 +4933,20 @@ namespace {
  *
  * @param type  the NodeType associated with the node instance.
  */
-FontStyle::FontStyle(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
-        FontStyleNode(nodeType, scope), family(1, fontStyleInitFamily_),
-        horizontal(true), justify(1, fontStyleInitJustify_), leftToRight(true),
-        size(1.0), spacing(1.0), style("PLAIN"), topToBottom(true) {}
+FontStyle::FontStyle(const NodeType & nodeType,
+                     const ScopePtr & scope,
+                     const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractBase(nodeType, scope),
+        FontStyleNode(nodeType, scope),
+        family(1, fontStyleInitFamily_),
+        horizontal(true),
+        justify(1, fontStyleInitJustify_),
+        leftToRight(true),
+        size(1.0),
+        spacing(1.0),
+        style("PLAIN"),
+        topToBottom(true) {}
 
 /**
  * @brief Destructor.
@@ -5015,9 +5126,14 @@ const NodeTypePtr GroupClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this node.
  */
-Group::Group(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), bboxSize(-1.0, -1.0, -1.0),
-        parentTransform(0), viewerObject(0) {
+Group::Group(const NodeType & nodeType,
+             const ScopePtr & scope,
+             const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        bboxSize(-1.0, -1.0, -1.0),
+        parentTransform(0),
+        viewerObject(0) {
     this->setBVolumeDirty(true);
 }
 
@@ -5443,8 +5559,13 @@ const NodeTypePtr ImageTextureClass::
  *
  * @param type  the NodeType associated with this node.
  */
-ImageTexture::ImageTexture(const NodeType & nodeType, const ScopePtr & scope) :
-        Node(nodeType, scope), AbstractTexture(nodeType, scope), image(0), texObject(0) {}
+ImageTexture::ImageTexture(const NodeType & nodeType,
+                           const ScopePtr & scope,
+                           const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractTexture(nodeType, scope),
+        image(0),
+        texObject(0) {}
 
 /**
  * @brief Destructor.
@@ -5742,9 +5863,16 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with this node.
  */
-IndexedFaceSet::IndexedFaceSet(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractIndexedSet(nodeType, scope), ccw(true),
-        convex(true), creaseAngle(0.0), normalPerVertex(true), solid(true) {
+IndexedFaceSet::IndexedFaceSet(const NodeType & nodeType,
+                               const ScopePtr & scope,
+                               const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractIndexedSet(nodeType, scope),
+        ccw(true),
+        convex(true),
+        creaseAngle(0.0),
+        normalPerVertex(true),
+        solid(true) {
     this->setBVolumeDirty(true);
 }
 
@@ -6067,8 +6195,10 @@ const NodeTypePtr
  * @param type  the NodeType associated with this node.
  */
 IndexedLineSet::IndexedLineSet(const NodeType & nodeType,
-                               const ScopePtr & scope):
-        Node(nodeType, scope), AbstractIndexedSet(nodeType, scope) {}
+                               const ScopePtr & scope,
+                               const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractIndexedSet(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -6193,8 +6323,12 @@ const NodeTypePtr InlineClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this node.
  */
-Inline::Inline(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), Group(nodeType, scope), hasLoaded(false) {
+Inline::Inline(const NodeType & nodeType,
+               const ScopePtr & scope,
+               const bool inProtoDef):
+        Node(nodeType, scope),
+        Group(nodeType, scope, inProtoDef),
+        hasLoaded(false) {
     this->setBVolumeDirty(true);
 }
 
@@ -6370,8 +6504,11 @@ const NodeTypePtr LODClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this node.
  */
-LOD::LOD(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope) {
+LOD::LOD(const NodeType & nodeType,
+         const ScopePtr & scope,
+         const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope) {
     this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
@@ -6608,11 +6745,18 @@ const NodeTypePtr MaterialClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this node.
  */
-Material::Material(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
-        MaterialNode(nodeType, scope), ambientIntensity(0.2),
-        diffuseColor(0.8, 0.8, 0.8), emissiveColor(0.0, 0.0, 0.0),
-        shininess(0.2), specularColor(0.0, 0.0, 0.0), transparency(0.0) {}
+Material::Material(const NodeType & nodeType,
+                   const ScopePtr & scope,
+                   const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractBase(nodeType, scope),
+        MaterialNode(nodeType, scope),
+        ambientIntensity(0.2),
+        diffuseColor(0.8, 0.8, 0.8),
+        emissiveColor(0.0, 0.0, 0.0),
+        shininess(0.2),
+        specularColor(0.0, 0.0, 0.0),
+        transparency(0.0) {}
 
 /**
  * @brief Destructor.
@@ -6900,17 +7044,29 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-MovieTexture::MovieTexture(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractTexture(nodeType, scope), loop(false), speed(1.0),
-        image(0), frame(0), lastFrame(-1), lastFrameTime(-1.0), texObject(0) {
-    this->nodeType.nodeClass.scene.addMovie(*this);
+MovieTexture::MovieTexture(const NodeType & nodeType,
+                           const ScopePtr & scope,
+                           const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractTexture(nodeType, scope),
+        inProtoDef(inProtoDef),
+        loop(false),
+        speed(1.0),
+        image(0),
+        frame(0),
+        lastFrame(-1),
+        lastFrameTime(-1.0),
+        texObject(0) {
+    if (!inProtoDef) { this->nodeType.nodeClass.scene.addMovie(*this); }
 }
 
 /**
  * @brief Destructor.
  */
 MovieTexture::~MovieTexture() throw () {
-    this->nodeType.nodeClass.scene.removeMovie(*this);
+    if (!this->inProtoDef) {
+        this->nodeType.nodeClass.scene.removeMovie(*this);
+    }
     delete this->image;
 }
 
@@ -7282,18 +7438,29 @@ namespace {
  * @param type  the NodeType associated with the node instance.
  */
 NavigationInfo::NavigationInfo(const NodeType & nodeType,
-                               const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope),
-        avatarSize(3, avatarSize_), headlight(true), speed(1.0), type(2, type_),
-        visibilityLimit(0.0), bound(false) {
-    this->nodeType.nodeClass.scene.addNavigationInfo(*this);
+                               const ScopePtr & scope,
+                               const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        inProtoDef(inProtoDef),
+        avatarSize(3, avatarSize_),
+        headlight(true),
+        speed(1.0),
+        type(2, type_),
+        visibilityLimit(0.0),
+        bound(false) {
+    if (!inProtoDef) {
+        this->nodeType.nodeClass.scene.addNavigationInfo(*this);
+    }
 }
 
 /**
  * @brief Destructor.
  */
 NavigationInfo::~NavigationInfo() throw () {
-    this->nodeType.nodeClass.scene.removeNavigationInfo(*this);
+    if (!this->inProtoDef) {
+        this->nodeType.nodeClass.scene.removeNavigationInfo(*this);
+    }
 }
 
 NavigationInfo* NavigationInfo::toNavigationInfo() const
@@ -7490,8 +7657,11 @@ const NodeTypePtr NormalClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this node.
  */
-Normal::Normal(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
+Normal::Normal(const NodeType & nodeType,
+               const ScopePtr & scope,
+               const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractBase(nodeType, scope),
         NormalNode(nodeType, scope) {}
 
 /**
@@ -7615,8 +7785,11 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-NormalInterpolator::NormalInterpolator(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope) {}
+NormalInterpolator::NormalInterpolator(const NodeType & nodeType,
+                                       const ScopePtr & scope,
+                                       const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -7820,8 +7993,11 @@ const NodeTypePtr OrientationInterpolatorClass::
  *
  * @param type  the NodeType associated with the node instance.
  */
-OrientationInterpolator::OrientationInterpolator(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope) {}
+OrientationInterpolator::OrientationInterpolator(const NodeType & nodeType,
+                                                 const ScopePtr & scope,
+                                                 const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -8021,8 +8197,12 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with this node.
  */
-PixelTexture::PixelTexture(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractTexture(nodeType, scope), texObject(0) {}
+PixelTexture::PixelTexture(const NodeType & nodeType,
+                           const ScopePtr & scope,
+                           const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractTexture(nodeType, scope),
+        texObject(0) {}
 
 /**
  * @brief Destructor.
@@ -8252,10 +8432,18 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with this node.
  */
-PlaneSensor::PlaneSensor(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), autoOffset(true),
-        enabled(true), maxPosition(-1.0, -1.0), minPosition(0.0, 0.0),
-        offset(0.0, 0.0, 0.0), active(false), parentTransform(0) {
+PlaneSensor::PlaneSensor(const NodeType & nodeType,
+                         const ScopePtr & scope,
+                         const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        autoOffset(true),
+        enabled(true),
+        maxPosition(-1.0, -1.0),
+        minPosition(0.0, 0.0),
+        offset(0.0, 0.0, 0.0),
+        active(false),
+        parentTransform(0) {
     this->setModified();
 }
 
@@ -8567,17 +8755,25 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-PointLight::PointLight(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractLight(nodeType, scope),
-        attenuation(1.0, 0.0, 0.0), location(0.0, 0.0, 0.0), radius(100) {
-    this->nodeType.nodeClass.scene.addScopedLight(*this);
+PointLight::PointLight(const NodeType & nodeType,
+                       const ScopePtr & scope,
+                       const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractLight(nodeType, scope),
+        inProtoDef(inProtoDef),
+        attenuation(1.0, 0.0, 0.0),
+        location(0.0, 0.0, 0.0),
+        radius(100) {
+    if (!inProtoDef) { this->nodeType.nodeClass.scene.addScopedLight(*this); }
 }
 
 /**
  * @brief Destructor.
  */
 PointLight::~PointLight() throw () {
-    this->nodeType.nodeClass.scene.removeScopedLight(*this);
+    if (!this->inProtoDef) {
+        this->nodeType.nodeClass.scene.removeScopedLight(*this);
+    }
 }
 
 PointLight* PointLight::toPointLight() const
@@ -8728,8 +8924,11 @@ const NodeTypePtr PointSetClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this node.
  */
-PointSet::PointSet(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractGeometry(nodeType, scope) {
+PointSet::PointSet(const NodeType & nodeType,
+                   const ScopePtr & scope,
+                   const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractGeometry(nodeType, scope) {
     this->setBVolumeDirty(true);
 }
 
@@ -8929,8 +9128,11 @@ const NodeTypePtr PositionInterpolatorClass::
  *
  * @param type  the NodeType associated with the node instance.
  */
-PositionInterpolator::PositionInterpolator(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope) {}
+PositionInterpolator::PositionInterpolator(const NodeType & nodeType,
+                                           const ScopePtr & scope,
+                                           const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -9133,10 +9335,18 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with this node.
  */
-ProximitySensor::ProximitySensor(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), center(0.0, 0.0, 0.0), enabled(true),
-        size(0.0, 0.0, 0.0), active(false), position(0.0, 0.0, 0.0),
-        enterTime(0.0), exitTime(0.0) {
+ProximitySensor::ProximitySensor(const NodeType & nodeType,
+                                 const ScopePtr & scope,
+                                 const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        center(0.0, 0.0, 0.0),
+        enabled(true),
+        size(0.0, 0.0, 0.0),
+        active(false),
+        position(0.0, 0.0, 0.0),
+        enterTime(0.0),
+        exitTime(0.0) {
     this->setModified();
 }
 
@@ -9370,8 +9580,11 @@ const NodeTypePtr ScalarInterpolatorClass::
  *
  * @param type  the NodeType associated with the node instance.
  */
-ScalarInterpolator::ScalarInterpolator(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope) {}
+ScalarInterpolator::ScalarInterpolator(const NodeType & nodeType,
+                                       const ScopePtr & scope,
+                                       const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -9524,8 +9737,12 @@ const NodeTypePtr ShapeClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this node.
  */
-Shape::Shape(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), viewerObject(0) {}
+Shape::Shape(const NodeType & nodeType,
+             const ScopePtr & scope,
+             const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        viewerObject(0) {}
 
 /**
  * @brief Destructor.
@@ -9792,9 +10009,18 @@ const NodeTypePtr SoundClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this node.
  */
-Sound::Sound(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), direction(0, 0, 1), intensity(1),
-        maxBack(10), maxFront(10), minBack(1), minFront(1), spatialize(true) {}
+Sound::Sound(const NodeType & nodeType,
+             const ScopePtr & scope,
+             const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        direction(0, 0, 1),
+        intensity(1),
+        maxBack(10),
+        maxFront(10),
+        minBack(1),
+        minFront(1),
+        spatialize(true) {}
 
 /**
  * @brief Destructor.
@@ -10022,8 +10248,12 @@ const NodeTypePtr SphereClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with the node instance.
  */
-Sphere::Sphere(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractGeometry(nodeType, scope), radius(1.0) {
+Sphere::Sphere(const NodeType & nodeType,
+               const ScopePtr & scope,
+               const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractGeometry(nodeType, scope),
+        radius(1.0) {
     this->setBVolumeDirty(true); // lazy calc of bvolumes
 }
 
@@ -10152,9 +10382,15 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-SphereSensor::SphereSensor(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), autoOffset(true), enabled(true),
-        offset(0,1,0,0), active(false) {
+SphereSensor::SphereSensor(const NodeType & nodeType,
+                           const ScopePtr & scope,
+                           const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        autoOffset(true),
+        enabled(true),
+        offset(0,1,0,0),
+        active(false) {
     this->setModified();
 }
 
@@ -10438,18 +10674,28 @@ const NodeTypePtr
  *
  * @param type  the NodeType associated with the node instance.
  */
-SpotLight::SpotLight(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractLight(nodeType, scope),
-        attenuation(1.0, 0.0, 0.0), beamWidth(1.570796), cutOffAngle(0.785398),
-        direction(0.0, 0.0, -1.0), location(0.0, 0.0, 0.0), radius(100) {
-    this->nodeType.nodeClass.scene.addScopedLight(*this);
+SpotLight::SpotLight(const NodeType & nodeType,
+                     const ScopePtr & scope,
+                     const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractLight(nodeType, scope),
+        inProtoDef(inProtoDef),
+        attenuation(1.0, 0.0, 0.0),
+        beamWidth(1.570796),
+        cutOffAngle(0.785398),
+        direction(0.0, 0.0, -1.0),
+        location(0.0, 0.0, 0.0),
+        radius(100) {
+    if (!inProtoDef) { this->nodeType.nodeClass.scene.addScopedLight(*this); }
 }
 
 /**
  * @brief Destructor.
  */
 SpotLight::~SpotLight() throw () {
-    this->nodeType.nodeClass.scene.removeScopedLight(*this);
+    if (!this->inProtoDef) {
+        this->nodeType.nodeClass.scene.removeScopedLight(*this);
+    }
 }
 
 SpotLight* SpotLight::toSpotLight() const
@@ -10655,8 +10901,12 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
  *
  * @param type  the NodeType associated with this instance.
  */
-Switch::Switch(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), whichChoice(-1) {
+Switch::Switch(const NodeType & nodeType,
+               const ScopePtr & scope,
+               const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        whichChoice(-1) {
     this->setBVolumeDirty(true);
 }
 
@@ -10883,10 +11133,16 @@ const NodeTypePtr TextClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the instance.
+ * @param nodeType      the NodeType associated with the instance.
+ * @param scope         the Scope that the new node will belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
  */
-Text::Text(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractGeometry(nodeType, scope) {}
+Text::Text(const NodeType & nodeType,
+           const ScopePtr & scope,
+           const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractGeometry(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -11093,11 +11349,16 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the instance.
+ * @param nodeType      the NodeType associated with the instance.
+ * @param scope         the Scope that the new node will belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
  */
 TextureCoordinate::TextureCoordinate(const NodeType & nodeType,
-                                     const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
+                                     const ScopePtr & scope,
+                                     const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractBase(nodeType, scope),
         TextureCoordinateNode(nodeType, scope) {}
 
 /**
@@ -11254,13 +11515,21 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the instance.
+ * @param nodeType      the NodeType associated with the instance.
+ * @param scope         the Scope that the new node will belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
  */
 TextureTransform::TextureTransform(const NodeType & nodeType,
-                                   const ScopePtr & scope):
-        Node(nodeType, scope), AbstractBase(nodeType, scope),
-        TextureTransformNode(nodeType, scope), center(0.0, 0.0), rotation(0.0),
-        scale(1.0, 1.0), translation(0.0, 0.0) {}
+                                   const ScopePtr & scope,
+                                   const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractBase(nodeType, scope),
+        TextureTransformNode(nodeType, scope),
+        center(0.0, 0.0),
+        rotation(0.0),
+        scale(1.0, 1.0),
+        translation(0.0, 0.0) {}
 
 /**
  * @brief Destructor.
@@ -11538,20 +11807,36 @@ const NodeTypePtr TimeSensorClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the instance.
+ * @param nodeType      the NodeType associated with the instance.
+ * @param scope         the Scope that the new node will belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
  */
-TimeSensor::TimeSensor(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), cycleInterval(1.0), enabled(true),
-        loop(false), startTime(0.0), stopTime(0.0), active(false),
+TimeSensor::TimeSensor(const NodeType & nodeType,
+                       const ScopePtr & scope,
+                       const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        inProtoDef(inProtoDef),
+        cycleInterval(1.0),
+        enabled(true),
+        loop(false),
+        startTime(0.0),
+        stopTime(0.0),
+        active(false),
         lastTime(-1.0) {
-    this->nodeType.nodeClass.scene.addTimeSensor(*this);
+    if (!inProtoDef) {
+        this->nodeType.nodeClass.scene.addTimeSensor(*this);
+    }
 }
 
 /**
  * @brief Destructor.
  */
 TimeSensor::~TimeSensor() throw () {
-    this->nodeType.nodeClass.scene.removeTimeSensor(*this);
+    if (!this->inProtoDef) {
+        this->nodeType.nodeClass.scene.removeTimeSensor(*this);
+    }
 }
 
 /**
@@ -11929,11 +12214,20 @@ const NodeTypePtr TouchSensorClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the instance.
+ * @param nodeType      the NodeType associated with the instance.
+ * @param scope         the Scope that the new node will belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
  */
-TouchSensor::TouchSensor(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), enabled(true), active(false),
-        over(false), touchTime(0.0) {
+TouchSensor::TouchSensor(const NodeType & nodeType,
+                         const ScopePtr & scope,
+                         const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        enabled(true),
+        active(false),
+        over(false),
+        touchTime(0.0) {
     this->setModified();
 }
 
@@ -12189,12 +12483,21 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the instance.
+ * @param nodeType      the NodeType associated with the instance.
+ * @param scope         the Scope that the new node will belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
  */
-Transform::Transform(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), Group(nodeType, scope), center(0.0, 0.0, 0.0),
-        rotation(0.0, 0.0, 1.0, 0.0), scale(1.0, 1.0, 1.0),
-        scaleOrientation(0.0, 0.0, 1.0, 0.0), translation(0.0, 0.0, 0.0),
+Transform::Transform(const NodeType & nodeType,
+                     const ScopePtr & scope,
+                     const bool inProtoDef):
+        Node(nodeType, scope),
+        Group(nodeType, scope, inProtoDef),
+        center(0.0, 0.0, 0.0),
+        rotation(0.0, 0.0, 1.0, 0.0),
+        scale(1.0, 1.0, 1.0),
+        scaleOrientation(0.0, 0.0, 1.0, 0.0),
+        translation(0.0, 0.0, 0.0),
         xformObject(0) {
     this->M_dirty = true;
     this->setBVolumeDirty(true);
@@ -12666,21 +12969,36 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the instance.
+ * @param nodeType      the NodeType associated with the instance.
+ * @param scope         the Scope that the new node will belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
  */
-Viewpoint::Viewpoint(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope),
-        fieldOfView(DEFAULT_FIELD_OF_VIEW), jump(true),
-        orientation(0.0, 0.0, 1.0, 0.0), position(0.0, 0.0, 10.0),
-        bound(false), bindTime(0), parentTransform(0) {
-    this->nodeType.nodeClass.scene.addViewpoint(*this);
+Viewpoint::Viewpoint(const NodeType & nodeType,
+                     const ScopePtr & scope,
+                     const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        inProtoDef(inProtoDef),
+        fieldOfView(DEFAULT_FIELD_OF_VIEW),
+        jump(true),
+        orientation(0.0, 0.0, 1.0, 0.0),
+        position(0.0, 0.0, 10.0),
+        bound(false),
+        bindTime(0),
+        parentTransform(0) {
+    if (!inProtoDef) {
+        this->nodeType.nodeClass.scene.addViewpoint(*this);
+    }
 }
 
 /**
  * @brief Destructor.
  */
 Viewpoint::~Viewpoint() throw () {
-    this->nodeType.nodeClass.scene.removeViewpoint(*this);
+    if (!this->inProtoDef) {
+        this->nodeType.nodeClass.scene.removeViewpoint(*this);
+    }
 }
 
 /**
@@ -13057,13 +13375,22 @@ const NodeTypePtr
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the instance.
+ * @param nodeType      the NodeType associated with the instance.
+ * @param scope         the Scope that the new node will belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
  */
 VisibilitySensor::VisibilitySensor(const NodeType & nodeType,
-                                   const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope), center(0.0, 0.0, 0.0),
-        enabled(true), size(0.0, 0.0, 0.0), active(false),
-        enterTime(0.0), exitTime(0.0) {
+                                   const ScopePtr & scope,
+                                   const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope),
+        center(0.0, 0.0, 0.0),
+        enabled(true),
+        size(0.0, 0.0, 0.0),
+        active(false),
+        enterTime(0.0),
+        exitTime(0.0) {
     this->setModified();
 }
 
@@ -13283,10 +13610,16 @@ const NodeTypePtr WorldInfoClass::createType(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the instance.
+ * @param nodeType      the NodeType associated with the instance.
+ * @param scope         the Scope that the new node will belong to.
+ * @param inProtoDef    @c true if the new node will be part of a prototype
+ *                      definition; @c false otherwise.
  */
-WorldInfo::WorldInfo(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope), AbstractChild(nodeType, scope) {}
+WorldInfo::WorldInfo(const NodeType & nodeType,
+                     const ScopePtr & scope,
+                     const bool inProtoDef):
+        Node(nodeType, scope),
+        AbstractChild(nodeType, scope) {}
 
 /**
  * @brief Destructor.
