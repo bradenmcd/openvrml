@@ -58,12 +58,12 @@ unsupported_interface::unsupported_interface(const std::string & message):
 /**
  * @brief Constructor.
  *
- * @param nodeType      the node type.
+ * @param type      the node type.
  * @param interfaceId   the name of the interface that is not available.
  */
-unsupported_interface::unsupported_interface(const node_type & nodeType,
+unsupported_interface::unsupported_interface(const node_type & type,
                                              const std::string & interfaceId):
-    std::runtime_error(nodeType.id + " has no interface \"" + interfaceId
+    std::runtime_error(type.id + " has no interface \"" + interfaceId
                        + '"')
 {}
 
@@ -79,7 +79,7 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param nodeType      the node type.
+ * @param type      the node type.
  * @param interfaceType the type of the interface that is not available.
  * @param interfaceId   the name of the interface that is not available.
  */
@@ -684,7 +684,7 @@ field_value::type_id node_type::has_field(const std::string & id) const
  */
 
 /**
- * @fn const node_ptr node_type::create_node(const ScopePtr & scope) const throw (std::bad_alloc)
+ * @fn const node_ptr node_type::create_node(const scope_ptr & scope) const throw (std::bad_alloc)
  *
  * @brief Create a new node with this node_type.
  *
@@ -849,7 +849,7 @@ node::polled_eventout_value::polled_eventout_value(
 {}
 
 /**
- * @var ScopePtr node::scope_
+ * @var scope_ptr node::scope_
  *
  * @brief The Scope to which the node belongs.
  */
@@ -878,7 +878,7 @@ node::polled_eventout_value::polled_eventout_value(
  * @param type  the node_type associated with the instance.
  * @param scope the Scope associated with the instance.
  */
-node::node(const node_type & type, const ScopePtr & scope) throw ():
+node::node(const node_type & type, const scope_ptr & scope) throw ():
     scope_(scope),
     scene_(0),
     type(type),
@@ -970,7 +970,7 @@ const std::string node::id() const
 }
 
 /**
- * @fn const ScopePtr & node::scope() const throw ()
+ * @fn const scope_ptr & node::scope() const throw ()
  *
  * @brief Get the scope to which the node belongs.
  *
@@ -2009,7 +2009,7 @@ void node::do_shutdown(const double timestamp) throw ()
  * @param scope the Scope the node belongs to.
  */
 appearance_node::appearance_node(const node_type & type,
-                                 const ScopePtr & scope)
+                                 const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2077,7 +2077,7 @@ appearance_node * appearance_node::to_appearance() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-child_node::child_node(const node_type & type, const ScopePtr & scope)
+child_node::child_node(const node_type & type, const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2121,7 +2121,7 @@ child_node * child_node::to_child() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-color_node::color_node(const node_type & type, const ScopePtr & scope)
+color_node::color_node(const node_type & type, const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2174,7 +2174,7 @@ color_node * color_node::to_color() throw ()
  * @param scope the Scope the node belongs to.
  */
 coordinate_node::coordinate_node(const node_type & type,
-                                 const ScopePtr & scope)
+                                 const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2227,7 +2227,7 @@ coordinate_node * coordinate_node::to_coordinate() throw ()
  * @param scope the Scope the node belongs to.
  */
 font_style_node::font_style_node(const node_type & type,
-                                 const ScopePtr & scope)
+                                 const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2350,7 +2350,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  * @param scope the Scope the node belongs to.
  */
 geometry_node::geometry_node(const node_type & type,
-                             const ScopePtr & scope)
+                             const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2409,7 +2409,7 @@ const color_node * geometry_node::color() const throw ()
  * @param scope the Scope the node belongs to.
  */
 grouping_node::grouping_node(const node_type & type,
-                             const ScopePtr & scope)
+                             const scope_ptr & scope)
     throw ():
     node(type, scope),
     child_node(type, scope)
@@ -2462,7 +2462,7 @@ grouping_node * grouping_node::to_grouping() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-material_node::material_node(const node_type & type, const ScopePtr & scope)
+material_node::material_node(const node_type & type, const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2554,7 +2554,7 @@ material_node * material_node::to_material() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-normal_node::normal_node(const node_type & type, const ScopePtr & scope)
+normal_node::normal_node(const node_type & type, const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2607,7 +2607,7 @@ normal_node * normal_node::to_normal() throw ()
  * @param scope the Scope the node belongs to.
  */
 sound_source_node::sound_source_node(const node_type & type,
-                                     const ScopePtr & scope)
+                                     const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2654,7 +2654,7 @@ sound_source_node * sound_source_node::to_sound_source() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-texture_node::texture_node(const node_type & type, const ScopePtr & scope)
+texture_node::texture_node(const node_type & type, const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2762,7 +2762,7 @@ texture_node * texture_node::to_texture() throw ()
  * @param scope the Scope the node belongs to.
  */
 texture_coordinate_node::texture_coordinate_node(const node_type & type,
-                                                 const ScopePtr & scope)
+                                                 const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2809,7 +2809,7 @@ texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
  * @param scope the Scope the node belongs to.
  */
 texture_transform_node::texture_transform_node(const node_type & type,
-                                               const ScopePtr & scope)
+                                               const scope_ptr & scope)
     throw ():
     node(type, scope)
 {}
@@ -2856,7 +2856,7 @@ texture_transform_node * texture_transform_node::to_texture_transform()
  * @param scope the Scope the node belongs to.
  */
 transform_node::transform_node(const node_type & type,
-                               const ScopePtr & scope)
+                               const scope_ptr & scope)
     throw ():
     node(type, scope),
     child_node(type, scope),
@@ -2907,14 +2907,14 @@ transform_node * transform_node::to_transform() throw ()
 /**
  * @brief Constructor.
  *
- * @param nodeType  the node_type associated with the node.
+ * @param type  the node_type associated with the node.
  * @param scope     the Scope the node belongs to.
  */
-viewpoint_node::viewpoint_node(const node_type & nodeType,
-                             const ScopePtr & scope)
+viewpoint_node::viewpoint_node(const node_type & type,
+                               const scope_ptr & scope)
     throw ():
-    node(nodeType, scope),
-    child_node(nodeType, scope)
+    node(type, scope),
+    child_node(type, scope)
 {}
 
 /**

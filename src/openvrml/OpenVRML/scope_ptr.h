@@ -19,73 +19,85 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifndef OPENVRML_SCOPEPTR_H
-#   define OPENVRML_SCOPEPTR_H
+# ifndef OPENVRML_SCOPE_PTR_H
+#   define OPENVRML_SCOPE_PTR_H
 
 #   include <stddef.h>
 #   include <assert.h>
+#   include <memory>
 #   include <OpenVRML/common.h>
 
 namespace OpenVRML {
 
+    class scope_ptr;
+
+    bool operator==(const scope_ptr & lhs, const scope_ptr & rhs) throw ();
+
     class scope;
 
-    class OPENVRML_SCOPE ScopePtr {
+    class OPENVRML_SCOPE scope_ptr {
+        friend bool operator==(const scope_ptr & lhs, const scope_ptr & rhs)
+            throw ();
+
         scope * scope_;
         size_t * count_;
 
     public:
-        explicit ScopePtr(OpenVRML::scope * scope = 0);
-        ScopePtr(const ScopePtr & scopePtr);
-        ~ScopePtr();
+        explicit scope_ptr(OpenVRML::scope * scope = 0) throw (std::bad_alloc);
+        scope_ptr(const scope_ptr & ptr) throw ();
+        ~scope_ptr() throw ();
 
-        operator bool() const;
+        operator bool() const throw ();
 
-        ScopePtr & operator=(const ScopePtr & scopePtr);
+        scope_ptr & operator=(const scope_ptr & ptr) throw ();
 
-        bool operator==(const ScopePtr & scopePtr) const;
+        scope & operator*() const throw ();
+        scope * operator->() const throw ();
+        scope * get() const throw ();
 
-        scope & operator*() const;
-        scope * operator->() const;
-        scope * get() const;
-
-        void reset(OpenVRML::scope * scope = 0);
+        void reset(OpenVRML::scope * scope = 0) throw (std::bad_alloc);
 
     private:
-        void dispose();
+        void dispose() throw ();
     };
 
-    inline ScopePtr::~ScopePtr()
+    inline scope_ptr::~scope_ptr() throw ()
     {
         this->dispose();
     }
 
-    inline ScopePtr::operator bool() const
+    inline scope_ptr::operator bool() const throw ()
     {
         return this->scope_;
     }
 
-    inline bool ScopePtr::operator==(const ScopePtr & scopePtr) const
-    {
-        return (this->scope_ == scopePtr.scope_);
-    }
-
-    inline scope & ScopePtr::operator*() const
+    inline scope & scope_ptr::operator*() const throw ()
     {
         assert(this->scope_);
         return *this->scope_;
     }
 
-    inline scope * ScopePtr::operator->() const
+    inline scope * scope_ptr::operator->() const throw ()
     {
         assert(this->scope_);
         return this->scope_;
     }
 
-    inline scope * ScopePtr::get() const
+    inline scope * scope_ptr::get() const throw ()
     {
         assert(this->scope_);
         return this->scope_;
+    }
+
+    inline bool operator==(const scope_ptr & lhs, const scope_ptr & rhs)
+        throw ()
+    {
+        return lhs.scope_ == rhs.scope_;
+    }
+
+    inline bool operator!=(const scope_ptr & lhs, const scope_ptr & rhs)
+    {
+        return !(lhs == rhs);
     }
 }
 

@@ -96,7 +96,7 @@ namespace OpenVRML {
     public:
         explicit ProtoNode(const node_type & nodeType) throw (std::bad_alloc);
         ProtoNode(const node_type & nodeType,
-                  const ScopePtr & scope,
+                  const scope_ptr & scope,
                   const ProtoNode & node) throw (std::bad_alloc);
         virtual ~ProtoNode() throw ();
 
@@ -195,7 +195,7 @@ namespace OpenVRML {
             virtual ~ProtoNodeType() throw ();
 
             virtual const node_interface_set & interfaces() const throw ();
-            virtual const node_ptr create_node(const ScopePtr & scope) const
+            virtual const node_ptr create_node(const scope_ptr & scope) const
                 throw (std::bad_alloc);
 
             void addInterface(const node_interface & interface)
@@ -284,7 +284,7 @@ public:
     virtual ~NullNodeType() throw ();
 
     virtual const node_interface_set & interfaces() const throw ();
-    virtual const node_ptr create_node(const ScopePtr & scope) const throw ();
+    virtual const node_ptr create_node(const scope_ptr & scope) const throw ();
 };
 
 
@@ -2266,7 +2266,7 @@ namespace {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 ProtoNode::ProtoNode(const node_type & nodeType) throw (std::bad_alloc):
-    node(nodeType, ScopePtr(0))
+    node(nodeType, scope_ptr(0))
 {}
 
 /**
@@ -2279,7 +2279,7 @@ ProtoNode::ProtoNode(const node_type & nodeType) throw (std::bad_alloc):
  * @exception std::bad_alloc    if memory allocation fails.
  */
 ProtoNode::ProtoNode(const node_type & nodeType,
-                     const ScopePtr & scope,
+                     const scope_ptr & scope,
                      const ProtoNode & n) throw (std::bad_alloc):
     node(nodeType, scope)
 {
@@ -2340,14 +2340,14 @@ ProtoNode::ProtoNode(const node_type & nodeType,
 
     private:
         const sfnode cloneFieldValue(const sfnode & node,
-                                     const ScopePtr & targetScope)
+                                     const scope_ptr & targetScope)
             throw (std::bad_alloc)
         {
             return sfnode(this->cloneNode(node.value, targetScope));
         }
 
         const mfnode cloneFieldValue(const mfnode & nodes,
-                                     const ScopePtr & targetScope)
+                                     const scope_ptr & targetScope)
             throw (std::bad_alloc)
         {
             mfnode result(nodes.value.size());
@@ -2358,7 +2358,7 @@ ProtoNode::ProtoNode(const node_type & nodeType,
         }
 
         const node_ptr cloneNode(const node_ptr & n,
-                                const ScopePtr & targetScope)
+                                const scope_ptr & targetScope)
             throw (std::bad_alloc)
         {
             assert(targetScope);
@@ -2488,7 +2488,7 @@ ProtoNode::ProtoNode(const node_type & nodeType,
 
     public:
         const sfnode clone(const sfnode & node,
-                           const ScopePtr & targetScope)
+                           const scope_ptr & targetScope)
             throw (std::bad_alloc)
         {
             assert(this->traversedNodes.empty());
@@ -2498,7 +2498,7 @@ ProtoNode::ProtoNode(const node_type & nodeType,
         }
 
         const mfnode clone(const mfnode & nodes,
-                           const ScopePtr & targetScope)
+                           const scope_ptr & targetScope)
             throw (std::bad_alloc)
         {
             assert(this->traversedNodes.empty());
@@ -2509,14 +2509,14 @@ ProtoNode::ProtoNode(const node_type & nodeType,
 
     private:
         const sfnode cloneFieldValue(const sfnode & node,
-                                     const ScopePtr & targetScope)
+                                     const scope_ptr & targetScope)
             throw (std::bad_alloc)
         {
             return sfnode(this->cloneNode(node.value, targetScope));
         }
 
         const mfnode cloneFieldValue(const mfnode & nodes,
-                                     const ScopePtr & targetScope)
+                                     const scope_ptr & targetScope)
             throw (std::bad_alloc)
         {
             mfnode result(nodes.value.size());
@@ -2527,7 +2527,7 @@ ProtoNode::ProtoNode(const node_type & nodeType,
         }
 
         const node_ptr cloneNode(const node_ptr & node,
-                                const ScopePtr & targetScope)
+                                const scope_ptr & targetScope)
             throw (std::bad_alloc)
         {
             assert(targetScope);
@@ -2593,7 +2593,7 @@ ProtoNode::ProtoNode(const node_type & nodeType,
     typedef ProtoNodeClass::DefaultValueMap DefaultValueMap;
     DefaultValueMap & defaultValueMap =
         static_cast<ProtoNodeClass &>(nodeType._class).defaultValueMap;
-    const ScopePtr & protoScope = this->implNodes[0]->scope();
+    const scope_ptr & protoScope = this->implNodes[0]->scope();
 
     for (DefaultValueMap::const_iterator i(defaultValueMap.begin());
             i != defaultValueMap.end(); ++i) {
@@ -3473,7 +3473,7 @@ const node_interface_set & ProtoNodeClass::ProtoNodeType::interfaces() const
  * @return a node_ptr to a new Node.
  */
 const node_ptr
-ProtoNodeClass::ProtoNodeType::create_node(const ScopePtr & scope) const
+ProtoNodeClass::ProtoNodeType::create_node(const scope_ptr & scope) const
     throw (std::bad_alloc)
 {
     return node_ptr(new ProtoNode(*this, scope,
@@ -4966,7 +4966,7 @@ const node_interface_set & NullNodeType::interfaces() const throw ()
     return interfaces;
 }
 
-const node_ptr NullNodeType::create_node(const ScopePtr & scope) const throw ()
+const node_ptr NullNodeType::create_node(const scope_ptr & scope) const throw ()
 {
     assert(false);
     static const node_ptr node;
@@ -4980,9 +4980,9 @@ const node_ptr NullNodeType::create_node(const ScopePtr & scope) const throw ()
  * @param nodeType  the Browser's NullNodeType instance.
  */
 DefaultViewpoint::DefaultViewpoint(const NullNodeType & nodeType) throw ():
-    node(nodeType, ScopePtr()),
-    child_node(nodeType, ScopePtr()),
-    viewpoint_node(nodeType, ScopePtr())
+    node(nodeType, scope_ptr()),
+    child_node(nodeType, scope_ptr()),
+    viewpoint_node(nodeType, scope_ptr())
 {}
 
 /**

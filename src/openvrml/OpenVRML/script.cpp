@@ -290,7 +290,7 @@ namespace {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 const node_ptr
-script_node::script_node_type::create_node(const ScopePtr & scope) const
+script_node::script_node_type::create_node(const scope_ptr & scope) const
     throw (std::bad_alloc)
 {
     script_node_class & scriptNodeClass =
@@ -395,7 +395,7 @@ script_node::script_node_type::create_node(const ScopePtr & scope) const
  * @param scope
  */
 script_node::script_node(script_node_class & class_,
-                         const ScopePtr & scope)
+                         const scope_ptr & scope)
     throw ():
     node(this->type, scope),
     child_node(this->type, scope),

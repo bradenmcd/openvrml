@@ -27,7 +27,7 @@
 #   include <map>
 #   include <string>
 #   include <OpenVRML/node_type_ptr.h>
-#   include <OpenVRML/scopeptr.h>
+#   include <OpenVRML/scope_ptr.h>
 
 namespace OpenVRML {
 
@@ -39,10 +39,10 @@ namespace OpenVRML {
 
     public:
         const std::string id;
-        const ScopePtr parent;
+        const scope_ptr parent;
 
         explicit scope(const std::string & id,
-                       const ScopePtr & parent = ScopePtr());
+                       const scope_ptr & parent = scope_ptr());
         virtual ~scope();
 
         void add_type(const node_type_ptr & type);

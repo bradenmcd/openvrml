@@ -297,7 +297,7 @@ namespace {
             throw (unsupported_interface);
 
         virtual const node_interface_set & interfaces() const throw ();
-        virtual const node_ptr create_node(const ScopePtr & scope) const
+        virtual const node_ptr create_node(const scope_ptr & scope) const
             throw (std::bad_alloc);
 
     private:
@@ -452,7 +452,7 @@ namespace {
 
     template <typename NodeT>
     const node_ptr
-    Vrml97NodeTypeImpl<NodeT>::create_node(const ScopePtr & scope) const
+    Vrml97NodeTypeImpl<NodeT>::create_node(const scope_ptr & scope) const
         throw (std::bad_alloc)
     {
         return node_ptr(new NodeT(*this, scope));
@@ -544,11 +544,11 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with this node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with this node.
+ * @param scope     the scope to which the node belongs.
  */
-AbstractBase::AbstractBase(const node_type & nodeType, const ScopePtr & scope):
-    node(nodeType, scope)
+AbstractBase::AbstractBase(const node_type & type, const scope_ptr & scope):
+    node(type, scope)
 {}
 
 /**
@@ -645,14 +645,14 @@ const field_value & AbstractBase::do_eventout(const std::string & id) const
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType for the node.
- * @param scope     the Scope the new node should belong to.
+ * @param type  the node_type for the node.
+ * @param scope     the scope the new node should belong to.
  */
-AbstractChild::AbstractChild(const node_type & nodeType,
-                             const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    child_node(nodeType, scope)
+AbstractChild::AbstractChild(const node_type & type,
+                             const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    child_node(type, scope)
 {}
 
 /**
@@ -670,14 +670,14 @@ AbstractChild::~AbstractChild() throw ()
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType for the node.
- * @param scope     the Scope the new node should belong to.
+ * @param type  the node_type for the node.
+ * @param scope     the scope the new node should belong to.
  */
-AbstractGeometry::AbstractGeometry(const node_type & nodeType,
-                                   const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    geometry_node(nodeType, scope),
+AbstractGeometry::AbstractGeometry(const node_type & type,
+                                   const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    geometry_node(type, scope),
     d_viewerObject(0)
 {}
 
@@ -722,13 +722,13 @@ void AbstractGeometry::render(Viewer & viewer, VrmlRenderContext context)
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the instance.
- * @param scope         the Scope that the new node will belong to.
+ * @param type      the node_type associated with the instance.
+ * @param scope         the scope that the new node will belong to.
  */
-AbstractIndexedSet::AbstractIndexedSet(const node_type & nodeType,
-                                       const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractGeometry(nodeType, scope),
+AbstractIndexedSet::AbstractIndexedSet(const node_type & type,
+                                       const scope_ptr & scope):
+    node(type, scope),
+    AbstractGeometry(type, scope),
     colorPerVertex(true)
 {}
 
@@ -854,12 +854,12 @@ void AbstractIndexedSet::processSet_coordIndex(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType for the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type for the node.
+ * @param scope     the scope to which the node belongs.
  */
-AbstractLight::AbstractLight(const node_type & nodeType, const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+AbstractLight::AbstractLight(const node_type & type, const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     ambientIntensity(0.0),
     color(OpenVRML::color(1.0, 1.0, 1.0)),
     intensity(1.0),
@@ -971,14 +971,14 @@ void AbstractLight::processSet_on(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType for the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type for the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-AbstractTexture::AbstractTexture(const node_type & nodeType,
-                                 const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    texture_node(nodeType, scope),
+AbstractTexture::AbstractTexture(const node_type & type,
+                                 const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    texture_node(type, scope),
     repeatS(true),
     repeatT(true)
 {}
@@ -1034,12 +1034,12 @@ AnchorClass::~AnchorClass() throw ()
 {}
 
 /**
- * @brief Create a NodeType.
+ * @brief Create a node_type.
  *
- * @param id            the name for the new NodeType.
- * @param interfaces    the interfaces for the new NodeType.
+ * @param id            the name for the new node_type.
+ * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a NodeType capable of creating Anchor nodes.
+ * @return a node_type_ptr to a node_type capable of creating Anchor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by AnchorClass.
@@ -1060,9 +1060,9 @@ AnchorClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Anchor>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Anchor>(*this, id));
     Vrml97NodeTypeImpl<Anchor> & anchorNodeType =
-            static_cast<Vrml97NodeTypeImpl<Anchor> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Anchor> &>(*type);
     typedef Vrml97NodeTypeImpl<Anchor>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -1118,7 +1118,7 @@ AnchorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -1130,15 +1130,15 @@ AnchorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with this node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with this node.
+ * @param scope     the scope to which the node belongs.
  */
-Anchor::Anchor(const node_type & nodeType,
-               const ScopePtr & scope):
-    node(nodeType, scope),
-    child_node(nodeType, scope),
-    grouping_node(nodeType, scope),
-    Group(nodeType, scope)
+Anchor::Anchor(const node_type & type,
+               const scope_ptr & scope):
+    node(type, scope),
+    child_node(type, scope),
+    grouping_node(type, scope),
+    Group(type, scope)
 {
     this->bvolume_dirty(true);
 }
@@ -1267,12 +1267,12 @@ AppearanceClass::~AppearanceClass() throw ()
 {}
 
 /**
- * @brief Create a NodeType.
+ * @brief Create a node_type.
  *
- * @param id            the name for the new NodeType.
- * @param interfaces    the interfaces for the new NodeType.
+ * @param id            the name for the new node_type.
+ * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a NodeType capable of creating Appearance nodes.
+ * @return a node_type_ptr to a node_type capable of creating Appearance nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by AppearanceClass.
@@ -1288,9 +1288,9 @@ AppearanceClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "texture"),
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "textureTransform")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Appearance>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Appearance>(*this, id));
     Vrml97NodeTypeImpl<Appearance> & appearanceNodeType =
-            static_cast<Vrml97NodeTypeImpl<Appearance> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Appearance> &>(*type);
     typedef Vrml97NodeTypeImpl<Appearance>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -1319,7 +1319,7 @@ AppearanceClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -1331,14 +1331,14 @@ AppearanceClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Appearance::Appearance(const node_type & nodeType,
-                       const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    appearance_node(nodeType, scope)
+Appearance::Appearance(const node_type & type,
+                       const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    appearance_node(type, scope)
 {}
 
 /**
@@ -1549,7 +1549,7 @@ AudioClipClass::~AudioClipClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating AudioClip nodes.
+ * @return a node_type_ptr to a node_type capable of creating AudioClip nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by AudioClipClass.
@@ -1570,9 +1570,9 @@ AudioClipClass::create_type(const std::string & id,
         node_interface(node_interface::eventout_id, field_value::sftime_id, "duration_changed"),
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<AudioClip>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<AudioClip>(*this, id));
     Vrml97NodeTypeImpl<AudioClip> & audioClipNodeType =
-            static_cast<Vrml97NodeTypeImpl<AudioClip> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<AudioClip> &>(*type);
     typedef Vrml97NodeTypeImpl<AudioClip>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -1634,7 +1634,7 @@ AudioClipClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -1646,13 +1646,13 @@ AudioClipClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-AudioClip::AudioClip(const node_type & nodeType,
-                     const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
+AudioClip::AudioClip(const node_type & type,
+                     const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
     pitch(1.0),
     active(false),
     audio(0),
@@ -2178,7 +2178,7 @@ void BackgroundClass::render(Viewer & viewer) throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Background nodes.
+ * @return a node_type_ptr to a node_type capable of creating Background nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by BackgroundClass.
@@ -2203,9 +2203,9 @@ BackgroundClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::mfcolor_id, "skyColor"),
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Background>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Background>(*this, id));
     Vrml97NodeTypeImpl<Background> & backgroundNodeType =
-            static_cast<Vrml97NodeTypeImpl<Background> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Background> &>(*type);
     typedef Vrml97NodeTypeImpl<Background>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -2293,7 +2293,7 @@ BackgroundClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -2305,13 +2305,13 @@ BackgroundClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Background::Background(const node_type & nodeType,
-                       const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+Background::Background(const node_type & type,
+                       const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     bound(false),
     viewerObject(0)
 {
@@ -2584,7 +2584,7 @@ BillboardClass::~BillboardClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Billboard nodes.
+ * @return a node_type_ptr to a node_type capable of creating Billboard nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by BillboardClass.
@@ -2603,9 +2603,9 @@ BillboardClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Billboard>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Billboard>(*this, id));
     Vrml97NodeTypeImpl<Billboard> & billboardNodeType =
-            static_cast<Vrml97NodeTypeImpl<Billboard> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Billboard> &>(*type);
     typedef Vrml97NodeTypeImpl<Billboard>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -2647,7 +2647,7 @@ BillboardClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -2659,15 +2659,15 @@ BillboardClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Billboard::Billboard(const node_type & nodeType,
-                     const ScopePtr & scope):
-    node(nodeType, scope),
-    child_node(nodeType, scope),
-    grouping_node(nodeType, scope),
-    Group(nodeType, scope),
+Billboard::Billboard(const node_type & type,
+                     const scope_ptr & scope):
+    node(type, scope),
+    child_node(type, scope),
+    grouping_node(type, scope),
+    Group(type, scope),
     axisOfRotation(vec3f(0.0, 1.0, 0.0)),
     xformObject(0)
 {}
@@ -2819,7 +2819,7 @@ BoxClass::~BoxClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Box nodes.
+ * @return a node_type_ptr to a node_type capable of creating Box nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by BoxClass.
@@ -2831,9 +2831,9 @@ const node_type_ptr BoxClass::create_type(const std::string & id,
 {
     static const node_interface supportedInterface =
             node_interface(node_interface::field_id, field_value::sfvec3f_id, "size");
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Box>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Box>(*this, id));
     Vrml97NodeTypeImpl<Box> & boxNodeType =
-            static_cast<Vrml97NodeTypeImpl<Box> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Box> &>(*type);
     typedef Vrml97NodeTypeImpl<Box>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -2846,7 +2846,7 @@ const node_type_ptr BoxClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -2858,13 +2858,13 @@ const node_type_ptr BoxClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Box::Box(const node_type & nodeType,
-         const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractGeometry(nodeType, scope),
+Box::Box(const node_type & type,
+         const scope_ptr & scope):
+    node(type, scope),
+    AbstractGeometry(type, scope),
     size(vec3f(2.0, 2.0, 2.0))
 {
     this->bvolume_dirty(true); // lazy calc of bvolume
@@ -2938,7 +2938,7 @@ CollisionClass::~CollisionClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Collision nodes.
+ * @return a node_type_ptr to a node_type capable of creating Collision nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CollisionClass.
@@ -2958,9 +2958,9 @@ const node_type_ptr
         node_interface(node_interface::field_id, field_value::sfnode_id, "proxy"),
         node_interface(node_interface::eventout_id, field_value::sftime_id, "collideTime")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Collision>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Collision>(*this, id));
     Vrml97NodeTypeImpl<Collision> & collisionNodeType =
-            static_cast<Vrml97NodeTypeImpl<Collision> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Collision> &>(*type);
     typedef Vrml97NodeTypeImpl<Collision>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -3014,7 +3014,7 @@ const node_type_ptr
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -3026,15 +3026,15 @@ const node_type_ptr
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Collision::Collision(const node_type & nodeType,
-                     const ScopePtr & scope):
-    node(nodeType, scope),
-    child_node(nodeType, scope),
-    grouping_node(nodeType, scope),
-    Group(nodeType, scope),
+Collision::Collision(const node_type & type,
+                     const scope_ptr & scope):
+    node(type, scope),
+    child_node(type, scope),
+    grouping_node(type, scope),
+    Group(type, scope),
     collide(true)
 {}
 
@@ -3095,7 +3095,7 @@ ColorClass::~ColorClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Color nodes.
+ * @return a node_type_ptr to a node_type capable of creating Color nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ColorClass.
@@ -3106,9 +3106,9 @@ const node_type_ptr ColorClass::create_type(const std::string & id,
         throw (unsupported_interface, std::bad_alloc) {
     static const node_interface supportedInterface =
             node_interface(node_interface::exposedfield_id, field_value::mfcolor_id, "color");
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Color>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Color>(*this, id));
     Vrml97NodeTypeImpl<Color> & colorNodeType =
-            static_cast<Vrml97NodeTypeImpl<Color> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Color> &>(*type);
     typedef Vrml97NodeTypeImpl<Color>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -3123,7 +3123,7 @@ const node_type_ptr ColorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -3135,14 +3135,14 @@ const node_type_ptr ColorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with this node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with this node.
+ * @param scope     the scope to which the node belongs.
  */
-Color::Color(const node_type & nodeType,
-             const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        color_node(nodeType, scope) {}
+Color::Color(const node_type & type,
+             const scope_ptr & scope):
+        node(type, scope),
+        AbstractBase(type, scope),
+        color_node(type, scope) {}
 
 /**
  * @brief Destructor.
@@ -3204,7 +3204,7 @@ ColorInterpolatorClass::~ColorInterpolatorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating ColorInterpolator
+ * @return a node_type_ptr to a node_type capable of creating ColorInterpolator
  *      nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
@@ -3231,9 +3231,9 @@ ColorInterpolatorClass::create_type(const std::string & id,
                       "value_changed")
     };
     const node_type_ptr
-        nodeType(new Vrml97NodeTypeImpl<ColorInterpolator>(*this, id));
+        type(new Vrml97NodeTypeImpl<ColorInterpolator>(*this, id));
     Vrml97NodeTypeImpl<ColorInterpolator> & colorInterpolatorNodeType =
-            static_cast<Vrml97NodeTypeImpl<ColorInterpolator> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<ColorInterpolator> &>(*type);
     typedef Vrml97NodeTypeImpl<ColorInterpolator>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
@@ -3270,7 +3270,7 @@ ColorInterpolatorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -3282,13 +3282,13 @@ ColorInterpolatorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-ColorInterpolator::ColorInterpolator(const node_type & nodeType,
-                                     const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractChild(nodeType, scope) {}
+ColorInterpolator::ColorInterpolator(const node_type & type,
+                                     const scope_ptr & scope):
+        node(type, scope),
+        AbstractChild(type, scope) {}
 
 /**
  * @brief Destructor.
@@ -3414,7 +3414,7 @@ ConeClass::~ConeClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Cone nodes.
+ * @return a node_type_ptr to a node_type capable of creating Cone nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ConeClass.
@@ -3429,9 +3429,9 @@ const node_type_ptr ConeClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfbool_id, "side"),
         node_interface(node_interface::field_id, field_value::sfbool_id, "bottom")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Cone>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Cone>(*this, id));
     Vrml97NodeTypeImpl<Cone> & coneNodeType =
-            static_cast<Vrml97NodeTypeImpl<Cone> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Cone> &>(*type);
     typedef Vrml97NodeTypeImpl<Cone>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -3463,7 +3463,7 @@ const node_type_ptr ConeClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -3475,13 +3475,13 @@ const node_type_ptr ConeClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Cone::Cone(const node_type & nodeType,
-           const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractGeometry(nodeType, scope),
+Cone::Cone(const node_type & type,
+           const scope_ptr & scope):
+        node(type, scope),
+        AbstractGeometry(type, scope),
         bottom(true),
         bottomRadius(1.0),
         height(2.0),
@@ -3532,7 +3532,7 @@ CoordinateClass::~CoordinateClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Coordinate nodes.
+ * @return a node_type_ptr to a node_type capable of creating Coordinate nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CoordinateClass.
@@ -3547,9 +3547,9 @@ CoordinateClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id,
                        field_value::mfvec3f_id,
                        "point");
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Coordinate>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Coordinate>(*this, id));
     Vrml97NodeTypeImpl<Coordinate> & coordinateNodeType =
-            static_cast<Vrml97NodeTypeImpl<Coordinate> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Coordinate> &>(*type);
     typedef Vrml97NodeTypeImpl<Coordinate>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -3564,7 +3564,7 @@ CoordinateClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -3576,14 +3576,14 @@ CoordinateClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-Coordinate::Coordinate(const node_type & nodeType,
-                       const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        coordinate_node(nodeType, scope) {}
+Coordinate::Coordinate(const node_type & type,
+                       const scope_ptr & scope):
+        node(type, scope),
+        AbstractBase(type, scope),
+        coordinate_node(type, scope) {}
 
 /**
  * @brief Destructor.
@@ -3645,7 +3645,7 @@ CoordinateInterpolatorClass::~CoordinateInterpolatorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating
+ * @return a node_type_ptr to a node_type capable of creating
  *      CoordinateInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -3671,10 +3671,10 @@ CoordinateInterpolatorClass::create_type(const std::string & id,
                        "value_changed")
     };
     const node_type_ptr
-        nodeType(new Vrml97NodeTypeImpl<CoordinateInterpolator>(*this, id));
+        type(new Vrml97NodeTypeImpl<CoordinateInterpolator>(*this, id));
     Vrml97NodeTypeImpl<CoordinateInterpolator> &
         coordinateInterpolatorNodeType =
-        static_cast<Vrml97NodeTypeImpl<CoordinateInterpolator> &>(*nodeType);
+        static_cast<Vrml97NodeTypeImpl<CoordinateInterpolator> &>(*type);
     typedef Vrml97NodeTypeImpl<CoordinateInterpolator>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
@@ -3711,7 +3711,7 @@ CoordinateInterpolatorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -3723,13 +3723,13 @@ CoordinateInterpolatorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-CoordinateInterpolator::CoordinateInterpolator(const node_type & nodeType,
-                                               const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractChild(nodeType, scope) {}
+CoordinateInterpolator::CoordinateInterpolator(const node_type & type,
+                                               const scope_ptr & scope):
+        node(type, scope),
+        AbstractChild(type, scope) {}
 
 /**
  * @brief Destructor.
@@ -3850,7 +3850,7 @@ CylinderClass::~CylinderClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Cylinder nodes.
+ * @return a node_type_ptr to a node_type capable of creating Cylinder nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CylinderClass.
@@ -3866,9 +3866,9 @@ const node_type_ptr CylinderClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfbool_id, "side"),
         node_interface(node_interface::field_id, field_value::sfbool_id, "top")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Cylinder>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Cylinder>(*this, id));
     Vrml97NodeTypeImpl<Cylinder> & cylinderNodeType =
-            static_cast<Vrml97NodeTypeImpl<Cylinder> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Cylinder> &>(*type);
     typedef Vrml97NodeTypeImpl<Cylinder>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -3906,7 +3906,7 @@ const node_type_ptr CylinderClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -3918,13 +3918,13 @@ const node_type_ptr CylinderClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Cylinder::Cylinder(const node_type & nodeType,
-                   const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractGeometry(nodeType, scope),
+Cylinder::Cylinder(const node_type & type,
+                   const scope_ptr & scope):
+        node(type, scope),
+        AbstractGeometry(type, scope),
         bottom(true),
         height(2.0),
         radius(1.0),
@@ -3979,7 +3979,7 @@ CylinderSensorClass::~CylinderSensorClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating CylinderSensor nodes.
+ * @return a node_type_ptr to a node_type capable of creating CylinderSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CylinderSensorClass.
@@ -4000,9 +4000,9 @@ const node_type_ptr
         node_interface(node_interface::eventout_id, field_value::sfrotation_id, "rotation_changed"),
         node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<CylinderSensor>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<CylinderSensor>(*this, id));
     Vrml97NodeTypeImpl<CylinderSensor> & cylinderSensorNodeType =
-            static_cast<Vrml97NodeTypeImpl<CylinderSensor> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<CylinderSensor> &>(*type);
     typedef Vrml97NodeTypeImpl<CylinderSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -4070,7 +4070,7 @@ const node_type_ptr
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -4082,13 +4082,13 @@ const node_type_ptr
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-CylinderSensor::CylinderSensor(const node_type & nodeType,
-                               const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractChild(nodeType, scope),
+CylinderSensor::CylinderSensor(const node_type & type,
+                               const scope_ptr & scope):
+        node(type, scope),
+        AbstractChild(type, scope),
         autoOffset(true),
         diskAngle(0.262),
         enabled(true),
@@ -4334,7 +4334,7 @@ DirectionalLightClass::~DirectionalLightClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating DirectionalLight
+ * @return a node_type_ptr to a node_type capable of creating DirectionalLight
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -4352,9 +4352,9 @@ const node_type_ptr
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "intensity"),
         node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "on")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<DirectionalLight>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<DirectionalLight>(*this, id));
     Vrml97NodeTypeImpl<DirectionalLight> & directionalLightNodeType =
-            static_cast<Vrml97NodeTypeImpl<DirectionalLight> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<DirectionalLight> &>(*type);
     typedef Vrml97NodeTypeImpl<DirectionalLight>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -4397,7 +4397,7 @@ const node_type_ptr
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -4409,13 +4409,13 @@ const node_type_ptr
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-DirectionalLight::DirectionalLight(const node_type & nodeType,
-                                   const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractLight(nodeType, scope),
+DirectionalLight::DirectionalLight(const node_type & type,
+                                   const scope_ptr & scope):
+    node(type, scope),
+    AbstractLight(type, scope),
     direction(vec3f(0.0, 0.0, -1.0))
 {}
 
@@ -4484,7 +4484,7 @@ ElevationGridClass::~ElevationGridClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating ElevationGrid nodes.
+ * @return a node_type_ptr to a node_type capable of creating ElevationGrid nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ElevationGridClass.
@@ -4510,9 +4510,9 @@ const node_type_ptr
         node_interface(node_interface::field_id, field_value::sfint32_id, "zDimension"),
         node_interface(node_interface::field_id, field_value::sffloat_id, "zSpacing")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<ElevationGrid>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<ElevationGrid>(*this, id));
     Vrml97NodeTypeImpl<ElevationGrid> & elevationGridNodeType =
-            static_cast<Vrml97NodeTypeImpl<ElevationGrid> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<ElevationGrid> &>(*type);
     typedef Vrml97NodeTypeImpl<ElevationGrid>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -4606,7 +4606,7 @@ const node_type_ptr
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -4618,13 +4618,13 @@ const node_type_ptr
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-ElevationGrid::ElevationGrid(const node_type & nodeType,
-                             const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractGeometry(nodeType, scope),
+ElevationGrid::ElevationGrid(const node_type & type,
+                             const scope_ptr & scope):
+        node(type, scope),
+        AbstractGeometry(type, scope),
         ccw(true),
         colorPerVertex(true),
         normalPerVertex(true),
@@ -4824,7 +4824,7 @@ ExtrusionClass::~ExtrusionClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Extrusion nodes.
+ * @return a node_type_ptr to a node_type capable of creating Extrusion nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ExtrusionClass.
@@ -4850,9 +4850,9 @@ const node_type_ptr
         node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
         node_interface(node_interface::field_id, field_value::mfvec3f_id, "spine")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Extrusion>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Extrusion>(*this, id));
     Vrml97NodeTypeImpl<Extrusion> & extrusionNodeType =
-            static_cast<Vrml97NodeTypeImpl<Extrusion> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Extrusion> &>(*type);
     typedef Vrml97NodeTypeImpl<Extrusion>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -4936,7 +4936,7 @@ const node_type_ptr
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 namespace {
@@ -4961,13 +4961,13 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Extrusion::Extrusion(const node_type & nodeType,
-                     const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractGeometry(nodeType, scope),
+Extrusion::Extrusion(const node_type & type,
+                     const scope_ptr & scope):
+    node(type, scope),
+    AbstractGeometry(type, scope),
     beginCap(true),
     ccw(true),
     convex(true),
@@ -5232,7 +5232,7 @@ void FogClass::render(Viewer & viewer) throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Fog nodes.
+ * @return a node_type_ptr to a node_type capable of creating Fog nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by FogClass.
@@ -5248,9 +5248,9 @@ const node_type_ptr FogClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "visibilityRange"),
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Fog>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Fog>(*this, id));
     Vrml97NodeTypeImpl<Fog> & fogNodeType =
-            static_cast<Vrml97NodeTypeImpl<Fog> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Fog> &>(*type);
     typedef Vrml97NodeTypeImpl<Fog>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -5289,7 +5289,7 @@ const node_type_ptr FogClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -5301,13 +5301,13 @@ const node_type_ptr FogClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Fog::Fog(const node_type & nodeType,
-         const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+Fog::Fog(const node_type & type,
+         const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     color(OpenVRML::color(1.0, 1.0, 1.0)),
     fogType("LINEAR"),
     visibilityRange(0.0),
@@ -5439,7 +5439,7 @@ FontStyleClass::~FontStyleClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating FontStyle nodes.
+ * @return a node_type_ptr to a node_type capable of creating FontStyle nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by FontStyleClass.
@@ -5479,9 +5479,9 @@ FontStyleClass::create_type(const std::string & id,
                        field_value::sfbool_id,
                        "topToBottom")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<FontStyle>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<FontStyle>(*this, id));
     Vrml97NodeTypeImpl<FontStyle> & fontStyleNodeType =
-            static_cast<Vrml97NodeTypeImpl<FontStyle> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<FontStyle> &>(*type);
     typedef Vrml97NodeTypeImpl<FontStyle>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -5543,7 +5543,7 @@ FontStyleClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -5560,14 +5560,14 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-FontStyle::FontStyle(const node_type & nodeType,
-                     const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    font_style_node(nodeType, scope),
+FontStyle::FontStyle(const node_type & type,
+                     const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    font_style_node(type, scope),
     family_(fontStyleInitFamily_, fontStyleInitFamily_ + 1),
     horizontal_(true),
     justify_(fontStyleInitJustify_, fontStyleInitJustify_ + 2),
@@ -5707,7 +5707,7 @@ GroupClass::~GroupClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Group nodes.
+ * @return a node_type_ptr to a node_type capable of creating Group nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by GroupClass.
@@ -5734,9 +5734,9 @@ const node_type_ptr GroupClass::create_type(const std::string & id,
                        field_value::sfvec3f_id,
                        "bboxSize")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Group>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Group>(*this, id));
     Vrml97NodeTypeImpl<Group> & groupNodeType =
-            static_cast<Vrml97NodeTypeImpl<Group> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Group> &>(*type);
     typedef Vrml97NodeTypeImpl<Group>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -5771,7 +5771,7 @@ const node_type_ptr GroupClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -5783,15 +5783,15 @@ const node_type_ptr GroupClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-Group::Group(const node_type & nodeType,
-             const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    child_node(nodeType, scope),
-    grouping_node(nodeType, scope),
+Group::Group(const node_type & type,
+             const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    child_node(type, scope),
+    grouping_node(type, scope),
     bboxSize(vec3f(-1.0, -1.0, -1.0)),
     viewerObject(0)
 {
@@ -6103,7 +6103,7 @@ ImageTextureClass::~ImageTextureClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating ImageTexture nodes.
+ * @return a node_type_ptr to a node_type capable of creating ImageTexture nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ImageTextureClass.
@@ -6126,9 +6126,9 @@ ImageTextureClass::create_type(const std::string & id,
                        "repeatT")
     };
     const node_type_ptr
-        nodeType(new Vrml97NodeTypeImpl<ImageTexture>(*this, id));
+        type(new Vrml97NodeTypeImpl<ImageTexture>(*this, id));
     Vrml97NodeTypeImpl<ImageTexture> & imageTextureNodeType =
-            static_cast<Vrml97NodeTypeImpl<ImageTexture> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<ImageTexture> &>(*type);
     typedef Vrml97NodeTypeImpl<ImageTexture>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -6155,7 +6155,7 @@ ImageTextureClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -6167,13 +6167,13 @@ ImageTextureClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-ImageTexture::ImageTexture(const node_type & nodeType,
-                           const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractTexture(nodeType, scope),
+ImageTexture::ImageTexture(const node_type & type,
+                           const scope_ptr & scope):
+        node(type, scope),
+        AbstractTexture(type, scope),
         image(0),
         texObject(0) {}
 
@@ -6316,7 +6316,7 @@ IndexedFaceSetClass::~IndexedFaceSetClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating IndexedFaceSet nodes.
+ * @return a node_type_ptr to a node_type capable of creating IndexedFaceSet nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by IndexedFaceSetClass.
@@ -6346,9 +6346,9 @@ const node_type_ptr
         node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
         node_interface(node_interface::field_id, field_value::mfint32_id, "texCoordIndex")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<IndexedFaceSet>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<IndexedFaceSet>(*this, id));
     Vrml97NodeTypeImpl<IndexedFaceSet> & indexedFaceSetNodeType =
-            static_cast<Vrml97NodeTypeImpl<IndexedFaceSet> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<IndexedFaceSet> &>(*type);
     typedef Vrml97NodeTypeImpl<IndexedFaceSet>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -6464,7 +6464,7 @@ const node_type_ptr
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -6476,13 +6476,13 @@ const node_type_ptr
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-IndexedFaceSet::IndexedFaceSet(const node_type & nodeType,
-                               const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractIndexedSet(nodeType, scope),
+IndexedFaceSet::IndexedFaceSet(const node_type & type,
+                               const scope_ptr & scope):
+        node(type, scope),
+        AbstractIndexedSet(type, scope),
         ccw(true),
         convex(true),
         creaseAngle(0.0),
@@ -6740,7 +6740,7 @@ IndexedLineSetClass::~IndexedLineSetClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating IndexedLineSet
+ * @return a node_type_ptr to a node_type capable of creating IndexedLineSet
  *         nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -6776,9 +6776,9 @@ IndexedLineSetClass::create_type(const std::string & id,
                       "coordIndex")
     };
     const node_type_ptr
-        nodeType(new Vrml97NodeTypeImpl<IndexedLineSet>(*this, id));
+        type(new Vrml97NodeTypeImpl<IndexedLineSet>(*this, id));
     Vrml97NodeTypeImpl<IndexedLineSet> & indexedLineSetNodeType =
-        static_cast<Vrml97NodeTypeImpl<IndexedLineSet> &>(*nodeType);
+        static_cast<Vrml97NodeTypeImpl<IndexedLineSet> &>(*type);
     typedef Vrml97NodeTypeImpl<IndexedLineSet>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
@@ -6829,7 +6829,7 @@ IndexedLineSetClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -6841,13 +6841,13 @@ IndexedLineSetClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-IndexedLineSet::IndexedLineSet(const node_type & nodeType,
-                               const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractIndexedSet(nodeType, scope) {}
+IndexedLineSet::IndexedLineSet(const node_type & type,
+                               const scope_ptr & scope):
+        node(type, scope),
+        AbstractIndexedSet(type, scope) {}
 
 /**
  * @brief Destructor.
@@ -6916,7 +6916,7 @@ InlineClass::~InlineClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Inline nodes.
+ * @return a node_type_ptr to a node_type capable of creating Inline nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by InlineClass.
@@ -6938,9 +6938,9 @@ InlineClass::create_type(const std::string & id,
                        field_value::sfvec3f_id,
                        "bboxSize")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Inline>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Inline>(*this, id));
     Vrml97NodeTypeImpl<Inline> & inlineNodeType =
-            static_cast<Vrml97NodeTypeImpl<Inline> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Inline> &>(*type);
     typedef Vrml97NodeTypeImpl<Inline>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -6967,7 +6967,7 @@ InlineClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -6979,15 +6979,15 @@ InlineClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with this node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with this node.
+ * @param scope     the scope to which the node belongs.
  */
-Inline::Inline(const node_type & nodeType,
-               const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    child_node(nodeType, scope),
-    grouping_node(nodeType, scope),
+Inline::Inline(const node_type & type,
+               const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    child_node(type, scope),
+    grouping_node(type, scope),
     inlineScene(0),
     hasLoaded(false)
 {
@@ -7117,7 +7117,7 @@ LODClass::~LODClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating LOD nodes.
+ * @return a node_type_ptr to a node_type capable of creating LOD nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by LODClass.
@@ -7131,9 +7131,9 @@ const node_type_ptr LODClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "center"),
         node_interface(node_interface::field_id, field_value::mffloat_id, "range")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<LOD>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<LOD>(*this, id));
     Vrml97NodeTypeImpl<LOD> & lodNodeType =
-            static_cast<Vrml97NodeTypeImpl<LOD> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<LOD> &>(*type);
     typedef Vrml97NodeTypeImpl<LOD>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -7160,7 +7160,7 @@ const node_type_ptr LODClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -7178,15 +7178,15 @@ const node_type_ptr LODClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with this node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with this node.
+ * @param scope     the scope to which the node belongs.
  */
-LOD::LOD(const node_type & nodeType,
-         const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    child_node(nodeType, scope),
-    grouping_node(nodeType, scope),
+LOD::LOD(const node_type & type,
+         const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    child_node(type, scope),
+    grouping_node(type, scope),
     children_(1)
 {
     this->bvolume_dirty(true); // lazy calc of bvolume
@@ -7392,7 +7392,7 @@ MaterialClass::~MaterialClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Material nodes.
+ * @return a node_type_ptr to a node_type capable of creating Material nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by MaterialClass.
@@ -7409,9 +7409,9 @@ const node_type_ptr MaterialClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "specularColor"),
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "transparency")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Material>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Material>(*this, id));
     Vrml97NodeTypeImpl<Material> & materialNodeType =
-            static_cast<Vrml97NodeTypeImpl<Material> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Material> &>(*type);
     typedef Vrml97NodeTypeImpl<Material>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -7461,7 +7461,7 @@ const node_type_ptr MaterialClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -7473,14 +7473,14 @@ const node_type_ptr MaterialClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with this node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with this node.
+ * @param scope     the scope to which the node belongs.
  */
-Material::Material(const node_type & nodeType,
-                   const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    material_node(nodeType, scope),
+Material::Material(const node_type & type,
+                   const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    material_node(type, scope),
     ambientIntensity(0.2),
     diffuseColor(color(0.8, 0.8, 0.8)),
     emissiveColor(color(0.0, 0.0, 0.0)),
@@ -7683,7 +7683,7 @@ MovieTextureClass::~MovieTextureClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating MovieTexture nodes.
+ * @return a node_type_ptr to a node_type capable of creating MovieTexture nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by MovieTextureClass.
@@ -7724,9 +7724,9 @@ MovieTextureClass::create_type(const std::string & id,
                       "isActive")
     };
     const node_type_ptr
-        nodeType(new Vrml97NodeTypeImpl<MovieTexture>(*this, id));
+        type(new Vrml97NodeTypeImpl<MovieTexture>(*this, id));
     Vrml97NodeTypeImpl<MovieTexture> & movieTextureNodeType =
-            static_cast<Vrml97NodeTypeImpl<MovieTexture> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<MovieTexture> &>(*type);
     typedef Vrml97NodeTypeImpl<MovieTexture>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -7793,7 +7793,7 @@ MovieTextureClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -7805,13 +7805,13 @@ MovieTextureClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-MovieTexture::MovieTexture(const node_type & nodeType,
-                           const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractTexture(nodeType, scope),
+MovieTexture::MovieTexture(const node_type & type,
+                           const scope_ptr & scope):
+        node(type, scope),
+        AbstractTexture(type, scope),
         loop(false),
         speed(1.0),
         image(0),
@@ -8160,7 +8160,7 @@ NavigationInfoClass::~NavigationInfoClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating NavigationInfo nodes.
+ * @return a node_type_ptr to a node_type capable of creating NavigationInfo nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by NavigationInfoClass.
@@ -8179,9 +8179,9 @@ const node_type_ptr
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "visibilityLimit"),
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<NavigationInfo>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<NavigationInfo>(*this, id));
     Vrml97NodeTypeImpl<NavigationInfo> & navigationInfoNodeType =
-            static_cast<Vrml97NodeTypeImpl<NavigationInfo> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<NavigationInfo> &>(*type);
     typedef Vrml97NodeTypeImpl<NavigationInfo>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -8234,7 +8234,7 @@ const node_type_ptr
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 namespace {
@@ -8251,13 +8251,13 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-NavigationInfo::NavigationInfo(const node_type & nodeType,
-                               const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+NavigationInfo::NavigationInfo(const node_type & type,
+                               const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     avatarSize(avatarSize_, avatarSize_ + 3),
     headlight(true),
     speed(1.0),
@@ -8454,7 +8454,7 @@ NormalClass::~NormalClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Normal nodes.
+ * @return a node_type_ptr to a node_type capable of creating Normal nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by NormalClass.
@@ -8469,9 +8469,9 @@ NormalClass::create_type(const std::string & id,
             node_interface(node_interface::exposedfield_id,
                            field_value::mfvec3f_id,
                            "vector");
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Normal>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Normal>(*this, id));
     Vrml97NodeTypeImpl<Normal> & normalNodeType =
-            static_cast<Vrml97NodeTypeImpl<Normal> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Normal> &>(*type);
     typedef Vrml97NodeTypeImpl<Normal>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -8486,7 +8486,7 @@ NormalClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -8498,14 +8498,14 @@ NormalClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-Normal::Normal(const node_type & nodeType,
-               const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    normal_node(nodeType, scope)
+Normal::Normal(const node_type & type,
+               const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    normal_node(type, scope)
 {}
 
 /**
@@ -8567,7 +8567,7 @@ NormalInterpolatorClass::~NormalInterpolatorClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating NormalInterpolator
+ * @return a node_type_ptr to a node_type capable of creating NormalInterpolator
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -8584,9 +8584,9 @@ const node_type_ptr
         node_interface(node_interface::exposedfield_id, field_value::mfvec3f_id, "keyValue"),
         node_interface(node_interface::eventout_id, field_value::mfvec3f_id, "value_changed")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<NormalInterpolator>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<NormalInterpolator>(*this, id));
     Vrml97NodeTypeImpl<NormalInterpolator> & normalInterpolatorNodeType =
-            static_cast<Vrml97NodeTypeImpl<NormalInterpolator> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<NormalInterpolator> &>(*type);
     typedef Vrml97NodeTypeImpl<NormalInterpolator>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -8619,7 +8619,7 @@ const node_type_ptr
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -8631,13 +8631,13 @@ const node_type_ptr
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-NormalInterpolator::NormalInterpolator(const node_type & nodeType,
-                                       const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractChild(nodeType, scope) {}
+NormalInterpolator::NormalInterpolator(const node_type & type,
+                                       const scope_ptr & scope):
+        node(type, scope),
+        AbstractChild(type, scope) {}
 
 /**
  * @brief Destructor.
@@ -8782,7 +8782,7 @@ OrientationInterpolatorClass::~OrientationInterpolatorClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating
+ * @return a node_type_ptr to a node_type capable of creating
  *      OrientationInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -8809,10 +8809,10 @@ OrientationInterpolatorClass::create_type(const std::string & id,
                       "value_changed")
     };
     const node_type_ptr
-        nodeType(new Vrml97NodeTypeImpl<OrientationInterpolator>(*this, id));
+        type(new Vrml97NodeTypeImpl<OrientationInterpolator>(*this, id));
     Vrml97NodeTypeImpl<OrientationInterpolator> &
         orientationInterpolatorNodeType =
-        static_cast<Vrml97NodeTypeImpl<OrientationInterpolator> &>(*nodeType);
+        static_cast<Vrml97NodeTypeImpl<OrientationInterpolator> &>(*type);
     typedef Vrml97NodeTypeImpl<OrientationInterpolator>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
@@ -8849,7 +8849,7 @@ OrientationInterpolatorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -8861,13 +8861,13 @@ OrientationInterpolatorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-OrientationInterpolator::OrientationInterpolator(const node_type & nodeType,
-                                                 const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractChild(nodeType, scope) {}
+OrientationInterpolator::OrientationInterpolator(const node_type & type,
+                                                 const scope_ptr & scope):
+        node(type, scope),
+        AbstractChild(type, scope) {}
 
 /**
  * @brief Destructor.
@@ -9007,7 +9007,7 @@ PixelTextureClass::~PixelTextureClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating PixelTexture nodes.
+ * @return a node_type_ptr to a node_type capable of creating PixelTexture nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PixelTextureClass.
@@ -9030,9 +9030,9 @@ PixelTextureClass::create_type(const std::string & id,
                       "repeatT")
     };
     const node_type_ptr
-        nodeType(new Vrml97NodeTypeImpl<PixelTexture>(*this, id));
+        type(new Vrml97NodeTypeImpl<PixelTexture>(*this, id));
     Vrml97NodeTypeImpl<PixelTexture> & pixelTextureNodeType =
-        static_cast<Vrml97NodeTypeImpl<PixelTexture> &>(*nodeType);
+        static_cast<Vrml97NodeTypeImpl<PixelTexture> &>(*type);
     typedef Vrml97NodeTypeImpl<PixelTexture>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -9059,7 +9059,7 @@ PixelTextureClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -9071,13 +9071,13 @@ PixelTextureClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-PixelTexture::PixelTexture(const node_type & nodeType,
-                           const ScopePtr & scope):
-        node(nodeType, scope),
-        AbstractTexture(nodeType, scope),
+PixelTexture::PixelTexture(const node_type & type,
+                           const scope_ptr & scope):
+        node(type, scope),
+        AbstractTexture(type, scope),
         texObject(0) {}
 
 /**
@@ -9223,7 +9223,7 @@ PlaneSensorClass::~PlaneSensorClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating PlaneSensor nodes.
+ * @return a node_type_ptr to a node_type capable of creating PlaneSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PlaneSensorClass.
@@ -9243,9 +9243,9 @@ const node_type_ptr
         node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed"),
         node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "translation_changed")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<PlaneSensor>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<PlaneSensor>(*this, id));
     Vrml97NodeTypeImpl<PlaneSensor> & planeSensorNodeType =
-            static_cast<Vrml97NodeTypeImpl<PlaneSensor> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<PlaneSensor> &>(*type);
     typedef Vrml97NodeTypeImpl<PlaneSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -9306,7 +9306,7 @@ const node_type_ptr
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -9400,13 +9400,13 @@ const node_type_ptr
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-PlaneSensor::PlaneSensor(const node_type & nodeType,
-                         const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+PlaneSensor::PlaneSensor(const node_type & type,
+                         const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     autoOffset(true),
     enabled(true),
     maxPosition(vec2f(-1.0, -1.0)),
@@ -9625,7 +9625,7 @@ PointLightClass::~PointLightClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating PointLight nodes.
+ * @return a node_type_ptr to a node_type capable of creating PointLight nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PointLightClass.
@@ -9645,9 +9645,9 @@ PointLightClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "on"),
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "radius")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<PointLight>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<PointLight>(*this, id));
     Vrml97NodeTypeImpl<PointLight> & pointLightNodeType =
-            static_cast<Vrml97NodeTypeImpl<PointLight> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<PointLight> &>(*type);
     typedef Vrml97NodeTypeImpl<PointLight>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -9704,7 +9704,7 @@ PointLightClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -9740,13 +9740,13 @@ PointLightClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-PointLight::PointLight(const node_type & nodeType,
-                       const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractLight(nodeType, scope),
+PointLight::PointLight(const node_type & type,
+                       const scope_ptr & scope):
+    node(type, scope),
+    AbstractLight(type, scope),
     attenuation(vec3f(1.0, 0.0, 0.0)),
     location(vec3f(0.0, 0.0, 0.0)),
     radius(100)
@@ -9896,7 +9896,7 @@ PointSetClass::~PointSetClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating PointSet nodes.
+ * @return a node_type_ptr to a node_type capable of creating PointSet nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PointSetClass.
@@ -9910,9 +9910,9 @@ const node_type_ptr PointSetClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "coord")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<PointSet>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<PointSet>(*this, id));
     Vrml97NodeTypeImpl<PointSet> & pointSetNodeType =
-            static_cast<Vrml97NodeTypeImpl<PointSet> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<PointSet> &>(*type);
     typedef Vrml97NodeTypeImpl<PointSet>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -9934,7 +9934,7 @@ const node_type_ptr PointSetClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -9970,13 +9970,13 @@ const node_type_ptr PointSetClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-PointSet::PointSet(const node_type & nodeType,
-                   const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractGeometry(nodeType, scope)
+PointSet::PointSet(const node_type & type,
+                   const scope_ptr & scope):
+    node(type, scope),
+    AbstractGeometry(type, scope)
 {
     this->bvolume_dirty(true);
 }
@@ -10150,7 +10150,7 @@ PositionInterpolatorClass::~PositionInterpolatorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating
+ * @return a node_type_ptr to a node_type capable of creating
  *      CoordinateInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -10177,9 +10177,9 @@ PositionInterpolatorClass::create_type(const std::string & id,
                       "value_changed")
     };
     const node_type_ptr
-        nodeType(new Vrml97NodeTypeImpl<PositionInterpolator>(*this, id));
+        type(new Vrml97NodeTypeImpl<PositionInterpolator>(*this, id));
     Vrml97NodeTypeImpl<PositionInterpolator> & positionInterpolatorNodeType =
-            static_cast<Vrml97NodeTypeImpl<PositionInterpolator> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<PositionInterpolator> &>(*type);
     typedef Vrml97NodeTypeImpl<PositionInterpolator>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
@@ -10213,7 +10213,7 @@ PositionInterpolatorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -10250,13 +10250,13 @@ PositionInterpolatorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-PositionInterpolator::PositionInterpolator(const node_type & nodeType,
-                                           const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope)
+PositionInterpolator::PositionInterpolator(const node_type & type,
+                                           const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope)
 {}
 
 /**
@@ -10369,7 +10369,7 @@ ProximitySensorClass::~ProximitySensorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating ProximitySensor
+ * @return a node_type_ptr to a node_type capable of creating ProximitySensor
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -10391,9 +10391,9 @@ ProximitySensorClass::create_type(const std::string & id,
         node_interface(node_interface::eventout_id, field_value::sftime_id, "enterTime"),
         node_interface(node_interface::eventout_id, field_value::sftime_id, "exitTime")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<ProximitySensor>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<ProximitySensor>(*this, id));
     Vrml97NodeTypeImpl<ProximitySensor> & proximitySensorNodeType =
-            static_cast<Vrml97NodeTypeImpl<ProximitySensor> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<ProximitySensor> &>(*type);
     typedef Vrml97NodeTypeImpl<ProximitySensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -10452,7 +10452,7 @@ ProximitySensorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -10518,13 +10518,13 @@ ProximitySensorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-ProximitySensor::ProximitySensor(const node_type & nodeType,
-                                 const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+ProximitySensor::ProximitySensor(const node_type & type,
+                                 const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     center(vec3f(0.0, 0.0, 0.0)),
     enabled(true),
     size(vec3f(0.0, 0.0, 0.0)),
@@ -10709,7 +10709,7 @@ ScalarInterpolatorClass::~ScalarInterpolatorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating
+ * @return a node_type_ptr to a node_type capable of creating
  *      CoordinateInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -10727,9 +10727,9 @@ ScalarInterpolatorClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "keyValue"),
         node_interface(node_interface::eventout_id, field_value::sffloat_id, "value_changed")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<ScalarInterpolator>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<ScalarInterpolator>(*this, id));
     Vrml97NodeTypeImpl<ScalarInterpolator> & scalarInterpolatorNodeType =
-            static_cast<Vrml97NodeTypeImpl<ScalarInterpolator> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<ScalarInterpolator> &>(*type);
     typedef Vrml97NodeTypeImpl<ScalarInterpolator>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -10762,7 +10762,7 @@ ScalarInterpolatorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -10798,13 +10798,13 @@ ScalarInterpolatorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-ScalarInterpolator::ScalarInterpolator(const node_type & nodeType,
-                                       const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope)
+ScalarInterpolator::ScalarInterpolator(const node_type & type,
+                                       const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope)
 {}
 
 /**
@@ -10913,7 +10913,7 @@ ShapeClass::~ShapeClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Shape nodes.
+ * @return a node_type_ptr to a node_type capable of creating Shape nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ShapeClass.
@@ -10927,9 +10927,9 @@ const node_type_ptr ShapeClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "appearance"),
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "geometry")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Shape>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Shape>(*this, id));
     Vrml97NodeTypeImpl<Shape> & shapeNodeType =
-            static_cast<Vrml97NodeTypeImpl<Shape> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Shape> &>(*type);
     typedef Vrml97NodeTypeImpl<Shape>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -10951,7 +10951,7 @@ const node_type_ptr ShapeClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -10991,13 +10991,13 @@ const node_type_ptr ShapeClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node.
+ * @param scope     the scope to which the node belongs.
  */
-Shape::Shape(const node_type & nodeType,
-             const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+Shape::Shape(const node_type & type,
+             const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     viewerObject(0)
 {}
 
@@ -11176,7 +11176,7 @@ SoundClass::~SoundClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Sound nodes.
+ * @return a node_type_ptr to a node_type capable of creating Sound nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SoundClass.
@@ -11198,9 +11198,9 @@ const node_type_ptr SoundClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "source"),
         node_interface(node_interface::field_id, field_value::sfbool_id, "spatialize")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Sound>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Sound>(*this, id));
     Vrml97NodeTypeImpl<Sound> & soundNodeType =
-            static_cast<Vrml97NodeTypeImpl<Sound> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Sound> &>(*type);
     typedef Vrml97NodeTypeImpl<Sound>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -11277,7 +11277,7 @@ const node_type_ptr SoundClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -11355,13 +11355,13 @@ const node_type_ptr SoundClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the instance.
- * @param scope     the Scope associated with the instance.
+ * @param type  the node_type associated with the instance.
+ * @param scope     the scope associated with the instance.
  */
-Sound::Sound(const node_type & nodeType,
-             const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+Sound::Sound(const node_type & type,
+             const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     direction(vec3f(0, 0, 1)),
     intensity(1),
     maxBack(10),
@@ -11586,7 +11586,7 @@ SphereClass::~SphereClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Sphere nodes.
+ * @return a node_type_ptr to a node_type capable of creating Sphere nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SphereClass.
@@ -11598,9 +11598,9 @@ const node_type_ptr SphereClass::create_type(const std::string & id,
 {
     static const node_interface supportedInterface =
             node_interface(node_interface::field_id, field_value::sffloat_id, "radius");
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Sphere>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Sphere>(*this, id));
     Vrml97NodeTypeImpl<Sphere> & spereNodeType =
-            static_cast<Vrml97NodeTypeImpl<Sphere> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Sphere> &>(*type);
     typedef Vrml97NodeTypeImpl<Sphere>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -11614,7 +11614,7 @@ const node_type_ptr SphereClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -11644,13 +11644,13 @@ const node_type_ptr SphereClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Sphere::Sphere(const node_type & nodeType,
-               const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractGeometry(nodeType, scope),
+Sphere::Sphere(const node_type & type,
+               const scope_ptr & scope):
+    node(type, scope),
+    AbstractGeometry(type, scope),
     radius(1.0)
 {
     this->bvolume_dirty(true); // lazy calc of bvolumes
@@ -11716,7 +11716,7 @@ SphereSensorClass::~SphereSensorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating SphereSensor nodes.
+ * @return a node_type_ptr to a node_type capable of creating SphereSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SphereSensorClass.
@@ -11735,9 +11735,9 @@ SphereSensorClass::create_type(const std::string & id,
         node_interface(node_interface::eventout_id, field_value::sfrotation_id, "rotation_changed"),
         node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<SphereSensor>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<SphereSensor>(*this, id));
     Vrml97NodeTypeImpl<SphereSensor> & sphereSensorNodeType =
-            static_cast<Vrml97NodeTypeImpl<SphereSensor> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<SphereSensor> &>(*type);
     typedef Vrml97NodeTypeImpl<SphereSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -11784,7 +11784,7 @@ SphereSensorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -11856,13 +11856,13 @@ SphereSensorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-SphereSensor::SphereSensor(const node_type & nodeType,
-                           const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+SphereSensor::SphereSensor(const node_type & type,
+                           const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     autoOffset(true),
     enabled(true),
     offset(OpenVRML::rotation(0.0, 1.0, 0.0, 0.0)),
@@ -12064,7 +12064,7 @@ SpotLightClass::~SpotLightClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating PointLight nodes.
+ * @return a node_type_ptr to a node_type capable of creating PointLight nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PointLightClass.
@@ -12107,9 +12107,9 @@ SpotLightClass::create_type(const std::string & id,
                       field_value::sffloat_id,
                       "radius")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<SpotLight>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<SpotLight>(*this, id));
     Vrml97NodeTypeImpl<SpotLight> & spotLightNodeType =
-            static_cast<Vrml97NodeTypeImpl<SpotLight> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<SpotLight> &>(*type);
     typedef Vrml97NodeTypeImpl<SpotLight>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -12187,7 +12187,7 @@ SpotLightClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -12241,13 +12241,13 @@ SpotLightClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-SpotLight::SpotLight(const node_type & nodeType,
-                     const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractLight(nodeType, scope),
+SpotLight::SpotLight(const node_type & type,
+                     const scope_ptr & scope):
+    node(type, scope),
+    AbstractLight(type, scope),
     attenuation(vec3f(1.0, 0.0, 0.0)),
     beamWidth(1.570796),
     cutOffAngle(0.785398),
@@ -12454,7 +12454,7 @@ SwitchClass::~SwitchClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Switch nodes.
+ * @return a node_type_ptr to a node_type capable of creating Switch nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SwitchClass.
@@ -12471,9 +12471,9 @@ const node_type_ptr SwitchClass::create_type(const std::string & id,
                       field_value::sfint32_id,
                       "whichChoice")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Switch>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Switch>(*this, id));
     Vrml97NodeTypeImpl<Switch> & switchNodeType =
-            static_cast<Vrml97NodeTypeImpl<Switch> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Switch> &>(*type);
     typedef Vrml97NodeTypeImpl<Switch>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -12495,7 +12495,7 @@ const node_type_ptr SwitchClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -12537,15 +12537,15 @@ const node_type_ptr SwitchClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node instance.
- * @param scope     the Scope to which the node belongs.
+ * @param type  the node_type associated with the node instance.
+ * @param scope     the scope to which the node belongs.
  */
-Switch::Switch(const node_type & nodeType,
-               const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    child_node(nodeType, scope),
-    grouping_node(nodeType, scope),
+Switch::Switch(const node_type & type,
+               const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    child_node(type, scope),
+    grouping_node(type, scope),
     whichChoice(-1),
     children_(1)
 {
@@ -12767,7 +12767,7 @@ TextClass::~TextClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Text nodes.
+ * @return a node_type_ptr to a node_type capable of creating Text nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by TextClass.
@@ -12782,9 +12782,9 @@ const node_type_ptr TextClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "length"),
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxExtent")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Text>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Text>(*this, id));
     Vrml97NodeTypeImpl<Text> & textNodeType =
-            static_cast<Vrml97NodeTypeImpl<Text> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Text> &>(*type);
     typedef Vrml97NodeTypeImpl<Text>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -12820,7 +12820,7 @@ const node_type_ptr TextClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -13335,13 +13335,13 @@ Text::GlyphGeometry::GlyphGeometry(
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the instance.
- * @param scope         the Scope that the new node will belong to.
+ * @param type      the node_type associated with the instance.
+ * @param scope         the scope that the new node will belong to.
  */
-Text::Text(const node_type & nodeType,
-           const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractGeometry(nodeType, scope),
+Text::Text(const node_type & type,
+           const scope_ptr & scope):
+    node(type, scope),
+    AbstractGeometry(type, scope),
     face(0)
 {}
 
@@ -14223,7 +14223,7 @@ TextureCoordinateClass::~TextureCoordinateClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating TextureCoordinate
+ * @return a node_type_ptr to a node_type capable of creating TextureCoordinate
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -14239,9 +14239,9 @@ const node_type_ptr
                       field_value::mfvec2f_id,
                       "point");
     const node_type_ptr
-        nodeType(new Vrml97NodeTypeImpl<TextureCoordinate>(*this, id));
+        type(new Vrml97NodeTypeImpl<TextureCoordinate>(*this, id));
     Vrml97NodeTypeImpl<TextureCoordinate> & textureCoordinateNodeType =
-            static_cast<Vrml97NodeTypeImpl<TextureCoordinate> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<TextureCoordinate> &>(*type);
     typedef Vrml97NodeTypeImpl<TextureCoordinate>::NodeFieldPtrPtr
         NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
@@ -14258,7 +14258,7 @@ const node_type_ptr
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -14282,14 +14282,14 @@ const node_type_ptr
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the instance.
- * @param scope         the Scope that the new node will belong to.
+ * @param type      the node_type associated with the instance.
+ * @param scope         the scope that the new node will belong to.
  */
-TextureCoordinate::TextureCoordinate(const node_type & nodeType,
-                                     const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    texture_coordinate_node(nodeType, scope)
+TextureCoordinate::TextureCoordinate(const node_type & type,
+                                     const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    texture_coordinate_node(type, scope)
 {}
 
 /**
@@ -14353,7 +14353,7 @@ TextureTransformClass::~TextureTransformClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating TextureTransform
+ * @return a node_type_ptr to a node_type capable of creating TextureTransform
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -14371,9 +14371,9 @@ TextureTransformClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "scale"),
         node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "translation")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<TextureTransform>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<TextureTransform>(*this, id));
     Vrml97NodeTypeImpl<TextureTransform> & textureTransformNodeType =
-            static_cast<Vrml97NodeTypeImpl<TextureTransform> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<TextureTransform> &>(*type);
     typedef Vrml97NodeTypeImpl<TextureTransform>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -14409,7 +14409,7 @@ TextureTransformClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -14451,14 +14451,14 @@ TextureTransformClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the instance.
- * @param scope         the Scope that the new node will belong to.
+ * @param type      the node_type associated with the instance.
+ * @param scope         the scope that the new node will belong to.
  */
-TextureTransform::TextureTransform(const node_type & nodeType,
-                                   const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    texture_transform_node(nodeType, scope),
+TextureTransform::TextureTransform(const node_type & type,
+                                   const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    texture_transform_node(type, scope),
     center(vec2f(0.0, 0.0)),
     rotation(0.0),
     scale(vec2f(1.0, 1.0)),
@@ -14582,7 +14582,7 @@ TimeSensorClass::~TimeSensorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating TimeSensor nodes.
+ * @return a node_type_ptr to a node_type capable of creating TimeSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by TimeSensorClass.
@@ -14604,9 +14604,9 @@ TimeSensorClass::create_type(const std::string & id,
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
         node_interface(node_interface::eventout_id, field_value::sftime_id, "time")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<TimeSensor>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<TimeSensor>(*this, id));
     Vrml97NodeTypeImpl<TimeSensor> & timeSensorNodeType =
-            static_cast<Vrml97NodeTypeImpl<TimeSensor> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<TimeSensor> &>(*type);
     typedef Vrml97NodeTypeImpl<TimeSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -14673,7 +14673,7 @@ TimeSensorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -14751,13 +14751,13 @@ TimeSensorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the instance.
- * @param scope         the Scope that the new node will belong to.
+ * @param type      the node_type associated with the instance.
+ * @param scope         the scope that the new node will belong to.
  */
-TimeSensor::TimeSensor(const node_type & nodeType,
-                       const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+TimeSensor::TimeSensor(const node_type & type,
+                       const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     cycleInterval(1.0),
     enabled(true),
     loop(false),
@@ -15058,7 +15058,7 @@ TouchSensorClass::~TouchSensorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating TouchSensor nodes.
+ * @return a node_type_ptr to a node_type capable of creating TouchSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by TouchSensorClass.
@@ -15092,9 +15092,9 @@ TouchSensorClass::create_type(const std::string & id,
                       field_value::sftime_id,
                       "touchTime")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<TouchSensor>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<TouchSensor>(*this, id));
     Vrml97NodeTypeImpl<TouchSensor> & touchSensorNodeType =
-            static_cast<Vrml97NodeTypeImpl<TouchSensor> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<TouchSensor> &>(*type);
     typedef Vrml97NodeTypeImpl<TouchSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -15145,7 +15145,7 @@ TouchSensorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -15205,13 +15205,13 @@ TouchSensorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the instance.
- * @param scope         the Scope that the new node will belong to.
+ * @param type      the node_type associated with the instance.
+ * @param scope         the scope that the new node will belong to.
  */
-TouchSensor::TouchSensor(const node_type & nodeType,
-                         const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+TouchSensor::TouchSensor(const node_type & type,
+                         const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     enabled(true),
     active(false),
     over(false),
@@ -15314,7 +15314,7 @@ TransformClass::~TransformClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Transform nodes.
+ * @return a node_type_ptr to a node_type capable of creating Transform nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by TransformClass.
@@ -15337,9 +15337,9 @@ TransformClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Transform>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Transform>(*this, id));
     Vrml97NodeTypeImpl<Transform> & transformNodeType =
-            static_cast<Vrml97NodeTypeImpl<Transform> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Transform> &>(*type);
     typedef Vrml97NodeTypeImpl<Transform>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -15409,7 +15409,7 @@ TransformClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -15483,16 +15483,16 @@ TransformClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the instance.
- * @param scope         the Scope that the new node will belong to.
+ * @param type      the node_type associated with the instance.
+ * @param scope         the scope that the new node will belong to.
  */
-Transform::Transform(const node_type & nodeType,
-                     const ScopePtr & scope):
-    node(nodeType, scope),
-    child_node(nodeType, scope),
-    grouping_node(nodeType, scope),
-    Group(nodeType, scope),
-    transform_node(nodeType, scope),
+Transform::Transform(const node_type & type,
+                     const scope_ptr & scope):
+    node(type, scope),
+    child_node(type, scope),
+    grouping_node(type, scope),
+    Group(type, scope),
+    transform_node(type, scope),
     center(vec3f(0.0, 0.0, 0.0)),
     rotation(OpenVRML::rotation(0.0, 0.0, 1.0, 0.0)),
     scale(vec3f(1.0, 1.0, 1.0)),
@@ -15885,7 +15885,7 @@ void ViewpointClass::initialize(viewpoint_node * initialViewpoint,
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating Viewpoint nodes.
+ * @return a node_type_ptr to a node_type capable of creating Viewpoint nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by ViewpointClass.
@@ -15922,9 +15922,9 @@ ViewpointClass::create_type(const std::string & id,
                       field_value::sfbool_id,
                       "isBound")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Viewpoint>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<Viewpoint>(*this, id));
     Vrml97NodeTypeImpl<Viewpoint> & viewpointNodeType =
-            static_cast<Vrml97NodeTypeImpl<Viewpoint> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<Viewpoint> &>(*type);
     typedef Vrml97NodeTypeImpl<Viewpoint>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -15982,7 +15982,7 @@ ViewpointClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -16052,15 +16052,15 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the instance.
- * @param scope         the Scope that the new node will belong to.
+ * @param type      the node_type associated with the instance.
+ * @param scope         the scope that the new node will belong to.
  */
-Viewpoint::Viewpoint(const node_type & nodeType,
-                     const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractBase(nodeType, scope),
-    child_node(nodeType, scope),
-    viewpoint_node(nodeType, scope),
+Viewpoint::Viewpoint(const node_type & type,
+                     const scope_ptr & scope):
+    node(type, scope),
+    AbstractBase(type, scope),
+    child_node(type, scope),
+    viewpoint_node(type, scope),
     fieldOfView(DEFAULT_FIELD_OF_VIEW),
     jump(true),
     orientation_(rotation(0.0, 0.0, 1.0, 0.0)),
@@ -16377,7 +16377,7 @@ VisibilitySensorClass::~VisibilitySensorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating VisibilitySensor
+ * @return a node_type_ptr to a node_type capable of creating VisibilitySensor
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
@@ -16397,9 +16397,9 @@ VisibilitySensorClass::create_type(const std::string & id,
         node_interface(node_interface::eventout_id, field_value::sftime_id, "exitTime"),
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<VisibilitySensor>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<VisibilitySensor>(*this, id));
     Vrml97NodeTypeImpl<VisibilitySensor> & visibilitySensorNodeType =
-            static_cast<Vrml97NodeTypeImpl<VisibilitySensor> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<VisibilitySensor> &>(*type);
     typedef Vrml97NodeTypeImpl<VisibilitySensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -16446,7 +16446,7 @@ VisibilitySensorClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -16500,13 +16500,13 @@ VisibilitySensorClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the instance.
- * @param scope         the Scope that the new node will belong to.
+ * @param type      the node_type associated with the instance.
+ * @param scope         the scope that the new node will belong to.
  */
-VisibilitySensor::VisibilitySensor(const node_type & nodeType,
-                                   const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope),
+VisibilitySensor::VisibilitySensor(const node_type & type,
+                                   const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope),
     center(vec3f(0.0, 0.0, 0.0)),
     enabled(true),
     size(vec3f(0.0, 0.0, 0.0)),
@@ -16675,7 +16675,7 @@ WorldInfoClass::~WorldInfoClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a node_type_ptr to a NodeType capable of creating WorldInfo nodes.
+ * @return a node_type_ptr to a node_type capable of creating WorldInfo nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by WorldInfoClass.
@@ -16694,9 +16694,9 @@ WorldInfoClass::create_type(const std::string & id,
                        field_value::sfstring_id,
                        "title")
     };
-    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<WorldInfo>(*this, id));
+    const node_type_ptr type(new Vrml97NodeTypeImpl<WorldInfo>(*this, id));
     Vrml97NodeTypeImpl<WorldInfo> & worldInfoNodeType =
-            static_cast<Vrml97NodeTypeImpl<WorldInfo> &>(*nodeType);
+            static_cast<Vrml97NodeTypeImpl<WorldInfo> &>(*type);
     typedef Vrml97NodeTypeImpl<WorldInfo>::NodeFieldPtrPtr NodeFieldPtrPtr;
     for (node_interface_set::const_iterator itr(interfaces.begin());
             itr != interfaces.end(); ++itr) {
@@ -16716,7 +16716,7 @@ WorldInfoClass::create_type(const std::string & id,
             throw unsupported_interface("Invalid interface.");
         }
     }
-    return nodeType;
+    return type;
 }
 
 /**
@@ -16746,13 +16746,13 @@ WorldInfoClass::create_type(const std::string & id,
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the instance.
- * @param scope         the Scope that the new node will belong to.
+ * @param type  the node_type associated with the instance.
+ * @param scope the scope that the new node will belong to.
  */
-WorldInfo::WorldInfo(const node_type & nodeType,
-                     const ScopePtr & scope):
-    node(nodeType, scope),
-    AbstractChild(nodeType, scope)
+WorldInfo::WorldInfo(const node_type & type,
+                     const scope_ptr & scope):
+    node(type, scope),
+    AbstractChild(type, scope)
 {}
 
 /**

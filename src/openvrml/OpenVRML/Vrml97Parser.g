@@ -611,14 +611,14 @@ private:
 vrmlScene[OpenVRML::Browser & browser,
           std::vector<node_ptr> & nodes]
 {
-    const ScopePtr scope(new Vrml97RootScope(browser, this->uri));
+    const scope_ptr scope(new Vrml97RootScope(browser, this->uri));
 }
     :   (statement[browser, nodes, scope])*
     ;
 
 statement[OpenVRML::Browser & browser,
           std::vector<node_ptr> & nodes,
-          const OpenVRML::ScopePtr & scope]
+          const OpenVRML::scope_ptr & scope]
     {
         OpenVRML::node_ptr node;
         OpenVRML::node_type_ptr nodeType;
@@ -634,7 +634,7 @@ statement[OpenVRML::Browser & browser,
     ;
 
 nodeStatement[OpenVRML::Browser & browser,
-              const OpenVRML::ScopePtr & scope]
+              const OpenVRML::scope_ptr & scope]
 returns [OpenVRML::node_ptr n]
 options { defaultErrorHandler=false; }
     :   KEYWORD_DEF id0:ID n=node[browser, scope, id0->getText()]
@@ -658,7 +658,7 @@ options { defaultErrorHandler=false; }
     }
 
 protoStatement[OpenVRML::Browser & browser,
-               const OpenVRML::ScopePtr & scope]
+               const OpenVRML::scope_ptr & scope]
     //
     // XXX What if the node type already exists in the scope? Probably need to
     // XXX handle an exception here.
@@ -668,10 +668,10 @@ protoStatement[OpenVRML::Browser & browser,
     ;
 
 proto[OpenVRML::Browser & browser,
-      const OpenVRML::ScopePtr & scope]
+      const OpenVRML::scope_ptr & scope]
 {
     node_class_ptr nodeClass;
-    ScopePtr protoScope;
+    scope_ptr protoScope;
 }
     : KEYWORD_PROTO id:ID {
             nodeClass.reset(new ProtoNodeClass(browser));
@@ -683,7 +683,7 @@ proto[OpenVRML::Browser & browser,
                 // XXX here. This is wasteful; Vrml97RootScope is expensive and
                 // XXX we only *really* need this for SFNode and MFNode
                 // XXX fields/exposedFields.
-                ScopePtr interfaceDeclScope(new Vrml97RootScope(browser,
+                scope_ptr interfaceDeclScope(new Vrml97RootScope(browser,
                                                                 this->uri));
             }
             protoInterfaceDeclaration[interfaceDeclScope,
@@ -720,7 +720,7 @@ proto[OpenVRML::Browser & browser,
         }
     ;
 
-protoInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
+protoInterfaceDeclaration[const OpenVRML::scope_ptr & scope,
                           OpenVRML::ProtoNodeClass & proto]
 {
     using OpenVRML::node_interface;
@@ -788,7 +788,7 @@ returns [OpenVRML::node_interface::type_id it =
     |   KEYWORD_EXPOSEDFIELD { it = OpenVRML::node_interface::exposedfield_id; }
     ;
 
-protoBody[const OpenVRML::ScopePtr & scope,
+protoBody[const OpenVRML::scope_ptr & scope,
           OpenVRML::ProtoNodeClass & proto]
 {
     OpenVRML::node_ptr n;
@@ -799,7 +799,7 @@ protoBody[const OpenVRML::ScopePtr & scope,
     ;
 
 protoBodyStatement[OpenVRML::ProtoNodeClass & proto,
-                   const OpenVRML::ScopePtr & scope]
+                   const OpenVRML::scope_ptr & scope]
 {
     OpenVRML::node_ptr n;
 }
@@ -809,7 +809,7 @@ protoBodyStatement[OpenVRML::ProtoNodeClass & proto,
     ;
 
 protoNodeStatement[OpenVRML::ProtoNodeClass & proto,
-                   const OpenVRML::ScopePtr & scope]
+                   const OpenVRML::scope_ptr & scope]
 returns [OpenVRML::node_ptr n]
 options { defaultErrorHandler=false; }
 {
@@ -830,7 +830,7 @@ options { defaultErrorHandler=false; }
     | n=protoNode[proto, scope, std::string()]
     ;
 
-externproto[OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope]
+externproto[OpenVRML::Browser & browser, const OpenVRML::scope_ptr & scope]
 {
     OpenVRML::node_interface_set interfaces;
     OpenVRML::mfstring urlList;
@@ -940,7 +940,7 @@ routeStatement[const OpenVRML::scope & scope]
     ;
 
 node[OpenVRML::Browser & browser,
-     const OpenVRML::ScopePtr & scope,
+     const OpenVRML::scope_ptr & scope,
      const std::string & nodeId]
 returns [OpenVRML::node_ptr n]
 options { defaultErrorHandler = false; }
@@ -979,7 +979,7 @@ options { defaultErrorHandler = false; }
         } LBRACE (nodeBodyElement[scope, *n])* RBRACE
     ;
 
-nodeBodyElement[const OpenVRML::ScopePtr & scope,
+nodeBodyElement[const OpenVRML::scope_ptr & scope,
                 OpenVRML::node & node]
 {
     using OpenVRML::field_value;
@@ -1009,7 +1009,7 @@ nodeBodyElement[const OpenVRML::ScopePtr & scope,
     |   protoStatement[node.type._class.browser, scope]
     ;
 
-scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
+scriptInterfaceDeclaration[const OpenVRML::scope_ptr & scope,
                            OpenVRML::script_node & node]
     {
         using OpenVRML::node_interface;
@@ -1043,7 +1043,7 @@ scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
     | scriptFieldInterfaceDeclaration[scope, node]
     ;
 
-scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
+scriptFieldInterfaceDeclaration[const OpenVRML::scope_ptr & scope,
                                 OpenVRML::script_node & node]
 {
     using std::find_if;
@@ -1073,7 +1073,7 @@ scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
     ;
 
 protoNode[OpenVRML::ProtoNodeClass & proto,
-          const OpenVRML::ScopePtr & scope,
+          const OpenVRML::scope_ptr & scope,
           const std::string & nodeId]
 returns [OpenVRML::node_ptr n]
 options { defaultErrorHandler=false; }
@@ -1113,7 +1113,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoNodeBodyElement[OpenVRML::ProtoNodeClass & proto,
-                     const OpenVRML::ScopePtr & scope,
+                     const OpenVRML::scope_ptr & scope,
                      OpenVRML::node & node]
 {
     using OpenVRML::field_value;
@@ -1174,7 +1174,7 @@ isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::node & node,
     ;
 
 protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
-                                const OpenVRML::ScopePtr & scope,
+                                const OpenVRML::scope_ptr & scope,
                                 OpenVRML::script_node & node]
 {
     using OpenVRML::node_interface;
@@ -1209,7 +1209,7 @@ protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
     ;
 
 protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
-                                     const OpenVRML::ScopePtr & scope,
+                                     const OpenVRML::scope_ptr & scope,
                                      OpenVRML::script_node & node]
 {
     using std::find_if;
@@ -1319,7 +1319,7 @@ returns [OpenVRML::field_value::type_id ft = OpenVRML::field_value::invalid_type
     ;
 
 fieldValue[OpenVRML::Browser & browser,
-           const OpenVRML::ScopePtr & scope,
+           const OpenVRML::scope_ptr & scope,
            OpenVRML::field_value::type_id ft]
 returns [OpenVRML::field_value_ptr fv]
 options { defaultErrorHandler=false; }
@@ -1332,7 +1332,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoFieldValue[OpenVRML::ProtoNodeClass & proto,
-                const OpenVRML::ScopePtr & scope,
+                const OpenVRML::scope_ptr & scope,
                 OpenVRML::field_value::type_id ft]
 returns [OpenVRML::field_value_ptr fv]
 {
@@ -1370,7 +1370,7 @@ options { defaultErrorHandler=false; }
     ;
 
 nodeFieldValue[OpenVRML::Browser & browser,
-               const OpenVRML::ScopePtr & scope,
+               const OpenVRML::scope_ptr & scope,
                OpenVRML::field_value::type_id ft]
 returns [OpenVRML::field_value_ptr fv]
 options { defaultErrorHandler=false; }
@@ -1382,7 +1382,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoNodeFieldValue[OpenVRML::ProtoNodeClass & proto,
-                    const OpenVRML::ScopePtr & scope,
+                    const OpenVRML::scope_ptr & scope,
                     OpenVRML::field_value::type_id ft]
 returns [OpenVRML::field_value_ptr fv]
 options { defaultErrorHandler=false; }
@@ -1544,7 +1544,7 @@ options { defaultErrorHandler=false; }
     ;
 
 sfNodeValue[OpenVRML::Browser & browser,
-            const OpenVRML::ScopePtr & scope]
+            const OpenVRML::scope_ptr & scope]
 returns [OpenVRML::field_value_ptr snv]
 {
     OpenVRML::node_ptr n;
@@ -1554,7 +1554,7 @@ returns [OpenVRML::field_value_ptr snv]
     ;
 
 protoSfNodeValue[OpenVRML::ProtoNodeClass & proto,
-                 const OpenVRML::ScopePtr & scope]
+                 const OpenVRML::scope_ptr & scope]
 returns [OpenVRML::field_value_ptr snv]
 {
     OpenVRML::node_ptr n;
@@ -1564,7 +1564,7 @@ returns [OpenVRML::field_value_ptr snv]
     ;
 
 mfNodeValue[OpenVRML::Browser & browser,
-            const OpenVRML::ScopePtr & scope]
+            const OpenVRML::scope_ptr & scope]
 returns [OpenVRML::field_value_ptr mnv = OpenVRML::field_value_ptr(new mfnode)]
 {
     OpenVRML::node_ptr n;
@@ -1579,7 +1579,7 @@ returns [OpenVRML::field_value_ptr mnv = OpenVRML::field_value_ptr(new mfnode)]
     ;
 
 protoMfNodeValue[OpenVRML::ProtoNodeClass & proto,
-                 const OpenVRML::ScopePtr & scope]
+                 const OpenVRML::scope_ptr & scope]
 returns [OpenVRML::field_value_ptr mnv = OpenVRML::field_value_ptr(new mfnode)]
 {
     OpenVRML::node_ptr n;

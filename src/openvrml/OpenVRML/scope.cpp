@@ -51,7 +51,7 @@ typedef std::list<node_type_ptr> node_type_list_t;
  * @param id        the identifier for the scope.
  * @param parent    the parent scope.
  */
-scope::scope(const std::string & id, const ScopePtr & parent):
+scope::scope(const std::string & id, const scope_ptr & parent):
     id(id),
     parent(parent)
 {}

@@ -48,7 +48,7 @@ namespace OpenVRML {
             virtual ~AbstractBase() throw () = 0;
 
         protected:
-            AbstractBase(const node_type & nodeType, const ScopePtr & scope);
+            AbstractBase(const node_type & type, const scope_ptr & scope);
 
         private:
             virtual void do_field(const std::string & id,
@@ -75,7 +75,7 @@ namespace OpenVRML {
             virtual ~AbstractChild() throw () = 0;
 
         protected:
-            AbstractChild(const node_type & nodeType, const ScopePtr & scope);
+            AbstractChild(const node_type & type, const scope_ptr & scope);
         };
 
 
@@ -87,7 +87,7 @@ namespace OpenVRML {
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
         protected:
-            AbstractGeometry(const node_type & nodeType, const ScopePtr & scope);
+            AbstractGeometry(const node_type & type, const scope_ptr & scope);
 
             Viewer::Object d_viewerObject; // move to Node? ...
         };
@@ -110,8 +110,8 @@ namespace OpenVRML {
             virtual const color_node * color() const throw ();
 
         protected:
-            AbstractIndexedSet(const node_type & nodeType,
-                               const ScopePtr & scope);
+            AbstractIndexedSet(const node_type & type,
+                               const scope_ptr & scope);
 
             //
             // eventIn handlers
@@ -163,7 +163,7 @@ namespace OpenVRML {
             }
 
         protected:
-            AbstractLight(const node_type & nodeType, const ScopePtr & scope);
+            AbstractLight(const node_type & type, const scope_ptr & scope);
 
             //
             // eventIn handlers
@@ -196,7 +196,7 @@ namespace OpenVRML {
             virtual bool repeat_t() const throw ();
 
         protected:
-            AbstractTexture(const node_type & nodeType, const ScopePtr & scope);
+            AbstractTexture(const node_type & type, const scope_ptr & scope);
         };
 
 
@@ -228,8 +228,8 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            Group(const node_type & nodeType,
-                  const ScopePtr & scope);
+            Group(const node_type & type,
+                  const scope_ptr & scope);
             virtual ~Group() throw ();
 
             virtual bool modified() const;
@@ -283,8 +283,8 @@ namespace OpenVRML {
             mfstring url;
 
         public:
-            Anchor(const node_type & nodeType,
-                   const ScopePtr & scope);
+            Anchor(const node_type & type,
+                   const scope_ptr & scope);
             virtual ~Anchor() throw ();
 
             virtual Anchor * to_anchor() const;
@@ -339,8 +339,8 @@ namespace OpenVRML {
             sfnode textureTransform;
 
         public:
-            Appearance(const node_type & nodeType,
-                       const ScopePtr & scope);
+            Appearance(const node_type & type,
+                       const scope_ptr & scope);
             virtual ~Appearance() throw ();
 
             virtual bool modified() const;
@@ -402,8 +402,8 @@ namespace OpenVRML {
             int audio_fd;
 
         public:
-            AudioClip(const node_type & nodeType,
-                      const ScopePtr & scope);
+            AudioClip(const node_type & type,
+                      const scope_ptr & scope);
             virtual ~AudioClip() throw ();
 
             void update(double time);
@@ -488,8 +488,8 @@ namespace OpenVRML {
             Viewer::Object viewerObject;
 
         public:
-            Background(const node_type & nodeType,
-                       const ScopePtr & scope);
+            Background(const node_type & type,
+                       const scope_ptr & scope);
             virtual ~Background() throw ();
 
         private:
@@ -556,8 +556,8 @@ namespace OpenVRML {
                                             const mat4f & MV,
                                             mat4f & M);
 
-            Billboard(const node_type & nodeType,
-                      const ScopePtr & scope);
+            Billboard(const node_type & type,
+                      const scope_ptr & scope);
             virtual ~Billboard() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
@@ -596,8 +596,8 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            Box(const node_type & nodeType,
-                const ScopePtr & scope);
+            Box(const node_type & type,
+                const scope_ptr & scope);
             virtual ~Box() throw ();
 
             virtual Viewer::Object insert_geometry(Viewer & viewer,
@@ -624,8 +624,8 @@ namespace OpenVRML {
             sftime collideTime;  // eventOut
 
         public:
-            Collision(const node_type & nodeType,
-                      const ScopePtr & scope);
+            Collision(const node_type & type,
+                      const scope_ptr & scope);
             virtual ~Collision() throw ();
 
             virtual bool modified() const;
@@ -655,8 +655,8 @@ namespace OpenVRML {
             mfcolor color_;
 
         public:
-            Color(const node_type & nodeType,
-                  const ScopePtr & scope);
+            Color(const node_type & type,
+                  const scope_ptr & scope);
             virtual ~Color() throw ();
 
             //
@@ -698,8 +698,8 @@ namespace OpenVRML {
             sfcolor value;
 
         public:
-            ColorInterpolator(const node_type & nodeType,
-                              const ScopePtr & scope);
+            ColorInterpolator(const node_type & type,
+                              const scope_ptr & scope);
             virtual ~ColorInterpolator() throw ();
 
         private:
@@ -744,8 +744,8 @@ namespace OpenVRML {
             sfbool side;
 
         public:
-            Cone(const node_type & nodeType,
-                 const ScopePtr & scope);
+            Cone(const node_type & type,
+                 const scope_ptr & scope);
             virtual ~Cone() throw ();
 
             virtual Viewer::Object insert_geometry(Viewer & viewer,
@@ -770,8 +770,8 @@ namespace OpenVRML {
             mfvec3f point_;
 
         public:
-            Coordinate(const node_type & nodeType,
-                       const ScopePtr & scope);
+            Coordinate(const node_type & type,
+                       const scope_ptr & scope);
             virtual ~Coordinate() throw ();
 
             //
@@ -812,8 +812,8 @@ namespace OpenVRML {
             mfvec3f value;
 
         public:
-            CoordinateInterpolator(const node_type & nodeType,
-                                   const ScopePtr & scope);
+            CoordinateInterpolator(const node_type & type,
+                                   const scope_ptr & scope);
             virtual ~CoordinateInterpolator() throw ();
 
         private:
@@ -860,8 +860,8 @@ namespace OpenVRML {
             sfbool top;
 
         public:
-            Cylinder(const node_type & nodeType,
-                     const ScopePtr & scope);
+            Cylinder(const node_type & type,
+                     const scope_ptr & scope);
             virtual ~Cylinder() throw ();
 
             virtual Viewer::Object insert_geometry(Viewer & viewer,
@@ -899,8 +899,8 @@ namespace OpenVRML {
             mat4f modelview;
 
         public:
-            CylinderSensor(const node_type & nodeType,
-                           const ScopePtr & scope);
+            CylinderSensor(const node_type & type,
+                           const scope_ptr & scope);
             virtual ~CylinderSensor() throw ();
 
             virtual CylinderSensor * to_cylinder_sensor() const;
@@ -945,8 +945,8 @@ namespace OpenVRML {
             sfvec3f direction;
 
         public:
-            DirectionalLight(const node_type & nodeType,
-                             const ScopePtr & scope);
+            DirectionalLight(const node_type & type,
+                             const scope_ptr & scope);
             virtual ~DirectionalLight() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
@@ -988,8 +988,8 @@ namespace OpenVRML {
             sffloat zSpacing;
 
         public:
-            ElevationGrid(const node_type & nodeType,
-                          const ScopePtr & scope);
+            ElevationGrid(const node_type & type,
+                          const scope_ptr & scope);
             virtual ~ElevationGrid() throw ();
 
             virtual bool modified() const;
@@ -1038,8 +1038,8 @@ namespace OpenVRML {
             mfvec3f spine;
 
         public:
-            Extrusion(const node_type & nodeType,
-                      const ScopePtr & scope);
+            Extrusion(const node_type & type,
+                      const scope_ptr & scope);
             virtual ~Extrusion() throw ();
 
             virtual Viewer::Object insert_geometry(Viewer & viewer,
@@ -1098,8 +1098,8 @@ namespace OpenVRML {
             sfbool bound;
 
         public:
-            Fog(const node_type & nodeType,
-                const ScopePtr & scope);
+            Fog(const node_type & type,
+                const scope_ptr & scope);
             virtual ~Fog() throw ();
 
         private:
@@ -1147,8 +1147,8 @@ namespace OpenVRML {
             sfbool topToBottom;
 
         public:
-            FontStyle(const node_type & nodeType,
-                      const ScopePtr & scope);
+            FontStyle(const node_type & type,
+                      const scope_ptr & scope);
             virtual ~FontStyle() throw ();
 
             //
@@ -1186,8 +1186,8 @@ namespace OpenVRML {
             Viewer::TextureObject texObject;
 
         public:
-            ImageTexture(const node_type & nodeType,
-                         const ScopePtr & scope);
+            ImageTexture(const node_type & type,
+                         const scope_ptr & scope);
             virtual ~ImageTexture() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
@@ -1233,8 +1233,8 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            IndexedFaceSet(const node_type & nodeType,
-                           const ScopePtr & scope);
+            IndexedFaceSet(const node_type & type,
+                           const scope_ptr & scope);
             virtual ~IndexedFaceSet() throw ();
 
             virtual bool modified() const;
@@ -1277,8 +1277,8 @@ namespace OpenVRML {
             friend class IndexedLineSetClass;
 
         public:
-            IndexedLineSet(const node_type & nodeType,
-                           const ScopePtr & scope);
+            IndexedLineSet(const node_type & type,
+                           const scope_ptr & scope);
             virtual ~IndexedLineSet() throw ();
 
             virtual Viewer::Object insert_geometry(Viewer & viewer,
@@ -1308,8 +1308,8 @@ namespace OpenVRML {
             bool hasLoaded;
 
         public:
-            Inline(const node_type & nodeType,
-                   const ScopePtr & scope);
+            Inline(const node_type & type,
+                   const scope_ptr & scope);
             virtual ~Inline() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
@@ -1352,8 +1352,8 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            LOD(const node_type & nodeType,
-                const ScopePtr & scope);
+            LOD(const node_type & type,
+                const scope_ptr & scope);
             virtual ~LOD() throw ();
 
             virtual bool modified() const;
@@ -1398,8 +1398,8 @@ namespace OpenVRML {
             sffloat transparency_;
 
         public:
-            Material(const node_type & nodeType,
-                     const ScopePtr & scope);
+            Material(const node_type & type,
+                     const scope_ptr & scope);
             virtual ~Material() throw ();
 
             //
@@ -1465,8 +1465,8 @@ namespace OpenVRML {
             Viewer::TextureObject texObject;
 
         public:
-            MovieTexture(const node_type & nodeType,
-                         const ScopePtr & scope);
+            MovieTexture(const node_type & type,
+                         const scope_ptr & scope);
             virtual ~MovieTexture() throw ();
 
             virtual MovieTexture * to_movie_texture() const;
@@ -1522,8 +1522,8 @@ namespace OpenVRML {
             sfbool bound;
 
         public:
-            NavigationInfo(const node_type & nodeType,
-                           const ScopePtr & scope);
+            NavigationInfo(const node_type & type,
+                           const scope_ptr & scope);
             virtual ~NavigationInfo() throw ();
 
             virtual NavigationInfo * to_navigation_info() const;
@@ -1590,8 +1590,8 @@ namespace OpenVRML {
             mfvec3f vector_;
 
         public:
-            Normal(const node_type & nodeType,
-                   const ScopePtr & scope);
+            Normal(const node_type & type,
+                   const scope_ptr & scope);
             virtual ~Normal() throw ();
 
             //
@@ -1626,8 +1626,8 @@ namespace OpenVRML {
             mfvec3f value;
 
         public:
-            NormalInterpolator(const node_type & nodeType,
-                               const ScopePtr & scope);
+            NormalInterpolator(const node_type & type,
+                               const scope_ptr & scope);
             virtual ~NormalInterpolator() throw ();
 
         private:
@@ -1663,8 +1663,8 @@ namespace OpenVRML {
             sfrotation value;
 
         public:
-            OrientationInterpolator(const node_type & nodeType,
-                                    const ScopePtr & scope);
+            OrientationInterpolator(const node_type & type,
+                                    const scope_ptr & scope);
             virtual ~OrientationInterpolator() throw ();
 
         private:
@@ -1700,8 +1700,8 @@ namespace OpenVRML {
             Viewer::TextureObject texObject;
 
         public:
-            PixelTexture(const node_type & nodeType,
-                         const ScopePtr & scope);
+            PixelTexture(const node_type & type,
+                         const scope_ptr & scope);
             virtual ~PixelTexture() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
@@ -1749,8 +1749,8 @@ namespace OpenVRML {
             mat4f modelview;
 
         public:
-            PlaneSensor(const node_type & nodeType,
-                        const ScopePtr & scope);
+            PlaneSensor(const node_type & type,
+                        const scope_ptr & scope);
             virtual ~PlaneSensor() throw ();
 
             virtual PlaneSensor * to_plane_sensor() const;
@@ -1795,8 +1795,8 @@ namespace OpenVRML {
             sffloat radius;
 
         public:
-            PointLight(const node_type & nodeType,
-                       const ScopePtr & scope);
+            PointLight(const node_type & type,
+                       const scope_ptr & scope);
             virtual ~PointLight() throw ();
 
             virtual PointLight * to_point_light() const;
@@ -1838,8 +1838,8 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            PointSet(const node_type & nodeType,
-                     const ScopePtr & scope);
+            PointSet(const node_type & type,
+                     const scope_ptr & scope);
             virtual ~PointSet() throw ();
 
             virtual void update_modified(node_path & path, int flags = 0x003);
@@ -1879,8 +1879,8 @@ namespace OpenVRML {
             sfvec3f value;
 
         public:
-            PositionInterpolator(const node_type & nodeType,
-                                 const ScopePtr & scope);
+            PositionInterpolator(const node_type & type,
+                                 const scope_ptr & scope);
             virtual ~PositionInterpolator() throw ();
 
         private:
@@ -1922,8 +1922,8 @@ namespace OpenVRML {
             sftime exitTime;
 
         public:
-            ProximitySensor(const node_type & nodeType,
-                            const ScopePtr & scope);
+            ProximitySensor(const node_type & type,
+                            const scope_ptr & scope);
             virtual ~ProximitySensor() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
@@ -1959,8 +1959,8 @@ namespace OpenVRML {
             sffloat value;
 
         public:
-            ScalarInterpolator(const node_type & nodeType,
-                               const ScopePtr & scope);
+            ScalarInterpolator(const node_type & type,
+                               const scope_ptr & scope);
             virtual ~ScalarInterpolator() throw ();
 
         private:
@@ -1998,8 +1998,8 @@ namespace OpenVRML {
             Viewer::Object viewerObject; // move to Node.h ? ...
 
         public:
-            Shape(const node_type & nodeType,
-                  const ScopePtr & scope);
+            Shape(const node_type & type,
+                  const scope_ptr & scope);
             virtual ~Shape() throw ();
 
             virtual bool modified() const;
@@ -2045,8 +2045,8 @@ namespace OpenVRML {
             sfbool spatialize;
 
         public:
-            Sound(const node_type & nodeType,
-                  const ScopePtr & scope);
+            Sound(const node_type & type,
+                  const scope_ptr & scope);
             virtual ~Sound() throw ();
 
             virtual void update_modified(node_path & path, int flags = 0x003);
@@ -2094,8 +2094,8 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            Sphere(const node_type & nodeType,
-                   const ScopePtr & scope);
+            Sphere(const node_type & type,
+                   const scope_ptr & scope);
             virtual ~Sphere() throw ();
 
             virtual Viewer::Object insert_geometry(Viewer & viewer,
@@ -2129,8 +2129,8 @@ namespace OpenVRML {
             mat4f modelview;
 
         public:
-            SphereSensor(const node_type & nodeType,
-                         const ScopePtr & scope);
+            SphereSensor(const node_type & type,
+                         const scope_ptr & scope);
             virtual ~SphereSensor() throw ();
 
             virtual SphereSensor * to_sphere_sensor() const;
@@ -2177,8 +2177,8 @@ namespace OpenVRML {
             sffloat radius;
 
         public:
-            SpotLight(const node_type & nodeType,
-                      const ScopePtr & scope);
+            SpotLight(const node_type & type,
+                      const scope_ptr & scope);
             virtual ~SpotLight() throw ();
 
             virtual SpotLight * to_spot_light() const;
@@ -2231,8 +2231,8 @@ namespace OpenVRML {
             BSphere bsphere;
 
         public:
-            Switch(const node_type & nodeType,
-                   const ScopePtr & scope);
+            Switch(const node_type & type,
+                   const scope_ptr & scope);
             virtual ~Switch() throw ();
 
             virtual bool modified() const;
@@ -2307,8 +2307,8 @@ namespace OpenVRML {
             TextGeometry textGeometry;
 
         public:
-            Text(const node_type & nodeType,
-                 const ScopePtr & scope);
+            Text(const node_type & type,
+                 const scope_ptr & scope);
             virtual ~Text() throw ();
 
             virtual bool modified() const;
@@ -2359,8 +2359,8 @@ namespace OpenVRML {
             mfvec2f point_;
 
         public:
-            TextureCoordinate(const node_type & nodeType,
-                              const ScopePtr & scope);
+            TextureCoordinate(const node_type & type,
+                              const scope_ptr & scope);
             virtual ~TextureCoordinate() throw ();
 
             //
@@ -2398,8 +2398,8 @@ namespace OpenVRML {
             sfvec2f translation;
 
         public:
-            TextureTransform(const node_type & nodeType,
-                             const ScopePtr & scope);
+            TextureTransform(const node_type & type,
+                             const scope_ptr & scope);
             virtual ~TextureTransform() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
@@ -2449,8 +2449,8 @@ namespace OpenVRML {
             double lastTime;
 
         public:
-            TimeSensor(const node_type & nodeType,
-                       const ScopePtr & scope);
+            TimeSensor(const node_type & type,
+                       const scope_ptr & scope);
             virtual ~TimeSensor() throw ();
 
             virtual TimeSensor * to_time_sensor() const;
@@ -2503,8 +2503,8 @@ namespace OpenVRML {
             sftime touchTime;
 
         public:
-            TouchSensor(const node_type & nodeType,
-                        const ScopePtr & scope);
+            TouchSensor(const node_type & type,
+                        const scope_ptr & scope);
             virtual ~TouchSensor() throw ();
 
             virtual TouchSensor * to_touch_sensor() const;
@@ -2548,8 +2548,8 @@ namespace OpenVRML {
             Viewer::Object xformObject;
 
         public:
-            Transform(const node_type & nodeType,
-                      const ScopePtr & scope);
+            Transform(const node_type & type,
+                      const scope_ptr & scope);
             virtual ~Transform() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
@@ -2626,8 +2626,8 @@ namespace OpenVRML {
             mat4f userViewTransform;
 
         public:
-            Viewpoint(const node_type & nodeType,
-                      const ScopePtr & scope);
+            Viewpoint(const node_type & type,
+                      const scope_ptr & scope);
             virtual ~Viewpoint() throw ();
 
             virtual const mat4f & transformation() const throw ();
@@ -2691,8 +2691,8 @@ namespace OpenVRML {
             sftime exitTime;
 
         public:
-            VisibilitySensor(const node_type & nodeType,
-                             const ScopePtr & scope);
+            VisibilitySensor(const node_type & type,
+                             const scope_ptr & scope);
             virtual ~VisibilitySensor() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
@@ -2729,8 +2729,8 @@ namespace OpenVRML {
             sfstring title;
 
         public:
-            WorldInfo(const node_type & nodeType,
-                      const ScopePtr & scope);
+            WorldInfo(const node_type & type,
+                      const scope_ptr & scope);
             virtual ~WorldInfo() throw ();
         };
     }

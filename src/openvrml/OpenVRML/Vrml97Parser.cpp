@@ -514,7 +514,7 @@ void Vrml97Parser::vrmlScene(
 ) {
 #line 611 "Vrml97Parser.g"
 	
-	const ScopePtr scope(new Vrml97RootScope(browser, this->uri));
+	const scope_ptr scope(new Vrml97RootScope(browser, this->uri));
 	
 #line 520 "Vrml97Parser.cpp"
 	
@@ -542,7 +542,7 @@ void Vrml97Parser::vrmlScene(
 void Vrml97Parser::statement(
 	OpenVRML::Browser & browser,
           std::vector<node_ptr> & nodes,
-          const OpenVRML::ScopePtr & scope
+          const OpenVRML::scope_ptr & scope
 ) {
 #line 619 "Vrml97Parser.g"
 	
@@ -594,7 +594,7 @@ void Vrml97Parser::statement(
 
 OpenVRML::node_ptr  Vrml97Parser::nodeStatement(
 	OpenVRML::Browser & browser,
-              const OpenVRML::ScopePtr & scope
+              const OpenVRML::scope_ptr & scope
 ) {
 #line 636 "Vrml97Parser.g"
 	OpenVRML::node_ptr n;
@@ -655,7 +655,7 @@ OpenVRML::node_ptr  Vrml97Parser::nodeStatement(
 
 void Vrml97Parser::protoStatement(
 	OpenVRML::Browser & browser,
-               const OpenVRML::ScopePtr & scope
+               const OpenVRML::scope_ptr & scope
 ) {
 	
 	try {      // for error handling
@@ -752,7 +752,7 @@ void Vrml97Parser::routeStatement(
 
 OpenVRML::node_ptr  Vrml97Parser::node(
 	OpenVRML::Browser & browser,
-     const OpenVRML::ScopePtr & scope,
+     const OpenVRML::scope_ptr & scope,
      const std::string & nodeId
 ) {
 #line 942 "Vrml97Parser.g"
@@ -854,7 +854,7 @@ OpenVRML::node_ptr  Vrml97Parser::node(
 }
 
 void Vrml97Parser::externproto(
-	OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope
+	OpenVRML::Browser & browser, const OpenVRML::scope_ptr & scope
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
 #line 833 "Vrml97Parser.g"
@@ -916,13 +916,13 @@ void Vrml97Parser::externproto(
 
 void Vrml97Parser::proto(
 	OpenVRML::Browser & browser,
-      const OpenVRML::ScopePtr & scope
+      const OpenVRML::scope_ptr & scope
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
 #line 670 "Vrml97Parser.g"
 	
 	node_class_ptr nodeClass;
-	ScopePtr protoScope;
+	scope_ptr protoScope;
 	
 #line 928 "Vrml97Parser.cpp"
 	
@@ -946,7 +946,7 @@ void Vrml97Parser::proto(
 				// XXX here. This is wasteful; Vrml97RootScope is expensive and
 				// XXX we only *really* need this for SFNode and MFNode
 				// XXX fields/exposedFields.
-				ScopePtr interfaceDeclScope(new Vrml97RootScope(browser,
+				scope_ptr interfaceDeclScope(new Vrml97RootScope(browser,
 				this->uri));
 				
 #line 953 "Vrml97Parser.cpp"
@@ -1003,7 +1003,7 @@ void Vrml97Parser::proto(
 }
 
 void Vrml97Parser::protoInterfaceDeclaration(
-	const OpenVRML::ScopePtr & scope,
+	const OpenVRML::scope_ptr & scope,
                           OpenVRML::ProtoNodeClass & proto
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -1101,7 +1101,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 }
 
 void Vrml97Parser::protoBody(
-	const OpenVRML::ScopePtr & scope,
+	const OpenVRML::scope_ptr & scope,
           OpenVRML::ProtoNodeClass & proto
 ) {
 #line 791 "Vrml97Parser.g"
@@ -1410,7 +1410,7 @@ OpenVRML::node_interface::type_id  Vrml97Parser::fieldInterfaceType() {
 
 OpenVRML::field_value_ptr  Vrml97Parser::fieldValue(
 	OpenVRML::Browser & browser,
-           const OpenVRML::ScopePtr & scope,
+           const OpenVRML::scope_ptr & scope,
            OpenVRML::field_value::type_id ft
 ) {
 #line 1321 "Vrml97Parser.g"
@@ -1437,7 +1437,7 @@ OpenVRML::field_value_ptr  Vrml97Parser::fieldValue(
 
 OpenVRML::node_ptr  Vrml97Parser::protoNodeStatement(
 	OpenVRML::ProtoNodeClass & proto,
-                   const OpenVRML::ScopePtr & scope
+                   const OpenVRML::scope_ptr & scope
 ) {
 #line 811 "Vrml97Parser.g"
 	OpenVRML::node_ptr n;
@@ -1494,7 +1494,7 @@ OpenVRML::node_ptr  Vrml97Parser::protoNodeStatement(
 
 void Vrml97Parser::protoBodyStatement(
 	OpenVRML::ProtoNodeClass & proto,
-                   const OpenVRML::ScopePtr & scope
+                   const OpenVRML::scope_ptr & scope
 ) {
 #line 801 "Vrml97Parser.g"
 	
@@ -1540,7 +1540,7 @@ void Vrml97Parser::protoBodyStatement(
 
 OpenVRML::node_ptr  Vrml97Parser::protoNode(
 	OpenVRML::ProtoNodeClass & proto,
-          const OpenVRML::ScopePtr & scope,
+          const OpenVRML::scope_ptr & scope,
           const std::string & nodeId
 ) {
 #line 1075 "Vrml97Parser.g"
@@ -1793,7 +1793,7 @@ std::string  Vrml97Parser::stringValue() {
 }
 
 void Vrml97Parser::nodeBodyElement(
-	const OpenVRML::ScopePtr & scope,
+	const OpenVRML::scope_ptr & scope,
                 OpenVRML::node & node
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -1862,7 +1862,7 @@ void Vrml97Parser::nodeBodyElement(
 }
 
 void Vrml97Parser::scriptInterfaceDeclaration(
-	const OpenVRML::ScopePtr & scope,
+	const OpenVRML::scope_ptr & scope,
                            OpenVRML::script_node & node
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -1930,7 +1930,7 @@ void Vrml97Parser::scriptInterfaceDeclaration(
 }
 
 void Vrml97Parser::scriptFieldInterfaceDeclaration(
-	const OpenVRML::ScopePtr & scope,
+	const OpenVRML::scope_ptr & scope,
                                 OpenVRML::script_node & node
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -1979,7 +1979,7 @@ void Vrml97Parser::scriptFieldInterfaceDeclaration(
 
 void Vrml97Parser::protoNodeBodyElement(
 	OpenVRML::ProtoNodeClass & proto,
-                     const OpenVRML::ScopePtr & scope,
+                     const OpenVRML::scope_ptr & scope,
                      OpenVRML::node & node
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -2084,7 +2084,7 @@ void Vrml97Parser::protoNodeBodyElement(
 
 void Vrml97Parser::protoScriptInterfaceDeclaration(
 	OpenVRML::ProtoNodeClass & proto,
-                                const OpenVRML::ScopePtr & scope,
+                                const OpenVRML::scope_ptr & scope,
                                 OpenVRML::script_node & node
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -2177,7 +2177,7 @@ void Vrml97Parser::protoScriptInterfaceDeclaration(
 
 OpenVRML::field_value_ptr  Vrml97Parser::protoFieldValue(
 	OpenVRML::ProtoNodeClass & proto,
-                const OpenVRML::ScopePtr & scope,
+                const OpenVRML::scope_ptr & scope,
                 OpenVRML::field_value::type_id ft
 ) {
 #line 1334 "Vrml97Parser.g"
@@ -2258,7 +2258,7 @@ void Vrml97Parser::isStatement(
 
 void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 	OpenVRML::ProtoNodeClass & proto,
-                                     const OpenVRML::ScopePtr & scope,
+                                     const OpenVRML::scope_ptr & scope,
                                      OpenVRML::script_node & node
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -2394,7 +2394,7 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 
 OpenVRML::field_value_ptr  Vrml97Parser::nodeFieldValue(
 	OpenVRML::Browser & browser,
-               const OpenVRML::ScopePtr & scope,
+               const OpenVRML::scope_ptr & scope,
                OpenVRML::field_value::type_id ft
 ) {
 #line 1372 "Vrml97Parser.g"
@@ -2494,7 +2494,7 @@ OpenVRML::field_value_ptr  Vrml97Parser::nonNodeFieldValue(
 
 OpenVRML::field_value_ptr  Vrml97Parser::protoNodeFieldValue(
 	OpenVRML::ProtoNodeClass & proto,
-                    const OpenVRML::ScopePtr & scope,
+                    const OpenVRML::scope_ptr & scope,
                     OpenVRML::field_value::type_id ft
 ) {
 #line 1384 "Vrml97Parser.g"
@@ -3142,7 +3142,7 @@ OpenVRML::field_value_ptr  Vrml97Parser::mfVec3fValue() {
 
 OpenVRML::field_value_ptr  Vrml97Parser::sfNodeValue(
 	OpenVRML::Browser & browser,
-            const OpenVRML::ScopePtr & scope
+            const OpenVRML::scope_ptr & scope
 ) {
 #line 1546 "Vrml97Parser.g"
 	OpenVRML::field_value_ptr snv;
@@ -3189,7 +3189,7 @@ OpenVRML::field_value_ptr  Vrml97Parser::sfNodeValue(
 
 OpenVRML::field_value_ptr  Vrml97Parser::mfNodeValue(
 	OpenVRML::Browser & browser,
-            const OpenVRML::ScopePtr & scope
+            const OpenVRML::scope_ptr & scope
 ) {
 #line 1566 "Vrml97Parser.g"
 	OpenVRML::field_value_ptr mnv = OpenVRML::field_value_ptr(new mfnode);
@@ -3252,7 +3252,7 @@ OpenVRML::field_value_ptr  Vrml97Parser::mfNodeValue(
 
 OpenVRML::field_value_ptr  Vrml97Parser::protoSfNodeValue(
 	OpenVRML::ProtoNodeClass & proto,
-                 const OpenVRML::ScopePtr & scope
+                 const OpenVRML::scope_ptr & scope
 ) {
 #line 1556 "Vrml97Parser.g"
 	OpenVRML::field_value_ptr snv;
@@ -3299,7 +3299,7 @@ OpenVRML::field_value_ptr  Vrml97Parser::protoSfNodeValue(
 
 OpenVRML::field_value_ptr  Vrml97Parser::protoMfNodeValue(
 	OpenVRML::ProtoNodeClass & proto,
-                 const OpenVRML::ScopePtr & scope
+                 const OpenVRML::scope_ptr & scope
 ) {
 #line 1581 "Vrml97Parser.g"
 	OpenVRML::field_value_ptr mnv = OpenVRML::field_value_ptr(new mfnode);

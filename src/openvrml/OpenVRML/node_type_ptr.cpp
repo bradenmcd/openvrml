@@ -39,7 +39,7 @@ namespace OpenVRML {
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
  * @param type a pointer to a node_type constructed with @c new.
  *
@@ -57,7 +57,7 @@ node_type_ptr::node_type_ptr(node_type * const type) throw (std::bad_alloc):
 }
 
 /**
- * @brief Copy constructor.
+ * @brief Construct a copy.
  *
  * @param ptr the node_type_ptr to copy.
  */
@@ -68,7 +68,7 @@ node_type_ptr::node_type_ptr(const node_type_ptr & ptr) throw ():
 }
 
 /**
- * @brief Assignment operator.
+ * @brief Assignment.
  *
  * @param ptr
  */
