@@ -1,4 +1,4 @@
-LIBRARY_VERSION = 0:0:0
+LIBRARY_VERSION = 1:0:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |
