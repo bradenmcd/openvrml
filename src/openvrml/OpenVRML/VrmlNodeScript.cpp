@@ -29,6 +29,7 @@
 # include <math.h>
 # include <assert.h>
 # include <memory>
+# include <vector>
 # if defined(_WIN32) && !defined(__CYGWIN__)
 #   include <strstrea.h>
 # else
@@ -1217,6 +1218,9 @@ namespace {
 
         JSRuntime * Script::rt = 0; // Javascript runtime singleton object
         size_t Script::nInstances = 0; // Number of distinct script objects
+ 
+       JSBool eventOut_setProperty(JSContext * cx, JSObject * obj,
+                                    jsval id, jsval * val) ;
 
         void ErrorReporter(JSContext *, const char *, JSErrorReport *);
 
