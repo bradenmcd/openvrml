@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = doc macros models lib src
+SUBDIRS = doc macros models lib src test
 
 ACLOCAL_AMFLAGS = -I macros
 
@@ -39,8 +39,8 @@ IDE_PROJECT_FILES = \
         ide-projects/Windows/VisualC6/tplib/antlr/libantlr.dsw \
         ide-projects/Windows/VisualC6/tplib/antlr/Makefile.vc6
 
-EXTRA_DIST = vrml.m4 vrml-gl.m4 Doxyfile.in openvrml.spec.in \
-lookat.xpm $(IDE_PROJECT_FILES)
+EXTRA_DIST = vrml.m4 vrml-gl.m4 Doxyfile.in openvrml.spec.in lookat.xpm \
+$(IDE_PROJECT_FILES)
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = vrml.m4 vrml-gl.m4
