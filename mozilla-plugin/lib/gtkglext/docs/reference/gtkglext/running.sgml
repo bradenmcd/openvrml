@@ -1,0 +1,212 @@
+<refentry id="gtkglext-running" revision="11 Dec 2002">
+<refmeta>
+<refentrytitle>Running GtkGLExt Applications</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>GtkGLExt Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>Running GtkGLExt Applications</refname>
+<refpurpose>
+How to run and debug your GtkGLExt application
+</refpurpose>
+</refnamediv>
+
+<refsect1>
+<title>Running and debugging GtkGLExt Applications</title>
+
+<refsect2>
+<title>Common command line options</title>
+
+<para>
+All GtkGLExt applications support the following command line
+options. These are removed from <literal>argv</literal> by
+<link linkend="gtk-gl-init">gtk_gl_init()</link>.
+</para>
+
+<formalpara>
+<title><systemitem>--gtk-gl-install-colormap</systemitem></title>
+
+<para>
+Install OpenGL window's colormap to the top-level window.
+If window manager doesn't watch the WM_COLORMAP_WINDOWS property on
+the top-level window, we have to set OpenGL window's colormap to the
+top-level window, especially in color index mode (color index mode
+uses own private colormap).
+</para>
+</formalpara>
+
+<formalpara>
+<title><systemitem>--gtk-gl-debug <replaceable>options</replaceable></systemitem></title>
+
+<para>
+A list of <link linkend="GTK-GL-Debug-Options">debug options</link> 
+to turn on in addition to those specified in the
+<envar>GTK_GL_DEBUG</envar> environment variable. 
+This option is only available if GtkGLExt has been configured with
+<option>--enable-debug=yes</option>.
+</para>
+</formalpara>
+
+<formalpara>
+<title><systemitem>--gtk-gl-no-debug <replaceable>options</replaceable></systemitem></title>
+
+<para>
+A list of <link linkend="GTK-GL-Debug-Options">debug options</link> 
+to turn off.
+This option is only available if GtkGLExt has been configured with
+<option>--enable-debug=yes</option>.
+</para>
+</formalpara>
+
+<para>
+The following options are really used by GdkGLExt library.
+</para>
+
+<formalpara>
+<title><systemitem>--gdk-gl-no-standard-colormap</systemitem></title>
+
+<para>
+This option disables GdkGLExt library to find a standard RGB colormap
+using XmuLookupStandardColormap(). If your application gets a BadColor
+X Window System error, try this option.
+On Solaris 2.4 and 2.5, they have a bug in XmuLookupStandardColormap()
+implementation. If your application gets a BadMatch X Window System
+error from XCreateWindow(), pass this option to avoid using broken
+XmuLookupStandardColormap(). Sun fixed this bug in Solaris 2.6.
+</para>
+</formalpara>
+
+<formalpara>
+<title><systemitem>--gdk-gl-force-indirect</systemitem></title>
+
+<para>
+Users can force GdkGLExt library to use indirect rendering context.
+If your application has a problem with hardware acceleration, try 
+this option.
+</para>
+</formalpara>
+
+<formalpara>
+<title><systemitem>--gdk-gl-debug <replaceable>options</replaceable></systemitem></title>
+
+<para>
+A list of <link linkend="GDK-GL-Debug-Options">debug options</link> 
+to turn on in addition to those 
+specified in the <envar>GDK_GL_DEBUG</envar> environment variable. 
+This option is only available if GtkGLExt has been configured with
+<option>--enable-debug=yes</option>.
+</para>
+</formalpara>
+
+<formalpara>
+<title><systemitem>--gdk-gl-no-debug <replaceable>options</replaceable></systemitem></title>
+
+<para>
+A list of <link linkend="GDK-GL-Debug-Options">debug options</link> 
+to turn off.
+This option is only available if GtkGLExt has been configured with
+<option>--enable-debug=yes</option>.
+</para>
+</formalpara>
+
+</refsect2>
+
+<refsect2>
+<title>Environment variables</title>
+
+<para> 
+GtkGLExt inspects the following environment variables.
+</para>
+
+<formalpara>
+  <title><envar>GTK_GL_INSTALL_COLORMAP</envar></title>
+
+  <para>
+    If this variable is set to 1, GtkGLExt will try to install
+    colormap to the top-level window.
+    If window manager doesn't watch the WM_COLORMAP_WINDOWS property on
+    the top-level window, we have to set OpenGL window's colormap to the
+    top-level window.
+  </para>
+</formalpara>
+
+<formalpara id="GTK-GL-Debug-Options">
+  <title><envar>GTK_GL_DEBUG</envar></title>
+
+  <para>
+  If GtkGLExt has been configured with <option>--enable-debug=yes</option>,
+  this variable can be set to a list of debug options, which cause
+  GtkGLExt library to print out different types of debugging
+  information.
+  <variablelist>
+    <varlistentry>
+      <term>misc</term>
+      <listitem><para>Miscellaneous information</para></listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>func</term>
+      <listitem><para>Show function call information</para></listitem>
+    </varlistentry>
+  </variablelist>
+  The special value <literal>all</literal> can be used to turn on all debug options.
+  </para>
+</formalpara>
+
+<formalpara>
+  <title><envar>GDK_GL_NO_STANDARD_COLORMAP</envar></title>
+
+  <para>
+    If this variable is set to 1, GdkGLExt library doesn't try to
+    find a standard RGB colormap using XmuLookupStandardColormap().
+    If your application gets a BadColor X Window System error,
+    try to set this environment variable.
+    On Solaris 2.4 and 2.5, they have a bug in XmuLookupStandardColormap()
+    implementation. If your application gets a BadMatch X Window
+    System error from XCreateWindow(), set this environment variable
+    to avoid using broken XmuLookupStandardColormap(). Sun fixed this
+    bug in Solaris 2.6.
+  </para>
+</formalpara>
+
+<formalpara>
+  <title><envar>GDK_GL_FORCE_INDIRECT</envar></title>
+
+  <para>
+    If this variable is set to 1, GdkGLExt library uses indirect
+    rendering context. If your application has a problem with
+    hardware acceleration, try to set this environment variable.
+  </para>
+</formalpara>
+
+<formalpara id="GDK-GL-Debug-Options">
+  <title><envar>GDK_GL_DEBUG</envar></title>
+
+  <para>
+  If GtkGLExt has been configured with <option>--enable-debug=yes</option>,
+  this variable can be set to a list of debug options, which cause
+  GdkGLExt library to print out different types of debugging
+  information.
+  <variablelist>
+    <varlistentry>
+      <term>misc</term>
+      <listitem><para>Miscellaneous information</para></listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>func</term>
+      <listitem><para>Show function call information</para></listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>impl</term>
+      <listitem><para>Show window system specific (GLX, WGL) function call information</para></listitem>
+    </varlistentry>
+  </variablelist>
+  The special value <literal>all</literal> can be used to turn on all debug options.
+  </para>
+</formalpara>
+
+</refsect2>
+
+</refsect1>
+
+</refentry>
