@@ -62,8 +62,8 @@ private:
     bool d_fieldsInitialized;
 
 public:
-    VrmlNodeType(const char *nm,
-	         VrmlNode* (*creator)(VrmlScene *scene) = 0);
+    VrmlNodeType(const char * name,
+	         VrmlNode * (*creator)(VrmlScene *) = 0);
     ~VrmlNodeType();
 
     VrmlNodeType * reference();
@@ -76,12 +76,12 @@ public:
     // Routines for adding/getting eventIns/Outs/fields to this type
     void addEventIn(const char *name, VrmlField::VrmlFieldType type);
     void addEventOut(const char *name, VrmlField::VrmlFieldType type);
-    void addField(const char *name, VrmlField::VrmlFieldType type,
-		  VrmlField const * defaultVal = 0);
-    void addExposedField(const char *name, VrmlField::VrmlFieldType type,
-		         VrmlField const * defaultVal = 0);
+    void addField(const char * id, VrmlField::VrmlFieldType type,
+		  const VrmlField * defaultValue = 0);
+    void addExposedField(const char * id, VrmlField::VrmlFieldType type,
+		         const VrmlField * defaultValue = 0);
 
-    void setFieldDefault(const char *name, VrmlField const * value);
+    void setFieldDefault(const char * name, const VrmlField * defaultValue);
 
     VrmlField::VrmlFieldType hasEventIn(const char *name) const;
     VrmlField::VrmlFieldType hasEventOut(const char *name) const;

@@ -89,12 +89,14 @@ VrmlField::~VrmlField() {}
 
 /**
  * @brief A static method to convert a type name to an ID.
+ *
  * @param type the (C-style) string name of a VRML field type
+ *
  * @return the VrmlFieldType enumerant corresponding to the passed type name
  */
-VrmlField::VrmlFieldType VrmlField::fieldType(char const *type) {
+VrmlField::VrmlFieldType VrmlField::fieldType(const char * fieldTypeId) {
     for (size_t i(SFBOOL); i <= MFVEC3F; ++i) {
-        if (strcmp(type, ftn[i]) == 0) {
+        if (strcmp(fieldTypeId, ftn[i]) == 0) {
             return static_cast<VrmlFieldType>(i);
         }
     }
@@ -2273,7 +2275,7 @@ VrmlMFNode::VrmlMFNode(size_t length, const VrmlNodePtr * nodes):
  *
  * @param mfNode the object to copy
  */
-VrmlMFNode::VrmlMFNode(VrmlMFNode const & mfnode):
+VrmlMFNode::VrmlMFNode(const VrmlMFNode & mfnode):
         nodes(new VrmlNodePtr[mfnode.size]), allocated(mfnode.size),
         size(mfnode.size) {
     std::copy(mfnode.nodes, mfnode.nodes + this->size, this->nodes);
@@ -2489,7 +2491,7 @@ public:
  * @param length the number of rotation values in the passed array
  * @param rotations a pointer to an array of rotation values
  */
-VrmlMFRotation::VrmlMFRotation(size_t length, float const * rotations):
+VrmlMFRotation::VrmlMFRotation(size_t length, const float * rotations):
         d_data(new FData(length * 4)) {
     if (rotations) {
         std::copy(rotations, rotations + (length * 4), this->d_data->d_v);

@@ -55,7 +55,7 @@ public:
         MFINT32, MFNODE, MFROTATION, MFSTRING, MFTIME, MFVEC2F, MFVEC3F
     };
 
-    static VrmlFieldType fieldType(const char *fieldTypeName);
+    static VrmlFieldType fieldType(const char * fieldTypeId);
     
     const char * fieldTypeName() const;
     

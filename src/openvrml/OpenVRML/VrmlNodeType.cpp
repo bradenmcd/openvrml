@@ -215,7 +215,8 @@ void VrmlNodeType::addEventOut(const char * id, VrmlField::VrmlFieldType type) {
  * @param type
  * @param defaultValue
  */
-void VrmlNodeType::addField(const char * id, VrmlField::VrmlFieldType type,
+void VrmlNodeType::addField(const char * id,
+                            const VrmlField::VrmlFieldType type,
                             const VrmlField * defaultValue) {
     add(d_fields, id, type);
     if (defaultValue) {
@@ -231,7 +232,7 @@ void VrmlNodeType::addField(const char * id, VrmlField::VrmlFieldType type,
  * @param defaultValue
  */
 void VrmlNodeType::addExposedField(const char * id,
-                                   VrmlField::VrmlFieldType type,
+                                   const VrmlField::VrmlFieldType type,
                                    const VrmlField * defaultValue) {
     char tmp[1000];
     add(d_fields, id, type);

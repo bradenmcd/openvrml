@@ -64,14 +64,14 @@ EXTRACT_STATIC         = NO
 # various overviews, but no documentation section is generated. 
 # This option has no effect if EXTRACT_ALL is enabled. 
 
-HIDE_UNDOC_MEMBERS     = NO
+HIDE_UNDOC_MEMBERS     = YES
 
 # If the HIDE_UNDOC_CLASSES tag is set to YES, Doxygen will hide all 
 # undocumented classes that are normally visible in the class hierarchy. 
 # If set to NO (the default) these class will be included in the various 
 # overviews. This option has no effect if EXTRACT_ALL is enabled. 
 
-HIDE_UNDOC_CLASSES     = NO
+HIDE_UNDOC_CLASSES     = YES
 
 # If the BRIEF_MEMBER_DESC tag is set to YES (the default) Doxygen will 
 # include brief member descriptions after the members that are listed in 
@@ -111,7 +111,7 @@ STRIP_FROM_PATH        =
 # to NO (the default) then the documentation will be excluded. 
 # Set it to YES to include the internal documentation. 
 
-INTERNAL_DOCS          = NO
+INTERNAL_DOCS          = YES
 
 # If the CLASS_DIAGRAMS tag is set to YES (the default) Doxygen will 
 # generate a class diagram (in Html and LaTeX) for classes with base or 
@@ -173,7 +173,7 @@ JAVADOC_AUTOBRIEF      = NO
 # member inherits the documentation from any documented member that it 
 # reimplements. 
 
-INHERIT_DOCS           = YES
+INHERIT_DOCS           = NO
 
 # If the INLINE_INFO tag is set to YES (the default) then a tag [inline] 
 # is inserted in the documentation for inline members. 
