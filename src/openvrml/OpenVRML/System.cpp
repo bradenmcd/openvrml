@@ -98,52 +98,6 @@ void System::debug(const char *, ...)
 #endif
 }
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
-
-// Windows
-
-#include <sys/timeb.h>
-#include <time.h>
-
-double System::time()	
-{
-   struct _timeb timebuffer;
-   _ftime( &timebuffer );
-	return (double) timebuffer.time + 1.e-3 * (double) timebuffer.millitm;
-}
-
-#else
-
-#ifdef macintosh
-#define kTwoPower32 4294967296.0
-
-double System::time()
-{
-  static double offset = ((double)std::time(NULL)-((double)std::clock()/CLOCKS_PER_SEC));
-  UnsignedWide currentTime;
-  Microseconds(&currentTime);
-  return (((double)currentTime.hi * kTwoPower32 + (double)currentTime.lo) * 1.e-6) + offset;
-}
-
-#else
-
-// Unix/Linux
-#include <sys/time.h>
-#include <unistd.h>
-
-double System::time()
-{
-  struct timeval tv;
-  struct timezone tz;
-  gettimeofday(&tv, &tz);
-  
-  return (double) tv.tv_sec + 1.e-6 * (double) tv.tv_usec;
-}
-
-#endif // macintosh
-#endif // _WIN32
-
-
 #ifdef macintosh
 
 #include <Types.h>
@@ -199,6 +153,7 @@ bool System::loadUrl(const std::string & url, const MFString & parameters)
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 #include <netdb.h>
 #include <string.h>		// memset
 #include <ctype.h>

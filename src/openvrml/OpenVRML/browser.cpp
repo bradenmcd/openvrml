@@ -26,11 +26,16 @@
 # include <sstream>
 # include <stack>
 # include <regex.h>
+# ifdef _WIN32
+#   include <sys/timeb.h>
+#   include <time.h>
+# else
+#   include <sys/time.h>
+# endif
 # include "private.h"
 # include "browser.h"
 # include "doc2.hpp"
 # include "Viewer.h"
-# include "System.h"
 # include "MathUtils.h"
 # include "scope.h"
 # include "VrmlRenderContext.h"
@@ -585,6 +590,26 @@ InvalidVrml::~InvalidVrml() throw ()
  */
 
 /**
+ * @brief Get the current time.
+ */
+double Browser::getCurrentTime() throw ()
+{
+    double currentTime;
+# ifdef _WIN32
+    _timeb timebuffer;
+    _ftime(&timebuffer);
+    currentTime = double(timebuffer.time) + 1.0e-3 * double(timebuffer.millitm);
+# else
+    timeval tv;
+    const int result = gettimeofday(&tv, 0);
+    assert(result == 0);
+
+    currentTime = double(tv.tv_sec) + 1.0e-6 * double(tv.tv_usec);
+# endif
+    return currentTime;
+}
+
+/**
  * @var std::ostream & Browser::out
  *
  * @brief Output stream, generally for console output.
@@ -722,11 +747,11 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     this->initNodeClassMap();
     this->scene = new Scene(*this, uri);
     
-    const double timeNow = theSystem->time();
+    const double now = Browser::getCurrentTime();
 
-    this->scene->initialize(timeNow);
+    this->scene->initialize(now);
     std::for_each(this->nodeClassMap.begin(), this->nodeClassMap.end(),
-                  InitNodeClass(timeNow));
+                  InitNodeClass(now));
 
     //
     // Send initial bind events to bindable nodes.
@@ -734,13 +759,13 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     if (!this->d_navigationInfos.empty()) {
         assert(this->d_navigationInfos.front());
         this->d_navigationInfos.front()
-                ->processEvent("set_bind", SFBool(true), timeNow);
+                ->processEvent("set_bind", SFBool(true), now);
     }
 
     if (!this->d_viewpoints.empty()) {
         assert(this->d_viewpoints.front());
         this->d_viewpoints.front()
-                ->processEvent("set_bind", SFBool(true), timeNow);
+                ->processEvent("set_bind", SFBool(true), now);
     }
 
     this->setModified();
@@ -1046,7 +1071,7 @@ namespace {
  * @return @c true if the browser needs to be rerendered, @c false otherwise.
  */
 bool Browser::update(double currentTime) {
-    if (currentTime <= 0.0) { currentTime = theSystem->time(); }
+    if (currentTime <= 0.0) { currentTime = Browser::getCurrentTime(); }
 
     d_deltaTime = DEFAULT_DELTA;
 
@@ -1428,7 +1453,9 @@ void Browser::nextViewpoint() {
               i = d_viewpoints.begin();
 
             if (*i && (vp = (*i)->toViewpoint())) {
-                vp->processEvent("set_bind", SFBool(true), theSystem->time());
+                vp->processEvent("set_bind",
+                                 SFBool(true),
+                                 Browser::getCurrentTime());
             }
             return;
         }
@@ -1448,7 +1475,9 @@ void Browser::prevViewpoint() {
                 i = d_viewpoints.end();
             }
             if (*(--i) && (vp = (*i)->toViewpoint())) {
-                vp->processEvent("set_bind", SFBool(true), theSystem->time());
+                vp->processEvent("set_bind",
+                                 SFBool(true),
+                                 Browser::getCurrentTime());
             }
             return;
         }
@@ -1498,7 +1527,9 @@ void Browser::setViewpoint(const std::string & name)
             i != this->d_viewpoints.end(); ++i) {
         if (name == (*i)->getId()) {
             assert((*i)->toViewpoint());
-            (*i)->processEvent("set_bind", SFBool(true), theSystem->time());
+            (*i)->processEvent("set_bind",
+                               SFBool(true),
+                               Browser::getCurrentTime());
             return;
         }
     }
@@ -1517,7 +1548,9 @@ void Browser::setViewpoint(const size_t index) {
             i != this->d_viewpoints.end(); ++i, ++j) {
         if (j == index) {
             assert((*i)->toViewpoint());
-            (*i)->processEvent("set_bind", SFBool(true), theSystem->time());
+            (*i)->processEvent("set_bind",
+                               SFBool(true),
+                               Browser::getCurrentTime());
 	    return;
         }
     }

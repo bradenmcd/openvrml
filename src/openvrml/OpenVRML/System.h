@@ -34,7 +34,6 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE System {
     public:
-        virtual double time();
         virtual void error(const char *, ...);
         virtual void warn(const char *, ...);
         virtual void inform(const char *, ...);

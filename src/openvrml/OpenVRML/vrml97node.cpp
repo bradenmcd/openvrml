@@ -6933,7 +6933,7 @@ void Inline::load() {
     this->inlineScene = new Scene(this->getScene()->browser,
                                   this->url,
                                   this->getScene());
-    this->inlineScene->initialize(theSystem->time());
+    this->inlineScene->initialize(Browser::getCurrentTime());
 }
 
 /**
@@ -10351,7 +10351,7 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
             && this->size.getY() > 0.0
             && this->size.getZ() > 0.0
             && viewer.getRenderMode() == Viewer::RENDER_MODE_DRAW) {
-        SFTime timeNow(theSystem->time());
+        SFTime timeNow(Browser::getCurrentTime());
         float x, y, z;
 
         // Is viewer inside the box?
@@ -16001,7 +16001,7 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
     using OpenVRML_::fpzero;
 
     if (this->enabled.get()) {
-        SFTime timeNow(theSystem->time());
+        SFTime timeNow(Browser::getCurrentTime());
         float xyz[2][3];
 
         // hack: enclose box in a sphere...

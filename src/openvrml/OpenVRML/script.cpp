@@ -350,7 +350,7 @@ ScriptNode::ScriptNode(ScriptNodeClass & nodeClass, const ScopePtr & scope):
  */
 ScriptNode::~ScriptNode() throw ()
 {
-    this->shutdown(theSystem->time());
+    this->shutdown(Browser::getCurrentTime());
     if (this->getScene()) {
         this->getScene()->browser.removeScript(*this);
     }

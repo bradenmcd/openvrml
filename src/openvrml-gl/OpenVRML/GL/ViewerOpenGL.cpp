@@ -2999,7 +2999,7 @@ void ViewerOpenGL::redraw()
 {
   if (! d_GLinitialized) initialize();
 
-  double start = theSystem->time();
+  double start = Browser::getCurrentTime();
 
 
   glDisable( GL_FOG );                // this is a global attribute
@@ -3037,7 +3037,7 @@ void ViewerOpenGL::redraw()
   wsSwapBuffers();
 
   d_renderTime1 = d_renderTime;
-  d_renderTime = theSystem->time() - start;
+  d_renderTime = Browser::getCurrentTime() - start;
 }
 
 void ViewerOpenGL::resize(int width, int height)
@@ -3398,7 +3398,7 @@ void ViewerOpenGL::handleMouseDrag(int x, int y)
  */
 bool ViewerOpenGL::checkSensitive(const int x, const int y,
                                   const EventType mouseEvent) {
-    double timeNow = theSystem->time();
+    double timeNow = Browser::getCurrentTime();
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
 

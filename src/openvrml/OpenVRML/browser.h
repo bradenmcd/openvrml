@@ -95,6 +95,8 @@ namespace OpenVRML {
         size_t d_lastEvent;
         
     public:
+        static double getCurrentTime() throw ();
+
         std::ostream & out;
         std::ostream & err;
         bool d_flags_need_updating;

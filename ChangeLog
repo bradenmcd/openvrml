@@ -1,3 +1,15 @@
+2003-02-07  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/System.cpp,
+          src/openvrml/OpenVRML/System.h,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/browser.h,
+          src/openvrml/OpenVRML/script.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Moved
+          System::time functionality to Browser::getCurrentTime
+          function.
+
 2003-01-27  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * doc/conformance.doc: Update conformance test results.
