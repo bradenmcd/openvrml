@@ -625,7 +625,6 @@ void ScriptNode::processEventImpl(const std::string & id,
  */
 void ScriptNode::setEventOut(const std::string & id, const FieldValue & value)
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
-    cout << this->getId() << " node set " << id << " eventOut." << endl;
     const EventOutValueMap::iterator itr(this->eventOutValueMap.find(id));
     if (itr == this->eventOutValueMap.end()) {
         throw UnsupportedInterface("Script node has no eventOut \"" + id

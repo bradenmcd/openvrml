@@ -19,6 +19,9 @@
         * Tweaked SpiderMonkey detection macro to work with
           Mozilla 1.0.0.
 
+        * script.cpp: Removed vestigal debug output from
+          ScriptNode::setEventOut.
+
 2002-06-04  Braden McDaniel  <braden@endoframe.com>
 
         * Made zlib an optional dependency.
