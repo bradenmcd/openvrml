@@ -1,4 +1,5 @@
 VISUALC6_FILES = \
+        Windows/VisualC6/config.h \
         Windows/VisualC6/openvrml.dsw \
         Windows/VisualC6/openvrml.dsp \
         Windows/VisualC6/tplib/antlr/libantlr.dsw \
