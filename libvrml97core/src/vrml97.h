@@ -3,14 +3,13 @@
 
 #include <vrml97/Audio.h>
 #include <vrml97/Doc.h>
-#include <vrml97/doc2.hpp>
 #include <vrml97/Image.h>
-#include <vrml97/MathUtils.h>
-#include <vrml97/ScriptJDK.h>
 #include <vrml97/ScriptJS.h>
 #include <vrml97/ScriptObject.h>
 #include <vrml97/System.h>
 #include <vrml97/Viewer.h>
+#include <vrml97/Vrml97Parser.hpp>
+#include <vrml97/Vrml97ParserTokenTypes.hpp>
 #include <vrml97/VrmlAABox.h>
 #include <vrml97/VrmlBSphere.h>
 #include <vrml97/VrmlBVolume.h>
@@ -89,7 +88,6 @@
 #include <vrml97/VrmlNodeViewpoint.h>
 #include <vrml97/VrmlNodeVisibilitySensor.h>
 #include <vrml97/VrmlNodeWorldInfo.h>
-#include <vrml97/VrmlParse.h>
 #include <vrml97/VrmlRenderContext.h>
 #include <vrml97/VrmlSFBool.h>
 #include <vrml97/VrmlSFColor.h>
@@ -103,10 +101,7 @@
 #include <vrml97/VrmlSFVec2f.h>
 #include <vrml97/VrmlSFVec3f.h>
 #include <vrml97/VrmlScene.h>
-#include <vrml97/gifread.h>
-#include <vrml97/jpgread.h>
-#include <vrml97/mpgread.h>
-#include <vrml97/pngread.h>
-#include <vrml97/sound.h>
+#include <vrml97/doc2.hpp>
+#include <vrml97/vrml97scanner.hpp>
 
 #endif

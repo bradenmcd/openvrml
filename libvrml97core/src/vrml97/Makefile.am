@@ -147,32 +147,21 @@ libvrml97_la_LIBADD = antlr-prelinked.lo scriptjs-prelinked.lo
 
 vrml97includedir = $(includedir)/vrml97
 vrml97include_HEADERS = \
-	doc2.hpp \
-        vrml97scanner.hpp \
-        Vrml97Parser.hpp \
-        Vrml97ParserTokenTypes.hpp \
 	Audio.h \
 	Doc.h \
 	Image.h \
-	System.h \
-	ScriptObject.h \
 	ScriptJS.h \
+	ScriptObject.h \
+	System.h \
 	Viewer.h \
+        Vrml97Parser.hpp \
+        Vrml97ParserTokenTypes.hpp \
+	VrmlAABox.h \
+	VrmlBVolume.h \
+	VrmlBSphere.h \
 	VrmlEvent.h \
-        VrmlNamespace.h \
-        VrmlScene.h \
 	VrmlField.h \
-	VrmlSFBool.h \
-        VrmlSFColor.h \
-        VrmlSFFloat.h \
-        VrmlSFImage.h \
-        VrmlSFInt.h \
-        VrmlSFNode.h \
-	VrmlSFRotation.h \
-        VrmlSFString.h \
-        VrmlSFTime.h \
-        VrmlSFVec2f.h \
-        VrmlSFVec3f.h \
+	VrmlFrustum.h \
 	VrmlMFColor.h \
         VrmlMFFloat.h \
         VrmlMFInt.h \
@@ -182,6 +171,7 @@ vrml97include_HEADERS = \
         VrmlMFTime.h \
         VrmlMFVec2f.h \
         VrmlMFVec3f.h \
+        VrmlNamespace.h \
 	VrmlNode.h \
 	VrmlNodeType.h \
 	VrmlNodeAnchor.h \
@@ -224,6 +214,7 @@ vrml97include_HEADERS = \
 	VrmlNodePointLight.h \
 	VrmlNodePointSet.h \
 	VrmlNodePositionInt.h \
+	VrmlNodeProto.h \
 	VrmlNodeProximitySensor.h \
 	VrmlNodeScalarInt.h \
 	VrmlNodeScript.h \
@@ -243,12 +234,21 @@ vrml97include_HEADERS = \
 	VrmlNodeViewpoint.h \
 	VrmlNodeVisibilitySensor.h \
 	VrmlNodeWorldInfo.h \
-	VrmlNodeProto.h \
-	VrmlBVolume.h \
-	VrmlBSphere.h \
-	VrmlAABox.h \
-	VrmlFrustum.h \
-	VrmlRenderContext.h
+	VrmlRenderContext.h \
+	VrmlSFBool.h \
+        VrmlSFColor.h \
+        VrmlSFFloat.h \
+        VrmlSFImage.h \
+        VrmlSFInt.h \
+        VrmlSFNode.h \
+	VrmlSFRotation.h \
+        VrmlSFString.h \
+        VrmlSFTime.h \
+        VrmlSFVec2f.h \
+        VrmlSFVec3f.h \
+        VrmlScene.h \
+	doc2.hpp \
+        vrml97scanner.hpp
 
 noinst_HEADERS = MathUtils.h gifread.h jpgread.h mpgread.h pngread.h sound.h
 
