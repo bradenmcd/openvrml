@@ -11,6 +11,9 @@
           OPENVRML_MAJOR_VERSION, OPENVRML_MINOR_VERSION,
           OPENVRML_MICRO_VERSION.
 
+        * Moved ProtoNode, ProtoNodeClass definitions and implementation
+          to VrmlScene.cpp.
+
 2002-06-04  Braden McDaniel  <braden@endoframe.com>
 
         * Made zlib an optional dependency.

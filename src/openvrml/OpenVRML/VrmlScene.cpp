@@ -18,30 +18,254 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#include <winconfig.h>
-#endif
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#   include <winconfig.h>
+# endif
 
-#include <algorithm>
-#include <errno.h>
-#include <stdio.h>
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#include <strstrea.h>
-#else
-#include <strstream.h>
-#endif
-#include "VrmlScene.h"
-#include "doc2.hpp"
-#include "Viewer.h"
-#include "System.h"
-#include "MathUtils.h"
-#include "VrmlNamespace.h"
-#include "VrmlRenderContext.h"
-#include "script.h"
+# include <errno.h>
+# include <stdio.h>
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#   include <strstrea.h>
+# else
+#   include <strstream.h>
+# endif
+# include <algorithm>
+# include <stack>
+# include "VrmlScene.h"
+# include "doc2.hpp"
+# include "Viewer.h"
+# include "System.h"
+# include "MathUtils.h"
+# include "VrmlNamespace.h"
+# include "VrmlRenderContext.h"
+# include "script.h"
+
+namespace OpenVRML {
+
+    namespace Vrml97Node {
+        class Anchor;
+        class AudioClip;
+        class Background;
+        class CylinderSensor;
+        class Fog;
+        class Group;
+        class Inline;
+        class AbstractLight;
+        class MovieTexture;
+        class NavigationInfo;
+        class PlaneSensor;
+        class PointLight;
+        class SphereSensor;
+        class SpotLight;
+        class TimeSensor;
+        class TouchSensor;
+        class Viewpoint;
+    }
+
+    class OPENVRML_SCOPE ProtoNode : public Node {
+        friend class ProtoNodeClass;
+        friend class Vrml97Parser;
+        
+        class NodeCloneVisitor : public NodeVisitor {
+            std::stack<NodePtr> rootNodeStack;
+
+            const ProtoNode & fromProtoNode;
+            ProtoNode & toProtoNode;
+
+        public:
+            NodeCloneVisitor(const ProtoNode & fromProtoNode,
+                             ProtoNode & toProtoNode);
+            virtual ~NodeCloneVisitor();
+
+            void clone();
+
+            virtual void visit(Node & node);
+
+        private:
+            // Not copyable.
+            NodeCloneVisitor(const NodeCloneVisitor &);
+            NodeCloneVisitor & operator=(const NodeCloneVisitor &);
+        };
+        
+        friend class NodeCloneVisitor;
+        
+        class RouteCopyVisitor : public NodeVisitor {
+            const ProtoNode & fromProtoNode;
+            ProtoNode & toProtoNode;
+
+        public:
+            RouteCopyVisitor(const ProtoNode & fromProtoNode,
+                             ProtoNode & toProtoNode);
+            virtual ~RouteCopyVisitor() {}
+
+            void copyRoutes();
+
+            virtual void visit(Node & node);
+
+        private:
+            // Not copyable.
+            RouteCopyVisitor(const RouteCopyVisitor &);
+            RouteCopyVisitor & operator=(const RouteCopyVisitor &);
+        };
+        
+        friend class RouteCopyVisitor;
+
+    public:
+        struct ImplNodeInterface {
+            Node & node;
+            std::string interfaceId;
+            
+            ImplNodeInterface(Node & node, const std::string & interfaceId);
+        };
+        typedef std::multimap<std::string, ImplNodeInterface> ISMap;
+        typedef std::map<std::string, PolledEventOutValue> EventOutValueMap;
+
+    private:
+        ISMap isMap;
+        EventOutValueMap eventOutValueMap;
+        VrmlNamespace scope;
+        MFNode implNodes;
+        
+    public:
+        ProtoNode(const NodeType & nodeType, VrmlNamespace & parentScope);
+        ProtoNode(const NodeType & nodeType, const ProtoNode & node);
+        virtual ~ProtoNode() throw ();
+        
+        void addRootNode(const NodePtr & node) throw (std::bad_alloc);
+        void addIS(Node & implNode,
+                   const std::string & implNodeInterfaceId,
+                   const std::string & protoInterfaceId)
+                throw (std::invalid_argument, std::bad_alloc);
+        
+        void update(double time);
+        
+        virtual const ScriptNode * toScript() const throw ();
+        virtual ScriptNode * toScript() throw ();
+        virtual const AppearanceNode * toAppearance() const throw ();
+        virtual AppearanceNode * toAppearance() throw ();
+        virtual const ChildNode * toChild() const throw ();
+        virtual ChildNode * toChild() throw ();
+        virtual const ColorNode * toColor() const throw ();
+        virtual ColorNode * toColor() throw ();
+        virtual const CoordinateNode * toCoordinate() const throw ();
+        virtual CoordinateNode * toCoordinate() throw ();
+        virtual const FontStyleNode * toFontStyle() const throw ();
+        virtual FontStyleNode * toFontStyle() throw () ;
+        virtual const GeometryNode * toGeometry() const throw ();
+        virtual GeometryNode * toGeometry() throw ();
+        virtual const MaterialNode * toMaterial() const throw ();
+        virtual MaterialNode * toMaterial() throw ();
+        virtual const NormalNode * toNormal() const throw ();
+        virtual NormalNode * toNormal() throw ();
+        virtual const SoundSourceNode * toSoundSource() const throw ();
+        virtual SoundSourceNode * toSoundSource() throw ();
+        virtual const TextureNode * toTexture() const throw ();
+        virtual TextureNode * toTexture() throw ();
+        virtual const TextureCoordinateNode * toTextureCoordinate() const
+                throw ();
+        virtual TextureCoordinateNode * toTextureCoordinate() throw ();
+        virtual const TextureTransformNode * toTextureTransform() const
+                throw ();
+        virtual TextureTransformNode * toTextureTransform() throw ();
+        
+        virtual Vrml97Node::Anchor * toAnchor() const;
+        virtual Vrml97Node::AudioClip * toAudioClip() const;
+        virtual Vrml97Node::Background * toBackground() const;
+        virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
+        virtual Vrml97Node::Fog * toFog() const;
+        virtual Vrml97Node::Group * toGroup() const;
+        virtual Vrml97Node::Inline * toInline() const;
+        virtual Vrml97Node::AbstractLight * toLight() const;
+        virtual Vrml97Node::MovieTexture * toMovieTexture() const;
+        virtual Vrml97Node::NavigationInfo * toNavigationInfo() const;
+        virtual Vrml97Node::PlaneSensor * toPlaneSensor() const;
+        virtual Vrml97Node::PointLight * toPointLight() const;
+        virtual Vrml97Node::SphereSensor * toSphereSensor() const;
+        virtual Vrml97Node::SpotLight * toSpotLight() const;
+        virtual Vrml97Node::TimeSensor * toTimeSensor() const;
+        virtual Vrml97Node::TouchSensor * toTouchSensor() const;
+        virtual Vrml97Node::Viewpoint * toViewpoint() const;
+        
+        virtual void render(Viewer *, VrmlRenderContext rc);
+
+    private:
+        // Not copyable.
+        ProtoNode(const ProtoNode &);
+        ProtoNode & operator=(const ProtoNode &);
+        
+        virtual void setFieldImpl(const std::string & id,
+                                  const FieldValue & value)
+                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        
+        virtual const FieldValue & getFieldImpl(const std::string & id) const
+                throw (UnsupportedInterface);
+        
+        virtual void processEventImpl(const std::string & id,
+                                      const FieldValue & value,
+                                      double timestamp)
+                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        
+        virtual const FieldValue & getEventOutImpl(const std::string & id) const
+                throw (UnsupportedInterface);
+    };
+    
+    
+    class OPENVRML_SCOPE ProtoNodeClass : public NodeClass {
+        
+        friend class Vrml97Parser;
+        
+    public:
+        friend class ProtoNodeType : public NodeType {
+            NodeInterfaceSet nodeInterfaces;
+
+        public:
+            ProtoNodeType(ProtoNodeClass & nodeClass, const std::string & id)
+                    throw (UnsupportedInterface, std::bad_alloc);
+            virtual ~ProtoNodeType() throw ();
+
+            virtual const NodeInterfaceSet & getInterfaces() const throw ();
+            virtual const NodePtr createNode() const throw (std::bad_alloc);
+            
+            void addInterface(const NodeInterface & interface)
+                    throw (std::invalid_argument, std::bad_alloc);
+        };
+
+    private:
+        typedef std::map<std::string, FieldValuePtr> DefaultValueMap;
+        
+        ProtoNodeType protoNodeType;
+        DefaultValueMap defaultValueMap;
+        ProtoNode protoNode;
+
+    public:
+        ProtoNodeClass(VrmlScene & scene) throw ();
+        virtual ~ProtoNodeClass() throw ();
+        
+        void addEventIn(FieldValue::Type, const std::string & id)
+                throw (std::invalid_argument, std::bad_alloc);
+        void addEventOut(FieldValue::Type, const std::string & id)
+                throw (std::invalid_argument, std::bad_alloc);
+        void addExposedField(const std::string & id,
+                             const FieldValuePtr & defaultValue)
+                throw (std::invalid_argument, std::bad_alloc);
+        void addField(const std::string & id,
+                      const FieldValuePtr & defaultValue)
+                throw (std::invalid_argument, std::bad_alloc);
+        void addRootNode(const NodePtr & node) throw (std::bad_alloc);
+        void addIS(Node & implNode,
+                   const std::string & implNodeInterfaceId,
+                   const std::string & protoInterfaceId)
+                throw (std::invalid_argument, std::bad_alloc);
+        
+        virtual const NodeTypePtr createType(const std::string & id,
+                                             const NodeInterfaceSet &)
+                throw (UnsupportedInterface, std::bad_alloc);
+    };
+}
 
 //
 // Including a .cpp file is strange, but it's exactly what we want to do here.
@@ -1640,6 +1864,1227 @@ void VrmlScene::updateFlags()
 {
 //  Node* root = this->getRoot();
 //  root->updateModified(0x002);
+}
+
+
+/**
+ * @class ProtoNode
+ *
+ * @brief A prototype node instance.
+ *
+ * An archetypal ProtoNode is constructed in the process of parsing a @c PROTO,
+ * and stored in the ProtoNodeClass. Calls to @c ProtoNodeType::createNode
+ * return a clone of the archetypal instance.
+ */
+
+/**
+ * @var ProtoNode::ProtoNodeClass
+ *
+ * @brief Class object for ProtoNode instances.
+ */
+
+/**
+ * @var ProtoNode::Vrml97Parser
+ *
+ * @brief VRML97 parser (generated by ANTLR).
+ */
+
+/**
+ * @internal
+ *
+ * @class ProtoNode::NodeCloneVisitor
+ *
+ * @brief A NodeVisitor that makes a deep copy of the node tree for creating
+ *      a new prototype node instance.
+ */
+
+/**
+ * @var std::stack<NodePtr> ProtoNode::NodeCloneVisitor::rootNodeStack
+ *
+ * @brief A stack for node clones.
+ *
+ * As the NodeVisitor traverses the node tree, it pushes the newly-created
+ * cloned node onto the stack. The node at the top of the stack is then the
+ * result of cloning any given subtree in the source node tree.
+ */
+
+/**
+ * @var const ProtoNode & ProtoNode::NodeCloneVisitor::fromProtoNode
+ *
+ * @brief A reference to the "source" node.
+ */
+
+/**
+ * @var const ProtoNode & ProtoNode::NodeCloneVisitor::toProtoNode
+ *
+ * @brief A reference to the "destination" node.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param fromNode  a reference to the "source" node.
+ * @param toNode    a reference to the "destination" node.
+ */
+ProtoNode::NodeCloneVisitor::NodeCloneVisitor(const ProtoNode & fromProtoNode,
+                                              ProtoNode & toProtoNode):
+        fromProtoNode(fromProtoNode), toProtoNode(toProtoNode) {}
+
+/**
+ * @brief Destructor.
+ */
+ProtoNode::NodeCloneVisitor::~NodeCloneVisitor() {}
+
+/**
+ * @brief Clone the nodes.
+ */
+void ProtoNode::NodeCloneVisitor::clone() {
+    assert(this->fromProtoNode.implNodes.getElement(0));
+    this->toProtoNode.implNodes.setLength(this->fromProtoNode.implNodes.getLength());
+    for (size_t i = 0; i < this->toProtoNode.implNodes.getLength(); ++i) {
+        if (this->fromProtoNode.implNodes.getElement(i)) {
+            Node & childNode(*this->fromProtoNode.implNodes.getElement(i));
+            if (!childNode.accept(*this)) {
+                assert(this->toProtoNode.scope.findNode(childNode.getId()));
+                this->rootNodeStack
+                        .push(NodePtr(this->toProtoNode.scope.findNode(childNode.getId())));
+            }
+            assert(this->rootNodeStack.top());
+            this->toProtoNode.implNodes.setElement(i, this->rootNodeStack.top());
+            this->rootNodeStack.pop();
+        }
+    }
+    assert(this->rootNodeStack.size() == 0);
+
+    for (size_t i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
+        assert(this->fromProtoNode.implNodes.getElement(i));
+        this->fromProtoNode.implNodes.getElement(i)->resetVisitedFlag();
+    }
+}
+
+namespace {
+
+    struct CloneFieldValue_ : std::unary_function<NodeInterface, void> {
+        CloneFieldValue_(NodeVisitor & visitor,
+                         std::stack<NodePtr> & rootNodeStack,
+                         VrmlNamespace & scope, Node & fromNode, Node & toNode):
+                visitor(&visitor), rootNodeStack(&rootNodeStack), scope(&scope),
+                fromNode(&fromNode), toNode(&toNode) {}
+    
+        void operator()(const NodeInterface & interface) const {
+            if (interface.type == NodeInterface::field
+                    || interface.type == NodeInterface::exposedField) {
+                if (interface.fieldType == FieldValue::sfnode) {
+                    const SFNode & value =
+                            static_cast<const SFNode &>
+                                (this->fromNode->getField(interface.id));
+                    if (value.get()) {
+                        Node & childNode(*value.get());
+                        if (!childNode.accept(*this->visitor)) {
+                            assert(this->scope->findNode(childNode.getId()));
+                            this->rootNodeStack
+                                    ->push(NodePtr(this->scope->findNode(childNode.getId())));
+                        }
+                        assert(this->rootNodeStack->top());
+                        this->toNode->setField(interface.id,
+                                               SFNode(this->rootNodeStack->top()));
+                        this->rootNodeStack->pop();
+                    }
+                } else if (interface.fieldType == FieldValue::mfnode) {
+                    const MFNode & children =
+                            static_cast<const MFNode &>
+                                (this->fromNode->getField(interface.id));
+                    MFNode clonedChildren(children.getLength());
+                    for (size_t i = 0; i < clonedChildren.getLength(); ++i) {
+                        if (children.getElement(i)) {
+                            Node & childNode(*children.getElement(i));
+                            if (!childNode.accept(*this->visitor)) {
+                                assert(this->scope->findNode(childNode.getId()));
+                                this->rootNodeStack
+                                        ->push(NodePtr(this->scope->findNode(childNode.getId())));
+                            }
+                            assert(this->rootNodeStack->top());
+                            clonedChildren.setElement(i, this->rootNodeStack->top());
+                            this->rootNodeStack->pop();
+                        }
+                    }
+                    this->toNode->setField(interface.id, clonedChildren);
+                } else {
+                    this->toNode->setField(interface.id,
+                                           this->fromNode->getField(interface.id));
+                }
+            }
+        }
+
+    private:
+        NodeVisitor * visitor;
+        std::stack<NodePtr> * rootNodeStack;
+        VrmlNamespace * scope;
+        Node * fromNode;
+        Node * toNode;
+    };
+}
+
+/**
+ * @brief Visit a node.
+ *
+ * @param node  a Node.
+ */
+void ProtoNode::NodeCloneVisitor::visit(Node & node) {
+    //
+    // Create a new node of the same type.
+    //
+    const NodePtr newNode(node.nodeType.createNode());
+    this->rootNodeStack.push(newNode);
+
+    //
+    // If the node has a name, give it to the new node.
+    //
+    if (!node.getId().empty()) {
+        newNode->setId(node.getId(), &this->toProtoNode.scope);
+    }
+
+    //
+    // Any IS mappings for this node?
+    //
+    for (ISMap::const_iterator itr(this->fromProtoNode.isMap.begin());
+            itr != this->fromProtoNode.isMap.end(); ++itr) {
+        if (&itr->second.node == &node) {
+            this->toProtoNode.addIS(*newNode, itr->second.interfaceId,
+                                    itr->first);
+        }
+    }
+
+    //
+    // Copy the field values.
+    //
+    const NodeInterfaceSet & interfaces(node.nodeType.getInterfaces());
+    std::for_each(interfaces.begin(), interfaces.end(),
+                  CloneFieldValue_(*this, this->rootNodeStack,
+                                   this->toProtoNode.scope, node, *newNode));
+}
+
+/**
+ * @internal
+ *
+ * @class ProtoNode::RouteCopyVisitor
+ *
+ * @brief Copy the routes.
+ *
+ * Given two topologically identical node trees, copy the routes in the first
+ * tree to analogous routes in the second tree.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param fromProtoNode a reference to the "source" node.
+ * @param toProtoNode   a reference to the "destination" node.
+ */
+ProtoNode::RouteCopyVisitor::RouteCopyVisitor(const ProtoNode & fromProtoNode,
+                                              ProtoNode & toProtoNode):
+        fromProtoNode(fromProtoNode), toProtoNode(toProtoNode) {}
+
+/**
+ * @brief Copy the ROUTEs.
+ */
+void ProtoNode::RouteCopyVisitor::copyRoutes() {
+    for (size_t i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
+        if (this->fromProtoNode.implNodes.getElement(i)) {
+            this->fromProtoNode.implNodes.getElement(i)->accept(*this);
+        }
+    }
+
+    for (size_t i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
+        this->fromProtoNode.implNodes.getElement(i)->resetVisitedFlag();
+    }
+}
+
+namespace {
+    
+    struct AddRoute_ : std::unary_function<Node::Route, void> {
+        AddRoute_(VrmlNamespace & scope, Node & fromNode):
+                  scope(&scope), fromNode(&fromNode) {}
+
+        void operator()(const Node::Route & route) const {
+            const std::string & toNodeId(route.toNode->getId());
+            assert(this->scope->findNode(toNodeId));
+            fromNode->addRoute(route.fromEventOut,
+                               NodePtr(this->scope->findNode(toNodeId)),
+                               route.toEventIn);
+        }
+
+    private:
+        VrmlNamespace * scope;
+        Node * fromNode;
+    };
+}
+
+/**
+ * @brief Visit a node.
+ *
+ * @param node  a Node.
+ */
+void ProtoNode::RouteCopyVisitor::visit(Node & node) {
+    const std::string & fromNodeId = node.getId();
+    if (!fromNodeId.empty()) {
+        Node * const fromNode = this->toProtoNode.scope.findNode(fromNodeId);
+        assert(fromNode);
+        std::for_each(node.getRoutes().begin(), node.getRoutes().end(),
+                      AddRoute_(this->toProtoNode.scope, *fromNode));
+    }
+
+    //
+    // Visit the children.
+    //
+    const MFNode & children(node.getChildren());
+    for (size_t i = 0; i < children.getLength(); ++i) {
+        if (children.getElement(i)) {
+            children.getElement(i)->accept(*this);
+        }
+    }
+}
+
+/**
+ * @struct ProtoNode::ImplNodeInterface
+ *
+ * @brief Used for @c IS event propagation.
+ */
+
+/**
+ * @var Node & ProtoNode::ImplNodeInterface::node
+ *
+ * @brief A reference to a node in the prototype implementation.
+ */
+
+/**
+ * @var std::string ProtoNode::ImplNodeInterface::interfaceId
+ *
+ * @brief An interface of @a node.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param node          a reference to a node in the prototype implementation.
+ * @param interfaceId   an interface of @p node.
+ */
+ProtoNode::ImplNodeInterface::ImplNodeInterface(Node & node,
+                                                const std::string & interfaceId):
+        node(node), interfaceId(interfaceId) {}
+
+namespace {
+    const FieldValuePtr defaultFieldValue(const FieldValue::Type fieldType) {
+        switch (fieldType) {
+        case FieldValue::sfbool:        return FieldValuePtr(new SFBool);
+        case FieldValue::sfcolor:       return FieldValuePtr(new SFColor);
+        case FieldValue::sffloat:       return FieldValuePtr(new SFFloat);
+        case FieldValue::sfimage:       return FieldValuePtr(new SFImage);
+        case FieldValue::sfint32:       return FieldValuePtr(new SFInt32);
+        case FieldValue::sfnode:        return FieldValuePtr(new SFNode);
+        case FieldValue::sfrotation:    return FieldValuePtr(new SFRotation);
+        case FieldValue::sfstring:      return FieldValuePtr(new SFString);
+        case FieldValue::sftime:        return FieldValuePtr(new SFTime);
+        case FieldValue::sfvec2f:       return FieldValuePtr(new SFVec2f);
+        case FieldValue::sfvec3f:       return FieldValuePtr(new SFVec3f);
+        case FieldValue::mfcolor:       return FieldValuePtr(new MFColor);
+        case FieldValue::mffloat:       return FieldValuePtr(new MFFloat);
+        case FieldValue::mfint32:       return FieldValuePtr(new MFInt32);
+        case FieldValue::mfnode:        return FieldValuePtr(new MFNode);
+        case FieldValue::mfrotation:    return FieldValuePtr(new MFRotation);
+        case FieldValue::mfstring:      return FieldValuePtr(new MFString);
+        case FieldValue::mftime:        return FieldValuePtr(new MFTime);
+        case FieldValue::mfvec2f:       return FieldValuePtr(new MFVec2f);
+        case FieldValue::mfvec3f:       return FieldValuePtr(new MFVec3f);
+        default: assert(false);
+        }
+    }
+    
+    struct AddEventOutValue_ : std::unary_function<NodeInterface, void> {
+        AddEventOutValue_(ProtoNode::EventOutValueMap & eventOutValueMap):
+                eventOutValueMap(&eventOutValueMap) {}
+        
+        void operator()(const NodeInterface & interface) const {
+            if (interface.type == NodeInterface::eventOut) {
+                const Node::PolledEventOutValue
+                    eventOutValue(defaultFieldValue(interface.fieldType), 0.0);
+                const ProtoNode::EventOutValueMap::value_type
+                        value(interface.id, eventOutValue);
+                const bool succeeded =
+                        this->eventOutValueMap->insert(value).second;
+                assert(succeeded);
+            } else if (interface.type == NodeInterface::exposedField) {
+                const Node::PolledEventOutValue
+                    eventOutValue(defaultFieldValue(interface.fieldType), 0.0);
+                const ProtoNode::EventOutValueMap::value_type
+                        value(interface.id + "_changed", eventOutValue);
+                const bool succeeded =
+                        this->eventOutValueMap->insert(value).second;
+                assert(succeeded);
+            }
+        }
+        
+    private:
+        ProtoNode::EventOutValueMap * eventOutValueMap;
+    };
+}
+
+/**
+ * @brief Constructor.
+ *
+ * @param nodeType      the NodeType associated with the node.
+ * @param parentScope   the parent scope.
+ */
+ProtoNode::ProtoNode(const NodeType & nodeType, VrmlNamespace & parentScope):
+        Node(nodeType), scope(&parentScope) {
+    //
+    // For each exposedField and eventOut in the prototype interface, add
+    // a value to the eventOutValueMap.
+    //
+//    const NodeInterfaceSet & interfaces(this->nodeType.getInterfaces());
+//    std::for_each(interfaces.begin(), interfaces.end(),
+//                  AddEventOutValue_(this->eventOutValueMap));
+}
+
+/**
+ * @brief Construct a prototype instance.
+ *
+ * @param nodeType  the type object for the new ProtoNode instance.
+ * @param node      the ProtoNode to clone when creating the instance.
+ */
+ProtoNode::ProtoNode(const NodeType & nodeType, const ProtoNode & node):
+        Node(nodeType), scope(node.scope.parent) {
+    assert(node.implNodes.getLength() > 0);
+    assert(node.implNodes.getElement(0));
+    
+    //
+    // For each exposedField and eventOut in the prototype interface, add
+    // a value to the eventOutValueMap.
+    //
+    // Note: We don't want to copy node's EventOutValueMap, since the values
+    // in that map should be per-instance.
+    //
+    const NodeInterfaceSet & interfaces(this->nodeType.getInterfaces());
+    std::for_each(interfaces.begin(), interfaces.end(),
+                  AddEventOutValue_(this->eventOutValueMap));
+    
+    //
+    // Cloning the nodes is a two-step process. First, we clone the actual
+    // node instances. Second, we traverse the node tree again cloning the
+    // routes.
+    //
+    NodeCloneVisitor(node, *this).clone();
+    RouteCopyVisitor(node, *this).copyRoutes();
+    
+    //
+    // Add to the scene.
+    //
+    this->nodeType.nodeClass.scene.addProto(*this);
+}
+
+/**
+ * @brief Destructor.
+ */
+ProtoNode::~ProtoNode() throw () {
+    //
+    // Remove from the scene.
+    //
+    this->nodeType.nodeClass.scene.removeProto(*this);
+}
+
+/**
+ * @brief Cast to a ScriptNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a ScriptNode, or 0 otherwise.
+ */
+const ScriptNode * ProtoNode::toScript() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toScript();
+}
+
+/**
+ * @brief Cast to a ScriptNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a ScriptNode, or 0 otherwise.
+ */
+ScriptNode * ProtoNode::toScript() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toScript();
+}
+
+/**
+ * @brief Cast to an AppearanceNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      an AppearanceNode, or 0 otherwise.
+ */
+const AppearanceNode * ProtoNode::toAppearance() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toAppearance();
+}
+
+/**
+ * @brief Cast to an AppearanceNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      an AppearanceNode, or 0 otherwise.
+ */
+AppearanceNode * ProtoNode::toAppearance() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toAppearance();
+}
+
+/**
+ * @brief Cast to a ChildNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a ChildNode, or 0 otherwise.
+ */
+const ChildNode * ProtoNode::toChild() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toChild();
+}
+
+/**
+ * @brief Cast to a ChildNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a ChildNode, or 0 otherwise.
+ */
+ChildNode * ProtoNode::toChild() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toChild();
+}
+
+/**
+ * @brief Cast to a ColorNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a ColorNode, or 0 otherwise.
+ */
+const ColorNode * ProtoNode::toColor() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toColor();
+}
+
+/**
+ * @brief Cast to a ColorNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a ColorNode, or 0 otherwise.
+ */
+ColorNode * ProtoNode::toColor() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toColor();
+}
+
+/**
+ * @brief Cast to a CoordinateNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a CoordinateNode, or 0 otherwise.
+ */
+const CoordinateNode * ProtoNode::toCoordinate() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toCoordinate();
+}
+
+/**
+ * @brief Cast to a CoordinateNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a CoordinateNode, or 0 otherwise.
+ */
+CoordinateNode * ProtoNode::toCoordinate() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toCoordinate();
+}
+
+/**
+ * @brief Cast to a FontStyleNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a FontStyleNode, or 0 otherwise.
+ */
+const FontStyleNode * ProtoNode::toFontStyle() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toFontStyle();
+}
+
+/**
+ * @brief Cast to a FontStyleNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a FontStyleNode, or 0 otherwise.
+ */
+FontStyleNode * ProtoNode::toFontStyle() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toFontStyle();
+}
+
+/**
+ * @brief Cast to a GeometryNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a GeometryNode, or 0 otherwise.
+ */
+const GeometryNode * ProtoNode::toGeometry() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toGeometry();
+}
+
+/**
+ * @brief Cast to a GeometryNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a GeometryNode, or 0 otherwise.
+ */
+GeometryNode * ProtoNode::toGeometry() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toGeometry();
+}
+
+/**
+ * @brief Cast to a MaterialNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a MaterialNode, or 0 otherwise.
+ */
+const MaterialNode * ProtoNode::toMaterial() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toMaterial();
+}
+
+/**
+ * @brief Cast to a MaterialNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a MaterialNode, or 0 otherwise.
+ */
+MaterialNode * ProtoNode::toMaterial() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toMaterial();
+}
+
+/**
+ * @brief Cast to a NormalNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a NormalNode, or 0 otherwise.
+ */
+const NormalNode * ProtoNode::toNormal() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toNormal();
+}
+
+/**
+ * @brief Cast to a NormalNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a NormalNode, or 0 otherwise.
+ */
+NormalNode * ProtoNode::toNormal() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toNormal();
+}
+
+/**
+ * @brief Cast to a SoundSourceNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a SoundSourceNode, or 0 otherwise.
+ */
+const SoundSourceNode * ProtoNode::toSoundSource() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toSoundSource();
+}
+
+/**
+ * @brief Cast to a SoundSourceNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a SoundSourceNode, or 0 otherwise.
+ */
+SoundSourceNode * ProtoNode::toSoundSource() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toSoundSource();
+}
+
+/**
+ * @brief Cast to a TextureNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a TextureNode, or 0 otherwise.
+ */
+const TextureNode * ProtoNode::toTexture() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toTexture();
+}
+
+/**
+ * @brief Cast to a TextureNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a TextureNode, or 0 otherwise.
+ */
+TextureNode * ProtoNode::toTexture() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toTexture();
+}
+
+/**
+ * @brief Cast to a TextureCoordinateNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a TextureCoordinateNode, or 0 otherwise.
+ */
+const TextureCoordinateNode * ProtoNode::toTextureCoordinate() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toTextureCoordinate();
+}
+
+/**
+ * @brief Cast to a TextureCoordinateNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a TextureCoordinateNode, or 0 otherwise.
+ */
+TextureCoordinateNode * ProtoNode::toTextureCoordinate() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toTextureCoordinate();
+}
+
+/**
+ * @brief Cast to a TextureTransformNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a TextureTransformNode, or 0 otherwise.
+ */
+const TextureTransformNode * ProtoNode::toTextureTransform() const throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toTextureTransform();
+}
+
+/**
+ * @brief Cast to a TextureTransformNode.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a TextureTransformNode, or 0 otherwise.
+ */
+TextureTransformNode * ProtoNode::toTextureTransform() throw () {
+    assert(this->implNodes.getLength() != 0);
+    assert(this->implNodes.getElement(0).get());
+    return this->implNodes.getElement(0)->toTextureTransform();
+}
+
+/**
+ * @brief Add a root node to the prototype definition.
+ */
+void ProtoNode::addRootNode(const NodePtr & node) throw (std::bad_alloc) {
+    assert(node);
+    this->implNodes.addNode(node);
+}
+
+/**
+ * @brief Add an IS mapping to the prototype definition.
+ *
+ * @param implNode              a node in the protoype implementation.
+ * @param implNodeInterfaceId   an interface of @p implNode.
+ * @param protoInterfaceId      an interface of the prototype.
+ *
+ * @exception std::invalid_argument
+ */
+void ProtoNode::addIS(Node & implNode,
+                      const std::string & implNodeInterfaceId,
+                      const std::string & protoInterfaceId)
+        throw (std::invalid_argument, std::bad_alloc) {
+    const ImplNodeInterface implNodeInterface(implNode, implNodeInterfaceId);
+    const ISMap::value_type value(protoInterfaceId, implNodeInterface);
+    this->isMap.insert(value);
+    
+    if (this->nodeType.hasEventOut(protoInterfaceId)) {
+        EventOutValueMap::iterator pos =
+                this->eventOutValueMap.find(protoInterfaceId);
+        if (pos == this->eventOutValueMap.end()) {
+            pos = this->eventOutValueMap.find(protoInterfaceId + "_changed");
+        }
+        assert(pos != this->eventOutValueMap.end());
+        implNode.addEventOutIS(implNodeInterfaceId, &pos->second);
+    }
+}
+
+void ProtoNode::update(const double currentTime) {
+    //
+    // For each modified eventOut, send an event.
+    //
+    for (EventOutValueMap::iterator itr = eventOutValueMap.begin();
+            itr != eventOutValueMap.end(); ++itr) {
+        if (itr->second.modified) {
+            this->emitEvent(itr->first, *itr->second.value, currentTime);
+            itr->second.modified = false;
+        }
+    }
+}
+
+void ProtoNode::setFieldImpl(const std::string & id,
+                             const FieldValue & value)
+        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
+            this->isMap.equal_range(id);
+    for (ISMap::iterator itr(rangeItrs.first); itr != rangeItrs.second; ++itr) {
+        itr->second.node.setField(itr->second.interfaceId, value);
+    }
+}
+
+const FieldValue & ProtoNode::getFieldImpl(const std::string & id) const
+        throw (UnsupportedInterface) {
+    //
+    // This is a little wierd: what should getField mean for a PROTO-based
+    // node? Here, we just pick the first node in the IS-map and call getField
+    // on it.
+    //
+    ISMap::const_iterator pos = this->isMap.find(id);
+    if (pos == this->isMap.end()) {
+        throw UnsupportedInterface(this->nodeType.id + " node has no field \""
+                                   + id + "\".");
+    }
+    return pos->second.node.getField(pos->second.interfaceId);
+}
+
+namespace {
+    
+    struct DispatchEvent_ :
+            std::unary_function<ProtoNode::ISMap::value_type, void> {
+        DispatchEvent_(const FieldValue & value, const double timestamp):
+                value(&value), timestamp(timestamp) {}
+
+        void operator()(const ProtoNode::ISMap::value_type & value) const {
+            value.second.node.processEvent(value.second.interfaceId,
+                                           *this->value, this->timestamp);
+        }
+
+    private:
+        const FieldValue * value;
+        double timestamp;
+    };
+}
+
+void ProtoNode::processEventImpl(const std::string & id,
+                                 const FieldValue & value,
+                                 const double timestamp)
+        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    const std::pair<ISMap::const_iterator, ISMap::const_iterator> rangeItrs =
+            this->isMap.equal_range(id);
+    if (rangeItrs.first == this->isMap.end()) {
+        throw UnsupportedInterface(this->nodeType.id + " node has no eventIn "
+                                   + id);
+    }
+    std::for_each(rangeItrs.first, rangeItrs.second,
+                  DispatchEvent_(value, timestamp));
+    
+    //
+    // Emit events.
+    //
+    for (EventOutValueMap::iterator itr(this->eventOutValueMap.begin());
+            itr != this->eventOutValueMap.end(); ++itr) {
+        if (itr->second.modified) {
+            this->emitEvent(itr->first, *itr->second.value, timestamp);
+            itr->second.modified = false;
+        }
+    }
+}
+
+const FieldValue & ProtoNode::getEventOutImpl(const std::string & id) const
+        throw (UnsupportedInterface) {
+    //
+    // If we have a real eventOut (not an exposedField) ...
+    //
+    {
+        const EventOutValueMap::const_iterator pos =
+                this->eventOutValueMap.find(id);
+        if (pos != this->eventOutValueMap.end()) { return *pos->second.value; }
+    }
+    
+    //
+    // If the above code doesn't find anything, see if we have an exposedField.
+    //
+    // XXX I don't think this covers the case where more than one exposedField
+    // XXX in the implementation is IS'd to the same exposedField in the
+    // XXX interface.
+    //
+    {
+        const ISMap::const_iterator pos = this->isMap.find(id);
+        if (pos != this->isMap.end()) {
+            return pos->second.node.getEventOut(id);
+        }
+    }
+}
+
+Vrml97Node::Anchor * ProtoNode::toAnchor() const {
+    return this->implNodes.getElement(0)->toAnchor();
+}
+
+Vrml97Node::AudioClip * ProtoNode::toAudioClip() const {
+    return this->implNodes.getElement(0)->toAudioClip();
+}
+
+Vrml97Node::Background * ProtoNode::toBackground() const {
+    return this->implNodes.getElement(0)->toBackground();
+}
+
+Vrml97Node::CylinderSensor * ProtoNode::toCylinderSensor() const {
+    return this->implNodes.getElement(0)->toCylinderSensor();
+}
+
+Vrml97Node::Fog * ProtoNode::toFog() const {
+    return this->implNodes.getElement(0)->toFog();
+}
+
+Vrml97Node::Group * ProtoNode::toGroup() const {
+    return this->implNodes.getElement(0)->toGroup();
+}
+
+Vrml97Node::Inline * ProtoNode::toInline() const {
+    return this->implNodes.getElement(0)->toInline();
+}
+
+Vrml97Node::AbstractLight * ProtoNode::toLight() const {
+    return this->implNodes.getElement(0)->toLight();
+}
+
+Vrml97Node::MovieTexture * ProtoNode::toMovieTexture() const {
+    return this->implNodes.getElement(0)->toMovieTexture();
+}
+
+Vrml97Node::NavigationInfo * ProtoNode::toNavigationInfo() const {
+    return this->implNodes.getElement(0)->toNavigationInfo();
+}
+
+Vrml97Node::PlaneSensor * ProtoNode::toPlaneSensor() const {
+    return this->implNodes.getElement(0)->toPlaneSensor();
+}
+
+Vrml97Node::PointLight * ProtoNode::toPointLight() const {
+    return this->implNodes.getElement(0)->toPointLight();
+}
+
+Vrml97Node::SphereSensor * ProtoNode::toSphereSensor() const {
+    return this->implNodes.getElement(0)->toSphereSensor();
+}
+
+Vrml97Node::SpotLight * ProtoNode::toSpotLight() const {
+    return this->implNodes.getElement(0)->toSpotLight();
+}
+
+Vrml97Node::TimeSensor * ProtoNode::toTimeSensor() const {
+    return this->implNodes.getElement(0)->toTimeSensor();
+}
+
+Vrml97Node::TouchSensor * ProtoNode::toTouchSensor() const {
+    return this->implNodes.getElement(0)->toTouchSensor();
+}
+
+Vrml97Node::Viewpoint * ProtoNode::toViewpoint() const {
+    return this->implNodes.getElement(0)->toViewpoint();
+}
+
+void ProtoNode::render(Viewer * const viewer, const VrmlRenderContext rc) {
+    assert(this->implNodes.getElement(0));
+    this->implNodes.getElement(0)->render(viewer, rc);
+}
+
+
+/**
+ * @class ProtoNodeClass
+ *
+ * @brief Class object for ProtoNode instances.
+ *
+ * ProtoNodeClass instances are created and initialized when a PROTO definition
+ * is read by the parser. Initialization consists of various calls to
+ * addEventIn, addEventOut, addExposedField, addField, addRootNode, and addIS,
+ * after which the ProtoNodeClass instance is added to the implementation
+ * repository. Once the scene has started running, it is not appropriate to
+ * call those methods.
+ */
+
+/**
+ * @class ProtoNodeClass::ProtoNodeType
+ *
+ * @brief Type information object for ProtoNode instances.
+ */
+
+/**
+ * @var ProtoNodeClass:ProtoNodeType::nodeInterfaces
+ *
+ * @brief The list of interfaces supported by a node of this type.
+ */
+
+/**
+ * @brief Constructor.
+ */
+ProtoNodeClass::ProtoNodeType::ProtoNodeType(ProtoNodeClass & nodeClass,
+                                             const std::string & id)
+        throw (UnsupportedInterface, std::bad_alloc): NodeType(nodeClass, id) {}
+
+/**
+ * @brief Destructor.
+ */
+ProtoNodeClass::ProtoNodeType::~ProtoNodeType() throw () {}
+
+/**
+ * @brief Get the list of interfaces.
+ *
+ * @return the list of interfaces for nodes of this type.
+ */
+const NodeInterfaceSet & ProtoNodeClass::ProtoNodeType::getInterfaces() const
+        throw () {
+    return this->nodeInterfaces;
+}
+
+/**
+ * @brief Create a Node of this type.
+ *
+ * @return a NodePtr to a new Node.
+ */
+const NodePtr ProtoNodeClass::ProtoNodeType::createNode() const
+        throw (std::bad_alloc) {
+    return NodePtr(new ProtoNode(*this,
+                                 static_cast<ProtoNodeClass &>(this->nodeClass)
+                                    .protoNode));
+}
+
+/**
+ * @brief Add an interface.
+ */
+void ProtoNodeClass::ProtoNodeType::addInterface(const NodeInterface & interface)
+        throw (std::invalid_argument, std::bad_alloc) {
+    this->nodeInterfaces.add(interface);
+}
+
+/**
+ * @var ProtoNodeClass::ProtoNodeType ProtoNodeClass::protoNodeType
+ *
+ * @brief This NodeType includes the full set of
+ *      @link NodeInterface NodeInterfaces@endlink supported by the
+ *      ProtoNodeClass.
+ *
+ * A ProtoNodeType instance is used for this instead of a NodeInterfaceSet as
+ * a matter of convenience: we need to give @a protoNode a NodeType object.
+ */
+
+/**
+ * @var std::map<std::string, FieldValuePtr> ProtoNodeClass::defaultValueMap
+ *
+ * @brief A map containing the default values for fields and exposedFields for
+ *      the PROTO.
+ */
+
+/**
+ * @var ProtoNode ProtoNodeClass::protoNode
+ *
+ * @brief The prototype object. New nodes are created by copying this object.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param scene the VrmlScene associated with this NodeClass.
+ */
+ProtoNodeClass::ProtoNodeClass(VrmlScene & scene) throw ():
+        NodeClass(scene), protoNodeType(*this, ""),
+        protoNode(protoNodeType, *scene.scope) {}
+
+/**
+ * @brief Destructor.
+ */
+ProtoNodeClass::~ProtoNodeClass() throw () {}
+
+/**
+ * @brief Add an eventIn.
+ *
+ * @param type  the data type for the eventIn.
+ * @param id    the name of the eventIn.
+ *
+ * @exception std::invalid_argument if an interface named @p id is already
+ *                                  defined for the prototype.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+void ProtoNodeClass::addEventIn(const FieldValue::Type type,
+                                const std::string & id)
+        throw (std::invalid_argument, std::bad_alloc) {
+    const NodeInterface interface(NodeInterface::eventIn, type, id);
+    this->protoNodeType.addInterface(interface);
+}
+
+/**
+ * @brief Add an eventOut.
+ *
+ * @param type  the data type for the eventOut.
+ * @param id    the name of the eventOut.
+ *
+ * @exception std::invalid_argument if an interface named @p id is already
+ *                                  defined for the prototype.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+void ProtoNodeClass::addEventOut(const FieldValue::Type type,
+                                 const std::string & id)
+        throw (std::invalid_argument, std::bad_alloc) {
+    const NodeInterface interface(NodeInterface::eventOut, type, id);
+    this->protoNodeType.addInterface(interface);
+    
+    //
+    // Add a value to the ProtoNode's eventOutValueMap.
+    //
+    const Node::PolledEventOutValue
+            eventOutValue(defaultFieldValue(interface.fieldType), false);
+    const ProtoNode::EventOutValueMap::value_type
+            value(interface.id, eventOutValue);
+    const bool succeeded =
+            this->protoNode.eventOutValueMap.insert(value).second;
+    assert(succeeded);
+}
+
+/**
+ * @brief Add an exposedField.
+ *
+ * @param id            the name of the exposedField.
+ * @param defaultValue  the default value for the exposedField.
+ *
+ * @exception std::invalid_argument if an interface named @p id is already
+ *                                  defined for the prototype.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+void ProtoNodeClass::addExposedField(const std::string & id,
+                                     const FieldValuePtr & defaultValue)
+        throw (std::invalid_argument, std::bad_alloc) {
+    const NodeInterface
+            interface(NodeInterface::exposedField, defaultValue->type(), id);
+    this->protoNodeType.addInterface(interface);
+    {
+        const DefaultValueMap::value_type value(id, defaultValue);
+        const bool succeeded = this->defaultValueMap.insert(value).second;
+        assert(succeeded);
+    }
+    
+    //
+    // Add a value to the ProtoNode's eventOutValueMap.
+    //
+    {
+        const Node::PolledEventOutValue
+                eventOutValue(defaultFieldValue(interface.fieldType), 0.0);
+        const ProtoNode::EventOutValueMap::value_type
+                value(interface.id + "_changed", eventOutValue);
+        const bool succeeded =
+                this->protoNode.eventOutValueMap.insert(value).second;
+        assert(succeeded);
+    }
+}
+
+/**
+ * @brief Add a field.
+ *
+ * @param id            the name of the field.
+ * @param defaultValue  the default value for the field.
+ *
+ * @exception std::invalid_argument if an interface named @p id is already
+ *                                  defined for the prototype.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+void ProtoNodeClass::addField(const std::string & id,
+                              const FieldValuePtr & defaultValue)
+        throw (std::invalid_argument, std::bad_alloc) {
+    const NodeInterface
+            interface(NodeInterface::field, defaultValue->type(), id);
+    this->protoNodeType.addInterface(interface);
+    const DefaultValueMap::value_type value(id, defaultValue);
+    const bool succeeded = this->defaultValueMap.insert(value).second;
+    assert(succeeded);
+}
+
+/**
+ * @brief Add a root node to the prototype definition.
+ *
+ * @param node  a NodePtr to a non-NULL node.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void ProtoNodeClass::addRootNode(const NodePtr & node) throw (std::bad_alloc) {
+    this->protoNode.addRootNode(node);
+}
+
+/**
+ * @brief Add an IS mapping to the prototype definition.
+ *
+ * @param implNode              a node in the protoype implementation.
+ * @param implNodeInterfaceId   an interface of @p implNode.
+ * @param protoInterfaceId      an interface of the prototype.
+ *
+ * @exception std::invalid_argument
+ */
+void ProtoNodeClass::addIS(Node & implNode,
+                           const std::string & implNodeInterfaceId,
+                           const std::string & protoInterfaceId)
+        throw (std::invalid_argument, std::bad_alloc) {
+    this->protoNode.addIS(implNode, implNodeInterfaceId, protoInterfaceId);
+}
+
+namespace {
+    struct AddInterface_ : std::unary_function<NodeInterface, void> {
+        AddInterface_(ProtoNodeClass::ProtoNodeType & protoNodeType):
+                protoNodeType(&protoNodeType) {}
+        
+        void operator()(const NodeInterface & interface) const {
+            protoNodeType->addInterface(interface);
+        }
+    
+    private:
+        ProtoNodeClass::ProtoNodeType * protoNodeType;
+    };
+}
+/**
+ * @brief Create a new NodeType.
+ */
+const NodeTypePtr
+        ProtoNodeClass::createType(const std::string & id,
+                                   const NodeInterfaceSet & interfaces)
+        throw (UnsupportedInterface, std::bad_alloc) {
+    const NodeTypePtr nodeType(new ProtoNodeType(*this, id));
+    try {
+        std::for_each(interfaces.begin(), interfaces.end(),
+                      AddInterface_(static_cast<ProtoNodeType &>(*nodeType)));
+    } catch (UnsupportedInterface &) {
+        throw;
+    } catch (std::invalid_argument & ex) {
+        throw UnsupportedInterface(ex.what());
+    }
+    return nodeType;
 }
 
 } // namespace OpenVRML
