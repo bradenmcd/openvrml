@@ -102,7 +102,7 @@ $(LIBDIR) :
 	   if not exist $(LIBDIR) mkdir $(LIBDIR)
 
 CPP = cl.exe
-CFLAGS = /nologo /ML /W3 /GX /O2 /D "WIN32" /D "_WINDOWS"\
+CFLAGS = /nologo /ML /W3 /GR /GX /O2 /D "WIN32" /D "_WINDOWS"\
 	/Fp"$(INTDIR)\libvrml97core.pch" /YX /Fo"$(INTDIR)\\"\
 	/Fd"$(INTDIR)\\" /FD /c /D "NDEBUG"
 

@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
+# ADD CPP /nologo /W3 /GR /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -523,8 +523,8 @@ InputPath=.\antlr.g
 
 "temp.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	copy ..\src\vrml97\Vrml97TokenTypes.txt.in vrml97tokentypes.txt 
-	set classpath=c:\user\bose\antlr-2.7.0 
-	c:\user\bose\jdk1.2.2\bin\java antlr.Tool ..\src\vrml97\vrml97parser.g 
+	set classpath=c:\user\antlr-2.7.0 
+	c:\user\jdk1.2.2\bin\java antlr.Tool ..\src\vrml97\vrml97parser.g 
 	
 # End Custom Build
 
@@ -535,8 +535,8 @@ InputPath=.\antlr.g
 
 "temp.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	copy ..\src\vrml97\Vrml97TokenTypes.txt.in  vrml97tokentypes.txt 
-	set classpath = c:\user\bose\antlr-2.7.0 
-	c:\user\bose\jdk1.2.2\bin\java antlr.Tool ..\src\vrml97\vrml97parser.g 
+	set classpath = c:\user\antlr-2.7.0 
+	c:\user\jdk1.2.2\bin\java antlr.Tool ..\src\vrml97\vrml97parser.g 
 	
 # End Custom Build
 
