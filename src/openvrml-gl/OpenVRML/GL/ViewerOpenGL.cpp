@@ -659,34 +659,35 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
           number_tiles=number_splits_x*number_splits_y;
           size_x=2.0/(float)number_splits_x;
           size_y=2.0/(float)number_splits_y;
-          for (int j=0;j<16*6;j++)
-            for (int k=0;k<4;k++)
-              for (int i=0;i<3;i++)
+          int i, j, k;
+          for (j=0;j<16*6;j++)
+            for (k=0;k<4;k++)
+              for (i=0;i<3;i++)
                  v[j][k][i]=0;
 
           for (j=0;j<6;j++)
-            for (int k=0;k<4;k++)
-              for (int i=0;i<3;i++)
+            for (k=0;k<4;k++)
+              for (i=0;i<3;i++)
                  v3[j][k][i]=v2[j][k][i]-v2[j][0][i];
 
           for (j=0;j<6;j++)
-            for (int i=0;i<3;i++)
+            for (i=0;i<3;i++)
             {
               v[j*number_tiles][0][i]=v2[j][0][i];
-              for (int k=0;k<4;k++)
+              for (k=0;k<4;k++)
                 v[j*number_tiles][k][i]=v[j*number_tiles][0][i]+v3[j][k][i]/number_splits_y;
             }          
 
           for (j=0;j<6;j++)
           {
             number_vertices=j*number_tiles+1;
-            for (int k=0;k<number_splits_y;k++)
+            for (k=0;k<number_splits_y;k++)
             {
               int num_line;
               num_line=number_vertices-1;
               for (int l=1;l<number_splits_x;l++)
               {
-                for (int i=0;i<3;i++)
+                for (i=0;i<3;i++)
                 {
                   v[number_vertices][0][i]=v[number_vertices-1][0][i]+
                                            v3[j][1][i]/number_splits_x;
@@ -697,7 +698,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
                 number_vertices++;
               }
               if (k==(number_splits_y-1)) break;
-              for (int i=0;i<3;i++)
+              for (i=0;i<3;i++)
               {
                 v[number_vertices][0][i]=v[num_line][0][i]+
                                          v3[j][3][i]/number_splits_y;
@@ -717,8 +718,8 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
           int vertices_number = 0;
 	  int t, lastT = -1;
           for (t=0; t<6; ++t, whc+=3) 
-            for (int j=0;j<number_splits_y;j++)
-              for (int i=0;i<number_splits_x;i++)
+            for (j=0;j<number_splits_y;j++)
+              for (i=0;i<number_splits_x;i++)
               {
 
                 // Check for non-zero width,height,coords and pixel data
