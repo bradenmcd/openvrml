@@ -4570,6 +4570,8 @@ void browser::load_url(const std::vector<std::string> & url,
     private:
         virtual void scene_loaded()
         {
+            boost::recursive_mutex::scoped_lock lock(this->browser().mutex_);
+
             try {
                 using std::string;
 

@@ -1,3 +1,8 @@
+2005-03-08 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp:  Lock the browser when
+	initializing the root scene.
+
 2005-03-07 Braden McDaniel  <braden@endoframe.com>
 
 	Load the initial and inline worlds asynchronously.
