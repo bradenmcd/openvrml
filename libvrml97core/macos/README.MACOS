@@ -39,20 +39,21 @@ To build LibVRML and Lookat
           - libvrml97
             - libvrml97core
             - libvrml97gl
+            - libvrml97js
             - lookat
             - ...
 
-2) Compile JavaScript.mcp
+2) Compile JavaScript.mcp in libvrml97js/macos
 
-3) Compile ImageReader.mcp
+3) Compile ImageReader.mcp in libvrml97core/macos
    -- you should ensure that the ImageReader.mcp project access paths include
       your JPEG, PNG and Z compression library folders.
 
-4) Compile LibVRML97.mcp
+4) Compile LibVRML97.mcp in libvrml97core/macos
    -- you need to include InternetConfig, ZLIB, PNG, JPEG and OpenGL libraries
       and header files in your access paths. 
            
-5) Compile Lookat.mcp (in the libvrml97/lookat/macos folder)
+5) Compile Lookat.mcp (in lookat/macos)
    -- you will need to update the access paths so that your compiler can find
       your Apple OpenGL SDK GLUT files (header files, library, and the resource file).
 
@@ -64,9 +65,9 @@ choose which VRML files to view.
 Notes
 =====
 
-You will need to use your own application's creator code in System::loadUrl()
-in sysem.cpp in order to use InternetConfig to pass non-VRML anchors to your default
-helper application (Need a smarter solution here...).
+You will usually need to provide your application's creator code in System.cpp
+in order to use InternetConfig to pass non-VRML anchors to your default
+helper application within LibVRML97 (Need a smarter solution here...).
 
 Note that I have included premade parser files in the macos folder, which the supplied
 LibVRML97.mcp project uses.
@@ -95,4 +96,4 @@ version of GLUT. Go to this URL for details:
 
 
 Michael louka (Michael.Louka@hrp.no)
-7 January 2000
+21 January 2000
