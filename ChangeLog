@@ -1,3 +1,20 @@
+2002-09-23  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * src/openvrml/OpenVRML/ScriptJDK.cpp: Use std::copy instead of
+          memcpy. Fix bugs in ConstSFNode::CreateObject, 
+          ConstMFRotation::CreateObject, ConstMFVec3f::CreateObject and
+          MFVec3f::setValue. Additional documentation.
+
+        * src/openvrml/OpenVRML/MathUtils.cpp: Removed unneeded include.
+
+        * models/TestJSAI.java: Add tests of SFNode, ConstMFNode,
+          ConstMFRotation, ConstMFTime, ConstMFVec2f and ConstMFVec3f.
+
+        * java/vrml/field/ConstMFFloat.java,
+          java/vrml/field/ConstMFNode.java,
+          java/vrml/field/ConstMFRotation.java,
+          java/vrml/field/ConstMFTime.java: Update javadoc comments.
+
 2002-09-21  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp: Fixes to MFNode::print to
