@@ -1,5 +1,10 @@
 2004-11-27 Braden McDaniel  <braden@endoframe.com>
 
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
+	Project file updates.
+
+2004-11-27 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/event.h:  event_emitter::last_time
 	accessor should be public.
 
