@@ -102,7 +102,7 @@ void VrmlNodeImageTexture::render(Viewer *viewer)
       Doc relDoc(relUrl);
       d_image = new Image;
       if ( ! d_image->tryURLs( d_url.size(), d_url.get(), &relDoc ) )
-	cerr << "Error: couldn't read ImageTexture from URL " << d_url << endl;
+	      theSystem->error("Couldn't read ImageTexture from URL %s\n", (char*)d_url.get(0));
     }
 
   // Check texture cache
