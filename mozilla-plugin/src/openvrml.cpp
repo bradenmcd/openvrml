@@ -58,7 +58,7 @@ namespace {
                                                gpointer data);
 
     class PluginInstance : boost::noncopyable {
-	friend class ScriptablePeer;
+        friend class ScriptablePeer;
         friend gboolean request_data_available(GIOChannel * source,
                                                GIOCondition condition,
                                                gpointer data);
@@ -71,13 +71,13 @@ namespace {
         int out_pipe[2], in_pipe[2];
         GIOChannel * request_channel;
         std::stringstream request_line;
-	nsCOMPtr<VrmlBrowser> scriptablePeer;
+        nsCOMPtr<VrmlBrowser> scriptablePeer;
 
     public:
         explicit PluginInstance(NPP npp) throw (std::bad_alloc);
         ~PluginInstance() throw ();
 
-	nsISupports * GetScriptablePeer() throw ();
+        nsISupports * GetScriptablePeer() throw ();
         void SetWindow(NPWindow & window) throw (std::bad_alloc);
         void HandleEvent(void * event) throw ();
         int in() const throw ();
@@ -85,7 +85,7 @@ namespace {
     };
 
     class ScriptablePeer : public nsIClassInfo, public VrmlBrowser {
-	PluginInstance & pluginInstance;
+        PluginInstance & pluginInstance;
 
     public:
         explicit ScriptablePeer(PluginInstance & pluginInstance);
@@ -612,7 +612,7 @@ NPError NPP_GetValue(const NPP instance,
         //
         NS_ADDREF(scriptablePeer);
         *static_cast<nsISupports **>(value) = scriptablePeer;
-	break;
+        break;
     case NPPVpluginScriptableIID:
         try {
             scriptableIID_ptr =
@@ -832,7 +832,7 @@ namespace {
     }
 
     ScriptablePeer::ScriptablePeer(PluginInstance & pluginInstance):
-	pluginInstance(pluginInstance)
+        pluginInstance(pluginInstance)
     {
         NS_INIT_ISUPPORTS();
     }
@@ -901,12 +901,12 @@ namespace {
 
     NS_IMETHODIMP ScriptablePeer::GetName(char ** _retval)
     {
-	if (!_retval) { return NS_ERROR_NULL_POINTER; }
+        if (!_retval) { return NS_ERROR_NULL_POINTER; }
 
         const std::string name;
-	const size_t bufferSize = sizeof (char) * (name.length() + 1);
+        const size_t bufferSize = sizeof (char) * (name.length() + 1);
 
-	*_retval = static_cast<char *>(nsMemory::Clone(name.c_str(),
+        *_retval = static_cast<char *>(nsMemory::Clone(name.c_str(),
                                                        bufferSize));
         if (!*_retval) { return NS_ERROR_OUT_OF_MEMORY; }
 
@@ -915,12 +915,12 @@ namespace {
 
     NS_IMETHODIMP ScriptablePeer::GetVersion(char ** _retval)
     {
-	if (!_retval) { return NS_ERROR_NULL_POINTER; }
+        if (!_retval) { return NS_ERROR_NULL_POINTER; }
 
         const std::string version;
-	const size_t bufferSize = sizeof (char) * (version.length() + 1);
+        const size_t bufferSize = sizeof (char) * (version.length() + 1);
 
-	*_retval = static_cast<char *>(nsMemory::Clone(version.c_str(),
+        *_retval = static_cast<char *>(nsMemory::Clone(version.c_str(),
                                                        bufferSize));
         if (!*_retval) { return NS_ERROR_OUT_OF_MEMORY; }
 
@@ -1036,7 +1036,7 @@ namespace {
         height(0),
         player_pid(0),
         request_channel(0),
-	scriptablePeer(new ScriptablePeer(*this))
+        scriptablePeer(new ScriptablePeer(*this))
     {
         int result = pipe(this->out_pipe);
         if (result != 0) {
@@ -1060,7 +1060,7 @@ namespace {
 
     nsISupports * PluginInstance::GetScriptablePeer() throw ()
     {
-	return this->scriptablePeer;
+        return this->scriptablePeer;
     }
 
     void PluginInstance::SetWindow(NPWindow & window)

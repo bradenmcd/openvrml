@@ -1,5 +1,9 @@
 2005-03-14 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp:  Removed tabs.
+
+2005-03-14 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/private.h:  Removed unused class templates
 	unary_function_base and unary_function_wrapper.
 
