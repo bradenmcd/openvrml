@@ -1,9 +1,9 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
-includedir=@includedir@
+includedir=@includedir@/@PACKAGE_TARNAME@
 
-Name: OpenVRML
+Name: @PACKAGE_NAME@
 Description: VRML97 run-time library.
 Version: @PACKAGE_VERSION@
 Requires: @OPENVRML_PKG_REQUIRES@

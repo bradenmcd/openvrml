@@ -1,3 +1,8 @@
+2003-08-03  Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.pc.in:  Adjusted include directory.
+	* openvrml-gl.pc.in: Adjusted include directory.
+
 2003-07-29  Braden McDaniel  <braden@endoframe.com>
 
 	Naming convention changes. Change "OpenVRML" namespace to
