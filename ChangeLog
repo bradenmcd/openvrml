@@ -14,8 +14,11 @@
 
         * In `VrmlNamespace.cpp', moved definitions of NodeCloneVisitor
           and NodeRouteCopyVisitor from inside the cloneNodes() method
-          to unnamed namespace at global scope. This fixes a weird
+          to an unnamed namespace at global scope. This fixes a weird
           problem with linking under egcs 1.1.2.
+
+        * Changed erroneous dynamic_casts in NodeCloneVisitor and
+          NodeRouteCopyVisitor to to[Node]() method calls.
 
 2001-02-05  Braden McDaniel  <braden@endoframe.com>
 

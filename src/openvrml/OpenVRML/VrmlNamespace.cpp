@@ -326,24 +326,21 @@ namespace {
             
             if (node.getMaterial().get()) {
                 this->visitNode(*node.getMaterial().get());
-                assert(dynamic_cast<VrmlNodeMaterial *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toMaterial());
                 clonedNode->setMaterial(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
             if (node.getTexture().get()) {
                 this->visitNode(*node.getTexture().get());
-                assert(dynamic_cast<VrmlNodeTexture *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toTexture());
                 clonedNode->setTexture(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
             if (node.getTextureTransform().get()) {
                 this->visitNode(*node.getTextureTransform().get());
-                assert(dynamic_cast<VrmlNodeTextureTransform *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toTextureTransform());
                 clonedNode->setTextureTransform(
                         VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
@@ -374,8 +371,7 @@ namespace {
             clonedNode->setChildren(this->visitChildren(node.getChildren()));
             if (node.getProxy().get()) {
                 this->visitNode(*node.getProxy().get());
-                assert(dynamic_cast<VrmlNodeChild *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toChild());
                 clonedNode->setProxy(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
@@ -420,24 +416,21 @@ namespace {
             
             if (node.getColor().get()) {
                 this->visitNode(*node.getColor().get());
-                assert(dynamic_cast<VrmlNodeColor *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toColor());
                 clonedNode->setColor(VrmlSFNode(VrmlSFNode(this->rootNodeStack.top())));
                 this->rootNodeStack.pop();
             }
             
             if (node.getNormal().get()) {
                 this->visitNode(*node.getNormal().get());
-                assert(dynamic_cast<VrmlNodeNormal *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toNormal());
                 clonedNode->setNormal(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
             if (node.getTexCoord().get()) {
                 this->visitNode(*node.getTexCoord().get());
-                assert(dynamic_cast<VrmlNodeTextureCoordinate *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toCoordinate());
                 clonedNode->setTexCoord(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
@@ -467,32 +460,28 @@ namespace {
             
             if (node.getColor().get()) {
                 this->visitNode(*node.getColor().get());
-                assert(dynamic_cast<VrmlNodeColor *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toColor());
                 clonedNode->setColor(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
             if (node.getCoord().get()) {
                 this->visitNode(*node.getCoord().get());
-                assert(dynamic_cast<VrmlNodeCoordinate *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toCoordinate());
                 clonedNode->setCoord(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
             if (node.getNormal().get()) {
                 this->visitNode(*node.getNormal().get());
-                assert(dynamic_cast<VrmlNodeNormal *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toNormal());
                 clonedNode->setNormal(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
             if (node.getTexCoord().get()) {
                 this->visitNode(*node.getTexCoord().get());
-                assert(dynamic_cast<VrmlNodeTextureCoordinate *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toTextureCoordinate());
                 clonedNode->setTexCoord(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
@@ -504,16 +493,14 @@ namespace {
             
             if (node.getColor().get()) {
                 this->visitNode(*node.getColor().get());
-                assert(dynamic_cast<VrmlNodeColor *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toColor());
                 clonedNode->setColor(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
             if (node.getCoord().get()) {
                 this->visitNode(*node.getCoord().get());
-                assert(dynamic_cast<VrmlNodeCoordinate *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toCoordinate());
                 clonedNode->setCoord(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
@@ -575,16 +562,14 @@ namespace {
             
             if (node.getColor().get()) {
                 this->visitNode(*node.getColor().get());
-                assert(dynamic_cast<VrmlNodeColor *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toColor());
                 clonedNode->setColor(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
             if (node.getCoord().get()) {
                 this->visitNode(*node.getCoord().get());
-                assert(dynamic_cast<VrmlNodeCoordinate *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toCoordinate());
                 clonedNode->setCoord(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
@@ -637,8 +622,7 @@ namespace {
             
             if (node.getAppearance().get()) {
                 this->visitNode(*node.getAppearance().get());
-                assert(dynamic_cast<VrmlNodeAppearance *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toAppearance());
                 clonedNode->setAppearance(
                         VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
@@ -646,21 +630,23 @@ namespace {
             
             if (node.getGeometry().get()) {
                 this->visitNode(*node.getGeometry().get());
-                assert(dynamic_cast<VrmlNodeGeometry *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toGeometry());
                 clonedNode->setGeometry(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
         }
         
+        /**
+         * @todo The assertion here will fail if a MovieTexture node is used
+         *       as a sound source.
+         */
         virtual void visit(VrmlNodeSound & node) {
             VrmlNodeSound * const clonedNode = new VrmlNodeSound(node);
             this->rootNodeStack.push(clonedNode);
             
             if (node.getSource().get()) {
                 this->visitNode(*node.getSource().get());
-                assert(dynamic_cast<VrmlNodeAudioClip *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toAudioClip());
                 clonedNode->setSource(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
@@ -690,8 +676,7 @@ namespace {
             
             if (node.getFontStyle().get()) {
                 this->visitNode(*node.getFontStyle().get());
-                assert(dynamic_cast<VrmlNodeFontStyle *>
-                        (this->rootNodeStack.top()));
+                assert(this->rootNodeStack.top()->toFontStyle());
                 clonedNode->setFontStyle(VrmlSFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
