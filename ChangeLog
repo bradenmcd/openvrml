@@ -1,3 +1,11 @@
+2005-03-28 Braden McDaniel  <braden@endoframe.com>
+
+	Added swap member function to openvrml::image along with a
+	specialization of std::swap.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/basetypes.h
+
 2005-03-25 Braden McDaniel  <braden@endoframe.com>
 
 	* examples/sdl_viewer.cpp:  Code cleanup.

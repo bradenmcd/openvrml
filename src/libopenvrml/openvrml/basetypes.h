@@ -533,6 +533,8 @@ namespace openvrml {
 
         // Use compiler-defined operator= and copy constructor.
 
+        void swap(image & img) throw ();
+
         size_t x() const throw ();
         void x(size_t value) throw (std::bad_alloc);
 
@@ -651,5 +653,14 @@ namespace openvrml {
     std::ostream & operator<<(std::ostream & out, const image & img);
 
 } // namespace openvrml
+
+namespace std {
+
+    template <>
+    inline void swap(openvrml::image & a, openvrml::image & b)
+    {
+        a.swap(b);
+    }
+}
 
 # endif // OPENVRML_BASETYPES_H

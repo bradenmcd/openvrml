@@ -2972,6 +2972,20 @@ image::image(const size_t x,
  */
 
 /**
+ * @brief Swap.
+ *
+ * @param img   an image.
+ */
+void image::swap(image & img) throw ()
+{
+    using std::swap;
+    swap(this->x_, img.x_);
+    swap(this->y_, img.y_);
+    swap(this->comp_, img.comp_);
+    swap(this->array_, img.array_);
+}
+
+/**
  * @fn size_t image::x() const throw ()
  *
  * @brief Pixels in the <var>x</var>-dimension.
@@ -3198,3 +3212,16 @@ std::ostream & operator<<(std::ostream & out, const image & img)
 }
 
 }
+
+/**
+ * @fn template <> void std::swap(openvrml::image & a, openvrml::image & b)
+ *
+ * @relatesalso openvrml::image
+ *
+ * @brief Swap the values of @p and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
