@@ -44,7 +44,10 @@ VrmlNodeType *VrmlNodeViewpoint::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeViewpoint::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeViewpoint::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 static const float DEFAULT_FIELD_OF_VIEW = 0.785398;
@@ -214,4 +217,3 @@ void VrmlNodeViewpoint::setField(const char *fieldName,
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
-

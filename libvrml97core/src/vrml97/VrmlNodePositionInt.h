@@ -4,11 +4,10 @@
 //
 //  VrmlNodePositionInt.h
 
-#ifndef  _VRMLNODEPOSITIONINT_
-#define  _VRMLNODEPOSITIONINT_
+#ifndef VRMLNODEPOSITIONINT_H
+#define VRMLNODEPOSITIONINT_H
 
 #include "VrmlNodeChild.h"
-
 #include "VrmlSFFloat.h"
 #include "VrmlMFFloat.h"
 #include "VrmlSFVec3f.h"
@@ -23,7 +22,7 @@ public:
 
   // Define the fields of PositionInt nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodePositionInt( VrmlScene *scene = 0);
   virtual ~VrmlNodePositionInt();
@@ -53,5 +52,4 @@ private:
   VrmlSFVec3f d_value;
 };
 
-#endif _VRMLNODEPOSITIONINT_
-
+#endif

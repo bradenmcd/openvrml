@@ -2,14 +2,14 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef  _VRMLSFNODE_
-#define  _VRMLSFNODE_
+# ifndef VRMLSFNODE_H
+# define VRMLSFNODE_H
 
-#include "VrmlField.h"
+# include "VrmlField.h"
 
 class VrmlNode;
 
-class VrmlSFNode : public VrmlSField {
+class VrmlSFNode : public VrmlField {
 public:
 
   VrmlSFNode(VrmlNode *value = 0);
@@ -19,11 +19,7 @@ public:
   // Assignment.
   VrmlSFNode& operator=(const VrmlSFNode& rhs);
 
-#ifdef macintosh
   virtual ostream& print(ostream& os) const;
-#else
-  virtual ostream& VrmlSFNode::print(ostream& os) const;
-#endif
 
   virtual VrmlField *clone() const;
 
@@ -40,4 +36,4 @@ private:
 
 };
 
-#endif _VRMLSFNODE_
+# endif

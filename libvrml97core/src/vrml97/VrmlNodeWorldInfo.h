@@ -5,8 +5,8 @@
 //  VrmlNodeWorldInfo.h
 //
 
-#ifndef  _VRMLNODEWORLDINFO_
-#define  _VRMLNODEWORLDINFO_
+#ifndef VRMLNODEWORLDINFO_H
+#define VRMLNODEWORLDINFO_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlMFString.h"
@@ -20,7 +20,7 @@ public:
   // Define the built in VrmlNodeType:: "WorldInfo"
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
 
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeWorldInfo(VrmlScene *);
   virtual ~VrmlNodeWorldInfo();
@@ -49,7 +49,4 @@ private:
 
 
 
-#endif _VRMLNODEWORLDINFO_
-
-
-
+#endif

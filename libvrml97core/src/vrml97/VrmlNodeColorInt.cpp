@@ -40,7 +40,10 @@ VrmlNodeType *VrmlNodeColorInt::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeColorInt::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeColorInt::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeColorInt::VrmlNodeColorInt( VrmlScene *scene ) :
@@ -78,7 +81,7 @@ void VrmlNodeColorInt::eventIn(double timeStamp,
 	{
 	  theSystem->error
 	    ("Invalid type for %s eventIn %s (expected SFFloat).\n",
-		nodeType()->getName(), eventName);
+		nodeType().getName(), eventName);
 	  return;
 	}
       float f = fieldValue->toSFFloat()->get();
@@ -166,4 +169,3 @@ void VrmlNodeColorInt::setField(const char *fieldName,
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
-

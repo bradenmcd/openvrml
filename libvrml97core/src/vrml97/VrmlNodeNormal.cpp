@@ -30,7 +30,10 @@ VrmlNodeType *VrmlNodeNormal::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeNormal::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeNormal::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeNormal::VrmlNodeNormal(VrmlScene *scene) : VrmlNode(scene)
@@ -79,4 +82,3 @@ void VrmlNodeNormal::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 }
-

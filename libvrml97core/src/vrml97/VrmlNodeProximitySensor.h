@@ -4,8 +4,8 @@
 //
 //  VrmlNodeProximitySensor.h
 
-#ifndef  _VRMLNODEPROXIMITYSENSOR_
-#define  _VRMLNODEPROXIMITYSENSOR_
+#ifndef VRMLNODEPROXIMITYSENSOR_H
+#define VRMLNODEPROXIMITYSENSOR_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
@@ -15,14 +15,13 @@
 
 class VrmlScene;
 
-
 class VrmlNodeProximitySensor : public VrmlNodeChild {
 
 public:
 
   // Define the fields of ProximitySensor nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeProximitySensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeProximitySensor();
@@ -51,5 +50,4 @@ private:
   VrmlSFTime d_exitTime;
 };
 
-#endif _VRMLNODEPROXIMITYSENSOR_
-
+#endif

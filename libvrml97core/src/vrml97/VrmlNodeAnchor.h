@@ -20,7 +20,7 @@ public:
 
   // Define the built in VrmlNodeType:: "Anchor"
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeAnchor(VrmlScene*);
   VrmlNodeAnchor(const VrmlNodeAnchor&);
@@ -54,5 +54,4 @@ protected:
   
 };
 
-#endif // VRMLNODEANCHOR_H
-
+#endif

@@ -7,44 +7,54 @@
 //  a real http protocol library is found...
 //
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
-#ifdef _WIN32
-#include <winconfig.h>
-#endif
+# ifdef _WIN32
+#   include <winconfig.h>
+# endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <fstream.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <ctype.h>
+# include <string.h>
+# include <fstream.h>
 
-#include "Doc.h"
-#include "System.h"
+# include "Doc.h"
+# include "doc2.hpp"
+# include "System.h"
 
-
-Doc::Doc(const char *url, Doc *relative) :
-  d_url(0),
-  d_ostream(0),
-  d_fp(0),
-  d_gz(0),
-  d_tmpfile(0)
+Doc::Doc(char const * url, Doc const * relative)
+  : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
 {
-  if ( url )
-    seturl(url, relative);
+    if (url) {
+        seturl(url, relative);
+    }
 }
 
-Doc::Doc(Doc *doc) :
-  d_url(0),
-  d_ostream(0),
-  d_fp(0),
-  d_gz(0),
-  d_tmpfile(0)
+Doc::Doc(char const * url, Doc2 const * relative)
+  : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
 {
-  if ( doc )
-    seturl( doc->url() );
+    if (url) {
+        seturl(url, relative);
+    }
+}
+
+Doc::Doc(Doc const * doc)
+  : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
+{
+    if (doc) {
+        seturl(doc->url(), static_cast<Doc const *>(0));
+    }
+}
+
+Doc::Doc(Doc2 const * doc)
+  : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
+{
+    if (doc) {
+        seturl(doc->url(), static_cast<Doc2 const *>(0));
+    }
 }
 
 Doc::~Doc()
@@ -60,7 +70,7 @@ Doc::~Doc()
 }
 
 
-void Doc::seturl(const char *url, Doc *relative)
+void Doc::seturl(char const * url, Doc const * relative)
 {
   delete [] d_url;
   d_url = 0;
@@ -82,10 +92,34 @@ void Doc::seturl(const char *url, Doc *relative)
   }
 }
 
+void Doc::seturl(char const * url, Doc2 const * relative)
+{
+  delete [] d_url;
+  d_url = 0;
 
-const char *Doc::url() { return d_url; }
+  if (url)
+  {
+      const char *path = "";
 
-const char *Doc::urlBase() 
+      if ( relative && ! isAbsolute(url) )
+	    path = relative->urlPath();
+
+      d_url = new char[strlen(path) + strlen(url) + 1];
+      strcpy(d_url, path);
+
+      if (strlen(url)>2 && url[0] == '.' && url[1] == SLASH)
+        strcat(d_url, url+2); // skip "./"
+      else
+        strcat(d_url, url);
+  }
+}
+
+char const * Doc::url() const
+{
+    return d_url;
+}
+
+char const * Doc::urlBase() const
 {
   if (! d_url) return "";
 
@@ -104,7 +138,7 @@ const char *Doc::urlBase()
   return s;
 }
 
-const char *Doc::urlExt() 
+char const * Doc::urlExt() const
 {
   if (! d_url) return "";
 
@@ -122,7 +156,7 @@ const char *Doc::urlExt()
   return &ext[0];
 }
 
-const char *Doc::urlPath() 
+char const * Doc::urlPath() const
 {
   if (! d_url) return "";
 
@@ -138,7 +172,7 @@ const char *Doc::urlPath()
 }
 
 
-const char *Doc::urlProtocol()
+char const * Doc::urlProtocol() const
 {
   if (d_url)
     {
@@ -166,13 +200,13 @@ const char *Doc::urlProtocol()
   return "file";
 }
 
-const char *Doc::urlModifier()
+char const * Doc::urlModifier() const
 {
   char *mod = d_url ? strrchr(d_url,'#') : 0;
   return mod ? mod : "";
 }
 
-const char *Doc::localName()
+char const * Doc::localName()
 {
   static char buf[1024];
   if (filename(buf, sizeof(buf)))
@@ -180,7 +214,7 @@ const char *Doc::localName()
   return 0;
 }
 
-const char *Doc::localPath()
+char const * Doc::localPath() 
 {
   static char buf[1024];
   if (filename(buf, sizeof(buf)))
@@ -439,5 +473,3 @@ bool Doc::isAbsolute(const char *url)
   const char *s = stripProtocol(url);
   return ( *s == SLASH || *(s+1) == ':' );
 }
-
-    

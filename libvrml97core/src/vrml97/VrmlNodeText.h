@@ -4,8 +4,8 @@
 //
 //  VrmlNodeText.h
 
-#ifndef  _VRMLNODETEXT_
-#define  _VRMLNODETEXT_
+#ifndef VRMLNODETEXT_H
+#define VRMLNODETEXT_H
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlMFString.h"
@@ -21,7 +21,7 @@ public:
 
   // Define the fields of text nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeText(VrmlScene *);
   virtual ~VrmlNodeText();
@@ -54,5 +54,4 @@ protected:
 
 };
 
-#endif _VRMLNODETEXT_
-
+#endif

@@ -12,7 +12,6 @@
 #endif
 
 #include <list>
-
 #include "VrmlNodeChild.h"
 #include "VrmlMFString.h"
 #include "VrmlSFString.h"
@@ -29,7 +28,7 @@ public:
 
   // Define the fields of Script nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeScript( VrmlScene *scene = 0 );
   VrmlNodeScript( const VrmlNodeScript& );
@@ -60,17 +59,17 @@ public:
   void addEventIn(const char *name, VrmlField::VrmlFieldType type);
   void addEventOut(const char *name, VrmlField::VrmlFieldType type);
   void addField(const char *name, VrmlField::VrmlFieldType type,
-		VrmlField *defaultVal = 0);
+		VrmlField const * defaultVal = 0);
 
   // Access to eventIns/Outs/fields for ScriptObjects
 
   // Per-script field type
-  typedef struct {
+  struct ScriptField {
     char *name;
     VrmlField *value;
     VrmlField::VrmlFieldType type;
     bool modified;
-  } ScriptField;
+  };
 
   typedef std::list< ScriptField* > FieldList;
 
@@ -78,6 +77,7 @@ public:
   VrmlField::VrmlFieldType hasEventIn(const char *name) const;
   VrmlField::VrmlFieldType hasEventOut(const char *name) const;
   VrmlField::VrmlFieldType hasField(const char *name) const;
+  VrmlField::VrmlFieldType hasInterface(char const *) const;
 
   // Set field/event values
   void setEventIn(const char *, const VrmlField *);
@@ -118,5 +118,4 @@ private:
   int d_eventsReceived;
 };
 
-#endif VRMLNODESCRIPT_H
-
+#endif

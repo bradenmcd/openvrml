@@ -168,11 +168,11 @@ bool System::loadUrl(char *url, int np, char **parameters )
 
 // This won't work under windows or if netscape isn't running...
 
-#ifndef _WIN32
-# include <stdlib.h>
-#endif
+# ifndef _WIN32
+#   include <stdlib.h>
+# endif
 
-bool System::loadUrl(const char *url, int np, char **parameters )
+bool System::loadUrl(const char * url, size_t np, char const * const * parameters )
 {
   if (! url) return false;
 #ifndef _WIN32
@@ -309,28 +309,28 @@ const char *System::httpFetch( const char *url )
 //  return 0;
 // #else
 
-  int port = 80;
-  const char *hostname = httpHost(url, &port);
-
-  if (port == 80)
-    theSystem->inform("Connecting to %s ...", hostname);
-  else
-    theSystem->inform("Connecting to %s:%d ...", hostname, port);
-
-  int sockfd;
-  if ((sockfd = System::connectSocket( hostname, port )) != -1)
-    theSystem->inform("connected.");
-  else
-#ifdef _WIN32                          
-     {
+    int port = 80;
+    const char *hostname = httpHost(url, &port);
+    
+    if (port == 80) {
+        theSystem->inform("Connecting to %s ...", hostname);
+    } else {
+        theSystem->inform("Connecting to %s:%d ...", hostname, port);
+    }
+    
+    int sockfd;
+    if ((sockfd = System::connectSocket( hostname, port )) != -1) {
+        theSystem->inform("connected.");
+    } else {
+# ifdef _WIN32                          
         theSystem->warn("Connect failed:  (errno %d)\n",
         WSAGetLastError());
         WSACleanup();
-     }
-#else
-  theSystem->warn("Connect failed: %s (errno %d).\n",
-		 strerror(errno), errno);
+# else
+        theSystem->warn("Connect failed: %s (errno %d).\n",
+                        strerror(errno), errno);
 #endif
+    }
   // Copy to a local temp file
   char *result = 0;
   if (sockfd != -1 && (result = tempnam(0, "VR")))

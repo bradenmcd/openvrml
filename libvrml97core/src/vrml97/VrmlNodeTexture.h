@@ -5,8 +5,8 @@
 //  %W% %G%
 //  VrmlNodeTexture.h
 
-#ifndef  _VRMLNODETEXTURE_
-#define  _VRMLNODETEXTURE_
+#ifndef VRMLNODETEXTURE_H
+#define VRMLNODETEXTURE_H
 
 #include "VrmlNode.h"
 #include "VrmlSFString.h"
@@ -19,7 +19,7 @@ class VrmlNodeTexture : public VrmlNode {
 public:
 
   // Define the fields of Texture nodes
-  static VrmlNodeType *defineType(VrmlNodeType *t);
+  static VrmlNodeType * defineType(VrmlNodeType *t);
 
   VrmlNodeTexture(VrmlScene *s);
   virtual ~VrmlNodeTexture();
@@ -45,5 +45,4 @@ protected:
 
 };
 
-#endif // _VRMLNODETEXTURE_
-
+#endif

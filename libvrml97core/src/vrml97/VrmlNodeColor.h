@@ -18,7 +18,7 @@ public:
 
   // Define the fields of Color nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeColor(VrmlScene *);
   virtual ~VrmlNodeColor();

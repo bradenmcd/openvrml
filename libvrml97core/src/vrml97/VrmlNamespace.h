@@ -48,7 +48,7 @@ public:
   const VrmlNodeType *firstType();
   
   // Find a node by name.
-  VrmlNode *findNode(const char *name);
+  VrmlNode *findNode(const char *name) const;
   
 private:
 
@@ -72,4 +72,4 @@ private:
 
 };
 
-#endif // VRMLNAMESPACE_H
+#endif

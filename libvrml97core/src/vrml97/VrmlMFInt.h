@@ -37,7 +37,7 @@ public:
 
   VrmlMFInt();
   VrmlMFInt(int value);
-  VrmlMFInt(int n, int *v);
+  VrmlMFInt(int n, int const *v);
   VrmlMFInt(const VrmlMFInt &src);
 
   ~VrmlMFInt();

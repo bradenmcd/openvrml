@@ -4,12 +4,11 @@
 //
 //  VrmlNodeSphere.h
 
-#ifndef  _VRMLNODESPHERE_
-#define  _VRMLNODESPHERE_
+#ifndef VRMLNODESPHERE_H
+#define VRMLNODESPHERE_H
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFFloat.h"
-
 
 class VrmlNodeSphere : public VrmlNodeGeometry {
 
@@ -17,7 +16,7 @@ public:
 
   // Define the fields of sphere nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeSphere(VrmlScene *);
   virtual ~VrmlNodeSphere();
@@ -39,4 +38,4 @@ protected:
 
 };
 
-#endif _VRMLNODESPHERE_
+#endif

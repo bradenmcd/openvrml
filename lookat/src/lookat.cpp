@@ -5,16 +5,17 @@
 //  Program to exercise the VrmlScene and ViewerGlut classes.
 //
 
-# if defined(__FreeBSD__)
-#   include <floatingpoint.h>
-# endif
+#if defined(__FreeBSD__)
+#include <floatingpoint.h>
+#endif
 
-# include <GL/glut.h>
-# include <vrml97/Doc.h>
-# include <vrml97/System.h>
-# include <vrml97/VrmlScene.h>
+#include <stdio.h>
+#include <GL/glut.h>
+#include <vrml97/doc2.hpp>
+#include <vrml97/System.h>
+#include <vrml97/VrmlScene.h>
 
-# include "ViewerGlut.h"
+#include "ViewerGlut.h"
 
 static void worldChangedCB(int);
 static void buildViewpointMenu();
@@ -28,9 +29,9 @@ static bool setTitleUrl = true;
 int
 main(int argc, char **argv)
 {
-# if defined(__FreeBSD__)
+#if defined(__FreeBSD__)
   fpsetmask(0);
-# endif;  
+#endif;  
   
   glutInitWindowSize(400, 320);
   glutInit( &argc, argv);
@@ -126,12 +127,11 @@ static void worldChangedCB(int reason)
       break;
 
     case VrmlScene::REPLACE_WORLD:
-      if ( setTitleUrl )
-	{
-	  Doc *urlDoc = vrmlScene->urlDoc();
-	  const char *title = urlDoc ? urlDoc->urlBase() : 0;
-	  if (title && *title) glutSetWindowTitle(title);
-	}
+      if ( setTitleUrl ) {
+        Doc2 * urlDoc = vrmlScene->urlDoc();
+        const char * title = urlDoc ? urlDoc->urlBase() : 0;
+        if (title && *title) glutSetWindowTitle(title);
+      }
       buildViewpointMenu();
       break;
     }

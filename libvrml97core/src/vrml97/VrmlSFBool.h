@@ -2,8 +2,8 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef  _VRMLSFBOOL_
-#define  _VRMLSFBOOL_
+#ifndef  VRMLSFBOOL_H
+#define  VRMLSFBOOL_H
 
 #include "VrmlField.h"
 
@@ -29,4 +29,4 @@ private:
 
 };
 
-#endif _VRMLSFBOOL_
+#endif

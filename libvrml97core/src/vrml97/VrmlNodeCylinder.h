@@ -4,8 +4,8 @@
 //
 //  VrmlNodeCylinder.h
 
-#ifndef  _VRMLNODECYLINDER_
-#define  _VRMLNODECYLINDER_
+#ifndef VRMLNODECYLINDER_H
+#define VRMLNODECYLINDER_H
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFBool.h"
@@ -17,7 +17,7 @@ public:
 
   // Define the fields of cylinder nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeCylinder(VrmlScene *);
   virtual ~VrmlNodeCylinder();
@@ -47,4 +47,4 @@ protected:
 
 };
 
-#endif _VRMLNODECYLINDER_
+#endif

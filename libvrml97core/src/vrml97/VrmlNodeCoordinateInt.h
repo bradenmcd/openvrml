@@ -4,11 +4,10 @@
 //
 //  VrmlNodeCoordinateInt.h
 
-#ifndef  _VRMLNODECOORDINATEINT_
-#define  _VRMLNODECOORDINATEINT_
+#ifndef VRMLNODECOORDINATEINT_H
+#define VRMLNODECOORDINATEINT_H
 
 #include "VrmlNodeChild.h"
-
 #include "VrmlSFFloat.h"
 #include "VrmlMFFloat.h"
 #include "VrmlMFVec3f.h"
@@ -22,7 +21,7 @@ public:
 
   // Define the fields of CoordinateInt nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeCoordinateInt( VrmlScene *scene = 0);
   virtual ~VrmlNodeCoordinateInt();
@@ -48,5 +47,4 @@ private:
   VrmlMFVec3f d_value;
 };
 
-#endif _VRMLNODECOORDINATEINT_
-
+#endif

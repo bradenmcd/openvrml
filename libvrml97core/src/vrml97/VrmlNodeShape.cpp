@@ -5,11 +5,9 @@
 //  VrmlNodeShape.cpp
 
 #include "VrmlNodeShape.h"
-
 #include "VrmlNodeAppearance.h"
 #include "VrmlNodeGeometry.h"
 #include "VrmlNodeTexture.h"
-
 #include "VrmlNodeType.h"
 #include "Viewer.h"
 
@@ -37,7 +35,10 @@ VrmlNodeType *VrmlNodeShape::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeShape::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeShape::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeShape::VrmlNodeShape(VrmlScene *scene) :
@@ -184,4 +185,3 @@ void VrmlNodeShape::setField(const char *fieldName,
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
-

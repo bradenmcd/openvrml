@@ -5,15 +5,13 @@
 //  VrmlNodeMovieTexture.cpp
 
 #include "VrmlNodeMovieTexture.h"
-
 #include "Image.h"
 #include "MathUtils.h"
 #include "System.h"
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
 #include "Viewer.h"
-#include "Doc.h"
-
+#include "doc2.hpp"
 
 static VrmlNode *creator( VrmlScene *s ) 
 { return new VrmlNodeMovieTexture(s); }
@@ -47,7 +45,10 @@ VrmlNodeType *VrmlNodeMovieTexture::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeMovieTexture::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeMovieTexture::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeMovieTexture::VrmlNodeMovieTexture(VrmlScene *scene) :
@@ -135,8 +136,8 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
   // Load the movie if needed (should check startTime...)
   if (! d_image && d_url.size() > 0)
     {
-      Doc relDoc( d_relativeUrl.get() );
-      Doc *rel = d_relativeUrl.get() ? &relDoc : d_scene->urlDoc();
+      Doc2 relDoc(d_relativeUrl.get());
+      Doc2 * rel = d_relativeUrl.get() ? &relDoc : d_scene->urlDoc();
       d_image = new Image;
       if ( ! d_image->tryURLs( d_url.size(), d_url.get(), rel ) )
 	cerr << "Error: couldn't read MovieTexture from URL " << d_url << endl;

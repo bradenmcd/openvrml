@@ -19,7 +19,7 @@ public:
 
   // Define the fields of Collision nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeCollision(VrmlScene *);
   virtual ~VrmlNodeCollision();

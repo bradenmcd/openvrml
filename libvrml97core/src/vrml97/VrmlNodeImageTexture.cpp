@@ -5,11 +5,11 @@
 //  VrmlNodeImageTexture.cpp
 
 #include "VrmlNodeImageTexture.h"
-
 #include "Image.h"
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
 #include "Doc.h"
+#include "doc2.hpp"
 
 static VrmlNode *creator( VrmlScene *s ) 
 { return new VrmlNodeImageTexture(s); }
@@ -50,7 +50,10 @@ VrmlNodeImageTexture::VrmlNodeImageTexture(VrmlScene *scene) :
 {
 }
 
-VrmlNodeType *VrmlNodeImageTexture::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeImageTexture::nodeType() const
+{
+    return *defineType(0);
+}
 
 VrmlNodeImageTexture::~VrmlNodeImageTexture()
 {
@@ -98,7 +101,7 @@ void VrmlNodeImageTexture::render(Viewer *viewer)
     {
       const char *relUrl = d_relativeUrl.get() ? d_relativeUrl.get() :
 	d_scene->urlDoc()->url();
-      Doc relDoc(relUrl);
+      Doc relDoc(relUrl, static_cast<Doc const *>(0));
       d_image = new Image;
       if ( ! d_image->tryURLs( d_url.size(), d_url.get(), &relDoc ) )
 	      theSystem->error("Couldn't read ImageTexture from URL %s\n", (char*)d_url.get(0));
@@ -207,3 +210,12 @@ void VrmlNodeImageTexture::setField(const char *fieldName,
     VrmlNode::setField(fieldName, fieldValue);
 }
 
+bool VrmlNodeImageTexture::getRepeatS() const
+{
+    return d_repeatS.get();
+}
+
+bool VrmlNodeImageTexture::getRepeatT() const
+{
+    return d_repeatT.get();
+}

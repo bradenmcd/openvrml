@@ -14,16 +14,13 @@
 #include "VrmlScene.h"
 #include "MathUtils.h"
 
-#include <stdio.h>		// sprintf
+#include <stdio.h>     // sprintf
 
-//# ifndef NDEBUG
+#ifndef NDEBUG
 //#   define VRML_NODE_DEBUG
-//# endif
+#endif
 
 VrmlNodeType *VrmlNode::defineType(VrmlNodeType *t) { return t; }
-
-VrmlNodeType *VrmlNode::nodeType() const { return 0; }
-
 
 VrmlNode::VrmlNode(VrmlScene *scene) :
   d_scene(scene),
@@ -365,7 +362,7 @@ void VrmlNode::eventIn(double timeStamp,
     eventName += 4;
 
   // Handle exposedFields 
-  if ( nodeType()->hasExposedField( eventName ) )
+  if ( nodeType().hasExposedField( eventName ) )
     {
       setField(eventName, *fieldValue);
       char eventOutName[256];
@@ -375,15 +372,15 @@ void VrmlNode::eventIn(double timeStamp,
     }
 
   // Handle set_field eventIn/field
-  else if ( nodeType()->hasEventIn( origEventName ) &&
-	    nodeType()->hasField( eventName ) )
+  else if ( nodeType().hasEventIn( origEventName ) &&
+	    nodeType().hasField( eventName ) )
     {
       setField(eventName, *fieldValue);
       setModified();
     }
 
   else
-    cerr << "Error: unhandled eventIn " << nodeType()->getName()
+    cerr << "Error: unhandled eventIn " << nodeType().getName()
 		<< "::" << name() << "." << origEventName << endl;
 
 }
@@ -437,7 +434,7 @@ ostream& VrmlNode::print(ostream& os, int indent) const
   if (nm && *nm)
     os << "DEF " << nm << " ";
 
-  os << nodeType()->getName() << " { ";
+  os << nodeType().getName() << " { ";
 
   // cast away const-ness for now...
   VrmlNode *n = (VrmlNode*)this;
@@ -456,7 +453,7 @@ ostream& VrmlNode::print(ostream& os, int indent) const
 
 ostream& VrmlNode::printFields(ostream& os, int /*indent*/)
 {
-  os << "# Error: " << nodeType()->getName()
+  os << "# Error: " << nodeType().getName()
      << "::printFields unimplemented.\n";
   return os; 
 }
@@ -481,7 +478,7 @@ ostream& VrmlNode::printField(ostream& os,
 void VrmlNode::setField(const char *fieldName, const VrmlField &)
 {
   theSystem->error("%s::setField: no such field (%s)",
-		   nodeType()->getName(), fieldName);
+		   nodeType().getName(), fieldName);
 }
 
 // Get the value of a field or eventOut.
@@ -489,7 +486,7 @@ void VrmlNode::setField(const char *fieldName, const VrmlField &)
 const VrmlField *VrmlNode::getField(const char *fieldName) const
 {
   theSystem->error("%s::getField: no such field (%s)\n",
-		   nodeType()->getName(), fieldName);
+		   nodeType().getName(), fieldName);
   return 0;
 }
 
@@ -510,9 +507,9 @@ const VrmlField *VrmlNode::getEventOut(const char *fieldName) const
     strncpy(shortName, fieldName, sizeof(shortName));
 
   // Handle exposedFields 
-  if ( nodeType()->hasExposedField( shortName ) )
+  if ( nodeType().hasExposedField( shortName ) )
     return getField( shortName );
-  else if ( nodeType()->hasEventOut( fieldName ) )
+  else if ( nodeType().hasEventOut( fieldName ) )
     return getField( fieldName );
   return 0;
 }

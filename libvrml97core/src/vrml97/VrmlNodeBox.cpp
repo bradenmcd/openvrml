@@ -35,7 +35,10 @@ VrmlNodeType *VrmlNodeBox::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeBox::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeBox::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeBox::VrmlNodeBox(VrmlScene *scene) :

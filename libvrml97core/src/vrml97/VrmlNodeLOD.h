@@ -4,13 +4,12 @@
 //
 //  VrmlNodeLOD.h
 
-#ifndef  _VRMLNODELOD_
-#define  _VRMLNODELOD_
+#ifndef VRMLNODELOD_H
+#define VRMLNODELOD_H
 
 #include "VrmlMFNode.h"
 #include "VrmlMFFloat.h"
 #include "VrmlSFVec3f.h"
-
 #include "VrmlNodeChild.h"
 
 class VrmlNodeLOD : public VrmlNodeChild {
@@ -19,7 +18,7 @@ public:
 
   // Define the fields of all built in LOD nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeLOD(VrmlScene *);
   virtual ~VrmlNodeLOD();
@@ -55,5 +54,4 @@ protected:
 
 };
 
-#endif _VRMLNODELOD_
-
+#endif

@@ -5,8 +5,8 @@
 //  %W% %G%
 //  VrmlNodeILineSet.h
 
-#ifndef  _VRMLNODEILINESET_
-#define  _VRMLNODEILINESET_
+#ifndef VRMLNODEILINESET_H
+#define VRMLNODEILINESET_H
 
 #include "VrmlNodeIndexedSet.h"
 #include "VrmlSFBool.h"
@@ -19,7 +19,7 @@ public:
 
   // Define the fields of indexed line set nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeILineSet(VrmlScene *);
   virtual ~VrmlNodeILineSet();
@@ -34,5 +34,4 @@ protected:
   // All fields are defined in VrmlNodeIndexedSet
 };
 
-#endif // _VRMLNODEILINESET_
-
+#endif

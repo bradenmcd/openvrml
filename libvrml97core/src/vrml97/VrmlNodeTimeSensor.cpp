@@ -6,10 +6,7 @@
 
 #include "VrmlNodeTimeSensor.h"
 #include "VrmlNodeType.h"
-
 #include "MathUtils.h"
-
-
 #include "VrmlScene.h"
 
 // TimeSensor factory. Add each TimeSensor to the scene for fast access.
@@ -47,7 +44,10 @@ VrmlNodeType *VrmlNodeTimeSensor::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeTimeSensor::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeTimeSensor::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeTimeSensor::VrmlNodeTimeSensor( VrmlScene *scene ) :

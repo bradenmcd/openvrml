@@ -12,10 +12,6 @@
 // nodes.
 //
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "VrmlNode.h"
 #include "VrmlNodeType.h"
 #include "Viewer.h"
@@ -26,7 +22,7 @@ class VrmlNodeProto : public VrmlNode {
 
 public:
 
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene);
   VrmlNodeProto(const VrmlNodeProto&);
@@ -147,4 +143,4 @@ private:
 
 };
 
-#endif _VRMLNODEPROTO_
+#endif

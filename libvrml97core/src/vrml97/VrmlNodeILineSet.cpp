@@ -6,14 +6,11 @@
 //  VrmlNodeILineSet.cpp
 
 #include "VrmlNodeILineSet.h"
-
 #include "VrmlNodeType.h"
 #include "VrmlNodeColor.h"
 #include "VrmlNodeCoordinate.h"
 #include "VrmlNodeTextureCoordinate.h"
-
 #include "Viewer.h"
-
 
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeILineSet(s); }
 
@@ -35,8 +32,10 @@ VrmlNodeType *VrmlNodeILineSet::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeILineSet::nodeType() const { return defineType(0); }
-
+VrmlNodeType & VrmlNodeILineSet::nodeType() const
+{
+    return *defineType(0);
+}
 
 VrmlNodeILineSet::VrmlNodeILineSet(VrmlScene *scene) :
   VrmlNodeIndexedSet(scene)
@@ -98,5 +97,3 @@ Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer)
 
   return obj;
 }
-
-

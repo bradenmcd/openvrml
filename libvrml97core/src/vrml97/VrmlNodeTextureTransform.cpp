@@ -35,8 +35,10 @@ VrmlNodeType *VrmlNodeTextureTransform::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeTextureTransform::nodeType() const 
-{ return defineType(0); }
+VrmlNodeType & VrmlNodeTextureTransform::nodeType() const 
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeTextureTransform::VrmlNodeTextureTransform(VrmlScene *scene) :
@@ -121,4 +123,3 @@ void VrmlNodeTextureTransform::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 }
-

@@ -6,8 +6,6 @@
 
 #include "VrmlNodeCoordinateInt.h"
 #include "VrmlNodeType.h"
-
-
 #include "VrmlScene.h"
 
 // CoordinateInt factory.
@@ -39,7 +37,10 @@ VrmlNodeType *VrmlNodeCoordinateInt::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeCoordinateInt::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeCoordinateInt::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeCoordinateInt::VrmlNodeCoordinateInt( VrmlScene *scene ) :
@@ -75,7 +76,7 @@ void VrmlNodeCoordinateInt::eventIn(double timeStamp,
 	{
 	  theSystem->error
 	    ("Invalid type for %s eventIn %s (expected SFFloat).\n",
-	     nodeType()->getName(), eventName);
+	     nodeType().getName(), eventName);
 	  return;
 	}
       float f = fieldValue->toSFFloat()->get();
@@ -161,4 +162,3 @@ void VrmlNodeCoordinateInt::setField(const char *fieldName,
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
-

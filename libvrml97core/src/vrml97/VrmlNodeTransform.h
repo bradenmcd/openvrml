@@ -4,8 +4,8 @@
 //
 //  VrmlNodeTransform.h
 
-#ifndef  _VRMLNODETRANSFORM_
-#define  _VRMLNODETRANSFORM_
+#ifndef VRMLNODETRANSFORM_H
+#define VRMLNODETRANSFORM_H
 
 #include "VrmlNodeGroup.h"
 #include "VrmlSFRotation.h"
@@ -17,7 +17,7 @@ public:
 
   // Define the fields of Transform nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeTransform(VrmlScene *);
   virtual ~VrmlNodeTransform();
@@ -54,5 +54,4 @@ private:
   
 };
 
-#endif _VRMLNODETRANSFORM_
-
+#endif

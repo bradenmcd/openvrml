@@ -6,7 +6,6 @@
 
 #include "VrmlNodeSwitch.h"
 #include "VrmlNodeType.h"
-
 #include "Viewer.h"
 
 
@@ -33,7 +32,10 @@ VrmlNodeType *VrmlNodeSwitch::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeSwitch::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeSwitch::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeSwitch::VrmlNodeSwitch(VrmlScene *scene) :

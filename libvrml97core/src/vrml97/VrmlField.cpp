@@ -11,12 +11,19 @@
 #include <config.h>
 #endif
 
+# include "VrmlField.h"
+# include <algorithm>
+# include <cassert>
+
 #include <string.h>		// memcpy
 #include <iostream.h>
 
-#include "VrmlField.h"
 #include "MathUtils.h"
 
+namespace {
+    ::ostream & mffprint(::ostream &, float const * c, int n, int eltsize);
+    ::ostream & mfdprint(::ostream &, double const * c, int n, int eltsize);
+}
 
 VrmlField::VrmlField() {}
 
@@ -28,13 +35,16 @@ VrmlField::~VrmlField() {}
 
 
 VrmlField::VrmlFieldType
-VrmlField::fieldType() const { return NO_FIELD; }
+VrmlField::fieldType() const
+{
+    return NO_FIELD;
+}
 
 
 // A static method to convert a type name to an ID.
 
 VrmlField::VrmlFieldType
-VrmlField::fieldType(const char *type)
+VrmlField::fieldType(char const *type)
 {
   if (strcmp(type, "SFBool") == 0) return SFBOOL;
   if (strcmp(type, "SFColor") == 0) return SFCOLOR;
@@ -53,6 +63,7 @@ VrmlField::fieldType(const char *type)
   if (strcmp(type, "MFNode") == 0) return MFNODE;
   if (strcmp(type, "MFRotation") == 0) return MFROTATION;
   if (strcmp(type, "MFString") == 0) return MFSTRING;
+  if (strcmp(type, "MFTime") == 0) return MFTIME;
   if (strcmp(type, "MFVec2f") == 0) return MFVEC2F;
   if (strcmp(type, "MFVec3f") == 0) return MFVEC3F;
 
@@ -63,28 +74,28 @@ static char *ftn[] = {
   "SFBool",
   "SFColor",
   "SFFloat",
+  "SFImage",
   "SFInt32",
+  "SFNode",
   "SFRotation",
+  "SFString",
   "SFTime",
   "SFVec2f",
   "SFVec3f",
-  "SFImage",
-  "SFString",
   "MFColor",
   "MFFloat",
   "MFInt32",
+  "MFNode"
   "MFRotation",
   "MFString",
+  "MFTime",
   "MFVec2f",
   "MFVec3f",
-  "SFNode",
-  "MFNode"
 };
 
 // Return the type name of a field  
 
-const char*
-VrmlField::fieldTypeName() const
+char const * VrmlField::fieldTypeName() const
 {
   int ft = (int) this->fieldType();
   if (ft > 0 && ft <= (int) VrmlField::MFNODE)
@@ -219,9 +230,12 @@ VrmlField::VrmlFieldType VrmlSFFloat::fieldType() const { return SFFLOAT; }
 #include "VrmlSFImage.h"
 
 
-VrmlSFImage::VrmlSFImage(int w, int h, int nc, unsigned char *pixels)
-  : d_w(w), d_h(h), d_nc(nc), d_pixels(pixels)
+VrmlSFImage::VrmlSFImage(int w, int h, int nc, unsigned char const * pixels)
+  : d_w(w), d_h(h), d_nc(nc), d_pixels(new unsigned char[w * h])
 {
+    if (pixels) {
+        std::copy(pixels, pixels + (w * h), d_pixels);
+    }
 }
 
 VrmlSFImage::VrmlSFImage(const VrmlSFImage& sfi) :
@@ -542,7 +556,7 @@ VrmlMFColor::VrmlMFColor() : d_data(new FData(0)) {}
 VrmlMFColor::VrmlMFColor(float r, float g, float b) : d_data(new FData(3))
 { d_data->d_v[0] = r; d_data->d_v[1] = g; d_data->d_v[2] = b; }
 
-VrmlMFColor::VrmlMFColor(int n, float *v) : d_data(new FData(3*n))
+VrmlMFColor::VrmlMFColor(int n, float const * v) : d_data(new FData(3*n))
 {
   if (v) memcpy(d_data->d_v, v, 3*n*sizeof(float));
 }
@@ -583,7 +597,7 @@ VrmlMFFloat::VrmlMFFloat() : d_data(new FData(0))
 VrmlMFFloat::VrmlMFFloat(float value) : d_data(new FData(1)) 
 { d_data->d_v[0] = value; }
 
-VrmlMFFloat::VrmlMFFloat(int n, float* v) : d_data(new FData(n))
+VrmlMFFloat::VrmlMFFloat(int n, float const * v) : d_data(new FData(n))
 {
   if (v) memcpy(d_data->d_v, v, n*sizeof(float));
 }
@@ -624,7 +638,7 @@ VrmlMFInt::VrmlMFInt() : d_data(new IData(0))
 VrmlMFInt::VrmlMFInt(int value) : d_data(new IData(1)) 
 { d_data->d_v[0] = value; }
 
-VrmlMFInt::VrmlMFInt(int n, int *v) : d_data(new IData(n))
+VrmlMFInt::VrmlMFInt(int n, int const * v) : d_data(new IData(n))
 { if (v) memcpy(d_data->d_v, v, n*sizeof(int)); }
 
 VrmlMFInt::VrmlMFInt(const VrmlMFInt &src) : d_data(src.d_data->ref()) 
@@ -653,41 +667,49 @@ VrmlField *VrmlMFInt::clone() const	{ return new VrmlMFInt(*this); }
 VrmlField::VrmlFieldType VrmlMFInt::fieldType() const { return MFINT32; }
 
 
-//  MFNode
-
+////////////////////////////////////////////////////////////////////////////////
+//  VrmlMFNode
+//
 #include "VrmlMFNode.h"
 
-VrmlMFNode::VrmlMFNode() : d_v(0), d_allocated(0), d_size(0) {}
+VrmlMFNode::VrmlMFNode()
+  : d_v(0), d_allocated(0), d_size(0)
+{}
 
-VrmlMFNode::VrmlMFNode(VrmlNode *value) :
-  d_v(new VrmlNode* [1]), d_allocated(1), d_size(1)
-{ d_v[0] = value ? value->reference() : 0; }
-
-
-VrmlMFNode::VrmlMFNode(int n, VrmlNode **v) :
-  d_v(new VrmlNode* [n]), d_allocated(n), d_size(n)
+VrmlMFNode::VrmlMFNode(VrmlNode *value)
+  : d_v(new VrmlNode* [1]), d_allocated(1), d_size(1)
 {
-  if (v)
-    for (int i=0; i<n; ++i)
-      d_v[i] = v[i] ? (v[i]->reference()) : 0;
-  else
-    memset(d_v, 0, n * sizeof(VrmlNode*));
+    d_v[0] = value ? value->reference() : 0;
 }
 
-VrmlMFNode::VrmlMFNode(const VrmlMFNode& rhs) :
+
+VrmlMFNode::VrmlMFNode(size_t n, VrmlNode * const * v)
+  : d_v(new VrmlNode* [n]), d_allocated(n), d_size(n)
+{
+    if (v) {
+        for (size_t i(0); i < n; ++i) {
+            d_v[i] = v[i] ? (v[i]->reference()) : 0;
+        }
+    } else {
+        std::fill(d_v, d_v + n, static_cast<VrmlNode *>(0));
+    }
+}
+
+VrmlMFNode::VrmlMFNode(VrmlMFNode const & rhs) :
   d_v(new VrmlNode* [rhs.d_size]), d_allocated(rhs.d_size), d_size(rhs.d_size)
 {
-  int n = rhs.d_size;
-  for (int i=0; i<n; ++i)
-    d_v[i] = rhs.d_v[i] ? (rhs.d_v[i]->reference()) : 0;
+    for (size_t i(0); i < rhs.d_size; ++i) {
+        d_v[i] = rhs.d_v[i] ? (rhs.d_v[i]->reference()) : 0;
+    }
 }
   
 
 VrmlMFNode::~VrmlMFNode()
 { 
-  for (int i=0; i<d_size; ++i)
-    if (d_v[i]) d_v[i]->dereference();
-  delete [] d_v;
+    for (size_t i(0); i < d_size; ++i) {
+        if (d_v[i]) d_v[i]->dereference();
+    }
+    delete [] d_v;
 }
 
 
@@ -695,27 +717,30 @@ VrmlMFNode::~VrmlMFNode()
 // don't bother trying to share the NodeLists.
 VrmlMFNode& VrmlMFNode::operator=(const VrmlMFNode& rhs)
 {
-  if (this == &rhs) return *this;
-
-  int i;
-  for (i=0; i < d_size; ++i)
-    if (d_v[i]) d_v[i]->dereference();
-
-  if (d_allocated < rhs.d_size)
-    {
-      delete [] d_v;
-      d_size = d_allocated = 0;
-      d_v = 0;
-      d_v = new VrmlNode*[rhs.d_size];
-      d_allocated = rhs.d_size;
+    if (this != &rhs) {
+        size_t i(0);
+        for (; i < d_size; ++i) {
+            if (d_v[i]) {
+                d_v[i]->dereference();
+            }
+        }
+        
+        if (d_allocated < rhs.d_size) {
+            delete [] d_v;
+            d_size = d_allocated = 0;
+            d_v = 0;
+            d_v = new VrmlNode*[rhs.d_size];
+            d_allocated = rhs.d_size;
+        }
+        
+        d_size = rhs.d_size;
+        
+        for (i=0; i<d_size; ++i) {
+            d_v[i] = rhs.d_v[i] ? rhs.d_v[i]->reference() : 0;
+        }
     }
-
-  d_size = rhs.d_size;
-
-  for (i=0; i<d_size; ++i)
-    d_v[i] = rhs.d_v[i] ? rhs.d_v[i]->reference() : 0;
-
-  return *this;
+    
+    return *this;
 }
 
 VrmlField *VrmlMFNode::clone() const
@@ -723,35 +748,38 @@ VrmlField *VrmlMFNode::clone() const
 
 VrmlField::VrmlFieldType VrmlMFNode::fieldType() const { return MFNODE; }
 
-bool VrmlMFNode::exists(VrmlNode *n) 
+bool VrmlMFNode::exists(VrmlNode const * n) 
 {
-  for (int i=0; i<d_size; ++i)
-    if (d_v[i] == n)
-      return true;
-  return false;
+    for (size_t i(0); i < d_size; ++i) {
+        if (d_v[i] == n) {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
-void VrmlMFNode::addNode(VrmlNode *n) 
+void VrmlMFNode::addNode(VrmlNode * n) 
 {
-  if (! exists(n))
-    {
-      if (d_allocated < d_size+1)
-	{
-	  int newSize = d_allocated + 10; // ...
-	  VrmlNode **newNodes = new VrmlNode* [newSize];
-	  memcpy(newNodes, d_v, d_size*sizeof(VrmlNode*));
-	  d_allocated = newSize;
-	  delete [] d_v;
-	  d_v = newNodes;
-	}
-      d_v[d_size++] = n ? n->reference() : 0;
+    if (!exists(n)) {
+        
+        if (d_allocated < d_size+1) {
+            size_t newSize = d_allocated + 10; // ...
+            VrmlNode **newNodes = new VrmlNode* [newSize];
+            memcpy(newNodes, d_v, d_size*sizeof(VrmlNode*));
+            d_allocated = newSize;
+            delete [] d_v;
+            d_v = newNodes;
+        }
+        
+        d_v[d_size++] = n ? n->reference() : 0;
     }
 }
 
 
-void VrmlMFNode::removeNode(VrmlNode *n) 
+void VrmlMFNode::removeNode(VrmlNode * n) 
 {
-  for (int i=0; i<d_size; ++i)
+  for (size_t i=0; i<d_size; ++i)
     if (d_v[i] == n)
       {
 	if (i < d_size-1)
@@ -776,7 +804,7 @@ VrmlMFRotation::VrmlMFRotation(float x, float y, float z, float r)
   : d_data(new FData(4))
 { d_data->d_v[0]=x; d_data->d_v[1]=y; d_data->d_v[2]=z; d_data->d_v[3]=r; }
 
-VrmlMFRotation::VrmlMFRotation(int n, float *v) : d_data(new FData(4*n))
+VrmlMFRotation::VrmlMFRotation(int n, float const * v) : d_data(new FData(4*n))
 {
   if (v) memcpy(d_data->d_v, v, 4*n*sizeof(float));
 }  
@@ -812,86 +840,82 @@ VrmlField::VrmlFieldType VrmlMFRotation::fieldType() const { return MFROTATION; 
 #include "VrmlMFString.h"
 
 
-VrmlMFString::VrmlMFString() : d_v(0), d_allocated(0), d_size(0) {}
+VrmlMFString::VrmlMFString()
+  : d_v(0), d_allocated(0), d_size(0)
+{}
 
-VrmlMFString::VrmlMFString(char* s) :
-  d_v(new char*[1]), d_allocated(1), d_size(1)
+VrmlMFString::VrmlMFString(char const * s)
+  : d_v(new char*[1]), d_allocated(1), d_size(1)
 {
-  if (s)
-    {
-      d_v[0] = new char[strlen(s)+1];
-      strcpy(d_v[0],s);
+    if (s) {
+        d_v[0] = new char[strlen(s)+1];
+        strcpy(d_v[0],s);
+    } else {
+        d_v[0] = 0;
     }
-  else
-    d_v[0] = 0;
 }
 
-VrmlMFString::VrmlMFString(int n, char **v) :
-  d_v(new char*[n]), d_allocated(n), d_size(n)
+VrmlMFString::VrmlMFString(size_t n, char const * const * v)
+  : d_v(new char *[n]), d_allocated(n), d_size(n)
 {
-  if (v)
-    for (int i=0; i<n; ++i, ++v)
-      {
-	if (*v)
-	  {
-	    d_v[i] = new char[strlen(*v)+1];
-	    strcpy(d_v[i], *v);
-	  }
-	else
-	  d_v[i] = 0;
-      }
-  else
-    memset(d_v, 0, n * sizeof(char*));
+    if (v) {
+        for (size_t i(0); i < n; ++i, ++v) {
+            if (*v) {
+                d_v[i] = new char[strlen(*v)+1];
+                strcpy(d_v[i], *v);
+            } else {
+                d_v[i] = 0;
+            }
+        }
+    } else {
+        std::fill(d_v, d_v + n, static_cast<char *>(0));
+    }
 }
 
 
-VrmlMFString::VrmlMFString(const VrmlMFString& rhs) :
-  d_v(new char*[rhs.d_size]), d_allocated(rhs.d_size), d_size(rhs.d_size)
+VrmlMFString::VrmlMFString(VrmlMFString const & rhs)
+  : d_v(new char *[rhs.d_size]), d_allocated(rhs.d_size), d_size(rhs.d_size)
 {
-  int n = rhs.d_size;
-  for (int i=0; i<n; ++i)
-    {
-      if (rhs.d_v[i])
-	{
-	  d_v[i] = new char[strlen(rhs.d_v[i])+1];
-	  strcpy(d_v[i], rhs.d_v[i]);
-	}
-      else
-	d_v[i] = 0;
+    for (size_t i(0); i < rhs.d_size; ++i) {
+        if (rhs.d_v[i]) {
+            d_v[i] = new char[strlen(rhs.d_v[i])+1];
+            strcpy(d_v[i], rhs.d_v[i]);
+        } else {
+            d_v[i] = 0;
+        }
     }
 }
 
 VrmlMFString::~VrmlMFString()
 {
-  for (int i=0; i<d_size; ++i)
-    delete [] d_v[i];
-  delete [] d_v;
+    for (size_t i(0); i < d_size; ++i) {
+        delete [] d_v[i];
+    }
+    delete [] d_v;
 }
 
-void VrmlMFString::set(int n, char *v[])
+void VrmlMFString::set(size_t n, char const * const v[])
 {
-  for (int i=0; i<d_size; ++i)
-    delete [] d_v[i];
-
-  if (d_allocated < n)
-    {
-      delete [] d_v;
-      d_v = 0;
-      d_allocated = d_size = 0;
-      d_v = new char*[n];
-      d_allocated = n;
+    for (size_t i=0; i<d_size; ++i) {
+        delete [] d_v[i];
     }
-  d_size = n;
-
-  for (int j = 0; j < n; ++j)
-    {
-      if (v[j])
-	{
-	  d_v[j] = new char[ strlen(v[j]) + 1 ];
-	  strcpy(d_v[j], v[j]);
-	}
-      else
-	d_v[j] = 0;
+    
+    if (d_allocated < n) {
+        delete [] d_v;
+        d_v = 0;
+        d_allocated = d_size = 0;
+        d_v = new char*[n];
+        d_allocated = n;
+    }
+    d_size = n;
+    
+    for (size_t j = 0; j < n; ++j) {
+        if (v[j]) {
+            d_v[j] = new char[ strlen(v[j]) + 1 ];
+            strcpy(d_v[j], v[j]);
+        } else {
+            d_v[j] = 0;
+        }
     }
 }
 
@@ -906,8 +930,161 @@ VrmlField *VrmlMFString::clone() const
 
 VrmlField::VrmlFieldType VrmlMFString::fieldType() const { return MFSTRING; }
 
+size_t VrmlMFString::size() const
+{
+    return d_size;
+}
 
-// MFVec2f
+char const * const * VrmlMFString::get() const
+{
+    return d_v;
+}
+
+char const * VrmlMFString::get(size_t index) const
+{
+    return (*this)[index];
+}
+
+char const * const & VrmlMFString::operator[](size_t index) const
+{
+    assert(index < d_size);
+    return d_v[index];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// VrmlMFTime
+//
+
+# include "VrmlMFTime.h"
+
+//
+// Reference-counted double data
+//
+class VrmlMFTime::DData {
+    public:
+        DData(std::size_t = 0);
+        ~DData();
+        
+        DData * ref();
+        void deref();
+        
+        unsigned int refs;      // number of VrmlMFTime objects using this data
+        std::size_t size;       // size of d_v
+        double * const data;    // data vector
+        
+    private:
+        //
+        // This class is not copyable. Copy ctor and operator= are declared
+        // private and not defined.
+        //
+        DData(DData const &);
+        DData & operator=(DData const &);
+};
+
+VrmlMFTime::DData::DData(std::size_t size)
+  : refs(1), size(size), data(size > 0 ? new double[size] : 0)
+{}
+
+VrmlMFTime::DData::~DData()
+{
+    delete [] data;
+}
+
+VrmlMFTime::DData * VrmlMFTime::DData::ref()
+{
+    ++refs;
+    return this;
+}
+
+void VrmlMFTime::DData::deref()
+{
+    if (--refs == 0) {
+        delete this;
+    }
+}
+
+VrmlMFTime::VrmlMFTime()
+  : d_data(new DData(0))
+{}
+
+VrmlMFTime::VrmlMFTime(double t)
+  : d_data(new DData(1))
+{
+    d_data->data[0] = t;
+}
+
+VrmlMFTime::VrmlMFTime(std::size_t size, double const * v)
+  : d_data(new DData(size))
+{
+    if (v) {
+        std::copy(v, v + size, d_data->data);
+    }
+}
+
+VrmlMFTime::VrmlMFTime(VrmlMFTime const & c)
+  : d_data(c.d_data->ref())
+{}
+
+VrmlMFTime::~VrmlMFTime()
+{
+    d_data->deref();
+}
+
+VrmlMFTime & VrmlMFTime::operator=(VrmlMFTime const & c)
+{
+    if (this != &c) {
+        d_data->deref();
+        d_data = c.d_data->ref();
+    }
+    return *this;
+}
+
+void VrmlMFTime::set(std::size_t size, double const * v)
+{
+    d_data->deref();
+    d_data = new DData(size);
+    if (v) {
+        std::copy(v, v + size, d_data->data);
+    }
+}
+
+double const * VrmlMFTime::get() const
+{
+    return d_data->data;
+}
+
+double const & VrmlMFTime::operator[](std::size_t index) const
+{
+    assert(index >= 0 && index < d_data->size);
+    
+    return d_data->data[index];
+}
+
+std::size_t VrmlMFTime::size() const
+{
+    return d_data->size;
+}
+
+VrmlField * VrmlMFTime::clone() const
+{
+    return new VrmlMFTime(*this);
+}
+
+VrmlField::VrmlFieldType VrmlMFTime::fieldType() const
+{
+    return MFTIME;
+}
+
+ostream & VrmlMFTime::print(ostream & os) const
+{
+    return mfdprint(os, get(), size(), 1);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// VrmlMFVec2f
+//
 
 #include "VrmlMFVec2f.h"
 
@@ -916,7 +1093,7 @@ VrmlMFVec2f::VrmlMFVec2f() : d_data(new FData(0)) {}
 VrmlMFVec2f::VrmlMFVec2f(float x, float y) : d_data(new FData(2))
 { d_data->d_v[0] = x; d_data->d_v[1] = y; }
 
-VrmlMFVec2f::VrmlMFVec2f(int n, float *v) : d_data(new FData(2*n))
+VrmlMFVec2f::VrmlMFVec2f(int n, float const * v) : d_data(new FData(2*n))
 {
   if (v) memcpy(d_data->d_v, v, 2*n*sizeof(float));
 }
@@ -958,7 +1135,7 @@ VrmlMFVec3f::VrmlMFVec3f(int n) : d_data(new FData(n)) {}
 VrmlMFVec3f::VrmlMFVec3f(float x, float y, float z) : d_data(new FData(3))
 { d_data->d_v[0] = x; d_data->d_v[1] = y; d_data->d_v[2] = z; }
 
-VrmlMFVec3f::VrmlMFVec3f(int n, float *v) : d_data(new FData(3*n))
+VrmlMFVec3f::VrmlMFVec3f(int n, float const * v) : d_data(new FData(3*n))
 {
   if (v) memcpy(d_data->d_v, v, 3*n*sizeof(float));
 }
@@ -991,30 +1168,55 @@ VrmlField *VrmlMFVec3f::clone() const { return new VrmlMFVec3f(*this); }
 VrmlField::VrmlFieldType VrmlMFVec3f::fieldType() const { return MFVEC3F; }
 
 
-// Generic MF float print function
+// Generic MF float and double print functions
 
-static ostream& mffprint( ostream& os, float *c, int n, int eltsize )
-{
-  int e;
-
-  if (n == 1)
-    for (e=0; e<eltsize; ++e)
-      os << c[e] << ((e < eltsize-1) ? " " : "");
-  
-  else
+namespace {
+    
+    ostream& mffprint( ostream& os, float const * c, int n, int eltsize )
     {
-      os << '[';
-      for (int i=0; i<n; ++i, c+=eltsize)
-	{
-	  for (e=0; e<eltsize; ++e)
-	    os << c[e] << ((e < eltsize-1) ? " " : "");
-
-	  os << ((i < n-1) ? ", " : " ");
-	}
-      os << ']';
+        int e;
+        
+        if (n == 1) {
+            for (e=0; e<eltsize; ++e) {
+                os << c[e] << ((e < eltsize-1) ? " " : "");
+            }
+        } else {
+            os << '[';
+            for (int i=0; i<n; ++i, c+=eltsize) {
+                for (e=0; e<eltsize; ++e) {
+                    os << c[e] << ((e < eltsize-1) ? " " : "");
+                }
+            
+	    os << ((i < n-1) ? ", " : " ");
+	    }
+            os << ']';
+        }
+        
+        return os;
     }
-
-  return os;
+    
+    ostream & mfdprint(ostream & os, double const * c, int n, int eltsize)
+    {
+        int e;
+        
+        if (n == 1) {
+            for (e=0; e<eltsize; ++e) {
+                os << c[e] << ((e < eltsize-1) ? " " : "");
+            }
+        } else {
+            os << '[';
+            for (int i=0; i<n; ++i, c+=eltsize) {
+                for (e=0; e<eltsize; ++e) {
+                    os << c[e] << ((e < eltsize-1) ? " " : "");
+                }
+            
+	    os << ((i < n-1) ? ", " : " ");
+	    }
+            os << ']';
+        }
+        
+        return os;
+    }
 }
 
 

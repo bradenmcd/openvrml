@@ -37,7 +37,7 @@ public:
 
   VrmlMFVec3f(int n = 0);
   VrmlMFVec3f(float x, float y, float z);
-  VrmlMFVec3f(int n, float *v);
+  VrmlMFVec3f(int n, float const * v);
   VrmlMFVec3f(const VrmlMFVec3f &source);
 
   ~VrmlMFVec3f();

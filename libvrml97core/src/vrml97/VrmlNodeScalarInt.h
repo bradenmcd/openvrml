@@ -4,11 +4,10 @@
 //
 //  VrmlNodeScalarInt.h
 
-#ifndef  _VRMLNODESCALARINT_
-#define  _VRMLNODESCALARINT_
+#ifndef VRMLNODESCALARINT_H
+#define VRMLNODESCALARINT_H
 
 #include "VrmlNodeChild.h"
-
 #include "VrmlSFFloat.h"
 #include "VrmlMFFloat.h"
 
@@ -21,7 +20,7 @@ public:
 
   // Define the fields of ScalarInt nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeScalarInt( VrmlScene *scene = 0 );
   virtual ~VrmlNodeScalarInt();
@@ -51,5 +50,4 @@ private:
   VrmlSFFloat d_value;
 };
 
-#endif _VRMLNODESCALARINT_
-
+#endif

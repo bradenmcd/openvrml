@@ -4,8 +4,8 @@
 //
 //  VrmlNodeDirLight.h
 
-#ifndef  _VRMLNODEDIRLIGHT_
-#define  _VRMLNODEDIRLIGHT_
+#ifndef VRMLNODEDIRLIGHT_H
+#define VRMLNODEDIRLIGHT_H
 
 #include "VrmlNodeLight.h"
 #include "VrmlSFVec3f.h"
@@ -17,7 +17,7 @@ public:
 
   // Define the fields of dirLight nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeDirLight(VrmlScene *);
   virtual ~VrmlNodeDirLight();
@@ -41,4 +41,4 @@ protected:
 
 };
 
-#endif _VRMLNODEDIRLIGHT_
+#endif

@@ -6,7 +6,6 @@
 //  VrmlNodeExtrusion.cpp
 
 #include "VrmlNodeExtrusion.h"
-
 #include "VrmlNodeType.h"
 #include "Viewer.h"
 
@@ -48,7 +47,10 @@ VrmlNodeType *VrmlNodeExtrusion::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeExtrusion::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeExtrusion::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeExtrusion::VrmlNodeExtrusion(VrmlScene *scene) :

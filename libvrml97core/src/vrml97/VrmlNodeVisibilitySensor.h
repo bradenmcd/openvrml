@@ -4,8 +4,8 @@
 //
 //  VrmlNodeVisibilitySensor.h
 
-#ifndef  _VRMLNODEVISIBILITYSENSOR_
-#define  _VRMLNODEVISIBILITYSENSOR_
+#ifndef VRMLNODEVISIBILITYSENSOR_H
+#define VRMLNODEVISIBILITYSENSOR_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
@@ -15,14 +15,13 @@
 
 class VrmlScene;
 
-
 class VrmlNodeVisibilitySensor : public VrmlNodeChild {
 
 public:
 
   // Define the fields of VisibilitySensor nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeVisibilitySensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeVisibilitySensor();
@@ -49,5 +48,4 @@ private:
   VrmlSFTime d_exitTime;
 };
 
-#endif _VRMLNODEVISIBILITYSENSOR_
-
+#endif

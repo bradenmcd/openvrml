@@ -4,13 +4,12 @@
 //
 //  VrmlNodeGroup.h
 
-#ifndef  _VRMLNODEGROUP_
-#define  _VRMLNODEGROUP_
+#ifndef VRMLNODEGROUP_H
+#define VRMLNODEGROUP_H
 
 #include "VrmlMFNode.h"
 #include "VrmlSFString.h"
 #include "VrmlSFVec3f.h"
-
 #include "VrmlNodeChild.h"
 #include "Viewer.h"
 
@@ -21,7 +20,7 @@ public:
 
   // Define the fields of all built in group nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeGroup(VrmlScene *s = 0);
   virtual ~VrmlNodeGroup();
@@ -76,5 +75,4 @@ protected:
   Viewer::Object d_viewerObject;
 };
 
-#endif _VRMLNODEGROUP_
-
+#endif

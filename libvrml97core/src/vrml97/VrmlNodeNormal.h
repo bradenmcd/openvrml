@@ -4,8 +4,8 @@
 //
 //  VrmlNodeNormal.h
 
-#ifndef  _VRMLNODENORMAL_
-#define  _VRMLNODENORMAL_
+#ifndef VRMLNODENORMAL_H
+#define VRMLNODENORMAL_H
 
 #include "VrmlNode.h"
 #include "VrmlMFVec3f.h"
@@ -16,7 +16,7 @@ public:
 
   // Define the fields of Normal nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeNormal(VrmlScene *);
   virtual ~VrmlNodeNormal();
@@ -38,5 +38,4 @@ private:
   
 };
 
-#endif _VRMLNODENORMAL_
-
+#endif

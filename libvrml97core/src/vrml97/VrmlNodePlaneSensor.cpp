@@ -10,7 +10,6 @@
 
 #include "VrmlNodePlaneSensor.h"
 #include "VrmlNodeType.h"
-
 #include "MathUtils.h"
 #include "System.h"
 #include "Viewer.h"
@@ -49,8 +48,10 @@ VrmlNodeType *VrmlNodePlaneSensor::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodePlaneSensor::nodeType() const 
-{ return defineType(0); }
+VrmlNodeType & VrmlNodePlaneSensor::nodeType() const 
+{
+    return *defineType(0);
+}
 
 
 VrmlNodePlaneSensor::VrmlNodePlaneSensor( VrmlScene *scene ) :

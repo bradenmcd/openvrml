@@ -5,10 +5,8 @@
 //  VrmlNodePointSet.cpp
 
 #include "VrmlNodePointSet.h"
-
 #include "VrmlNodeCoordinate.h"
 #include "VrmlNodeColor.h"
-
 #include "VrmlNodeType.h"
 #include "Viewer.h"
 
@@ -35,7 +33,10 @@ VrmlNodeType *VrmlNodePointSet::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodePointSet::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodePointSet::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodePointSet::VrmlNodePointSet(VrmlScene *scene) :

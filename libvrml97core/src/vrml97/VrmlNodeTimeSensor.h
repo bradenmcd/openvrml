@@ -4,8 +4,8 @@
 //
 //  VrmlNodeTimeSensor.h
 
-#ifndef  _VRMLNODETIMESENSOR_
-#define  _VRMLNODETIMESENSOR_
+#ifndef VRMLNODETIMESENSOR_H
+#define VRMLNODETIMESENSOR_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
@@ -14,14 +14,13 @@
 
 class VrmlScene;
 
-
 class VrmlNodeTimeSensor : public VrmlNodeChild {
 
 public:
 
   // Define the fields of TimeSensor nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeTimeSensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeTimeSensor();
@@ -64,5 +63,4 @@ private:
   double d_lastTime;
 };
 
-#endif _VRMLNODETIMESENSOR_
-
+#endif

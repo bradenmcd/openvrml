@@ -4,11 +4,10 @@
 //
 //  VrmlNodeOrientationInt.h
 
-#ifndef  _VRMLNODEORIENTATIONINT_
-#define  _VRMLNODEORIENTATIONINT_
+#ifndef VRMLNODEORIENTATIONINT_H
+#define VRMLNODEORIENTATIONINT_H
 
 #include "VrmlNodeChild.h"
-
 #include "VrmlSFFloat.h"
 #include "VrmlMFFloat.h"
 #include "VrmlSFRotation.h"
@@ -23,7 +22,7 @@ public:
 
   // Define the fields of OrientationInt nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeOrientationInt( VrmlScene *scene = 0);
   virtual ~VrmlNodeOrientationInt();
@@ -53,5 +52,4 @@ private:
   VrmlSFRotation d_value;
 };
 
-#endif _VRMLNODEORIENTATIONINT_
-
+#endif

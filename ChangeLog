@@ -2,13 +2,128 @@
 
 	* Added -title arg to lookat for multiple viewers under xswallow.
 
+2000-04-11  Braden McDaniel  <braden@endoframe.com>
+        
+        * Added some infectious const lovin' with a dash of size_t. Too much
+          to list. 
+        
+        * In VrmlMFString, removed the method:
+        
+            char ** getURL()
+          
+          This was redundant with the availability of
+          
+            virtual const VrmlMFString & getUrl() const;
+            
 2000-04-09  Michael Louka <Michael.Louka@hrp.no>
 
-  * Modified System::time() for the Mac OS to provide VRML97 compliancy
+        * Modified System::time() for the Mac OS to provide VRML97 compliancy
 
+2000-04-07  Braden McDaniel  <braden@endoframe.com>
+        
+        * The VrmlSFImage constructor was assuming ownership of the pixel array
+          passed to it. This is inconsistent with the behavior of the similar
+          constructors for MF* types, which copy the data in the buffer passed
+          to them. I modified the VrmlSFImage constructor to instead make a copy
+          of the pixel buffer passed to it.
+          
+          Also changed the constructor's signature from
+          
+            VrmlSFImage(int w = 0, int h = 0, int nc = 0, unsigned char * pixels = 0);
+          
+          to
+          
+            VrmlSFImage(int w = 0, int h = 0, int nc = 0, unsigned char const * pixels = 0);
+        
+        * Changed VrmlMFColor constructor from
+          
+            VrmlMFColor(int n, float * values);
+          
+          to
+          
+            VrmlMFColor(int n, float const * values);
+          
+        * Changed VrmlMFFloat constructor from
+          
+            VrmlMFFloat(int n, float * values);
+          
+          to
+          
+            VrmlMFFloat(int n, float const * values);
+          
+        * Changed VrmlMFInt constructor from
+          
+            VrmlMFInt(int n, int * values);
+          
+          to
+          
+            VrmlMFInt(int n, int const * values);
+        
+        * Changed VrmlMFRotation constructor from
+          
+            VrmlMFRotation(int n, float * values);
+          
+          to
+          
+            VrmlMFRotation(int n, float const * values);
+        
+        * Changed VrmlMFVec2f constructor from
+          
+            VrmlMFVec2f(int n, float * values);
+          
+          to
+          
+            VrmlMFVec2f(int n, float const * values);
+        
+        * Changed VrmlMFVec3f constructor from
+          
+            VrmlMFVec3f(int n, float * values);
+          
+          to
+          
+            VrmlMFVec3f(int n, float const * values);
+        
+2000-04-06  Braden McDaniel  <braden@endoframe.com>
+        
+        * Changed the signature of VrmlNode::nodeType from
+          
+            virtual NodeType * nodeType();
+        
+          to
+        
+            virtual NodeType & nodeType() const = 0;
+          
+          Previously, the default implementation returned 0. As this isn't
+          really useful behavior, the method now returns a reference to the
+          NodeType (cannot be null) and requires that concrete subclasses
+          implement it.
+        
 2000-04-05  Chris Morley  <cmorley@vermontel.net>
 
 	* Initial support for MPEG files in MovieTexture nodes.
+
+2000-04-05  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed VrmlNamespace::findNode to a const method.
+
+2000-04-03  Braden McDaniel  <braden@endoframe.com>
+
+        * Beginning the process of replacing the SGI lex/yacc parser with an
+          open source parser based on ANTLR.
+
+        * Added MFTime field type.
+
+        * Added a Doc2 class. This is a Doc work-alike, except Doc2 provides a
+          C++ istream rather than a C file pointer for file access.
+
+        * Modified the Doc class to interoperate with the Doc2 class.
+
+        * Modified VrmlScene to use a Doc2 rather than a Doc. The new scanner
+          (Vrml97Utf8Scanner) takes an istream as input.
+
+2000-03-28  Braden McDaniel  <braden@endoframe.com>
+
+        * Added libantlr to the build. The new parser will use this.
 
 2000-03-28  Chris Morley  <cmorley@vermontel.net>
 

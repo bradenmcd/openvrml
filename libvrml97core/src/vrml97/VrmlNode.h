@@ -9,7 +9,6 @@
 
 #include <string.h>
 #include <iostream.h>
-
 #include "System.h"		// error
 
 class Route;
@@ -82,7 +81,7 @@ public:
 
   // Define the fields of all built in VrmlNodeTypes
   static VrmlNodeType *defineType(VrmlNodeType *t);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const = 0;
 
   // VrmlNodes are reference counted, optionally named objects
   // The reference counting is manual (that is, each user of a
@@ -132,7 +131,7 @@ public:
   virtual VrmlNodeIFaceSet*	toIFaceSet() const;
   virtual VrmlNodeImageTexture* toImageTexture() const;
   virtual VrmlNodePixelTexture* toPixelTexture() const;
-   virtual VrmlNodeInline*	toInline() const;
+  virtual VrmlNodeInline*	toInline() const;
   virtual VrmlNodeLight*	toLight() const;
   virtual VrmlNodeMaterial*	toMaterial() const;
   virtual VrmlNodeMovieTexture*	toMovieTexture() const;
@@ -172,7 +171,7 @@ public:
   // Write self
   ostream& print(ostream& os, int indent) const;
   virtual ostream& printFields(ostream& os, int indent);
-  static  ostream& printField(ostream&, int, const char*, const VrmlField&);
+  static ostream& printField(ostream&, int, const char*, const VrmlField&);
 
   // Indicate that the node state has changed, need to re-render
   void setModified();
@@ -198,8 +197,7 @@ public:
 		       const VrmlField *fieldValue);
 
   // Set a field by name (used by the parser, not for external consumption).
-  virtual void setField(const char *fieldName,
-			const VrmlField &fieldValue);
+  virtual void setField(char const * fieldName, VrmlField const &);
 
   // Get a field or eventOut by name. getField is used by Script nodes
   // to access exposedFields. It does not allow access to private fields
@@ -290,7 +288,7 @@ private:
       d_##_f = (Vrml##_t &)fieldValue;\
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
-	    fieldValue.fieldTypeName(), #_f, nodeType()->getName(), #_t);\
+	    fieldValue.fieldTypeName(), #_f, nodeType().getName(), #_t);\
   }
 
 // For SFNode fields. Allow un-fetched EXTERNPROTOs to succeed...
@@ -302,7 +300,7 @@ private:
       d_##_f = (VrmlSFNode &)fieldValue; \
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
-	    fieldValue.fieldTypeName(), #_f, nodeType()->getName(), #_n);\
+	    fieldValue.fieldTypeName(), #_f, nodeType().getName(), #_n);\
   }
 
 #define TRY_SFNODE_FIELD2(_f,_n1,_n2) \
@@ -314,9 +312,8 @@ private:
       d_##_f = (VrmlSFNode &)fieldValue; \
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s or %s).\n",\
-	    fieldValue.fieldTypeName(), #_f, nodeType()->getName(), #_n1, #_n2);\
+	    fieldValue.fieldTypeName(), #_f, nodeType().getName(), #_n1, #_n2);\
   }
 
 
-#endif VRMLNODE_H
-
+#endif

@@ -4,17 +4,15 @@
 //
 //  VrmlNodeNormalInt.h
 
-#ifndef  _VRMLNODENORMALINT_
-#define  _VRMLNODENORMALINT_
+#ifndef VRMLNODENORMALINT_H
+#define VRMLNODENORMALINT_H
 
 #include "VrmlNodeChild.h"
-
 #include "VrmlSFFloat.h"
 #include "VrmlMFFloat.h"
 #include "VrmlMFVec3f.h"
 
 class VrmlScene;
-
 
 class VrmlNodeNormalInt : public VrmlNodeChild {
 
@@ -22,7 +20,7 @@ public:
 
   // Define the fields of NormalInt nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeNormalInt( VrmlScene *scene = 0);
   virtual ~VrmlNodeNormalInt();
@@ -48,5 +46,4 @@ private:
   VrmlMFVec3f d_value;
 };
 
-#endif _VRMLNODENORMALINT_
-
+#endif

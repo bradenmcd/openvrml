@@ -7,7 +7,6 @@
 
 #include "VrmlNodeAnchor.h"
 #include "VrmlNodeType.h"
-
 #include "VrmlScene.h"
 
 static VrmlNode *creator( VrmlScene *scene ) 
@@ -35,7 +34,10 @@ VrmlNodeType *VrmlNodeAnchor::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeAnchor::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeAnchor::nodeType() const
+{
+    return *VrmlNodeAnchor::defineType(0);
+}
 
 
 VrmlNodeAnchor::VrmlNodeAnchor(VrmlScene *scene) : VrmlNodeGroup(scene)

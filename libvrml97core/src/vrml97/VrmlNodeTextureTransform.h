@@ -4,8 +4,8 @@
 //
 //  VrmlNodeTextureTransform.h
 
-#ifndef  _VRMLNODETEXTURETRANSFORM_
-#define  _VRMLNODETEXTURETRANSFORM_
+#ifndef VRMLNODETEXTURETRANSFORM_H
+#define VRMLNODETEXTURETRANSFORM_H
 
 #include "VrmlNode.h"
 #include "VrmlSFFloat.h"
@@ -19,7 +19,7 @@ public:
 
   // Define the fields of TextureTransform nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeTextureTransform(VrmlScene *);
   virtual ~VrmlNodeTextureTransform();
@@ -49,5 +49,4 @@ private:
   
 };
 
-#endif _VRMLNODETEXTURETRANSFORM_
-
+#endif

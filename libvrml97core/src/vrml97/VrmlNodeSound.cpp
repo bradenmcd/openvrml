@@ -7,7 +7,6 @@
 
 #include "VrmlNodeSound.h"
 #include "VrmlNodeType.h"
-
 #include "MathUtils.h"
 #include "VrmlScene.h"
 
@@ -49,7 +48,10 @@ VrmlNodeType *VrmlNodeSound::defineType(VrmlNodeType *t)
 
 // Should subclass NodeType and have each Sound maintain its own type...
 
-VrmlNodeType *VrmlNodeSound::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeSound::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeSound::VrmlNodeSound( VrmlScene *scene ) :

@@ -2,8 +2,8 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef  _VRMLSFTIME_
-#define  _VRMLSFTIME_
+#ifndef VRMLSFTIME
+#define VRMLSFTIME
 
 #include "VrmlField.h"
 
@@ -34,4 +34,4 @@ private:
 
 };
 
-#endif _VRMLSFTIME_
+#endif

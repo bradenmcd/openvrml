@@ -4,8 +4,8 @@
 //
 //  VrmlNodeInline.h
 
-#ifndef  _VRMLNODEINLINE_
-#define  _VRMLNODEINLINE_
+#ifndef VRMLNODEINLINE_H
+#define VRMLNODEINLINE_H
 
 #include "VrmlNodeGroup.h"
 #include "VrmlMFString.h"
@@ -20,7 +20,7 @@ public:
 
   // Define the built in VrmlNodeType:: "Inline"
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeInline(VrmlScene*);
   virtual ~VrmlNodeInline();
@@ -49,5 +49,4 @@ protected:
 
 };
 
-#endif // _VRMLNODEINLINE_
-
+#endif

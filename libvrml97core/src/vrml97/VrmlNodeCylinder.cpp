@@ -6,7 +6,6 @@
 //  VrmlNodeCylinder.cpp
 
 #include "VrmlNodeCylinder.h"
-
 #include "VrmlNodeType.h"
 #include "Viewer.h"
 
@@ -38,7 +37,10 @@ VrmlNodeType *VrmlNodeCylinder::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeCylinder::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeCylinder::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeCylinder::VrmlNodeCylinder(VrmlScene *scene) :

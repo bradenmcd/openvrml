@@ -5,7 +5,6 @@
 //  VrmlNodeFog.cpp
 
 #include "VrmlNodeFog.h"
-
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
 #include "VrmlSFBool.h"
@@ -45,7 +44,10 @@ VrmlNodeType *VrmlNodeFog::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeFog::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeFog::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeFog::VrmlNodeFog(VrmlScene *scene) :

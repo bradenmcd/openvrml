@@ -6,8 +6,6 @@
 
 #include "VrmlNodeScalarInt.h"
 #include "VrmlNodeType.h"
-
-
 #include "VrmlScene.h"
 
 // ScalarInt factory.
@@ -39,7 +37,10 @@ VrmlNodeType *VrmlNodeScalarInt::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeScalarInt::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeScalarInt::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeScalarInt::VrmlNodeScalarInt( VrmlScene *scene ) :
@@ -76,7 +77,7 @@ void VrmlNodeScalarInt::eventIn(double timeStamp,
 	{
 	  theSystem->error
 	    ("Invalid type for %s eventIn %s (expected SFFloat).\n",
-		nodeType()->getName(), eventName);
+		nodeType().getName(), eventName);
 	  return;
 	}
       float f = fieldValue->toSFFloat()->get();

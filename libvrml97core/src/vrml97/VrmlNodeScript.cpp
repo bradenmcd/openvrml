@@ -9,9 +9,7 @@
 #include "VrmlSFTime.h"
 #include "VrmlSFNode.h"
 #include "VrmlMFNode.h"
-
 #include "ScriptObject.h"
-
 #include "VrmlScene.h"
 
 #ifdef macintosh
@@ -53,7 +51,10 @@ VrmlNodeType *VrmlNodeScript::defineType(VrmlNodeType *t)
 
 // Should subclass NodeType and have each Script maintain its own type...
 
-VrmlNodeType *VrmlNodeScript::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeScript::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeScript::VrmlNodeScript( VrmlScene *scene ) :
@@ -291,7 +292,7 @@ void VrmlNodeScript::addEventOut(const char *ename, VrmlField::VrmlFieldType t)
 }
 
 void VrmlNodeScript::addField(const char *ename, VrmlField::VrmlFieldType t,
-			      VrmlField *val)
+			      VrmlField const * val)
 {
   add(d_fields, ename, t);
   if (val) set(d_fields, ename, val);
@@ -309,7 +310,7 @@ void VrmlNodeScript::add(FieldList &recs,
 }
 
 // get event/field values
-#if 0
+# if 0
 VrmlField*
 VrmlNodeScript::getEventIn(const char *fname) const
 {
@@ -327,7 +328,7 @@ VrmlNodeScript::getField(const char *fname) const
 {
   return get(d_fields, fname);
 }
-#endif
+# endif
 
 VrmlField*
 VrmlNodeScript::get(const FieldList &recs, const char *fname) const
@@ -360,6 +361,24 @@ VrmlNodeScript::hasField(const char *ename) const
   return has(d_fields, ename);
 }
 
+VrmlField::VrmlFieldType VrmlNodeScript::hasInterface(const char * id) const
+{
+    VrmlField::VrmlFieldType fieldType = VrmlField::NO_FIELD;
+    
+    if ((fieldType = this->hasField(id)) != VrmlField::NO_FIELD) {
+        return fieldType;
+    }
+    
+    if ((fieldType = this->hasEventIn(id)) != VrmlField::NO_FIELD) {
+        return fieldType;
+    }
+    
+    if ((fieldType = this->hasEventOut(id)) != VrmlField::NO_FIELD) {
+        return fieldType;
+    }
+    
+    return fieldType;
+}
 
 VrmlField::VrmlFieldType
 VrmlNodeScript::has(const FieldList &recs, const char *ename) const
@@ -423,10 +442,10 @@ VrmlNodeScript::setEventIn(const char *fname, const VrmlField *value)
 void
 VrmlNodeScript::setEventOut(const char *fname, const VrmlField *value)
 {
-#if 0
+# if 0
   cerr << "Script::" << name() << " setEventOut(" << fname << ", "
        << (*value) << endl;
-#endif
+# endif
   set(d_eventOuts, fname, value);
 }
 

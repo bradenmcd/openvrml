@@ -2,8 +2,8 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef  _VRMLSFCOLOR_
-#define  _VRMLSFCOLOR_
+#ifndef VRMLSFCOLOR_H
+#define VRMLSFCOLOR_H
 
 #include "VrmlField.h"
 
@@ -41,4 +41,4 @@ private:
 
 };
 
-#endif _VRMLSFCOLOR_
+#endif

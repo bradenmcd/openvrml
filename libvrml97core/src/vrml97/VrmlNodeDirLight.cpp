@@ -6,7 +6,6 @@
 
 #include "VrmlNodeDirLight.h"
 #include "VrmlNodeType.h"
-
 #include "MathUtils.h"
 #include "Viewer.h"
 
@@ -32,7 +31,10 @@ VrmlNodeType *VrmlNodeDirLight::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeDirLight::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeDirLight::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeDirLight::VrmlNodeDirLight(VrmlScene *scene) :

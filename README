@@ -21,9 +21,7 @@ How can I use it?
 =================
 
 The code is copyrighted, but is provided free of charge for any purpose.  Refer
-to the file COPYING for details.  The library includes the SGI VRML2 parser,
-which has its own copyright (see README.SGI) and uses other libraries which may
-have their own restrictions.
+to the file COPYING for details.
 
 
 What else do I need?
@@ -105,22 +103,3 @@ The very brief architecture description:
     VrmlNodeGroup class has a data member VrmlMFNode d_children.  There is a lot
     of code, but it is pretty easy to find what you want once you understand
     the structure.
-
-
-SGI Parser bugs
-===============
-
-Just for the record, these are the bugs I have found & fixed in the 
-SGI parser.
-
-- Lexer couldn't handle "0." or leading + on numbers.
-
-- hasExposedField checked eventIn/Out wrong names.
-
-- FontStyle family is an MFString.
-
-- IS statements with MFNode/SFNode fields didn't work.
-
-- Lexer whitespace rules break "#viewpoint" URL parsing.
-
-

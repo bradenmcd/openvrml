@@ -4,11 +4,10 @@
 //
 //  VrmlNodeColorInt.h
 
-#ifndef  _VRMLNODECOLORINT_
-#define  _VRMLNODECOLORINT_
+#ifndef VRMLNODECOLORINT_H
+#define VRMLNODECOLORINT_H
 
 #include "VrmlNodeChild.h"
-
 #include "VrmlSFFloat.h"
 #include "VrmlMFFloat.h"
 #include "VrmlSFColor.h"
@@ -23,7 +22,7 @@ public:
 
   // Define the fields of ColorInt nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeColorInt( VrmlScene *scene = 0 );
   virtual ~VrmlNodeColorInt();
@@ -49,5 +48,4 @@ private:
   VrmlSFColor d_value;
 };
 
-#endif _VRMLNODECOLORINT_
-
+#endif

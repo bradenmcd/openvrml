@@ -39,7 +39,10 @@ VrmlNodeType *VrmlNodeFontStyle::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeFontStyle::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeFontStyle::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeFontStyle::VrmlNodeFontStyle(VrmlScene *scene) :
@@ -109,4 +112,3 @@ void VrmlNodeFontStyle::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 }
-

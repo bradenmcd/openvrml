@@ -47,28 +47,29 @@ class VrmlField {
 public:
 
   // Field type identifiers
-  typedef enum {
+  enum VrmlFieldType {
     NO_FIELD,
     SFBOOL,
     SFCOLOR,
     SFFLOAT,
+    SFIMAGE,
     SFINT32,
+    SFNODE,
     SFROTATION,
+    SFSTRING,
     SFTIME,
     SFVEC2F,
     SFVEC3F,
-    SFIMAGE,
-    SFSTRING,
     MFCOLOR,
     MFFLOAT,
     MFINT32,
+    MFNODE,
     MFROTATION,
     MFSTRING,
+    MFTIME,
     MFVEC2F,
-    MFVEC3F,
-    SFNODE,
-    MFNODE
-  } VrmlFieldType;
+    MFVEC3F
+  };
 
   // Constructors/destructor
   VrmlField();

@@ -37,7 +37,7 @@ public:
 
   VrmlMFFloat();
   VrmlMFFloat(float value);
-  VrmlMFFloat(int n, float *v);
+  VrmlMFFloat(int n, float const * v);
   VrmlMFFloat(const VrmlMFFloat &src);
 
   ~VrmlMFFloat();

@@ -44,7 +44,10 @@ VrmlNodeType *VrmlNodeAudioClip::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeAudioClip::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeAudioClip::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeAudioClip::VrmlNodeAudioClip(VrmlScene *scene) :
@@ -121,7 +124,7 @@ void VrmlNodeAudioClip::update (VrmlSFTime &inTime)
     // If the URL has been modified, update the audio object
     if (d_url_modified)
     {
-        Doc relDoc( d_relativeUrl.get() );
+        Doc relDoc(d_relativeUrl.get(), static_cast<Doc const *>(0));
         delete d_audio;
         d_audio = new Audio(0);
         if (d_audio->tryURLs (d_url.size(),

@@ -30,7 +30,10 @@ VrmlNodeType *VrmlNodeBillboard::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeBillboard::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeBillboard::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeBillboard::VrmlNodeBillboard(VrmlScene *scene) :

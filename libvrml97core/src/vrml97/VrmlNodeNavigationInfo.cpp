@@ -5,11 +5,9 @@
 //  VrmlNodeNavigationInfo.cpp
 
 #include "VrmlNodeNavigationInfo.h"
-
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
-
 
 //  NavigationInfo factory.
 //  Since NavInfo is a bindable child node, the first one created needs
@@ -46,7 +44,10 @@ VrmlNodeType *VrmlNodeNavigationInfo::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeNavigationInfo::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeNavigationInfo::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeNavigationInfo::VrmlNodeNavigationInfo(VrmlScene *scene) :

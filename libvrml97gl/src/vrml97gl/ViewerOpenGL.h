@@ -129,7 +129,7 @@ public:
 
   virtual Object insertSphere(float radius);
 
-  virtual Object insertText(int *, float, int n, char **s);
+  virtual Object insertText(int *, float, int n, char const * const * s);
 
   // Lights
   virtual Object insertDirLight(float a, float i, float rgb[], float xyz[]);
@@ -307,7 +307,7 @@ protected:
 
   // Text rendering
   void text2(int x, int y, float scale, char *text);
-  void text3(int *justify, float size, int n, const char **s);
+  void text3(int *justify, float size, int n, const char * const * s);
 
   // IndexedFaceSet helpers
   void insertShellConvex(ShellData *);

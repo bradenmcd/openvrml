@@ -3,13 +3,16 @@
 //  Copyright (C) 1998 Chris Morley
 //
 
-#ifndef IMAGE_H
-#define IMAGE_H
+# ifndef IMAGE_H
+#   define IMAGE_H
 //
 //  Image document class
 //
 
+# include <stddef.h>
+
 class Doc;
+class Doc2;
 
 class Image {
 
@@ -19,8 +22,10 @@ public:
   ~Image();
 
   bool setURL(const char *url, Doc *relative = 0);
+  bool setURL(const char *url, Doc2 *relative = 0);
 
-  bool tryURLs(int nUrls, char **urls, Doc *relative = 0);
+  bool tryURLs(size_t nUrls, char const * const * urls, Doc *relative = 0);
+  bool tryURLs(size_t nUrls, char const * const * urls, Doc2 *relative = 0);
 
   const char *url();
 
@@ -35,7 +40,7 @@ public:
 
 protected:
 
-  Doc *d_url;
+  Doc * d_url;
   int d_w, d_h, d_nc, d_nFrames;
   unsigned char *d_pixels;
   unsigned char **d_frame;

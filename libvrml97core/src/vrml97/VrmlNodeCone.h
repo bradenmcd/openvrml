@@ -4,8 +4,8 @@
 //
 //  VrmlNodeCone.h
 
-#ifndef  _VRMLNODECONE_
-#define  _VRMLNODECONE_
+#ifndef VRMLNODECONE_H
+#define VRMLNODECONE_H
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFBool.h"
@@ -19,7 +19,7 @@ public:
 
   // Define the fields of cone nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeCone(VrmlScene *);
   virtual ~VrmlNodeCone();
@@ -47,4 +47,4 @@ protected:
 
 };
 
-#endif _VRMLNODECONE_
+#endif

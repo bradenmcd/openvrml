@@ -4,8 +4,8 @@
 //
 //  VrmlNodeCylinderSensor.h
 
-#ifndef  _VRMLNODECYLINDERSENSOR_
-#define  _VRMLNODECYLINDERSENSOR_
+#ifndef VRMLNODECYLINDERSENSOR_H
+#define VRMLNODECYLINDERSENSOR_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
@@ -15,14 +15,13 @@
 
 class VrmlScene;
 
-
 class VrmlNodeCylinderSensor : public VrmlNodeChild {
 
 public:
 
   // Define the fields of CylinderSensor nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeCylinderSensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeCylinderSensor();
@@ -52,5 +51,4 @@ private:
 
 };
 
-#endif _VRMLNODECYLINDERSENSOR_
-
+#endif

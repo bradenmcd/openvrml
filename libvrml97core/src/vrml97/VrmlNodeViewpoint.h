@@ -4,8 +4,8 @@
 //
 //  VrmlNodeViewpoint.h
 
-#ifndef  _VRMLNODEVIEWPOINT_
-#define  _VRMLNODEVIEWPOINT_
+#ifndef VRMLNODEVIEWPOINT_H
+#define VRMLNODEVIEWPOINT_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlField.h"
@@ -24,7 +24,7 @@ public:
 
   // Define the fields of Viewpoint nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeViewpoint(VrmlScene *);
   virtual ~VrmlNodeViewpoint();
@@ -75,5 +75,4 @@ private:
 
 };
 
-#endif _VRMLNODEVIEWPOINT_
-
+#endif

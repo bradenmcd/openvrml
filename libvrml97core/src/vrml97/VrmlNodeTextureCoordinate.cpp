@@ -31,8 +31,10 @@ VrmlNodeType *VrmlNodeTextureCoordinate::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeTextureCoordinate::nodeType() const 
-{ return defineType(0); }
+VrmlNodeType & VrmlNodeTextureCoordinate::nodeType() const 
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeTextureCoordinate::VrmlNodeTextureCoordinate(VrmlScene *scene) :
@@ -80,4 +82,3 @@ void VrmlNodeTextureCoordinate::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 }
-

@@ -5,13 +5,10 @@
 //  VrmlNodeElevationGrid.cpp
 
 #include "VrmlNodeElevationGrid.h"
-
 #include "VrmlNodeType.h"
-
 #include "VrmlNodeColor.h"
 #include "VrmlNodeNormal.h"
 #include "VrmlNodeTextureCoordinate.h"
-
 #include "Viewer.h"
 
 
@@ -52,7 +49,10 @@ VrmlNodeType *VrmlNodeElevationGrid::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeElevationGrid::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeElevationGrid::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeElevationGrid::VrmlNodeElevationGrid(VrmlScene *scene) :

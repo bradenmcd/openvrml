@@ -5,15 +5,11 @@
 //  VrmlNodeMaterial.cpp
 
 #include "VrmlNodeMaterial.h"
-
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
 #include "Viewer.h"
 
-
-
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeMaterial(s); }
-
 
 // Define the built in VrmlNodeType:: "Material" fields
 
@@ -38,8 +34,10 @@ VrmlNodeType *VrmlNodeMaterial::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeMaterial::nodeType() const { return defineType(0); }
-
+VrmlNodeType & VrmlNodeMaterial::nodeType() const
+{
+    return *defineType(0);
+}
 
 VrmlNodeMaterial::VrmlNodeMaterial(VrmlScene *scene) :
   VrmlNode(scene),
@@ -145,4 +143,3 @@ void VrmlNodeMaterial::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 }
-

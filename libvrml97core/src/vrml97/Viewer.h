@@ -128,7 +128,7 @@ public:
 
   virtual Object insertSphere(float /*radius*/) = 0;
 
-  virtual Object insertText(int*, float size, int n, char **s) = 0;
+  virtual Object insertText(int*, float size, int n, char const * const *s) = 0;
 
   // Lights
   virtual Object insertDirLight(float, float, float [], float []) = 0;

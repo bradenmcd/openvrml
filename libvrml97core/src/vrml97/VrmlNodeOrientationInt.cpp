@@ -46,7 +46,10 @@ VrmlNodeType *VrmlNodeOrientationInt::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeOrientationInt::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeOrientationInt::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeOrientationInt::VrmlNodeOrientationInt( VrmlScene *scene ) :
@@ -84,7 +87,7 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
 	{
 	  theSystem->error
 	    ("Invalid type for %s eventIn %s (expected SFFloat).\n",
-		nodeType()->getName(), eventName);
+		nodeType().getName(), eventName);
 	  return;
 	}
       float f = fieldValue->toSFFloat()->get();

@@ -38,15 +38,18 @@
 
 #include <string.h>
 
-# ifndef NDEBUG
-#   define VRML_NODE_PROTO_DEBUG
-# endif
+#ifndef NDEBUG
+#define VRML_NODE_PROTO_DEBUG
+#endif
 
 #ifdef macintosh
 extern char* strdup( const char* );
 #endif
 
-VrmlNodeType * VrmlNodeProto::nodeType() const { return d_nodeType; }
+VrmlNodeType & VrmlNodeProto::nodeType() const
+{
+    return *d_nodeType;
+}
 
 
 VrmlNodeProto::VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene) :
@@ -61,7 +64,7 @@ VrmlNodeProto::VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene) :
 
 VrmlNodeProto::VrmlNodeProto(const VrmlNodeProto &n) :
   VrmlNode(0),
-  d_nodeType(n.nodeType()->reference()),
+  d_nodeType(n.nodeType().reference()),
   d_instantiated(false),
   d_scope(0),
   d_nodes(0),

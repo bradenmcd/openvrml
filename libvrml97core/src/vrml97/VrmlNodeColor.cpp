@@ -30,7 +30,10 @@ VrmlNodeType *VrmlNodeColor::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeColor::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeColor::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeColor::VrmlNodeColor(VrmlScene *scene) : VrmlNode(scene)
@@ -79,4 +82,3 @@ void VrmlNodeColor::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 }
-

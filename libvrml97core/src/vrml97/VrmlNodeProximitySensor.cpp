@@ -11,7 +11,6 @@
 
 #include "VrmlNodeProximitySensor.h"
 #include "VrmlNodeType.h"
-
 #include "MathUtils.h"
 #include "System.h"
 #include "Viewer.h"
@@ -50,7 +49,10 @@ VrmlNodeType *VrmlNodeProximitySensor::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeProximitySensor::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeProximitySensor::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeProximitySensor::VrmlNodeProximitySensor( VrmlScene *scene ) :

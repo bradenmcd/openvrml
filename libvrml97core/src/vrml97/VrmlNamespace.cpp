@@ -260,12 +260,14 @@ VrmlNamespace::removeNodeName( VrmlNode *namedNode )
 }
 
 
-VrmlNode* VrmlNamespace::findNode( const char *name )
+VrmlNode * VrmlNamespace::findNode( const char *name ) const
 {
-  std::list<VrmlNode*>::iterator n;
-  for (n = d_nameList.begin(); n != d_nameList.end(); ++n)
-    if (strcmp((*n)->name(), name) == 0)
-      return *n;
-
-  return 0;
+    for (std::list<VrmlNode*>::const_iterator n = d_nameList.begin();
+         n != d_nameList.end(); ++n) {
+        if (strcmp((*n)->name(), name) == 0) {
+            return *n;
+        }
+    }
+    
+    return 0;
 }

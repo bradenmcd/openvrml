@@ -34,7 +34,10 @@ VrmlNodeType *VrmlNodeTransform::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeTransform::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeTransform::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeTransform::VrmlNodeTransform(VrmlScene *scene) :
@@ -252,4 +255,3 @@ void VrmlNodeTransform::inverseTransform(double m[4][4])
   Mscale( M, scale );
   MM( m, M );
 }
-

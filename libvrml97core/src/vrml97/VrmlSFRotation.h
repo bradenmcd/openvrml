@@ -2,11 +2,10 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef  _VRMLSFROTATION_
-#define  _VRMLSFROTATION_
+#ifndef VRMLSFROTATION_H
+#define VRMLSFROTATION_H
 
 #include "VrmlField.h"
-
 
 class VrmlSFRotation : public VrmlSField {
 public:
@@ -39,4 +38,4 @@ private:
 
 };
 
-#endif _VRMLSFROTATION_
+#endif

@@ -27,7 +27,7 @@
 #include "VrmlNode.h"
 #include "VrmlNamespace.h"
 
-#include "Doc.h"
+#include "doc2.hpp"
 #include "VrmlNodeProto.h"	// Instances of PROTOtyped nodes
 #include "VrmlMFString.h"
 #include "VrmlScene.h"
@@ -91,20 +91,23 @@ VrmlNodeType::~VrmlNodeType()
   delete d_implementation;
 }
 
-void VrmlNodeType::setScope( VrmlNamespace *createdIn )
+void VrmlNodeType::setScope(VrmlNamespace & createdIn)
 {
-  d_namespace = new VrmlNamespace( createdIn );
+  d_namespace = new VrmlNamespace(&createdIn);
 }
 
 
-void VrmlNodeType::setUrl(VrmlField *url, Doc *relative)
+void VrmlNodeType::setUrl(VrmlMFString * url, Doc2 const * relative)
 {
-  if (d_implementation) return;	// Too late...
-
-  if (d_url) delete d_url;
-  d_url = url ? url->toMFString() : 0;
-  if (d_relative) delete d_relative;
-  d_relative = relative ? new Doc(relative) : 0;
+    if (d_implementation) {
+        return; // Too late...
+    }
+    
+    delete d_url;
+    d_url = url;
+    
+    delete d_relative;
+    d_relative = relative ? new Doc2(relative) : 0;
 }
 
 void VrmlNodeType::setActualUrl(const char *url)
@@ -128,7 +131,7 @@ VrmlNodeType::addEventOut(const char *ename, VrmlField::VrmlFieldType type)
 void
 VrmlNodeType::addField(const char *ename,
 		       VrmlField::VrmlFieldType type,
-		       VrmlField *defaultValue)
+		       VrmlField const * defaultValue)
 {
   add(d_fields, ename, type);
   if (defaultValue)
@@ -138,7 +141,7 @@ VrmlNodeType::addField(const char *ename,
 void
 VrmlNodeType::addExposedField(const char *ename,
 			      VrmlField::VrmlFieldType type,
-			      VrmlField *defaultValue)
+			      VrmlField const * defaultValue)
 {
   char tmp[1000];
   add(d_fields, ename, type);
@@ -163,7 +166,7 @@ VrmlNodeType::add(FieldList &recs, const char *ename, VrmlField::VrmlFieldType t
 }
 
 void
-VrmlNodeType::setFieldDefault(const char *fname, VrmlField *defaultValue)
+VrmlNodeType::setFieldDefault(const char *fname, VrmlField const * defaultValue)
 {
   FieldList::const_iterator i;
 
@@ -349,6 +352,25 @@ VrmlNodeType::hasExposedField(const char *ename) const
   return type;
 }
 
+VrmlField::VrmlFieldType VrmlNodeType::hasInterface(char const * id) const
+{
+    VrmlField::VrmlFieldType fieldType = VrmlField::NO_FIELD;
+    
+    if ((fieldType = this->hasField(id)) != VrmlField::NO_FIELD) {
+        return fieldType;
+    }
+    
+    if ((fieldType = this->hasEventIn(id)) != VrmlField::NO_FIELD) {
+        return fieldType;
+    }
+    
+    if ((fieldType = this->hasEventOut(id)) != VrmlField::NO_FIELD) {
+        return fieldType;
+    }
+    
+    return fieldType;
+}
+
 VrmlField::VrmlFieldType
 VrmlNodeType::has(const FieldList &recs, const char *ename) const
 {
@@ -371,13 +393,14 @@ VrmlNodeType::fieldDefault(const char *fname) const
   return 0;
 }
 
-void VrmlNodeType::addNode(VrmlNode *node)
+void VrmlNodeType::addNode(VrmlNode & node)
 {
-  // add node to list of implementation nodes
-  if (d_implementation)
-    d_implementation->addNode(node);
-  else    
-    d_implementation = new VrmlMFNode(node);
+    // add node to list of implementation nodes
+    if (d_implementation) {
+        d_implementation->addNode(&node);
+    } else {
+        d_implementation = new VrmlMFNode(&node);
+    }
 }
 
 void VrmlNodeType::addIS(const char *isFieldName,
@@ -389,7 +412,7 @@ void VrmlNodeType::addIS(const char *isFieldName,
   theSystem->debug("%s::addIS(%s, %s::%s.%s)\n",
 		   getName(),
 		   isFieldName,
-		   implNode->nodeType()->getName(),
+		   implNode->nodeType().getName(),
 		   implNode->name(),
 		   implFieldName);
 

@@ -5,8 +5,8 @@
 //  %W% %G%
 //  VrmlNodeFontStyle.h
 
-#ifndef  _VRMLNODEFONTSTYLE_
-#define  _VRMLNODEFONTSTYLE_
+#ifndef VRMLNODEFONTSTYLE_H
+#define VRMLNODEFONTSTYLE_H
 
 #include "VrmlNode.h"
 #include "VrmlMFString.h"
@@ -20,7 +20,7 @@ public:
 
   // Define the fields of FontStyle nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeFontStyle(VrmlScene *);
   virtual ~VrmlNodeFontStyle();
@@ -50,5 +50,4 @@ private:
   
 };
 
-#endif _VRMLNODEFONTSTYLE_
-
+#endif

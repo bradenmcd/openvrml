@@ -4,11 +4,10 @@
 //
 //  VrmlNodeIndexedSet.h
 
-#ifndef  _VRMLNODEINDEXEDSET_
-#define  _VRMLNODEINDEXEDSET_
+#ifndef VRMLNODEINDEXEDSET_H
+#define VRMLNODEINDEXEDSET_H
 
 #include "VrmlNodeGeometry.h"
-
 #include "VrmlSFBool.h"
 #include "VrmlSFFloat.h"
 #include "VrmlSFNode.h"
@@ -55,4 +54,4 @@ protected:
 
 };
 
-#endif _VRMLNODEINDEXEDSET_
+#endif

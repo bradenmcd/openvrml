@@ -2,11 +2,13 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef SYSTEM_H
-#define SYSTEM_H
+# ifndef SYSTEM_H
+#   define SYSTEM_H
 //
 //  System dependent utilities class
 //
+
+#   include <stddef.h>
 
 class System {
 
@@ -25,7 +27,7 @@ public:
 #ifdef macintosh
   virtual bool loadUrl(char *url, int np, char **parameters );
 #else
-  virtual bool loadUrl(const char *url, int np, char **parameters );
+  virtual bool loadUrl(const char *url, size_t np, char const * const * parameters );
 #endif
 
   virtual int connectSocket( const char *host, int port );

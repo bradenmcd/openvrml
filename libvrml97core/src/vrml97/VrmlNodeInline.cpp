@@ -9,17 +9,15 @@
 #include <config.h>
 #endif
 
-#include "VrmlNodeInline.h"
-
 #include <errno.h>
-
+#include "VrmlNodeInline.h"
 #include "VrmlNamespace.h"
 #include "VrmlNodeType.h"
-#include "Doc.h"
+#include "doc2.hpp"
 #include "MathUtils.h"
 #include "VrmlScene.h"
 
-static VrmlNode *creator( VrmlScene *scene ) 
+static VrmlNode * creator(VrmlScene * scene) 
 {
   return new VrmlNodeInline(scene);
 }
@@ -27,7 +25,7 @@ static VrmlNode *creator( VrmlScene *scene )
 
 // Define the built in VrmlNodeType:: "Inline" fields
 
-VrmlNodeType *VrmlNodeInline::defineType(VrmlNodeType *t)
+VrmlNodeType * VrmlNodeInline::defineType(VrmlNodeType * t)
 {
   static VrmlNodeType *st = 0;
   if (! t)
@@ -45,7 +43,10 @@ VrmlNodeType *VrmlNodeInline::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeInline::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeInline::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeInline::VrmlNodeInline(VrmlScene *scene) :
@@ -131,11 +132,11 @@ void VrmlNodeInline::load(const char *relativeUrl)
     {
       VrmlNamespace *ns = new VrmlNamespace();
       VrmlMFNode *kids = 0;
-      Doc url;
+      Doc2 url;
       int i, n = d_url.size();
       for (i=0; i<n; ++i)
 	{
-	  Doc relDoc( relativeUrl );
+	  Doc2 relDoc(relativeUrl);
 	  theSystem->debug("Trying to read url '%s' (relative %s)\n",
 			   d_url.get(i), d_relative.get() ? d_relative.get() : "<null>");
 	  url.seturl( d_url.get(i), &relDoc );

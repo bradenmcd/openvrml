@@ -2,16 +2,21 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef  _VRMLSFIMAGE_
-#define  _VRMLSFIMAGE_
+#ifndef VRMLSFIMAGE_H
+#define VRMLSFIMAGE_H
 
 #include "VrmlField.h"
 
+//
+// How come the pixels are defined as bytes? This would seem only to allow for
+// 8-bit PixelTextures. Should they be longs to allow for 32-bit images?
+// -- Braden McDaniel <braden@endoframe.com>, 4 Apr, 2000
+//
 
 class VrmlSFImage : public VrmlSField {
 public:
 
-  VrmlSFImage(int w = 0, int h = 0, int nc = 0, unsigned char *pixels = 0);
+  VrmlSFImage(int w = 0, int h = 0, int nc = 0, unsigned char const * pixels = 0);
   VrmlSFImage(const VrmlSFImage&);
 
   ~VrmlSFImage();
@@ -41,6 +46,4 @@ private:
 
 };
 
-#endif _VRMLSFIMAGE_
-
-
+#endif

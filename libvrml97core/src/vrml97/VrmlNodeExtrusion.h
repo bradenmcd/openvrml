@@ -3,14 +3,12 @@
 //  Copyright (C) 1998 Chris Morley
 //  VrmlNodeExtrusion.h
 
-#ifndef  _VRMLNODEEXTRUSION_
-#define  _VRMLNODEEXTRUSION_
+#ifndef VRMLNODEEXTRUSION_H
+#define VRMLNODEEXTRUSION_H
 
 #include "VrmlNodeGeometry.h"
-
 #include "VrmlSFBool.h"
 #include "VrmlSFFloat.h"
-
 #include "VrmlMFRotation.h"
 #include "VrmlMFVec2f.h"
 #include "VrmlMFVec3f.h"
@@ -21,7 +19,7 @@ public:
 
   // Define the fields of extrusion nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeExtrusion(VrmlScene *);
   virtual ~VrmlNodeExtrusion();
@@ -62,4 +60,4 @@ protected:
 
 };
 
-#endif _VRMLNODEEXTRUSION_
+# endif

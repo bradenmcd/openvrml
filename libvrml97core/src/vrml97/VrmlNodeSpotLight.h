@@ -4,8 +4,8 @@
 //
 //  VrmlNodeSpotLight.h
 
-#ifndef  _VRMLNODESPOTLIGHT_
-#define  _VRMLNODESPOTLIGHT_
+#ifndef VRMLNODESPOTLIGHT_H
+#define VRMLNODESPOTLIGHT_H
 
 #include "VrmlNodeLight.h"
 #include "VrmlSFFloat.h"
@@ -18,7 +18,7 @@ public:
 
   // Define the fields of spotLight nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeSpotLight(VrmlScene *);
   virtual ~VrmlNodeSpotLight();
@@ -54,4 +54,4 @@ protected:
 
 };
 
-#endif _VRMLNODESPOTLIGHT_
+#endif

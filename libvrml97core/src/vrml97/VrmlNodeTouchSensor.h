@@ -4,8 +4,8 @@
 //
 //  VrmlNodeTouchSensor.h
 
-#ifndef  _VRMLNODETOUCHSENSOR_
-#define  _VRMLNODETOUCHSENSOR_
+#ifndef VRMLNODETOUCHSENSOR_H
+#define VRMLNODETOUCHSENSOR_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
@@ -15,14 +15,13 @@
 
 class VrmlScene;
 
-
 class VrmlNodeTouchSensor : public VrmlNodeChild {
 
 public:
 
   // Define the fields of TouchSensor nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeTouchSensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeTouchSensor();
@@ -55,5 +54,4 @@ private:
 
 };
 
-#endif _VRMLNODETOUCHSENSOR_
-
+#endif

@@ -6,7 +6,6 @@
 //  VrmlNodeWorldInfo.cpp
 
 #include "VrmlNodeWorldInfo.h"
-
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
 
@@ -37,7 +36,10 @@ VrmlNodeType *VrmlNodeWorldInfo::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeWorldInfo::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeWorldInfo::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeWorldInfo::VrmlNodeWorldInfo(VrmlScene *scene) :
@@ -73,4 +75,3 @@ void VrmlNodeWorldInfo::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 }
-

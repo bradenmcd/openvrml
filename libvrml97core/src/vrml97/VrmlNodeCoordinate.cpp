@@ -30,7 +30,10 @@ VrmlNodeType *VrmlNodeCoordinate::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeCoordinate::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeCoordinate::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeCoordinate::VrmlNodeCoordinate(VrmlScene *scene) : VrmlNode(scene)
@@ -80,4 +83,3 @@ void VrmlNodeCoordinate::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 }
-

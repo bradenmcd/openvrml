@@ -5,7 +5,6 @@
 //  VrmlNodePointLight.cpp
 
 #include "VrmlNodePointLight.h"
-
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
@@ -35,7 +34,10 @@ VrmlNodeType *VrmlNodePointLight::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodePointLight::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodePointLight::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodePointLight::VrmlNodePointLight(VrmlScene *scene) :

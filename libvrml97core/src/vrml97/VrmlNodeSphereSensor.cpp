@@ -10,7 +10,6 @@
 
 #include "VrmlNodeSphereSensor.h"
 #include "VrmlNodeType.h"
-
 #include "MathUtils.h"
 #include "System.h"
 #include "Viewer.h"
@@ -47,8 +46,10 @@ VrmlNodeType *VrmlNodeSphereSensor::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeSphereSensor::nodeType() const 
-{ return defineType(0); }
+VrmlNodeType & VrmlNodeSphereSensor::nodeType() const 
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeSphereSensor::VrmlNodeSphereSensor( VrmlScene *scene ) :

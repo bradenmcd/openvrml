@@ -36,7 +36,10 @@ VrmlNodeType *VrmlNodeAppearance::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeAppearance::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeAppearance::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeAppearance::VrmlNodeAppearance(VrmlScene *scene) :

@@ -30,7 +30,7 @@
 #include "VrmlMFNode.h"
 #include "VrmlSFString.h"
 
-class Doc;
+class Doc2;
 class VrmlNamespace;
 class VrmlNode;
 class VrmlScene;
@@ -54,27 +54,28 @@ public:
 
   // Set/get scope of this type (namespace is NULL for builtins).
   VrmlNamespace *scope() { return d_namespace; }
-  void setScope( VrmlNamespace *scopeDefinedIn );
+  void setScope(VrmlNamespace &);
 
   // Routines for adding/getting eventIns/Outs/fields to this type
   void addEventIn(const char *name, VrmlField::VrmlFieldType type);
   void addEventOut(const char *name, VrmlField::VrmlFieldType type);
   void addField(const char *name, VrmlField::VrmlFieldType type,
-		VrmlField *defaultVal = 0);
+		VrmlField const * defaultVal = 0);
   void addExposedField(const char *name, VrmlField::VrmlFieldType type,
-		       VrmlField *defaultVal = 0);
+		       VrmlField const * defaultVal = 0);
 
-  void setFieldDefault(const char *name, VrmlField *value);
+  void setFieldDefault(const char *name, VrmlField const * value);
 
   VrmlField::VrmlFieldType hasEventIn(const char *name) const;
   VrmlField::VrmlFieldType hasEventOut(const char *name) const;
   VrmlField::VrmlFieldType hasField(const char *name) const;
   VrmlField::VrmlFieldType hasExposedField(const char *name) const;
+  VrmlField::VrmlFieldType hasInterface(char const *) const;
 
   VrmlField *fieldDefault(const char *name) const;
 
   // Set the URL to retrieve an EXTERNPROTO implementation from.
-  void setUrl(VrmlField *url, Doc *relative = 0);
+  void setUrl(VrmlMFString * url, Doc2 const * relative = 0);
 
   void setActualUrl(const char *url);
 
@@ -82,7 +83,7 @@ public:
   const char *url() { return d_actualUrl ? d_actualUrl->get() : 0; }
 
   // Add a node to a PROTO implementation
-  void addNode(VrmlNode *implNode);
+  void addNode(VrmlNode & implNode);
   
   // Add an IS linkage to one of the PROTO interface fields/events.
   void addIS(const char *isFieldName,
@@ -95,19 +96,19 @@ public:
 
   VrmlNode *firstNode();
 
-  typedef struct {
+  struct NodeFieldRec {
     VrmlNode *node;
     char *fieldName;
-  } NodeFieldRec;
+  };
 
   typedef std::list<NodeFieldRec*> ISMap;
 
-  typedef struct {
+  struct ProtoField {
     char *name;
     VrmlField::VrmlFieldType type;
     VrmlField *defaultValue;
     ISMap thisIS;
-  } ProtoField;
+  };
 
   typedef std::list<ProtoField*> FieldList;
 
@@ -133,7 +134,7 @@ private:
 
   VrmlMFString *d_url;		// Where the EXTERNPROTO could be.
   VrmlSFString *d_actualUrl;	// The URL actually used.
-  Doc *d_relative;
+  Doc2 *d_relative;
 
   VrmlMFNode *d_implementation;	// The PROTO implementation nodes
 

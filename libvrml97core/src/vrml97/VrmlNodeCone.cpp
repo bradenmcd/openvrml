@@ -36,7 +36,10 @@ VrmlNodeType *VrmlNodeCone::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeCone::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeCone::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeCone::VrmlNodeCone(VrmlScene *scene) :

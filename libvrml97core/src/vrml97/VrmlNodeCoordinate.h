@@ -4,8 +4,8 @@
 //
 //  VrmlNodeCoordinate.h
 
-#ifndef  _VRMLNODECOORDINATE_
-#define  _VRMLNODECOORDINATE_
+#ifndef VRMLNODECOORDINATE_H
+#define VRMLNODECOORDINATE_H
 
 #include "VrmlNode.h"
 #include "VrmlMFVec3f.h"
@@ -16,7 +16,7 @@ public:
 
   // Define the fields of Coordinate nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeCoordinate(VrmlScene *);
   virtual ~VrmlNodeCoordinate();
@@ -38,5 +38,4 @@ private:
   
 };
 
-#endif _VRMLNODECOORDINATE_
-
+#endif

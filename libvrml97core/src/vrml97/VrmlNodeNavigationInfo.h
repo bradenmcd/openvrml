@@ -4,8 +4,8 @@
 //
 //  VrmlNodeNavigationInfo.h
 
-#ifndef  _VRMLNODENAVIGATIONINFO_
-#define  _VRMLNODENAVIGATIONINFO_
+#ifndef VRMLNODENAVIGATIONINFO_H
+#define VRMLNODENAVIGATIONINFO_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlMFFloat.h"
@@ -19,7 +19,7 @@ public:
 
   // Define the built in VrmlNodeType:: "NavigationInfo"
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeNavigationInfo(VrmlScene *scene);
   virtual ~VrmlNodeNavigationInfo();
@@ -58,5 +58,4 @@ private:
   VrmlSFBool d_isBound;		// eventOut
 };
 
-#endif _VRMLNODENAVIGATIONINFO_
-
+#endif

@@ -4,11 +4,10 @@
 //
 //  VrmlNodeFog.h
 
-#ifndef  _VRMLNODEFOG_
-#define  _VRMLNODEFOG_
+#ifndef VRMLNODEFOG_H
+#define VRMLNODEFOG_H
 
 #include "VrmlNodeChild.h"
-
 #include "VrmlSFBool.h"
 #include "VrmlSFColor.h"
 #include "VrmlSFFloat.h"
@@ -22,7 +21,7 @@ public:
 
   // Define the fields of Fog nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeFog(VrmlScene *);
   virtual ~VrmlNodeFog();
@@ -58,5 +57,4 @@ private:
 
 };
 
-#endif _VRMLNODEFOG_
-
+#endif

@@ -37,7 +37,7 @@ public:
 
   VrmlMFRotation();
   VrmlMFRotation(float x, float y, float z, float r);
-  VrmlMFRotation(int n, float *v);
+  VrmlMFRotation(int n, float const * v);
   VrmlMFRotation(const VrmlMFRotation &src);
 
   ~VrmlMFRotation();

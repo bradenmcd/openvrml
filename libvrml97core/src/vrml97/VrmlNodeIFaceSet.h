@@ -4,8 +4,8 @@
 //
 //  VrmlNodeIFaceSet.h
 
-#ifndef  _VRMLNODEIFACESET_
-#define  _VRMLNODEIFACESET_
+#ifndef VRMLNODEIFACESET_H
+#define VRMLNODEIFACESET_H
 
 #include "VrmlNodeIndexedSet.h"
 #include "VrmlSFBool.h"
@@ -19,7 +19,7 @@ public:
 
   // Define the fields of indexed face set nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeIFaceSet(VrmlScene *);
   virtual ~VrmlNodeIFaceSet();
@@ -70,5 +70,4 @@ protected:
   
 };
 
-#endif // _VRMLNODEIFACESET_
-
+#endif

@@ -7,7 +7,7 @@
 
 #include "VrmlNodeBackground.h"
 
-#include "Doc.h"
+#include "doc2.hpp"
 #include "Image.h"
 #include "VrmlNodeType.h"
 #include "VrmlSFBool.h"
@@ -57,7 +57,10 @@ VrmlNodeType *VrmlNodeBackground::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeBackground::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeBackground::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeBackground::VrmlNodeBackground(VrmlScene *scene)
@@ -110,7 +113,7 @@ ostream& VrmlNodeBackground::printFields(ostream& os, int indent)
 // Load and scale textures as needed.
 
 static Image* getTexture( VrmlMFString &urls,
-			  Doc *relative,
+			  Doc2 * relative,
 			  Image *tex,
 			  int thisIndex,
 			  Viewer *viewer )
@@ -193,8 +196,8 @@ void VrmlNodeBackground::renderBindable(Viewer *viewer)
     {
       if (isModified() || d_texPtr[0] == 0)
 	{
-	  Doc relDoc( d_relativeUrl.get() );
-	  Doc *rel = d_relativeUrl.get() ? &relDoc : d_scene->urlDoc();
+	  Doc2 relDoc( d_relativeUrl.get() );
+	  Doc2 *rel = d_relativeUrl.get() ? &relDoc : d_scene->urlDoc();
 	  d_texPtr[0] = getTexture( d_backUrl, rel, d_tex, 0, viewer );
 	  d_texPtr[1] = getTexture( d_bottomUrl, rel, d_tex, 1, viewer );
 	  d_texPtr[2] = getTexture( d_frontUrl, rel, d_tex, 2, viewer );

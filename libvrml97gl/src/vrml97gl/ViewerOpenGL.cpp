@@ -1887,7 +1887,7 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
 
 Viewer::Object ViewerOpenGL::insertText(int *justify,
 					float size,
-					int n, char **s)
+					int n, char const * const * s)
 {
   GLuint glid = 0;
 
@@ -1901,7 +1901,7 @@ Viewer::Object ViewerOpenGL::insertText(int *justify,
 
   beginGeometry();
 
-  text3(justify, size, n, (const char **)s);
+  this->text3(justify, size, n, s);
 
   endGeometry();
   if (glid) glEndList();
@@ -3069,7 +3069,7 @@ void ViewerOpenGL::text2( int x, int y, float scale, char* text )
   glMatrixMode(GL_MODELVIEW);
 }
 
-void ViewerOpenGL::text3(int *justify, float size, int n, const char **s)
+void ViewerOpenGL::text3(int *justify, float size, int n, const char * const *s)
 {
   float font_scale = 0.005 * size;
 

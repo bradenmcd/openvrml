@@ -6,13 +6,10 @@
 //
 
 #include "VrmlNodeGroup.h"
-
 #include "VrmlNodeType.h"
-
 #include "VrmlNodeProto.h"
 #include "VrmlNodePlaneSensor.h"
 #include "VrmlNodeTouchSensor.h"
-
 #include "VrmlMFNode.h"
 #include "VrmlSFVec3f.h"
 
@@ -44,7 +41,10 @@ VrmlNodeType *VrmlNodeGroup::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeGroup::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeGroup::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeGroup::VrmlNodeGroup(VrmlScene *scene) :
@@ -161,54 +161,58 @@ ostream& VrmlNodeGroup::printFields(ostream& os, int indent)
 
 void VrmlNodeGroup::render(Viewer *viewer)
 {
-  if ( d_viewerObject && isModified() )
-    {
-      viewer->removeObject(d_viewerObject);
-      d_viewerObject = 0;
+    if ( d_viewerObject && isModified() ) {
+        viewer->removeObject(d_viewerObject);
+        d_viewerObject = 0;
     }
-
-  if (d_viewerObject)
-    viewer->insertReference(d_viewerObject);
-
-  else if (d_children.size() > 0)
-    {
-      int i, n = d_children.size();
-      int nSensors = 0;
-
-      d_viewerObject = viewer->beginObject(name());
-
-      // Draw nodes that impact their siblings (DirectionalLights,
-      // TouchSensors, any others? ...)
-      for (i = 0; i<n; ++i)
-	{
-	  VrmlNode *kid = d_children[i];
-
-	  if ( kid->toLight() && ! (kid->toPointLight() || kid->toSpotLight()) )
-	    kid->render(viewer);
-	  else if (( kid->toTouchSensor() && kid->toTouchSensor()->isEnabled() ) ||
-		   ( kid->toPlaneSensor() && kid->toPlaneSensor()->isEnabled() ))
-	    {
-	      if (++nSensors == 1)
-		viewer->setSensitive( this );
-	    }
-	}	      
-
-      // Do the rest of the children (except the scene-level lights)
-      for (i = 0; i<n; ++i)
-	if (! (d_children[i]->toLight() ||
-	       d_children[i]->toPlaneSensor() ||
-	       d_children[i]->toTouchSensor()) )
-	  d_children[i]->render(viewer);
-
-      // Turn off sensitivity
-      if (nSensors > 0)
-	viewer->setSensitive( 0 );
-
-      viewer->endObject();
-
+    
+    if (d_viewerObject) {
+        
+        viewer->insertReference(d_viewerObject);
+        
+    } else if (d_children.size() > 0) {
+        size_t i, n = d_children.size();
+        size_t nSensors = 0;
+        
+        d_viewerObject = viewer->beginObject(name());
+        
+        // Draw nodes that impact their siblings (DirectionalLights,
+        // TouchSensors, any others? ...)
+        for (i = 0; i < n; ++i) {
+	    VrmlNode * const kid = d_children[i];
+            
+            if (kid) {
+	        if ( kid->toLight() && ! (kid->toPointLight() || kid->toSpotLight()) ) {
+	            kid->render(viewer);
+                } else if (( kid->toTouchSensor() && kid->toTouchSensor()->isEnabled() ) ||
+                           ( kid->toPlaneSensor() && kid->toPlaneSensor()->isEnabled() )) {
+                    if (++nSensors == 1) {
+                        viewer->setSensitive( this );
+                    }
+                }
+            }
+        }     
+        
+        // Do the rest of the children (except the scene-level lights)
+        for (i = 0; i < n; ++i) {
+            if (d_children[i]
+                && !(   d_children[i]->toLight()
+                     || d_children[i]->toPlaneSensor()
+                     || d_children[i]->toTouchSensor()) ) {
+                d_children[i]->render(viewer);
+            }
+        }
+        
+        // Turn off sensitivity
+        if (nSensors > 0) {
+            viewer->setSensitive( 0 );
+        }
+        
+        viewer->endObject();
+        
     }
-
-  clearModified();
+    
+    clearModified();
 }
 
 
@@ -282,7 +286,7 @@ void VrmlNodeGroup::addChildren( const VrmlMFNode &children )
       else
 	theSystem->error
 	  ("Error: Attempt to add a %s node as a child of a %s node.\n",
-	      child->nodeType()->getName(), nodeType()->getName());
+	      child->nodeType().getName(), nodeType().getName());
     }
 
   if (nNow != d_children.size())

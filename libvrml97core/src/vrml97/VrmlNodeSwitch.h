@@ -4,12 +4,11 @@
 //
 //  VrmlNodeSwitch.h
 
-#ifndef  _VRMLNODESWITCH_
-#define  _VRMLNODESWITCH_
+#ifndef VRMLNODESWITCH_H
+#define VRMLNODESWITCH_H
 
 #include "VrmlMFNode.h"
 #include "VrmlSFInt.h"
-
 #include "VrmlNodeChild.h"
 
 class VrmlNodeSwitch : public VrmlNodeChild {
@@ -18,7 +17,7 @@ public:
 
   // Define the fields of all built in switch nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeSwitch(VrmlScene *);
   virtual ~VrmlNodeSwitch();
@@ -54,5 +53,4 @@ protected:
   
 };
 
-#endif _VRMLNODESWITCH_
-
+#endif

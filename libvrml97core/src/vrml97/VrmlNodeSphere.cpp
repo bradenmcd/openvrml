@@ -6,10 +6,8 @@
 //  VrmlNodeSphere.cpp
 
 #include "VrmlNodeSphere.h"
-
 #include "VrmlNodeType.h"
 #include "Viewer.h"
-
 
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeSphere(s); }
 
@@ -32,7 +30,10 @@ VrmlNodeType *VrmlNodeSphere::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeSphere::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeSphere::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeSphere::VrmlNodeSphere(VrmlScene *scene) :

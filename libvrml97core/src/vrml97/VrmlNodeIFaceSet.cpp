@@ -5,18 +5,14 @@
 //  VrmlNodeIFaceSet.cpp
 
 #include "VrmlNodeIFaceSet.h"
-
 #include "VrmlNodeType.h"
 #include "VrmlNodeColor.h"
 #include "VrmlNodeCoordinate.h"
 #include "VrmlNodeNormal.h"
 #include "VrmlNodeTextureCoordinate.h"
-
 #include "Viewer.h"
 
-
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeIFaceSet(s); }
-
 
 // Define the built in VrmlNodeType:: "IndexedFaceSet" fields
 
@@ -48,7 +44,10 @@ VrmlNodeType *VrmlNodeIFaceSet::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeIFaceSet::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeIFaceSet::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeIFaceSet::VrmlNodeIFaceSet(VrmlScene *scene) :
@@ -264,4 +263,3 @@ const VrmlMFInt& VrmlNodeIFaceSet::getTexCoordIndex() const
 
 VrmlNodeIFaceSet* VrmlNodeIFaceSet::toIFaceSet() const
 { return (VrmlNodeIFaceSet*) this; }
-

@@ -4,8 +4,8 @@
 //
 //  VrmlNodeTextureCoordinate.h
 
-#ifndef  _VRMLNODETEXTURECOORDINATE_
-#define  _VRMLNODETEXTURECOORDINATE_
+#ifndef VRMLNODETEXTURECOORDINATE_H
+#define VRMLNODETEXTURECOORDINATE_H
 
 #include "VrmlNode.h"
 #include "VrmlMFVec2f.h"
@@ -17,7 +17,7 @@ public:
 
   // Define the fields of TextureCoordinate nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeTextureCoordinate(VrmlScene *);
   virtual ~VrmlNodeTextureCoordinate();
@@ -39,5 +39,4 @@ private:
   
 };
 
-#endif _VRMLNODETEXTURECOORDINATE_
-
+#endif

@@ -4,8 +4,8 @@
 //
 //  VrmlNodeMaterial.h
 
-#ifndef  _VRMLNODEMATERIAL_
-#define  _VRMLNODEMATERIAL_
+#ifndef VRMLNODEMATERIAL_H
+#define VRMLNODEMATERIAL_H
 
 #include "VrmlNode.h"
 #include "VrmlSFColor.h"
@@ -17,7 +17,7 @@ public:
 
   // Define the fields of Material nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeMaterial(VrmlScene *);
   virtual ~VrmlNodeMaterial();
@@ -51,5 +51,4 @@ private:
 
 };
 
-#endif _VRMLNODEMATERIAL_
-
+#endif

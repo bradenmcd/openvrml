@@ -4,12 +4,11 @@
 //
 //  VrmlNodeShape.h
 
-#ifndef  _VRMLNODESHAPE_
-#define  _VRMLNODESHAPE_
+#ifndef VRMLNODESHAPE_H
+#define VRMLNODESHAPE_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFNode.h"
-
 #include "Viewer.h"
 
 class VrmlNodeShape : public VrmlNodeChild {
@@ -18,7 +17,7 @@ public:
 
   // Define the fields of Shape nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeShape(VrmlScene *);
   virtual ~VrmlNodeShape();
@@ -55,5 +54,4 @@ private:
   
 };
 
-#endif _VRMLNODESHAPE_
-
+#endif

@@ -6,8 +6,6 @@
 
 #include "VrmlNodePositionInt.h"
 #include "VrmlNodeType.h"
-
-
 #include "VrmlScene.h"
 
 // PositionInt factory.
@@ -39,7 +37,10 @@ VrmlNodeType *VrmlNodePositionInt::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodePositionInt::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodePositionInt::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodePositionInt::VrmlNodePositionInt( VrmlScene *scene ) :
@@ -76,7 +77,7 @@ void VrmlNodePositionInt::eventIn(double timeStamp,
 	{
 	  theSystem->error
 	    ("Invalid type for %s eventIn %s (expected SFFloat).\n",
-		nodeType()->getName(), eventName);
+		nodeType().getName(), eventName);
 	  return;
 	}
       float f = fieldValue->toSFFloat()->get();
@@ -155,4 +156,3 @@ const VrmlMFFloat& VrmlNodePositionInt::getKey() const
 
 const VrmlMFVec3f& VrmlNodePositionInt::getKeyValue() const  
 { return d_keyValue; }
-

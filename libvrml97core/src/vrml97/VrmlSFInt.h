@@ -2,11 +2,10 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef  _VRMLSFINT_
-#define  _VRMLSFINT_
+#ifndef VRMLSFINT_H
+#define VRMLSFINT_H
 
 #include "VrmlField.h"
-
 
 class VrmlSFInt : public VrmlSField {
 public:
@@ -29,4 +28,4 @@ private:
 
 };
 
-#endif _VRMLSFINT_
+#endif

@@ -5,10 +5,8 @@
 //  VrmlNodePixelTexture.cpp
 
 #include "VrmlNodePixelTexture.h"
-
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
-
 
 static VrmlNode *creator( VrmlScene *s ) {
   return new VrmlNodePixelTexture(s); 
@@ -38,7 +36,10 @@ VrmlNodeType *VrmlNodePixelTexture::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodePixelTexture::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodePixelTexture::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodePixelTexture::VrmlNodePixelTexture(VrmlScene *scene) :
@@ -190,4 +191,3 @@ void VrmlNodePixelTexture::setField(const char *fieldName,
 						x, y, nc, *p);
   }
 }
-

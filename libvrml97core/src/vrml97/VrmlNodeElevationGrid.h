@@ -4,18 +4,15 @@
 //  VrmlNodeElevationGrid.h
 //
 
-#ifndef  _VRMLNODEELEVATIONGRID_
-#define  _VRMLNODEELEVATIONGRID_
+#ifndef VRMLNODEELEVATIONGRID_H
+#define VRMLNODEELEVATIONGRID_H
 
 #include "VrmlNodeGeometry.h"
-
 #include "VrmlSFBool.h"
 #include "VrmlSFFloat.h"
 #include "VrmlSFInt.h"
 #include "VrmlSFNode.h"
-
 #include "VrmlMFFloat.h"
-
 
 class VrmlNodeElevationGrid : public VrmlNodeGeometry {
 
@@ -23,7 +20,7 @@ public:
 
   // Define the fields of elevationGrid nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeElevationGrid(VrmlScene *);
   virtual ~VrmlNodeElevationGrid();
@@ -81,5 +78,4 @@ protected:
 
 };
 
-#endif _VRMLNODEELEVATIONGRID_
-
+#endif

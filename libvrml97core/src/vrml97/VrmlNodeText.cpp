@@ -5,12 +5,10 @@
 //  VrmlNodeText.cpp
 
 #include "VrmlNodeText.h"
-
 #include "VrmlNodeType.h"
 #include "VrmlNodeFontStyle.h"
 #include "MathUtils.h"
 #include "Viewer.h"
-
 
 // Make a VrmlNodeText
 
@@ -38,7 +36,10 @@ VrmlNodeType *VrmlNodeText::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeText::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeText::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeText::VrmlNodeText(VrmlScene *scene) :
@@ -98,34 +99,33 @@ ostream& VrmlNodeText::printFields(ostream& os, int indent)
 
 Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer)
 {
-  char **s = d_string.get();
-
-  if (s)
-    {
-      int justify[2] = { 1, 1 };
-      float size = 1.0;
-      VrmlNodeFontStyle *f = 0;
-      if (d_fontStyle.get())
-	f = d_fontStyle.get()->toFontStyle();
-
-      if (f)
-	{
-	  VrmlMFString &j = f->justify();
-
-	  for (int i=0; i<j.size(); ++i)
-	    {
-	      if (strcmp(j[i], "END") == 0)
-		justify[i] = -1;
-	      else if (strcmp(j[i], "MIDDLE") == 0)
-		justify[i] = 0;
-	    }
-	  size = f->size();
-	} 
+    char const * const * s = d_string.get();
     
-      return viewer->insertText(justify, size, d_string.size(), s);
+    if (s) {
+        int justify[2] = { 1, 1 };
+        float size = 1.0;
+        VrmlNodeFontStyle *f = 0;
+        if (d_fontStyle.get()) {
+            f = d_fontStyle.get()->toFontStyle();
+        }
+        
+        if (f) {
+            VrmlMFString & j = f->justify();
+            
+            for (size_t i=0; i<j.size(); ++i) {
+                if (strcmp(j[i], "END") == 0) {
+                    justify[i] = -1;
+                } else if (strcmp(j[i], "MIDDLE") == 0) {
+                    justify[i] = 0;
+                }
+            }
+            size = f->size();
+        }
+        
+        return viewer->insertText(justify, size, d_string.size(), s);
     }
-
-  return 0;
+    
+    return 0;
 }
 
 // Get the value of a field or eventOut.

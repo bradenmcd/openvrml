@@ -18,14 +18,15 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <strstream.h>
 
-#include "Doc.h"
+#include "doc2.hpp"
 #include "Viewer.h"
 #include "System.h"
-
+#include "vrml97scanner.hpp"
+#include "vrml97parser.hpp"
 #include "VrmlNamespace.h"
 #include "VrmlNodeType.h"
-
 
 // Handle clicks on Anchor nodes
 #include "VrmlNodeAnchor.h"
@@ -55,9 +56,8 @@
 // Max time in seconds between updates. Make this user
 // setable to balance performance with cpu usage.
 #ifndef DEFAULT_DELTA
-# define DEFAULT_DELTA 0.5
+#define DEFAULT_DELTA 0.5
 #endif
-
 
 //
 // Create a VrmlScene from a URL (optionally loading from a local copy,
@@ -137,54 +137,61 @@ VrmlScene::~VrmlScene()
 
 // Load a (possibly non-VRML) file...
 
-bool VrmlScene::loadUrl( VrmlMFString *url, VrmlMFString *parameters )
+bool VrmlScene::loadUrl(VrmlMFString const * url, VrmlMFString const * parameters)
 {
-  if (! url) return false;
-
-  int np = parameters ? parameters->size() : 0;
-  char **params = parameters ? parameters->get() : 0;
-
-  // try each url until we find one we can handle
-  int i, n = url->size();
-  char **urls = url->get();
-  for (i=0; i<n; ++i)
-    {
-      if (! urls[i]) continue;
-
-      // #Viewpoint
-      if (*urls[i] == '#')
-	{
-	  if (load( urls[i] ))
-	    break;
-	}
-
-      // Load .wrl's, or pass off to system
-      else
-	{      // Check mime type...
-	  char *tail = strrchr(urls[i], SLASH);
-	  if (! tail) tail = urls[i];
-	  char *mod = strchr(tail, '#');
-	  if (! mod) mod = urls[i] + strlen(urls[i]);
-	  if (mod-tail > 4 &&
-	      ( strncmp( mod-4, ".wrl", 4) == 0 ||
-		strncmp( mod-4, ".wrz", 4) == 0 ||
-		strncmp( mod-4, ".WRL", 4) == 0 ||
-		strncmp( mod-4, ".WRZ", 4) == 0 ||
-		(mod-tail > 7 &&
-		 strncmp( mod-7, ".wrl.gz", 7) == 0 )))
-	    {
-	      if (load( urls[i] ))
-		break;
-	    }
-	  else
-	    {
-	      if (theSystem->loadUrl( urls[i], np, params ))
-		break;
-	    }
-	}
-    }   
-
-  return i != n;		// true if we found a url that loaded
+    if (! url) {
+        return false;
+    }
+    
+    size_t np = parameters ? parameters->size() : 0;
+    char const * const * params = parameters ? parameters->get() : 0;
+    
+    // try each url until we find one we can handle
+//    int i, n = url->size();
+    size_t i(0);
+    char const * const * urls = url->get();
+    for (; i < url->size(); ++i) {
+        if (! urls[i]) {
+            continue;
+        }
+        
+        // #Viewpoint
+        if (*urls[i] == '#') {
+            if (load( urls[i] )) {
+                break;
+            }
+        }
+        
+        // Load .wrl's, or pass off to system
+        else {
+            // Check mime type...
+            char const * tail = strrchr(urls[i], SLASH);
+            if (! tail) {
+                tail = urls[i];
+            }
+            char const * mod = strchr(tail, '#');
+            if (! mod) {
+                mod = urls[i] + strlen(urls[i]);
+            }
+            if (mod-tail > 4
+                && (   strncmp( mod-4, ".wrl", 4) == 0
+                    || strncmp( mod-4, ".wrz", 4) == 0
+                    || strncmp( mod-4, ".WRL", 4) == 0
+                    || strncmp( mod-4, ".WRZ", 4) == 0
+                    || (mod-tail > 7 && strncmp( mod-7, ".wrl.gz", 7) == 0 )))
+            {
+                if (load( urls[i] )) {
+                    break;
+                }
+	    } else {
+                if (theSystem->loadUrl( urls[i], np, params )) {
+                    break;
+                }
+            }
+        }
+    }
+    
+    return (i != url->size());  // true if we found a url that loaded
 }
 
 // Called by viewer when a destroy request is received. The request
@@ -198,8 +205,8 @@ void VrmlScene::destroyWorld()
 
 // Replace nodes
 
-void VrmlScene::replaceWorld( VrmlMFNode &nodes, VrmlNamespace *ns,
-			      Doc *url, Doc *urlLocal )
+void VrmlScene::replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
+			     Doc2 * url, Doc2 * urlLocal)
 {
   delete d_namespace;
   delete d_url;
@@ -272,136 +279,121 @@ void VrmlScene::addWorldChangedCallback( SceneCB cb )
 
 bool VrmlScene::load(const char *url, const char *localCopy)
 {
-  // Look for '#Viewpoint' syntax. There ought to be a current
-  // scene if this format is used.
-  VrmlSFBool flag(true);
-  if (*url == '#')
-    {
-      VrmlNode *vp = d_namespace ? d_namespace->findNode(url+1) : 0;
-
-      // spec: ignore if named viewpoint not found
-      if (vp)
-	{
-	  vp->eventIn( theSystem->time(), "set_bind", &flag );
-	  setModified();
+    // Look for '#Viewpoint' syntax. There ought to be a current
+    // scene if this format is used.
+    VrmlSFBool flag(true);
+    if (*url == '#') {
+        VrmlNode *vp = d_namespace ? d_namespace->findNode(url+1) : 0;
+        
+        // spec: ignore if named viewpoint not found
+        if (vp) {
+	    vp->eventIn( theSystem->time(), "set_bind", &flag );
+	    setModified();
 	}
-
-      return true;
+        
+        return true;
     }
-
-  // Try to load a file. Prefer a local copy if available.
-  Doc *tryUrl;
-  if (localCopy)
-    tryUrl = new Doc( localCopy, 0 );
-  else
-    tryUrl = new Doc( url, d_url);
-
-  VrmlNamespace *newScope = new VrmlNamespace();
-  VrmlMFNode *newNodes = readWrl( tryUrl, newScope );
-
-  if ( newNodes )
-    {
-      Doc *sourceUrl = tryUrl, *urlLocal = 0;
-      if (localCopy)
-	{
-	  sourceUrl = new Doc( url );
-	  urlLocal = tryUrl;
-	}
-      
-      replaceWorld( *newNodes, newScope, sourceUrl, urlLocal );
-      delete newNodes;
-
-      // Look for '#Viewpoint' syntax
-      if ( sourceUrl->urlModifier() )
-	{
-	  VrmlNode *vp = d_namespace->findNode( sourceUrl->urlModifier()+1 );
-	  double timeNow = theSystem->time();
-	  if (vp)
-	    vp->eventIn( timeNow, "set_bind", &flag );
-	}
-
-      return true;      // Success.
+    
+    // Try to load a file. Prefer a local copy if available.
+    Doc2 * tryUrl = 0;
+    if (localCopy) {
+        tryUrl = new Doc2(localCopy, 0);
+    } else {
+        tryUrl = new Doc2(url, d_url);
     }
-
-  delete tryUrl;
-  return false;
+    
+    VrmlNamespace * newScope = new VrmlNamespace();
+    VrmlMFNode * newNodes = readWrl(tryUrl, newScope);
+    
+    if (newNodes) {
+        Doc2 * sourceUrl = tryUrl;
+        Doc2 * urlLocal = 0;
+        if (localCopy) {
+            sourceUrl = new Doc2( url );
+            urlLocal = tryUrl;
+        }
+        
+        replaceWorld(*newNodes, newScope, sourceUrl, urlLocal);
+        delete newNodes;
+        
+        // Look for '#Viewpoint' syntax
+        if (sourceUrl->urlModifier()) {
+            VrmlNode * vp = d_namespace->findNode(sourceUrl->urlModifier() + 1);
+            double timeNow = theSystem->time();
+            if (vp) {
+                vp->eventIn(timeNow, "set_bind", &flag);
+            }
+	}
+        
+        return true;      // Success.
+    }
+    
+    delete tryUrl;
+    return false;
 }
 
 
 // Read a VRML file from one of the urls.
 
-VrmlMFNode* VrmlScene::readWrl( VrmlMFString *urls, Doc *relative,
-				VrmlNamespace *ns )
+VrmlMFNode * VrmlScene::readWrl(VrmlMFString * urls, Doc2 * relative,
+                                VrmlNamespace * ns)
 {
-  Doc url;
-  int i, n = urls->size();
-  for (i=0; i<n; ++i)
-    {
-      //theSystem->debug("Trying to read url '%s'\n", urls->get(i));
-      url.seturl( urls->get(i), relative );
-      VrmlMFNode *kids = VrmlScene::readWrl( &url, ns );
-      if ( kids )
-	return kids;
-      else if (i < n-1 && strncmp(urls->get(i),"urn:",4))
-	theSystem->warn("Couldn't read url '%s': %s\n",
-			urls->get(i), strerror( errno));
+    Doc2 url;
+    int n = urls->size();
+    for (int i = 0; i < n; ++i) {
+        //theSystem->debug("Trying to read url '%s'\n", urls->get(i));
+        url.seturl( urls->get(i), relative );
+        VrmlMFNode * kids = VrmlScene::readWrl(&url, ns);
+        if (kids) {
+            return kids;
+        } else if ((i < n - 1) && strncmp(urls->get(i),"urn:",4)) {
+            theSystem->warn("Couldn't read url '%s': %s\n",
+                            urls->get(i), strerror( errno));
+        }
     }
-
-  return 0;
+    
+    return 0;
 }
-
-
-// yacc globals
-extern void yystring(char *);
-extern void yyfunction( int (*)(char *, int) );
-extern int yyparse();
-
-extern FILE *yyin;
-extern VrmlNamespace *yyNodeTypes;
-extern VrmlMFNode *yyParsedNodes;
-extern Doc *yyDocument;
-
-# include "zlib.h"
-# define YYIN yygz
-extern gzFile yygz;
 
 
 // Read a VRML file and return the (valid) nodes.
-
-VrmlMFNode* VrmlScene::readWrl( Doc *tryUrl, VrmlNamespace *ns )
+VrmlMFNode * VrmlScene::readWrl(Doc2 * tryUrl, VrmlNamespace * ns)
 {
-  VrmlMFNode* result = 0;
-
-  theSystem->debug("readWRL %s\n", tryUrl->url());
-
-  // Should verify MIME type...
-  if ((YYIN = tryUrl->gzopen("rb")) != 0)
-    {
-      // If the caller is not interested in PROTO defs, use a local namespace
-      VrmlNamespace nodeDefs;
-      if (ns)
-	yyNodeTypes = ns;
-      else
-	yyNodeTypes = &nodeDefs;
-
-      yyDocument = tryUrl;
-      yyParsedNodes = 0;
-
-      yyparse();
-
-      yyNodeTypes = 0;
-      yyDocument = 0;
-
-      result = yyParsedNodes;
-      yyParsedNodes = 0;
-
-      tryUrl->gzclose();
+    VrmlMFNode * result = 0;
+    
+    theSystem->debug("readWRL %s\n", tryUrl->url());
+    
+    // Should verify MIME type...
+    istream & istm(tryUrl->inputStream());
+    if (istm) {
+        
+        Vrml97Utf8Scanner scanner(istm);
+        Vrml97Parser parser(scanner);
+        
+        //
+        // If the caller is not interested in PROTO defs, use a local namespace.
+        //
+        // Note: Can we displace the responsibility for this to the caller? Here
+        // we instantiate a VrmlNamespace whether or not we need it. That could
+        // be avoided with new/delete, but the resulting code would be awkward
+        // and hard to follow. Why not instead have the caller pass in a
+        // reference to a namespace, and let the caller decide whether or not a
+        // new namespace should be instantiated?
+        // -- Braden McDaniel <braden@endoframe.com>, 30 Mar, 2000
+        //
+        VrmlNamespace nodeDefs;
+        VrmlNamespace * rootNamespace = ns ? ns : &nodeDefs;
+        
+        result = new VrmlMFNode();
+        try {
+            parser.vrmlScene(*result, *rootNamespace, tryUrl);
+        } catch (std::exception & ex) {
+            cerr << ex.what() << endl;
+        }
     }
-
-  return result;
+    
+    return result;
 }
-
-//
 
 bool VrmlScene::loadFromString( const char *vrmlString )
 {
@@ -418,119 +410,120 @@ bool VrmlScene::loadFromString( const char *vrmlString )
 
 // Read VRML from a string and return the (valid) nodes.
 
-VrmlMFNode* VrmlScene::readString( const char *vrmlString,
-				   VrmlNamespace *ns )
+VrmlMFNode * VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
 {
-  VrmlMFNode* result = 0;
-
-  if (vrmlString != 0)
-    {
-      yyNodeTypes = ns;
-      yyDocument = 0;
-      yyParsedNodes = 0;
-
-      // set input to be from string
-      yyin = 0;
-      yystring( (char *)vrmlString );
-
-      yyparse();
-
-      yyNodeTypes = 0;
-      result = yyParsedNodes;
-      yyParsedNodes = 0;
+    //
+    // Hmm. It looks like passing a zero pointer for the namespace argument of
+    // this function is not an option. Perhaps it should be a reference rather
+    // than a pointer?
+    // -- Braden McDaniel <braden@endoframe.com> 1 Apr, 2000
+    //
+    
+    VrmlMFNode * result = 0;
+    
+    if (vrmlString) {
+        istrstream istrstm(vrmlString);
+        Vrml97Utf8Scanner scanner(istrstm);
+        Vrml97Parser parser(scanner);
+        
+        result = new VrmlMFNode();
+        parser.vrmlScene(*result, *ns);
     }
-
-  return result;
+    
+    return result;
 }
 
 
+# if 0
 // Load VRML from an application-provided callback function
 
-bool VrmlScene::loadFromFunction( LoadCB cb, const char *url )
+bool VrmlScene::loadFromFunction(LoadCB cb, char const * url)
 {
-  Doc *doc = url ? new Doc( url, 0 ) : 0;
-  VrmlNamespace *ns = new VrmlNamespace();
-  VrmlMFNode *newNodes = readFunction( cb, doc, ns );
-
-  if ( newNodes )
-    {
-      replaceWorld( *newNodes, ns, doc, 0 );
-      delete newNodes;
-      return true;
+    Doc2 * doc = url ? new Doc2(url, 0) : 0;
+    VrmlNamespace * ns = new VrmlNamespace();
+    VrmlMFNode * newNodes = readFunction(cb, doc, ns);
+    
+    if (newNodes) {
+        replaceWorld( *newNodes, ns, doc, 0 );
+        delete newNodes;
+        return true;
     }
-  if (doc) delete doc;
-  return false;
+    
+    if (doc) {
+        delete doc;
+    }
+    
+    return false;
 }
 
 // Read VRML from a cb and return the (valid) nodes.
 
-VrmlMFNode* VrmlScene::readFunction( LoadCB cb, Doc *url, VrmlNamespace *ns )
+VrmlMFNode * VrmlScene::readFunction(LoadCB cb, Doc2 * url, VrmlNamespace * ns)
 {
-  VrmlMFNode* result = 0;
-
-  if (cb != 0)
-    {
-      yyNodeTypes = ns;
-      yyParsedNodes = 0;
-      yyDocument = url;
-
-      // set input to be from cb
-      yyfunction( cb );
-
-      yyparse();
-
-      yyDocument = 0;
-      yyNodeTypes = 0;
-      result = yyParsedNodes;
-      yyParsedNodes = 0;
+    VrmlMFNode * result = 0;
+    
+    if (cb != 0) {
+        yyNodeTypes = ns;
+        yyParsedNodes = 0;
+        yyDocument = url;
+        
+        // set input to be from cb
+        yyfunction(cb);
+        
+        yyparse();
+        
+        yyDocument = 0;
+        yyNodeTypes = 0;
+        result = yyParsedNodes;
+        yyParsedNodes = 0;
     }
-
-  return result;
+    
+    return result;
 }
+# endif
 
 
 // Read a PROTO from a URL to get the implementation of an EXTERNPROTO.
 // This should read only PROTOs and return when the first/specified PROTO
 // is read...
 
-VrmlNodeType* VrmlScene::readPROTO( VrmlMFString *urls, Doc *relative )
+VrmlNodeType * VrmlScene::readPROTO(VrmlMFString * urls, Doc2 const * relative)
 {
-  // This is a problem. The nodeType of the EXTERNPROTO has a namespace
-  // that refers back to this namespace (protos), which will be invalid
-  // after we exit this function. I guess it needs to be allocated and
-  // ref counted too...
-  //VrmlNamespace protos;
-  VrmlNamespace *protos = new VrmlNamespace();  // leak...
-  Doc urlDoc;
-  VrmlNodeType* def = 0;
-  int i, n = urls->size();
-
-  for (i=0; i<n; ++i)
-    {
-      theSystem->inform("Trying to read EXTERNPROTO from url '%s'\n",
-			urls->get(i));
-      urlDoc.seturl( urls->get(i), relative );
-      VrmlMFNode *kids = VrmlScene::readWrl( &urlDoc, protos );
-      if ( kids ) delete kids;
-
-      // Grab the specified PROTO, or the first one.
-      const char *whichProto = urlDoc.urlModifier();
-      if (whichProto && *whichProto)
-	def = (VrmlNodeType*) protos->findType( whichProto+1 );
-      else
-	def = (VrmlNodeType*) protos->firstType();
-
-      if (def)
-	{
-	  def->setActualUrl( urlDoc.url() );
-	  break;
-	}
-      else if (i < n-1 && strncmp(urls->get(i),"urn:",4))
-        theSystem->warn("Couldn't read EXTERNPROTO url '%s': %s\n",
-			urls->get(i), strerror( errno));
+    // This is a problem. The nodeType of the EXTERNPROTO has a namespace
+    // that refers back to this namespace (protos), which will be invalid
+    // after we exit this function. I guess it needs to be allocated and
+    // ref counted too...
+    //VrmlNamespace protos;
+    VrmlNamespace * protos = new VrmlNamespace();  // leak...
+    Doc2 urlDoc(static_cast<char *>(0));
+    VrmlNodeType * def = 0;
+//    int i, n = urls->size();
+    
+    for (std::size_t i(0); i < urls->size(); ++i) {
+        theSystem->inform("Trying to read EXTERNPROTO from url '%s'\n",
+                          urls->get(i));
+        urlDoc.seturl( urls->get(i), relative );
+        VrmlMFNode * kids = VrmlScene::readWrl(&urlDoc, protos);
+        delete kids;
+        
+        // Grab the specified PROTO, or the first one.
+        const char * whichProto = urlDoc.urlModifier();
+        if (whichProto && *whichProto) {
+            def = (VrmlNodeType*) protos->findType( whichProto+1 );
+        } else {
+            def = (VrmlNodeType*) protos->firstType();
+        }
+        
+        if (def) {
+            def->setActualUrl( urlDoc.url() );
+            break;
+	} else if ((i < (urls->size() - 1)) && strncmp(urls->get(i),"urn:",4)) {
+            theSystem->warn("Couldn't read EXTERNPROTO url '%s': %s\n",
+                            urls->get(i), strerror( errno));
+        }
     }
-
-  return def;
+    
+    return def;
 }
 
 // Write the current scene to a file.
@@ -539,7 +532,7 @@ VrmlNodeType* VrmlScene::readPROTO( VrmlMFString *urls, Doc *relative )
 bool VrmlScene::save(const char *url)
 {
   bool success = false;
-  Doc save(url);
+  Doc2 save(url);
   ostream &os = save.outputStream();
 
   if (os)
@@ -744,7 +737,7 @@ bool VrmlScene::update( double timeStamp )
       if (this != n->scene())
 	{
 	  theSystem->debug("VrmlScene::update: %s::%s is not in the scene graph yet.\n",
-			   n->nodeType()->getName(), n->name());
+			   n->nodeType().getName(), n->name());
 	  n->addToScene((VrmlScene*)this, urlDoc()->url() );
 	}
       n->eventIn(e->timeStamp, e->toEventIn, e->value);

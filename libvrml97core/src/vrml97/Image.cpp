@@ -38,7 +38,7 @@ typedef enum {
 static ImageFileType imageFileType(const char *, FILE *);
 
 
-Image::Image(const char *url, Doc *relative) :
+Image::Image(const char *url, Doc * relative) :
   d_url(0),
   d_w(0), d_h(0), d_nc(0), d_pixels(0), d_frame(0)
 {
@@ -96,6 +96,57 @@ bool Image::setURL(const char *url, Doc *relative)
 	        break;
 	}
 
+  if (! d_pixels)
+	  theSystem->error("Error: unable to read image file (%s).\n", url);
+	
+  d_url->fclose();
+  }
+
+  return (d_pixels != 0);
+}
+
+bool Image::setURL(const char *url, Doc2 *relative)
+{
+  if (d_url) delete d_url;
+  if (d_pixels) free(d_pixels); // assumes file readers use malloc...
+  if (d_frame) free(d_frame);
+  d_pixels = 0;
+  d_frame = 0;
+  d_w = d_h = d_nc = d_nFrames = 0;
+  if (! url) return true;
+
+  d_url = new Doc(url, relative);
+
+  //  theSystem->debug("Image: trying to create Doc(%s, %s)\n",
+  //		   url, relative ? relative->url() : "");
+  
+  FILE *fp = d_url->fopen("rb");
+
+  if (fp)
+  {
+      switch (imageFileType(url, fp))
+	    {
+	      case ImageFile_GIF:
+	        d_pixels = gifread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
+	        break;
+
+	      case ImageFile_JPG:
+	        d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
+	        break;
+          
+	      case ImageFile_MPG:
+	        d_pixels = mpgread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
+	        break;
+
+	      case ImageFile_PNG:
+	        d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
+	        break;
+
+	      default:
+	        theSystem->error("Error: unrecognized image file format (%s).\n", url);
+	        break;
+	}
+
       if (! d_pixels)
 	  theSystem->error("Error: unable to read image file (%s).\n", url);
 	
@@ -105,15 +156,28 @@ bool Image::setURL(const char *url, Doc *relative)
   return (d_pixels != 0);
 }
 
-
-bool Image::tryURLs(int nUrls, char **urls, Doc *relative)
+bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc * relative)
 {
-  int i;
-  for (i=0; i<nUrls; ++i)	// Try each url until one succeeds
-    if (urls[i] && setURL(urls[i], relative))
-      break;
+    size_t i(0);
+    for (; i < nUrls; ++i) {  // Try each url until one succeeds
+        if (urls[i] && setURL(urls[i], relative)) {
+            break;
+        }
+    }
+    
+    return i < nUrls;
+}
 
-  return i < nUrls;
+bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc2 * relative)
+{
+    size_t i(0);
+    for (; i < nUrls; ++i) {  // Try each url until one succeeds
+        if (urls[i] && setURL(urls[i], relative)) {
+            break;
+        }
+    }
+    
+    return i < nUrls;
 }
 
 

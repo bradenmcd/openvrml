@@ -32,7 +32,10 @@ VrmlNodeType *VrmlNodeCollision::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeCollision::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeCollision::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeCollision::VrmlNodeCollision(VrmlScene *scene) :
@@ -120,4 +123,3 @@ void VrmlNodeCollision::setField(const char *fieldName,
   else
     VrmlNodeGroup::setField(fieldName, fieldValue);
 }
-

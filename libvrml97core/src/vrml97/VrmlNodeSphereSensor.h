@@ -4,8 +4,8 @@
 //
 //  VrmlNodeSphereSensor.h
 
-#ifndef  _VRMLNODESPHERESENSOR_
-#define  _VRMLNODESPHERESENSOR_
+#ifndef VRMLNODESPHERESENSOR_H
+#define VRMLNODESPHERESENSOR_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
@@ -21,7 +21,7 @@ public:
 
   // Define the fields of SphereSensor nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeSphereSensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeSphereSensor();
@@ -48,5 +48,4 @@ private:
 
 };
 
-#endif _VRMLNODESPHERESENSOR_
-
+#endif

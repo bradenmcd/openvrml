@@ -2,10 +2,11 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef VRMLMFNODE_H
-#define VRMLMFNODE_H
+# ifndef VRMLMFNODE_H
+#   define VRMLMFNODE_H
 
-#include "VrmlField.h"
+#   include "VrmlField.h"
+#   include <stddef.h>
 
 class VrmlNode;
 
@@ -13,9 +14,9 @@ class VrmlMFNode : public VrmlMField {
 public:
 
   VrmlMFNode();
-  VrmlMFNode(VrmlNode *value);
-  VrmlMFNode(int n, VrmlNode **v);
-  VrmlMFNode(const VrmlMFNode&);
+  VrmlMFNode(VrmlNode *);
+  VrmlMFNode(size_t n, VrmlNode * const * v);
+  VrmlMFNode(VrmlMFNode const &);
 
   ~VrmlMFNode();
 
@@ -31,25 +32,25 @@ public:
   virtual const VrmlMFNode* toMFNode() const;
   virtual VrmlMFNode* toMFNode();
 
-  int size() const			{ return d_size; }
-  VrmlNode **get()			{ return d_v; }
-  VrmlNode* get(int index)		{ return d_v[index]; }
+  size_t size() const			{ return d_size; }
+  VrmlNode ** get()			{ return d_v; }
+  VrmlNode* get(size_t index)		{ return d_v[index]; }
 
   // can't use this as lhs for now.
-  VrmlNode* operator[](int index) const	{ return d_v[index]; }
+  VrmlNode* operator[](size_t index) const	{ return d_v[index]; }
 
-  bool exists(VrmlNode *n);
+  bool exists(VrmlNode const * n);
 
-  void addNode(VrmlNode *n);
-  void removeNode(VrmlNode *n);
+  void addNode(VrmlNode * n);
+  void removeNode(VrmlNode * n);
 
 
 private:
 
   VrmlNode **d_v;
-  int d_allocated;
-  int d_size;
+  size_t d_allocated;
+  size_t d_size;
 
 };
 
-#endif VRMLMFNODE_H
+# endif

@@ -37,7 +37,7 @@ public:
 
   VrmlMFColor();
   VrmlMFColor(float r, float g, float b);
-  VrmlMFColor(int n, float *values);
+  VrmlMFColor(int n, float const *values);
   VrmlMFColor(const VrmlMFColor &source);
 
   ~VrmlMFColor();

@@ -19,7 +19,7 @@ public:
 
   // Define the built in VrmlNodeType:: "Appearance"
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeAppearance(VrmlScene *);
   virtual ~VrmlNodeAppearance();
@@ -60,5 +60,4 @@ protected:
 
 };
 
-#endif // VRMLNODEAPPEARANCE_H
-
+#endif

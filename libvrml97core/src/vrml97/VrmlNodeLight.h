@@ -4,14 +4,13 @@
 //
 //  VrmlNodeLight.h
 
-#ifndef  _VRMLNODELIGHT_
-#define  _VRMLNODELIGHT_
+#ifndef VRMLNODELIGHT_H
+#define VRMLNODELIGHT_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
 #include "VrmlSFColor.h"
 #include "VrmlSFFloat.h"
-
 
 class VrmlNodeLight : public VrmlNodeChild {
 
@@ -19,7 +18,7 @@ public:
 
   // Define the fields of light nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeLight(VrmlScene *);
   virtual ~VrmlNodeLight();
@@ -47,4 +46,4 @@ protected:
   VrmlSFBool d_on;
 };
 
-#endif _VRMLNODELIGHT_
+#endif

@@ -4,8 +4,8 @@
 //
 //  VrmlNodePixelTexture.h
 
-#ifndef  _VRMLNODEPIXELTEXTURE_
-#define  _VRMLNODEPIXELTEXTURE_
+#ifndef VRMLNODEPIXELTEXTURE_H
+#define VRMLNODEPIXELTEXTURE_H
 
 #include "VrmlNodeTexture.h"
 #include "VrmlSFImage.h"
@@ -18,7 +18,7 @@ public:
 
   // Define the fields of PixelTexture nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodePixelTexture(VrmlScene *);
   virtual ~VrmlNodePixelTexture();
@@ -52,5 +52,4 @@ private:
   Viewer::TextureObject d_texObject;
 };
 
-#endif // _VRMLNODEPIXELTEXTURE_
-
+#endif

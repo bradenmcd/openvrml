@@ -23,7 +23,7 @@ public:
 
   // Define the fields of AudioClip nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeAudioClip(VrmlScene *);
   VrmlNodeAudioClip(const VrmlNodeAudioClip&);
@@ -64,5 +64,4 @@ private:
   int    _audio_fd;
 };
 
-#endif // VRMLNODEAUDIOCLIP_H
-
+#endif

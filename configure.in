@@ -18,6 +18,7 @@ dnl
   VRML97_LIBRARY_VERSION="1:0:0"
 VRML97GL_LIBRARY_VERSION="0:1:0"
 VRML97JS_LIBRARY_VERSION="0:0:0"
+   ANTLR_LIBRARY_VERSION="0:0:0"
 dnl                       | | |
 dnl                +------+ | +---+
 dnl                |        |     |
@@ -33,6 +34,18 @@ dnl                   changed
 AC_SUBST(VRML97_LIBRARY_VERSION)
 AC_SUBST(VRML97GL_LIBRARY_VERSION)
 AC_SUBST(VRML97JS_LIBRARY_VERSION)
+
+dnl
+dnl Variables to build libantlr as a convenience library
+dnl
+AC_SUBST(ANTLR_LIBRARY_VERSION)
+NOINSTALL_LIBANTLR=libantlr.la
+AC_SUBST(INSTALL_LIBANTLR)
+AC_SUBST(NOINSTALL_LIBANTLR)
+AC_SUBST(LIBANTLR_RPATH_FLAG)
+ANTLR_INCLUDEDIR=/vrml97/antlr
+AC_SUBST(ANTLR_INCLUDEDIR)
+
 
 dnl
 dnl Checks for Win32 stuff
@@ -51,6 +64,32 @@ AM_PROG_LEX
 AC_PROG_YACC
 AC_PROG_CXX
 AC_PROG_CXXCPP
+
+
+dnl
+dnl Check for ANTLR
+dnl
+
+dnl Check for Java runtime
+AC_PATH_PROG(JAVA, java, no)
+if test X"$JAVA" = Xno; then
+  AC_MSG_ERROR(Java runtime not found. Check config.log for details.)
+else
+  AC_MSG_CHECKING(for ANTLR)
+  cat > conftest.g <<EOF
+class ConfTest extends Parser;
+stmt: "conftest";
+EOF
+  sh -c "$JAVA antlr.Tool conftest.g" 1>&5 2>&5
+  if test $? = 0; then
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+    AC_MSG_WARN(ANTLR not found. You will need ANTLR to recompile the parser grammar if you modify it.)
+  fi
+  rm -f conftest.g ConfTest.java ConfTestTokenTypes.java ConfTestTokenTypes.txt
+fi
+
 
 dnl
 dnl Check for libjpeg
@@ -138,6 +177,8 @@ AC_OUTPUT(Makefile \
           libvrml97core/m4/Makefile \
           libvrml97core/src/Makefile \
           libvrml97core/src/vrml97/Makefile \
+          libvrml97core/src/vrml97/Vrml97TokenTypes.txt \
+          libvrml97core/src/vrml97/antlr/Makefile \
           libvrml97gl/Makefile \
           libvrml97gl/m4/Makefile \
           libvrml97gl/src/Makefile \

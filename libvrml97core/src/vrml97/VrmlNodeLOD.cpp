@@ -6,10 +6,8 @@
 
 #include "VrmlNodeLOD.h"
 #include "VrmlNodeType.h"
-
 #include "MathUtils.h"
 #include "Viewer.h"
-
 
 // Return a new VrmlNodeLOD
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeLOD(s); }
@@ -36,7 +34,10 @@ VrmlNodeType *VrmlNodeLOD::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeLOD::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeLOD::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeLOD::VrmlNodeLOD(VrmlScene *scene) :
@@ -188,4 +189,3 @@ const VrmlMFFloat& VrmlNodeLOD::getRange() const
 
 const VrmlSFVec3f& VrmlNodeLOD::getCenter() const   
 {  return d_center; }
-

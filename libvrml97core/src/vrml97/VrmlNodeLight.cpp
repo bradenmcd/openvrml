@@ -24,7 +24,10 @@ VrmlNodeType *VrmlNodeLight::defineType(VrmlNodeType *t)
 }
 
 
-VrmlNodeType *VrmlNodeLight::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeLight::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeLight::VrmlNodeLight(VrmlScene *scene) :

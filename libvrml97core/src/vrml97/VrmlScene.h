@@ -23,7 +23,7 @@ class VrmlNode;
 typedef std::list< VrmlNode* > VrmlNodeList;
 
 
-class Doc;
+class Doc2;
 class Viewer;
 
 // PROTO definitions
@@ -49,14 +49,22 @@ class VrmlScene {
 public:
 
   // These are available without a scene object
-  static VrmlMFNode* readWrl( VrmlMFString *url, Doc *relative, VrmlNamespace *ns );
-  static VrmlMFNode* readWrl( Doc *url, VrmlNamespace *ns );
-  static VrmlMFNode* readString( const char *vrmlString, VrmlNamespace *ns );
+  static VrmlMFNode * readWrl(VrmlMFString * url, Doc2 * relative,
+                              VrmlNamespace * ns);
+  static VrmlMFNode * readWrl(Doc2 * url, VrmlNamespace * ns );
+  static VrmlMFNode * readString(char const * vrmlString, VrmlNamespace * ns);
 
+//
+// Disabling the LoadCB stuff for now. We probably want to replace this with
+// functions that take an istream instead of a function pointer.
+// -- Braden McDaniel <braden@endoframe.com>, 2 Apr, 2000
+//
+#if 0
   typedef int (*LoadCB)(char *buf, int bufSize);
-  static VrmlMFNode* readFunction( LoadCB cb, Doc *url, VrmlNamespace *ns );
+  static VrmlMFNode * readFunction(LoadCB cb, Doc *url, VrmlNamespace *ns);
+#endif
 
-  static VrmlNodeType* readPROTO( VrmlMFString *url, Doc *relative = 0 );
+  static VrmlNodeType * readPROTO(VrmlMFString * url, Doc2 const * relative = 0);
 
   //
   VrmlScene( const char *url = 0, const char *localCopy = 0);
@@ -66,8 +74,8 @@ public:
   void destroyWorld();
 
   // Replace world with nodes, recording url as the source URL.
-  void replaceWorld( VrmlMFNode &nodes, VrmlNamespace *ns,
-		     Doc* url=0, Doc* urlLocal=0 );
+  void replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
+		    Doc2 * url=0, Doc2 * urlLocal=0);
 
   // A way to let the app know when a world is loaded, changed, etc.
   typedef void (*SceneCB)( int reason );
@@ -81,7 +89,7 @@ public:
   void addWorldChangedCallback( SceneCB );
 
   // Load a generic file (possibly non-VRML)
-  bool loadUrl( VrmlMFString *url, VrmlMFString *parameters = 0 );
+  bool loadUrl(VrmlMFString const * url, VrmlMFString const * parameters = 0 );
 
   // Load a VRML file
   bool load(const char *url, const char *localCopy = 0);
@@ -89,14 +97,16 @@ public:
   // Load a VRML string
   bool loadFromString(const char *string);
 
+#if 0
   // Load VRML from an application-provided callback function
-  bool loadFromFunction( LoadCB, const char *url = 0 );
+  bool loadFromFunction( LoadCB, const char * url = 0 );
+#endif
 
   // Save the scene to a file
   bool save(const char *url);
 
   // URL the current scene was loaded from
-  Doc *urlDoc() { return d_url; }
+  Doc2 * urlDoc() { return d_url; }
 
   // Types and node names defined in this scope
   VrmlNamespace *scope() { return d_namespace; }
@@ -210,8 +220,8 @@ protected:
   void doCallbacks( int reason );
 
   // Document URL
-  Doc *d_url;
-  Doc *d_urlLocal;
+  Doc2 * d_url;
+  Doc2 * d_urlLocal;
 
   // Scene graph
   VrmlNodeGroup d_nodes;
@@ -303,5 +313,4 @@ protected:
 
 };
 
-#endif // VRMLSCENE_H
-
+#endif

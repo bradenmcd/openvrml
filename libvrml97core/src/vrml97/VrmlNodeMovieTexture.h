@@ -4,8 +4,8 @@
 //
 //  VrmlNodeMovieTexture.h
 
-#ifndef  _VRMLNODEMOVIETEXTURE_
-#define  _VRMLNODEMOVIETEXTURE_
+#ifndef VRMLNODEMOVIETEXTURE_H
+#define VRMLNODEMOVIETEXTURE_H
 
 #include "VrmlNodeTexture.h"
 #include "VrmlMFString.h"
@@ -22,7 +22,7 @@ public:
 
   // Define the fields of MovieTexture nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeMovieTexture(VrmlScene *);
   virtual ~VrmlNodeMovieTexture();
@@ -74,5 +74,4 @@ private:
 
 };
 
-#endif // _VRMLNODEMOVIETEXTURE_
-
+#endif

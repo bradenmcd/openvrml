@@ -4,8 +4,8 @@
 //
 //  VrmlNodeGeometry.h
 
-#ifndef  _VRMLNODEGEOMETRY_
-#define  _VRMLNODEGEOMETRY_
+#ifndef VRMLNODEGEOMETRY_H
+#define VRMLNODEGEOMETRY_H
 
 #include "VrmlNode.h"
 #include "Viewer.h"
@@ -37,5 +37,4 @@ protected:
 
 };
 
-#endif // _VRMLNODEGEOMETRY_
-
+#endif

@@ -10,7 +10,6 @@
 
 #include "VrmlNodeCylinderSensor.h"
 #include "VrmlNodeType.h"
-
 #include "MathUtils.h"
 #include "System.h"
 #include "Viewer.h"
@@ -50,8 +49,10 @@ VrmlNodeType *VrmlNodeCylinderSensor::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeCylinderSensor::nodeType() const 
-{ return defineType(0); }
+VrmlNodeType & VrmlNodeCylinderSensor::nodeType() const 
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeCylinderSensor::VrmlNodeCylinderSensor( VrmlScene *scene ) :

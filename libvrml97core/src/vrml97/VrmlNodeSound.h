@@ -5,11 +5,10 @@
 //  VrmlNodeSound.h
 //    contributed by Kumaran Santhanam
 
-#ifndef  _VRMLNODESOUND_
-#define  _VRMLNODESOUND_
+#ifndef VRMLNODESOUND_H
+#define VRMLNODESOUND_H
 
 #include "VrmlNodeChild.h"
-
 #include "VrmlSFBool.h"
 #include "VrmlSFFloat.h"
 #include "VrmlSFNode.h"
@@ -17,14 +16,13 @@
 
 class VrmlScene;
 
-
 class VrmlNodeSound : public VrmlNodeChild {
 
 public:
 
   // Define the fields of Sound nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeSound( VrmlScene *scene = 0 );
   virtual ~VrmlNodeSound();
@@ -62,5 +60,4 @@ private:
   VrmlSFBool d_spatialize;
 };
 
-#endif _VRMLNODESOUND_
-
+#endif

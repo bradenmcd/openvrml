@@ -7,9 +7,9 @@
 //  This needs a major clean up...
 //
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
 # include <stdio.h>
 # include <string.h>
@@ -21,43 +21,40 @@
 # endif
 
 
-#include "ScriptJS.h"
-
-#include "Doc.h"
-#include "MathUtils.h"
-#include "System.h"
-#include "VrmlNodeScript.h"
-#include "VrmlNamespace.h"
-#include "VrmlNodeType.h"
-#include "VrmlScene.h"
-
-#include "VrmlSFBool.h"
-#include "VrmlSFColor.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFImage.h"
-#include "VrmlSFInt.h"
-#include "VrmlSFNode.h"
-#include "VrmlSFRotation.h"
-#include "VrmlSFString.h"
-#include "VrmlSFTime.h"
-#include "VrmlSFVec2f.h"
-#include "VrmlSFVec3f.h"
-
-#include "VrmlMFColor.h"
-#include "VrmlMFFloat.h"
-#include "VrmlMFInt.h"
-#include "VrmlMFNode.h"
-#include "VrmlMFRotation.h"
-#include "VrmlMFString.h"
-#include "VrmlMFVec2f.h"
-#include "VrmlMFVec3f.h"
+# include "ScriptJS.h"
+# include "doc2.hpp"
+# include "MathUtils.h"
+# include "System.h"
+# include "VrmlNodeScript.h"
+# include "VrmlNamespace.h"
+# include "VrmlNodeType.h"
+# include "VrmlScene.h"
+# include "VrmlSFBool.h"
+# include "VrmlSFColor.h"
+# include "VrmlSFFloat.h"
+# include "VrmlSFImage.h"
+# include "VrmlSFInt.h"
+# include "VrmlSFNode.h"
+# include "VrmlSFRotation.h"
+# include "VrmlSFString.h"
+# include "VrmlSFTime.h"
+# include "VrmlSFVec2f.h"
+# include "VrmlSFVec3f.h"
+# include "VrmlMFColor.h"
+# include "VrmlMFFloat.h"
+# include "VrmlMFInt.h"
+# include "VrmlMFNode.h"
+# include "VrmlMFRotation.h"
+# include "VrmlMFString.h"
+# include "VrmlMFVec2f.h"
+# include "VrmlMFVec3f.h"
 
 // This is nominally a private include but I want to subclass Arrays...
-#include "vrml97js/jsarray.h"
+# include "vrml97js/jsarray.h"
 
 
-#define MAX_HEAP_BYTES 4L * 1024L * 1024L
-#define STACK_CHUNK_BYTES 4024L
+# define MAX_HEAP_BYTES 4L * 1024L * 1024L
+# define STACK_CHUNK_BYTES 4024L
 
 # ifndef NDEBUG
 #   define SCRIPTJS_DEBUG
@@ -583,7 +580,7 @@ node_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
       JSString *str = JSVAL_TO_STRING(id);
       char *eventIn = str ? JS_GetStringBytes(str) : 0;
       VrmlField::VrmlFieldType expect;
-      expect = n->nodeType()->hasEventIn( eventIn );
+      expect = n->nodeType().hasEventIn( eventIn );
 
       if (expect && eventIn)	// convert vp to field, send eventIn to n
 	{
@@ -595,7 +592,7 @@ node_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 #ifdef SCRIPTJS_DEBUG
 	  cout << "ScriptJS::node_setProperty sending " << eventIn
 	       << " (" << (*f) << ") to "
-	       << n->nodeType()->getName() << "::"
+	       << n->nodeType().getName() << "::"
 	       << n->name() << endl;
 #endif
 
@@ -2151,7 +2148,7 @@ static VrmlField *jsvalToVrmlField( JSContext *cx,
       jsuint len;
       JS_GetArrayLength( cx, JSVAL_TO_OBJECT(v), &len );
       VrmlMFNode *f = new VrmlMFNode( (int) len, 0 );
-      VrmlNode **nodes = f->get();
+      VrmlNode ** nodes = f->get();
       for (int i=0; i<(int)len; ++i)
 	{
 	  jsval elt;
@@ -2552,7 +2549,7 @@ static JSBool createVrmlFromString(JSContext *cx, JSObject* bobj,
       // should store the namespace as well...
       int i, n = kids->size();
       jsval *jsvec = new jsval[n];
-      VrmlNode **k = kids->get();
+      VrmlNode * const * k = kids->get();
 
       for (i=0; i<n; ++i)
 	{
@@ -2579,7 +2576,7 @@ static JSBool createVrmlFromURL(JSContext* cx, JSObject* b,
 {
   if ((int)argc != 3) return JS_FALSE;
 
-  Doc *relative = 0;
+  Doc2 * relative = 0;
 
   jsval p;
   ScriptJS *s = 0;		// egcs warning
@@ -2669,10 +2666,10 @@ static JSBool addRoute(JSContext* cx, JSObject*,
   if (! to || !to->get() || !from || !from->get()) return JS_FALSE;
 
   theSystem->debug("addRoute(%s::%s::%s, %s::%s::%s)\n",
-		   from->get()->nodeType()->getName(),
+		   from->get()->nodeType().getName(),
 		   from->get()->name(),
 		   eventOut,
-		   to->get()->nodeType()->getName(),
+		   to->get()->nodeType().getName(),
 		   to->get()->name(),
 		   eventIn);
 

@@ -5,7 +5,6 @@
 //  VrmlNodeIndexedSet.cpp
 
 #include "VrmlNodeIndexedSet.h"
-
 #include "VrmlNodeType.h"
 
 
@@ -116,4 +115,3 @@ void VrmlNodeIndexedSet::setField(const char *fieldName,
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
 }
-

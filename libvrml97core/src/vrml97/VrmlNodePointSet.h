@@ -4,8 +4,8 @@
 //
 //  VrmlNodePointSet.h
 
-#ifndef  _VRMLNODEPOINTSET_
-#define  _VRMLNODEPOINTSET_
+#ifndef VRMLNODEPOINTSET_H
+#define VRMLNODEPOINTSET_H
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFNode.h"
@@ -17,7 +17,7 @@ public:
 
   // Define the fields of pointSet nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodePointSet(VrmlScene *);
   virtual ~VrmlNodePointSet();
@@ -47,4 +47,4 @@ protected:
 
 };
 
-#endif _VRMLNODEPOINTSET_
+#endif

@@ -2,11 +2,10 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef  _VRMLSFSTRING_
-#define  _VRMLSFSTRING_
+#ifndef VRMLSFSTRING_H
+#define VRMLSFSTRING_H
 
 #include "VrmlField.h"
-
 
 class VrmlSFString : public VrmlSField {
 public:
@@ -35,6 +34,4 @@ private:
 
 };
 
-#endif // _VRMLSFSTRING_
-
-
+# endif

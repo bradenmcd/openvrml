@@ -4,13 +4,12 @@
 //
 //  VrmlNodeImageTexture.h
 
-#ifndef  _VRMLNODEIMAGETEXTURE_
-#define  _VRMLNODEIMAGETEXTURE_
+#ifndef VRMLNODEIMAGETEXTURE_H
+#define VRMLNODEIMAGETEXTURE_H
 
 #include "VrmlNodeTexture.h"
 #include "VrmlMFString.h"
 #include "VrmlSFBool.h"
-
 #include "Viewer.h"
 
 class Image;
@@ -21,7 +20,7 @@ public:
 
   // Define the fields of ImageTexture nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-  virtual VrmlNodeType *nodeType() const;
+  virtual VrmlNodeType & nodeType() const;
 
   VrmlNodeImageTexture(VrmlScene *);
   virtual ~VrmlNodeImageTexture();
@@ -45,9 +44,15 @@ public:
 
   virtual VrmlNodeImageTexture*	toImageTexture() const;
 
-  virtual bool getRepeatS(){ return d_repeatS.get(); }  // LarryD Feb18/99
-  virtual bool getRepeatT(){ return d_repeatT.get(); }  // LarryD Feb18/99
-  char** getURL() { return d_url.get(); }  // LarryD  Feb18/99
+  //
+  // Aren't repeatS and repeatT shared by all texture nodes? Perhaps these
+  // methods should be moved to the base class, VrmlNodeTexture. (Also, these
+  // should probably return VrmlSFBool const references to be consistent with
+  // the getUrl method.
+  // -- Braden McDaniel, <braden@endoframe.com>, 11 Apr, 2000
+  //
+  virtual bool getRepeatS() const; // LarryD Feb18/99
+  virtual bool getRepeatT() const; // LarryD Feb18/99
 
 private:
 
@@ -61,5 +66,4 @@ private:
 
 };
 
-#endif // _VRMLNODEIMAGETEXTURE_
-
+#endif

@@ -7,7 +7,6 @@
 #include "VrmlNodeNormalInt.h"
 #include "VrmlNodeType.h"
 #include "MathUtils.h"
-
 #include "VrmlScene.h"
 
 // NormalInt factory.
@@ -39,7 +38,10 @@ VrmlNodeType *VrmlNodeNormalInt::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeNormalInt::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeNormalInt::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeNormalInt::VrmlNodeNormalInt( VrmlScene *scene ) :
@@ -77,7 +79,7 @@ void VrmlNodeNormalInt::eventIn(double timeStamp,
 	{
 	  theSystem->error
 	    ("Invalid type for %s eventIn %s (expected SFFloat).\n",
-		nodeType()->getName(), eventName);
+		nodeType().getName(), eventName);
 	  return;
 	}
       float f = fieldValue->toSFFloat()->get();
@@ -191,4 +193,3 @@ void VrmlNodeNormalInt::setField(const char *fieldName,
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
-

@@ -10,7 +10,6 @@
 
 #include "VrmlNodeTouchSensor.h"
 #include "VrmlNodeType.h"
-
 #include "MathUtils.h"
 #include "System.h"
 #include "Viewer.h"
@@ -47,7 +46,10 @@ VrmlNodeType *VrmlNodeTouchSensor::defineType(VrmlNodeType *t)
   return t;
 }
 
-VrmlNodeType *VrmlNodeTouchSensor::nodeType() const { return defineType(0); }
+VrmlNodeType & VrmlNodeTouchSensor::nodeType() const
+{
+    return *defineType(0);
+}
 
 
 VrmlNodeTouchSensor::VrmlNodeTouchSensor( VrmlScene *scene ) :
