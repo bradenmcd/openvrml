@@ -35,7 +35,7 @@
 # endif
 # include "private.h"
 # include "browser.h"
-# include "doc2.hpp"
+# include "doc.h"
 # include "viewer.h"
 # include "scope.h"
 # include "script.h"
@@ -2020,8 +2020,8 @@ scene::scene(OpenVRML::browser & browser,
                 absoluteURI = testURI.resolveAgainst(URI(parent->url()));
             }
 
-            Doc2 doc(absoluteURI);
-            std::istream & in = doc.inputStream();
+            doc2 doc(absoluteURI);
+            std::istream & in = doc.input_stream();
             if (!in) { throw unreachable_url(); }
             try {
                 Vrml97Scanner scanner(in);

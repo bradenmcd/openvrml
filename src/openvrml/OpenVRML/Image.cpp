@@ -28,7 +28,7 @@
 #endif
 
 #include "Image.h"
-#include "Doc.h"
+#include "doc.h"
 #include "System.h"
 #include "field.h"
 
@@ -6840,7 +6840,7 @@ Image::~Image()
   if (d_frame) free(d_frame);
 }
 
-bool Image::setURL(const char * const url, const Doc2 * const relative)
+bool Image::setURL(const char * const url, const doc2 * const relative)
 {
     if (this->d_url) {
         delete this->d_url;
@@ -6857,7 +6857,7 @@ bool Image::setURL(const char * const url, const Doc2 * const relative)
     this->d_w = this->d_h = this->d_nc = this->d_nFrames = 0;
     if (!url) { return true; }
 
-    this->d_url = new Doc(url, relative);
+    this->d_url = new doc(url, relative);
 
     FILE * const fp = this->d_url->fopen("rb");
 
@@ -6896,7 +6896,7 @@ bool Image::setURL(const char * const url, const Doc2 * const relative)
     return (this->d_pixels != 0);
 }
 
-bool Image::tryURLs(const mfstring & urls, const Doc2 * const relative) {
+bool Image::tryURLs(const mfstring & urls, const doc2 * const relative) {
     size_t i(0);
     for (; i < urls.value.size(); ++i) {
         if (!urls.value[i].empty()

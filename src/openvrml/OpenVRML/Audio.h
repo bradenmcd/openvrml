@@ -29,13 +29,13 @@
 
 namespace OpenVRML {
 
-    class Doc;
+    class doc;
     class mfstring;
 
     OPENVRML_SCOPE enum AudioEncoding { AUDIO_LINEAR, AUDIO_ULAW };
 
     class OPENVRML_SCOPE Audio {
-        Doc *           _doc;
+        doc *           _doc;
 
         AudioEncoding   _encoding;
         int             _channels;
@@ -52,11 +52,11 @@ namespace OpenVRML {
         unsigned char * _samples;
 
     public:
-        explicit Audio(const std::string & url, Doc * relative = 0);
+        explicit Audio(const std::string & url, doc * relative = 0);
         ~Audio ();
 
-        bool setURL(const std::string & url, Doc * relative = 0);
-        bool tryURLs(const mfstring & urls, Doc * relative = 0);
+        bool setURL(const std::string & url, doc * relative = 0);
+        bool tryURLs(const mfstring & urls, doc * relative = 0);
 
         const char *url() const;
 

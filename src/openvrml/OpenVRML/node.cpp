@@ -28,7 +28,6 @@
 # include "node.h"
 # include "scope.h"
 # include "browser.h"
-# include "doc2.hpp"
 
 namespace OpenVRML {
 

@@ -23,7 +23,7 @@
 #include <string.h>
 
 #include "Audio.h"
-#include "Doc.h"
+#include "doc.h"
 #include "System.h"
 #include "field.h"
 
@@ -95,7 +95,7 @@ namespace {
  * @param url       URL string.
  * @param relative  Doc object.
  */
-Audio::Audio(const std::string & url, Doc *relative)
+Audio::Audio(const std::string & url, doc *relative)
     : _doc(0),
       _encoding(AUDIO_LINEAR),
       _channels(0),
@@ -121,11 +121,11 @@ Audio::~Audio()
  * @brief Set the URL of the audio file and read it from the document object.
  *
  * @param url       URL string.
- * @param relative  Doc object.
+ * @param relative  doc object.
  *
  * @return @c true if the URL was read; @c false otherwise.
  */
-bool Audio::setURL(const std::string & url, Doc *relative)
+bool Audio::setURL(const std::string & url, doc *relative)
 {
 #if HAVE_SOUND
     if (url == 0)
@@ -135,7 +135,7 @@ bool Audio::setURL(const std::string & url, Doc *relative)
 #endif
 
     delete _doc;
-    _doc = new Doc (url, relative);
+    _doc = new doc (url, relative);
     FILE *fp = _doc->fopen ("rb");
 
     bool success = false;
@@ -174,9 +174,9 @@ bool Audio::setURL(const std::string & url, Doc *relative)
  * @brief Try a list of URLs.
  *
  * @param urls      list of URLs.
- * @param relative  Doc object.
+ * @param relative  doc object.
  */
-bool Audio::tryURLs(const mfstring & urls, Doc * relative)
+bool Audio::tryURLs(const mfstring & urls, doc * relative)
 {
     for (size_t i = 0; i < urls.value.size(); ++i) {
         if (this->setURL(urls.value[i], relative)) { return true; }

@@ -1,5 +1,46 @@
 2003-06-03  Braden McDaniel  <braden@endoframe.com>
 
+	Applied naming convention changes:  Doc -> doc, Doc2 -> doc2.
+
+	* src/lookat/lookat.cpp:  Changes associated with naming
+	convention changes to doc, doc2.
+	* src/openvrml/OpenVRML/doc.cpp:  Added file.  Replaces Doc.cpp,
+	doc2.cpp.
+	* src/openvrml/OpenVRML/doc.h:  Added file.  Replaces Doc.h,
+	doc2.hpp.
+	* src/openvrml/OpenVRML/Doc.cpp:  Removed file.
+	* src/openvrml/OpenVRML/Doc.h:  Removed file.
+	* src/openvrml/OpenVRML/doc2.cpp:  Removed file.
+	* src/openvrml/OpenVRML/doc2.hpp:  Removed file.
+	* src/openvrml/OpenVRML/Makefile.am:  Added doc.cpp, doc.h,
+	removed Doc.cpp, Doc.h, doc2.cpp, doc2.hpp.
+	* src/openvrml/OpenVRML/Audio.cpp (Audio::Audio, Audio::setURL,
+	Audio::tryURLs):  Changes associated with naming convention
+	changes to doc, doc2.
+	* src/openvrml/OpenVRML/Audio.h (Audio::Audio, Audio::setURL,
+	Audio::tryURLs):  Changes associated with naming convention
+	changes to doc, doc2.
+	* src/openvrml/OpenVRML/Image.cpp (Image::setURL,
+	Image::tryURLs):  Changes associated with naming convention
+	changes to doc, doc2.
+	* src/openvrml/OpenVRML/Image.h (Image::setURL,
+	Image::tryURLs):  Changes associated with naming convention
+	changes to doc, doc2.
+	* src/openvrml/OpenVRML/ScriptJDK.cpp:  Changes associated with
+	naming convention changes to doc, doc2.
+	* src/openvrml/OpenVRML/browser.cpp (scene::scene):  Changes
+	associated with naming convention changes to doc, doc2.
+	* src/openvrml/OpenVRML/node.cpp:  Changes associated with
+	naming convention changes to doc, doc2.
+	* src/openvrml/OpenVRML/script.cpp (script_node::create_script):
+	Changes associated with naming convention changes to doc, doc2.
+	* src/openvrml/OpenVRML/vrml97node.cpp (AudioClip::update,
+	getTexture, BackgroundClass::render, ImageTexture::render,
+	MovieTexture::update):  Changes associated with naming
+	convention changes to doc, doc2.
+
+2003-06-03  Braden McDaniel  <braden@endoframe.com>
+
 	Applied naming convention changes:  VrmlRenderContext ->
 	rendering_context.
 

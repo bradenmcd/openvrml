@@ -89,13 +89,10 @@
 #   include <vrml_node_Node.h>
 #   include <vrml_node_Script.h>
 
-#   include "doc2.hpp"
 #   include "System.h"
 #   include "script.h"
 #   include "browser.h"
-#   include "node_ptr.h"
 #   include "node.h"
-#   include "field.h"
 
 #   ifdef _WIN32
 #     define PATH_SEPARATOR ";"

@@ -33,7 +33,6 @@
 # else
 #   include <GL/glut.h>
 # endif
-# include <OpenVRML/doc2.hpp>
 # include <OpenVRML/browser.h>
 
 # include "ViewerGlut.h"

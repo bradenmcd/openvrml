@@ -41,8 +41,7 @@ extern "C" {
 }
 # endif
 # include "vrml97node.h"
-# include "Doc.h"
-# include "doc2.hpp"
+# include "doc.h"
 # include "browser.h"
 # include "Audio.h"
 # include "sound.h"
@@ -1684,7 +1683,7 @@ void AudioClip::update(const double currentTime)
 {
     // If the URL has been modified, update the audio object
     if (this->url_modified) {
-        Doc relDoc(this->relativeUrl.value, static_cast<Doc const *>(0));
+        doc relDoc(this->relativeUrl.value, static_cast<doc const *>(0));
         delete this->audio;
         std::string emptyUrl;
         this->audio = new Audio(emptyUrl);
@@ -2033,7 +2032,7 @@ namespace {
     /**
      * @brief Load and scale textures as needed.
      */
-    Image * getTexture(const mfstring & urls, Doc2 & baseDoc,
+    Image * getTexture(const mfstring & urls, doc2 & baseDoc,
                        Image * tex, int thisIndex, OpenVRML::viewer & viewer)
     {
         // Check whether the url has already been loaded
@@ -2041,7 +2040,7 @@ namespace {
         if (n > 0) {
             for (int index=thisIndex-1; index >= 0; --index) {
                 const char * currentTex = tex[index].url();
-                const std::string relPath = baseDoc.urlPath();
+                const std::string relPath = baseDoc.url_path();
                 int currentLen = currentTex ? strlen(currentTex) : 0;
                 int relPathLen = relPath.length();
                 if (relPathLen >= currentLen) { relPathLen = 0; }
@@ -2121,7 +2120,7 @@ void BackgroundClass::render(OpenVRML::viewer & viewer) throw ()
             viewer.insert_reference(background.viewerObject);
         } else {
             if (background.modified() || background.texPtr[0] == 0) {
-                Doc2 baseDoc(background.scene()->url());
+                doc2 baseDoc(background.scene()->url());
                 background.texPtr[0] = getTexture(background.backUrl,
                                                   baseDoc,
                                                   background.tex,
@@ -6240,7 +6239,7 @@ void ImageTexture::render(OpenVRML::viewer & viewer, rendering_context context)
     // loaded just once... of course world authors should just DEF/USE
     // them...
     if (!this->image && this->url.value.size() > 0) {
-        Doc2 baseDoc(this->scene()->url());
+        doc2 baseDoc(this->scene()->url());
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &baseDoc)) {
             theSystem->error("Couldn't read ImageTexture from URL %s\n",
@@ -7896,7 +7895,7 @@ void MovieTexture::update(const double currentTime)
 
     // Load the movie if needed (should check startTime...)
     if (!this->image && this->url.value.size() > 0) {
-        Doc2 baseDoc(this->scene()->url());
+        doc2 baseDoc(this->scene()->url());
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &baseDoc)) {
             std::cerr << "Error: couldn't read MovieTexture from URL "
@@ -14639,15 +14638,33 @@ TimeSensorClass::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sftime_id, "cycleInterval"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "loop"),
-        node_interface(node_interface::exposedfield_id, field_value::sftime_id, "startTime"),
-        node_interface(node_interface::exposedfield_id, field_value::sftime_id, "stopTime"),
-        node_interface(node_interface::eventout_id, field_value::sftime_id, "cycleTime"),
-        node_interface(node_interface::eventout_id, field_value::sffloat_id, "fraction_changed"),
-        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
-        node_interface(node_interface::eventout_id, field_value::sftime_id, "time")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "cycleInterval"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "loop"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "startTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "stopTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "cycleTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "fraction_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "time")
     };
     const node_type_ptr type(new Vrml97NodeTypeImpl<TimeSensor>(*this, id));
     Vrml97NodeTypeImpl<TimeSensor> & timeSensorNodeType =

@@ -23,19 +23,19 @@
 #   define IMAGE_H
 
 # include <stddef.h>
-# include "common.h"
+# include <OpenVRML/common.h>
 
 namespace OpenVRML {
 
-    class Doc;
-    class Doc2;
+    class doc;
+    class doc2;
     class mfstring;
 
     /**
      * The Image class is a format-independent API for loading textures.
      */
     class OPENVRML_SCOPE Image {
-        Doc * d_url;
+        doc * d_url;
         int d_w, d_h, d_nc, d_nFrames;
         unsigned char *d_pixels;
         unsigned char **d_frame;
@@ -44,9 +44,9 @@ namespace OpenVRML {
         Image();
         ~Image();
 
-        bool setURL(const char * url, const Doc2 * relative = 0);
+        bool setURL(const char * url, const doc2 * relative = 0);
 
-        bool tryURLs(const mfstring & urls, const Doc2 * relative = 0);
+        bool tryURLs(const mfstring & urls, const doc2 * relative = 0);
 
         const char *url();
 

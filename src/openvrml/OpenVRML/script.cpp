@@ -29,7 +29,7 @@
 # include "script.h"
 # include "scope.h"
 # include "browser.h"
-# include "doc2.hpp"
+# include "doc.h"
 # include "System.h"
 # include "ScriptJDK.h"
 
@@ -853,12 +853,12 @@ script * script_node::create_script() {
                                this->url_.value[i].end() - 6)
                     || std::equal(javaExtension2, javaExtension2 + 6,
                                   this->url_.value[i].end() - 6))) {
-            Doc2 base(this->type._class.browser.world_url());
-            Doc2 doc(this->url_.value[i], &base);
-            if (doc.localName()) {
+            doc2 base(this->type._class.browser.world_url());
+            doc2 doc(this->url_.value[i], &base);
+            if (doc.local_name()) {
                 return new ScriptJDK(*this,
-                                     doc.urlBase().c_str(),
-                                     doc.localPath());
+                                     doc.url_base().c_str(),
+                                     doc.local_path());
             }
         }
 #endif
