@@ -1,12 +1,17 @@
-2005-01-24 Braden McDaniel  <braden@endoframe.com>
+2005-01-26 Braden McDaniel  <braden@endoframe.com>
 
-	* configure.ac:  SpiderMonkey doesn't need the top-level Mozilla
-	include directory.
+	* src/libopenvrml/Makefile.am:  Incremented library version to
+	5:3:0.
 
 2005-01-26 Braden McDaniel  <braden@endoframe.com>
 
 	* openvrml.spec.in:  configure with --disable-script-node-java.
 	The Script node Java binding is not currently usable.
+
+2005-01-24 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac:  SpiderMonkey doesn't need the top-level Mozilla
+	include directory.
 
 2005-01-24 Braden McDaniel  <braden@endoframe.com>
 
