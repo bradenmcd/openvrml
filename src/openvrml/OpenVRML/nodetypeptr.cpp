@@ -24,8 +24,8 @@
  * @brief NodeTypePtr is a reference-counting smart pointer for NodeTypes.
  *
  * NodeTypePtr is patterned after the <a href="http://boost.org/libs/smart_ptr/shared_ptr.htm">Boost shared_ptr</a>,
- * and it works basically the same way. Importantly, NodeTypePtr should be
- * constructed or reset with a NodeType created with <code>new</code>.
+ * and it works basically the same way. A NodeTypePtr should be constructed
+ * or reset with a NodeType created with <code>new</code> (or 0).
  *
  * @see http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
