@@ -3,6 +3,9 @@
         * m4/jpeg.m4, m4/png.m4, m4/zlib.m4: Fixed problem with macros
           when using config.cache.
 
+        * src/lookat/Makefile.am: Updated obsolete substitutions
+          JAVA_CFLAGS, JAVA_LIBS to JNI_CFLAGS, JNI_LIBS.
+
 2002-11-11  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/ScriptJDK.cpp: Fix bugs in

@@ -1,12 +1,13 @@
 INCLUDES = -I$(top_srcdir)/src/openvrml -I$(top_srcdir)/src/openvrml-gl
-AM_CXXFLAGS = $(GLUT_CFLAGS) $(JAVA_CFLAGS)
+AM_CXXFLAGS = @GLUT_CFLAGS@ @JNI_CFLAGS@
 
 if WITH_GLUT
 bin_PROGRAMS = lookat
 lookat_SOURCES = lookat.cpp ViewerGlut.cpp
-lookat_LDFLAGS = $(GLUT_LIBS) $(JAVA_LIBS)
-lookat_LDADD = $(top_builddir)/src/openvrml-gl/OpenVRML/GL/libopenvrml-gl.la \
-$(top_builddir)/src/openvrml/OpenVRML/libopenvrml.la
+lookat_LDFLAGS = @GLUT_LIBS@ @JNI_LIBS@
+lookat_LDADD = \
+        $(top_builddir)/src/openvrml-gl/OpenVRML/GL/libopenvrml-gl.la \
+        $(top_builddir)/src/openvrml/OpenVRML/libopenvrml.la
 endif
 
 noinst_HEADERS = ViewerGlut.h glutint.h
