@@ -23,6 +23,4 @@ OpenVRMLGLincludedir = $(includedir)/OpenVRML/GL
 OpenVRMLGLinclude_HEADERS = common.h OpenGLEvent.h ViewerOpenGL.h
 endif
 
-noinst_HEADERS = private.h
-
 EXTRA_DIST = ViewerOpenGL.cpp OpenGLEvent.cpp

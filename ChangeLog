@@ -11,6 +11,11 @@
           src/openvrml/OpenVRML/bvolume.h: Removed BVolume::dump and
           VrmlFrustum::dump.
 
+        * src/openvrml-gl/OpenVRML/GL/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/private.h: Removed private.h.
+          
+
 2002-09-29  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Viewer.cpp,

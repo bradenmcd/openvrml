@@ -51,7 +51,6 @@
 
 # include "ViewerOpenGL.h"
 # include "OpenGLEvent.h"
-# include "private.h"
 
 /**
  * @namespace OpenVRML::GL
@@ -83,9 +82,22 @@
 
 using namespace OpenVRML;
 using namespace OpenVRML::GL;
-using namespace OpenVRML_::GL_;
 
 namespace {
+    const float FPTOLERANCE(1.0e-6);
+
+    inline bool fpzero(const float f) {
+        return (fabs(f) <= FPTOLERANCE);
+    }
+
+    inline bool fpequal(const float a, const float b) {
+        return fpzero(a - b);
+    }
+
+    inline double length(const float vec[3]) {
+        return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+    }
+
     void matrix_to_glmatrix(const float M[4][4], float GLM[16]) {
         GLM[0]  = M[0][0];
         GLM[1]  = M[1][0];
@@ -1409,8 +1421,6 @@ namespace {
                           float *tc,  // OUT: texture coords
                           int *faces)   // OUT: face list
     {
-        using OpenVRML_::GL_::fpzero;
-
         int i, j, ci;
 
         // Xscp, Yscp, Zscp- columns of xform matrix to align cross section
@@ -2868,9 +2878,6 @@ namespace {
                      float target[3],
                      float up[3])
     {
-        using OpenVRML_::GL_::fpequal;
-        using OpenVRML_::GL_::length;
-        
         // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
         
         //
