@@ -157,7 +157,6 @@ AC_OUTPUT(Makefile \
           models/audio/Makefile \
           models/textures/Makefile \
           libvrml97core/Makefile \
-          libvrml97core/m4/Makefile \
           libvrml97core/src/Makefile \
           libvrml97core/src/vrml97/Makefile \
           libvrml97core/src/vrml97/Vrml97TokenTypes.txt \
@@ -165,7 +164,6 @@ AC_OUTPUT(Makefile \
           libvrml97core/src/vrml97/javascript/Makefile \
           libvrml97core/src/vrml97/javascript/fdlibm/Makefile \
           libvrml97gl/Makefile \
-          libvrml97gl/m4/Makefile \
           libvrml97gl/src/Makefile \
           libvrml97gl/src/vrml97gl/Makefile \
           lookat/Makefile \
