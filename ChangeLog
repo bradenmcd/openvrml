@@ -1,3 +1,14 @@
+2004-12-25 Braden McDaniel  <braden@endoframe.com>
+
+	Updated package version to 0.15.3.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac
+
 2004-12-24 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp:  Removed some erroneously
