@@ -2,25 +2,21 @@
 // OpenVRML
 //
 // Copyright (C) 2000  Christopher K. St. John
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
-
-#ifdef _WIN32
-#include <winconfig.h>
-#endif
+//
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -111,7 +107,7 @@ VrmlFrustum::VrmlFrustum() {
  */
 VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar) {
     using OpenVRML_::pi;
-    
+
     fovy = (afovy / 360.0) * 2.0 * pi;
     float cy = (float)tan(fovy/2.0);
     fovx = 2.0*atan(cy*aaspect);
@@ -130,7 +126,7 @@ void VrmlFrustum::update() {
     // vectors from the eyepoint to the four corners to figure out the
     // plane equations. the diagram shows how to get the x and z
     // coordinates, finding the y coordinates is analogous.
-    // 
+    //
     //
     //   -x
     //    |        /
@@ -144,7 +140,7 @@ void VrmlFrustum::update() {
     //    |/ )--:----- angle is fovx/2
     //    --------------------- -z
     //    |<-n->|
-    //    |    
+    //    |
     //   +x
     //
     // (finish the diagram later)
@@ -198,11 +194,11 @@ void VrmlFrustum::update() {
 
 
 /**
- * @brief Dumps the frustum to the given stream. 
+ * @brief Dumps the frustum to the given stream.
  */
 std::ostream & VrmlFrustum::dump(std::ostream & ostr) const {
     using OpenVRML_::pi;
-    
+
     ostr << "VrmlFrustum {" << endl;
     ostr << z_near << endl;
     ostr << z_far << endl;

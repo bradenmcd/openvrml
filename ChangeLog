@@ -1,5 +1,9 @@
 2002-06-22  Braden McDaniel  <braden@endoframe.com>
 
+        * Fixes for compiling with Microsoft Visual C++ 6.0 sp5.
+
+2002-06-22  Braden McDaniel  <braden@endoframe.com>
+
         * Fixed a bunch of warnings and errors flagged by the Intel C++
           compiler.
 

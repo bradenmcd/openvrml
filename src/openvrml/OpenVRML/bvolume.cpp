@@ -2,21 +2,21 @@
 // OpenVRML
 //
 // Copyright (C) 2000  Christopher K. St. John
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # include <float.h>
 # include "private.h"
@@ -132,7 +132,7 @@ BVolume::~BVolume() {}
  * what sort of bounding volumes their children will have. Group could test
  * using toBSphere and toAABox, but it's better to centralize ugly stuff like
  * that.
- * 
+ *
  * @param b a bounding volume of unknown type
  */
 
@@ -302,7 +302,7 @@ BSphere::isectFrustum(const VrmlFrustum& frust) const
   // viewing case they are parallel to the xy plane. (vrml97 restricts
   // the view volume, but other systems might not, so be careful to
   // confirm the assumption before reusing this code).
-  // 
+  //
 
   // distance from the center of the sphere to the near plane.
   //
@@ -311,7 +311,7 @@ BSphere::isectFrustum(const VrmlFrustum& frust) const
   if (d < -r)
     return BVolume::BV_OUTSIDE;
   if (d < r)
-    code = BVolume::BV_PARTIAL;  
+    code = BVolume::BV_PARTIAL;
 
 
   // distance from the sphere center to the far plane. same logic as
@@ -322,8 +322,8 @@ BSphere::isectFrustum(const VrmlFrustum& frust) const
   if (d < -r)
     return BVolume::BV_OUTSIDE;
   if (d < r)
-    code = BVolume::BV_PARTIAL;  
-  
+    code = BVolume::BV_PARTIAL;
+
 
   // test against the top, the same logic will be used to test against
   // the other sides. we still want to find the distanct to the plane, but
@@ -333,32 +333,32 @@ BSphere::isectFrustum(const VrmlFrustum& frust) const
   if (d < -r)
     return BVolume::BV_OUTSIDE;
   if (d < r)
-    code = BVolume::BV_PARTIAL;  
+    code = BVolume::BV_PARTIAL;
 
 
   d = sphere_plane_distance(*this, frust.bot_plane, frust.bot_plane[3]);
   if (d < -r)
     return BVolume::BV_OUTSIDE;
   if (d < r)
-    code = BVolume::BV_PARTIAL;  
+    code = BVolume::BV_PARTIAL;
 
 
   d = sphere_plane_distance(*this, frust.left_plane, frust.left_plane[3]);
   if (d < -r)
     return BVolume::BV_OUTSIDE;
   if (d < r)
-    code = BVolume::BV_PARTIAL;  
+    code = BVolume::BV_PARTIAL;
 
 
   d = sphere_plane_distance(*this, frust.right_plane, frust.right_plane[3]);
   if (d < -r)
     return BVolume::BV_OUTSIDE;
   if (d < r)
-    code = BVolume::BV_PARTIAL;  
+    code = BVolume::BV_PARTIAL;
 
 
   return code;
-  
+
 }
 
 void
@@ -380,8 +380,8 @@ BSphere::extend(const BVolume & bv)
 }
 
 
-void 
-BSphere::extend(const float p[3]) 
+void
+BSphere::extend(const float p[3])
 {
 
   if (this->isMAX())
@@ -406,7 +406,7 @@ BSphere::extend(const float p[3])
   float y0 = this->c[1];
   float z0 = this->c[2];
   float r0 = this->r;
-  
+
   float x1 = p[0];
   float y1 = p[1];
   float z1 = p[2];
@@ -433,7 +433,7 @@ BSphere::extend(const float p[3])
   this->c[0] = cx;
   this->c[1] = cy;
   this->c[2] = cz;
-}  
+}
 
 
 void BSphere::extend(const AABox & b) {
@@ -540,12 +540,12 @@ BSphere::enclose(const float* p, int n)
 
   this->reset();
 
-  if (n < 1) 
+  if (n < 1)
     return;
 
   const float* min_p[3] = { &p[0], &p[0], &p[0] };
   const float* max_p[3] = { &p[0], &p[0], &p[0] };
-  
+
   // find the 6 points with: minx, maxx, miny, maxy, minz, maxz
   //
   int i;
@@ -602,7 +602,7 @@ BSphere::getCenter() const
   return c;
 }
 
-void 
+void
 BSphere::setCenter(const SFVec3f & center)
 {
   SFVec3f::ConstArrayReference centerVec = center.get();
@@ -650,7 +650,7 @@ BSphere::setMAX()
 bool
 BSphere::isMAX() const
 {
-  if (r==FLT_MAX) 
+  if (r==FLT_MAX)
     return true;
   return false;
 }
@@ -658,7 +658,7 @@ BSphere::isMAX() const
 
 
 void
-BSphere::orthoTransform(const VrmlMatrix & M) 
+BSphere::orthoTransform(const VrmlMatrix & M)
 {
   if (this->isMAX())
     return;
@@ -677,7 +677,7 @@ BSphere::orthoTransform(const VrmlMatrix & M)
   c[2] = new_c[2];
 
   // uniform scale means we can pick any of the scale elements? wait:
-  // can we really do this? 
+  // can we really do this?
   float tmp_r[3] = { M[0][0], M[1][0], M[2][0] };
   float new_r = Vlength(tmp_r);
   r = new_r*r;
@@ -727,7 +727,6 @@ std::ostream & BSphere::dump(std::ostream & out) const {
 }
 
 
-
 /**
  * @class AABox
  *
@@ -760,8 +759,8 @@ AABox::extend(const BVolume & bv)
 }
 
 
-void 
-AABox::extend(const float p[3]) 
+void
+AABox::extend(const float p[3])
 {
 }
 
@@ -792,7 +791,7 @@ AABox::isMAX() const
 }
 
 void
-AABox::orthoTransform(const VrmlMatrix & M) 
+AABox::orthoTransform(const VrmlMatrix & M)
 {
 }
 
