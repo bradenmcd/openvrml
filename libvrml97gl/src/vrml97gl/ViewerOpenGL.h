@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
-//  Copyright (C) 1998 Chris Morley
+//  Copyright (C) 1998-2000 Chris Morley
+//  See the file COPYING for license details.
 //
 //  ViewerOpenGL.h
 //  Abstract class for display of VRML models using OpenGL/Mesa.

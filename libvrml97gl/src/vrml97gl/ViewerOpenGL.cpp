@@ -1,6 +1,7 @@
 //
 //  Vrml 97 library
-//  Copyright (C) 1998 Chris Morley
+//  Copyright (C) 1998-2000 Chris Morley
+//  See the file COPYING for license details.
 //
 //  ViewerOpenGL.cpp
 //  Display of VRML models using OpenGL. This is an abstract class
