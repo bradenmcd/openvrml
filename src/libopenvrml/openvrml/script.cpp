@@ -7141,60 +7141,51 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx,
     vec3f center(0.0, 0.0, 0.0);
 
     for (uintN i = 0; i < argc; ++i) {
-        const sfield::sfdata * sfdata = 0;
         JSObject * arg_obj;
         if (!JS_ValueToObject(cx, argv[i], &arg_obj)) { return JS_FALSE; }
+        assert(JS_GetPrivate(cx, arg_obj));
+        const sfield::sfdata & sfdata =
+            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
         switch (i) {
         case 0:
             if (!JS_InstanceOf(cx, arg_obj, &js_::SFVec3f::jsclass, argv)) {
                 return JS_FALSE;
             }
-            sfdata = static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-            assert(sfdata);
-            assert(dynamic_cast<sfvec3f *>(&sfdata->field_value()));
-            translation = static_cast<sfvec3f &>(sfdata->field_value()).value;
+            assert(dynamic_cast<sfvec3f *>(&sfdata.field_value()));
+            translation = static_cast<sfvec3f &>(sfdata.field_value()).value;
             break;
 
         case 1:
             if (!JS_InstanceOf(cx, arg_obj, &js_::SFRotation::jsclass, argv)) {
                 return JS_FALSE;
             }
-            sfdata = static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-            assert(sfdata);
-            assert(dynamic_cast<sfrotation *>(&sfdata->field_value()));
-            rot = static_cast<sfrotation &>(sfdata->field_value()).value;
+            assert(dynamic_cast<sfrotation *>(&sfdata.field_value()));
+            rot = static_cast<sfrotation &>(sfdata.field_value()).value;
             break;
 
         case 2:
             if (!JS_InstanceOf(cx, arg_obj, &js_::SFVec3f::jsclass, argv)) {
                 return JS_FALSE;
             }
-            sfdata = static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-            assert(sfdata);
-            assert(dynamic_cast<sfvec3f *>(&sfdata->field_value()));
-            scale = static_cast<sfvec3f &>(sfdata->field_value()).value;
+            assert(dynamic_cast<sfvec3f *>(&sfdata.field_value()));
+            scale = static_cast<sfvec3f &>(sfdata.field_value()).value;
             break;
 
         case 3:
             if (!JS_InstanceOf(cx, arg_obj, &js_::SFRotation::jsclass, argv)) {
                 return JS_FALSE;
             }
-            sfdata = static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-            assert(sfdata);
-            assert(dynamic_cast<sfrotation *>(&sfdata->field_value()));
+            assert(dynamic_cast<sfrotation *>(&sfdata.field_value()));
             scaleOrientation =
-                static_cast<sfrotation &>(sfdata->field_value()).value;
+                static_cast<sfrotation &>(sfdata.field_value()).value;
             break;
 
         case 4:
-            if (!JS_ValueToObject(cx, argv[i], &arg_obj)) { return JS_FALSE; }
             if (!JS_InstanceOf(cx, arg_obj, &js_::SFVec3f::jsclass, argv)) {
                 return JS_FALSE;
             }
-            sfdata = static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-            assert(sfdata);
-            assert(dynamic_cast<sfvec3f *>(&sfdata->field_value()));
-            center = static_cast<sfvec3f &>(sfdata->field_value()).value;
+            assert(dynamic_cast<sfvec3f *>(&sfdata.field_value()));
+            center = static_cast<sfvec3f &>(sfdata.field_value()).value;
             break;
 
         default:
@@ -7238,38 +7229,34 @@ JSBool VrmlMatrix::getTransform(JSContext * const cx,
 
     for (uintN i = 0; i < argc; ++i) {
         if (JSVAL_IS_NULL(argv[i])) { continue; }
-        const sfield::sfdata * sfdata = 0;
         JSObject * arg_obj;
         if (!JS_ValueToObject(cx, argv[i], &arg_obj)) { return JS_FALSE; }
+        assert(JS_GetPrivate(cx, arg_obj));
+        const sfield::sfdata & sfdata =
+            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
         switch (i) {
         case 0:
             if (!JS_InstanceOf(cx, arg_obj, &js_::SFVec3f::jsclass, argv)) {
                 return JS_FALSE;
             }
-            sfdata = static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-            assert(sfdata);
-            assert(dynamic_cast<sfvec3f *>(&sfdata->field_value()));
-            static_cast<sfvec3f &>(sfdata->field_value()).value = translation;
+            assert(dynamic_cast<sfvec3f *>(&sfdata.field_value()));
+            static_cast<sfvec3f &>(sfdata.field_value()).value = translation;
             break;
 
         case 1:
             if (!JS_InstanceOf(cx, arg_obj, &js_::SFRotation::jsclass, argv)) {
                 return JS_FALSE;
             }
-            sfdata = static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-            assert(sfdata);
-            assert(dynamic_cast<sfrotation *>(&sfdata->field_value()));
-            static_cast<sfrotation &>(sfdata->field_value()).value = rot;
+            assert(dynamic_cast<sfrotation *>(&sfdata.field_value()));
+            static_cast<sfrotation &>(sfdata.field_value()).value = rot;
             break;
 
         case 2:
             if (!JS_InstanceOf(cx, arg_obj, &js_::SFVec3f::jsclass, argv)) {
                 return JS_FALSE;
             }
-            sfdata = static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-            assert(sfdata);
-            assert(dynamic_cast<sfvec3f *>(&sfdata->field_value()));
-            static_cast<sfvec3f &>(sfdata->field_value()).value = scale;
+            assert(dynamic_cast<sfvec3f *>(&sfdata.field_value()));
+            static_cast<sfvec3f &>(sfdata.field_value()).value = scale;
             break;
 
         default:
