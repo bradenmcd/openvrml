@@ -2,6 +2,10 @@
 
         * Modified ANTLR's config.cpp to define NO_STATIC_CONSTS for gcc 2.96.
           This fixes <https://sourceforge.net/bugs/?func=detailbug&bug_id=117652&group_id=7151>.
+        
+        * In configure.in, disabled the ability to disable building static
+          libraries. We need them to incrementally link against, even when the
+          only desired end product are shared libraries.
 
 2000-10-24  Braden McDaniel  <braden@endoframe.com>
 

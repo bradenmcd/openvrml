@@ -45,12 +45,10 @@ AC_MINGW32
 dnl
 dnl Checks for programs.
 dnl
-dnl AC_PROG_CC
-dnl AC_PROG_CPP
+AC_ENABLE_STATIC(yes)
+enable_static=yes
 AM_PROG_LIBTOOL
 AC_PROG_INSTALL
-dnl AM_PROG_LEX
-dnl AC_PROG_YACC
 AC_PROG_CXX
 AC_PROG_CXXCPP
 
