@@ -1,3 +1,24 @@
+2003-08-25  Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment improvements.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/doc.cpp
+	* src/libopenvrml/openvrml/img.cpp
+	* src/libopenvrml/openvrml/img.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node_class_ptr.cpp
+	* src/libopenvrml/openvrml/node_ptr.cpp
+	* src/libopenvrml/openvrml/node_type_ptr.cpp
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/scope_ptr.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/viewer.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+
 2003-08-22  Braden McDaniel  <braden@endoframe.com>
 
 	Added Microsoft Visual Studio 7.0 solution and project files.
