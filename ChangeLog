@@ -1,5 +1,13 @@
 2002-09-27  S. K. Bose  <bose@pavan.barc.ernet.in>
 
+        * ide-projects/Windows/VisualC6/winconfig.h: In MSVC project
+          file, if macros are defined with values, it does not give 
+          the result as expected. Rename "winconfig.h" as "config.h"
+          to define macros for MSVC project file. Inside the project
+          file "HAVE_CONFIG_H" macro is defined.
+
+2002-09-27  S. K. Bose  <bose@pavan.barc.ernet.in>
+
         * Remove the directory regex. This library is under GPL whereas
           OpenVRML is under LGPL.
 
