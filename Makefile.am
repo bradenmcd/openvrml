@@ -1,5 +1,4 @@
-AUTOMAKE_OPTIONS = foreign
-VERSION = 1.5
+AUTOMAKE_OPTIONS = 1.5 foreign
 
 SUBDIRS = doc macros models lib @JAVA_SUBDIR@ src
 

@@ -10,6 +10,8 @@
 
         * Updated AC_INIT usage for autoconf 2.52.
 
+        * Require automake 1.5. (Do it right this time.)
+
 2002-01-28  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * In "NodeLOD", accumulated modelview matrix within 
