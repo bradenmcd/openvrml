@@ -711,7 +711,7 @@ namespace {
 //
 // PNG reader
 //
-# ifdef OPENVRML_HAVE_LIBPNG
+# ifdef HAVE_LIBPNG
 #   include <png.h>
 namespace {
 
@@ -980,12 +980,12 @@ namespace {
 //
 // JPEG reader
 //
-# ifdef OPENVRML_HAVE_LIBJPEG
+# ifdef HAVE_LIBJPEG
 #   include <setjmp.h>
 
 extern "C" {
 #   include <jpeglib.h>
-    
+
     typedef void (*JpegErrorExit)(j_common_ptr);
 }
 
@@ -6809,11 +6809,11 @@ typedef enum {
   ImageFile_UNKNOWN,
 
   ImageFile_GIF
-# ifdef OPENVRML_HAVE_LIBJPEG
+# ifdef HAVE_LIBJPEG
   , ImageFile_JPG
 # endif
   , ImageFile_MPG
-# ifdef OPENVRML_HAVE_LIBPNG
+# ifdef HAVE_LIBPNG
   , ImageFile_PNG
 # endif
 
@@ -6867,7 +6867,7 @@ bool Image::setURL(const char * const url, const Doc2 * const relative)
             this->d_pixels = gifread(fp, &this->d_w, &this->d_h, &this->d_nc,
                                      &this->d_nFrames, &this->d_frame);
             break;
-# ifdef OPENVRML_HAVE_LIBJPEG
+# ifdef HAVE_LIBJPEG
         case ImageFile_JPG:
             this->d_pixels = jpgread(fp, &this->d_w, &this->d_h, &this->d_nc);
             break;
@@ -6876,7 +6876,7 @@ bool Image::setURL(const char * const url, const Doc2 * const relative)
             this->d_pixels = mpgread(fp, &this->d_w, &this->d_h, &this->d_nc,
                                      &this->d_nFrames, &this->d_frame);
             break;
-# ifdef OPENVRML_HAVE_LIBPNG
+# ifdef HAVE_LIBPNG
         case ImageFile_PNG:
             this->d_pixels = pngread(fp, &this->d_w, &this->d_h, &this->d_nc);
             break;
@@ -6921,7 +6921,7 @@ static ImageFileType imageFileType(const char *url, FILE *)
   if (strcmp(suffix,"gif") == 0 ||
       strcmp(suffix,"GIF") == 0)
     return ImageFile_GIF;
-# ifdef OPENVRML_HAVE_LIBJPEG
+# ifdef HAVE_LIBJPEG
   else if (strcmp(suffix,"jpg") == 0 ||
 	   strcmp(suffix,"JPG") == 0 ||
 	   strcmp(suffix,"jpeg") == 0 ||
@@ -6933,7 +6933,7 @@ static ImageFileType imageFileType(const char *url, FILE *)
 	   strcmp(suffix,"mpeg") == 0 ||
 	   strcmp(suffix,"MPEG") == 0)
     return ImageFile_MPG;
-# ifdef OPENVRML_HAVE_LIBPNG
+# ifdef HAVE_LIBPNG
   else if (strcmp(suffix,"png") == 0 ||
 	   strcmp(suffix,"PNG") == 0)
     return ImageFile_PNG;

@@ -16,15 +16,9 @@ AC_PROG_CXXCPP
 #
 # Optional packages.
 #
-AC_ARG_WITH(zlib, [  --with-zlib             use zlib (read gzipped VRML files)], ,
-            [# Use zlib by default.
-             with_zlib=yes])
-AC_ARG_WITH(libpng, [  --with-libpng           use libpng (PNG image support)], ,
-            [# Use libpng by default.
-             with_libpng=yes])
-AC_ARG_WITH(libjpeg, [  --with-libjpeg          use libjpeg (JPEG image support)], ,
-            [# Use libjpeg by default.
-             with_libjpeg=yes])
+OV_WITH_ZLIB
+OV_WITH_LIBPNG
+OV_WITH_LIBJPEG
 AC_PATH_XTRA
 AC_ARG_WITH(gl, [  --with-gl               use OpenGL/Mesa (required for GL renderer)], ,
             [# Use OpenGL by default.
@@ -44,27 +38,6 @@ AC_ARG_WITH(ftflib, [  --with-ftflib           use ftflib (required for font sup
 AC_ARG_WITH(doxygen, [  --with-doxygen          use Doxygen to generate documentation], ,
             [# Use Doxygen by default.
              with_doxygen=yes])
-
-#
-# Check for zlib, libpng.
-#
-if test "X$with_zlib" = "Xyes"; then
-  OV_CHECK_ZLIB
-  if test "X$no_zlib" = "Xyes"; then
-    AC_MSG_ERROR([zlib not found.])
-  else
-    AC_DEFINE([OPENVRML_HAVE_ZLIB], , [Defined if zlib is available and should be used.])
-    
-    if test "X$with_libpng" = "Xyes"; then
-      OV_CHECK_LIBPNG
-      if test "X$no_libpng" = "Xyes"; then
-        AC_MSG_ERROR([libpng not found.])
-      else
-        AC_DEFINE([OPENVRML_HAVE_LIBPNG], , [Defined if libpng is available and should be used.])
-      fi
-    fi
-  fi
-fi
 
 #
 # Check for OpenGL/Mesa, GLUT.
@@ -93,18 +66,6 @@ fi
 AM_CONDITIONAL([WITH_GL], [test "X$with_gl" = "Xyes"])
 AM_CONDITIONAL([WITH_GLUT], [test "X$with_gl" = "Xyes" -a "X$with_glut" = "Xyes"])
 dnl AM_CONDITIONAL([WITH_GLUT], [test "apple" = "orange"])
-
-#
-# Check for libjpeg.
-#
-if test "X$with_libjpeg" = "Xyes"; then
-  OV_CHECK_LIBJPEG
-  if test "X$no_libjpeg" = "Xyes"; then
-    AC_MSG_ERROR([libjpeg not found.])
-  else
-    AC_DEFINE(OPENVRML_HAVE_LIBJPEG, , [Defined if libjpeg is available and should be used.])
-  fi
-fi
 
 #
 # Check for SpiderMonkey

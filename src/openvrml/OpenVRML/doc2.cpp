@@ -41,7 +41,7 @@
 # include "System.h"
 # include "browser.h"
 
-# ifdef OPENVRML_HAVE_ZLIB
+# ifdef HAVE_ZLIB
 #   include <zlib.h>
 
 namespace {
@@ -232,12 +232,12 @@ namespace {
         void ifstream::close() { this->fbuf.close(); }
     }
 }
-# endif // OPENVRML_HAVE_ZLIB
+# endif // HAVE_ZLIB
 
 namespace OpenVRML {
 
 namespace {
-    
+
     class URI {
         std::string str;
         enum { nmatch = 11 };
@@ -258,7 +258,7 @@ namespace {
         const std::string getPath() const throw (std::bad_alloc);
         const std::string getQuery() const throw (std::bad_alloc);
         const std::string getFragment() const throw (std::bad_alloc);
-        
+
         const URI resolveAgainst(const URI & absoluteURI) const
                 throw (std::bad_alloc);
     };
@@ -356,7 +356,7 @@ namespace {
  */
 void Doc2::seturl(const std::string & url, const Doc2 * relative) {
     using std::string;
-    
+
     this->url_ = string();
 
     if (!url.empty()) {
@@ -398,7 +398,7 @@ const std::string Doc2::url() const { return this->url_; }
  */
 const std::string Doc2::urlBase() const {
     using std::string;
-    
+
     string::size_type lastSlashPos = this->url_.find_last_of('/');
     string::size_type lastDotPos = this->url_.find_last_of('.');
 
@@ -408,7 +408,7 @@ const std::string Doc2::urlBase() const {
     string::size_type length = (lastDotPos != string::npos)
                              ? lastDotPos - beginPos
                              : this->url_.length() - 1 - beginPos;
-    
+
     return (beginPos < this->url_.length())
             ? this->url_.substr(beginPos, length)
             : "";
@@ -439,9 +439,9 @@ const std::string Doc2::urlExt() const {
  */
 const std::string Doc2::urlPath() const {
     using std::string;
-    
+
     string::size_type lastSlashPos = this->url_.find_last_of('/');
-    
+
     return (lastSlashPos != string::npos)
             ? this->url_.substr(0, lastSlashPos + 1)
             : this->url_;
@@ -454,7 +454,7 @@ const std::string Doc2::urlPath() const {
  */
 const std::string Doc2::urlProtocol() const {
     using std::string;
-    
+
     string::size_type firstColonPos = this->url_.find_first_of(':');
     return (firstColonPos != string::npos)
             ? this->url_.substr(0, firstColonPos)
@@ -525,7 +525,7 @@ std::istream & Doc2::inputStream() {
         if (strcmp(fn, "-") == 0) {
             this->istm_ = &std::cin;
         } else {
-# ifdef OPENVRML_HAVE_ZLIB
+# ifdef HAVE_ZLIB
             this->istm_ = new z::ifstream(
 #   ifdef macintosh
                                           convertCommonToMacPath(fn, sizeof(fn))
@@ -569,13 +569,13 @@ std::ostream & Doc2::outputStream() {
 bool Doc2::filename(char * fn, int nfn) {
     using std::copy;
     using std::string;
-    
+
     fn[0] = '\0';
 
     const char * s = 0;
 
     const std::string protocol = this->urlProtocol();
-    
+
     if (protocol == "file") {
         string name = URI(this->url_).getPath();
         size_t len = (name.length() < (nfn - 1))
