@@ -1037,7 +1037,11 @@ bool doc2::filename(char * fn, const size_t nfn) {
     const std::string protocol = this->url_protocol();
 
     if (protocol == "file") {
+# ifdef _WIN32
+        string name = URI(this->url_).getPath().substr(1);
+# else
         string name = URI(this->url_).getPath();
+# endif
         size_t len = (name.length() < (nfn - 1))
                    ? name.length()
                    : nfn - 1;

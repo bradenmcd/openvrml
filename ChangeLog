@@ -1,5 +1,18 @@
 2003-09-01  Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/doc.cpp (doc2::filename):  Fixed
+	problem resolving file URLs on Windows.
+
+2003-09-01  Braden McDaniel  <braden@endoframe.com>
+
+	Quelled some stupid warnings in Release builds.
+
+	* ide-projects/Windows/VisualC7/OpenVRML/lookat/lookat.vcproj
+	* ide-projects/Windows/VisualC7/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC7/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+
+2003-09-01  Braden McDaniel  <braden@endoframe.com>
+
 	Fixed a bunch of warnings from cl 13.00.9466.
 
 	* src/libopenvrml/openvrml/Vrml97Parser.cpp
