@@ -26,6 +26,9 @@
 
         * AUTHORS: Updated Gerall Kahla's e-mail address.
 
+        * THANKS: openvrml.org is now hosted by SourceForge; reflect
+          name change VA Linux -> VA Software.
+
 2002-02-19  Braden McDaniel  <braden@endoframe.com>
 
         * VrmlMatrix: use std::copy instead of memcpy.
