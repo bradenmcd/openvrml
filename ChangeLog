@@ -1,5 +1,12 @@
 2005-01-10 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for Doxygen 1.4.
+
+	* doc/Doxyfile
+	* doc/doxygen-header
+
+2005-01-10 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml.cpp:  Use getenv instead of
 	g_getenv.
 

@@ -15,6 +15,39 @@
 @import url("doxygen.css");
 @import url("http://openvrml.org/openvrml.css");
 
+body, td {
+  font-size: 100%;
+}
+
+div.nav {
+  background-color: transparent;
+  text-align: left;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  border-color: black;
+  border-left: none;
+  border-right: none;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+
+div.nav a.el:link, div.nav a.el:visited {
+  border-width: 1px;
+  border-style: solid;
+  border-color: silver;
+  padding: 2px;
+}
+
+div.nav a.el:link:hover, div.nav a.el:visited:hover {
+  border-style: outset;
+  border-color: gray;
+}
+
+div.nav a.el:active {
+  border-style: inset;
+  border-color: gray;
+}
+
 .body td {
   background-color: transparent;
 }
