@@ -22,18 +22,81 @@ package vrml.field;
 
 import vrml.Field;
 
+/**
+ * Represents a VRML SFRotation field in Java.
+ */
 public class SFRotation extends Field
 {
-  private native void CreateObject(float axisX, float axisY, float axisZ, float angle);
+  /**
+   * Construct a new SFRotation field in OpenVRML using the given values.
+   *
+   * @param axisX X-component of the rotation
+   * @param axisY Y-component of the rotation
+   * @param axisZ Z-component of the rotation
+   * @param angle Angle of the rotation
+   */
+  private native void CreateObject(float axisX, float axisY,
+                                   float axisZ, float angle);
 
-  public SFRotation() { CreateObject(0f, 0f, 0f, 0f); }
-  public SFRotation(float axisX, float axisY, float axisZ, float angle) {	CreateObject(axisX, axisY, axisZ, angle); }
+  /**
+   * Construct a default SFRotation field.
+   */
+  public SFRotation()
+  {
+    CreateObject(0f, 0f, 1f, 0f);
+  }
 
+  /**
+   * Construct an SFRotation field.
+   *
+   * @param axisX X-component of the rotation
+   * @param axisY Y-component of the rotation
+   * @param axisZ Z-component of the rotation
+   * @param angle Angle of the rotation
+   */
+  public SFRotation(float axisX, float axisY,
+                    float axisZ, float angle)
+  {
+    CreateObject(axisX, axisY, axisZ, angle);
+  }
+
+  /**
+   * Get the X, Y, Z and angle values representing the SFRotation.
+   *
+   * @param rotations X, Y, Z and angle values representing the SFRotation
+   */	
   public native void getValue(float rotations[]);
 
+  /**
+   * Set the X, Y, Z and angle values of an SFRotation.
+   *
+   * @param rotations X, Y, Z and angle values to set SFRotation with
+   */
   public native void setValue(float rotations[]);
-  public native void setValue(float axisX, float axisY, float axisZ, float angle);
+
+  /**
+   * Set the X, Y, Z and angle values of an SFRotation.
+   *
+   * @param axisX X-component of the rotation
+   * @param axisY Y-component of the rotation
+   * @param axisZ Z-component of the rotation
+   * @param angle Angle of the rotation
+   */
+  public native void setValue(float axisX, float axisY,
+                              float axisZ, float angle);
+
+  /**
+   * Set the value of an SFRotation.
+   *
+   * @param rotation ConstSFRotation to take values from
+   */
   public native void setValue(ConstSFRotation rotation);
+
+  /**
+   * Set the value of an SFRotation.
+   *
+   * @param rotation SFRotation to take values from
+   */
   public native void setValue(SFRotation rotation);
 
   public native String toString();

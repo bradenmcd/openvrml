@@ -22,15 +22,40 @@ package vrml.field;
 
 import vrml.ConstField;
 
+/**
+ * Represents a read-only VRML SFRotation field in Java.
+ */
 public class ConstSFRotation extends ConstField
 {
-  private native void CreateObject(float axisX, float axisY, float axisZ, float angle);
+  /**
+   * Construct a new SFRotation field in OpenVRML using the given values.
+   *
+   * @param axisX X-component of the rotation
+   * @param axisY Y-component of the rotation
+   * @param axisZ Z-component of the rotation
+   * @param angle Angle of the rotation
+   */
+  private native void CreateObject(float axisX, float axisY,
+                                   float axisZ, float angle);
 
+  /**
+   * Construct a read-only SFRotation field.
+   *
+   * @param axisX X-component of the rotation
+   * @param axisY Y-component of the rotation
+   * @param axisZ Z-component of the rotation
+   * @param angle Angle of the rotation
+   */
   public ConstSFRotation(float axisX, float axisY, float axisZ, float angle)
   {
     CreateObject(axisX, axisY, axisZ, angle);
   }
 
+  /**
+   * Get the X, Y, Z and angle values representing the SFRotation.
+   *
+   * @param rotations X, Y, Z and angle values representing the SFRotation
+   */	
   public native void getValue(float rotations[]);
 
   public native String toString();

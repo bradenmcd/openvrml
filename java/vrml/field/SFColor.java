@@ -87,7 +87,7 @@ public class SFColor extends Field
   /**
    * Set the value of an SFColor.
    *
-   * @param colors 
+   * @param colors R, G, B value
    */
   public native void setValue(float colors[]);
 
@@ -103,7 +103,7 @@ public class SFColor extends Field
   /**
    * Set the value of an SFColor using the given SFColor.
    *
-   * @param color SFColor to take RGB value from
+   * @param color ConstSFColor to take RGB value from
    */
   public native void setValue(ConstSFColor color);
 
