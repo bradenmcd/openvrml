@@ -1,5 +1,9 @@
 2003-12-31 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Doxyfile.in:  Updated for Doxygen 1.3.5.
+
+2003-12-31 Braden McDaniel  <braden@endoframe.com>
+
 	Doxygen doc-comment updates.
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
