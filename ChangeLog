@@ -1,3 +1,21 @@
+2004-04-27 Braden McDaniel  <braden@endoframe.com>
+
+	Removed Microsoft Visual C++ 7.0 project files.
+
+	* ide-projects/Makefile.am
+	* ide-projects/Windows/VisualC7/OpenVRML/OpenVRML.sln:  Removed
+	file.
+	* ide-projects/Windows/VisualC7/OpenVRML/antlr/antlr.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC7/OpenVRML/lookat/lookat.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC7/OpenVRML/openvrml/openvrml.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC7/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC7/OpenVRML/regex/regex.vcproj:
+	Removed file.
+
 2004-04-26 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/configure.ac:  Removed unused Makefile from
