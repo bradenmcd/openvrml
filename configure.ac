@@ -139,6 +139,17 @@ if test "X$with_jdk" = "Xyes"; then
   fi
 fi
 
+AC_ARG_WITH(doxygen, [  --with-doxygen          use Doxygen to generate documentation], ,
+            [# Use Doxygen by default.
+             with_doxygen=yes])
+if test "X$with_doxygen" = "Xyes"; then
+  AC_PATH_PROG([DOXYGEN], [doxygen])
+  if test -z "${DOXYGEN}"; then
+    AC_MSG_ERROR([Doxygen not found.])
+  fi
+fi
+AM_CONDITIONAL([WITH_DOXYGEN], [test "X$with_doxygen" = "Xyes"])
+
 #
 # Modulate debug mode
 #
@@ -152,6 +163,7 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 AC_OUTPUT([Makefile \
 doc/Makefile \
+doc/Doxyfile \
 m4/Makefile \
 models/Makefile \
 models/audio/Makefile \
@@ -169,7 +181,6 @@ java/Makefile \
 java/vrml/Makefile \
 java/vrml/node/Makefile \
 java/vrml/field/Makefile \
-Doxyfile \
 openvrml.pc \
 openvrml-gl.pc \
 openvrml.spec])
