@@ -7,6 +7,11 @@
           MFString element.  This behavior is consistent with that of
           the String object constructor.
 
+        * src/openvrml/OpenVRML/script.cpp:  Treat SFInt32 values and
+          MFInt32 elements in JavaScript as JavaScript numerics (double
+          precision) rather than JavaScript integers.  ECMAScript
+          doesn't have distinct integer and floating point types.
+
 2002-12-10  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp:  MSVC6 doesn't like in-class

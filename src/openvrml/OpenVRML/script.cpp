@@ -1692,8 +1692,7 @@ jsval Script::vrmlFieldToJSVal(const FieldValue & fieldValue) throw ()
         {
             const OpenVRML::SFImage & sfimage =
                     static_cast<const OpenVRML::SFImage &>(fieldValue);
-            if (!SFImage::toJsval(sfimage,
-                                  this->cx, globalObj, &rval)) {
+            if (!SFImage::toJsval(sfimage, this->cx, globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
         }
@@ -1703,7 +1702,9 @@ jsval Script::vrmlFieldToJSVal(const FieldValue & fieldValue) throw ()
         {
             const OpenVRML::SFInt32 & sfint32 =
                     static_cast<const OpenVRML::SFInt32 &>(fieldValue);
-	    rval = INT_TO_JSVAL(sfint32.get());
+            if (!JS_NewNumberValue(cx, jsdouble(sfint32.get()), &rval)) {
+                rval = JSVAL_NULL;
+            }
         }
         break;
 
@@ -2151,20 +2152,20 @@ createFieldValueFromJsval(JSContext * const cx, const jsval v,
 
     case FieldValue::sffloat:
         {
-            if (!JSVAL_IS_NUMBER(v)) {
+            jsdouble d;
+            if (!JS_ValueToNumber(cx, v, &d)) {
                 throw BadConversion("Numeric value expected.");
             }
-            jsdouble sffloatDouble;
-            JS_ValueToNumber(cx, v, &sffloatDouble);
-            return auto_ptr<FieldValue>(new SFFloat(sffloatDouble));
+            return auto_ptr<FieldValue>(new SFFloat(d));
         }
 
     case FieldValue::sfint32:
         {
-            if (!JSVAL_IS_INT(v)) {
-                throw BadConversion("Integer value expected.");
+            int32 i;
+            if (!JS_ValueToECMAInt32(cx, v, &i)) {
+                throw BadConversion("Numeric value expected.");
             }
-            return auto_ptr<FieldValue>(new SFInt32(JSVAL_TO_INT(v)));
+            return auto_ptr<FieldValue>(new SFInt32(i));
         }
 
     case FieldValue::sfimage:
@@ -2209,12 +2210,11 @@ createFieldValueFromJsval(JSContext * const cx, const jsval v,
 
     case FieldValue::sftime:
         {
-            if (!JSVAL_IS_NUMBER(v)) {
+            jsdouble d;
+            if (!JS_ValueToNumber(cx, v, &d)) {
                 throw BadConversion("Numeric value expected.");
             }
-            jsdouble sftimeDouble;
-            JS_ValueToNumber(cx, v, &sftimeDouble);
-            return auto_ptr<FieldValue>(new SFTime(sftimeDouble));
+            return auto_ptr<FieldValue>(new SFTime(d));
         }
 
     case FieldValue::sfvec2f:
@@ -5656,8 +5656,17 @@ JSBool MFInt32::initObject(JSContext * const cx, JSObject * const obj,
     try {
         std::auto_ptr<MFData> mfdata(new MFData(argc));
         for (uintN i = 0; i < argc; ++i) {
-            if (!JSVAL_IS_INT(argv[i])) { return JS_FALSE; }
-            mfdata->array[i] = argv[i];
+            //
+            // Convert the jsval to an int32 and back to a jsval in order
+            // to remove any decimal part.
+            //
+            int32 integer;
+            if (!JS_ValueToECMAInt32(cx, argv[i], &integer)) {
+                return JS_FALSE;
+            }
+            if (!JS_NewNumberValue(cx, jsdouble(integer), &mfdata->array[i])) {
+                return JS_FALSE;
+            }
         }
         if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
         mfdata.release();
@@ -5679,11 +5688,6 @@ JSBool MFInt32::setElement(JSContext * const cx, JSObject * const obj,
     assert(mfdata);
 
     //
-    // Make sure new value is an integer.
-    //
-    if (!JSVAL_IS_INT(*vp)) { return JS_FALSE; }
-
-    //
     // Make sure the index is valid.
     //
     if (!JSVAL_IS_INT(id) || JSVAL_TO_INT(id) < 0) { return JS_FALSE; }
@@ -5697,9 +5701,14 @@ JSBool MFInt32::setElement(JSContext * const cx, JSObject * const obj,
     }
 
     //
-    // Put the new element in the array.
+    // Convert the jsval to an int32 and back to a jsval in order
+    // to remove any decimal part.
     //
-    mfdata->array[JSVAL_TO_INT(id)] = *vp;
+    int32 i;
+    if (!JS_ValueToECMAInt32(cx, *vp, &i)) { return JS_FALSE; }
+    if (!JS_NewNumberValue(cx, jsdouble(i), &mfdata->array[JSVAL_TO_INT(id)])) {
+        return JS_FALSE;
+    }
     mfdata->changed = true;
     return JS_TRUE;
 }
