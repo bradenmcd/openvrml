@@ -4296,19 +4296,21 @@ JSBool SFVec2f::initObject(JSContext * const cx,
                            jsval * const argv)
     throw ()
 {
-    jsdouble x = 0.0, y = 0.0;
-    if (argc > 0) {
-        if (!JS_ValueToNumber(cx, argv[0], &x)) { return JS_FALSE; }
-    }
-    if (argc > 1) {
-        if (!JS_ValueToNumber(cx, argv[1], &y)) { return JS_FALSE; }
+    jsdouble vec[] = { 0.0, 0.0 };
+    for (uintN i(0); i < ((argc < 2) ? argc : 2); ++i) {
+        if (!JS_ValueToNumber(cx, argv[i], vec + i)) { return JS_FALSE; }
+        if (vec[i] != vec[i]) {
+            JS_ReportError(cx, "Argument %d of SFVec2f constructor is NaN.",
+                           i);
+            return JS_FALSE;
+        }
     }
 
     try {
         using std::auto_ptr;
 
         auto_ptr<openvrml::sfvec2f>
-            sfvec2f(new openvrml::sfvec2f(vec2f(x, y)));
+            sfvec2f(new openvrml::sfvec2f(vec2f(vec[0], vec[1])));
         auto_ptr<sfdata> sfdata(new sfdata(sfvec2f.get()));
         sfvec2f.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -4358,6 +4360,10 @@ JSBool SFVec2f::setProperty(JSContext * const cx,
 
         jsdouble d;
         if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
+        if (d != d) {
+            JS_ReportError(cx, "Cannot set SFVec2f component to NaN.");
+            return JS_FALSE;
+        }
 
         switch (JSVAL_TO_INT(id)) {
         case 0:
@@ -4802,6 +4808,11 @@ JSBool SFVec3f::initObject(JSContext * const cx,
     jsdouble vec[] = { 0.0, 0.0, 0.0 };
     for (uintN i(0); i < ((argc < 3) ? argc : 3); ++i) {
         if (!JS_ValueToNumber(cx, argv[i], vec + i)) { return JS_FALSE; }
+        if (vec[i] != vec[i]) {
+            JS_ReportError(cx, "Argument %d of SFVec3f constructor is NaN.",
+                           i);
+            return JS_FALSE;
+        }
     }
 
     try {
@@ -4857,6 +4868,10 @@ JSBool SFVec3f::setProperty(JSContext * const cx,
 
         jsdouble d;
         if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
+        if (d != d) {
+            JS_ReportError(cx, "Cannot set SFVec3f component to NaN.");
+            return JS_FALSE;
+        }
 
         switch (JSVAL_TO_INT(id)) {
         case 0:

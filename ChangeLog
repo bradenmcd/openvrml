@@ -1,5 +1,12 @@
 2004-01-24 Braden McDaniel  <braden@endoframe.com>
 
+	Guard against NaN values in JavaScript SFVec3f, SFVec2f
+	constructors and component mutators.
+
+	* src/libopenvrml/openvrml/script.cpp
+
+2004-01-24 Braden McDaniel  <braden@endoframe.com>
+
 	Quell warnings from gcc.
 
 	* src/libopenvrml/openvrml/system.cpp
