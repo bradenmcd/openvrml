@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  The VrmlNode class is the base node class.
 
 #ifdef HAVE_CONFIG_H
@@ -17,9 +16,9 @@
 
 #include <stdio.h>		// sprintf
 
-# ifndef NDEBUG
-#   define VRML_NODE_DEBUG
-# endif
+//# ifndef NDEBUG
+//#   define VRML_NODE_DEBUG
+//# endif
 
 VrmlNodeType *VrmlNode::defineType(VrmlNodeType *t) { return t; }
 

@@ -113,9 +113,6 @@ void VrmlNodeGroup::addToScene(VrmlScene *s, const char *relativeUrl)
 {
   d_scene = s;
 
-  theSystem->debug("VrmlNodeGroup::addToScene( %s )\n",
-		   relativeUrl ? relativeUrl : "<null>");
-
   const char *currentRel = d_relative.get();
   if ( ! currentRel || ! relativeUrl || strcmp(currentRel, relativeUrl) != 0)
     d_relative.set( relativeUrl );
