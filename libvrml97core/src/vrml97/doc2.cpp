@@ -142,6 +142,13 @@ void Doc2::seturl(char const * url, Doc2 const * relative)
         this->ostm_ = 0;
         
         char const * path = "";
+
+#ifdef _WIN32     
+// Convert windows path stream to standard URL
+	  char *p = (char *)url;
+	  for(;*p != '\0';p++)
+		  if(*p == '\\')*p = '/';
+#endif
         
         if (relative && !isAbsolute(url)) {
 	    path = relative->urlPath();
@@ -229,7 +236,7 @@ char const * Doc2::urlProtocol() const
         char const * s = url_;
         
 # ifdef _WIN32
-        if (strncmp(s+1,":\\",2) == 0) {
+        if (strncmp(s+1,":/",2) == 0) {
             return "file";
         }
 # endif
@@ -320,7 +327,7 @@ char const * Doc2::stripProtocol(char const * url)
     char const * s = url;
     
 # ifdef _WIN32
-    if (strncmp(s+1,":\\",2) == 0) {
+    if (strncmp(s+1,":/",2) == 0) {
         return url;
     }
 # endif
@@ -373,7 +380,13 @@ bool Doc2::filename(char * fn, int nfn)
     else if (strcmp(protocol, "file") != 0) {
         s = 0;
     }
-    
+
+#ifdef _WIN32   
+  // Does not like "//C:" skip "// "  
+   if(s)
+	   if(strlen(s)>2 && s[0] == '/' && s[1] == '/')s=s+2;
+#endif  
+  
     if (s) {
         strncpy( fn, s, nfn-1 );
         fn[nfn-1] = '\0';

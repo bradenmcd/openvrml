@@ -81,6 +81,13 @@ void Doc::seturl(char const * url, Doc const * relative)
   {
       const char *path = "";
 
+#ifdef _WIN32     
+// Convert windows path stream to standard URL
+	  char *p = (char *)url;
+	  for(;*p != '\0';p++)
+		  if(*p == '\\')*p = '/';
+#endif
+
       if ( relative && ! isAbsolute(url) )
 	    path = relative->urlPath();
 
@@ -102,6 +109,13 @@ void Doc::seturl(char const * url, Doc2 const * relative)
   if (url)
   {
       const char *path = "";
+
+#ifdef _WIN32     
+// Convert windows path stream to standard URL
+	  char *p = (char *)url;
+	  for(;*p != '\0';p++)
+		  if(*p == '\\')*p = '/';
+#endif
 
       if ( relative && ! isAbsolute(url) )
 	    path = relative->urlPath();
@@ -182,7 +196,7 @@ char const * Doc::urlProtocol() const
       const char *s = d_url;
 
 #ifdef _WIN32
-      if (strncmp(s+1,":\\",2) == 0) return "file";
+      if (strncmp(s+1,":/",2) == 0) return "file";
 #endif
 
       for (unsigned int i=0; i<sizeof(protocol); ++i, ++s)
@@ -233,7 +247,7 @@ const char *Doc::stripProtocol(const char *url)
   const char *s = url;
 
 #ifdef _WIN32
-  if (strncmp(s+1,":\\",2) == 0) return url;
+  if (strncmp(s+1,":/",2) == 0) return url;
 #endif
 
   // strip off protocol if any
@@ -276,6 +290,12 @@ bool Doc::filename( char *fn, int nfn )
   // Unrecognized protocol (need ftp here...)
   else if (strcmp(protocol, "file") != 0)
     s = 0;
+
+#ifdef _WIN32   
+  // Does not like "//C:" skip "// "  
+   if(s)
+	   if(strlen(s)>2 && s[0] == '/' && s[1] == '/')s=s+2;
+#endif
 
   if (s)
     {
