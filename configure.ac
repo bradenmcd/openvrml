@@ -19,7 +19,6 @@ OV_PROG_JAVA
 OV_PROG_JAVAC
 OV_PROG_JAVAH
 OV_PROG_JAR
-AC_PATH_PROG([DOXYGEN], [doxygen])
 
 #
 # Checks for libraries/headers.
@@ -146,19 +145,6 @@ AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVA],
                [test "X$enable_script_node_java" = "Xyes" -a "X$no_jdk" != "Xyes"])
 
 #
-# build API docs
-#
-AC_ARG_ENABLE([api-docs], [  --disable-api-docs      do not build API documentation])
-if test "X$enable_api_docs" = "Xno"; then
-  DOXYGEN=""
-else
-  if test -z "$DOXYGEN"; then
-    AC_MSG_ERROR([doxygen is required to build the API documentation])
-  fi
-fi
-AM_CONDITIONAL([ENABLE_API_DOCS], [test -n "$DOXYGEN"])
-
-#
 # build GL renderer
 #
 AC_ARG_ENABLE([gl-renderer], [  --disable-gl-renderer   do not build GL renderer])
@@ -186,7 +172,6 @@ AC_SUBST([OPENVRML_PKG_REQUIRES])
     
 AC_OUTPUT([Makefile \
 doc/Makefile \
-doc/Doxyfile \
 m4/Makefile \
 models/Makefile \
 models/audio/Makefile \

@@ -1,12 +1,16 @@
 docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
-EXTRA_DIST = Doxyfile.in openvrml.css doxygen-header doxygen-footer
+EXTRA_DIST = \
+        conformance.html \
+        Doxyfile \
+        openvrml.css \
+        doxygen-header \
+        doxygen-footer \
+        manual
 
-if ENABLE_API_DOCS
 install-data-local:
-	$(INSTALL) -d $(docdir)
-	$(DOXYGEN)
+	$(mkinstalldirs) $(docdir)/manual
+	$(INSTALL_DATA) manual/* $(docdir)/manual
 
 uninstall-local:
 	rm -rf $(docdir)/manual
-endif

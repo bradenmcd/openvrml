@@ -70,7 +70,7 @@ GLUT-based VRML viewer.
 
 
 %build
-./configure $ARCH_FLAGS --prefix=%{prefix} --disable-api-docs CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
+./configure $ARCH_FLAGS --prefix=%{prefix} CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
 make
 
 
@@ -81,26 +81,32 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %files 
 %doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
+%doc doc/conformance.html
 %{prefix}/lib/libopenvrml.so.*
 %{prefix}/lib/pkgconfig/openvrml.pc
 
 %files devel
-%{prefix}/include/OpenVRML
+%doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
+%doc doc/manual
+%{prefix}/include/OpenVRML/*.h*
 %{prefix}/lib/libopenvrml.la
 %{prefix}/lib/libopenvrml.a
 %{prefix}/lib/libopenvrml.so
 
 %files gl
+%doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
 %{prefix}/lib/libopenvrml-gl.so.*
 %{prefix}/lib/pkgconfig/openvrml-gl.pc
 
 %files gl-devel
+%doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
 %{prefix}/include/OpenVRML/GL
 %{prefix}/lib/libopenvrml-gl.la
 %{prefix}/lib/libopenvrml-gl.a
 %{prefix}/lib/libopenvrml-gl.so
 
 %files -n lookat
+%doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
 %{prefix}/bin/lookat
 %{prefix}/share/pixmaps/lookat.xpm
 
@@ -110,6 +116,11 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 - Added BuildRequires for pkgconfig, fontconfig-devel, freetype-devel.
 - Added Requires for fontconfig, freetype.
 - Updated configure arguments.
+- Added conformance.html to openvrml's %doc.
+- Added API (doxygen) docs to openvrml-devel's %doc.
+- Removed GL renderer headers in openvrml-devel.
+- Added AUTHORS, COPYING.LIB, ChangeLog, NEWS, README, THANKS to %doc for all
+  packages.
 
 * Sun Dec 08 2002  Braden McDaniel  <braden@endoframe.com>
 - Removed COPYING from %doc.

@@ -23,6 +23,13 @@
         * src/openvrml/OpenVRML/script.h:  Removed obsolete declaration
           of Doc class.
 
+        * configure.ac, openvrml.spec.in, doc/Doxyfile, doc/Doxyfile.in,
+          doc/Makefile.am:  Removed generation of API docs during
+          install.  API doc generation must now be done manually, and
+          the generated docs get included in the distribution.  This
+          simplifies things for RPM--and probably users in general--so
+          the API docs now get included in the RPM package.
+
 2002-12-09  Braden McDaniel  <braden@endoframe.com>
 
         * README, configure.ac, java/Makefile.am, java/vrml/Makefile.am,
