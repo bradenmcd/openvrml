@@ -1,3 +1,15 @@
+2004-02-04 Braden McDaniel  <braden@endoframe.com>
+
+	Replaced node_interface_set class with a typedef for a std::set.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2004-01-31 Braden McDaniel  <braden@endoframe.com>
 
 	More de-inlining.

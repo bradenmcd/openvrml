@@ -342,7 +342,7 @@ proto_node_type::proto_node_type(proto_node_class & node_class,
             //
             // Throws std::invalid_argument, std::bad_alloc.
             //
-            this->interfaces_.add(*interface);
+            add_interface(this->interfaces_, *interface);
         } catch (invalid_argument & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
         }
@@ -4289,7 +4289,7 @@ namespace {
 
         void operator()(const node_interface & nodeInterface) const
                 throw (std::invalid_argument, std::bad_alloc) {
-            this->nodeInterfaceSet.add(nodeInterface);
+            add_interface(this->nodeInterfaceSet, nodeInterface);
         }
     };
 

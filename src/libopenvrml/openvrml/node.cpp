@@ -268,7 +268,7 @@ node_interface::node_interface(const type_id type,
  */
 
 /**
- * @class node_interface_set
+ * @typedef node_interface_set
  *
  * @brief A group of unique @link node_interface node_interfaces@endlink.
  *
@@ -276,43 +276,6 @@ node_interface::node_interface(const type_id type,
  * @link node_type node_types@endlink. node_type objects also expose their
  * interfaces as a node_interface_set. The interfaces in a node_interface_set
  * are guaranteed to be unique and non-conflicting.
- */
-
-
-
-/**
- * @internal
- *
- * @struct node_interface_set::id_less
- *
- * @brief A functor for ordering @link node_interface node_interfaces@endlink
- *        in the set.
- *
- * Compares the @a id's of two @link node_interface node_interfaces@endlink
- * using @c operator<.
- */
-
-/**
- * @fn bool node_interface_set::id_less::operator()(const node_interface & lhs, const node_interface & rhs) const
- *
- * @brief Simple lexicographic comparison of the @a id's.
- *
- * @return @c true if @p lhs.id is lexicographically less than @p rhs.id,
- *      @c false otherwise.
- */
-
-/**
- * @internal
- *
- * @var std::set<node_interface, node_interface_set::id_less> node_interface_set::interfaces
- *
- * @brief Set of @link node_interface node_interfaces@endlink.
- */
-
-/**
- * @typedef node_interface_set::const_iterator
- *
- * @brief An STL const_iterator.
  */
 
 /**
@@ -326,36 +289,20 @@ node_interface::node_interface(const type_id type,
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_interface_set::const_iterator
-node_interface_set::add(const node_interface & interface)
+add_interface(node_interface_set & interfaces,
+              const node_interface & interface)
     throw (std::invalid_argument, std::bad_alloc)
 {
     using std::pair;
     using std::set;
-    pair<set<node_interface, id_less>::iterator, bool> result =
-        this->interfaces.insert(interface);
+    pair<node_interface_set::iterator, bool> result =
+        interfaces.insert(interface);
     if (!result.second) {
         throw std::invalid_argument("Interface conflicts with an interface "
                                     "already in this set.");
     }
     return result.first;
 }
-
-/**
- * @fn node_interface_set::const_iterator node_interface_set::begin() const throw ()
- *
- * @brief Returns an iterator to the beginning of the node_interface_set.
- *
- * @return a const_iterator pointing to the first node_interface in the set.
- */
-
-/**
- * @fn node_interface_set::const_iterator node_interface_set::end() const throw ()
- *
- * @brief Returns an iterator to the end of the node_interface_set.
- *
- * @return a const_iterator pointing to one increment past the last
- *       node_interface in the set.
- */
 
 namespace {
 
@@ -401,10 +348,13 @@ namespace {
  *      interface is found.
  */
 const node_interface_set::const_iterator
-node_interface_set::find(const std::string & id) const throw ()
+find_interface(const node_interface_set & interfaces, const std::string & id)
+    throw ()
 {
-    return std::find_if(this->begin(), this->end(), interface_id_matches_(id));
+    return std::find_if(interfaces.begin(), interfaces.end(),
+                        interface_id_matches_(id));
 }
+
 
 /**
  * @relates node_interface

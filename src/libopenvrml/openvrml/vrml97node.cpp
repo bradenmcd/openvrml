@@ -384,7 +384,7 @@ namespace {
         throw (unsupported_interface, std::bad_alloc)
     {
         const node_interface interface(node_interface::eventin_id, type, id);
-        this->interfaces_.add(interface);
+        add_interface(this->interfaces_, interface);
         const typename event_listener_map_t::value_type value(id,
                                                               event_listener);
         const bool succeeded = this->event_listener_map.insert(value).second;
@@ -399,7 +399,7 @@ namespace {
         throw (unsupported_interface, std::bad_alloc)
     {
         const node_interface interface(node_interface::eventout_id, type, id);
-        this->interfaces_.add(interface);
+        add_interface(this->interfaces_, interface);
         const typename event_emitter_map_t::value_type value(id,
                                                              event_emitter);
         const bool succeeded = this->event_emitter_map.insert(value).second;
@@ -418,7 +418,7 @@ namespace {
         const node_interface interface(node_interface::exposedfield_id,
                                        type,
                                        id);
-        this->interfaces_.add(interface);
+        add_interface(this->interfaces_, interface);
         bool succeeded;
         {
             const typename event_listener_map_t::value_type
@@ -447,7 +447,7 @@ namespace {
         throw (unsupported_interface, std::bad_alloc)
     {
         const node_interface interface(node_interface::field_id, type, id);
-        this->interfaces_.add(interface);
+        add_interface(this->interfaces_, interface);
         const typename field_value_map_t::value_type
             value(id, nodeFieldPtrPtr);
         const bool succeeded = this->field_value_map.insert(value).second;

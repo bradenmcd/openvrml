@@ -100,42 +100,27 @@ namespace openvrml {
     };
 
 
-    class node_interface_set {
-        struct id_less :
-                std::binary_function<node_interface, node_interface, bool> {
-            bool operator()(const node_interface & lhs,
-                            const node_interface & rhs) const
-            {
-                return lhs.id < rhs.id;
-            }
-        };
-
-        std::set<node_interface, id_less> interfaces;
-
-    public:
-        typedef std::set<node_interface, id_less>::const_iterator
-            const_iterator;
-
-        const const_iterator add(const node_interface & interface)
-            throw (std::invalid_argument, std::bad_alloc);
-        const const_iterator begin() const throw ();
-        const const_iterator end() const throw ();
-        const const_iterator find(const std::string & id) const throw ();
+    struct node_interface_id_less :
+        std::binary_function<node_interface, node_interface, bool> {
+        bool operator()(const node_interface & lhs,
+                        const node_interface & rhs) const
+        {
+            return lhs.id < rhs.id;
+        }
     };
 
-    inline const node_interface_set::const_iterator
-    node_interface_set::begin() const
-        throw ()
-    {
-        return this->interfaces.begin();
-    }
+    typedef std::set<node_interface, node_interface_id_less>
+        node_interface_set;
 
-    inline const node_interface_set::const_iterator
-    node_interface_set::end() const
-        throw ()
-    {
-        return this->interfaces.end();
-    }
+    const node_interface_set::const_iterator
+    add_interface(node_interface_set & interfaces,
+                  const node_interface & interface)
+        throw (std::invalid_argument, std::bad_alloc);
+
+    const node_interface_set::const_iterator
+    find_interface(const node_interface_set & interfaces,
+                   const std::string & id)
+        throw ();
 
 
     class browser;

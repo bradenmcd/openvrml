@@ -309,9 +309,9 @@ script_node::script_node_type::script_node_type(script_node_class & class_):
                       field_value::sfbool_id,
                       "mustEvaluate")
     };
-    this->interfaces_.add(interfaces[0]);
-    this->interfaces_.add(interfaces[1]);
-    this->interfaces_.add(interfaces[2]);
+    openvrml::add_interface(this->interfaces_, interfaces[0]);
+    openvrml::add_interface(this->interfaces_, interfaces[1]);
+    openvrml::add_interface(this->interfaces_, interfaces[2]);
 }
 
 /**
@@ -332,7 +332,7 @@ const node_interface_set::const_iterator
 script_node::script_node_type::add_interface(const node_interface & interface)
     throw (std::invalid_argument)
 {
-    return this->interfaces_.add(interface);
+    return openvrml::add_interface(this->interfaces_, interface);
 }
 
 /**

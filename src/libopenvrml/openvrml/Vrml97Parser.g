@@ -753,7 +753,8 @@ protoInterfaceDeclaration[
 }
     :   it=eventInterfaceType ft=fieldType id0:ID {
             try {
-                interfaces.add(node_interface(it, ft, id0->getText()));
+                add_interface(interfaces,
+                              node_interface(it, ft, id0->getText()));
             } catch (invalid_argument & ex) {
                 throw SemanticException(ex.what(),
                                         this->uri,
@@ -765,7 +766,8 @@ protoInterfaceDeclaration[
         fv=fieldValue[browser, scope, ft] {
             assert(fv);
             try {
-                interfaces.add(node_interface(it, ft, id1->getText()));
+                add_interface(interfaces,
+                              node_interface(it, ft, id1->getText()));
             } catch (invalid_argument & ex) {
                 throw SemanticException(ex.what(),
                                         this->uri,
@@ -922,7 +924,7 @@ externInterfaceDeclaration[openvrml::node_interface_set & interfaces]
     :   it=interfaceType ft=fieldType id:ID {
             const node_interface interface(it, ft, id->getText());
             try {
-                interfaces.add(interface);
+                add_interface(interfaces, interface);
             } catch (std::invalid_argument & ex) {
             	throw SemanticException(ex.what(),
                                         this->uri,
@@ -1135,7 +1137,8 @@ scriptInterfaceDeclaration[const scope_ptr & scope, script_node & node]
 }
     : it=eventInterfaceType ft=fieldType id:ID {
             const node_interface_set::const_iterator pos =
-                    node.node::type.interfaces().find(id->getText());
+                find_interface(node.node::type.interfaces(),
+                               id->getText());
             if (pos != node.node::type.interfaces().end()) {
                 throw SemanticException("Interface \"" + id->getText()
                                         + "\" already declared for Script "
@@ -1172,7 +1175,7 @@ scriptFieldInterfaceDeclaration[const scope_ptr & scope, script_node & node]
             const node_interface_set & interfaces =
                 node.node::type.interfaces();
             const node_interface_set::const_iterator pos =
-                interfaces.find(id->getText());
+                find_interface(interfaces, id->getText());
             if (pos != interfaces.end()) {
                 throw SemanticException("Interface \"" + id->getText()
                                         + "\" already declared for Script "
@@ -1255,7 +1258,8 @@ protoNodeBodyElement[openvrml::browser & browser,
 }
     :   interface_id:ID {
             const node_interface_set::const_iterator impl_node_interface =
-                node.type.interfaces().find(interface_id->getText());
+                find_interface(node.type.interfaces(),
+                               interface_id->getText());
             if (impl_node_interface == node.type.interfaces().end()) {
                 throw SemanticException(node.type.id + " node has no "
                                         "interface \""
@@ -1298,7 +1302,7 @@ isStatement[const node_interface_set & proto_interfaces,
 }
     :   KEYWORD_IS id:ID {
             node_interface_set::const_iterator proto_interface =
-                proto_interfaces.find(id->getText());
+                find_interface(proto_interfaces, id->getText());
             if (proto_interface == proto_interfaces.end()) {
                 throw SemanticException("PROTO has no interface \""
                                         + id->getText() + "\".",
@@ -1369,7 +1373,7 @@ protoScriptInterfaceDeclaration[openvrml::browser & browser,
 }
     :   it=eventInterfaceType ft=fieldType id:ID {
             const node_interface_set::const_iterator pos =
-                node.node::type.interfaces().find(id->getText());
+                find_interface(node.node::type.interfaces(), id->getText());
             if (pos != node.node::type.interfaces().end()) {
                 throw SemanticException("Interface \"" + id->getText()
                                         + "\" already declared for Script "
@@ -1452,7 +1456,8 @@ protoScriptFieldInterfaceDeclaration[
                     node.add_field(id->getText(), field_value_ptr(value));
 
                 const node_interface_set::const_iterator proto_interface =
-                    proto_interfaces.find(proto_field_id->getText());
+                    find_interface(proto_interfaces,
+                                   proto_field_id->getText());
                 if (proto_interface == proto_interfaces.end()) {
                     throw SemanticException("PROTO has no interface \""
                                             + proto_field_id->getText()
