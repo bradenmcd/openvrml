@@ -1,3 +1,9 @@
+2001-07-14  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed a bug in the JavaScript binding where
+          createVrmlFieldFromJsval would create a VrmlSFFloat when it
+          should have been creating a VrmlSFTime.
+
 2001-06-30  Braden McDaniel  <braden@endoframe.com>
 
         * Changed SFRotations to require that their axis component must

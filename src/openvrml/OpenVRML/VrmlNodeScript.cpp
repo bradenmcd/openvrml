@@ -1834,7 +1834,7 @@ namespace {
                     assert(JSVAL_IS_NUMBER(v));
                     jsdouble sftimeDouble;
                     JS_ValueToNumber(cx, v, &sftimeDouble);
-                    return new VrmlSFFloat(sftimeDouble);
+                    return new VrmlSFTime(sftimeDouble);
                 }
             
             case VrmlField::SFVEC2F:
