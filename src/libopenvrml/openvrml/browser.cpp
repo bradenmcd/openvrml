@@ -4206,7 +4206,7 @@ scene::scene(openvrml::browser & browser,
             if (!in) { throw unreachable_url(); }
             try {
                 Vrml97Scanner scanner(in);
-                Vrml97Parser parser(scanner, this->url());
+                Vrml97Parser parser(scanner, absoluteURI);
                 parser.vrmlScene(browser, this->nodes_);
             } catch (antlr::RecognitionException & ex) {
                 throw invalid_vrml(ex.getFilename(),
