@@ -1,0 +1,38 @@
+#VRML V2.0 utf8
+
+# Inline node example:
+# Just a box/sphere/cone on an inline'ed plane+flagpole world
+
+Inline {
+  bboxCenter 0 3 0
+  bboxSize 100 6 100
+  url "groundPlane.wrl"
+}
+
+Viewpoint {
+  position 0 1.8 10
+  description "In front of flag-pole"
+}
+
+# Box/Sphere/Cone:
+Transform {
+  translation -3 1 0
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 0 0 1 } }
+    geometry Box { }
+  }
+}
+Transform {
+  translation 0 1 3
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 0 1 0 } }
+    geometry Cone { bottom FALSE }
+  }
+}
+Transform {
+  translation 3 1 0
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 1 0 0 } }
+    geometry Sphere { }
+  }
+}

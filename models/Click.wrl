@@ -1,0 +1,42 @@
+#VRML V2.0 utf8
+
+DEF OpenVault Script { 
+    # Declarations of what's in this Script node:
+    eventIn SFTime  openVault
+    eventIn SFBool  combinationEntered
+    eventOut SFTime vaultUnlocked
+    field SFBool    unlocked FALSE
+
+    # Implementation of the logic:
+    url "javascript:
+        function combinationEntered(value) { unlocked = value; }
+        function openVault(value) {
+            if (unlocked) vaultUnlocked = value;
+        }"
+}
+
+Shape {
+    appearance Appearance {
+        material Material { diffuseColor 1 0 0 }
+    }
+    geometry Sphere { }
+}
+
+Sound {
+      source	DEF Click AudioClip {
+	url	"audio/click.wav"
+	stopTime 1
+      }
+
+      minFront	1000
+      maxFront	1000
+      minBack	1000
+      maxBack	1000
+}
+
+
+DEF TS TouchSensor { }
+
+ROUTE TS.isOver TO OpenVault.combinationEntered
+ROUTE TS.touchTime TO OpenVault.openVault
+ROUTE OpenVault.vaultUnlocked TO Click.startTime
