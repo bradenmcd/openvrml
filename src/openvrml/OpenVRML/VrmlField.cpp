@@ -1541,7 +1541,7 @@ VrmlMFVec2f::VrmlMFVec2f() : d_data(new FData(0)) {}
 VrmlMFVec2f::VrmlMFVec2f(float x, float y) : d_data(new FData(2))
 { d_data->d_v[0] = x; d_data->d_v[1] = y; }
 
-VrmlMFVec2f::VrmlMFVec2f(int n, float const * v) : d_data(new FData(2*n))
+VrmlMFVec2f::VrmlMFVec2f(size_t n, const float * v) : d_data(new FData(2*n))
 {
   if (v) memcpy(d_data->d_v, v, 2*n*sizeof(float));
 }
@@ -1552,7 +1552,7 @@ VrmlMFVec2f::VrmlMFVec2f(const VrmlMFVec2f &source) :
 
 VrmlMFVec2f::~VrmlMFVec2f() { d_data->deref(); }
 
-void VrmlMFVec2f::set(int n, float *v)
+void VrmlMFVec2f::set(size_t n, const float * v)
 {
   d_data->deref();
   d_data = new FData(2*n);
@@ -1578,12 +1578,12 @@ VrmlField::VrmlFieldType VrmlMFVec2f::fieldType() const { return MFVEC2F; }
 #include "VrmlMFVec3f.h"
 
 
-VrmlMFVec3f::VrmlMFVec3f(int n) : d_data(new FData(n)) {}
+VrmlMFVec3f::VrmlMFVec3f(size_t n) : d_data(new FData(n)) {}
 
 VrmlMFVec3f::VrmlMFVec3f(float x, float y, float z) : d_data(new FData(3))
 { d_data->d_v[0] = x; d_data->d_v[1] = y; d_data->d_v[2] = z; }
 
-VrmlMFVec3f::VrmlMFVec3f(int n, float const * v) : d_data(new FData(3*n))
+VrmlMFVec3f::VrmlMFVec3f(size_t n, const float * v) : d_data(new FData(3*n))
 {
   if (v) memcpy(d_data->d_v, v, 3*n*sizeof(float));
 }
@@ -1595,7 +1595,7 @@ VrmlMFVec3f::VrmlMFVec3f(const VrmlMFVec3f &source) :
 VrmlMFVec3f::~VrmlMFVec3f() { d_data->deref(); }
 
 
-void VrmlMFVec3f::set(int n, float *v)
+void VrmlMFVec3f::set(size_t n, const float * v)
 {
   d_data->deref();
   d_data = new FData(3*n);
@@ -1615,6 +1615,21 @@ VrmlField *VrmlMFVec3f::clone() const { return new VrmlMFVec3f(*this); }
 
 VrmlField::VrmlFieldType VrmlMFVec3f::fieldType() const { return MFVEC3F; }
 
+const float * VrmlMFVec3f::get() const {
+    return this->d_data->d_v;
+}
+
+float * VrmlMFVec3f::get() {
+    return this->d_data->d_v;
+}
+
+const float * VrmlMFVec3f::operator[](size_t index) const {
+    return (this->d_data->d_v + (index * 3));
+}
+
+float * VrmlMFVec3f::operator[](size_t index) {
+    return (this->d_data->d_v + (index * 3));
+}
 
 // Generic MF float and double print functions
 

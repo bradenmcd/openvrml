@@ -50,15 +50,15 @@ private:
 
 public:
 
-  VrmlMFVec3f(int n = 0);
+  VrmlMFVec3f(size_t n = 0);
   VrmlMFVec3f(float x, float y, float z);
-  VrmlMFVec3f(int n, float const * v);
+  VrmlMFVec3f(size_t n, const float * v);
   VrmlMFVec3f(const VrmlMFVec3f &source);
 
   ~VrmlMFVec3f();
 
   // Assignment.
-  void set(int n, float *v);
+  void set(size_t n, const float * v);
   VrmlMFVec3f& operator=(const VrmlMFVec3f& rhs);
 
   virtual VrmlField *clone() const;
@@ -69,9 +69,11 @@ public:
 
   virtual ostream& print(ostream& os) const;
 
-  int size() const		{ return d_data->d_n/3; } // # of vec3fs
-  float *get() const		{ return d_data->d_v; }
-  float *operator[](int index)	{ return &d_data->d_v[3*index]; }
+  size_t size() const		{ return d_data->d_n/3; } // # of vec3fs
+  float * get();
+  const float * get() const;
+  const float * operator[](size_t index) const;
+  float * operator[](size_t index);
 
 };
 

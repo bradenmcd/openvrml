@@ -1825,7 +1825,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
     // MF*
     case VrmlField::MFCOLOR:
       {
-	VrmlMFColor *mf = f ? ((VrmlMFColor*) (f->toMFColor())) : 0;
+	const VrmlMFColor * const mf =
+                f ? static_cast<const VrmlMFColor *>(f->toMFColor()) : 0;
 	int i, n = mf ? mf->getLength() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1847,7 +1848,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFFLOAT:
       {
-	VrmlMFFloat *mf = f ? ((VrmlMFFloat*) (f->toMFFloat())) : 0;
+	const VrmlMFFloat * const mf =
+                f ? static_cast<const VrmlMFFloat *>(f->toMFFloat()) : 0;
 	int i, n = mf ? mf->size() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1867,7 +1869,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFINT32:
       {
-	VrmlMFInt32 *mf = f ? ((VrmlMFInt32*) (f->toMFInt32())) : 0;
+	const VrmlMFInt32 * const mf =
+                f ? static_cast<const VrmlMFInt32 *>(f->toMFInt32()) : 0;
 	int i, n = mf ? mf->size() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1884,7 +1887,8 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFNODE:
       {
-	VrmlMFNode *mf = f ? ((VrmlMFNode*) (f->toMFNode())) : 0;
+	const VrmlMFNode * const mf =
+                f ? static_cast<const VrmlMFNode *>(f->toMFNode()) : 0;
 	int i, n = mf ? mf->size() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -1955,7 +1959,7 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
 	JS_AddRoot( d_cx, obj );
-	float *fn = mf ? mf->get() : 0;
+	const float * fn = mf ? mf->get() : 0;
 	for (i=0; i<n; ++i, fn+=2)
 	  {
 	    JSObject *elt = JS_NewObject( d_cx, &SFVec2fClass,

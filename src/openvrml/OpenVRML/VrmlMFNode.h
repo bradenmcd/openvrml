@@ -49,7 +49,7 @@ public:
 
   size_t size() const			{ return d_size; }
   VrmlNode ** get()			{ return d_v; }
-  VrmlNode* get(size_t index)		{ return d_v[index]; }
+  VrmlNode* get(size_t index) const		{ return d_v[index]; }
 
   // can't use this as lhs for now.
   VrmlNode* operator[](size_t index) const	{ return d_v[index]; }

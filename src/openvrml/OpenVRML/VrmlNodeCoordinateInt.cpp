@@ -115,9 +115,9 @@ void VrmlNodeCoordinateInt::eventIn(double timeStamp,
 	  for (int i=0; i<n; ++i)
 	    if (d_key[i] <= f && f <= d_key[i+1])
 	      {
-		float *v1 = d_keyValue[i*nCoords];
-		float *v2 = d_keyValue[(i+1)*nCoords];
-		float *x = d_value.get();
+		const float * v1 = d_keyValue[i*nCoords];
+		const float * v2 = d_keyValue[(i+1)*nCoords];
+		float * x = d_value.get();
 
 		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
 

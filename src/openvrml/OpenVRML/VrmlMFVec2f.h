@@ -52,13 +52,13 @@ public:
 
   VrmlMFVec2f();
   VrmlMFVec2f(float x, float y);
-  VrmlMFVec2f(int n, float const * v);
+  VrmlMFVec2f(size_t n, const float * v);
   VrmlMFVec2f(const VrmlMFVec2f &source);
 
   ~VrmlMFVec2f();
 
   // Assignment.
-  void set(int n, float *v);
+  void set(size_t n, const float * v);
   VrmlMFVec2f& operator=(const VrmlMFVec2f& rhs);
 
   virtual VrmlField *clone() const;
@@ -69,9 +69,9 @@ public:
 
   virtual ostream& print(ostream& os) const;
 
-  int size() const		{ return d_data->d_n/2; } // # of vec2fs
-  float *get() const		{ return d_data->d_v; }
-  float *operator[](int index)	{ return &d_data->d_v[2*index]; }
+  size_t size() const		{ return d_data->d_n/2; } // # of vec2fs
+  const float * get() const		{ return d_data->d_v; }
+  const float * operator[](size_t index)	{ return &d_data->d_v[2*index]; }
 
 };
 
