@@ -270,14 +270,14 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces. 
 
-INPUT                  = @top_srcdir@/src/openvrml @top_srcdir@/src/openvrml-gl @top_srcdir@/java
+INPUT                  = @top_srcdir@/src/openvrml @top_srcdir@/src/openvrml-gl
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
 # and *.h) to filter out the source-files in the directories. If left 
 # blank all files are included. 
 
-FILE_PATTERNS          = *.cpp *.h *.hpp *.java
+FILE_PATTERNS          = *.cpp *.h *.hpp
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 
@@ -289,7 +289,7 @@ RECURSIVE              = YES
 # excluded from the INPUT source files. This way you can easily exclude a 
 # subdirectory from a directory tree whose root is specified with the INPUT tag. 
 
-EXCLUDE                = Vrml97Parser.hpp
+EXCLUDE                = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp
 
 # If the value of the INPUT tag contains directories, you can use the 
 # EXCLUDE_PATTERNS tag to specify one or more wildcard patterns to exclude 

@@ -3,6 +3,8 @@
         * src/openvrml/OpenVRML/script.cpp: Added VrmlMatrix support
           to JavaScript binding.
 
+        * doc/Doxyfile.in: Don't generate API docs for Java sources.
+
 2002-12-03  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/VrmlMatrix.cpp,
