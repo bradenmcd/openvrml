@@ -28,8 +28,13 @@
 
 #include "ViewerOpenGL.h"
 
+#if defined(__MACH__)&&defined(__APPLE__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
 #include <stdio.h>		// sprintf
 #include <math.h>
 
@@ -3306,7 +3311,12 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
 // Text rendering
 
 /* From smooth.c by Nate Robins, 1997 in the glut dist */
-# include <GL/glut.h>
+
+#if defined(__MACH__)&&defined(__APPLE__)
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
 
 /* text: general purpose text routine.  draws a string according to
  * format in a stroke font at x, y after scaling it by the scale
