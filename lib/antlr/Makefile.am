@@ -8,7 +8,7 @@ AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 lib_LTLIBRARIES = @INSTALL_LIBANTLR@
 noinst_LTLIBRARIES = @NOINSTALL_LIBANTLR@
 EXTRA_LTLIBRARIES = libantlr.la
-libantlr_la_LDFLAGS = -version-info @ANTLR_LIBRARY_VERSION@
+libantlr_la_LDFLAGS = @LIBANTLR_RPATH_FLAG@ -version-info @ANTLR_LIBRARY_VERSION@
 
 libantlr_la_SOURCES = \
 	ANTLRException.cpp \
@@ -41,7 +41,7 @@ libantlr_la_SOURCES = \
 	TreeParser.cpp \
         TreeParserSharedInputState.cpp
 
-antlrincludedir = $(includedir)/antlr
+antlrincludedir = $(includedir)@ANTLR_INCLUDEDIR@
 
 antlrinclude_HEADERS = \
 	ANTLRException.hpp \
