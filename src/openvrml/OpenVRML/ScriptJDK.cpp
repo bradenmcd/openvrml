@@ -50,7 +50,6 @@
 #include "script.h"
 #include "VrmlNamespace.h"
 #include "VrmlScene.h"
-#include "VrmlEvent.h"
 #include "nodeptr.h"
 
 #include "field.h"
@@ -62,6 +61,45 @@
 #endif
 
 using namespace OpenVRML;
+
+namespace {
+
+    class OPENVRML_SCOPE VrmlEvent {
+        double d_timeStamp;
+        char *d_eventName;
+        FieldValue *d_value;
+        int d_refCount;
+
+    public:
+        VrmlEvent(double timeStamp, const char *eventName,
+                  const FieldValue * value) :
+          d_timeStamp(timeStamp),
+          d_eventName(new char[strlen(eventName)+1]),
+          d_value(value->clone()),
+          d_refCount(1)
+        { strcpy(d_eventName, eventName); }
+
+        ~VrmlEvent() { delete [] d_eventName; delete d_value; }
+
+        VrmlEvent * clone() const {
+          return new VrmlEvent(this->d_timeStamp, this->d_eventName, this->d_value);
+        }
+
+        // VrmlEvents are reference counted.
+        // The reference counting is manual (that is, each user of a
+        // VrmlEvent, such as the VrmlNode class, calls reference()
+        // and dereference() explicitly). Should make it internal...
+
+        // Add/remove references to a VrmlEvent. This is silly, as it
+        // requires the users of VrmlEvent to do the reference/derefs...
+        VrmlEvent *reference() { ++d_refCount; return this; }
+        void dereference() { if (--d_refCount == 0) delete this; }
+
+        double timeStamp() const { return d_timeStamp; }
+        const char * name() const { return d_eventName; }
+        const FieldValue * value() const { return d_value; }
+    };
+}
 
 // Static members
 JavaVM *ScriptJDK::d_jvm = 0;

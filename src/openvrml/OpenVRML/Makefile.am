@@ -38,8 +38,8 @@ libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
 
 OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = common.h Audio.h Doc.h Image.h MathUtils.h Route.h \
-ScriptJDK.h script.h System.h Viewer.h bvolume.h VrmlEvent.h VrmlFrustum.h \
-field.h VrmlMatrix.h nodetypeptr.h VrmlNamespace.h proto.h nodeptr.h node.h \
+ScriptJDK.h script.h System.h Viewer.h bvolume.h VrmlFrustum.h field.h \
+VrmlMatrix.h nodetypeptr.h VrmlNamespace.h proto.h nodeptr.h node.h \
 vrml97node.h VrmlRenderContext.h VrmlScene.h doc2.hpp
 
 noinst_HEADERS = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp private.h sound.h
