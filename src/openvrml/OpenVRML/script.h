@@ -87,6 +87,8 @@ namespace OpenVRML {
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
             virtual const NodePtr createNode() const throw (std::bad_alloc);
         };
+        
+        friend class ScriptNodeType;
     
         ScriptNodeType scriptNodeType;
         SFBool directOutput;

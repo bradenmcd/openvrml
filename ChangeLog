@@ -1,8 +1,11 @@
-2002-06-04  Braden McDaniel  <braden@endoframe.com>
+2002-06-05  Braden McDaniel  <braden@endoframe.com>
 
         * Doxygen love for VrmlScene.
 
         * Made scene callback IDs enumerants instead of ints.
+
+        * src/openvrml/OpenVRML/script.h: Made
+          ScriptNode::ScriptNodeType a friend of ScriptNode.
 
 2002-06-04  Braden McDaniel  <braden@endoframe.com>
 
