@@ -3,6 +3,12 @@
         * doc/openvrml.css: Stylesheet fixes for consistency with Web
           site.
 
+        * src/openvrml/OpenVRML/script.h,
+          src/openvrml/OpenVRML/script.cpp:  Reverted 2002-06-19 change
+          to ScriptNodeClass::createType exception specification.  This
+          problem has apparently been addressed with a patch to Sun
+          Forte update 2.
+
 2002-06-20  Braden McDaniel  <braden@endoframe.com>
 
         * m4/gl.m4: AC_REQUIRE([AC_PATH_XTRA]) and add the X CFLAGS and

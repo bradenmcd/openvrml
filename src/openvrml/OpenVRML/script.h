@@ -62,7 +62,7 @@ namespace OpenVRML {
         
         virtual const NodeTypePtr createType(const std::string & id,
                                              const NodeInterfaceSet &)
-                throw (UnsupportedInterface, std::bad_alloc);
+                throw ();
     };
     
     

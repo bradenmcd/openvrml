@@ -135,16 +135,10 @@ ScriptNodeClass::~ScriptNodeClass() throw () {}
  * This method is not implemented because the Script node implementation,
  * unlike other node implementations, cannot provide the implementation of
  * an @c EXTERNPROTO. It is an error to call this method.
- *
- * @note
- * Since this method should never be called--and an assertion will fail if it
- * @em is called--there is no reason for this method to throw any exceptions.
- * However, Sun Forte 6 update 2 complains if the exception specification for
- * this method does not match that of NodeClass::createType.
  */
 const NodeTypePtr ScriptNodeClass::createType(const std::string &,
                                               const NodeInterfaceSet &)
-        throw (UnsupportedInterface, std::bad_alloc) {
+        throw () {
     assert(false);
     return NodeTypePtr(0);
 }
