@@ -6,6 +6,13 @@
         * java/Makefile.am: Added the generated JNI headers to
           CLEANFILES.
 
+        * src/openvrml/OpenVRML/field.cpp,
+          src/openvrml/OpenVRML/ScriptJDK.cpp: Made FieldValue::print
+          private.
+
+        * src/openvrml/OpenVRML/field.cpp: Added exception
+          specifications to FieldValue classes and much Doxygen love.
+
 2002-05-20  Braden McDaniel  <braden@endoframe.com>
 
         * Makefile.am, src/Makefile.am: Add optionally built

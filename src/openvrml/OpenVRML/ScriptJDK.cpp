@@ -341,8 +341,7 @@ static jstring fieldToString(JNIEnv *env, jobject obj)
 {
   ostrstream os;
   FieldValue* pField = getFieldValue(env, obj);
-  pField->print(os);
-  os << ends;
+  os << *pField << ends;
   char* szString = os.str();
   jstring result = env->NewStringUTF(szString);
   os.rdbuf()->freeze(0);

@@ -25,17 +25,19 @@
 #   include <string>
 #   include <typeinfo>
 #   include <vector>
-#   include <iostream.h>
+#   include <iostream>
 #   include "common.h"
 #   include "nodeptr.h"
 
 namespace OpenVRML {
     class FieldValue;
 
-    ostream & operator<<(ostream &, const FieldValue &);
+    std::ostream & operator<<(std::ostream & out,
+                              const FieldValue & fieldValue);
 
     class OPENVRML_SCOPE FieldValue {
-        friend ostream & operator<<(ostream &, const FieldValue &);
+        friend std::ostream & operator<<(std::ostream & out,
+                                         const FieldValue & fieldValue);
 
     public:
         enum Type {
@@ -44,36 +46,40 @@ namespace OpenVRML {
             mfint32, mfnode, mfrotation, mfstring, mftime, mfvec2f, mfvec3f
         };
 
-        virtual ~FieldValue() = 0;
+        virtual ~FieldValue() throw () = 0;
         
         virtual FieldValue * clone() const throw (std::bad_alloc) = 0;
-        virtual FieldValue & assign(const FieldValue &)
+        virtual FieldValue & assign(const FieldValue & value)
                 throw (std::bad_cast, std::bad_alloc) = 0;
-        virtual ostream& print(ostream& os) const = 0;
-        virtual Type type() const = 0;
+        virtual Type type() const throw () = 0;
+    
+    private:
+        virtual std::ostream & print(std::ostream & out) const = 0;
     };
 
-    std::ostream & operator<<(std::ostream &, FieldValue::Type);
-    std::istream & operator>>(std::istream &, FieldValue::Type &);
+    std::ostream & operator<<(std::ostream & out, FieldValue::Type type);
+    std::istream & operator>>(std::istream & out, FieldValue::Type & type);
 
 
     class OPENVRML_SCOPE SFBool : public FieldValue {
         bool d_value;
 
     public:
-        explicit SFBool(bool value = false);
-        virtual ~SFBool();
+        explicit SFBool(bool value = false) throw ();
+        virtual ~SFBool() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
-        bool get() const;
-        void set(bool value);
+        bool get() const throw ();
+        void set(bool value) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual FieldValue & assign(const FieldValue & value)
+                throw (std::bad_cast);
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream & out) const;
     };
 
 
@@ -81,31 +87,33 @@ namespace OpenVRML {
         float d_rgb[3];
 
     public:
-        static void HSVtoRGB(const float hsv[3], float rgb[3]);
-        static void RGBtoHSV(const float rgb[3], float hsv[3]);
+        static void HSVtoRGB(const float hsv[3], float rgb[3]) throw ();
+        static void RGBtoHSV(const float rgb[3], float hsv[3]) throw ();
 
-        SFColor();
-        explicit SFColor(const float rgb[3]);
-        SFColor(float r, float g, float b);
-        virtual ~SFColor();
+        SFColor() throw ();
+        explicit SFColor(const float rgb[3]) throw ();
+        SFColor(float r, float g, float b) throw ();
+        virtual ~SFColor() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
-        float operator[](size_t index) const;
-        float & operator[](size_t index);
-        float getR() const;
-        float getG() const;
-        float getB() const;
-        const float (&get() const)[3];
-        void set(const float rgb[3]);
-        void setHSV(float h, float s, float v);
-        void getHSV(float hsv[3]) const;
+        float operator[](size_t index) const throw ();
+        float & operator[](size_t index) throw ();
+        float getR() const throw ();
+        float getG() const throw ();
+        float getB() const throw ();
+        const float (&get() const throw ())[3];
+        void set(const float rgb[3]) throw ();
+        void setHSV(float h, float s, float v) throw ();
+        void getHSV(float hsv[3]) const throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual FieldValue & assign(const FieldValue & value)
+                throw (std::bad_cast);
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream & out) const;
     };
 
 
@@ -113,19 +121,21 @@ namespace OpenVRML {
         float d_value;
 
     public:
-        explicit SFFloat(float value = 0.0);
-        virtual ~SFFloat();
+        explicit SFFloat(float value = 0.0) throw ();
+        virtual ~SFFloat() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
-        float get() const;
-        void set(float value);
+        float get() const throw ();
+        void set(float value) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual FieldValue & assign(const FieldValue & value)
+                throw (std::bad_cast);
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream & out) const;
     };
 
 
@@ -134,25 +144,28 @@ namespace OpenVRML {
         unsigned char * d_pixels;	// nc bytes/pixel, lower left to upper right
 
     public:
-        SFImage();
-        SFImage(size_t w, size_t h, size_t nc, const unsigned char * pixels = 0);
-        SFImage(const SFImage &);
-        virtual ~SFImage();
+        SFImage() throw ();
+        SFImage(size_t w, size_t h, size_t nc, const unsigned char * pixels = 0)
+                throw (std::bad_alloc);
+        SFImage(const SFImage &) throw (std::bad_alloc);
+        virtual ~SFImage() throw ();
 
-        SFImage & operator=(const SFImage & rhs);
+        SFImage & operator=(const SFImage & rhs) throw (std::bad_alloc);
 
-        size_t getWidth() const;
-        size_t getHeight() const;
-        size_t getComponents() const;
-        const unsigned char * getPixels() const;
+        size_t getWidth() const throw ();
+        size_t getHeight() const throw ();
+        size_t getComponents() const throw ();
+        const unsigned char * getPixels() const throw ();
         void set(size_t width, size_t height, size_t components,
-                 const unsigned char * pixels);
+                 const unsigned char * pixels) throw (std::bad_alloc);
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
+        virtual FieldValue & assign(const FieldValue & value)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream & out) const;
     };
 
 
@@ -160,19 +173,20 @@ namespace OpenVRML {
         long d_value;
 
     public:
-        explicit SFInt32(long = 0);
-        virtual ~SFInt32();
+        explicit SFInt32(long = 0) throw ();
+        virtual ~SFInt32() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
-        long get() const;
-        void set(long);
+        long get() const throw ();
+        void set(long) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -180,19 +194,20 @@ namespace OpenVRML {
         NodePtr node;
 
     public:
-        explicit SFNode(const NodePtr & node = NodePtr(0));
-        virtual ~SFNode();
+        explicit SFNode(const NodePtr & node = NodePtr(0)) throw ();
+        virtual ~SFNode() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
-        const NodePtr & get() const;
-        void set(const NodePtr & node);
+        const NodePtr & get() const throw ();
+        void set(const NodePtr & node) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -202,43 +217,39 @@ namespace OpenVRML {
         float d_x[4];
 
     public:
-        SFRotation();
-        explicit SFRotation(const float rot[4]);
-        SFRotation(float x, float y, float z, float angle);
-        SFRotation(const SFVec3f & axis, float angle);
-        SFRotation(const SFVec3f & fromVec, const SFVec3f & toVec);
-        virtual ~SFRotation();
+        SFRotation() throw ();
+        explicit SFRotation(const float rot[4]) throw ();
+        SFRotation(float x, float y, float z, float angle) throw ();
+        SFRotation(const SFVec3f & axis, float angle) throw ();
+        SFRotation(const SFVec3f & fromVec, const SFVec3f & toVec) throw ();
+        virtual ~SFRotation() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
-//        float operator[](size_t index) const;
-//        float & operator[](size_t index);
-        const float (&get() const)[4];
-        void set(const float rot[4]);
-        float getX() const;
-        void setX(float);
-        float getY() const;
-        void setY(float);
-        float getZ() const;
-        void setZ(float);
-        float getAngle() const;
-        void setAngle(float);
-        const SFVec3f getAxis() const;
-        void setAxis(const SFVec3f & vec);
-        const SFRotation inverse() const;
-        const SFRotation multiply(const SFRotation & rot) const;
+        const float (&get() const throw ())[4];
+        void set(const float rot[4]) throw ();
+        float getX() const throw ();
+        void setX(float) throw ();
+        float getY() const throw ();
+        void setY(float) throw ();
+        float getZ() const throw ();
+        void setZ(float) throw ();
+        float getAngle() const throw ();
+        void setAngle(float) throw ();
+        const SFVec3f getAxis() const throw ();
+        void setAxis(const SFVec3f & vec) throw ();
+        const SFRotation inverse() const throw ();
+        const SFRotation multiply(const SFRotation & rot) const throw ();
         const SFVec3f multVec(const SFVec3f & vec) const;
-        const SFRotation slerp(const SFRotation & destRot, float t) const;  
+        const SFRotation slerp(const SFRotation & destRot, float t) const
+                throw ();  
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual Type type() const throw ();
 
     private:
-        void toQuaternion(float theQuat[4]) const;
-        void fromQuaternion(const float theQuat[4]);
+        virtual std::ostream & print(std::ostream & os) const;
     };
 
 
@@ -246,19 +257,22 @@ namespace OpenVRML {
         std::string value;
 
     public:
-        explicit SFString(const std::string & value = std::string());
-        virtual ~SFString();
+        explicit SFString(const std::string & value = std::string())
+                throw (std::bad_alloc);
+        virtual ~SFString() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
-        const std::string & get() const;
-        void set(const std::string & value);
+        const std::string & get() const throw ();
+        void set(const std::string & value) throw (std::bad_alloc);
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -266,19 +280,20 @@ namespace OpenVRML {
         double d_value;
 
     public:
-        explicit SFTime(double value = 0.0);
-        virtual ~SFTime();
+        explicit SFTime(double value = 0.0) throw ();
+        virtual ~SFTime() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
-        double get() const;
-        void set(double value);
+        double get() const throw ();
+        void set(double value) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -286,35 +301,36 @@ namespace OpenVRML {
         float d_x[2];
 
     public:
-        SFVec2f();
-        explicit SFVec2f(const float vec[2]);
-        SFVec2f(float x, float y);
-        virtual ~SFVec2f();
+        SFVec2f() throw ();
+        explicit SFVec2f(const float vec[2]) throw ();
+        SFVec2f(float x, float y) throw ();
+        virtual ~SFVec2f() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
-        float operator[](size_t index) const;
-        float & operator[](size_t index);
-        float getX() const;
-        void setX(float);
-        float getY() const;
-        void setY(float);
-        const float (&get() const)[2];
-        void set(const float vec[2]);
-        const SFVec2f add(const SFVec2f & vec) const;
-        const SFVec2f divide(float number) const;
-        double dot(const SFVec2f & vec) const;
-        double length() const;
-        const SFVec2f multiply(float number) const;
-        const SFVec2f negate() const;
-        const SFVec2f normalize() const;
-        const SFVec2f subtract(const SFVec2f & vec) const;
+        float operator[](size_t index) const throw ();
+        float & operator[](size_t index) throw ();
+        float getX() const throw ();
+        void setX(float) throw ();
+        float getY() const throw ();
+        void setY(float) throw ();
+        const float (&get() const throw ())[2];
+        void set(const float vec[2]) throw ();
+        const SFVec2f add(const SFVec2f & vec) const throw ();
+        const SFVec2f divide(float number) const throw ();
+        double dot(const SFVec2f & vec) const throw ();
+        double length() const throw ();
+        const SFVec2f multiply(float number) const throw ();
+        const SFVec2f negate() const throw ();
+        const SFVec2f normalize() const throw ();
+        const SFVec2f subtract(const SFVec2f & vec) const throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -322,38 +338,39 @@ namespace OpenVRML {
         float d_x[3];
 
     public:
-        SFVec3f();
-        explicit SFVec3f(const float vec[3]);
-        SFVec3f(float x, float y, float z);
-        virtual ~SFVec3f();
+        SFVec3f() throw ();
+        explicit SFVec3f(const float vec[3]) throw ();
+        SFVec3f(float x, float y, float z) throw ();
+        virtual ~SFVec3f() throw ();
 
         // Use compiler-defined copy ctor and operator=.
 
-        float operator[](size_t index) const;
-        float & operator[](size_t index);
-        float getX() const;
-        void setX(float);
-        float getY() const;
-        void setY(float);
-        float getZ() const;
-        void setZ(float);
-        const float (&get() const)[3];
-        void set(const float vec[3]);
-        const SFVec3f add(const SFVec3f & vec) const;
-        const SFVec3f cross(const SFVec3f & vec) const;
-        const SFVec3f divide(float number) const;
-        double dot(const SFVec3f & vec) const;
-        double length() const;
-        const SFVec3f multiply(float number) const;
-        const SFVec3f negate() const;
-        const SFVec3f normalize() const;
-        const SFVec3f subtract(const SFVec3f & vec) const;
+        float operator[](size_t index) const throw ();
+        float & operator[](size_t index) throw ();
+        float getX() const throw ();
+        void setX(float) throw ();
+        float getY() const throw ();
+        void setY(float) throw ();
+        float getZ() const throw ();
+        void setZ(float) throw ();
+        const float (&get() const throw ())[3];
+        void set(const float vec[3]) throw ();
+        const SFVec3f add(const SFVec3f & vec) const throw ();
+        const SFVec3f cross(const SFVec3f & vec) const throw ();
+        const SFVec3f divide(float number) const throw ();
+        double dot(const SFVec3f & vec) const throw ();
+        double length() const throw ();
+        const SFVec3f multiply(float number) const throw ();
+        const SFVec3f negate() const throw ();
+        const SFVec3f normalize() const throw ();
+        const SFVec3f subtract(const SFVec3f & vec) const throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -362,26 +379,31 @@ namespace OpenVRML {
         FData * d_data;
 
     public:
-        explicit MFColor(size_t length = 0, float const * colors = 0);
-        MFColor(const MFColor & mfcolor);
-        virtual ~MFColor();
+        explicit MFColor(size_t length = 0, float const * colors = 0)
+                throw (std::bad_alloc);
+        MFColor(const MFColor & mfcolor) throw (std::bad_alloc);
+        virtual ~MFColor() throw ();
 
-        MFColor & operator=(const MFColor & mfcolor);
+        MFColor & operator=(const MFColor & mfcolor) throw (std::bad_alloc);
 
-        const float * get() const;
-        void set(size_t length, const float * colors = 0);
-        const float * getElement(size_t index) const;
-        void setElement(size_t index, const float value[3]);
-        size_t getLength() const;
-        void setLength(size_t length);
-        void insertElement(size_t index, const float value[3]);
-        void removeElement(size_t index);
+        const float * get() const throw ();
+        void set(size_t length, const float * colors = 0)
+                throw (std::bad_alloc);
+        const float * getElement(size_t index) const throw ();
+        void setElement(size_t index, const float value[3]) throw ();
+        size_t getLength() const throw ();
+        void setLength(size_t length) throw (std::bad_alloc);
+        void insertElement(size_t index, const float value[3])
+                throw (std::bad_alloc);
+        void removeElement(size_t index) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -390,26 +412,29 @@ namespace OpenVRML {
         FData * d_data;
 
     public:
-        explicit MFFloat(size_t length = 0, float const * numbers = 0);
-        MFFloat(const MFFloat & mffloat);
-        virtual ~MFFloat();
+        explicit MFFloat(size_t length = 0, float const * numbers = 0)
+                throw (std::bad_alloc);
+        MFFloat(const MFFloat & mffloat) throw (std::bad_alloc);
+        virtual ~MFFloat() throw ();
 
-        MFFloat & operator=(const MFFloat & mffloat);
+        MFFloat & operator=(const MFFloat & mffloat) throw (std::bad_alloc);
 
-        const float * get() const;
-        void set(size_t length, const float * numbers);
-        float getElement(size_t index) const;
-        void setElement(size_t index, float value);
-        size_t getLength() const;
-        void setLength(size_t length);
-        void insertElement(size_t index, float value);
-        void removeElement(size_t index);
+        const float * get() const throw ();
+        void set(size_t length, const float * numbers) throw (std::bad_alloc);
+        float getElement(size_t index) const throw ();
+        void setElement(size_t index, float value) throw ();
+        size_t getLength() const throw ();
+        void setLength(size_t length) throw (std::bad_alloc);
+        void insertElement(size_t index, float value) throw (std::bad_alloc);
+        void removeElement(size_t index) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -418,26 +443,29 @@ namespace OpenVRML {
         IData *d_data;
 
     public:
-        explicit MFInt32(size_t length = 0, const long * numbers = 0);
-        MFInt32(const MFInt32 & mfint32);
-        virtual ~MFInt32();
+        explicit MFInt32(size_t length = 0, const long * numbers = 0)
+                throw (std::bad_alloc);
+        MFInt32(const MFInt32 & mfint32) throw (std::bad_alloc);
+        virtual ~MFInt32() throw ();
 
-        MFInt32 & operator=(const MFInt32 & mfint32);
+        MFInt32 & operator=(const MFInt32 & mfint32) throw (std::bad_alloc);
 
-        const long * get() const;
-        void set(size_t length, const long * numbers);
-        long getElement(size_t index) const;
-        void setElement(size_t index, long value);
-        size_t getLength() const;
-        void setLength(size_t length);
-        void insertElement(size_t index, long value);
-        void removeElement(size_t index);
+        const long * get() const throw ();
+        void set(size_t length, const long * numbers) throw (std::bad_alloc);
+        long getElement(size_t index) const throw ();
+        void setElement(size_t index, long value) throw ();
+        size_t getLength() const throw ();
+        void setLength(size_t length) throw (std::bad_alloc);
+        void insertElement(size_t index, long value) throw (std::bad_alloc);
+        void removeElement(size_t index) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -445,27 +473,31 @@ namespace OpenVRML {
         std::vector<NodePtr> nodes;
 
     public:
-        explicit MFNode(size_t length = 0, const NodePtr * nodes = 0);
-        virtual ~MFNode();
+        explicit MFNode(size_t length = 0, const NodePtr * nodes = 0)
+                throw (std::bad_alloc);
+        virtual ~MFNode() throw ();
 
         // Use compiler-defined copy ctor and operator=
 
         const NodePtr & getElement(size_t index) const throw ();
-        void setElement(size_t index, const NodePtr & node);
+        void setElement(size_t index, const NodePtr & node) throw ();
         size_t getLength() const throw ();
-        void setLength(size_t length);
+        void setLength(size_t length) throw (std::bad_alloc);
         bool exists(const Node & node) const;
         bool addNode(const NodePtr & node);
         bool removeNode(const Node & node);
-        void insertElement(size_t index, const NodePtr & node);
-        void removeElement(size_t index);
-        void clear();
+        void insertElement(size_t index, const NodePtr & node)
+                throw (std::bad_alloc);
+        void removeElement(size_t index) throw ();
+        void clear() throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -474,26 +506,31 @@ namespace OpenVRML {
         FData *d_data;
 
     public:
-        explicit MFRotation(size_t length = 0, const float * rotations = 0);
-        MFRotation(const MFRotation & mfrotation);
-        virtual ~MFRotation();
+        explicit MFRotation(size_t length = 0, const float * rotations = 0)
+                throw (std::bad_alloc);
+        MFRotation(const MFRotation & mfrotation) throw (std::bad_alloc);
+        virtual ~MFRotation() throw ();
 
-        MFRotation & operator=(const MFRotation & mfrotation);
+        MFRotation & operator=(const MFRotation & mfrotation)
+                throw (std::bad_alloc);
 
-        const float * get() const;
-        void set(size_t length, const float * rotations);
-        const float * getElement(size_t index) const;
-        void setElement(size_t, const float value[4]);
-        size_t getLength() const;
-        void setLength(size_t length);
-        void insertElement(size_t index, const float value[3]);
-        void removeElement(size_t index);
+        const float * get() const throw ();
+        void set(size_t length, const float * rotations) throw (std::bad_alloc);
+        const float * getElement(size_t index) const throw ();
+        void setElement(size_t, const float value[4]) throw ();
+        size_t getLength() const throw ();
+        void setLength(size_t length) throw (std::bad_alloc);
+        void insertElement(size_t index, const float value[4])
+                throw (std::bad_alloc);
+        void removeElement(size_t index) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual ostream& print(ostream& os) const;
-        virtual Type type() const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -501,23 +538,29 @@ namespace OpenVRML {
         std::vector<std::string> values;
 
     public:
-        explicit MFString(size_t length = 0, const std::string * values = 0);
-        virtual ~MFString();
+        explicit MFString(size_t length = 0, const std::string * values = 0)
+                throw (std::bad_alloc);
+        MFString(const MFString & mfstring) throw (std::bad_alloc);
+        virtual ~MFString() throw ();
 
-        // Use compiler-defined copy ctor and operator=.
+        MFString & operator=(const MFString & mfstring) throw (std::bad_alloc);
 
-        const std::string & getElement(size_t index) const;
-        void setElement(size_t index, const std::string & value);
-        size_t getLength() const;
-        void setLength(const size_t length);
-        void insertElement(size_t index, const std::string & value);
-        void removeElement(size_t index);
+        const std::string & getElement(size_t index) const throw ();
+        void setElement(size_t index, const std::string & value)
+                throw (std::bad_alloc);
+        size_t getLength() const throw ();
+        void setLength(const size_t length) throw (std::bad_alloc);
+        void insertElement(size_t index, const std::string & value)
+                throw (std::bad_alloc);
+        void removeElement(size_t index) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual Type type() const;
-        virtual ostream& print(ostream& os) const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -526,26 +569,29 @@ namespace OpenVRML {
         DData * d_data;
 
     public:
-        explicit MFTime(size_t length = 0, const double * times = 0);
-        MFTime(const MFTime & mftime);
-        virtual ~MFTime();
+        explicit MFTime(size_t length = 0, const double * times = 0)
+                throw (std::bad_alloc);
+        MFTime(const MFTime & mftime) throw (std::bad_alloc);
+        virtual ~MFTime() throw ();
 
-        MFTime & operator=(const MFTime & mftime);
+        MFTime & operator=(const MFTime & mftime) throw (std::bad_alloc);
 
-        const double * get() const;
-        void set(size_t length, const double * times);
-        double getElement(size_t index) const;
-        void setElement(size_t index, double value);
-        size_t getLength() const;
-        void setLength(size_t length);
-        void insertElement(size_t index, double value);
-        void removeElement(size_t index);
+        const double * get() const throw ();
+        void set(size_t length, const double * times) throw (std::bad_alloc);
+        double getElement(size_t index) const throw ();
+        void setElement(size_t index, double value) throw ();
+        size_t getLength() const throw ();
+        void setLength(size_t length) throw (std::bad_alloc);
+        void insertElement(size_t index, double value) throw (std::bad_alloc);
+        void removeElement(size_t index) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual ostream & print(ostream &) const;
-        virtual Type type() const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -554,26 +600,30 @@ namespace OpenVRML {
         FData * d_data;
 
     public:
-        explicit MFVec2f(size_t length = 0, const float * vecs = 0);
-        MFVec2f(const MFVec2f & mfvec2f);
-        virtual ~MFVec2f();
+        explicit MFVec2f(size_t length = 0, const float * vecs = 0)
+                throw (std::bad_alloc);
+        MFVec2f(const MFVec2f & mfvec2f) throw (std::bad_alloc);
+        virtual ~MFVec2f() throw ();
 
-        MFVec2f & operator=(const MFVec2f & mfvec2f);
+        MFVec2f & operator=(const MFVec2f & mfvec2f) throw (std::bad_alloc);
 
-        const float * get() const;
-        void set(size_t length, const float * vecs);
-        const float * getElement(size_t index) const;
-        void setElement(size_t, const float value[2]);
-        size_t getLength() const;
-        void setLength(size_t length);
-        void insertElement(size_t index, const float value[2]);
-        void removeElement(size_t index);
+        const float * get() const throw ();
+        void set(size_t length, const float * vecs) throw (std::bad_alloc);
+        const float * getElement(size_t index) const throw ();
+        void setElement(size_t, const float value[2]) throw ();
+        size_t getLength() const throw ();
+        void setLength(size_t length) throw (std::bad_alloc);
+        void insertElement(size_t index, const float value[2])
+                throw (std::bad_alloc);
+        void removeElement(size_t index) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual Type type() const;
-        virtual ostream& print(ostream& os) const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 
 
@@ -582,26 +632,30 @@ namespace OpenVRML {
         FData * d_data;
 
     public:
-        explicit MFVec3f(size_t length = 0, const float * vecs = 0);
-        MFVec3f(const MFVec3f & mfvec3f);
-        virtual ~MFVec3f();
+        explicit MFVec3f(size_t length = 0, const float * vecs = 0)
+                throw (std::bad_alloc);
+        MFVec3f(const MFVec3f & mfvec3f) throw (std::bad_alloc);
+        virtual ~MFVec3f() throw ();
 
-        MFVec3f & operator=(const MFVec3f & mfvec3f);
+        MFVec3f & operator=(const MFVec3f & mfvec3f) throw (std::bad_alloc);
 
-        const float * get() const;
-        void set(size_t length, const float * vecs);
-        const float * getElement(size_t index) const;
-        void setElement(size_t, const float value[3]);
-        size_t getLength() const;
-        void setLength(size_t length);
-        void insertElement(size_t index, const float data[3]);
-        void removeElement(size_t index);
+        const float * get() const throw ();
+        void set(size_t length, const float * vecs) throw (std::bad_alloc);
+        const float * getElement(size_t index) const throw ();
+        void setElement(size_t, const float value[3]) throw ();
+        size_t getLength() const throw ();
+        void setLength(size_t length) throw (std::bad_alloc);
+        void insertElement(size_t index, const float data[3])
+                throw (std::bad_alloc);
+        void removeElement(size_t index) throw ();
 
         virtual FieldValue * clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
-        virtual Type type() const;
-        virtual ostream& print(ostream& os) const;
+        virtual Type type() const throw ();
+    
+    private:
+        virtual std::ostream & print(std::ostream &) const;
     };
 }
 
