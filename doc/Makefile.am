@@ -8,6 +8,8 @@ EXTRA_DIST = \
         conformance.doc \
         manual
 
+manual: html
+
 html: Doxyfile
 	$(DOXYGEN)
 
@@ -17,3 +19,5 @@ install-data-local:
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(docdir)/manual
+
+MAINTAINERCLEANFILES = manual
