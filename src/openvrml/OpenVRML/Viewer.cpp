@@ -640,9 +640,9 @@ int Viewer::isectViewVolume(const BVolume & bv) const {
     int r = BVolume::BV_PARTIAL;
     const BSphere * bs = 0;
     const AABox * ab = 0;
-    if (bs = dynamic_cast<const BSphere *>(&bv)) {
+    if ((bs = dynamic_cast<const BSphere *>(&bv))) {
         r = bs->isectFrustum(this->d_frust);
-    } else if (ab = dynamic_cast<const AABox *>(&bv)) {
+    } else if ((ab = dynamic_cast<const AABox *>(&bv))) {
         r = ab->isectFrustum(this->d_frust);
     }
     return r;

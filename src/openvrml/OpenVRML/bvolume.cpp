@@ -366,11 +366,11 @@ BSphere::extend(const BVolume & bv)
 {
   const BSphere * bs = 0;
   const AABox * ab = 0;
-  if (bs = dynamic_cast<const BSphere *>(&bv)) {
+  if ((bs = dynamic_cast<const BSphere *>(&bv))) {
     this->extend(*bs);
     return;
   }
-  if (ab = dynamic_cast<const AABox *>(&bv)) {
+  if ((ab = dynamic_cast<const AABox *>(&bv))) {
     this->extend(*ab);
     return;
   }
@@ -606,7 +606,7 @@ BSphere::getCenter() const
 void 
 BSphere::setCenter(const SFVec3f & center)
 {
-  const float * const centerVec = center.get();
+  SFVec3f::ConstArrayReference centerVec = center.get();
   std::copy(centerVec, centerVec + 3, this->c);
 }
 
@@ -754,11 +754,11 @@ AABox::extend(const BVolume & bv)
 {
   const BSphere * bs = 0;
   const AABox * ab = 0;
-  if (bs = dynamic_cast<const BSphere *>(&bv)) {
+  if ((bs = dynamic_cast<const BSphere *>(&bv))) {
     this->extend(*bs);
     return;
   }
-  if (ab = dynamic_cast<const AABox *>(&bv)) {
+  if ((ab = dynamic_cast<const AABox *>(&bv))) {
     this->extend(*ab);
     return;
   }

@@ -18,14 +18,14 @@
 #
 # OV_CHECK_GLUT
 # -------------
-# Check for GLUT. If GLUT is found, the required linker flags are included in
-# the output variable `GL_LIBS' and the shell variable `no_glut' is set to the
-# empty string. Also, the proper GLUT library header inclusion is defined in
-# `OPENVRML_GLUT_H'. If GLUT is not found, `no_glut' is set to `yes'.
+# Check for GLUT. If GLUT is found, the required compiler and linker flags are
+# included in the output variables `GL_CFLAGS' and `GL_LIBS', respectively, and
+# the shell variable `no_glut' is set to the empty string. Also, the proper GLUT
+# library header inclusion is defined in `OPENVRML_GLUT_H'.
+# If GLUT is not found, `no_glut' is set to `yes'.
 #
 AC_DEFUN(OV_CHECK_GLUT,
-[AC_REQUIRE([OV_CHECK_GL])
-AC_REQUIRE([AC_PATH_XTRA])
+[AC_REQUIRE([OV_CHECK_GL])dnl
 
 AC_LANG_PUSH(C)
 ov_have_glut=no
@@ -40,15 +40,18 @@ AC_CHECK_LIB(glut, glutMainLoop,
                                                 AC_DEFINE(OPENVRML_GLUT_H,
                                                           [<GLUT/glut.h>],
                                                           [Header for GLUT])])])],
-             , ${GL_LIBS} ${X_PRE_LIBS} ${X_LIBS} ${X_EXTRA_LIBS})
+             , ${GL_LIBS})
 AC_LANG_POP(C)
     
 if test "X${ov_have_glut}" = Xyes; then
   no_glut=""
-  GLUT_LIBS="-lglut"
+  GLUT_CFLAGS="${GL_CFLAGS}"
+  GLUT_LIBS="-lglut ${GL_LIBS}"
 else
   no_glut="yes"
+  GLUT_CFLAGS=""
   GLUT_LIBS=""
 fi
-AC_SUBST(GLUT_LIBS)
+AC_SUBST([GLUT_CFLAGS])
+AC_SUBST([GLUT_LIBS])
 ])

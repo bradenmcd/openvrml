@@ -143,7 +143,7 @@ namespace OpenVRML {
             float getAmbientIntensity() const { return this->ambientIntensity.get(); }
             float getIntensity() const { return this->intensity.get(); }
             bool getOn() const { return this->on.get(); }
-            const float * getColor() const { return this->color.get(); }
+            SFColor::ConstArrayReference getColor() const { return this->color.get(); }
 
         protected:
             explicit AbstractLight(const NodeType & type);
@@ -1068,7 +1068,7 @@ namespace OpenVRML {
 
             virtual Fog * toFog() const;
 
-            const float * getColor() const { return this->color.get(); }
+            SFColor::ConstArrayReference getColor() const { return this->color.get(); }
             const std::string & getFogType() const { return this->fogType.get(); }
             float getVisibilityRange() const { return this->visibilityRange.get(); }
         

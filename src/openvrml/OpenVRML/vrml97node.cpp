@@ -2314,7 +2314,6 @@ void Billboard::inverseTransform(VrmlMatrix & m)
  */
 void Billboard::billboard_to_matrix(const Billboard* t_arg,
                                     const VrmlMatrix & L_MV, VrmlMatrix& M) {
-    Billboard * t = (Billboard*)t_arg; // argh.
     VrmlMatrix MV = L_MV.affine_inverse();
 
     // Viewer position in local coordinate system
@@ -3251,7 +3250,7 @@ void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
         // Reserve enough space for the new value
         this->value.set(nCoords, 0);
 
-        for (int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             if (this->key.getElement(i) <= f
                     && f <= this->key.getElement(i + 1)) {
                 const float * v1 = this->keyValue.getElement(i * nCoords);
@@ -6919,8 +6918,8 @@ void MovieTexture::update(const double currentTime) {
     if (isModified()) {
         if (this->image) {
             const char * imageUrl = this->image->url();
-            int imageLen = strlen(imageUrl);
-            int i, nUrls = this->url.getLength();
+            size_t imageLen = strlen(imageUrl);
+            size_t i, nUrls = this->url.getLength();
             for (i = 0; i < nUrls; ++i) {
                 size_t len = this->url.getElement(i).length();
                 
@@ -7280,9 +7279,9 @@ namespace {
  * @param type  the NodeType associated with the node instance.
  */
 NavigationInfo::NavigationInfo(const NodeType & type):
-        Node(type), AbstractChild(type), headlight(true), speed(1.0),
-        visibilityLimit(0.0), bound(false), avatarSize(3, avatarSize_),
-        type(2, type_) {
+        Node(type), AbstractChild(type), avatarSize(3, avatarSize_),
+        headlight(true), speed(1.0), type(2, type_), visibilityLimit(0.0),
+        bound(false) {
     this->nodeType.nodeClass.scene.addNavigationInfo(*this);
 }
 
@@ -8250,8 +8249,8 @@ const NodeTypePtr
  */
 PlaneSensor::PlaneSensor(const NodeType & type):
         Node(type), AbstractChild(type), autoOffset(true), enabled(true),
-        maxPosition(-1.0, -1.0), active(false), minPosition(0.0, 0.0),
-        offset(0.0, 0.0, 0.0), parentTransform(0) {
+        maxPosition(-1.0, -1.0), minPosition(0.0, 0.0), offset(0.0, 0.0, 0.0),
+        active(false), parentTransform(0) {
     this->setModified();
 }
 
@@ -9209,8 +9208,6 @@ void ProximitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
                                 timeNow.get());
             }
 
-            float xyzr[4];
-//            viewer->getOrientation(xyzr);
             SFVec3f trans, scale, shear;
             SFRotation orientation;
             MV.getTransform(trans, orientation, scale, shear);
@@ -10668,7 +10665,7 @@ bool Switch::isModified() const {
 
     long w = this->whichChoice.get();
 
-    return (w >= 0 && w < this->choice.getLength()
+    return (w >= 0 && size_t(w) < this->choice.getLength()
             && this->choice.getElement(w)->isModified());
 }
 
@@ -10698,7 +10695,7 @@ void Switch::clearFlags() {
  */
 void Switch::render(Viewer * const viewer, const VrmlRenderContext rc) {
     long w = this->whichChoice.get();
-    if (w >= 0 && w < this->choice.getLength()) {
+    if (w >= 0 && size_t(w) < this->choice.getLength()) {
         this->choice.getElement(w)->render(viewer, rc);
     }
     clearModified();
@@ -10719,7 +10716,7 @@ const BVolume* Switch::getBVolume() const {
 void Switch::recalcBSphere() {
     this->bsphere.reset();
     long w = this->whichChoice.get();
-    if (w >= 0 && w < this->choice.getLength()) {
+    if (w >= 0 && size_t(w) < this->choice.getLength()) {
         const BVolume * ci_bv = this->choice.getElement(w)->getBVolume();
         if (ci_bv) { this->bsphere.extend(*ci_bv); }
     }

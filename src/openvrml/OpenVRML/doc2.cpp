@@ -595,7 +595,7 @@ bool Doc2::filename(char * fn, int nfn) {
     fn[0] = '\0';
     
     char * e = 0;
-    const char * s = stripProtocol(url_);
+    char * s = const_cast<char *>(stripProtocol(url_));
     
     if ((e = strrchr(s,'#')) != 0) {
         *e = '\0';

@@ -1,44 +1,7 @@
-Building and Installing OpenVRML
-================================
+Basic Installation
+==================
 
-   The OpenVRML distribution includes facilities for building and
-installation in three environments:
-
-  * Using the GNU build tools in a Un*x environment.
-  * Using Microsoft Visual C++ 6.0 under Microsoft Windows 9x/NT/2000.
-  * Using Metrowerks CodeWarrior Pro 5 on an Apple Macintosh (Classic OS).
-
-
-Contents
-========
-
-   1    Using the GNU Build Tools
-   1.1  Basic Installation
-   1.2  Compilers and Options
-   1.3  Compiling For Multiple Architectures
-   1.4  Installation Names
-   1.5  Optional Features
-   1.6  Specifying the System Type
-   1.7  Sharing Defaults
-   1.8  Operation Controls
-   
-   2    Microsoft Visual C++ 6.0
-   2.1  Using nmake
-   2.2  Using DevStudio
-   
-   3    CodeWarrior 5.0 Professional for Macintosh
-   3.1  Source directory structure
-   3.2  Build order
-
-
-1  Using the GNU Build Tools
-============================
-
-   This section is derived from the generic installation instructions
-provided by automake.
-
-1.1  Basic Installation
-=======================
+   These are generic installation instructions.
 
    The `configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
@@ -88,8 +51,8 @@ The simplest way to compile this package is:
      all sorts of other programs in order to regenerate files that came
      with the distribution.
 
-1.2 Compilers and Options
-=========================
+Compilers and Options
+=====================
 
    Some systems require unusual options for compilation or linking that
 the `configure' script does not know about.  You can give `configure'
@@ -101,8 +64,8 @@ this:
 Or on systems that have the `env' program, you can do it like this:
      env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
 
-1.3 Compiling For Multiple Architectures
-========================================
+Compiling For Multiple Architectures
+====================================
 
    You can compile the package for more than one kind of computer at the
 same time, by placing the object files for each architecture in their
@@ -118,8 +81,8 @@ in the source code directory.  After you have installed the package for
 one architecture, use `make distclean' before reconfiguring for another
 architecture.
 
-1.4 Installation Names
-======================
+Installation Names
+==================
 
    By default, `make install' will install the package's files in
 `/usr/local/bin', `/usr/local/man', etc.  You can specify an
@@ -141,8 +104,8 @@ you can set and what kinds of files go in them.
 with an extra prefix or suffix on their names by giving `configure' the
 option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
 
-1.5 Optional Features
-=====================
+Optional Features
+=================
 
    Some packages pay attention to `--enable-FEATURE' options to
 `configure', where FEATURE indicates an optional part of the package.
@@ -156,8 +119,8 @@ find the X include and library files automatically, but if it doesn't,
 you can use the `configure' options `--x-includes=DIR' and
 `--x-libraries=DIR' to specify their locations.
 
-1.6 Specifying the System Type
-==============================
+Specifying the System Type
+==========================
 
    There may be some features `configure' can not figure out
 automatically, but needs to determine by the type of host the package
@@ -176,8 +139,8 @@ use the `--target=TYPE' option to select the type of system they will
 produce code for and the `--build=TYPE' option to select the type of
 system on which you are compiling the package.
 
-1.7 Sharing Defaults
-====================
+Sharing Defaults
+================
 
    If you want to set default values for `configure' scripts to share,
 you can create a site shell script called `config.site' that gives
@@ -187,8 +150,8 @@ default values for variables like `CC', `cache_file', and `prefix'.
 `CONFIG_SITE' environment variable to the location of the site script.
 A warning: not all `configure' scripts look for a site script.
 
-1.8 Operation Controls
-======================
+Operation Controls
+==================
 
    `configure' recognizes the following options to control how it
 operates.
@@ -217,123 +180,3 @@ operates.
      script, and exit.
 
 `configure' also accepts some other, not widely useful, options.
-
-
-2  Microsoft Visual C++ 6.0
-===========================
-
-   The OpenVRML distribution includes DevStudio projects as well as
-makefiles for use with nmake.
-
-
-2.1  Using nmake
-================
-
-   Before executing nmake, ensure your PATH, INCLUDE, and LIB
-environment variables are set appropriately.  This is generally
-accomplished by running the batch file `vcvars32.bat'.
-
-   In a console window, change to the `ide-projects\Windows\VisualC6' 
-subdirectory of the OpenVRML distribution. Run
-     nmake /F Makefile.vc6
-for help and options, or
-     nmake /F Makefile.vc6 all
-to build the OpenVRML dll library and the Lookat program using OpenVRML
-dll.
-   By default it will make OpenVRML dynamic library with mozilla 
-javascript, JNI, JPEG image and PNG image support. Options are there to 
-support all these selectively by undefined the corresponding macro in
-`<openvrml>\ide-projects\Windows\VisualC6\winconfig.h'. Macros 
-are, OPENVRML_HAVE_SPIDERMONKEY for javascript, OPENVRML_HAVE_JNI
-for java, OPENVRML_HAVE_LIBJPEG for JPEG image support and  
-OPENVRML_HAVE_LIBPNG for PNG image support.
-
-    Use Makefile.vc6 in '<openvrml>\java' to make all java support
-classes in jar format (script.jar).
-
-2.2  Using DevStudio
-====================
-
-   The OpenVRML distribution includes a workspace file (*.dsw) and
-project files (*.dsp) for each library and the Lookat program. Simply
-open the workspace file--in the `ide-projects\Windows\VisualC6' 
-subdirectory of the distribution--in DevStudio.  This will load the 
-libantlr, openvrml and lookat project files, which should be built in 
-that order, if you set active project to lookat. Remember to set the 
-include and library directories to point to where you've installed 
-OpenVRML's dependencies (`README' for further information on obtaining 
-these). You can have options to support javascript, JNI, JPEG image and 
-PNG image support selectively. By default all these are supported. If you
-don't want to support all these selectively then edit the file
-`<openvrml>\ide-projects\Windows\VisualC6\winconfig.h` and undefined the
-corresponding macro. Macros are, OPENVRML_HAVE_SPIDERMONKEY for 
-javascript, OPENVRML_HAVE_JNI for java, OPENVRML_HAVE_LIBJPEG for JPEG 
-image support and OPENVRML_HAVE_LIBPNG for PNG image support. Set include 
-directories and library directories for GLUT, Zlib, mozilla javascript 
-(optional), java SDK (optional), PNG image support (optional) and JPEG 
-image support (optional) library by Tools->Options->Directories in 
-MSVC++6.
-
-    Use Makefile.vc6 in '<openvrml>\java' to make all java support
-classes in jar format (script.jar) by
-       nmake /f Makefile.vc6 all
-Please note that you should be in <openvrml>\java.
-
-   Individual workspace file for openvrmlcore is kept in 
-'ide-projects\Windows\VisualC6\openvrml-core' and for openvrmlgl is 
-kept in 'ide-projects\Windows\VisualC6\openvrml-gl'.
-
-   For building only antlr library (libantlr.lib), workspace file
-`libantlr.dsw' is given in `ide-projects\Windows\VisualC6\tplib\antlr'.
-
-
-3  CodeWarrior 5.x Professional for Macintosh (Classic Mac OS)
-==============================================================
-
-[For Mac OS X, compile as for Un*x environments, as described above]
-
-3.1  Source directory structure
-===============================
-
-   The default location for installing all of these, except the OpenGL
-SDK, is in the folder that contains the OpenVRML CVS root folder, i.e.:
-     
-     OpenVRML
-       - InternetConfig
-       - libjpeg
-       - libjs
-       - libpng
-       - zlib
-       - OpenVRML             <- CVS root
-         - openvrml
-           - ide-projects
-           - src
-           - lib
-           - ...
-
-3.2  Build order
-================
-
-   The project file is located in `ide-projects/Macintosh/CodeWarrior5'.
-  
-   Observe the following order when building OpenVRML.Lib and Lookat:
-
-   1. Decode `OpenVRML.rsrc.hqx' (e.g., using Stuffit Expander).
-
-   2. Compile the `BuildAll.mcp' project.
-
-   For step 2, you will need to adjust the project access paths
-so that CodeWarrior can locate your OpenGL SDK files.  If you do not
-have the libjpeg, libpng, zlib and InternetConfig files in the default
-file structure described above then you will need to adjust the access
-paths for those too. CodeWarrior should report which files it is unable
-to locate.
-
-   NOTE:  If you have problems with the project file then create new
-   one using the supplied XML file (BuildAll.mcp.xml) instead (using
-   the "Import Project..." command in CodeWarrior's "File" menu).
-
-   The final result should be an `OpenVRML.Lib' library
-and a simple GLUT-based viewer called `Lookat'.
-You can enter URLs (file or http) into the dialog box that appears when
-you start `Lookat' to choose which VRML files to view.
