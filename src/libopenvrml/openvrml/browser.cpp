@@ -3961,7 +3961,6 @@ browser::~browser() throw ()
     assert(this->timers.empty());
     assert(this->audio_clips.empty());
     assert(this->movies.empty());
-    this->node_class_map.clear();
 }
 
 /**

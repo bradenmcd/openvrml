@@ -1,3 +1,10 @@
+2005-01-16 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp (browser::~browser):
+	Don't clear the node_class_map.  This is unnecessary, and it
+	prematurely removes PROTO definitions that the scene (which
+	hasn't been destroyed yet) depends on.
+
 2005-01-10 Braden McDaniel  <braden@endoframe.com>
 
 	Merged changes from 0.15.5 release.
