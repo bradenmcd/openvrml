@@ -11,6 +11,8 @@
           Thing anyway. Stylistically, at the very least, deleting a
           const object would seem to be Bad.
 
+        * Added include of <assert.h> to `ScriptJS.cpp'.
+
 2001-01-03  Braden McDaniel  <braden@endoframe.com>
 
         * Removed single-value constructor from VrmlMF*. It is

@@ -33,6 +33,7 @@
 
 # ifndef OPENVRML_DISABLE_JAVASCRIPT
 
+# include <assert.h>
 # include <stdio.h>
 # include <string.h>
 
