@@ -104,10 +104,10 @@ Billboard
          eventIn SFVec3f  translation_in IS translation_in
          eventIn SFRotation rotation_in IS rotation_in
          eventOut SFVec3f  translation_out IS translation_out           
-         field SFRotation rotation    0 0 0 0
-         field SFRotation quaternion1 0 0 0 0
-         field SFRotation quaternion2 0 0 0 0
-         field SFRotation quaternion3 0 0 0 0
+         field SFRotation rotation    0 0 1 0
+         field SFRotation quaternion1 0 0 1 0
+         field SFRotation quaternion2 0 0 1 0
+         field SFRotation quaternion3 0 0 1 0
          field SFFloat leng 1
          field SFFloat winkelkorrektur 0
 
@@ -333,7 +333,7 @@ Transform
          step_translation[0]=(Math.random()-0.5)*0.04;
          step_translation[1]=(Math.random()-0.5)*0.04;
          step_translation[2]=(Math.random()-0.5)*0.04;
-         step=Math.random()*200+1;
+         step=Math.floor(Math.random()*200+1);
          }
       function initialize()
          {
