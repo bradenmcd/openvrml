@@ -624,7 +624,7 @@ NPError NPP_GetValue(const NPP instance,
         *static_cast<PRBool *>(value) = PR_TRUE;
         break;
     default:
-        err = NPERR_GENERIC_ERROR;
+        err = NP_GetValue(instance, variable, value);
     }
     return err;
 }
