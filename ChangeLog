@@ -2,6 +2,9 @@
 
         * configure.ac, README: Incremented version number to 0.13.0.
 
+        * src/openvrml/OpenVRML/private.h,
+          src/openvrml/OpenVRML/VrmlMatrix.h: #include <stddef.h>.
+
 2002-06-16  Braden McDaniel  <braden@endoframe.com>
 
         * README, doc/Makefile.am: Removed "conformance.html" from the
