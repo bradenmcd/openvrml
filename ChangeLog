@@ -29,6 +29,8 @@
           src/openvrml-gl/OpenVRML/GL/Makefile.am: Added
           INSTALL-MSVC6.txt, Makefile.vc6's to the distribution.
 
+        * src/openvrml/OpenVRML/Makefile.am:  Fixed missing '\'.
+
 2002-12-18  Braden McDaniel  <braden@endoframe.com>
 
         * m4/Makefile.am, m4/ftflib.m4:  Removed obsolete macro.

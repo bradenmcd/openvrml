@@ -83,7 +83,7 @@ noinst_HEADERS = \
 
 EXTRA_DIST = \
         Vrml97TokenTypes.txt \
-        Vrml97Parser.g
+        Vrml97Parser.g \
         Vrml97Parser.cpp \
         Vrml97Parser.hpp \
         Vrml97ParserTokenTypes.txt \
