@@ -209,6 +209,9 @@ AC_DEFUN(VRMLGL_PATH_GLUT,
   ]
 )
 
+dnl
+dnl AM_PATH_VRMLGL([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl
 AC_DEFUN(AM_PATH_VRMLGL,
   [dnl
     dnl
@@ -221,6 +224,7 @@ AC_DEFUN(AM_PATH_VRMLGL,
     dnl Test for libvrml97gl
     dnl
     AC_MSG_CHECKING([for libvrml97gl])
+    AC_LANG_SAVE
     AC_LANG_CPLUSPLUS
     ac_save_LIBS="$LIBS"
     LIBS="-lvrml97gl $VRML_LIBS $GLUT_LIBS $LIBS"
@@ -242,6 +246,7 @@ AC_DEFUN(AM_PATH_VRMLGL,
       ifelse([$2], , :, [$2])
     fi
     
+    AC_LANG_RESTORE
     AC_SUBST(VRMLGL_LIBS)
   ]
 )

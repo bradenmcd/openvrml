@@ -13,32 +13,29 @@ dnl
 dnl
 dnl
 
-
 AC_INIT(libvrml97core/src/vrml97/VrmlScene.cpp)
-
-
-dnl Checks for programs.
-AC_PROG_CXX
-AC_PROG_AWK
-AC_PROG_YACC
-AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_PROG_RANLIB
-AM_PROG_LEX
-AM_PROG_LIBTOOL
-
-
-
-dnl random automake stuff
-dnl
 PACKAGE=libvrml97
 VERSION="0.8.1"
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 AM_CONFIG_HEADER(config.h)
 
+dnl
+dnl Checks for Win32 stuff
+dnl
+AC_CYGWIN
+AC_MINGW32
+
+dnl
+dnl Checks for programs.
+dnl
+AC_PROG_CC
+AC_PROG_CPP
+AM_PROG_LIBTOOL
+AC_PROG_INSTALL
+AM_PROG_LEX
+AC_PROG_YACC
+AC_PROG_CXX
+AC_PROG_CXXCPP
 
 
 dnl ZLIB
@@ -147,6 +144,14 @@ fi
 AC_SUBST(VRMLGL_LIBS)
 
 
+dnl
+dnl Test for adequate namespace support in the C++ compiler
+dnl
+VRML_CXX_NAMESPACE(
+  ,
+  AC_MSG_ERROR([Your compiler does not have sufficient support for C++ namespaces. See config.log for details.])
+)
+
 
 dnl NOTABLY COMPLEX C++ COMPILER TESTS
 dnl
@@ -158,7 +163,6 @@ dnl the ones that are not absolutely necessary need to be removed.
 dnl
 dnl
 
-AC_PROG_CXX
 AC_LANG_CPLUSPLUS
 
 
@@ -329,32 +333,13 @@ AC_SUBST(CFLAGS)
 
 
 
-dnl Checks for header files.
-AC_PATH_X
-AC_HEADER_DIRENT
-AC_HEADER_STDC
-AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS(fcntl.h limits.h sgtty.h strings.h sys/ioctl.h sys/time.h termio.h unistd.h)
-
-dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_C_INLINE
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-AC_HEADER_TIME
-AC_STRUCT_TM
-AC_STRUCT_TIMEZONE
-
 dnl Checks for library functions.
-AC_PROG_GCC_TRADITIONAL
-AC_FUNC_SETVBUF_REVERSED
-AC_FUNC_STRFTIME
-AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(ftime getcwd gettimeofday mktime strdup strerror strstr)
 
 
 
 AC_OUTPUT(Makefile \
+          m4/Makefile \
           libvrml97core/Makefile \
           libvrml97core/m4/Makefile \
           libvrml97core/src/Makefile \

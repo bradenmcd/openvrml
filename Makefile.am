@@ -20,4 +20,4 @@ AUTOMAKE_OPTIONS=foreign
 # check for the proper libs and enable the build
 # conditionally.
 #
-SUBDIRS = libvrml97core libvrml97gl lookat
+SUBDIRS = m4 libvrml97core libvrml97gl lookat
