@@ -1,3 +1,17 @@
+2002-10-29  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * ide-projects/Windows/VisualC6/openvrml.dsp,
+          ide-projects/Windows/VisualC6/lookat/lookat.dsp, 
+          ide-projects/Windows/VisualC6/openvrml-core/openvrmlcore.dsp,
+          ide-projects/Windows/VisualC6/openvrml-gl/openvrmlgl.dsp:
+          Accommodate font and defined "HAVE_CONFIG_H"
+
+        * src/lookat/ViewerGlut.cpp: Remove "winconfig.h"
+
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:
+          Fixed if there is no vector information about character in
+          "insertText" method.
+  
 2002-10-28  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * src/openvrml/OpenVRML/font.h,
