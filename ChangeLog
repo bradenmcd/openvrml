@@ -1,7 +1,15 @@
+2000-03-08  Chris Morley  <cmorley@vermontel.net>
+
+	* Don't attempt to render null strings. Duh.
+
 2000-03-07  Braden McDaniel <braden@endoframe.com>
         * Made Viewer's protected member functions computeCylinder,
           computeExtrusion, computeSphere, and computeView all static, as there
           seems no reason for them not to be.
+
+2000-03-07  Chris Morley  <cmorley@vermontel.net>
+
+	* Apply textures to cone and cylinder tops & bottoms.
 
 2000-01-23  Braden McDaniel <braden@endoframe.com>
 
