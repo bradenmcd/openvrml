@@ -42,6 +42,9 @@
           src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: #include
           cleanup.
 
+        * src/openvrml/OpenVRML/script.cpp: Cleaned up error handler a
+          bit.
+
 2002-10-17  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,

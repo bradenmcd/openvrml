@@ -1355,7 +1355,8 @@ JSBool eventOut_setProperty(JSContext * cx, JSObject * obj,
 JSBool field_setProperty(JSContext * cx, JSObject * obj,
                          jsval id, jsval * val) throw ();
 
-void ErrorReporter(JSContext *, const char *, JSErrorReport *);
+void errorReporter(JSContext * cx, const char * message,
+                   JSErrorReport * report);
 
 
 // Construct from inline script
@@ -1385,7 +1386,7 @@ Script::Script(ScriptNode & scriptNode, const std::string & source)
     //
     JS_SetContextPrivate(this->cx, this);
 
-    JS_SetErrorReporter(cx, ErrorReporter);
+    JS_SetErrorReporter(cx, errorReporter);
 
     //
     // Define the global objects (builtins, Browser, SF*, MF*) ...
@@ -2003,39 +2004,33 @@ void Script::defineFields() throw (std::bad_alloc)
 }
 
 
-void
-ErrorReporter(JSContext *, const char *message, JSErrorReport *report)
+void errorReporter(JSContext * const cx,
+                   const char * const message,
+                   JSErrorReport * const errorReport)
 {
-    int i, j, k, n;
+    using std::endl;
+    using std::string;
+    
+    Script * const script =
+            static_cast<Script *>(JS_GetContextPrivate(cx));
+    assert(script);
+    
+    OpenVRML::Browser & browser = script->getScriptNode().getScene()->browser;
+    
+    string nodeId = script->getScriptNode().getId();
+    if (!nodeId.empty()) {
+        browser.err << nodeId << ": ";
+    }
+    
+    if (errorReport) {
+        if (errorReport->filename) {
+            browser.err << errorReport->filename << ": ";
+        }
 
-    theSystem->error("javascript: ");
-    if (!report) {
-	theSystem->error("%s\n", message);
-	return;
+        browser.err << errorReport->lineno << ": ";
     }
 
-    if (report->filename)
-	theSystem->error("%s, ", report->filename);
-    if (report->lineno)
-	theSystem->error("line %u: ", report->lineno);
-    theSystem->error(message);
-    if (!report->linebuf) {
-	theSystem->error("\n");
-	return;
-    }
-
-    theSystem->error(":\n%s\n", report->linebuf);
-    n = report->tokenptr - report->linebuf;
-    for (i = j = 0; i < n; i++) {
-	if (report->linebuf[i] == '\t') {
-	    for (k = (j + 8) & ~7; j < k; j++)
-	      theSystem->error(".");
-	    continue;
-	}
-	theSystem->error(".");
-	j++;
-    }
-    theSystem->error("\n");
+    browser.err << message << endl;
 }
 
 JSBool floatsToJSArray(const size_t numFloats, const float * floats,
