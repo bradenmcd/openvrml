@@ -175,7 +175,7 @@ static int never = 0;		/* for use in asserts; shuts lint up */
  = #define	REG_PEND	0040
  = #define	REG_DUMP	0200
  */
-int	__stdcall			/* 0 success, otherwise REG_something */
+int			/* 0 success, otherwise REG_something */
 regcomp(preg, pattern, cflags)
 regex_t *preg;
 const char *pattern;

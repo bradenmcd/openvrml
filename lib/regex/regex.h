@@ -50,8 +50,11 @@
 #define __P(_X) _X
 #else
 #include <sys/cdefs.h>
-#define __stdcall
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+# endif
 
 /* types */
 typedef off_t regoff_t;
@@ -107,11 +110,15 @@ typedef struct {
 #define	REG_BACKR	02000	/* force use of backref code */
 
 __BEGIN_DECLS
-int	__stdcall regcomp __P((regex_t *, const char *, int));
-size_t	__stdcall regerror __P((int, const regex_t *, char *, size_t));
-int	__stdcall regexec __P((const regex_t *,
+int regcomp __P((regex_t *, const char *, int));
+size_t regerror __P((int, const regex_t *, char *, size_t));
+int regexec __P((const regex_t *,
 	    const char *, size_t, regmatch_t [], int));
-void	__stdcall regfree __P((regex_t *));
+void regfree __P((regex_t *));
 __END_DECLS
+
+#ifdef __cplusplus
+}; /* extern "C" */
+#endif
 
 #endif /* !_REGEX_H_ */

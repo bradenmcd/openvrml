@@ -152,7 +152,7 @@ static int nope = 0;		/* for use in asserts; shuts lint up */
  * when choosing which matcher to call.  Also, by this point the matchers
  * have been prototyped.
  */
-int	__stdcall			/* 0 success, REG_NOMATCH failure */
+int			/* 0 success, REG_NOMATCH failure */
 regexec(preg, string, nmatch, pmatch, eflags)
 const regex_t *preg;
 const char *string;

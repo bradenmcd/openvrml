@@ -1,5 +1,15 @@
 2003-08-21  Braden McDaniel  <braden@endoframe.com>
 
+	Gave regex API functions C linkage.
+
+	* lib/regex/regcomp.c
+	* lib/regex/regerror.c
+	* lib/regex/regex.h
+	* lib/regex/regexec.c
+	* lib/regex/regfree.c
+
+2003-08-21  Braden McDaniel  <braden@endoframe.com>
+
 	Added George J. Carrette's Windows port of Henry Spencer's regex
 	to the distribution.  This is needed for the Windows cl build.
 
