@@ -1,0 +1,129 @@
+1) For making LibVRML97 What else do I need?
+
+  LibVRML97 requires zlib, libpng, libjpeg, OpenGL/Mesa, GLUT and antlr to build. 
+ 
+    zlib:       <URL:ftp://ftp.freesoftware.com/pub/infozip/zlib/>
+    libpng:     <URL:http://www.cdrom.com/pub/png/pngcode.html>
+    libjpeg:    <URL:http://www.ijg.org>
+    Mesa:       <URL:http://www.mesa3d.org>
+    GLUT:       <URL:http://reality.sgi.com/mjk_asd/glut3/>
+    antlr:      <URL:http://www.ANTLR.org>  
+
+  Make sure you have java installed in your system.
+
+2) How to build third party libraries?
+
+   Use "nmake" utility provided by microsoft for making following static
+   libraries. If you are having any problem to use "nmake", see bellow for
+   information. 
+
+ zlib.lib
+         Use the command nmake /f .\msdos\Makefile.w32
+         For building win32lookat and lookat, I have problem with 
+         undefined symbol "errno" while linking. My simple solution is
+         to add "int errno" in zutil.h and make the library.
+         
+ libpng.lib 
+          Use the command nmake /f .\scripts\makefile.vcwin32
+
+ libjpeg.lib 
+          Use the command  nmake /f makefile.vc
+
+ OpenGL/Mesa
+          I have not tested with Mesa but I have used Opengl32.lib and
+          Glu32.lib that comes along with Microsoft Visual C++6.0
+
+ Glut32.lib
+          Download directly GLUT headers and pre-compiled libraries for
+          Microsoft Windows 95 and NT users (Glut32.dll, Glut32.lib 
+          and gl\Glut.h).
+
+
+antlr 2.7.0
+           Antlr has two parts, a java program that generates C++ code, and a
+           set of C++ utility classes. The utility classes are included with
+           the CVS download, but you will need to download and install the
+           antlr Java classes.  
+
+
+3) Installation using MSVC++6
+
+
+   You can install either by using Makefile.win or by MSVC++6
+   Projects (*.dsp) and workspace file (*.dsw). It is recommended to use
+   Makefile.win
+
+  a) Using Makefile.win
+
+   Use nmake utility provided by Microsoft. Before this you should see all
+   executable files, include files and lib files of MSVC++6 are defined in 
+   path, include and lib environment variables respectively.
+
+   For example 
+   SET PATH=%PATH%;c:\Program Files\Microsoft Visual Studio\Vc98\bin;c:\Program Files
+   \Microsoft Visual Studio\Common\MsDev98\bin;c:\Program Files\Microsoft Visual Studio
+   \Common\Tools
+   SET INCLUDE=c:\Program Files\Microsoft Visual Studio\Vc98\include;
+   c:\Program Files\Microsoft Visual Studio\Vc98\mfc\include
+   SET LIB=c:\Program Files\Microsoft Visual Studio\Vc98\lib;
+   c:\Program Files\Microsoft Visual Studio\Vc98\mfc\\lib
+
+   Give the command in command mode. Please note that you should be in 
+   libvrml97\win32.
+
+      i) nmake /F Makefile.win  
+               for Help and options
+     ii) nmake /F Makefile.win all 
+               for making all libvrml97 and lookat executable. 
+
+  b) Using MSVC++6 Projects (*.dsp) and workspace files (*.dsw) 
+
+    MSVC++6 Projects (*.dsp) and workspace files (*.dsw) are included for libvrml97core, libvrml97gl
+    and lookat. Workspace file for all libvrml97 is kept in libvrml97\win32. From here
+    you can build whole libvrml97 (libvrml97core and libvrml97gl).
+    From here for building libvrml97core, you need to set Project->Set Active Project->
+    libvrml97core and for libvrml97gl, you set Project->Set Active Project->
+    libvrml97gl.
+
+    Individual workspace file for libvrml97core is kept in libvrml97\libvrml97core\win32 and for
+    libvrml97gl is kept in libvrml97\libvrml97gl\win32.
+
+    For building libvrml97core and libvrml97gl library, you need to set include directories
+    GLUT, PNG, Zlib and JPEG library by Tools->Options->Directories in MSVC++6.
+
+    For building libvrml97core you have to perform Custom Build Step for antlr.g 
+    by Project->Settings->libvrml97core->Source File in MSVC++6. Replace c:\User\jdk1.2.2\bin
+    with the location of java compiler. Make sure to set the CLASSPATH to include the directory that
+    antlr is installed in. Replace c:\User\antlr-2.7.0 with the location "antlr"
+    directory. Otherwise you edit the file libvrml97core.dsp in 
+    libvrml97\libvrml97core\win32 and do the same. 
+
+    For building only javascript dll library (libjavascript.lib and libjavascript.dll),
+    workspace file  libvrml97js.dsw is given in libvrml97\libvrml97core\win32\javascript directory.
+    
+    For building only antlr library (libantlr.lib), workspace file libantlr.dsw is
+    given in libvrml97\libvrml97core\win32\antlr.
+
+    For building lookat application program, you need to set include directories 
+    libvrml97core and libvrml97gl (for example c:\libvrml97\libvrml97core\src) and library 
+    directories for libvrml97core, libvrml97gl, GLUT, PNG, Zlib and JPEG library by 
+    Tools->Options->Directories in MSVC++6.
+
+    Please note that I have faced undefined sysmbols problems while building
+    lookat at debug mode. It is recommended to make lookat and all libraries
+    (libvrml97core.lib and libvrml97gl.lib) under release mode. For win32lookat 
+    no such problem exist. You can build either in debug mode or in release
+    mode but not in mixed mode.
+
+4) To execute lookat viewer
+
+   a) If you use Makefile.win
+       cd libvrml97\lookat\win32\bin 
+       lookat ..\..\..\models\orbit3.wrl
+
+   b) If you use Projects and workspace
+      cd libvrml97\lookat\win32\release (In release mode)
+        You may need to copy libjavascript.dll (In libvrml97\libvrml97core\win32\
+        javascript\Release) and glut32.dll here or these files
+        may be copied into system area (for example c:\WINNT\SYSTEM32 for NT). 
+      lookat ..\..\..\models\orbit3.wrl 

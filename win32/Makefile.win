@@ -1,0 +1,159 @@
+.SILENT:
+# Makefile for libvrml97
+# Microsoft Visual C++6.0 or later
+
+
+
+
+help:
+	more < <<
+usage: nmake[.exe] /f nmake.mak [options] [target]
+
+where: [target] may be any one of the following ...
+    (default)... shows this text
+    all ........ builds all targets libraries and lookat executable
+    libraries... builds all libraries 
+    core........ builds core library 
+    gl ........  builds gl library 
+    js ........  builds javascript library
+    ant .......  builds antlr library
+    clean....... deletes all intermediate files
+
+    ---- build options -----------------
+
+
+   PNGLIB_DIR  .................... - required to be defined as 
+			the path where your PNGLIB is installed. 
+		   Default path is C:\User\lpng105, however you may provide 
+		   it as an environment variable by doing something like 
+		   this prior to execute nmake:
+
+			 set PNGLIB_DIR=C:\lpng105
+
+   ZLIB_DIR  .................... - required to be defined as the path
+		   where your ZLIB is installed. Default path is C:\User\zlib,
+		   however you may provide it as an environment variable by
+		   doing something like this prior to execute nmake:
+
+			 set ZLIB_DIR=C:\zlib
+
+   JPEGLIB_DIR  .................... - required to be defined as the path
+		   where your JPEGLIB is installed. 
+		   Default path is C:\User\jpeg-6b, however you may provide
+		   it as an environment variable by doing something like 
+		   this prior to execute nmake:
+
+			 set JPEGLIB_DIR=C:\jpeg-6b
+
+   GLUTLIB_DIR  .................... - required to be defined as the path
+		   where your GLUT is installed. 
+		   Default path is C:\User\glut, however you may provide
+		   it as an environment variable by doing something like 
+		   this prior to execute nmake:
+
+			 set GLUTLIB_DIR=C:\glut
+
+   ANTLRLIB_DIR  .................... - required to be defined as the path
+		   where your ANTLR is installed. Default path 
+		   is C:\User\antlr-2.7.0, however you may provide it as an 
+		   environment variable by doing something like this prior 
+		   to execute nmake:
+
+			 set ANTLRLIB_DIR=C:\antlr
+
+
+
+    ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
+         LibVRML97 was originally written by Chris Morley
+	 (http://www.vermontel.net/~cmorley/. He has donated it 
+	 as a foundation for OVAL development and is currently 
+	 maintained at http://openvrml.sourceforge.net
+
+    This makefile suite built against MS Visual C++ 6.0 and tested on
+    WindowsNT 4.0, Windows95, and Windows98.
+
+    ---- output directories as configured -------
+
+    Linking Libs  
+	
+	 libvrml97core.lib   :    libvrml97\libvrml97core\win32\lib
+	 libvrml97gl.lib     :    libvrml97\libvrml97gl\win32\lib
+	 libjavascript.dll   :    libvrml97\libvrml97core\win32\javascript\lib
+
+    Object Files 
+	
+	 libvrml97core   :    libvrml97\libvrml97core\win32\bin
+	 libvrml97gl     :    libvrml97\libvrml97gl\win32\bin
+	 libjavascript   :    libvrml97\libvrml97core\win32\javascript\bin
+	 libantlr        :    libvrml97\libvrml97core\win32\antlr\bin
+	 
+    lookat executable
+	 	 
+     lookat.exe       :    libvrml97\lookat\win32\bin
+<<
+
+!IF "$(PNGLIB_DIR)" == ""
+PNGLIB_DIR = c:\User\lpng105
+!ENDIF
+
+!IF "$(ZLIB_DIR)" == ""
+ZLIB_DIR = c:\User\zlib
+!ENDIF
+
+!IF "$(JPEGLIB_DIR)" == ""
+JPEGLIB_DIR = c:\User\jpeg-6b
+!ENDIF
+
+!IF "$(ANTLRLIB_DIR)" == ""
+ANTLRLIB_DIR = c:\User\antlr-2.7.0
+!ENDIF
+
+
+
+!IF "$(GLUTLIB_DIR)" == ""
+GLUTLIB_DIR = c:\User\glut
+!ENDIF
+
+clean :
+  cd ..\libvrml97core\win32
+  nmake /F Makefile.win clean
+  cd ..\..\libvrml97gl\win32
+  nmake /F Makefile.win clean
+  cd ..\..\lookat\win32
+  nmake /F Makefile.win clean
+
+all: libraries lookat
+
+
+
+libraries:core gl
+
+core:
+  cd ..\libvrml97core\win32
+  nmake /F Makefile.win PNGLIB_DIR=$(PNGLIB_DIR)\
+  ZLIB_DIR=$(ZLIB_DIR) JPEGLIB_DIR=$(JPEGLIB_DIR) \
+  ANTLRLIB_DIR=$(ANTLRLIB_DIR) core
+  cd $(MAKEDIR)
+
+gl:
+  cd ..\libvrml97gl\win32
+  nmake /F Makefile.win GLUTLIB_DIR=$(GLUTLIB_DIR) gl
+  cd $(MAKEDIR)
+
+js:
+  cd ..\libvrml97core\win32\javascript
+  nmake /F Makefile.win js
+  cd $(MAKEDIR)
+
+ant:
+  cd ..\libvrml97core\win32\antlr
+  nmake /F Makefile.win antlr
+  cd $(MAKEDIR)
+
+
+lookat:
+  cd ..\lookat\win32
+  nmake /F Makefile.win PNGLIB_DIR=$(PNGLIB_DIR)\
+  ZLIB_DIR=$(ZLIB_DIR) JPEGLIB_DIR=$(JPEGLIB_DIR) \
+  GLUTLIB_DIR=$(GLUTLIB_DIR) lookat
+  cd $(MAKEDIR)

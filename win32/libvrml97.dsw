@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "fdlibm"=.\javascript\fdlibm.dsp - Package Owner=<4>
+Project: "fdlibm"=..\libvrml97core\win32\javascript\fdlibm.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -15,7 +15,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libantlr"=.\antlr\libantlr.dsp - Package Owner=<4>
+Project: "libantlr"=..\libvrml97core\win32\antlr\libantlr.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -27,7 +27,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libjavascript"=.\javascript\libjavascript.dsp - Package Owner=<4>
+Project: "libjavascript"=..\libvrml97core\win32\javascript\libjavascript.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -42,7 +42,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libvrml97core"=.\libvrml97core.dsp - Package Owner=<4>
+Project: "libvrml97core"=..\libvrml97core\win32\libvrml97core.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -55,6 +55,36 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name libjavascript
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "libvrml97gl"=..\libvrml97gl\win32\libvrml97gl.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "lookat"=..\lookat\win32\lookat.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name libvrml97core
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libvrml97gl
     End Project Dependency
 }}}
 

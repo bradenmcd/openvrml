@@ -1,0 +1,128 @@
+.SILENT:
+# Makefile for libvrml97gl
+# Microsoft Visual C++6.0 or later
+
+#!include <c:\Program Files\Microsoft Visual Studio\vc98\include\win32.mak>
+
+GLBINOUTDIR = .\bin
+INTDIR = $(GLBINOUTDIR)
+GLLIBDIR = .\lib
+GLSOURCE = ..\src\vrml97gl
+CORESOURCE = ..\..\libvrml97core\src
+JSSOURCE = ..\..\libvrml97core\src\vrml97\javascript
+
+help:
+	more < <<
+usage: nmake[.exe] /f nmake.mak [options] [target]
+where: [target] may be any one of the following ...
+    (default)... shows this text
+    gl ........  builds OpenGL based library 
+    clean....... deletes all intermediate files
+
+    ---- build options -----------------
+
+
+   GLUTLIB_DIR  .................... - required to be defined as 
+			the path where your GLUTLIB is installed. 
+		   Default path is C:\User\glut, however you may provide 
+		   it as an environment variable by doing something like 
+		   this prior to execute nmake:
+
+			 set GLUTLIB_DIR=C:\glut
+
+
+    ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
+         LibVRML97 was originally written by Chris Morley
+	 (http://www.vermontel.net/~cmorley/. He has donated it 
+	 as a foundation for OVAL development and is currently 
+	 maintained at http://openvrml.sourceforge.net
+
+    This makefile suite built against MS Visual C++ 6.0 and tested on
+    WindowsNT 4.0, Windows95, and Windows98.
+
+    ---- output directories as configured -------
+
+    Linking Libs . : $(GLLIBDIR)
+    Object Files . : $(GLBINOUTDIR)
+
+<<
+
+
+!IF "$(GLUTLIB_DIR)" == ""
+GLUTLIB_DIR = c:\User\glut
+!ENDIF
+
+PROMPT :
+      -@echo Making LibVRML97gl library
+
+$(GLBINOUTDIR) : 
+	   if not exist $(GLBINOUTDIR) mkdir $(GLBINOUTDIR)
+
+$(GLLIBDIR) : 
+	   if not exist $(GLLIBDIR) mkdir $(GLLIBDIR)
+
+CPP = cl.exe
+CFLAGS = /nologo /ML /W3 /GX /O2 /D "WIN32" /D "_WINDOWS"\
+	/Fp"$(INTDIR)\libvrml97core.pch" /YX /Fo"$(INTDIR)\\"\
+	/Fd"$(INTDIR)\\" /FD /c
+
+O=.obj
+LIB32 = link.exe -lib
+
+
+# variables
+
+OBJ = $(GLBINOUTDIR)\OpenGLEvent$(O) $(GLBINOUTDIR)\ViewerOpenGL$(O)
+
+
+clean :
+    -@echo Cleaning LibVRML97gl library
+	-@erase $(GLBINOUTDIR)\OpenGLEvent.obj
+	-@erase $(GLBINOUTDIR)\ViewerOpenGL.obj
+	-@erase $(GLLIBDIR)\libvrml97gl.lib
+
+all: gl
+libraries : gl
+
+gl : PROMPT $(GLBINOUTDIR) $(GLLIBDIR) $(GLLIBDIR)\libvrml97gl.lib
+
+
+$(GLLIBDIR)\libvrml97gl.lib : $(OBJ)
+		       if exist $(GLLIBDIR)\libvrml97gl.lib del $(GLLIBDIR)\libvrml97gl.lib
+		       $(LIB32) /nologo /out:$(GLLIBDIR)\libvrml97gl.lib $(OBJ)
+
+$(GLBINOUTDIR)\OpenGLEvent.obj :  $(GLSOURCE)\OpenGLEvent.cpp\
+								$(GLSOURCE)\OpenGLEvent.h
+            		       	  $(CPP) $(CFLAGS) $(GLSOURCE)\OpenGLEvent.cpp
+
+$(GLBINOUTDIR)\ViewerOpenGL.obj :  $(GLSOURCE)\ViewerOpenGL.cpp\
+								$(CORESOURCE)\vrml97\system.h\
+								$(CORESOURCE)\vrml97\viewer.h\
+								$(CORESOURCE)\vrml97\vrmlfield.h\
+								$(CORESOURCE)\vrml97\vrmlmffloat.h\
+								$(CORESOURCE)\vrml97\vrmlmfnode.h\
+								$(CORESOURCE)\vrml97\vrmlmfstring.h\
+								$(CORESOURCE)\vrml97\vrmlnode.h\
+								$(CORESOURCE)\vrml97\vrmlnodechild.h\
+								$(CORESOURCE)\vrml97\vrmlnodegroup.h\
+								$(CORESOURCE)\vrml97\vrmlnodenavigationinfo.h\
+								$(CORESOURCE)\vrml97\vrmlscene.h\
+								$(CORESOURCE)\vrml97\vrmlsfbool.h\
+								$(CORESOURCE)\vrml97\vrmlsffloat.h\
+								$(CORESOURCE)\vrml97\vrmlsfstring.h\
+								$(CORESOURCE)\vrml97\vrmlsfvec3f.h\
+								..\..\win32\winconfig.h\
+								$(GLSOURCE)\OpenGLEvent.h\
+								$(GLSOURCE)\ViewerOpenGL.h
+            			$(CPP) $(CFLAGS) /I ..\..\win32\
+						/I $(CORESOURCE) /I $(GLUTLIB_DIR)\
+						$(GLSOURCE)\ViewerOpenGL.cpp
+
+
+
+
+
+
+
+
+

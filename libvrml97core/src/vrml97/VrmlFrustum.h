@@ -46,12 +46,11 @@ class VrmlFrustum {
   /**
    * Distance to the near clipping plane.
    */
-  double near;
-
+  double z_near;
   /**
    * Distance to the far clipping plane
    */
-  double far;
+  double z_far;
 
   /**
    * Left (looking down -z) side clip plane. Format is (a,b,c,d) where

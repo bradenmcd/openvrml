@@ -1,0 +1,1613 @@
+.SILENT:
+# Makefile for libvrml97core
+# Microsoft Visual C++6.0 or later
+
+BINOUTDIR = .\bin
+INTDIR = .\bin
+LIBDIR = .\lib
+SOURCE = ..\src\vrml97
+JSINCLUDE = ..\src\vrml97\javascript
+JAVALIBDIR = .\javascript\lib
+ANTLRLIBDIR = .\antlr\lib
+
+help:
+	more < <<
+usage: nmake[.exe] /f nmake.mak [options] [target]
+where: [target] may be any one of the following ...
+    (default)... shows this text
+    core........ builds core library
+    clean....... deletes all intermediate files
+
+    ---- build options -----------------
+
+
+   PNGLIB_DIR  .................... - required to be defined as 
+			the path where your PNGLIB is installed. 
+		   Default path is C:\User\lpng105, however you may provide 
+		   it as an environment variable by doing something like 
+		   this prior to execute nmake:
+
+			 set PNGLIB_DIR=C:\lpng105
+
+   ZLIB_DIR  .................... - required to be defined as the path
+		   where your ZLIB is installed. Default path is C:\User\zlib,
+		   however you may provide it as an environment variable by
+		   doing something like this prior to execute nmake:
+
+			 set ZLIB_DIR=C:\zlib
+
+   JPEGLIB_DIR  .................... - required to be defined as the path
+		   where your JPEGLIB is installed. 
+		   Default path is C:\User\jpeg-6b, however you may provide
+		   it as an environment variable by doing something like 
+		   this prior to execute nmake:
+
+			 set JPEGLIB_DIR=C:\jpeg-6b
+
+   ANTLRLIB_DIR  .................... - required to be defined as the path
+		   where your antlr is installed. Default path 
+		   is C:\User\antlr, however you may provide it as an 
+		   environment variable by doing something like this prior 
+		   to execute nmake:
+
+			 set ANTLRLIB_DIR=C:\antlr-2.7.0
+
+  
+
+    ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
+         LibVRML97 was originally written by Chris Morley
+	 (http://www.vermontel.net/~cmorley/. He has donated it 
+	 as a foundation for OVAL development and is currently 
+	 maintained at http://openvrml.sourceforge.net
+
+    This makefile suite built against MS Visual C++ 6.0 and tested on
+    WindowsNT 4.0, Windows95, and Windows98.
+
+    ---- output directories as configured -------
+
+    Linking Libs . : $(LIBDIR)
+    Object Files . : $(BINOUTDIR)
+
+<<
+!IF "$(OS)" == "Windows_NT"
+NUL = NUL: 
+!ELSE
+NUL = nul
+!ENDIF
+
+!IF "$(PNGLIB_DIR)" == ""
+PNGLIB_DIR = c:\User\lpng105
+!ENDIF
+
+!IF "$(ZLIB_DIR)" == ""
+ZLIB_DIR = c:\User\zlib
+!ENDIF
+
+!IF "$(JPEGLIB_DIR)" == ""
+JPEGLIB_DIR = c:\User\jpeg-6b
+!ENDIF
+
+!IF "$(ANTLRLIB_DIR)" == ""
+ANTLRLIB_DIR = c:\User\antlr-2.7.0
+!ENDIF
+
+
+PROMPT :
+      -@echo Making LibVRML97core library
+
+$(BINOUTDIR) : 
+	   if not exist $(BINOUTDIR) mkdir $(BINOUTDIR)
+
+$(LIBDIR) : 
+	   if not exist $(LIBDIR) mkdir $(LIBDIR)
+
+CPP = cl.exe
+CFLAGS = /nologo /ML /W3 /GX /O2 /D "WIN32" /D "_WINDOWS"\
+	/Fp"$(INTDIR)\libvrml97core.pch" /YX /Fo"$(INTDIR)\\"\
+	/Fd"$(INTDIR)\\" /FD /c /D "NDEBUG"
+
+O=.obj
+LIB32 = link.exe -lib
+
+
+
+# variables
+
+OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOUTDIR)\MathUtils$(O)\
+      $(BINOUTDIR)\gifread$(O) $(BINOUTDIR)\Image$(O) $(BINOUTDIR)\jpgread$(O)\
+	  $(BINOUTDIR)\Vrml97Parser$(O) $(BINOUTDIR)\vrml97scanner$(O) $(BINOUTDIR)\pngread$(O)\
+      $(BINOUTDIR)\ScriptJDK$(O) $(BINOUTDIR)\ScriptJS$(O) $(BINOUTDIR)\ScriptObject$(O)\
+      $(BINOUTDIR)\sound$(O) $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
+      $(BINOUTDIR)\VrmlField$(O) $(BINOUTDIR)\VrmlNamespace$(O) $(BINOUTDIR)\VrmlNode$(O)\
+      $(BINOUTDIR)\VrmlNodeAnchor$(O) $(BINOUTDIR)\VrmlNodeAppearance$(O)\
+	  $(BINOUTDIR)\VrmlNodeAudioClip$(O) $(BINOUTDIR)\VrmlNodeBackGround$(O)\
+      $(BINOUTDIR)\VrmlNodeBillboard$(O) $(BINOUTDIR)\VrmlNodeBox$(O)\
+      $(BINOUTDIR)\VrmlNodeCollision$(O) $(BINOUTDIR)\VrmlNodeColor$(O)\
+      $(BINOUTDIR)\VrmlNodeColorInt$(O) $(BINOUTDIR)\VrmlNodeCone$(O)\
+	  $(BINOUTDIR)\VrmlNodeCoordinate$(O) $(BINOUTDIR)\VrmlNodeCoordinateInt$(O)\
+	  $(BINOUTDIR)\VrmlNodeCylinder$(O) $(BINOUTDIR)\VrmlNodeCylinderSensor$(O)\
+	  $(BINOUTDIR)\VrmlNodeDirLight$(O) $(BINOUTDIR)\VrmlNodeElevationGrid$(O)\
+	  $(BINOUTDIR)\VrmlNodeExtrusion$(O) $(BINOUTDIR)\VrmlNodeFog$(O)\
+      $(BINOUTDIR)\VrmlNodeFontStyle$(O)  $(BINOUTDIR)\VrmlNodeGeometry$(O)
+	   
+OBJ2 = $(BINOUTDIR)\VrmlNodeGroup$(O) $(BINOUTDIR)\VrmlNodeIFaceSet$(O)\
+	   $(BINOUTDIR)\VrmlNodeILineSet$(O) $(BINOUTDIR)\VrmlNodeImageTexture$(O)\
+	   $(BINOUTDIR)\VrmlNodeIndexedSet$(O) $(BINOUTDIR)\VrmlNodeInline$(O)\
+       $(BINOUTDIR)\VrmlNodeLight$(O) $(BINOUTDIR)\VrmlNodeLOD$(O)\
+       $(BINOUTDIR)\VrmlNodeMaterial$(O) $(BINOUTDIR)\VrmlNodeMovieTexture$(O)\
+       $(BINOUTDIR)\VrmlNodeNavigationInfo$(O) $(BINOUTDIR)\VrmlNodeNormal$(O)\
+       $(BINOUTDIR)\VrmlNodeNormalInt$(O) $(BINOUTDIR)\VrmlNodeOrientationInt$(O)\
+	   $(BINOUTDIR)\VrmlNodePixelTexture$(O) $(BINOUTDIR)\VrmlNodePlaneSensor$(O)\
+       $(BINOUTDIR)\VrmlNodePointLight$(O) $(BINOUTDIR)\VrmlNodePointSet$(O)\
+       $(BINOUTDIR)\VrmlNodePositionInt$(O) $(BINOUTDIR)\VrmlNodeProto$(O)\
+       $(BINOUTDIR)\VrmlNodeProximitySensor$(O) $(BINOUTDIR)\VrmlNodeScalarInt$(O)\
+       $(BINOUTDIR)\VrmlNodeScript$(O) $(BINOUTDIR)\VrmlNodeShape$(O)\
+       $(BINOUTDIR)\VrmlNodeSound$(O) $(BINOUTDIR)\VrmlNodeSphere$(O)\
+       $(BINOUTDIR)\VrmlNodeSphereSensor$(O) $(BINOUTDIR)\VrmlNodeSpotLight$(O)\
+       $(BINOUTDIR)\VrmlNodeSwitch$(O) $(BINOUTDIR)\VrmlNodeText$(O)\
+       $(BINOUTDIR)\VrmlNodeTextureCoordinate$(O) $(BINOUTDIR)\VrmlNodeTextureTransform$(O)\
+	   $(BINOUTDIR)\VrmlNodeTimeSensor$(O) $(BINOUTDIR)\VrmlNodeTouchSensor$(O)\
+	   $(BINOUTDIR)\VrmlNodeTransform$(O) $(BINOUTDIR)\VrmlNodeType$(O)\
+	   $(BINOUTDIR)\VrmlNodeViewPoint$(O) $(BINOUTDIR)\VrmlNodeVisibilitySensor$(O)\
+	   $(BINOUTDIR)\VrmlNodeWorldInfo$(O) $(BINOUTDIR)\VrmlScene$(O)\
+	   $(BINOUTDIR)\mpgread$(O) $(BINOUTDIR)\VrmlAABox$(O) $(BINOUTDIR)\VrmlBSphere$(O)\
+         $(BINOUTDIR)\VrmlBVolume$(O) $(BINOUTDIR)\VrmlFrustum$(O) $(BINOUTDIR)\VrmlRenderContext$(O) 
+
+clean :
+      cd javascript
+      nmake /F Makefile.win clean
+      cd ..\antlr
+      nmake /F Makefile.win clean
+      cd ..
+    -@echo Cleaning LibVRML97core library
+	-@erase $(BINOUTDIR)\Audio.obj
+	-@erase $(BINOUTDIR)\Doc.obj
+	-@erase $(BINOUTDIR)\Doc2.obj
+	-@erase $(BINOUTDIR)\gifread.obj
+	-@erase $(BINOUTDIR)\Image.obj
+	-@erase $(BINOUTDIR)\jpgread.obj
+	-@erase $(BINOUTDIR)\vrml97scanner.obj
+	-@erase $(BINOUTDIR)\MathUtils.obj
+	-@erase $(BINOUTDIR)\Vrml97Parser.obj
+	-@erase $(BINOUTDIR)\pngread.obj
+	-@erase $(BINOUTDIR)\ScriptJDK.obj
+	-@erase $(BINOUTDIR)\ScriptJS.obj
+	-@erase $(BINOUTDIR)\ScriptObject.obj
+	-@erase $(BINOUTDIR)\sound.obj
+	-@erase $(BINOUTDIR)\System.obj
+	-@erase $(BINOUTDIR)\Viewer.obj
+	-@erase $(BINOUTDIR)\VrmlField.obj
+	-@erase $(BINOUTDIR)\VrmlNamespace.obj
+	-@erase $(BINOUTDIR)\VrmlNode.obj
+	-@erase $(BINOUTDIR)\VrmlNodeAnchor.obj
+	-@erase $(BINOUTDIR)\VrmlNodeAppearance.obj
+	-@erase $(BINOUTDIR)\VrmlNodeAudioClip.obj
+	-@erase $(BINOUTDIR)\VrmlNodeBackground.obj
+	-@erase $(BINOUTDIR)\VrmlNodeBillboard.obj
+	-@erase $(BINOUTDIR)\VrmlNodeBox.obj
+	-@erase $(BINOUTDIR)\VrmlNodeCollision.obj
+	-@erase $(BINOUTDIR)\VrmlNodeColor.obj
+	-@erase $(BINOUTDIR)\VrmlNodeColorInt.obj
+	-@erase $(BINOUTDIR)\VrmlNodeCone.obj
+	-@erase $(BINOUTDIR)\VrmlNodeCoordinate.obj
+	-@erase $(BINOUTDIR)\VrmlNodeCoordinateInt.obj
+	-@erase $(BINOUTDIR)\VrmlNodeCylinder.obj
+	-@erase $(BINOUTDIR)\VrmlNodeCylinderSensor.obj
+	-@erase $(BINOUTDIR)\VrmlNodeDirLight.obj
+	-@erase $(BINOUTDIR)\VrmlNodeElevationGrid.obj
+	-@erase $(BINOUTDIR)\VrmlNodeExtrusion.obj
+	-@erase $(BINOUTDIR)\VrmlNodeFog.obj
+	-@erase $(BINOUTDIR)\VrmlNodeFontStyle.obj
+	-@erase $(BINOUTDIR)\VrmlNodeGeometry.obj
+	-@erase $(BINOUTDIR)\VrmlNodeGroup.obj
+	-@erase $(BINOUTDIR)\VrmlNodeIFaceSet.obj
+	-@erase $(BINOUTDIR)\VrmlNodeILineSet.obj
+	-@erase $(BINOUTDIR)\VrmlNodeImageTexture.obj
+	-@erase $(BINOUTDIR)\VrmlNodeIndexedSet.obj
+	-@erase $(BINOUTDIR)\VrmlNodeInline.obj
+	-@erase $(BINOUTDIR)\VrmlNodeLight.obj
+	-@erase $(BINOUTDIR)\VrmlNodeLOD.obj
+	-@erase $(BINOUTDIR)\VrmlNodeMaterial.obj
+	-@erase $(BINOUTDIR)\VrmlNodeMovieTexture.obj
+	-@erase $(BINOUTDIR)\VrmlNodeNavigationInfo.obj
+	-@erase $(BINOUTDIR)\VrmlNodeNormal.obj
+	-@erase $(BINOUTDIR)\VrmlNodeNormalInt.obj
+	-@erase $(BINOUTDIR)\VrmlNodeOrientationInt.obj
+	-@erase $(BINOUTDIR)\VrmlNodePixelTexture.obj
+	-@erase $(BINOUTDIR)\VrmlNodePlaneSensor.obj
+	-@erase $(BINOUTDIR)\VrmlNodePointLight.obj
+	-@erase $(BINOUTDIR)\VrmlNodePointSet.obj
+	-@erase $(BINOUTDIR)\VrmlNodePositionInt.obj
+	-@erase $(BINOUTDIR)\VrmlNodeProto.obj
+	-@erase $(BINOUTDIR)\VrmlNodeProximitySensor.obj
+	-@erase $(BINOUTDIR)\VrmlNodeScalarInt.obj
+	-@erase $(BINOUTDIR)\VrmlNodeScript.obj
+	-@erase $(BINOUTDIR)\VrmlNodeShape.obj
+	-@erase $(BINOUTDIR)\VrmlNodeSound.obj
+	-@erase $(BINOUTDIR)\VrmlNodeSphere.obj
+	-@erase $(BINOUTDIR)\VrmlNodeSphereSensor.obj
+	-@erase $(BINOUTDIR)\VrmlNodeSpotLight.obj
+	-@erase $(BINOUTDIR)\VrmlNodeSwitch.obj
+	-@erase $(BINOUTDIR)\VrmlNodeText.obj
+	-@erase $(BINOUTDIR)\VrmlNodeTextureCoordinate.obj
+	-@erase $(BINOUTDIR)\VrmlNodeTextureTransform.obj
+	-@erase $(BINOUTDIR)\VrmlNodeTimeSensor.obj
+	-@erase $(BINOUTDIR)\VrmlNodeTouchSensor.obj
+	-@erase $(BINOUTDIR)\VrmlNodeTransform.obj
+	-@erase $(BINOUTDIR)\VrmlNodeType.obj
+	-@erase $(BINOUTDIR)\VrmlNodeViewpoint.obj
+	-@erase $(BINOUTDIR)\VrmlNodeVisibilitySensor.obj
+	-@erase $(BINOUTDIR)\VrmlNodeWorldInfo.obj
+	-@erase $(BINOUTDIR)\VrmlScene.obj
+      -@erase $(BINOUTDIR)\mpgread.obj
+      -@erase $(BINOUTDIR)\VrmlAABox.obj
+      -@erase $(BINOUTDIR)\VrmlBSphere.obj
+      -@erase $(BINOUTDIR)\VrmlBVolume.obj
+      -@erase $(BINOUTDIR)\VrmlFrustum.obj
+      -@erase $(BINOUTDIR)\VrmlRenderContext.obj
+      -@erase Vrml97Parser.cpp
+      -@erase Vrml97Parser.hpp
+      -@erase Vrml97ParserTokenTypes.hpp
+      -@erase Vrml97ParserTokenTypes.txt
+      -@erase vrml97tokentypes.txt
+	-@erase $(LIBDIR)\libvrml97core.lib
+
+all : core
+libraries : core
+
+$(JAVALIBDIR)\libjavascript.lib  : 
+                                   cd .\javascript
+                                   nmake /F Makefile.win js
+                                   cd $(MAKEDIR)
+
+$(ANTLRLIBDIR)\libantlr.lib : 
+                             cd .\antlr
+                             nmake /F Makefile.win antlr
+                             cd $(MAKEDIR)
+
+core : prompt $(BINOUTDIR) $(LIBDIR) $(LIBDIR)\libvrml97core.lib
+
+
+$(LIBDIR)\libvrml97core.lib : $(JAVALIBDIR)\libjavascript.lib  \
+                   $(ANTLRLIBDIR)\libantlr.lib $(OBJ1) $(OBJ2)
+		       if exist $(LIBDIR)\libvrml97core.lib del $(LIBDIR)\libvrml97core.lib
+		       $(LIB32) /nologo /out:$(LIBDIR)\libvrml97core.lib $(JAVALIBDIR)\libjavascript.lib \
+                   $(ANTLRLIBDIR)\libantlr.lib $(OBJ1) $(OBJ2)
+
+$(BINOUTDIR)\Audio.obj :  $(SOURCE)\Audio.cpp $(SOURCE)\Audio.h $(SOURCE)\Doc.h \
+						  $(SOURCE)\System.h	
+            			  $(CPP) $(CFLAGS) /I $(ZLIB_DIR) $(SOURCE)\Audio.cpp
+
+$(BINOUTDIR)\Doc.obj :  $(SOURCE)\Doc.cpp $(SOURCE)\Doc.h ..\..\win32\winconfig.h
+            			$(CPP) $(CFLAGS) /I ..\..\win32  /I $(ZLIB_DIR) $(SOURCE)\Doc.cpp
+
+$(BINOUTDIR)\Doc2.obj :  $(SOURCE)\Doc2.cpp $(SOURCE)\Doc2.hpp ..\..\win32\winconfig.h
+            			$(CPP) $(CFLAGS) /I ..\..\win32 /I $(ZLIB_DIR) $(SOURCE)\Doc2.cpp
+
+
+$(BINOUTDIR)\gifread.obj :  $(SOURCE)\gifread.cpp $(SOURCE)\gifread.h 
+            			  $(CPP) $(CFLAGS) $(SOURCE)\gifread.cpp 
+
+$(BINOUTDIR)\Image.obj :  $(SOURCE)\Image.cpp $(SOURCE)\Image.h $(SOURCE)\gifread.h\
+						  $(SOURCE)\jpgread.h $(SOURCE)\pngread.h $(SOURCE)\System.h
+            			  $(CPP) $(CFLAGS) /I $(ZLIB_DIR) $(SOURCE)\Image.cpp
+
+$(BINOUTDIR)\jpgread.obj :  $(SOURCE)\jpgread.cpp $(SOURCE)\jpgread.h 
+            			    $(CPP) $(CFLAGS) /I $(JPEGLIB_DIR) $(SOURCE)\jpgread.cpp 
+
+Vrml97Parser.cpp     :                $(SOURCE)\vrml97parser.g $(SOURCE)\Vrml97TokenTypes.txt.in 
+						   copy $(SOURCE)\Vrml97TokenTypes.txt.in vrml97tokentypes.txt
+						   SET CLASSPATH=$(ANTLRLIB_DIR)
+						   java antlr.Tool $(SOURCE)\vrml97parser.g
+
+$(BINOUTDIR)\Vrml97Parser.obj  :       Vrml97Parser.cpp $(SOURCE)\Doc2.hpp\
+                                       $(SOURCE)\VrmlMFTime.h $(SOURCE)\VrmlSFBool.h $(SOURCE)\VrmlMFNode.h\
+						   $(SOURCE)\VrmlMFString.h $(SOURCE)\VrmlNamespace.h $(SOURCE)\VrmlNode.h\
+						   $(SOURCE)\VrmlNodeScript.h $(SOURCE)\VrmlNodeType.h\
+						   $(SOURCE)\VrmlSFColor.h $(SOURCE)\VrmlSFFloat.h $(SOURCE)\VrmlSFNode.h\
+						   $(SOURCE)\VrmlSFImage.h $(SOURCE)\VrmlSFVec3f.h \
+						   $(SOURCE)\VrmlMFColor.h $(SOURCE)\VrmlMFFloat.h\
+						   $(SOURCE)\VrmlSFInt.h $(SOURCE)\VrmlSFRotation.h $(SOURCE)\VrmlSFTime.h\
+						   $(SOURCE)\VrmlMFInt.h $(SOURCE)\VrmlSFVec2f.h \
+					         $(SOURCE)\VrmlMFRotation.h $(SOURCE)\VrmlMFTime.h\
+                                       $(SOURCE)\VrmlMFVec2f.h $(SOURCE)\VrmlMFVec3f.h
+						   $(CPP) $(CFLAGS) /GR /I $(SOURCE) /I . Vrml97Parser.cpp
+
+
+$(BINOUTDIR)\vrml97scanner.obj :   $(SOURCE)\vrml97scanner.cpp $(SOURCE)\vrml97scanner.hpp 
+                                   $(CPP) $(CFLAGS) $(SOURCE)\vrml97scanner.cpp
+    						   						   							 
+$(BINOUTDIR)\MathUtils.obj : $(SOURCE)\MathUtils.cpp $(SOURCE)\MathUtils.h 
+	                    	$(CPP) $(CFLAGS) $(SOURCE)\MathUtils.cpp
+
+$(BINOUTDIR)\pngread.obj : $(SOURCE)\pngread.cpp $(SOURCE)\pngread.h 
+	                    	$(CPP) $(CFLAGS) /I $(PNGLIB_DIR) /I $(ZLIB_DIR)\
+							$(SOURCE)\pngread.cpp
+
+$(BINOUTDIR)\ScriptJDK.obj : $(SOURCE)\ScriptJDK.cpp $(SOURCE)\ScriptJDK.h\
+						     $(SOURCE)\Doc.h $(SOURCE)\MathUtils.h\
+                        	 $(SOURCE)\ScriptObject.h $(SOURCE)\System.h\
+                        	 $(SOURCE)\Viewer.h	$(SOURCE)\VrmlField.h\
+                             $(SOURCE)\VrmlMFColor.h $(SOURCE)\VrmlMFFloat.h\
+	                         $(SOURCE)\VrmlMFInt.h	$(SOURCE)\VrmlMFNode.h\
+                             $(SOURCE)\VrmlMFRotation.h	$(SOURCE)\VrmlMFString.h\
+                             $(SOURCE)\VrmlMFVec2f.h $(SOURCE)\VrmlMFVec3f.h\
+                        	 $(SOURCE)\VrmlNamespace.h $(SOURCE)\VrmlNode.h\
+                        	 $(SOURCE)\VrmlNodeChild.h $(SOURCE)\VrmlNodeGroup.h\
+                             $(SOURCE)\VrmlNodeScript.h $(SOURCE)\VrmlNodeType.h\
+                             $(SOURCE)\VrmlScene.h $(SOURCE)\VrmlSFBool.h\
+                             $(SOURCE)\VrmlSFColor.h $(SOURCE)\VrmlSFFloat.h\
+	                         $(SOURCE)\VrmlSFImage.h $(SOURCE)\VrmlSFInt.h\
+                             $(SOURCE)\VrmlSFNode.h	$(SOURCE)\VrmlSFRotation.h\
+                             $(SOURCE)\VrmlSFString.h $(SOURCE)\VrmlSFTime.h\
+                             $(SOURCE)\VrmlSFVec2f.h $(SOURCE)\VrmlSFVec3f.h
+							 $(CPP) $(CFLAGS) $(SOURCE)\ScriptJDK.cpp
+
+$(BINOUTDIR)\ScriptJS.obj : $(SOURCE)\ScriptJS.cpp $(SOURCE)\ScriptJS.h\
+                        	$(SOURCE)\Doc.h $(SOURCE)\MathUtils.h\
+							$(SOURCE)\ScriptObject.h\
+							$(SOURCE)\System.h	$(SOURCE)\Viewer.h\
+							$(SOURCE)\VrmlField.h	$(SOURCE)\VrmlMFColor.h\
+							$(SOURCE)\VrmlMFFloat.h $(SOURCE)\VrmlMFInt.h\
+							$(SOURCE)\VrmlMFNode.h $(SOURCE)\VrmlMFRotation.h\
+							$(SOURCE)\VrmlMFString.h $(SOURCE)\VrmlMFVec2f.h\
+							$(SOURCE)\VrmlMFVec3f.h $(SOURCE)\VrmlNamespace.h\
+							$(SOURCE)\VrmlNode.h $(SOURCE)\VrmlNodeChild.h\
+							$(SOURCE)\VrmlNodeGroup.h $(SOURCE)\VrmlNodeScript.h\
+							$(SOURCE)\VrmlNodeType.h $(SOURCE)\VrmlScene.h\
+							$(SOURCE)\VrmlSFBool.h $(SOURCE)\VrmlSFColor.h\
+							$(SOURCE)\VrmlSFFloat.h $(SOURCE)\VrmlSFImage.h\
+							$(SOURCE)\VrmlSFInt.h $(SOURCE)\VrmlSFNode.h\
+							$(SOURCE)\VrmlSFRotation.h $(SOURCE)\VrmlSFString.h\
+							$(SOURCE)\VrmlSFTime.h $(SOURCE)\VrmlSFVec2f.h\
+							$(SOURCE)\VrmlSFVec3f.h
+							$(CPP) $(CFLAGS) /I $(JSINCLUDE) /I $(ZLIB_DIR) /D XP_PC\
+							/D js_InitArrayClass=JS_InitArrayClass $(SOURCE)\ScriptJS.cpp
+
+$(BINOUTDIR)\ScriptObject.obj : $(SOURCE)\ScriptObject.cpp $(SOURCE)\ScriptObject.h\
+								$(SOURCE)\Doc.h\
+								$(SOURCE)\ScriptJDK.h\
+								$(SOURCE)\ScriptJS.h\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlMFString.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeChild.h\
+								$(SOURCE)\VrmlNodeGroup.h\
+								$(SOURCE)\VrmlNodeScript.h\
+								$(SOURCE)\VrmlScene.h\
+								$(SOURCE)\VrmlSFBool.h\
+								$(SOURCE)\VrmlSFString.h\
+								$(SOURCE)\VrmlSFVec3f.h
+								$(CPP) $(CFLAGS) /I $(JSINCLUDE) /I $(ZLIB_DIR) /D XP_PC\
+								$(SOURCE)\ScriptObject.cpp
+
+$(BINOUTDIR)\sound.obj : $(SOURCE)\sound.c $(SOURCE)\sound.h
+						 $(CPP) $(CFLAGS) $(SOURCE)\sound.c
+
+$(BINOUTDIR)\System.obj : $(SOURCE)\System.cpp $(SOURCE)\System.h
+						 $(CPP) $(CFLAGS) $(SOURCE)\System.cpp
+
+$(BINOUTDIR)\Viewer.obj :   $(SOURCE)\Viewer.cpp $(SOURCE)\Viewer.h\
+							$(SOURCE)\MathUtils.h\
+							$(SOURCE)\System.h\
+							$(SOURCE)\VrmlField.h\
+							$(SOURCE)\VrmlMFNode.h\
+							$(SOURCE)\VrmlNode.h\
+							$(SOURCE)\VrmlNodeChild.h\
+							$(SOURCE)\VrmlNodeGroup.h\
+							$(SOURCE)\VrmlScene.h\
+							$(SOURCE)\VrmlSFString.h\
+							$(SOURCE)\VrmlSFVec3f.h\
+							..\..\win32\winconfig.h
+							$(CPP) $(CFLAGS) /I ..\..\win32 $(SOURCE)\Viewer.cpp
+
+$(BINOUTDIR)\VrmlField.obj :    $(SOURCE)\VrmlField.cpp $(SOURCE)\VrmlField.h\
+								$(SOURCE)\MathUtils.h\
+								$(SOURCE)\System.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFColor.h\
+								$(SOURCE)\VrmlMFFloat.h\
+								$(SOURCE)\VrmlMFInt.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlMFRotation.h\
+								$(SOURCE)\VrmlMFString.h\
+								$(SOURCE)\VrmlMFVec2f.h\
+								$(SOURCE)\VrmlMFVec3f.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlSFBool.h\
+								$(SOURCE)\VrmlSFColor.h\
+								$(SOURCE)\VrmlSFFloat.h\
+								$(SOURCE)\VrmlSFImage.h\
+								$(SOURCE)\VrmlSFInt.h\
+								$(SOURCE)\VrmlSFNode.h\
+								$(SOURCE)\VrmlSFRotation.h\
+								$(SOURCE)\VrmlSFString.h\
+								$(SOURCE)\VrmlSFTime.h\
+								$(SOURCE)\VrmlSFVec2f.h\
+								$(SOURCE)\VrmlSFVec3f.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlField.cpp
+
+$(BINOUTDIR)\VrmlNamespace.obj :  $(SOURCE)\VrmlNamespace.cpp $(SOURCE)\VrmlNamespace.h\
+								$(SOURCE)\Image.h\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFColor.h\
+								$(SOURCE)\VrmlMFFloat.h\
+								$(SOURCE)\VrmlMFInt.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlMFRotation.h\
+								$(SOURCE)\VrmlMFString.h\
+								$(SOURCE)\VrmlMFVec2f.h\
+								$(SOURCE)\VrmlMFVec3f.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeAnchor.h\
+								$(SOURCE)\VrmlNodeAppearance.h\
+								$(SOURCE)\VrmlNodeAudioClip.h\
+								$(SOURCE)\VrmlNodeBackground.h\
+								$(SOURCE)\VrmlNodeBillboard.h\
+								$(SOURCE)\VrmlNodeBox.h\
+								$(SOURCE)\VrmlNodeChild.h\
+								$(SOURCE)\VrmlNodeCollision.h\
+								$(SOURCE)\VrmlNodeColor.h\
+								$(SOURCE)\VrmlNodeColorInt.h\
+								$(SOURCE)\VrmlNodeCone.h\
+								$(SOURCE)\VrmlNodeCoordinate.h\
+								$(SOURCE)\VrmlNodeCoordinateInt.h\
+								$(SOURCE)\VrmlNodeCylinder.h\
+								$(SOURCE)\VrmlNodeCylinderSensor.h\
+								$(SOURCE)\VrmlNodeDirLight.h\
+								$(SOURCE)\VrmlNodeElevationGrid.h\
+								$(SOURCE)\VrmlNodeExtrusion.h\
+								$(SOURCE)\VrmlNodeFog.h\
+								$(SOURCE)\VrmlNodeFontStyle.h\
+								$(SOURCE)\VrmlNodeGeometry.h\
+								$(SOURCE)\VrmlNodeGroup.h\
+								$(SOURCE)\VrmlNodeIFaceSet.h\
+								$(SOURCE)\VrmlNodeILineSet.h\
+								$(SOURCE)\VrmlNodeImageTexture.h\
+								$(SOURCE)\VrmlNodeIndexedSet.h\
+								$(SOURCE)\VrmlNodeInline.h\
+								$(SOURCE)\VrmlNodeLight.h\
+								$(SOURCE)\VrmlNodeLOD.h\
+								$(SOURCE)\VrmlNodeMaterial.h\
+								$(SOURCE)\VrmlNodeMovieTexture.h\
+								$(SOURCE)\VrmlNodeNavigationInfo.h\
+								$(SOURCE)\VrmlNodeNormal.h\
+								$(SOURCE)\VrmlNodeNormalInt.h\
+								$(SOURCE)\VrmlNodeOrientationInt.h\
+								$(SOURCE)\VrmlNodePixelTexture.h\
+								$(SOURCE)\VrmlNodePlaneSensor.h\
+								$(SOURCE)\VrmlNodePointLight.h\
+								$(SOURCE)\VrmlNodePointSet.h\
+								$(SOURCE)\VrmlNodePositionInt.h\
+								$(SOURCE)\VrmlNodeProximitySensor.h\
+								$(SOURCE)\VrmlNodeScalarInt.h\
+								$(SOURCE)\VrmlNodeScript.h\
+								$(SOURCE)\VrmlNodeShape.h\
+								$(SOURCE)\VrmlNodeSound.h\
+								$(SOURCE)\VrmlNodeSphere.h\
+								$(SOURCE)\VrmlNodeSphereSensor.h\
+								$(SOURCE)\VrmlNodeSpotLight.h\
+								$(SOURCE)\VrmlNodeSwitch.h\
+								$(SOURCE)\VrmlNodeText.h\
+								$(SOURCE)\VrmlNodeTexture.h\
+								$(SOURCE)\VrmlNodeTextureCoordinate.h\
+								$(SOURCE)\VrmlNodeTextureTransform.h\
+								$(SOURCE)\VrmlNodeTimeSensor.h\
+								$(SOURCE)\VrmlNodeTouchSensor.h\
+								$(SOURCE)\VrmlNodeTransform.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlNodeViewpoint.h\
+								$(SOURCE)\VrmlNodeVisibilitySensor.h\
+								$(SOURCE)\VrmlNodeWorldInfo.h\
+								$(SOURCE)\VrmlSFBool.h\
+								$(SOURCE)\VrmlSFColor.h\
+								$(SOURCE)\VrmlSFFloat.h\
+								$(SOURCE)\VrmlSFImage.h\
+								$(SOURCE)\VrmlSFInt.h\
+								$(SOURCE)\VrmlSFNode.h\
+								$(SOURCE)\VrmlSFRotation.h\
+								$(SOURCE)\VrmlSFString.h\
+								$(SOURCE)\VrmlSFTime.h\
+								$(SOURCE)\VrmlSFVec2f.h\
+								$(SOURCE)\VrmlSFVec3f.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNamespace.cpp
+
+
+$(BINOUTDIR)\VrmlNode.obj :  $(SOURCE)\VrmlNode.cpp $(SOURCE)\VrmlNode.h\
+								$(SOURCE)\MathUtils.h\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlNamespace.h\
+								$(SOURCE)\VrmlNodeChild.h\
+								$(SOURCE)\VrmlNodeGroup.h\
+								$(SOURCE)\VrmlNodeTexture.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlScene.h\
+								$(SOURCE)\VrmlSFString.h\
+								$(SOURCE)\VrmlSFVec3f.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNode.cpp
+
+$(BINOUTDIR)\VrmlNodeAnchor.obj :   $(SOURCE)\VrmlNodeAnchor.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFString.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeAnchor.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeAnchor.cpp
+
+$(BINOUTDIR)\VrmlNodeAppearance.obj :   $(SOURCE)\VrmlNodeAppearance.cpp\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeAppearance.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeMaterial.h\
+										$(SOURCE)\VrmlNodeTexture.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlSFColor.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFNode.h\
+										$(SOURCE)\VrmlSFString.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeAppearance.cpp
+
+$(BINOUTDIR)\VrmlNodeAudioClip.obj :	$(SOURCE)\VrmlNodeAudioClip.cpp\
+										$(SOURCE)\Audio.h\
+										$(SOURCE)\Doc.h\
+										$(SOURCE)\MathUtils.h\
+										$(SOURCE)\sound.h\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlMFString.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeAudioClip.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFBool.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFTime.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) /I $(ZLIB_DIR) $(SOURCE)\VrmlNodeAudioClip.cpp
+
+$(BINOUTDIR)\VrmlNodeBackGround.obj: $(SOURCE)\VrmlNodeBackGround.cpp\
+									$(SOURCE)\Doc.h\
+									$(SOURCE)\Image.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFColor.h\
+									$(SOURCE)\VrmlMFFloat.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFString.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeBackground.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) /I $(ZLIB_DIR) $(SOURCE)\VrmlNodeBackGround.cpp
+
+$(BINOUTDIR)\VrmlNodeBillboard.obj: $(SOURCE)\VrmlNodeBillboard.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeBillboard.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeBillboard.cpp
+
+$(BINOUTDIR)\VrmlNodeBox.obj: $(SOURCE)\VrmlNodeBox.cpp\
+								$(SOURCE)\MathUtils.h\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeBox.h\
+								$(SOURCE)\VrmlNodeGeometry.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlSFString.h\
+								$(SOURCE)\VrmlSFVec3f.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeBox.cpp
+
+$(BINOUTDIR)\VrmlNodeCollision.obj: $(SOURCE)\VrmlNodeCollision.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeCollision.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFNode.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFTime.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeCollision.cpp
+
+$(BINOUTDIR)\VrmlNodeColor.obj :    $(SOURCE)\VrmlNodeColor.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFColor.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeColor.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeColor.cpp
+
+$(BINOUTDIR)\VrmlNodeColorInt.obj :     $(SOURCE)\VrmlNodeColorInt.cpp\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFColor.h\
+										$(SOURCE)\VrmlMFFloat.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeColorInt.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFColor.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeColorInt.cpp
+
+$(BINOUTDIR)\VrmlNodeCone.obj :     $(SOURCE)\VrmlNodeCone.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeCone.h\
+									$(SOURCE)\VrmlNodeGeometry.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeCone.cpp
+
+$(BINOUTDIR)\VrmlNodeCoordinate.obj :   $(SOURCE)\VrmlNodeCoordinate.cpp\
+										$(SOURCE)\System.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlMFVec3f.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeCoordinate.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlSFString.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeCoordinate.cpp
+
+$(BINOUTDIR)\VrmlNodeCoordinateInt.obj: $(SOURCE)\VrmlNodeCoordinateInt.cpp\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFFloat.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlMFVec3f.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeCoordinateInt.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeCoordinateInt.cpp
+
+$(BINOUTDIR)\VrmlNodeCylinder.obj:  $(SOURCE)\VrmlNodeCylinder.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeCylinder.h\
+									$(SOURCE)\VrmlNodeGeometry.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeCylinder.cpp
+
+$(BINOUTDIR)\VrmlNodeCylinderSensor.obj:  $(SOURCE)\VrmlNodeCylinderSensor.cpp\
+										$(SOURCE)\MathUtils.h\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeCylinderSensor.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFBool.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFRotation.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeCylinderSensor.cpp
+
+$(BINOUTDIR)\VrmlNodeDirLight.obj:  $(SOURCE)\VrmlNodeDirLight.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeDirLight.h\
+									$(SOURCE)\VrmlNodeLight.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFColor.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeDirLight.cpp
+
+$(BINOUTDIR)\VrmlNodeElevationGrid.obj:  $(SOURCE)\VrmlNodeElevationGrid.cpp\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFColor.h\
+										$(SOURCE)\VrmlMFFloat.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlMFVec2f.h\
+										$(SOURCE)\VrmlMFVec3f.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeColor.h\
+										$(SOURCE)\VrmlNodeElevationGrid.h\
+										$(SOURCE)\VrmlNodeGeometry.h\
+										$(SOURCE)\VrmlNodeNormal.h\
+										$(SOURCE)\VrmlNodeTextureCoordinate.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlSFBool.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFInt.h\
+										$(SOURCE)\VrmlSFNode.h\
+										$(SOURCE)\VrmlSFString.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeElevationGrid.cpp
+
+$(BINOUTDIR)\VrmlNodeExtrusion.obj:  $(SOURCE)\VrmlNodeExtrusion.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFRotation.h\
+									$(SOURCE)\VrmlMFVec2f.h\
+									$(SOURCE)\VrmlMFVec3f.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeExtrusion.h\
+									$(SOURCE)\VrmlNodeGeometry.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeExtrusion.cpp
+
+
+$(BINOUTDIR)\VrmlNodeFog.obj:  $(SOURCE)\VrmlNodeFog.cpp\
+							$(SOURCE)\System.h\
+							$(SOURCE)\Viewer.h\
+							$(SOURCE)\VrmlField.h\
+							$(SOURCE)\VrmlMFNode.h\
+							$(SOURCE)\VrmlNode.h\
+							$(SOURCE)\VrmlNodeChild.h\
+							$(SOURCE)\VrmlNodeFog.h\
+							$(SOURCE)\VrmlNodeGroup.h\
+							$(SOURCE)\VrmlNodeType.h\
+							$(SOURCE)\VrmlScene.h\
+							$(SOURCE)\VrmlSFBool.h\
+							$(SOURCE)\VrmlSFColor.h\
+							$(SOURCE)\VrmlSFFloat.h\
+							$(SOURCE)\VrmlSFString.h\
+							$(SOURCE)\VrmlSFVec3f.h
+							$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeFog.cpp
+
+$(BINOUTDIR)\VrmlNodeFontStyle.obj: $(SOURCE)\VrmlNodeFontStyle.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFString.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeFontStyle.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeFontStyle.cpp
+
+$(BINOUTDIR)\VrmlNodeGeometry.obj: $(SOURCE)\VrmlNodeGeometry.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeGeometry.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeGeometry.cpp
+
+$(BINOUTDIR)\VrmlNodeGroup.obj: $(SOURCE)\VrmlNodeGroup.cpp\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeChild.h\
+								$(SOURCE)\VrmlNodeGroup.h\
+								$(SOURCE)\VrmlNodePlaneSensor.h\
+								$(SOURCE)\VrmlNodeProto.h\
+								$(SOURCE)\VrmlNodeTouchSensor.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlSFBool.h\
+								$(SOURCE)\VrmlSFFloat.h\
+								$(SOURCE)\VrmlSFString.h\
+								$(SOURCE)\VrmlSFTime.h\
+								$(SOURCE)\VrmlSFVec2f.h\
+								$(SOURCE)\VrmlSFVec3f.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeGroup.cpp
+
+$(BINOUTDIR)\VrmlNodeIFaceSet.obj: $(SOURCE)\VrmlNodeIFaceSet.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFColor.h\
+									$(SOURCE)\VrmlMFInt.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFVec2f.h\
+									$(SOURCE)\VrmlMFVec3f.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeColor.h\
+									$(SOURCE)\VrmlNodeCoordinate.h\
+									$(SOURCE)\VrmlNodeGeometry.h\
+									$(SOURCE)\VrmlNodeIFaceSet.h\
+									$(SOURCE)\VrmlNodeIndexedSet.h\
+									$(SOURCE)\VrmlNodeNormal.h\
+									$(SOURCE)\VrmlNodeTextureCoordinate.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFNode.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeIFaceSet.cpp
+
+$(BINOUTDIR)\VrmlNodeILineSet.obj: $(SOURCE)\VrmlNodeILineSet.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFColor.h\
+									$(SOURCE)\VrmlMFInt.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFVec2f.h\
+									$(SOURCE)\VrmlMFVec3f.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeColor.h\
+									$(SOURCE)\VrmlNodeCoordinate.h\
+									$(SOURCE)\VrmlNodeGeometry.h\
+									$(SOURCE)\VrmlNodeILineSet.h\
+									$(SOURCE)\VrmlNodeIndexedSet.h\
+									$(SOURCE)\VrmlNodeTextureCoordinate.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFNode.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeILineSet.cpp
+
+$(BINOUTDIR)\VrmlNodeImageTexture.obj: $(SOURCE)\VrmlNodeImageTexture.cpp\
+										$(SOURCE)\Doc.h\
+										$(SOURCE)\Image.h\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlMFString.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodeImageTexture.h\
+										$(SOURCE)\VrmlNodeTexture.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFBool.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
+									    $(SOURCE)\VrmlNodeImageTexture.cpp
+
+$(BINOUTDIR)\VrmlNodeIndexedSet.obj: $(SOURCE)\VrmlNodeIndexedSet.cpp\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFInt.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeGeometry.h\
+										$(SOURCE)\VrmlNodeIndexedSet.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlSFBool.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFNode.h\
+										$(SOURCE)\VrmlSFString.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeIndexedSet.cpp
+
+$(BINOUTDIR)\VrmlNodeInline.obj: $(SOURCE)\VrmlNodeInline.cpp\
+									$(SOURCE)\Doc.h\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFString.h\
+									$(SOURCE)\VrmlNamespace.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeInline.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
+								    $(SOURCE)\VrmlNodeInline.cpp
+
+$(BINOUTDIR)\VrmlNodeLight.obj: $(SOURCE)\VrmlNodeLight.cpp\
+								$(SOURCE)\MathUtils.h\
+								$(SOURCE)\System.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeChild.h\
+								$(SOURCE)\VrmlNodeLight.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlSFBool.h\
+								$(SOURCE)\VrmlSFColor.h\
+								$(SOURCE)\VrmlSFFloat.h\
+								$(SOURCE)\VrmlSFString.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeLight.cpp
+
+$(BINOUTDIR)\VrmlNodeLOD.obj: $(SOURCE)\VrmlNodeLOD.cpp\
+								$(SOURCE)\MathUtils.h\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFFloat.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeChild.h\
+								$(SOURCE)\VrmlNodeLOD.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlSFString.h\
+								$(SOURCE)\VrmlSFVec3f.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeLOD.cpp
+
+$(BINOUTDIR)\VrmlNodeMaterial.obj: $(SOURCE)\VrmlNodeMaterial.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeMaterial.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFColor.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeMaterial.cpp
+
+$(BINOUTDIR)\VrmlNodeMovieTexture.obj: $(SOURCE)\VrmlNodeMovieTexture.cpp\
+										$(SOURCE)\Doc.h\
+										$(SOURCE)\Image.h\
+										$(SOURCE)\MathUtils.h\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlMFString.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodeMovieTexture.h\
+										$(SOURCE)\VrmlNodeTexture.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFBool.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFTime.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
+								        $(SOURCE)\VrmlNodeMovieTexture.cpp
+
+$(BINOUTDIR)\VrmlNodeNavigationInfo.obj: $(SOURCE)\VrmlNodeNavigationInfo.cpp\
+										$(SOURCE)\MathUtils.h\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFFloat.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlMFString.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodeNavigationInfo.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFBool.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeNavigationInfo.cpp
+
+$(BINOUTDIR)\VrmlNodeNormal.obj: $(SOURCE)\VrmlNodeNormal.cpp\
+								$(SOURCE)\System.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlMFVec3f.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeNormal.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlSFString.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeNormal.cpp
+
+$(BINOUTDIR)\VrmlNodeNormalInt.obj: $(SOURCE)\VrmlNodeNormalInt.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFFloat.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFVec3f.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeNormalInt.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeNormalInt.cpp
+
+$(BINOUTDIR)\VrmlNodeOrientationInt.obj: $(SOURCE)\VrmlNodeOrientationInt.cpp\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFFloat.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlMFRotation.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodeOrientationInt.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFRotation.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFVec3f.h\
+										..\..\win32\winconfig.h
+					                    $(CPP) $(CFLAGS) /I ..\..\win32 $(SOURCE)\VrmlNodeOrientationInt.cpp
+
+$(BINOUTDIR)\VrmlNodePixelTexture.obj: $(SOURCE)\VrmlNodePixelTexture.cpp\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodePixelTexture.h\
+										$(SOURCE)\VrmlNodeTexture.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFBool.h\
+										$(SOURCE)\VrmlSFImage.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodePixelTexture.cpp
+
+$(BINOUTDIR)\VrmlNodePlaneSensor.obj: $(SOURCE)\VrmlNodePlaneSensor.cpp\
+										$(SOURCE)\MathUtils.h\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodePlaneSensor.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFBool.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFVec2f.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodePlaneSensor.cpp
+
+$(BINOUTDIR)\VrmlNodePointLight.obj: $(SOURCE)\VrmlNodePointLight.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeLight.h\
+									$(SOURCE)\VrmlNodePointLight.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFColor.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodePointLight.cpp
+
+$(BINOUTDIR)\VrmlNodePointSet.obj: $(SOURCE)\VrmlNodePointSet.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFColor.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFVec3f.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeColor.h\
+									$(SOURCE)\VrmlNodeCoordinate.h\
+									$(SOURCE)\VrmlNodeGeometry.h\
+									$(SOURCE)\VrmlNodePointSet.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFNode.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodePointSet.cpp
+
+$(BINOUTDIR)\VrmlNodePositionInt.obj: $(SOURCE)\VrmlNodePositionInt.cpp\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFFloat.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlMFVec3f.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodePositionInt.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFFloat.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodePositionInt.cpp
+
+$(BINOUTDIR)\VrmlNodeProto.obj: $(SOURCE)\VrmlNodeProto.cpp\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlNamespace.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeProto.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlSFString.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeProto.cpp
+
+$(BINOUTDIR)\VrmlNodeProximitySensor.obj: $(SOURCE)\VrmlNodeProximitySensor.cpp\
+											$(SOURCE)\MathUtils.h\
+											$(SOURCE)\System.h\
+											$(SOURCE)\Viewer.h\
+											$(SOURCE)\VrmlField.h\
+											$(SOURCE)\VrmlMFNode.h\
+											$(SOURCE)\VrmlNode.h\
+											$(SOURCE)\VrmlNodeChild.h\
+											$(SOURCE)\VrmlNodeGroup.h\
+											$(SOURCE)\VrmlNodeProximitySensor.h\
+											$(SOURCE)\VrmlNodeType.h\
+											$(SOURCE)\VrmlScene.h\
+											$(SOURCE)\VrmlSFBool.h\
+											$(SOURCE)\VrmlSFRotation.h\
+											$(SOURCE)\VrmlSFString.h\
+											$(SOURCE)\VrmlSFTime.h\
+											$(SOURCE)\VrmlSFVec3f.h
+											$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeProximitySensor.cpp
+
+$(BINOUTDIR)\VrmlNodeScalarInt.obj: $(SOURCE)\VrmlNodeScalarInt.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFFloat.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeScalarInt.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeScalarInt.cpp
+
+$(BINOUTDIR)\VrmlNodeScript.obj: $(SOURCE)\VrmlNodeScript.cpp\
+									$(SOURCE)\ScriptObject.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFString.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeScript.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFNode.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFTime.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeScript.cpp
+
+$(BINOUTDIR)\VrmlNodeShape.obj: $(SOURCE)\VrmlNodeShape.cpp\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeAppearance.h\
+								$(SOURCE)\VrmlNodeChild.h\
+								$(SOURCE)\VrmlNodeGeometry.h\
+								$(SOURCE)\VrmlNodeShape.h\
+								$(SOURCE)\VrmlNodeTexture.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlSFNode.h\
+								$(SOURCE)\VrmlSFString.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeShape.cpp
+
+$(BINOUTDIR)\VrmlNodeSound.obj: $(SOURCE)\VrmlNodeSound.cpp\
+								$(SOURCE)\MathUtils.h\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeChild.h\
+								$(SOURCE)\VrmlNodeGroup.h\
+								$(SOURCE)\VrmlNodeSound.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlScene.h\
+								$(SOURCE)\VrmlSFBool.h\
+								$(SOURCE)\VrmlSFFloat.h\
+								$(SOURCE)\VrmlSFNode.h\
+								$(SOURCE)\VrmlSFString.h\
+								$(SOURCE)\VrmlSFVec3f.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeSound.cpp
+
+$(BINOUTDIR)\VrmlNodeSphere.obj: $(SOURCE)\VrmlNodeSphere.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeGeometry.h\
+									$(SOURCE)\VrmlNodeSphere.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h								
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeSphere.cpp
+
+$(BINOUTDIR)\VrmlNodeSphereSensor.obj: $(SOURCE)\VrmlNodeSphereSensor.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeSphereSensor.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFRotation.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeSphereSensor.cpp
+
+$(BINOUTDIR)\VrmlNodeSpotLight.obj: $(SOURCE)\VrmlNodeSpotLight.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeLight.h\
+									$(SOURCE)\VrmlNodeSpotLight.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFColor.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeSpotLight.cpp
+
+$(BINOUTDIR)\VrmlNodeSwitch.obj : $(SOURCE)\VrmlNodeSwitch.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeSwitch.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFInt.h\
+									$(SOURCE)\VrmlSFString.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeSwitch.cpp
+
+$(BINOUTDIR)\VrmlNodeText.obj : $(SOURCE)\VrmlNodeText.cpp\
+								$(SOURCE)\MathUtils.h\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFFloat.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlMFString.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeFontStyle.h\
+								$(SOURCE)\VrmlNodeGeometry.h\
+								$(SOURCE)\VrmlNodeText.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlSFBool.h\
+								$(SOURCE)\VrmlSFFloat.h\
+								$(SOURCE)\VrmlSFNode.h\
+								$(SOURCE)\VrmlSFString.h
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeText.cpp
+
+$(BINOUTDIR)\VrmlNodeTextureCoordinate.obj : $(SOURCE)\VrmlNodeTextureCoordinate.cpp\
+											$(SOURCE)\System.h\
+											$(SOURCE)\VrmlField.h\
+											$(SOURCE)\VrmlMFNode.h\
+											$(SOURCE)\VrmlMFVec2f.h\
+											$(SOURCE)\VrmlNode.h\
+											$(SOURCE)\VrmlNodeTextureCoordinate.h\
+											$(SOURCE)\VrmlNodeType.h\
+											$(SOURCE)\VrmlSFString.h
+											$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeTextureCoordinate.cpp
+
+$(BINOUTDIR)\VrmlNodeTextureTransform.obj : $(SOURCE)\VrmlNodeTextureTransform.cpp\
+											$(SOURCE)\MathUtils.h\
+											$(SOURCE)\System.h\
+											$(SOURCE)\Viewer.h\
+											$(SOURCE)\VrmlField.h\
+											$(SOURCE)\VrmlMFNode.h\
+											$(SOURCE)\VrmlNode.h\
+											$(SOURCE)\VrmlNodeTextureTransform.h\
+											$(SOURCE)\VrmlNodeType.h\
+											$(SOURCE)\VrmlSFFloat.h\
+											$(SOURCE)\VrmlSFString.h\
+											$(SOURCE)\VrmlSFVec2f.h
+											$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeTextureTransform.cpp
+
+$(BINOUTDIR)\VrmlNodeTimeSensor.obj : $(SOURCE)\VrmlNodeTimeSensor.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeTimeSensor.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFTime.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeTimeSensor.cpp
+
+$(BINOUTDIR)\VrmlNodeTouchSensor.obj : $(SOURCE)\VrmlNodeTouchSensor.cpp\
+										$(SOURCE)\MathUtils.h\
+										$(SOURCE)\System.h\
+										$(SOURCE)\Viewer.h\
+										$(SOURCE)\VrmlField.h\
+										$(SOURCE)\VrmlMFNode.h\
+										$(SOURCE)\VrmlNode.h\
+										$(SOURCE)\VrmlNodeChild.h\
+										$(SOURCE)\VrmlNodeGroup.h\
+										$(SOURCE)\VrmlNodeTouchSensor.h\
+										$(SOURCE)\VrmlNodeType.h\
+										$(SOURCE)\VrmlScene.h\
+										$(SOURCE)\VrmlSFBool.h\
+										$(SOURCE)\VrmlSFString.h\
+										$(SOURCE)\VrmlSFTime.h\
+										$(SOURCE)\VrmlSFVec2f.h\
+										$(SOURCE)\VrmlSFVec3f.h
+										$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeTouchSensor.cpp
+
+$(BINOUTDIR)\VrmlNodeTransform.obj : $(SOURCE)\VrmlNodeTransform.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeTransform.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlSFRotation.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeTransform.cpp
+
+$(BINOUTDIR)\VrmlNodeType.obj : $(SOURCE)\VrmlNodeType.cpp\
+								$(SOURCE)\Doc.h\
+								$(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h\
+								$(SOURCE)\VrmlField.h\
+								$(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlMFString.h\
+								$(SOURCE)\VrmlNamespace.h\
+								$(SOURCE)\VrmlNode.h\
+								$(SOURCE)\VrmlNodeChild.h\
+								$(SOURCE)\VrmlNodeGroup.h\
+								$(SOURCE)\VrmlNodeProto.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlScene.h\
+								$(SOURCE)\VrmlSFString.h\
+								$(SOURCE)\VrmlSFVec3f.h
+								$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
+							    $(SOURCE)\VrmlNodeType.cpp
+
+
+$(BINOUTDIR)\VrmlNodeViewPoint.obj : $(SOURCE)\VrmlNodeViewPoint.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlNodeViewpoint.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFRotation.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeViewPoint.cpp
+
+$(BINOUTDIR)\VrmlNodeVisibilitySensor.obj : $(SOURCE)\VrmlNodeVisibilitySensor.cpp\
+									$(SOURCE)\MathUtils.h\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFFloat.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFString.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeNavigationInfo.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlNodeVisibilitySensor.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFBool.h\
+									$(SOURCE)\VrmlSFFloat.h\
+									$(SOURCE)\VrmlSFRotation.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFTime.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeVisibilitySensor.cpp
+
+$(BINOUTDIR)\VrmlNodeWorldInfo.obj : $(SOURCE)\VrmlNodeWorldInfo.cpp\
+									$(SOURCE)\System.h\
+									$(SOURCE)\Viewer.h\
+									$(SOURCE)\VrmlField.h\
+									$(SOURCE)\VrmlMFNode.h\
+									$(SOURCE)\VrmlMFString.h\
+									$(SOURCE)\VrmlNode.h\
+									$(SOURCE)\VrmlNodeChild.h\
+									$(SOURCE)\VrmlNodeGroup.h\
+									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\VrmlNodeWorldInfo.h\
+									$(SOURCE)\VrmlScene.h\
+									$(SOURCE)\VrmlSFString.h\
+									$(SOURCE)\VrmlSFVec3f.h
+									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeWorldInfo.cpp
+
+$(BINOUTDIR)\VrmlScene.obj : $(SOURCE)\VrmlScene.cpp\
+								$(SOURCE)\Doc.h $(SOURCE)\Image.h $(SOURCE)\System.h\
+								$(SOURCE)\Viewer.h $(SOURCE)\VrmlField.h $(SOURCE)\VrmlMFColor.h\
+								$(SOURCE)\VrmlMFFloat.h $(SOURCE)\VrmlMFNode.h\
+								$(SOURCE)\VrmlMFString.h $(SOURCE)\VrmlNamespace.h\
+								$(SOURCE)\VrmlNode.h $(SOURCE)\VrmlNodeAnchor.h\
+								$(SOURCE)\VrmlNodeAudioClip.h $(SOURCE)\VrmlNodeBackground.h\
+								$(SOURCE)\VrmlNodeChild.h $(SOURCE)\VrmlNodeFog.h\
+								$(SOURCE)\VrmlNodeGroup.h $(SOURCE)\VrmlNodeLight.h\
+								$(SOURCE)\VrmlNodeMovieTexture.h $(SOURCE)\VrmlNodeNavigationInfo.h\
+								$(SOURCE)\VrmlNodePointLight.h $(SOURCE)\VrmlNodeScript.h\
+								$(SOURCE)\VrmlNodeSpotLight.h $(SOURCE)\VrmlNodeTexture.h\
+								$(SOURCE)\VrmlNodeTimeSensor.h\
+								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\VrmlNodeViewpoint.h\
+								$(SOURCE)\VrmlScene.h\
+								$(SOURCE)\VrmlSFBool.h\
+								$(SOURCE)\VrmlSFColor.h\
+								$(SOURCE)\VrmlSFFloat.h\
+								$(SOURCE)\VrmlSFRotation.h\
+								$(SOURCE)\VrmlSFString.h\
+								$(SOURCE)\VrmlSFTime.h\
+								$(SOURCE)\VrmlSFVec3f.h\
+								..\..\win32\winconfig.h
+								$(CPP) $(CFLAGS)  /GR /I . /I ..\..\win32 /I $(ZLIB_DIR) $(SOURCE)\VrmlScene.cpp
+
+$(BINOUTDIR)\mpgread.obj : $(SOURCE)\mpgread.cpp $(SOURCE)\mpgread.h 							
+								$(CPP) $(CFLAGS) $(SOURCE)\mpgread.cpp
+
+
+$(BINOUTDIR)\VrmlAABox.obj : $(SOURCE)\VrmlAABox.cpp $(SOURCE)\VrmlAABox.h 							
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlAABox.cpp
+
+$(BINOUTDIR)\VrmlBSphere.obj : $(SOURCE)\VrmlBSphere.cpp $(SOURCE)\VrmlBSphere.h 							
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlBSphere.cpp
+
+$(BINOUTDIR)\VrmlBVolume.obj : $(SOURCE)\VrmlBVolume.cpp $(SOURCE)\VrmlBVolume.h 							
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlBVolume.cpp
+
+$(BINOUTDIR)\VrmlFrustum.obj : $(SOURCE)\VrmlFrustum.cpp $(SOURCE)\VrmlFrustum.h 							
+								$(CPP) $(CFLAGS) /I ..\..\win32 $(SOURCE)\VrmlFrustum.cpp
+
+$(BINOUTDIR)\VrmlRenderContext.obj : $(SOURCE)\VrmlRenderContext.cpp $(SOURCE)\VrmlRenderContext.h 							
+								$(CPP) $(CFLAGS) $(SOURCE)\VrmlRenderContext.cpp
+
+
+
+

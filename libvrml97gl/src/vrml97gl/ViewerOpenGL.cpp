@@ -2493,13 +2493,13 @@ void ViewerOpenGL::setViewpoint(float *position,
   //}
   //cout << endl;
 
-  #if 0
+#if 0
   double MV[4][4];
   this->getUserNavigation(MV);
   float OGL_MV[16];
   matrix_to_glmatrix(MV, OGL_MV);
   glLoadMatrixf(OGL_MV);
-  #endif 
+#endif 
 
   // View modifiers are applied in first beginObject
   if (d_rotationChanged)
@@ -2650,15 +2650,16 @@ ViewerOpenGL::rot(float x, float y, float z, float a)
   Mrotation(rot_mat, rot_vec);
 
   double curr_rot_mat[4][4];
-  for(int i=0; i<4; i++) // oh good grief.
-    for(int j=0; j<4; j++)
+  int i,j;
+  for(i=0; i<4; i++) // oh good grief.
+    for(j=0; j<4; j++)
       curr_rot_mat[i][j] = d_rotationMatrix[j][i];
 
   double new_rot_mat[4][4];
   MM(new_rot_mat, curr_rot_mat, rot_mat);
 
-  for(int i=0; i<4; i++) // oh good grief.
-    for(int j=0; j<4; j++)
+  for(i=0; i<4; i++) // oh good grief.
+    for(j=0; j<4; j++)
       d_rotationMatrix[i][j] = new_rot_mat[j][i];
 
   wsPostRedraw();
@@ -2669,7 +2670,7 @@ void ViewerOpenGL::step( float x, float y, float z )
 {
   //cout << "ViewerOpenGL::step(" << x << "," << y << "," << z << ")" << endl;
 
-  #if 1
+#if 1
 
   double rot_mat[4][4];
   for(int i=0; i<4; i++) // oh good grief.
@@ -2691,9 +2692,9 @@ void ViewerOpenGL::step( float x, float y, float z )
   this->d_translatex += d[0];
   this->d_translatey += d[1];
   this->d_translatez += d[2];
-  #endif
+#endif
 
-  #if 0
+#if 0
   GLint viewport[4];
   GLdouble modelview[16], projection[16];
   glGetIntegerv (GL_VIEWPORT, viewport);
@@ -2723,7 +2724,7 @@ void ViewerOpenGL::step( float x, float y, float z )
   d_translatex += dx;
   d_translatey += dy;
   d_translatez += dz;
-  #endif
+#endif
 
   wsPostRedraw();
 }

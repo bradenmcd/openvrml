@@ -24,12 +24,16 @@
 #include <stdlib.h>	 /* malloc */
 #include <string.h>	 /* memset */
 
-#ifndef macintosh
+#ifdef macintosh
+#define	htonl(x)	(x)
+#else
+#ifdef _WIN32
+#include <winsock2.h>
+#else
 #include <sys/types.h>   /* to make netinet/in.h happy */
 #include <netinet/in.h>  /* for htonl */
-#else
-#define	htonl(x)	(x)
-#endif
+#endif          // for _WIN32
+#endif          // for macintosh
 
 static const int FRAMES_PER_ALLOC = 100;
 

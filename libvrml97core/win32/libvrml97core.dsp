@@ -1,5 +1,5 @@
 # Microsoft Developer Studio Project File - Name="libvrml97core" - Package Owner=<4>
-# Microsoft Developer Studio Generated Build File, Format Version 5.00
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
@@ -17,15 +17,16 @@ CFG=libvrml97core - Win32 Debug
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "libvrml97core - Win32 Release" (based on\
- "Win32 (x86) Static Library")
+!MESSAGE "libvrml97core - Win32 Release" (based on "Win32 (x86) Static Library")
 !MESSAGE "libvrml97core - Win32 Debug" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
 # Begin Project
+# PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
 CPP=cl.exe
+RSC=rc.exe
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
 
@@ -41,16 +42,15 @@ CPP=cl.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
+# ADD BASE RSC /l 0x409
+# ADD RSC /l 0x409
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
-# Begin Special Build Tool
-SOURCE=$(InputPath)
-PostBuild_Cmds=del unistd.h
-# End Special Build Tool
+
 
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
@@ -65,17 +65,15 @@ PostBuild_Cmds=del unistd.h
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MDd /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
+# ADD CPP /nologo /MDd /W3 /GR /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
+# ADD BASE RSC /l 0x409
+# ADD RSC /l 0x409
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
-# Begin Special Build Tool
-SOURCE=$(InputPath)
-PostBuild_Cmds=del unistd.h
-# End Special Build Tool
 
 !ENDIF 
 
@@ -96,6 +94,10 @@ SOURCE=..\src\vrml97\Doc.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\vrml97\doc2.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\vrml97\gifread.h
 # End Source File
 # Begin Source File
@@ -112,7 +114,7 @@ SOURCE=..\src\vrml97\MathUtils.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\vrml97\parser.h
+SOURCE=..\src\vrml97\mpgread.h
 # End Source File
 # Begin Source File
 
@@ -144,11 +146,27 @@ SOURCE=..\src\vrml97\Viewer.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Vrml97Parser.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Vrml97ParserTokenTypes.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\vrml97\vrml97scanner.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\vrml97\VrmlEvent.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\src\vrml97\VrmlField.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\vrml97\VrmlFrustum.h
 # End Source File
 # Begin Source File
 
@@ -440,6 +458,10 @@ SOURCE=..\src\vrml97\VrmlParse.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\vrml97\VrmlRenderContext.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\vrml97\VrmlScene.h
 # End Source File
 # Begin Source File
@@ -492,6 +514,37 @@ SOURCE=..\src\vrml97\VrmlSFVec3f.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\antlr.g
+
+!IF  "$(CFG)" == "libvrml97core - Win32 Release"
+
+# Begin Custom Build
+InputPath=.\antlr.g
+
+"temp.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy ..\src\vrml97\Vrml97TokenTypes.txt.in vrml97tokentypes.txt 
+	set classpath=c:\user\bose\antlr-2.7.0 
+	c:\user\bose\jdk1.2.2\bin\java antlr.Tool ..\src\vrml97\vrml97parser.g 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
+
+# Begin Custom Build
+InputPath=.\antlr.g
+
+"temp.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy ..\src\vrml97\Vrml97TokenTypes.txt.in  vrml97tokentypes.txt 
+	set classpath = c:\user\bose\antlr-2.7.0 
+	c:\user\bose\jdk1.2.2\bin\java antlr.Tool ..\src\vrml97\vrml97parser.g 
+	
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\vrml97\Audio.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
@@ -506,7 +559,12 @@ SOURCE=..\src\vrml97\Audio.cpp
 # Begin Source File
 
 SOURCE=..\src\vrml97\Doc.cpp
-# ADD CPP /I "."
+# ADD CPP /I "..\..\win32"
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\vrml97\doc2.cpp
+# ADD CPP /I "..\..\win32"
 # End Source File
 # Begin Source File
 
@@ -549,61 +607,6 @@ SOURCE=..\src\vrml97\jpgread.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\lexer.cpp
-
-!IF  "$(CFG)" == "libvrml97core - Win32 Release"
-
-# ADD CPP /I "." /I "..\src\vrml97" /D "YY_NEVER_INTERACTIVE"
-
-!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
-
-# ADD CPP /I "..\src\vrml97" /I "." /D "YY_NEVER_INTERACTIVE"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\vrml97\lexer.lpp
-USERDEP__LEXER="parser.out"	
-
-!IF  "$(CFG)" == "libvrml97core - Win32 Release"
-
-# Begin Custom Build
-InputPath=..\src\vrml97\lexer.lpp
-
-"lexer.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set BISON_SIMPLE=c:\bison\bison.simple 
-	set BISON_HAIRY=c:\bison\bison.hairy 
-	c:\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
-	del parser.h 
-	ren parser.cpp.h parser.h 
-	c:\flex\flex -dLt ..\src\vrml97\lexer.lpp > lexer.cpp 
-	type NUL:  > unistd.h 
-	
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
-
-# Begin Custom Build
-InputPath=..\src\vrml97\lexer.lpp
-
-"lexer.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set BISON_SIMPLE=c:\bison\bison.simple 
-	set BISON_HAIRY=c:\bison\bison.hairy 
-	c:\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
-	del parser.h 
-	ren parser.cpp.h parser.h 
-	c:\flex\flex -dLt ..\src\vrml97\lexer.lpp > lexer.cpp 
-	type NUL:  > unistd.h 
-	
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\src\vrml97\MathUtils.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
@@ -617,49 +620,7 @@ SOURCE=..\src\vrml97\MathUtils.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\parser.cpp
-
-!IF  "$(CFG)" == "libvrml97core - Win32 Release"
-
-# ADD CPP /I "..\src\vrml97"
-
-!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
-
-# ADD CPP /I "..\src\vrml97" /I "."
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\vrml97\parser.ypp
-
-!IF  "$(CFG)" == "libvrml97core - Win32 Release"
-
-# Begin Custom Build
-InputPath=..\src\vrml97\parser.ypp
-
-"parser.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set BISON_SIMPLE=c:\bison\bison.simple 
-	set BISON_HAIRY=c:\bison\bison.hairy 
-	c:\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
-	
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
-
-# Begin Custom Build
-InputPath=..\src\vrml97\parser.ypp
-
-"parser.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set BISON_SIMPLE=c:\bison\bison.simple 
-	set BISON_HAIRY=c:\bison\bison.hairy 
-	c:\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
-	
-# End Custom Build
-
-!ENDIF 
-
+SOURCE=..\src\vrml97\mpgread.cpp
 # End Source File
 # Begin Source File
 
@@ -690,32 +651,12 @@ SOURCE=..\src\vrml97\ScriptJDK.cpp
 # Begin Source File
 
 SOURCE=..\src\vrml97\ScriptJS.cpp
-
-!IF  "$(CFG)" == "libvrml97core - Win32 Release"
-
 # ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC" /D js_InitArrayClass=JS_InitArrayClass
-
-!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
-
-# ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC" /D js_InitArrayClass=JS_InitArrayClass
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=..\src\vrml97\ScriptObject.cpp
-
-!IF  "$(CFG)" == "libvrml97core - Win32 Release"
-
 # ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC"
-
-!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
-
-# ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -746,17 +687,47 @@ SOURCE=..\src\vrml97\System.cpp
 # Begin Source File
 
 SOURCE=..\src\vrml97\Viewer.cpp
+# ADD CPP /I "..\..\win32"
+# End Source File
+# Begin Source File
+
+SOURCE=.\Vrml97Parser.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
 
-# ADD CPP /I "."
+# ADD CPP /GR /I "..\src\vrml97"
 
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
-# ADD CPP /I "..\.." /I "."
+# ADD CPP /I "..\src\vrml97"
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\vrml97\vrml97scanner.cpp
+
+!IF  "$(CFG)" == "libvrml97core - Win32 Release"
+
+# ADD CPP /I "..\..\win32"
+
+!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\vrml97\VrmlAABox.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\vrml97\VrmlBSphere.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\vrml97\VrmlBVolume.cpp
 # End Source File
 # Begin Source File
 
@@ -770,6 +741,11 @@ SOURCE=..\src\vrml97\VrmlField.cpp
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\vrml97\VrmlFrustum.cpp
+# ADD CPP /I "..\..\win32"
 # End Source File
 # Begin Source File
 
@@ -1229,17 +1205,7 @@ SOURCE=..\src\vrml97\VrmlNodeNormalInt.cpp
 # Begin Source File
 
 SOURCE=..\src\vrml97\VrmlNodeOrientationInt.cpp
-
-!IF  "$(CFG)" == "libvrml97core - Win32 Release"
-
-# ADD CPP /I "."
-
-!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
-
-# ADD CPP /I "..\.." /I "."
-
-!ENDIF 
-
+# ADD CPP /I "..\..\win32"
 # End Source File
 # Begin Source File
 
@@ -1568,15 +1534,19 @@ SOURCE=..\src\vrml97\VrmlNodeWorldInfo.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\vrml97\VrmlRenderContext.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\vrml97\VrmlScene.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
 
-# ADD CPP /I "."
+# ADD CPP /GR /I "..\..\win32" /I ".\\"
 
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
-# ADD CPP /I "..\.." /I "."
+# ADD CPP /I "..\..\win32" /I ".\\"
 
 !ENDIF 
 

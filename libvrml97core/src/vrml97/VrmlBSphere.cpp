@@ -97,7 +97,7 @@ VrmlBSphere::isectFrustum(const VrmlFrustum& frust) const
 
   // distance from the center of the sphere to the near plane.
   //
-  float znear = -frust.near;
+  float znear = -frust.z_near;
   float d = znear - c[2];
   if (d < -r)
     return VrmlBVolume::BV_OUTSIDE;
@@ -108,7 +108,7 @@ VrmlBSphere::isectFrustum(const VrmlFrustum& frust) const
   // distance from the sphere center to the far plane. same logic as
   // above. this is all much easier with a diagram...
   //
-  float zfar = -frust.far;
+  float zfar = -frust.z_far;
   d = c[3] - zfar;
   if (d < -r)
     return VrmlBVolume::BV_OUTSIDE;
@@ -340,7 +340,8 @@ VrmlBSphere::enclose(const float* p, int n)
   
   // find the 6 points with: minx, maxx, miny, maxy, minz, maxz
   //
-  for(int i=1; i<n; ++i) {
+  int i;
+  for(i=1; i<n; ++i) {
     const float* pi = &p[i*3];
     if (pi[0] < (min_p[0])[0]) min_p[0] = pi;
     if (pi[1] < (min_p[1])[1]) min_p[1] = pi;
@@ -382,7 +383,7 @@ VrmlBSphere::enclose(const float* p, int n)
   float rad_sq = c[0]*c[0] + c[1]*c[1] + c[2]*c[2];
   this->r = (float)sqrt((double)rad_sq);
 
-  for(int i=0; i<n; ++i)
+  for(i=0; i<n; ++i)
     this->extend(&p[i*3]);
 }
 

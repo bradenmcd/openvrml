@@ -10,7 +10,9 @@
  *
  */
 
-
+#ifdef _WIN32
+#include <winconfig.h>
+#endif
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -27,8 +29,8 @@ VrmlFrustum::VrmlFrustum()
 {
   fovy = -1;
   fovx = -1;
-  near = -1;
-  far = -1;
+  z_near = -1;
+  z_far = -1;
 }
 
 
@@ -40,8 +42,8 @@ VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar)
   fovy = (afovy/360.0)*2.0*M_PI;
   float cy = (float)tan(fovy/2.0);
   fovx = 2.0*atan(cy*aaspect);
-  near = anear;
-  far = afar;
+  z_near = anear;
+  z_far = afar;
   update();
 }
 
@@ -77,9 +79,9 @@ VrmlFrustum::update()
   float cy = (float)tan(fovy/2.0);
   float cx = (float)tan(fovx/2.0);
 
-  float NL = -near*cx;
+  float NL = -z_near*cx;
   float NR = -NL;
-  float NT =  near*cy;
+  float NT =  z_near*cy;
   float NB = -NT;
 
   float tmp0[3];
@@ -87,11 +89,11 @@ VrmlFrustum::update()
 
   tmp0[0] = NL;
   tmp0[1] = NB;
-  tmp0[2] = -near;
+  tmp0[2] = -z_near;
 
   tmp1[0] = NL;
   tmp1[1] = NT;
-  tmp1[2] = -near;
+  tmp1[2] = -z_near;
 
   Vcross(left_plane, tmp0, tmp1);
   Vnorm(left_plane);
@@ -104,11 +106,11 @@ VrmlFrustum::update()
 
   tmp0[0] = NL;
   tmp0[1] = NT;
-  tmp0[2] = -near;
+  tmp0[2] = -z_near;
 
   tmp1[0] = NR;
   tmp1[1] = NT;
-  tmp1[2] = -near;
+  tmp1[2] = -z_near;
     
   Vcross(top_plane, tmp0, tmp1);
   Vnorm(top_plane);
@@ -125,8 +127,8 @@ ostream&
 VrmlFrustum::dump(ostream& ostr) const
 {
   ostr << "VrmlFrustum {" << endl;
-  ostr << near << endl;
-  ostr << far << endl;
+  ostr << z_near << endl;
+  ostr << z_far << endl;
   ostr << fovx*(360.0/(M_PI*2.0)) << endl;
   ostr << fovy*(360.0/(M_PI*2.0)) << endl;
   ostr << "}";

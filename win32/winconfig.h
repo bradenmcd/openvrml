@@ -3,13 +3,13 @@
 /*
   Vrml 97 library
   Copyright (C) 1998 Chris Morley
-
+  See the file COPYING for license details.
   winconfig.h
 */
 
 #define LIBVRML97_MAJOR_VERSION	0
 #define LIBVRML97_MINOR_VERSION	8
-#define LIBVRML97_MICRO_VERSION	0
+#define LIBVRML97_MICRO_VERSION	2
 
 
 // Disable warning messages about truncation from const double to float
