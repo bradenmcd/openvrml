@@ -42,6 +42,8 @@
 
         * Added getters/setters to VrmlNodePointSet.
 
+        * Include <stddef.h> from `Viewer.h'.
+
 2001-01-22  Braden McDaniel  <braden@endoframe.com>
 
         * Added SFNode field getters/setters to VrmlNodeIFaceSet.

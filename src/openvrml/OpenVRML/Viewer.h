@@ -24,6 +24,8 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
+#include <stddef.h>
+
 class VrmlScene;
 class VrmlBVolume;
 class VrmlBSphere;

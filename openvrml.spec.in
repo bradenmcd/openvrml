@@ -27,6 +27,7 @@ using OpenVRML
 Summary:        OpenGL renderer for OpenVRML
 Group:          System Environment/Libraries
 Requires:       %{name}
+Requires:       Mesa >= 3.2
 %description gl
 OpenGL renderer for OpenVRML.
 
@@ -34,6 +35,7 @@ OpenGL renderer for OpenVRML.
 Summary:        OpenVRML OpenGL renderer headers and static library.
 Group:          Development/Libraries
 Requires:       %{name}-gl
+Requires:       Mesa-devel >= 3.2
 %description gl-devel
 Headers and static library that programmers will need to develop C++ programs
 using the OpenVRML OpenGL renderer.
@@ -85,10 +87,14 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %files -n lookat
 %{prefix}/bin/lookat
-%{prefix}/share/lookat.xpm
+%{prefix}/share/pixmaps/lookat.xpm
 
 
 %changelog
+* Thu Jan 25 2001  Braden McDaniel  <braden@endoframe.com>
+- Fixed location of lookat icon in %files section for lookat
+- Added Mesa >= 3.2 as a requirement for openvrml-gl.
+
 * Tue Jan 2 2001  Braden McDaniel  <braden@endoframe.com>
 - Removed obsolete TODO from %doc.
 
