@@ -1,4 +1,15 @@
-2005-01-05 Braden McDaniel  <braden@endoframe.com>
+2005-01-07 Braden McDaniel  <braden@endoframe.com>
+
+	Made the Mozilla plug-in out-of-process.
+
+	* openvrml.spec.in
+	* mozilla-plugin/configure.ac
+	* mozilla-plugin/src/Makefile.am
+	* mozilla-plugin/src/openvrml.cpp
+	* mozilla-plugin/src/openvrml-player/Makefile.am:  Added file.
+	* mozilla-plugin/src/openvrml-player/player.cpp:  Added file.
+
+2005-01-07 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/viewer.cpp:  Explicitly qualify
 	openvrml::browser to make doxygen happy.

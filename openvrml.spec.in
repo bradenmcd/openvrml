@@ -128,10 +128,14 @@ rm -rf $RPM_BUILD_ROOT
 %doc AUTHORS COPYING ChangeLog NEWS README THANKS
 %{_libdir}/mozilla/plugins/openvrml.so
 %{_libdir}/mozilla/plugins/openvrml.xpt
+%{_libexecdir}/openvrml-player
 %{_datadir}/idl/%{name}-%{version}/openvrml.idl
 
 
 %changelog
+* Fri Jan 07 2005  Braden McDaniel  <braden@endoframe.com>
+- Added %{_libexecdir}/openvrml-player to the openvrml-mozilla-plugin package.
+
 * Fri Dec 29 2004  Braden McDaniel  <braden@endoframe.com>
 - Fixed name of xorg-x11-devel prerequisite for the openvrml-gl-devel package.
 
