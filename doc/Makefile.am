@@ -1,7 +1,7 @@
 docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
 EXTRA_DIST = \
-        Doxyfile \
+        Doxyfile.in \
         doxygen-header \
         doxygen-footer \
         index.doc \
@@ -9,7 +9,7 @@ EXTRA_DIST = \
         manual
 
 doc:
-	cd $(srcdir) && $(DOXYGEN)
+	$(DOXYGEN)
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual

@@ -1,10 +1,8 @@
-# Doxyfile 1.3.3-20030808
-
 #---------------------------------------------------------------------------
 # General configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = OpenVRML
-PROJECT_NUMBER         = 0.13.99
+PROJECT_NAME           = @PACKAGE_NAME@
+PROJECT_NUMBER         = @PACKAGE_VERSION@
 OUTPUT_DIRECTORY       = 
 OUTPUT_LANGUAGE        = English
 USE_WINDOWS_ENCODING   = NO
@@ -58,10 +56,10 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = index.doc \
-                         conformance.doc \
-                         ../src/libopenvrml \
-                         ../src/libopenvrml-gl
+INPUT                  = @srcdir@/index.doc \
+                         @srcdir@/conformance.doc \
+                         @top_srcdir@/src/libopenvrml \
+                         @top_srcdir@/src/libopenvrml-gl
 FILE_PATTERNS          = *.cpp \
                          *.h
 RECURSIVE              = YES
@@ -95,10 +93,10 @@ IGNORE_PREFIX          =
 # configuration options related to the HTML output
 #---------------------------------------------------------------------------
 GENERATE_HTML          = YES
-HTML_OUTPUT            = manual
+HTML_OUTPUT            = @srcdir@/manual
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = doxygen-header
-HTML_FOOTER            = doxygen-footer
+HTML_HEADER            = @srcdir@/doxygen-header
+HTML_FOOTER            = @srcdir@/doxygen-footer
 HTML_STYLESHEET        = 
 HTML_ALIGN_MEMBERS     = YES
 GENERATE_HTMLHELP      = NO

@@ -1,3 +1,13 @@
+2003-10-14  Braden McDaniel  <braden@endoframe.com>
+
+	Generate Doxyfile from configure in order to take advantage of
+	PACKAGE_NAME and PACKAGE_VERSION substitutions.
+
+	* configure.ac:  Added doc/Doxyfile to AC_CONFIG_FILES.
+	* doc/Doxyfile:  Removed file.
+	* doc/Doxyfile.in:  Added file.
+	* doc/Makefile.am:  Use Doxfile in the builddir.
+
 2003-10-08  Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac:  Removed useless checks for zlib, libpng, and
