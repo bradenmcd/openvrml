@@ -25,8 +25,9 @@
 # include "VrmlNodePtr.h"
 # include "VrmlNode.h"
 
-
-CountMap countMap;
+namespace {
+    CountMap countMap;
+}
 
 /**
  * @brief Constructor.
