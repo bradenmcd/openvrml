@@ -1,5 +1,33 @@
 2003-09-30  Braden McDaniel  <braden@endoframe.com>
 
+	Replace field_value_ptr, node_class_ptr, node_type_ptr, and
+	scope_ptr with instances of boost::shared_ptr.
+
+	* openvrml.spec.in
+	* src/libopenvrml/openvrml/Makefile.am
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/field.h
+	* src/libopenvrml/openvrml/field_value_ptr.cpp
+	* src/libopenvrml/openvrml/field_value_ptr.h
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/node_class_ptr.cpp
+	* src/libopenvrml/openvrml/node_class_ptr.h
+	* src/libopenvrml/openvrml/node_type_ptr.cpp
+	* src/libopenvrml/openvrml/node_type_ptr.h
+	* src/libopenvrml/openvrml/private.h
+	* src/libopenvrml/openvrml/scope.h
+	* src/libopenvrml/openvrml/scope_ptr.cpp
+	* src/libopenvrml/openvrml/scope_ptr.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
+2003-09-30  Braden McDaniel  <braden@endoframe.com>
+
 	Merge from 0.14.1.
 
 	* src/libopenvrml/openvrml/private.h:  Allow for 10 rounding

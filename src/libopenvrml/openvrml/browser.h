@@ -26,7 +26,6 @@
 #   include <list>
 #   include <map>
 #   include <openvrml/common.h>
-#   include <openvrml/node_class_ptr.h>
 #   include <openvrml/script.h>
 
 namespace openvrml {

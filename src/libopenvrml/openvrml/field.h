@@ -29,6 +29,7 @@
 #   include <string>
 #   include <typeinfo>
 #   include <vector>
+#   include <boost/shared_ptr.hpp>
 #   include <openvrml/basetypes.h>
 #   include <openvrml/node_ptr.h>
 
@@ -87,6 +88,8 @@ namespace openvrml {
     private:
         virtual void print(std::ostream & out) const = 0;
     };
+
+    typedef boost::shared_ptr<field_value> field_value_ptr;
 
     std::ostream & operator<<(std::ostream & out,
                               field_value::type_id type_id);

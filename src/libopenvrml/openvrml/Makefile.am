@@ -8,13 +8,9 @@ openvrml_include_HEADERS = \
         img.h \
         system.h \
         field.h \
-        field_value_ptr.h \
         scope.h \
-        scope_ptr.h \
         node.h \
         node_ptr.h \
-        node_type_ptr.h \
-        node_class_ptr.h \
         bounding_volume.h \
         script.h \
         browser.h \
@@ -61,13 +57,9 @@ libopenvrml_la_SOURCES = \
         img.cpp \
         system.cpp \
         field.cpp \
-        field_value_ptr.cpp \
         scope.cpp \
-        scope_ptr.cpp \
         node.cpp \
         node_ptr.cpp \
-        node_type_ptr.cpp \
-        node_class_ptr.cpp \
         bounding_volume.cpp \
         script.cpp \
         ScriptJDK.cpp \

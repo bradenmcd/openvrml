@@ -137,7 +137,7 @@ const node_type_ptr script_node_class::create_type(const std::string &,
     throw ()
 {
     assert(false);
-    return node_type_ptr(0);
+    return node_type_ptr();
 }
 
 

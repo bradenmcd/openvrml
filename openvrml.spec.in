@@ -9,6 +9,7 @@ Source:         http://prdownloads.sf.net/openvrml/%{name}-%{version}.tar.gz
 URL:            http://openvrml.org
 BuildRoot:      %{_tmppath}/%{name}-root
 BuildRequires:  pkgconfig >= 0.12.0
+BuildRequires:  boost-devel >= 1.30.2
 BuildRequires:  zlib-devel >= 1.1.3
 BuildRequires:  libpng-devel >= 1.0.12
 BuildRequires:  libjpeg-devel >= 6b
@@ -111,6 +112,9 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Tue Sep 30 2003  Braden McDaniel  <braden@endoframe.com>
+- Added BuildRequires: boost-devel.
+
 * Sun Sep 28 2003  Braden McDaniel  <braden@endoframe.com>
 - Changed COPYING.LIB to COPYING.LESSER.
 - Moved pkg-config metadata files to devel packages.

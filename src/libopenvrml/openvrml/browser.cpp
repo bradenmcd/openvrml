@@ -2374,7 +2374,7 @@ namespace {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 ProtoNode::ProtoNode(const node_type & nodeType) throw (std::bad_alloc):
-    node(nodeType, scope_ptr(0))
+    node(nodeType, scope_ptr())
 {}
 
 /**

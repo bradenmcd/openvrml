@@ -167,7 +167,7 @@ namespace {
         typedef node_field_ptr_impl<NodeT, mfvec2f> mfvec2f_ptr;
         typedef node_field_ptr_impl<NodeT, mfvec3f> mfvec3f_ptr;
 
-        typedef openvrml_::SharedPtr<node_field_ptr<NodeT> >
+        typedef boost::shared_ptr<node_field_ptr<NodeT> >
             node_field_ptr_ptr;
         typedef void (NodeT::* eventin_handler_ptr)
             (const openvrml::field_value &, double);

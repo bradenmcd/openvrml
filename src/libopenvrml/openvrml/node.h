@@ -29,12 +29,11 @@
 #   include <set>
 #   include <stdexcept>
 #   include <utility>
+#   include <boost/shared_ptr.hpp>
 #   include <openvrml/field.h>
-#   include <openvrml/field_value_ptr.h>
-#   include <openvrml/node_type_ptr.h>
-#   include <openvrml/scope_ptr.h>
 #   include <openvrml/viewer.h>
 #   include <openvrml/rendering_context.h>
+#   include <openvrml/scope.h>
 
 namespace openvrml {
 
@@ -130,6 +129,8 @@ namespace openvrml {
 
     class browser;
     class viewpoint_node;
+    class node_type;
+    typedef boost::shared_ptr<node_type> node_type_ptr;
 
     class node_class {
     public:
@@ -147,6 +148,9 @@ namespace openvrml {
     protected:
         explicit node_class(openvrml::browser & b) throw ();
     };
+
+    typedef boost::shared_ptr<node_class> node_class_ptr;
+
 
     class node_type {
     public:
