@@ -1,3 +1,10 @@
+2003-11-24 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(viewer::insert_texture):  Accept arbitrarily large textures
+	rather than topping out at 256*256.  Textures with sides that
+	are not powers of 2 are scaled down to the nearest power of 2.
+
 2003-11-22 Braden McDaniel  <braden@endoframe.com>
 
 	Modified "viewer::insert_texture" to accept an "image".

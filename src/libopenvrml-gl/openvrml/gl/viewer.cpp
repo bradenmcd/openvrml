@@ -3314,6 +3314,14 @@ void viewer::set_sensitive(node * object)
     }
 }
 
+namespace {
+
+    inline bool power_of_2(unsigned long n)
+    {
+        return !(n & (n - 1));
+    }
+}
+
 /**
  * @brief Create a texture object.
  *
@@ -3347,40 +3355,31 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
     //
     // Rescale the texture if necessary.
     //
+    while (!power_of_2(width)) { --width; }
+    while (!power_of_2(height)) { --height; }
+
     vector<GLubyte> rescaled_pixels;
-    const GLsizei size[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-    const size_t sizes = sizeof size / sizeof(GLsizei);
-    size_t i, j;
-    for (i = 0; i < sizes; ++i) { if (width < size[i]) { break; } }
-    for (j = 0; j < sizes; ++j) { if (height < size[j]) { break; } }
 
-    if (i > 0 && j > 0) {
-        if (width != size[i - 1] || height != size[j - 1]) {
-            const GLsizei new_width = size[i - 1];
-            const GLsizei new_height = size[j - 1];
+    if (size_t(width) != img.x() || size_t(height) != img.y()) {
+        //
+        // Throws std::bad_alloc.
+        //
+        rescaled_pixels.resize(img.comp() * width * height);
 
-            //
-            // Throws std::bad_alloc.
-            //
-            rescaled_pixels.resize(img.comp() * new_width * new_height);
-
-            glPixelStorei(GL_PACK_ALIGNMENT, 1);
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-            const GLint result = gluScaleImage(fmt[img.comp() - 1],
-                                               width,
-                                               height,
-                                               GL_UNSIGNED_BYTE,
-                                               &img.array()[0],
-                                               new_width,
-                                               new_height,
-                                               GL_UNSIGNED_BYTE,
-                                               &rescaled_pixels[0]);
-            if (result == GL_NO_ERROR) {
-                assert(!rescaled_pixels.empty());
-                pixels = &rescaled_pixels[0];
-                width = new_width;
-                height = new_height;
-            }
+        glPixelStorei(GL_PACK_ALIGNMENT, 1);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        const GLint result = gluScaleImage(fmt[img.comp() - 1],
+                                           img.x(),
+                                           img.y(),
+                                           GL_UNSIGNED_BYTE,
+                                           &img.array()[0],
+                                           width,
+                                           height,
+                                           GL_UNSIGNED_BYTE,
+                                           &rescaled_pixels[0]);
+        if (result == GL_NO_ERROR) {
+            assert(!rescaled_pixels.empty());
+            pixels = &rescaled_pixels[0];
         }
     }
 
