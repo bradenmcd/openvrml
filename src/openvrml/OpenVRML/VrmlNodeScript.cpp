@@ -166,16 +166,19 @@ void VrmlNodeScript::resetVisitedFlag() {
 VrmlNodeScript* VrmlNodeScript::toScript() const
 { return (VrmlNodeScript*) this; }
 
-void VrmlNodeScript::addToScene(VrmlScene *s, const char *relUrl)
-{
-  theSystem->debug("VrmlNodeScript::%s 0x%x addToScene 0x%x\n",
-		   name(), (unsigned)this, (unsigned)s);
+void VrmlNodeScript::addToScene(VrmlScene * const scene,
+                                const char * const relUrl) {
+    theSystem->debug("VrmlNodeScript::%s 0x%x addToScene 0x%x\n",
+		     name(), (unsigned)this, (unsigned)scene);
 
-  d_relativeUrl.set(relUrl);
-  if (d_scene == s) return;
-  d_scene = s;
-  initialize( theSystem->time() );
-  if ((d_scene = s) != 0) d_scene->addScript(this);
+    this->d_relativeUrl.set(relUrl);
+    if (this->d_scene == scene) {
+        return;
+    }
+    if ((this->d_scene = scene)) {
+        this->initialize(theSystem->time());
+        this->d_scene->addScript(this);
+    }
 }
 
 
