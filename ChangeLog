@@ -1,3 +1,11 @@
+2001-02-06  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed VrmlNodeGroup::removeChildren() to account for nulls in
+          the MFNode array.
+
+        * Fixed VrmlNodeGroup::recalcBSphere() to account for nulls in
+          the MFNode array.
+
 2001-02-05  Braden McDaniel  <braden@endoframe.com>
 
         * Removed dynamic_cast in assertions in VrmlNodeAppearance's,

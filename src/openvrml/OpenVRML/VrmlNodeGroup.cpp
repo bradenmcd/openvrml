@@ -427,15 +427,15 @@ void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
  * @todo Remove this method in favor of passing an empty VrmlMFNode to
  *       setChildren()?
  */
-void VrmlNodeGroup::removeChildren()
-{
-  int n = d_children.getLength();
-
-  for (int i=n; i>0; --i)
-    d_children.removeNode( d_children[i-1] );
-
-  setModified();
-  this->setBVolumeDirty(true);
+void VrmlNodeGroup::removeChildren() {
+    for (size_t i = this->d_children.getLength(); i > 0; --i) {
+        if (this->d_children[i - 1]) {
+            d_children.removeNode(*d_children[i - 1]);
+        }
+    }
+    
+    setModified();
+    this->setBVolumeDirty(true);
 }
 
 
@@ -501,20 +501,15 @@ const VrmlBVolume* VrmlNodeGroup::getBVolume() const
   return &d_bsphere;
 }
 
-
-
-void
-VrmlNodeGroup::recalcBSphere()
-{
-  //cout << "VrmlNodeGroup[" << this << "]::recalcBSphere()" << endl;
-  d_bsphere.reset();
-  for (int i = 0; i< (int) d_children.getLength(); ++i) {
-    VrmlNode* ci = d_children[i];
-    const VrmlBVolume* ci_bv = ci->getBVolume();
-    if (ci_bv)
-      d_bsphere.extend(*ci_bv);
-  }
-  //cout << "VrmlNodeGroup[" << this << "]::recalcBSphere()";
-  //d_bsphere.dump(cout) << endl;
-  this->setBVolumeDirty(false);
+void VrmlNodeGroup::recalcBSphere() {
+    d_bsphere.reset();
+    for (size_t i = 0; i< d_children.getLength(); ++i) {
+        if (this->d_children[i]) {
+            const VrmlBVolume * const ci_bv = d_children[i]->getBVolume();
+            if (ci_bv) {
+                d_bsphere.extend(*ci_bv);
+            }
+        }
+    }
+    this->setBVolumeDirty(false);
 }
