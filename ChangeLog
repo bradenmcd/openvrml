@@ -17,6 +17,8 @@
 
         * NEWS: Updates for 0.12.1 release.
 
+        * doc/openvrml.css: Changes for consistency with Web site.
+
 2002-06-16  Braden McDaniel  <braden@endoframe.com>
 
         * README, doc/Makefile.am: Removed "conformance.html" from the
