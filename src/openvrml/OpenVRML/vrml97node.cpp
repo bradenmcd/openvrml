@@ -5323,8 +5323,28 @@ Group::~Group() throw () {
  */
 void Group::processAddChildren(const FieldValue & mfnode,
                                const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->addChildren(dynamic_cast<const MFNode &>(mfnode));
+    throw (std::bad_cast, std::bad_alloc)
+{
+    const MFNode & newChildren(dynamic_cast<const MFNode &>(mfnode));
+    size_t nNow = this->children.getLength();
+    size_t n = newChildren.getLength();
+
+    for (size_t i = 0; i < n; ++i) {
+        const NodePtr & child = newChildren.getElement(i);
+        if (child && child->toChild()) {
+            this->children.addNode(child);
+            child->accumulateTransform(this->parentTransform);
+        } else {
+            theSystem->error(
+                "Error: Attempt to add a %s node as a child of a %s node.\n",
+                child->nodeType.id.c_str(), this->nodeType.id.c_str());
+        }
+    }
+
+    if (nNow != this->children.getLength()) {
+        setModified();
+        this->setBVolumeDirty(true);
+    }
 }
 
 /**
@@ -5338,8 +5358,21 @@ void Group::processAddChildren(const FieldValue & mfnode,
  */
 void Group::processRemoveChildren(const FieldValue & mfnode,
                                   const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->removeChildren(dynamic_cast<const MFNode &>(mfnode));
+    throw (std::bad_cast, std::bad_alloc)
+{
+    const MFNode & childrenToRemove = dynamic_cast<const MFNode &>(mfnode);
+    const size_t oldLength = this->children.getLength();
+
+    for (size_t i = 0; i < childrenToRemove.getLength(); ++i) {
+        if (childrenToRemove.getElement(i)) {
+            this->children.removeNode(*childrenToRemove.getElement(i));
+        }
+    }
+
+    if (oldLength != this->children.getLength()) {
+        setModified();
+        this->setBVolumeDirty(true);
+    }
 }
 
 /**
@@ -5511,100 +5544,6 @@ void Group::activate(double time, bool isOver, bool isActive, double *p) {
             kid->toSphereSensor()->activate(time, isActive, p);
         }
     }
-}
-
-/**
- * @brief Set the Group's children.
- *
- * @param children the new children for the node
- *
- * @todo We should throw an exception if any of the nodes in
- *       <var>children</var> are not child nodes.
- */
-void Group::setChildren(const MFNode & children) {
-    const size_t currentLength = this->children.getLength();
-
-    for (size_t i = 0; i < children.getLength(); ++i) {
-        const NodePtr & child = children.getElement(i);
-        if (child && child->toChild()) {
-            child->accumulateTransform(this->parentTransform);
-        } else {
-            theSystem ->error(
-                "Error: Attempt to add a %s node as a child of a %s node.\n",
-                child->nodeType.id.c_str(), this->nodeType.id.c_str());
-        }
-    }
-
-    this->children = children;
-
-    if (currentLength != this->children.getLength()) {
-        //??eventOut( d_scene->timeNow(), "children_changed", d_children );
-        setModified();
-        this->setBVolumeDirty(true);
-    }
-}
-
-/**
- * @brief Add children from another MFNode.
- *
- * Add legal children and un-instantiated EXTERNPROTOs. Children only
- * get added if they do not already exist in this Group. NULLs in the
- * argument MFNode are <strong>not</strong> added.
- *
- * @param children a MFNode containing the nodes to add to this Group
- */
-void Group::addChildren(const MFNode & children) {
-    size_t nNow = this->children.getLength();
-    size_t n = children.getLength();
-
-    for (size_t i = 0; i < n; ++i) {
-        const NodePtr & child = children.getElement(i);
-        if (child && child->toChild()) {
-            this->children.addNode(child);
-            child->accumulateTransform(this->parentTransform);
-        } else {
-            theSystem->error(
-                "Error: Attempt to add a %s node as a child of a %s node.\n",
-                child->nodeType.id.c_str(), this->nodeType.id.c_str());
-        }
-    }
-
-    if (nNow != this->children.getLength()) {
-        //??eventOut( d_scene->timeNow(), "children_changed", d_children );
-        setModified();
-        this->setBVolumeDirty(true);
-    }
-}
-
-void Group::removeChildren(const MFNode & children) {
-    const size_t oldLength = this->children.getLength();
-
-    for (size_t i = 0; i < children.getLength(); ++i) {
-        if (children.getElement(i)) {
-            this->children.removeNode(*children.getElement(i));
-        }
-    }
-
-    if (oldLength != this->children.getLength()) {
-        //??eventOut( d_scene->timeNow(), "children_changed", d_children );
-        setModified();
-        this->setBVolumeDirty(true);
-    }
-}
-
-/**
- * @todo Remove this method in favor of passing an empty MFNode to
- *       setChildren()?
- */
-void Group::removeChildren() {
-    for (size_t i = this->children.getLength(); i > 0; --i) {
-        if (this->children.getElement(i - 1)) {
-            this->children.removeNode(*this->children.getElement(i - 1));
-        }
-    }
-
-    setModified();
-    this->setBVolumeDirty(true);
 }
 
 const BVolume * Group::getBVolume() const

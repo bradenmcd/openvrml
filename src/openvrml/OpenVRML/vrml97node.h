@@ -229,11 +229,6 @@ namespace OpenVRML {
 
             void activate( double timeStamp, bool isOver, bool isActive, double *p );
 
-            void setChildren(const MFNode & children);
-            void addChildren(const MFNode & children);
-            void removeChildren(const MFNode & children);
-            void removeChildren();
-
             virtual Node* getParentTransform();
 
             const BVolume * getBVolume() const;
