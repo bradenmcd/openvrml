@@ -121,7 +121,7 @@ ANTLR_RBRACE
 header "post_include_cpp" {
 # include <assert.h>
 # include <ctype.h>
-# include <istream>
+# include <iostream>
 # include <antlr/CommonToken.hpp>
 # include "scope.h"
 # include "script.h"

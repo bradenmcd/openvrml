@@ -22,6 +22,7 @@
 # ifndef OPENVRML_NODE_H
 #   define OPENVRML_NODE_H
 
+#   include <iostream>
 #   include <list>
 #   include <set>
 #   include <stdexcept>

@@ -21,6 +21,7 @@
 //
 
 # include <iostream>
+# include <algorithm>
 # include "vrml97node.h"
 # include "Doc.h"
 # include "doc2.hpp"

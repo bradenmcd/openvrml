@@ -23,6 +23,7 @@
 
 #   include <assert.h>
 #   include <stddef.h>
+#   include <iostream>
 #   include <iosfwd>
 #   include "common.h"
 

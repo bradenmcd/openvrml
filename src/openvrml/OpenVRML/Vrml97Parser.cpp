@@ -12,7 +12,7 @@ ANTLR_RBRACE
 
 # include <assert.h>
 # include <ctype.h>
-# include <istream>
+# include <iostream>
 # include <antlr/CommonToken.hpp>
 # include "scope.h"
 # include "script.h"
