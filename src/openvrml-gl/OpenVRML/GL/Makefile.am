@@ -23,4 +23,4 @@ OpenVRMLGLincludedir = $(includedir)/OpenVRML/GL
 OpenVRMLGLinclude_HEADERS = common.h OpenGLEvent.h ViewerOpenGL.h
 endif
 
-EXTRA_DIST = ViewerOpenGL.cpp OpenGLEvent.cpp
+EXTRA_DIST = ViewerOpenGL.cpp OpenGLEvent.cpp Makefile.vc6

@@ -24,6 +24,11 @@
           src/openvrml-gl/OpenVRML/GL/Makefile.am:  Merged changes from
           0.12.5 release.  (Better late than never.)
 
+        * Makefile.am, lib/antlr/Makefile.am, src/lookat/Makefile.am,
+          src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/Makefile.am: Added
+          INSTALL-MSVC6.txt, Makefile.vc6's to the distribution.
+
 2002-12-18  Braden McDaniel  <braden@endoframe.com>
 
         * m4/Makefile.am, m4/ftflib.m4:  Removed obsolete macro.

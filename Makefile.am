@@ -4,7 +4,13 @@ SUBDIRS = doc ide-projects m4 models lib java src
 
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = openvrml.pc.in openvrml-gl.pc.in openvrml.spec.in lookat.xpm
+EXTRA_DIST = \
+        openvrml.pc.in \
+        openvrml-gl.pc.in \
+        openvrml.spec.in \
+        INSTALL-MSVC6.txt \
+        Makefile.vc6 \
+        lookat.xpm
 
 if ENABLE_GL_RENDERER
 OPENVRML_GL_PC = openvrml-gl.pc

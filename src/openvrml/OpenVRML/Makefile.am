@@ -81,5 +81,10 @@ noinst_HEADERS = \
         sound.h \
         ScriptJDK.h
 
-EXTRA_DIST = Vrml97TokenTypes.txt Vrml97Parser.cpp Vrml97Parser.hpp \
-Vrml97ParserTokenTypes.txt Vrml97Parser.g
+EXTRA_DIST = \
+        Vrml97TokenTypes.txt \
+        Vrml97Parser.g
+        Vrml97Parser.cpp \
+        Vrml97Parser.hpp \
+        Vrml97ParserTokenTypes.txt \
+        Makefile.vc6

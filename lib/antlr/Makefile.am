@@ -78,4 +78,7 @@ noinst_HEADERS = \
         TreeParserSharedInputState.hpp \
         config.hpp
 
-EXTRA_DIST = MacTokenStrmHiddenTknFltr.cpp MacTokenStrmHiddenTknFltr.hpp
+EXTRA_DIST = \
+        MacTokenStrmHiddenTknFltr.cpp \
+        MacTokenStrmHiddenTknFltr.hpp \
+        Makefile.vc6
