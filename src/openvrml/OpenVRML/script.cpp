@@ -1346,6 +1346,66 @@ public:
         throw (BadConversion, std::bad_alloc);
 };
 
+class VrmlMatrix {
+public:
+    //
+    // The VrmlMatrixRow_ class is returned when using the [] operator on
+    // a VrmlMatrix in order to facilitate matrix[i][j] notation. A
+    // VrmlMatrixRow_ object holds a pointer to a row of the
+    // OpenVRML::VrmlMatrix associate with the JavaScript VrmlMatrix that
+    // spawned it. The only useful thing you can do with a VrmlMatrixRow_
+    // object is use the [] operator to dereference a row element.
+    //
+    class Row {
+    public:
+        static JSClass jsclass;
+
+        static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+        static JSBool construct(JSContext * cx, JSObject * obj,
+	                        uintN argc, jsval * argv,
+                                jsval * vp) throw ();
+        static JSBool getElement(JSContext * cx, JSObject * obj,
+                                 jsval id, jsval * vp) throw ();
+        static JSBool setElement(JSContext * cx, JSObject * obj,
+                                 jsval id, jsval * vp) throw ();
+    };
+
+    static JSClass jsclass;
+
+    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSBool construct(JSContext * cx, JSObject * obj,
+	                    uintN argc, jsval * argv,
+                            jsval * vp) throw ();
+    static JSBool initObject(JSContext * cx, JSObject * obj,
+                             uintN argc, jsval * argv) throw ();
+    static JSBool getElement(JSContext * cx, JSObject * obj,
+                             jsval id, jsval * vp) throw ();
+    static JSBool setElement(JSContext * cx, JSObject * obj,
+                             jsval id, jsval * vp) throw ();
+    static JSBool setTransform(JSContext * cx, JSObject * obj,
+                               uintN argc, jsval * argv, jsval * rval) throw ();
+    static JSBool getTransform(JSContext * cx, JSObject * obj,
+                               uintN argc, jsval * argv, jsval * rval) throw ();
+    static JSBool inverse(JSContext * cx, JSObject * obj,
+                          uintN argc, jsval * argv, jsval * rval) throw ();
+    static JSBool transpose(JSContext * cx, JSObject * obj,
+                            uintN argc, jsval * argv, jsval * rval) throw ();
+    static JSBool multLeft(JSContext * cx, JSObject * obj,
+                           uintN argc, jsval * argv, jsval * rval) throw ();
+    static JSBool multRight(JSContext * cx, JSObject * obj,
+                            uintN argc, jsval * argv, jsval * rval) throw ();
+    static JSBool multVecMatrix(JSContext * cx, JSObject * obj,
+                                uintN argc, jsval * argv, jsval * rval) throw ();
+    static JSBool multMatrixVec(JSContext * cx, JSObject * obj,
+                                uintN argc, jsval * argv, jsval * rval) throw ();
+    static JSBool toString(JSContext * cx, JSObject * obj,
+                           uintN argc, jsval * argv, jsval * rval) throw ();
+    static void finalize(JSContext * cx, JSObject * obj) throw ();
+
+private:
+    VrmlMatrix();
+};
+
 JSRuntime * Script::rt = 0; // Javascript runtime singleton object
 size_t Script::nInstances = 0; // Number of distinct script objects
 
@@ -1924,7 +1984,9 @@ void Script::initVrmlClasses() throw (std::bad_alloc)
             && MFString::initClass(this->cx, globalObj)
             && MFTime::initClass(this->cx, globalObj)
             && MFVec2f::initClass(this->cx, globalObj)
-            && MFVec3f::initClass(this->cx, globalObj))) {
+            && MFVec3f::initClass(this->cx, globalObj)
+            && VrmlMatrix::initClass(this->cx, globalObj)
+            && VrmlMatrix::Row::initClass(this->cx, globalObj))) {
         throw std::bad_alloc();
     }
 }
@@ -3527,7 +3589,7 @@ JSBool SFRotation::initObject(JSContext * const cx,
             assert(sfdata);
             assert(dynamic_cast<OpenVRML::SFVec3f *>(&sfdata->getFieldValue()));
             const OpenVRML::SFVec3f & argVec1 =
-                    (static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue()));
+                    static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
             if (argc > 1) {
                 if (JSVAL_IS_OBJECT(argv[1])) {
@@ -6453,6 +6515,633 @@ MFVec3f::createFromJSObject(JSContext * const cx, JSObject * const obj)
     }
 
     return mfvec3f;
+}
+
+JSClass VrmlMatrix::Row::jsclass =
+        { "VrmlMatrixRow_", JSCLASS_HAS_PRIVATE,
+          JS_PropertyStub, JS_PropertyStub,
+          getElement, setElement,
+          JS_EnumerateStub, JS_ResolveStub,
+          JS_ConvertStub, JS_FinalizeStub };
+
+JSObject * VrmlMatrix::Row::initClass(JSContext * const cx,
+                                      JSObject * const obj)
+    throw ()
+{
+    return JS_InitClass(cx, obj, 0, &jsclass,
+                        construct, 0,
+                        0, 0,
+                        0, 0);
+}
+
+JSBool VrmlMatrix::Row::construct(JSContext * const cx, JSObject * obj,
+                                  const uintN argc, jsval * const argv,
+                                  jsval * const rval)
+    throw ()
+{
+    //
+    // If called without new, replace obj with a new object.
+    //
+    if (!JS_IsConstructing(cx)) {
+        obj = JS_NewObject(cx, &jsclass, 0, 0);
+        if (!obj) { return JS_FALSE; }
+        *rval = OBJECT_TO_JSVAL(obj);
+    }
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::Row::getElement(JSContext * const cx, JSObject * const obj,
+                                   const jsval id, jsval * const vp)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+
+    if (JSVAL_IS_INT(id)) {
+        if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 3) {
+            return JS_FALSE;
+        }
+
+        const float (*row)[4] =
+                static_cast<float (*)[4]>(JS_GetPrivate(cx, obj));
+        assert(row);
+
+        if (!JS_NewDoubleValue(cx, (*row)[JSVAL_TO_INT(id)], vp)) {
+            return JS_FALSE;
+        }
+    }
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::Row::setElement(JSContext * const cx, JSObject * const obj,
+                                   const jsval id, jsval * const vp)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+
+    if (JSVAL_IS_INT(id)) {
+        if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 3) {
+            return JS_FALSE;
+        }
+
+        jsdouble d;
+        if (!JSVAL_IS_NUMBER(*vp)
+                || !JS_ValueToNumber(cx, *vp, &d)) {
+            return JS_FALSE;
+        }
+        
+        float (*row)[4] = static_cast<float (*)[4]>(JS_GetPrivate(cx, obj));
+        assert(row);
+        (*row)[JSVAL_TO_INT(id)] = d;
+    }
+    return JS_TRUE;
+}
+
+JSClass VrmlMatrix::jsclass =
+        { "VrmlMatrix", JSCLASS_HAS_PRIVATE,
+          JS_PropertyStub, JS_PropertyStub,
+          getElement, setElement,
+          JS_EnumerateStub, JS_ResolveStub,
+          JS_ConvertStub, finalize };
+
+JSObject * VrmlMatrix::initClass(JSContext * const cx, JSObject * const obj)
+    throw ()
+{
+    static JSFunctionSpec methods[] =
+            { { "setTransform", setTransform, 0, 0, 0 },
+              { "getTransform", getTransform, 0, 0, 0 },
+              { "inverse", inverse, 0, 0, 0 },
+              { "transpose", transpose, 0, 0, 0 },
+              { "multLeft", multLeft, 1, 0, 0 },
+              { "multRight", multRight, 1, 0, 0 },
+              { "multVecMatrix", multVecMatrix, 1, 0, 0 },
+              { "multMatrixVec", multMatrixVec, 1, 0, 0 },
+              { "toString", toString, 0, 0, 0 } };
+
+    JSObject * const proto = JS_InitClass(cx, obj, 0, &jsclass,
+                                          construct, 0,
+                                          0, methods,
+                                          0, 0);
+    if (!proto || !initObject(cx, proto, 0, 0)) { return 0; }
+    return proto;
+}
+
+JSBool VrmlMatrix::construct(JSContext * const cx, JSObject * obj,
+                             const uintN argc, jsval * const argv,
+                             jsval * const rval)
+    throw ()
+{
+    //
+    // If called without new, replace obj with a new object.
+    //
+    if (!JS_IsConstructing(cx)) {
+        obj = JS_NewObject(cx, &jsclass, 0, 0);
+        if (!obj) { return JS_FALSE; }
+        *rval = OBJECT_TO_JSVAL(obj);
+    }
+    return initObject(cx, obj, argc, argv);
+}
+
+JSBool VrmlMatrix::initObject(JSContext * const cx, JSObject * const obj,
+                              uintN argc, jsval * const argv)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+
+    argc = (argc < 16)
+         ? argc
+         : 16;
+    try {
+        std::auto_ptr<OpenVRML::VrmlMatrix> mat(new OpenVRML::VrmlMatrix);
+        for (uintN i = 0; i < argc; ++i) {
+            jsdouble d;
+            if (!JSVAL_IS_NUMBER(argv[0])
+                    || !JS_ValueToNumber(cx, argv[i], &d)) {
+                return JS_FALSE;
+            }
+            (&(*mat)[0][0])[i] = d;
+        }
+        if (!JS_SetPrivate(cx, obj, mat.get())) { return JS_FALSE; }
+        mat.release();
+    } catch (std::bad_alloc & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+        return JS_FALSE;
+    }
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::getElement(JSContext * const cx, JSObject * const obj,
+                              const jsval id, jsval * const vp)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+
+    if (JSVAL_IS_INT(id)) {
+        if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 3) {
+            return JS_FALSE;
+        }
+
+        OpenVRML::VrmlMatrix * const thisMat =
+                static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+
+        //
+        // Construct the result object.
+        //
+        JSObject * const robj = JS_ConstructObject(cx, &Row::jsclass, 0,
+                                                   JS_GetParent(cx, obj));
+        if (!robj) { return JS_FALSE; }
+        
+        if (!JS_SetPrivate(cx, robj, &(*thisMat)[JSVAL_TO_INT(id)])) {
+            return JS_FALSE;
+        }
+        *vp = OBJECT_TO_JSVAL(robj);
+    }
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::setElement(JSContext * const cx, JSObject * const obj,
+                              const jsval id, jsval * const vp)
+    throw ()
+{
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::setTransform(JSContext * const cx, JSObject * const obj,
+                                const uintN argc, jsval * const argv,
+                                jsval * const rval)
+    throw ()
+{
+    using OpenVRML::SFVec3f;
+    using OpenVRML::SFRotation;
+
+    assert(cx);
+    assert(obj);
+    
+    SFVec3f translation(0.0, 0.0, 0.0);
+    SFRotation rotation(0.0, 0.0, 1.0, 0.0);
+    SFVec3f scale(1.0, 1.0, 1.0);
+    SFRotation scaleOrientation(0.0, 0.0, 1.0, 0.0);
+    SFVec3f center(0.0, 0.0, 0.0);
+    
+    for (uintN i = 0; i < argc; ++i) {
+        const SField::SFData * sfdata = 0;
+        switch (i) {
+        case 0:
+            if (!JSVAL_IS_OBJECT(argv[0])
+                    || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                                      &JavaScript_::SFVec3f::jsclass, 0)) {
+                return JS_FALSE;
+            }
+            sfdata = static_cast<SField::SFData *>
+                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+            assert(sfdata);
+            assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
+            translation = static_cast<SFVec3f &>(sfdata->getFieldValue());
+            break;
+
+        case 1:
+            if (!JSVAL_IS_OBJECT(argv[1])
+                    || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[1]),
+                                      &JavaScript_::SFRotation::jsclass, 0)) {
+                return JS_FALSE;
+            }
+            sfdata = static_cast<SField::SFData *>
+                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[1])));
+            assert(sfdata);
+            assert(dynamic_cast<SFRotation *>(&sfdata->getFieldValue()));
+            rotation = static_cast<SFRotation &>(sfdata->getFieldValue());
+            break;
+
+        case 2:
+            if (!JSVAL_IS_OBJECT(argv[2])
+                    || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[2]),
+                                      &JavaScript_::SFVec3f::jsclass, 0)) {
+                return JS_FALSE;
+            }
+            sfdata = static_cast<SField::SFData *>
+                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[2])));
+            assert(sfdata);
+            assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
+            scale = static_cast<SFVec3f &>(sfdata->getFieldValue());
+            break;
+
+        case 3:
+            if (!JSVAL_IS_OBJECT(argv[3])
+                    || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[3]),
+                                      &JavaScript_::SFRotation::jsclass, 0)) {
+                return JS_FALSE;
+            }
+            sfdata = static_cast<SField::SFData *>
+                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[3])));
+            assert(sfdata);
+            assert(dynamic_cast<SFRotation *>(&sfdata->getFieldValue()));
+            scaleOrientation =
+                    static_cast<SFRotation &>(sfdata->getFieldValue());
+            break;
+
+        case 4:
+            if (!JSVAL_IS_OBJECT(argv[4])
+                    || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[4]),
+                                      &JavaScript_::SFVec3f::jsclass, 0)) {
+                return JS_FALSE;
+            }
+            sfdata = static_cast<SField::SFData *>
+                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[4])));
+            assert(sfdata);
+            assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
+            center = static_cast<SFVec3f &>(sfdata->getFieldValue());
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    OpenVRML::VrmlMatrix * const thisMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    assert(thisMat);
+
+    thisMat->setTransform(translation,
+                          rotation,
+                          scale,
+                          scaleOrientation,
+                          center);
+    *rval = JSVAL_VOID;
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::getTransform(JSContext * const cx, JSObject * const obj,
+                                const uintN argc, jsval * const argv,
+                                jsval * const rval)
+    throw ()
+{
+    using OpenVRML::SFVec3f;
+    using OpenVRML::SFRotation;
+
+    assert(cx);
+    assert(obj);
+    
+    SFVec3f translation;
+    SFRotation rotation;
+    SFVec3f scale;
+
+    const OpenVRML::VrmlMatrix * const thisMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    assert(thisMat);
+
+    thisMat->getTransform(translation,
+                          rotation,
+                          scale);
+    
+    for (uintN i = 0; i < argc; ++i) {
+        if (JSVAL_IS_NULL(argv[i])) { continue; }
+        const SField::SFData * sfdata = 0;
+        switch (i) {
+        case 0:
+            if (!JSVAL_IS_OBJECT(argv[0])
+                    || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                                      &JavaScript_::SFVec3f::jsclass, 0)) {
+                return JS_FALSE;
+            }
+            sfdata = static_cast<SField::SFData *>
+                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+            assert(sfdata);
+            assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
+            static_cast<SFVec3f &>(sfdata->getFieldValue()) = translation;
+            break;
+
+        case 1:
+            if (!JSVAL_IS_OBJECT(argv[1])
+                    || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[1]),
+                                      &JavaScript_::SFRotation::jsclass, 0)) {
+                return JS_FALSE;
+            }
+            sfdata = static_cast<SField::SFData *>
+                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[1])));
+            assert(sfdata);
+            assert(dynamic_cast<SFRotation *>(&sfdata->getFieldValue()));
+            static_cast<SFRotation &>(sfdata->getFieldValue()) = rotation;
+            break;
+
+        case 2:
+            if (!JSVAL_IS_OBJECT(argv[2])
+                    || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[2]),
+                                      &JavaScript_::SFVec3f::jsclass, 0)) {
+                return JS_FALSE;
+            }
+            sfdata = static_cast<SField::SFData *>
+                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[2])));
+            assert(sfdata);
+            assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
+            static_cast<SFVec3f &>(sfdata->getFieldValue()) = scale;
+            break;
+
+        default:
+            break;
+        }
+    }
+    *rval = JSVAL_VOID;
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::inverse(JSContext * const cx, JSObject * const obj,
+                           const uintN argc, jsval * const argv,
+                           jsval * const rval)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+    
+    JSObject * robj = JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+                                         JS_GetParent(cx, obj));
+    if (!robj) { return JS_FALSE; }
+
+    const OpenVRML::VrmlMatrix * const thisMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    assert(thisMat);
+
+    OpenVRML::VrmlMatrix * const newMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, robj));
+    assert(newMat);
+    *newMat = thisMat->affine_inverse();
+    *rval = OBJECT_TO_JSVAL(robj);
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::transpose(JSContext * const cx, JSObject * const obj,
+                             const uintN argc, jsval * const argv,
+                             jsval * const rval)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+    
+    JSObject * robj = JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+                                         JS_GetParent(cx, obj));
+    if (!robj) { return JS_FALSE; }
+
+    const OpenVRML::VrmlMatrix * const thisMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    assert(thisMat);
+
+    OpenVRML::VrmlMatrix * const newMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, robj));
+    assert(newMat);
+    *newMat = thisMat->transpose();
+    *rval = OBJECT_TO_JSVAL(robj);
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::multLeft(JSContext * const cx, JSObject * const obj,
+                            const uintN argc, jsval * const argv,
+                            jsval * const rval)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+    assert(argc >= 1);
+
+    if (!JSVAL_IS_OBJECT(argv[0])
+            || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                              &VrmlMatrix::jsclass, 0)) {
+        return JS_FALSE;
+    }
+
+    const OpenVRML::VrmlMatrix * const argMat =
+            static_cast<OpenVRML::VrmlMatrix *>
+                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+    assert(argMat);
+
+    const OpenVRML::VrmlMatrix * const thisMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    assert(thisMat);
+
+    //
+    // Construct the result object.
+    //
+    JSObject * const robj = JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+                                               JS_GetParent(cx, obj));
+    if (!robj) { return JS_FALSE; }
+
+    OpenVRML::VrmlMatrix * const resultMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, robj));
+    assert(resultMat);
+
+    *resultMat = thisMat->multLeft(*argMat);
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::multRight(JSContext * const cx, JSObject * const obj,
+                             const uintN argc, jsval * const argv,
+                             jsval * const rval)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+    assert(argc >= 1);
+
+    if (!JSVAL_IS_OBJECT(argv[0])
+            || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                              &VrmlMatrix::jsclass, 0)) {
+        return JS_FALSE;
+    }
+
+    const OpenVRML::VrmlMatrix * const argMat =
+            static_cast<OpenVRML::VrmlMatrix *>
+                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+    assert(argMat);
+
+    const OpenVRML::VrmlMatrix * const thisMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    assert(thisMat);
+
+    //
+    // Construct the result object.
+    //
+    JSObject * const robj = JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+                                               JS_GetParent(cx, obj));
+    if (!robj) { return JS_FALSE; }
+
+    OpenVRML::VrmlMatrix * const resultMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, robj));
+    assert(resultMat);
+
+    *resultMat = thisMat->multRight(*argMat);
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::multVecMatrix(JSContext * const cx, JSObject * const obj,
+                                 const uintN argc, jsval * const argv,
+                                 jsval * const rval)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+    assert(argc >= 1);
+
+    //
+    // Make sure argument is an SFVec3f.
+    //
+    if (!JSVAL_IS_OBJECT(argv[0])
+            || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                              &SFVec3f::jsclass, 0)) {
+        return JS_FALSE;
+    }
+    
+    const SField::SFData * sfdata =
+            static_cast<SField::SFData *>
+                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+    assert(sfdata);
+    assert(dynamic_cast<OpenVRML::SFVec3f *>(&sfdata->getFieldValue()));
+    const OpenVRML::SFVec3f & argVec =
+            static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
+    sfdata = 0;
+
+    const OpenVRML::VrmlMatrix * const thisMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    assert(thisMat);
+
+    //
+    // Construct the result object.
+    //
+    JSObject * const robj = JS_ConstructObject(cx, &SFVec3f::jsclass, 0,
+                                               JS_GetParent(cx, obj));
+    if (!robj) { return JS_FALSE; }
+
+    sfdata = static_cast<SField::SFData *>(JS_GetPrivate(cx, robj));
+    assert(sfdata);
+    assert(dynamic_cast<OpenVRML::SFVec3f *>(&sfdata->getFieldValue()));
+    OpenVRML::SFVec3f & resultVec =
+        static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
+
+    thisMat->multVecMatrix(argVec, resultVec);
+    *rval = OBJECT_TO_JSVAL(robj);
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::multMatrixVec(JSContext * const cx, JSObject * const obj,
+                                 const uintN argc, jsval * const argv,
+                                 jsval * const rval)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+    assert(argc >= 1);
+
+    //
+    // Make sure argument is an SFVec3f.
+    //
+    if (!JSVAL_IS_OBJECT(argv[0])
+            || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
+                              &SFVec3f::jsclass, 0)) {
+        return JS_FALSE;
+    }
+    
+    const SField::SFData * sfdata =
+            static_cast<SField::SFData *>
+                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+    assert(sfdata);
+    assert(dynamic_cast<OpenVRML::SFVec3f *>(&sfdata->getFieldValue()));
+    const OpenVRML::SFVec3f & argVec =
+            static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
+    sfdata = 0;
+
+    const OpenVRML::VrmlMatrix * const thisMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    assert(thisMat);
+
+    //
+    // Construct the result object.
+    //
+    JSObject * const robj = JS_ConstructObject(cx, &SFVec3f::jsclass, 0,
+                                               JS_GetParent(cx, obj));
+    if (!robj) { return JS_FALSE; }
+
+    sfdata = static_cast<SField::SFData *>(JS_GetPrivate(cx, robj));
+    assert(sfdata);
+    assert(dynamic_cast<OpenVRML::SFVec3f *>(&sfdata->getFieldValue()));
+    OpenVRML::SFVec3f & resultVec =
+        static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
+
+    thisMat->multMatrixVec(argVec, resultVec);
+    *rval = OBJECT_TO_JSVAL(robj);
+    return JS_TRUE;
+}
+
+JSBool VrmlMatrix::toString(JSContext * const cx, JSObject * const obj,
+                            const uintN argc, jsval * const argv,
+                            jsval * const rval)
+    throw ()
+{
+    assert(cx);
+    assert(obj);
+    assert(rval);
+
+    const OpenVRML::VrmlMatrix * const thisMat =
+            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    assert(thisMat);
+
+    JSString * jsstr = 0;
+    try {
+        std::ostringstream out;
+        out << *thisMat;
+        jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
+        if (!jsstr) { return JS_FALSE; }
+    } catch (std::bad_alloc & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+        return JS_FALSE;
+    }
+    *rval = STRING_TO_JSVAL(jsstr);
+    return JS_TRUE;
+}
+
+void VrmlMatrix::finalize(JSContext * const cx, JSObject * const obj) throw ()
+{
+    delete static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    JS_SetPrivate(cx, obj, 0);
 }
 
 } // namespace JavaScript_
