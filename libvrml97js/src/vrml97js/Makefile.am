@@ -1,21 +1,29 @@
 SUBDIRS = fdlibm
 
 if DEBUG
-DEBUG_CFLAGS = -g -DDEBUG
+  DEBUG_CFLAGS = -g -DDEBUG
 else
-DEBUG_CFLAGS = -DNDEBUG
+  DEBUG_CFLAGS = -DNDEBUG
 endif
+
+UNIX_DEFS = -DXP_UNIX
+FREEBSD_DEFS = -DFREEBSD
+AIX_DEFS = -DAIX -DAIXV3
+AIX_4_3_DEFS = $(AIX_DEFS) -DAIX4_3
+
+AM_CPPFLAGS = $(UNIX_DEFS)
 
 if FREEBSD
-  DEFS += -DFREEBSD
-elif AIX
-  DEFS += -DAIX -DAIXV3
-  if AIX4_3
-    DEFS += -DAIX4_3
-  endif
+  AM_CPPFLAGS = $(AM_CPPFLAGS) $(FREEBSD_DEFS)
+endif
+if AIX
+  AM_CPPFLAGS = $(AM_CPPFLAGS) $(AIX_DEFS)
+endif
+if AIX4_3
+  AM_CPPFLAGS = $(AM_CPPFLAGS) $(AIX_4_3_DEFS)
 endif
 
-CFLAGS = -Wall -Wno-format -O2 $(DEBUG_CFLAGS) -DXP_UNIX
+AM_CFLAGS = -Wall -Wno-format -O2 $(DEBUG_CFLAGS)
 INCLUDES = -I.
 LDFLAGS = -version-info @LIBVRML97JS_SO_VERSION@
 
@@ -122,7 +130,7 @@ jsmath.o jsmath.lo: jsmath.c
 	$(LTCOMPILE) -c $<
 
 jsmathprelinked.lo: jsmath.lo jsmath.o
-	$(LIBTOOL) --mode=link $(LD) $(reload_flag) -o $@ $< ./fdlibm/libfdm.la
+	$(LINK) $(reload_flag) $< ./fdlibm/libfdm.la
 
 libvrml97js_la_LIBADD = jsmathprelinked.lo
 

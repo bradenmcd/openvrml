@@ -2,7 +2,7 @@
 # Blow off "std" if the compiler doesn't support namespaces
 #
 if NO_CXX_NAMESPACES
-  DEFS += -Dstd=""
+  NO_STD_NAMESPACE_DEF = -Dstd=""
 endif
 
 #
@@ -11,14 +11,15 @@ endif
 if DEBUG
   DEBUG_CXXFLAGS = -g
 else
-  DEBUG_CXXFLAGS = -DNDEBUG
+  DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
 INCLUDES = -I$(top_srcdir)/libvrml97js/src -I../../../libvrml97js/src/vrml97js
-CXXFLAGS = -Wall -O2 $(DEBUG_CXXFLAGS) @JPEG_CFLAGS@ @PNG_CFLAGS@
+AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF)
+AM_CXXFLAGS = -Wall $(DEBUG_CXXFLAGS) @JPEG_CFLAGS@ @PNG_CFLAGS@
+AM_LFLAGS = -Ls
+AM_YFLAGS = -d
 LDFLAGS = -version-info @LIBVRML97_SO_VERSION@ @JPEG_LIBS@ @PNG_LIBS@
-LFLAGS = -Ls
-YFLAGS = -d
 
 vrml97includedir = $(includedir)/vrml97
 
