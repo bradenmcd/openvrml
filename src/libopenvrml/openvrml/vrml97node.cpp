@@ -9990,7 +9990,7 @@ movie_texture_node* movie_texture_node::to_movie_texture() const
  */
 void movie_texture_node::update(const double time)
 {
-    if (modified()) {
+    if (this->modified()) {
         if (this->img_) {
             const char * imageUrl = this->img_->url();
             size_t imageLen = strlen(imageUrl);
@@ -9999,9 +9999,9 @@ void movie_texture_node::update(const double time)
                 size_t len = this->url_.mfstring::value[i].length();
 
                 if (this->url_.mfstring::value[i] == imageUrl
-                        || (imageLen > len
-                            && this->url_.mfstring::value[i]
-                                == (imageUrl + imageLen - len))) {
+                    || ((imageLen > len)
+                        && (this->url_.mfstring::value[i]
+                            == (imageUrl + imageLen - len)))) {
                     break;
                 }
             }
@@ -10095,11 +10095,12 @@ void movie_texture_node::update(const double time)
     // Check whether the frame should be advanced
     else if (this->active_.value
              && this->lastFrameTime + fabs(1 / this->speed_.value) <= time) {
-        if (this->speed_.value < 0.0) {
-            --this->frame;
-        } else {
-            ++this->frame;
-        }
+        this->frame = (this->speed_.value >= 0)
+            ? int(time - this->start_time_.sftime::value)
+                % int(this->duration_.value / this->speed_.value)
+            : -(int(time - this->start_time_.sftime::value)
+                 % int(fabs(this->duration_.value / this->speed_.value)));
+        assert(this->frame >= 0);
 
         this->lastFrameTime = time;
         this->modified(true);
