@@ -5,6 +5,10 @@
           take a 16-value float array.  Added a setRotate method to
           create a rotation matrix from a Quaternion.
 
+        * src/openvrml/OpenVRML/quaternion.cpp,
+          src/openvrml/OpenVRML/quaternion.h:  Added set method to set
+          the quaternion value from a 4-element float array.
+
 2003-01-25  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Makefile.am,

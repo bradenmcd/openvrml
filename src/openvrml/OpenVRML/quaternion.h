@@ -45,6 +45,7 @@ namespace OpenVRML {
         float operator[](size_t index) const throw ();
         float & operator[](size_t index) throw ();
         const float (&get() const throw ())[4];
+        void set(const float (&quat)[4]) throw ();
         float getX() const throw ();
         void setX(float x) throw ();
         float getY() const throw ();
@@ -90,6 +91,11 @@ namespace OpenVRML {
     inline const float (&Quaternion::get() const throw ())[4]
     {
         return this->quat;
+    }
+
+    inline void Quaternion::set(const float (&quat)[4]) throw ()
+    {
+        std::copy(quat, quat + 4, this->quat);
     }
 
     inline float Quaternion::getX() const throw ()

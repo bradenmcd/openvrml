@@ -44,7 +44,7 @@ Quaternion::Quaternion() throw ()
     this->quat[0] = 0.0;
     this->quat[1] = 0.0;
     this->quat[2] = 0.0;
-    this->quat[3] = 0.0;
+    this->quat[3] = 1.0;
 }
 
 /**
@@ -125,6 +125,15 @@ Quaternion::Quaternion(const SFRotation & rot) throw ()
  * @brief Get the value.
  *
  * @return a reference to a 4-element array comprising the quaternion value.
+ */
+
+/**
+ * @fn void Quaternion::set(const float (&quat)[4]) const throw ()
+ *
+ * @brief Set the value.
+ *
+ * @param quat  a 4-element array comprising a quaternion value, ordered
+ *              <var>x</var>, <var>y</var>, <var>z</var>, <var>w</var>.
  */
 
 /**
