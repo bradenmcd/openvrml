@@ -1,3 +1,10 @@
+2004-12-04 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(viewer::transform_points):  Fixed math to correctly transform
+	by the modelview matrix.  This fixes a problem with the
+	VisibilitySensor node.
+
 2004-12-03 Braden McDaniel  <braden@endoframe.com>
 
 	Updated package version to 0.15.2.
