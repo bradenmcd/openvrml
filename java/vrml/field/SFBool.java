@@ -22,17 +22,62 @@ package vrml.field;
 
 import vrml.Field;
 
+/**
+ * Represents a VRML SFBool field in Java.
+ */
 public class SFBool extends Field
 {
+  /**
+   * Construct a new SFBool field in OpenVRML using the given param.
+   *
+   * @param value Initial value of field.
+   */
   private native void CreateObject(boolean value);
 
-  public SFBool() { CreateObject(false); }
-  public SFBool(boolean value) { CreateObject(value); }
+  /**
+   * Default constructor for SFBool fields.
+   */
+  public SFBool()
+  {
+    CreateObject(false);
+  }
 
+  /**
+   * Construct an SFBool field.
+   *
+   * @param value Boolean value of field.
+   */
+  public SFBool(boolean value)
+  {
+    CreateObject(value);
+  }
+
+  /**
+   * Get the value of the SFBool field.
+   *
+   * @return Value of SFBool.
+   */
   public native boolean getValue();
 
+  /**
+   * Set the value of the SFBool field.
+   *
+   * @param b Desired value for SFBool.
+   */
   public native void setValue(boolean b);
+
+  /**
+   * Set the value of the SFBool field.
+   *
+   * @param b Desired value for SFBool.
+   */
   public native void setValue(ConstSFBool b);
+
+  /**
+   * Set the value of the SFBool field.
+   *
+   * @param b Desired value for SFBool.
+   */
   public native void setValue(SFBool b);
 
   public native String toString();

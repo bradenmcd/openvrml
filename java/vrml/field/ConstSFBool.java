@@ -22,12 +22,33 @@ package vrml.field;
 
 import vrml.ConstField;
 
+/**
+ * Read-only SFBool field.
+ */
 public class ConstSFBool extends ConstField
 {
+  /**
+   * Construct a new SFBool field in OpenVRML using the given param.
+   *
+   * @param value Initial value of field.
+   */
   private native void CreateObject(boolean value);
 
-  public ConstSFBool(boolean value) { CreateObject(value); }
+  /**
+   * Construct a read-only SFBool field.
+   *
+   * @param value Boolean value of field.
+   */
+  public ConstSFBool(boolean value)
+  {
+    CreateObject(value);
+  }
 
+  /**
+   * Get the value of the SFBool field.
+   *
+   * @return Value of SFBool.
+   */
   public native boolean getValue();
 
   public native String toString();
