@@ -1,5 +1,15 @@
 2004-11-27 Braden McDaniel  <braden@endoframe.com>
 
+	Merged changes from 0.15.1 release.
+
+	* NEWS:  Updated for 0.15.1.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
+	Project file updates.
+	* src/libopenvrml/openvrml/event.h:  event_emitter::last_time
+	accessor should be public.
+
+2004-11-27 Braden McDaniel  <braden@endoframe.com>
+
 	Updated package version to 0.15.99.
 
 	* configure.ac
