@@ -439,8 +439,8 @@ const char *System::httpFetch( const char *url )
 
 #include <Files.h>
 #include <TextUtils.h>
-#include <DriverServices.h>
-#include <PLStringFuncs.h>
+//#include <DriverServices.h> Removed 27Jan01
+//#include <PLStringFuncs.h>  Removed 27Jan01
 
 //#ifndef qDebug
 //#define qDebug	1
@@ -483,6 +483,9 @@ char* strdup(const char *string)
 	return newstr;
 }
 
+inline void c2str255(const char *cs, Str255 ps) {
+	int i = 255; *ps++ = strlen(cs); while(*cs && i--) *ps++ = *cs++;
+}
 
 static pascal void YieldingNotifier(void* contextPtr, OTEventCode code, 
 									   OTResult result, void* cookie)
@@ -518,7 +521,6 @@ void handleWindowDrag(EventRecord *event)
 	}
 }
 */
-
 
 
 static pascal OSStatus ProgressThread(void *junkParam)
@@ -614,10 +616,11 @@ const char *System::httpFetch( const char *url )
          theSystem->error("Connect failed: Memory allocation error\n");
          return NULL;
       }
-      Str255 counterPString;
-      NumToString(counter, counterPString);
-	    PStrCopy(destFileName, "\pvr_");
-		  PStrCat(destFileName, counterPString);        
+      // Str255 counterPString; // removed
+      //NumToString(counter, counterPString); // removed
+	    //PStrCopy(destFileName, "\pvr_"); // removed
+		  //PStrCat(destFileName, counterPString); // removed
+		  c2str255(fetchedFilename, destFileName); // Added 27Jan01   
 		  (void) FSMakeFSSpec(0, 0, destFileName, &destFSSpec);
 		  (void) FSpCreate(&destFSSpec, 'ttxt', 'TEXT', 0);
 		  err = FSpOpenDF(&destFSSpec, fsRdWrPerm, &destFileRefNum);
