@@ -137,15 +137,6 @@
                     </SETTING>
                     <SETTING>
                         <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>:parser:</VALUE></SETTING>
-                            <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>Project</VALUE></SETTING>
-                        </SETTING>
-                        <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
-                        <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
-                    </SETTING>
-                    <SETTING>
-                        <SETTING><NAME>SearchPath</NAME>
                             <SETTING><NAME>Path</NAME><VALUE>:</VALUE></SETTING>
                             <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
                             <SETTING><NAME>PathRoot</NAME><VALUE>Project</VALUE></SETTING>
@@ -762,10 +753,10 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>¢Ú`</VALUE></SETTING>
-                    <SETTING><VALUE>:i8</VALUE></SETTING>
+                    <SETTING><VALUE>úÒ¿</VALUE></SETTING>
+                    <SETTING><VALUE>0(∏</VALUE></SETTING>
                     <SETTING><VALUE>
-»Ï</VALUE></SETTING>
+D©¿</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
