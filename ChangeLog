@@ -1,3 +1,8 @@
+2002-12-18  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Shift ide-projects/Windows/VisualC6/tplib/antlr/Makefile.vc6
+          to lib/antlr directory.
+     
 2002-12-17  Braden McDaniel  <braden@endoframe.com>
 
         * doc/Doxyfile, doc/Makefile.am, doc/conformance.doc,
