@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  Viewer.h
 //  Abstract base class for display of VRML models
 //
@@ -45,6 +44,18 @@ public:
   // Query
   virtual void getPosition( float *x, float *y, float *z ) = 0;
   virtual void getOrientation( float *orientation ) = 0;
+
+  // S. K. Bose March. 02/2000
+  virtual bool IsBoxOutside(float *,float *) = 0;
+  // S. K. Bose March. 02/2000
+  virtual void getTransformMatrix(float [4][4] /*Matrix*/, 
+			    float * /*center*/,
+			    float * /*rotation*/,
+			    float * /*scale*/,
+			    float * /*scaleOrientation*/,
+			    float * /*translation*/) = 0;
+  // S. K. Bose March. 02/2000
+  virtual void getBillboardTransformMatrix(float [4][4], float *) = 0;
 
   enum RenderMode {
     RENDER_MODE_DRAW,
