@@ -1,0 +1,85 @@
+Date: Thu, 28 Mar 2002 14:57:00 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: RegoleDiFormattazioneDelTesto,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=RegoleDiFormattazioneDelTesto;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+! Sinossi
+RegoleDiFormattazioneDelTesto%%%
+__Enfasi:__ '____' per ''corsivo'', _''''_ per __grassetto__, '____'_''''_ per ''__entrambi__''.%%%
+__Liste:__ * per liste puntate, # per liste numerate, ''__;__ term __:__ definition'' per liste di definizioni.
+%%%__Collegamenti:__ !UnisciParoleConInizialiInMaiuscolo o usa le parentesi quadre per un [[collegamento ad una pagina] o un URL [[!http://cool.wiki.int/].
+%%%__Footnotes:__ Use [[1],[[2],[[3],...
+%%%__Preventing linking:__ Prefix with "!": !!DoNotHyperlink, name links like [[[[text | URL] (double up on the "[").
+%%%__Varie:__ "!", "!!", "!!!" definisce le intestazioni, "%''''%%" va a capo, "-''''---" crea una linea orizzontale.
+
+----
+! Paragrafi
+
+* Non identare i paragrafi
+* I word wrap vengono messi a seconda delle necessità
+* Usa le linee bianche come separatori
+* Quattro o più trattini indicano una linea orizzontale
+* %%''''% produce un ritorno a capo (nelle intestazioni e nelle liste anche)
+
+
+! Liste
+
+* asterisco per il primo livello.
+** asterisco-asterisco per il secondo livello etc, etc
+* Usa * per le liste puntate o # per quelle numerate, mischiale come vuoi 
+* semicolon-term-colon-definition for definition lists:
+;term here:definition here, as in the <DL><DT><DD> list
+* Una linea per ogni elemento
+* Spazi all'inizio del testo cambiano la visualizzazione in monospace.
+
+! Intestazione
+
+* '!' all'inizio produce una picccola intestazione
+* '!!' all'inizio produce una media intestazione
+* '!!!' all'inizio produce una grossa intestazione
+
+
+! Fonts
+
+* Identa con uno o più spazi per usare i font monospace:
+
+ Questo è monospace
+Questo no
+
+!Paragrafi identati
+''(Quotature)''
+
+* il punto e virgola e i due punti funzionano come <BLOCKQUOTE>
+
+;: questo è un blocco di testo identato
+
+! Enfasi
+
+* Usa doppi apici singoli ('') per dare enfasi (solitamente ''italico'')
+* Usa doppio underscores (__) per dare molta enfasi (solitamente __grassetto__)
+* Mescolali a piacere: __''grassetto corsivo''__
+* ''Enfasi'' può essere usata ''più volte'' dentro una linea, ma ''non può'' superare i limiti della linea:
+
+''questo
+non funzionerà''
+
+! Links (o collegamenti)
+* I collegamenti alle altre pagine all'interno del Wiki sono fatti usando un nome circondato da parentesi quadre: [questo è un link] oppure UsandoLeWikiWords (metodo preferito)
+* I collegamento alle pagine esterne sono fatti in questo modo: [http://www.wcsb.org]
+* Puoi anche dare un nome al collegamento fornendo una barra o pipe (|) all'inizio del link, ad esempio: [La pagina di PhpWiki | http://phpwiki.sourceforge.net/] - [La pagina princiale | PaginaPrincipale] 
+* Puoi eliminare i link in vecchi stile facendo precedere un URI da un punto esclamativo, come ad esempio !NotEUnWikiName, oppure !http://non.e.linkato
+* [1], [2], [3], [4] refer to remote references. Click EditLinks on the edit form to enter URLs. These differ from the newer linking scheme; references are unique to a page.
+* In ogni caso il vecchio modo di fare collegamenti è ancora supportato, quindi si potranno usare "http:", "ftp:", o "mailto:" per creare automaticamente link, come in http://c2.com 
+* Gli URL che finiscono in .png, .gif o .jpg sono racchiuse da parentesi quadre e permettono di inserire un'immagine, as esempio: [http://phpwiki.sourceforge.net/demo/themes/default/images/png.png]
+
+
+! Linguaggio di marcatura HTML
+
+* Non preoccupartene
+* < e > sono loro stessi
+* I caratteri di & commerciale non funzioneranno
+* Se devi veramente usare l'html puoi provare a chiedere al tuo amministratore del Wiki se può abilitare la funzionalità. Inizia ogni linea con una barra (|). Nota questa funzionalità è disabilitata di default

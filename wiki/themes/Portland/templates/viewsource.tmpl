@@ -1,0 +1,28 @@
+<!-- -*-html-*- -->
+<!-- $Id: viewsource.tmpl,v 1.1.1.1 2004-04-13 23:41:42 braden Exp $ -->
+
+<?php if ($page->get('locked') && !$user->isAdmin()) { ?>
+  <p><strong><?=_("Note:")?></strong>
+  <?=_("This page has been locked by the administrator and cannot be edited.")?></p>
+<?php } ?>
+
+<?php if (! $revision->isCurrent()) { ?>
+  <p><?=_("You are viewing an old revision of this page.")?>
+  <?= Button('viewsource', _("View the current version"), $page)?>.</p>
+<?php } ?>
+
+<!-- Dummy form else NS4 does not like the textarea -->
+<form method="post" action="<?=$request->getPostURL()?>" accept-charset="<?=CHARSET?>">
+<!-- wrap=virtual is not HTML4, but without it NS4 does not wrap long lines -->
+<textarea class="wikiedit"
+          name="content"
+          rows="<?=$request->getPref('editHeight')?>"
+          cols="<?=$request->getPref('editWidth')?>"
+	  readonly="readonly"
+          wrap="virtual"><?= $PAGE_SOURCE ?></textarea>
+<?= HiddenInputs($request->getArgs()) ?>
+</form>
+<hr />
+<a href="<?=WikiURL($page,array('action'=>_("PageHistory")))?>"
+   ><?= $Theme->getLastModifiedMessage($revision) ?></a>
+<br />

@@ -1,0 +1,17 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: PaginaPrincipale,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=PaginaPrincipale;
+  flags="";
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+* Che cosa è WikiWikiWeb? Una descrizione di questa applicazione.
+* Impara ComeUsareWiki e ad AggiungerePagine.
+* Usa la ScatolaDiSabbia per sperimentare con le pagine Wiki
+* Per favore metti il tuo nome nei VisitatoriRecenti.
+* Guarda CambiamentiRecenti per le ultime pagine aggiunte e cambiate.
+* Scopri quali sono le pagine PiuPopolari.
+* Leggi le NoteDiRilascio
+* Administer this wiki via AmministrazioneDiPhpWiki.

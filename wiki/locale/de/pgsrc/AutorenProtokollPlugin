@@ -1,0 +1,57 @@
+Date: Sun, 4 Jan 2004 17:18:08 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.8)
+X-Rcs-Id: $Id: AutorenProtokollPlugin,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=AutorenProtokollPlugin;
+  pgsrc_version="2 $Revision: 1.1.1.1 $";
+  flags="";
+  markup=2;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Liste aller Versionen eines Autors mit Diff-Links, oder eine SeitenProtokoll-ähnliche Liste einer oder aller (page=all) Seiten nur für einen Autor.
+
+Dieses experimentelle WikiPlugin erlaubt nur die Änderungen eines bestimmten Autors anzuzeigen; man kann auch das Protokoll für eine spezielle Seite bestimmen, die Vorgabe ist das Protokoll für die aktuelle Seite. Carsten sagt: _EXPERIMENTAL PLUGIN Needs a lot of work! Use at your own risk._
+
+<verbatim>
+<?plugin AuthorHistory page=StartSeite ?>
+
+<?plugin AuthorHistory page=all author="test" ?>
+</verbatim>
+
+Das erste Beispiel zeigt alle Änderungen der Seite "StartSeite" für jeweils andere Benutzer,
+das zweite Beispiel alle Änderungen des Autors "test" im gesamten Wiki.
+
+!! Benutzung
+
+<verbatim>
+<?plugin AuthorHistory page=StartSeite ?>
+</verbatim> 
+
+ergibt:
+<?plugin AuthorHistory page=StartSeite ?>
+
+----
+
+!! Argumente
+
+__author__ |
+  Benutzername. Vorgabe: aktueller Benutzername
+__page__ |
+  Seitenname.  Vorgabe: aktuelle Seite. 
+  Besondere Werte: page=username: page=author, page=all: Liste aller Seiten mit Änderungen dieses Benutzers.
+__info__|
+  Liste der Spaltentypen. Vorgabe: version,minor,author,summary,mtime
+  Beispiel: info=mtime,hits,summary,version,author,locked,minor
+__exclude__ |
+  Komma-getrennte Liste von Seiten, die nicht angezeigt werden sollen. Vorgabe: ''
+__noheader__ |
+  boolean. Vorgabe: false
+__includeminor__ |
+  boolean. Vorgabe: false
+__includedeleted__ |
+  boolean. Vorgabe: false
+
+----
+
+PhpWikiDokumentation

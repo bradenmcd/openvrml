@@ -1,0 +1,12 @@
+Date: Sat, 3 Feb 2002 17:28:00 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.3-jeffs-hacks)
+X-Rcs-Id: $Id: InterWikiKarte,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=InterWikiKarte;
+  flags=PAGE_LOCKED;
+  pgsrc_version="2 $Revision: 1.1.1.1 $";
+  markup=2;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Die InterWiki-Karte die in diesem Wiki benutzt wird, wird nachstehend aufgeführt. Die Karte wird vom Text im verbatim Block unten genommen. (Dieses funktioniert aber nur wenn diese Seite gesperrt ist.)

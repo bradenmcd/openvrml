@@ -1,0 +1,101 @@
+<?php // -*-html-*- ?>
+<!-- $Id: actionbar.tmpl,v 1.1.1.1 2004-04-13 23:41:42 braden Exp $ -->
+<div id="actionbar">
+
+<?php
+  $Sep = $Theme->getButtonSeparator();
+
+  if (!$page->get('locked') || $user->isAdmin())
+      $EditB = Button("edit",
+                      $revision->isCurrent() ? _("Edit this page") : _("Edit old revision"));
+  else
+      $EditB = Button("viewsource", _("View source"));
+  // $EditB = fmt("%s of this page", $EditB);
+
+?>
+
+ <ul>
+   <li><a class="wikilink" href="<?=WikiURL(HOME_PAGE)?>"><?= WIKI_NAME ?></a>
+     <ul>
+       <li>
+         <?= WikiLink(_("HomePage"), "button") ?>
+       </li>
+       <li>
+         <?= WikiLink(_("RecentChanges"), "button") ?>
+       </li>
+       <?php if (!empty($user) && $user->isAdmin()) { ?>
+       <li>
+       <?=$Sep?><?= WikiLink(_("PhpWikiAdministration"), "button") ?>
+       </li>
+       <?php } ?>
+       <?php if (!empty($user)) { ?>
+       <?php
+       /* Today's calendar page for the user, if the Calender subpage is defined. */
+        $UserCalPageTitle = $user->getId() . SUBPAGE_SEPARATOR . _("Calendar");
+        $dbi = $request->getDbh();
+        if ($dbi->isWikiPage($UserCalPageTitle)) {
+          $UserCalPageTodayTitle = $UserCalPageTitle . SUBPAGE_SEPARATOR . strftime("%Y-%m-%d", time());
+          $UserCalPageTodayUrl = WikiURL($UserCalPageTodayTitle);
+         ?>
+         <li>
+         <?=$Sep?><?= WikiLink($UserCalPageTodayUrl, "button", _("Today")) ?>
+         </li>
+       <?php } ?>
+      <?php } ?>
+     </ul>
+   </li>
+   <li>Editing
+     <ul>
+       <li>
+         <?= $EditB ?> 
+       </li>
+       <?php if ($user->isAdmin()) { ?>
+       <li>
+         <?=$Sep?><?= Button($page->get('locked') ? 'unlock' : 'lock')?>
+       </li>
+       <li>
+         <?=$Sep?><?= Button('remove') ?>
+       </li>
+       <?php } ?>
+     </ul>
+   </li>
+   <li>Information
+     <ul>
+       <li>
+         <a href="<?=WikiURL($revision,array('action'=>'diff'))?>" >
+         <?= $Theme->getLastModifiedMessage($revision) ?></a>
+       </li>
+       <li>
+         <?=$Sep?><?= Button("PageHistory", _("PageHistory")) ?> <?=$Sep?>
+       </li>
+       <li> <?= Button("PageInfo", _("PageInfo")) ?> </li>
+         <?php if (defined('DEBUG') || $user->isAdmin()) { ?>
+         <li>
+           <?=$Sep?><?= Button("DebugInfo", _("DebugInfo")) ?> <!-- For debugging only, really -->
+         </li>
+         <?php } ?>
+
+     </ul>
+   </li>
+   <li>Search
+     <ul>
+       <li>
+         <?plugin-form TitleSearch formsize=20 ?>
+       </li>
+       <li>
+         <?plugin-form FullTextSearch formsize=20 ?>
+       </li>
+       <li>
+         <?php if (!empty($revision)) { ?>
+           <?= Button("LikePages", _("LikePages")) ?>
+         <?php } ?>
+       </li>
+     </ul>
+   </li>
+   <li>User info
+     <ul>
+       <?= Template('signin') ?> 
+     </ul>
+   </li>
+ </ul>
+</div>

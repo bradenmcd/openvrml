@@ -1,0 +1,15 @@
+Date: Fri, 21 Nov 2003 04:30:14 +0100
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.7pre)
+X-Rcs-Id: $Id: %C4hnlicheSeiten,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=%C4hnlicheSeiten;
+  pgsrc_version="2 $Revision: 1.1.1.1 $";
+  flags="";
+  markup=2;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+ÄhnlicheSeiten haben einen identischen Wortteil im Namen. Siehe
+Wiki:LikePages und MeatBall:LikePages.
+----
+<?plugin LikePages ?>

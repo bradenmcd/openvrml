@@ -1,0 +1,18 @@
+<?php // -*-html-*- ?>
+<!-- $Id: browse.tmpl,v 1.1.1.1 2004-04-13 23:41:42 braden Exp $ -->
+<?php
+?>
+
+<br clear="all" class="clear-floats" />
+
+<?php if (! $revision->isCurrent()) { ?>
+  <p><strong><?=_("Note:")?></strong>
+     <?=_("You are viewing an old revision of this page.")?>
+     <?= WikiLink($page, 'existing', _("View the current version"))?>.</p>
+  <hr class="ignore" />
+<?php } ?>
+
+<?=$CONTENT?>
+<hr />
+<?= Template('actionbar') ?>
+<!-- The bottom navigation/search bar -->

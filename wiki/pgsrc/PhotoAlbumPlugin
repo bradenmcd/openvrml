@@ -1,0 +1,74 @@
+Date: Sat, 4 Jan 2003 23:05:22 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.4)
+X-Rcs-Id: $Id: PhotoAlbumPlugin,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=PhotoAlbumPlugin;
+  flags="";
+  pgsrc_version="2 $Revision: 1.1.1.1 $";
+  markup=2;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+!!! Summary
+Makes an 'album' by displaying a set of photos listed in a text file
+with optional descriptions.
+
+!!! Usage
+<verbatim>
+<?plugin PhotoAlbum
+         src=http://server/textfile
+         mode=[column|row]
+         align=[center|left|right]
+         desc=true
+         sort=false
+         height=100%
+         width=100%
+?>
+</verbatim>
+
+!!! Arguments
+''Only the ='src'= parameter is mandatory.''
+
+__src__:
+  Url to a CSV textfile which separates filename and description of
+  each photo. Photos listed in the text file have to be in same
+  directory as the file. Descriptions are optional.
+
+__mode__:
+  Specifies how the images are arranged, ='column'= means vertically,
+  ='row'= means horizontally. Default is ='row'=.
+
+__align__:
+  Only applicable to column mode. Default is ='center'=.
+
+__desc__:
+  Display any descriptions given in the text file. Default is true.
+
+__sort__:
+  Sort images by file name. By default the order in the text file is
+  followed.
+
+__height__, __width__:
+  Height and width are calculated compared to original metrics
+  retrieved by [php-function:getimagesize] and can be absolute or a
+  percentage (e.g. "50%").
+
+!!! Examples
+!! Text file
+Possible content of a valid text file:
+
+<verbatim>
+photo-01.jpg; My girlfriend and I
+photo-02.jpg
+christmas.gif; Merry Christmas!
+</verbatim>
+
+!! Sample Album
+<?plugin PhotoAlbum
+         src="http://phpwiki.sourceforge.net/demo/themes/Hawaiian/images/pictures/PhotoAlbum"
+?>
+
+!!! Plugin Author
+[Ted Vinke|mailto:teddy@jouwfeestje.com] <teddy@jouwfeestje.com>
+----
+PhpWikiDocumentation WikiPlugin

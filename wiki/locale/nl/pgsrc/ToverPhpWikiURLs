@@ -1,0 +1,94 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: ToverPhpWikiURLs,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=ToverPhpWikiURLs;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+!!! Over phpwiki: URLs
+
+Een speciaal typen URL is beschikbaar voor het maken van koppelingen
+naar beheers- en andere speciale functies in PhpWiki.  Hier is een
+korte beschrijving hoe ze werken.
+
+De basissyntax van een phpwiki: URL is
+  __phpwiki:__''paginanaam''__?__''vraag-argen''
+
+Als ''paginanaam'' wordt weggelaten, wordt het de huidige pagina.
+
+''Vraag-argen'' moet een reeks van parameters in standaard HTTP GET
+formaat zijn.
+
+''Vraag-argen''
+
+FIXME: can these be localised?
+De "action=''x''" parameter moet altijd worden opgegeven.  Het kan er
+een zijn van __browse__, __info__, __diff__, __search__, __edit__,
+__zip__, __dumpserial__, __loadserial__, __remove__, __lock__,
+__unlock__, __login__, __logout__, __setprefs__ of __save__.
+The standaard actie is __browse__.
+
+
+Sommige van deze acties accepteren andere parameters.
+
+;__info__: Accepteert __showpagesource__.
+;__search__: Accepteert __searchterm__, and __searchtype__.
+;__edit__: Accepteert __version__.
+;__remove__: Accepteert __verify__.
+;__save__: Accepteert __editversion__, __minor_edit__, en __content__.
+;__setprefs__: Accepteert __edit_area_width__, __edit_area_height__.
+
+!! Tover Koppelingen Schrijven in Wiki Pagina's
+
+Een toverkoppeling ziet eruit als:
+
+  __[[__ ''tekst'' __|__ ''phpwiki-url'' __]__
+
+
+Het "''tekst'' __|__" deel is optioneel maar meestal wel aan te raden.
+Als dit is opgegeven wordt dit het etiket voor de koppeling.
+
+Het ''phpwiki-url'' gedeelte is ook optioneel.  Als dit wordt
+weggelaten, wijst de koppeling naar de huidige wiki-pagina.
+
+!Enkele voorbeelden
+
+  [[ Verander de !ZandBak | phpwiki:!ZandBak?action=edit ]
+zal een koppeling maken die je direct naar het wijzigen van de ZandBak brengt,
+aldus:
+[ Verander de ZandBak | phpwiki:ZandBak?action=edit ].
+
+Andere mogelijkheden:
+* [ Diff de ZandBak | phpwiki:ZandBak?action=diff ],
+* [ Sluit de ThuisPagina af | phpwiki:ThuisPagina?action=lock ],
+* [ Krijg een Volledige Zip Stort | phpwiki:?action=zip&include=all ],
+* [ Paginatitels die 'wiki' bevatten | phpwiki:?action=search&searchterm=wiki ],
+
+!! Tover Formulieren schrijven in Wiki Pagina's
+
+Als een van de ''vraag-argen'' een waarde heeft als
+  ''arg''__=__''opt-breedte''__(__''opt-verstek-waarde''__)__
+zal de koppeling worden weergegeven als een formulier, in plaats van een anker.
+
+''Opt-breedte'', als opgegeven specificeert de breedte van het invoerveld,
+terwijld ''opt-verstek-waarde'' de verstekwaarde voor de invoer specificeert.
+Als ''tekst'' wordt opgegeven in de koppelijng, dan wordt een submit-knop
+met dat etiket opgenomen in het formulier, zoniet wordt de submit knop
+achterwege gelaten.
+
+Voorbeelden:
+
+  [[ Volledige Zoektocht | phpwiki:?action=search&searchtype=full&searchterm=() ] 
+geeft
+[ Volledige Zoektocht | phpwiki:?action=search&searchtype=full&searchterm=() ] 
+
+Terwijl
+  [[ phpwiki:?action=search&searchterm=12() ]
+oplevert
+[ phpwiki:?action=search&searchterm=12() ]
+
+Andere voorbeelden:
+[ Blader Pagina | phpwiki:?action=browse&pagename=() ]
+

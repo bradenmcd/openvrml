@@ -1,0 +1,11 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: PhpWikiDokumentation,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=PhpWikiDokumentation;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+!!Seiten in dieser Kategorie:
+<?plugin BackLinks exclude||='' include_self||=1 noheader||=0 page||=[pagename] info||=mtime ?>

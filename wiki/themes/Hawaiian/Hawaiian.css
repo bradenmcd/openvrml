@@ -1,0 +1,414 @@
+/**
+ * $Id: Hawaiian.css,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+ *
+ * This incarnation of this stylesheet is a complete rewrite from the
+ * ground up. It has not yet been tested against NS4.
+ *
+ * Mozilla's "DOM Inspector" Sidebar was an invaluable troubleshooting
+ * tool for mapping the more complex CSS node selectors, such as those
+ * used to reference the various CalendarPlugin elements.
+ */
+
+/**
+ * NS4 doesn't grok @import.  This allows us to put things which
+ * break NS4 in another file. As of OmniWeb 4.1, OW now @imports :-(
+ */
+@import url(Hawaiian-heavy.css);
+
+
+/**
+ * General
+ */ 
+img {
+  border: 0;
+  vertical-align: baseline;
+}
+
+form  { margin: 0; }
+input { margin: 0.1em; }
+input.numeric { text-align: right; }
+table {
+  border-spacing: 1px;
+  /* For Mozilla */
+  empty-cells: show;
+}
+caption {
+  caption-side: top;
+  text-align: left;
+  margin-bottom: .5ex;
+  /* Allow the caption to extend to the full page width
+     Mac ie5.1 ignores this*/
+  width: 100%;
+}
+
+
+/**
+ * Wiki
+ */
+
+/* Main wiki text box */
+body {
+  color: black;
+  background: white url("images/uhhbackground.jpg") repeat;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 1ex 0.5em;
+}
+body p {
+  margin-left: 1em;
+}
+
+#logo img {
+  border: 1px outset gray;
+  margin-left: 1em;
+  margin-bottom: 1ex;
+}
+img#signature {
+  background: white;
+  border: 1px outset gray;
+  padding-left:  8px; 
+  padding-right: 8px;
+  padding-top:    8px;
+  padding-bottom: 14px;
+}
+div.wikitext {
+  margin-top:    1ex;
+  margin-bottom: 0.5ex;
+  padding-left:  0.8em; 
+  padding-right: 0.8em;
+  padding-top:    0.5ex;
+  padding-bottom: 0.5ex;
+  /*This breaks Netscape 4: (display does not go full width).
+   * width: auto;
+   */
+  clear: both;
+  /* user's browser settings *
+  font-family: none; */
+}
+div.wikitext hr { height: 1px; }
+
+div.wikitext pre { font-family: monospace; }
+
+
+/* Mozilla RecentChanges Sidebar */
+body.sidebar {
+  font-size: smaller;
+  margin: 0.5em;
+}
+body.sidebar div.wikitext {
+  padding: 0.5em;
+}
+body.sidebar div.wikitext ul { padding-left: 1em; }
+body.sidebar h2 { margin-top: 0; }
+
+
+/**
+ * Link styles
+ */
+.wiki, .named-wiki {
+  font-weight: bold;
+  color: #87785c;
+}
+.wiki { text-decoration: none; }
+.named-wiki { text-decoration: underline; }
+
+/**
+ * wikiaction, wikiadmin, wikiunsafe:
+ */
+.wikiaction, .wikiadmin, .wiki-rc-action, .backlinks { text-decoration: none; }
+.wikiaction, .wikiadmin { font-weight: bold; }
+
+.wikiaction, .wikiaction table, span.wikiaction { color: #4d5a6b; }
+.wikiadmin, .wikiadmin table { color :#ff7e00; }
+.wikiunsafe { }
+
+.backlinks { color: #1d4fc0; }
+h1 .backlinks { text-decoration: underline; }
+
+
+/* Unknown links */
+.wikiunknown a, .named-wikiunknown a, .wikiunknown u { color: #a6977a; }
+
+/* Interwiki links */
+.wikipage  { font-weight: bold; }
+.interwiki { text-decoration: none; }
+.interwiki, i.interwiki .wikipage, em .interwiki .wikipage {
+  font-style: oblique;
+}
+.interwiki .wikipage, i .interwiki, em .interwiki {
+  font-style: normal;
+}
+
+
+/**
+ * headings
+ */
+h1, h2, h3, h4, h5, h6 { font-family: Arial, Helvetica, sans-serif; }
+
+h1 { margin: 0; }
+
+/**
+ * tables
+ */
+caption { font-family: Arial, Helvetica, sans-serif; }
+.pagelist {
+}
+.pagelist thead, .pagelist thead u {
+}
+.pagelist tr.evenrow { background: #eee; }
+.pagelist tr.oddrow  { background: white; }
+
+
+/**
+ * Toolbar
+ */
+.toolbar, input.button { font-family: Arial, Helvetica, sans-serif; }
+
+.toolbar {
+  padding: 0;
+  margin:  0;
+}
+/* Prevent buttons from overlapping when wrapped */
+#navbar, #actionbar { line-height: 140%; }
+
+.editdate {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  padding-top:    0.25ex;
+}
+
+
+/**
+ * Edit Page & View Source
+ */
+
+/* Make the textarea the full page width */
+.wikiedit {
+  width: 100%;
+  margin-bottom: 0.5ex;
+  margin-top:    0.5ex;
+  padding: 2px;
+}
+
+input.button { font-family: Arial, Helvetica, sans-serif; }
+#editarea-size {
+  margin-top: 1ex;
+  text-align: right;
+  font-size: smaller;
+}
+
+/* IncludePage plugin */
+.transclusion-title {
+  text-align: right;
+  font-style: oblique;
+  font-size:  smaller;
+  text-decoration: underline;
+  margin-bottom: 0.25ex;
+  margin-right:  0.25em;
+} 
+.transclusion, .wiki-edithelp {
+  font-size: smaller;
+}
+.transclusion {
+  background: inherit;
+  border: 1px dotted #a6977a;
+  padding-left:  0.8em; 
+  padding-right: 0.8em; 
+  padding-top:     0px;
+  padding-bottom:  0px;
+  margin-left:   0.25em;
+  margin-right:  0.25em;
+  margin-bottom: 0.1ex;
+}
+.wiki-edithelp {
+  border: medium solid #d8caae;
+  padding-left:  0.5em;
+  padding-right: 0.5em;
+  padding-top:    0.75ex;
+  padding-bottom: 0.75ex;
+  margin-left:  0;
+  margin-right: 0;
+  margin-top: 1ex;
+  margin-bottom: 1ex;
+}
+.wiki-edithelp .wiki {
+  color: #87785c;
+}
+.wiki-edithelp p {
+  font-family: Arial, Helvetica, sans-serif;
+  padding-left:  0.5em;
+  padding-right: 0.5em;
+  padding-top:    0.5ex;
+  padding-bottom: 0.5ex;
+  margin: 0;
+}
+
+
+/**
+ * Calendar plugin
+ */
+table.cal {
+  border: 1px outset gray;
+  margin: 0.5ex 0.5em;
+  padding: 1px;
+  /* For Mozilla */
+  empty-cells: hide;
+}
+/* Month-name & arrows area */
+table.cal thead {
+}
+table.cal table.cal-header td {
+  padding-top: 110px;
+}
+table.cal thead tr:first-child {
+  background: url("images/pictures/SteamVolcanoDusk.jpg") no-repeat;
+  background-position: center;
+  font-size: larger;
+}
+ /* Month-name & arrows cells */
+table.cal table.cal-header td {
+  text-align: center;
+  color: white;
+  background: transparent;
+  border: 0;
+}
+ /* arrow text */
+.cal-arrow {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+/* Day-names header */
+table.cal tr .cal-dayname {
+  background: inherit;
+}
+.cal-dayname td {
+  text-align: center;
+  font-size: smaller;
+  text-decoration: none;
+  color: black;
+  padding-bottom: 0.5ex;
+}
+
+/* Individual days */
+ /* cells */
+table.cal tbody td {
+  border: 0.5pt solid #ddd;
+  background: white;
+  text-align: right;
+} 
+ /* text */
+a.cal-hide {
+  text-decoration: none;
+  color: black;
+  font-weight: normal;
+}
+ /* Today */
+  /* cell */
+table.cal td.cal-today {
+  margin: 1px;
+  background: white;
+  border: 0.5pt solid black;
+}
+  /* text */
+table.cal td.cal-today a {
+  color: blue;
+}
+ /* Day with a data page */
+  /* cell */
+table.cal td.cal-day {
+  margin: 1px;
+  background: white;
+  border: 0.5pt solid black;
+}
+  /* text */
+table.cal td.cal-day a {
+  color: red;
+  text-decoration: none;
+}
+
+
+/**
+ * Diff Output
+ */
+
+/* main box */
+.diff .block {
+  background: #ccc;
+  /*border: 1px solid black;*/
+  padding: 0.5ex 0.5em;
+  margin:  0.5ex 0;
+}
+
+/* individual lines */
+.diff .context { background: white; }
+
+/* + - line prefix */
+.diff .block tt{
+  font-weight: bold;
+  font-family: monospace;
+  margin-left: -.6em;
+  color: black;
+}
+
+.diff del, .diff ins {
+  font-weight: bold;
+  text-decoration: none;
+}
+.diff .original, .diff .deleted { background: #fcc; }
+.diff .final, .diff .added { background: #cfc; }
+
+/* These don't work in NS4 -- it completely ignores <del> and <ins>. */
+.diff del { background: #f99; }
+.diff ins { background: #9f9; }
+
+
+/**
+ * Other
+ */
+.printer { display: none; }
+
+/* PHP Warnings */
+div.errors {
+  color: black;
+  border: medium solid #d8caae;
+  margin-top:    1em;
+  margin-bottom: 1em;
+  padding-left:  0.8em; 
+  padding-right: 0.8em; 
+  padding-top:    0.8ex;
+  padding-bottom: 0;
+  font-size: smaller;
+  clear: both;
+}
+.errors h4 {
+  color: #87785c;
+  margin:  0;
+  padding: 0;
+  text-decoration: none;
+  font-weight: bold;
+}
+.error { font-family: monospace; }
+.error ul { font-family: monospace; }
+
+/* Debug */
+.debug {
+  color: black;
+  font-family: monospace;
+  margin: 1ex 0;
+  padding: 0.5ex 0.5em;
+  border: medium solid #d8caae;
+}
+
+.clear-floats {
+  clear: both;
+}
+
+/* For emacs users
+ *
+ * Local Variables:
+ * mode: c
+ * c-file-style: cc-mode
+ * End:
+ */

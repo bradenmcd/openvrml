@@ -1,0 +1,42 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: MeerOverTechnieken,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=MeerOverTechnieken;
+  flags="";
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+PhpWiki is geschreven in de server-zijde scripttaal PHP, die
+verkrijgbaar is op http://www.php.net/.  PHP lijkt kwa syntax op C en
+Perl en functioneert goed vergelijkbaar met ASP, EmbPerl of JSP.
+
+PhpWiki bestaat uit een tal bestanden met een mengsel van PHP en HTML.
+De webpagina's waaruit het WikiWikiWeb gebaseerd op PHP bestaat, komen
+uit een data base, waarin ook backups van vorige versies worden
+bewaard.
+
+Steeds wanneer een gebruiker de site bezoekt, wordt de gevraagde
+pagina uit de data base gehaald en weergegeven.  De gebruiker vraagt
+enkel altijd het bestand index.php op, dat dan beslist welke andere
+php bestanden worden ingevoegd.
+
+Koppelingen naar pagina's in de Wiki worden automatisch gemaakt:
+PhpWiki.  Dit zou best wel eens het aantrekkelijkste onderdeel van een
+Wiki kunnen zijn, de mogelijkheid van pagina's toevoegen, enkel door
+het maken van een koppeling.  Het op een na aantrekkelijkst is het
+gemak waarmee externe URL's gekoppeld kunnen worden:
+
+# http://www.lilypond.org/
+# ftp://ftp.nl.debian.org/
+# http://www.wcsb.org/
+# ftp://ftp.redhat.com/
+# news://news.mozilla.org/
+# http://www.slashdot.com/
+# http://theregister.co.uk/
+
+Gecombineerd met een enkele naamruimte en eenvoudige opmaak, vertoont
+een Wiki vele karakteristieken van WabiSabi.
+
+PhpWiki wordt uitgebracht onder de GNU Algemene Openbare Licentie ([GNU General Public License | http://www.gnu.org/copyleft/gpl.html]).
+

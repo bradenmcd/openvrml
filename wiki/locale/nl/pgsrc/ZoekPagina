@@ -1,0 +1,30 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: ZoekPagina,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=ZoekPagina;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Hier zijn een paar goede plaatsen om te beginnen met bladeren.
+
+* HoeWikiTeGebruiken maakt snel wegwijs in Wiki.
+* RecenteVeranderingen worden automatisch bijgehouden.
+* MeerOverTechnieken van het bladeren en veranderen van deze server.
+
+
+Hier is een titel zoeker.  Probeer iets als ''wiki'' of ''broodje''.
+
+<?plugin-form TitleSearch?>
+
+Gebruik deze voor het doorzoeken van alle tekst.  Dit kan een paar seconden duren.  De resultaten tonen alle regels op een pagina die een oplossing bevatten.
+
+<?plugin-form FullTextSearch?>
+------
+Scheid woorden met een spatie.  Alle woorden moeten gevonden worden.
+%%%Om woorden uit te zonderen, plak er een '-' voor.
+%%%Voorbeeld: 'wiki tekst -php' zoekt naar alle pagina's die de woorden
+'wiki' __en__ 'tekst' bevatten, maar __niet__ het woord 'php.
+
+

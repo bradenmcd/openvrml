@@ -1,0 +1,29 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: PaginasToevoegen,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=PaginasToevoegen;
+  flags="";
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Voor het toevoegen van een nieuwe pagina aan Wiki, hoef je alleen maar een
+zinvolle titel de bedenken, de woorden met een hoofdletter te beginnen, en
+ZeAanElkaarTeSchrijvenZoalsDit.  Wiki herkent dit automagisch als een
+koppeling.
+
+Daarna kun je verder gaan en HetVraagtekenAanKlikken vlak na je nieuwe
+koppeling, dan geeft Wiki je een venster voor het maken van de nieuwe pagina.
+
+Als je documenten met een ingewikkelde opmaak aan de Wiki toe wilt voegen,
+kun je misschien beter een URL geven dan de tekst van het document hier 
+in proberen te tiepen, zoals:
+
+ PhpWiki project pagina: http://phpwiki.sourceforge.net/
+
+Wiki ondersteunt geen HTML tags (zie TekstFormmateringsRegels).  <tags>Die
+zien er gewoon uit als tekst.</tags>  De bedoeling van Wiki is zo eenvoudig 
+mogelijk zijn, om gebruik aan te moedigen.
+
+Merk op dat er een kunstje is dat je systeembeheerder aan kan zetten om
+ingebedde HTML toe te staan, maar hier zijn beveiligingsrisiko's mee gemoeid.

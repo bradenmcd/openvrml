@@ -1,0 +1,4 @@
+Nicht alle diese Seiten werden wirklich benötigt. Der Linkextraktor ist immer noch viel zu optimistisch, bei Interlinks, usw. D.h. viele dieser Links sind gar keine internen Seiten. 
+Einige Web-Robots erzeugen manchmal auch leere Seiten.
+
+<?plugin WantedPages limit=20 with_count=0 as_tree=0 maxlinks=5 sort='pagename' ?>

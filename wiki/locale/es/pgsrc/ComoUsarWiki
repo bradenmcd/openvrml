@@ -1,0 +1,45 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: ComoUsarWiki,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=ComoUsarWiki;
+  flags="";
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+''"Wiki wiki"'' significa "rápido" en Hawaiano.
+
+__Lo que necesita saber es:__
+
+* Para editar cualquier página haga click en el vínculo que hay
+al final de la página. Debería hacer esto ahora y leer el código fuente
+de esta página. Se hará una idea mas clara de como funciona esto.
+* Se obtiene cursiva poniendo rodeando las palabras con dos comillas simples
+a cada lado ''como este''.
+* Se consigue __texto en negrita___ usando "two underscores."
+* Y, __''cursiva negrilla''__ "with commilas simples y underscores."
+* Para tener una lista con puntos se hace poniendo un tablulador y un asterisco *
+* Si usa Windows, no se puede utilizar la tecla TAB. Es culpa de Bill Gates. Pero puede marcar el pequeño cuadrado que dice Convierte Espacios En Tabs. Se pueden poner muchos espacios y Wiki los reconocerá como un tabulador.
+* Para tener texto monoespaciado, indentelo con un espacio:
+
+ esto es un poema
+ sobre monoespaciado
+ nada rima con poema
+ nada rima con monoespaciado
+
+* Se pueden separar parrafos con una line en blanco. Ejemplo:
+
+Yo soy un parrafo.
+
+Yo tambien soy un parrafo. Ambos somos pequeños parrafos.
+
+
+* Se pueden poner lineas horizontales con cuatro o más guiones como estos:
+----
+* Para crear hipervínculos solamente hay que poner las palabras juntas y capitalizarlas. Imaginemonos que quiere crear una página sobre como Steve Wainstead come gusanos. Todo lo que tiene que hacer es algo parecido a: SteveWainsteadComeGusanos. Si la página no existe, entonces aparecerá un simbolo ? después del vínculo, invitandole a crear la página: EstaPaginaNoDeberiaExistir. (Y por favor no arruine este ejemplo creando una aquí) 
+* Para vincular páginas fuera del Wiki, simplementa hay que poner la URL y Wiki lo vinculará por usted: http://www.nytimes.com/
+* Para poner imágenes, simplemente ponga el hipervínculo entre corchetes, por ejemplo: [[http://www.yourhost.yourdomain/images/picture.png]. Las URL de imagenes que no esten entre corchetes aparecerán como vínculos a la imagen.
+* Ahora está listo para comenzar a AgregarPaginas.
+
+----
+Un WikiWikiWeb está preparado para ser rápido y de facil edición. Tiene un código muy simple, sobre el cual se puede leer en ReglasDeFormatoDeTexto.

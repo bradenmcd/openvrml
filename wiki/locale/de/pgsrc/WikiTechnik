@@ -1,0 +1,49 @@
+Date: Sun, 16 Nov 2003 02:12:32 +0100
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.5pre)
+X-Rcs-Id: $Id: WikiTechnik,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=WikiTechnik;
+  pgsrc_version="2 $Revision: 1.1.1.1 $";
+  flags="";
+  markup=2;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+PhpWiki ist in der serverseitigen Skriptsprache PHP
+(http://www.php.net/) geschrieben. PHP hat eine ähnliche Syntax wie
+Perl oder C und funktioniert ähnlich wie ASP, ~EmbPerl oder JSP.
+
+PhpWiki besteht aus etwa einem Dutzend Dateien mit gemischtem PHP und
+HTML. Die Webseiten, aus denen ein WikiWikiWeb besteht, werden von
+PHP live in einer Datenbank gespeichert, außerdem werden
+Sicherungskopien der vorherigen Versionen aller Seiten auch
+gespeichert. (PhpWiki unterstützt inzwischen neben DBM auch
+Datenbankserver wie MySQL oder PostgreSQL, und einfache
+Textdateien.)
+
+Immer wenn ein Benutzer eine Seite anfordert wird sie aus der
+Datenbank geholt und fliegender erstellt. Anwender fragen wirklich
+nur die Seite index.php ab, die automatisch feststellt, welche
+weiteren Seiten eingebunden werden müssen.
+
+Links auf andere Seiten in einem Wiki werden automatisch erstellt:
+[SeitenNamen|DseWiki:SeitenNamen]. Die Möglichkeit, neue Seiten zu
+erstellen, indem man einfach einen Link zu diesen erstellt, ist eine
+der wichtigsten Eigenschaften eines Wikis. Außerdem sind Links auf
+externe Seiten genauso einfach zu erstellen:
+* http://www.wcsb.org/
+* ftp://ftp.redhat.de/
+* news://news.mozilla.org/
+* http://slashdot.org/
+* http://theregister.co.uk/
+
+In Verbindung mit einem einzigen Namensraum und einfachen
+Textformatierungen besitzt ein Wiki viele Eigenschaften von
+WabiSabi.
+
+PhpWiki ist freie Software unter der GNU General Public License, die
+unter dieser Adresse zu finden ist:
+http://agnes.dida.physik.uni-essen.de/~gnu-pascal/gpl-ger.html
+(und auf Englisch: http://www.gnu.org/copyleft/gpl.html).
+----
+PhpWikiDokumentation KategorieWiki

@@ -1,0 +1,43 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: WieManWikiBenutzt,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=WieManWikiBenutzt;
+  flags="";
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+''»Wiki wiki«'' heißt »schnell« auf Hawai'anisch.
+
+__Alles was du wissen mußt ist:__
+
+* Klicke auf »Editieren« am unteren Ende der Seite, um sie zu bearbeiten. Du solltest das gleich jetzt tun und den Quelltext dieser Seite lesen - es ergibt dann mehr Sinn.
+* Kursiven Text bekommt man, indem man Wörter in jeweils zwei Apostrophen ' einschließt, ''wie in diesem Beispiel''.
+* Fette Schrift bekommt man, indem man Wörter in jeweils zwei untergesetzten Strichen einschließt, __wie in diesem Beispiel__
+* Und beides, indem man __''beides verwendet''__.
+* Eine Liste erhält man, indem man eine Zeile mit einem Sternchen »*« startet.
+* Vorformatierten Text rückt man mit mindestens einem Leerzeichen ein:
+
+ Das ist ein Gedicht
+ über vorformatierten Text
+ Es gibt Reime mit Gedicht
+ aber nicht mit Text
+
+* Absätze werden durch eine Leerzeile voneinander getrennt.
+
+Ich bin ein Absatz.
+
+Ich bin auch ein Absatz. Wir sind halt sehr kleine Absätze.
+
+* Eine horizontale Trennlinie bekommt man indem man vier oder mehr Bindestriche an den Anfang einer Zeile stellt:
+----
+* Links kann man erzeugen, indem man einzelne Wörter, deren Anfangsbuchstabe groß geschrieben wird, zusammenfügt. Wenn du also etwa eine Seite darüber  schreiben willst, daß Arno Ratten mag, schreibst du: ArnoMagRatten. Falls die Seite noch nicht existiert erscheint dahinter ein Fragezeichen, das dir die Möglichkeit gibt die Seite zu erzeugen: DieseSeiteSollteNichtExistieren. (Und bitte verdirb das Beispiel nicht, indem du diese Seite erzeugst).
+* Um externe Links zu setzen, kannst du einfach die Adresse eintippen und PhpWiki erzeugt einen passenden Link, z.B. http://www.diezeit.de/
+* Um Bilder einzufügen, schließt man deren Adresse in eckigen Klammern ein, wie hier: [[!http://www.deinhost.de/bilder/bild.png]. Falls die Adresse des Bildes nicht in eckigen Klammern steht, wird einfach nur die Adresse (nicht aber das Bild) angezeigt.
+* Jetzt kann es eigentlich schon mit dem SeitenErzeugen losgehen!
+
+----
+WikiWikiWeb soll schnell und einfach zu editieren sein. Es hat eine sehr
+einfache Syntax, über die du in TextFormatierungsRegeln mehr erfahren kannst.
+----
+PhpWikiDokumentation

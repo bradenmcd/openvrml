@@ -1,0 +1,27 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: TrovaPagina,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=TrovaPagina;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Ecco alcuni buoni punti di partenza per iniziare ad usare Wiki.
+
+* ComeUsareWiki fornisce una veloce guida al linguaggio di marcatura di Wiki
+* CambiamentiRecenti sono registrati automaticamente
+* VarieSulFunzionamento di browsing e modifica sul server
+
+Questo è un titolo di ricerca. Prova qualcosa come ''wiki'' o ''sandwich''.
+
+<?plugin-form TitleSearch?>
+
+Usa il seguente campo per una ricerca completa del testo. Verranno impiegati alcuni secondi ed i risultati saranno mostrati su tutte le linee che contengono l'occorrenza.
+
+<?plugin-form FullTextSearch?>
+
+------
+Separa le parole con uno spazio. Tutte le parole devono corrispondere.
+%%%Per escludere delle parole falle precedere dal segno di '-'.
+%%%Esempio: 'wiki text -php' cerca per tutte le pagine contenenti la parola wiki __e__ il testo 'text', ma __non__  quelle contenenti 'php'

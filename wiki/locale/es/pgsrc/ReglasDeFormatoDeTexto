@@ -1,0 +1,96 @@
+Date: Thu, 28 Mar 2002 14:57:00 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: ReglasDeFormatoDeTexto,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=ReglasDeFormatoDeTexto;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+! Sinopsis
+ReglasDeFormatoDeTexto%%%
+__Énfasis:__ '____' para ''itálicas'', _''''_ para __bold__, '____'_''''_ para ''__ambos__''.%%%
+__Listas:__ * para listas de balazos, # para listas numeradas, ''__;__ term __:__ definición'' para listas de definiciones.%%%
+__Referencias:__ !UnirPalabrasEnMayúsculas o usar corchetes para una [[enlace hacia una página] o URL [[!http://cool.wiki.int/].%%%
+__Anotaciones:__ Use [[1],[[2],[[3],...%%%
+__Preveción enlazar:__ Evite hacer enlaces con "!": !!NoHiperEnlaces. Enlaces con nombres como [[[[text | URL] (doble "["). %%%
+__Varios:__ "!", "!!", "!!!" para hacer títulos, "%''''%%" hace un salto de línea, "-''''---" Hace una linea horizontal.
+
+! Parrafos
+
+* No indente los parrafos
+* Las palabras se acomodan automaticamente
+* Use lines en blanco como seperarodes de pararrafos
+* Cuatro o mas guiones hacen una linea horizontal
+* %%''''% hace una ruptura de linea (tambien en cabeceras y listas)
+
+
+! Listas
+
+* asterisco para primer nivel
+** asterico-asterico para segundo nivel, etc.
+* Use * para listas, # para listas numeradas (se pueden mezclar)
+* ;Term: Definición para definicíon de listas
+* Una linea por cada item
+* cualquier otro espacio en blanco señala texto preformateado, acmbia el tipo de letra.
+
+! Cabeceras
+
+* '!' al principio hace una pequeña cabecera
+* '!!' al principio hace una cabecera mediana
+* '!!!' al principio hace una cabecera grande
+
+! Tipos de Letra
+
+* Indente con uno o mas espacios para usar tipo de letra monoespaciado:
+
+ Esto es monoespaciado
+Esto no
+
+! Parrafos indentados
+''(Citas)''
+
+* ;: -- a menudo usado (con énfasis) para citas.
+
+
+! Enfasis
+
+* Use dobles comillas simples ('') para énfasis (normalmente cursiva)
+* Use doble subrayado (__) para un énfasis fuerte (normalmente negrita)
+* Mezclelos y seran: ''__negrita cursiva__''
+* ''Enfasis'' puede ser usado ''multiples'' veces en una linea, pero no puede ir a traves de mas de una linea:
+
+''esto
+no funcionará''
+
+! Referencias
+
+* Los enlaces a otras páginas dentro de Wiki son realizadas poniendo el nombre entre corchetes: [esto es un vinculo de página] o UsandoPalabarasWiki (preferido)
+* Los enlaces a páginas externas son realizados como este: [http://www.wcsb.org/]
+* Puede nombrar los enlaces a páginas externas poniendo un nombre, una barra (|) y el enlace: [página web de Steve | http://wcsb.org/~swain/]  
+* Puede suprimir enlace a viejas referencias, precediendo la palabra con un '!', e.j. !NotLinkedAsWikiName
+* You can create footnotes by using [[1], [[2], [[3], ... like this here [1]. See footnote for counterpart.  (If the [[ is in the first column, it is a footnote ''definition'' rather than a footnote ''reference'' [1].)
+* También, el sistema antiguo de enlazar los URL's sigue siendo soportado: preceda los URLs con "http:", "ftp:" o "mailto:" para crear enlaces automáticamante como en: http://c2.com/
+* Las URLs que finalizan en .png, o .jpg son visualizadas si están entre corchetes: [http://phpwiki.sourceforge.net/phpwiki/images/wikibase.png]
+
+! Tables
+
+* Simple tables are available.  A table row is introduced by a __|__ in the first column.  It is best described by example:
+      ||  _''''_Name_''''_               |v _''''_Cost_''''_   |v _''''_Notes_''''_
+      | _''''_First_''''_   | _''''_Last_''''_
+      |> Jeff       |< Dairiki   |^  Cheap     |< Not worth it
+      |> Marco      |< Polo      | Cheaper     |< Not available
+;: will generate
+||  __Name__               |v __Cost__   |v __Notes__
+| __First__   | __Last__
+|> Jeff       |< Dairiki   |^  Cheap     |< Not worth it
+|> Marco      |< Polo      | Cheaper     |< Not available
+
+;: Note that multiple __|__'s lead to spanned columns, and __v__'s can be used to span rows.  A __>__ generates a right justified column, __<__ a left justified column and __^__ a centered column (which is the default.)
+
+! Lenguaje HTML
+
+* No se preocupe de el
+* < y > son si mismos
+* Los caracters & no funcionarán
+* Si realmente desea usar HTML, su administrador del sistema debe activar esta característica. Empiece cada líneas con una barra vertical (|). Tenga en cuenta que esta característica está desactivada por defecto.

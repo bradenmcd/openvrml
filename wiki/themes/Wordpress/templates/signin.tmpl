@@ -1,0 +1,77 @@
+<?php // -*-html-*-
+      // MPickering: modified; this will be enclosed within an ul
+     rcs_id('$Id: signin.tmpl,v 1.1.1.1 2004-04-13 23:41:42 braden Exp $');
+
+     $Sep = $Theme->getButtonSeparator();
+     $SignOutB = $Theme->makeButton(_("Sign Out"), "javascript:SignOut();", 'wikiaction');
+
+     if (empty($FORMNAME))
+         $FORMNAME = 'signin';
+     else
+         $NOFORM = true;
+?>
+<?php if (empty($NOFORM)) { ?>
+ <li>
+  <form method="post" action="<?= $request->getPostURL() ?>" accept-charset="<?=CHARSET?>" name="<?=$FORMNAME?>">
+  <?= HiddenInputs($request->getArgs(), false, array('auth')) ?>
+<?php } ?>
+<?php if ($user->isAuthenticated()) {  ?>
+
+<span>
+  <?= fmt("Authenticated as %s", WikiLink($user->getAuthenticatedId(), 'auto')) ?>
+  <?=$Sep?>
+</span>
+  <script language="JavaScript" type="text/javascript"><!--
+    document.write('<br /><input type="hidden" name="auth[logout]" value="0" />');
+    function SignOut(form) { 
+      var form = document.forms["<?=$FORMNAME?>"];
+      form.elements["auth[logout]"].value = 1;
+      form.submit();
+    }
+    document.write('<?=$SignOutB?>'); // -->
+  </script>
+  <noscript>
+    <?= Button("submit:auth[logout]", _("Sign Out"), 'wikiaction') ?>
+  </noscript>
+<?php } else {
+  $SignInInput = HTML::input(array('type' => 'text',
+                                   'name' => "auth[userid]",
+                                   'size' => 12,
+                                   'maxlength' => 256,
+                                   'onchange' => "SignIn(this.form);"));
+  $SignInInput->addTooltip(_("Enter your UserId to sign in"));
+  $userid = $user->getId();
+  if ($user->isSignedIn()) 
+      echo sprintf(_("You are signed but not authenticated as %s. "), 
+		   asXml(HTML::a(array(
+				       'href'=>'#',
+				       'title' => sprintf(_("Click to authenticate as %s"),$userid),
+				       'onclick'=>'SignIn(document.forms["'.$FORMNAME.'"],"'.$userid.'");'),
+				 $userid)));
+
+?>
+  <script type="text/javascript"> <!--
+    function SignIn(form) {
+      <?php /* (comment out:)
+      if (window.focus) {
+        window.open('/EditingPolicy.html',<!-- url -->
+                    'PleaseReadThisFirst',<!-- window name -->
+                    'width=600,height=430,scrollbars=yes,resizable=yes,toolbar=yes');
+      }
+      */ ?>
+      form.submit();
+    }
+    //-->
+  </script>
+  <?= Button("submit:auth[login]", _("Sign in as:"), 'wikiaction')?>
+  <?= $SignInInput ?>
+  <noscript>
+    <?= Button("submit:auth[login]", _("Sign In"), 'wikiaction')?>
+  </noscript>
+
+<?php } ?>
+
+<?php if (empty($NOFORM)) { ?>
+  </form>
+ </li>
+<?php } ?>

@@ -1,0 +1,148 @@
+Date: Sun, 15 Feb 2004 19:08:00 +0100
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.8)
+X-Rcs-Id: $Id: PhpWikiSystemverwalten,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=PhpWikiSystemverwalten;
+  flags=PAGE_LOCKED;
+  pgsrc_version="3 $Revision: 1.1.1.1 $";
+  markup=2;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+__Beachte__: Du mußt den Systemverwalter-Zugang zuerst mit einem Passwort schützen, sonst werden die meisten Links auf dieser Seite nicht funktionieren.
+
+----------
+!!! #[Inhaltsverzeichnis]
+* [Seiten Explorer|#Seiten Explorer]
+* [Aufräumen|#Aufräumen]
+* [Speicherauszug und Archiv-Datensicherung|#Speicherauszug und Archiv-Datensicherung]
+* [Wiederherstellen|#Wiederherstellen]
+* [Daten-Format|#Daten-Format]
+* [Seiten als XHTML Dateien speichern|#Seiten als XHTML Dateien speichern]
+* [PhpWiki Internals|#PhpWiki Internals]
+
+----
+!!! #[|Seiten Explorer][Seiten Explorer|#Inhaltsverzeichnis]
+
+Entweder wähle zuerst die Seiten und führe dann die Aktion aus:
+
+<?plugin-form WikiAdminSelect s="*" ?>
+
+oder rufe die möglichen ~WikiAdmin Aktionen direkt auf:
+
+[/Löschen] | 
+  [/Umbenennen] |
+    [/SuchenErsetzen] |
+      [/Chmod] 
+
+----------
+!!! #[|Aufräumen][Aufräumen|#Inhaltsverzeichnis]
+
+Räume die Wiki SandKiste auf. Hiermit kann man die Seite mit der Version von locale/de/pgsrc/SandKiste erneut initialisieren: [ Putze die SandKiste aus | phpwiki:?action=loadfile&source=locale/de/pgsrc/SandKiste ].
+
+----------
+!!! #[|Speicherauszug und Archiv-Datensicherung][Speicherauszug und Archiv-Datensicherung|#Inhaltsverzeichnis]
+
+! ZIP Dateien als Backup der PhpWiki Datenbank
+
+Diese Links erzeugen automatisch ZIP Archive, mit allen Seiten in deinem Wiki. Die ZIP Datei wird auf deinen lokalen Computer heruntergeladen, und muß dort gespeichert werden.
+
+Diese __[ kleine ZIP Datei | phpwiki:?action=zip]__ enthält nur die aktuellste Versionen aller Seiten, und diese __[ große ZIP Datei | phpwiki:?action=zip&include=all]__ enthält zusätzlich alle archivierten, vorigen Versionen.
+
+(Wenn dein PhpWiki insoweit konfiguriert ist, darf jeder die ZIP Datei herunterladen.)
+
+Wenn in deinem PHP die ''zlib'' Bibliothek unterstützt, werden alle Seiten in dem Archiv komprimiert, ansonsten nur unkomprimiert gespeichert.
+
+! Wiki Seiten als Dateien in lokales Verzeichnis speichern
+
+Hier kannst du alle Seiten aus deinem Wiki in eine lokales Verzeichnis deiner Wahl herunterladen.
+
+<?plugin WikiForm action=dumpserial?>
+
+Nur die neuesten Versionen aller Seiten wird als Einzeldatei in dieses Verzeichnis geschrieben. Beachte, daß evtl. deine Benutzerrechte dazu ausreichen müssen.
+
+-----------
+
+!!! #[|Wiederherstellen][Wiederherstellen|#Inhaltsverzeichnis]
+
+Wenn du ein PhpWiki Backup besitzt, kannst du dieses hier wieder restaurieren. Beachte das alle Seiten in der Datenbank damit überschrieben werden! Das heißt, das Hochladen einer lokalen StartSeite überschreibt die aktuelle Seite in der Datenbank. Um nur einzelne Dateien zu restaurieren, musst dein Verzeichnis oder ZIP Archiv insosoweit anpassen.
+
+! Datei Hochladen
+
+Hier kannst du ein ZIP Archiv hochladen, oder einzelne Dateien von deinem Computer (client).
+
+<?plugin WikiForm action=upload?>
+
+! Dateien Laden
+
+Hier kann man ZIP Archive, einzelne Dateien oder ganze Verzeichnisse ins Wiki laden. Die Dateien oder Verzeichnisse müssen lokal auf dem HTTP Server bestehen. Du kannst den Pfad allerdings auch mit der http: oder einer ftp: URL von externen Quellen laden.
+
+<?plugin WikiForm action=loadfile?>
+
+-----------
+
+!!! #[|Daten-Format][Daten-Format|#Inhaltsverzeichnis]
+
+Momentan werden alle Seiten dateiweise als MIME (RFC:2045) E-Mail's (RFC:822) gespeichert. Der Content-type ''application/x-phpwiki'' wird benutzt, und die Seiten Meta Daten sind als Content-type Parameter codiert. (Wenn die Datei mehrere Versionen der Seite enthält, wird der MIME Typ ''multipart/mixed'' verwendet, und jede Version als Teil ''application/x-phpwiki'' codiert). Der Email Body enthält die aktuelle Version des Seiteninhaltes, der Kopf die anderen Daten aus der Datenbank. (Datum, Autor, ...)
+
+! Alte Daten-Formate
+
+__Serialisierte Dateien__
+
+Der alte Dump-To-Directory Befehl schrieb alle Seiten als PHP ''serialized()'' Zeichenketten hinaus, die erstens unleserlich sind, und zweitens schwer bis gar nicht zu editieren sind.
+
+__Textdateien__
+
+Davor wurde der Seiteninhalt als einfache Textdatei gespeichert, d.h. alle zusätzlichen Daten (Meta-Daten) gingen verloren. (Datum, Autor, Version, ...). Der Seitenname entsprach dem Dateinamen.
+
+Die Hochlade- und Lade-Funktionen erkennen jeden dieser drei Dateitypen automatisch. Es werden noch alle unterstützt.
+(ZIP, Verzeichnis oder Einzeldateien als MIME E-Mail, Serialisiert oder einfache Textdatei.)
+----
+
+!!! #[|Seiten als XHTML Dateien speichern][Seiten als XHTML Dateien speichern|#Inhaltsverzeichnis]
+
+<?plugin WikiForm action=dumphtml?>
+
+Dieses zieht einer HTML-Speicherauszug in ein Verzeichnis aus, die für Verteilung auf Platte verwendbar sind, in der kein Web-Server vorhanden ist.
+
+Die XHTML-Dateiansammlung kann auch heruntergeladen werden als eine __[XHTML ZIP Datei | phpwiki:?action=ziphtml]__.
+----
+
+!!! #[|PhpWiki Internals][PhpWiki Internals|#Inhaltsverzeichnis]
+
+These are here mostly for debugging purposes (at least, that's the
+hope.)
+
+In normal use, you shouldn't need to use these, though, then again,
+they shouldn't really do any harm.
+
+!! Purge Markup Cache
+
+(If your wiki is so configured,) the transformed (almost-HTML) content
+of the most recent version of each page is cached. This speeds up page
+rendering since parsing of the wiki-text takes a fair amount of juice.
+
+  Hitting this button will delete all cached transformed
+  content. (Each pages content will be transformed and re-cached next
+  time someone views it.)
+
+  <?plugin WikiAdminUtils
+           action=purge-cache
+           label="Purge Cache"
+   ?>
+
+!! Clean WikiDB of Illegal Filenames
+
+Page names beginning with the subpage-separator, usually a slash
+(=/=), are not allowed. Sometimes though an errant plugin or something
+might create one....
+
+  This button will delete any pages with illegal page names.
+
+  <?plugin WikiAdminUtils
+           action=purge-bad-pagenames
+           label="Exorcise WikiDB"
+   ?> 
+
+----
+PhpWikiDokumentation

@@ -1,0 +1,245 @@
+/**
+ * $Id: SpaceWiki-gravimetric.css,v 1.1.1.1 2004-04-13 23:41:42 braden Exp $
+ *
+ * SpaceWiki-gravimetric.css
+ *
+ * This is stuff which should be in SpaceWiki.css, but which breaks NS4.
+ */
+
+/**
+ * General
+ */
+input.numeric { text-align: right; }
+input {
+  margin: 0;
+  border-left: 1px solid #0053db;
+  border-right: 1px solid #0053db;
+  border-top: 1px solid #0053db;
+  border-bottom: 1px solid #0053db;
+  text-align:  center;
+}
+input[type=text] {
+  border-left: 2px solid #0053db;
+  border-right: 2px solid #0053db;
+  border-bottom: 2px solid #0053db;
+  border-top: 0;
+  margin-top: 2px;
+  padding: 1px;
+}
+input[type=submit] {
+  color: #0053db;
+  border-left:   1.5em solid #0053db;
+  border-right:  0.15em solid #0053db;
+  border-top: 2px solid #0053db;
+  border-bottom: 2px solid #0053db;
+  padding-left:  0;
+  padding-right: 0;
+}
+input[type=submit]:hover {
+  color: #5791ff;
+  border-color: #5791ff;
+}
+
+.logo img {
+  margin-bottom: 1ex;
+}
+
+/**
+ * Wiki Forms
+ * 
+ * The div inside the wikiadmin upload form does not
+ * have a class yet, so it must be referenced indirectly
+ */
+/* div.wikiaction, div.wikiadmin { */
+div.wikiaction, form.wikiadmin div {
+  /* Emulate the display behaviour of a table, to shrink it's width.
+   * ie5.1Mac ignores this */
+  position: relative;
+  display: table;
+}
+
+/* Add space between the input field and following buttons, but not after the last button. */
+div.wikiaction input[type=text],
+div.wikiadmin input[type=text],
+form.wikiadmin input[type=file] { margin-right: 0.5em; }
+
+
+/**
+ * Links
+ */
+
+/* Make wikiaction links look futuristic */ 
+a.wikiaction {
+  border-left:   1.5em solid #115511;
+  border-right:  0.15em solid #115511;
+  padding-left:  0.15em;
+  padding-right: 0.3em;
+}
+a.wikiaction:hover {
+  border-right: 0.15em solid #1bab11;
+}
+
+a.wikiadmin {
+  border-left:   1.5em solid #982505;
+  border-right:  0.15em solid #982505;
+  padding-left:  0.15em;
+  padding-right: 0.3em;
+}
+a.wikiadmin:hover {
+  border-right: .15em solid #ef0032;
+}
+
+/* QuestionMark */
+.wikiunknown a, .named-wikiunknown a {
+  border: 1px solid black;
+  padding-left:  1px;
+  padding-right: 1px;
+  padding-top: 1px;
+  margin-right: 1px;
+  font-size: smaller; /* too small in NS4 */
+}
+.wikiunknown a:hover, .named-wikiunknown a:hover {
+  border: 1px solid #403752;
+}
+
+a.wiki-rc-action {
+  border-left: 0.15em solid #0053db;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  padding-bottom: 0.2ex;
+  margin-left: -0.25em;
+}
+li.rc-major a.wiki-rc-action,
+li.rc-minor a.wiki-rc-action {
+  border-left: 0;
+  margin-left: 0;
+  border-right: 0.25em solid #0053db;
+  padding-right: 0.25em;
+  margin-right: 0.8em;
+}
+p.wiki-rc-action a.wiki-rc-action:first-child {
+  border-left: 0;
+  margin-left: 0;
+  border-right: 0;
+}
+li.rc-major, li.rc-minor {
+  display: table;
+  /*border-bottom: 1px solid #222;*/
+  margin-bottom: .25ex;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}
+li.rc-minor {
+  font-size: 75%;
+  margin-top: .5ex;
+  border-bottom: 0;
+  padding-left: 1em;
+}
+li.rc-minor a.wiki-rc-action {
+  border-right: 0.15em solid #0053db;
+  margin-right: 2em;
+}
+li.rc-major a.wiki-rc-action:hover,
+li.rc-minor a.wiki-rc-action:hover,
+a.wiki-rc-action:hover {
+  border-color: #5791ff;
+}
+
+/* Link icons */
+img.linkicon { vertical-align: middle; }
+
+
+/**
+ * Headings
+ */
+h1 {
+  padding-top:      0.25ex;
+  padding-left:     0.5em;
+  padding-right:    0.25em;
+  padding-bottom:   1px;
+}
+div.toolbar h1 a.wiki, h1 a.backlinks {
+  padding-top:      0.25ex;
+  padding-left:     0.25em;
+  padding-right:    0.25em;
+  padding-bottom:   1px;
+}
+h2 a.wiki {
+  padding-top:      0.25ex;
+  padding-left:     0.25em;
+  padding-right:    0.25em;
+  padding-bottom:   1px;
+}
+div.toolbar input {
+  text-align:  left;
+}
+
+
+/**
+ * Edit Page & View Source
+ */
+/* color: inherit; and background: inherit; display as lime in NS4 */
+div.transclusion { font-size: smaller; } /* too small in NS4 */
+
+
+/**
+ * Diff Output
+ */
+.diff .block div {
+  position: relative;
+  padding-left: 1.5em;
+} 
+.diff .prefix {
+  position: absolute;
+  left: 0;
+  top:  0;
+}
+
+
+.editdate {
+  padding-top:    0.25ex;
+  padding-left:   0.5em;
+  padding-right:  0.5em;
+  padding-bottom: 1px;
+  margin-top:     2em;
+  margin-bottom:  0ex;
+
+  border-left: 0.5em solid #96c;
+  border-top: 0.15em solid #96c;
+}
+
+div.toolbar .wiki {
+  border-left:   1.5em solid #0053db;
+  border-right:  0.15em solid #0053db;
+  padding-left:  0.15em;
+  padding-right: 0.3em;
+}
+div.toolbar .wiki:hover {
+  border-right: 0.15em solid #5791ff;
+}
+
+b.wikisummary {
+  padding: 2px;
+  margin: 1px;
+}
+
+/**
+ * Other
+ */
+/* PHP Warnings */
+div.errors {
+  font-size: smaller; /* too small in NS4 */
+  margin-top:    4ex;
+  margin-bottom: 2ex;
+  padding: 0.5ex 0.25em;
+}
+.errors h4 {
+  margin: 0;
+  padding: 0.5ex 0.25em;
+}
+
+.error {
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}
+

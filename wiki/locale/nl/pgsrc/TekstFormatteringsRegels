@@ -1,0 +1,104 @@
+Date: Thu, 28 Mar 2002 14:57:00 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: TekstFormatteringsRegels,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=TekstFormatteringsRegels;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+! Synopsis
+TekstFormatteringsRegels%%%
+__Nadruk:__ '____' voor ''schuin'', _''''_ voor __vet__, '____'_''''_ voor ''__beide__''.%%%
+__Lijsten:__ * voor punt lijsten, # voor genummerde lijsten, ''__;__ Term __:__ Definitie'' voor definitie lijsten.%%%
+__Verwijzingen:__ !KapitaliseerEnSchrijfAanElkaar of gebruik vierkante haken [[pagina koppeling] of URL [[!http://koel.wiki.int/].%%%
+__Footnotes:__ Gebruik [[1],[[2],[[3],...%%%
+__Vermijden van koppelingen:__ Vermijdt kopplingen met "!": !!KoppelNiet, noem koppelingen met [[[[naam | URL].%%%
+__Allerlei:__ "!", "!!", "!!!" maak koppen, "%''''%%" maak regelbreuk, "-''''---" maak horizontale lijn.
+
+----
+! Alinea's
+
+* Spring alinea's niet in (zoals engelstaligen dat doen).
+* Begin een nieuwe regel en vul uit waar nodig.
+* Gebruik lege regels als scheiding.
+* Vier of meer mintekens maken een horizontale lijn.
+* %%''''% maakt een regelbreuk (ook in koppen en lijsten).
+
+
+! Lijsten
+
+* * voor niveau een.
+** ** voor niveau twee, enz.
+* Gebuik * voor gepunteerde lijsten, # genummerde lijsten (meng maar wat raak).
+* ; Term : Definitie voor definitie lijsten.
+* Een regel voor elk punt.
+* Andere witruimte aan het begin betekent geformatteerde tekst en
+verandert het font.
+
+
+! Koppen
+
+* '!' aan het begin van een regel maakt een kleine kop.
+* '!!' aan het begin van een regel maakt een middelgrote kop.
+* '!!!' aan het begin van een regel maakt een grote kop.
+
+! Lettertypen
+
+* Spring in met een of meer spaties voor een niet proportioneel font:
+
+ Dit is niet proportioneel
+En dit lekker wel.
+
+
+! Ingesprongen Alinea's
+''(Citaten)''
+
+* ;: -- veel gebruikt (met nadruk) voor citaten.  (Zie BlokCitatenNadoen)
+
+
+! Nadruk
+
+* Gebruik twee paar enkele aanhalingtekens ('') voor nadruk (meestal ''cursief'').
+* Gebruik "two underscores" (__) voor sterke nadruk (meestal __vet__).
+* Mix them at will: __''bold italics''__
+* <Obsolete>: Gebruik vijf paar enkele aanhalingstekens ('''''), of drie binnen
+dubbele, voor een ander soort van nadruk (VetCursiefInWiki), maar wees
+op je hoede voor luizen in de Wiki nadruk logica...
+* Nadruk kan meerdere malen in een regel worden gebruikt, maar kan
+regelbreuken niet oversteken.
+
+! Verwijzingen
+
+* Koppelingen naar andere pagina's binnen de Wiki worden gemaakt door de naam van de pagina in vierkante haken te zetten: [dit is een paginakoppeling].
+* Koppelingen naar externe pagina's gaan zo: [http://www.lilypond.org].
+* Je kunt de koppelingen naar externe pagina's een naam geven, door het tiepen van naam, een staaf (|) en dan de koppeling: [Jan's thuispagina | http://www.xs4all.nl/~jantien].
+* Oude Wiki koppeling wordt nog steeds ondersteund: KapitaliseerEnSchrijfAanElkaar voor het maken van lokale verwijzingen.
+* Je kunt koppelen naar oude stijl verwijzingen onderdrukken door een '!' voor de woorden te tiepen: !NietGekoppeldAlsWikiNaam.
+* You can create footnotes by using [[1], [[2], [[3], ... like this here [1]. See footnote for counterpart.  (If the [[ is in the first column, it is a footnote ''definition'' rather than a footnote ''reference'' [1].)
+* De oude manier van URL koppeling wordt nog steeds ondersteund: tiep voor de URLs "http:", "ftp:" of "mailto:" ome een automatiese koppeling te maken, als in: http://c2.com/.
+* URLs die eindigen op .png, .gif of .jpg worden ingebed ''wanneer ingevoerd als een externe verwijzing'': [http://phpwiki.sourceforge.net/demo/themes/default/images/png.png]
+
+
+! Tables
+
+* Simple tables are available.  A table row is introduced by a __|__ in the first column.  It is best described by example:
+      ||  _''''_Name_''''_               |v _''''_Cost_''''_   |v _''''_Notes_''''_
+      | _''''_First_''''_   | _''''_Last_''''_
+      |> Jeff       |< Dairiki   |^  Cheap     |< Not worth it
+      |> Marco      |< Polo      | Cheaper     |< Not available
+;: will generate
+||  __Name__               |v __Cost__   |v __Notes__
+| __First__   | __Last__
+|> Jeff       |< Dairiki   |^  Cheap     |< Not worth it
+|> Marco      |< Polo      | Cheaper     |< Not available
+
+;: Note that multiple __|__'s lead to spanned columns, and __v__'s can be used to span rows.  A __>__ generates a right justified column, __<__ a left justified column and __^__ a centered column (which is the default.)
+
+! Opmaak Taal
+
+* Doe geen moeite.
+* < en > zijn zichzelf.
+* De & tekens werken toch niet.
+* Als je nou echt zo nodig HTML moet gebruiken, begin elke regel met een staaf (|).  Merk op dat dit kunstje mogelijk gemaakt moet worden door de systeembeheerder.
+

@@ -1,0 +1,156 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: PhpWikiAdministration,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=PhpWikiAdministration;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+__Note__: Most of the actions on this page require administrative privileges.
+They won't work unless you have set an admin username and password in the PhpWiki config file.
+
+-----------
+! Log In
+
+__[Log In | phpwiki:?action=login]__
+
+This allows you to login.
+While you are logged in you will be able to ''lock'', ''unlock'' and ''delete'' pages.
+You will also be able to edit ''locked'' pages.
+
+----------
+!! Cleanup
+A Wiki SandBox is very easy to clean. Here you can restore it to pristine condition by loading the default from pgsrc:
+
+[ Rake the SandBox | phpwiki:?action=loadfile&source=pgsrc/SandBox ].
+
+----------
+!! Making Snapshots or Backups
+
+! ZIP files of database
+
+These links lead to zip files, generated on the fly, which contain all
+the  pages in your Wiki.  The zip file will be downloaded to your local computer.
+
+This __[ZIP Snapshot | phpwiki:?action=zip]__ contains only the latest versions
+of each page, while this __[ZIP Dump | phpwiki:?action=zip&include=all]__ contains all
+archived versions.
+
+(If the PhpWiki is configured to allow it,) anyone can download a zip file.
+
+If your php has ''zlib'' support, the files in the archive will be compressed,
+otherwise they will just be stored.
+
+! Dump to directory
+
+Here you can dump pages of your Wiki into a directory of your choice.
+
+[ Dump Pages | phpwiki:?action=dumpserial&directory=(/tmp/wikidump) ]
+
+The most recent version of each page will written out to the
+directory, one page per file.
+Your server must have write permissions to the directory!
+
+-----------
+!! Restoring
+
+If you have dumped a set of pages from PhpWiki, you can reload them here.
+Note that pages in your database will be overwritten; thus, if you dumped
+your HomePage when you load it from this form it will overwrite the one
+in your database now. If you want to be selective just delete
+the pages from the directory (or zip file) which you don't want to load.
+
+! Upload File
+
+Here you can upload ZIP archives, or individual files from
+your (client) machine.
+
+[ Upload | phpwiki:?action=upload&file=50()upload ]
+
+! Load File
+
+Here you can load ZIP archives, individual files or entire directories.
+The file or directory must be local to the http server.
+You can also use this form to load from an http: or ftp: URL.
+
+[ Load | phpwiki:?action=loadfile&source=50(/tmp/wikidump) ]
+
+-----------
+!! Format of the files
+
+Currently the pages are stored, one per
+file, as MIME ([ RFC2045 | http://www.faqs.org/rfcs/rfc2045.html ]) e-mail
+([ RFC822 | http://www.faqs.org/rfcs/rfc822.html ]) messages.
+The content-type ''application/x-phpwiki'' is used, and page meta-data
+is encoded in the content-type parameters.
+(If the file contains several versions of a page, it will have
+type ''multipart/mixed'', and contain several sub-parts, each
+with type ''application/x-phpwiki''.)
+The message body contains the page text.
+
+! Old Formats
+
+__Serialized Files__
+
+The dump to directory command used to dump the pages as
+php ''serialized()'' strings.  For humans, this made the files very hard
+to read, and nearly impossible to edit.
+
+__Plain Files__
+
+Before that the page text was just dumped to a file--this means
+that all page meta-data was lost. Note that when loading
+''plain files'', the page name is deduced from the file name.
+
+The upload and load functions will automatically recognize each of these
+three types of files, and handle them accordingly.
+----
+PhpWikiDocumentation
+
+OLD TEXT
+!!! Detta fungerar bara om du är inloggad som ADMIN
+
+-----------
+
+! ZIP-filer av databasen
+
+ __[ZIP Snapshot | phpwiki:zip=snapshot]__ : innehåller endast den senaste versionen
+
+ __[ZIP Dump | phpwiki:?zip=all]__ : innehåller alla arkiverade versioner
+
+De här länkarna leder till zipfilerna, som genereras direkt, och
+innehåller den senaste versionen av alla sidor på denna
+PhpWiki. Sidorna lagras, en per fil, som MIME (RFC2045)
+e-postmeddelanden (RFC822), med "content type" application/x-phpwiki
+för den senaste versionen och multipart/mixed för den arkiverade
+versionen. I det senare fallet finns det en underdel (med "content
+type" application/x-phpwiki) för varje version av sidan (i kronlogisk
+ordning). Brevkroppen innehåller texten till sidan medan sidans
+metadata finns som parametrar till Content-Type i brevhuvudet.
+
+-----------
+
+! Ladda / Dumpa serialiserade sidor
+
+Här kan du ladda eller dumpa sidor av din Wiki i valfri katalog.
+
+__Dump__
+
+%%ADMIN-INPUT-dumpserial-Dumpa_serialiserade_sidor%%
+
+Sidor kommer att skrivas som serialiserade strängar av PHP-associativa
+vektorer, vilket betyder att de inte är läsbara. Om katalogen inte
+existerar kommer PhpWiki att försöka skapa en åt dig. Se till att din
+webbserver har skrivrättigheter i katalogen!
+
+__Ladda__
+
+%%ADMIN-INPUT-loadserial-Ladda_serialiserade_sidor%%
+
+Om du har dumpat en mängd med sidor från PhpWiki kan du ladda dem här.
+Observera att sidorna i din databas kommer att skrivas över. Om du
+vill kan du bara ta bort de sidor från katalogen som du inte vill
+ladda.
+
+-----------

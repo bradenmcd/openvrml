@@ -1,0 +1,13 @@
+Date: Sat, 3 Feb 2002 17:28:00 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.3-jeffs-hacks)
+X-Rcs-Id: $Id: Geringf%FCgige%C4nderungen,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=Geringf%FCgige%C4nderungen;
+  flags=PAGE_LOCKED;
+  pgsrc_version="2 $Revision: 1.1.1.1 $";
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Hier ist eine Liste der vor kurzem bearbeiteten Seiten in diesem Wiki. Alle geringfügigen Änderungen werden gezeigt, nicht nur die neuesten Änderungen. (Siehe FrischeSeiten für die neuesten Hauptänderungen).
+--------
+<?plugin RecentChanges days||=3 show_all||=1 show_minor=1 daylist=1,3,7,30,90,0 ?>

@@ -1,0 +1,83 @@
+Date: Sat, 15 Nov 2003 17:23:27 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.8)
+X-Rcs-Id: $Id: HalloWeltPlugin,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=HalloWeltPlugin;
+  pgsrc_version="2 $Revision: 1.1.1.1 $";
+  flags="";
+  markup=2;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Ein einfaches Beispiels-Plugin.
+
+<?plugin HelloWorld salutation="Hallo," name="WikiUser" ?>
+
+Vom Quellcode dieser Seite:
+
+<verbatim>
+<?plugin HelloWorld salutation="Hallo," name="WikiUser" ?>
+</verbatim>
+
+-----
+PhpWiki's Plugin Architektur erlaubt dir benutzerdefinierte HTML Elemente deinem Wiki hinzuzufügen. Du mußt nur eine neue Klasse (Unterklasse) von der ~WikiPlugin Klasse ableiten, wie mit dem Namen unterhalb, und mit der run() Methode ja nach Wiki- oder Request Argumenten die HTML Ausgabe zu erzeugen. 
+
+* Entweder man erzeugt sie über die HTML Klassen, 
+* oder über ein Template (Vorlage). Templates sind unübersichtlicher, und Verleiten zum Erzeugen von ungültigem XHTML code, sind aber leichter anpassbar.
+
+<?plugin PhpHighlight
+
+/**
+ * Ein einfaches Beispiels-WikiPlugin. 
+ * Name, Argumente und Texte bitte auf englisch, und erst in locale/po/de.po
+ * auf Deutsch übersetzen.
+ *
+ * Aufruf:
+ * <?plugin HelloWorld?&gt;
+ * <?plugin HelloWorld
+ *          salutation="Grüße, "
+ *          name=Wikimeister
+ * ? >
+ * <?plugin HelloWorld salutation=Hallo ? >
+ * <?plugin HelloWorld name=WabiSabi ? >
+ */
+
+// Konstanten vor der Klasse definieren.
+if (!defined('THE_END'))
+    define('THE_END', "!");
+
+class WikiPlugin_HelloWorld
+extends WikiPlugin
+{
+    // Fünf notwendige Funktionen in einem WikiPlugin.
+
+    function getName () {
+        return _("HelloWorld");
+    }
+
+    function getDescription () {
+        return _("Simple Sample Plugin");
+    }
+
+    function getVersion() {
+        return preg_replace("/[Revision: $]/", '',
+                            "\$Revision: 1.1.1.1 $");
+    }
+
+    // Establish default values for each of this plugin's arguments.
+    function getDefaultArguments() {
+        return array('salutation' => "Hello,",
+                     'name'       => "World");
+    }
+
+    function run($dbi, $argstr, $request) {
+        extract($this->getArgs($argstr, $request));
+
+        // Any text that is returned will not be further transformed,
+        // so use html where necessary.
+        $html = HTML::tt(fmt('%s: %s', $salutation, WikiLink($name, 'auto')),
+                         THE_END);
+        return $html;
+    }
+};
+?>

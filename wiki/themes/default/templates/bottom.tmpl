@@ -1,0 +1,6 @@
+<?php // -*-html-*-
+  rcs_id('$Id: bottom.tmpl,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $');
+?>
+<!-- Add your Disclaimer here -->
+<?= $GLOBALS['ErrorManager']->getPostponedErrorsAsHTML() ?>
+<?php if (defined('DEBUG') and DEBUG) { ?><?= Template('debug') ?><?php } ?>

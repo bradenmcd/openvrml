@@ -1,0 +1,50 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: ComeUsareWiki,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=ComeUsareWiki;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+''"Wiki wiki"'' significa "veloce" in Hawaiano
+
+__Tutto quello che devi sapere è:__
+
+* Per mofificare qualsiasi pagina clicca sul pulsante Modifica Testo alla fine della pagina. Fallo adesso e leggi il sorgente della pagina, tutto avrà più senso
+
+* Puoi ottenere il corsivo circondando le parole con due apici da entrambe le parti come ''questo ad esempio''
+
+* Puoi ottenere testo in __grassetto__ usando gli underscore in questo modo sempre circondando il testo 
+* E, __''grassetto corsivo''__ usandoli entrambi
+* Potrai ottenere liste puntate aggiungendo un
+* all'inizio di una linea
+* Per avere un font monospace (tipo macchina da scrivere) puoi iniziare con uno spazio la riga come ad esempio:
+
+ questo è un poema
+ sul monospacing
+ niente rima con poema
+ niente rima con monospazio
+
+* Puoi separare i paragrafi con una linea bianca. Esempio:
+
+Sono un paragrafo.
+
+Anche io sono un paragrafo. Siamo dei piccoli paragrafi.
+
+
+* Puoi creare una linea orizzontale con almeno quattro trattini come questi:
+---------
+* Per creare link è sufficente rendere in maiuscoletto le parole assieme. Supponi di volere crere una pagina su Steve Wainstaead che mangia i vermi. Tutto quello che devi fare è rendere in maiuscolo tutte le parole relative al link SteveWainsteadMangiaIVermi Se questa pagina non esiste ancora viene mostrato un punto di domanda dopo il link che invita a creare la pagina: QuestaPaginaNonEsiste. (Per favore non rovinare questo esempio riempiendolo)
+
+* Per collegare pagine al di fuori del Wiki puoi scrivere direttamente l'indirizzo e PhpWiki se ne prenderà cura per te: http://www.nytimes.com/
+
+* Per inserire immagini, basta usare un link tra parentesi quadre come
+* questo [[http://www.iltuohost.iltuodominio/images/picture.png. le
+* immagini non in parentesi quadre saranno trattate come URL normali. 
+* Ora sei pronto per AggiungerePagine
+
+----
+Un WikiWikiWeb è strutturato per facilitare la modifica veloce dei
+documenti. Ha un semplice sistema di marcatura che puoi imparare
+velocemente nelle RegoleDiFormattazioneDelTesto

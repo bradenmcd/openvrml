@@ -1,0 +1,65 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: HoeWikiTeGebruiken,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=HoeWikiTeGebruiken;
+  flags="";
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+''"Wiki wiki"'' betekent "vlug" in het Hawaiiaans.
+
+__Alles wat je echt moet weten is:__
+
+* Om een pagina te veranderen, klik op de Verander Tekst
+koppeling onderaan de desbetreffende pagina.  Doe dat nu maar, en lees
+de bron tekst van deze pagina.  Dat is wat zinvoller.
+* Je maakt cursieve tekst door woorden tussen enkele
+aanhalingtekens te zetten ''zoals dit''.
+* Je maakt __vette tekst__ door aan weerszijden twee underscores te gebruiken.
+* En, ''__vet schuingedrukt__'' door beiden te gebruiken.
+* Je maakt punten met een tab en een sterretje *.
+* Als je Windows gebruikt, dan werkt je tab toets niet.  Dat is de
+schuld van Bill Gates.  Maar je kunt het kleine knopje indrukken,
+genaamd Vertaal Spaties Naar Tabs.  Je kunt een stel spaties tiepen
+die Wiki dan herkent als ware ze een tab.
+* Om een gewoon, niet proportioneel font te krijgen, spring in met een spatie:
+
+ dit is een gedicht
+ niet over proportioneel
+ niks rijmt op gedicht
+ wat rijmt op niet proportioneel
+
+* Je kunt alinea's van elkaar scheiden met een lege regel.  Voorbeeld:
+
+Ik ben een alinea.
+
+Ik ben ook een aline.  We zijn gewoon erg korte alinea's.
+
+* Je maakt een horizontale lijn met vier of meer streepjes zoals hier:
+----
+* Om hyperkoppelingen te maken hoef je slechts de woorden met
+hoofdletters en aan elkaar te schrijven.  Laten we zeggen dat je een
+pagina wilt maken over die Jan Nieuwenhuizen eet wormen.  Het enige
+dat je hoeft te doen is elk woord met een hoofdletter beginen en ze
+aan elkaar schrijven: JanNieuwenhuizenEetWormen.  Als de pagina nog
+niet bestaat, verschijnt er een vraagteken achter de koppeling, die je
+uitnodigt om de pagina aan te maken: DezePaginaMagNietBestaan.
+(Verpest dit voorbeeld nou alsjeblieft niet door er een aan te maken.)
+* Om naar pagina's buiten de Wiki te koppelen, tiep je gewoon de URL
+* in en Wiki maakt de koppelinig voor jou: http://www.volkskrant.nl/.
+* Om plaatjes in te voegen, zet de koppeling gewoon tussen vierkante
+* haken zoals hier:
+* [http://www.jouwgastheer.jouwdomein/plaatjes/figuur.png].  URLs naar
+* plaatjes die niet tussen vierkante haken staan, verschijnen als een
+* gewone koppeling naar het plaatje.  Nu ben je klaar om te beginnen
+* met PaginasToevoegen.
+
+----
+Een WikiWikiWeb is bedoeld om snel en gemakkelijk te kunnen veranderen.  Het
+heeft een erg eenvoudige formattering waarover je kunt lezen in
+TekstFormatteringsRegels.
+----
+Als de afmetingen van het invoerveld dat je krijgt je niet bevallen, kun je
+die veranderen.
+Zie GebruikersVoorkeuren.

@@ -1,0 +1,48 @@
+Date: Sat, 13 Mar 2004 11:26:41 +0100
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.8)
+X-Rcs-Id: $Id: InhaltsVerzeichnisPlugin,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=InhaltsVerzeichnisPlugin;
+  pgsrc_version="2 $Revision: 1.1.1.1 $";
+  flags="";
+  markup=2;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+<?plugin CreateToc jshide||=1 ?>
+
+WikiPlugin um ein dynamisches *Inhaltsverzeichnis* aller Überschriften anzuzeigen. Seit v1.3.8
+
+!! Benutzung
+
+<verbatim>
+     <?plugin CreateToc ?>
+     <?plugin CreateToc jshide||=1 with_toclink||=1 ?>
+</verbatim>
+
+!! Argumente
+
+__jshide__: |
+  Bool'sche Variable, ob das Inhaltsverzeichnis (TOC) zuerst versteckt sein soll, und erst auf Klick erscheint. Vorgabe: 0
+__with_toclink__:  |
+  Bool'sche Variable, ob die Überschriften zum TOC zurück linken sollen. Vorgabe: 0
+__headers__:  |
+  Welche Überschriften?  Vorgabe: !!!,!!,!    1,2,3 auch erlaubt
+__noheader__:  |
+  Bool'sche Variable, ob die "Inhaltsverzeichnis" h2 Überschrift weggelassen soll. Vorgabe: 0
+__liststyle__:  |
+  dl oder ol oder ul. Vorgabe: dl
+__indentstr__:  |
+  Vorgabe: &nbsp;&nbsp;
+__pagename__:  |
+  TOC welcher Seite? Vorgabe: Aktueller Seitenname
+
+!! Bekannte Probleme
+
+Wenn eine Überschrift einen Link oder eine WikiWort enthält, erzeugt ~CreateToc eine Warnung und diese Überschrift wird falsch verlinkt.
+
+!! Beispiele
+
+Siehe zB. TextFormattingRules
+----
+PhpWikiDokumentation

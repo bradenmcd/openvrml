@@ -1,0 +1,28 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: BuscarP%E1gina,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=BuscarP%E1gina;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Aquí hay algunos buenos consejos para comenzar la búsqueda.
+
+* ComoUsarWiki tiene una rápida introducción sobre el lenguaje de códigos de Wiki.
+* CambiosRecientes grabada automáticamente
+* MasAcercadeLaMecanica sobre navegar y editar en este servidor
+
+Aquí hay una búsqueda de títulos. Intente con algo como ''wiki'' o ''sandwich''.
+
+<?plugin-form TitleSearch?>
+
+Use lo siguiente para una búsqueda completa de texto. Esto tarda unos pocos segundos. Los resultados mostrarán todas las líneas en una página dada que contengan un acierto.
+
+<?plugin-form FullTextSearch?>
+
+------
+Separate words with a space. All words have to match.
+%%%To exclude words prepend a '-'.
+%%%Example: 'wiki text -php' looks for all pages containing the words 'wiki'
+__and__ 'text', but __not__ containing the word 'php'.

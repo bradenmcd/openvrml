@@ -1,0 +1,253 @@
+/**
+ * $Id: Wordpress.css,v 1.1.1.1 2004-04-13 23:41:42 braden Exp $
+ *
+ * PhpWiki's Portland style sheet based on the original Wiki
+ *
+ * Styles are kept to a minimum, so the page will mostly appear
+ * according to the browser's default font settings.
+ */
+
+/* 
+	Blue-Fade Theme 
+	Modified 2004-01-20 by Alex King (http://www.alexking.org/)
+
+	based on:
+	Default WordPress by Dave Shea || http://mezzoblue.com
+	Modifications by Matthew Mullenweg || http://photomatt.net
+	This is just a basic layout, with only the bare minimum defined.
+	Please tweak this and make it your own. :)
+*/
+
+/* This stuff was copied straight out of portland.css */
+
+body {
+  color : black;
+  background : white;
+}
+
+img {
+  border : 0 none;
+}
+
+.wiki-edithelp {
+  font-size : smaller;
+}
+
+input.numeric {
+  text-align: right;
+}
+
+/* Mozilla RecentChanges Sidebar */
+body.sidebar {
+  font-size: smaller;
+  margin: 0.5em;
+}
+body.sidebar div.wikitext ul { padding-left: 1em; }
+body.sidebar h2 { margin-top: 0; }
+
+/* End of stuff copied from portland.css */
+
+
+/* This stuff was added to get the "look" right, and wasn't part of the
+ * goal to match WordPress.  If you're changing the WordPress styles, these
+ * items don't have a WordPress equivalent, so you might be able to leave them
+ * as-is.  */
+
+.wikitext .wiki, .wikitext .named-wiki {
+        font-weight: bold;
+}
+
+.wikitext {
+        margin: 30px 13em 0 3em;
+        padding-right: 20px;
+}
+
+.cal-hide {
+        color: #999;
+}
+
+.cal-hide, .cal-day a {
+        font-size: smaller;
+}
+
+.cal-day a, .cal-hide a {
+        font-weight: bold;
+}
+
+hr {
+        border-bottom: 1px dotted #ccc;
+        height: 0px;
+}
+
+/* End of stuff added for "look" */
+
+
+/* This was copied (nearly verbatim) from a WordPress style.css */
+
+body {
+        background: #fff url(images/content-background.gif) repeat-x;
+        font-family: Verdana, Geneva, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: black;
+}
+
+a {
+        color: #036;
+        text-decoration: none;  /* This was added */
+}
+ 
+a:visited {
+        color: #369;
+}
+
+a:hover {
+        color: #69c;
+}
+
+#header {
+        background: #036 url(images/header-background.gif) repeat-x;
+        border-bottom: 1px solid #69c;
+        font: italic normal 230% 'Times New Roman', Times, serif;
+        letter-spacing: 0.2em;
+        margin: 0;
+        padding: 15px 10px 15px 30px;
+        color: #69c; /* added for subpage headings */
+}
+
+#header a {
+        color: #fff;
+        text-decoration: none;
+}
+
+#header a:hover {
+        text-decoration: underline;
+}
+
+/* End of stuff copied (almost) verbatim */
+
+
+/* The remainder of this file contains things that "sort-of" had equivalents
+ * between WordPress and PhpWiki.  See comments for specifics.  */
+
+/* All PhpWiki #actionbar items are from WordPress #menu items */
+#actionbar {
+        background: #e8e8e8 url(images/menu-background.gif) repeat-x;
+        border-left: 1px solid #9cf;
+        border-bottom: 1px solid #9cf;
+        padding: 30px 0 20px 20px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 11em;
+}
+
+#actionbar form {
+        margin: 0;
+}
+
+#actionbar input {
+        width: 80%;
+}
+
+/* Genericize it a little for other input fields */
+input {
+        background: #fff;
+        border: 1px solid #999;
+/*        width: 80%; */
+        font-size: smaller;
+}
+
+#actionbar ul {
+        color: #369;
+        font-weight: bold;
+        list-style-type: none;
+        margin: 0;
+        padding-left: 3px;
+}
+
+#actionbar ul li {
+        font: italic normal 100% 'Times New Roman', Times, serif;
+        letter-spacing: 100%;
+        margin-top: 10px;
+        padding-bottom: 2px; /*border-bottom: dotted 1px #ccc;*/
+}
+
+#actionbar ul ul {
+        list-style-type: none;
+        font-variant: normal;
+        font-weight: normal;
+        line-height: 100%;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+}
+
+#actionbar ul ul li {
+        border: 0;
+        font: normal 70% Verdana, sans-serif;
+        letter-spacing: 100%;
+        margin-top: 0;
+        padding: 0 0 1px 12px;
+}
+
+#actionbar ul ul li a {
+        color: #036;
+        text-decoration: none;
+}
+
+#actionbar ul ul li a:hover {
+        border-bottom: 1px solid #69c;
+}
+
+
+/* All PhpWiki .cal items are from WordPress #wp-calendar items */
+.cal {
+        background: #fff;
+        border: 1px solid #ddd;
+        empty-cells: show;
+/*        font-size: 14px; */
+        margin: 0 0 0 -5px;
+/*        width: 90%; */
+}
+
+.cal a {
+        /* display: block; */
+        text-decoration: none;
+        font: normal;
+}
+
+.cal a:hover {
+        background: #e8e8e8;
+        color: #333;
+}
+
+.cal-header, .cal-dayname td {
+        color: #999;
+/*        font: normal 11px Verdana, Geneva, sans-serif; */
+        padding: 1px 1px;
+/*        text-align: right; */
+}
+
+/* from wp-calendar th  (with changes) */
+.cal-dayname td {
+        font-size: smaller;
+        color: #69c;
+}
+
+.cal td.pad:hover {
+        background: #fff;
+}
+
+.cal td:hover, .cal-today {
+        background: #e8e8e8;
+        color: #666;
+}
+
+/* from #wp-calendar th */
+.cal-header {
+        color: #69c;
+        font-style: normal;
+        text-transform: capitalize;
+}
+

@@ -1,0 +1,36 @@
+<?php // -*-html-*- ?>
+<!-- $Id: navbar.tmpl,v 1.1.1.1 2004-04-13 23:41:42 braden Exp $ -->
+<?php
+  $Sep = $Theme->getButtonSeparator();
+?>
+<!-- The bottom navigation/search bar -->
+
+    <?= WikiLink(_("FindPage"), "button") ?> by searching
+    <?php if (!empty($revision)) { ?>
+      (or browse <?= Button("LikePages", _("LikePages")) ?>)
+    <?php } ?>
+    <?php if ($user->isAdmin()) { ?>
+     <?=$Sep?><?= Button($page->get('locked') ? 'unlock' : 'lock')?>
+     <?=$Sep?><?= Button('remove') ?>
+    <?php } ?>
+   <hr />
+<!-- I would like not to have to use these tables, and managed to
+     get this stuff to work more or less correctly using
+     CSSs float:left; and float:right;.  However float:right; seems
+     to cause MSIE4.01/NT to hang. 
+     So, we use tables...  -->
+<table summary="Toolbar 1: Navigation and user login."
+       class="toolbar" width="100%"
+       cellpadding="0" cellspacing="0" border="0"
+       id="actionbar">
+<tr valign="baseline">
+  <td>
+   <?= WikiLink(_("RecentChanges"), "button") ?>
+    <?php if (!empty($user) && $user->isAdmin()) { ?>
+     <?=$Sep?><?= WikiLink(_("PhpWikiAdministration"), "button") ?>
+    <?php } ?>
+  </td>
+  <td align="right">
+    <?= Template('signin') ?>
+  </td>
+</tr></table>

@@ -1,0 +1,50 @@
+/* 
+ * $Id: Hawaiian-heavy.css,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+ *
+ * Hawaiian-heavy.css
+ *
+ * This is stuff which should be in Hawaiian.css, but which breaks NS4.
+ */
+
+/* This makes spacings in NS4 too big. */
+.toolbar, div.toolbar { margin: 0.5ex 0ex; }
+
+/* Link icons */
+img.linkicon { vertical-align: middle; }
+
+
+/* This break NS4 (display does not go full width), but is necessary for IE4. */
+div.wikitext {
+  width: auto;
+  /* NS4 doesn't know about png with transparency so it renders the whole image solid black */
+  background: url("images/tchecker-white.png") repeat;
+}
+.wiki-edithelp {
+  /* NS4 doesn't know about png with transparency so it renders the whole image solid black */
+  background: url("images/tchecker-sand.png") repeat;
+}
+.wiki-edithelp p {
+  /* NS4 doesn't know about png with transparency so it renders the whole image solid black */
+  background: url("images/tchecker-white.png") repeat;
+}
+
+
+/**
+ * Diff Output
+ */
+.diff .block div { position: relative; padding-left: 1.5em; } 
+.diff .prefix    { position: absolute; left: 0.5em; top: 0; }
+
+
+/**
+ * Other
+ */
+div.errors {
+  /* NS4 doesn't know about png with transparency so it renders the whole image solid black */
+  background: url("images/tchecker-sand.png") repeat;
+}
+.debug {
+  /* NS4 doesn't know about png with transparency so it renders the whole image solid black */
+  background: url("images/tchecker-sand.png") repeat;
+}
+

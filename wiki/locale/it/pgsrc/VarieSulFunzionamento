@@ -1,0 +1,37 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: VarieSulFunzionamento,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=VarieSulFunzionamento;
+  flags="";
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+PhpWiki è scritto in PHP, linguaggio di scripting lato-server,
+disponibile su http://www.php.net/. PHP riassume nella sua sintassi il C
+e il Perl, e funziona molto similmente a ASP, EmbPerl e JPS.
+
+PhpWiki consiste in una dozzina di file PHP misti HTML. La pagina web
+che compone un WikiWikiWeb basato su PHP vive in un file DBM con delle
+copie di backup delle precedenti versioni contenute in un secondo file
+DBM.
+
+Ogni volta che un utente raggiunge il sito la pagina richiesta viene
+presa da DBM e renderizzata al volo. L'utente richiede solo il file
+index.php, che sceglierà gli altri file php da includere.
+
+Nel wiki i links alle pagine sono automaticamente linkati PhpWiki.
+Questo può essere l'aspetto più interessante di un wiki,
+l'abilità  di aggiungere pagine semplicemente linkandole. L'altro
+aspetto interessante è la possibilità di creare link
+# http://www.wcsb.org/
+# ftp://ftp.redhat.com/
+# news://news.mozilla.org/
+# http://www.slashdot.com/
+# http://theregister.co.uk/
+
+Compinato con un namespace e una semplice marcatura, un Wiki mostra
+molte delle caratteristiche di un WabiSabi
+
+PhpWiki è sotto la GNU General Public License, che è
+possibile trovare a questo indirizzo: http://www.gnu.org/copyleft/gpl.txt.

@@ -1,0 +1,112 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: PhpWikiBeheer,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=PhpWikiBeheer;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+__Noot__: Het merendeel van de acties op deze pagina vereist beheer
+privileges.  Ze zullen niet werken tenzij je een beheer gebruikersnaam
+en wachtwoord in het PhpWiki configuratiebestand hebt gezet.
+
+----------
+!! Cleanup
+A Wiki SandBox is very easy to clean. Here you can restore it to pristine condition by loading the default from pgsrc:
+
+[ Rake the SandBox | phpwiki:?action=loadfile&source=locale/nl/pgsrc/ZandBak ].
+
+[/Verwijder] multiple paginas.
+
+----------
+
+!! Kiekjes of Backups maken
+
+! ZIP bestanden van database
+
+Deze koppelingen leiden naar zip bestanden, aangemaakt terwijl je
+wacht, die alle pagina's van je Wiki bevatten.  Het zip bestand wordt
+gedowload naar je lokale computer.
+
+Dit __[ZIP Kiekje | phpwiki:?action=zip]__ bevat enkel de meest recente versies van elke pagina, terwijl deze __[ZIP Stort | phpwiki:?action=zip&include=all]__ alle gearchiveerde versies bevat.
+
+(Als de PhpWiki geconfigureerd is dit toe te staan,) kan iedereen een
+zip bestand downloaden.
+
+Als je php ''zlib'' ondersteuning heeft, worden de bestanden is het
+archief gecomprimeerd, anders worden ze simpelweg opgeslagen.
+
+! Stort in directory
+
+Hier kun je pagina's van je Wiki in een willekeurige directory storten.
+
+<?plugin WikiForm action=dumpserial?>
+
+De meest recente versie van elke pagina wordt naar de directory geschreven,
+een pagina be bestand.  Je server moet schrijfpermissies naar die directory
+hebben.
+
+-----------
+
+!! Herladen
+
+Als je een stel pagina's van PhpWiki hebt gestort, kun je ze hier
+herladen.  Noot dat pagina's in je database zullen worden
+overschreven; dus, als je je ThuisPagina hebt gestort en je laadt
+vanuit dit formulier, zal de pagina die nu in je database staat worden
+overschreven.  Als je een selectie wilt maken, verwijder dan de
+pagina's uit de directory (of uit het zip bestand) die je niet wil
+laden.
+
+! Upload bestand
+
+Hier kun je ZIP archieven uploaden, of individuele bestanden van je (client)
+machine.
+
+<?plugin WikiForm action=upload?>
+
+! Laad bestand
+
+Here you can load ZIP archives, individual files or entire directories.
+The file or directory must be local to the http server.
+You can also use this form to load from an http: or ftp: URL.
+
+<?plugin WikiForm action=loadfile?>
+
+-----------
+
+!! Formaat van de bestanden
+
+Momenteel worden de pagina's opgeslagen, een per bestand, als MIME ([
+RFC2045 | http://www.faqs.org/rfcs/rfc2045.html ]) e-mail ([ RFC822 |
+http://www.faqs.org/rfcs/rfc822.html ]) berichten.  Het content-type
+''application/x-phpwiki'' wordt gebruikt, en pagina meta-data wordt
+gecodeerd in de content-type parameters.
+(Als het bestand meerdere versies van een pagina bevat, is het type
+''multipart/mixed'', en bevat een aantal onderdelen, elke van type
+''application/x-phpwiki''.)
+De body van het bericht bevat de tekst van de pagina.
+
+! Oude formaten
+
+__Geserialiseerde bestanden__
+
+De stort naar directory opdracht stortte voorheen de pagina's als php
+''serialized()'' strings.  Dit maakte de bestanden slecht geschikt
+voor menselijke consumptie, en bijna onmogelijk te veranderen.
+
+__Platte bestanden__
+
+Nog vroeger werd de pagina tekst gewoon naar een bestand gestort ---
+dit betekent dat alle pagina meta-data verloren ging.
+
+The upload and load functions will automatically recognize each of these
+three types of files, and handle them accordingly.
+Note that when loading ''plain files'', the page name is deduced from the
+file name.
+
+De upload en laad functies herkennen automatisch alle van deze drie
+verschillenden types van bestanden, en verwerken ze aldus.  Noot dat
+bij het laden van ''platte bestanden'' de paginanaam wordt afgeleidt
+van de bestandsnaam.

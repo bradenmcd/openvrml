@@ -1,0 +1,16 @@
+Date: Mon, 3 Nov 2003 18:46:23 +0100
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.5pre)
+X-Rcs-Id: $Id: BenutzerEinstellungen,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=BenutzerEinstellungen;
+  pgsrc_version="2 $Revision: 1.1.1.1 $";
+  flags=PAGE_LOCKED;
+  markup=2;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Sie können einige Einstellungen jetzt bestimmen. Die Werte werden in
+einer __Cookie__ Ihres Browsers gespeichert, daher müssen Cookies in
+Ihrem Browser aktiviert sein.
+
+<?plugin UserPreferences?>

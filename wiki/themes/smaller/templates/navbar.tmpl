@@ -1,0 +1,28 @@
+<?php // -*-html-*- ?>
+<!-- $Id: navbar.tmpl,v 1.1.1.1 2004-04-13 23:41:42 braden Exp $ -->
+<?php
+$s = $Theme->getButtonSeparator();
+?>
+<!-- The top navigation/search bar -->
+<form action="<?= WikiURL(_("TitleSearch"))?>"
+      method="get" accept-charset="<?=CHARSET?>">
+  <div id="navbuttons">
+   <?= WikiLink(_("RecentChanges"), "","News") ?>
+   <?=$s?><?= WikiLink(_("FindPage"), "","Search:") ?>
+   <input type="hidden" name="auto_redirect" value="1" />
+      <input type="text"  name="s" size="12" maxlength="256"
+             title='<?=_("Quick Search")?>'
+             onmouseover="window.status='<?=_("Quick Search")?>'; return true;"
+             onmouseout="window.status=''; return true;" />
+    <?php if (!empty($revision)) { ?>
+     <?=$s?><?= WikiLink(_("LikePages")) ?>
+     <?=$s?><?= WikiLink(_("BackLinks")) ?>
+    <?php } ?>
+    <?php if (!empty($user) && $user->isAdmin()) { ?>
+     <?=$s?><?= WikiLink(_("PhpWikiAdministration"), "","Admin") ?>
+    <?php } ?>
+    <?php if (!empty($user) && $user->isSignedIn()) { ?>
+     <?=$s?><?= WikiLink(_("UserPreferences"), "","Preferences") ?>
+    <?php } ?>
+  </div>
+</form>

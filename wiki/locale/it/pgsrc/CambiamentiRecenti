@@ -1,0 +1,15 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: CambiamentiRecenti,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=CambiamentiRecenti;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Le pagine aggiornate più frequentemente sono elencate qua sotto.
+
+Here's a list of recently changed pages on this wiki. (See RecentEdits for all recent minor edits and changes).
+
+--------
+<?plugin RecentChanges days||=7 daylist=1,3,7,30,90,0 ?>

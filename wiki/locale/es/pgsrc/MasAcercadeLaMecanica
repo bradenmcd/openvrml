@@ -1,0 +1,25 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: MasAcercadeLaMecanica,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=MasAcercadeLaMecanica;
+  flags="";
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+PhpWiki está escrito con el lenguaje de servidor PHP, disponible en http://www.php.net/. El PHP se asemeja a C y Perl en su sintaxis, y funciona muy parecido a ASP, EmbPerl o JSP.
+
+PhpWiki consiste en mas o menos de una docena de ficheros mixtos PHP y HTML. Las páginas web de un WikiWikiWeb que se construyen en PHP residen en un fichero de base de datos con copias de seguridad de versiones previas, almacenadas en un segundo fichero.
+
+Cada vez que el usuario haga click el el sitio web, la página solicitada es traida de la base de datos y renderizada al vuelo. El usuario solo solicita el fichero index.php, en donde se decide que otros fichero php se deben incluir.
+
+Los vínculos a páginas Wiki son automáticamente realizados, como: PhpWiki. Este puede ser el aspecto mas importante de un Wiki, la capacidad de añadir páginas que se autoenlazan. Otro aspecto interesante es como se enlanzan facilmente URL's:
+# http://www.wcsb.org/
+# ftp://ftp.redhat.com/
+# news://news.mozilla.org/
+# http://www.slashdot.com/
+# http://theregister.co.uk/
+
+Combinando un espacio de almacenamiento y un lenguaje de control sencillo, un Wiki expone muchas de las caracteristicas de WabiSabi.
+
+PhpWiki es licenciado bajo GNU (Licencia Pública General), la cual se puede ver aquí: http://www.gnu.org/copyleft/gpl.txt.

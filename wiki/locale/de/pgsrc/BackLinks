@@ -1,0 +1,12 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: BackLinks,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=BackLinks;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Der Titel der aktuellen Seite ist mit einem Suchbefehl nach allen Seiten verbunden, die einen Link auf die aktuelle Seite enthalten. Die BackLinks Funktion beantwortet also die Frage: »Wo wird der Name dieser Seite verwendet?«.
+----
+<?plugin BackLinks exclude||='' include_self||=1 noheader||=0 page||='' info||='' ?>

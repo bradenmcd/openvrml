@@ -1,0 +1,86 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: NoteDiRilascio,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=NoteDiRilascio;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+PhpWiki 1.2 è avanzato di molto rispetto alla versione 1.0:
+
+* Supporto per MySQL, Postgresql, mSQL, flat file e sono incluse le nuove librerie dba_ di PHP4
+* Internazionalizzazione: supporto per differenti linguaggi. Tedesco, Spagnolo, Svedese e Olandese sono inclusi in PhpWiki. È possibile aggiungere facilmente nuovi linguaggi 
+* Nuovo sistema per i link usando le parentesi quadre in aggiunta al !BumpyText  vecchio stile
+* Le caratteristiche di amministrazione includono blocco delle pagina, compattare il Wiki in un file zip e cancellare pagine.
+* La pagina PiuPopolari mostra le pagine più frequentemente viste.
+* Pienamente compatibile HTML.
+* I link in basso alle pagine descrivono le relazioni tra i link in entrata dalle altre pagine ed i link in uscita, e le pagine più popolari
+* Le differenze di colore tra la versione corrente e quella precedente
+* Una pagina informativa per visualizzare metadati
+* Più facilità di personalizzazione da parte dell'amministratore
+* Un sistema di template per separare la pagina HTML generata dal codice stesso
+* Nuovi marcatori per <B>, <I>, <DD>, <BR>  ed altri 
+* Il marcaggio senza tab rimpiazza il vecchio stile di markup (in ogni caso entrambi sono supportati
+
+
+----
+
+PhpWiki 1.1.9 include pagine in lingua spagnola e molte altre, una piena
+implementazione di Postgresql e numerosi bug fix. Guarda il file
+HISTORY per maggiori informazioni su: http://phpwiki.sourceforge.net/phpwiki/HISTORY
+
+----
+
+PhpWiki 1.1.6 è una versione notevolmente migliorata di PhpWiki. Ha la
+possibilità di avere temi tramite un sistema facilmente modificabile;
+Questo schema per MySQL è stato completamente riscritto, spezzando i dettagli
+delle pagine in colonne (per efficenza ci siamo accordati di non mettere
+references in tabelle separate, così da non completamente normalizzare
+il db. "Non lasciare che il meglio sia il nemico del buono.");
+
+Il supporto per Postgresql è stato aggiunto e il linguaggio di
+marcatura si sta evolvendo, ora permette di usare i tag
+!!!<h1>
+!!<h2>
+!<h3>
+e __un nuovo modo per rendere il testo in grassetto__, ed ovviamente un
+[nuovo sistema di linking]
+
+C'è una nuova funzione su tutte le pagine chiamata ''more info'' che
+permette una visione a ''basso livello'' della pagina, molto utile per
+questioni di debugging
+
+Dalla release 1.2 abbiamo aggiunto il logging, le 10 pagine più attive
+and altre funzionalità con il nuovo schema del database (e si, queste
+funzionalità funzionano anche con la versione DBM). Vorrei anche
+aggiungere il supporto per mSQL a testarlo con Zend, il nuovo PHP4
+
+Da qui in poi si trovano le note di rilascio della versione 1.03,
+l'ultimo rilascio della serie 1.0 di PhpWiki.
+--Steve Wainstead, mailto:swain@panix.com
+----
+
+PhpWiki è stato scritto perchè ero così interessato ai WikiWikiWebs,
+e non avevo usato il php dalla versione 2.0. Volevo vedere come era
+progredito
+
+La versione 1.0 è un clone quasi perfetto del Portland Pattern Repository http://c2.com/cgi-bin/wiki?WikiWikiWeb. In verità, stavo usando lo script Wiki che è scaricabile come modello di partenza. Wiki manca di un numero di funzionalità che PPR ha, come EditCopy. Così in verità PhpWiki ha un è un ibrido tra PPR e il wiki generico che puoi ottenere li (che è stato scritto in perl)
+
+Una particolarità di PhpWiki è quello di permettere l'uso dell'HTML se
+la linea è preceduta da una | pipe. è stato molto semplice da
+aggiungere a l'idea è scaturita da un posting sul PPR a proposito dic
+ome la AT&T e il loro clone Wiki interno era usato con la stessa
+tecnica. La abilità di includere l'HTML è disabilitata per default per
+ragioni di sicurezza.                       
+
+La versione 1.01 include una patch che corregge un piccolo errore nel
+rendering delle linee orizzontali <hr>. I ringraziamenti vanno a Gerry
+Barksdale.
+
+Guarda il file HISTORY per una descrizione di tutto il processo di
+sviluppo se tutta la storia ti interessa! :-)
+
+--SteveWainstead
+
+

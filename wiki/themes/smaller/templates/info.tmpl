@@ -1,0 +1,207 @@
+<?php // -*-php-*- ?>
+<!-- $Id: info.tmpl,v 1.1.1.1 2004-04-13 23:41:42 braden Exp $ -->
+<?php
+
+$modifed = $Theme->formatDateTime($revision->get('mtime'));
+
+$author = $revision->get('author');
+global $WikiNameRegexp;
+$dbi = $request->getDbh();
+$author = $revision->get('author');
+$authorLink = $author;
+if (preg_match("/^$WikiNameRegexp\$/", $author) && $dbi->isWikiPage($author))
+    $authorLink = WikiLink($author);
+
+$authorId = $revision->get('author_id');
+$version = $revision->getVersion();
+$hits = $page->get('hits');
+
+$is_minor_edit = $revision->get('is_minor_edit') ? _("minor edit") : false;
+if ($minor_flag = $is_minor_edit) {
+    $minor_flag = HTML(" ",
+                       HTML::span(array('class' => 'pageinfo-minoredit'),
+                                  "(" . _("minor edit") . ")"));
+}
+
+/* better way to do this? */
+$bytes = strlen($revision->_data['%content']);
+if ($bytes < 1024 )
+    $size = fmt("%s bytes", $bytes);
+else {
+    $kb = round($bytes / 1024, 1);
+    $size = fmt("%s Kb (%s bytes)", $kb, $bytes);
+}
+// Count words
+preg_match_all('/\\w+\\W*/', $revision->_data['%content'], $whitespacematches);
+if (1 == $c = count_all($whitespacematches))
+  $wordcount = fmt("1 word");
+else
+  $wordcount = fmt("%s words", $c);
+
+
+$markupVersion = ($markupVersion = $revision->get('markup'))
+               ? fmt("Version %s", $markupVersion)
+               : _("Original (1.2 or 1.0)");
+
+$summary = HTML::textarea(array('name' => 'summary',
+                                'class' => 'summary',
+                                /* use fixed dimensions? */
+                                'rows' => $request->getPref('editHeight')/4,
+                                'cols' => $request->getPref('editWidth')/2,
+                                'readonly' => 'readonly',
+                                'wrap' => 'virtual'), /* for Netscape 4 */
+                          $revision->get('summary'));
+
+if ($is_current = $revision->isCurrent()) {
+
+    $LOCKED_CB = HTML::input(array('type' => 'checkbox',
+                                   'name' => 'edit[locked]',
+                                   'disabled' => !$user->isadmin(),
+                                   'checked'  => $page->get('locked')));
+
+    // Not sure if I want to keep this... --Carsten
+    if ($user->isadmin()) {
+        $lockunlock = $page->get('locked') ? 'unlock' : 'lock';
+        $clickcheckbUrl = WikiURL($revision, array('action' => $lockunlock));
+        $clickcheckb = "location.href='$clickcheckbUrl'";
+
+        $LOCKED_CB->setAttr('onclick', $clickcheckb);
+    }
+
+    $label['date'] = _("Last Modified:");
+    $label['author'] = _("Last Author:");
+    $label['summary'] = _("Last Summary:");
+
+} else {
+    $label['date'] = _("Saved on:");
+    $label['author'] = _("Author:");
+    $label['summary'] = _("Summary:");
+}
+
+$tableSummary = fmt("Statistics about %s.", $page->getName());
+$Sep = $Theme->getButtonSeparator();
+
+?>
+
+<!-- FIXME: move table formatting to css -->
+<table summary="<?= $tableSummary ?>" class="pageinfo"
+       border="0" cellspacing="0" cellpadding="3">
+
+<?php if (!$is_current) { ?>
+  <tr>
+    <td align="right" class="pageinfo"><?=_("Supplanted on:")?></td>
+    <td><?= $Theme->formatDateTime($revision->get('_supplanted')) ?></td>
+  </tr>
+<?php } ?>
+
+  <tr>
+    <td align="right" nowrap="nowrap" class="pageinfo"><?= $label['date'] ?></td>
+    <td><?= $modifed ?><?= $minor_flag ?></td>
+  </tr>
+  <tr>
+    <td align="right" class="pageinfo"><?= $label['author'] ?></td>
+    <td><?= $authorLink ?>
+      <?php if (! ($author == $authorId)) { ?>
+        <span class="pageinfo-authorid">(<?= $authorId ?>)</span>
+      <?php } ?></td>
+  </tr>
+  <tr>
+    <td align="right" class="pageinfo"><?=_("Page Version:")?></td>
+    <td><?= $version ?></td>
+  </tr>
+  <tr>
+    <td align="right" class="pageinfo"><?=_("Markup:")?></td>
+    <td><?= $markupVersion ?></td>
+  </tr>
+  <tr>
+    <td align="right" class="pageinfo"><?=_("Size:")?></td>
+    <td><?= $wordcount ?>, <?= $size ?></td>
+  </tr>
+<?php if ($is_current) { ?>
+  <tr>
+    <td align="right" class="pageinfo"><?= _("Hits:") ?></td>
+    <td><?= $hits ?></td>
+  </tr>
+<?php } ?>
+  <tr>
+    <td align="right" valign="top" class="pageinfo"><?= $label['summary'] ?></td>
+    <td><?= $summary ?></td>
+  </tr>
+<?php if ($is_current) { ?>
+  <tr>
+    <td align="right"><?= $LOCKED_CB ?></td>
+    <td class="pageinfo"><?=_("Locked")?></td>
+  </tr>
+<?php } ?>
+
+<?php // determine page type
+if (HOME_PAGE == $page->getName()) {
+    $pagetype []= sprintf('%s %s', WIKI_NAME, _("home page"));
+}
+if (0 && $page->isUserPage($include_empty=true)) {
+    $pagetype []= _("User page");
+}
+if (@$request->isActionPage($page->getName())) {
+    $pagetype []= _("Action page");
+}
+if ($page->get('pagetype') == 'wikiblog') {
+    $pagetype []= _("Blog page");
+}
+if ($page->getName() == _("InterWikiMap")) {
+    $pagetype []= _("InterWikiMap");
+}
+if (0 and isSubPage($page->getName())) {
+    $pagetype []= _("Subpage");
+} ?>
+
+<?php if (!empty($pagetype)) { $pagetype = implode(", ", $pagetype); ?>
+  <tr>
+    <td align="right" class="pageinfo"><?=_("Page Type:")?></td>
+    <td align="left"><?=$pagetype?></td>
+  </tr>
+<?php } ?>
+
+</table>
+
+<div id="actionbuttons">
+    <?= Button("viewsource", _("View Source")) ?>
+    <?=$Sep?><?= Button("PageHistory", _("PageHistory")) ?>
+    <?=$Sep?><?= Button("AuthorHistory", _("AuthorHistory")) ?>
+    <?=$Sep?><?= Button("Diff") ?> 
+    <?=$Sep?><?= Button(array('action'=>'diff','previous' => 'minor'),_("Diff previous Revision"),$page->getName()) ?> 
+    <?=$Sep?><?= Button(array('action'=>'diff','previous' => 'author'),_("Diff previous Author"),$page->getName()) ?> 
+<?php if ((defined('DEBUG') && DEBUG) || $user->isAdmin()) { ?> 
+    <!-- Buttons really only for debugging -->
+    <?=$Sep?><?= Button("DebugInfo", _("DebugInfo")) ?>
+<?php
+     $PurgeCache = Button(array('nocache' => 'purge'),
+                     _("PurgeHtmlCache"), $page->getName());
+     $PurgeCache->addTooltip(_("Purge HTML cache for this page. Regenerate from WikiMarkup when next accessed."));
+?>
+    <?=$Sep?><?= $PurgeCache ?>
+
+    <!-- End debugging buttons -->
+<?php } ?>
+  </div>
+
+<?php
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -                         
+// $Log: not supported by cvs2svn $
+// Revision 1.1  2004/03/01 09:38:01  rurban
+// Theme with less buttons and shorter descriptions:
+//   More behind "Info"
+//
+// Revision 1.15  2003/12/11 19:38:29  carstenklapp
+// Internal change: Fix PHP Warning: Call-time pass-by-reference has been deprecated
+//
+// Revision 1.14  2003/11/29 20:13:38  carstenklapp
+// Internal change: Refactored ByteFormatter code into a new function in
+// stdlib (now used by PageList too).
+//
+// Revision 1.13  2003/02/21 04:24:48  dairiki
+// Fix <td> </td> nesting. (Was generating invalid HTML.)
+//
+// Revision 1.12  2003/01/11 22:54:28  carstenklapp
+// Added Page type field displayed for special pages.
+//
+?>

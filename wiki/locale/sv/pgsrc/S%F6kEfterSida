@@ -1,0 +1,30 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: S%F6kEfterSida,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=S%F6kEfterSida;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+Här är några bra startpunkter för att leta.
+
+* [HurManAnvänderWiki] är en snabb introduktion till hur man skriver i Wiki.
+* [SenasteÄndringar] ändras automatiskt.
+* MerOmMekanismerna om hur man söker och ändrar på den här servern.
+
+Här är titelsökningen. Försök med ord wom ''wiki'' eller ''smörgås''.
+
+<?plugin-form TitleSearch?>
+
+Använd följande för fulltextsökning. Det kan ta några
+sekunder. Resultatet visar alla rader på en sidan som innehåller
+en träff.
+
+<?plugin-form FullTextSearch?>
+
+------
+Separera ord med mellanslag. Alla ord måste matcha.
+%%%För att exkludera ord sätt ett "-" framför.
+%%%Exempel: "wiki text -php" söker på alla sidor som innehåller orden "wiki"
+__och__ "text", men __inte__ innehåller ordet "php".

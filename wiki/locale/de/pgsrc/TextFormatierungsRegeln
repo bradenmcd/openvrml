@@ -1,0 +1,182 @@
+Date: Thu, 28 Mar 2002 14:57:00 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: TextFormatierungsRegeln,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=TextFormatierungsRegeln;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+! Übersicht
+TextFormatierungsRegeln%%%
+*Hervorhebung:* <tt>~_</tt> for _italics_, <tt>~*</tt> for *bold*,
+<tt>~_~*</tt> for _*both*_, <tt>~=</tt> for =fixed width=.%%%
+*Listen:* <tt>~*</tt> for bullet lists, <tt>#</tt> for numbered lists,
+_Term<b>:</b>~<new-line> definition_ for definition lists.%%%
+*Unformatiert:* Enclose text in <tt>~<pre>~</pre></tt> or
+<tt>~<verbatim>~</verbatim></tt>.%%%
+*Text einrücken:* Indent the paragraph with whitespaces.%%%
+*Querverweise:* ~JoinCapitalizedWords or use square brackets for a
+<tt>~[page link]</tt> or URL <tt>~[~http://cool.wiki.int/]</tt>.%%%
+*Links verhindern:* Prefix with "<tt>~~</tt>":
+<tt>~~~DoNotHyperlink</tt>, name links like <tt>~[text | URL]</tt>.%%%
+*Verschiedenes:* "<tt>!</tt>", "<tt>!!</tt>", "<tt>!!!</tt>" make headings,
+"<tt>~%%%</tt>" or "<tt>~<br></tt>" makes a linebreak,
+"<tt>~----</tt>" makes a horizontal rule.%%%
+*Erlaubte HTML Tags:* <b>b</b> <big>big</big> <i>i</i>
+<small>small</small> <tt>tt</tt> <em>em</em> <strong>strong</strong>
+<abbr>abbr</abbr> <acronym>acronym</acronym> <cite>cite</cite>
+<code>code</code> <dfn>dfn</dfn> <kbd>kbd</kbd> <samp>samp</samp>
+<var>var</var> <sup>sup</sup> <sub>sub</sub>
+
+----
+! Tip
+Schau dir am besten auch den »Quelltext« dieser Seite an, indem du unten auf den Link zum Editieren klickst. Dann verstehst du die Beispiele besser.
+
+!!! Absätze
+
+* Rücke Absätze nicht ein
+* Zeilenumbrüche werden automatisch erstellt
+* Absätze werden durch Leerzeilen getrennt
+* Vier oder mehr Minuszeichen am Zeilenanfang erzeugen eine horizontale Linie
+* =~%%%= oder =~<br>= erstellt einen Zeilenumbruch (auch in Überschriften und Listen)
+
+
+!!! Listen
+
+* Ein Sternchen für die erste Ebene
+  * eingerückte Sternchen (mind 2 Zeichen) für die zweite Ebene, usw.
+* Verwende <tt>~*</tt>, <tt>-</tt>, <tt>+</tt> oder <tt>o</tt> für Aufzählungslisten, <tt>#</tt> für numerierte Listen (auch durcheinander)
+* Definitions Listen:
+  <pre>
+  Term:
+    Definition
+  </pre>
+  ergibt
+  Term:
+    Definition
+  wie in einer =<DL><DT><DD>= Liste
+* Andere Leerzeichen als Tab am Zeilenanfang erstellen vorformatierten Text mit einer anderen Schriftart
+
+!!! Überschriften
+
+* '=!=' am Zeilenanfang erstellt eine kleine Überschrift ''H3''
+* '=!!=' eine mittlere ''H2''
+* '=!!!='' eine große ''H1''
+
+!!! Unformatierter Text
+
+* Setze die Zeilen in =~<pre>=:
+  <verbatim>
+  <pre>
+  Preformatted text. WikiLinks still work.
+  </pre>
+  </verbatim>
+  gives
+  <pre>
+  Preformatted text. WikiLinks still work.
+  </pre>
+* If you want text with no Wiki interaction, use the =~<verbatim>= tag:
+  <pre>
+  <verbatim>
+  Preformatted text. ~WikiLinks do not work.
+  </verbatim>
+  </pre>
+  gives
+  <verbatim>
+  Preformatted text. WikiLinks do not work.
+  </verbatim>
+
+!!! Eingerückte Absätze
+
+* Zwei oder mehr Leerzeichen am Anfgang erzeugen eingerückte Absätze. Einrückungen dürfen sich steigern.
+
+    Dieser Absatz ist eingerückt.
+
+      Dieser Absatz ist noch mehr eingerückt.
+
+!!! Hervorhebung
+
+* Verwende einen Unterstrich (<tt>~_</tt>) für _Betonung_ (wird normalerweise _kursiv_ dargestellt)
+* Verwende Sternchen (<tt>~*</tt>) für *starke Betonung* (wird normalerweise *fett* dargestellt)
+* Du kannst sie auch zusammen verwenden: *_fett & kursiv_*
+* _Betonungen_ können _mehrfach_ in einer Zeile verwendet werden, aber sie können _nicht_ über das Zeilenende hinausgehen:
+
+  _So etwas
+
+  funktioniert nicht_
+
+!!! Querverweise (Links)
+
+* Hyperlinks zu anderen Seiten im Wiki werden erstellt, indem man den Namen in eckige Klammern 
+  einschließt [das ist ein Link] oder besser WikiWörterVerwendet.
+* Hyperlinks zu externen Seiten werden so erstellt: [http://www.wcsb.org/]
+* Du kannst Links zu externen Seiten einen Namen geben, indem du in der eckigen Klammer erst 
+  den Namen und dann, getrennt durch einen senkrechten Strich (|), die Adresse angibst:
+  [PhpWiki Homepage | http://phpwiki.sourceforge.net/] ---
+  [Die Start Seite | StartSeite]
+
+* Du kannst das Erstellen eines Links verhindern, indem du vor das Wort eine 
+  Tilde '<tt>~~</tt>' setzt, zum Beispiel ~DasIstKeinLink.
+  ~http://not.linked.to/
+* Wenn du im Text Adressen eingibst, die mit __http:__, __ftp:__ oder __mailto:__ beginnen, 
+  werden diese auch automatisch in Links umgewandelt, zum Beispiel http://c2.com/
+* Adressen, die mit __.png__ oder __.jpg__ enden (d.h. Bilder) werden in die Seite 
+  eingefügt, wenn sie in eckige Klammern gesetzt werden, z. B.: [http://phpwiki.sourceforge.net/demo/themes/default/images/png.png]
+
+!!! Tabellen
+
+* Definition list style tables are written just like definition lists,
+  except that you replace the trailing colon on the term with a "pipe"
+  (<tt>|</tt>).
+
+  <pre>
+  Term 1 |
+     Definition 1 begins here.
+     Term 1.1 |
+        Definition 1.1
+     Term 1.2 |
+        Definition 1.2
+     This is part of definition 1.
+  Term 2 |
+     Here's definition 2.
+  </pre>
+
+  Term 1 |
+     Definition 1 begins here.
+     Term 1.1 |
+        Definition 1.1
+     Term 1.2 |
+        Definition 1.2
+     This is part of definition 1.
+  Term 2 |
+     Here's definition 2.
+
+* Old-style tables are supported through the OldStyleTablePlugin
+
+!!! HTML-Formatierungen
+
+* Some in-line markup is allowed through the use of HTML tags:
+  <b>b</b>, <big>big</big>, <i>i</i>, <small>small</small>,
+  <tt>tt</tt>, <em>em</em>, <strong>strong</strong>,
+  <abbr>abbr</abbr>, <acronym>acronym</acronym>, <cite>cite</cite>,
+  <code>code</code>, <dfn>dfn</dfn>, <kbd>kbd</kbd>,
+  <samp>samp</samp>, <var>var</var>, <sup>sup</sup> and <sub>sub</sub>
+* < und > erscheinen einfach so im Text
+* Sonderzeichen mit & funktionieren nicht
+* Im Prinzip benötigst du keine HTML-Formatierungen
+
+!!! Inserting plugins
+
+* Several plugins permit embedding additional functionality to Wiki
+  pages. For example,
+  <verbatim>
+  <?plugin BackLinks page=StartSeite info=hits ?>
+  </verbatim>
+  ergibt
+  <?plugin BackLinks page=StartSeite info=hits ?>
+
+* Für weitere Informationen zu plugins, siehe WikiPlugin.
+
+----
+PhpWikiDokumentation

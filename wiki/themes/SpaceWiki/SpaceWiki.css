@@ -1,0 +1,574 @@
+/**
+ * $Id: SpaceWiki.css,v 1.1.1.1 2004-04-13 23:41:42 braden Exp $
+ *
+ * This theme will probably be renamed something like "Space" to
+ * avoid any potential copyright issues.
+ *
+ * http://www.w3.org/TR/REC-CSS2/indexlist.html
+ *
+ * #fff; white
+ * #000; black
+ * #fff313; yellow
+ * #ddc300; darker-yellow
+ * #5791ff; bright-blue
+ * #0053db; blue
+ * #8452b5; magenta
+ * #982505; red
+ * #ef0032; light-red
+ * #009000; green
+ * #1bab11; light-green
+ * #ff7e00; orange
+ */
+
+
+/**
+ * NS4 doesn't grok @import.  This allows us to put things which
+ * break NS4 in another file.
+ */
+@import url(SpaceWiki-gravimetric.css);
+
+
+/**
+ * General
+ */ 
+img { border: 0; }
+form  { margin: 0; }
+input.button { font-family: Helvetica, Arial, sans-serif; }
+input { font-family: Helvetica, Arial, sans-serif; }
+textarea, input {
+  color:      white;
+  background: black;
+}
+dt { font-weight: bold; }
+table {
+  border-spacing: 1px;
+  /* For Mozilla */
+  empty-cells: show;
+}
+td { color: white; } /* for NS4 */
+caption {
+  caption-side: top;
+  text-align: left;
+  margin-bottom: .5ex;
+  /* Allow the caption to extend to the full page width
+     Mac ie5.1 ignores this*/
+  width: 100%;
+}
+a { color: #0053db; }
+a:hover { color: #5791ff; }
+
+
+/**
+ * Wiki
+ */
+body {
+  /* the background image url is relative to this file's directory */
+  /*background-image:  url(images/starfield.png) repeat; */
+  font-family: Helvetica, Arial, sans-serif;
+  color:             white;
+  background-color:  black;
+}
+
+/* Main wiki text box */
+div.wikitext {
+  clear: both;
+}
+
+/**
+ * <hr>
+ * Not all browsers support this, but it's a cool trick when it is!
+ * yes=OmniWeb 4.1sp28; No=IE5.1Mac, Mozilla0.97Mac, iCAB2.6Mac.
+ */
+div.wikitext hr {
+  visibility: hidden; /* for Mozilla */
+  background-image:   url("images/hr.png");
+  background-repeat:   repeat-x;
+  background-position: center;
+}
+/* for Mozilla */
+div.wikitext hr:after {
+  visibility: visible;
+  display: block;
+  content: url("images/hr.png");
+  text-align: center;
+  margin-top: -2.5ex;
+  margin-bottom: 1ex;
+}
+
+
+
+div.wikitext pre { font-family: monospace; }
+
+
+/**
+ * Wiki Forms
+ * 
+ * The div inside the wikiadmin upload form does not
+ * have a class yet, so it must be referenced indirectly
+ */
+div.wikiaction, form.wikiadmin div {
+  background-color: #002;
+  border: 1px solid #006;
+  margin-top: 0.5ex;
+  margin-bottom: 0.5ex;
+  padding: 0.5ex 0.5em; }
+/* div.wikiadmin { background-color: black; } */
+form.wikiadmin div { background-color: black; }
+
+
+/**
+ * Link styles
+ */
+/* WikiWords */
+.wiki {
+  text-decoration: none;
+}
+.named-wiki {
+  text-decoration: underline;
+}
+div.wikitext a.wiki, div.wikitext a.named-wiki {
+  color:           #fff313;
+  font-weight:     bold;
+}
+
+.wikitext a.wiki:hover, .wiki:hover {
+  color: #44cff4;
+}
+
+/* Action buttons */
+a.wikiaction, a.wikiadmin, a.wiki-rc-action, a.wikiunsafe {
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a.wikiaction {
+  color:           #115511;
+  font-weight:     bold;
+}
+a.wikiaction:hover { color: #1bab11; }
+
+a.wikiadmin {
+  color: #982505;
+  font-weight:     bold;
+}
+a.wikiadmin:hover { color: #ef0032; }
+
+/* Unknown links */
+.wikiunknown, .named-wikiunknown {
+  color: gray;
+  font-weight: normal;
+  font-size: 100%;
+}
+ /* QuestionMark #600 */
+.wikiunknown a, .named-wikiunknown a {
+  color: #0053db;
+  background: #1b1722;
+  text-decoration: none;
+  font-weight: normal;
+}
+.wikiunknown a:hover, .named-wikiunknown a:hover { color: #5791ff; }
+
+/* Backlinks */
+.backlinks { text-decoration: none; }
+h1 .backlinks { text-decoration: none; }
+
+/* Interwiki links */
+.wikipage  { font-weight: bold; }
+.interwiki { text-decoration: none; }
+.interwiki, i.interwiki .wikipage, em .interwiki .wikipage { font-style: oblique; }
+.interwiki .wikipage, i .interwiki, em .interwiki { font-style: normal; }
+
+
+/**
+ * Headings
+ */
+h1 {
+  color: #000;
+  background-color: #fff313;
+}
+div.toolbar h1 a.wiki, h1 a.backlinks, h2 a.wiki {
+  border: 0;
+  color: #fff313;
+  background-color: #000;
+  text-decoration: none;
+}
+div.toolbar h1 a.wiki, h2 a.wiki {
+  color: #0053db;
+}
+div.toolbar h1 a.wiki:hover, h1 a.wiki:hover, h2 a.wiki:hover {
+  border: 0;
+  color: #5791ff;
+}
+
+h2, h3, h4, h5, h6 {
+  display: inline;
+  padding-top:      0.25ex;
+  padding-left:     0.5em;
+  padding-right:    0.25em;
+  padding-bottom:   1px;
+  margin-top:    2ex;
+  margin-bottom: 0;
+}
+h2:after, h3:after, h4:after, h5:after, h6:after {
+  display: block;
+  content: " | ";
+  color: black;
+  margin-left: 0.3em;
+}
+h2:after {
+  border-left: 0.5em solid #0053db;
+  border-top: 0.15ex solid #0053db;
+}
+h3:after {
+  border-left: 0.5em solid #96c;
+  border-top: 0.15ex solid #96c;
+}
+h4:after {
+  border-left: 0.5em solid #639;
+  border-top: 0.15ex solid #639;
+}
+h5:after {
+  border-left: 0.5em solid #888;
+  border-top: 0.15ex solid #888;
+}
+h6:after {
+  border-left: 0.5em solid #aaa;
+  border-top: 0.15ex solid #aaa;
+}
+
+
+h2 {
+  color: #0053db;
+  border-left: 0.25em solid #0053db;
+}
+h3 {
+  color: #96c;
+  border-left: 0.25em solid #96c;
+}
+h4 {
+  color: #639;
+  border-left: 0.25em solid #639;
+}
+h5 {
+  color: #888;
+  border-left: 0.25em solid #888;
+}
+h6 {
+  color: #aaa;
+  border-left: 0.25em solid #aaa;
+}
+
+
+/* Mozilla RecentChanges Sidebar */
+body.sidebar {
+  font-size: smaller;
+  margin: 0.5em;
+}
+body.sidebar div.wikitext {
+  padding: 0.5em;
+}
+body.sidebar div.wikitext ul {
+  padding-left: 0;
+  line-height: 150%
+}
+body.sidebar div.wikitext h2:after {
+  margin-bottom: 1ex;
+  vertical-align: top;
+}
+
+
+
+/**
+ * Tables
+ */
+table, td { font-family: Arial, Helvetica, sans-serif; }
+caption { font-family: Arial, Helvetica, sans-serif; }
+.pagelist {
+}
+.pagelist thead, .pagelist thead u {  }
+.pagelist tr.evenrow { background: #111; }
+.pagelist tr.oddrow  { background: black; }
+
+
+/**
+ * Toolbar
+ */
+.toolbar, input.button, #signin { font-family: Arial, Helvetica, sans-serif; }
+.toolbar hr { visibility: hidden; }
+div.toolbar, #signin {
+  color: white;
+  padding: 0;
+  margin:  0;
+}
+div.toolbar { margin-top: 1ex; }
+
+#navbuttons {
+  margin-right: 7em; /* wrap around logo */
+  margin-bottom: 1ex; /* space for h1 */
+}
+#navbuttons input {
+  position: relative;
+  bottom: -2px;
+}
+.editdate {
+  font-family: Arial, Helvetica, sans-serif;
+  color:            #96c;
+}
+
+.toolbar .wiki {
+  color:           #0053db;
+  text-decoration: none;
+  font-weight:   bold;
+}
+.toolbar .wiki:hover {
+  color: #5791ff;
+  font-weight:  bold;
+}
+
+div.toolbar input {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+
+/**
+ * Edit Page & View Source
+ */
+/* Make the textarea the full page width */
+textarea {
+  border: 2px solid #0053db;
+  padding-top:   .5ex;
+  padding-bottom:.5ex;
+  padding-left:  .5em;
+  padding-right: .25em;
+}
+textarea.wikiedit {
+  width: 100%;
+  margin-bottom: 0.5ex;
+  margin-top:    0.5ex;
+  padding: 2px;
+}
+#editarea-size {
+  margin-top: 1ex;
+  text-align: right;
+  font-size: smaller;
+}
+
+
+/**
+ * IncludePage plugin
+ */
+.transclusion-title {
+  font-style: oblique;
+  font-size: smaller; /* 0.75em; */
+  text-decoration: none;
+  text-align: right;
+} 
+.wiki-edithelp, .transclusion {
+  background: #1b1722;
+  border: 1px solid #403752;
+}
+.wiki-edithelp {
+  font-size: smaller;
+  margin: 0.5ex 0px;
+}
+.wiki-edithelp, div.transclusion {
+  color: #a2a2a2;
+  background-color: #1b1722;
+  padding-left:  0.5em;
+  padding-right: 0.5em;
+  padding-top:    0.5ex;
+  padding-bottom: 0.5ex;
+  margin-left:  0;
+  margin-right: 0;
+}
+.wiki-edithelp .wiki {
+  color:           #fff313;
+  font-weight:     bold;
+  text-decoration: none;
+  margin-top: 1ex;
+  margin-bottom: 1ex;
+}
+.wiki-edithelp p {
+  font-family: Arial, Helvetica, sans-serif;
+  padding-left:  0.5em;
+  padding-right: 0.5em;
+  padding-top:    0.5ex;
+  padding-bottom: 0.5ex;
+  margin: 0;
+}
+
+
+/**
+ * Calendar plugin
+ */
+table.cal {
+  border: 1px solid #006;
+  background: black;
+  margin: 0.5ex 0.5em;
+  padding: 1px;
+  /* For Mozilla */
+  empty-cells: hide;
+} 
+
+/* cells */
+table.cal td {
+  border: 1px solid #006;
+  color: #fff313;
+  background: black;
+  text-align: right;
+} 
+
+/* Month-name header */
+table.cal-header { font-size: larger; }
+table.cal-header tr, table.cal-header td { text-align: center; }
+.cal-arrow {
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* Day-names header */
+table.cal tbody tr .cal-dayname {  }
+.cal-dayname td {
+  text-align: center;
+  font-size: smaller;
+  text-decoration: underline;
+}
+
+/* Individual days */
+a.cal-hide { text-decoration: none; }
+
+/* Today */
+ /* cell */
+table.cal td.cal-today {
+  margin: 1px;
+  border: 1px solid gray;
+}
+ /* text */
+table.cal td.cal-today a.cal-hide {  }
+/**
+ * Diff Output
+ */
+
+/* main box */
+.diff .block {
+  background: #008;
+  padding: 0.5ex 0.5em;
+  margin:  0.5ex 0;
+}
+
+/* individual lines */
+.diff .context { background: black; }
+
+/* + - line prefix */
+.diff .block tt{
+  font-weight: bold;
+  font-family: monospace;
+  margin-left: -.6em;
+  color: black;
+}
+
+.diff del, .diff ins {
+  font-weight: bold;
+  text-decoration: none;
+}
+.diff .original, .diff .deleted { background: #a40024; }
+.diff .final, .diff .added { background: #cfc; }
+
+/* These don't work in NS4 -- it completely ignores <del> and <ins>. */
+.diff del { background: #a40024; }
+.diff ins { background: #9f9; }
+
+
+/**
+ * PageHistory, Info
+ */
+table.pageinfo {
+ border: 1px solid #96c;
+}
+table.pageinfo td { background: black; }
+table.pageinfo td.pageinfo {
+  border-right: 0.15em solid #639;
+  font-weight: bold;
+  color: #639;
+  background: #203;
+}
+table.pageinfo td + td.pageinfo {
+  border-right: 0;
+}
+.pageinfo-minoredit, .pageinfo-authorid {
+  font-size: smaller;
+  font-style: oblique;
+}
+
+
+/**
+ * RecentChanges
+ */
+.rssicon {
+  border-color: #000;
+  border-width: 2px;
+}
+.rc-major {
+  color:       #fff;
+  background:  #000;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+img.rssicon {
+  vertical-align: top;
+}
+b.wikisummary {
+  color:        #fff313;
+  background:   #000;
+  text-decoration: none;
+  font-weight:  bold;
+}
+
+
+/**
+ * Other
+ */
+.printer { display: none; }
+
+/* PHP Warnings */
+div.errors {
+  color: red;
+  background: black;
+  border: medium solid red;
+  clear: both;
+}
+.errors h4 {
+  color: black;
+  background: red;
+  text-decoration: underline;
+}
+.error { font-family: monospace; }
+.error ul { font-family: monospace; }
+
+/* Debug */
+.debug {
+  color: white;
+  background: black;
+  font-family: monospace;
+  font-size: smaller;
+  margin-top:    16ex;
+  margin-bottom: 4ex;
+  margin-left:  0;
+  margin-right: 0;
+  padding: 0.5ex 0.5em;
+  border: medium solid gray;
+  display: table;
+}
+
+.clear-floats {
+  clear: both;
+}
+
+/* For emacs users
+ *
+ * Local Variables:
+ * mode: c
+ * c-file-style: cc-mode
+ * End:
+ */

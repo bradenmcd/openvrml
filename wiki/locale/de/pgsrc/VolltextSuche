@@ -1,0 +1,17 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: VolltextSuche,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=VolltextSuche;
+  flags=PAGE_LOCKED;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+<?plugin FullTextSearch ?>
+----
+Suche erneut:
+<?plugin-form TitleSearch?>
+<?plugin-form FullTextSearch?>
+<?plugin-form FuzzyPages?>
+----
+<?plugin IncludePage page=SeiteFinden quiet=1 section=Tips sectionhead=1 ?>

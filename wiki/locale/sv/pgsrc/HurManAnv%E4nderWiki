@@ -1,0 +1,41 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: HurManAnv%E4nderWiki,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=HurManAnv%E4nderWiki;
+  flags="";
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+''"Wiki wiki"'' betyder "snabb" på Hawai.
+
+__Allt du behöver veta är:__
+
+* För att redigera en sida, klicka på länken längst ned på sidan. Du bör göra det nu på en gång och läsa källkoden för den här sidan. Det är vettigare.
+* Du får lutande text genom att sätta två apostrofer på var sin sida om ordet ''så här''.
+* Du får __fet text__ genom att sätta två understreck på var sin sida.
+* Och __''fet lutande text''__ genom att använda båda.
+* Du får punkter genom att använda asterisk i början av raden
+* För att få text med lika breda tecken, indentera med ett mellanslag:
+
+ det här är en dikt
+ om text med lika breda tecken
+ det är lätt att rimma på dikt
+ men inte med lika breda tecken
+
+* Du kan separera paragrafer med en extra blankrad. Exempel:
+
+Jag är en paragraf.
+
+Jag är också en paragraf. Vi är bara väldigt små paragrafer.
+
+
+* Du kan få horisontella linjer genom att skriva fyra eller fler streck så här:
+--------
+* För att skapa hyperlänkar behöver du bara skriva ord som börjar med stor bokstav och sätta ihop dem. Låt oss säga att du vill skapa en sida om att Steve Wainstead äter maskar. Allt du behöver göra är att skriva orden med stor bokstav i början och sätta ihop dem så här: SteveWainsteadEatsWorms. Om sidan inte existerar än kommer det finnas ett frågetecken efter länken som inbjuder dig att skapa sidan: [DenHärSidanSkaInteFinnas]. (Var snäll och inte förstör exemplet genom att skapa sidan.)
+* För att länka till sidor utanför Wikin kan du bara skriva URL:en och Wiki kommer skapa en länk åt dig: http://www.nytimes.com/
+* För att inkludera bilder, skriv en hyperlänk innanför hakparenteser så här: [[http://www.dindator.dindomän/bild.png]. URL:er till bilder som inte är innanför hakparenteser blir en vanlig länk till bilden.
+* Nu är du redo att [LäggaTillSidor].
+
+----
+En WikiWikiWeb är menad att vara snabb och lätt att ändra. Den har ett enkelt uppmärkningsspråk som du kan läsa om i [Textformateringsregler].

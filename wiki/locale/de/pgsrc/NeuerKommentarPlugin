@@ -1,0 +1,41 @@
+Date: Sat, 13 Mar 2004 11:26:41 +0100
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.8)
+X-Rcs-Id: $Id: NeuerKommentarPlugin,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=NeuerKommentarPlugin;
+  pgsrc_version="2 $Revision: 1.1.1.1 $";
+  flags="";
+  markup=2;
+  charset=iso-8859-1
+Content-Transfer-Encoding: binary
+
+<?plugin CreateToc jshide||=1 ?>
+
+WikiPlugin um Benutzer Kommentare zu Seiten ans Ende einer Seite anhängen zu lassen. Seit v1.3.8.
+Anpassungs des Layouts über die Vorlagen comment.tmpl und addcomment.tmpl, und die CSS Klassen
+wikicomment, wikicomment-header, wikicomment-body, wikicomment-footer
+
+!! Benutzung
+
+<verbatim>
+     <?plugin AddComment order||=normal jshide||=0 mode||=show,add noheader||=0 ?>
+</verbatim>
+
+!! Argumente
+
+__jshide__: |
+  Bool'sche Variable, ob die Kommentare oder Eingabe-Textbox zuerst versteckt sein soll, und erst auf Klick erscheint. Vorgabe: 0
+__order__:  |
+  Liste Kommentare in chronologischer (order=normal) oder umgekehrter Reihenfolge (order=reverse)
+__mode__:  |
+  Liste von "add" und/oder "show".  Vorgabe: "add,show"
+__noheader__:  |
+  Bool'sche Variable, ob die "Kommentare" h2 Überschrift weggelassen soll. Vorgabe: 0
+__pagename__:  |
+  Hänge Kommentare an welche Seite an? Vorgabe: Aktueller Seitenname
+
+!! Beispiele
+
+<?plugin AddComment jshide||=1 ?>
+----
+PhpWikiDokumentation

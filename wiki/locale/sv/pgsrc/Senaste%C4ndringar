@@ -1,0 +1,13 @@
+Date: Sun, 27 Jan 2002 17:28:55 -0500
+Mime-Version: 1.0 (Produced by PhpWiki 1.3.2-jeffs-hacks)
+X-Rcs-Id: $Id: Senaste%C4ndringar,v 1.1.1.1 2004-04-13 23:41:41 braden Exp $
+Content-Type: application/x-phpwiki;
+  pagename=Senaste%C4ndringar;
+  flags=PAGE_LOCKED;
+  lastmodified=1010523613
+Content-Transfer-Encoding: binary
+
+Here's a list of recently changed pages on this wiki. (See RecentEdits for all recent minor edits and changes).
+
+--------
+<?plugin RecentChanges days||=7 daylist=1,3,7,30,90,0 ?>
