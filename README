@@ -32,11 +32,17 @@ any of these are not already present on your system, first consult your
 operating system vendor for packages tailored to your particular operating
 system/distribution.  Failing that, consult the following URLs:
 
-    zlib:       <URL:http://www.cdrom.com/pub/infozip/zlib/>
-    libpng:     <URL:http://www.cdrom.com/pub/png/pngcode.html>
-    libjpeg:    <URL:http://www.ijg.org>
-    Mesa:       <URL:http://www.mesa3d.org>
-    GLUT:       <URL:http://reality.sgi.com/mjk_asd/glut3/>
+    zlib:       <http://www.cdrom.com/pub/infozip/zlib/>
+    libpng:     <http://www.cdrom.com/pub/png/pngcode.html>
+    libjpeg:    <http://www.ijg.org>
+    Mesa:       <http://www.mesa3d.org>
+    GLUT:       <http://reality.sgi.com/mjk_asd/glut3/>
+
+OpenVRML also uses the ANTLR parser generator.  The generated sources come with
+the distribution, and most users should never need to recompile the ANTLR
+source.  For those who do, ANTLR can be found here:
+
+    <http://www.antlr.org>
 
 
 Installation
@@ -85,6 +91,7 @@ Bug reports
 Please send bug reports to the OpenVRML mailing list,
 openvrml-develop@sourceforge.net.  Subscription instructions are at
 <http://lists.sourceforge.net/mailman/listinfo/openvrml-develop>.
+
 
 Design
 ======

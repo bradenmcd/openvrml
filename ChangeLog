@@ -1,3 +1,7 @@
+2000-11-07  Braden McDaniel  <braden@endoframe.com>
+
+        * Took the ANTLR source out of the automated build.
+
 2000-11-03  Braden McDaniel  <braden@endoframe.com>
 
         * Changed the character variables in the Vrml97Utf8Scanner from char to

@@ -42,13 +42,6 @@ libvrml97_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@
 
 lib_LTLIBRARIES = libvrml97.la 
 
-BUILT_SOURCES = Vrml97Parser.cpp Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp \
-Vrml97ParserTokenTypes.txt
-
-Vrml97Parser.cpp Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp \
-Vrml97ParserTokenTypes.txt: vrml97parser.g Vrml97TokenTypes.txt
-	$(JAVA) antlr.Tool $<
-
 vrml97scanner.o vrml97scanner.lo: vrml97scanner.cpp vrml97scanner.hpp
 	$(LTCXXCOMPILE) -c $<
 
@@ -259,5 +252,5 @@ vrml97include_HEADERS = \
 
 noinst_HEADERS = MathUtils.h gifread.h jpgread.h mpgread.h pngread.h sound.h
 
-EXTRA_DIST = vrml97scanner.cpp Vrml97TokenTypes.txt.in Vrml97Parser.cpp \
-Vrml97Parser.hpp Vrml97ParserTokenTypes.txt vrml97parser.g ScriptJS.cpp
+EXTRA_DIST = vrml97scanner.cpp Vrml97TokenTypes.txt Vrml97Parser.cpp \
+Vrml97Parser.hpp Vrml97ParserTokenTypes.txt Vrml97Parser.g ScriptJS.cpp

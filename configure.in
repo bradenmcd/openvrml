@@ -54,35 +54,6 @@ AC_PROG_CXXCPP
 
 
 dnl
-dnl Check for ANTLR
-dnl
-
-dnl Check for Java runtime
-AC_PATH_PROG(JAVA, java, no)
-if test X"$JAVA" = Xno; then
-  have_antlr=no
-else
-  AC_MSG_CHECKING(for ANTLR)
-  cat > conftest.g <<EOF
-class ConfTest extends Parser;
-stmt: "conftest";
-EOF
-  sh -c "$JAVA antlr.Tool conftest.g" 1>&5 2>&5
-  if test $? = 0; then
-    AC_MSG_RESULT(yes)
-    have_antlr=yes
-  else
-    AC_MSG_RESULT(no)
-    have_antlr=no
-  fi
-  rm -f conftest.g ConfTest.java ConfTestTokenTypes.java ConfTestTokenTypes.txt
-fi
-if test X"$have_antlr" = Xno; then
-  AC_MSG_WARN(ANTLR not found. You will need ANTLR to recompile the parser grammar if you modify it.)
-fi
-
-
-dnl
 dnl Check for libjpeg
 dnl
 OV_PATH_JPEG(, [libjpeg not found. Check 'config.log' for details.])
@@ -161,7 +132,6 @@ AC_OUTPUT(Makefile \
           libvrml97core/Makefile \
           libvrml97core/src/Makefile \
           libvrml97core/src/vrml97/Makefile \
-          libvrml97core/src/vrml97/Vrml97TokenTypes.txt \
           libvrml97core/src/vrml97/antlr/Makefile \
           libvrml97core/src/vrml97/javascript/Makefile \
           libvrml97core/src/vrml97/javascript/fdlibm/Makefile \
