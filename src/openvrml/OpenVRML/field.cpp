@@ -812,7 +812,7 @@ std::ostream & SFImage::print(std::ostream & out) const {
     for (size_t i = 0; i < np; ++i) {
         unsigned int pixval = 0;
         for (size_t j=0; j<d_nc; ++j) { pixval = (pixval << 8) | *p++; }
-        out << pixval << " ";
+        out << " " << pixval;
     }
     return out;
 }
