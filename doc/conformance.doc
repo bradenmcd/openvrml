@@ -79,11 +79,11 @@ following the primary result table.
   <tr>
     <td>Anchor<td>7<td>2<td>3
   <tr>
-    <td>Appearance<td>11<td>1
+    <td>Appearance<td>9<td>3
   <tr>
     <td>AudioClip<td>0<td>19
   <tr>
-    <td>Background<td>8<td>7<td>8
+    <td>Background<td>13<td>2<td>8
   <tr>
     <td>Billboard<td>4<td>2
   <tr>
@@ -115,7 +115,7 @@ following the primary result table.
   <tr>
     <td>Fog<td>21<td>0
   <tr>
-    <td>FontStyle<td>0<td>7
+    <td>FontStyle<td>3<td>3<td>1
   <tr>
     <td>Group<td>2<td>0
   <tr>
@@ -129,9 +129,9 @@ following the primary result table.
   <tr>
     <td>LOD<td>6<td>0
   <tr>
-    <td>Material<td>22<td>7
+    <td>Material<td>23<td>6
   <tr>
-    <td>MovieTexture<td>35<td>4
+    <td>MovieTexture<td>0<td>39
   <tr>
     <td>NavigationInfo<td>14<td>10<td>2
   <tr>
@@ -141,7 +141,7 @@ following the primary result table.
   <tr>
     <td>OrientationInterpolator<td>4<td>1
   <tr>
-    <td>PixelTexture<td>10<td>7
+    <td>PixelTexture<td>9<td>8
   <tr>
     <td>PlaneSensor<td>11<td>3
   <tr>
@@ -177,7 +177,7 @@ following the primary result table.
   <tr>
     <td>TextureCoordinate<td>12<td>6
   <tr>
-    <td>TextureTransform<td>36<td>12
+    <td>TextureTransform<td>34<td>12<td>2
   <tr>
     <td>TimeSensor<td>12<td>7
   <tr>
@@ -200,7 +200,7 @@ following the primary result table.
   <tr>
     <th>Node Group<th>Node<th>Test<br>Number<th>Result<th>Related Tasks<th>Related Bugs
   <tr>
-    <td rowspan="186"><B>Appearance</B><td rowspan="12">Appearance<td>1<td class="pass">+
+    <td rowspan="186"><b>Appearance</b><td rowspan="12">Appearance<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -220,19 +220,19 @@ following the primary result table.
   <tr>
     <td>10<td class="fail">-<td><td><a href="http://sourceforge.net/tracker/index.php?func=detail&aid=464211&group_id=7151&atid=107151">464211</a>
   <tr>
-    <td>11<td class="pass">+
+    <td>11<td class="fail">-
   <tr>
-    <td>12<td class="pass">+
+    <td>12<td class="fail">-
   <tr>
     <td rowspan="7">FontStyle
     <td>1
-    <td class="fail">-
+    <td class="pass">+
     <td>
       <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
     <td>
       <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
   <tr>
-    <td>2<td class="fail">-
+    <td>2<td class="pass">+
     <td>
       <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
     <td>
@@ -243,17 +243,19 @@ following the primary result table.
     <td>
       <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
     <td>
-      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>,
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=933104&group_id=7151&atid=107151" title="Alternative fonts not working">933104</a>
   <tr>
     <td>4
     <td class="fail">-
     <td>
       <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
     <td>
-      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>,
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=933106&group_id=7151&atid=107151" title="Default font family is not SERIF">933106</a>
   <tr>
     <td>5
-    <td class="fail">-
+    <td class="pass">+
     <td>
       <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
     <td>
@@ -264,7 +266,8 @@ following the primary result table.
     <td>
       <a href="http://sourceforge.net/pm/task.php?func=detailtask&project_task_id=24095&group_id=7151&group_project_id=2579" title="Support use of system fonts in Text/FontStyle">24095</a>
     <td>
-      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>,
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=933108&group_id=7151&atid=107151" title="Vertical text not working">933108</a>
   <tr>
     <td>7<td class="invalid">x<a href="#note1"><sup>1</sup></a>
   <tr>
@@ -290,9 +293,17 @@ following the primary result table.
   <tr>
     <td>11<td class="pass">+
   <tr>
-    <td>12<td class="pass">+
+    <td>12
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=933532&group_id=7151&atid=107151" title="Texture mapping incorrect for Extrusion">933532</a>
   <tr>
-    <td>13<td class="fail">-
+    <td>13
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=933535&group_id=7151&atid=107151" title="Texture color &quot;bleeding&quot; in text">933535</a>
   <tr>
     <td>14<td class="pass">+
   <tr>
@@ -304,17 +315,25 @@ following the primary result table.
   <tr>
     <td>18<td class="pass">+
   <tr>
-    <td>19<td class="pass">+
+    <td>19
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=933532&group_id=7151&atid=107151" title="Texture mapping incorrect for Extrusion">933532</a>
   <tr>
-    <td>20<td class="fail">-
+    <td>20
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=933535&group_id=7151&atid=107151" title="Texture color &quot;bleeding&quot; in text">933535</a>
   <tr>
     <td>21<td class="pass">+
   <tr>
-    <td>22<td class="fail">-
+    <td>22<td class="pass">+
   <tr>
     <td>23<td class="pass">+
   <tr>
-    <td>24<td class="fail">-
+    <td>24<td class="pass">+
   <tr>
     <td>25<td class="pass">+
   <tr>
@@ -377,7 +396,7 @@ following the primary result table.
     <td>16<td class="pass">+
   <tr>
     <td>17
-    <td class="fail">-
+    <td class="pass">+
     <td>
     <td>
       <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=211349&group_id=7151&atid=107151" title="emissiveColor on IndexedLineSet doesn't work">211349</a>
@@ -426,83 +445,228 @@ following the primary result table.
     <td>
       <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=213951" title="Transparency problems">213951</a>
   <tr>
-    <td rowspan="39">MovieTexture <td>1<td class="pass">+
+    <td rowspan="39">MovieTexture
+    <td>1
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>2<td class="fail">-
+    <td>2
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>3<td class="fail">-
+    <td>3
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>4<td class="pass">+
+    <td>4
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>5<td class="pass">+
+    <td>5
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>6<td class="pass">+
+    <td>6
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>7<td class="pass">+
+    <td>7
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>8<td class="pass">+
+    <td>8
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>9<td class="pass">+
+    <td>9
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>10<td class="pass">+
+    <td>10
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>11<td class="fail">-
+    <td>11
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>12<td class="pass">+
+    <td>12
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>13<td class="pass">+
+    <td>13
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>14<td class="pass">+
+    <td>14
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>15<td class="fail">-
+    <td>15
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>16<td class="pass">+
+    <td>16
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>17<td class="pass">+
+    <td>17
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>18<td class="pass">+<a href="#note2"><sup>2</sup></a>
+    <td>18
+    <td class="fail">-<a href="#note2"><sup>2</sup></a>
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>19<td class="pass">+
+    <td>19
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>20<td class="pass">+
+    <td>20
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>21<td class="pass">+
+    <td>21
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>22<td class="pass">+
+    <td>22
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>23<td class="pass">+
+    <td>23
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>24<td class="pass">+
+    <td>24
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>25<td class="pass">+
+    <td>25
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>26<td class="pass">+<a href="#note2"><sup>2</sup></a>
+    <td>26
+    <td class="fail">-<a href="#note2"><sup>2</sup></a>
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>27<td class="pass">+<a href="#note2"><sup>2</sup></a>
+    <td>27
+    <td class="fail">-<a href="#note2"><sup>2</sup></a>
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>28<td class="pass">+<a href="#note2"><sup>2</sup></a>
+    <td>28<td class="fail">-<a href="#note2"><sup>2</sup></a>
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>29<td class="pass">+<a href="#note2"><sup>2</sup></a>
+    <td>29<td class="fail">-<a href="#note2"><sup>2</sup></a>
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>30<td class="pass">+<a href="#note2"><sup>2</sup></a>
+    <td>30<td class="fail">-<a href="#note2"><sup>2</sup></a>
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>31<td class="pass">+<a href="#note2"><sup>2</sup></a>
+    <td>31<td class="fail">-<a href="#note2"><sup>2</sup></a>
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>32<td class="pass">+
+    <td>32<td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>33<td class="pass">+
+    <td>33<td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>34<td class="pass">+
+    <td>34<td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>35<td class="pass">+
+    <td>35<td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>36<td class="pass">+
+    <td>36<td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>37<td class="pass">+
+    <td>37<td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>38<td class="pass">+
+    <td>38<td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
-    <td>39<td class="pass">+
+    <td>39<td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964744&group_id=7151&atid=107151" title="MovieTexture animates too slowly">964744</a>, <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=964745&group_id=7151&atid=107151" title="MovieTexture loops when &quot;loop&quot; is &quot;FALSE&quot;">964745</a>
   <tr>
     <td rowspan="17">PixelTexture<td>1<td class="pass">+
   <tr>
@@ -513,7 +677,7 @@ following the primary result table.
     <td>4
     <td class="fail">-
     <td>
-    <td><a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466479" title="Test of 4-component pix. tex. fails">466479</a>
+    <td><a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466479" title="Test of 4-component pixel texture fails">466479</a>
   <tr>
     <td>5<td class="pass">+
   <tr>
@@ -539,7 +703,11 @@ following the primary result table.
   <tr>
     <td>10<td class="pass">+
   <tr>
-    <td>11<td class="pass">+
+    <td>11
+    <td class="fail">-
+    <td>
+    <td>
+      <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=933532&group_id=7151&atid=107151" title="Texture mapping incorrect for Extrusion">933532</a>
   <tr>
     <td>12<td class="fail">-
   <tr>
@@ -577,9 +745,15 @@ following the primary result table.
   <tr>
     <td>12<td class="pass">+
   <tr>
-    <td>13<td class="fail">-
+    <td>13
+    <td class="fail">-
+    <td>
+    <td><a href="http://sourceforge.net/tracker/index.php?func=detail&aid=965478&group_id=7151&atid=107151" title="TextureTransform &quot;center&quot; field not working correctly">965478</a>
   <tr>
-    <td>14<td class="fail">-
+    <td>14
+    <td class="fail">-
+    <td>
+    <td><a href="http://sourceforge.net/tracker/index.php?func=detail&aid=965478&group_id=7151&atid=107151" title="TextureTransform &quot;center&quot; field not working correctly">965478</a>
   <tr>
     <td>15<td class="pass">+
   <tr>
@@ -609,9 +783,15 @@ following the primary result table.
   <tr>
     <td>28<td class="pass">+
   <tr>
-    <td>29<td class="fail">-
+    <td>29
+    <td class="fail">-
+    <td>
+    <td><a href="http://sourceforge.net/tracker/index.php?func=detail&aid=965478&group_id=7151&atid=107151" title="TextureTransform &quot;center&quot; field not working correctly">965478</a>
   <tr>
-    <td>30<td class="fail">-
+    <td>30
+    <td class="fail">-
+    <td>
+    <td><a href="http://sourceforge.net/tracker/index.php?func=detail&aid=965478&group_id=7151&atid=107151" title="TextureTransform &quot;center&quot; field not working correctly">965478</a>
   <tr>
     <td>31<td class="pass">+
   <tr>
@@ -645,25 +825,23 @@ following the primary result table.
   <tr>
     <td>40<td class="pass">+
   <tr>
-    <td>41<td class="pass">+<a href="#note4"><sup>4</sup></a>
+    <td>41<td class="invalid">x<a href="#note4"><sup>4</sup></a>
   <tr>
     <td>42<td class="pass">+
   <tr>
-    <td>43<td class="pass">+<a href="#note5"><sup>5</sup></a>
+    <td>43<td class="invalid">x<a href="#note5"><sup>5</sup></a>
   <tr>
     <td>44<td class="pass">+<a href="#note6"><sup>6</sup></a>
   <tr>
     <td>45
     <td class="fail">-
     <td>
-    <td>
-      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
+    <td><a href="http://sourceforge.net/tracker/index.php?func=detail&aid=965478&group_id=7151&atid=107151" title="TextureTransform &quot;center&quot; field not working correctly">965478</a>
   <tr>
     <td>46
     <td class="fail">-
     <td>
-    <td>
-      <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
+    <td><a href="http://sourceforge.net/tracker/index.php?func=detail&aid=965478&group_id=7151&atid=107151" title="TextureTransform &quot;center&quot; field not working correctly">965478</a>
   <tr>
     <td>47
     <td class="fail">-
@@ -677,7 +855,9 @@ following the primary result table.
     <td>
       <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=466484" title="PixelTexture mapping problems">466484</a>
   <tr>
-    <td rowspan="93"><B>Bindable Nodes</B><td rowspan="23">Background<td>1<td class="pass">+
+    <td rowspan="93"><b>Bindable Nodes</b>
+    <td rowspan="23">Background
+    <td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -685,44 +865,44 @@ following the primary result table.
   <tr>
     <td>4<td class="pass">+
   <tr>
-    <td>5<td class="pass">+
+    <td>5<td class="fail">-
   <tr>
     <td>6<td class="pass">+
   <tr>
     <td>7<td class="pass">+
   <tr>
     <td>8
-    <td class="fail">-
+    <td class="pass">+
     <td>
     <td>
       <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
     <td>9
-    <td class="fail">-
+    <td class="pass">+
     <td>
     <td>
       <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
     <td>10
-    <td class="fail">-
+    <td class="pass">+
     <td>
     <td>
       <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
     <td>11
-    <td class="fail">-
+    <td class="pass">+
     <td>
     <td>
       <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
     <td>12
-    <td class="fail">-
+    <td class="pass">+
     <td>
     <td>
       <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
   <tr>
     <td>13
-    <td class="fail">-
+    <td class="pass">+
     <td>
     <td>
       <a href="http://sourceforge.net/tracker/?group_id=7151&atid=107151&func=detail&aid=210070" title="Background texture incorrectly positioned">210070</a>
@@ -921,7 +1101,7 @@ following the primary result table.
   <tr>
     <td>23<td class="pass">+
   <tr>
-    <td rowspan="53"><B>Geometric Properties</B><td rowspan="21">Color<td>1<td class="pass">+
+    <td rowspan="53"><b>Geometric Properties</b><td rowspan="21">Color<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -1027,7 +1207,7 @@ following the primary result table.
   <tr>
     <td>18<td class="fail">-
   <tr>
-    <td rowspan="113"><B>Geometry</B><td rowspan="6">Box<td>1<td class="pass">+
+    <td rowspan="113"><b>Geometry</b><td rowspan="6">Box<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -1253,7 +1433,7 @@ following the primary result table.
   <tr>
     <td>12<td class="fail">-
   <tr>
-    <td rowspan="52"><B>Grouping Nodes</B><td rowspan="12">Anchor<td>1<td class="pass">+
+    <td rowspan="52"><b>Grouping Nodes</b><td rowspan="12">Anchor<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -1357,7 +1537,7 @@ following the primary result table.
   <tr>
     <td>24<td class="pass">+
   <tr>
-    <td rowspan="30"><B>Interpolators</B><td rowspan="5">ColorInterpolator<td>1<td class="pass">+
+    <td rowspan="30"><b>Interpolators</b><td rowspan="5">ColorInterpolator<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -1417,7 +1597,7 @@ following the primary result table.
   <tr>
     <td>5<td class="fail">-
   <tr>
-    <td rowspan="92"><B>Lights</B><td rowspan="28">DirectionalLight<td>1<td class="pass">+
+    <td rowspan="92"><b>Lights</b><td rowspan="28">DirectionalLight<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -1601,7 +1781,7 @@ following the primary result table.
   <tr>
     <td>35<td class="fail">-
   <tr>
-    <td rowspan="52"><B>Misc</B><td rowspan="18">EXTERNPROTO<td>1<td class="fail">-
+    <td rowspan="52"><b>Misc</b><td rowspan="18">EXTERNPROTO<td>1<td class="fail">-
   <tr>
     <td>2<td class="fail">-
   <tr>
@@ -1705,7 +1885,7 @@ following the primary result table.
   <tr>
     <td>2<td class="pass">+
   <tr>
-    <td rowspan="81"><B>Sensors</B><td rowspan="11">CylinderSensor<td>1<td class="pass">+
+    <td rowspan="81"><b>Sensors</b><td rowspan="11">CylinderSensor<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -1867,7 +2047,7 @@ following the primary result table.
   <tr>
     <td>9<td class="pass">+
   <tr>
-    <td rowspan="28"><B>Sounds</B><td rowspan="19">AudioClip<td>1<td class="fail">-
+    <td rowspan="28"><b>Sounds</b><td rowspan="19">AudioClip<td>1<td class="fail">-
   <tr>
     <td>2<td class="fail">-
   <tr>
@@ -1923,7 +2103,7 @@ following the primary result table.
   <tr>
     <td>9<td class="fail">-
   <tr>
-    <td rowspan="18"><B>Special Groups</B><td rowspan="6">Inline<td>1<td class="pass">+
+    <td rowspan="18"><b>Special Groups</b><td rowspan="6">Inline<td>1<td class="pass">+
   <tr>
     <td>2<td class="pass">+
   <tr>
@@ -1968,9 +2148,9 @@ vrmlstring used in the script code.
 
 <sup id="note3">3</sup> Rear view picture missing in expected results.
 
-<sup id="note4">4</sup> Expected results for the bottom view are incorrect.
+<sup id="note4">4</sup> Test file has a syntax error: multiple definitions for &quot;textureTransform&quot; field. Also, expected results for the bottom view are incorrect.
 
-<sup id="note5">5</sup> Expected results for top and bottom view are incorrect.
+<sup id="note5">5</sup> Test file has a syntax error: multiple definitions for &quot;textureTransform&quot; field. Expected results for top and bottom view are incorrect.
 
 <sup id="note6">6</sup> Expected results incorrect for top, bottom, left and
 right views.
