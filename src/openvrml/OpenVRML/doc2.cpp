@@ -582,6 +582,7 @@ bool Doc2::filename(char * fn, int nfn) {
                    : nfn - 1;
         copy(name.begin(), name.begin() + len, fn);
         fn[len] = '\0';
+        return true;
     } else if (protocol == "http") {
         //
         // Get a local copy of http files.
