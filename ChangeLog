@@ -12,6 +12,13 @@
           <Frederic.Devernay@sophia.inria.fr>.
           macros/gtkgl.m4: fixed OV_CHECK_GL macro name.
 
+        * Applied patch from Frederic Devernay
+          <Frederic.Devernay@sophia.inria.fr>.
+          openvrml-core/java/vrml/Makefile.am
+          openvrml-core/java/vrml/field/Makefile.am
+          openvrml-core/java/vrml/node/Makefile.am: fixed non-installation
+          of java files
+
 2002-02-07  Braden McDaniel  <braden@endoframe.com>
 
         * Added a stylesheet for the Doxygen-generated docs.
