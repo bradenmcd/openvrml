@@ -40,7 +40,7 @@
 
 # include <cmath>
 # include <limits>
-
+# include <boost/shared_ptr.hpp>
 # include <openvrml/browser.h>
 # include <openvrml/vrml97node.h>
 # include <openvrml/bounding_volume.h>
@@ -108,21 +108,22 @@ namespace {
     public:
         GLint max_modelview_stack_depth;
 
-        static const gl_capabilities * instance() throw (std::bad_alloc);
+        static boost::shared_ptr<const gl_capabilities> instance()
+            throw (std::bad_alloc);
 
     private:
-        static const gl_capabilities * instance_;
+        static boost::shared_ptr<const gl_capabilities> instance_;
 
         gl_capabilities();
     };
 
-    const gl_capabilities * gl_capabilities::instance_(0);
+    boost::shared_ptr<const gl_capabilities> gl_capabilities::instance_;
 
-    const gl_capabilities * gl_capabilities::instance()
+    boost::shared_ptr<const gl_capabilities> gl_capabilities::instance()
         throw (std::bad_alloc)
     {
         if (!gl_capabilities::instance_) {
-            gl_capabilities::instance_ = new gl_capabilities;
+            gl_capabilities::instance_.reset(new gl_capabilities);
         }
         return gl_capabilities::instance_;
     }

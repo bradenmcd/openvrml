@@ -1,5 +1,11 @@
 2003-11-17  Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Use
+	boost::shared_ptr with gl_capabilities singleton to eliminate
+	memory leak.
+
+2003-11-17  Braden McDaniel  <braden@endoframe.com>
+
 	Merged changes from 0.14.3.
 
 	* NEWS:  Updates for 0.14.3 release.
