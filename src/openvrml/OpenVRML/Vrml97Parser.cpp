@@ -1623,7 +1623,7 @@ void Vrml97Parser::externInterfaceDeclaration(
 		match(ID);
 #line 810 "Vrml97Parser.g"
 		
-		const NodeInterface interface = { it, ft, id->getText() };
+		const NodeInterface interface(it, ft, id->getText());
 		try {
 		interfaces.add(interface);
 		} catch (std::invalid_argument & ex) {

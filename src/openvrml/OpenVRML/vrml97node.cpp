@@ -203,8 +203,7 @@ namespace {
                            const std::string & id,
                            const EventInHandlerPtr eventInHandlerPtr)
                 throw (UnsupportedInterface, std::bad_alloc) {
-            const NodeInterface interface =
-                    { NodeInterface::eventIn, type, id };
+            const NodeInterface interface(NodeInterface::eventIn, type, id);
             this->interfaces.add(interface);
             const EventInHandlerMap::value_type value(id, eventInHandlerPtr);
             const bool succeeded = this->eventInHandlerMap.insert(value).second;
@@ -217,8 +216,7 @@ namespace {
                             const std::string & id,
                             const NodeFieldPtrPtr & eventOutPtrPtr)
                 throw (UnsupportedInterface, std::bad_alloc) {
-            const NodeInterface interface =
-                    { NodeInterface::eventOut, type, id };
+            const NodeInterface interface(NodeInterface::eventOut, type, id);
             this->interfaces.add(interface);
             const FieldValueMap::value_type value(id, eventOutPtrPtr);
             const bool succeeded = this->eventOutValueMap.insert(value).second;
@@ -232,8 +230,7 @@ namespace {
                             const EventInHandlerPtr eventInHandlerPtr,
                             const NodeFieldPtrPtr & fieldPtrPtr)
                 throw (UnsupportedInterface, std::bad_alloc) {
-            const NodeInterface interface =
-                    { NodeInterface::exposedField, type, id };
+            const NodeInterface interface(NodeInterface::exposedField, type, id);
             this->interfaces.add(interface);
             
             bool succeeded;
@@ -262,7 +259,7 @@ namespace {
                      const std::string & id,
                      const NodeFieldPtrPtr & nodeFieldPtrPtr)
                 throw (UnsupportedInterface, std::bad_alloc) {
-            const NodeInterface interface = { NodeInterface::field, type, id };
+            const NodeInterface interface(NodeInterface::field, type, id);
             this->interfaces.add(interface);
             const FieldValueMap::value_type value(id, nodeFieldPtrPtr);
             const bool succeeded = this->fieldValueMap.insert(value).second;
@@ -840,14 +837,14 @@ const NodeTypePtr AnchorClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::mfnode, "addChildren" },
-        { NodeInterface::eventIn, FieldValue::mfnode, "removeChildren" },
-        { NodeInterface::exposedField, FieldValue::mfnode, "children" },
-        { NodeInterface::exposedField, FieldValue::sfstring, "description" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "parameter" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "url" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "description"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "parameter"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Anchor>(*this, id));
     Vrml97NodeTypeImpl<Anchor> & anchorNodeType =
@@ -1070,9 +1067,9 @@ const NodeTypePtr
                                     const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfnode, "material" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "texture" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "textureTransform" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "material"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texture"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "textureTransform")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Appearance>(*this, id));
     Vrml97NodeTypeImpl<Appearance> & appearanceNodeType =
@@ -1321,14 +1318,14 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfstring, "description" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "loop" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "pitch" },
-        { NodeInterface::exposedField, FieldValue::sftime, "startTime" },
-        { NodeInterface::exposedField, FieldValue::sftime, "stopTime" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "url" },
-        { NodeInterface::eventOut, FieldValue::sftime, "duration_changed" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "description"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "pitch"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "duration_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<AudioClip>(*this, id));
     Vrml97NodeTypeImpl<AudioClip> & audioClipNodeType =
@@ -1648,18 +1645,18 @@ const NodeTypePtr
                                     const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::sfbool, "set_bind" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "groundAngle" },
-        { NodeInterface::exposedField, FieldValue::mfcolor, "groundColor" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "backUrl" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "bottomUrl" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "frontUrl" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "leftUrl" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "rightUrl" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "topUrl" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "skyAngle" },
-        { NodeInterface::exposedField, FieldValue::mfcolor, "skyColor" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isBound" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "groundAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "groundColor"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "backUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "bottomUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "frontUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "leftUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "rightUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "topUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "skyAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "skyColor"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Background>(*this, id));
     Vrml97NodeTypeImpl<Background> & backgroundNodeType =
@@ -2160,12 +2157,12 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::mfnode, "addChildren" },
-        { NodeInterface::eventIn, FieldValue::mfnode, "removeChildren" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "axisOfRotation" },
-        { NodeInterface::exposedField, FieldValue::mfnode, "children" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "axisOfRotation"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Billboard>(*this, id));
     Vrml97NodeTypeImpl<Billboard> & billboardNodeType =
@@ -2414,7 +2411,7 @@ const NodeTypePtr BoxClass::createType(const std::string & id,
                                        const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterface =
-            { NodeInterface::field, FieldValue::sfvec3f, "size" };
+            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "size");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Box>(*this, id));
     Vrml97NodeTypeImpl<Box> & boxNodeType =
             static_cast<Vrml97NodeTypeImpl<Box> &>(*nodeType);
@@ -2514,14 +2511,14 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::mfnode, "addChildren" },
-        { NodeInterface::eventIn, FieldValue::mfnode, "removeChildren" },
-        { NodeInterface::exposedField, FieldValue::mfnode, "children" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "collide" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" },
-        { NodeInterface::field, FieldValue::sfnode, "proxy" },
-        { NodeInterface::eventOut, FieldValue::sftime, "collideTime" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "collide"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize"),
+        NodeInterface(NodeInterface::field, FieldValue::sfnode, "proxy"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "collideTime")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Collision>(*this, id));
     Vrml97NodeTypeImpl<Collision> & collisionNodeType =
@@ -2660,7 +2657,7 @@ const NodeTypePtr ColorClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterface =
-            { NodeInterface::exposedField, FieldValue::mfcolor, "color" };
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "color");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Color>(*this, id));
     Vrml97NodeTypeImpl<Color> & colorNodeType =
             static_cast<Vrml97NodeTypeImpl<Color> &>(*nodeType);
@@ -2760,10 +2757,10 @@ const NodeTypePtr ColorInterpolatorClass::
                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "key" },
-        { NodeInterface::exposedField, FieldValue::mfcolor, "keyValue" },
-        { NodeInterface::eventOut, FieldValue::sfcolor, "value_changed" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfcolor, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ColorInterpolator>(*this, id));
     Vrml97NodeTypeImpl<ColorInterpolator> & colorInterpolatorNodeType =
@@ -2948,10 +2945,10 @@ const NodeTypePtr ConeClass::createType(const std::string & id,
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::field, FieldValue::sffloat, "bottomRadius" },
-        { NodeInterface::field, FieldValue::sffloat, "height" },
-        { NodeInterface::field, FieldValue::sfbool, "side" },
-        { NodeInterface::field, FieldValue::sfbool, "bottom" }
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "bottomRadius"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "height"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "side"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "bottom")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Cone>(*this, id));
     Vrml97NodeTypeImpl<Cone> & coneNodeType =
@@ -3060,7 +3057,7 @@ const NodeTypePtr
                                     const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterface =
-            { NodeInterface::exposedField, FieldValue::mfvec3f, "point" };
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "point");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Coordinate>(*this, id));
     Vrml97NodeTypeImpl<Coordinate> & coordinateNodeType =
             static_cast<Vrml97NodeTypeImpl<Coordinate> &>(*nodeType);
@@ -3162,10 +3159,10 @@ const NodeTypePtr CoordinateInterpolatorClass::
                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "key" },
-        { NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue" },
-        { NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<CoordinateInterpolator>(*this, id));
     Vrml97NodeTypeImpl<CoordinateInterpolator> & coordinateInterpolatorNodeType =
@@ -3342,11 +3339,11 @@ const NodeTypePtr CylinderClass::createType(const std::string & id,
                                             const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::field, FieldValue::sfbool, "bottom" },
-        { NodeInterface::field, FieldValue::sffloat, "height" },
-        { NodeInterface::field, FieldValue::sffloat, "radius" },
-        { NodeInterface::field, FieldValue::sfbool, "side" },
-        { NodeInterface::field, FieldValue::sfbool, "top" }
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "bottom"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "height"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "radius"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "side"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "top")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Cylinder>(*this, id));
     Vrml97NodeTypeImpl<Cylinder> & cylinderNodeType =
@@ -3464,15 +3461,15 @@ const NodeTypePtr
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfbool, "autoOffset" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "diskAngle" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "maxAngle" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "minAngle" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "offset" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
-        { NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed" },
-        { NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "diskAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<CylinderSensor>(*this, id));
     Vrml97NodeTypeImpl<CylinderSensor> & cylinderSensorNodeType =
@@ -3813,11 +3810,11 @@ const NodeTypePtr
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity" },
-        { NodeInterface::exposedField, FieldValue::sfcolor, "color" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "direction" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "intensity" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "on" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<DirectionalLight>(*this, id));
     Vrml97NodeTypeImpl<DirectionalLight> & directionalLightNodeType =
@@ -3952,20 +3949,20 @@ const NodeTypePtr
                                        const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::mffloat, "set_height" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "color" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "normal" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "texCoord" },
-        { NodeInterface::field, FieldValue::mffloat, "height" },
-        { NodeInterface::field, FieldValue::sfbool, "ccw" },
-        { NodeInterface::field, FieldValue::sfbool, "colorPerVertex" },
-        { NodeInterface::field, FieldValue::sffloat, "creaseAngle" },
-        { NodeInterface::field, FieldValue::sfbool, "normalPerVertex" },
-        { NodeInterface::field, FieldValue::sfbool, "solid" },
-        { NodeInterface::field, FieldValue::sfint32, "xDimension" },
-        { NodeInterface::field, FieldValue::sffloat, "xSpacing" },
-        { NodeInterface::field, FieldValue::sfint32, "zDimension" },
-        { NodeInterface::field, FieldValue::sffloat, "zSpacing" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::mffloat, "set_height"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "normal"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texCoord"),
+        NodeInterface(NodeInterface::field, FieldValue::mffloat, "height"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "normalPerVertex"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
+        NodeInterface(NodeInterface::field, FieldValue::sfint32, "xDimension"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "xSpacing"),
+        NodeInterface(NodeInterface::field, FieldValue::sfint32, "zDimension"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "zSpacing")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ElevationGrid>(*this, id));
     Vrml97NodeTypeImpl<ElevationGrid> & elevationGridNodeType =
@@ -4269,20 +4266,20 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::mfvec2f, "set_crossSection" },
-        { NodeInterface::eventIn, FieldValue::mfrotation, "set_orientation" },
-        { NodeInterface::eventIn, FieldValue::mfvec2f, "set_scale" },
-        { NodeInterface::eventIn, FieldValue::mfvec3f, "set_spine" },
-        { NodeInterface::field, FieldValue::sfbool, "beginCap" },
-        { NodeInterface::field, FieldValue::sfbool, "ccw" },
-        { NodeInterface::field, FieldValue::sfbool, "convex" },
-        { NodeInterface::field, FieldValue::sffloat, "creaseAngle" },
-        { NodeInterface::field, FieldValue::mfvec2f, "crossSection" },
-        { NodeInterface::field, FieldValue::sfbool, "endCap" },
-        { NodeInterface::field, FieldValue::mfrotation, "orientation" },
-        { NodeInterface::field, FieldValue::mfvec2f, "scale" },
-        { NodeInterface::field, FieldValue::sfbool, "solid" },
-        { NodeInterface::field, FieldValue::mfvec3f, "spine" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfvec2f, "set_crossSection"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfrotation, "set_orientation"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfvec2f, "set_scale"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfvec3f, "set_spine"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "beginCap"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "convex"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
+        NodeInterface(NodeInterface::field, FieldValue::mfvec2f, "crossSection"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "endCap"),
+        NodeInterface(NodeInterface::field, FieldValue::mfrotation, "orientation"),
+        NodeInterface(NodeInterface::field, FieldValue::mfvec2f, "scale"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
+        NodeInterface(NodeInterface::field, FieldValue::mfvec3f, "spine")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Extrusion>(*this, id));
     Vrml97NodeTypeImpl<Extrusion> & extrusionNodeType =
@@ -4534,11 +4531,11 @@ const NodeTypePtr FogClass::createType(const std::string & id,
                                        const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::sfbool, "set_bind" },
-        { NodeInterface::exposedField, FieldValue::sfcolor, "color" },
-        { NodeInterface::exposedField, FieldValue::sfstring, "fogType" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "visibilityRange" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isBound" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "fogType"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "visibilityRange"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Fog>(*this, id));
     Vrml97NodeTypeImpl<Fog> & fogNodeType =
@@ -4728,15 +4725,15 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::field, FieldValue::mfstring, "family" },
-        { NodeInterface::field, FieldValue::sfbool, "horizontal" },
-        { NodeInterface::field, FieldValue::mfstring, "justify" },
-        { NodeInterface::field, FieldValue::sfstring, "language" },
-        { NodeInterface::field, FieldValue::sfbool, "leftToRight" },
-        { NodeInterface::field, FieldValue::sffloat, "size" },
-        { NodeInterface::field, FieldValue::sffloat, "spacing" },
-        { NodeInterface::field, FieldValue::sfstring, "style" },
-        { NodeInterface::field, FieldValue::sfbool, "topToBottom" }
+        NodeInterface(NodeInterface::field, FieldValue::mfstring, "family"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "horizontal"),
+        NodeInterface(NodeInterface::field, FieldValue::mfstring, "justify"),
+        NodeInterface(NodeInterface::field, FieldValue::sfstring, "language"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "leftToRight"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "size"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "spacing"),
+        NodeInterface(NodeInterface::field, FieldValue::sfstring, "style"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "topToBottom")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<FontStyle>(*this, id));
     Vrml97NodeTypeImpl<FontStyle> & fontStyleNodeType =
@@ -4948,11 +4945,11 @@ const NodeTypePtr GroupClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::mfnode, "addChildren" },
-        { NodeInterface::eventIn, FieldValue::mfnode, "removeChildren" },
-        { NodeInterface::exposedField, FieldValue::mfnode, "children" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Group>(*this, id));
     Vrml97NodeTypeImpl<Group> & groupNodeType =
@@ -5386,9 +5383,9 @@ const NodeTypePtr ImageTextureClass::
                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::mfstring, "url" },
-        { NodeInterface::field, FieldValue::sfbool, "repeatS" },
-        { NodeInterface::field, FieldValue::sfbool, "repeatT" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ImageTexture>(*this, id));
     Vrml97NodeTypeImpl<ImageTexture> & imageTextureNodeType =
@@ -5581,24 +5578,24 @@ const NodeTypePtr
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex" },
-        { NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex" },
-        { NodeInterface::eventIn, FieldValue::mfint32, "set_normalIndex" },
-        { NodeInterface::eventIn, FieldValue::mfint32, "set_texCoordIndex" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "color" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "coord" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "normal" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "texCoord" },
-        { NodeInterface::field, FieldValue::sfbool, "ccw" },
-        { NodeInterface::field, FieldValue::mfint32, "colorIndex" },
-        { NodeInterface::field, FieldValue::sfbool, "colorPerVertex" },
-        { NodeInterface::field, FieldValue::sfbool, "convex" },
-        { NodeInterface::field, FieldValue::mfint32, "coordIndex" },
-        { NodeInterface::field, FieldValue::sffloat, "creaseAngle" },
-        { NodeInterface::field, FieldValue::mfint32, "normalIndex" },
-        { NodeInterface::field, FieldValue::sfbool, "normalPerVertex" },
-        { NodeInterface::field, FieldValue::sfbool, "solid" },
-        { NodeInterface::field, FieldValue::mfint32, "texCoordIndex" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_normalIndex"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_texCoordIndex"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "normal"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texCoord"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
+        NodeInterface(NodeInterface::field, FieldValue::mfint32, "colorIndex"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "convex"),
+        NodeInterface(NodeInterface::field, FieldValue::mfint32, "coordIndex"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
+        NodeInterface(NodeInterface::field, FieldValue::mfint32, "normalIndex"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "normalPerVertex"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
+        NodeInterface(NodeInterface::field, FieldValue::mfint32, "texCoordIndex")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<IndexedFaceSet>(*this, id));
     Vrml97NodeTypeImpl<IndexedFaceSet> & indexedFaceSetNodeType =
@@ -5982,13 +5979,13 @@ const NodeTypePtr
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex" },
-        { NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "color" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "coord" },
-        { NodeInterface::field, FieldValue::mfint32, "colorIndex" },
-        { NodeInterface::field, FieldValue::sfbool, "colorPerVertex" },
-        { NodeInterface::field, FieldValue::mfint32, "coordIndex" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord"),
+        NodeInterface(NodeInterface::field, FieldValue::mfint32, "colorIndex"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
+        NodeInterface(NodeInterface::field, FieldValue::mfint32, "coordIndex")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<IndexedLineSet>(*this, id));
     Vrml97NodeTypeImpl<IndexedLineSet> & indexedLineSetNodeType =
@@ -6135,9 +6132,9 @@ const NodeTypePtr InlineClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::mfstring, "url" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Inline>(*this, id));
     Vrml97NodeTypeImpl<Inline> & inlineNodeType =
@@ -6312,9 +6309,9 @@ const NodeTypePtr LODClass::createType(const std::string & id,
                                        const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::mfnode, "level" },
-        { NodeInterface::field, FieldValue::sfvec3f, "center" },
-        { NodeInterface::field, FieldValue::mffloat, "range" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "level"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "center"),
+        NodeInterface(NodeInterface::field, FieldValue::mffloat, "range")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<LOD>(*this, id));
     Vrml97NodeTypeImpl<LOD> & lodNodeType =
@@ -6530,12 +6527,12 @@ const NodeTypePtr MaterialClass::createType(const std::string & id,
                                             const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity" },
-        { NodeInterface::exposedField, FieldValue::sfcolor, "diffuseColor" },
-        { NodeInterface::exposedField, FieldValue::sfcolor, "emissiveColor" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "shininess" },
-        { NodeInterface::exposedField, FieldValue::sfcolor, "specularColor" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "transparency" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "diffuseColor"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "emissiveColor"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "shininess"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "specularColor"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "transparency")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Material>(*this, id));
     Vrml97NodeTypeImpl<Material> & materialNodeType =
@@ -6802,15 +6799,15 @@ const NodeTypePtr
                                       const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfbool, "loop" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "speed" },
-        { NodeInterface::exposedField, FieldValue::sftime, "startTime" },
-        { NodeInterface::exposedField, FieldValue::sftime, "stopTime" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "url" },
-        { NodeInterface::field, FieldValue::sfbool, "repeatS" },
-        { NodeInterface::field, FieldValue::sfbool, "repeatT" },
-        { NodeInterface::eventOut, FieldValue::sftime, "duration_changed" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "speed"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "duration_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<MovieTexture>(*this, id));
     Vrml97NodeTypeImpl<MovieTexture> & movieTextureNodeType =
@@ -7194,13 +7191,13 @@ const NodeTypePtr
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::sfbool, "set_bind" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "avatarSize" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "headlight" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "speed" },
-        { NodeInterface::exposedField, FieldValue::mfstring, "type" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "visibilityLimit" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isBound" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "avatarSize"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "headlight"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "speed"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "type"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "visibilityLimit"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<NavigationInfo>(*this, id));
     Vrml97NodeTypeImpl<NavigationInfo> & navigationInfoNodeType =
@@ -7452,7 +7449,7 @@ const NodeTypePtr NormalClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterface =
-            { NodeInterface::exposedField, FieldValue::mfvec3f, "vector" };
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "vector");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Normal>(*this, id));
     Vrml97NodeTypeImpl<Normal> & normalNodeType =
             static_cast<Vrml97NodeTypeImpl<Normal> &>(*nodeType);
@@ -7554,10 +7551,10 @@ const NodeTypePtr
                                             const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "key" },
-        { NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue" },
-        { NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<NormalInterpolator>(*this, id));
     Vrml97NodeTypeImpl<NormalInterpolator> & normalInterpolatorNodeType =
@@ -7757,10 +7754,10 @@ const NodeTypePtr OrientationInterpolatorClass::
         createType(const std::string & id, const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "key" },
-        { NodeInterface::exposedField, FieldValue::mfrotation, "keyValue" },
-        { NodeInterface::eventOut, FieldValue::sfrotation, "value_changed" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfrotation, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<OrientationInterpolator>(*this, id));
     Vrml97NodeTypeImpl<OrientationInterpolator> & orientationInterpolatorNodeType =
@@ -7963,9 +7960,9 @@ const NodeTypePtr
                                       const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfimage, "image" },
-        { NodeInterface::field, FieldValue::sfbool, "repeatS" },
-        { NodeInterface::field, FieldValue::sfbool, "repeatT" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfimage, "image"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PixelTexture>(*this, id));
     Vrml97NodeTypeImpl<PixelTexture> & pixelTextureNodeType =
@@ -8149,14 +8146,14 @@ const NodeTypePtr
                                      const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfbool, "autoOffset" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
-        { NodeInterface::exposedField, FieldValue::sfvec2f, "maxPosition" },
-        { NodeInterface::exposedField, FieldValue::sfvec2f, "minPosition" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "offset" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
-        { NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed" },
-        { NodeInterface::eventOut, FieldValue::sfvec3f, "translation_changed" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "maxPosition"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "minPosition"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "translation_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PlaneSensor>(*this, id));
     Vrml97NodeTypeImpl<PlaneSensor> & planeSensorNodeType =
@@ -8234,12 +8231,6 @@ const NodeTypePtr
  * liable to generate events
  *
  * @todo need copy constructor for d_parentTransform ...
- */
-
-/**
- * @class PlaneSensor
- *
- * @brief Represents PlaneSensor node instances.
  */
 
 /**
@@ -8481,13 +8472,13 @@ const NodeTypePtr
                                     const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation" },
-        { NodeInterface::exposedField, FieldValue::sfcolor, "color" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "intensity" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "location" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "on" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "radius" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "radius")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PointLight>(*this, id));
     Vrml97NodeTypeImpl<PointLight> & pointLightNodeType =
@@ -8682,8 +8673,8 @@ const NodeTypePtr PointSetClass::createType(const std::string & id,
                                             const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfnode, "color" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "coord" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PointSet>(*this, id));
     Vrml97NodeTypeImpl<PointSet> & pointSetNodeType =
@@ -8870,10 +8861,10 @@ const NodeTypePtr PositionInterpolatorClass::
                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "key" },
-        { NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue" },
-        { NodeInterface::eventOut, FieldValue::sfvec3f, "value_changed" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PositionInterpolator>(*this, id));
     Vrml97NodeTypeImpl<PositionInterpolator> & positionInterpolatorNodeType =
@@ -9044,14 +9035,14 @@ const NodeTypePtr
                                          const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "center" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "size" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
-        { NodeInterface::eventOut, FieldValue::sfvec3f, "position_changed" },
-        { NodeInterface::eventOut, FieldValue::sfrotation, "orientation_changed" },
-        { NodeInterface::eventOut, FieldValue::sftime, "enterTime" },
-        { NodeInterface::eventOut, FieldValue::sftime, "exitTime" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "size"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "position_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "orientation_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "enterTime"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "exitTime")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ProximitySensor>(*this, id));
     Vrml97NodeTypeImpl<ProximitySensor> & proximitySensorNodeType =
@@ -9313,10 +9304,10 @@ const NodeTypePtr ScalarInterpolatorClass::
                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "key" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "keyValue" },
-        { NodeInterface::eventOut, FieldValue::sffloat, "value_changed" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sffloat, "value_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ScalarInterpolator>(*this, id));
     Vrml97NodeTypeImpl<ScalarInterpolator> & scalarInterpolatorNodeType =
@@ -9480,8 +9471,8 @@ const NodeTypePtr ShapeClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfnode, "appearance" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "geometry" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "appearance"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "geometry")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Shape>(*this, id));
     Vrml97NodeTypeImpl<Shape> & shapeNodeType =
@@ -9685,16 +9676,16 @@ const NodeTypePtr SoundClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "direction" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "intensity" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "location" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "maxBack" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "maxFront" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "minBack" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "minFront" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "priority" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "source" },
-        { NodeInterface::field, FieldValue::sfbool, "spatialize" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxBack"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxFront"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minBack"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minFront"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "priority"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "source"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "spatialize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Sound>(*this, id));
     Vrml97NodeTypeImpl<Sound> & soundNodeType =
@@ -9988,7 +9979,7 @@ const NodeTypePtr SphereClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterface =
-            { NodeInterface::field, FieldValue::sffloat, "radius" };
+            NodeInterface(NodeInterface::field, FieldValue::sffloat, "radius");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Sphere>(*this, id));
     Vrml97NodeTypeImpl<Sphere> & spereNodeType =
             static_cast<Vrml97NodeTypeImpl<Sphere> &>(*nodeType);
@@ -10079,12 +10070,12 @@ const NodeTypePtr
                                       const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfbool, "autoOffset" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "offset" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
-        { NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed" },
-        { NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<SphereSensor>(*this, id));
     Vrml97NodeTypeImpl<SphereSensor> & sphereSensorNodeType =
@@ -10330,16 +10321,16 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "beamWidth" },
-        { NodeInterface::exposedField, FieldValue::sfcolor, "color" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "cutOffAngle" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "direction" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "intensity" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "location" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "on" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "radius" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "beamWidth"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "cutOffAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "radius")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<SpotLight>(*this, id));
     Vrml97NodeTypeImpl<SpotLight> & spotLightNodeType =
@@ -10605,8 +10596,8 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::mfnode, "choice" },
-        { NodeInterface::exposedField, FieldValue::sfint32, "whichChoice" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "choice"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfint32, "whichChoice")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Switch>(*this, id));
     Vrml97NodeTypeImpl<Switch> & switchNodeType =
@@ -10795,10 +10786,10 @@ const NodeTypePtr TextClass::createType(const std::string & id,
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::mfstring, "string" },
-        { NodeInterface::exposedField, FieldValue::sfnode, "fontStyle" },
-        { NodeInterface::exposedField, FieldValue::mffloat, "length" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "maxExtent" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "string"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "fontStyle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "length"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxExtent")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Text>(*this, id));
     Vrml97NodeTypeImpl<Text> & textNodeType =
@@ -11048,7 +11039,7 @@ const NodeTypePtr
                                            const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterface =
-            { NodeInterface::exposedField, FieldValue::mfvec2f, "point" };
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec2f, "point");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TextureCoordinate>(*this, id));
     Vrml97NodeTypeImpl<TextureCoordinate> & textureCoordinateNodeType =
             static_cast<Vrml97NodeTypeImpl<TextureCoordinate> &>(*nodeType);
@@ -11164,10 +11155,10 @@ const NodeTypePtr
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfvec2f, "center" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "rotation" },
-        { NodeInterface::exposedField, FieldValue::sfvec2f, "scale" },
-        { NodeInterface::exposedField, FieldValue::sfvec2f, "translation" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "center"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "rotation"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "scale"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "translation")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TextureTransform>(*this, id));
     Vrml97NodeTypeImpl<TextureTransform> & textureTransformNodeType =
@@ -11375,15 +11366,15 @@ const NodeTypePtr TimeSensorClass::createType(const std::string & id,
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sftime, "cycleInterval" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "loop" },
-        { NodeInterface::exposedField, FieldValue::sftime, "startTime" },
-        { NodeInterface::exposedField, FieldValue::sftime, "stopTime" },
-        { NodeInterface::eventOut, FieldValue::sftime, "cycleTime" },
-        { NodeInterface::eventOut, FieldValue::sffloat, "fraction_changed" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
-        { NodeInterface::eventOut, FieldValue::sftime, "time" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "cycleInterval"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "cycleTime"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sffloat, "fraction_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "time")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TimeSensor>(*this, id));
     Vrml97NodeTypeImpl<TimeSensor> & timeSensorNodeType =
@@ -11802,13 +11793,13 @@ const NodeTypePtr TouchSensorClass::createType(const std::string & id,
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
-        { NodeInterface::eventOut, FieldValue::sfvec3f, "hitNormal_changed" },
-        { NodeInterface::eventOut, FieldValue::sfvec3f, "hitPoint_changed" },
-        { NodeInterface::eventOut, FieldValue::sfvec2f, "hitTexCoord_changed" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isOver" },
-        { NodeInterface::eventOut, FieldValue::sftime, "touchTime" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "hitNormal_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "hitPoint_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec2f, "hitTexCoord_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isOver"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "touchTime")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TouchSensor>(*this, id));
     Vrml97NodeTypeImpl<TouchSensor> & touchSensorNodeType =
@@ -12026,16 +12017,16 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::mfnode, "addChildren" },
-        { NodeInterface::eventIn, FieldValue::mfnode, "removeChildren" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "center" },
-        { NodeInterface::exposedField, FieldValue::mfnode, "children" },
-        { NodeInterface::exposedField, FieldValue::sfrotation, "rotation" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "scale" },
-        { NodeInterface::exposedField, FieldValue::sfrotation, "scaleOrientation" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "translation" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
-        { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "rotation"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "scale"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "scaleOrientation"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "translation"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Transform>(*this, id));
     Vrml97NodeTypeImpl<Transform> & transformNodeType =
@@ -12521,14 +12512,14 @@ const NodeTypePtr
                                    const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::eventIn, FieldValue::sfbool, "set_bind" },
-        { NodeInterface::exposedField, FieldValue::sffloat, "fieldOfView" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "jump" },
-        { NodeInterface::exposedField, FieldValue::sfrotation, "orientation" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "position" },
-        { NodeInterface::field, FieldValue::sfstring, "description" },
-        { NodeInterface::eventOut, FieldValue::sftime, "bindTime" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isBound" }
+        NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "fieldOfView"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "jump"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "orientation"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "position"),
+        NodeInterface(NodeInterface::field, FieldValue::sfstring, "description"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "bindTime"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Viewpoint>(*this, id));
     Vrml97NodeTypeImpl<Viewpoint> & viewpointNodeType =
@@ -12941,12 +12932,12 @@ const NodeTypePtr
                                           const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "center" },
-        { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
-        { NodeInterface::exposedField, FieldValue::sfvec3f, "size" },
-        { NodeInterface::eventOut, FieldValue::sftime, "enterTime" },
-        { NodeInterface::eventOut, FieldValue::sftime, "exitTime" },
-        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "size"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "enterTime"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "exitTime"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<VisibilitySensor>(*this, id));
     Vrml97NodeTypeImpl<VisibilitySensor> & visibilitySensorNodeType =
@@ -13221,8 +13212,8 @@ const NodeTypePtr WorldInfoClass::createType(const std::string & id,
                                         const NodeInterfaceSet & interfaces)
         throw (UnsupportedInterface, std::bad_alloc) {
     static const NodeInterface supportedInterfaces[] = {
-        { NodeInterface::field, FieldValue::mfstring, "info" },
-        { NodeInterface::field, FieldValue::sfstring, "title" }
+        NodeInterface(NodeInterface::field, FieldValue::mfstring, "info"),
+        NodeInterface(NodeInterface::field, FieldValue::sfstring, "title")
     };
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<WorldInfo>(*this, id));
     Vrml97NodeTypeImpl<WorldInfo> & worldInfoNodeType =

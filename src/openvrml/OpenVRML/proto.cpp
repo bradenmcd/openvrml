@@ -284,6 +284,34 @@ void ProtoNode::RouteCopyVisitor::visit(Node & node) {
     }
 }
 
+/**
+ * @struct ProtoNode::ImplNodeInterface
+ *
+ * @brief Used for @c IS event propagation.
+ */
+
+/**
+ * @var Node & ProtoNode::ImplNodeInterface::node
+ *
+ * @brief A reference to a node in the prototype implementation.
+ */
+
+/**
+ * @var std::string ProtoNode::ImplNodeInterface::interfaceId
+ *
+ * @brief An interface of @a node.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param node          a reference to a node in the prototype implementation.
+ * @param interfaceId   an interface of @p node.
+ */
+ProtoNode::ImplNodeInterface::ImplNodeInterface(Node & node,
+                                                const std::string & interfaceId):
+        node(node), interfaceId(interfaceId) {}
+
 namespace {
     const FieldValuePtr defaultFieldValue(const FieldValue::Type fieldType) {
         switch (fieldType) {
@@ -317,16 +345,16 @@ namespace {
         
         void operator()(const NodeInterface & interface) const {
             if (interface.type == NodeInterface::eventOut) {
-                const Node::ProtoEventOutValue eventOutValue =
-                        { defaultFieldValue(interface.fieldType), 0.0 };
+                const Node::PolledEventOutValue
+                    eventOutValue(defaultFieldValue(interface.fieldType), 0.0);
                 const ProtoNode::EventOutValueMap::value_type
                         value(interface.id, eventOutValue);
                 const bool succeeded =
                         this->eventOutValueMap->insert(value).second;
                 assert(succeeded);
             } else if (interface.type == NodeInterface::exposedField) {
-                const Node::ProtoEventOutValue eventOutValue =
-                        { defaultFieldValue(interface.fieldType), 0.0 };
+                const Node::PolledEventOutValue
+                    eventOutValue(defaultFieldValue(interface.fieldType), 0.0);
                 const ProtoNode::EventOutValueMap::value_type
                         value(interface.id + "_changed", eventOutValue);
                 const bool succeeded =
@@ -736,8 +764,7 @@ void ProtoNode::addIS(Node & implNode,
                       const std::string & implNodeInterfaceId,
                       const std::string & protoInterfaceId)
         throw (std::invalid_argument, std::bad_alloc) {
-    const ImplNodeInterface implNodeInterface =
-            { implNode, implNodeInterfaceId };
+    const ImplNodeInterface implNodeInterface(implNode, implNodeInterfaceId);
     const ISMap::value_type value(protoInterfaceId, implNodeInterface);
     this->isMap.insert(value);
     
@@ -1051,7 +1078,7 @@ ProtoNodeClass::~ProtoNodeClass() throw () {}
 void ProtoNodeClass::addEventIn(const FieldValue::Type type,
                                 const std::string & id)
         throw (std::invalid_argument, std::bad_alloc) {
-    NodeInterface interface = { NodeInterface::eventIn, type, id };
+    const NodeInterface interface(NodeInterface::eventIn, type, id);
     this->protoNodeType.addInterface(interface);
 }
 
@@ -1068,14 +1095,14 @@ void ProtoNodeClass::addEventIn(const FieldValue::Type type,
 void ProtoNodeClass::addEventOut(const FieldValue::Type type,
                                  const std::string & id)
         throw (std::invalid_argument, std::bad_alloc) {
-    NodeInterface interface = { NodeInterface::eventOut, type, id };
+    const NodeInterface interface(NodeInterface::eventOut, type, id);
     this->protoNodeType.addInterface(interface);
     
     //
     // Add a value to the ProtoNode's eventOutValueMap.
     //
-    const Node::ProtoEventOutValue eventOutValue =
-            { defaultFieldValue(interface.fieldType), false };
+    const Node::PolledEventOutValue
+            eventOutValue(defaultFieldValue(interface.fieldType), false);
     const ProtoNode::EventOutValueMap::value_type
             value(interface.id, eventOutValue);
     const bool succeeded =
@@ -1096,8 +1123,8 @@ void ProtoNodeClass::addEventOut(const FieldValue::Type type,
 void ProtoNodeClass::addExposedField(const std::string & id,
                                      const FieldValuePtr & defaultValue)
         throw (std::invalid_argument, std::bad_alloc) {
-    NodeInterface interface =
-            { NodeInterface::exposedField, defaultValue->type(), id };
+    const NodeInterface
+            interface(NodeInterface::exposedField, defaultValue->type(), id);
     this->protoNodeType.addInterface(interface);
     {
         const DefaultValueMap::value_type value(id, defaultValue);
@@ -1108,9 +1135,9 @@ void ProtoNodeClass::addExposedField(const std::string & id,
     //
     // Add a value to the ProtoNode's eventOutValueMap.
     //
-    {    
-    const Node::ProtoEventOutValue eventOutValue =
-            { defaultFieldValue(interface.fieldType), 0.0 };
+    {
+        const Node::PolledEventOutValue
+                eventOutValue(defaultFieldValue(interface.fieldType), 0.0);
         const ProtoNode::EventOutValueMap::value_type
                 value(interface.id + "_changed", eventOutValue);
         const bool succeeded =
@@ -1132,8 +1159,8 @@ void ProtoNodeClass::addExposedField(const std::string & id,
 void ProtoNodeClass::addField(const std::string & id,
                               const FieldValuePtr & defaultValue)
         throw (std::invalid_argument, std::bad_alloc) {
-    NodeInterface interface =
-            { NodeInterface::field, defaultValue->type(), id };
+    const NodeInterface
+            interface(NodeInterface::field, defaultValue->type(), id);
     this->protoNodeType.addInterface(interface);
     const DefaultValueMap::value_type value(id, defaultValue);
     const bool succeeded = this->defaultValueMap.insert(value).second;

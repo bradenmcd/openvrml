@@ -98,9 +98,11 @@ namespace OpenVRML {
         struct ImplNodeInterface {
             Node & node;
             std::string interfaceId;
+            
+            ImplNodeInterface(Node & node, const std::string & interfaceId);
         };
         typedef std::multimap<std::string, ImplNodeInterface> ISMap;
-        typedef std::map<std::string, ProtoEventOutValue> EventOutValueMap;
+        typedef std::map<std::string, PolledEventOutValue> EventOutValueMap;
 
     private:
         ISMap isMap;

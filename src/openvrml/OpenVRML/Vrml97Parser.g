@@ -808,7 +808,7 @@ externInterfaceDeclaration[OpenVRML::NodeInterfaceSet & interfaces]
             FieldValue::Type ft(FieldValue::invalidType);
         }
     :   it=interfaceType ft=fieldType id:ID {
-            const NodeInterface interface = { it, ft, id->getText() };
+            const NodeInterface interface(it, ft, id->getText());
             try {
                 interfaces.add(interface);
             } catch (std::invalid_argument & ex) {

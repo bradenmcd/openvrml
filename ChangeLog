@@ -9,6 +9,9 @@
 
         * Moved Route class to be a member class of Node.
 
+        * Microsoft Visual C++ 6.0 doesn't like aggregates with members
+          of class type.
+
 2002-05-14  Braden McDaniel  <braden@endoframe.com>
 
         * Partial Inline node support.

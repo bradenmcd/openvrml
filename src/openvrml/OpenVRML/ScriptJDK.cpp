@@ -314,8 +314,9 @@ static FieldValue* getFieldValue(JNIEnv *env, jobject obj)
 
   if (eventOut)
   {
-    ScriptNode::EventOutValue* eventOutPtr =
-      (ScriptNode::EventOutValue*)env->GetIntField(obj, fid);
+    ScriptNode::PolledEventOutValue * const eventOutPtr =
+      reinterpret_cast<ScriptNode::PolledEventOutValue *>
+        (env->GetIntField(obj, fid));
     fieldPtr = static_cast<FieldValue*>(eventOutPtr->value.get());
     eventOutPtr->modified = true;
   }
@@ -4010,7 +4011,6 @@ jobject JNICALL Java_vrml_node_Script_getField
 jobject JNICALL Java_vrml_node_Script_getEventOut
   (JNIEnv *env, jobject obj, jstring jstrEventOutName)
 {
-  ScriptNode::EventOutValue eventOutValue;
   char clazzName[256];
   jobject eventOut;
   jclass clazz;
@@ -4024,7 +4024,7 @@ jobject JNICALL Java_vrml_node_Script_getEventOut
 
   if (iter != eventOutMap.end())
   {
-    eventOutValue = iter->second;
+    ScriptNode::PolledEventOutValue eventOutValue(iter->second);
     // Found the eventOut
     char clazzName[256];
     sprintf(clazzName, "vrml/field/%s", iter->second.value->typeName());

@@ -70,13 +70,8 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE ScriptNode : public ChildNode {
     public:
-        struct EventOutValue {
-            FieldValuePtr value;
-            bool modified;
-        };
-        
         typedef std::map<std::string, FieldValuePtr> FieldValueMap;
-        typedef std::map<std::string, EventOutValue> EventOutValueMap;
+        typedef std::map<std::string, PolledEventOutValue> EventOutValueMap;
     
     private:
         class ScriptNodeType : public NodeType {

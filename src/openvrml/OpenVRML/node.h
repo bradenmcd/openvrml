@@ -50,6 +50,9 @@ namespace OpenVRML {
         Type type;
         FieldValue::Type fieldType;
         std::string id;
+        
+        NodeInterface(Type type, FieldValue::Type fieldType,
+                      const std::string & id);
     };
     
     bool operator==(const NodeInterface & rhs, const NodeInterface & lhs);
@@ -188,16 +191,18 @@ namespace OpenVRML {
         
         typedef std::list<Route> RouteList;
         
-        struct ProtoEventOutValue {
+        struct PolledEventOutValue {
             const FieldValuePtr value;
             bool modified;
+            
+            PolledEventOutValue(const FieldValuePtr & value, bool modified);
         };
 
     private:
         std::string id;
         RouteList routes;
         
-        typedef std::map<std::string, ProtoEventOutValue *> EventOutISMap;
+        typedef std::map<std::string, PolledEventOutValue *> EventOutISMap;
         EventOutISMap eventOutISMap;
 
     public:
@@ -217,7 +222,7 @@ namespace OpenVRML {
         const MFNode getChildren() const;
 
         void addEventOutIS(const std::string & eventOut,
-                           ProtoEventOutValue * eventOutValue)
+                           PolledEventOutValue * eventOutValue)
                 throw (UnsupportedInterface, std::bad_alloc);
 
         void setField(const std::string & id, const FieldValue & value)

@@ -95,6 +95,17 @@ UnsupportedInterface::~UnsupportedInterface() throw () {}
  */
 
 /**
+ * @brief Constructor.
+ *
+ * @param type      the type of interface.
+ * @param fieldType the field data type handled by the interface.
+ * @param id        the name of the interface.
+ */
+NodeInterface::NodeInterface(const Type type, const FieldValue::Type fieldType,
+                             const std::string & id):
+        type(type), fieldType(fieldType), id(id) {}
+
+/**
  * @brief Compare for equality.
  *
  * @param rhs   a NodeInterface.
@@ -433,7 +444,7 @@ FieldValue::Type NodeType::hasInterface(const std::string & id) const throw () {
  */
 
 /**
- * @class Node::Route
+ * @struct Node::Route
  *
  * @brief A route from one node to another through which events propagate.
  */
@@ -476,6 +487,35 @@ Node::Route::Route(const std::string & fromEventOut,
  */
 Node::Route::Route(const Route & route): fromEventOut(route.fromEventOut), 
 	toNode(route.toNode), toEventIn(route.toEventIn) {}
+
+/**
+ * @struct Node::PolledEventOutValue
+ *
+ * @brief Simple struct for use in implementing nodes that are polled for
+ *      pending events.
+ */
+
+/**
+ * @var const FieldValuePtr Node::PolledEventOutValue::value
+ *
+ * @brief The value.
+ */
+
+/**
+ * @var bool Node::PolledEventOutValue::modified
+ *
+ * @brief A flag to indicate whether the eventOut has been modified.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param value     the value.
+ * @param modified  a flag to indicate whether the eventOut has been modified.
+ */
+Node::PolledEventOutValue::PolledEventOutValue(const FieldValuePtr & value,
+                                               const bool modified):
+        value(value), modified(modified) {}
 
 /**
  * @var Node::nodeType
@@ -588,7 +628,7 @@ void Node::setId(const std::string & nodeId, VrmlNamespace * const ns) {
 const std::string & Node::getId() const { return this->id; }
 
 void Node::addEventOutIS(const std::string & eventOutId,
-                         ProtoEventOutValue * const eventOutValue)
+                         PolledEventOutValue * const eventOutValue)
         throw (UnsupportedInterface, std::bad_alloc) {
     if (!this->nodeType.hasEventOut(eventOutId)) {
         throw UnsupportedInterface(this->nodeType.id + " node has no eventOut "

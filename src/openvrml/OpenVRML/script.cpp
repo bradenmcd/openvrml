@@ -151,13 +151,6 @@ const NodeTypePtr ScriptNodeClass::createType(const std::string &,
  */
 
 /**
- * @struct ScriptNode::EventOutValue
- *
- * @brief Couples a FieldValue with a boolean flag indicating whether the value
- *      has been modified during the current event cascade.
- */
- 
-/**
  * @typedef ScriptNode::FieldValueMap
  *
  * @brief A std::map that keys field values on their field name.
@@ -183,9 +176,9 @@ const NodeTypePtr ScriptNodeClass::createType(const std::string &,
 ScriptNode::ScriptNodeType::ScriptNodeType(ScriptNodeClass & nodeClass):
         NodeType(nodeClass, "Script") {
     static const NodeInterface interfaces[] = {
-        { NodeInterface::exposedField, FieldValue::mfstring, "url" },
-        { NodeInterface::field, FieldValue::sfbool, "directOutput" },
-        { NodeInterface::field, FieldValue::sfbool, "mustEvaluate" }
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "directOutput"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "mustEvaluate")
     };
     this->interfaces.add(interfaces[0]);
     this->interfaces.add(interfaces[1]);
@@ -271,8 +264,8 @@ const NodePtr ScriptNode::ScriptNodeType::createNode() const
                     scriptNode.fieldValueMap.insert(value).second;
             assert(succeeded);
         } else if (itr->type == NodeInterface::eventOut) {
-            EventOutValue eventOutValue =
-                    { defaultFieldValue(itr->fieldType), false };
+            const PolledEventOutValue
+                    eventOutValue(defaultFieldValue(itr->fieldType), false);
             const EventOutValueMap::value_type value(itr->id, eventOutValue);
             const bool succeeded =
                     scriptNode.eventOutValueMap.insert(value).second;
@@ -382,20 +375,20 @@ const MFString & ScriptNode::getUrl() const {
 
 void ScriptNode::addEventIn(const FieldValue::Type type, const std::string & id)
         throw (std::invalid_argument, std::bad_alloc) {
-    const NodeInterface interface = { NodeInterface::eventIn, type, id };
+    const NodeInterface interface(NodeInterface::eventIn, type, id);
     this->scriptNodeType.addInterface(interface);
 }
 
 void ScriptNode::addEventOut(const FieldValue::Type type,
                              const std::string & id)
         throw (std::invalid_argument, std::bad_alloc) {
-    const NodeInterface interface = { NodeInterface::eventOut, type, id };
+    const NodeInterface interface(NodeInterface::eventOut, type, id);
     this->scriptNodeType.addInterface(interface);
     
     //
     // eventOut value.
     //
-    const EventOutValue eventOutValue = { defaultFieldValue(type), 0.0 };
+    const PolledEventOutValue eventOutValue(defaultFieldValue(type), 0.0);
     EventOutValueMap::value_type value(id, eventOutValue);
     const bool succeeded = this->eventOutValueMap.insert(value).second;
     assert(succeeded);
@@ -404,8 +397,7 @@ void ScriptNode::addEventOut(const FieldValue::Type type,
 void ScriptNode::addField(const std::string & id,
                           const FieldValuePtr & defaultVal)
         throw (std::invalid_argument, std::bad_alloc) {
-    const NodeInterface interface =
-            { NodeInterface::field, defaultVal->type(), id };
+    const NodeInterface interface(NodeInterface::field, defaultVal->type(), id);
     this->scriptNodeType.addInterface(interface);
     
     //
