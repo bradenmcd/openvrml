@@ -1256,7 +1256,7 @@ namespace {
 
     typedef std::list<node_path_element> node_path_t;
 
-    class path_getter {
+    class path_getter : boost::noncopyable {
         const node & objective;
         node_path_t & node_path;
         bool found;
@@ -1269,10 +1269,6 @@ namespace {
             throw (std::bad_alloc);
 
     private:
-        // Not copyable.
-        path_getter(const path_getter &);
-        path_getter & operator=(const path_getter &);
-
         void traverse_children(node & n) throw (std::bad_alloc);
     };
 
@@ -2643,16 +2639,6 @@ browser::browser(std::ostream & out, std::ostream & err)
 }
 
 /**
- * @internal
- *
- * @fn browser::browser(const browser &)
- *
- * @brief Construct a copy.
- *
- * Not implemented. browser is not copyable.
- */
-
-/**
  * @brief Destructor.
  */
 browser::~browser() throw ()
@@ -2672,16 +2658,6 @@ browser::~browser() throw ()
     assert(this->movies.empty());
     this->node_class_map.clear();
 }
-
-/**
- * @internal
- *
- * @fn browser &browser::operator=(const browser &)
- *
- * @brief Assign.
- *
- * Not implemented. browser is not copyable.
- */
 
 /**
  * @brief Get the root nodes for the browser.
@@ -4115,22 +4091,6 @@ scene::scene(openvrml::browser & browser,
         break;
     }
 }
-
-/**
- * @fn scene::scene(const scene &)
- *
- * @brief Not implemented.
- *
- * scene is not copyable.
- */
-
-/**
- * @fn scene & scene::operator=(const scene &)
- *
- * @brief Not implemented.
- *
- * scene is not copyable.
- */
 
 /**
  * @brief Initialize the scene.
