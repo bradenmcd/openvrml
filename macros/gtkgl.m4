@@ -1,7 +1,7 @@
 AC_DEFUN(OV_PATH_GTKGL,
   [
     AC_REQUIRE([AM_PATH_GTK])
-    AC_REQUIRE([OV_PATH_GL])
+    AC_REQUIRE([OV_CHECK_GL])
     
     AC_ARG_WITH(gtkgl-prefix, [  --with-gtkgl-prefix=DIR prefix where GtkGLArea is installed ])
     if test -n "${with_gtkgl_pefix}"; then

@@ -8,6 +8,10 @@
           <Frederic.Devernay@sophia.inria.fr>.
           openvrml-gl.pc openvrml.pc: fixed pkg-config compliance.
 
+        * Applied patch from Frederic Devernay
+          <Frederic.Devernay@sophia.inria.fr>.
+          macros/gtkgl.m4: fixed OV_CHECK_GL macro name.
+
 2002-02-07  Braden McDaniel  <braden@endoframe.com>
 
         * Added a stylesheet for the Doxygen-generated docs.
