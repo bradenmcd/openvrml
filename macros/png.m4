@@ -22,14 +22,16 @@ AC_DEFUN(OV_PATH_PNG,
   [
     AC_REQUIRE([OV_PATH_ZLIB])
     
-    AC_ARG_WITH(png, [  --with-png[=PREFIX]     libpng installed under PREFIX])
+    AC_ARG_WITH(png, [  --with-png[=PREFIX]     libpng installed under PREFIX [default=yes]])
     have_png=yes
     if test "X$with_png" = "Xno"; then
       have_png=no
     else
-      if test "X$with_png" != "Xyes"; then
-        png__Idir="-I${with_png_prefix}/include"
-        png__Ldir="-L${with_png_prefix}/lib"
+      if test -n "$with_png"; then
+        if test "X$with_png" != "Xyes"; then
+          png__Idir="-I${with_png}/include"
+          png__Ldir="-L${with_png}/lib"
+        fi
       fi
     
       PNG_CFLAGS=""
