@@ -6879,6 +6879,12 @@ namespace openvrml {
  */
 
 /**
+ * @var unsigned char ** img::frame_
+ *
+ * @brief Frame data for time-dependent images.
+ */
+
+/**
  * @brief Construct.
  */
 img::img():
@@ -6896,7 +6902,14 @@ img::img():
 img::~img()
 {
     delete this->url_;
-    free(this->pixels_); // assumes file readers use malloc...
+    if (!this->frame_) {
+        //
+        // If we have frame data, pixels_ is just a pointer to it, and it
+        // will be freed along with the rest of the frame data.
+        //
+        free(this->pixels_); // assumes file readers use malloc.
+    }
+    for (size_t i = 0; i < this->nframes_; ++i) { free(this->frame_[i]); }
     free(this->frame_);
 }
 
@@ -6911,18 +6924,19 @@ img::~img()
  */
 bool img::set_url(const char * const url, const doc2 * const relative)
 {
-    if (this->url_) {
-        delete this->url_;
-        this->url_ = 0;
+    delete this->url_;
+    this->url_ = 0;
+    if (!this->frame_) {
+        //
+        // If we have frame data, pixels_ is just a pointer to it, and it
+        // will be freed along with the rest of the frame data.
+        //
+        free(this->pixels_); // assumes file readers use malloc...
     }
-    if (this->pixels_) {
-        free(this->pixels_); // Assumes file readers use malloc.
-        this->pixels_ = 0;
-    }
-    if (this->frame_) {
-        this->frame_ = 0;
-        free(this->frame_);
-    }
+    this->pixels_ = 0;
+    for (size_t i = 0; i < this->nframes_; ++i) { free(this->frame_[i]); }
+    free(this->frame_);
+    this->frame_ = 0;
     this->w_ = this->h_ = this->nc_ = this->nframes_ = 0;
     if (!url) { return true; }
 
@@ -6943,7 +6957,7 @@ bool img::set_url(const char * const url, const doc2 * const relative)
 # endif
         case ImageFile_MPG:
             this->pixels_ = mpgread(fp, &this->w_, &this->h_, &this->nc_,
-                                     &this->nframes_, &this->frame_);
+                                    &this->nframes_, &this->frame_);
             break;
 # if OPENVRML_ENABLE_IMAGETEXTURE_NODE
         case ImageFile_PNG:

@@ -1,3 +1,8 @@
+2003-09-23  Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/img.cpp:  Fixed memory leak when
+	cleaning up frame data.
+
 2003-09-22  Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp:  Doc-comment and
