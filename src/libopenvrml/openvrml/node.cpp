@@ -31,10 +31,16 @@
 # include "scope.h"
 # include "browser.h"
 
+/**
+ * @defgroup nodes Nodes
+ */
+
 namespace openvrml {
 
 /**
  * @class unsupported_interface
+ *
+ * @ingroup nodes
  *
  * @brief Exception to indicate that a node interface is not supported.
  *
@@ -104,6 +110,8 @@ unsupported_interface::~unsupported_interface() throw ()
 
 /**
  * @class node_interface
+ *
+ * @ingroup nodes
  *
  * @brief Type information for an interface of a node.
  */
@@ -311,6 +319,8 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 /**
  * @struct node_interface_matches_eventin
  *
+ * @ingroup nodes
+ *
  * @brief Determine if a node_interface matches an eventIn identifier.
  *
  * @par Model of
@@ -346,6 +356,8 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 
 /**
  * @struct node_interface_matches_eventout
+ *
+ * @ingroup nodes
  *
  * @brief Determine if a node_interface matches an eventOut identifier.
  *
@@ -383,6 +395,8 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 /**
  * @struct node_interface_matches_exposedfield
  *
+ * @ingroup nodes
+ *
  * @brief Determine if a node_interface matches an exposedField identifier.
  *
  * @par Model of
@@ -412,6 +426,8 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 /**
  * @struct node_interface_matches_field
  *
+ * @ingroup nodes
+ *
  * @brief Determine if a node_interface matches an field identifier.
  *
  * @par Model of
@@ -439,6 +455,8 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 
 /**
  * @struct node_interface_compare
+ *
+ * @ingroup nodes
  *
  * @brief Function object to compare two node_interfaces based on their id.
  *
@@ -478,6 +496,8 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 
 /**
  * @typedef node_interface_set
+ *
+ * @ingroup nodes
  *
  * @brief A group of unique @link node_interface node_interfaces@endlink.
  *
@@ -542,6 +562,8 @@ find_interface(const node_interface_set & interfaces, const std::string & id)
 
 /**
  * @class node_class
+ *
+ * @ingroup nodes
  *
  * @brief A class object for node instances.
  *
@@ -634,6 +656,8 @@ void node_class::render(openvrml::viewer & viewer) throw ()
 /**
  * @class node_type
  *
+ * @ingroup nodes
+ *
  * @brief Type information object for @link openvrml::node nodes@endlink.
  */
 
@@ -706,6 +730,8 @@ node_type::~node_type() throw ()
 /**
  * @class field_value_type_mismatch
  *
+ * @ingroup nodes
+ *
  * @brief Thrown when field value types do not match, generally in a @c ROUTE
  *      or @c IS.
  */
@@ -727,6 +753,8 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @typedef node_path
  *
+ * @ingroup nodes
+ *
  * @brief A path to a node in the scene starting with one of the scene root
  *      nodes and ending with the objective node.
  */
@@ -734,6 +762,8 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 
 /**
  * @fn To * node_cast(node * n) throw ()
+ *
+ * @ingroup nodes
  *
  * @brief Downcast a node to one of the abstract node types.
  *
@@ -744,6 +774,8 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 
 /**
  * @class node
+ *
+ * @ingroup nodes
  *
  * @brief A node in the scene graph.
  */
@@ -1764,6 +1796,8 @@ namespace {
 }
 
 /**
+ * @ingroup nodes
+ *
  * @brief Add a route from an eventOut of this node to an eventIn of another
  *      node.
  *
@@ -1876,6 +1910,8 @@ namespace {
 }
 
 /**
+ * @ingroup nodes
+ *
  * @brief Remove a route from an eventOut of this node to an eventIn of another
  *      node.
  *
@@ -2154,6 +2190,8 @@ bool delete_route(node & from,
 /**
  * @class appearance_node
  *
+ * @ingroup nodes
+ *
  * @brief Abstract base class for appearance nodes.
  */
 
@@ -2234,6 +2272,8 @@ appearance_node * appearance_node::to_appearance() throw ()
 
 /**
  * @class child_node
+ *
+ * @ingroup nodes
  *
  * @brief Abstract base class for child nodes.
  */
@@ -2353,6 +2393,8 @@ void child_node::do_relocate() throw (std::bad_alloc)
 /**
  * @class color_node
  *
+ * @ingroup nodes
+ *
  * @brief Abstract base class for color nodes.
  */
 
@@ -2437,6 +2479,8 @@ coordinate_node * coordinate_node::to_coordinate() throw ()
 
 /**
  * @class font_style_node
+ *
+ * @ingroup nodes
  *
  * @brief Abstract base class for font style nodes.
  */
@@ -2550,6 +2594,8 @@ font_style_node * font_style_node::to_font_style() throw ()
 
 /**
  * @class geometry_node
+ *
+ * @ingroup nodes
  *
  * @brief Abstract base class for geometry nodes.
  */
@@ -2672,6 +2718,8 @@ const color_node * geometry_node::color() const throw ()
 /**
  * @class grouping_node
  *
+ * @ingroup nodes
+ *
  * @brief Abstract base class for grouping nodes.
  */
 
@@ -2727,6 +2775,8 @@ grouping_node * grouping_node::to_grouping() throw ()
 
 /**
  * @class material_node
+ *
+ * @ingroup nodes
  *
  * @brief Abstract base class for material nodes.
  */
@@ -2810,6 +2860,8 @@ material_node * material_node::to_material() throw ()
 /**
  * @class normal_node
  *
+ * @ingroup nodes
+ *
  * @brief Abstract base class for normal nodes.
  */
 
@@ -2852,6 +2904,8 @@ normal_node * normal_node::to_normal() throw ()
 /**
  * @class sound_source_node
  *
+ * @ingroup nodes
+ *
  * @brief Abstract base class for sound source nodes.
  */
 
@@ -2886,6 +2940,8 @@ sound_source_node * sound_source_node::to_sound_source() throw ()
 
 /**
  * @class texture_node
+ *
+ * @ingroup nodes
  *
  * @brief Abstract base class for texture nodes.
  */
@@ -3003,6 +3059,8 @@ texture_node * texture_node::to_texture() throw ()
 /**
  * @class texture_coordinate_node
  *
+ * @ingroup nodes
+ *
  * @brief Abstract base class for texture coordinate nodes.
  */
 
@@ -3046,6 +3104,8 @@ texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
 
 /**
  * @class texture_transform_node
+ *
+ * @ingroup nodes
  *
  * @brief Abstract base class for texture transform nodes.
  */
@@ -3102,6 +3162,8 @@ texture_transform_node * texture_transform_node::to_texture_transform()
 /**
  * @class transform_node
  *
+ * @ingroup nodes
+ *
  * @brief Abstract base class for texture transform nodes.
  */
 
@@ -3146,6 +3208,8 @@ transform_node * transform_node::to_transform() throw ()
 
 /**
  * @class viewpoint_node
+ *
+ * @ingroup nodes
  *
  * @brief Abstract base class for texture transform nodes.
  */
@@ -3226,6 +3290,8 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
 
 /**
  * @class node_traverser
+ *
+ * @ingroup nodes
  *
  * @brief Traverse the children of each node in a node hierarchy only once.
  *

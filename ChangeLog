@@ -1,5 +1,10 @@
 2004-06-01 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node.cpp:  Created "Nodes" module in
+	Doxygen documentation.
+
+2004-06-01 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp:  Fixed crash on last
 	frame of MovieTexture.
 
