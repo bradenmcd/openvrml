@@ -1887,6 +1887,7 @@ void Node::render(Viewer & viewer, VrmlRenderContext context)
     clearModified();
 }
 
+# if 0
 /**
  * @brief Accumulate transformations for proper rendering of bindable nodes.
  *
@@ -1931,6 +1932,7 @@ void Node::inverseTransform(VrmlMatrix & M)
         M = VrmlMatrix(); // Set to identity.
     }
 }
+# endif
 
 /**
  * @brief Send an event from this node.

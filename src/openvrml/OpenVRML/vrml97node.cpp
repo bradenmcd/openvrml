@@ -2705,32 +2705,6 @@ void Billboard::render(Viewer & viewer, VrmlRenderContext context)
 }
 
 /**
- * @brief Cache a pointer to (one of the) parent transforms for proper
- *      rendering of bindables.
- */
-void Billboard::accumulateTransform(Node * parent)
-{
-    this->parentTransform = parent;
-    for (size_t i = 0; i < this->children.getLength(); ++i) {
-        if (this->children.getElement(i)) {
-            this->children.getElement(i)->accumulateTransform(this);
-        }
-    }
-}
-
-Node * Billboard::getParentTransform()
-{
-    return this->parentTransform;
-}
-
-void Billboard::inverseTransform(VrmlMatrix & m)
-{
-    // It is calling program's responsibility to pass m as an unit matrix. skb
-    Node * const parentTransform = getParentTransform();
-    if (parentTransform) { parentTransform->inverseTransform(m); }
-}
-
-/**
  * @brief Calculate bb transformation matrix and store it in @p M.
  *
  * Here we are dealing with VrmlMatrix format (Matrices are stored
@@ -5715,7 +5689,6 @@ Group::Group(const NodeType & nodeType,
     ChildNode(nodeType, scope),
     GroupingNode(nodeType, scope),
     bboxSize(-1.0, -1.0, -1.0),
-    parentTransform(0),
     viewerObject(0)
 {
     this->setBVolumeDirty(true);
@@ -5749,7 +5722,7 @@ void Group::processAddChildren(const FieldValue & mfnode,
         const NodePtr & child = newChildren.getElement(i);
         if (child && child->toChild()) {
             this->children.addNode(child);
-            child->accumulateTransform(this->parentTransform);
+            child->relocate();
         } else {
             theSystem->error(
                 "Error: Attempt to add a %s node as a child of a %s node.\n",
@@ -5807,7 +5780,7 @@ void Group::processSet_children(const FieldValue & mfnode,
 
     for (size_t i = 0; i < this->children.getLength(); ++i) {
         if (children.getElement(i)) {
-            children.getElement(i)->accumulateTransform(this->parentTransform);
+            children.getElement(i)->relocate();
         }
     }
 
@@ -5850,8 +5823,6 @@ void Group::updateModified(NodePath & path, int flags) {
     }
     path.pop_front();
 }
-
-Node * Group::getParentTransform() { return this->parentTransform; }
 
 /**
  * @brief Render the node.
@@ -5943,21 +5914,6 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
 const MFNode & Group::getChildren() const throw ()
 {
     return this->children;
-}
-
-/**
- * @brief Accumulate transforms
- *
- * Cache a pointer to (one of the) parent transforms for proper
- * rendering of bindables.
- */
-void Group::accumulateTransform(Node * parent) {
-    this->parentTransform = parent;
-    for (size_t i = 0; i < this->children.getLength(); ++i) {
-        if (this->children.getElement(i)) {
-            this->children.getElement(i)->accumulateTransform(parent);
-        }
-    }
 }
 
 /**
@@ -9256,8 +9212,7 @@ PlaneSensor::PlaneSensor(const NodeType & nodeType,
     maxPosition(-1.0, -1.0),
     minPosition(0.0, 0.0),
     offset(0.0, 0.0, 0.0),
-    active(false),
-    parentTransform(0)
+    active(false)
 {
     this->setModified();
 }
@@ -9276,28 +9231,6 @@ PlaneSensor::~PlaneSensor() throw ()
 PlaneSensor * PlaneSensor::toPlaneSensor() const
 {
     return (PlaneSensor*) this;
-}
-
-/**
- * Cache a pointer to (one of the) parent transforms for converting
- * hits into local coords.
- */
-void PlaneSensor::accumulateTransform(Node * const parent)
-{
-    this->parentTransform = parent;
-}
-
-/**
- * @brief Get the nearest ancestor node that affects the modelview transform.
- *
- * Doesn't work for nodes with more than one parent.
- *
- * @return the nearest ancestor node that affects the modelview
- *      transform.
- */
-Node * PlaneSensor::getParentTransform()
-{
-    return this->parentTransform;
 }
 
 /**
@@ -15250,37 +15183,6 @@ void Transform::render(Viewer & viewer, VrmlRenderContext context)
 }
 
 /**
- * Cache a pointer to (one of the) parent transforms for proper
- * rendering of bindables.
- */
-void Transform::accumulateTransform(Node * parent)
-{
-    this->parentTransform = parent;
-    for (size_t i = 0; i < this->children.getLength(); ++i) {
-        if (this->children.getElement(i)) {
-            this->children.getElement(i)->accumulateTransform(this);
-        }
-    }
-}
-
-/**
- * @brief Get the inverse of the transformation applied by the Transform node
- *      as a matrix.
- *
- * @retval m    the inverse transform as a matrix.
- *
- * @pre @p m is a unit matrix.
- */
-void Transform::inverseTransform(VrmlMatrix & m)
-{
-    VrmlMatrix M = this->getTransform();
-    M = M.affine_inverse();
-    m = m.multLeft(M);
-    Node * parentTransform = getParentTransform();
-    if (parentTransform) { parentTransform->inverseTransform(m); }
-}
-
-/**
  * @brief Get the bounding volume.
  *
  * @return the bounding volume associated with the node.
@@ -15826,33 +15728,6 @@ const SFFloat & Viewpoint::getFieldOfView() const throw ()
 }
 
 /**
- * @brief Get the inverse of the transform represented by the viewpoint's
- *      position and orientation fields.
- *
- * Return the matrix in VrmlMatrix format (same as OGL). Note that this method
- * deals only with the viewpoint node's transform, not with any ancestor
- * transforms.
- *
- * @param mat   inverse of the position/orientation transform.
- */
-void Viewpoint::getInverseMatrix(VrmlMatrix & mat) const
-{
-    VrmlMatrix tmp;
-    float rot_aa[4];
-    rot_aa[0] =  this->orientation.getX();
-    rot_aa[1] =  this->orientation.getY();
-    rot_aa[2] =  this->orientation.getZ();
-    rot_aa[3] = -this->orientation.getAngle();
-    tmp.setRotate(rot_aa);
-    float pos_vec[3];
-    pos_vec[0] = -this->position.getX();
-    pos_vec[1] = -this->position.getY();
-    pos_vec[2] = -this->position.getZ();
-    mat.setTranslate(pos_vec);
-    mat = mat.multRight(tmp);
-}
-
-/**
  * @todo Implement me!
  */
 void Viewpoint::getFrustum(VrmlFrustum& frust) const
@@ -15938,6 +15813,7 @@ void Viewpoint::do_relocate() throw (std::bad_alloc)
 {
     assert(this->getScene());
     const NodePath path = this->getScene()->browser.findNode(*this);
+    assert(!path.empty());
     this->parentTransform = VrmlMatrix();
     std::for_each(path.begin(), path.end(),
                   AccumulateTransform(this->parentTransform));

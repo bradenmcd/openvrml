@@ -3,6 +3,12 @@
         * src/openvrml/OpenVRML/browser.cpp:  Added do_shutdown
           implementation to ProtoNode.
 
+        * src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h:  Removed parent pointer
+          stuff from Node.  This functionality is now provided by the
+          relocate/do_relocate methods.
+
 2003-02-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,

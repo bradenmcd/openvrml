@@ -203,7 +203,6 @@ namespace OpenVRML {
             MFNode children;
             SFString relative;
 
-            Node * parentTransform;
             Viewer::Object viewerObject;
 
             /**
@@ -221,14 +220,10 @@ namespace OpenVRML {
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
-            virtual void accumulateTransform(Node*);
-
             virtual const MFNode & getChildren() const throw ();
             virtual void activate(double timeStamp, bool isOver, bool isActive, double *p);
 
             void renderNoCull(Viewer & viewer, VrmlRenderContext context);
-
-            virtual Node* getParentTransform();
 
             const BVolume * getBVolume() const;
 
@@ -535,7 +530,6 @@ namespace OpenVRML {
 
             SFVec3f axisOfRotation;
 
-            Node * parentTransform;
             Viewer::Object xformObject;
 
         public:
@@ -548,10 +542,6 @@ namespace OpenVRML {
             virtual ~Billboard() throw ();
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-
-            virtual void accumulateTransform(Node*);
-            virtual Node* getParentTransform();
-            virtual void inverseTransform(VrmlMatrix &);
 
         private:
             //
@@ -1723,7 +1713,6 @@ namespace OpenVRML {
 
             SFVec3f activationPoint;
 
-            Node * parentTransform;
             VrmlMatrix activationMatrix;
             VrmlMatrix modelview;
 
@@ -1736,9 +1725,6 @@ namespace OpenVRML {
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             void activate( double timeStamp, bool isActive, double *p );
-
-            virtual void accumulateTransform( Node* );
-            virtual Node* getParentTransform();
 
             bool isEnabled() { return this->enabled.get(); }
 
@@ -2517,8 +2503,6 @@ namespace OpenVRML {
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
-            virtual void accumulateTransform(Node*);
-            virtual void inverseTransform(VrmlMatrix &);
             virtual const BVolume * getBVolume() const;
 
             virtual const VrmlMatrix & getTransform() const throw ();
@@ -2602,8 +2586,6 @@ namespace OpenVRML {
             const SFVec3f & getPosition() const;
 
             const BVolume * getBVolume() const;
-
-            void getInverseMatrix(VrmlMatrix & M) const;
 
             void getFrustum(VrmlFrustum& frust) const; // get a copy
 

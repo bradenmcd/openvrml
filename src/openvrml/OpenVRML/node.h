@@ -365,12 +365,6 @@ namespace OpenVRML {
 
         virtual void render(Viewer & viewer, VrmlRenderContext context);
 
-
-        virtual void accumulateTransform(Node*);
-
-        virtual Node* getParentTransform();
-        virtual void inverseTransform(VrmlMatrix &);
-
     protected:
         Node(const NodeType & nodeType, const ScopePtr & scope);
 
