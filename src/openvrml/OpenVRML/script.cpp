@@ -45,8 +45,10 @@
 # include "doc2.hpp"
 # include "ScriptJDK.h"
 
+namespace OpenVRML {
+
 /**
- * @class OpenVRML::Script
+ * @class Script
  *
  * @brief Abstract class implemented by scripting language bindings.
  *
@@ -55,7 +57,7 @@
  */
 
 /**
- * @var OpenVRML::ScriptNode & OpenVRML::Script::scriptNode
+ * @var ScriptNode & Script::scriptNode
  *
  * @brief a reference to the ScriptNode that uses this Script object.
  */
@@ -66,41 +68,39 @@
  * @param scriptNode    a reference to the ScriptNode that uses this Script
  *      object.
  */
-OpenVRML::Script::Script(ScriptNode & scriptNode): scriptNode(scriptNode) {}
+Script::Script(ScriptNode & scriptNode): scriptNode(scriptNode) {}
 
 /**
  * @brief Destructor.
  */
-OpenVRML::Script::~Script() {}
+Script::~Script() {}
 
 /**
- * @fn void OpenVRML::Script::initialize(double timestamp)
+ * @fn void Script::initialize(double timestamp)
  *
  * @brief Initialize the Script node.
  */
 
 /**
- * @fn void OpenVRML::Script::processEvent(const std::string & id, const FieldValue & value, double timestamp)
+ * @fn void Script::processEvent(const std::string & id, const FieldValue & value, double timestamp)
  *
  * @brief Process an event.
  */
 
 /**
- * @fn void OpenVRML::Script::eventsProcessed(double timestamp)
+ * @fn void Script::eventsProcessed(double timestamp)
  *
  * @brief Execute script code after processing events.
  */
 
 /**
- * @fn void OpenVRML::Script::shutdown(double timestamp)
+ * @fn void Script::shutdown(double timestamp)
  *
  * @brief Shut down the Script node.
  */
 
-using namespace OpenVRML;
-
 /**
- * @class OpenVRML::ScriptNode
+ * @class ScriptNode
  *
  * @brief Represents a VRML Script node.
  */
@@ -117,8 +117,7 @@ namespace {
 /**
  * Define the built in NodeType:: "Script" fields
  */
-const OpenVRML::NodeTypePtr
-        OpenVRML::ScriptNode::defineType(NodeTypePtr nodeType) {
+const NodeTypePtr ScriptNode::defineType(NodeTypePtr nodeType) {
     static NodeTypePtr st(0);
 
     if (!nodeType) {
@@ -136,7 +135,7 @@ const OpenVRML::NodeTypePtr
     return nodeType;
 }
 
-OpenVRML::ScriptNode::ScriptNode(VrmlScene * const scene):
+ScriptNode::ScriptNode(VrmlScene * const scene):
         NodeChild(*defineType(), scene), d_directOutput(false),
         d_mustEvaluate(false), script(0), d_eventsReceived(0) {
     if (this->d_scene) {
@@ -144,7 +143,7 @@ OpenVRML::ScriptNode::ScriptNode(VrmlScene * const scene):
     }
 }
 
-OpenVRML::ScriptNode::ScriptNode(const ScriptNode & node):
+ScriptNode::ScriptNode(const ScriptNode & node):
         NodeChild(node), d_directOutput(node.d_directOutput),
         d_mustEvaluate(node.d_mustEvaluate), d_url(node.d_url), script(0),
         d_eventIns(0), d_eventOuts(0), d_fields(0), d_eventsReceived(0) {
@@ -160,7 +159,7 @@ OpenVRML::ScriptNode::ScriptNode(const ScriptNode & node):
 }
 
 
-OpenVRML::ScriptNode::~ScriptNode()
+ScriptNode::~ScriptNode()
 {
   shutdown( theSystem->time() );
 
@@ -191,7 +190,7 @@ OpenVRML::ScriptNode::~ScriptNode()
     }
 }
 
-bool OpenVRML::ScriptNode::accept(NodeVisitor & visitor) {
+bool ScriptNode::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -201,7 +200,7 @@ bool OpenVRML::ScriptNode::accept(NodeVisitor & visitor) {
     return false;
 }
 
-void OpenVRML::ScriptNode::resetVisitedFlag() {
+void ScriptNode::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (FieldList::const_iterator itr = this->d_fields.begin();
@@ -230,15 +229,13 @@ namespace {
         
         result_type operator()(argument_type scriptField) {
             if (scriptField->type == FieldValue::sfnode) {
-                assert(dynamic_cast<OpenVRML::SFNode *>(scriptField->value));
+                assert(dynamic_cast<SFNode *>(scriptField->value));
                 this->children.setLength(this->children.getLength() + 1);
                 this->children.setElement(this->children.getLength() - 1,
-                        static_cast<OpenVRML::SFNode *>
-                            (scriptField->value)->get());
+                        static_cast<SFNode *>(scriptField->value)->get());
             } else if (scriptField->type == FieldValue::mfnode) {
-                assert(dynamic_cast<OpenVRML::MFNode *>(scriptField->value));
-                OpenVRML::MFNode & nodes =
-                        *static_cast<OpenVRML::MFNode *>(scriptField->value);
+                assert(dynamic_cast<MFNode *>(scriptField->value));
+                MFNode & nodes = *static_cast<MFNode *>(scriptField->value);
                 this->children.setLength(children.getLength()
                                             + nodes.getLength());
                 for (size_t i = 0; i < nodes.getLength(); ++i) {
@@ -253,18 +250,19 @@ namespace {
     };
 }
 
-const OpenVRML::MFNode OpenVRML::ScriptNode::getChildren() const {
+const MFNode ScriptNode::getChildren() const {
     MFNode children;
     std::for_each(this->d_fields.begin(), this->d_fields.end(),
                   AccumulateNodes_(children));
     return children;
 }
 
-OpenVRML::ScriptNode * OpenVRML::ScriptNode::toScript() const
-{ return (ScriptNode*) this; }
+ScriptNode * ScriptNode::toScript() const {
+    return const_cast<ScriptNode *>(this);
+}
 
-void OpenVRML::ScriptNode::addToScene(VrmlScene * const scene,
-                                      const std::string& relativeUrl) {
+void ScriptNode::addToScene(VrmlScene * const scene,
+                            const std::string& relativeUrl) {
     this->d_relativeUrl.set(relativeUrl);
     if (this->d_scene == scene) {
         return;
@@ -276,8 +274,7 @@ void OpenVRML::ScriptNode::addToScene(VrmlScene * const scene,
 }
 
 
-ostream & OpenVRML::ScriptNode::printFields(ostream& os, int indent)
-{
+ostream & ScriptNode::printFields(ostream & os, int indent) {
   if (d_url.getLength() > 0) PRINT_FIELD(url);
   if (d_directOutput.get()) PRINT_FIELD(directOutput);
   if (d_mustEvaluate.get()) PRINT_FIELD(mustEvaluate);
@@ -286,7 +283,7 @@ ostream & OpenVRML::ScriptNode::printFields(ostream& os, int indent)
 }
 
 
-void OpenVRML::ScriptNode::initialize(const double timestamp) {
+void ScriptNode::initialize(const double timestamp) {
     assert(!this->script);
 
     this->d_eventsReceived = 0;
@@ -306,13 +303,13 @@ void OpenVRML::ScriptNode::initialize(const double timestamp) {
     }
 }
 
-void OpenVRML::ScriptNode::shutdown(const double timestamp) {
+void ScriptNode::shutdown(const double timestamp) {
     if (this->script) {
         this->script->shutdown(timestamp);
     }
 }
 
-void OpenVRML::ScriptNode::update(const SFTime & timeNow) {
+void ScriptNode::update(const SFTime & timeNow) {
     if (this->d_eventsReceived > 0) {
         this->d_eventsReceived = 0;
         if (this->script) {
@@ -330,10 +327,69 @@ void OpenVRML::ScriptNode::update(const SFTime & timeNow) {
     }
 }
 
+//
+// Script nodes can be self referential! Check this condition,
+// and "undo" the refcounting: decrement the refcount on any
+// self-references we acquire ownership of, and increment the
+// refcount on any self-references for which we relinquish
+// ownership.
+//
 
-void OpenVRML::ScriptNode::eventIn(double timeStamp,
-                                   const std::string & eventName,
-                                   const FieldValue & fieldValue) {
+void ScriptNode::assignWithSelfRefCheck(const SFNode & inval, SFNode & retval)
+        throw () {
+    const NodePtr & oldNode = static_cast<SFNode &>(retval).get();
+
+    //
+    // About to relinquish ownership of a SFNode value. If the
+    // SFNode value is this Script node, then we need to
+    // *increment* its refcount, since we previously
+    // *decremented* it to accommodate creating a cycle between
+    // refcounted objects.
+    //
+    if (oldNode && oldNode.countPtr->first == this) {
+        ++oldNode.countPtr->second;
+    }
+
+    retval = inval;
+
+    //
+    // Now, check to see if the new SFNode value is a self-
+    // reference. If it is, we need to *decrement* the refcount.
+    // A self-reference creates a cycle. If a Script node with
+    // a self-reference were completely removed from the scene,
+    // it still wouldn't be deleted (if we didn't do this)
+    // because the reference it held to itself would prevent the
+    // refcount from ever dropping to zero.
+    //
+    const NodePtr & newNode = static_cast<SFNode &>(retval).get();
+    if (newNode.countPtr->first == this) {
+        --(newNode.countPtr->second);
+    }
+}
+
+void ScriptNode::assignWithSelfRefCheck(const MFNode & inval, MFNode & retval)
+        throw () {
+    size_t i;
+    for (i = 0; i < retval.getLength(); ++i) {
+        const NodePtr & oldNode = retval.getElement(i);
+        if (oldNode && (oldNode.countPtr->first == this)) {
+            ++oldNode.countPtr->second;
+        }
+    }
+
+    retval = inval;
+
+    for (i = 0; i < retval.getLength(); ++i) {
+        const NodePtr & newNode = retval.getElement(i);
+        if (newNode && (newNode.countPtr->first == this)) {
+            --(newNode.countPtr->second);
+        }
+    }
+}
+
+void ScriptNode::eventIn(double timeStamp,
+                         const std::string & eventName,
+                         const FieldValue & fieldValue) {
     if (!this->script) {
         this->initialize(timeStamp);
     }
@@ -464,28 +520,25 @@ namespace {
     }
 }
 
-void OpenVRML::ScriptNode::addEventIn(const std::string & ename,
-                                      FieldValue::Type t) {
+void ScriptNode::addEventIn(const std::string & ename, FieldValue::Type t) {
     add(this->d_eventIns, ename, t);
 }
 
-void OpenVRML::ScriptNode::addEventOut(const std::string & ename,
-                                       FieldValue::Type t) {
+void ScriptNode::addEventOut(const std::string & ename, FieldValue::Type t) {
     add(this->d_eventOuts, ename, t);
 }
 
-void OpenVRML::ScriptNode::addField(const std::string & ename,
-                                    FieldValue::Type t,
-			            const FieldValue * val) {
+void ScriptNode::addField(const std::string & ename,
+                          FieldValue::Type t,
+			  const FieldValue * val) {
     add(this->d_fields, ename, t);
     if (val) {
         this->set(this->d_fields, ename, *val);
     }
 }
 
-OpenVRML::FieldValue *
-        OpenVRML::ScriptNode::get(const FieldList & recs,
-                                  const std::string & fieldId) const {
+FieldValue * ScriptNode::get(const FieldList & recs,
+                             const std::string & fieldId) const {
     for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
         if ((*i)->name == fieldId) {
             return (*i)->value;
@@ -496,23 +549,19 @@ OpenVRML::FieldValue *
 
 // has
 
-OpenVRML::FieldValue::Type
-        OpenVRML::ScriptNode::hasEventIn(const std::string & id) const {
+FieldValue::Type ScriptNode::hasEventIn(const std::string & id) const {
     return has(d_eventIns, id);
 }
 
-OpenVRML::FieldValue::Type
-        OpenVRML::ScriptNode::hasEventOut(const std::string & id) const {
+FieldValue::Type ScriptNode::hasEventOut(const std::string & id) const {
     return has(d_eventOuts, id);
 }
 
-OpenVRML::FieldValue::Type
-        OpenVRML::ScriptNode::hasField(const std::string & id) const {
+FieldValue::Type ScriptNode::hasField(const std::string & id) const {
     return has(d_fields, id);
 }
 
-OpenVRML::FieldValue::Type
-        OpenVRML::ScriptNode::hasInterface(const std::string & id) const {
+FieldValue::Type ScriptNode::hasInterface(const std::string & id) const {
     FieldValue::Type fieldType = FieldValue::invalidType;
     
     if ((fieldType = this->hasField(id)) != FieldValue::invalidType) {
@@ -530,9 +579,8 @@ OpenVRML::FieldValue::Type
     return fieldType;
 }
 
-OpenVRML::FieldValue::Type
-        OpenVRML::ScriptNode::has(const FieldList & recs,
-                                  const std::string & id) const {
+FieldValue::Type ScriptNode::has(const FieldList & recs,
+                                 const std::string & id) const {
     for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
         if ((*i)->name == id) {
             return (*i)->type;
@@ -543,8 +591,7 @@ OpenVRML::FieldValue::Type
 
 // Get the value of a field or eventOut.
 
-const OpenVRML::FieldValue *
-        OpenVRML::ScriptNode::getField(const std::string & fieldId) const {
+const FieldValue * ScriptNode::getField(const std::string & fieldId) const {
     // exposedFields
     if (fieldId == "url") {
         return &d_url;
@@ -567,8 +614,8 @@ const OpenVRML::FieldValue *
 // Set the value of one of the node fields/events.
 // setField is public so the parser can access it.
 
-void OpenVRML::ScriptNode::setField(const std::string & fieldId,
-                                    const FieldValue & fieldValue) {
+void ScriptNode::setField(const std::string & fieldId,
+                          const FieldValue & fieldValue) {
   FieldValue::Type ft;
 
   if TRY_FIELD(url, MFString)	// need to re-initialize() if url changes...
@@ -586,26 +633,27 @@ void OpenVRML::ScriptNode::setField(const std::string & fieldId,
     this->NodeChild::setField(fieldId, fieldValue);
 }
 
-OpenVRML::ScriptNode::FieldList & OpenVRML::ScriptNode::eventIns() {
+ScriptNode::FieldList & ScriptNode::eventIns() {
     return this->d_eventIns;
 }
 
-void OpenVRML::ScriptNode::setEventIn(const std::string & fname,
-                                      const FieldValue & value) {
+void ScriptNode::setEventIn(const std::string & fname,
+                            const FieldValue & value) {
     this->set(d_eventIns, fname, value);
 }
 
-void OpenVRML::ScriptNode::setEventOut(const std::string & fname,
-                                       const FieldValue & value) {
+void ScriptNode::setEventOut(const std::string & fname,
+                             const FieldValue & value) {
     this->set(d_eventOuts, fname, value);
 }
 
-void OpenVRML::ScriptNode::set(const FieldList & recs,
-                               const std::string & fieldId,
-                               const FieldValue & value) {
+void ScriptNode::set(const FieldList & recs,
+                     const std::string & fieldId,
+                     const FieldValue & value) {
     for (FieldList::const_iterator itr = recs.begin(); itr != recs.end();
             ++itr) {
         if ((*itr)->name == fieldId) {
+            assert((*itr)->value);
             //
             // Script nodes can be self referential! Check this condition,
             // and "undo" the refcounting: decrement the refcount on any
@@ -613,63 +661,15 @@ void OpenVRML::ScriptNode::set(const FieldList & recs,
             // refcount on any self-references for which we relinquish
             // ownership.
             //
-            const FieldValue::Type fieldType(value.type());
+            const FieldValue::Type fieldType((*itr)->value->type());
             if (fieldType == FieldValue::sfnode) {
-                const NodePtr & oldNode =
-                        static_cast<SFNode *>((*itr)->value)->get();
-                //
-                // About to relinquish ownership of a SFNode value. If the
-                // SFNode value is this Script node, then we need to
-                // *increment* its refcount, since we previously
-                // *decremented* it to accommodate creating a cycle between
-                // refcounted objects.
-                //
-                if (oldNode && (oldNode.countPtr->first == this)) {
-                    ++(oldNode.countPtr->second);
-                }
-                
-	        delete (*itr)->value;
-	        (*itr)->value = value.clone();
-                
-                //
-                // Now, check to see if the new SFNode value is a self-
-                // reference. If it is, we need to *decrement* the refcount.
-                // A self-reference creates a cycle. If a Script node with
-                // a self-reference were completely removed from the scene,
-                // it still wouldn't be deleted (if we didn't do this)
-                // because the reference it held to itself would prevent the
-                // refcount from ever dropping to zero.
-                //
-                const NodePtr & newNode =
-                        static_cast<SFNode *>((*itr)->value)->get();
-                if (newNode && (newNode.countPtr->first == this)) {
-                    --(newNode.countPtr->second);
-                }
+                this->assignWithSelfRefCheck(dynamic_cast<const SFNode &>(value),
+                                             static_cast<SFNode &>(*(*itr)->value));
             } else if (fieldType == FieldValue::mfnode) {
-                size_t i;
-                const MFNode & oldNodes =
-                        static_cast<MFNode &>(*(*itr)->value);
-                for (i = 0; i < oldNodes.getLength(); ++i) {
-                    const NodePtr & node = oldNodes.getElement(i);
-                    if (node && (node.countPtr->first == this)) {
-                        ++(node.countPtr->second);
-                    }
-                }
-                
-                delete (*itr)->value;
-                (*itr)->value = value.clone();
-                
-                const MFNode & newNodes =
-                        static_cast<MFNode &>(*(*itr)->value);
-                for (i = 0; i < newNodes.getLength(); ++i) {
-                    const NodePtr & node = newNodes.getElement(i);
-                    if (node && (node.countPtr->first == this)) {
-                        --(node.countPtr->second);
-                    }
-                }
+                this->assignWithSelfRefCheck(dynamic_cast<const MFNode &>(value),
+                                             static_cast<MFNode &>(*(*itr)->value));
             } else {
-	        delete (*itr)->value;
-	        (*itr)->value = value.clone();
+	        (*itr)->value->assign(value);
             }
             
 	    (*itr)->modified = true;
@@ -677,6 +677,8 @@ void OpenVRML::ScriptNode::set(const FieldList & recs,
         }
     }
 }
+
+} // namespace OpenVRML
 
 # ifdef OPENVRML_HAVE_SPIDERMONKEY
 #   include <jsapi.h>
@@ -693,32 +695,35 @@ namespace {
             JSContext * cx;
 
         public:
-            Script(ScriptNode & scriptNode, const std::string & source)
+            Script(OpenVRML::ScriptNode & scriptNode,
+                   const std::string & source)
                 throw (std::bad_alloc);
             virtual ~Script();
 
             virtual void initialize(double timeStamp);
             virtual void processEvent(const std::string & id,
-                                      const FieldValue & value,
+                                      const OpenVRML::FieldValue & value,
                                       double timestamp);
             virtual void eventsProcessed(double timeStamp);
             virtual void shutdown(double timeStamp);
 
-            ScriptNode & getScriptNode();
+            OpenVRML::ScriptNode & getScriptNode();
 
-            jsval vrmlFieldToJSVal(const FieldValue & f, bool protect);
+            jsval vrmlFieldToJSVal(const OpenVRML::FieldValue &, bool protect);
 
         private:
             bool initVrmlClasses() throw ();
             bool defineBrowserObject() throw ();
             bool defineFields() throw ();
             void activate(double timeStamp, const std::string & fname,
-                          size_t argc, const FieldValue * const argv[]);
+                          size_t argc, const OpenVRML::FieldValue * const argv[]);
         };
         
     }
 }
 # endif
+
+namespace OpenVRML {
 
 Script * ScriptNode::createScript() {
     // Try each url until we find one we like
@@ -766,8 +771,12 @@ Script * ScriptNode::createScript() {
     return 0;
 }
 
+} // namespace OpenVRML
+
 namespace {
 
+    using namespace OpenVRML;
+    
 # ifdef OPENVRML_HAVE_SPIDERMONKEY
     namespace JavaScript_ {
 

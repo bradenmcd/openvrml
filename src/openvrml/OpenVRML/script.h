@@ -113,7 +113,10 @@ namespace OpenVRML {
         FieldList & eventOuts() { return d_eventOuts; }
         FieldList & fields() { return d_fields; }
         VrmlScene * browser() { return d_scene; }
-
+        
+        void assignWithSelfRefCheck(const SFNode &, SFNode &) throw ();
+        void assignWithSelfRefCheck(const MFNode &, MFNode &) throw ();
+        
         virtual bool accept(NodeVisitor & visitor);
         virtual void resetVisitedFlag();
         virtual const FieldValue * getField(const std::string & fieldId) const;

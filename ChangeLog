@@ -1,3 +1,8 @@
+2002-02-01  Braden McDaniel  <braden@endoframe.com>
+
+        * Refactored code to check for self-references when assigning to
+          fields of a Script node into methods on "ScriptNode".
+
 2002-01-31  Braden McDaniel  <braden@endoframe.com>
 
         * Minor fix to JDK/JNI autoconf macro: just check for the
