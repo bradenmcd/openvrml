@@ -2,21 +2,21 @@
 // OpenVRML
 //
 // Copyright (C) 1998-2000  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
@@ -98,14 +98,14 @@ namespace {
         GLM[14] = M[2][3];
         GLM[15] = M[3][3];
     }
-    
+
     class GLCapabilities {
     public:
         GLint maxModelviewStackDepth;
 
         GLCapabilities();
     };
-    
+
     GLCapabilities::GLCapabilities()
     {
         glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,
@@ -318,7 +318,7 @@ static void checkErrors(const char * s)
 //  (but the retain flag is just a hint, not guaranteed). Retained
 //  objects can be referred to later to avoid duplicating geometry.
 //  OpenGL doesn't allow nested objects. The top-down approach of
-//  putting entire groups in display lists is faster for static 
+//  putting entire groups in display lists is faster for static
 //  scenes but uses more memory and means that if anything is changed,
 //  the whole object must be tossed.
 //  The bottom-up model wraps each piece of geometry in a dlist but
@@ -339,10 +339,10 @@ Viewer::Object ViewerOpenGL::beginObject(const char *,
         glTranslatef(this->d_zoom[0],
                      this->d_zoom[1],
                      this->d_zoom[2]); // M = M * T
-        glMultMatrixf(&this->d_rotationMatrix[0][0]); // M = M * R 
+        glMultMatrixf(&this->d_rotationMatrix[0][0]); // M = M * R
         glTranslatef(this->d_translatex,
                      this->d_translatey,
-                     this->d_translatez); // M = M * T 
+                     this->d_translatez); // M = M * T
         if (!this->d_lit) { glDisable(GL_LIGHTING); }
     }
 
@@ -408,9 +408,9 @@ void ViewerOpenGL::endGeometry()
   glMatrixMode(GL_MODELVIEW);
 }
 
-Viewer::RenderMode ViewerOpenGL::getRenderMode() 
+Viewer::RenderMode ViewerOpenGL::getRenderMode()
 {
-  return d_selectMode ? RENDER_MODE_PICK : RENDER_MODE_DRAW; 
+  return d_selectMode ? RENDER_MODE_PICK : RENDER_MODE_DRAW;
 }
 
 double ViewerOpenGL::getFrameRate()
@@ -435,7 +435,7 @@ void ViewerOpenGL::resetUserNavigation()
 void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
 {
   // The Matrix M should be an unit matrix
-  VrmlMatrix tmp,rot(d_rotationMatrix); 
+  VrmlMatrix tmp,rot(d_rotationMatrix);
   float pos_vec[3];
   pos_vec[0] = d_zoom[0];
   pos_vec[1] = d_zoom[1];
@@ -447,7 +447,7 @@ void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
   pos_vec[1] = d_translatey;
   pos_vec[2] = d_translatez;
   tmp.setTranslate(pos_vec);
-  M = M.multLeft(tmp);             
+  M = M.multLeft(tmp);
 }
 
 // Generate a normal from 3 indexed points.
@@ -476,7 +476,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
                                               const float * skyAngle,
                                               const float * skyColor,
                                               int * whc,
-                                              unsigned char ** pixels) 
+                                              unsigned char ** pixels)
 {
     float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
 
@@ -604,7 +604,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
               {{1,-1,-1}, {1,-1,1}, {1,1,1}, {1,1,-1}},     // Right
               {{-1,1,-1}, {1,1,-1}, {1,1,1}, {-1,1,1}}};    // Top
 
-            // Tile big textures into 256x256 (or 256xsmaller or smallerx256) pieces 
+            // Tile big textures into 256x256 (or 256xsmaller or smallerx256) pieces
 
             float v3[6][4][3];
             int number_tiles;
@@ -613,8 +613,8 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
             float v[NUM_SPLITS * NUM_SPLITS * 6][4][3];
             float size_x;
             float size_y;
-            int number_splits_x; 
-            int number_splits_y; 
+            int number_splits_x;
+            int number_splits_y;
             number_splits_x = NUM_SPLITS;
             number_splits_y = NUM_SPLITS;
             number_tiles = number_splits_x * number_splits_y;
@@ -674,7 +674,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
                                 + v3[j][m][i] / number_splits_y;
                         }
                     }
-                    number_vertices++;                
+                    number_vertices++;
                 }
             }
 
@@ -695,10 +695,10 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
                             // if (lastT == -1 || pixels[t] != pixels[lastT])
                             insertSubTexture(i * whc[0] / number_splits_x,
                                              j * whc[1] / number_splits_y,
-                                             whc[0] / number_splits_x, 
+                                             whc[0] / number_splits_x,
                                              whc[1] / number_splits_y,
                                              whc[0],
-                                             whc[1], 
+                                             whc[1],
                                              whc[2],
                                              false, false, pixels[t],
                                              false); // Don't put the textures in dlists
@@ -1171,13 +1171,13 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
       for (i=0; i<nx; ++i)
 	{
 	  x = dx * i;
-	  
+
 	  if (colors &&
 	      ((mask & MASK_COLOR_PER_VERTEX) || (i < nx-1)))
 	    {
 	      glColor3fv( colors );
 	    }
-	      
+
 	  if (normals &&
 	      ((mask & MASK_NORMAL_PER_VERTEX) || (i < nx-1)))
 	    {
@@ -1258,7 +1258,7 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 #if _WIN32
 # define WINAPI __stdcall
 #else
-# define WINAPI 
+# define WINAPI
 #endif
 extern "C" {
     typedef GLvoid (WINAPI *TessCB)();
@@ -1288,7 +1288,7 @@ static void WINAPI tessExtrusionVertex( void *vdata, void *pdata )
 {
   int j = (int)vdata;
   TessExtrusion *p = (TessExtrusion *)pdata;
-  
+
   glTexCoord2f( (p->crossSection[2*j] - p->tcDeltaU) * p->tcScaleU,
 		(p->crossSection[2*j+1] - p->tcDeltaV) * p->tcScaleV );
   glVertex3fv( &(p->c[3 * (j + p->vOffset)]) );
@@ -1356,7 +1356,7 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 	  gluTessEndContour( d_tess );
 	  gluTessEndPolygon( d_tess );
 	}
-      
+
       if (mask & MASK_TOP)
 	{
 	  int n = (nSpine - 1) * nCrossSection;
@@ -1401,7 +1401,7 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 	    }
 	  glEnd();
 	}
-      
+
       if (mask & MASK_TOP)
 	{
 	  int n = (nSpine - 1) * nCrossSection;
@@ -1796,7 +1796,7 @@ Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
   return (Object) glid;
 }
 
-// 
+//
 
 static void computeBounds(size_t npoints, const float * points, float * bounds)
 {
@@ -1848,7 +1848,7 @@ texGenParams( float bounds[],	// xmin,xmax, ymin,ymax, zmin,zmax
 
   // If two of the dimensions are zero, give up.
   if ( fpzero( params[1] ) || fpzero( params[3] )) return;
-  
+
   params[1] = 1.0 / params[1];
   params[3] = 1.0 / params[3];
 }
@@ -1862,7 +1862,7 @@ texGenParams( float bounds[],	// xmin,xmax, ymin,ymax, zmin,zmax
  &((_v).v[ 3*(((_v).ni > 0) ? (_v).i[_i] : (_f)[_i]) ])
 
 
-void 
+void
 ViewerOpenGL::insertShellConvex( ShellData *s )
 {
   float N[3];
@@ -1894,14 +1894,14 @@ ViewerOpenGL::insertShellConvex( ShellData *s )
 				   3*s->faces[i1+2], s->points, N );
 
 		  // Lukas: flip normal if primitiv-orientation is clockwise
-		  if (!(s->mask & MASK_CCW)) 
+		  if (!(s->mask & MASK_CCW))
 		    for (int k=0;k<3;k++) // flip Normal
 		      N[k] = -N[k];
       		  glNormal3fv( N );
 		}
 	    }
 
-	  ++nf;			// 
+	  ++nf;			//
 	}
 
       if (s->faces[i] >= 0)
@@ -1979,7 +1979,7 @@ static void WINAPI tessShellBegin( GLenum type, void *pdata )
 	  indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
 			   3*s->faces[i1+2], s->points, N );
 	  // Lukas: flip normal if primitiv-orientation is clockwise
-	  if (!(s->mask & Viewer::MASK_CCW)) 
+	  if (!(s->mask & Viewer::MASK_CCW))
 	    for (int k=0;k<3;k++) // flip Normal
 	      N[k] = -N[k];
 	  glNormal3fv( N );
@@ -1992,7 +1992,7 @@ static void WINAPI tessShellVertex( void *vdata, void *pdata )
 {
   int i = (int)vdata;
   ViewerOpenGL::ShellData *s = (ViewerOpenGL::ShellData *)pdata;
-  
+
   // Per-vertex attributes
   if (s->color.v && (s->mask & Viewer::MASK_COLOR_PER_VERTEX) )
     glColor3fv( INDEX_VTX_VAL(s->color, s->faces, i) );
@@ -2028,7 +2028,7 @@ static void WINAPI tessShellVertex( void *vdata, void *pdata )
 }
 
 
-void 
+void
 ViewerOpenGL::insertShellTess(ShellData *s)
 {
   if (! d_tess) d_tess = gluNewTess();
@@ -2079,7 +2079,7 @@ ViewerOpenGL::insertShellTess(ShellData *s)
 
 // There are too many arguments to this...
 
-Viewer::Object 
+Viewer::Object
 ViewerOpenGL::insertShell(unsigned int mask,
 			  size_t npoints,
 			  const float * points,
@@ -2323,7 +2323,7 @@ Viewer::Object ViewerOpenGL::insertDirLight(float ambient,
       break;
   if (i == MAX_LIGHTS)
     return 0;
-  
+
   d_lightInfo[i].lightType = LIGHT_DIRECTIONAL;
   d_lightInfo[i].nestingLevel = 0;
   GLenum light = (GLenum) (GL_LIGHT0 + i);
@@ -2375,7 +2375,7 @@ Viewer::Object ViewerOpenGL::insertPointLight(float ambient,
       break;
   if (i == MAX_LIGHTS)
     return 0;
-  
+
   d_lightInfo[i].lightType = LIGHT_POSITIONAL;
   d_lightInfo[i].location[0] = location[0];
   d_lightInfo[i].location[1] = location[1];
@@ -2431,7 +2431,7 @@ OpenVRML::Viewer::Object
       break;
   if (i == MAX_LIGHTS)
     return 0;
-  
+
   d_lightInfo[i].lightType = LIGHT_POSITIONAL;
   d_lightInfo[i].location[0] = location[0];
   d_lightInfo[i].location[1] = location[1];
@@ -2475,7 +2475,7 @@ void ViewerOpenGL::removeObject(Object key)
 }
 
 
-void ViewerOpenGL::enableLighting(bool lightsOn) 
+void ViewerOpenGL::enableLighting(bool lightsOn)
 {
   if (lightsOn)
     {
@@ -2487,7 +2487,7 @@ void ViewerOpenGL::enableLighting(bool lightsOn)
 
 // Set attributes
 
-void ViewerOpenGL::setColor(float r, float g, float b, float a) 
+void ViewerOpenGL::setColor(float r, float g, float b, float a)
 {
   glColor4f(r,g,b,a);
 }
@@ -2541,7 +2541,7 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
 // In OGL standard range of shininess is [0.0,128.0]
-// In VRML97 the range is [0.0,1.0] 
+// In VRML97 the range is [0.0,1.0]
   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess*128);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
@@ -2685,7 +2685,7 @@ ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
 //
 
 Viewer::TextureObject
-ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset, 
+ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
                             size_t w, size_t h,
                             size_t whole_w,size_t whole_h,size_t nc,
 			    bool repeat_s,
@@ -2788,7 +2788,7 @@ namespace {
                      float up[3])
     {
         // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
-        
+
         //
         // orientation axis should be normalized.
         //
@@ -2857,7 +2857,7 @@ void ViewerOpenGL::setViewpoint(const float position[3],
   float OGL_MV[16];
   matrix_to_glmatrix(MV, OGL_MV);
   glLoadMatrixf(OGL_MV);
-#endif 
+#endif
 
   // View modifiers are applied in first beginObject
   if (d_rotationChanged)
@@ -2874,14 +2874,14 @@ void ViewerOpenGL::transformPoints(int np, float *p)
 {
   float m[16];
   glGetFloatv (GL_MODELVIEW_MATRIX, m);
-  
+
   float x, y, z;
   for (int i=0; i<np; ++i)
     {
       x = m[0]*p[0] + m[4]*p[1] + m[8]*p[2] + m[12];
       y = m[1]*p[0] + m[5]*p[1] + m[9]*p[2] + m[13];
       z = m[2]*p[0] + m[6]*p[1] + m[10]*p[2] + m[14];
-      
+
       p[0] = x;
       p[1] = y;
       p[2] = z;
@@ -2915,7 +2915,7 @@ void ViewerOpenGL::update(const double timeNow) {
     this->wsSetTimer(this->browser.getDelta());
 }
 
-void ViewerOpenGL::redraw() 
+void ViewerOpenGL::redraw()
 {
   if (! d_GLinitialized) initialize();
 
@@ -2976,7 +2976,7 @@ void ViewerOpenGL::redraw()
   d_renderTime = theSystem->time() - start;
 }
 
-void ViewerOpenGL::resize(int width, int height) 
+void ViewerOpenGL::resize(int width, int height)
 {
   if (width < 2) width = 2;
   if (height < 2) height = 2;
@@ -3033,7 +3033,7 @@ void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
    add_quats(q, d_curquat, d_curquat);
    d_rotationChanged = true;
    wsPostRedraw();
-}                
+}
 
 void ViewerOpenGL::step(float x, float y, float z) {
     GLint viewport[4];
@@ -3128,43 +3128,43 @@ void ViewerOpenGL::handleKey(int key)
     case KEY_LEFT:
           step(-1, 0, 0);
       break;
- 
+
     case KEY_RIGHT:
           step(1, 0, 0);
      break;
- 
+
     case KEY_UP:  // move forward along line of sight
       zoom(1);
       break;
- 
+
     case KEY_DOWN: // move backwards along line of sight
       zoom(-1);
       break;
- 
+
     case 'a':  // look up
       rot_trackball(0.0, 0.45, 0.0, 0.55);
       break;
- 
+
     case 'z':  // look down
       rot_trackball(0.0, 0.55, 0.0, 0.45);
       break;
- 
+
     case 'A':  // translate up
       step(0,1,0);
       break;
- 
+
     case 'Z':  // translate down
-      step(0,-1,0);                              
+      step(0,-1,0);
       break;
- 
+
     case ',':                   // Look left
       rot_trackball(0.55, 0.0, 0.45, 0.0);
       break;
- 
+
     case '.':                   // Look right
       rot_trackball(0.45, 0.0, 0.55, 0.0);
       break;
-               
+
     case KEY_PAGE_DOWN:
       this->browser.nextViewpoint(); wsPostRedraw(); break;
 
@@ -3182,7 +3182,7 @@ void ViewerOpenGL::handleKey(int key)
       theSystem->inform(" Alpha blending %sabled.",
 		     d_blend ? "en" : "dis");
       break;
-	
+
     case 'd':
       d_drawBSpheres = ! d_drawBSpheres;
       theSystem->inform(" bspheres %sabled.", d_drawBSpheres ? "en" : "dis");
@@ -3194,7 +3194,7 @@ void ViewerOpenGL::handleKey(int key)
       theSystem->inform(" culling %sabled.", d_cull ? "en" : "dis");
       wsPostRedraw();
       break;
-	
+
     case 'l':
       d_lit = ! d_lit;
       theSystem->inform(" Lighting %sabled.", d_lit ? "en" : "dis");
@@ -3205,14 +3205,14 @@ void ViewerOpenGL::handleKey(int key)
     case 'r':			// Reset view
       resetUserNavigation();
       break;
-	
+
     case 't':
       d_texture = ! d_texture;
       wsPostRedraw();
       theSystem->inform(" Texture mapping %sabled.",
 		     d_texture ? "en" : "dis");
       break;
-	
+
     case 'w':			// Wireframe (should disable texturing)
       d_wireframe = ! d_wireframe;
       glPolygonMode(GL_FRONT_AND_BACK, d_wireframe ? GL_LINE : GL_FILL);
@@ -3254,14 +3254,14 @@ void ViewerOpenGL::handleButton( EventInfo *e)
 	d_beginx = e->x;
 	d_beginy = e->y;
 	break;
-      
+
       case 1:
 	wsSetCursor( CURSOR_UP_DOWN );
 	d_scaling = true;
 	d_beginx = e->x;
 	d_beginy = e->y;
 	break;
-      
+
       case 2:
 	wsSetCursor( CURSOR_CROSSHAIR );
 	d_translating = true;
@@ -3509,7 +3509,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
 
 /* text: general purpose text routine.  draws a string according to
  * format in a stroke font at x, y after scaling it by the scale
- * specified (scale is in window-space (lower-left origin) pixels).  
+ * specified (scale is in window-space (lower-left origin) pixels).
  *
  * x      - position in x (in window-space)
  * y      - position in y (in window-space)
@@ -3616,7 +3616,7 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
         glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
         gluSphere(sph, bs.getRadius(), 5, 5);
         break;
-    
+
     case BVolume::partial:
         //glEnable(GL_LIGHTING);
         gluQuadricNormals(sph, GLU_SMOOTH);
@@ -3626,7 +3626,7 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
         glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
         gluSphere(sph, bs.getRadius(), 8, 8);
         break;
-    
+
     case BVolume::inside:
         //glEnable(GL_LIGHTING);
         gluQuadricNormals(sph, GLU_SMOOTH);
