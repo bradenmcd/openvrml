@@ -1,0 +1,643 @@
+#
+# OpenVRML
+#
+# Copyright (C) 2001-2002  S. K. bose
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# 
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+.SILENT:
+# Makefile for openvrml
+# Microsoft Visual C++6.0 or later
+
+PACKAGE_VERSION = openvrml-0.13.0
+
+BINOUTDIR = .\src\bin
+LIBDIR = .\src\lib
+INTDIR = $(BINOUTDIR)
+CORELIBDIR = .\src\openvrml\OpenVRML
+GLLIBDIR = .\src\openvrml-gl\OpenVRML\GL
+ANTLRLIBDIR = .\lib\antlr
+LOOKATDIR = .\src\lookat
+CORESOURCE = .\src\openvrml\OpenVRML
+LIBINCLUDE = .\lib
+GLSOURCE = .\src\openvrml-gl\OpenVRML\GL
+INCLUDECORE = .\src\openvrml
+SCRIPTDIR = .\java
+
+help:
+	more < <<
+usage: nmake[.exe] /f Makefile.vc6 [options] [target]
+
+where: [target] may be any one of the following ...
+    (default)... shows this text
+    all         ........ builds OpenVRML dynamic-library and lookat executable
+    all-static  ........ builds OpenVRML static-library and lookat executable
+                without java (JNI) support.     
+    openvrml-dynamic ... builds OpenVRML dynamic-library
+    openvrml-static  ... builds OpenVRML static-library without java(JNI)
+                 support.    
+    core-dynamic........ builds OpenVRMLcore dynamic-library 
+    core-static ........ builds OpenVRMLcore static-library without java(JNI)
+                 support.      
+    gl         ........  builds OpenVRMLgl static-library 
+    ant         .......  builds antlr static-library
+    clean        ....... deletes all intermediate files
+
+    ---- build options -----------------
+   REGEXLIB_DIR  .................... - required to be defined as 
+               the path where your REGEXLIB is installed. 
+               Default path is C:\User\regex-0.12, however you may provide 
+               it as an environment variable by doing something like 
+               this prior to execute nmake:
+
+               set REGEXLIB_DIR=C:\regex
+
+   WITH_ZLIB = YES .................... - If it is YES, 
+               then you must have zlib in your system.
+               This is default. Otherwise build without ZLIB support
+               (if you don't have zlib or don't want ZLIB support),
+               by giving WITH_ZLIB = NO.
+
+   ZLIB_DIR  .................... - required to be defined as the path
+               where your ZLIB is installed. Default path is C:\User\zlib,
+               however you may provide it as an environment variable by
+               doing something like this prior to execute nmake:
+
+               set ZLIB_DIR=C:\zlib
+
+   WITH_IMAGETEXTURE = YES .................... - If it is YES, 
+               then you must have libpng and libjpeg in your system.
+               This is default. Otherwise build without PNG and JPEG 
+               support (if you don't have libpng or libjpeg), 
+               by giving WITH_IMAGETEXTURE = NO.
+
+   PNGLIB_DIR  .................... - required to be defined as 
+               the path where your PNGLIB is installed. 
+               Default path is C:\User\lpng123, however you may provide 
+               it as an environment variable by doing something like 
+               this prior to execute nmake:
+
+               set PNGLIB_DIR=C:\lpng123
+               However it is not needed, if you give option 
+               WITH_IMAGETEXTURE = NO
+
+   JPEGLIB_DIR  .................... - required to be defined as the 
+               path where your JPEGLIB is installed. 
+               Default path is C:\User\jpeg-6b, however you may provide
+               it as an environment variable by doing something like 
+               this prior to execute nmake:
+
+               set JPEGLIB_DIR=C:\jpeg-6b
+               However it is not needed, if you give option 
+               WITH_IMAGETEXTURE=NO
+
+   WITH_JAVASCRIPT = YES .................... - If it is YES, 
+               then you must have js32.lib and js32.dll from mozilla 
+               in your system. This is default. Otherwise 
+               build without JAVASCRIPT support (if you don't have 
+               SpiderMonkey or don't want JAVASCRIPT support),
+               by giving WITH_JAVASCRIPT = NO.
+
+   MOZILLA_DIR  .................... - required to be defined as 
+               the path where your MOZILLA is installed. 
+               Default path is C:\User\js, however you may provide
+               it as an environment variable by doing something like 
+               this prior to execute nmake:
+
+               set MOZILLA_DIR=C:\js
+               However it is not needed, if you give option WITH_JAVASCRIPT=NO
+
+   WITH_JNI =  YES .................... - If it is YES, 
+               then you must have jvm.lib and jvm.dll from SUN  
+               Microsystems in your system. This is default. Otherwise 
+               build without JAVA support (if you don't have 
+               Java SDK from SUN or don't want JAVA support),
+               by giving WITH_JNI = NO.
+
+   JAVA_DIR  .................... - required to be defined as 
+               the path where your Java SDK is installed. 
+               Default path is C:\User\jdk1.4.1, however you may provide
+               it as an environment variable by doing something like 
+               this prior to execute nmake:
+
+               set java_DIR=C:\jdk1.2.2
+               However it is not needed, if you give option WITH_JNI=NO
+
+   WITH_GLUT = YES .................... - If it is YES, 
+               then you must have glut32 in your system.
+               This is default. Otherwise build without GLUT support
+               (if you don't have glut32 or don't want GLUT support),
+               by giving WITH_GLUT = NO.
+
+
+   GLUTLIB_DIR  .................... - required to be defined as the path
+               where your GLUT is installed. Default path is 
+               C:\User\glut36, however you may provide it as an 
+               environment variable by doing something like this prior 
+               to execute nmake:
+
+               set GLUTLIB_DIR=C:\glut32
+
+ 
+
+   WITH_ANTLR=YES  .................... - If it is YES, 
+               then you must have java in your system and system will
+               generate C++ code from antlr grammar(Vrml97Parser.g). 
+               Otherwise it will take generated code(Vrml97Parser.cpp)
+               and create the library. Default is NO.
+
+   ANTLRLIB_DIR  .................... - required to be defined as the path
+               where your antlr is installed. If you define WITH_ANTLR=YES 
+               then you must give this path. Otherwise it is not needed. 
+               Default path is C:\User\antlr, however you may provide it 
+               as an environment variable by doing something like this 
+               prior to execute nmake:
+
+			 set ANTLRLIB_DIR=C:\antlr-2.7.0
+               However it is not needed, if you give option WITH_ANTLR=NO
+
+    This makefile suite built against MS Visual C++ 6.0 and tested on
+    WindowsNT 4.0, Windows95, and Windows98.
+
+    ---- output directories as configured -------
+
+For Dynamic-library
+
+ Linking Libs  
+	
+  openvrml.lib :    $(MAKEDIR)\src\lib
+  openvrml.dll :    $(MAKEDIR)\src\lib
+
+ Object Files 
+	
+  openvrmlcore :    $(MAKEDIR)\src\bin
+  openvrmlgl   :    $(MAKEDIR)\src\bin
+  libantlr     :    $(MAKEDIR)\lib\antlr\bin
+
+For Static-library
+
+ Linking Libs  
+	
+  openvrml.lib :    $(MAKEDIR)\src\lib
+
+ Object Files 
+	
+  openvrmlcore :    $(MAKEDIR)\src\openvrml\OpenVRML\bin
+  openvrmlgl   :    $(MAKEDIR)\src\openvrml-gl\OpenVRML\GL\bin
+  libantlr     :    $(MAKEDIR)\lib\antlr\bin
+	 
+lookat executable
+	 	 
+lookat.exe     :    $(MAKEDIR)\src\lookat\bin
+<<
+
+!IF "$(REGEXLIB_DIR)" == ""
+REGEXLIB_DIR = c:\User\regex-0.12
+!ENDIF
+
+!IF "$(WITH_IMAGETEXTURE)" == ""
+WITH_IMAGETEXTURE = YES
+!ENDIF
+
+!IF "$(PNGLIB_DIR)" == ""
+PNGLIB_DIR = c:\User\lpng123
+!ENDIF
+
+!IF "$(JPEGLIB_DIR)" == ""
+JPEGLIB_DIR = c:\User\jpeg-6b
+!ENDIF
+
+!IF "$(WITH_JAVASCRIPT)" == ""
+WITH_JAVASCRIPT = YES
+!ENDIF
+
+!IF "$(MOZILLA_DIR)" == ""
+MOZILLA_DIR = c:\User\js
+!ENDIF
+
+!IF "$(WITH_JNI)" == ""
+WITH_JNI = YES
+!ENDIF
+
+!IF "$(JAVA_DIR)" == ""
+JAVA_DIR = c:\User\jdk1.2.2
+!ENDIF
+
+!IF "$(WITH_ZLIB)" == ""
+WITH_ZLIB = YES
+!ENDIF
+
+!IF "$(ZLIB_DIR)" == ""
+ZLIB_DIR = c:\User\zlib
+!ENDIF
+
+!IF "$(WITH_GLUT)" == ""
+WITH_GLUT = YES
+!ENDIF
+
+!IF "$(GLUTLIB_DIR)" == ""
+GLUTLIB_DIR = c:\User\glut36
+!ENDIF
+
+!IF "$(WITH_ANTLR)" == ""
+WITH_ANTLR = NO
+!ENDIF
+
+!IF "$(ANTLRLIB_DIR)" == ""
+ANTLRLIB_DIR = c:\User\antlr
+!ENDIF
+
+MOZILLALIB_DIR = $(MOZILLA_DIR)\src\release
+MOZILLAINC_DIR = $(MOZILLA_DIR)\src
+
+O=.obj
+
+LIB32 = link.exe -lib
+
+LINK32 = link.exe
+
+COMMONLIB = $(REGEXLIB_DIR)\regex.lib\
+!IF "$(WITH_ZLIB)" == "YES"
+ $(ZLIB_DIR)\zlib.lib\
+!ENDIF
+!IF "$(WITH_IMAGETEXTURE)" == "YES"
+ $(PNGLIB_DIR)\libpng.lib $(JPEGLIB_DIR)\libjpeg.lib\
+!ENDIF
+!IF "$(WITH_JAVASCRIPT)" == "YES"
+ $(MOZILLALIB_DIR)\js32.lib\
+!ENDIF
+!IF "$(WITH_JNI)" == "YES"
+ $(JAVA_DIR)\lib\jvm.lib\
+!ENDIF
+!IF "$(WITH_GLUT)" == "YES"
+ $(GLUTLIB_DIR)\glut32.lib\
+!ENDIF
+   
+LINKFLAGS = opengl32.lib glu32.lib wsock32.lib\
+ /nologo /subsystem:windows /dll /incremental:no\
+ /pdb:"$(LIBDIR)/openvrmlcore.pdb" /machine:I386 /NODEFAULTLIB:LIBC\
+ /NODEFAULTLIB:MSVCRTD
+
+
+CFLAGS = /nologo /MD /W0 /GR /GX /O2 /D "WIN32" /D "_WINDOWS" \
+	/D DLL_EXPORT /Fp"$(INTDIR)\openvrml.pch" /Fo"$(INTDIR)\\"\
+	/Fd"$(INTDIR)\\" /FD /c /D "NDEBUG"
+
+PROMPT :
+      -@echo Making openvrml library
+
+$(BINOUTDIR) : 
+	   if not exist $(BINOUTDIR) mkdir $(BINOUTDIR)
+
+$(LIBDIR) : 
+	   if not exist $(LIBDIR) mkdir $(LIBDIR)
+
+# variables
+
+OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\browser$(O) $(BINOUTDIR)\bvolume$(O) \
+       $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOUTDIR)\dummysound$(O)\
+       $(BINOUTDIR)\field$(O) $(BINOUTDIR)\fieldvalueptr$(O) $(BINOUTDIR)\Image$(O)\
+       $(BINOUTDIR)\MathUtils$(O) $(BINOUTDIR)\node$(O) $(BINOUTDIR)\nodeclassptr$(O)\
+       $(BINOUTDIR)\nodeptr$(O) $(BINOUTDIR)\nodetypeptr$(O) $(BINOUTDIR)\scope$(O) \
+       $(BINOUTDIR)\scopeptr$(O) $(BINOUTDIR)\script$(O) $(BINOUTDIR)\ScriptJDK$(O) \
+       $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O) $(BINOUTDIR)\vrml97node$(O)\
+       $(BINOUTDIR)\VrmlFrustum$(O) $(BINOUTDIR)\VrmlMatrix$(O)\
+       $(BINOUTDIR)\VrmlRenderContext$(O) 
+
+OBJ2 = $(BINOUTDIR)\OpenGLEvent$(O) $(BINOUTDIR)\ViewerOpenGL$(O)
+
+clean :
+!IF "$(WITH_ANTLR)" == "YES"
+      if exist Vrml97ParserTokenTypes.hpp del Vrml97ParserTokenTypes.hpp
+      if exist Vrml97ParserTokenTypes.txt del Vrml97ParserTokenTypes.txt
+      if exist vrml97tokentypes.txt del vrml97tokentypes.txt
+!endif
+  if exist $(LIBDIR) del /Q $(LIBDIR)
+  if exist $(LIBDIR) rmdir $(LIBDIR)
+  if exist $(BINOUTDIR) del /Q $(BINOUTDIR)
+  if exist $(BINOUTDIR) rmdir $(BINOUTDIR)
+  cd .\src\lookat
+  nmake /F Makefile.vc6 clean
+  cd ..\openvrml\openvrml
+  nmake /F Makefile.vc6 WITH_ANTLR=$(WITH_ANTLR) clean
+  cd ..\..\openvrml-gl\openvrml\gl
+  nmake /F Makefile.vc6 clean
+  cd ..\..\..\..\lib\antlr
+  nmake /F Makefile.vc6 clean
+!IF "$(WITH_JNI)" == "YES"
+  cd ..\..\java
+  nmake /F Makefile.vc6 clean
+!endif
+
+
+all: script-jar openvrml-dynamic lookat-dynamic
+
+all-static : openvrml-static lookat-static  
+
+openvrml-dynamic : $(LIBDIR) $(BINOUTDIR) $(LIBDIR)\openvrml.dll
+openvrml-static :  $(LIBDIR)  $(LIBDIR)\openvrml.lib
+
+$(LIBDIR)\openvrml.lib  :  core-static gl prompt
+                           if exist $(LIBDIR) del /Q $(LIBDIR)
+                           $(LIB32) /nologo /out:$(LIBDIR)\openvrml.lib \
+                           $(GLLIBDIR)\lib\openvrmlgl.lib \
+                           $(CORELIBDIR)\lib\openvrmlcore.lib
+
+$(LIBDIR)\openvrml.dll  : ant prompt $(OBJ1) $(OBJ2)
+                          if exist $(LIBDIR) del /Q $(LIBDIR)
+                          $(LINK32) $(LINKFLAGS) /out:$(LIBDIR)\openvrml.dll \
+                          /implib:$(LIBDIR)\openvrml.lib \
+                          $(COMMONLIB)\
+                          $(ANTLRLIBDIR)\lib\libantlr.lib \
+                          $(OBJ1) $(OBJ2)
+ 
+core-static:
+  cd $(CORELIBDIR)
+  nmake /F Makefile.vc6 WITH_IMAGETEXTURE=$(WITH_IMAGETEXTURE)\
+  PNGLIB_DIR=$(PNGLIB_DIR) JPEGLIB_DIR=$(JPEGLIB_DIR)\
+  WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLA_DIR=$(MOZILLA_DIR)\
+  WITH_JNI=NO JAVA_DIR=$(JAVA_DIR) WITH_ZLIB=$(WITH_ZLIB)\
+  ZLIB_DIR=$(ZLIB_DIR) REGEXLIB_DIR=$(REGEXLIB_DIR) LIBTYPE=STATIC\
+  ANTLRLIB_DIR=$(ANTLRLIB_DIR) WITH_ANTLR=$(WITH_ANTLR) core
+  cd $(MAKEDIR)
+
+core-dynamic:
+  cd $(CORELIBDIR)
+  nmake /F Makefile.vc6 WITH_IMAGETEXTURE=$(WITH_IMAGETEXTURE)\
+  PNGLIB_DIR=$(PNGLIB_DIR) JPEGLIB_DIR=$(JPEGLIB_DIR)\
+  WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLA_DIR=$(MOZILLA_DIR)\
+  WITH_JNI=$(WITH_JNI) JAVA_DIR=$(JAVA_DIR) WITH_ZLIB=$(WITH_ZLIB)\
+  ZLIB_DIR=$(ZLIB_DIR) REGEXLIB_DIR=$(REGEXLIB_DIR)\
+  ANTLRLIB_DIR=$(ANTLRLIB_DIR) WITH_ANTLR=$(WITH_ANTLR) core
+  cd $(MAKEDIR)
+
+gl:
+  cd $(GLLIBDIR)
+  nmake /F Makefile.vc6 GLUTLIB_DIR=$(GLUTLIB_DIR) gl
+  cd $(MAKEDIR)
+
+
+ant:
+  cd $(ANTLRLIBDIR)
+  nmake /F Makefile.vc6 antlr
+  cd $(MAKEDIR)
+
+lookat-static:
+!IF "$(WITH_GLUT)" == "YES"
+  cd $(LOOKATDIR)
+  nmake /F Makefile.vc6\
+  WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLA_DIR=$(MOZILLA_DIR) \
+  WITH_JNI=NO JAVA_DIR=$(JAVA_DIR)\
+  GLUTLIB_DIR=$(GLUTLIB_DIR) lookat-static
+  cd $(MAKEDIR)
+!endif
+
+lookat-dynamic:
+!IF "$(WITH_GLUT)" == "YES"
+  cd $(LOOKATDIR)
+  nmake /F Makefile.vc6\
+  WITH_JAVASCRIPT=$(WITH_JAVASCRIPT) MOZILLA_DIR=$(MOZILLA_DIR) \
+  WITH_JNI=$(WITH_JNI) JAVA_DIR=$(JAVA_DIR)\
+  GLUTLIB_DIR=$(GLUTLIB_DIR) lookat-dynamic
+  cd $(MAKEDIR)
+!endif
+
+script-jar:
+!IF "$(WITH_JNI)" == "YES"
+  cd $(SCRIPTDIR)
+  nmake /F Makefile.vc6 JDK_DIR=$(JAVA_DIR) all
+  cd $(MAKEDIR)
+!endif
+
+Vrml97Parser   :   $(CORESOURCE)\vrml97parser.g $(CORESOURCE)\Vrml97TokenTypes.txt 
+				   copy $(CORESOURCE)\Vrml97TokenTypes.txt vrml97tokentypes.txt
+				   SET CLASSPATH=$(ANTLRLIB_DIR)
+				   java antlr.Tool -o $(CORESOURCE) $(CORESOURCE)\vrml97parser.g
+
+$(BINOUTDIR)\Audio.obj :  $(CORESOURCE)\Audio.cpp $(CORESOURCE)\Audio.h $(CORESOURCE)\Doc.h \
+                          $(CORESOURCE)\common.h $(CORESOURCE)\System.h $(CORESOURCE)\field.h 	
+                          $(CPP) $(CFLAGS) /I $(ZLIB_DIR) $(CORESOURCE)\Audio.cpp
+
+$(BINOUTDIR)\browser.obj :  $(CORESOURCE)\browser.cpp $(CORESOURCE)\browser.h\
+!IF "$(WITH_ANTLR)" == "YES"
+                              Vrml97Parser\
+!ENDIF
+                              $(CORESOURCE)\Doc2.hpp $(CORESOURCE)\System.h\
+                              $(CORESOURCE)\Viewer.h $(CORESOURCE)\private.h \
+                              $(CORESOURCE)\MathUtils.h $(CORESOURCE)\scope.h\
+                              $(CORESOURCE)\vrml97node.h\
+                              $(CORESOURCE)\VrmlRenderContext.h\
+                              $(CORESOURCE)\script.h\
+                              $(CORESOURCE)\nodeclassptr.h\
+                              $(CORESOURCE)\common.h
+                              $(CPP) $(CFLAGS)  /GR /I $(LIBINCLUDE) /I $(REGEXLIB_DIR)\
+                              /D"__STDC__"\
+                              /DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" $(CORESOURCE)\browser.cpp
+
+$(BINOUTDIR)\bvolume.obj : $(CORESOURCE)\bvolume.cpp $(CORESOURCE)\bvolume.h\
+                           $(CORESOURCE)\private.h $(CORESOURCE)\field.h\
+                           $(CORESOURCE)\VrmlMatrix.h $(CORESOURCE)\VrmlFrustum.h\
+                           $(CORESOURCE)\MathUtils.h                							
+                           $(CPP) $(CFLAGS) $(CORESOURCE)\bvolume.cpp
+
+$(BINOUTDIR)\Doc.obj :  $(CORESOURCE)\Doc.cpp $(CORESOURCE)\Doc.h $(CORESOURCE)\common.h\
+                        $(CORESOURCE)\doc2.hpp $(CORESOURCE)\System.h
+                        $(CPP) $(CFLAGS) /I $(ZLIB_DIR) $(CORESOURCE)\Doc.cpp
+
+$(BINOUTDIR)\Doc2.obj :  $(CORESOURCE)\Doc2.cpp $(CORESOURCE)\Doc2.hpp $(CORESOURCE)\common.h\
+                         $(CORESOURCE)\System.h
+                         $(CPP) $(CFLAGS) /I $(REGEXLIB_DIR)\
+!IF "$(WITH_ZLIB)" == "YES"
+                         /I $(ZLIB_DIR) /D "_HAVE_ZLIB" \
+!ENDIF
+                           /D"__STDC__" /D XP_PC $(CORESOURCE)\Doc2.cpp
+
+$(BINOUTDIR)\dummysound.obj : $(CORESOURCE)\dummysound.cpp $(CORESOURCE)\sound.h
+                              $(CPP) $(CFLAGS) $(CORESOURCE)\dummysound.cpp
+
+$(BINOUTDIR)\field.obj :  $(CORESOURCE)\field.cpp $(CORESOURCE)\field.h \
+                          $(CORESOURCE)\private.h \
+                          $(CORESOURCE)\node.h\
+                          $(CORESOURCE)\nodeptr.h\
+                          $(CORESOURCE)\common.h 
+                          $(CPP) $(CFLAGS) $(CORESOURCE)\field.cpp
+
+$(BINOUTDIR)\fieldvalueptr.obj :  $(CORESOURCE)\fieldvalueptr.cpp \
+                                  $(CORESOURCE)\fieldvalueptr.h \
+                                  $(CORESOURCE)\field.h \
+                                  $(CORESOURCE)\common.h 
+                                  $(CPP) $(CFLAGS) $(CORESOURCE)\fieldvalueptr.cpp
+
+$(BINOUTDIR)\Image.obj : $(CORESOURCE)\Image.cpp $(CORESOURCE)\Image.h $(CORESOURCE)\common.h \
+                         $(CORESOURCE)\Doc.h $(CORESOURCE)\field.h\
+                         $(CORESOURCE)\System.h
+                         $(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
+!IF "$(WITH_IMAGETEXTURE)" == "YES"
+                         /D OPENVRML_ENABLE_IMAGETEXTURE_NODE=1\
+                         /I $(PNGLIB_DIR)\
+                         /I $(JPEGLIB_DIR)\
+!ENDIF
+                         /I .\ /D XMD_H $(CORESOURCE)\Image.cpp
+						   						   							 
+$(BINOUTDIR)\MathUtils.obj : $(CORESOURCE)\MathUtils.cpp $(CORESOURCE)\MathUtils.h 
+                             $(CPP) $(CFLAGS) $(CORESOURCE)\MathUtils.cpp
+
+$(BINOUTDIR)\node.obj :  $(CORESOURCE)\node.cpp $(CORESOURCE)\node.h\
+                         $(CORESOURCE)\field.h\
+                         $(CORESOURCE)\fieldvalueptr.h\
+                         $(CORESOURCE)\nodetypeptr.h\
+                         $(CORESOURCE)\doc2.hpp\
+                         $(CORESOURCE)\MathUtils.h\
+                         $(CORESOURCE)\bvolume.h\
+                         $(CORESOURCE)\browser.h\
+                         $(CORESOURCE)\VrmlRenderContext.h\
+                         $(CORESOURCE)\common.h
+                         $(CPP) $(CFLAGS) $(CORESOURCE)\node.cpp
+
+$(BINOUTDIR)\nodeclassptr.obj : $(CORESOURCE)\nodeclassptr.cpp\
+                                $(CORESOURCE)\nodeclassptr.h\
+                                $(CORESOURCE)\node.h\
+                                $(CORESOURCE)\common.h
+                                $(CPP) $(CFLAGS)\
+                                $(CORESOURCE)\nodeclassptr.cpp
+
+$(BINOUTDIR)\nodeptr.obj: $(CORESOURCE)\nodeptr.cpp\
+                          $(CORESOURCE)\node.h\
+                          $(CORESOURCE)\nodeptr.h\
+                          $(CORESOURCE)\common.h
+                          $(CPP) $(CFLAGS) $(CORESOURCE)\nodeptr.cpp
+
+$(BINOUTDIR)\nodetypeptr.obj : $(CORESOURCE)\nodetypeptr.cpp\
+                               $(CORESOURCE)\nodetypeptr.h\
+                               $(CORESOURCE)\node.h\
+                               $(CORESOURCE)\common.h
+                               $(CPP) $(CFLAGS) $(CORESOURCE)\nodetypeptr.cpp
+
+$(BINOUTDIR)\scope.obj:   $(CORESOURCE)\scope.cpp\
+                          $(CORESOURCE)\scope.h\
+                          $(CORESOURCE)\node.h\
+                          $(CORESOURCE)\nodetypeptr.h\
+                          $(CORESOURCE)\scopeptr.h\
+                          $(CORESOURCE)\common.h
+                          $(CPP) $(CFLAGS) $(CORESOURCE)\scope.cpp
+
+$(BINOUTDIR)\scopeptr.obj: $(CORESOURCE)\scopeptr.cpp\
+                           $(CORESOURCE)\scopeptr.h\
+                           $(CORESOURCE)\scope.h\
+                           $(CORESOURCE)\common.h
+                           $(CPP) $(CFLAGS) $(CORESOURCE)\scopeptr.cpp
+
+$(BINOUTDIR)\script.obj : $(CORESOURCE)\script.cpp $(CORESOURCE)\script.h\
+                          $(CORESOURCE)\common.h\
+                          $(CORESOURCE)\private.h\
+                          $(CORESOURCE)\browser.h\
+                          $(CORESOURCE)\doc2.hpp\
+                          $(CORESOURCE)\vrml97node.h\
+                          $(CORESOURCE)\ScriptJDK.h
+                          $(CPP) $(CFLAGS)\
+!IF "$(WITH_JAVASCRIPT)" == "YES"
+                          /I $(MOZILLAINC_DIR) /D OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT=1\
+!ENDIF
+!IF "$(WITH_JNI)" == "YES"
+                          /I $(JAVA_DIR)\include /I $(JAVA_DIR)\include\win32\
+                          /D OPENVRML_ENABLE_SCRIPT_NODE_JAVA=1\
+!ENDIF
+                          /D XP_PC $(CORESOURCE)\script.cpp
+ 
+
+$(BINOUTDIR)\ScriptJDK.obj : $(CORESOURCE)\ScriptJDK.cpp $(CORESOURCE)\ScriptJDK.h\
+                             $(CORESOURCE)\common.h\
+                             $(CORESOURCE)\doc2.hpp\
+                             $(CORESOURCE)\MathUtils.h\
+                             $(CORESOURCE)\System.h\
+                             $(CORESOURCE)\script.h\
+                             $(CORESOURCE)\node.h\
+                             $(CORESOURCE)\browser.h\
+                             $(CORESOURCE)\nodeptr.h\
+                             $(CORESOURCE)\Field.h
+                             $(CPP) $(CFLAGS)\
+!IF "$(WITH_JNI)" == "YES"
+                /I $(SCRIPTDIR) /I $(JAVA_DIR)\include\
+                /I $(JAVA_DIR)\include\win32 /D OPENVRML_ENABLE_SCRIPT_NODE_JAVA=1\
+!ENDIF
+                             $(CORESOURCE)\ScriptJDK.cpp
+
+$(BINOUTDIR)\System.obj : $(CORESOURCE)\System.cpp $(CORESOURCE)\System.h $(CORESOURCE)\common.h 
+                          $(CPP) $(CFLAGS) $(CORESOURCE)\System.cpp
+
+$(BINOUTDIR)\Viewer.obj : $(CORESOURCE)\Viewer.cpp $(CORESOURCE)\Viewer.h\
+                          $(CORESOURCE)\MathUtils.h\
+                          $(CORESOURCE)\private.h\
+                          $(CORESOURCE)\VrmlFrustum.h\
+                          $(CORESOURCE)\node.h\
+                          $(CORESOURCE)\bvolume.h\
+                          $(CORESOURCE)\browser.h\
+                          $(CORESOURCE)\common.h 
+                          $(CPP) $(CFLAGS) $(CORESOURCE)\Viewer.cpp
+
+$(BINOUTDIR)\vrml97node.obj : $(CORESOURCE)\vrml97node.cpp $(CORESOURCE)\vrml97node.h \
+                              $(CORESOURCE)\node.h\
+                              $(CORESOURCE)\Doc.h\
+                              $(CORESOURCE)\doc2.hpp\
+                              $(CORESOURCE)\Audio.h\
+                              $(CORESOURCE)\Sound.h\
+                              $(CORESOURCE)\MathUtils.h\
+                              $(CORESOURCE)\Viewer.h\
+                              $(CORESOURCE)\field.h\
+                              $(CORESOURCE)\Image.h\
+                              $(CORESOURCE)\browser.h\
+                              $(CORESOURCE)\VrmlMatrix.h\
+                              $(CORESOURCE)\nodetypeptr.h\
+                              $(CORESOURCE)\bvolume.h\
+                              $(CORESOURCE)\system.h\
+                              $(CORESOURCE)\private.h\
+                              $(CORESOURCE)\common.h
+                              $(CPP) $(CFLAGS) /Zm400\
+                              /Zm400 $(CORESOURCE)\vrml97node.cpp
+
+$(BINOUTDIR)\VrmlFrustum.obj : $(CORESOURCE)\VrmlFrustum.cpp $(CORESOURCE)\VrmlFrustum.h\
+                               $(CORESOURCE)\MathUtils.h $(CORESOURCE)\common.h 							
+                               $(CPP) $(CFLAGS) /I .\ $(CORESOURCE)\VrmlFrustum.cpp
+
+
+
+$(BINOUTDIR)\VrmlMatrix.obj  : $(CORESOURCE)\VrmlMatrix.cpp \
+                               $(CORESOURCE)\field.h $(CORESOURCE)\private.h \
+                               $(CORESOURCE)\VrmlMatrix.h 
+                               $(CPP) $(CFLAGS) $(CORESOURCE)\VrmlMatrix.cpp
+    
+$(BINOUTDIR)\VrmlRenderContext.obj : $(CORESOURCE)\VrmlRenderContext.cpp $(CORESOURCE)\VrmlRenderContext.h\
+                                     $(CORESOURCE)\bvolume.h 							
+                                     $(CPP) $(CFLAGS) $(CORESOURCE)\VrmlRenderContext.cpp
+
+#For OpenVRMLgl source
+
+$(BINOUTDIR)\OpenGLEvent.obj :  $(GLSOURCE)\OpenGLEvent.cpp\
+                                $(GLSOURCE)\OpenGLEvent.h
+                                $(CPP) $(CFLAGS) $(GLSOURCE)\OpenGLEvent.cpp
+
+$(BINOUTDIR)\ViewerOpenGL.obj :  $(GLSOURCE)\ViewerOpenGL.cpp\
+                                 $(CORESOURCE)\system.h\
+                                 $(CORESOURCE)\viewer.h\
+                                 $(CORESOURCE)\MathUtils.h\
+                                 $(CORESOURCE)\browser.h\
+                                 $(CORESOURCE)\vrml97node.h\
+                                 $(CORESOURCE)\bvolume.h\
+                                 $(CORESOURCE)\VrmlFrustum.h\
+                                 $(GLSOURCE)\OpenGLEvent.h\
+                                 $(GLSOURCE)\ViewerOpenGL.h
+                                 $(CPP) $(CFLAGS)\
+                                 /I $(INCLUDECORE)\
+                                  $(GLSOURCE)\ViewerOpenGL.cpp

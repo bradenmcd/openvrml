@@ -1,3 +1,16 @@
+2002-12-17  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Take out all Makefile.vc6 from ide-projects/Windows/VisualC6/*
+          and keep these in respective source directory.
+
+        * INSTALL-MSVC6.txt : Installation note for MSVC6.
+
+        * ide-projects/Windows/VisualC6/Install: remove.
+
+        * Update all Makefile.vc6 and *.dsp.
+
+        * Apply patches #653113 and #653128.
+
 2002-12-16  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * doc/conformance.html: Update conformance results.

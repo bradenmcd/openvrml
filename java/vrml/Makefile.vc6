@@ -47,12 +47,6 @@ where: [target] may be any one of the following ...
 			 set JDK_DIR=C:\jdk1.2.2
   
 
-    ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
-         OpenVRML was originally written by Chris Morley
-	 (http://www.vermontel.net/~cmorley/. He has donated it 
-	 as a foundation for OVAL development and is currently 
-	 maintained at http://sourceforge.net/projects/openvrml
-
     This makefile suite built against jdk1.2.2 from sun and tested on
     WindowsNT 4.0, Windows95, and Windows98.
 
