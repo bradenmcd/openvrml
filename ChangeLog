@@ -1,3 +1,9 @@
+2001-05-27  Braden McDaniel <braden@endoframe.com>
+
+        * Improvements (mostly cosmetic) to the Script node JavaScript
+          API implementation. Use of namespaces to improve clarity of
+          organization.
+
 2001-05-23  Michael Louka <michael.louka@hrp.no>
 
         * Updated ViewerOpenGL.cpp, ViewerGlut.cpp, and lookat.cpp

@@ -52,7 +52,6 @@ public:
                            bool protect);
 
 private:
-    void defineAPI();
     void defineFields();
 };
 
