@@ -563,7 +563,7 @@ jobject JNICALL Java_vrml_Field_clone
  */
 jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
 {
-  return JNI_VERSION_1_4;
+  return JNI_VERSION_1_2;
 }
 
 /**

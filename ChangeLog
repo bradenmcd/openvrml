@@ -4,6 +4,9 @@
 
         * Eliminated downcast methods from the FieldValue classes.
 
+        * Previous changes to compile against JDK 1.4 also work for
+          JDK 1.3, as long as JNI_Onload returns JNI_VERSION_1_2.
+
 2002-05-14  Braden McDaniel  <braden@endoframe.com>
 
         * Partial Inline node support.
