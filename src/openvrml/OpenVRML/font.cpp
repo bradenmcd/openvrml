@@ -316,7 +316,7 @@ FontFace & FontFace::getDefFontFace() throw (std::bad_alloc) {
  * @param value the input string
  *
  */
-void FontFace::ProcessString(const std::string & value) throw (){
+void FontFace::ProcessText(const std::string & value) throw (){
   int length = value.length();
   for (int i=0; i < length; i++)
     ProcessChar(value[i]);
@@ -368,11 +368,11 @@ const FontVectoriser * FontFace::getVectoriser(unsigned char ch) throw(){
 /**
  * @brief Get the descriptor for the text justification.
  *
- * @return string value describing the characteristics of the text
+ * @return pointer of string value array describing the characteristics of the text
  *      justification.
  */
-const std::string & FontFace::getJustify() const throw () {
-    return *this->justify;
+const std::string * FontFace::getJustify() const throw () {
+    return this->justify;
 }
 
 /**
