@@ -31,7 +31,7 @@
 #include "System.h"
 #include "MathUtils.h"
 #include "vrml97scanner.hpp"
-#include "vrml97parser.hpp"
+#include "Vrml97Parser.hpp"
 #include "VrmlNamespace.h"
 #include "VrmlNodeType.h"
 #include "VrmlRenderContext.h"
