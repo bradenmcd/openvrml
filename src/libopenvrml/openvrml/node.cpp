@@ -499,12 +499,13 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  *
  * @ingroup nodes
  *
- * @brief A group of unique @link node_interface node_interfaces@endlink.
+ * @brief A group of unique <code>node_interface</code>s.
  *
- * node_interface_sets are used to construct new
- * @link node_type node_types@endlink. node_type objects also expose their
- * interfaces as a node_interface_set. The interfaces in a node_interface_set
- * are guaranteed to be unique and non-conflicting.
+ * <code>node_interface_set</code>s are used to construct new
+ * <code>node_type</code>s. <code>node_type</code> objects also expose their
+ * interfaces as a <code>node_interface_set</code>. The interfaces in a
+ * <code>node_interface_set</code> are guaranteed to be unique and
+ * non-conflicting.
  */
 
 namespace {
@@ -545,11 +546,11 @@ namespace {
  * If no interface is found with an interface identifier that is an exact match
  * for @p id, this method will look for @c set_ and @c _changed variants.
  *
- * @param interfaces    a set of node_interfaces.
+ * @param interfaces    a set of <code>node_interface</code>s.
  * @param id            the interface id to look for.
  *
- * @return a const_iterator to the interface, or node_interface_set::end if no
- *      interface is found.
+ * @return a <code>const_iterator</code> to the interface, or
+ *         <code>node_interface_set::end</code> if no interface is found.
  */
 const node_interface_set::const_iterator
 find_interface(const node_interface_set & interfaces, const std::string & id)
@@ -567,27 +568,29 @@ find_interface(const node_interface_set & interfaces, const std::string & id)
  *
  * @brief A class object for node instances.
  *
- * node_class can be thought of as a "supertype" of sorts. A given node
- * implementation can support as many node types as there are unique
+ * <code>node_class</code> can be thought of as a "supertype" of sorts. A given
+ * node implementation can support as many node types as there are unique
  * combinations of the interfaces it supports. The most readily apparent
- * role of the node_class object for a node implementation is to serve as
- * a factory for these @link node_type node_types@endlink.
+ * role of the <code>node_class</code> object for a node implementation is to
+ * serve as a factory for these <code>node_type</code>s.
  */
 
 /**
  * @var openvrml::browser & node_class::browser
  *
- * @brief The browser associated with this node_class.
+ * @brief The browser associated with this <code>node_class</code>.
  */
 
 /**
  * @brief Constructor.
  *
- * A node_class is constructed using a browser. All node instances that share
- * a particular node_class "belong to" the browser associated with the
- * node_class.
+ * A <code>node_class</code> is constructed using a <code>browser</code>. All
+ * <code>node</code> instances that share a particular <code>node_class</code>
+ * "belong to" the <code>browser</code> associated with the
+ * <code>node_class</code>.
  *
- * @param b the browser to be associated with the node_class.
+ * @param b the <code>browser</code> to be associated with the
+ *          <code>node_class</code>.
  */
 node_class::node_class(openvrml::browser & b) throw ():
     browser(b)
@@ -600,14 +603,16 @@ node_class::~node_class() throw ()
 {}
 
 /**
- * @brief node_class-specific initialization.
+ * @brief <code>node_class</code>-specific initialization.
  *
- * This method is called during initialization of a browser object with a new
- * root Scene. It is called after the individual node instances have been
- * initialized, and before the world starts running.
+ * This method is called during initialization of a <code>browser</code> object
+ * with a new root <code>scene</code>. It is called after the individual
+ * <code>node</code> instances have been initialized, and before the world
+ * starts running.
  *
- * @param initial_viewpoint the viewpoint_node that should be bound initially;
- *                          or 0 if the default viewpoint_node should be bound.
+ * @param initial_viewpoint the <code>viewpoint_node</code> that should be
+ *                          bound initially; or 0 if the default
+ *                          <code>viewpoint_node</code> should be bound.
  * @param time              the current time.
  */
 void node_class::initialize(viewpoint_node * initial_viewpoint,
@@ -616,7 +621,7 @@ void node_class::initialize(viewpoint_node * initial_viewpoint,
 {}
 
 /**
- * @brief node_class-specific rendering.
+ * @brief <code>node_class</code>-specific rendering.
  *
  * The default implementation of this method does nothing.
  *
@@ -628,28 +633,33 @@ void node_class::render(openvrml::viewer & viewer) throw ()
 /**
  * @fn const node_type_ptr node_class::create_type(const std::string & id, const node_interface_set & interfaces) throw (std::invalid_argument, std::bad_alloc)
  *
- * @brief Create a new node_type.
+ * @brief Create a new <code>node_type</code>.
  *
- * @link node_type node_types@endlink can be said to subset the master type
- * provided by the node_class. Each node_class instance can support certain
- * node interfaces; the node_interface_set passed to createType must be a
- * subset of those supported interfaces.
+ * <code>node_type</code>s can be said to subset the master type provided by
+ * the <code>node_class</code>. Each <code>node_class</code> instance can
+ * support certain <code>node</code> interfaces; the
+ * <code>node_interface_set</code> passed to
+ * <code>node_class::create_type</code> must be a subset of those supported
+ * interfaces.
  *
- * @param id            the name for the new node_type.
- * @param interfaces    a node_interface_set containing the interfaces
- *                      for the new type.
+ * @param id            the name for the new <code>node_type</code>.
+ * @param interfaces    a <code>node_interface_set</code> containing the
+ *                      interfaces for the new type.
  *
- * @return a node_type_ptr to the newly created node_type.
+ * @return a <code>node_type_ptr</code> to the newly created
+ *         <code>node_type</code>.
  *
- * @exception std::invalid_argument if the node_class cannot support one of the
- *                                  node_interfaces in @p interfaces.
+ * @exception std::invalid_argument if the <code>node_class</code> cannot
+ *                                  support one of the
+ *                                  <code>node_interface</code>s in
+ *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 
 /**
  * @typedef node_class_ptr
  *
- * @brief A boost::shared_ptr to a node_class.
+ * @brief A <code>boost::shared_ptr</code> to a <code>node_class</code>.
  */
 
 
@@ -658,26 +668,26 @@ void node_class::render(openvrml::viewer & viewer) throw ()
  *
  * @ingroup nodes
  *
- * @brief Type information object for @link openvrml::node nodes@endlink.
+ * @brief Type information object for <code>node</code>s.
  */
 
 /**
  * @var openvrml::node_class & node_type::node_class
  *
- * @brief The class object associated with the node_type.
+ * @brief The class object associated with the <code>node_type</code>.
  */
 
 /**
  * @var const std::string node_type::id
  *
- * @brief The name of the node_type.
+ * @brief The name of the <code>node_type</code>.
  */
 
 /**
  * @brief Constructor.
  *
- * @param c     the class object associated with the node_type.
- * @param id    the name for the node_type.
+ * @param c     the class object associated with the <code>node_type</code>.
+ * @param id    the name for the <code>node_type</code>.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -696,7 +706,7 @@ node_type::~node_type() throw ()
 /**
  * @fn const node_interface_set & node_type::interfaces() const throw ()
  *
- * @brief Get the set of interfaces for the node_type.
+ * @brief Get the set of interfaces for the <code>node_type</code>.
  *
  * @return the set of interfaces.
  */
@@ -704,11 +714,12 @@ node_type::~node_type() throw ()
 /**
  * @fn const node_ptr node_type::create_node(const scope_ptr & scope, const initial_value_map & initial_values) const throw (unsupported_interface, std::bad_cast, std::bad_alloc)
  *
- * @brief Create a new node with this node_type.
+ * @brief Create a new node with this <code>node_type</code>.
  *
- * @param scope             the scope to which the new node should belong.
- * @param initial_values    a map of initial values for the node's fields and
- *                          exposedFields.
+ * @param scope             the scope to which the new <code>node</code> should
+ *                          belong.
+ * @param initial_values    a map of initial values for the <code>node</code>'s
+ *                          fields and exposedFields.
  *
  * @return a node_ptr to a new node.
  *
@@ -1811,6 +1822,7 @@ namespace {
  * @return @c true if a route was successfully added; @c false otherwise (if
  *         the route already existed).
  *
+ * @exception std::bad_alloc            if memory allocation fails.
  * @exception unsupported_interface     if the node has no eventOut
  *                                      @p eventout; or if @p to has no eventIn
  *                                      @p eventin.
@@ -1924,12 +1936,15 @@ namespace {
  *
  * @return @c true if a route was deleted; @c false otherwise (if no such route
  *         existed).
+ *
+ * @exception unsupported_interface if @p from has no eventOut @p eventout or
+ *                                  if @p to has no eventIn @p eventin.
  */
 bool delete_route(node & from,
                   const std::string & eventout,
                   node & to,
                   const std::string & eventin)
-    throw ()
+    throw (unsupported_interface)
 {
     using std::bad_cast;
 

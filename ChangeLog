@@ -1,5 +1,12 @@
 2004-07-18 Braden McDaniel  <braden@endoframe.com>
 
+	delete_route should throw unsupported_interface.
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+
+2004-07-18 Braden McDaniel  <braden@endoframe.com>
+
 	Allow viewers to be associated with and detached from browsers.
 	This is not optimal, but we need to retain a viewer reference so
 	that destroyed nodes can deallocate resources allocated in the

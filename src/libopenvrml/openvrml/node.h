@@ -437,7 +437,7 @@ namespace openvrml {
 
     bool delete_route(node & from, const std::string & eventout,
                       node & to, const std::string & eventin)
-        throw ();
+        throw (unsupported_interface);
 
     template <>
     inline script_node * node_cast<script_node *>(node * n) throw ()
