@@ -12,6 +12,9 @@
           src/openvrml/OpenVRML/vrml97node.cpp: Removed vestigal
           '#include "proto.h"'.
 
+        * src/openvrml/OpenVRML/Makefile.am: Updated libopenvrml
+          library version to 2:1:0.
+
 2002-06-16  Braden McDaniel  <braden@endoframe.com>
 
         * README, doc/Makefile.am: Removed "conformance.html" from the
