@@ -1,3 +1,8 @@
+2003-02-09  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp:  Only call Scene::shutdown
+          if Browser::scene is nonzero.
+
 2003-02-08  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,

@@ -736,7 +736,7 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     //
     // Clear out the current Scene.
     //
-    this->scene->shutdown(now);
+    if (this->scene) { this->scene->shutdown(now); }
     delete this->scene;
     this->scene = 0;
     this->d_navigationInfoStack.clear();
