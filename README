@@ -5,8 +5,6 @@ Portions Copyright SGI and others
 Available from <http://openvrml.sourceforge.net>
 
 See the `NEWS' file for a list of changes in this release.
-See the `TODO' file for a list of things we are planning to implement
-for future releases.
 
 
 About
@@ -137,6 +135,16 @@ System-specific notes
    But you should really get a graphics card with 24-bit color.  Tell
    your boss I said so.
 
+ * Compiling on Irix
+   
+   OpenVRML cannot currently be compiled with the SGI C++ compiler.  It
+   can be compiled with gcc 2.95, but to prevent a runtime error libGLU
+   must also be compiled with gcc 2.95 since gcc and the MIPSPro
+   compiler have different ABIs. The source code to the SGI OpenGL
+   sample implementation (which includes the GLU library) can be found
+   here:
+     <ftp://oss.sgi.com/projects/ogl-sample/download/>
+
  * Using helper applications on the Macintosh
    
    A creator code should be supplied in
@@ -162,25 +170,41 @@ system:
 
      <http://sourceforge.net/bugs/?group_id=7151>
 
-Note that you will need to log into SourceForge before reporting a bug
-if you would like to be notified (via e-mail) when the bug's status is
-updated.
+   Note that you will need to log into SourceForge before reporting a
+bug if you would like to be notified (via e-mail) when the bug's status
+is updated.
 
 
-Mailing Lists
+Mailing lists
 =============
 
    Two mailing lists are maintained:
 
  * <openvrml-announce@sourceforge.net> is a low-traffic list for
-   announcments, typically regarding new releases. Subscription
+   announcments, typically regarding new releases.  Subscription
    instructions are at
      <http://lists.sourceforge.net/mailman/listinfo/openvrml-announce>
 
  * <openvrml-develop@sourceforge.net> is a forum for developers using
    and working on the libraries.  User feedback is welcome in this
-   channel. Subscription instructions are at
+   channel.  Subscription instructions are at
      <http://lists.sourceforge.net/mailman/listinfo/openvrml-develop>
+
+
+Get involved
+============
+
+   We're always grateful for help in improving OpenVRML.  Consult the
+SourceForge Task Manager for a list of planned improvements:
+
+     <http://sourceforge.net/pm/task.php?group_project_id=2579&group_id=7151&func=browse>
+
+   Unassigned tasks are up for grabs, but please post to the
+openvrml-develop mailing list to alert others of your intention to take
+a task.  This helps avoid duplicated effort.  If you do not see the task
+you'd like to pursue listed in the Task Manager, but you think the
+library could benefit from your contribution, post a proposal to the
+openvrml-develop mailing list.
 
 
 Design

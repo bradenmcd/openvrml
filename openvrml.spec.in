@@ -62,7 +62,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %files 
-%doc AUTHORS COPYING.LIB ChangeLog MPL-1.1.txt NEWS README THANKS TODO
+%doc AUTHORS COPYING.LIB ChangeLog MPL-1.1.txt NEWS README THANKS
 %doc doc/conformance.html
 %{prefix}/lib/libopenvrml.so.*
 %{prefix}/share/aclocal/vrml.m4
@@ -89,6 +89,9 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Tue Jan 2 2001  Braden McDaniel  <braden@endoframe.com>
+- Removed obsolete TODO from %doc.
+
 * Sun Dec 31 2000  Clayton Cottingham <drfrog@smartt.com>
 - Change in install section rm command is now recursive 
 
