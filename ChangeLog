@@ -1,8 +1,12 @@
 2002-02-08  Braden McDaniel  <braden@endoframe.com>
 
-        * Applied patch from Frederic Devernay.
-          <Frederic.Devernay@sophia.inria.fr>
+        * Applied patch from Frederic Devernay
+          <Frederic.Devernay@sophia.inria.fr>.
           configure.ac: AC_PREREQ should be first. fixed version.
+
+        * Applied patch from Frederic Devernay
+          <Frederic.Devernay@sophia.inria.fr>.
+          openvrml-gl.pc openvrml.pc: fixed pkg-config compliance.
 
 2002-02-07  Braden McDaniel  <braden@endoframe.com>
 
