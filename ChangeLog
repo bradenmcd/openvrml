@@ -31,6 +31,8 @@
 
         * src/openvrml/OpenVRML/node.cpp:  Added doc-comments.
 
+        * doc/Doxyfile, doc/doxygen-header:  Documentation improvements.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
