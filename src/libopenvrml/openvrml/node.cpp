@@ -3315,7 +3315,8 @@ void node_traverser::traverse(const node_ptr & node)
  * In addition to std::bad_alloc, this function throws any exception thrown
  * from on_entering or on_leaving.
  *
- * @param nodes  the root @link node nodes@endlink of the branch to traverse.
+ * @param nodes  the root @link openvrml::node nodes@endlink of the branch to
+ *               traverse.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -3345,9 +3346,9 @@ void node_traverser::traverse(const std::vector<node_ptr> & nodes)
  * @brief Halt the traversal.
  *
  * If this method is called during a traversal, no more descendent
- * @link node nodes@endlink will be traversed. Note that if halt_traversal
- * is called in the implementation of on_entering, on_leaving will still be
- * called for the current node.
+ * @link openvrml::node nodes@endlink will be traversed. Note that if
+ * halt_traversal is called in the implementation of on_entering, on_leaving
+ * will still be called for the current node.
  */
 void node_traverser::halt_traversal() throw ()
 {

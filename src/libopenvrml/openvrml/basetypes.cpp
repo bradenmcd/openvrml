@@ -207,7 +207,7 @@ void color::hsv(float h, const float s, const float v) throw ()
 }
 
 /**
- * @relates color
+ * @relates openvrml::color
  *
  * @brief Compare for equality.
  *
@@ -228,7 +228,7 @@ bool operator==(const color & lhs, const color & rhs) throw ()
 /**
  * @fn bool operator!=(const color & lhs, const color & rhs) throw ()
  *
- * @relates color
+ * @relates openvrml::color
  *
  * @brief Compare for inequality.
  *
@@ -307,7 +307,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
 /**
  * @fn const vec2f operator*(const vec2f & lhs, float rhs) throw ()
  *
- * @relates vec2f
+ * @relates openvrml::vec2f
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -330,7 +330,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
 /**
  * @fn const vec2f operator/(const vec2f & lhs, float rhs) throw ()
  *
- * @relates vec2f
+ * @relates openvrml::vec2f
  *
  * @brief Divide a vector by a scalar.
  *
@@ -353,7 +353,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
 /**
  * @fn const vec2f operator+(const vec2f & lhs, const vec2f & rhs) throw ()
  *
- * @relates vec2f
+ * @relates openvrml::vec2f
  *
  * @brief Add two vectors.
  *
@@ -376,7 +376,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
 /**
  * @fn const vec2f operator-(const vec2f & lhs, const vec2f & rhs) throw ()
  *
- * @relates vec2f
+ * @relates openvrml::vec2f
  *
  * @brief Subtract two vectors.
  *
@@ -505,7 +505,7 @@ bool operator==(const vec2f & lhs, const vec2f & rhs) throw ()
 /**
  * @fn bool operator!=(const vec2f & lhs, const vec2f & rhs) throw ()
  *
- * @relates vec2f
+ * @relates openvrml::vec2f
  *
  * @brief Compare for inequality.
  *
@@ -585,7 +585,7 @@ std::ostream & operator<<(std::ostream & out, const vec2f & v)
 /**
  * @fn const vec3f operator*(const vec3f & lhs, const vec3f & rhs) throw ()
  *
- * @relates vec3f
+ * @relates openvrml::vec3f
  *
  * @brief Cross multiply two vectors.
  *
@@ -621,7 +621,7 @@ vec3f & vec3f::operator*=(const mat4f & mat) throw ()
 /**
  * @fn const vec3f operator*(const vec3f & vec, const mat4f & mat) throw ()
  *
- * @relates vec3f
+ * @relates openvrml::vec3f
  *
  * @brief Multiply a vector by a matrix.
  *
@@ -667,7 +667,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
 /**
  * @fn const vec3f operator*(const vec2f & lhs, float rhs) throw ()
  *
- * @relates vec3f
+ * @relates openvrml::vec3f
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -690,7 +690,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
 /**
  * @fn const vec3f operator/(const vec3f & lhs, float rhs) throw ()
  *
- * @relates vec3f
+ * @relates openvrml::vec3f
  *
  * @brief Divide a vector by a scalar.
  *
@@ -713,7 +713,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
 /**
  * @fn const vec3f operator+(const vec3f & lhs, const vec3f & rhs) throw ()
  *
- * @relates vec3f
+ * @relates openvrml::vec3f
  *
  * @brief Add two vectors.
  *
@@ -736,7 +736,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
 /**
  * @fn const vec3f operator-(const vec3f & lhs, const vec3f & rhs) throw ()
  *
- * @relates vec3f
+ * @relates openvrml::vec3f
  *
  * @brief Subtract two vectors.
  *
@@ -881,7 +881,7 @@ bool operator==(const vec3f & lhs, const vec3f & rhs) throw ()
 /**
  * @fn bool operator!=(const vec3f & lhs, const vec3f & rhs) throw ()
  *
- * @relates vec3f
+ * @relates openvrml::vec3f
  *
  * @brief Compare for inequality.
  *
@@ -1053,7 +1053,7 @@ rotation & rotation::operator*=(const rotation & rot) throw ()
 /**
  * @fn const rotation operator*(const rotation & lhs, const rotation & rhs) throw ()
  *
- * @relates rotation
+ * @relates openvrml::rotation
  *
  * @brief Multiply rotations.
  *
@@ -1286,7 +1286,7 @@ bool operator==(const rotation & lhs, const rotation & rhs) throw ()
 /**
  * @fn bool operator!=(const rotation & lhs, const rotation & rhs) throw ()
  *
- * @relates rotation
+ * @relates openvrml::rotation
  *
  * @brief Compare for inequality.
  *
@@ -1603,7 +1603,7 @@ mat4f & mat4f::operator*=(const float scalar) throw ()
 /**
  * @fn const mat4f operator*(const mat4f & mat, const float scalar) throw ()
  *
- * @relates mat4f
+ * @relates openvrml::mat4f
  *
  * @brief Multiply a matrix by a scalar value.
  *
@@ -1616,7 +1616,7 @@ mat4f & mat4f::operator*=(const float scalar) throw ()
 /**
  * @fn const mat4f operator*(const float scalar, const mat4f & mat) throw ()
  *
- * @relates mat4f
+ * @relates openvrml::mat4f
  *
  * @brief Multiply a scalar value by matrix.
  *
@@ -1670,7 +1670,7 @@ mat4f & mat4f::operator*=(const mat4f & mat) throw ()
 /**
  * @fn const mat4f operator*(const mat4f & lhs, const mat4f & rhs) throw ()
  *
- * @relates mat4f
+ * @relates openvrml::mat4f
  *
  * @brief Multiply two matrices.
  *
@@ -2108,7 +2108,7 @@ bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
 /**
  * @fn bool operator!=(const mat4f & lhs, const mat4f & rhs) throw ()
  *
- * @relates mat4f
+ * @relates openvrml::mat4f
  *
  * @brief Inequality comparison operator.
  *
@@ -2260,7 +2260,7 @@ quatf & quatf::operator*=(const quatf & quat) throw ()
 /**
  * @fn const quatf operator*(const quatf & lhs, const quatf & rhs) throw ()
  *
- * @relates quatf
+ * @relates openvrml::quatf
  *
  * @brief Multiply two quaternions.
  *
@@ -2289,7 +2289,7 @@ quatf & quatf::operator*=(const float scalar) throw ()
 /**
  * @fn const quatf operator*(const quatf & quat, float scalar) throw ()
  *
- * @relates quatf
+ * @relates openvrml::quatf
  *
  * @brief Multiply a quaternion by a scalar.
  *
@@ -2302,7 +2302,7 @@ quatf & quatf::operator*=(const float scalar) throw ()
 /**
  * @fn const quatf operator*(float scalar, const quatf & quat) throw ()
  *
- * @relates quatf
+ * @relates openvrml::quatf
  *
  * @brief Multiply a scalar by a quaternion.
  *
@@ -2331,7 +2331,7 @@ quatf & quatf::operator/=(const float scalar) throw ()
 /**
  * @fn const quatf operator/(const quatf & quat, float scalar) throw ()
  *
- * @relates quatf
+ * @relates openvrml::quatf
  *
  * @brief Divide a quaternion by a scalar.
  *
@@ -2360,7 +2360,7 @@ quatf & quatf::operator+=(const quatf & quat) throw ()
 /**
  * @fn const quatf operator+(const quatf & lhs, const quatf & rhs) throw ()
  *
- * @relates quatf
+ * @relates openvrml::quatf
  *
  * @brief Add two quaternions.
  *
@@ -2389,7 +2389,7 @@ quatf & quatf::operator-=(const quatf & quat) throw ()
 /**
  * @fn const quatf operator-(const quatf & lhs, const quatf & rhs) throw ()
  *
- * @relates quatf
+ * @relates openvrml::quatf
  *
  * @brief Take the difference between two quaternions.
  *
@@ -2583,7 +2583,7 @@ bool operator==(const quatf & lhs, const quatf & rhs) throw ()
 /**
  * @fn bool operator!=(const quatf & lhs, const quatf & rhs) throw ()
  *
- * @relates quatf
+ * @relates openvrml::quatf
  *
  * @brief Compare for inequality.
  *

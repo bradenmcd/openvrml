@@ -28,7 +28,7 @@ namespace openvrml {
  * @class node_class_ptr
  *
  * @brief node_class_ptr is a reference-counting smart pointer for
- *        @link node_class node_classes@endlink.
+ *        @link openvrml::node_class node_classes@endlink.
  *
  * node_class_ptr is patterned after the <a
  * href="http://boost.org/libs/smart_ptr/shared_ptr.htm">Boost shared_ptr</a>,
@@ -63,8 +63,6 @@ namespace openvrml {
  */
 
 /**
- * @fn node_class_ptr::node_class_ptr(node_class * class_)
- *
  * @brief Constructor.
  *
  * @param class_ a pointer to a NodeClass constructed with @c new.
@@ -151,8 +149,6 @@ node_class_ptr & node_class_ptr::operator=(const node_class_ptr & ptr) throw ()
  */
 
 /**
- * @fn void node_class_ptr::reset(node_class * class_) throw (std::bad_alloc)
- *
  * @brief Reset the node_class_ptr to a new node_class.
  *
  * @param class_ a pointer to a node_class constructed with @c new.
@@ -200,7 +196,7 @@ void node_class_ptr::dispose() throw ()
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs point to different
- *         @link node_class node_classes@endlink; @c false otherwise.
+ *         @link openvrml::node_class node_classes@endlink; @c false otherwise.
  */
 
 } // namespace openvrml

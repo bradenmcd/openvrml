@@ -111,8 +111,12 @@ namespace {
 
     int error = FALSE;
 
-    unsigned char *gifread (FILE *fp, int *w, int *h, int *nc, int *nf,
-			    unsigned char ***frames)
+    unsigned char * gifread(FILE *fp,
+                            size_t *w,
+                            size_t *h,
+                            size_t *nc,
+                            size_t *nf,
+                            unsigned char ***frames)
     {
       unsigned char* image[MAXIMAGE];
       int i;
@@ -718,14 +722,14 @@ namespace {
 
     double get_gamma_exp( void );
     int pngreadstr(FILE *fp,
-		   int *w, int *h, int *nc,
+                   size_t *w, size_t *h, size_t *nc,
 		   png_structp png_ptr,
 		   png_infop info_ptr,
 		   unsigned char **pixels,
 		   unsigned char ***rows);
 
 
-    unsigned char *pngread (FILE *fp, int *w, int *h, int *nc)
+    unsigned char *pngread (FILE *fp, size_t *w, size_t *h, size_t *nc)
     {
       png_structp png_ptr;
       png_infop info_ptr;
@@ -768,12 +772,14 @@ namespace {
      * can't clobber pixels and rows.
      */
 
-    int pngreadstr( FILE *fp,
-		           int *w, int *h, int *nc,
-		           png_structp png_ptr,
-		           png_infop info_ptr,
-		           unsigned char **ppixels,
-		           unsigned char ***prows )
+    int pngreadstr(FILE *fp,
+                   size_t *w,
+                   size_t *h,
+                   size_t *nc,
+                   png_structp png_ptr,
+                   png_infop info_ptr,
+                   unsigned char **ppixels,
+                   unsigned char ***prows )
     {
       png_uint_32 width, height;
       int bit_depth, color_type, interlace_type;
@@ -1019,7 +1025,7 @@ namespace {
 
 
 
-    unsigned char *jpgread (FILE *fp, int *w, int *h, int *nc)
+    unsigned char * jpgread(FILE *fp, size_t *w, size_t *h, size_t *nc)
     {
       struct jpeg_decompress_struct cinfo;
       /*struct jpeg_error_mgr jerr;*/
@@ -1249,7 +1255,11 @@ namespace {
     /*static int   MPEGRewind (MPEG *); Not used */
 
 
-    unsigned char *mpgread (FILE *fp, int *w, int *h, int *nc, int *nf,
+    unsigned char * mpgread(FILE *fp,
+                            size_t *w,
+                            size_t *h,
+                            size_t *nc,
+                            size_t *nf,
 			    unsigned char ***frames)
     {
       MPEG *m = MPEGOpen( fp, 0 );
@@ -6803,8 +6813,6 @@ namespace {
     }
 }
 
-using namespace openvrml;
-
 typedef enum {
   ImageFile_UNKNOWN,
 
@@ -6822,10 +6830,48 @@ typedef enum {
 
 static ImageFileType imageFileType(const char *, FILE *);
 
+namespace openvrml {
+
 /**
  * @class img
  *
  * @brief Image data.
+ */
+
+/**
+ * @var doc * img::url_
+ *
+ * @brief Resource.
+ */
+
+/**
+ * @var size_t img::w_;
+ *
+ * @brief Image width.
+ */
+
+/**
+ * @var size_t img::h_;
+ *
+ * @brief Image height.
+ */
+
+/**
+ * @var size_t img::nc_;
+ *
+ * @brief Number of components.
+ */
+
+/**
+ * @var size_t img::nframes_;
+ *
+ * @brief Number of frames.
+ */
+
+/**
+ * @var unsigned char * img::pixels_
+ *
+ * @brief Pixel data.
  */
 
 /**
@@ -6952,6 +6998,74 @@ const char * img::url() const
         : 0;
 }
 
+/**
+ * @fn size_t img::w() const
+ *
+ * @brief Image width.
+ *
+ * @return the image width.
+ */
+
+/**
+ * @fn size_t img::h() const
+ *
+ * @brief Image height.
+ *
+ * @return the image height.
+ */
+
+/**
+ * @fn size_t img::nc() const
+ *
+ * @brief Number of components.
+ *
+ * @return the number of components.
+ */
+
+/**
+ * @fn size_t img::nframes() const
+ *
+ * @brief Number of frames.
+ *
+ * @return the number of frames.
+ */
+
+/**
+ * @fn size_t img::pixels() const
+ *
+ * @brief Pixel data.
+ *
+ * @return the pixel data.
+ */
+
+/**
+ * @brief The pixel data for a frrame of the currently loaded image.
+ *
+ * @param frame the frame of interest.
+ *
+ * @return the pixel data for a frame of the currently loaded image; or 0 if
+ *         @p frame is not valid.
+ */
+unsigned char * img::pixels(const size_t frame) const
+{
+  return (frame < this->nframes_)
+      ? this->frame_[frame]
+      : 0;
+}
+
+/**
+ * @fn void img::resize(size_t w, size_t h)
+ *
+ * @brief Resize the image.
+ *
+ * This method simply resets the width and height attributes. It does not
+ * rescale the image or even reallocate the pixel data.
+ *
+ * @param w new width.
+ * @param h new height.
+ */
+
+} // namespace openvrml
 
 // Could peek at file header...
 
@@ -6983,19 +7097,3 @@ static ImageFileType imageFileType(const char *url, FILE *)
   else
     return ImageFile_UNKNOWN;
 }
-
-/**
- * @brief The pixel data for a frrame of the currently loaded image.
- *
- * @param frame the frame of interest.
- *
- * @return the pixel data for a frame of the currently loaded image; or 0 if
- *         @p frame is not valid.
- */
-unsigned char * img::pixels(int frame) const
-{
-  return (frame < this->nframes_)
-      ? this->frame_[frame]
-      : 0;
-}
-

@@ -156,9 +156,7 @@ namespace {
 }
 
 /**
- * @fn void doc::seturl(const char * url, const doc * relative)
- *
- * @brief Set the URL.
+  * @brief Set the URL.
  *
  * @param url       the new URL.
  * @param relative  the doc that @p url is relative to, or 0 if @p url is an
@@ -194,8 +192,6 @@ void doc::seturl(const char * const url, const doc * const relative)
 }
 
 /**
- * @fn void doc::seturl(const char * url, const doc2 * relative)
- *
  * @brief Set the URL.
  *
  * @param url       the new URL.

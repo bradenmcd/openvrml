@@ -522,12 +522,12 @@ viewer::~viewer() {}
  */
 
 /**
- * @fn void viewer::transform_points(int nPoints, float * points)
+ * @fn void viewer::transform_points(size_t nPoints, vec3f * point) const
  *
  * @brief Transform @p points by the current modelview matrix.
  *
  * @param nPoints   number of points.
- * @param points    points.
+ * @param point     pointer to the first point in an array.
  */
 
 /**

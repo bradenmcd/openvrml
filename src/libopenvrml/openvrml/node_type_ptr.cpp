@@ -28,7 +28,7 @@ namespace openvrml {
  * @class node_type_ptr
  *
  * @brief node_type_ptr is a reference-counting smart pointer for
- *        @link node_type node_types@endlink.
+ *        @link openvrml::node_type node_types@endlink.
  *
  * node_type_ptr is patterned after the <a
  * href="http://boost.org/libs/smart_ptr/shared_ptr.htm">Boost shared_ptr</a>,
@@ -63,8 +63,6 @@ namespace openvrml {
  */
 
 /**
- * @fn node_type_ptr::node_type_ptr(node_type * type) throw (std::bad_alloc)
- *
  * @brief Construct.
  *
  * @param type a pointer to a node_type constructed with @c new.
@@ -146,8 +144,6 @@ node_type_ptr & node_type_ptr::operator=(const node_type_ptr & ptr) throw ()
  */
 
 /**
- * @fn void node_type_ptr::reset(node_type * type) throw (std::bad_alloc)
- *
  * @brief Reset the node_type_ptr to a new node_type.
  *
  * @param type a pointer to a node_type constructed with @c new.
@@ -195,7 +191,7 @@ void node_type_ptr::dispose() throw ()
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs point to different
- *         @link node_type node_types@endlink; @c false otherwise.
+ *         @link openvrml::node_type node_types@endlink; @c false otherwise.
  */
 
 } // namespace openvrml

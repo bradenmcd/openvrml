@@ -297,16 +297,16 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
  *
  * @brief Type object for the script_node instance.
  *
- * Script node @link node_type node_types@endlink are significantly different
- * from other @link node_type node_types@endlink. While most
- * @link node_type node_types@endlink are shared by the Node instances they
- * spawn, the script_node_type is unique to a script_node instance, and it
- * shares the script_nodeInstance's lifetime. This reflects the fact that
- * Script nodes in VRML get their functionality by the addition of fields,
+ * Script node @link openvrml::node_type node_types@endlink are significantly
+ * different from other @link openvrml::node_type node_types@endlink. While
+ * most @link openvrml::node_type node_types@endlink are shared by the node
+ * instances they spawn, the script_node_type is unique to a script_node
+ * instance, and it* shares the script_node's lifetime. This reflects the fact
+ * that Script nodes in VRML get their functionality by the addition of fields,
  * eventIns, and eventOuts on a per-instance basis.
  *
- * For script_node instances, Node::nodeType is an alias for the scriptNodeType
- * object.
+ * For script_node instances, node::node_type is an alias for the
+ * script_node_type object.
  */
 
 /**
@@ -891,7 +891,8 @@ private:
  *
  * @return a new script object.
  */
-script * script_node::create_script() {
+script * script_node::create_script()
+{
     // Try each url until we find one we like
     for (size_t i = 0; i < this->url_.value.size(); ++i) {
         if (this->url_.value[i].empty()) { continue; }

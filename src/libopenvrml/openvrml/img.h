@@ -34,7 +34,7 @@ namespace openvrml {
 
     class OPENVRML_SCOPE img {
         doc * url_;
-        int w_, h_, nc_, nframes_;
+        size_t w_, h_, nc_, nframes_;
         unsigned char * pixels_;
         unsigned char ** frame_;
 
@@ -49,32 +49,32 @@ namespace openvrml {
 
         const char * url() const;
 
-        int w() const;
-        int h() const;
-        int nc() const;
-        int nframes() const;
+        size_t w() const;
+        size_t h() const;
+        size_t nc() const;
+        size_t nframes() const;
         unsigned char * pixels() const;
-        unsigned char * pixels(int frame) const;
+        unsigned char * pixels(size_t frame) const;
 
-        void resize(int w, int h);
+        void resize(size_t w, size_t h);
     };
 
-    inline int img::w() const
+    inline size_t img::w() const
     {
         return this->w_;
     }
 
-    inline int img::h() const
+    inline size_t img::h() const
     {
         return this->h_;
     }
 
-    inline int img::nc() const
+    inline size_t img::nc() const
     {
         return this->nc_;
     }
 
-    inline int img::nframes() const
+    inline size_t img::nframes() const
     {
         return this->nframes_;
     }
@@ -84,7 +84,7 @@ namespace openvrml {
         return this->pixels_;
     }
 
-    inline void img::resize(const int w, const int h)
+    inline void img::resize(const size_t w, const size_t h)
     {
         this->w_ = w;
         this->h_ = h;

@@ -28,7 +28,8 @@ namespace openvrml {
 /**
  * @class node_ptr
  *
- * @brief A reference-counted smart pointer for @link node nodes@endlink.
+ * @brief A reference-counted smart pointer for
+ *        @link openvrml::node nodes@endlink.
  */
 
 /**
@@ -70,7 +71,7 @@ namespace {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-node_ptr::node_ptr(node * node) throw (std::bad_alloc):
+node_ptr::node_ptr(node * const node) throw (std::bad_alloc):
     count_ptr(0)
 {
     if (node) {
@@ -149,8 +150,6 @@ node_ptr::node_ptr(const node_ptr & ptr) throw ():
  */
 
 /**
- * @fn void node_ptr::reset(node * node) throw (std::bad_alloc)
- *
  * @brief Reset the node_ptr to point to a different node.
  *
  * @param node
@@ -210,7 +209,7 @@ void node_ptr::share(std::map<node *, size_t>::value_type * count_ptr) throw ()
 /**
  * @fn bool operator!=(const node_ptr & lhs, const node_ptr & rhs) throw ()
  *
- * @relates node_ptr
+ * @relates openvrml::node_ptr
  *
  * @brief Compare for inequality.
  *
@@ -218,7 +217,7 @@ void node_ptr::share(std::map<node *, size_t>::value_type * count_ptr) throw ()
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs point to different
- *         @link node nodes@endlink; @c false otherwise.
+ *         @link openvrml::node nodes@endlink; @c false otherwise.
  */
 
 } // namespace openvrml

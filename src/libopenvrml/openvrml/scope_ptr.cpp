@@ -61,8 +61,6 @@ namespace openvrml {
  */
 
 /**
- * @fn scope_ptr::scope_ptr(openvrml::scope * scope) throw (std::bad_alloc)
- *
  * @brief Construct.
  *
  * @param scope a pointer to a scope constructed with @c new.
@@ -140,8 +138,6 @@ scope_ptr & scope_ptr::operator=(const scope_ptr & ptr) throw ()
  */
 
 /**
- * @fn void scope_ptr::reset(openvrml::scope * scope) throw (std::bad_alloc)
- *
  * @brief Reset the scope_ptr to a new scope.
  *
  * @param scope a pointer to a scope constructed with @c new.
@@ -189,7 +185,7 @@ void scope_ptr::dispose() throw ()
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs point to different
- *         @link scope scopes@endlink; @c false otherwise.
+ *         @link openvrml::scope scopes@endlink; @c false otherwise.
  */
 
 } // namespace openvrml

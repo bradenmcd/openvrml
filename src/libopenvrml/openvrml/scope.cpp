@@ -53,13 +53,13 @@ namespace openvrml {
 /**
  * @var std::list<node_type_ptr> scope::node_type_list
  *
- * @brief List of @link node_type node_types@endlink in the scope.
+ * @brief List of @link openvrml::node_type node_types@endlink in the scope.
  */
 
 /**
  * @var std::map<std::string, node *> scope::named_node_map
  *
- * @brief Map of the named @link node nodes@endlink in the scope.
+ * @brief Map of the named @link openvrml::node nodes@endlink in the scope.
  */
 
 /**
@@ -143,6 +143,9 @@ namespace {
     };
 }
 
+/**
+ * @internal
+ */
 typedef std::list<node_type_ptr> node_type_list_t;
 
 /**
@@ -179,6 +182,9 @@ const node_type_ptr scope::first_type() const
             : node_type_ptr(0);
 }
 
+/**
+ * @internal
+ */
 typedef std::map<std::string, node *> named_node_map_t;
 
 /**

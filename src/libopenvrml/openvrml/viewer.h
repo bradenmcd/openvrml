@@ -186,8 +186,7 @@ namespace openvrml {
 
         virtual void transform(const mat4f & mat) = 0;
 
-        // The viewer knows the current viewpoint
-        virtual void transform_points(int nPoints, float *points) = 0;
+        virtual void transform_points(size_t nPoints, vec3f * point) const = 0;
 
         // still working on some navigation api issues, so don't depend on
         // thses yet. there's a default implementation in any case, so you

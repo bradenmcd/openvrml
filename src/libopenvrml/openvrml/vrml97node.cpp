@@ -2559,7 +2559,7 @@ background_class::create_type(const std::string & id,
 /**
  * @var img * background_node::texPtr[6]
  *
- * @brief Pointers to the @link img imgs@endlink in @a tex.
+ * @brief Pointers to the @link openvrml::img imgs@endlink in @a tex.
  *
  * The pointers are initialized to zero, and become non-null once the textures
  * are loaded and, if necessary, resized.
@@ -18314,21 +18314,12 @@ void visibility_sensor_node::render(openvrml::viewer & viewer,
 
     if (this->enabled.value) {
         sftime timeNow(browser::current_time());
-        float xyz[2][3];
+        vec3f xyz[2] = { this->center.value,
+                         this->center.value + this->size.value };
 
         // hack: enclose box in a sphere...
-        xyz[0][0] = this->center.value.x();
-        xyz[0][1] = this->center.value.y();
-        xyz[0][2] = this->center.value.z();
-        xyz[1][0] = this->center.value.x() + this->size.value.x();
-        xyz[1][1] = this->center.value.y() + this->size.value.y();
-        xyz[1][2] = this->center.value.z() + this->size.value.z();
-        viewer.transform_points(2, &xyz[0][0]);
-        float dx = xyz[1][0] - xyz[0][0];
-        float dy = xyz[1][1] - xyz[0][1];
-        float dz = xyz[1][2] - xyz[0][2];
-        float r  = dx * dx + dy * dy + dz * dz;
-        if (!fpzero(r)) { r = sqrt(r); }
+        viewer.transform_points(2, &xyz[0]);
+        float r  = (xyz[1] - xyz[0]).length();
 
         // Was the sphere visible last time through? How does this work
         // for USE'd nodes? I need a way for each USE to store whether
@@ -18336,7 +18327,7 @@ void visibility_sensor_node::render(openvrml::viewer & viewer,
         bool wasIn = this->active.value;
 
         // Is the sphere visible? ...
-        bool inside = xyz[0][2] < 0.0; // && z > - scene->visLimit()
+        bool inside = xyz[0].z() < 0.0; // && z > - scene->visLimit()
         if (inside) {
             navigation_info_node * ni =
                 this->type.node_class.browser.bindable_navigation_info_top();
@@ -18348,8 +18339,8 @@ void visibility_sensor_node::render(openvrml::viewer & viewer,
 
         // This bit assumes 90degree fieldOfView to get rid of trig calls...
         if (inside) {
-            inside = fabs(xyz[0][0]) < -0.5 * xyz[0][2] + r
-                    && fabs(xyz[0][1]) < -0.5 * xyz[0][2] + r;
+            inside = fabs(xyz[0].x()) < -0.5 * xyz[0].z() + r
+                    && fabs(xyz[0].y()) < -0.5 * xyz[0].z() + r;
         }
 
         // Just became visible

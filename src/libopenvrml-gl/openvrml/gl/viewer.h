@@ -310,8 +310,7 @@ namespace openvrml {
 
             virtual void transform(const mat4f & mat);
 
-            // The viewer knows the current viewpoint
-            virtual void transform_points(int nPoints, float *points);
+            virtual void transform_points(size_t nPoints, vec3f * point) const;
 
             virtual void
             draw_bounding_sphere(const bounding_sphere & bs,

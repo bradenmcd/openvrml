@@ -3549,24 +3549,14 @@ void viewer::set_viewpoint(const vec3f & position,
  * @brief Transform @p points by the current modelview matrix.
  *
  * @param nPoints   number of points.
- * @param points    points.
+ * @param point     pointer to the first point in an array.
  */
-void viewer::transform_points(int np, float *p)
+void viewer::transform_points(const size_t nPoints, vec3f * point) const
 {
-    float m[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX, m);
-
-    float x, y, z;
-    for (int i = 0; i < np; ++i) {
-        x = m[0] * p[0] + m[4] * p[1] + m[8] * p[2] + m[12];
-        y = m[1] * p[0] + m[5] * p[1] + m[9] * p[2] + m[13];
-        z = m[2] * p[0] + m[6] * p[1] + m[10] * p[2] + m[14];
-
-        p[0] = x;
-        p[1] = y;
-        p[2] = z;
-        p += 3;
-    }
+    mat4f m;
+    glGetFloatv(GL_MODELVIEW_MATRIX, &m[0][0]);
+    vec3f * const end = point + nPoints;
+    for (; point != end; ++point) { *point = m * *point; }
 }
 
 /**
