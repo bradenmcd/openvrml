@@ -1,3 +1,8 @@
+2004-11-19 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp (NP_GetValue):  Handle
+	variables NPPVpluginNameString and NPPVpluginDescriptionString.
+
 2004-11-15 Braden McDaniel  <braden@endoframe.com>
 
 	Updated versions of GL detection macros.

@@ -1,3 +1,4 @@
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
 //
 // OpenVRML Mozilla plug-in
 // Copyright 2004  Braden N. McDaniel
@@ -27,6 +28,7 @@
 # include <openvrml/browser.h>
 # if defined MOZ_X11
 #   include "gtkvrml/vrmlbrowser.h"
+#   include <gtk/gtkgl.h>
 # else
 #   error Unsupported toolkit.
 # endif
@@ -236,6 +238,10 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     if (err != NPERR_NO_ERROR || toolkit != NPNVGtk2) {
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
     }
+
+    static int argc = 0;
+    static char ** argv = 0;
+    if (!gtk_gl_init_check(&argc, &argv)) { return NPERR_GENERIC_ERROR; }
 # endif // defined MOZ_X11
 
     return NPP_Initialize();
@@ -249,7 +255,18 @@ NPError NP_Shutdown()
 
 NPError NP_GetValue(void * future, NPPVariable variable, void * value)
 {
-    return NPP_GetValue(static_cast<NPP>(future), variable, value);
+    NPError err = NPERR_NO_ERROR;
+    switch (variable) {
+    case NPPVpluginNameString:
+        *static_cast<const char **>(value) = "OpenVRML";
+        break;
+    case NPPVpluginDescriptionString:
+        *static_cast<const char **>(value) = "VRML browser";
+        break;
+    default:
+        err = NPERR_GENERIC_ERROR;
+    }
+    return err;
 }
 
 char * NPP_GetMIMEDescription()
@@ -580,12 +597,6 @@ NPError NPP_GetValue(const NPP instance,
     PluginInstance<toolkit> * pluginInstance = 0;
 
     switch (variable) {
-    case NPPVpluginNameString:
-        *static_cast<const char **>(value) = "OpenVRML";
-        break;
-    case NPPVpluginDescriptionString:
-        *static_cast<const char **>(value) = "VRML browser";
-        break;
     case NPPVpluginScriptableInstance:
         assert(instance->pdata);
         pluginInstance =
@@ -691,7 +702,7 @@ NPError NPN_PostURL(NPP instance,
                                len,
                                buf,
                                file);
-} 
+}
 
 NPError NPN_RequestRead(NPStream * stream, NPByteRange * rangeList)
 {
@@ -1022,7 +1033,8 @@ namespace {
 
     PluginInstance<gtk>::~PluginInstance() throw ()
     {
-        std::cout << "PluginInstance<gtk>::~PluginInstance" << std::endl;
+        gtk_container_remove(GTK_CONTAINER(this->plug), this->vrmlBrowser);
+        gtk_widget_destroy(this->vrmlBrowser);
         gtk_widget_destroy(this->plug);
     }
 
@@ -1039,7 +1051,7 @@ namespace {
         // a C++ type in what ought to be a C interface.  We probably need
         // simply to punt on the idea of gtk_vrml_browser ever being usable
         // from C.
-        // 
+        //
         return *static_cast<openvrml::browser *>(
             GTK_VRML_BROWSER(this->vrmlBrowser)->browser);
     }
