@@ -1,3 +1,11 @@
+2005-01-24 Braden McDaniel  <braden@endoframe.com>
+
+	Mozilla pkg-config metadata files do not reliably add the top-
+	level Mozilla include directory to the _CFLAGS variable.
+
+	* configure.ac
+	* mozilla-plugin/configure.ac
+
 2005-01-23 Braden McDaniel  <braden@endoframe.com>
 
 	* README:  Added note about memory requirements for building
