@@ -2,6 +2,8 @@
 
         * Made the parser, scanner, and ANTLR headers non-public.
 
+        * Upgraded JavaScript to 1.5RC2.
+
 2000-11-16  S. K. Bose <bose@pavan.barc.ernet.in>
         
         * Changes in Makefile.win to include conditional generation
