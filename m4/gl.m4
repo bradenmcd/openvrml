@@ -33,10 +33,13 @@ GL_CFLAGS="${PTHREAD_CFLAGS}"
 GL_LIBS="${PTHREAD_LIBS} -lm"
 
 #
-# If X is present, use x_includes and x_libraries.
+# Use x_includes and x_libraries if they have been set (presumably by
+# AC_PATH_X).
 #
-if test "X${no_x}" != "Xyes"; then
+if test -n "$x_includes"; then
   GL_CFLAGS="-I${x_includes} ${GL_CFLAGS}"
+fi
+if test -n "$x_libraries"; then
   GL_LIBS="-L${x_libraries} ${GL_LIBS}"
 fi
 
