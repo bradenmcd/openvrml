@@ -35,6 +35,7 @@
 # include <ctype.h>
 # include <algorithm>
 # include <fstream>
+# include <iostream>
 # include <regex.h>
 # include "doc2.hpp"
 # include "System.h"

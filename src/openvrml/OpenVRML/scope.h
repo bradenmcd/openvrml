@@ -25,7 +25,6 @@
 #   include <list>
 #   include <map>
 #   include <string>
-#   include "common.h"
 #   include "nodetypeptr.h"
 #   include "scopeptr.h"
 

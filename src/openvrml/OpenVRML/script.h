@@ -22,9 +22,6 @@
 # ifndef OPENVRML_SCRIPT_H
 #   define OPENVRML_SCRIPT_H
 
-#   include <stddef.h>
-#   include <string>
-#   include "common.h"
 #   include "fieldvalueptr.h"
 #   include "node.h"
 

@@ -25,17 +25,17 @@
 #   define OPENVRML_VIEWER_H
 
 #   include <stddef.h>
-#   include "common.h"
 #   include "bvolume.h"
-#   include "node.h"
 #   include "VrmlFrustum.h"
 
 namespace OpenVRML {
 
+    class Node;
     class BSphere;
     class AABox;
     class SFVec3f;
     class VrmlMatrix;
+    class Browser;
 
     class OPENVRML_SCOPE Viewer {
     protected:

@@ -22,12 +22,11 @@
 # ifndef OPENVRML_FIELD_H
 #   define OPENVRML_FIELD_H
 
-#   include <iostream>
+#   include <iosfwd>
 #   include <memory>
 #   include <string>
 #   include <typeinfo>
 #   include <vector>
-#   include "common.h"
 #   include "nodeptr.h"
 
 namespace OpenVRML {

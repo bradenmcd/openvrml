@@ -21,7 +21,7 @@
 # ifndef OPENVRML_DOC2_HPP
 #   define OPENVRML_DOC2_HPP
 
-#   include <iostream>
+#   include <iosfwd>
 #   include <string>
 #   include "common.h"
 

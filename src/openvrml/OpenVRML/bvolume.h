@@ -21,7 +21,7 @@
 # ifndef OPENVRML_BVOLUME_H
 #   define OPENVRML_BVOLUME_H
 
-#   include <iostream>
+#   include <iosfwd>
 #   include "common.h"
 
 namespace OpenVRML {

@@ -21,7 +21,7 @@
 # ifndef OPENVRML_BROWSER_H
 #   define OPENVRML_BROWSER_H
 
-#   include <algorithm>
+#   include <stddef.h>
 #   include <list>
 #   include <map>
 #   include "common.h"

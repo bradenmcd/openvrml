@@ -23,7 +23,7 @@
 # endif
 
 # include <algorithm>
-# include <stdio.h>
+# include <ostream>
 # include "node.h"
 # include "scope.h"
 # include "browser.h"

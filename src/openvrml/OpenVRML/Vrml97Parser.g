@@ -120,9 +120,10 @@ ANTLR_RBRACE
 
 header "post_include_cpp" {
 # include <assert.h>
+# include <ctype.h>
+# include <istream>
 # include <antlr/CommonToken.hpp>
 # include "scope.h"
-# include "node.h"
 # include "script.h"
 # include "private.h"
 
@@ -880,7 +881,6 @@ routeStatement[const OpenVRML::Scope & scope]
             using OpenVRML::FieldValue;
             using OpenVRML::Node;
             using OpenVRML::NodePtr;
-            using OpenVRML::ScriptNode;
             using antlr::SemanticException;
             
             Node * const fromNode = scope.findNode(fromNodeId->getText());

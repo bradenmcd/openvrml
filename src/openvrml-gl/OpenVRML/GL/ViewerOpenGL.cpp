@@ -22,17 +22,12 @@
 #   include <config.h>
 # endif
 
-# if defined(_WIN32) && !defined(__CYGWIN__)
-#   include <winconfig.h>
+# ifdef _WIN32
+#   include <wtypes.h>
+#   include <winbase.h>
+#   include <windef.h>
+#   include <wingdi.h>
 # endif
-
-// Win32 needs to know that GL stuff lives in a DLL (OPENGL32.DLL)
-#if defined(_WIN32)
-#include <wtypes.h>
-#include <winbase.h>
-#include <windef.h>
-#include <wingdi.h>
-#endif
 
 # include OPENVRML_GL_H
 # include OPENVRML_GLU_H

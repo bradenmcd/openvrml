@@ -22,14 +22,9 @@
 # ifndef OPENVRML_NODE_H
 #   define OPENVRML_NODE_H
 
-#   include <iostream>
 #   include <list>
 #   include <set>
 #   include <stdexcept>
-#   include <string>
-#   include <typeinfo>
-#   include <vector>
-#   include "common.h"
 #   include "field.h"
 #   include "fieldvalueptr.h"
 #   include "nodetypeptr.h"

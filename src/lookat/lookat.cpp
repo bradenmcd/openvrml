@@ -33,15 +33,14 @@
 # endif
 
 # include <stdio.h>
+# include <iostream>
 # include OPENVRML_GLUT_H
-# include <OpenVRML/doc2.hpp>
 # include <OpenVRML/browser.h>
 
 # include "ViewerGlut.h"
 
 using OpenVRML::Browser;
 using OpenVRML::MFString;
-using OpenVRML::Doc2;
 
 extern "C" {
     typedef void (*GlutMenu)(int);

@@ -22,13 +22,8 @@
 #   include <config.h>
 # endif
 
-# include <errno.h>
-# include <stdio.h>
-# include <stddef.h>
 # include <algorithm>
 # include <stack>
-# include <strstream>
-# include <list>
 # include <regex.h>
 # include "private.h"
 # include "browser.h"
