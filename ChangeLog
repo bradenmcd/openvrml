@@ -1,3 +1,8 @@
+2004-11-23 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp (gtk_vrml_browser_destroy):
+	The browser must be destroyed before the viewer.
+
 2004-11-22 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp:  Fixed declaration of
