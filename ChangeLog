@@ -1,7 +1,17 @@
+1999-10-17  Braden N. McDaniel  <braden@endoframe.com>
+
+        * OpenGL renderer displaced from libvrml97core and placed in
+          libvrml97gl.
+
+        * Helper functions from MathHelper.cpp in libvrml97core placed in an
+          unnamed namespace in ViewerOpenGL.cpp.
+
+	* OpenGLEvent.c renamed to OpenGLEvent.cpp
+
 1999-10-19  Braden McDaniel <braden@endoframe.com>
 
         * Displaced lookat, xmlookat, and gtklookat to their own packages. This
-          removed the files:
+          removed these files from libvrml97core:
           
           lookat.cpp
           ViewerGlut.cpp

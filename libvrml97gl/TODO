@@ -1,8 +1,0 @@
-- There is a good deal of overlap between the helper functions imported from
-  MathHelper.cpp and those in OpenGLEvent.cpp. As long as there's no good reason
-  to expose these functions to the outside world, they should be consolidated
-  and all the helper methods should be put in the unnamed namespace in
-  ViewerOpenGL.cpp. OpenGLEvent.cpp, OpenGLEvent.h would then be eliminated from
-  the build.
-
-- glut dependency needs to be eliminated.

@@ -1,8 +1,0 @@
-1999-10-17  Braden N. McDaniel  <braden@endoframe.com>
-
-        * OpenGL renderer displaced from libvrml97 and placed in libvrml97gl.
-
-        * Helper functions from MathHelper.cpp in libvrml97 placed in an unnamed
-          namespace in ViewerOpenGL.cpp.
-
-	* OpenGLEvent.c renamed to OpenGLEvent.cpp
