@@ -45,7 +45,7 @@ using OpenVRML
 Summary:        OpenGL renderer for OpenVRML
 Group:          System Environment/Libraries
 Requires:       %{name} = %{version}
-Requires:       xorg-x11-Mesa-libGLU >= 4.3
+Requires:       xorg-x11-Mesa-libGLU >= 6.7
 %description gl
 OpenGL renderer for OpenVRML.
 
@@ -53,7 +53,7 @@ OpenGL renderer for OpenVRML.
 Summary:        OpenVRML OpenGL renderer headers and static library.
 Group:          Development/Libraries
 Requires:       %{name}-gl = %{version}
-Requires:       XFree86-devel >= 4.3
+Requires:       xorg-X11-devel >= 6.7
 %description gl-devel
 Headers and static library that programmers will need to develop C++ programs
 using the OpenVRML OpenGL renderer.
@@ -73,7 +73,6 @@ Group:          Applications/Internet
 License:        GPL
 Requires:       %{name}-gl = %{version}
 Requires:       gtkglext >= 1.0.0
-Requires:       mozilla >= 1.6
 %description mozilla
 VRML browser plug-in for Mozilla.
 
@@ -131,6 +130,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Nov 21 2004  Braden McDaniel  <braden@endoframe.com>
+- Changed openvrml-gl-devel dependency on XFree86-devel to xorg-X11-devel.
+- Removed openvrml-mozilla dependency on mozilla.  Other browsers (e.g.,
+  Firefox) could use the plug-in, too.
+
 * Sat May 15 2004  Braden McDaniel  <braden@endoframe.com>
 - Use "License" instead of "Copyright".
 - Require xorg-x11 packages instead of XFree86.

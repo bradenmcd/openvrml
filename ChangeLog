@@ -1,3 +1,10 @@
+2004-11-21 Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.spec.in:  Changed openvrml-gl-devel dependency on
+	XFree86-devel to xorg-X11-devel.  Removed openvrml-mozilla
+	dependency on mozilla.  Other browsers (e.g., Firefox) could use
+	the plug-in, too.
+
 2004-11-20 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp (NPP_GetValue):  Delegate to
