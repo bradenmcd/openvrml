@@ -1,5 +1,11 @@
 2005-03-14 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml-player/player.cpp:
+	bounded_buffer<>'s mutex needs to be mutable for
+	bounded_buffer<>::buffered.
+
+2005-03-14 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml-player/player.cpp:  Moved
 	plugin_istream to initial_stream_reader::operator() as a locally
 	defined class.

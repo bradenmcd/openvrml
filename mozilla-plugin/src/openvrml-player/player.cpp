@@ -126,7 +126,7 @@ namespace {
 
     template <typename T, size_t BufferSize>
     class bounded_buffer {
-        boost::mutex mutex_;
+        mutable boost::mutex mutex_;
         boost::condition buffer_not_full_, buffer_not_empty_;
 
         T buf_[BufferSize];
