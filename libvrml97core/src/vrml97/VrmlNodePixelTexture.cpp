@@ -181,15 +181,21 @@ void VrmlNodePixelTexture::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 
-  if ( strcmp(fieldName, "image") == 0 )
-  {
-	  theSystem->debug("image w h c %dx%dx%d", d_image.width(), d_image.height(), d_image.nComponents());
-	  unsigned char* p= d_image.pixels();
-	  for (int y=0; y<d_image.height(); ++y)
-		  for (int x=0; x<d_image.width(); ++x)
-			  for (int nc=0; nc<d_image.nComponents(); ++nc, ++p)
-				  theSystem->debug("pixel %d, %d byte %d: 0x%x",
-						x, y, nc, *p);
-  }
+  //if ( strcmp(fieldName, "image") == 0 )
+  //{
+  //theSystem->debug("image w h c %dx%dx%d\n", d_image.width(), d_image.height(), d_image.nComponents());
+  //unsigned char* p= d_image.pixels();
+  //for (int y=0; y<d_image.height(); ++y) {
+  //for (int y=0; y<1; ++y) {
+  //for (int x=0; x<d_image.width(); ++x) {
+  //for (int nc=0; nc<d_image.nComponents(); ++nc, ++p) {
+  //if (*p)
+  //cout << x << "," << y << "," << nc << ":" << (int)*p << endl;
+  //}
+  //}
+  //}
+  //theSystem->debug("pixel %d, %d byte %d: 0x%x",
+  //x, y, nc, *p);
+  //}
 }
 

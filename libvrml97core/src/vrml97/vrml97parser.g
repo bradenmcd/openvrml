@@ -959,26 +959,46 @@ floatValue returns [float f = 0.0f]
 sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
         {
             long w(0L), h(0L), com(0L), pixel(0L);
+            //int cnt = 0;
         }
     :   w=intValue h=intValue com=intValue
         {
-            //
-            // This needs to be a long, but VrmlSFImage wants a char ... ?
-            //
             SimpleVector<unsigned char> pixelVector;
+	    //cout << "sfImageValue {" << endl;
         }
         (
             pixel=intValue
             {
-                pixelVector.add(static_cast<unsigned char>(pixel));
+                // need to confirm the cross-platform-ness of this, it
+                // looks kind of ugly but might in fact be ok. basically,
+                // we read the value as an integer, then strip off the
+                // bytes one by one.
+		for(int i=com-1; i>=0; i--) {
+                  unsigned char pix = (unsigned char)(pixel >> (8*i) & 0xff);
+  	          //cout << "sfImageValue:pixel:" << i << ":" << pixel << "/" << (int)pix << endl;
+                  pixelVector.add(pix);
+                  //cnt++;
+                }
             }
         )*
         {
-            if (pixelVector.size() != static_cast<unsigned long>(w * h)) {
+	    //cout << "w/h/nc=" << w << "," << h << "," << com << "," << cnt << endl;
+	    //cout << "w*h*com=" << w*h*com << endl;
+	    //cout << "pixelVector.size()=" << pixelVector.size() << endl;
+
+            // if somebody gives us a really, really, really big
+            // pixeltexture, then we will crash. in the age of dos
+            // attacks, we have to assume that someone will feed us a
+	    // too-big texture to see if we barf. good behavior
+	    // would be to detect outsized w/h and bail. casting away
+	    // the compiler warning is not helpful. there are other 
+            // bigger bugs to fry, so I guess it's ok for now.
+            //
+            if (pixelVector.size() != (w * h * com)) {
                 throw antlr::SemanticException("Wrong number of pixel values for SFImage.");
             }
-            *siv = VrmlSFImage(static_cast<int>(w), static_cast<int>(h),
-                               static_cast<int>(com), pixelVector.data());
+            *siv = VrmlSFImage(w, h, com, pixelVector.data()); // hmmmm...
+            //cout << "}" << endl;
         }
     ;
 
@@ -1020,13 +1040,24 @@ mfInt32Value returns [VrmlMFInt * miv = new VrmlMFInt()]
     ;
 
 intValue returns [long val = 0]
-    :   i:INTEGER { istrstream(
+    :   i:INTEGER { istrstream istr(
 # ifdef _WIN32
                                const_cast<char *>(i->getText().c_str())
 # else
                                i->getText().c_str()
 # endif
-                               ) >> val; }
+                               );
+        // default for istr is ios:dec for basefield, we have to clear
+        // the flag entirely to force istr to recognize the "0x"
+        // syntax as meaning hex while still reading decimal. (we also
+        // mistakenly recognize octal). depending on obscure iostream
+        // features worries me, as it's error prone. better to have
+        // the lexer specifically handle cases like this.
+   	//
+	istr.setf(0, ios::basefield);
+	istr >> val; 
+	//cout << "intValue:" << val << endl;
+	}
     ;
 
 sfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlSFNode * snv = new VrmlSFNode(0)]

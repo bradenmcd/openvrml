@@ -231,25 +231,33 @@ VrmlField::VrmlFieldType VrmlSFFloat::fieldType() const { return SFFLOAT; }
 #include "VrmlSFImage.h"
 
 
-VrmlSFImage::VrmlSFImage(int w, int h, int nc, unsigned char const * pixels)
-  : d_w(w), d_h(h), d_nc(nc), d_pixels(new unsigned char[w * h])
+VrmlSFImage::VrmlSFImage(int w, int h, int nc, unsigned char const * pixels) :
+  d_w(0), d_h(0), d_nc(0), d_pixels(0)
 {
-    if (pixels) {
-        std::copy(pixels, pixels + (w * h), d_pixels);
-    }
+  int nbytes = w * h * nc;
+  if (pixels) {
+    if ((d_pixels = new unsigned char[nbytes]) != 0)
+      {
+        d_w = w;
+        d_h = h;
+        d_nc = nc;
+        memcpy(d_pixels, pixels, nbytes);
+      }
+  }
 }
 
-VrmlSFImage::VrmlSFImage(const VrmlSFImage& sfi) :
-  d_w(sfi.d_w), d_h(sfi.d_h), d_nc(sfi.d_nc),
-  d_pixels(0)
+VrmlSFImage::VrmlSFImage(const VrmlSFImage& rhs) :
+  d_w(0), d_h(0), d_nc(0), d_pixels(0)
 {
-  int nbytes = d_w * d_h * d_nc;
+  int nbytes = rhs.d_w * rhs.d_h * rhs.d_nc;
   if ((d_pixels = new unsigned char[nbytes]) != 0)
     {
-      memcpy(d_pixels, sfi.d_pixels, nbytes);
+      d_w = rhs.d_w;
+      d_h = rhs.d_h;
+      d_nc = rhs.d_nc;
+      memcpy(d_pixels, rhs.d_pixels, nbytes);
     }
 }
-
 
 VrmlSFImage::~VrmlSFImage()
 {
