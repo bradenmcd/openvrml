@@ -57,22 +57,46 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  virtual VrmlNodeColor *color();
-
   virtual VrmlNodeElevationGrid* toElevationGrid() const; //LarryD Mar 09/99
 
-  virtual VrmlNode* getNormal();  //LarryD Mar 09/99
-  virtual VrmlNode* getTexCoord();  //LarryD Mar 09/99
-  virtual bool getCcw(){ return d_ccw.get(); }   //LarryD Mar 09/99
-  virtual bool getColorPerVertex(){ return d_colorPerVertex.get(); }  //LarryD Mar 09/99
-  virtual float getCreaseAngle(){ return d_creaseAngle.get();}  //LarryD Mar 09/99
-  virtual const VrmlMFFloat& getHeight() const;   //LarryD Mar 09/99
-  virtual bool getNormalPerVertex(){ return d_normalPerVertex.get();}  //LarryD Mar 09/99
-  virtual bool getSolid(){ return d_solid.get();}  //LarryD Mar 09/99
-  virtual int getXDimension() { return d_xDimension.get(); }  //LarryD Mar 09/99
-  virtual float getXSpacing() { return d_xSpacing.get(); }  //LarryD Mar 09/99
-  virtual int getZDimension() { return d_zDimension.get(); }  //LarryD Mar 09/99
-  virtual float getZSpacing() { return d_zSpacing.get(); }  //LarryD Mar 09/99
+  const VrmlSFNode & getColor() const;
+  void setColor(const VrmlSFNode & color);
+
+  const VrmlSFNode & getNormal() const;
+  void setNormal(const VrmlSFNode & normal);
+
+  const VrmlSFNode & getTexCoord() const;
+  void setTexCoord(const VrmlSFNode & texCoord);
+
+  const VrmlSFBool & getCcw() const;
+  void setCcw(const VrmlSFBool & ccw);
+
+  const VrmlSFBool & getColorPerVertex() const;
+  void setColorPerVertex(const VrmlSFBool & colorPerVertex);
+
+  const VrmlSFFloat & getCreaseAngle() const;
+  void setCreaseAngle(const VrmlSFFloat & creaseAngle);
+
+  const VrmlMFFloat & getHeight() const;
+  void setHeight(const VrmlMFFloat & height);
+
+  const VrmlSFBool & getNormalPerVertex() const;
+  void setNormalPerVertex(const VrmlSFBool & normalPerVertex);
+
+  const VrmlSFBool & getSolid() const;
+  void setSolid(const VrmlSFBool & solid);
+
+  const VrmlSFInt32 & getXDimension() const;
+  void setXDimension(const VrmlSFInt32 & xDimension);
+
+  const VrmlSFFloat & getXSpacing() const;
+  void setXSpacing(const VrmlSFFloat & xSpacing);
+
+  const VrmlSFInt32 & getZDimension() const;
+  void setZDimension(const VrmlSFInt32 & zDimension);
+
+  const VrmlSFFloat & getZSpacing() const;
+  void setZSpacing(const VrmlSFFloat & zSpacing);
 
 protected:
 

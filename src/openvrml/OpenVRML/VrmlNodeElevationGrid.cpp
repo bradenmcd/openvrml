@@ -169,12 +169,6 @@ ostream& VrmlNodeElevationGrid::printFields(ostream& os, int indent)
   return os;
 }
 
-VrmlNodeColor *VrmlNodeElevationGrid::color()
-{
-  return d_color.get() ? d_color.get()->toColor() : 0;
-}
-
-
 Viewer::Object VrmlNodeElevationGrid::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
@@ -266,12 +260,249 @@ void VrmlNodeElevationGrid::setField(const char *fieldName,
 VrmlNodeElevationGrid* VrmlNodeElevationGrid::toElevationGrid() const 
 { return (VrmlNodeElevationGrid*) this; }
 
-VrmlNode* VrmlNodeElevationGrid::getNormal()  // LarryD Mar 09/99
-{   return d_normal.get(); }
+/**
+ * @brief Get the Color node.
+ *
+ * @return an SFNode object containing the Color node associated with
+ *         this ElevationGrid.
+ */
+const VrmlSFNode & VrmlNodeElevationGrid::getColor() const {
+    return this->d_color;
+}
 
-VrmlNode* VrmlNodeElevationGrid::getTexCoord()  // LarryD Mar 09/99
-{   return d_texCoord.get(); }
+/**
+ * @brief Set the Color node.
+ *
+ * @param color an SFNode value containing a Color node.
+ */
+void VrmlNodeElevationGrid::setColor(const VrmlSFNode & color) {
+    assert(!color.get() || dynamic_cast<VrmlNodeColor *>(color.get()));
+    this->d_color = color;
+}
 
-const VrmlMFFloat& VrmlNodeElevationGrid::getHeight() const  // LarryD Mar 09/99
-{   return d_height; }
+/**
+ * @brief Get the Normal node.
+ *
+ * @return an SFNode object containing the Normal node associated with
+ *         this ElevationGrid.
+ */
+const VrmlSFNode & VrmlNodeElevationGrid::getNormal() const {
+    return this->d_normal;
+}
 
+/**
+ * @brief Set the Normal node.
+ *
+ * @param normal an SFNode value containing a Normal node.
+ */
+void VrmlNodeElevationGrid::setNormal(const VrmlSFNode & normal) {
+    assert(!normal.get() || dynamic_cast<VrmlNodeNormal *>(normal.get()));
+    this->d_normal = normal;
+}
+
+/**
+ * @brief Get the TextureCoordinate node.
+ *
+ * @return an SFNode object containing the TextureCoordinate node
+ *         associated with this ElevationGrid.
+ */
+const VrmlSFNode & VrmlNodeElevationGrid::getTexCoord() const {
+    return this->d_texCoord;
+}
+
+/**
+ * @brief Set the TextureCoordinate node.
+ *
+ * @param texCoord an SFNode value containing a TextureCoordinate node.
+ */
+void VrmlNodeElevationGrid::setTexCoord(const VrmlSFNode & texCoord) {
+    assert(!texCoord.get()
+            || dynamic_cast<VrmlNodeTextureCoordinate *>(texCoord.get()));
+    this->d_texCoord = texCoord;
+}
+
+/**
+ * @brief Get whether vertices are ordered counter-clockwise.
+ *
+ * @return an SFBool object.
+ */
+const VrmlSFBool & VrmlNodeElevationGrid::getCcw() const {
+    return this->d_ccw;
+}
+
+/**
+ * @brief Set whether vertices are ordered counter-clockwise.
+ *
+ * @param ccw an SFBool object.
+ */
+void VrmlNodeElevationGrid::setCcw(const VrmlSFBool & ccw) {
+    this->d_ccw = ccw;
+}
+
+/**
+ * @brief Get whether colors are interpreted per-vertex.
+ *
+ * @return an SFBool object.
+ */
+const VrmlSFBool & VrmlNodeElevationGrid::getColorPerVertex() const {
+    return this->d_colorPerVertex;
+}
+
+/**
+ * @brief Set whether colors are interpreted per-vertex.
+ *
+ * @param colorPerVertex an SFBool object.
+ */
+void VrmlNodeElevationGrid::setColorPerVertex(const VrmlSFBool & colorPerVertex)
+{
+    this->d_colorPerVertex = colorPerVertex;
+}
+
+/**
+ * @brief Get the crease angle.
+ *
+ * @return the crease angle.
+ */
+const VrmlSFFloat & VrmlNodeElevationGrid::getCreaseAngle() const {
+    return this->d_creaseAngle;
+}
+
+/**
+ * @brief Set the crease angle.
+ *
+ * @param creaseAngle
+ */
+void VrmlNodeElevationGrid::setCreaseAngle(const VrmlSFFloat & creaseAngle) {
+    this->d_creaseAngle = creaseAngle;
+}
+
+/**
+ * @brief Get the height field.
+ *
+ * @return the height field
+ */
+const VrmlMFFloat & VrmlNodeElevationGrid::getHeight() const {
+    return this->d_height;
+}
+
+/**
+ * @brief Set the height field.
+ *
+ * @param height a height field
+ */
+void VrmlNodeElevationGrid::setHeight(const VrmlMFFloat & height) {
+    this->d_height = height;
+}
+
+/**
+ * @brief Get whether normals are interpreted per-vertex.
+ *
+ * @return an SFBool object.
+ */
+const VrmlSFBool & VrmlNodeElevationGrid::getNormalPerVertex() const {
+    return this->d_normalPerVertex;
+}
+
+/**
+ * @brief Set whether normals are interpreted per-vertex.
+ *
+ * @param normalPerVertex an SFBool object.
+ */
+void VrmlNodeElevationGrid::setNormalPerVertex(const VrmlSFBool &
+                                                            normalPerVertex) {
+    this->d_normalPerVertex = normalPerVertex;
+}
+
+/**
+ * @brief Get whether the geometry should be interpreted as a solid.
+ *
+ * @return an SFBool object.
+ */
+const VrmlSFBool & VrmlNodeElevationGrid::getSolid() const {
+    return this->d_solid;
+}
+
+/**
+ * @brief Set whether the geometry should be interpreted as solid.
+ *
+ * @param solid
+ */
+void VrmlNodeElevationGrid::setSolid(const VrmlSFBool & solid) {
+    this->d_solid = solid;
+}
+
+/**
+ * @brief Get the number of vertices in the <var>x</var>-dimension.
+ *
+ * @return the xDimension
+ */
+const VrmlSFInt32 & VrmlNodeElevationGrid::getXDimension() const {
+    return this->d_xDimension;
+}
+
+/**
+ * @brief Set the number of vertices in the <var>x</var>-dimension.
+ *
+ * @param xDimension
+ */
+void VrmlNodeElevationGrid::setXDimension(const VrmlSFInt32 & xDimension) {
+    this->d_xDimension = xDimension;
+}
+
+/**
+ * @brief Get the distance between vertices in the
+ *        <var>x</var>-dimension.
+ *
+ * @return the xSpacing
+ */
+const VrmlSFFloat & VrmlNodeElevationGrid::getXSpacing() const {
+    return this->d_xSpacing;
+}
+
+/**
+ * @brief Set the distance between vertices in the
+ *        <var>x</var>-dimension.
+ *
+ * @param xSpacing
+ */
+void VrmlNodeElevationGrid::setXSpacing(const VrmlSFFloat & xSpacing) {
+    this->d_xSpacing = xSpacing;
+}
+
+/**
+ * @brief Get the number of vertices in the <var>z</var>-dimension.
+ *
+ * @return the zDimension
+ */
+const VrmlSFInt32 & VrmlNodeElevationGrid::getZDimension() const {
+    return this->d_zDimension;
+}
+
+/**
+ * @brief Set the number of vertices in the <var>z</var>-dimension.
+ *
+ * @param zDimension
+ */
+void VrmlNodeElevationGrid::setZDimension(const VrmlSFInt32 & zDimension) {
+    this->d_zDimension = zDimension;
+}
+
+/**
+ * @brief Get the distance between vertices in the
+ *        <var>z</var>-dimension.
+ *
+ * @return the zSpacing
+ */
+const VrmlSFFloat & VrmlNodeElevationGrid::getZSpacing() const {
+    return this->d_zSpacing;
+}
+
+/**
+ * @brief Set the distance between vertices in the
+ *        <var>z</var>-dimension.
+ *
+ * @param zSpacing
+ */
+void VrmlNodeElevationGrid::setZSpacing(const VrmlSFFloat & zSpacing) {
+    this->d_zSpacing = zSpacing;
+}
