@@ -98,11 +98,11 @@ SOURCE=..\..\..\..\src\lookat\lookat.cpp
 
 !IF  "$(CFG)" == "lookat - Win32 Release"
 
-# ADD CPP /w /W0 /I "..\\" /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl"
+# ADD CPP /w /W0 /I "..\\" /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl" /D "OPENVRML_GLUT_H=<gl/glut.h>"
 
 !ELSEIF  "$(CFG)" == "lookat - Win32 Debug"
 
-# ADD CPP /MDd /Ze /Gm /GR- /Od /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl" /D "OPENVRML_DLL_IMPORT"
+# ADD CPP /MDd /Ze /Gm /GR- /Od /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl" /D "OPENVRML_DLL_IMPORT" /D "OPENVRML_GLUT_H=<gl/glut.h>"
 
 !ENDIF 
 
@@ -113,12 +113,12 @@ SOURCE=..\..\..\..\src\lookat\ViewerGlut.cpp
 
 !IF  "$(CFG)" == "lookat - Win32 Release"
 
-# ADD CPP /w /W0 /I "..\\" /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl"
+# ADD CPP /w /W0 /I "..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl" /D OPENVRML_GLUT_H=<gl/glut.h>
 # SUBTRACT CPP /YX
 
 !ELSEIF  "$(CFG)" == "lookat - Win32 Debug"
 
-# ADD CPP /I "..\\" /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl" /D "OPENVRML_DLL_IMPORT"
+# ADD CPP /I "..\..\..\..\src\openvrml" /I "..\..\..\..\src\openvrml-gl" /D "OPENVRML_DLL_IMPORT" /D OPENVRML_GLUT_H=<gl/glut.h>
 # SUBTRACT CPP /YX
 
 !ENDIF 
