@@ -697,7 +697,7 @@ AbstractGeometry::~AbstractGeometry() throw ()
  * @param viewer a renderer
  * @param context the renderer context
  */
-void AbstractGeometry::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
+void AbstractGeometry::render(OpenVRML::viewer & viewer, rendering_context context)
 {
     if (this->d_viewerObject && this->modified()) {
         viewer.remove_object(this->d_viewerObject);
@@ -1216,7 +1216,7 @@ Anchor * Anchor::to_anchor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Anchor::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
+void Anchor::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     viewer.set_sensitive(this);
 
@@ -1443,7 +1443,7 @@ void Appearance::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Appearance::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
+void Appearance::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     material_node * const material = this->material_.value
                                   ? this->material_.value->to_material()
@@ -2708,13 +2708,13 @@ Billboard::~Billboard() throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-void Billboard::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
+void Billboard::render(OpenVRML::viewer & viewer, rendering_context context)
 {
     mat4f LM;
-    mat4f new_LM = context.getMatrix();
+    mat4f new_LM = context.matrix();
     billboard_to_matrix(this, new_LM, LM);
     new_LM = LM * new_LM;
-    context.setMatrix(new_LM);
+    context.matrix(new_LM);
 
     if (this->xformObject && this->modified()) {
         viewer.remove_object(this->xformObject);
@@ -2907,7 +2907,7 @@ Box::~Box() throw ()
  * @return display object identifier.
  */
 viewer::object_t Box::insert_geometry(OpenVRML::viewer & viewer,
-                                      const VrmlRenderContext context)
+                                      const rendering_context context)
 {
     return viewer.insert_box(this->size.value);
 }
@@ -3517,7 +3517,7 @@ Cone::~Cone() throw () {}
  * @param context   the rendering context.
  */
 viewer::object_t Cone::insert_geometry(OpenVRML::viewer & viewer,
-                                       const VrmlRenderContext context)
+                                       const rendering_context context)
 {
     return viewer.insert_cone(this->height.value,
                               this->bottomRadius.value,
@@ -3963,7 +3963,7 @@ Cylinder::~Cylinder() throw () {
  * @param context   the rendering context.
  */
 viewer::object_t Cylinder::insert_geometry(OpenVRML::viewer & viewer,
-                                           const VrmlRenderContext context)
+                                           const rendering_context context)
 {
     return viewer.insert_cylinder(this->height.value,
                                   this->radius.value,
@@ -4135,13 +4135,13 @@ CylinderSensor* CylinderSensor::to_cylinder_sensor() const {   // mgiger 6/16/00
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void CylinderSensor::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
+void CylinderSensor::render(OpenVRML::viewer & viewer, rendering_context context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
     // in render-context. This matrix will be in use at the time of activation.
     //
-    this->modelview = context.getMatrix();
+    this->modelview = context.matrix();
 }
 
 void CylinderSensor::activate(double timeStamp, bool isActive, double *p)
@@ -4451,7 +4451,7 @@ DirectionalLight::~DirectionalLight() throw () {}
  * @param context   a rendering context.
  */
 void DirectionalLight::render(OpenVRML::viewer & viewer,
-                              const VrmlRenderContext rc)
+                              const rendering_context rc)
 {
     if (this->on.value) {
         viewer.insert_dir_light(this->ambientIntensity.value,
@@ -4696,7 +4696,7 @@ void ElevationGrid::update_modified(node_path & path, int flags)
  * @param context   the rendering context.
  */
 viewer::object_t ElevationGrid::insert_geometry(OpenVRML::viewer & viewer,
-                                             const VrmlRenderContext context)
+                                             const rendering_context context)
 {
     viewer::object_t obj = 0;
 
@@ -5012,7 +5012,7 @@ Extrusion::~Extrusion() throw () {}
  * @param context   the rendering context.
  */
 viewer::object_t Extrusion::insert_geometry(OpenVRML::viewer & viewer,
-                                         const VrmlRenderContext context)
+                                         const rendering_context context)
 {
     viewer::object_t obj = 0;
     if (this->crossSection.value.size() > 0 && this->spine.value.size() > 1) {
@@ -5960,19 +5960,24 @@ void Group::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Group::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
+void Group::render(OpenVRML::viewer & viewer, rendering_context context)
 {
-    if (context.getCullFlag() != bounding_volume::inside) {
-        assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
+    if (context.cull_flag != bounding_volume::inside) {
+        assert(dynamic_cast<const bounding_sphere *>
+               (&this->bounding_volume()));
         const bounding_sphere & bs =
             static_cast<const bounding_sphere &>(this->bounding_volume());
         bounding_sphere bv_copy(bs);
-        bv_copy.transform(context.getMatrix());
+        bv_copy.transform(context.matrix());
         bounding_volume::intersection r =
             viewer.intersect_view_volume(bv_copy);
-        if (context.getDrawBSpheres()) { viewer.draw_bounding_sphere(bs, r); }
+        if (context.draw_bounding_spheres) {
+            viewer.draw_bounding_sphere(bs, r);
+        }
         if (r == bounding_volume::outside) { return; }
-        if (r == bounding_volume::inside) { context.setCullFlag(bounding_volume::inside); }
+        if (r == bounding_volume::inside) {
+            context.cull_flag = bounding_volume::inside;
+        }
     }
     this->renderNoCull(viewer, context);
 }
@@ -5982,7 +5987,8 @@ void Group::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
  * because children will already have done the culling, we don't need
  * to repeat it here.
  */
-void Group::renderNoCull(OpenVRML::viewer & viewer, VrmlRenderContext context) {
+void Group::renderNoCull(OpenVRML::viewer & viewer, rendering_context context)
+{
     if (this->viewerObject && this->modified()) {
         viewer.remove_object(this->viewerObject);
         this->viewerObject = 0;
@@ -6216,7 +6222,7 @@ ImageTexture::~ImageTexture() throw () {
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void ImageTexture::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
+void ImageTexture::render(OpenVRML::viewer & viewer, rendering_context context)
 {
     if (modified()) {
         if (this->image) {
@@ -6569,11 +6575,11 @@ void IndexedFaceSet::update_modified(node_path& path, int flags) {
  * @todo stripify, crease angle, generate normals ...
  */
 viewer::object_t IndexedFaceSet::insert_geometry(OpenVRML::viewer & viewer,
-                                               const VrmlRenderContext context)
+                                               const rendering_context context)
 {
     using std::vector;
 
-    if (context.getDrawBSpheres()) {
+    if (context.draw_bounding_spheres) {
         assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
         const bounding_sphere & bs =
             static_cast<const bounding_sphere &>(this->bounding_volume());
@@ -6892,7 +6898,7 @@ IndexedLineSet::~IndexedLineSet() throw () {}
  * @todo colors
  */
 viewer::object_t IndexedLineSet::insert_geometry(OpenVRML::viewer & viewer,
-                                              const VrmlRenderContext context)
+                                              const rendering_context context)
 {
     using std::vector;
 
@@ -7037,7 +7043,7 @@ Inline::~Inline() throw () {}
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Inline::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
+void Inline::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     this->load();
     if (this->inlineScene) { this->inlineScene->render(viewer, context); }
@@ -7273,14 +7279,14 @@ void LOD::update_modified(node_path & path, int flags) {
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void LOD::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
+void LOD::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     this->node::modified(false);
     if (this->level.value.size() <= 0) { return; }
 
     float x, y, z;
 
-    mat4f MV = context.getMatrix();
+    mat4f MV = context.matrix();
     MV = MV.inverse();
     x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
     float dx = x - this->center.value.x();
@@ -7986,7 +7992,7 @@ void MovieTexture::update(const double currentTime)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void MovieTexture::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
+void MovieTexture::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     if (!this->image || this->frame < 0) { return; }
 
@@ -9126,7 +9132,7 @@ PixelTexture::~PixelTexture() throw ()
  * @param context   a rendering context.
  */
 void PixelTexture::render(OpenVRML::viewer & viewer,
-                          const VrmlRenderContext context)
+                          const rendering_context context)
 {
     if (modified()) {
         if (this->texObject) {
@@ -9473,13 +9479,13 @@ PlaneSensor * PlaneSensor::to_plane_sensor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void PlaneSensor::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
+void PlaneSensor::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
     // in render-context. This matrix will be in use at the time of activation.
     //
-    this->modelview = context.getMatrix();
+    this->modelview = context.matrix();
 }
 
 /**
@@ -10055,15 +10061,16 @@ void PointSet::update_modified(node_path & path, int flags)
  * @param context   the rendering context.
  */
 viewer::object_t PointSet::insert_geometry(OpenVRML::viewer & viewer,
-                                        const VrmlRenderContext context)
+                                        const rendering_context context)
 {
     using std::vector;
 
-    if (context.getDrawBSpheres()) {
-        assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
+    if (context.draw_bounding_spheres) {
+        assert(dynamic_cast<const bounding_sphere *>
+               (&this->bounding_volume()));
         const bounding_sphere & bs =
             static_cast<const bounding_sphere &>(this->bounding_volume());
-        viewer.draw_bounding_sphere(bs, static_cast<bounding_volume::intersection>(4));
+        viewer.draw_bounding_sphere(bs, bounding_volume::intersection(4));
     }
 
     coordinate_node * const coordinateNode = this->coord.value
@@ -10600,7 +10607,7 @@ ProximitySensor::~ProximitySensor() throw ()
  * @param context   a rendering context.
  */
 void ProximitySensor::render(OpenVRML::viewer & viewer,
-                             const VrmlRenderContext context)
+                             const rendering_context context)
 {
     using OpenVRML_::fpequal;
 
@@ -10613,7 +10620,7 @@ void ProximitySensor::render(OpenVRML::viewer & viewer,
         float x, y, z;
 
         // Is viewer inside the box?
-        mat4f MV = context.getMatrix();
+        mat4f MV = context.matrix();
         MV = MV.inverse();
         x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
         bool inside = (fabs(x - this->center.value.x())
@@ -11083,7 +11090,7 @@ void Shape::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Shape::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
+void Shape::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     if (this->viewerObject && modified()) {
         viewer.remove_object(this->viewerObject);
@@ -11434,7 +11441,7 @@ void Sound::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Sound::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
+void Sound::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     // If this clip has been modified, update the internal data
     if (this->source.value && this->source.value->modified()) {
@@ -11705,7 +11712,7 @@ Sphere::~Sphere() throw ()
  * @param context   the rendering context.
  */
 viewer::object_t Sphere::insert_geometry(OpenVRML::viewer & viewer,
-                                         const VrmlRenderContext context)
+                                         const rendering_context context)
 {
     return viewer.insert_sphere(this->radius.value);
 }
@@ -11929,13 +11936,13 @@ SphereSensor * SphereSensor::to_sphere_sensor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void SphereSensor::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
+void SphereSensor::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
     // in render-context. This matrix will be in use at the time of activation
     //
-    this->modelview = context.getMatrix();
+    this->modelview = context.matrix();
 }
 
 /**
@@ -12639,7 +12646,7 @@ void Switch::update_modified(node_path & path, int flags) {
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Switch::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
+void Switch::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     if (this->children_.value[0]) {
         this->children_.value[0]->render(viewer, context);
@@ -13422,7 +13429,7 @@ void Text::update_modified(node_path & path, int flags) {
  * @param context   the rendering context.
  */
 viewer::object_t Text::insert_geometry(OpenVRML::viewer & viewer,
-                                     const VrmlRenderContext context)
+                                     const rendering_context context)
 {
     const viewer::object_t retval =
         viewer.insert_shell(viewer::mask_ccw,
@@ -14515,7 +14522,7 @@ TextureTransform::~TextureTransform() throw ()
  * @param context   a rendering context.
  */
 void TextureTransform::render(OpenVRML::viewer & viewer,
-                              const VrmlRenderContext context)
+                              const rendering_context context)
 {
     viewer.set_texture_transform(this->center.value,
                                  this->rotation.value,
@@ -15551,29 +15558,31 @@ const mat4f & Transform::transform() const throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-void Transform::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
+void Transform::render(OpenVRML::viewer & viewer, rendering_context context)
 {
-    if (context.getCullFlag() != bounding_volume::inside) {
+    if (context.cull_flag != bounding_volume::inside) {
         assert(dynamic_cast<const bounding_sphere *>
                (&this->bounding_volume()));
         const bounding_sphere & bs =
             static_cast<const bounding_sphere &>(this->bounding_volume());
         bounding_sphere bv_copy(bs);
-        bv_copy.transform(context.getMatrix());
+        bv_copy.transform(context.matrix());
         bounding_volume::intersection r =
             viewer.intersect_view_volume(bv_copy);
-        if (context.getDrawBSpheres()) { viewer.draw_bounding_sphere(bs, r); }
+        if (context.draw_bounding_spheres) {
+            viewer.draw_bounding_sphere(bs, r);
+        }
 
         if (r == bounding_volume::outside) { return; }
-        if (r == bounding_volume::inside) { context.setCullFlag(bounding_volume::inside); }
-
-        //context.setCullFlag(bounding_volume::BV_PARTIAL);
+        if (r == bounding_volume::inside) {
+            context.cull_flag = bounding_volume::inside;
+        }
     }
 
     mat4f LM = this->transform();
-    mat4f new_LM = context.getMatrix();
+    mat4f new_LM = context.matrix();
     new_LM = LM * new_LM;
-    context.setMatrix(new_LM);
+    context.matrix(new_LM);
 
     if (this->xformObject && modified()) {
         viewer.remove_object(this->xformObject);
@@ -16536,7 +16545,7 @@ VisibilitySensor::~VisibilitySensor() throw ()
  * scene graph. Move to update() when xforms are accumulated in Groups...
  */
 void VisibilitySensor::render(OpenVRML::viewer & viewer,
-                              const VrmlRenderContext context)
+                              const rendering_context context)
 {
     using OpenVRML_::fpzero;
 

@@ -238,7 +238,7 @@ namespace OpenVRML {
         void initialize(double timestamp) throw (std::bad_alloc);
         const std::vector<node_ptr> & nodes() const throw ();
         const std::string url() const throw (std::bad_alloc);
-        void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+        void render(OpenVRML::viewer & viewer, rendering_context context);
         void load_url(const std::vector<std::string> & uri,
                       const std::vector<std::string> & parameter)
                 throw (std::bad_alloc);

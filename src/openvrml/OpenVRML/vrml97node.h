@@ -81,7 +81,7 @@ namespace OpenVRML {
         public:
             virtual ~AbstractGeometry() throw () = 0;
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
         protected:
             AbstractGeometry(const node_type & type, const scope_ptr & scope);
@@ -231,12 +231,12 @@ namespace OpenVRML {
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
             virtual bool modified() const;
             virtual void update_modified(node_path& path, int flags);
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timeStamp, bool isOver, bool isActive, double *p);
 
-            void renderNoCull(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            void renderNoCull(OpenVRML::viewer & viewer, rendering_context context);
 
         protected:
             //
@@ -284,7 +284,7 @@ namespace OpenVRML {
             virtual Anchor * to_anchor() const;
 
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
             void activate();
 
@@ -339,7 +339,7 @@ namespace OpenVRML {
             virtual bool modified() const;
             virtual void update_modified(node_path & path, int flags = 0x003);
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
             //
             // appearance_node implementation
@@ -553,7 +553,7 @@ namespace OpenVRML {
                       const scope_ptr & scope);
             virtual ~Billboard() throw ();
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
         private:
             //
@@ -594,7 +594,7 @@ namespace OpenVRML {
             virtual ~Box() throw ();
 
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
-                                                  VrmlRenderContext context);
+                                                  rendering_context context);
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
         };
 
@@ -742,7 +742,7 @@ namespace OpenVRML {
             virtual ~Cone() throw ();
 
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
-                                                  VrmlRenderContext context);
+                                                  rendering_context context);
         };
 
 
@@ -858,7 +858,7 @@ namespace OpenVRML {
             virtual ~Cylinder() throw ();
 
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
-                                                  VrmlRenderContext context);
+                                                  rendering_context context);
         };
 
 
@@ -898,7 +898,7 @@ namespace OpenVRML {
 
             virtual CylinderSensor * to_cylinder_sensor() const;
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
             void activate( double timeStamp, bool isActive, double *p );
 
             bool isEnabled() { return this->enabled.value; }
@@ -942,7 +942,7 @@ namespace OpenVRML {
                              const scope_ptr & scope);
             virtual ~DirectionalLight() throw ();
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
         private:
             //
@@ -988,7 +988,7 @@ namespace OpenVRML {
             virtual bool modified() const;
             virtual void update_modified(node_path & path, int flags = 0x003);
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
-                                                  VrmlRenderContext context);
+                                                  rendering_context context);
 
         private:
             //
@@ -1036,7 +1036,7 @@ namespace OpenVRML {
             virtual ~Extrusion() throw ();
 
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
-                                                  VrmlRenderContext context);
+                                                  rendering_context context);
 
         private:
             //
@@ -1183,7 +1183,7 @@ namespace OpenVRML {
                          const scope_ptr & scope);
             virtual ~ImageTexture() throw ();
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
             virtual size_t nComponents() const throw ();
             virtual size_t width() const throw ();
@@ -1233,7 +1233,7 @@ namespace OpenVRML {
             virtual bool modified() const;
             virtual void update_modified(node_path & path, int flags = 0x003);
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
-                                                  VrmlRenderContext context);
+                                                  rendering_context context);
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
         private:
@@ -1275,7 +1275,7 @@ namespace OpenVRML {
             virtual ~IndexedLineSet() throw ();
 
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
-                                                  VrmlRenderContext context);
+                                                  rendering_context context);
         };
 
 
@@ -1305,7 +1305,7 @@ namespace OpenVRML {
                    const scope_ptr & scope);
             virtual ~Inline() throw ();
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
             virtual Inline * to_inline() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
@@ -1351,7 +1351,7 @@ namespace OpenVRML {
 
             virtual bool modified() const;
             virtual void update_modified(node_path & path, int flags = 0x003);
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
@@ -1466,7 +1466,7 @@ namespace OpenVRML {
 
             void update(double time);
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
             virtual size_t nComponents() const throw ();
             virtual size_t width() const throw ();
@@ -1697,7 +1697,7 @@ namespace OpenVRML {
                          const scope_ptr & scope);
             virtual ~PixelTexture() throw ();
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
             virtual size_t nComponents() const throw ();
             virtual size_t width() const throw ();
@@ -1748,7 +1748,7 @@ namespace OpenVRML {
 
             virtual PlaneSensor * to_plane_sensor() const;
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
             void activate( double timeStamp, bool isActive, double *p );
 
             bool isEnabled() { return this->enabled.value; }
@@ -1838,7 +1838,7 @@ namespace OpenVRML {
             virtual void update_modified(node_path & path, int flags = 0x003);
             virtual bool modified() const;
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
-                                                  VrmlRenderContext context);
+                                                  rendering_context context);
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
         private:
@@ -1919,7 +1919,7 @@ namespace OpenVRML {
                             const scope_ptr & scope);
             virtual ~ProximitySensor() throw ();
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
         private:
             //
@@ -1998,7 +1998,7 @@ namespace OpenVRML {
             virtual bool modified() const;
             virtual void update_modified(node_path& path, int flags);
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
         private:
             //
@@ -2043,7 +2043,7 @@ namespace OpenVRML {
             virtual ~Sound() throw ();
 
             virtual void update_modified(node_path & path, int flags = 0x003);
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
         private:
             //
@@ -2092,7 +2092,7 @@ namespace OpenVRML {
             virtual ~Sphere() throw ();
 
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
-                                                  VrmlRenderContext context);
+                                                  rendering_context context);
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
         };
 
@@ -2128,7 +2128,7 @@ namespace OpenVRML {
 
             virtual SphereSensor * to_sphere_sensor() const;
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
             void activate(double timeStamp, bool isActive, double * p);
             bool isEnabled() const throw ();
@@ -2230,7 +2230,7 @@ namespace OpenVRML {
 
             virtual bool modified() const;
             virtual void update_modified(node_path & path, int flags = 0x003);
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
@@ -2307,7 +2307,7 @@ namespace OpenVRML {
             virtual bool modified() const;
             virtual void update_modified(node_path & path, int flags = 0x003);
             virtual viewer::object_t insert_geometry(OpenVRML::viewer & viewer,
-                                                     VrmlRenderContext context);
+                                                     rendering_context context);
 
         private:
             virtual void do_initialize(double timestamp)
@@ -2395,7 +2395,7 @@ namespace OpenVRML {
                              const scope_ptr & scope);
             virtual ~TextureTransform() throw ();
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
         private:
             //
@@ -2544,7 +2544,7 @@ namespace OpenVRML {
                       const scope_ptr & scope);
             virtual ~Transform() throw ();
 
-            virtual void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
+            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
 
             virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
@@ -2684,7 +2684,7 @@ namespace OpenVRML {
             virtual ~VisibilitySensor() throw ();
 
             virtual void render(OpenVRML::viewer & viewer,
-                                VrmlRenderContext context);
+                                rendering_context context);
 
         private:
             //

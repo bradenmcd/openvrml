@@ -1,3 +1,56 @@
+2003-06-03  Braden McDaniel  <braden@endoframe.com>
+
+	Applied naming convention changes:  VrmlRenderContext ->
+	rendering_context.
+
+	* src/openvrml/OpenVRML/rendering_context.cpp:  Added file.
+	Replaces VrmlRenderContext.cpp.
+	* src/openvrml/OpenVRML/rendering_context.h:  Added file.
+	Replaces VrmlRenderContext.h.
+	* src/openvrml/OpenVRML/VrmlRenderContext.cpp:  Removed file.
+	* src/openvrml/OpenVRML/VrmlRenderContext.h:  Removed file.
+	* src/openvrml/OpenVRML/browser.cpp (ProtoNode::render,
+	browser::render, scene::render):  Changes associated with
+	naming convention changes to rendering_context.
+	* src/openvrml/OpenVRML/browser.h (browser::render,
+	scene::render):  Changes associated with naming convention
+	changes to rendering_context.
+	* src/openvrml/OpenVRML/node.cpp (node::render):  Changes
+	associated with naming convention changes to rendering_context.
+	* src/openvrml/OpenVRML/node.h (node::render,
+	geometry_node::insert_geometry):  Changes associated with naming
+	convention changes to rendering_context.
+	* src/openvrml/OpenVRML/vrml97node.cpp
+	(AbstractGeometry::render, Anchor::render, Appearance::render,
+	Billboard::render, Box::insert_geometry, Cone::insert_geometry,
+	Cylinder::insert_geometry, CylinderSensor::render,
+	DirectionalLight::render, ElevationGrid::insert_geometry,
+	Extrusion::insert_geometry, Group::render, Group::renderNoCull,
+	ImageTexture::render, IndexedFaceSet::insert_geometry,
+	IndexedLineSet::insert_geometry, Inline::render, LOD::render,
+	MovieTexture::render, PixelTexture::render,
+	PointSet::insert_geometry, ProximitySensor::render,
+	Shape::render, Sound::render, Sphere::insert_geometry,
+	SphereSensor::render, Switch::render, Text::insert_geometry,
+	TextureTransform::render, Transform::render,
+	VisibilitySensor::render):  Changes associated with naming
+	convention changes to rendering_context.
+	* src/openvrml/OpenVRML/vrml97node.h
+	(AbstractGeometry::render, Anchor::render, Appearance::render,
+	Billboard::render, Box::insert_geometry, Cone::insert_geometry,
+	Cylinder::insert_geometry, CylinderSensor::render,
+	DirectionalLight::render, ElevationGrid::insert_geometry,
+	Extrusion::insert_geometry, Group::render, Group::renderNoCull,
+	ImageTexture::render, IndexedFaceSet::insert_geometry,
+	IndexedLineSet::insert_geometry, Inline::render, LOD::render,
+	MovieTexture::render, PixelTexture::render,
+	PointSet::insert_geometry, ProximitySensor::render,
+	Shape::render, Sound::render, Sphere::insert_geometry,
+	SphereSensor::render, Switch::render, Text::insert_geometry,
+	TextureTransform::render, Transform::render,
+	VisibilitySensor::render):  Changes associated with naming
+	convention changes to rendering_context.
+
 2003-06-02  Braden McDaniel  <braden@endoframe.com>
 
 	Applied naming convention changes: VrmlFrustum -> frustum.

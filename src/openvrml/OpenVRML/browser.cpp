@@ -38,7 +38,6 @@
 # include "doc2.hpp"
 # include "viewer.h"
 # include "scope.h"
-# include "VrmlRenderContext.h"
 # include "script.h"
 # include "vrml97node.h"
 
@@ -158,7 +157,7 @@ namespace OpenVRML {
         virtual Vrml97Node::TouchSensor * to_touch_sensor() const;
 
         virtual void render(OpenVRML::viewer & viewer,
-                            VrmlRenderContext context);
+                            rendering_context context);
 
     private:
         // Not copyable.
@@ -1457,8 +1456,8 @@ void browser::render(OpenVRML::viewer & viewer)
 
     viewer.begin_object(0);
     mat4f modelview = t.inverse();
-    VrmlRenderContext rc(bounding_volume::partial, modelview);
-    rc.setDrawBSpheres(true);
+    rendering_context rc(bounding_volume::partial, modelview);
+    rc.draw_bounding_spheres = true;
 
     // Do the browser-level lights (Points and Spots)
     std::list<node *>::iterator li, end = this->scoped_lights.end();
@@ -2086,9 +2085,9 @@ void scene::initialize(const double timestamp) throw (std::bad_alloc)
  * @brief Render the scene.
  *
  * @param viewer    a Viewer to render to.
- * @param context   a VrmlRenderContext.
+ * @param context   a rendering_context.
  */
-void scene::render(OpenVRML::viewer & viewer, VrmlRenderContext context) {
+void scene::render(OpenVRML::viewer & viewer, rendering_context context) {
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
@@ -3459,7 +3458,7 @@ Vrml97Node::TouchSensor * ProtoNode::to_touch_sensor() const
 }
 
 void ProtoNode::render(OpenVRML::viewer & viewer,
-                       const VrmlRenderContext context)
+                       const rendering_context context)
 {
     assert(this->implNodes[0]);
     this->implNodes[0]->render(viewer, context);

@@ -34,7 +34,7 @@
 #   include <OpenVRML/node_type_ptr.h>
 #   include <OpenVRML/scope_ptr.h>
 #   include <OpenVRML/viewer.h>
-#   include <OpenVRML/VrmlRenderContext.h>
+#   include <OpenVRML/rendering_context.h>
 
 namespace OpenVRML {
 
@@ -371,7 +371,7 @@ namespace OpenVRML {
         const routes_t & routes() const;
 
         virtual void render(OpenVRML::viewer & viewer,
-                            VrmlRenderContext context);
+                            rendering_context context);
 
     protected:
         node(const node_type & type, const scope_ptr & scope) throw ();
@@ -526,7 +526,7 @@ namespace OpenVRML {
 
         virtual viewer::object_t
         insert_geometry(OpenVRML::viewer & viewer,
-                        VrmlRenderContext context) = 0;
+                        rendering_context context) = 0;
         virtual const color_node * color() const throw ();
 
     protected:

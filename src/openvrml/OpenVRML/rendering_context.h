@@ -29,24 +29,21 @@ namespace OpenVRML {
 
     class mat4f;
 
-    class OPENVRML_SCOPE VrmlRenderContext {
-        bounding_volume::intersection cull_flag;
+    class OPENVRML_SCOPE rendering_context {
         mat4f * modelview;
-        bool draw_bspheres;
 
     public:
-        VrmlRenderContext();
-        VrmlRenderContext(bounding_volume::intersection cull_flag,
+        bounding_volume::intersection cull_flag;
+        bool draw_bounding_spheres;
+
+        rendering_context();
+        rendering_context(bounding_volume::intersection cull_flag,
                           mat4f & modelview);
 
         // Use compiler-generated copy-ctor, dtor, operator=.
 
-        bounding_volume::intersection getCullFlag() const;
-        void setCullFlag(bounding_volume::intersection intersection);
-        const mat4f & getMatrix() const;
-        void setMatrix(mat4f & modelview);
-        void setDrawBSpheres(bool f);
-        bool getDrawBSpheres() const;
+        const mat4f & matrix() const;
+        void matrix(mat4f & modelview);
     };
 }
 

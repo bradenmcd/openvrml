@@ -28,7 +28,6 @@
 # include "node.h"
 # include "scope.h"
 # include "browser.h"
-# include "VrmlRenderContext.h"
 # include "doc2.hpp"
 
 namespace OpenVRML {
@@ -1867,7 +1866,7 @@ bool node::bounding_volume_dirty() const
  * @param context   generic context argument; holds things like the accumulated
  *                  modelview transform.
  */
-void node::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
+void node::render(OpenVRML::viewer & viewer, const rendering_context context)
 {
     this->modified(false);
 }
