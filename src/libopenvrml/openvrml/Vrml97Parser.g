@@ -995,6 +995,10 @@ options { defaultErrorHandler=false; }
             }
 
             try {
+                //
+                // Redundant routing is ignored (4.10.2), so we don't care
+                // if add_route returns false.
+                //
                 add_route(*from_node, eventout_id->getText(),
                           *to_node, eventin_id->getText());
             } catch (runtime_error & ex) {

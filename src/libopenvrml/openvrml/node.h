@@ -416,12 +416,12 @@ namespace openvrml {
     }
 
 
-    void add_route(node & from, const std::string & eventout,
+    bool add_route(node & from, const std::string & eventout,
                    node & to, const std::string & eventin)
         throw (std::bad_alloc, unsupported_interface,
                field_value_type_mismatch);
 
-    void delete_route(node & from, const std::string & eventout,
+    bool delete_route(node & from, const std::string & eventout,
                       node & to, const std::string & eventin)
         throw ();
 

@@ -1802,10 +1802,10 @@ void node::do_shutdown(const double timestamp) throw ()
 
 namespace {
     template <typename FieldValue>
-    void add_listener(event_emitter & emitter, event_listener & listener)
+    bool add_listener(event_emitter & emitter, event_listener & listener)
         throw (std::bad_alloc, std::bad_cast)
     {
-        static_cast<field_value_emitter<FieldValue> &>(emitter)
+        return static_cast<field_value_emitter<FieldValue> &>(emitter)
             .add(dynamic_cast<field_value_listener<FieldValue> &>(listener));
     }
 }
@@ -1821,6 +1821,9 @@ namespace {
  * @param to        destination node.
  * @param eventin   an eventIn of @p to.
  *
+ * @return @c true if a route was successfully added; @c false otherwise (if
+ *         the route already existed).
+ *
  * @exception unsupported_interface     if the node has no eventOut
  *                                      @p eventout; or if @p to has no eventIn
  *                                      @p eventin.
@@ -1829,7 +1832,7 @@ namespace {
  *
  * @pre @p to_node is not null.
  */
-void add_route(node & from_node,
+bool add_route(node & from_node,
                const std::string & from_eventout,
                node & to_node,
                const std::string & to_eventin)
@@ -1839,80 +1842,82 @@ void add_route(node & from_node,
 
     event_emitter & emitter = from_node.event_emitter(from_eventout);
     event_listener & listener = to_node.event_listener(to_eventin);
+    bool added_route = false;
     try {
         switch (emitter.value.type()) {
         case field_value::sfbool_id:
-            add_listener<sfbool>(emitter, listener);
+            added_route = add_listener<sfbool>(emitter, listener);
             break;
         case field_value::sfcolor_id:
-            add_listener<sfcolor>(emitter, listener);
+            added_route = add_listener<sfcolor>(emitter, listener);
             break;
         case field_value::sffloat_id:
-            add_listener<sffloat>(emitter, listener);
+            added_route = add_listener<sffloat>(emitter, listener);
             break;
         case field_value::sfimage_id:
-            add_listener<sfimage>(emitter, listener);
+            added_route = add_listener<sfimage>(emitter, listener);
             break;
         case field_value::sfint32_id:
-            add_listener<sfint32>(emitter, listener);
+            added_route = add_listener<sfint32>(emitter, listener);
             break;
         case field_value::sfnode_id:
-            add_listener<sfnode>(emitter, listener);
+            added_route = add_listener<sfnode>(emitter, listener);
             break;
         case field_value::sfrotation_id:
-            add_listener<sfrotation>(emitter, listener);
+            added_route = add_listener<sfrotation>(emitter, listener);
             break;
         case field_value::sfstring_id:
-            add_listener<sfstring>(emitter, listener);
+            added_route = add_listener<sfstring>(emitter, listener);
             break;
         case field_value::sftime_id:
-            add_listener<sftime>(emitter, listener);
+            added_route = add_listener<sftime>(emitter, listener);
             break;
         case field_value::sfvec2f_id:
-            add_listener<sfvec2f>(emitter, listener);
+            added_route = add_listener<sfvec2f>(emitter, listener);
             break;
         case field_value::sfvec3f_id:
-            add_listener<sfvec3f>(emitter, listener);
+            added_route = add_listener<sfvec3f>(emitter, listener);
             break;
         case field_value::mfcolor_id:
-            add_listener<mfcolor>(emitter, listener);
+            added_route = add_listener<mfcolor>(emitter, listener);
             break;
         case field_value::mffloat_id:
-            add_listener<mffloat>(emitter, listener);
+            added_route = add_listener<mffloat>(emitter, listener);
             break;
         case field_value::mfint32_id:
-            add_listener<mfint32>(emitter, listener);
+            added_route = add_listener<mfint32>(emitter, listener);
             break;
         case field_value::mfnode_id:
-            add_listener<mfnode>(emitter, listener);
+            added_route = add_listener<mfnode>(emitter, listener);
             break;
         case field_value::mfrotation_id:
-            add_listener<mfrotation>(emitter, listener);
+            added_route = add_listener<mfrotation>(emitter, listener);
             break;
         case field_value::mfstring_id:
-            add_listener<mfstring>(emitter, listener);
+            added_route = add_listener<mfstring>(emitter, listener);
             break;
         case field_value::mftime_id:
-            add_listener<mftime>(emitter, listener);
+            added_route = add_listener<mftime>(emitter, listener);
             break;
         case field_value::mfvec2f_id:
-            add_listener<mfvec2f>(emitter, listener);
+            added_route = add_listener<mfvec2f>(emitter, listener);
             break;
         case field_value::mfvec3f_id:
-            add_listener<mfvec3f>(emitter, listener);
+            added_route = add_listener<mfvec3f>(emitter, listener);
             break;
         }
     } catch (const bad_cast &) {
         throw field_value_type_mismatch();
     }
+    return added_route;
 }
 
 namespace {
     template <typename FieldValue>
-    void remove_listener(event_emitter & emitter, event_listener & listener)
+    bool remove_listener(event_emitter & emitter, event_listener & listener)
         throw (std::bad_cast)
     {
-        static_cast<field_value_emitter<FieldValue> &>(emitter).remove(
+        return static_cast<field_value_emitter<FieldValue> &>(emitter).remove(
             dynamic_cast<field_value_listener<FieldValue> &>(listener));
     }
 }
@@ -1927,8 +1932,11 @@ namespace {
  * @param eventout  an eventOut of @p from.
  * @param to        destination node.
  * @param eventin   an eventIn of @p to.
+ *
+ * @return @c true if a route was deleted; @c false otherwise (if no such route
+ *         existed).
  */
-void delete_route(node & from,
+bool delete_route(node & from,
                   const std::string & eventout,
                   node & to,
                   const std::string & eventin)
@@ -1939,74 +1947,77 @@ void delete_route(node & from,
     event_emitter & emitter = from.event_emitter(eventout);
     event_listener & listener = to.event_listener(eventin);
 
+    bool deleted_route = false;
+
     try {
         switch (emitter.value.type()) {
         case field_value::sfbool_id:
-            remove_listener<sfbool>(emitter, listener);
+            deleted_route = remove_listener<sfbool>(emitter, listener);
             break;
         case field_value::sfcolor_id:
-            remove_listener<sfcolor>(emitter, listener);
+            deleted_route = remove_listener<sfcolor>(emitter, listener);
             break;
         case field_value::sffloat_id:
-            remove_listener<sffloat>(emitter, listener);
+            deleted_route = remove_listener<sffloat>(emitter, listener);
             break;
         case field_value::sfimage_id:
-            remove_listener<sfimage>(emitter, listener);
+            deleted_route = remove_listener<sfimage>(emitter, listener);
             break;
         case field_value::sfint32_id:
-            remove_listener<sfint32>(emitter, listener);
+            deleted_route = remove_listener<sfint32>(emitter, listener);
             break;
         case field_value::sfnode_id:
-            remove_listener<sfnode>(emitter, listener);
+            deleted_route = remove_listener<sfnode>(emitter, listener);
             break;
         case field_value::sfrotation_id:
-            remove_listener<sfrotation>(emitter, listener);
+            deleted_route = remove_listener<sfrotation>(emitter, listener);
             break;
         case field_value::sfstring_id:
-            remove_listener<sfstring>(emitter, listener);
+            deleted_route = remove_listener<sfstring>(emitter, listener);
             break;
         case field_value::sftime_id:
-            remove_listener<sftime>(emitter, listener);
+            deleted_route = remove_listener<sftime>(emitter, listener);
             break;
         case field_value::sfvec2f_id:
-            remove_listener<sfvec2f>(emitter, listener);
+            deleted_route = remove_listener<sfvec2f>(emitter, listener);
             break;
         case field_value::sfvec3f_id:
-            remove_listener<sfvec3f>(emitter, listener);
+            deleted_route = remove_listener<sfvec3f>(emitter, listener);
             break;
         case field_value::mfcolor_id:
-            remove_listener<mfcolor>(emitter, listener);
+            deleted_route = remove_listener<mfcolor>(emitter, listener);
             break;
         case field_value::mffloat_id:
-            remove_listener<mffloat>(emitter, listener);
+            deleted_route = remove_listener<mffloat>(emitter, listener);
             break;
         case field_value::mfint32_id:
-            remove_listener<mfint32>(emitter, listener);
+            deleted_route = remove_listener<mfint32>(emitter, listener);
             break;
         case field_value::mfnode_id:
-            remove_listener<mfnode>(emitter, listener);
+            deleted_route = remove_listener<mfnode>(emitter, listener);
             break;
         case field_value::mfrotation_id:
-            remove_listener<mfrotation>(emitter, listener);
+            deleted_route = remove_listener<mfrotation>(emitter, listener);
             break;
         case field_value::mfstring_id:
-            remove_listener<mfstring>(emitter, listener);
+            deleted_route = remove_listener<mfstring>(emitter, listener);
             break;
         case field_value::mftime_id:
-            remove_listener<mftime>(emitter, listener);
+            deleted_route = remove_listener<mftime>(emitter, listener);
             break;
         case field_value::mfvec2f_id:
-            remove_listener<mfvec2f>(emitter, listener);
+            deleted_route = remove_listener<mfvec2f>(emitter, listener);
             break;
         case field_value::mfvec3f_id:
-            remove_listener<mfvec3f>(emitter, listener);
+            deleted_route = remove_listener<mfvec3f>(emitter, listener);
             break;
         }
     } catch (const bad_cast &) {
         //
-        // Do nothing.  If route removal fails, we don't care.
+        // Do nothing.  If route removal fails, we simply return false.
         //
     }
+    return deleted_route;
 }
 
 

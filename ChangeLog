@@ -1,5 +1,15 @@
 2004-03-08 Braden McDaniel  <braden@endoframe.com>
 
+	Modified add_route and delete_route to return boolean values
+	indicating success or failure.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+
+2004-03-08 Braden McDaniel  <braden@endoframe.com>
+
 	Removed unnecessary abstract_child_node and
 	abstract_geometry_node classes.
 
