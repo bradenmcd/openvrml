@@ -1,3 +1,8 @@
+2003-03-30  Braden McDaniel  <braden@endoframe.com>
+
+        * src/lookat/ViewerGlut.cpp:  Removed some debugging output that
+          crept in.
+
 2003-03-27  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Makefile.am,

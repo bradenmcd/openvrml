@@ -316,7 +316,6 @@ static void timer(int)
 
 void ViewerGlut::timerUpdate()
 {
-    std::cout << "ViewerGlut::timerUpdate" << std::endl;
   d_timerPending = false;
   update( 0.0 );
 }
