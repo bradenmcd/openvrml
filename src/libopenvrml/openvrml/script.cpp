@@ -841,8 +841,10 @@ void script_node::do_shutdown(const double timestamp) throw ()
 #   include <sstream>
 #   include <vector>
 #   include <jsapi.h>
+# endif
 namespace openvrml {
 
+# if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
 namespace {
 
 namespace js_ {
@@ -882,7 +884,7 @@ private:
 } // namespace js_
 
 } // namespace
-# endif
+# endif // OPENVRML_SCRIPT_NODE_JAVASCRIPT
 
 /**
  * @brief Create a script object.

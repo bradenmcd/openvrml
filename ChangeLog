@@ -1,9 +1,19 @@
 2003-08-21  Braden McDaniel  <braden@endoframe.com>
 
+	Changes to build with cl 13.00.9466.
+
+	* src/libopenvrml/openvrml/script.cpp:  Fixed #ifdef's for
+	conditionally building with JavaScript support.
+	* src/libopenvrml/openvrml/system.cpp:  #include fixes.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Fixed improper
+	use of aggregate initialization.
+
+2003-08-20  Braden McDaniel  <braden@endoframe.com>
+
 	* lib/antlr/antlr/config.hpp:  Fixed dllimport/dllexport macro
 	for building a static library.
 
-2003-08-21  Braden McDaniel  <braden@endoframe.com>
+2003-08-20  Braden McDaniel  <braden@endoframe.com>
 
 	Gave regex API functions C linkage.
 
@@ -13,7 +23,7 @@
 	* lib/regex/regexec.c
 	* lib/regex/regfree.c
 
-2003-08-21  Braden McDaniel  <braden@endoframe.com>
+2003-08-20  Braden McDaniel  <braden@endoframe.com>
 
 	Added George J. Carrette's Windows port of Henry Spencer's regex
 	to the distribution.  This is needed for the Windows cl build.

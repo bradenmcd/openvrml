@@ -35,6 +35,26 @@
 # include <algorithm>
 # include <sstream>
 
+// added for working under windows (and is not needed for mac os)...
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#   include <sys/types.h>
+#   include <winsock2.h>
+# else
+#   include <sys/types.h>
+#   include <sys/socket.h>
+#   include <netinet/in.h>
+#   include <arpa/inet.h>
+#   include <unistd.h>
+#   include <netdb.h>
+# endif
+
+#include <fcntl.h>        // open() modes
+#if defined(_WIN32) && !defined(__CYGWIN__)
+# include <io.h>
+#else
+# include <unistd.h>
+#endif
+
 # include "private.h"
 # include "system.h"
 
@@ -57,19 +77,6 @@ bool system::load_url(const std::string & url, const mfstring & parameters)
     return false;
 }
 
-// added for working under windows (and is not needed for mac os)...
-# if defined(_WIN32) && !defined(__CYGWIN__)
-#   include <sys/types.h>
-#   include <winsock2.h>
-# else
-#   include <sys/types.h>
-#   include <sys/socket.h>
-#   include <netinet/in.h>
-#   include <arpa/inet.h>
-#   include <unistd.h>
-#   include <netdb.h>
-# endif
-
 int system::connect_socket(const char * host, int port)
 {
     hostent * he;
@@ -84,7 +91,8 @@ int system::connect_socket(const char * host, int port)
 #if defined(_WIN32) && !defined(__CYGWIN__)
     wVersionRequested = MAKEWORD(1, 0);
     if (WSAStartup(wVersionRequested,&wsaData) == SOCKET_ERROR) {
-        the_system->error("WSAStartup failed with error %d\n",WSAGetLastError());
+        std::cerr << "WSAStartup failed with error " << WSAGetLastError()
+                  << std::endl;
         WSACleanup();
         return -1;
     }
@@ -122,14 +130,6 @@ int system::connect_socket(const char * host, int port)
 
     return sockfd;
 }
-
-
-#include <fcntl.h>        // open() modes
-#if defined(_WIN32) && !defined(__CYGWIN__)
-# include <io.h>
-#else
-# include <unistd.h>
-#endif
 
 const char * system::http_host(const char * url, int * port)
 {

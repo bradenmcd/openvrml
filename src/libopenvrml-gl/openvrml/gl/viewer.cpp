@@ -1730,7 +1730,30 @@ namespace {
         float tcScaleU, tcScaleV;
         int vOffset;
         vec3f N; // Normal
+
+        TessExtrusion(const float * c, const float * crossSection,
+                      float tcDeltaU, float tcDeltaV,
+                      float tcScaleU, float tcScaleV,
+                      int vOffset, const vec3f & N);
     };
+
+    TessExtrusion::TessExtrusion(const float * const c,
+                                 const float * const crossSection,
+                                 const float tcDeltaU,
+                                 const float tcDeltaV,
+                                 const float tcScaleU,
+                                 const float tcScaleV,
+                                 const int vOffset,
+                                 const vec3f & N):
+        c(c),
+        crossSection(crossSection),
+        tcDeltaU(tcDeltaU),
+        tcDeltaV(tcDeltaV),
+        tcScaleU(tcScaleU),
+        tcScaleV(tcScaleV),
+        vOffset(vOffset),
+        N(N)
+    {}
 }
 
 # if defined(__CYGWIN__) || defined(__MINGW32__)
@@ -1820,12 +1843,12 @@ namespace {
             gluTessCallback(&tesselator, GLU_TESS_END, glEnd);
 
             if (mask & viewer::mask_bottom) {
-                TessExtrusion bottom = { &c[0][0],
-                                         &cs[0][0],
-                                         xz[0], xz[2],
-                                         dx, dz,
-                                         0 };
-                bottom.N = indexFaceNormal(0, 1, 2, c);
+                TessExtrusion bottom(&c[0][0],
+                                     &cs[0][0],
+                                     xz[0], xz[2],
+                                     dx, dz,
+                                     0,
+                                     indexFaceNormal(0, 1, 2, c));
 
                 gluTessBeginPolygon(&tesselator, &bottom);
                 gluTessBeginContour(&tesselator);
@@ -1844,12 +1867,12 @@ namespace {
 
             if (mask & viewer::mask_top) {
                 int n = (nSpine - 1) * cs.size();
-                TessExtrusion top = { &c[0][0],
-                                      &cs[0][0],
-                                      xz[0], xz[2],
-                                      dx, dz,
-                                      n };
-                top.N = indexFaceNormal(n + 2, n + 1, n, c);
+                TessExtrusion top(&c[0][0],
+                                  &cs[0][0],
+                                  xz[0], xz[2],
+                                  dx, dz,
+                                  n,
+                                  indexFaceNormal(n + 2, n + 1, n, c));
 
                 gluTessBeginPolygon(&tesselator, &top);
                 gluTessBeginContour(&tesselator);
@@ -2386,7 +2409,46 @@ namespace {
         int *texAxes;
         float *texParams;
         size_t nf, i;
+
+        ShellData(unsigned int mask,
+                  const std::vector<vec3f> & coord,
+                  const std::vector<int32> & coordIndex,
+                  const std::vector<openvrml::color> & color,
+                  const std::vector<int32> & colorIndex,
+                  const std::vector<vec3f> & normal,
+                  const std::vector<int32> & normalIndex,
+                  const std::vector<vec2f> & texCoord,
+                  const std::vector<int32> & texCoordIndex,
+                  int * texAxes, float * texParams, size_t nf, size_t i);
     };
+
+    ShellData::ShellData(unsigned int mask,
+                         const std::vector<vec3f> & coord,
+                         const std::vector<int32> & coordIndex,
+                         const std::vector<openvrml::color> & color,
+                         const std::vector<int32> & colorIndex,
+                         const std::vector<vec3f> & normal,
+                         const std::vector<int32> & normalIndex,
+                         const std::vector<vec2f> & texCoord,
+                         const std::vector<int32> & texCoordIndex,
+                         int * texAxes,
+                         float * texParams,
+                         size_t nf,
+                         size_t i):
+        mask(mask),
+        coord(coord),
+        coordIndex(coordIndex),
+        color(color),
+        colorIndex(colorIndex),
+        normal(normal),
+        normalIndex(normalIndex),
+        texCoord(texCoord),
+        texCoordIndex(texCoordIndex),
+        texAxes(texAxes),
+        texParams(texParams),
+        nf(nf),
+        i(i)
+    {}
 
     void insertShellConvex(ShellData * const s)
     {
@@ -2676,14 +2738,12 @@ viewer::insert_shell(unsigned int mask,
 
     // Should build tri strips (probably at the VrmlNode level)...
 
-    ShellData s = {
-        mask,
-        coord, coordIndex,
-        color, colorIndex,
-        normal, normalIndex,
-        texCoord, texCoordIndex,
-        texAxes, texParams, 0
-    };
+    ShellData s(mask,
+                coord, coordIndex,
+                color, colorIndex,
+                normal, normalIndex,
+                texCoord, texCoordIndex,
+                texAxes, texParams, 0, 0);
 
     // Handle non-convex polys
     if (!(mask & mask_convex)) {
