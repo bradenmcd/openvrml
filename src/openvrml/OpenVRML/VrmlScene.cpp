@@ -1870,6 +1870,8 @@ void VrmlScene::updateFlags()
 
 
 /**
+ * @internal
+ *
  * @class ProtoNode
  *
  * @brief A prototype node instance.
@@ -2148,6 +2150,8 @@ void ProtoNode::RouteCopyVisitor::visit(Node & node) {
 }
 
 /**
+ * @internal
+ *
  * @struct ProtoNode::ImplNodeInterface
  *
  * @brief Used for @c IS event propagation.
@@ -2824,6 +2828,8 @@ void ProtoNode::render(Viewer * const viewer, const VrmlRenderContext rc) {
 
 
 /**
+ * @internal
+ *
  * @class ProtoNodeClass
  *
  * @brief Class object for ProtoNode instances.
