@@ -617,8 +617,12 @@ statement[OpenVRML::Browser & browser,
         OpenVRML::NodeTypePtr nodeType;
     }
     : node=nodeStatement[browser, scope] {
-            assert(node);
-            mfNode.addNode(node);
+            //
+            // If we are unable to parse a node, node will be null.
+            //
+            if (node) {
+                mfNode.addNode(node);
+            }
         }
     | protoStatement[browser, scope]
     | routeStatement[*scope]
@@ -641,6 +645,10 @@ options { defaultErrorHandler=false; }
         }
     |   n=node[browser, scope, std::string()]
     ;
+    exception
+    catch [antlr::RecognitionException & ex] {
+        reportError(ex);
+    }
 
 protoStatement[OpenVRML::Browser & browser,
                const OpenVRML::ScopePtr & scope]
@@ -821,7 +829,15 @@ externproto[OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope]
                     break;
                 }
             }
-            scope->addNodeType(nodeType);
+            //
+            // If we weren't able to create a NodeType, that means that we
+            // don't already have a NodeClass for the node. Currently we only
+            // support referring to existing NodeClasses with EXTERNPROTO;
+            // adding new NodeClasses via EXTERNPROTO is not supported. In
+            // practice, this means that the ordinary way of using EXTERNPROTOs
+            // in VRML worlds will fail.
+            //
+            if (nodeType) { scope->addNodeType(nodeType); }
         }
     ;
 
@@ -1498,10 +1514,12 @@ mfNodeValue[OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope]
 returns [OpenVRML::FieldValuePtr mnv]
     { OpenVRML::NodePtr n; }
-    : n=nodeStatement[browser, scope] { mnv.reset(new MFNode(1, &n)); }
+    : n=nodeStatement[browser, scope] {
+            if (n) { mnv.reset(new MFNode(1, &n)); }
+        }
     | LBRACKET { mnv.reset(new MFNode); } (
             n=nodeStatement[browser, scope] {
-                static_cast<MFNode &>(*mnv).addNode(n);
+                if (n) { static_cast<MFNode &>(*mnv).addNode(n); }
             }
         )* RBRACKET
     ;

@@ -1,3 +1,11 @@
+2002-10-19  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Vrml97Parser.cpp,
+          src/openvrml/OpenVRML/Vrml97Parser.g: Fixed crash (assertion
+          failure) when encountering an EXTERNPROTO. Arbitrary
+          EXTERNPROTOs still aren't supported, but at least we don't die
+          on them anymore.
+
 2002-10-18  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,
