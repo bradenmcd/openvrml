@@ -26,7 +26,6 @@
 #   include "common.h"
 #   include "nodeclassptr.h"
 #   include "script.h"
-#   include "VrmlNamespace.h"
 #   include "vrml97node.h"
 
 namespace OpenVRML {
@@ -34,13 +33,13 @@ namespace OpenVRML {
     class Doc2;
     class Viewer;
     class ProtoNode;
+    class Vrml97RootScope;
 
-    typedef std::map<std::string, NodeClassPtr> NodeClassMap;
-        
     class OPENVRML_SCOPE VrmlScene {
         friend class Vrml97Parser;
         friend class ProtoNodeClass;
         friend class Vrml97Node::Inline;
+        friend class Vrml97RootScope;
         
     public:
         enum CBReason {
@@ -51,11 +50,10 @@ namespace OpenVRML {
         typedef void (*SceneCB)(CBReason reason);
 
     private:
+        typedef std::map<std::string, NodeClassPtr> NodeClassMap;
         NodeClassMap nodeClassMap;
         ScriptNodeClass scriptNodeClass;
         Doc2 * d_url;
-        MFNode nodes;
-        VrmlNamespace * scope;
         typedef std::list<NodePtr> BindStack;
         BindStack d_backgroundStack;
         BindStack d_fogStack;
@@ -71,6 +69,7 @@ namespace OpenVRML {
         std::list<Node *> d_audioClips;
         std::list<Node *> d_movies;
         std::list<ProtoNode *> protoNodeList;
+        MFNode nodes;
         bool d_modified;
         bool d_newView;
         double d_deltaTime;
@@ -89,7 +88,6 @@ namespace OpenVRML {
         MFString *d_pendingParameters;
 
         MFNode *d_pendingNodes;
-        VrmlNamespace *d_pendingScope;
 
         SceneCBList d_sceneCallbacks;
 
@@ -109,10 +107,9 @@ namespace OpenVRML {
         virtual const char *getName();
         virtual const char *getVersion();
         
-        MFNode * readWrl(const MFString & urls, Doc2 * relative,
-                         VrmlNamespace * ns);
-        MFNode * readWrl(Doc2 * url, VrmlNamespace * ns );
-        const MFNode readString(char const * vrmlString, VrmlNamespace * ns);
+        MFNode * readWrl(const MFString & urls, Doc2 * relative);
+        MFNode * readWrl(Doc2 * url);
+        const MFNode readString(char const * vrmlString);
 
         const MFNode & getRootNodes() const throw ();
 
@@ -124,10 +121,8 @@ namespace OpenVRML {
 
         Doc2 * urlDoc() const;
 
-        VrmlNamespace * getScope() const;
-
         void queueLoadUrl(const MFString & url, const MFString & parameters );
-        void queueReplaceNodes(const MFNode & nodes, VrmlNamespace & ns);
+        void queueReplaceNodes(const MFNode & nodes);
 
         void sensitiveEvent(Node * object, double timeStamp,
 		            bool isOver, bool isActive, double *point );
@@ -218,7 +213,6 @@ namespace OpenVRML {
         VrmlScene & operator=(const VrmlScene &);
         
         void initNodeClassMap();
-        void initScope();
     };
 }
 

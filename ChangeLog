@@ -1,3 +1,8 @@
+2002-07-05  Braden McDaniel  <braden@endoframe.com>
+
+        * Replaced VrmlNamespace with Scope. Scopes are owned by Nodes,
+          and refcounted using ScopePtr.
+
 2002-07-04  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/lookat.cpp:  Minor code cleanup.

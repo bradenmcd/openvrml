@@ -25,7 +25,7 @@
 # include <algorithm>
 # include <stdio.h>
 # include "node.h"
-# include "VrmlNamespace.h"
+# include "scope.h"
 # include "VrmlScene.h"
 # include "MathUtils.h"
 # include "bvolume.h"
@@ -571,9 +571,25 @@ Node::PolledEventOutValue::PolledEventOutValue(const FieldValuePtr & value,
  *
  * @param type  the NodeType associated with the instance.
  */
-Node::Node(const NodeType & type):
-        nodeType(type), d_modified(false), d_bvol_dirty(false),
+Node::Node(const NodeType & type, const ScopePtr & scope):
+        nodeType(type), scope(scope), d_modified(false), d_bvol_dirty(false),
         visited(false) {}
+
+typedef std::map<std::string, Node *> NamedNodeMap;
+
+namespace {
+    
+    struct NodeIs_ : std::unary_function<NamedNodeMap::value_type, bool> {
+        NodeIs_(const Node & node): node(&node) {}
+        
+        bool operator()(const NamedNodeMap::value_type & value) const {
+            return value.second == this->node;
+        }
+        
+    private:
+        const Node * node;
+    };
+}
 
 /**
  * @brief Destructor.
@@ -581,14 +597,18 @@ Node::Node(const NodeType & type):
  * Remove node name (if any) from the scope.
  */
 Node::~Node() throw () {
-    // Remove the node's name (if any) from the map...
-    if (!this->id.empty()) {
-        assert(this->nodeType.nodeClass.scene.getScope());
-        this->nodeType.nodeClass.scene.getScope()->removeNodeName(*this);
+    //
+    // If this is the primordial node in a prototype definition, this->scope
+    // will be null.
+    //
+    if (this->scope) {
+        using std::find_if;
+        const NamedNodeMap::iterator end = this->scope->namedNodeMap.end();
+        const NamedNodeMap::iterator pos =
+                find_if(this->scope->namedNodeMap.begin(), end, NodeIs_(*this));
+        if (pos != end) { this->scope->namedNodeMap.erase(pos); }
     }
 }
-
-
 
 /**
  * @brief Accept a visitor.
@@ -649,18 +669,11 @@ void Node::resetVisitedFlag() {
 /**
  * @brief Set the nodeId of the node.
  *
- * Some one else (the parser) needs to tell the scene about the name for
- * use in USE/ROUTEs.
- *
- * @param nodeName a string
- * @param ns a pointer to the VrmlNamespace to which this node should
- *           belong
+ * @param nodeId   the ID for the node.
  */
-void Node::setId(const std::string & nodeId, VrmlNamespace * const ns) {
-    this->id = nodeId;
-    if (!nodeId.empty() && ns) {
-        ns->addNodeName(*this);
-    }
+void Node::setId(const std::string & nodeId) {
+    assert(this->scope);
+    this->scope->namedNodeMap[nodeId] = this;
 }
 
 /**
@@ -668,7 +681,14 @@ void Node::setId(const std::string & nodeId, VrmlNamespace * const ns) {
  *
  * @return the nodeId
  */
-const std::string & Node::getId() const { return this->id; }
+const std::string Node::getId() const {
+    using std::find_if;
+    assert(this->scope);
+    const NamedNodeMap::iterator end = this->scope->namedNodeMap.end();
+    const NamedNodeMap::iterator pos =
+            find_if(this->scope->namedNodeMap.begin(), end, NodeIs_(*this));
+    return (pos != end) ? pos->first : std::string();
+}
 
 void Node::addEventOutIS(const std::string & eventOutId,
                          PolledEventOutValue * const eventOutValue)
@@ -1397,8 +1417,9 @@ namespace {
 
 std::ostream & Node::print(std::ostream & out, const size_t indent) const {
     for (size_t i = 0; i < indent; ++i) { out << ' '; }
-    if (!this->id.empty()) { out << "DEF " << this->id.c_str() << " "; }
-    out << this->nodeType.id.c_str() << " { ";
+    std::string nodeId = this->getId();
+    if (!nodeId.empty()) { out << "DEF " << nodeId << " "; }
+    out << this->nodeType.id << " { ";
     const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
     std::for_each(interfaces.begin(), interfaces.end(),
                   PrintField_(*this, out, indent));
@@ -1419,9 +1440,12 @@ std::ostream & operator<<(std::ostream & out, const Node & node) {
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-AppearanceNode::AppearanceNode(const NodeType & type): Node(type) {}
+AppearanceNode::AppearanceNode(const NodeType & nodeType,
+                               const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -1478,9 +1502,11 @@ AppearanceNode * AppearanceNode::toAppearance() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-ChildNode::ChildNode(const NodeType & type): Node(type) {}
+ChildNode::ChildNode(const NodeType & nodeType, const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -1511,9 +1537,11 @@ ChildNode * ChildNode::toChild() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-ColorNode::ColorNode(const NodeType & type): Node(type) {}
+ColorNode::ColorNode(const NodeType & nodeType, const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -1552,9 +1580,12 @@ ColorNode * ColorNode::toColor() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-CoordinateNode::CoordinateNode(const NodeType & type): Node(type) {}
+CoordinateNode::CoordinateNode(const NodeType & nodeType,
+                               const ScopePtr & scope)
+        : Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -1595,9 +1626,11 @@ CoordinateNode * CoordinateNode::toCoordinate() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-FontStyleNode::FontStyleNode(const NodeType & type): Node(type) {}
+FontStyleNode::FontStyleNode(const NodeType & nodeType, const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -1710,9 +1743,11 @@ FontStyleNode * FontStyleNode::toFontStyle() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-GeometryNode::GeometryNode(const NodeType & type): Node(type) {}
+GeometryNode::GeometryNode(const NodeType & nodeType, const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -1754,9 +1789,11 @@ const ColorNode * GeometryNode::getColor() const throw () { return 0; }
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-MaterialNode::MaterialNode(const NodeType & type): Node(type) {}
+MaterialNode::MaterialNode(const NodeType & nodeType, const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -1835,9 +1872,11 @@ MaterialNode * MaterialNode::toMaterial() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-NormalNode::NormalNode(const NodeType & type): Node(type) {}
+NormalNode::NormalNode(const NodeType & nodeType, const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -1876,9 +1915,12 @@ NormalNode * NormalNode::toNormal() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-SoundSourceNode::SoundSourceNode(const NodeType & type): Node(type) {}
+SoundSourceNode::SoundSourceNode(const NodeType & nodeType,
+                                 const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -1914,9 +1956,11 @@ SoundSourceNode * SoundSourceNode::toSoundSource() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-TextureNode::TextureNode(const NodeType & type): Node(type) {}
+TextureNode::TextureNode(const NodeType & nodeType, const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -2010,10 +2054,12 @@ TextureNode * TextureNode::toTexture() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-TextureCoordinateNode::TextureCoordinateNode(const NodeType & type):
-        Node(type) {}
+TextureCoordinateNode::TextureCoordinateNode(const NodeType & nodeType,
+                                             const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.
@@ -2049,10 +2095,12 @@ TextureCoordinateNode * TextureCoordinateNode::toTextureCoordinate() throw () {
 /**
  * @brief Constructor.
  *
- * @param type  the NodeType associated with the node.
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
  */
-TextureTransformNode::TextureTransformNode(const NodeType & type):
-        Node(type) {}
+TextureTransformNode::TextureTransformNode(const NodeType & nodeType,
+                                           const ScopePtr & scope):
+        Node(nodeType, scope) {}
 
 /**
  * @brief Destructor.

@@ -27,7 +27,7 @@ header "post_include_hpp" {
 # define ANTLR_RBRACE }
 
 namespace OpenVRML {
-    class VrmlNamespace;
+    class Scope;
     class ScriptNode;
     class NodeType;
     class Doc2;
@@ -122,7 +122,7 @@ header "post_include_cpp" {
 # include <assert.h>
 # include <antlr/CommonToken.hpp>
 # include "doc2.hpp"
-# include "VrmlNamespace.h"
+# include "scope.h"
 # include "node.h"
 # include "script.h"
 # include "private.h"
@@ -590,47 +590,50 @@ options {
 
 vrmlScene[OpenVRML::VrmlScene & scene,
           OpenVRML::MFNode & mfNode,
-          OpenVRML::VrmlNamespace & vrmlNamespace,
           const OpenVRML::Doc2 * doc]
-    :   (statement[scene, mfNode, vrmlNamespace, doc])*
+{
+    const ScopePtr scope(new Vrml97RootScope(scene));
+}
+    :   (statement[scene, mfNode, scope, doc])*
     ;
 
 statement[OpenVRML::VrmlScene & scene,
           OpenVRML::MFNode & mfNode,
-          OpenVRML::VrmlNamespace & vrmlNamespace,
+          const OpenVRML::ScopePtr & scope,
           const OpenVRML::Doc2 * doc]
     {
         OpenVRML::NodePtr node;
         OpenVRML::NodeTypePtr nodeType;
     }
-    : node=nodeStatement[scene, vrmlNamespace, doc] {
+    : node=nodeStatement[scene, scope, doc] {
             assert(node);
             mfNode.addNode(node);
         }
-    | protoStatement[scene, vrmlNamespace, doc]
-    | routeStatement[vrmlNamespace]
+    | protoStatement[scene, scope, doc]
+    | routeStatement[*scope]
     ;
 
 nodeStatement[OpenVRML::VrmlScene & scene,
-              OpenVRML::VrmlNamespace & vrmlNamespace,
+              const OpenVRML::ScopePtr & scope,
               const OpenVRML::Doc2 * doc] 
 returns [OpenVRML::NodePtr n]
 options { defaultErrorHandler=false; }
-    :   KEYWORD_DEF id0:ID n=node[scene, vrmlNamespace, doc, id0->getText()]
+    :   KEYWORD_DEF id0:ID n=node[scene, scope, doc, id0->getText()]
     |   KEYWORD_USE id1:ID
         {
-            n.reset(vrmlNamespace.findNode(id1->getText()));
+            assert(scope);
+            n.reset(scope->findNode(id1->getText()));
             if (!n) {
                 throw antlr::SemanticException("Node \"" + id1->getText()
                                     + "\" has not been defined in this scope.",
                                     std::string(), LT(0)->getLine());
             }
         }
-    |   n=node[scene, vrmlNamespace, doc, std::string()]
+    |   n=node[scene, scope, doc, std::string()]
     ;
 
 protoStatement[OpenVRML::VrmlScene & scene,
-               OpenVRML::VrmlNamespace & scope,
+               const OpenVRML::ScopePtr & scope,
                const OpenVRML::Doc2 * doc]
     //
     // XXX What if the node type already exists in the scope? Probably need to
@@ -641,27 +644,42 @@ protoStatement[OpenVRML::VrmlScene & scene,
     ;
 
 proto[OpenVRML::VrmlScene & scene,
-      OpenVRML::VrmlNamespace & scope,
+      const OpenVRML::ScopePtr & scope,
       const OpenVRML::Doc2 * doc]
 {
     NodeClassPtr nodeClass;
+    ScopePtr protoScope;
 }
-    : KEYWORD_PROTO id:ID { nodeClass.reset(new ProtoNodeClass(scene)); }
-        LBRACKET
-            (protoInterfaceDeclaration[scope, doc, static_cast<ProtoNodeClass &>(*nodeClass)])*
-        RBRACKET LBRACE protoBody[doc, static_cast<ProtoNodeClass &>(*nodeClass)] RBRACE
+    : KEYWORD_PROTO id:ID {
+            nodeClass.reset(new ProtoNodeClass(scene));
+            protoScope.reset(new Scope(id->getText(), scope));
+        }
+        LBRACKET (
+            {
+                // XXX Hmm... We give each interface declaration its own scope
+                // XXX here. This is wasteful; Vrml97RootScope is expensive and
+                // XXX we only *really* need this for SFNode and MFNode
+                // XXX fields/exposedFields.
+                ScopePtr interfaceDeclScope(new Vrml97RootScope(scene));
+            }
+            protoInterfaceDeclaration[interfaceDeclScope, doc,
+                                      static_cast<ProtoNodeClass &>(*nodeClass)]
+        )* RBRACKET LBRACE protoBody[protoScope, doc,
+                                     static_cast<ProtoNodeClass &>(*nodeClass)]
+        RBRACE
         {
             //
             // Add the new NodeClass (prototype definition) to the scene's
             // NodeClassMap.
             //
-            // XXX Right now, this is just keyed on the PROTO's id, which won't
-            // XXX work correctly: it could collide with a PROTO from a
-            // XXX different scope. (The NodeClassMap is a global list of
-            // XXX PROTOs.) Once VrmlNamespace has been retooled with a scope
-            // XXX identifier, that can be used as the key here.
+            // First, construct the id for the node implementation.
             //
-            const NodeClassMap::value_type value(id->getText(), nodeClass);
+            std::string implId = scope->id;
+            while (protoScope) {
+                implId += '#' + protoScope->id;
+                protoScope = protoScope->parent;
+            }
+            const VrmlScene::NodeClassMap::value_type value(implId, nodeClass);
             scene.nodeClassMap.insert(value);
             
             //
@@ -672,11 +690,12 @@ proto[OpenVRML::VrmlScene & scene,
                                           static_cast<ProtoNodeClass &>(*nodeClass)
                                               .protoNodeType.getInterfaces());
             assert(nodeType);
-            scope.addNodeType(nodeType);
+            assert(scope);
+            scope->addNodeType(nodeType);
         }
     ;
 
-protoInterfaceDeclaration[OpenVRML::VrmlNamespace & scope,
+protoInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                           const OpenVRML::Doc2 * doc,
                           OpenVRML::ProtoNodeClass & proto]
 {
@@ -739,43 +758,49 @@ fieldInterfaceType returns [OpenVRML::NodeInterface::Type it = OpenVRML::NodeInt
     |   KEYWORD_EXPOSEDFIELD { it = OpenVRML::NodeInterface::exposedField; }
     ;
 
-protoBody[const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto]
+protoBody[const OpenVRML::ScopePtr & scope,
+          const OpenVRML::Doc2 * doc,
+          OpenVRML::ProtoNodeClass & proto]
 {
     OpenVRML::NodePtr n;
 }
-    : (protoStatement[proto.scene, proto.protoNode.scope, doc])*
-        n=protoNodeStatement[doc, proto] { assert(n); proto.addRootNode(n); }
-        (protoBodyStatement[doc, proto])*
+    : (protoStatement[proto.scene, scope, doc])*
+        n=protoNodeStatement[proto, scope, doc] { assert(n); proto.addRootNode(n); }
+        (protoBodyStatement[proto, scope, doc])*
     ;
 
-protoBodyStatement[const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto]
+protoBodyStatement[OpenVRML::ProtoNodeClass & proto,
+                   const OpenVRML::ScopePtr & scope,
+                   const OpenVRML::Doc2 * doc]
 {
     OpenVRML::NodePtr n;
 }
-    : n=protoNodeStatement[doc, proto] { assert(n); proto.addRootNode(n); }
-    | protoStatement[proto.scene, proto.protoNode.scope, doc]
-    | routeStatement[proto.protoNode.scope]
+    : n=protoNodeStatement[proto, scope, doc] { assert(n); proto.addRootNode(n); }
+    | protoStatement[proto.scene, scope, doc]
+    | routeStatement[*scope]
     ;
 
-protoNodeStatement[const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto]
+protoNodeStatement[OpenVRML::ProtoNodeClass & proto,
+                   const OpenVRML::ScopePtr & scope,
+                   const OpenVRML::Doc2 * doc]
 returns [OpenVRML::NodePtr n]
 options { defaultErrorHandler=false; }
 {
     using antlr::SemanticException;
 }
-    : KEYWORD_DEF id0:ID n=protoNode[doc, proto, id0->getText()]
+    : KEYWORD_DEF id0:ID n=protoNode[proto, scope, doc, id0->getText()]
     | KEYWORD_USE id1:ID {
-            n.reset(proto.protoNode.scope.findNode(id1->getText()));
+            n.reset(scope->findNode(id1->getText()));
             if (!n) {
                 throw SemanticException("Node \"" + id1->getText()
                                     + "\" has not been defined in this scope.",
                                     std::string(), LT(0)->getLine());
             }
         }
-    | n=protoNode[doc, proto, std::string()]
+    | n=protoNode[proto, scope, doc, std::string()]
     ;
 
-externproto[OpenVRML::VrmlScene & scene, OpenVRML::VrmlNamespace & scope,
+externproto[OpenVRML::VrmlScene & scene, const OpenVRML::ScopePtr & scope,
             const OpenVRML::Doc2 * doc]
 {
     OpenVRML::NodeInterfaceSet interfaces;
@@ -786,7 +811,7 @@ externproto[OpenVRML::VrmlScene & scene, OpenVRML::VrmlNamespace & scope,
         (externInterfaceDeclaration[interfaces])* RBRACKET
         urlList=externprotoUrlList {
             for (size_t i = 0; i < urlList.getLength(); ++i) {
-            	NodeClassMap::const_iterator pos =
+            	VrmlScene::NodeClassMap::const_iterator pos =
                         scene.nodeClassMap.find(urlList.getElement(i));
                 if (pos != scene.nodeClassMap.end()) {
                     nodeType = pos->second->createType(id->getText(),
@@ -794,7 +819,7 @@ externproto[OpenVRML::VrmlScene & scene, OpenVRML::VrmlNamespace & scope,
                     break;
                 }
             }
-            scope.addNodeType(nodeType);
+            scope->addNodeType(nodeType);
         }
     ;
 
@@ -848,7 +873,7 @@ externprotoUrlList returns [OpenVRML::MFString urlList]
 // when the time comes.
 // -- Braden McDaniel <braden@endoframe.com>, 6 Apr, 2000
 //
-routeStatement[const OpenVRML::VrmlNamespace & vrmlNamespace]
+routeStatement[const OpenVRML::Scope & scope]
     :   KEYWORD_ROUTE fromNodeId:ID PERIOD fromInterfaceId:ID
         KEYWORD_TO toNodeId:ID PERIOD toInterfaceId:ID
         {
@@ -858,8 +883,7 @@ routeStatement[const OpenVRML::VrmlNamespace & vrmlNamespace]
             using OpenVRML::ScriptNode;
             using antlr::SemanticException;
             
-            Node * const fromNode =
-                    vrmlNamespace.findNode(fromNodeId->getText());
+            Node * const fromNode = scope.findNode(fromNodeId->getText());
             if (!fromNode) {
                 throw SemanticException("Node \"" + fromNodeId->getText()
                                     + "\" has not been defined in this scope.",
@@ -879,7 +903,7 @@ routeStatement[const OpenVRML::VrmlNamespace & vrmlNamespace]
                 }
             }
             
-            Node * const toNode = vrmlNamespace.findNode(toNodeId->getText());
+            Node * const toNode = scope.findNode(toNodeId->getText());
             if (!toNode) {
                 throw SemanticException("Node \"" + toNodeId->getText()
                         + "\" has not been defined in this scope.",
@@ -910,7 +934,7 @@ routeStatement[const OpenVRML::VrmlNamespace & vrmlNamespace]
     ;
 
 node[OpenVRML::VrmlScene & scene,
-     OpenVRML::VrmlNamespace & scope,
+     const OpenVRML::ScopePtr & scope,
      const OpenVRML::Doc2 * doc,
      const std::string & nodeId]
 returns [OpenVRML::NodePtr n]
@@ -924,8 +948,8 @@ options { defaultErrorHandler = false; }
     NodeTypePtr nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
-            n.reset(new ScriptNode(scene.scriptNodeClass));
-            if (!nodeId.empty()) { n->setId(nodeId, &scope); }
+            n.reset(new ScriptNode(scene.scriptNodeClass, scope));
+            if (!nodeId.empty()) { n->setId(nodeId); }
             
             ScriptNode * const scriptNode = n->toScript();
             assert(scriptNode);
@@ -935,20 +959,20 @@ options { defaultErrorHandler = false; }
         )* RBRACE
         
     | nodeTypeId:ID {
-            nodeType = scope.findType(nodeTypeId->getText());
+            nodeType = scope->findType(nodeTypeId->getText());
             if (!nodeType) {
                 throw SemanticException("Unknown node type \""
                                         + nodeTypeId->getText() + "\".",
                                         std::string(), LT(0)->getLine());
             }
             
-            n = NodePtr(nodeType->createNode());
+            n = NodePtr(nodeType->createNode(scope));
             
-            if (!nodeId.empty()) { n->setId(nodeId, &scope); }
+            if (!nodeId.empty()) { n->setId(nodeId); }
         } LBRACE (nodeBodyElement[scope, doc, *n])* RBRACE
     ;
 
-nodeBodyElement[OpenVRML::VrmlNamespace & scope,
+nodeBodyElement[const OpenVRML::ScopePtr & scope,
                 const OpenVRML::Doc2 * doc,
                 OpenVRML::Node & node]
 {
@@ -973,11 +997,11 @@ nodeBodyElement[OpenVRML::VrmlNamespace & scope,
             assert(fv);
             node.setField(id->getText(), *fv);
         }
-    |   routeStatement[scope]
+    |   routeStatement[*scope]
     |   protoStatement[node.nodeType.nodeClass.scene, scope, doc]
     ;
 
-scriptInterfaceDeclaration[OpenVRML::VrmlNamespace & scope,
+scriptInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                            const OpenVRML::Doc2 * doc,
                            OpenVRML::ScriptNode & node]
     {
@@ -1008,7 +1032,7 @@ scriptInterfaceDeclaration[OpenVRML::VrmlNamespace & scope,
     | scriptFieldInterfaceDeclaration[scope, doc, node]
     ;
 
-scriptFieldInterfaceDeclaration[OpenVRML::VrmlNamespace & scope,
+scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
                                 const OpenVRML::Doc2 * doc,
                                 OpenVRML::ScriptNode & node]
 {
@@ -1031,7 +1055,9 @@ scriptFieldInterfaceDeclaration[OpenVRML::VrmlNamespace & scope,
         }
     ;
 
-protoNode[const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto,
+protoNode[OpenVRML::ProtoNodeClass & proto,
+          const OpenVRML::ScopePtr & scope,
+          const OpenVRML::Doc2 * doc,
           const std::string & nodeId]
 returns [OpenVRML::NodePtr n]
 options { defaultErrorHandler=false; }
@@ -1044,32 +1070,33 @@ options { defaultErrorHandler=false; }
     NodeTypePtr nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
-            n.reset(new ScriptNode(proto.scene.scriptNodeClass));
-            if (!nodeId.empty()) { n->setId(nodeId, &proto.protoNode.scope); }
+            n.reset(new ScriptNode(proto.scene.scriptNodeClass, scope));
+            if (!nodeId.empty()) { n->setId(nodeId); }
             
             ScriptNode * const scriptNode = n->toScript();
             assert(scriptNode);
         }
         LBRACE (
-            protoNodeBodyElement[doc, proto, *n]
-            | protoScriptInterfaceDeclaration[doc, proto, *scriptNode]
+            protoNodeBodyElement[proto, scope, doc, *n]
+            | protoScriptInterfaceDeclaration[proto, scope, doc, *scriptNode]
         )* RBRACE
 
     | nodeTypeId:ID {
-            nodeType = proto.protoNode.scope.findType(nodeTypeId->getText());
+            nodeType = scope->findType(nodeTypeId->getText());
             if (!nodeType) {
                 throw SemanticException("Unknown node type \""
                                         + nodeTypeId->getText() + "\".",
                                         std::string(), LT(0)->getLine());
             }
-            n = nodeType->createNode();
-            if (!nodeId.empty()) { n->setId(nodeId, &proto.protoNode.scope); }
+            n = nodeType->createNode(scope);
+            if (!nodeId.empty()) { n->setId(nodeId); }
         }
-        LBRACE (protoNodeBodyElement[doc, proto, *n])* RBRACE
+        LBRACE (protoNodeBodyElement[proto, scope, doc, *n])* RBRACE
     ;
 
-protoNodeBodyElement[const OpenVRML::Doc2 * doc,
-                     OpenVRML::ProtoNodeClass & proto,
+protoNodeBodyElement[OpenVRML::ProtoNodeClass & proto,
+                     const OpenVRML::ScopePtr & scope,
+                     const OpenVRML::Doc2 * doc,
                      OpenVRML::Node & node]
 {
     using OpenVRML::FieldValue;
@@ -1092,7 +1119,7 @@ protoNodeBodyElement[const OpenVRML::Doc2 * doc,
             }
         } (
             (
-                fv=protoFieldValue[doc, proto, ft] {
+                fv=protoFieldValue[proto, scope, doc, ft] {
                     assert(fv);
                     node.setField(id->getText(), *fv);
                 }
@@ -1100,8 +1127,8 @@ protoNodeBodyElement[const OpenVRML::Doc2 * doc,
             | isStatement[proto, node, id->getText()]
         )
     | eventId:ID isStatement[proto, node, eventId->getText()]
-    | routeStatement[proto.protoNode.scope]
-    | protoStatement[proto.scene, proto.protoNode.scope, doc]
+    | routeStatement[*scope]
+    | protoStatement[proto.scene, scope, doc]
     ;
 
 isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::Node & node,
@@ -1116,8 +1143,9 @@ isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::Node & node,
         }
     ;
 
-protoScriptInterfaceDeclaration[const OpenVRML::Doc2 * doc,
-                                OpenVRML::ProtoNodeClass & proto,
+protoScriptInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
+                                const OpenVRML::ScopePtr & scope,
+                                const OpenVRML::Doc2 * doc,
                                 OpenVRML::ScriptNode & node]
 {
     using OpenVRML::NodeInterface;
@@ -1143,11 +1171,12 @@ protoScriptInterfaceDeclaration[const OpenVRML::Doc2 * doc,
                     assert(false);
             }
         } (isStatement[proto, node, id->getText()])?
-    |   protoScriptFieldInterfaceDeclaration[doc, proto, node]
+    |   protoScriptFieldInterfaceDeclaration[proto, scope, doc, node]
     ;
 
-protoScriptFieldInterfaceDeclaration[const OpenVRML::Doc2 * doc,
-                                     OpenVRML::ProtoNodeClass & proto,
+protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
+                                     const OpenVRML::ScopePtr & scope,
+                                     const OpenVRML::Doc2 * doc,
                                      OpenVRML::ScriptNode & node]
 {
     using OpenVRML::FieldValue;
@@ -1165,7 +1194,7 @@ protoScriptFieldInterfaceDeclaration[const OpenVRML::Doc2 * doc,
             
         } (
             (
-                fv=protoFieldValue[doc, proto, ft] {
+                fv=protoFieldValue[proto, scope, doc, ft] {
                     assert(fv);
                     node.addField(id->getText(), fv);
                 }
@@ -1234,7 +1263,7 @@ returns [OpenVRML::FieldValue::Type ft = OpenVRML::FieldValue::invalidType]
     ;
 
 fieldValue[OpenVRML::VrmlScene & scene,
-           OpenVRML::VrmlNamespace & scope,
+           const OpenVRML::ScopePtr & scope,
            const OpenVRML::Doc2 * doc,
            OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValuePtr fv]
@@ -1247,15 +1276,16 @@ options { defaultErrorHandler=false; }
     | fv=nonNodeFieldValue[ft]
     ;
 
-protoFieldValue[const OpenVRML::Doc2 * doc,
-                OpenVRML::ProtoNodeClass & proto,
+protoFieldValue[OpenVRML::ProtoNodeClass & proto,
+                const OpenVRML::ScopePtr & scope,
+                const OpenVRML::Doc2 * doc,
                 OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValuePtr fv]
 {
     using OpenVRML::FieldValue;
 }
     : { (ft == FieldValue::sfnode) || (ft == FieldValue::mfnode) }?
-        fv=protoNodeFieldValue[doc, proto, ft] { assert(fv); }
+        fv=protoNodeFieldValue[proto, scope, doc, ft] { assert(fv); }
     | fv=nonNodeFieldValue[ft] { assert(fv); }
     ;
 
@@ -1286,7 +1316,7 @@ options { defaultErrorHandler=false; }
     ;
 
 nodeFieldValue[OpenVRML::VrmlScene & scene,
-               OpenVRML::VrmlNamespace & scope,
+               const OpenVRML::ScopePtr & scope,
                const OpenVRML::Doc2 * doc,
                OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValuePtr fv]
@@ -1298,13 +1328,15 @@ options { defaultErrorHandler=false; }
     | fv=mfNodeValue[scene, scope, doc]
     ;
 
-protoNodeFieldValue[const OpenVRML::Doc2 * doc,
-                    OpenVRML::ProtoNodeClass & proto,
+protoNodeFieldValue[OpenVRML::ProtoNodeClass & proto,
+                    const OpenVRML::ScopePtr & scope,
+                    const OpenVRML::Doc2 * doc,
                     OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValuePtr fv]
 options { defaultErrorHandler=false; }
-    : { ft == OpenVRML::FieldValue::sfnode }? fv=protoSfNodeValue[doc, proto]
-    | fv=protoMfNodeValue[doc, proto]
+    : { ft == OpenVRML::FieldValue::sfnode }?
+        fv=protoSfNodeValue[proto, scope, doc]
+    | fv=protoMfNodeValue[proto, scope, doc]
     ;
 
 sfBoolValue returns [OpenVRML::FieldValuePtr sbv]
@@ -1451,7 +1483,7 @@ options { defaultErrorHandler=false; }
     ;
 
 sfNodeValue[OpenVRML::VrmlScene & scene,
-            OpenVRML::VrmlNamespace & scope,
+            const OpenVRML::ScopePtr & scope,
             const OpenVRML::Doc2 * doc]
 returns [OpenVRML::FieldValuePtr snv]
 {
@@ -1461,17 +1493,19 @@ returns [OpenVRML::FieldValuePtr snv]
     | KEYWORD_NULL                       { snv.reset(new SFNode); }
     ;
 
-protoSfNodeValue[const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto]
+protoSfNodeValue[OpenVRML::ProtoNodeClass & proto,
+                 const OpenVRML::ScopePtr & scope,
+                 const OpenVRML::Doc2 * doc]
 returns [OpenVRML::FieldValuePtr snv]
 {
     OpenVRML::NodePtr n;
 }
-    : n=protoNodeStatement[doc, proto] { snv.reset(new SFNode(n)); }
-    | KEYWORD_NULL                     { snv.reset(new SFNode); }
+    : n=protoNodeStatement[proto, scope, doc] { snv.reset(new SFNode(n)); }
+    | KEYWORD_NULL                            { snv.reset(new SFNode); }
     ;
 
 mfNodeValue[OpenVRML::VrmlScene & scene,
-            OpenVRML::VrmlNamespace & scope,
+            const OpenVRML::ScopePtr & scope,
             const OpenVRML::Doc2 * doc]
 returns [OpenVRML::FieldValuePtr mnv]
     { OpenVRML::NodePtr n; }
@@ -1483,12 +1517,14 @@ returns [OpenVRML::FieldValuePtr mnv]
         )* RBRACKET
     ;
 
-protoMfNodeValue[const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto]
+protoMfNodeValue[OpenVRML::ProtoNodeClass & proto,
+                 const OpenVRML::ScopePtr & scope,
+                 const OpenVRML::Doc2 * doc]
 returns [OpenVRML::FieldValuePtr mnv]
     { OpenVRML::NodePtr n; }
-    : n=protoNodeStatement[doc, proto] { mnv.reset(new MFNode(1, &n)); }
+    : n=protoNodeStatement[proto, scope, doc] { mnv.reset(new MFNode(1, &n)); }
     | LBRACKET { mnv.reset(new MFNode); } (
-            n=protoNodeStatement[doc, proto] {
+            n=protoNodeStatement[proto, scope, doc] {
                 static_cast<MFNode &>(*mnv).addNode(n);
             }
         )* RBRACKET

@@ -32,7 +32,7 @@
 # include <vector>
 # include "private.h"
 # include "script.h"
-# include "VrmlNamespace.h"
+# include "scope.h"
 # include "VrmlScene.h"
 # include "doc2.hpp"
 # include "System.h"
@@ -236,11 +236,14 @@ namespace {
  * to use this method. The "primordial" ScriptNode instance must be created with
  * a call to the ScriptNode constructor.
  */
-const NodePtr ScriptNode::ScriptNodeType::createNode() const
+const NodePtr
+        ScriptNode::ScriptNodeType::createNode(const ScopePtr & scope) const
         throw (std::bad_alloc) {
-    const NodePtr node(new ScriptNode(static_cast<ScriptNodeClass &>(this->nodeClass)));
+    ScriptNodeClass & scriptNodeClass =
+            static_cast<ScriptNodeClass &>(this->nodeClass);
+    const NodePtr node(new ScriptNode(scriptNodeClass, scope));
     ScriptNode & scriptNode = dynamic_cast<ScriptNode &>(*node);
-
+    
     //
     // Copy the interfaces.
     //
@@ -332,8 +335,9 @@ const NodePtr ScriptNode::ScriptNodeType::createNode() const
 /**
  * @brief Constructor.
  */
-ScriptNode::ScriptNode(ScriptNodeClass & nodeClass):
-        Node(this->scriptNodeType), ChildNode(this->scriptNodeType),
+ScriptNode::ScriptNode(ScriptNodeClass & nodeClass, const ScopePtr & scope):
+        Node(this->scriptNodeType, scope),
+        ChildNode(this->scriptNodeType, scope),
         scriptNodeType(nodeClass), directOutput(false), mustEvaluate(false),
         script(0), eventsReceived(0) {
     this->nodeType.nodeClass.scene.addScript(*this);
@@ -2369,11 +2373,10 @@ namespace {
                 std::auto_ptr<OpenVRML::MFNode>
                         nodes(MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[0])));
                 assert(nodes.get());
-
-                VrmlNamespace * ns = new VrmlNamespace(); // should be stored with nodes...
+                
                 script->getScriptNode().nodeType.nodeClass
-                        .scene.queueReplaceNodes(*nodes, *ns);
-
+                        .scene.queueReplaceNodes(*nodes);
+                
                 *rval = JSVAL_VOID;
                 return JS_TRUE;
             }
@@ -2399,9 +2402,9 @@ namespace {
                 assert(str);
 
                 char *vrmlString = JS_GetStringBytes(str);
-                VrmlNamespace ns;
-                OpenVRML::MFNode kids(script->getScriptNode().nodeType.nodeClass
-                                      .scene.readString(vrmlString, &ns));
+                VrmlScene & scene =
+                        script->getScriptNode().nodeType.nodeClass.scene;
+                OpenVRML::MFNode kids(scene.readString(vrmlString));
 
                 if (kids.getLength() == 0) {
                     *rval = JSVAL_NULL;
@@ -2458,28 +2461,21 @@ namespace {
                                                     JSVAL_TO_OBJECT(argv[1])));
                 assert(sfnode.get());
                 NodePtr node(sfnode->get());
-                if (!node) {
-                    return JS_FALSE;
-                }
+                if (!node) { return JS_FALSE; }
 
                 //
                 // Make sure our third argument is a string.
                 //
-                if (!JSVAL_IS_STRING(argv[2])) {
-                    return JS_FALSE;
-                }
+                if (!JSVAL_IS_STRING(argv[2])) { return JS_FALSE; }
 
                 const char * const eventInId =
                         JS_GetStringBytes(JSVAL_TO_STRING(argv[2]));
-
-	        VrmlNamespace ns;	// this is a problem...
+                VrmlScene & scene =
+                        script->getScriptNode().nodeType.nodeClass.scene;
 	        std::auto_ptr<OpenVRML::MFNode>
-                        kids(script->getScriptNode().nodeType.nodeClass
-                                .scene.readWrl(*url, relative, &ns));
-
-                if (!kids.get()) {
-                    return JS_FALSE;
-                }
+                        kids(scene.readWrl(*url, relative));
+                
+                if (!kids.get()) { return JS_FALSE; }
 
 	        node->processEvent(eventInId, *kids,
                                    s_timeStamp); // fix me...
@@ -3189,23 +3185,19 @@ namespace {
             //
             // Make sure our argument is a string.
             //
-            if (!JSVAL_IS_STRING(argv[0])) {
-                return JS_FALSE;
-            }
+            if (!JSVAL_IS_STRING(argv[0])) { return JS_FALSE; }
 
             JSString * const str = JSVAL_TO_STRING(argv[0]);
             assert(str);
 
-            VrmlNamespace vrmlNamespace;
+            VrmlScene & scene =
+                    script->getScriptNode().nodeType.nodeClass.scene;
             const OpenVRML::MFNode nodes =
-                    script->getScriptNode().nodeType.nodeClass.scene
-                        .readString(JS_GetStringBytes(str), &vrmlNamespace);
+                    scene.readString(JS_GetStringBytes(str));
             //
             // Fail if the string does not produce exactly one node.
             //
-            if (nodes.getLength() != 1) {
-                return JS_FALSE;
-            }
+            if (nodes.getLength() != 1) { return JS_FALSE; }
 
             try {
                 std::auto_ptr<OpenVRML::SFNode>

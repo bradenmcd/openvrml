@@ -32,7 +32,7 @@
 # include "Viewer.h"
 # include "System.h"
 # include "MathUtils.h"
-# include "VrmlNamespace.h"
+# include "scope.h"
 # include "VrmlRenderContext.h"
 # include "script.h"
 
@@ -119,12 +119,12 @@ namespace OpenVRML {
     private:
         ISMap isMap;
         EventOutValueMap eventOutValueMap;
-        VrmlNamespace scope;
         MFNode implNodes;
 
     public:
-        ProtoNode(const NodeType & nodeType, VrmlNamespace & parentScope);
-        ProtoNode(const NodeType & nodeType, const ProtoNode & node);
+        explicit ProtoNode(const NodeType & nodeType);
+        ProtoNode(const NodeType & nodeType, const ScopePtr & scope,
+                  const ProtoNode & node);
         virtual ~ProtoNode() throw ();
 
         void addRootNode(const NodePtr & node) throw (std::bad_alloc);
@@ -220,8 +220,9 @@ namespace OpenVRML {
             virtual ~ProtoNodeType() throw ();
 
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
-            virtual const NodePtr createNode() const throw (std::bad_alloc);
-
+            virtual const NodePtr createNode(const ScopePtr & scope) const
+                    throw (std::bad_alloc);
+            
             void addInterface(const NodeInterface & interface)
                     throw (std::invalid_argument, std::bad_alloc);
         };
@@ -236,7 +237,7 @@ namespace OpenVRML {
         ProtoNode protoNode;
 
     public:
-        ProtoNodeClass(VrmlScene & scene) throw ();
+        explicit ProtoNodeClass(VrmlScene & scene) throw ();
         virtual ~ProtoNodeClass() throw ();
 
         void addEventIn(FieldValue::Type, const std::string & id)
@@ -258,6 +259,12 @@ namespace OpenVRML {
         virtual const NodeTypePtr createType(const std::string & id,
                                              const NodeInterfaceSet &)
                 throw (UnsupportedInterface, std::bad_alloc);
+    };
+    
+    class OPENVRML_SCOPE Vrml97RootScope : public Scope {
+    public:
+        Vrml97RootScope(const VrmlScene & scene);
+        virtual ~Vrml97RootScope();
     };
 }
 
@@ -593,15 +600,13 @@ namespace {
  * @param url   a URI.
  */
 VrmlScene::VrmlScene(const std::string & url):
-        scriptNodeClass(*this),
-        d_url(new Doc2(url)), scope(0), d_modified(false), d_newView(false),
-        d_deltaTime(DEFAULT_DELTA), d_pendingUrl(0), d_pendingParameters(0),
-        d_pendingNodes(0), d_pendingScope(0), d_frameRate(0.0), d_firstEvent(0),
-        d_lastEvent(0), d_flags_need_updating(false) {
+        scriptNodeClass(*this), d_url(new Doc2(url)), d_modified(false),
+        d_newView(false), d_deltaTime(DEFAULT_DELTA), d_pendingUrl(0),
+        d_pendingParameters(0), d_pendingNodes(0), d_frameRate(0.0),
+        d_firstEvent(0), d_lastEvent(0), d_flags_need_updating(false) {
     this->initNodeClassMap();
-    this->scope = new Vrml97RootNamespace(this->nodeClassMap);
 
-    MFNode * newNodes = this->readWrl(this->d_url, this->scope);
+    MFNode * newNodes = this->readWrl(this->d_url);
     if (newNodes) {
         this->nodes = *newNodes;
 
@@ -658,9 +663,6 @@ VrmlScene::~VrmlScene() {
     delete d_pendingUrl;
     delete d_pendingParameters;
     delete d_pendingNodes;
-    delete d_pendingScope;
-
-    delete this->scope;
 }
 
 /**
@@ -886,14 +888,13 @@ void VrmlScene::addWorldChangedCallback(const SceneCB cb) {
 /**
  * @brief Read a VRML file from one of the urls.
  */
-MFNode * VrmlScene::readWrl(const MFString & urls, Doc2 * relative,
-                            VrmlNamespace * ns) {
+MFNode * VrmlScene::readWrl(const MFString & urls, Doc2 * const relative) {
     Doc2 url;
     const size_t n = urls.getLength();
     for (size_t i = 0; i < n; ++i) {
         //theSystem->debug("Trying to read url '%s'\n", urls->get(i));
         url.seturl(urls.getElement(i).c_str(), relative );
-        MFNode * kids = this->readWrl(&url, ns);
+        MFNode * kids = this->readWrl(&url);
         if (kids) {
             return kids;
         } else if ((i < n - 1)
@@ -910,32 +911,17 @@ MFNode * VrmlScene::readWrl(const MFString & urls, Doc2 * relative,
 /**
  * @brief Read a VRML file and return the (valid) nodes.
  */
-MFNode * VrmlScene::readWrl(Doc2 * tryUrl, VrmlNamespace * ns) {
+MFNode * VrmlScene::readWrl(Doc2 * const tryUrl) {
     MFNode * result = 0;
 
     // Should verify MIME type...
     std::istream & istm = tryUrl->inputStream();
     if (istm) {
-
         Vrml97Scanner scanner(istm);
         Vrml97Parser parser(scanner);
-
-        //
-        // If the caller is not interested in PROTO defs, use a local namespace.
-        //
-        // Note: Can we displace the responsibility for this to the caller? Here
-        // we instantiate a VrmlNamespace whether or not we need it. That could
-        // be avoided with new/delete, but the resulting code would be awkward
-        // and hard to follow. Why not instead have the caller pass in a
-        // reference to a namespace, and let the caller decide whether or not a
-        // new namespace should be instantiated?
-        // -- Braden McDaniel <braden@endoframe.com>, 30 Mar, 2000
-        //
-        VrmlNamespace nodeDefs;
-        VrmlNamespace * rootNamespace = ns ? ns : &nodeDefs;
-
+        
         result = new MFNode();
-        parser.vrmlScene(*this, *result, *rootNamespace, tryUrl);
+        parser.vrmlScene(*this, *result, tryUrl);
     }
 
     return result;
@@ -944,22 +930,16 @@ MFNode * VrmlScene::readWrl(Doc2 * tryUrl, VrmlNamespace * ns) {
 /**
  * @brief Read VRML from a string and return the (valid) nodes.
  */
-const MFNode VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
-{
-    //
-    // Hmm. It looks like passing a zero pointer for the namespace argument of
-    // this function is not an option. Perhaps it should be a reference rather
-    // than a pointer?
-    // -- Braden McDaniel <braden@endoframe.com> 1 Apr, 2000
-    //
-
+const MFNode VrmlScene::readString(char const * vrmlString) {
+    assert(vrmlString);
+    
     MFNode result;
 
     if (vrmlString) {
         std::istrstream istrstm(vrmlString);
         Vrml97Scanner scanner(istrstm);
         Vrml97Parser parser(scanner);
-        parser.vrmlScene(*this, result, *ns, 0);
+        parser.vrmlScene(*this, result, 0);
     }
 
     return result;
@@ -992,13 +972,6 @@ bool VrmlScene::save(const char * url) {
 Doc2 * VrmlScene::urlDoc() const { return this->d_url; }
 
 /**
- * @brief Get the root scope for the scene.
- *
- * @return the root scope for the scene.
- */
-VrmlNamespace * VrmlScene::getScope() const { return this->scope; }
-
-/**
  * @brief Get the current frame rate.
  *
  * @return the current frame rate.
@@ -1023,12 +996,10 @@ void VrmlScene::queueLoadUrl(const MFString & url,
  * @brief Queue an event to replace the node for the world.
  *
  * @param nodes the new nodes.
- * @param ns    the scope associated with @a nodes.
  */
-void VrmlScene::queueReplaceNodes(const MFNode & nodes, VrmlNamespace & ns) {
+void VrmlScene::queueReplaceNodes(const MFNode & nodes) {
     if (!this->d_pendingNodes && !this->d_pendingUrl) {
         this->d_pendingNodes = new MFNode(nodes);
-        d_pendingScope = &ns;
     }
 }
 
@@ -1958,9 +1929,9 @@ void ProtoNode::NodeCloneVisitor::clone() {
         if (this->fromProtoNode.implNodes.getElement(i)) {
             Node & childNode = *this->fromProtoNode.implNodes.getElement(i);
             if (!childNode.accept(*this)) {
-                assert(this->toProtoNode.scope.findNode(childNode.getId()));
+                assert(this->toProtoNode.getScope()->findNode(childNode.getId()));
                 this->rootNodeStack
-                        .push(NodePtr(this->toProtoNode.scope.findNode(childNode.getId())));
+                        .push(NodePtr(this->toProtoNode.getScope()->findNode(childNode.getId())));
             }
             assert(this->rootNodeStack.top());
             this->toProtoNode.implNodes.setElement(i, this->rootNodeStack.top());
@@ -1980,7 +1951,8 @@ namespace {
     struct CloneFieldValue_ : std::unary_function<NodeInterface, void> {
         CloneFieldValue_(NodeVisitor & visitor,
                          std::stack<NodePtr> & rootNodeStack,
-                         VrmlNamespace & scope, Node & fromNode, Node & toNode):
+                         Scope & scope,
+                         Node & fromNode, Node & toNode):
                 visitor(&visitor), rootNodeStack(&rootNodeStack), scope(&scope),
                 fromNode(&fromNode), toNode(&toNode) {}
 
@@ -2032,7 +2004,7 @@ namespace {
     private:
         NodeVisitor * visitor;
         std::stack<NodePtr> * rootNodeStack;
-        VrmlNamespace * scope;
+        Scope * scope;
         Node * fromNode;
         Node * toNode;
     };
@@ -2047,15 +2019,13 @@ void ProtoNode::NodeCloneVisitor::visit(Node & node) {
     //
     // Create a new node of the same type.
     //
-    const NodePtr newNode(node.nodeType.createNode());
+    const NodePtr newNode(node.nodeType.createNode(this->toProtoNode.getScope()));
     this->rootNodeStack.push(newNode);
 
     //
     // If the node has a name, give it to the new node.
     //
-    if (!node.getId().empty()) {
-        newNode->setId(node.getId(), &this->toProtoNode.scope);
-    }
+    if (!node.getId().empty()) { newNode->setId(node.getId()); }
 
     //
     // Any IS mappings for this node?
@@ -2074,7 +2044,8 @@ void ProtoNode::NodeCloneVisitor::visit(Node & node) {
     const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
     std::for_each(interfaces.begin(), interfaces.end(),
                   CloneFieldValue_(*this, this->rootNodeStack,
-                                   this->toProtoNode.scope, node, *newNode));
+                                   *this->toProtoNode.getScope(),
+                                   node, *newNode));
 }
 
 /**
@@ -2117,7 +2088,7 @@ void ProtoNode::RouteCopyVisitor::copyRoutes() {
 namespace {
 
     struct AddRoute_ : std::unary_function<Node::Route, void> {
-        AddRoute_(VrmlNamespace & scope, Node & fromNode):
+        AddRoute_(Scope & scope, Node & fromNode):
                   scope(&scope), fromNode(&fromNode) {}
 
         void operator()(const Node::Route & route) const {
@@ -2129,7 +2100,7 @@ namespace {
         }
 
     private:
-        VrmlNamespace * scope;
+        Scope * scope;
         Node * fromNode;
     };
 }
@@ -2142,10 +2113,11 @@ namespace {
 void ProtoNode::RouteCopyVisitor::visit(Node & node) {
     const std::string & fromNodeId = node.getId();
     if (!fromNodeId.empty()) {
-        Node * const fromNode = this->toProtoNode.scope.findNode(fromNodeId);
+        Node * const fromNode =
+                this->toProtoNode.getScope()->findNode(fromNodeId);
         assert(fromNode);
         std::for_each(node.getRoutes().begin(), node.getRoutes().end(),
-                      AddRoute_(this->toProtoNode.scope, *fromNode));
+                      AddRoute_(*this->toProtoNode.getScope(), *fromNode));
     }
 
     //
@@ -2249,11 +2221,10 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param nodeType      the NodeType associated with the node.
- * @param parentScope   the parent scope.
+ * @param nodeType  the NodeType associated with the node.
  */
-ProtoNode::ProtoNode(const NodeType & nodeType, VrmlNamespace & parentScope):
-        Node(nodeType), scope(&parentScope) {
+ProtoNode::ProtoNode(const NodeType & nodeType):
+        Node(nodeType, ScopePtr(0)) {
     //
     // For each exposedField and eventOut in the prototype interface, add
     // a value to the eventOutValueMap.
@@ -2267,10 +2238,12 @@ ProtoNode::ProtoNode(const NodeType & nodeType, VrmlNamespace & parentScope):
  * @brief Construct a prototype instance.
  *
  * @param nodeType  the type object for the new ProtoNode instance.
+ * @param scope     the scope the new node belongs to.
  * @param node      the ProtoNode to clone when creating the instance.
  */
-ProtoNode::ProtoNode(const NodeType & nodeType, const ProtoNode & node):
-        Node(nodeType), scope(node.scope.parent) {
+ProtoNode::ProtoNode(const NodeType & nodeType, const ScopePtr & scope,
+                     const ProtoNode & node):
+        Node(nodeType, scope) {
     assert(node.implNodes.getLength() > 0);
     assert(node.implNodes.getElement(0));
 
@@ -2306,7 +2279,14 @@ ProtoNode::~ProtoNode() throw () {
     //
     // Remove from the scene.
     //
-    this->nodeType.nodeClass.scene.removeProto(*this);
+    // This test is a bit contrived; basically, we don't want to attempt to
+    // remove the primordial ProtoNode instance (the one that belongs to the
+    // NodeClass) from the scene, because it was never added. It so happens
+    // that the NodeType for that instance isn't given a name.
+    //
+    if (!nodeType.id.empty()) {
+        this->nodeType.nodeClass.scene.removeProto(*this);
+    }
 }
 
 /**
@@ -2896,9 +2876,10 @@ const NodeInterfaceSet & ProtoNodeClass::ProtoNodeType::getInterfaces() const
  *
  * @return a NodePtr to a new Node.
  */
-const NodePtr ProtoNodeClass::ProtoNodeType::createNode() const
+const NodePtr
+        ProtoNodeClass::ProtoNodeType::createNode(const ScopePtr & scope) const
         throw (std::bad_alloc) {
-    return NodePtr(new ProtoNode(*this,
+    return NodePtr(new ProtoNode(*this, scope,
                                  static_cast<ProtoNodeClass &>(this->nodeClass)
                                     .protoNode));
 }
@@ -2942,7 +2923,7 @@ void ProtoNodeClass::ProtoNodeType::addInterface(const NodeInterface & interface
  */
 ProtoNodeClass::ProtoNodeClass(VrmlScene & scene) throw ():
         NodeClass(scene), protoNodeType(*this, ""),
-        protoNode(protoNodeType, *scene.scope) {}
+        protoNode(protoNodeType) {}
 
 /**
  * @brief Destructor.
@@ -3109,5 +3090,1062 @@ const NodeTypePtr
     }
     return nodeType;
 }
+
+
+/**
+ * @class Vrml97RootScope
+ *
+ * @brief Root namespace for VRML97 scenes.
+ *
+ * Vrml97RootScope is initialized with the VRML97 node types.
+ */
+
+namespace {
+    class AddInterfaceToSet_ : std::unary_function<NodeInterface, void> {
+        NodeInterfaceSet & nodeInterfaceSet;
+        
+    public:
+        AddInterfaceToSet_(NodeInterfaceSet & nodeInterfaceSet):
+                nodeInterfaceSet(nodeInterfaceSet) {}
+        
+        void operator()(const NodeInterface & nodeInterface) const
+                throw (std::invalid_argument, std::bad_alloc) {
+            this->nodeInterfaceSet.add(nodeInterface);
+        }
+    };
+    
+    class Vrml97NodeInterfaceSet_ : public NodeInterfaceSet {
+    public:
+        Vrml97NodeInterfaceSet_(const NodeInterface * const begin,
+                                const NodeInterface * const end) {
+            std::for_each(begin, end, AddInterfaceToSet_(*this));
+        }
+    };
+}
+
+/**
+ * @brief Constructor.
+ *
+ * @param nodeClassMap  a map containing @link NodeClass NodeClasses@endlink
+ *                      for the VRML97 nodes.
+ */
+Vrml97RootScope::Vrml97RootScope(const VrmlScene & scene):
+        Scope(scene.urlDoc()->url()) {
+    const VrmlScene::NodeClassMap & nodeClassMap = scene.nodeClassMap;
+    VrmlScene::NodeClassMap::const_iterator pos;
+    
+    //
+    // Anchor node
+    //
+    static const NodeInterface anchorInterfaces[] = {
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "description"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "parameter"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+    };
+    static const Vrml97NodeInterfaceSet_
+            anchorInterfaceSet(anchorInterfaces, anchorInterfaces + 8);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Anchor");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Anchor", anchorInterfaceSet));
+    
+    //
+    // Appearance node
+    //
+    static const NodeInterface appearanceInterfaces[] = {
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "material"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texture"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "textureTransform")
+    };
+    static const Vrml97NodeInterfaceSet_
+            appearanceInterfaceSet(appearanceInterfaces,
+                                   appearanceInterfaces + 3);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Appearance");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Appearance",
+                                              appearanceInterfaceSet));
+    
+    //
+    // AudioClip node
+    //
+    static const NodeInterface audioClipInterfaces[] = {
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "description"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "pitch"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "duration_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
+    };
+    static const Vrml97NodeInterfaceSet_
+            audioClipInterfaceSet(audioClipInterfaces,
+                                  audioClipInterfaces + 8);
+    pos = nodeClassMap.find("urn:X-openvrml:node:AudioClip");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("AudioClip",
+                                              audioClipInterfaceSet));
+    
+    //
+    // Background node
+    //
+    static const NodeInterface backgroundInterfaces[] = {
+        NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "groundAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "groundColor"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "backUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "bottomUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "frontUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "leftUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "rightUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "topUrl"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "skyAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "skyColor"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+    };
+    static const Vrml97NodeInterfaceSet_
+            backgroundInterfaceSet(backgroundInterfaces,
+                                  backgroundInterfaces + 12);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Background");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Background",
+                                              backgroundInterfaceSet));
+    
+    //
+    // Billboard node
+    //
+    static const NodeInterface billboardInterfaces[] = {
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "axisOfRotation"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+    };
+    static const Vrml97NodeInterfaceSet_
+            billboardInterfaceSet(billboardInterfaces,
+                                  billboardInterfaces + 6);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Billboard");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Billboard",
+                                              billboardInterfaceSet));
+    
+    //
+    // Box node
+    //
+    static const NodeInterface boxInterface =
+            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "size");
+    static const Vrml97NodeInterfaceSet_
+            boxInterfaceSet(&boxInterface, &boxInterface + 1);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Box");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Box", boxInterfaceSet));
+    
+    //
+    // Collision node
+    //
+    static const NodeInterface collisionInterfaces[] = {
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
+        NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "collide"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+        NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize"),
+        NodeInterface(NodeInterface::field, FieldValue::sfnode, "proxy"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "collideTime")
+    };
+    static const Vrml97NodeInterfaceSet_
+            collisionInterfaceSet(collisionInterfaces, collisionInterfaces + 8);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Collision");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Collision",
+                                              collisionInterfaceSet));
+    
+    //
+    // Color node
+    //
+    static const NodeInterface colorInterface =
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "color");
+    static const Vrml97NodeInterfaceSet_
+            colorInterfaceSet(&colorInterface, &colorInterface + 1);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Color");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Color", colorInterfaceSet));
+    
+    //
+    // ColorInterpolator node
+    //
+    static const NodeInterface colorInterpolatorInterfaces[] = {
+        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfcolor, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfcolor, "value_changed")
+    };
+    static const Vrml97NodeInterfaceSet_
+            colorInterpolatorInterfaceSet(colorInterpolatorInterfaces,
+                                          colorInterpolatorInterfaces + 4);
+    pos = nodeClassMap.find("urn:X-openvrml:node:ColorInterpolator");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("ColorInterpolator",
+                                              colorInterpolatorInterfaceSet));
+    
+    //
+    // Cone node
+    //
+    static const NodeInterface coneInterfaces[] = {
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "bottomRadius"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "height"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "side"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "bottom")
+    };
+    static const Vrml97NodeInterfaceSet_
+            coneInterfaceSet(coneInterfaces, coneInterfaces + 4);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Cone");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Cone", coneInterfaceSet));
+    
+    //
+    // Coordinate node
+    //
+    static const NodeInterface coordinateInterface =
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "point");
+    static const Vrml97NodeInterfaceSet_
+            coordinateInterfaceSet(&coordinateInterface,
+                                   &coordinateInterface + 1);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Coordinate");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Coordinate",
+                                              coordinateInterfaceSet));
+    
+    //
+    // CoordinateInterpolator node
+    //
+    static const NodeInterface coordinateInterpolatorInterfaces[] = {
+        NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed")
+    };
+    static const Vrml97NodeInterfaceSet_
+            coordinateInterpolatorInterfaceSet(coordinateInterpolatorInterfaces,
+                                               coordinateInterpolatorInterfaces + 4);
+    pos = nodeClassMap.find("urn:X-openvrml:node:CoordinateInterpolator");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("CoordinateInterpolator",
+                                              coordinateInterpolatorInterfaceSet));
+    
+    //
+    // Cylinder node
+    //
+    static const NodeInterface cylinderInterfaces[] = {
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "bottom"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "height"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "radius"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "side"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "top")
+    };
+    static const Vrml97NodeInterfaceSet_
+            cylinderInterfaceSet(cylinderInterfaces, cylinderInterfaces + 5);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Cylinder");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Cylinder",
+                                              cylinderInterfaceSet));
+    
+    //
+    // CylinderSensor node
+    //
+    static const NodeInterface cylinderSensorInterfaces[] = {
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "diskAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minAngle"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed"),
+        NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed")
+    };
+    static const Vrml97NodeInterfaceSet_
+            cylinderSensorInterfaceSet(cylinderSensorInterfaces,
+                                       cylinderSensorInterfaces + 9);
+    pos = nodeClassMap.find("urn:X-openvrml:node:CylinderSensor");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("CylinderSensor",
+                                              cylinderSensorInterfaceSet));
+    
+    //
+    // DirectionalLight node
+    //
+    static const NodeInterface directionalLightInterfaces[] = {
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on")
+    };
+    static const Vrml97NodeInterfaceSet_
+            directionalLightInterfaceSet(directionalLightInterfaces,
+                                         directionalLightInterfaces + 5);
+    pos = nodeClassMap.find("urn:X-openvrml:node:DirectionalLight");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("DirectionalLight",
+                                              directionalLightInterfaceSet));
+    
+    //
+    // ElevationGrid node
+    //
+    static const NodeInterface elevationGridInterfaces[] = {
+        NodeInterface(NodeInterface::eventIn, FieldValue::mffloat, "set_height"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "normal"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texCoord"),
+        NodeInterface(NodeInterface::field, FieldValue::mffloat, "height"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "normalPerVertex"),
+        NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
+        NodeInterface(NodeInterface::field, FieldValue::sfint32, "xDimension"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "xSpacing"),
+        NodeInterface(NodeInterface::field, FieldValue::sfint32, "zDimension"),
+        NodeInterface(NodeInterface::field, FieldValue::sffloat, "zSpacing")
+    };
+    static const Vrml97NodeInterfaceSet_
+            elevationGridInterfaceSet(elevationGridInterfaces,
+                                         elevationGridInterfaces + 14);
+    pos = nodeClassMap.find("urn:X-openvrml:node:ElevationGrid");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("ElevationGrid",
+                                              elevationGridInterfaceSet));
+    
+    //
+    // Extrusion node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfvec2f, "set_crossSection"),
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfrotation, "set_orientation"),
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfvec2f, "set_scale"),
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfvec3f, "set_spine"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "beginCap"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "convex"),
+            NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
+            NodeInterface(NodeInterface::field, FieldValue::mfvec2f, "crossSection"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "endCap"),
+            NodeInterface(NodeInterface::field, FieldValue::mfrotation, "orientation"),
+            NodeInterface(NodeInterface::field, FieldValue::mfvec2f, "scale"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
+            NodeInterface(NodeInterface::field, FieldValue::mfvec3f, "spine")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 14);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Extrusion");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Extrusion",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Fog node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfstring, "fogType"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "visibilityRange"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Fog");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Fog", nodeInterfaceSet));
+    }
+    
+    //
+    // FontStyle node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::field, FieldValue::mfstring, "family"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "horizontal"),
+            NodeInterface(NodeInterface::field, FieldValue::mfstring, "justify"),
+            NodeInterface(NodeInterface::field, FieldValue::sfstring, "language"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "leftToRight"),
+            NodeInterface(NodeInterface::field, FieldValue::sffloat, "size"),
+            NodeInterface(NodeInterface::field, FieldValue::sffloat, "spacing"),
+            NodeInterface(NodeInterface::field, FieldValue::sfstring, "style"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "topToBottom")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
+        pos = nodeClassMap.find("urn:X-openvrml:node:FontStyle");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("FontStyle",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Group node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
+            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Group");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Group",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // ImageTexture node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
+        pos = nodeClassMap.find("urn:X-openvrml:node:ImageTexture");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("ImageTexture",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // IndexedFaceSet node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex"),
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex"),
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_normalIndex"),
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_texCoordIndex"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "normal"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "texCoord"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "ccw"),
+            NodeInterface(NodeInterface::field, FieldValue::mfint32, "colorIndex"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "convex"),
+            NodeInterface(NodeInterface::field, FieldValue::mfint32, "coordIndex"),
+            NodeInterface(NodeInterface::field, FieldValue::sffloat, "creaseAngle"),
+            NodeInterface(NodeInterface::field, FieldValue::mfint32, "normalIndex"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "normalPerVertex"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "solid"),
+            NodeInterface(NodeInterface::field, FieldValue::mfint32, "texCoordIndex")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 18);
+        pos = nodeClassMap.find("urn:X-openvrml:node:IndexedFaceSet");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("IndexedFaceSet",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // IndexedLineSet node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex"),
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord"),
+            NodeInterface(NodeInterface::field, FieldValue::mfint32, "colorIndex"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "colorPerVertex"),
+            NodeInterface(NodeInterface::field, FieldValue::mfint32, "coordIndex")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
+        pos = nodeClassMap.find("urn:X-openvrml:node:IndexedLineSet");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("IndexedLineSet",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Inline node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Inline");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Inline", nodeInterfaceSet));
+    }
+    
+    //
+    // LOD node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "level"),
+            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "center"),
+            NodeInterface(NodeInterface::field, FieldValue::mffloat, "range")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
+        pos = nodeClassMap.find("urn:X-openvrml:node:LOD");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("LOD", nodeInterfaceSet));
+    }
+    
+    //
+    // Material node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "diffuseColor"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "emissiveColor"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "shininess"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "specularColor"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "transparency")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Material");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Material",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // MovieTexture node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "speed"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "url"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "duration_changed"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
+        pos = nodeClassMap.find("urn:X-openvrml:node:MovieTexture");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("MovieTexture",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // NavigationInfo node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "avatarSize"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "headlight"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "speed"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "type"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "visibilityLimit"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
+        pos = nodeClassMap.find("urn:X-openvrml:node:NavigationInfo");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("NavigationInfo",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Normal node
+    //
+    {
+        static const NodeInterface nodeInterface =
+                NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "vector");
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Normal");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Normal",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // NormalInterpolator node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:NormalInterpolator");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("NormalInterpolator",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // OrientationInterpolator node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfrotation, "keyValue"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "value_changed")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:OrientationInterpolator");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("OrientationInterpolator",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // PixelTexture node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfimage, "image"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatS"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "repeatT")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
+        pos = nodeClassMap.find("urn:X-openvrml:node:PixelTexture");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("PixelTexture",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // PlaneSensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "maxPosition"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "minPosition"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "translation_changed")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
+        pos = nodeClassMap.find("urn:X-openvrml:node:PlaneSensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("PlaneSensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // PointLight node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "radius")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
+        pos = nodeClassMap.find("urn:X-openvrml:node:PointLight");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("PointLight",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // PointSet node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
+        pos = nodeClassMap.find("urn:X-openvrml:node:PointSet");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("PointSet",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // PositionInterpolator node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "value_changed")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:PositionInterpolator");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("PositionInterpolator",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // ProximitySensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "size"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "position_changed"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "orientation_changed"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "enterTime"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "exitTime")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
+        pos = nodeClassMap.find("urn:X-openvrml:node:ProximitySensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("ProximitySensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // ScalarInterpolator node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "keyValue"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sffloat, "value_changed")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:ScalarInterpolator");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("ScalarInterpolator",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Shape node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "appearance"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "geometry")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Shape");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Shape", nodeInterfaceSet));
+    }
+    
+    //
+    // Sound node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxBack"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxFront"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minBack"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "minFront"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "priority"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "source"),
+            NodeInterface(NodeInterface::field, FieldValue::sfbool, "spatialize")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Sound");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Sound", nodeInterfaceSet));
+    }
+    
+    //
+    // Sphere node
+    //
+    {
+        static const NodeInterface nodeInterface =
+                NodeInterface(NodeInterface::field, FieldValue::sffloat, "radius");
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Sphere");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Sphere", nodeInterfaceSet));
+    }
+    
+    //
+    // SphereSensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
+        pos = nodeClassMap.find("urn:X-openvrml:node:SphereSensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("SphereSensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // SpotLight node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "beamWidth"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfcolor, "color"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "cutOffAngle"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "location"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "on"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "radius")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
+        pos = nodeClassMap.find("urn:X-openvrml:node:SpotLight");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("SpotLight",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Switch node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "choice"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfint32, "whichChoice")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Switch");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Switch", nodeInterfaceSet));
+    }
+    
+    //
+    // Text node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfstring, "string"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "fontStyle"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "length"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "maxExtent")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Text");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Text", nodeInterfaceSet));
+    }
+    
+    //
+    // TextureCoordinate node
+    //
+    {
+        static const NodeInterface nodeInterface =
+                NodeInterface(NodeInterface::exposedField, FieldValue::mfvec2f, "point");
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
+        pos = nodeClassMap.find("urn:X-openvrml:node:TextureCoordinate");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("TextureCoordinate",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // TextureTransform node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "center"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "rotation"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "scale"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "translation")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:TextureTransform");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("TextureTransform",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // TimeSensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "cycleInterval"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "loop"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "startTime"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sftime, "stopTime"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "cycleTime"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sffloat, "fraction_changed"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "time")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
+        pos = nodeClassMap.find("urn:X-openvrml:node:TimeSensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("TimeSensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // TouchSensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "hitNormal_changed"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "hitPoint_changed"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfvec2f, "hitTexCoord_changed"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isOver"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "touchTime")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
+        pos = nodeClassMap.find("urn:X-openvrml:node:TouchSensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("TouchSensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Transform node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "addChildren"),
+            NodeInterface(NodeInterface::eventIn, FieldValue::mfnode, "removeChildren"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::mfnode, "children"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "rotation"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "scale"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "scaleOrientation"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "translation"),
+            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxCenter"),
+            NodeInterface(NodeInterface::field, FieldValue::sfvec3f, "bboxSize")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Transform");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Transform",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Viewpoint node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::eventIn, FieldValue::sfbool, "set_bind"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "fieldOfView"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "jump"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfrotation, "orientation"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "position"),
+            NodeInterface(NodeInterface::field, FieldValue::sfstring, "description"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "bindTime"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isBound")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Viewpoint");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Viewpoint",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // VisibilitySensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
+            NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "size"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "enterTime"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sftime, "exitTime"),
+            NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
+        pos = nodeClassMap.find("urn:X-openvrml:node:VisibilitySensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("VisibilitySensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // WorldInfo node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            NodeInterface(NodeInterface::field, FieldValue::mfstring, "info"),
+            NodeInterface(NodeInterface::field, FieldValue::sfstring, "title")
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
+        pos = nodeClassMap.find("urn:X-openvrml:node:WorldInfo");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("WorldInfo",
+                                                  nodeInterfaceSet));
+    }
+}
+
+Vrml97RootScope::~Vrml97RootScope() {}
 
 } // namespace OpenVRML

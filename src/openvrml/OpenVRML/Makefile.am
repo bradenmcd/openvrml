@@ -31,6 +31,8 @@ libopenvrml_la_SOURCES = \
         field.cpp \
         fieldvalueptr.cpp \
         VrmlMatrix.cpp \
+        scope.cpp \
+        scopeptr.cpp \
         node.cpp \
         nodeptr.cpp \
         nodetypeptr.cpp \
@@ -38,7 +40,6 @@ libopenvrml_la_SOURCES = \
         bvolume.cpp \
         script.cpp \
         ScriptJDK.cpp \
-        VrmlNamespace.cpp \
         VrmlScene.cpp \
         Viewer.cpp \
         VrmlRenderContext.cpp \
@@ -59,6 +60,8 @@ OpenVRMLinclude_HEADERS = \
         field.h \
         fieldvalueptr.h \
         VrmlMatrix.h \
+        scope.h \
+        scopeptr.h \
         node.h \
         nodeptr.h \
         nodetypeptr.h \
@@ -66,7 +69,6 @@ OpenVRMLinclude_HEADERS = \
         bvolume.h \
         script.h \
         ScriptJDK.h \
-        VrmlNamespace.h \
         VrmlScene.h \
         Viewer.h \
         VrmlRenderContext.h \
