@@ -1,6 +1,10 @@
 /**
 @page conformance Conformance Test Results
 
+@note Due to time constraints and pending large changes that would signficantly
+    impact these results, this table has not been updated for the current
+    release of OpenVRML.
+
 @section about About
 
 The <a href="http://xsun.sdct.itl.nist.gov/~mkass/vts/html/vrml.html">NIST VRML
