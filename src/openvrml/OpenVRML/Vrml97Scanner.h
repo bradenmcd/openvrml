@@ -26,7 +26,7 @@
 # include <iostream.h>
 # include "antlr/TokenStream.hpp"
 
-class Vrml97Utf8Scanner : public antlr::TokenStream {
+class Vrml97Scanner : public antlr::TokenStream {
     public:
         static const int EOF_;
         //
@@ -78,7 +78,7 @@ class Vrml97Utf8Scanner : public antlr::TokenStream {
         static const int FIELDTYPE_MFVEC2F;
         static const int FIELDTYPE_MFVEC3F;
         
-        Vrml97Utf8Scanner(istream &);
+        Vrml97Scanner(istream &);
         
         antlr::RefToken nextToken();
         size_t line() const;

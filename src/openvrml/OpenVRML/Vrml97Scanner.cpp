@@ -20,8 +20,8 @@
 
 # include <assert.h>
 # include <iostream.h>
-# include "vrml97scanner.hpp"
-# include "antlr/CommonToken.hpp"
+# include <antlr/CommonToken.hpp>
+# include "Vrml97Scanner.h"
 
 namespace {
     bool isValidIdFirstChar(char);
@@ -31,63 +31,63 @@ namespace {
     bool isHexDigit(char);
 }
 
-const int Vrml97Utf8Scanner::EOF_                   (antlr::Token::EOF_TYPE);
+const int Vrml97Scanner::EOF_                   (antlr::Token::EOF_TYPE);
 
 //
 // The values and names for these constants *must* match those expressed in the
 // file Vrml97TokenTypes.txt.
 //
-const int Vrml97Utf8Scanner::PERIOD                 (4);
-const int Vrml97Utf8Scanner::LBRACKET               (5);
-const int Vrml97Utf8Scanner::RBRACKET               (6);
-const int Vrml97Utf8Scanner::LBRACE                 (7);
-const int Vrml97Utf8Scanner::RBRACE                 (8);
-const int Vrml97Utf8Scanner::ID                     (9);
-const int Vrml97Utf8Scanner::INTEGER                (10);
-const int Vrml97Utf8Scanner::HEX_INTEGER            (11);
-const int Vrml97Utf8Scanner::REAL                   (12);
-const int Vrml97Utf8Scanner::STRING                 (13);
-const int Vrml97Utf8Scanner::KEYWORD_DEF            (14);
-const int Vrml97Utf8Scanner::KEYWORD_EVENTIN        (15);
-const int Vrml97Utf8Scanner::KEYWORD_EVENTOUT       (16);
-const int Vrml97Utf8Scanner::KEYWORD_EXPOSEDFIELD   (17);
-const int Vrml97Utf8Scanner::KEYWORD_EXTERNPROTO    (18);
-const int Vrml97Utf8Scanner::KEYWORD_FALSE          (19);
-const int Vrml97Utf8Scanner::KEYWORD_FIELD          (20);
-const int Vrml97Utf8Scanner::KEYWORD_IS             (21);
-const int Vrml97Utf8Scanner::KEYWORD_NULL           (22);
-const int Vrml97Utf8Scanner::KEYWORD_PROTO          (23);
-const int Vrml97Utf8Scanner::KEYWORD_ROUTE          (24);
-const int Vrml97Utf8Scanner::KEYWORD_TO             (25);
-const int Vrml97Utf8Scanner::KEYWORD_TRUE           (26);
-const int Vrml97Utf8Scanner::KEYWORD_USE            (27);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFBOOL       (28);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFCOLOR      (39);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFFLOAT      (30);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFIMAGE      (31);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFINT32      (32);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFNODE       (33);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFROTATION   (34);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFSTRING     (35);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFTIME       (36);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFVEC2F      (37);
-const int Vrml97Utf8Scanner::FIELDTYPE_SFVEC3F      (38);
-const int Vrml97Utf8Scanner::FIELDTYPE_MFCOLOR      (39);
-const int Vrml97Utf8Scanner::FIELDTYPE_MFFLOAT      (40);
-const int Vrml97Utf8Scanner::FIELDTYPE_MFINT32      (41);
-const int Vrml97Utf8Scanner::FIELDTYPE_MFNODE       (42);
-const int Vrml97Utf8Scanner::FIELDTYPE_MFROTATION   (43);
-const int Vrml97Utf8Scanner::FIELDTYPE_MFSTRING     (44);
-const int Vrml97Utf8Scanner::FIELDTYPE_MFTIME       (45);
-const int Vrml97Utf8Scanner::FIELDTYPE_MFVEC2F      (46);
-const int Vrml97Utf8Scanner::FIELDTYPE_MFVEC3F      (47);
+const int Vrml97Scanner::PERIOD                 (4);
+const int Vrml97Scanner::LBRACKET               (5);
+const int Vrml97Scanner::RBRACKET               (6);
+const int Vrml97Scanner::LBRACE                 (7);
+const int Vrml97Scanner::RBRACE                 (8);
+const int Vrml97Scanner::ID                     (9);
+const int Vrml97Scanner::INTEGER                (10);
+const int Vrml97Scanner::HEX_INTEGER            (11);
+const int Vrml97Scanner::REAL                   (12);
+const int Vrml97Scanner::STRING                 (13);
+const int Vrml97Scanner::KEYWORD_DEF            (14);
+const int Vrml97Scanner::KEYWORD_EVENTIN        (15);
+const int Vrml97Scanner::KEYWORD_EVENTOUT       (16);
+const int Vrml97Scanner::KEYWORD_EXPOSEDFIELD   (17);
+const int Vrml97Scanner::KEYWORD_EXTERNPROTO    (18);
+const int Vrml97Scanner::KEYWORD_FALSE          (19);
+const int Vrml97Scanner::KEYWORD_FIELD          (20);
+const int Vrml97Scanner::KEYWORD_IS             (21);
+const int Vrml97Scanner::KEYWORD_NULL           (22);
+const int Vrml97Scanner::KEYWORD_PROTO          (23);
+const int Vrml97Scanner::KEYWORD_ROUTE          (24);
+const int Vrml97Scanner::KEYWORD_TO             (25);
+const int Vrml97Scanner::KEYWORD_TRUE           (26);
+const int Vrml97Scanner::KEYWORD_USE            (27);
+const int Vrml97Scanner::FIELDTYPE_SFBOOL       (28);
+const int Vrml97Scanner::FIELDTYPE_SFCOLOR      (39);
+const int Vrml97Scanner::FIELDTYPE_SFFLOAT      (30);
+const int Vrml97Scanner::FIELDTYPE_SFIMAGE      (31);
+const int Vrml97Scanner::FIELDTYPE_SFINT32      (32);
+const int Vrml97Scanner::FIELDTYPE_SFNODE       (33);
+const int Vrml97Scanner::FIELDTYPE_SFROTATION   (34);
+const int Vrml97Scanner::FIELDTYPE_SFSTRING     (35);
+const int Vrml97Scanner::FIELDTYPE_SFTIME       (36);
+const int Vrml97Scanner::FIELDTYPE_SFVEC2F      (37);
+const int Vrml97Scanner::FIELDTYPE_SFVEC3F      (38);
+const int Vrml97Scanner::FIELDTYPE_MFCOLOR      (39);
+const int Vrml97Scanner::FIELDTYPE_MFFLOAT      (40);
+const int Vrml97Scanner::FIELDTYPE_MFINT32      (41);
+const int Vrml97Scanner::FIELDTYPE_MFNODE       (42);
+const int Vrml97Scanner::FIELDTYPE_MFROTATION   (43);
+const int Vrml97Scanner::FIELDTYPE_MFSTRING     (44);
+const int Vrml97Scanner::FIELDTYPE_MFTIME       (45);
+const int Vrml97Scanner::FIELDTYPE_MFVEC2F      (46);
+const int Vrml97Scanner::FIELDTYPE_MFVEC3F      (47);
 
-Vrml97Utf8Scanner::Vrml97Utf8Scanner(::istream & istm)
+Vrml97Scanner::Vrml97Scanner(::istream & istm)
   : _istm(istm), _line(1), _col(0), _c(' '), _prevChar('\0'), _prevTokenType(0),
     _readTooMuch(false), _expectingFieldType(false)
 {}
 
-antlr::RefToken Vrml97Utf8Scanner::nextToken()
+antlr::RefToken Vrml97Scanner::nextToken()
 {
     using std::string;
     using antlr::RefToken;
@@ -314,17 +314,17 @@ antlr::RefToken Vrml97Utf8Scanner::nextToken()
     return token;
 }
 
-size_t Vrml97Utf8Scanner::line() const
+size_t Vrml97Scanner::line() const
 {
     return _line;
 }
 
-size_t Vrml97Utf8Scanner::col() const
+size_t Vrml97Scanner::col() const
 {
     return _col;
 }
 
-void Vrml97Utf8Scanner::_getNextChar() {
+void Vrml97Scanner::_getNextChar() {
     _prevChar = _c;
     _c = _istm.get();
     ++_col; // Increment the column count;
@@ -342,7 +342,7 @@ void Vrml97Utf8Scanner::_getNextChar() {
     }
 }
 
-void Vrml97Utf8Scanner::_identifyKeyword(antlr::Token & token)
+void Vrml97Scanner::_identifyKeyword(antlr::Token & token)
 {
     std::string const tokenText(token.getText());
     
@@ -366,7 +366,7 @@ void Vrml97Utf8Scanner::_identifyKeyword(antlr::Token & token)
     else if (tokenText == "USE")            { token.setType(KEYWORD_USE); }
 }
 
-void Vrml97Utf8Scanner::_identifyFieldType(antlr::Token & token)
+void Vrml97Scanner::_identifyFieldType(antlr::Token & token)
 {
     assert(_expectingFieldType);
     
@@ -394,7 +394,7 @@ void Vrml97Utf8Scanner::_identifyFieldType(antlr::Token & token)
     else if (tokenText == "MFVec3f")    { token.setType(FIELDTYPE_MFVEC3F); }
 }
 
-void Vrml97Utf8Scanner::_identifyTerminalSymbol(antlr::Token & token)
+void Vrml97Scanner::_identifyTerminalSymbol(antlr::Token & token)
 {
     std::string const tokenText(token.getText());
     

@@ -42,7 +42,7 @@
 #include "Viewer.h"
 #include "System.h"
 #include "MathUtils.h"
-#include "vrml97scanner.hpp"
+#include "Vrml97Scanner.h"
 #include "Vrml97Parser.hpp"
 #include "VrmlNamespace.h"
 #include "VrmlNodeType.h"
@@ -389,7 +389,7 @@ VrmlMFNode * VrmlScene::readWrl(Doc2 * tryUrl, VrmlNamespace * ns)
     istream & istm = tryUrl->inputStream();
     if (istm) {
         
-        Vrml97Utf8Scanner scanner(istm);
+        Vrml97Scanner scanner(istm);
         Vrml97Parser parser(scanner);
         
         //
@@ -451,7 +451,7 @@ VrmlMFNode * VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
                            vrmlString
 #endif
                            );
-        Vrml97Utf8Scanner scanner(istrstm);
+        Vrml97Scanner scanner(istrstm);
         Vrml97Parser parser(scanner);
         
         result = new VrmlMFNode();
