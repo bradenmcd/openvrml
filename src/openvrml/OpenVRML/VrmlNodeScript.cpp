@@ -1219,8 +1219,8 @@ namespace {
         JSRuntime * Script::rt = 0; // Javascript runtime singleton object
         size_t Script::nInstances = 0; // Number of distinct script objects
  
-       JSBool eventOut_setProperty(JSContext * cx, JSObject * obj,
-                                    jsval id, jsval * val) ;
+        JSBool eventOut_setProperty(JSContext * cx, JSObject * obj,
+                                    jsval id, jsval * val) throw ();
 
         void ErrorReporter(JSContext *, const char *, JSErrorReport *);
 
