@@ -30,7 +30,7 @@
 # include <iostream>
 # include <iterator>
 # include <limits>
-# ifdef OPENVRML_ENABLE_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
 #   include FT_GLYPH_H
@@ -15058,13 +15058,13 @@ void switch_node::recalcBSphere()
 text_class::text_class(openvrml::browser & browser):
     node_class(browser)
 {
-# if OPENVRML_ENABLE_TEXT_NODE
+# if OPENVRML_ENABLE_RENDER_TEXT_NODE
     FT_Error error = 0;
     error = FT_Init_FreeType(&this->freeTypeLibrary);
     if (error) {
         browser.err << "Error initializing FreeType library." << std::endl;
     }
-# endif // OPENVRML_ENABLE_TEXT_NODE
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 
 /**
@@ -15072,14 +15072,14 @@ text_class::text_class(openvrml::browser & browser):
  */
 text_class::~text_class() throw ()
 {
-# if OPENVRML_ENABLE_TEXT_NODE
+# if OPENVRML_ENABLE_RENDER_TEXT_NODE
     FT_Error error = 0;
     error = FT_Done_FreeType(this->freeTypeLibrary);
     if (error) {
         this->browser().err << "Error shutting down FreeType library."
                             << std::endl;
     }
-# endif // OPENVRML_ENABLE_TEXT_NODE
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 
 /**
@@ -15427,7 +15427,7 @@ event_side_effect(const sffloat & max_extent,
  *      glyph.
  */
 
-# ifdef OPENVRML_ENABLE_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 namespace {
 
     /**
@@ -15703,7 +15703,7 @@ namespace {
         return -1;
     }
 }
-# endif // OPENVRML_ENABLE_TEXT_NODE
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
 /**
  * @brief Construct from a set of contours.
@@ -15725,7 +15725,7 @@ text_node::glyph_geometry::glyph_geometry(
     advance_width(advance_width),
     advance_height(advance_height)
 {
-# ifdef OPENVRML_ENABLE_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
     using std::vector;
 
     const vector<polygon_> polygons = get_polygons_(contours);
@@ -15803,7 +15803,7 @@ text_node::glyph_geometry::glyph_geometry(
         assert(connection_map.empty());
         this->coord_index.push_back(-1);
     }
-# endif // OPENVRML_ENABLE_TEXT_NODE
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 
 /**
@@ -15967,12 +15967,12 @@ void text_node::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 void text_node::do_shutdown(const double timestamp) throw ()
 {
-# if OPENVRML_ENABLE_TEXT_NODE
+# if OPENVRML_ENABLE_RENDER_TEXT_NODE
     if (this->face) {
         FT_Error ftError = FT_Done_Face(this->face);
         assert(ftError == FT_Err_Ok); // Surely this can't fail.
     }
-# endif // OPENVRML_ENABLE_TEXT_NODE
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 
 /**
@@ -15982,7 +15982,7 @@ void text_node::do_shutdown(const double timestamp) throw ()
  */
 void text_node::update_ucs4() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
     this->ucs4_string.clear();
     this->ucs4_string.resize(this->string_.mfstring::value.size());
 
@@ -16013,10 +16013,10 @@ void text_node::update_ucs4() throw (std::bad_alloc)
             }
         }
     }
-# endif // OPENVRML_ENABLE_TEXT_NODE
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 
-# ifdef OPENVRML_ENABLE_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 namespace {
 
     //
@@ -16140,7 +16140,7 @@ namespace {
         return e1 == e2;
     }
 }
-# endif // OPENVRML_ENABLE_TEXT_NODE
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
 /**
  * @brief Called when @a fontStyle changes to update the font face.
@@ -16149,7 +16149,7 @@ namespace {
  */
 void text_node::update_face() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
     static const char * const fcResultMessage[] = { "match",
                                                     "no match",
                                                     "type mismatch",
@@ -16314,10 +16314,10 @@ void text_node::update_face() throw (std::bad_alloc)
     } catch (FreeTypeError & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
-# endif // OPENVRML_ENABLE_TEXT_NODE
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 
-# ifdef OPENVRML_ENABLE_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 namespace {
 
     struct GlyphContours_ {
@@ -16482,7 +16482,7 @@ namespace {
         return 0;
     }
 }
-# endif // OPENVRML_ENABLE_TEXT_NODE
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
 /**
  * @brief Called to update @a text_geometry.
@@ -16491,7 +16491,7 @@ namespace {
  */
 void text_node::update_geometry() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
     using std::pair;
     using std::string;
     using std::vector;
@@ -16804,7 +16804,7 @@ void text_node::update_geometry() throw (std::bad_alloc)
     }
 
     this->text_geometry_ = newGeometry;
-# endif // OPENVRML_ENABLE_TEXT_NODE
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 
 

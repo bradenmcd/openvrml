@@ -129,7 +129,7 @@ if test "X$enable_render_text_node" = "Xno"; then
   FREETYPE_LIBS=""
 else
   if test "X$have_fontconfig" = "Xno" -o -z "$FREETYPE_CONFIG"; then
-    AC_MSG_FAILURE([fontconfig and FreeType are required for Text node support.])
+    AC_MSG_FAILURE([fontconfig and FreeType are required for rendering Text nodes.])
   fi
   if test -n "${OPENVRML_PKG_REQUIRES}"; then
     OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"

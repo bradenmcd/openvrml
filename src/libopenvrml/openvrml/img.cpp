@@ -720,7 +720,7 @@ namespace {
 //
 // PNG reader
 //
-# if OPENVRML_ENABLE_IMAGETEXTURE_NODE
+# if OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE
 #   include <png.h>
 namespace {
 
@@ -991,7 +991,7 @@ namespace {
 //
 // JPEG reader
 //
-# if OPENVRML_ENABLE_IMAGETEXTURE_NODE
+# if OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE
 #   include <csetjmp>
 
 extern "C" {
@@ -6821,11 +6821,11 @@ typedef enum {
   ImageFile_UNKNOWN,
 
   ImageFile_GIF
-# if OPENVRML_ENABLE_IMAGETEXTURE_NODE
+# if OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE
   , ImageFile_JPG
 # endif
   , ImageFile_MPG
-# if OPENVRML_ENABLE_IMAGETEXTURE_NODE
+# if OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE
   , ImageFile_PNG
 # endif
 
@@ -6951,7 +6951,7 @@ bool img::set_url(const char * const url, const doc2 * const relative)
             this->pixels_ = gifread(fp, &this->w_, &this->h_, &this->nc_,
                                      &this->nframes_, &this->frame_);
             break;
-# if OPENVRML_ENABLE_IMAGETEXTURE_NODE
+# if OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE
         case ImageFile_JPG:
             this->pixels_ = jpgread(fp, &this->w_, &this->h_, &this->nc_);
             break;
@@ -6960,7 +6960,7 @@ bool img::set_url(const char * const url, const doc2 * const relative)
             this->pixels_ = mpgread(fp, &this->w_, &this->h_, &this->nc_,
                                     &this->nframes_, &this->frame_);
             break;
-# if OPENVRML_ENABLE_IMAGETEXTURE_NODE
+# if OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE
         case ImageFile_PNG:
             this->pixels_ = pngread(fp, &this->w_, &this->h_, &this->nc_);
             break;
@@ -7098,7 +7098,7 @@ static ImageFileType imageFileType(const char *url, FILE *)
   if (strcmp(suffix,"gif") == 0 ||
       strcmp(suffix,"GIF") == 0)
     return ImageFile_GIF;
-# if OPENVRML_ENABLE_IMAGETEXTURE_NODE
+# if OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE
   else if (strcmp(suffix,"jpg") == 0 ||
 	   strcmp(suffix,"JPG") == 0 ||
 	   strcmp(suffix,"jpeg") == 0 ||
@@ -7110,7 +7110,7 @@ static ImageFileType imageFileType(const char *url, FILE *)
 	   strcmp(suffix,"mpeg") == 0 ||
 	   strcmp(suffix,"MPEG") == 0)
     return ImageFile_MPG;
-# if OPENVRML_ENABLE_IMAGETEXTURE_NODE
+# if OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE
   else if (strcmp(suffix,"png") == 0 ||
 	   strcmp(suffix,"PNG") == 0)
     return ImageFile_PNG;
