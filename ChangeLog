@@ -1,3 +1,64 @@
+2004-02-08 Braden McDaniel  <braden@endoframe.com>
+
+	Changed whitespace convention used in Java source to match Sun
+	convention.
+
+	* java/vrml/BaseNode.java
+	* java/vrml/Browser.java
+	* java/vrml/ConstField.java
+	* java/vrml/ConstMField.java
+	* java/vrml/Event.java
+	* java/vrml/Field.java
+	* java/vrml/InvalidEventInException.java
+	* java/vrml/InvalidEventOutException.java
+	* java/vrml/InvalidExposedFieldException.java
+	* java/vrml/InvalidFieldChangeException.java
+	* java/vrml/InvalidFieldException.java
+	* java/vrml/InvalidRouteException.java
+	* java/vrml/InvalidVRMLSyntaxException.java
+	* java/vrml/MField.java
+	* java/vrml/field/ConstMFColor.java
+	* java/vrml/field/ConstMFFloat.java
+	* java/vrml/field/ConstMFInt32.java
+	* java/vrml/field/ConstMFNode.java
+	* java/vrml/field/ConstMFRotation.java
+	* java/vrml/field/ConstMFString.java
+	* java/vrml/field/ConstMFTime.java
+	* java/vrml/field/ConstMFVec3f.java
+	* java/vrml/field/ConstSFBool.java
+	* java/vrml/field/ConstSFColor.java
+	* java/vrml/field/ConstSFFloat.java
+	* java/vrml/field/ConstSFImage.java
+	* java/vrml/field/ConstSFInt32.java
+	* java/vrml/field/ConstSFNode.java
+	* java/vrml/field/ConstSFRotation.java
+	* java/vrml/field/ConstSFString.java
+	* java/vrml/field/ConstSFTime.java
+	* java/vrml/field/ConstSFVec2f.java
+	* java/vrml/field/ConstSFVec3f.java
+	* java/vrml/field/MFColor.java
+	* java/vrml/field/MFFloat.java
+	* java/vrml/field/MFInt32.java
+	* java/vrml/field/MFNode.java
+	* java/vrml/field/MFRotation.java
+	* java/vrml/field/MFString.java
+	* java/vrml/field/MFTime.java
+	* java/vrml/field/MFVec2f.java
+	* java/vrml/field/MFVec3f.java
+	* java/vrml/field/SFBool.java
+	* java/vrml/field/SFColor.java
+	* java/vrml/field/SFFloat.java
+	* java/vrml/field/SFImage.java
+	* java/vrml/field/SFInt32.java
+	* java/vrml/field/SFNode.java
+	* java/vrml/field/SFRotation.java
+	* java/vrml/field/SFString.java
+	* java/vrml/field/SFTime.java
+	* java/vrml/field/SFVec2f.java
+	* java/vrml/field/SFVec3f.java
+	* java/vrml/node/Node.java
+	* java/vrml/node/Script.java
+
 2004-02-04 Braden McDaniel  <braden@endoframe.com>
 
 	Replaced node_interface_set class with a typedef for a std::set.
