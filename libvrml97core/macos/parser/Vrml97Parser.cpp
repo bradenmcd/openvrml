@@ -2,7 +2,6 @@
 #include "Vrml97Parser.hpp"
 #include "antlr/NoViableAltException.hpp"
 #include "antlr/SemanticException.hpp"
-
 # include <memory>
 # include <strstream.h>
 # include "doc2.hpp"
@@ -29,9 +28,7 @@
 # include "VrmlMFTime.h"
 # include "VrmlMFVec2f.h"
 # include "VrmlMFVec3f.h"
-
 namespace {
-
     template <typename T>
         class SimpleVector {
             public:
@@ -73,7 +70,6 @@ namespace {
         {
             delete [] this->data_;
         }
-
     template <typename T>
         SimpleVector<T> & SimpleVector<T>::operator=(SimpleVector<T> const & c)
         {
@@ -143,8 +139,7 @@ Vrml97Parser::Vrml97Parser(const ANTLR_USE_NAMESPACE(antlr)ParserSharedInputStat
 }
 
 void Vrml97Parser::vrmlScene(
-	//VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace,  Doc2 const * doc = 0
-	VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace,  Doc2 const * doc
+	VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc
 ) {
 	
 	
@@ -182,7 +177,6 @@ void Vrml97Parser::statement(
 		case ID:
 		case KEYWORD_DEF:
 		case KEYWORD_USE:
-		case NODE_SCRIPT:
 		{
 			node=nodeStatement(vrmlNamespace, doc);
 			
@@ -225,7 +219,6 @@ VrmlNode *  Vrml97Parser::nodeStatement(
 	
 	switch ( LA(1)) {
 	case ID:
-	case NODE_SCRIPT:
 	{
 		n=node(vrmlNamespace, doc, std::string());
 		break;
@@ -373,47 +366,15 @@ VrmlNode *  Vrml97Parser::node(
 ) {
 	VrmlNode * n = 0;
 	
+	ANTLR_USE_NAMESPACE(antlr)RefToken  scriptId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  nodeTypeId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
 	VrmlNodeType const * nodeType = 0;
 	
 	
-	switch ( LA(1)) {
-	case ID:
-	{
-		nodeTypeId = LT(1);
+	if (((LA(1)==ID))&&( !LT(1)->getText().compare("Script") )) {
+		scriptId = LT(1);
 		match(ID);
-		
-		nodeType = vrmlNamespace.findType(nodeTypeId->getText().c_str());
-		if (!nodeType) {
-		throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
-		}
-		
-		n = nodeType->newNode();
-		
-		if (nodeId.size() > 0) {
-		n->setName(nodeId.c_str(), &vrmlNamespace);
-		}
-		
-		match(LBRACE);
-		{
-		for (;;) {
-			if ((_tokenSet_4.member(LA(1)))) {
-				nodeBodyElement(vrmlNamespace, doc, *n);
-			}
-			else {
-				goto _loop31;
-			}
-			
-		}
-		_loop31:;
-		}
-		match(RBRACE);
-		break;
-	}
-	case NODE_SCRIPT:
-	{
-		match(NODE_SCRIPT);
 		
 		nodeType = vrmlNamespace.findType("Script");
 		assert(nodeType);
@@ -448,20 +409,48 @@ VrmlNode *  Vrml97Parser::node(
 			}
 			default:
 			{
+				goto _loop31;
+			}
+			}
+		}
+		_loop31:;
+		}
+		match(RBRACE);
+	}
+	else if ((LA(1)==ID)) {
+		nodeTypeId = LT(1);
+		match(ID);
+		
+		nodeType = vrmlNamespace.findType(nodeTypeId->getText().c_str());
+		if (!nodeType) {
+		throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
+		}
+		
+		n = nodeType->newNode();
+		
+		if (nodeId.size() > 0) {
+		n->setName(nodeId.c_str(), &vrmlNamespace);
+		}
+		
+		match(LBRACE);
+		{
+		for (;;) {
+			if ((_tokenSet_4.member(LA(1)))) {
+				nodeBodyElement(vrmlNamespace, doc, *n);
+			}
+			else {
 				goto _loop33;
 			}
-			}
+			
 		}
 		_loop33:;
 		}
 		match(RBRACE);
-		break;
 	}
-	default:
-	{
+	else {
 		throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
 	}
-	}
+	
 	return n;
 }
 
@@ -924,7 +913,6 @@ VrmlNode *  Vrml97Parser::protoNodeStatement(
 	
 	switch ( LA(1)) {
 	case ID:
-	case NODE_SCRIPT:
 	{
 		n=protoNode(doc, protoNodeType, std::string());
 		break;
@@ -971,7 +959,6 @@ void Vrml97Parser::protoBodyStatement(
 		case ID:
 		case KEYWORD_DEF:
 		case KEYWORD_USE:
-		case NODE_SCRIPT:
 		{
 			n=protoNodeStatement(doc, nodeType);
 			
@@ -1009,47 +996,15 @@ VrmlNode *  Vrml97Parser::protoNode(
 ) {
 	VrmlNode * n = 0;
 	
+	ANTLR_USE_NAMESPACE(antlr)RefToken  scriptId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  nodeTypeId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
 	VrmlNodeType const * nodeType = 0;
 	
 	
-	switch ( LA(1)) {
-	case ID:
-	{
-		nodeTypeId = LT(1);
+	if (((LA(1)==ID))&&( !LT(1)->getText().compare("Script") )) {
+		scriptId = LT(1);
 		match(ID);
-		
-		nodeType = protoNodeType.scope()->findType(nodeTypeId->getText().c_str());
-		if (!nodeType) {
-		throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
-		}
-		
-		n = nodeType->newNode();
-		
-		if (nodeId.size() > 0) {
-		n->setName(nodeId.c_str(), protoNodeType.scope());
-		}
-		
-		match(LBRACE);
-		{
-		for (;;) {
-			if ((_tokenSet_4.member(LA(1)))) {
-				protoNodeBodyElement(doc, protoNodeType, *n);
-			}
-			else {
-				goto _loop39;
-			}
-			
-		}
-		_loop39:;
-		}
-		match(RBRACE);
-		break;
-	}
-	case NODE_SCRIPT:
-	{
-		match(NODE_SCRIPT);
 		
 		nodeType = protoNodeType.scope()->findType("Script");
 		assert(nodeType);
@@ -1084,20 +1039,48 @@ VrmlNode *  Vrml97Parser::protoNode(
 			}
 			default:
 			{
+				goto _loop39;
+			}
+			}
+		}
+		_loop39:;
+		}
+		match(RBRACE);
+	}
+	else if ((LA(1)==ID)) {
+		nodeTypeId = LT(1);
+		match(ID);
+		
+		nodeType = protoNodeType.scope()->findType(nodeTypeId->getText().c_str());
+		if (!nodeType) {
+		throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
+		}
+		
+		n = nodeType->newNode();
+		
+		if (nodeId.size() > 0) {
+		n->setName(nodeId.c_str(), protoNodeType.scope());
+		}
+		
+		match(LBRACE);
+		{
+		for (;;) {
+			if ((_tokenSet_4.member(LA(1)))) {
+				protoNodeBodyElement(doc, protoNodeType, *n);
+			}
+			else {
 				goto _loop41;
 			}
-			}
+			
 		}
 		_loop41:;
 		}
 		match(RBRACE);
-		break;
 	}
-	default:
-	{
+	else {
 		throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
 	}
-	}
+	
 	return n;
 }
 
@@ -1288,7 +1271,7 @@ void Vrml97Parser::nodeBodyElement(
 			if (   ((ft = nodeType.hasField(id->getText().c_str())) == VrmlField::NO_FIELD)
 			&& ((ft = nodeType.hasExposedField(id->getText().c_str())) == VrmlField::NO_FIELD)) {
 			
-			throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\".");
+			throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\" (nodeBodyEl).");
 			}
 			
 			VrmlField * fv = 0;
@@ -1426,6 +1409,7 @@ void Vrml97Parser::protoNodeBodyElement(
 	Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNode & node
 ) {
 	
+	ANTLR_USE_NAMESPACE(antlr)RefToken  eventId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
 	VrmlNodeType const & nodeType(node.nodeType());
@@ -1434,56 +1418,6 @@ void Vrml97Parser::protoNodeBodyElement(
 	
 	try {      // for error handling
 		switch ( LA(1)) {
-		case ID:
-		{
-			id = LT(1);
-			match(ID);
-			
-			if (   ((ft = nodeType.hasField(id->getText().c_str())) == VrmlField::NO_FIELD)
-			&& ((ft = nodeType.hasExposedField(id->getText().c_str())) == VrmlField::NO_FIELD)) {
-			
-			throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\".");
-			}
-			
-			VrmlField * fv = 0;
-			
-			{
-			switch ( LA(1)) {
-			case LBRACKET:
-			case ID:
-			case INTEGER:
-			case REAL:
-			case STRING:
-			case KEYWORD_DEF:
-			case KEYWORD_FALSE:
-			case KEYWORD_NULL:
-			case KEYWORD_TRUE:
-			case KEYWORD_USE:
-			case NODE_SCRIPT:
-			{
-				{
-				fv=protoFieldValue(doc, protoNodeType, ft);
-				
-				assert(fv);
-				node.setField(id->getText().c_str(), *fv);
-				delete fv;
-				
-				}
-				break;
-			}
-			case KEYWORD_IS:
-			{
-				isStatement(protoNodeType, node, id->getText());
-				break;
-			}
-			default:
-			{
-				throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
-			}
-			}
-			}
-			break;
-		}
 		case KEYWORD_ROUTE:
 		{
 			routeStatement(*protoNodeType.scope());
@@ -1496,7 +1430,60 @@ void Vrml97Parser::protoNodeBodyElement(
 			break;
 		}
 		default:
-		{
+			if (((LA(1)==ID))&&( nodeType.hasEventIn(LT(1)->getText().c_str()) != VrmlField::NO_FIELD ||
+	  nodeType.hasEventOut(LT(1)->getText().c_str()) != VrmlField::NO_FIELD )) {
+				eventId = LT(1);
+				match(ID);
+				isStatement(protoNodeType, node, eventId->getText());
+			}
+			else if ((LA(1)==ID)) {
+				id = LT(1);
+				match(ID);
+				
+				if (   ((ft = nodeType.hasField(id->getText().c_str())) == VrmlField::NO_FIELD)
+				&& ((ft = nodeType.hasExposedField(id->getText().c_str())) == VrmlField::NO_FIELD)) {
+				
+				throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\" (protoNodeBodyEl).");
+				}
+				
+				VrmlField * fv = 0;
+				
+				{
+				switch ( LA(1)) {
+				case LBRACKET:
+				case ID:
+				case INTEGER:
+				case REAL:
+				case STRING:
+				case KEYWORD_DEF:
+				case KEYWORD_FALSE:
+				case KEYWORD_NULL:
+				case KEYWORD_TRUE:
+				case KEYWORD_USE:
+				{
+					{
+					fv=protoFieldValue(doc, protoNodeType, ft);
+					
+					assert(fv);
+					node.setField(id->getText().c_str(), *fv);
+					delete fv;
+					
+					}
+					break;
+				}
+				case KEYWORD_IS:
+				{
+					isStatement(protoNodeType, node, id->getText());
+					break;
+				}
+				default:
+				{
+					throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
+				}
+				}
+				}
+			}
+		else {
 			throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
 		}
 		}
@@ -1589,39 +1576,6 @@ void Vrml97Parser::protoScriptInterfaceDeclaration(
 	}
 }
 
-VrmlField *  Vrml97Parser::protoFieldValue(
-	Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlField::VrmlFieldType ft
-) {
-	VrmlField * fv = 0;
-	
-	
-	try {      // for error handling
-		if (((_tokenSet_10.member(LA(1))))&&(    (ft == VrmlField::SFNODE)
-          || (ft == VrmlField::MFNODE) )) {
-			fv=protoNodeFieldValue(doc, protoNodeType, ft);
-			
-			assert(fv);
-			
-		}
-		else if ((_tokenSet_11.member(LA(1)))) {
-			fv=nonNodeFieldValue(ft);
-			
-			assert(fv);
-			
-		}
-		else {
-			throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
-		}
-		
-	}
-	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
-		reportError(ex);
-		consume();
-		consumeUntil(_tokenSet_15);
-	}
-	return fv;
-}
-
 void Vrml97Parser::isStatement(
 	VrmlNodeType & protoNodeType, VrmlNode & node, std::string const & nodeInterfaceId
 ) {
@@ -1655,6 +1609,39 @@ void Vrml97Parser::isStatement(
 	}
 }
 
+VrmlField *  Vrml97Parser::protoFieldValue(
+	Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlField::VrmlFieldType ft
+) {
+	VrmlField * fv = 0;
+	
+	
+	try {      // for error handling
+		if (((_tokenSet_10.member(LA(1))))&&(    (ft == VrmlField::SFNODE)
+          || (ft == VrmlField::MFNODE) )) {
+			fv=protoNodeFieldValue(doc, protoNodeType, ft);
+			
+			assert(fv);
+			
+		}
+		else if ((_tokenSet_11.member(LA(1)))) {
+			fv=nonNodeFieldValue(ft);
+			
+			assert(fv);
+			
+		}
+		else {
+			throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
+		}
+		
+	}
+	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
+		reportError(ex);
+		consume();
+		consumeUntil(_tokenSet_15);
+	}
+	return fv;
+}
+
 void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 	Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNodeScript & node
 ) {
@@ -1677,6 +1664,7 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 		throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
 		}
 		
+		
 		{
 		switch ( LA(1)) {
 		case LBRACKET:
@@ -1689,7 +1677,6 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 		case KEYWORD_NULL:
 		case KEYWORD_TRUE:
 		case KEYWORD_USE:
-		case NODE_SCRIPT:
 		{
 			{
 			fv=protoFieldValue(doc, protoNodeType, ft);
@@ -1703,6 +1690,9 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 		}
 		case KEYWORD_IS:
 		{
+			
+			node.addField(id->getText().c_str(), ft);
+					
 			isStatement(protoNodeType, node, id->getText());
 			break;
 		}
@@ -2575,7 +2565,6 @@ VrmlSFNode *  Vrml97Parser::sfNodeValue(
 		case ID:
 		case KEYWORD_DEF:
 		case KEYWORD_USE:
-		case NODE_SCRIPT:
 		{
 			n=nodeStatement(vrmlNamespace, doc);
 			
@@ -2616,7 +2605,6 @@ VrmlMFNode *  Vrml97Parser::mfNodeValue(
 		case ID:
 		case KEYWORD_DEF:
 		case KEYWORD_USE:
-		case NODE_SCRIPT:
 		{
 			n=nodeStatement(vrmlNamespace, doc);
 			
@@ -2629,7 +2617,7 @@ VrmlMFNode *  Vrml97Parser::mfNodeValue(
 			match(LBRACKET);
 			{
 			for (;;) {
-				if ((_tokenSet_18.member(LA(1)))) {
+				if ((LA(1)==ID||LA(1)==KEYWORD_DEF||LA(1)==KEYWORD_USE)) {
 					n=nodeStatement(vrmlNamespace, doc);
 					
 					mnv->addNode(n);
@@ -2673,7 +2661,6 @@ VrmlSFNode *  Vrml97Parser::protoSfNodeValue(
 		case ID:
 		case KEYWORD_DEF:
 		case KEYWORD_USE:
-		case NODE_SCRIPT:
 		{
 			n=protoNodeStatement(doc, protoNodeType);
 			
@@ -2714,7 +2701,6 @@ VrmlMFNode *  Vrml97Parser::protoMfNodeValue(
 		case ID:
 		case KEYWORD_DEF:
 		case KEYWORD_USE:
-		case NODE_SCRIPT:
 		{
 			n=protoNodeStatement(doc, protoNodeType);
 			
@@ -2727,7 +2713,7 @@ VrmlMFNode *  Vrml97Parser::protoMfNodeValue(
 			match(LBRACKET);
 			{
 			for (;;) {
-				if ((_tokenSet_18.member(LA(1)))) {
+				if ((LA(1)==ID||LA(1)==KEYWORD_DEF||LA(1)==KEYWORD_USE)) {
 					n=protoNodeStatement(doc, protoNodeType);
 					
 					mnv->addNode(n);
@@ -2813,7 +2799,7 @@ void Vrml97Parser::colorValue(
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
 		consume();
-		consumeUntil(_tokenSet_19);
+		consumeUntil(_tokenSet_18);
 	}
 }
 
@@ -2848,7 +2834,7 @@ float  Vrml97Parser::colorComponent() {
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
 		consume();
-		consumeUntil(_tokenSet_19);
+		consumeUntil(_tokenSet_18);
 	}
 	return f;
 }
@@ -2884,7 +2870,7 @@ float  Vrml97Parser::floatValue() {
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
 		consume();
-		consumeUntil(_tokenSet_19);
+		consumeUntil(_tokenSet_18);
 	}
 	return f;
 }
@@ -2902,7 +2888,7 @@ long  Vrml97Parser::intValue() {
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
 		consume();
-		consumeUntil(_tokenSet_20);
+		consumeUntil(_tokenSet_19);
 	}
 	return val;
 }
@@ -2930,7 +2916,7 @@ void Vrml97Parser::rotationValue(
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
 		consume();
-		consumeUntil(_tokenSet_19);
+		consumeUntil(_tokenSet_18);
 	}
 }
 
@@ -2965,7 +2951,7 @@ double  Vrml97Parser::doubleValue() {
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
 		consume();
-		consumeUntil(_tokenSet_19);
+		consumeUntil(_tokenSet_18);
 	}
 	return d;
 }
@@ -2989,7 +2975,7 @@ void Vrml97Parser::vec2fValue(
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
 		consume();
-		consumeUntil(_tokenSet_19);
+		consumeUntil(_tokenSet_18);
 	}
 }
 
@@ -3014,7 +3000,7 @@ void Vrml97Parser::vec3fValue(
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
 		reportError(ex);
 		consume();
-		consumeUntil(_tokenSet_19);
+		consumeUntil(_tokenSet_18);
 	}
 }
 
@@ -3070,13 +3056,13 @@ const char* Vrml97Parser::_tokenNames[] = {
 	0
 };
 
-const unsigned long Vrml97Parser::_tokenSet_0_data_[] = { 214049280UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_0_data_[] = { 79831552UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_0(_tokenSet_0_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_1_data_[] = { 2UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_1(_tokenSet_1_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_2_data_[] = { 214049282UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_2_data_[] = { 79831554UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_2(_tokenSet_2_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_3_data_[] = { 214622978UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_3_data_[] = { 80405250UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_3(_tokenSet_3_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_4_data_[] = { 12714496UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_4(_tokenSet_4_data_,4);
@@ -3090,27 +3076,25 @@ const unsigned long Vrml97Parser::_tokenSet_8_data_[] = { 4026531840UL, 65535UL,
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_8(_tokenSet_8_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_9_data_[] = { 512UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_9(_tokenSet_9_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_10_data_[] = { 203432480UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_10_data_[] = { 69214752UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_10(_tokenSet_10_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_11_data_[] = { 33823776UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_11(_tokenSet_11_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_12_data_[] = { 13353792UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_12(_tokenSet_12_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_13_data_[] = { 214049536UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_13_data_[] = { 79831808UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_13(_tokenSet_13_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_14_data_[] = { 214692674UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_14_data_[] = { 80474946UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_14(_tokenSet_14_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_15_data_[] = { 13288192UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_15(_tokenSet_15_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_16_data_[] = { 203432448UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_16_data_[] = { 69214720UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_16(_tokenSet_16_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_17_data_[] = { 201335328UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_17_data_[] = { 67117600UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_17(_tokenSet_17_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_18_data_[] = { 201335296UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_18_data_[] = { 13356864UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_18(_tokenSet_18_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_19_data_[] = { 13356864UL, 0UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_19_data_[] = { 13354816UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_19(_tokenSet_19_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_20_data_[] = { 13354816UL, 0UL, 0UL, 0UL };
-const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_20(_tokenSet_20_data_,4);
 
 

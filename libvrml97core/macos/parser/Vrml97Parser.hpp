@@ -8,7 +8,6 @@
 #include "Vrml97ParserTokenTypes.hpp"
 #include "antlr/LLkParser.hpp"
 
-
 # include "VrmlField.h"
 class VrmlNamespace;
 class VrmlNode;
@@ -20,7 +19,6 @@ class Doc2;
 
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
-
     public:
         enum NodeInterfaceType {
             INVALID_NODE_INTERFACE_TYPE, EVENTIN, EVENTOUT, FIELD, EXPOSEDFIELD
@@ -100,11 +98,11 @@ public:
 	public: void protoScriptInterfaceDeclaration(
 		Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNodeScript & node
 	);
-	public: VrmlField *  protoFieldValue(
-		Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlField::VrmlFieldType ft
-	);
 	public: void isStatement(
 		VrmlNodeType & protoNodeType, VrmlNode & node, std::string const & nodeInterfaceId
+	);
+	public: VrmlField *  protoFieldValue(
+		Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlField::VrmlFieldType ft
 	);
 	public: void protoScriptFieldInterfaceDeclaration(
 		Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNodeScript & node
@@ -208,8 +206,6 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_18;
 	static const unsigned long _tokenSet_19_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_19;
-	static const unsigned long _tokenSet_20_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_20;
 };
 
 #endif /*INC_Vrml97Parser_hpp_*/
