@@ -33,8 +33,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "AST.hpp"
+#include "antlr/config.hpp"
+#include "antlr/AST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -43,7 +43,6 @@ ANTLR_BEGIN_NAMESPACE(antlr)
   * in one expression, like:
   *    (new ASTArray(3))->add(x)->add(y)->add(z)
   */
-
 class ASTArray {
 public:
 	int size; // = 0;

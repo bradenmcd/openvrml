@@ -30,9 +30,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "ASTFactory.hpp"
-
-#include "CommonAST.hpp"
+#include "antlr/ASTFactory.hpp"
+#include "antlr/CommonAST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -47,10 +46,10 @@ ANTLR_BEGIN_NAMESPACE(antlr)
  *  create to make heterogeneous nodes etc...
  */
 
-ASTFactory::ASTFactory()
+ASTFactory::ASTFactory() : nodeFactory(&CommonAST::factory)
 {
-	nodeFactory = &CommonAST::factory;
 }
+
 /** Add a child to the current AST */
 void ASTFactory::addASTChild(ASTPair& currentAST, RefAST child)
 {
@@ -78,35 +77,41 @@ void ASTFactory::addASTChild(ASTPair& currentAST, RefAST child)
  */
 RefAST ASTFactory::create()
 {
-	RefAST node = nodeFactory(); //new CommonASTNode();
+	RefAST node = nodeFactory();
 	node->setType(Token::INVALID_TYPE);
 	return node;
 }
+
 RefAST ASTFactory::create(int type)
 {
-	RefAST t = create();
+	RefAST t = nodeFactory();
 	t->initialize(type,"");
 	return t;
 }
+
 RefAST ASTFactory::create(int type, const ANTLR_USE_NAMESPACE(std)string& txt)
 {
-	RefAST t = create();
+	RefAST t = nodeFactory();
 	t->initialize(type,txt);
 	return t;
 }
+
 /** Create a new empty AST node; if the user did not specify
  *  an AST node type, then create a default one: CommonAST.
  */
 RefAST ASTFactory::create(RefAST tr)
 {
-	if (!tr) return nullAST;		// create(null) == null
-	RefAST t = create();
+	if (!tr)
+		return nullAST;
+
+	RefAST t = nodeFactory();
 	t->initialize(tr);
 	return t;
 }
+
 RefAST ASTFactory::create(RefToken tok)
 {
-	RefAST t = create();
+	RefAST t = nodeFactory();
 	t->initialize(tok);
 	return t;
 }
@@ -120,6 +125,7 @@ RefAST ASTFactory::dup(RefAST t)
 {
 	return create(t);		// if t==null, create returns null
 }
+
 /** Duplicate tree including siblings of root. */
 RefAST ASTFactory::dupList(RefAST t)
 {

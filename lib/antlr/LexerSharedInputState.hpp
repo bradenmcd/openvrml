@@ -1,9 +1,9 @@
 #ifndef INC_LexerSharedInputState_hpp__
 #define INC_LexerSharedInputState_hpp__
 
-#include "config.hpp"
-#include "InputBuffer.hpp"
-#include "RefCount.hpp"
+#include "antlr/config.hpp"
+#include "antlr/InputBuffer.hpp"
+#include "antlr/RefCount.hpp"
 #include <string>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
@@ -22,6 +22,8 @@ public:
 
 	int column;
 	int line;
+	int tokenStartColumn;
+	int tokenStartLine;
 	int guessing;
 	/** What file (if known) caused the problem? */
 	ANTLR_USE_NAMESPACE(std)string filename;
@@ -36,6 +38,11 @@ private:
 };
 
 typedef RefCount<LexerInputState> LexerSharedInputState;
+
+inline InputBuffer& LexerInputState::getInput()
+{
+	return *input;
+}
 
 ANTLR_END_NAMESPACE
 

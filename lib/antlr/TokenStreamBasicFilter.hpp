@@ -1,9 +1,9 @@
 #ifndef INC_TokenStreamBasicFilter_hpp__
 #define INC_TokenStreamBasicFilter_hpp__
 
-#include "config.hpp"
-#include "BitSet.hpp"
-#include "TokenStream.hpp"
+#include "antlr/config.hpp"
+#include "antlr/BitSet.hpp"
+#include "antlr/TokenStream.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

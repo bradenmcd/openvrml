@@ -30,7 +30,7 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "String.hpp"
+#include "antlr/String.hpp"
 
 #ifdef HAS_NOT_CSTDIO_H
 #include <stdio.h>
@@ -39,6 +39,7 @@
 #endif
 
 ANTLR_BEGIN_NAMESPACE(antlr)
+ANTLR_C_USING(sprintf)
 
 ANTLR_USE_NAMESPACE(std)string operator+(const ANTLR_USE_NAMESPACE(std)string& lhs,int rhs)
 {
@@ -52,10 +53,7 @@ ANTLR_USE_NAMESPACE(std)string charName(int ch)
 	if (ch == EOF)
 		return "EOF";
 	else {
-		static char buf[2];
-		buf[0] = static_cast<char>(ch);
-		buf[1] = '\0';
-		return buf;
+		return ANTLR_USE_NAMESPACE(std)string(1, static_cast<char>(ch));
 	}
 }
 

@@ -43,7 +43,7 @@
  * @see antlr.CharQueue
  */
 
-#include "CharBuffer.hpp"
+#include "antlr/CharBuffer.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

@@ -43,8 +43,7 @@
  * @see antlr.CharQueue
  */
 
-#include "InputBuffer.hpp"
-//#include <cstring>
+#include "antlr/InputBuffer.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -86,13 +85,6 @@ bool InputBuffer::isMarked() const
 	return (nMarkers != 0);
 }
 
-/** Get a lookahead character */
-int InputBuffer::LA(int i)
-{
-	fill(i);
-	return queue.elementAt(markerOffset + i - 1);
-}
-
 /**Return an integer marker that can be used to rewind the buffer to
  * its current state.
  */
@@ -111,21 +103,6 @@ void InputBuffer::rewind(int mark)
 	syncConsume();
 	markerOffset = mark;
 	nMarkers--;
-}
-
-/** Sync up deferred consumption */
-void InputBuffer::syncConsume() {
-	while (numToConsume > 0) {
-		if (nMarkers > 0)
-		{
-			// guess mode -- leave leading characters and bump offset.
-			markerOffset++;
-		} else {
-			// normal mode -- remove first character
-			queue.removeFirst();
-		}
-		numToConsume--;
-	}
 }
 
 ANTLR_END_NAMESPACE

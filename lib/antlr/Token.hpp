@@ -33,8 +33,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "RefCount.hpp"
+#include "antlr/config.hpp"
+#include "antlr/RefCount.hpp"
 #include <string>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
@@ -72,8 +72,6 @@ public:
 	// the illegal token object
 	static RefToken badToken; // = new Token(INVALID_TYPE, "<no text>");
 
-
-
 	Token();
 	Token(int t);
 	Token(int t, const ANTLR_USE_NAMESPACE(std)string& txt);
@@ -89,10 +87,7 @@ public:
 	virtual void setText(const ANTLR_USE_NAMESPACE(std)string& t);
 	virtual void setType(int t);
 
-
 	virtual ANTLR_USE_NAMESPACE(std)string toString() const;
-
-
 
 	virtual ~Token();
 private:

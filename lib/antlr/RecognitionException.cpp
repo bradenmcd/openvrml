@@ -30,13 +30,13 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "RecognitionException.hpp"
-#include "String.hpp"
+#include "antlr/RecognitionException.hpp"
+#include "antlr/String.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
 RecognitionException::RecognitionException()
-: ANTLRException("parsing error")
+: ANTLRException("parsing error"), line(1), column(1)
 {}
 
 RecognitionException::RecognitionException(const ANTLR_USE_NAMESPACE(std)string& s)
@@ -45,6 +45,10 @@ RecognitionException::RecognitionException(const ANTLR_USE_NAMESPACE(std)string&
 
 RecognitionException::RecognitionException(const ANTLR_USE_NAMESPACE(std)string& s,const ANTLR_USE_NAMESPACE(std)string& fileName_,int line_)
 : ANTLRException(s), fileName(fileName_), line(line_)
+{}
+
+RecognitionException::RecognitionException(const ANTLR_USE_NAMESPACE(std)string& s,const ANTLR_USE_NAMESPACE(std)string& fileName_,int line_,int column_)
+: ANTLRException(s), fileName(fileName_), line(line_), column(column_)
 {}
 
 int RecognitionException::getColumn() const
@@ -59,13 +63,10 @@ ANTLR_USE_NAMESPACE(std)string RecognitionException::getErrorMessage() const
 
 ANTLR_USE_NAMESPACE(std)string RecognitionException::getFileLineString() const
 {
-	if (fileName != "") {
-//		return fileName+": line("+line+"), ";
+	if ( fileName.length() ) 
 		return fileName+": "+line+": ";
-	} else {
-//		return ANTLR_USE_NAMESPACE(std)string("line(")+line+"), ";
+	else 
 		return ANTLR_USE_NAMESPACE(std)string("line ")+line+": ";
-	}
 }
 
 ANTLR_USE_NAMESPACE(std)string RecognitionException::getFilename() const
@@ -84,4 +85,3 @@ ANTLR_USE_NAMESPACE(std)string RecognitionException::toString() const
 }
 
 ANTLR_END_NAMESPACE
-

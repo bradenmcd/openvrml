@@ -33,10 +33,10 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "AST.hpp"
-#include "ASTArray.hpp"
-#include "ASTPair.hpp"
+#include "antlr/config.hpp"
+#include "antlr/AST.hpp"
+#include "antlr/ASTArray.hpp"
+#include "antlr/ASTPair.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -103,6 +103,9 @@ public:
 	void makeASTRoot(ASTPair& currentAST, RefAST root);
 	void setASTNodeFactory(factory_type factory);
 	virtual ~ASTFactory() {}
+private:
+	ASTFactory( const ASTFactory& );
+	ASTFactory& operator=( const ASTFactory& );
 };
 
 ANTLR_END_NAMESPACE

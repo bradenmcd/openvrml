@@ -33,10 +33,10 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "RecognitionException.hpp"
-#include "BitSet.hpp"
-#include "CharScanner.hpp"
+#include "antlr/config.hpp"
+#include "antlr/RecognitionException.hpp"
+#include "antlr/BitSet.hpp"
+#include "antlr/CharScanner.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -113,6 +113,7 @@ public:
 		const ANTLR_USE_NAMESPACE(std)string& s,
 		int line
 	);
+	~MismatchedCharException() throw() {}
 
 	/**
 	 * Returns the error message that happened on the line/col given.

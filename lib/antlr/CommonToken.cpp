@@ -30,19 +30,21 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "CommonToken.hpp"
-#include "String.hpp"
+#include "antlr/CommonToken.hpp"
+#include "antlr/String.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
-CommonToken::CommonToken()
+CommonToken::CommonToken() : Token(), line(1), col(1), text("")
 {}
 
 CommonToken::CommonToken(int t, const ANTLR_USE_NAMESPACE(std)string& txt)
-{ type=t; setText(txt); }
+	: Token(t), line(1), col(1), text(txt)
+{}
 
 CommonToken::CommonToken(const ANTLR_USE_NAMESPACE(std)string& s)
-{ text=s; }
+	: Token(), line(1), col(1), text(s)
+{}
 
 int CommonToken::getLine() const
 { return line; }
@@ -60,6 +62,12 @@ ANTLR_USE_NAMESPACE(std)string CommonToken::toString() const
 {
 	return "[\""+getText()+"\",<"+type+">,line="+line+"]";
 }
+
+int CommonToken::getColumn() const
+{ return col; }
+
+void CommonToken::setColumn(int c)
+{ col=c; }
 
 bool CommonToken::isInvalid() const
 { return type==INVALID_TYPE; }

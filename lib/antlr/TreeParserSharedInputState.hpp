@@ -1,8 +1,8 @@
 #ifndef INC_TreeParserSharedInputState_hpp__
 #define INC_TreeParserSharedInputState_hpp__
 
-#include "config.hpp"
-#include "RefCount.hpp"
+#include "antlr/config.hpp"
+#include "antlr/RefCount.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

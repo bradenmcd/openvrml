@@ -1,8 +1,8 @@
 #ifndef INC_TokenStreamSelector_hpp__
 #define INC_TokenStreamSelector_hpp__
 
-#include "config.hpp"
-#include "TokenStream.hpp"
+#include "antlr/config.hpp"
+#include "antlr/TokenStream.hpp"
 #include <map>
 #include <stack>
 

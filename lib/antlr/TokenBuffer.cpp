@@ -30,7 +30,7 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "TokenBuffer.hpp"
+#include "antlr/TokenBuffer.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -101,21 +101,6 @@ void TokenBuffer::rewind(int mark)
 	syncConsume();
 	markerOffset=mark;
 	nMarkers--;
-}
-
-/** Sync up deferred consumption */
-void TokenBuffer::syncConsume()
-{
-	while (numToConsume > 0) {
-		if (nMarkers > 0) {
-			// guess mode -- leave leading tokens and bump offset.
-			markerOffset++;
-		} else {
-			// normal mode -- remove first token
-			queue.removeFirst();
-		}
-		numToConsume--;
-	}
 }
 
 ANTLR_END_NAMESPACE

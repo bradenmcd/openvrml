@@ -29,20 +29,21 @@
  * @author <br>John Lilley, <a href=http://www.Empathy.com>Empathy Software</a>
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
-#include "TreeParser.hpp"
-#include "ASTNULLType.hpp"
-#include "MismatchedTokenException.hpp"
+#include "antlr/TreeParser.hpp"
+#include "antlr/ASTNULLType.hpp"
+#include "antlr/MismatchedTokenException.hpp"
 #include <iostream>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
+ANTLR_C_USING(exit)
 
 TreeParser::TreeParser()
-: inputState(new TreeParserInputState())
+: inputState(new TreeParserInputState()), traceDepth(0)
 {
 }
 
 TreeParser::TreeParser(const TreeParserSharedInputState& state)
-: inputState(state)
+: inputState(state), traceDepth(0)
 {
 }
 
@@ -76,7 +77,7 @@ void TreeParser::match(RefAST t, int ttype)
 }
 
 /**Make sure current lookahead symbol matches the given set
- * Throw an exception upon mismatch, which is catch by either the
+ * Throw an exception upon mismatch, which is caught by either the
  * error handler or by the syntactic predicate.
  */
 void TreeParser::match(RefAST t, const BitSet& b)
@@ -130,9 +131,19 @@ void TreeParser::setASTNodeFactory(ASTFactory::factory_type factory)
 	astFactory.setASTNodeFactory(factory);
 }
 
+/** Procedure to write out an indent for traceIn and traceOut */
+void TreeParser::traceIndent()
+{
+	for( int i = 0; i < traceDepth; i++ )
+		ANTLR_USE_NAMESPACE(std)cout << " ";
+}
+
 void TreeParser::traceIn(const ANTLR_USE_NAMESPACE(std)string& rname, RefAST t)
 {
-	ANTLR_USE_NAMESPACE(std)cout << "enter " << rname.c_str()
+	traceDepth++;
+	traceIndent();
+
+	ANTLR_USE_NAMESPACE(std)cout << "> " << rname.c_str()
 			<< "(" << (t ? t->toString().c_str() : "null") << ")"
 			<< ((inputState->guessing>0)?" [guessing]":"")
 			<< ANTLR_USE_NAMESPACE(std)endl;
@@ -140,11 +151,14 @@ void TreeParser::traceIn(const ANTLR_USE_NAMESPACE(std)string& rname, RefAST t)
 
 void TreeParser::traceOut(const ANTLR_USE_NAMESPACE(std)string& rname, RefAST t)
 {
-	ANTLR_USE_NAMESPACE(std)cout << "exit " << rname.c_str()
+	traceIndent();
+
+	ANTLR_USE_NAMESPACE(std)cout << "< " << rname.c_str()
 			<< "(" << (t ? t->toString().c_str() : "null") << ")"
 			<< ((inputState->guessing>0)?" [guessing]":"")
 			<< ANTLR_USE_NAMESPACE(std)endl;
+
+	traceDepth--;
 }
 
 ANTLR_END_NAMESPACE
-

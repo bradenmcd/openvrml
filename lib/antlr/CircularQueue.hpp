@@ -33,32 +33,52 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
+#include "antlr/config.hpp"
 #include <vector>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
+// Resize every 5000 items
+#define OFFSET_MAX_RESIZE 5000
+
 template <class T>
 class CircularQueue {
 private:
-	typename ANTLR_USE_NAMESPACE(std)vector<T> storage;
+	ANTLR_USE_NAMESPACE(std)vector<T> storage;
 
 public:
 	CircularQueue()
-		: storage() {}
+		: storage(), m_offset(0) {}
 	~CircularQueue()
 		{}
 
 	T elementAt(int idx) const
-		{ return storage[idx]; }
+		{ return storage[idx+m_offset]; } //Is this safe?
 	void removeFirst()
-		{ if (storage.size()>0) storage.erase(storage.begin()); }
+		{
+			if (m_offset >= OFFSET_MAX_RESIZE) {
+				storage.erase( storage.begin(), storage.begin() + m_offset + 1 );
+				m_offset = 0;
+			} else {
+				++m_offset;
+			}
+		}
+	inline void removeItems( int nb )
+		{
+			if (m_offset >= OFFSET_MAX_RESIZE) {
+				storage.erase( storage.begin(), storage.begin() + m_offset + nb );
+				m_offset = 0;
+			} else {
+				m_offset+=nb;
+			}
+		}
 	void append(const T& t)
 		{ storage.push_back(t); }
 	int entries() const
-		{ return storage.size(); }
+		{ return storage.size()-m_offset; }
 
 private:
+	int m_offset;
 	CircularQueue(const CircularQueue&);
 	const CircularQueue& operator=(const CircularQueue&);
 };

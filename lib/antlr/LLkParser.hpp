@@ -33,8 +33,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "Parser.hpp"
+#include "antlr/config.hpp"
+#include "antlr/Parser.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -45,7 +45,7 @@ ANTLR_BEGIN_NAMESPACE(antlr)
  * @see antlr.LL1Parser
  */
 class LLkParser : public Parser {
-private:
+protected:
 	int k;
 
 public:

@@ -30,22 +30,71 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "CommonAST.hpp"
+#include "antlr/config.hpp"
+#include "antlr/CommonAST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
+CommonAST::CommonAST()
+:  BaseAST(),
+   ttype( Token::INVALID_TYPE ),
+   text("")
+{
+}
+
+CommonAST::CommonAST(RefToken t)
+:  BaseAST(),
+   ttype( t->getType() ),
+   text( t->getText() )
+{
+}
+
+CommonAST::~CommonAST()
+{
+}
+
+ANTLR_USE_NAMESPACE(std)string CommonAST::getText() const
+{
+	return text;
+}
+
+int CommonAST::getType() const
+{
+	return ttype;
+}
+
 void CommonAST::initialize(int t,const ANTLR_USE_NAMESPACE(std)string& txt)
-{ setType(t); setText(txt); }
+{
+	setType(t);
+	setText(txt);
+}
 
 void CommonAST::initialize(RefAST t)
-{ setType(t->getType()); setText(t->getText()); }
+{
+	setType(t->getType());
+	setText(t->getText());
+}
 
 void CommonAST::initialize(RefToken t)
-{ setType(t->getType()); setText(t->getText()); }
+{
+	setType(t->getType());
+	setText(t->getText());
+}
+
+void CommonAST::setText(const ANTLR_USE_NAMESPACE(std)string& txt)
+{
+	text = txt;
+}
+
+void CommonAST::setType(int type)
+{
+	ttype = type;
+}
 
 RefAST CommonAST::factory()
-{ return RefAST(new CommonAST); }
+{
+	return RefAST(new CommonAST);
+}
 
 ANTLR_END_NAMESPACE
 

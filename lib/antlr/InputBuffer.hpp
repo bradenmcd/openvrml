@@ -46,8 +46,8 @@
  * @see antlr.CharQueue
  */
 
-#include "config.hpp"
-#include "CircularQueue.hpp"
+#include "antlr/config.hpp"
+#include "antlr/CircularQueue.hpp"
 #include <string>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
@@ -119,6 +119,39 @@ private:
 	InputBuffer(const InputBuffer& other);
 	InputBuffer& operator=(const InputBuffer& other);
 };
+
+/** Sync up deferred consumption */
+inline void InputBuffer::syncConsume() {
+#ifdef OLD_CODE
+	while (numToConsume > 0) {
+		if (nMarkers > 0)
+		{
+			// guess mode -- leave leading characters and bump offset.
+			markerOffset++;
+		} else {
+			// normal mode -- remove first character
+			queue.removeFirst();
+		}
+		numToConsume--;
+	}
+#endif
+
+	if (numToConsume > 0) {
+		if (nMarkers > 0) {
+			markerOffset += numToConsume;
+		} else {
+			queue.removeItems( numToConsume );
+		}
+		numToConsume = 0;
+	}
+}
+
+/** Get a lookahead character */
+inline int InputBuffer::LA(int i)
+{
+	fill(i);
+	return queue.elementAt(markerOffset + i - 1);
+}
 
 ANTLR_END_NAMESPACE
 

@@ -30,7 +30,7 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "LLkParser.hpp"
+#include "antlr/LLkParser.hpp"
 #include <iostream>
 
 ANTLR_BEGIN_NAMESPACE(antlr)
@@ -45,16 +45,17 @@ ANTLR_BEGIN_NAMESPACE(antlr)
 //	LLkParser(int k_);
 
 LLkParser::LLkParser(const ParserSharedInputState& state, int k_)
-: Parser(state)
-{ k=k_; }
+: Parser(state), k(k_)
+{}
 
 LLkParser::LLkParser(TokenBuffer& tokenBuf, int k_)
-: Parser(tokenBuf)
-{ k=k_; }
+: Parser(tokenBuf), k(k_)
+{}
 
 LLkParser::LLkParser(TokenStream& lexer, int k_)
-: Parser(new TokenBuffer(lexer))
-{ k=k_; }
+: Parser(new TokenBuffer(lexer)), k(k_)
+{
+}
 
 /**Consume another token from the input stream.  Can only write sequentially!
  * If you need 3 tokens ahead, you must consume() 3 times.
@@ -74,7 +75,10 @@ RefToken LLkParser::LT(int i)
 
 void LLkParser::trace(const ANTLR_USE_NAMESPACE(std)string& ee, const ANTLR_USE_NAMESPACE(std)string& rname)
 {
+	traceIndent();
+
 	ANTLR_USE_NAMESPACE(std)cout << ee.c_str() << rname.c_str() << ((inputState->guessing>0)?"; [guessing]":"; ");
+
 	for (int i = 1; i <= k; i++)
 	{
 		if (i != 1) {
@@ -82,14 +86,20 @@ void LLkParser::trace(const ANTLR_USE_NAMESPACE(std)string& ee, const ANTLR_USE_
 		}
 		ANTLR_USE_NAMESPACE(std)cout << "LA(" << i << ")==" << LT(i)->getText().c_str();
 	}
+
 	ANTLR_USE_NAMESPACE(std)cout << ANTLR_USE_NAMESPACE(std)endl;
 }
 
 void LLkParser::traceIn(const ANTLR_USE_NAMESPACE(std)string& rname)
-{ trace("enter ",rname); }
+{
+	traceDepth++;
+	trace("> ",rname);
+}
 
 void LLkParser::traceOut(const ANTLR_USE_NAMESPACE(std)string& rname)
-{ trace("exit ",rname); }
+{
+	trace("< ",rname);
+	traceDepth--;
+}
 
 ANTLR_END_NAMESPACE
-

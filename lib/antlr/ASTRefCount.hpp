@@ -1,5 +1,5 @@
 #ifndef INC_ASTRefCount_hpp__
-#define INC_ASTRefCount_hpp__
+# define INC_ASTRefCount_hpp__
 
 /**
  * <b>SOFTWARE RIGHTS</b>
@@ -33,13 +33,14 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
+# include "antlr/config.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
-class AST;
+	class AST;
 
-struct ASTRef {
+struct ASTRef
+{
 	AST* const ptr;
 	unsigned int count;
 
@@ -49,47 +50,51 @@ struct ASTRef {
 	bool decrement();
 
 	static ASTRef* getRef(const AST* p);
+private:
+	ASTRef( const ASTRef& );
+	ASTRef& operator=( const ASTRef& );
 };
 
 template<class T>
-class ASTRefCount {
+	class ASTRefCount
+{
 private:
 	ASTRef* ref;
 
 public:
-	ASTRefCount(const AST* p=0)
-		{
-			ref=p ? ASTRef::getRef(p) : 0;
-		}
+	ASTRefCount(const AST* p=0) 
+		: ref(p ? ASTRef::getRef(p) : 0)
+	{
+	}
 	ASTRefCount(const ASTRefCount<T>& other)
-		{
-			ref=other.ref ? other.ref->increment() : 0;
-		}
+		: ref(other.ref ? other.ref->increment() : 0)
+	{
+	}
 	~ASTRefCount()
-		{
-			if (ref && ref->decrement()) delete ref;
-		}
+	{
+		if (ref && ref->decrement()) delete ref;
+	}
 	ASTRefCount<T>& operator=(AST* other)
-		{
-			ASTRef* tmp=ASTRef::getRef(other);
-			if (ref && ref->decrement()) delete ref;
-			ref=tmp;
-			return *this;
-		}
+	{
+		ASTRef* tmp=ASTRef::getRef(other);
+		if (ref && ref->decrement()) delete ref;
+		ref=tmp;
+		return *this;
+	}
 	ASTRefCount<T>& operator=(const ASTRefCount<T>& other)
-		{
-			ASTRef* tmp=other.ref ? other.ref->increment() : 0;
-			if (ref && ref->decrement()) delete ref;
-			ref=tmp;
-			return *this;
-		}
+	{
+		ASTRef* tmp=other.ref ? other.ref->increment() : 0;
+		if (ref && ref->decrement()) delete ref;
+		ref=tmp;
+		return *this;
+	}
 
 	operator T* () const
-		{ return ref ? dynamic_cast<T*>(ref->ptr) : 0; }
+		{ return ref ? static_cast<T*>(ref->ptr) : 0; }
 	T* operator->() const
-		{ return ref ? dynamic_cast<T*>(ref->ptr) : 0; }
+		{ return ref ? static_cast<T*>(ref->ptr) : 0; }
 	T* get() const
-		{ return ref ? dynamic_cast<T*>(ref->ptr) : 0; }
+		{ return ref ? static_cast<T*>(ref->ptr) : 0; }
 };
 
 typedef ASTRefCount<AST> RefAST;

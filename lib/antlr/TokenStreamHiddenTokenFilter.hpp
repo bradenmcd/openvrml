@@ -1,8 +1,8 @@
 #ifndef INC_TokenStreamHiddenTokenFilter_hpp__
 #define INC_TokenStreamHiddenTokenFilter_hpp__
 
-#include "config.hpp"
-#include "TokenStreamBasicFilter.hpp"
+#include "antlr/config.hpp"
+#include "antlr/TokenStreamBasicFilter.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

@@ -33,9 +33,9 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "config.hpp"
-#include "TokenStream.hpp"
-#include "CircularQueue.hpp"
+#include "antlr/config.hpp"
+#include "antlr/TokenStream.hpp"
+#include "antlr/CircularQueue.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
@@ -109,6 +109,32 @@ private:
 public:
 //	virtual ~TokenBuffer() {}
 };
+
+/** Sync up deferred consumption */
+inline void TokenBuffer::syncConsume()
+{
+#ifdef OLD_CODE
+	while (numToConsume > 0) {
+		if (nMarkers > 0) {
+			// guess mode -- leave leading tokens and bump offset.
+			markerOffset++;
+		} else {
+			// normal mode -- remove first token
+			queue.removeFirst();
+		}
+		numToConsume--;
+	}
+#endif
+
+	if (numToConsume > 0) {
+		if (nMarkers > 0) {
+			markerOffset += numToConsume;
+		} else {
+			queue.removeItems( numToConsume );
+		}
+		numToConsume = 0;
+	}
+}
 
 ANTLR_END_NAMESPACE
 

@@ -1,4 +1,4 @@
-#include "TokenStreamBasicFilter.hpp"
+#include "antlr/TokenStreamBasicFilter.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
