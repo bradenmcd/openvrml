@@ -1229,7 +1229,7 @@ void Browser::render(Viewer & viewer) {
     std::list<Node *>::iterator li, end = this->d_scopedLights.end();
     for (li = this->d_scopedLights.begin(); li != end; ++li) {
         Vrml97Node::AbstractLight * x = (*li)->toLight();
-        if (x) { x->renderScoped(&viewer); }
+        if (x) { x->renderScoped(viewer); }
     }
 
     // Render the nodes

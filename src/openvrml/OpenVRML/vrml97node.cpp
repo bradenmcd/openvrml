@@ -884,7 +884,7 @@ AbstractLight * AbstractLight::toLight() const
  *
  * @param viewer a renderer.
  */
-void AbstractLight::renderScoped(Viewer * viewer)
+void AbstractLight::renderScoped(Viewer & viewer)
 {}
 
 /**
@@ -9480,17 +9480,17 @@ PointLight* PointLight::toPointLight() const
  *
  * @param viewer    a Viewer.
  */
-void PointLight::renderScoped(Viewer * const viewer)
+void PointLight::renderScoped(Viewer & viewer)
 {
     if (this->on.get() && this->radius.get() > 0.0) {
-        viewer->insertPointLight(this->ambientIntensity.get(),
-                                 this->attenuation.get(),
-                                 this->color.get(),
-                                 this->intensity.get(),
-                                 this->location.get(),
-                                 this->radius.get());
+        viewer.insertPointLight(this->ambientIntensity.get(),
+                                this->attenuation.get(),
+                                this->color.get(),
+                                this->intensity.get(),
+                                this->location.get(),
+                                this->radius.get());
     }
-    clearModified();
+    this->clearModified();
 }
 
 /**
@@ -11952,20 +11952,20 @@ SpotLight * SpotLight::toSpotLight() const
  *
  * @param viewer    a Viewer.
  */
-void SpotLight::renderScoped(Viewer * viewer)
+void SpotLight::renderScoped(Viewer & viewer)
 {
     if (this->on.get() && this->radius.get() > 0.0) {
-        viewer->insertSpotLight(this->ambientIntensity.get(),
-                                this->attenuation.get(),
-                                this->beamWidth.get(),
-                                this->color.get(),
-                                this->cutOffAngle.get(),
-                                this->direction.get(),
-                                this->intensity.get(),
-                                this->location.get(),
-                                this->radius.get());
+        viewer.insertSpotLight(this->ambientIntensity.get(),
+                               this->attenuation.get(),
+                               this->beamWidth.get(),
+                               this->color.get(),
+                               this->cutOffAngle.get(),
+                               this->direction.get(),
+                               this->intensity.get(),
+                               this->location.get(),
+                               this->radius.get());
     }
-    clearModified();
+    this->clearModified();
 }
 
 /**

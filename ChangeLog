@@ -5,6 +5,11 @@
         * src/openvrml/OpenVRML/browser.cpp:  Use newer form of
           UnsupportedInterface constructor.
 
+        * src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h:  Changed
+          AbstractLight::renderScoped to take a Viewer & instead of a
+          Viewer *.
+
 2002-12-26  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.h:  Made Node::visited private.

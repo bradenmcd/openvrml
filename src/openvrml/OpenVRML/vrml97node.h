@@ -140,7 +140,7 @@ namespace OpenVRML {
         public:
             virtual ~AbstractLight() throw () = 0;
 
-            virtual void renderScoped(Viewer *);
+            virtual void renderScoped(Viewer & viewer);
             virtual AbstractLight * toLight() const;
 
             float getAmbientIntensity() const { return this->ambientIntensity.get(); }
@@ -1763,7 +1763,7 @@ namespace OpenVRML {
 
             virtual PointLight * toPointLight() const;
 
-            virtual void renderScoped(Viewer *);
+            virtual void renderScoped(Viewer & viewer);
 
         private:
             virtual void initializeImpl(double timestamp) throw ();
@@ -2141,7 +2141,7 @@ namespace OpenVRML {
 
             virtual SpotLight * toSpotLight() const;
 
-            virtual void renderScoped(Viewer *);
+            virtual void renderScoped(Viewer & viewer);
 
         private:
             virtual void initializeImpl(double timestamp) throw ();
