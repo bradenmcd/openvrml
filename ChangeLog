@@ -1,3 +1,9 @@
+2003-01-25  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml/OpenVRML/quaternion.cpp,
+          src/openvrml/OpenVRML/quaternion.h:  Added Quaternion class.
+
 2003-01-24  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp:  Convert backslashes in
