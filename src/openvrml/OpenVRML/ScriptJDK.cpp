@@ -169,9 +169,13 @@ static FieldValue* getFieldValue(JNIEnv *env, jobject obj)
 
   fid = getFid(env, obj, "isEventOut", "Z");
   bool eventOut = (bool) env->GetBooleanField(obj, fid);
+  fid = getFid(env, obj, "isEventIn", "Z");
+  bool eventIn = (bool) env->GetBooleanField(obj, fid);
+  fid = getFid(env, obj, "isExposedField", "Z");
+  bool exposedField = (bool) env->GetBooleanField(obj, fid);
   fid = getFid(env, obj, "FieldPtr", "I");
 
-  if (eventOut)
+  if (eventOut || eventIn || exposedField)
   {
     ScriptNode::ScriptField* pScriptField =
       (ScriptNode::ScriptField*) env->GetIntField(obj, fid);
@@ -193,7 +197,7 @@ static jstring fieldToString(JNIEnv *env, jobject obj)
   pField->print(os);
   os << ends;
   char* szString = os.str();
-  jstring result = env->NewStringUTF(szString); 
+  jstring result = env->NewStringUTF(szString);
   os.rdbuf()->freeze(0);
   return result;
 }
@@ -3733,23 +3737,43 @@ JNIEXPORT jstring JNICALL Java_vrml_field_MFVec3f_toString
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
   (JNIEnv *env, jobject obj, jstring jstrFieldName)
 {
-  jfieldID fid;
-  ScriptNode* pScript;
+  FieldValue::FieldType fieldType;
+  const ScriptNode::ScriptField* fieldPtr;
+  const char *charFieldName = env->GetStringUTFChars(jstrFieldName, 0);
+  std::string fieldName(charFieldName);
+  jfieldID fid = getFid(env, obj, "NodePtr", "I");
+  ScriptNode* pScript = (ScriptNode*) env->GetIntField(obj, fid);
   jobject Field;
-  jclass clazz;
-  const FieldValue* FieldPtr;
-  char clazzName[256];
-  
-  const char *fieldName = env->GetStringUTFChars(jstrFieldName, 0);
-  fid = getFid(env, obj, "NodePtr", "I");
-  pScript = (ScriptNode*) env->GetIntField(obj, fid);
-  FieldPtr = pScript->getField(fieldName);
-  sprintf(clazzName, "vrml/field/%s", FieldPtr->fieldTypeName());
-  clazz = env->FindClass(clazzName);
-  env->ReleaseStringUTFChars(jstrFieldName, fieldName );
-  Field = env->AllocObject(clazz);
-  fid = env->GetFieldID(clazz, "FieldPtr", "I");
-  env->SetIntField(Field, fid, (int) FieldPtr);
+
+  if ((fieldType = pScript->hasField(fieldName)) !=
+       FieldValue::NO_FIELD)
+  {
+    char clazzName[256];
+    const FieldValue* FieldPtr = pScript->getField(fieldName);
+    sprintf(clazzName, "vrml/field/%s", FieldPtr->fieldTypeName());
+    jclass clazz = env->FindClass(clazzName);
+    Field = env->AllocObject(clazz);
+    fid = getFid(env, Field, "FieldPtr", "I");
+    ScriptNode::FieldList& exposedFields = pScript->fields();
+    for (ScriptNode::FieldList::const_iterator i(exposedFields.begin()); 
+          i != exposedFields.end(); ++i) {
+      if ((*i)->name == fieldName) {
+        fieldPtr = (*i);
+      }
+    }
+
+    env->SetIntField(Field, fid, (int) FieldPtr);
+  }
+  else
+  {
+    // Field doesn't exist, throw an exception
+    // TODO: Add exception
+    return 0;
+  }
+
+  fid = getFid(env, Field,"isExposedField", "Z");
+  env->SetBooleanField(Field, fid, true);
+  env->ReleaseStringUTFChars(jstrFieldName, charFieldName );
   return Field;
 }
 
@@ -3759,44 +3783,120 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
   FieldValue::FieldType eventOutType;
   const ScriptNode::ScriptField* fieldPtr;
   char clazzName[256];
-
-  const char *eventOutName = env->GetStringUTFChars(jstrEventOutName , 0);
+  jobject eventOut;
+  jclass clazz;
+  const char *charEventOut = env->GetStringUTFChars(jstrEventOutName , 0);
+  std::string eventOutName(charEventOut);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   ScriptNode* pScript = (ScriptNode*) env->GetIntField(obj, fid);
-  eventOutType = pScript->hasEventOut(eventOutName);
-  sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventOutType));
-  
-  jclass clazz = env->FindClass(clazzName);
-  jobject eventOut = env->AllocObject(clazz);
-  fid = getFid(env, eventOut, "FieldPtr", "I");
 
-  // What you really want to do here is get a pointer to a ScriptField in the
-  // FieldList array
-  ScriptNode::FieldList& eventOuts = pScript->eventOuts();
-
-  for (ScriptNode::FieldList::const_iterator i(eventOuts.begin()); 
-        i != eventOuts.end(); ++i) {
-    if ((*i)->name == eventOutName) {
-      fieldPtr = (*i);
+  if ((eventOutType = pScript->hasEventOut(eventOutName)) !=
+       FieldValue::NO_FIELD)
+  {
+    char clazzName[256];
+    sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventOutType));
+    clazz = env->FindClass(clazzName);
+    eventOut = env->AllocObject(clazz);
+    fid = getFid(env, eventOut, "FieldPtr", "I");
+    ScriptNode::FieldList& eventOuts = pScript->eventOuts();
+    for (ScriptNode::FieldList::const_iterator i(eventOuts.begin()); 
+          i != eventOuts.end(); ++i) {
+      if ((*i)->name == eventOutName) {
+        fieldPtr = (*i);
+      }
     }
+  }
+  else if ((eventOutType = pScript->hasField(eventOutName)) !=
+            FieldValue::NO_FIELD)
+  {
+    char clazzName[256];
+    sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventOutType));
+    clazz = env->FindClass(clazzName);
+    eventOut = env->AllocObject(clazz);
+    fid = getFid(env, eventOut, "FieldPtr", "I");
+    ScriptNode::FieldList& fields = pScript->fields();
+    for (ScriptNode::FieldList::const_iterator i(fields.begin()); 
+           i != fields.end(); ++i) { 
+      if ((*i)->name == eventOutName) {
+        fieldPtr = (*i);
+      }
+    }
+  }
+  else
+  {
+    // TODO: throw an exception as the given event out doesn't exist
+    return 0;
   }
 
   env->SetIntField(eventOut, fid, (int) fieldPtr);
-
   fid = getFid(env, eventOut,"isEventOut", "Z");
   env->SetBooleanField(eventOut, fid, true);
-
-  env->ReleaseStringUTFChars(jstrEventOutName, eventOutName);
+  env->ReleaseStringUTFChars(jstrEventOutName, charEventOut);
   
   return eventOut;
 }
 
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventIn
-  (JNIEnv *, jobject, jstring)
+  (JNIEnv *env, jobject obj, jstring jstrEventInName)
 {
-  cout << "TODO: Implement Java_vrml_node_Script_getEventIn" << endl;
+  FieldValue::FieldType eventInType;
+  const ScriptNode::ScriptField* fieldPtr;
+  jobject eventIn;
+  jfieldID fid;
 
-  return 0;
+  const char* charEventIn = env->GetStringUTFChars(jstrEventInName , 0);
+  std::string eventInName(charEventIn);
+
+  fid = getFid(env, obj, "NodePtr", "I");
+  ScriptNode* pScript = (ScriptNode*) env->GetIntField(obj, fid);
+  if ((eventInType = pScript->hasEventIn(eventInName)) != 
+       FieldValue::NO_FIELD)
+  {
+    char clazzName[256];
+    sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventInType));
+    jclass clazz = env->FindClass(clazzName);
+    eventIn = env->AllocObject(clazz);
+    fid = getFid(env, eventIn, "FieldPtr", "I");
+    ScriptNode::FieldList& eventIns = pScript->eventIns();
+    for (ScriptNode::FieldList::const_iterator i(eventIns.begin()); 
+          i != eventIns.end(); ++i) 
+    {
+      if ((*i)->name == eventInName) 
+      {
+        fieldPtr = (*i);
+      }
+    }
+  }
+  else if ((eventInType = pScript->hasField(eventInName)) !=
+            FieldValue::NO_FIELD)
+  {
+    char clazzName[256];
+    sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventInType));
+    jclass clazz = env->FindClass(clazzName);
+    eventIn = env->AllocObject(clazz);
+    fid = getFid(env, eventIn, "FieldPtr", "I");
+    ScriptNode::FieldList& fields = pScript->fields();
+    for (ScriptNode::FieldList::const_iterator i(fields.begin()); 
+           i != fields.end(); ++i) 
+    {
+      if ((*i)->name == eventInName) 
+      {
+        fieldPtr = (*i);
+      }
+    }
+  }
+  else
+  {
+    // TODO: throw an exception as the given event in doesn't exist
+    return 0;
+  }
+
+  env->SetIntField(eventIn, fid, (int) fieldPtr);
+  fid = getFid(env, eventIn,"isEventIn", "Z");
+  env->SetBooleanField(eventIn, fid, true);
+  env->ReleaseStringUTFChars(jstrEventInName, charEventIn);
+  
+  return eventIn;
 }
 
 JNIEXPORT jstring JNICALL Java_vrml_node_Script_toString
@@ -3998,7 +4098,7 @@ JNIEXPORT jstring JNICALL Java_vrml_Browser_toString
   fid = getFid(env, obj, "BrowserPtr", "I");
   pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
   
-  // What should this return?
+  // TODO: What should this return?
 
   return env->NewStringUTF("OpenVRML");
 }
@@ -4033,6 +4133,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_Browser_getCurrentSpeed
   
   fid = getFid(env, obj, "BrowserPtr", "I");
   pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
+  // TODO
   return (jfloat) 0.0;
 }
 
