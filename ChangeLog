@@ -1,3 +1,15 @@
+2004-03-14 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed crashes associated with subsequent calls to
+	browser::load_url.
+
+	* src/libopenvrml/openvrml/browser.cpp (scene::scene):  Throw
+	no_alternative_url if no alternative URI can be resolved.
+	* src/libopenvrml/openvrml/browser.h:  Added no_alternative_url
+	exception.
+	* src/libopenvrml/openvrml/system.cpp (system::http_fetch):
+	Don't attempt to construct a std::string from a null pointer.
+
 2004-03-13 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp

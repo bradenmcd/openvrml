@@ -282,7 +282,7 @@ const std::string system::http_fetch(const char * url)
         close(sockfd);
     }
 #endif
-    return result;
+    return result ? std::string(result) : std::string();
 }
 
 void system::remove_file(const char * fn)

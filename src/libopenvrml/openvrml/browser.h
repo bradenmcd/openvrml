@@ -69,7 +69,7 @@ namespace openvrml {
         node_class_map_t node_class_map;
         script_node_class script_node_class_;
         scene * scene_;
-        node_ptr default_viewpoint;
+        const node_ptr default_viewpoint;
         viewpoint_node * active_viewpoint_;
         std::list<viewpoint_node *> viewpoint_list;
         typedef std::list<node_ptr> bind_stack_t;
@@ -218,6 +218,12 @@ namespace openvrml {
     };
 
 
+    class no_alternative_url : public bad_url {
+    public:
+        no_alternative_url();
+        virtual ~no_alternative_url() throw ();
+    };
+
     class scene : boost::noncopyable {
         std::vector<node_ptr> nodes_;
         std::string url_;
@@ -229,7 +235,7 @@ namespace openvrml {
         scene(openvrml::browser & browser,
               const std::vector<std::string> & url,
               scene * parent = 0)
-            throw (invalid_vrml, std::bad_alloc);
+            throw (invalid_vrml, no_alternative_url, std::bad_alloc);
 
         void initialize(double timestamp) throw (std::bad_alloc);
         const std::vector<node_ptr> & nodes() const throw ();

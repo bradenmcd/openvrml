@@ -2812,8 +2812,8 @@ const node_path browser::find_node(const node & n) const
         node_path & nodePath;
 
     public:
-        explicit FindNodeTraverser(const node & objectiveNode,
-                                   node_path & nodePath) throw ():
+        FindNodeTraverser(const node & objectiveNode, node_path & nodePath)
+            throw ():
             objectiveNode(objectiveNode),
             nodePath(nodePath)
         {}
@@ -3073,6 +3073,8 @@ void browser::load_url(const std::vector<std::string> & url,
     if (this->scene_) { this->scene_->shutdown(now); }
     delete this->scene_;
     this->scene_ = 0;
+    this->active_viewpoint_ =
+        node_cast<viewpoint_node *>(this->default_viewpoint.get());
     this->navigation_info_stack.clear();
     assert(this->viewpoint_list.empty());
     assert(this->navigation_infos.empty());
@@ -3135,9 +3137,11 @@ void browser::load_url(const std::vector<std::string> & url,
     } catch (invalid_vrml & ex) {
         this->err << ex.url << ':' << ex.line << ':' << ex.column
                   << ": error: " << ex.what() << std::endl;
+    } catch (no_alternative_url & ex) {
+        this->err << ex.what() << std::endl;
     }
     this->modified(true);
-    this->new_view = true;		// Force resetUserNav
+    this->new_view = true; // Force resetUserNav
 }
 
 /**
@@ -4002,7 +4006,7 @@ void browser::update_flags()
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
  * @param message   Informative text.
  */
@@ -4011,7 +4015,7 @@ bad_url::bad_url(const std::string & message):
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
 bad_url::~bad_url() throw ()
 {}
@@ -4024,14 +4028,14 @@ bad_url::~bad_url() throw ()
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  */
 invalid_url::invalid_url():
     bad_url("Invalid URI.")
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
 invalid_url::~invalid_url() throw ()
 {}
@@ -4044,14 +4048,38 @@ invalid_url::~invalid_url() throw ()
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  */
-unreachable_url::unreachable_url(): bad_url("Unreachable URI.") {}
+unreachable_url::unreachable_url():
+    bad_url("Unreachable URI.")
+{}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-unreachable_url::~unreachable_url() throw () {}
+unreachable_url::~unreachable_url() throw ()
+{}
+
+
+/**
+ * @class no_alternative_url
+ *
+ * @brief Exception thrown when no URI in an alternative URI list can be
+ *        resolved.
+ */
+
+/**
+ * @brief Construct.
+ */
+no_alternative_url::no_alternative_url():
+    bad_url("No alternative URI could be resolved.")
+{}
+
+/**
+ * @brief Destroy.
+ */
+no_alternative_url::~no_alternative_url() throw ()
+{}
 
 
 /**
@@ -4162,7 +4190,7 @@ namespace {
 scene::scene(openvrml::browser & browser,
              const std::vector<std::string> & url,
              scene * parent)
-    throw (invalid_vrml, std::bad_alloc):
+    throw (invalid_vrml, no_alternative_url, std::bad_alloc):
     browser(browser),
     parent(parent)
 {
@@ -4228,6 +4256,7 @@ scene::scene(openvrml::browser & browser,
             : absoluteURI;
         break;
     }
+    if (this->url_.empty()) { throw no_alternative_url(); }
 }
 
 /**
