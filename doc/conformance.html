@@ -34,7 +34,7 @@
   <BR>
   <BR>
   <HR>
-  <H3>Last updated: July 21, 2002</H3>
+  <H3>Last updated: August 2, 2002</H3>
   <HR>
   <TABLE BORDER="1">
     <CAPTION>Results of OpenVRML Conformance Testing</CAPTION>
@@ -133,11 +133,11 @@
     <TR>
       <TD><TD><TD>21<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>22<TD>*<TD><TD>
+      <TD><TD><TD>22<TD><TD>*<TD>Failed! Texture mapping on extrusions faulty.
     <TR>
       <TD><TD><TD>23<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>24<TD>*<TD><TD>
+      <TD><TD><TD>24<TD><TD>*<TD>Failed! Texture mapping on extrusions faulty.
     <TR>
       <TD><TD><TD>25<TD>*<TD><TD>
     <TR>
@@ -176,13 +176,13 @@
     <TR>
       <TD><TD><TD>8<TD>*<TD><TD> 
     <TR>
-      <TD><TD><TD>9<TD><TD>*<TD>Failed! The ElevationGrid is initially colored blue which is incorrect. The strange thing is that if the scene is changed, the ElevationGrid is colored correctly on the update!
+      <TD><TD><TD>9<TD>*<TD><TD>
     <TR>
       <TD><TD><TD>10<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>11<TD><TD>*<TD>Failed! This test passed with release 0.10.1!
+      <TD><TD><TD>11<TD><TD>*<TD>Failed! ElevationGrid is incorrectly colored blue.
     <TR>
-      <TD><TD><TD>12<TD><TD>*<TD>Failed! See above.
+      <TD><TD><TD>12<TD><TD>*<TD>Failed! ElevationGrid is incorrectly colored red.
     <TR>
       <TD><TD><TD>13<TD>*<TD><TD>
     <TR>
@@ -192,7 +192,7 @@
     <TR>
       <TD><TD><TD>16<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>17<TD>*<TD><TD>
+      <TD><TD><TD>17<TD><TD>*<TD>Failed! Colored white when should be red.
     <TR>
       <TD><TD><TD>18<TD>*<TD><TD>
     <TR>
@@ -214,9 +214,9 @@
     <TR>
       <TD><TD><TD>27<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>28<TD>*<TD><TD>
+      <TD><TD><TD>28<TD><TD>*<TD>Failed! Transparency doesn't seem to be working.
     <TR>
-      <TD><TD><TD>29<TD>*<TD><TD>
+      <TD><TD><TD>29<TD><TD>*<TD>Failed! See above.
     <TR>
       <TD><TD>MovieTexture
       <TD>1<TD>*<TD><TD>Failed! Get error message "Error Decoding MPEG stream". No text displays to start the animation.
@@ -432,11 +432,11 @@
       <TD><B>Bindable Nodes</B>
     <TR>
       <TD><TD>Background
-      <TD>1<TD>*<TD><TD> Problems w/ Text though.
+      <TD>1<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>2<TD>*<TD><TD> Problems w/ Text though.
+      <TD><TD><TD>2<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>3<TD><TD>*<TD>Failed! Text off + Background 2 doesn't display properly.
+      <TD><TD><TD>3<TD><TD>*<TD>Failed! Background 2 doesn't display at all.
     <TR>
       <TD><TD><TD>4<TD>*<TD><TD>
     <TR>
@@ -458,21 +458,21 @@
     <TR>
       <TD><TD><TD>13<TD><TD>*<TD>Failed! Nothing displays in lookat except text.
     <TR>
-      <TD><TD><TD>14<TD><TD>*<TD>Failed! Panorama only displays first jpeg, not all four jpegs successively as it should. Might be a problem with PositionInterpolators.
+      <TD><TD><TD>14<TD><TD>*<TD>Failed! Panorama works great except that there is a black panel between the first and second panels.
     <TR>
-      <TD><TD><TD>15<TD><TD>*<TD>Failed! Nothing displays in lookat, see test 8 above.
+      <TD><TD><TD>15<TD><TD>*<TD>Failed! Console shows images are being downloaded but background does not get updated. Nothing but text displayed.
     <TR>
-      <TD><TD><TD>16<TD><TD>*<TD>Failed! Nothing displays in lookat except text.
+      <TD><TD><TD>16<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>17<TD><TD>*<TD>Failed! Nothing displays in lookat except text.
+      <TD><TD><TD>17<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>18<TD><TD>*<TD>Failed! Nothing displays in lookat except text.
+      <TD><TD><TD>18<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>19<TD><TD>*<TD>Failed! Nothing displays in lookat except text.
+      <TD><TD><TD>19<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>20<TD><TD>*<TD>Failed! Nothing displays in lookat except text.
+      <TD><TD><TD>20<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>21<TD><TD>*<TD>Failed! Panorama only displays first png, not all four pngs successively as it should.
+      <TD><TD><TD>21<TD><TD>*<TD>Failed! Panorama works great except that there is a black panel between the first and second panels.
     <TR>
       <TD><TD><TD>22<TD>*<TD><TD>
     <TR>
@@ -680,7 +680,7 @@
       <TD><TD>Normal
       <TD>1<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>2<TD>*<TD><TD>
+      <TD><TD><TD>2<TD><TD>*<TD>Failed! Segfault.
     <TR>
       <TD><TD><TD>3<TD>*<TD><TD>
     <TR>
@@ -688,7 +688,7 @@
     <TR>
       <TD><TD><TD>5<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>6<TD>*<TD><TD>Failed! Lighting is slightly incorrect. Should be a straight line across the shape but is a bit jagged.
+      <TD><TD><TD>6<TD>*<TD><TD>Failed! Segfault.
     <TR>
       <TD><TD><TD>7<TD>*<TD><TD>
     <TR>
@@ -826,7 +826,7 @@
     <TR>
       <TD><TD><TD>6<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>7<TD><TD>*<TD>Failed! Majority of the model was fine, problem with just one little part. This test should be attempted on another browser to make sure there isn't a mistake with the NIST test.
+      <TD><TD><TD>7<TD><TD>*<TD>Failed! Majority of the model was fine, problem with just one little part.
     <TR>
       <TD><TD><TD>8<TD>*<TD><TD>
     <TR>
@@ -834,15 +834,15 @@
     <TR>
       <TD><TD><TD>10<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>11<TD><TD>*<TD>Failed!
+      <TD><TD><TD>11<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>12<TD><TD>*<TD>Failed! The lookat generated figure doesn't really look like a twisted bar.
+      <TD><TD><TD>12<TD>*<TD><TD>
     <TR>
       <TD><TD><TD>13<TD><TD>*<TD>Failed! Line through one of the Extrusion's for no apparent reason.
     <TR>
-      <TD><TD><TD>14<TD>*<TD><TD>
+      <TD><TD><TD>14<TD><TD>*<TD>Failed! Something is wrong on the right hand side of the top and bottom of the shape.
     <TR>
-      <TD><TD><TD>15<TD>*<TD><TD>
+      <TD><TD><TD>15<TD><TD>*<TD>Failed! The lighting should be the same on both shapes.
     <TR>
       <TD><TD><TD>16<TD>*<TD><TD>
     <TR>
@@ -894,7 +894,7 @@
       <TD><TD>IndexedLineSet
       <TD>1<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>2<TD>*<TD><TD>
+      <TD><TD><TD>2<TD><TD>*<TD>Failed! Should be colored red.
     <TR>
       <TD><TD><TD>3<TD>*<TD><TD>
     <TR>
@@ -999,17 +999,17 @@
       <TD><TD><TD>12<TD>*<TD><TD>
     <TR>
       <TD><TD>Billboard
-      <TD>1<TD>*<TD><TD> Incredibly processor intensive if you try to rotate though.
+      <TD>1<TD>*<TD><TD>Incredibly processor intensive if you try to rotate though.
     <TR>
-      <TD><TD><TD>2<TD>*<TD><TD> Text is not lined up properly though.
+      <TD><TD><TD>2<TD>*<TD><TD>Text is not lined up properly though.
     <TR>
-      <TD><TD><TD>3<TD>*<TD><TD> Text is not lined up properly though.
+      <TD><TD><TD>3<TD>*<TD><TD>Text is not lined up properly though.
     <TR>
-      <TD><TD><TD>4<TD><TD>*<TD>Failed! Doesn't begin at correct position and I have no idea how to rotate the object about the Z axis with the nav. controls in lookat
+      <TD><TD><TD>4<TD><TD>*<TD>Failed! Initial view is incorrect.
     <TR>
-      <TD><TD><TD>5<TD>*<TD><TD> Text is not lined up properly though.
+      <TD><TD><TD>5<TD>*<TD><TD>Text is not lined up properly though.
     <TR>
-      <TD><TD><TD>6<TD><TD>*<TD>
+      <TD><TD><TD>6<TD><TD>*<TD>Failed!
     <TR>
       <TD><TD>Collision
       <TD>1<TD>*<TD><TD>
@@ -1091,8 +1091,7 @@
     <TR>
       <TD><TD><TD>3<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>4<TD><TD>*<TD>Failed! CORE DUMP! Console message says: Call to isOver2 in Script node COLORIT<BR>ColorInterpolator::getField: no such field (value_changed)<BR>lookat: ../../../../src/openvrml/OpenVRML/VrmlNodeScript.cpp:1790: VrmlField *{unnamed}::JavaScript_::createVrmlFieldFromJsval (JSContext *, long int, VrmlField::VrmlFieldType): Assertion `(((v) & (((JSUint32)1 << (3)) - 1)) == 0x0)' failed.<BR>
-Aborted (core dumped)
+      <TD><TD><TD>4<TD><TD>*<TD>Failed! Sphere on right should turn blue when mouse is over it, not black.
     <TR>
       <TD><TD><TD>5<TD>*<TD><TD>
     <TR>
@@ -1166,7 +1165,7 @@ Aborted (core dumped)
     <TR>
       <TD><TD><TD>6<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>7<TD>*<TD><TD>
+      <TD><TD><TD>7<TD><TD>*<TD>Failed! Light travels from right to left when should move from left to right.
     <TR>
       <TD><TD><TD>8<TD>*<TD><TD>
     <TR>
@@ -1174,23 +1173,23 @@ Aborted (core dumped)
     <TR>
       <TD><TD><TD>10<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>11<TD>*<TD><TD>
+      <TD><TD><TD>11<TD><TD>*<TD>Failed! Light travels from rigth to left when should move from left to right.
     <TR>
-      <TD><TD><TD>12<TD>*<TD><TD> Text doesn't appear.
+      <TD><TD><TD>12<TD><TD>*<TD>Failed! Text doesn't appear.
     <TR>
-      <TD><TD><TD>13<TD>*<TD><TD> Text doesn't appear.
+      <TD><TD><TD>13<TD><TD>*<TD>Failed! Text doesn't appear.
     <TR>
       <TD><TD><TD>14<TD><TD>*<TD>Failed! Text doesn't appear. Colour starts on the wrong side.
     <TR>
       <TD><TD><TD>15<TD><TD>*<TD>Failed! Text doesn't appear. Colour starts on the wrong side.
     <TR>
-      <TD><TD><TD>16<TD><TD>*<TD>Failed! Text incorrect, beginning color of shapes should be black not green!
+      <TD><TD><TD>16<TD><TD>*<TD>Failed! Beginning color of shapes should be black not green!
     <TR>
-      <TD><TD><TD>17<TD><TD>*<TD>Failed! Text incorrect, beginning color of shapes should be black not green + Extrusion is not lighted properly.
+      <TD><TD><TD>17<TD><TD>*<TD>Failed! Text incorrect, beginning color of shapes should be black not green.
     <TR>
-      <TD><TD><TD>18<TD><TD>*<TD>Failed! Color should be closer to red than green and initial shading of shape is the reverse of what is expected.
+      <TD><TD><TD>18<TD><TD>*<TD>Failed! Lighting moves from right to left instead of left to right.
     <TR>
-      <TD><TD><TD>19<TD><TD>*<TD>Failed! Text not viewable, same color as BG? + Extrusion is not lighted properly.
+      <TD><TD><TD>19<TD><TD>*<TD>Failed! Text not viewable, same color as BG? + Lighting moves from right to left instead of left to right..
     <TR>
       <TD><TD><TD>20<TD>*<TD><TD>
     <TR>
@@ -1198,7 +1197,7 @@ Aborted (core dumped)
     <TR>
       <TD><TD><TD>22<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>23<TD>*<TD><TD>Failed! Lighting doesn't change after click.
+      <TD><TD><TD>23<TD>*<TD><TD>
     <TR>
       <TD><TD><TD>24<TD>*<TD><TD>
     <TR>
@@ -1215,7 +1214,7 @@ Aborted (core dumped)
     <TR>
       <TD><TD><TD>2<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>3<TD>*<TD><TD>
+      <TD><TD><TD>3<TD><TD>*<TD>Failed! Only leftmost sphere should be lighted.
     <TR>
       <TD><TD><TD>4<TD>*<TD><TD>
     <TR>
@@ -1343,110 +1342,102 @@ Aborted (core dumped)
       <TD><B>Misc</B>
     <TR>
       <TD><TD>EXTERNPROTO
-      <TD>1<TD>*<TD><TD>
+      <TD>1<TD><TD>*<TD>Failed! Assertion failure on console stating:<BR>lookat: ../../../../src/openvrml/OpenVRML/VrmlNamespace.cpp:68: void OpenVRML::VrmlNamespace::addNodeType (const OpenVRML::NodeTypePtr &): Assertion `nodeType' failed.<BR>Aborted
     <TR>
-      <TD><TD><TD>2<TD><TD>*<TD>Failed! Nothing displays in lookat. On the console I see: <BR> Warning: Couldn't read EXTERNPROTO Red_sphere
+      <TD><TD><TD>2<TD><TD>*<TD>Failed! See above.
     <TR>
+      <TD><TD><TD>3<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>3<TD><TD>*<TD>Failed! CORE DUMP!
+      <TD><TD><TD>4<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>4<TD><TD>*<TD>Failed! Incorrect PROTO chosen...should display a green sphere but instead displays a blue sphere.This is a test of choosing the first PROTO found if none is specified.
+      <TD><TD><TD>5<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>5<TD>*<TD><TD>
+      <TD><TD><TD>6<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>6<TD><TD>*<TD>
+      <TD><TD><TD>7<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>7<TD>*<TD><TD>
+      <TD><TD><TD>8<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>8<TD><TD>*<TD>Failed! CORE DUMP!
+      <TD><TD><TD>9<TD><TD>*<TD>Failed! Cannot select sphere.
     <TR>
-      <TD><TD><TD>9<TD><TD>*<TD>Failed! The script initializes but the CreateVrmlFromURL doesn't seem to work.
-    <TR>
-      <TD><TD><TD>10<TD><TD>*<TD>Failed! The script initializes but the new sphere doesn't appear.
+      <TD><TD><TD>10<TD><TD>*<TD>Failed! See above.
     <TR>
       <TD><TD><TD>11<TD><TD>*<TD>Failed! Clicking on green sphere doesn't cause red sphere to appear as well.
     <TR>
-      <TD><TD><TD>12<TD><TD>*<TD>Failed! NIST Javascript problem? CORE DUMP when call is made to trigger_event in Script node.
+      <TD><TD><TD>12<TD><TD>*<TD>Failed! Clicking on green sphere doesn't cause red sphere to appear as well.
     <TR>
-      <TD><TD><TD>13<TD>*<TD><TD>
+      <TD><TD><TD>13<TD><TD>*<TD>Failed! Assertion failure on console stating:<BR>lookat: ../../../../src/openvrml/OpenVRML/VrmlNamespace.cpp:68: void OpenVRML::VrmlNamespace::addNodeType (const OpenVRML::NodeTypePtr &): Assertion `nodeType' failed.<BR>Aborted
     <TR>
-      <TD><TD><TD>14<TD><TD>*<TD>Failed! Test is perfect except bottom right sphere appears in red instead of blue.
+      <TD><TD><TD>14<TD><TD>*<TD>Failed! See above.
     <TR>
       <TD><TD><TD>15<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>16<TD><TD>*<TD>Failed! Only the bottom right sphere is animated.
+      <TD><TD><TD>16<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>17<TD>*<TD><TD>
+      <TD><TD><TD>17<TD><TD>*<TD>Failed! See above.
     <TR>
-      <TD><TD><TD>18<TD><TD>*<TD>Failed! Not even close.
+      <TD><TD><TD>18<TD><TD>*<TD>Failed! See above.
     <TR>
       <TD><TD>PROTO
       <TD>1<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>2<TD>*<TD><TD>
+      <TD><TD><TD>2<TD><TD>*<TD>Failed! Sphere should be red but instead is grey.
     <TR>
       <TD><TD><TD>3<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>4<TD><TD>*<TD>Failed! No change when sphere is selected.
+      <TD><TD><TD>4<TD>*<TD><TD>
     <TR>
       <TD><TD><TD>5<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>6<TD>*<TD><TD>
+      <TD><TD><TD>6<TD><TD>*<TD>Failed! Top sphere should be red but instead is grey.
     <TR>
-      <TD><TD><TD>7A<TD><TD>*<TD>Failed! CORE DUMP! Console message says <BR>lookat: ../../../../src/openvrml/OpenVRML/VrmlNamespace.cpp:613: void {unnamed}::NodeCloneVisitor::visit (VrmlNodeShape &): Assertion `this->rootNodeStack.top()->toGeometry()' failed.<BR>
-Aborted (core dumped)
+      <TD><TD><TD>7A<TD><TD>*<TD>Failed! Console message just says Aborted.
     <TR>
-      <TD><TD><TD>7B<TD><TD>*<TD>Failed! CORE DUMP! Console message says <BR>lookat: ../../../../src/openvrml/OpenVRML/VrmlNamespace.cpp:613: void {unnamed}::NodeCloneVisitor::visit (VrmlNodeShape &): Assertion `this->rootNodeStack.top()->toGeometry()' failed.<BR>
-Aborted (core dumped)
+      <TD><TD><TD>7B<TD><TD>*<TD>Failed!
     <TR>
-      <TD><TD><TD>7C<TD><TD>*<TD>Failed! CORE DUMP! Console message says <BR>lookat: ../../../../src/openvrml/OpenVRML/VrmlNamespace.cpp:613: void {unnamed}::NodeCloneVisitor::visit (VrmlNodeShape &): Assertion `this->rootNodeStack.top()->toGeometry()' failed.<BR>
-Aborted (core dumped)
+      <TD><TD><TD>7C<TD><TD>*<TD>Failed! When trying to click on text for the next test, console displays the following warning:<BR>Warning: Couldn't load URL ../../html/write_list.cgi?cylinder+PROTO+Misc
     <TR>
       <TD><TD><TD>7D<TD><TD>*<TD>Failed! Nothing displays in lookat for this test.
     <TR>
-      <TD><TD><TD>7E<TD><TD>*<TD>Failed! Nothing displays in lookat for this test.
+      <TD><TD><TD>7E<TD><TD>*<TD>Failed! When attempting to click on next test, following message is dumped to the console:<BR>Warning: Couldn't load URL ../../html/write_list.cgi?indexedfaceset+PROTO+Misc
     <TR>
-      <TD><TD><TD>7F<TD><TD>*<TD>Failed! CORE DUMP! Console message says<BR>lookat: ../../../../src/openvrml/OpenVRML/VrmlNamespace.cpp:1067: void {unnamed}::NodeRouteCopyVisitor::copyRoutesFromNode (VrmlNode &): Assertion `fromNode' failed.<BR>
-Aborted (core dumped)
+      <TD><TD><TD>7F<TD><TD>*<TD>Failed! Lookat fails to load the world dumping the following message to the console:<BR>lookat: ../../../../src/openvrml/OpenVRML/field.cpp:4246: const float *OpenVRML::MFVec3f::getElement (unsigned int) const: Assertion `(index * 3) < this->d_data->d_n' failed.<BR>Aborted
     <TR>
-      <TD><TD><TD>7G<TD><TD>*TD>Failed! Nothing displays in lookat for this test.
+      <TD><TD><TD>7G<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>7H<TD><TD>*TD>Failed! Nothing displays in lookat for this test.
+      <TD><TD><TD>7H<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>7I<TD><TD>*TD>Failed! Nothing displays in lookat for this test except the text.
+      <TD><TD><TD>7I<TD><TD>*<TD>Failed! For some reason, when the PointSet shape on the left comes into view, the IndexedLineSet on the right turns into a PointSet as well! Even worse, if the viewer walks through the shapes, lookat aborts with the following error message:<BR>lookat: ../../../../src/openvrml/OpenVRML/VrmlMatrix.cpp:469: void OpenVRML::{unnamed}::get_affine_inverse (const OpenVRML::VrmlMatrix &, OpenVRML::VrmlMatrix &): Assertion `det*det > (1.0e-25)' failed.<BR>Aborted
     <TR>
-      <TD><TD><TD>7J<TD><TD>*<TD>Failed! World loaded but when I tried to navigate forward, lookat cores with the following core dump. lookat: ../../../../src/openvrml/OpenVRML/field.cpp:1253: void VrmlSFRotation::set (const float *): Assertion `fpequal(length(rot), 1.0)' failed. Aborted (core dumped)
+      <TD><TD><TD>7J<TD><TD>*<TD>Failed! Nothing happens.
     <TR>
       <TD><TD><TD>7K<TD><TD>*<TD>Failed! Light should move around the shape but nothing appears to happen in lookat.
     <TR>
-      <TD><TD><TD>8<TD><TD>*<TD>Failed! No color change on touch.
+      <TD><TD><TD>8<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>9<TD>*<TD><TD>
+      <TD><TD><TD>9<TD><TD>*<TD>Failed! Lookat fails to load the world dumping the following message to the console:<BR>lookat: ../../../../src/openvrml/OpenVRML/field.cpp:3999: const float *OpenVRML::MFVec2f::getElement (unsigned int) const: Assertion `(index * 2) < this->d_data->d_n' failed.<BR>Aborted
     <TR>
       <TD><TD><TD>10<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>11<TD>*<TD><TD>
+      <TD><TD><TD>11<TD><TD>*<TD>Failed! Initial color of background should be black not purple.
     <TR>
-      <TD><TD><TD>12<TD><TD>*<TD>Failed! CORE DUMP! Console displays:lookat: ../../../../src/openvrml/OpenVRML/VrmlNamespace.cpp:1071: void {unnamed}::NodeRouteCopyVisitor::copyRoutesFromNode (VrmlNode &): Assertion `this->ns.findNode(toName)' failed.
-Aborted (core dumped)
+      <TD><TD><TD>12<TD><TD>*<TD>Failed! Nothing happens when clicking on the rings.
     <TR>
       <TD><TD><TD>13<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>14<TD><TD>*<TD>Failed! CORE DUMP! Console displays: Error: Attempt to add a Proto5 node as a child of a Transform node.<BR>
-lookat: ../../../../src/openvrml/OpenVRML/VrmlNamespace.cpp:1071: void {unnamed}::NodeRouteCopyVisitor::copyRoutesFromNode (VrmlNode &): Assertion `this->ns.findNode(toName)' failed.
-Aborted (core dumped)
+      <TD><TD><TD>14<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>15<TD><TD>*<TD>Failed! CORE DUMP! See above.
+      <TD><TD><TD>15<TD><TD>*<TD>Failed! Initial background color is yellow not black.
     <TR>
-      <TD><TD><TD>16<TD>*<TD><TD>
+      <TD><TD><TD>16<TD><TD>*<TD>Failed! All spheres display as white.
     <TR>
-      <TD><TD><TD>17<TD>*<TD><TD>
+      <TD><TD><TD>17<TD><TD>*<TD>Failed! All spheres display as white.
     <TR>
-      <TD><TD><TD>18<TD><TD>*<TD>Failed! Only the bottom right sphere changes color.
+      <TD><TD><TD>18<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>19<TD>*<TD><TD>
+      <TD><TD><TD>19<TD><TD>*<TD>Failed! Only top-left sphere changes color.
     <TR>
-      <TD><TD><TD>20<TD><TD>*<TD>Failed! See 18.
+      <TD><TD><TD>20<TD><TD>*<TD>Failed! Rightmost set of spheres does not animate properly. Two middle sets of spheres are displayed incorrectly as white.
     <TR>
       <TD><TD>Script ECMAScript<TD><TD><TD><TD>No Tests Defined by NIST!
     <TR>
@@ -1535,9 +1526,9 @@ Aborted (core dumped)
       <TD><TD>SphereSensor
       <TD>1<TD>*<TD><TD>
     <TR>
-      <TD><TD><TD>2<TD>*<TD><TD>
+      <TD><TD><TD>2<TD><TD>*<TD>Failed! IndexedFaceSet should not rotate.
     <TR>
-      <TD><TD><TD>3<TD><TD>*<TD>Failed!
+      <TD><TD><TD>3<TD><TD>*<TD>Failed! Aborted.
     <TR>
       <TD><TD><TD>4<TD>*<TD><TD>
     <TR>
@@ -1734,8 +1725,8 @@ Aborted (core dumped)
   <HR>
   <H3>Summary of Results</H3>
   Total Number of Tests = 795<BR>
-  Total Passed = 538<BR>
-  Total Failed = 257<BR>
+  Total Passed = 518<BR>
+  Total Failed = 277<BR>
   <BR>
 
   <TABLE BORDER="1">
@@ -1746,36 +1737,36 @@ Aborted (core dumped)
       <TH>Fail
     <TR>
       <TD>Appearance
-      <TD>146
-      <TD>40
+      <TD>141
+      <TD>45
     <TR>
       <TD>Bindable Nodes
       <TD>29
       <TD>64
     <TR>
       <TD>Geometric Properties
-      <TD>40
-      <TD>13
+      <TD>39
+      <TD>14
     <TR>
       <TD>Geometry
-      <TD>96
-      <TD>17
+      <TD>94
+      <TD>19
     <TR>
       <TD>Grouping Nodes
-      <TD>35
-      <TD>17
+      <TD>34
+      <TD>18
     <TR>
       <TD>Interpolators
       <TD>20
       <TD>10
     <TR>
       <TD>Lights
-      <TD>77
-      <TD>15
+      <TD>73
+      <TD>19
     <TR>
       <TD>Misc
-      <TD>21
-      <TD>29
+      <TD>14
+      <TD>36
     <TR>
       <TD>Sensors
       <TD>59
@@ -1815,8 +1806,8 @@ Aborted (core dumped)
       <TD>15
     <TR>
       <TD>Billboard
-      <TD>5
-      <TD>1
+      <TD>4
+      <TD>2
     <TR>
       <TD>Box
       <TD>6
@@ -1855,20 +1846,20 @@ Aborted (core dumped)
       <TD>2
     <TR>
       <TD>DirectionalLight
-      <TD>21
-      <TD>7
+      <TD>18
+      <TD>10
     <TR>
       <TD>ElevationGrid
       <TD>9
       <TD>5
     <TR>
       <TD>EXTERNPROTO
-      <TD>6
-      <TD>12
+      <TD>0
+      <TD>18
     <TR>
       <TD>Extrusion
-      <TD>14
-      <TD>3
+      <TD>13
+      <TD>4
     <TR>
       <TD>Fog
       <TD>16
@@ -1883,16 +1874,16 @@ Aborted (core dumped)
       <TD>0
     <TR>
       <TD>ImageTexture
-      <TD>32
-      <TD>2
+      <TD>30
+      <TD>4
     <TR>
       <TD>IndexedFaceSet
       <TD>20
       <TD>1
     <TR>
       <TD>IndexedLineSet
-      <TD>10
-      <TD>0
+      <TD>9
+      <TD>1
     <TR>
       <TD>Inline
       <TD>4
@@ -1903,8 +1894,8 @@ Aborted (core dumped)
       <TD>0
     <TR>
       <TD>Material
-      <TD>25
-      <TD>4
+      <TD>22
+      <TD>7
     <TR>
       <TD>MovieTexture
       <TD>29
@@ -1915,8 +1906,8 @@ Aborted (core dumped)
       <TD>22
     <TR>
       <TD>Normal
-      <TD>8
-      <TD>1
+      <TD>7
+      <TD>2
     <TR>
       <TD>NormalInterpolator
       <TD>4
@@ -1935,8 +1926,8 @@ Aborted (core dumped)
       <TD>3
     <TR>
       <TD>PointLight
-      <TD>26
-      <TD>3
+      <TD>25
+      <TD>4
     <TR>
       <TD>PointSet
       <TD>4
@@ -1947,8 +1938,8 @@ Aborted (core dumped)
       <TD>1
     <TR>
       <TD>PROTO
-      <TD>12
-      <TD>18
+      <TD>11
+      <TD>19
     <TR>
       <TD>ProximitySensor
       <TD>9
