@@ -1,3 +1,21 @@
+2004-11-11 Braden McDaniel  <braden@endoframe.com>
+
+	Favor private virtual functions that are delegated to by public
+	non-virtual functions.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/field.cpp
+	* src/libopenvrml/openvrml/field.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/node_ptr.cpp
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/scope.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
 2004-11-08 Braden McDaniel  <braden@endoframe.com>
 
 	Replaced several public class members with accessor/mutator

@@ -783,11 +783,16 @@ namespace openvrml {
 
     public:
         virtual ~field_value_listener() throw () = 0;
-        virtual void process_event(const FieldValue & value, double timestamp)
-            throw (std::bad_alloc) = 0;
+        void process_event(const FieldValue & value, double timestamp)
+            throw (std::bad_alloc);
 
     protected:
         explicit field_value_listener(openvrml::node & node) throw ();
+
+    private:
+        virtual void do_process_event(const FieldValue & value,
+                                      double timestamp)
+            throw (std::bad_alloc) = 0;
     };
 
     template <typename FieldValue>
@@ -800,6 +805,15 @@ namespace openvrml {
     template <typename FieldValue>
     field_value_listener<FieldValue>::~field_value_listener() throw ()
     {}
+
+    template <typename FieldValue>
+    void
+    field_value_listener<FieldValue>::process_event(const FieldValue & value,
+                                                    const double timestamp)
+        throw (std::bad_alloc)
+    {
+        this->do_process_event(value, timestamp);
+    }
 
     typedef field_value_listener<sfbool> sfbool_listener;
     typedef field_value_listener<sfcolor> sfcolor_listener;
@@ -851,21 +865,6 @@ namespace openvrml {
     private:
         virtual void emit_event(double timestamp) throw (std::bad_alloc) = 0;
     };
-
-    inline const field_value & event_emitter::value() const throw ()
-    {
-        return this->value_;
-    }
-
-    inline double event_emitter::last_time() const throw ()
-    {
-        return this->last_time_;
-    }
-
-    inline void event_emitter::last_time(const double t) throw ()
-    {
-        this->last_time_ = t;
-    }
 
     template <typename FieldValue>
     class field_value_emitter : public event_emitter {

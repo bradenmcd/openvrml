@@ -568,7 +568,9 @@ find_interface(const node_interface_set & interfaces, const std::string & id)
  */
 
 /**
- * @var openvrml::browser & node_class::browser
+ * @internal
+ *
+ * @var openvrml::browser * node_class::browser_
  *
  * @brief The browser associated with this <code>node_class</code>.
  */
@@ -595,12 +597,23 @@ node_class::~node_class() throw ()
 {}
 
 /**
+ * @brief The <code>browser</code> associated with this <code>node_class</code>.
+ *
+ * @return the <code>browser</code> associated with this <code>node_class</code>.
+ */
+browser & node_class::browser() const throw ()
+{
+    assert(this->browser_);
+    return *this->browser_;
+}
+
+/**
  * @brief <code>node_class</code>-specific initialization.
  *
  * This method is called during initialization of a <code>browser</code> object
  * with a new root <code>scene</code>. It is called after the individual
  * <code>node</code> instances have been initialized, and before the world
- * starts running.
+ * starts running. It delegates to <code>node_class::do_initialize</code>.
  *
  * @param initial_viewpoint the <code>viewpoint_node</code> that should be
  *                          bound initially; or 0 if the default
@@ -610,7 +623,39 @@ node_class::~node_class() throw ()
 void node_class::initialize(viewpoint_node * initial_viewpoint,
                             const double time)
     throw ()
+{
+    this->do_initialize(initial_viewpoint, time);
+}
+
+/**
+ * @brief <code>node_class</code>-specific initialization.
+ *
+ * Node implementations should override this method to perform any
+ * <code>node_class</code>-wide initialization.
+ *
+ * @param initial_viewpoint the <code>viewpoint_node</code> that should be
+ *                          bound initially; or 0 if the default
+ *                          <code>viewpoint_node</code> should be bound.
+ * @param time              the current time.
+ *
+ * @sa node_class::initialize
+ */
+void node_class::do_initialize(viewpoint_node * initial_viewpoint,
+                               const double time)
+    throw ()
 {}
+
+/**
+ * @brief <code>node_class</code>-specific rendering.
+ *
+ * This function delegates to <code>node_class::do_render</code>.
+ *
+ * @param v    the viewer to render to.
+ */
+void node_class::render(viewer & v) const throw ()
+{
+    this->do_render(v);
+}
 
 /**
  * @brief <code>node_class</code>-specific rendering.
@@ -618,13 +663,13 @@ void node_class::initialize(viewpoint_node * initial_viewpoint,
  * The default implementation of this method does nothing.
  *
  * @param v    the viewer to render to.
+ *
+ * @sa node_class::render
  */
-void node_class::render(viewer & v) const throw ()
+void node_class::do_render(viewer & v) const throw ()
 {}
 
 /**
- * @fn const node_type_ptr node_class::create_type(const std::string & id, const node_interface_set & interfaces) throw (std::invalid_argument, std::bad_alloc)
- *
  * @brief Create a new <code>node_type</code>.
  *
  * <code>node_type</code>s can be said to subset the master type provided by
@@ -634,6 +679,8 @@ void node_class::render(viewer & v) const throw ()
  * <code>node_class::create_type</code> must be a subset of those supported
  * interfaces.
  *
+ * This function delegates to <code>node_class::do_create_type</code>.
+ *
  * @param id            the name for the new <code>node_type</code>.
  * @param interfaces    a <code>node_interface_set</code> containing the
  *                      interfaces for the new type.
@@ -641,17 +688,53 @@ void node_class::render(viewer & v) const throw ()
  * @return a <code>node_type_ptr</code> to the newly created
  *         <code>node_type</code>.
  *
- * @exception std::invalid_argument if the <code>node_class</code> cannot
+ * @exception unsupported_interface if the <code>node_class</code> cannot
  *                                  support one of the
  *                                  <code>node_interface</code>s in
  *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
+ */
+const node_type_ptr
+node_class::create_type(const std::string & id,
+                        const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
+    return this->do_create_type(id, interfaces);
+}
+
+/**
+ * @fn const node_type_ptr node_class::do_create_type(const std::string & id, const node_interface_set & interfaces) const throw (unsupported_interface, std::bad_alloc)
+ *
+ * @brief Create a new <code>node_type</code>.
+ *
+ * @param id            the name for the new <code>node_type</code>.
+ * @param interfaces    a <code>node_interface_set</code> containing the
+ *                      interfaces for the new type.
+ *
+ * @return a <code>node_type_ptr</code> to the newly created
+ *         <code>node_type</code>.
+ *
+ * @exception unsupported_interface if the <code>node_class</code> cannot
+ *                                  support one of the
+ *                                  <code>node_interface</code>s in
+ *                                  @p interfaces.
+ * @exception std::bad_alloc        if memory allocation fails.
+ *
+ * @sa node_class::create_type
  */
 
 /**
  * @typedef node_class_ptr
  *
  * @brief A <code>boost::shared_ptr</code> to a <code>node_class</code>.
+ */
+
+
+/**
+ * @typedef initial_value_map
+ *
+ * @brief A map of the initial values with which a <code>node</code> is
+ *        instantiated.
  */
 
 
@@ -664,13 +747,17 @@ void node_class::render(viewer & v) const throw ()
  */
 
 /**
- * @var openvrml::node_class & node_type::node_class
+ * @internal
+ *
+ * @var openvrml::node_class & node_type::node_class_
  *
  * @brief The class object associated with the <code>node_type</code>.
  */
 
 /**
- * @var const std::string node_type::id
+ * @internal
+ *
+ * @var const std::string node_type::id_
  *
  * @brief The name of the <code>node_type</code>.
  */
@@ -683,7 +770,7 @@ void node_class::render(viewer & v) const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-node_type::node_type(openvrml::node_class & c, const std::string & id)
+node_type::node_type(const openvrml::node_class & c, const std::string & id)
     throw (std::bad_alloc):
     node_class_(c),
     id_(id)
@@ -696,20 +783,81 @@ node_type::~node_type() throw ()
 {}
 
 /**
- * @fn const node_interface_set & node_type::interfaces() const throw ()
+ * @brief The class object associated with the <code>node_type</code>.
+ *
+ * @return the class object associated with the <code>node_type</code>.
+ */
+const node_class & node_type::node_class() const throw ()
+{
+    return this->node_class_;
+}
+
+/**
+ * @brief The name of the <code>node_type</code>.
+ *
+ * @return the name of the <code>node_type</code>.
+ */
+const std::string & node_type::id() const throw ()
+{
+    return this->id_;
+}
+
+/**
+ * @brief Get the set of interfaces for the <code>node_type</code>.
+ *
+ * This function delegates to <code>node_type::do_interfaces</code>.
+ *
+ * @return the set of interfaces.
+ */
+const node_interface_set & node_type::interfaces() const throw ()
+{
+    return this->do_interfaces();
+}
+
+/**
+ * @fn const node_interface_set & node_type::do_interfaces() const throw ()
  *
  * @brief Get the set of interfaces for the <code>node_type</code>.
+ *
+ * Subclasses must implement this function.
  *
  * @return the set of interfaces.
  */
 
 /**
- * @fn const node_ptr node_type::create_node(const scope_ptr & scope, const initial_value_map & initial_values) const throw (unsupported_interface, std::bad_cast, std::bad_alloc)
- *
  * @brief Create a new node with this <code>node_type</code>.
  *
  * @param scope             the scope to which the new <code>node</code> should
  *                          belong.
+ * @param initial_values    a map of initial values for the <code>node</code>'s
+ *                          fields and exposedFields.
+ *
+ * @return a node_ptr to a new node.
+ *
+ * @exception unsupported_interface if @p initial_values specifies a field
+ *                                  name that is not supported by the node
+ *                                  type.
+ * @exception std::bad_cast         if a value in @p initial_values is the
+ *                                  wrong type.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+const node_ptr
+node_type::create_node(const boost::shared_ptr<openvrml::scope> & scope,
+                       const initial_value_map & initial_values) const
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+{
+    return this->do_create_node(scope, initial_values);
+}
+
+/**
+ * @fn const node_ptr node_type::do_create_node(const boost::shared_ptr<openvrml::scope> & scope, const initial_value_map & initial_values) const throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+ *
+ * @brief Create a new node with this <code>node_type</code>.
+ *
+ * Subclasses must implement this function.
+ *
+ * @param scope             the <code>scope</code> to which the new
+ *                          <code>node</code> should belong.
  * @param initial_values    a map of initial values for the <code>node</code>'s
  *                          fields and exposedFields.
  *
@@ -820,7 +968,9 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @var node::type
+ * @internal
+ *
+ * @var node::type_
  *
  * @brief The type information object for the node.
  */
@@ -885,6 +1035,16 @@ node::~node() throw ()
                     node_is_(*this));
         if (pos != end) { this->scope_->named_node_map.erase(pos); }
     }
+}
+
+/**
+ * @brief The type information object for the node.
+ *
+ * @return the type information object for the node.
+ */
+const node_type & node::type() const throw ()
+{
+    return this->type_;
 }
 
 /**
@@ -3411,12 +3571,12 @@ void node_traverser::on_leaving(node & n)
  * <code>exposedfield</code> conveniently implements an
  * <code>event_listener</code> and an <code>event_emitter</code>. Trivial
  * exposedFields can be implemented simply by instantiating this template with
- * a FieldValue. For the purposes of OpenVRML, <em>trivial exposedField</em> is
- * one that has <strong>no</strong> side-effects. That is, it simply receives
- * an event, updates an internal value, and fires an eventOut. Nontrivial
- * exposedFields (i.e., those with side-effects) can generally be implemented
- * by inheriting an instance of this class template and overriding
- * <code>exposedfield<FieldValue>::do_process_event</code>.
+ * a FieldValue. For the purposes of OpenVRML, a <em>trivial exposedField</em>
+ * is one that has <strong>no</strong> side-effects. That is, it simply
+ * receives an event, updates an internal value, and fires an eventOut.
+ * Nontrivial exposedFields (i.e., those with side-effects) can generally be
+ * implemented by inheriting an instance of this class template and overriding
+ * <code>exposedfield<FieldValue>::event_side_effect</code>.
  */
 
 /**
@@ -3435,16 +3595,20 @@ void node_traverser::on_leaving(node & n)
  */
 
 /**
- * @fn void exposedfield::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void exposedfield::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Process an event.
  *
  * This function performs the following steps:
  *
  * -# set the exposedField value.
- * -# call exposedfield<FieldValue>::do_process_event.
+ * -# call <code>exposedfield<FieldValue>::event_side_effect</code>.
  * -# set the modified flag.
  * -# emit the event.
+ *
+ * @warning This function should not be overridden by subclasses.  Subclasses
+ *          should override
+ *          <code>exposedfield<FieldValue>::event_side_effect</code> instead.
  *
  * @param value     new value.
  * @param timestamp the current time.
@@ -3453,9 +3617,9 @@ void node_traverser::on_leaving(node & n)
  */
 
 /**
- * @fn void exposedfield::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void exposedfield::event_side_effect(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
- * @brief Called by exposedfield<FieldValue>::process_event.
+ * @brief Called by <code>exposedfield<FieldValue>::do_process_event</code>.
  *
  * Subclasses should override this method to implement event handling
  * functionality specific to a particular exposedField. The default

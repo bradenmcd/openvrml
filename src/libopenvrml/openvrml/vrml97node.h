@@ -68,8 +68,9 @@ namespace openvrml {
                     abstract_indexed_set_node & node);
                 virtual ~set_color_index_listener() throw ();
 
-                virtual void process_event(const mfint32 & color_index,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mfint32 & color_index,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -79,8 +80,9 @@ namespace openvrml {
                     abstract_indexed_set_node & node);
                 virtual ~set_coord_index_listener() throw ();
 
-                virtual void process_event(const mfint32 & coord_index,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mfint32 & coord_index,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -156,8 +158,10 @@ namespace openvrml {
             explicit group_class(openvrml::browser & browser);
             virtual ~group_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -171,8 +175,9 @@ namespace openvrml {
                 explicit add_children_listener(group_node & node);
                 virtual ~add_children_listener() throw ();
 
-                virtual void process_event(const mfnode & value,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mfnode & value,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -181,8 +186,9 @@ namespace openvrml {
                 explicit remove_children_listener(group_node & node);
                 virtual ~remove_children_listener() throw ();
 
-                virtual void process_event(const mfnode & value,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mfnode & value,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -192,8 +198,8 @@ namespace openvrml {
                 virtual ~children_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const mfnode & value,
-                                              double timestamp)
+                virtual void event_side_effect(const mfnode & value,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -234,9 +240,10 @@ namespace openvrml {
             explicit anchor_class(openvrml::browser & browser);
             virtual ~anchor_class() throw ();
 
+        private:
             virtual const node_type_ptr
-            create_type(const std::string & id,
-                        const node_interface_set & interfaces)
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -269,8 +276,10 @@ namespace openvrml {
             explicit appearance_class(openvrml::browser & browser);
             virtual ~appearance_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -306,8 +315,10 @@ namespace openvrml {
             explicit audio_clip_class(openvrml::browser & browser);
             virtual ~audio_clip_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -362,8 +373,11 @@ namespace openvrml {
             virtual void initialize(viewpoint_node * initialViewpoint,
                                     double timestamp) throw ();
             virtual void render(viewer & v) const throw ();
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -376,8 +390,9 @@ namespace openvrml {
                 explicit set_bind_listener(background_node & node);
                 virtual ~set_bind_listener() throw ();
 
-                virtual void process_event(const sfbool & value,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sfbool & value,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -388,8 +403,8 @@ namespace openvrml {
                 virtual ~back_url_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const mfstring & value,
-                                              double timestamp)
+                virtual void event_side_effect(const mfstring & value,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -400,8 +415,8 @@ namespace openvrml {
                 virtual ~bottom_url_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const mfstring & value,
-                                              double timestamp)
+                virtual void event_side_effect(const mfstring & value,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -412,8 +427,8 @@ namespace openvrml {
                 virtual ~front_url_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const mfstring & value,
-                                              double timestamp)
+                virtual void event_side_effect(const mfstring & value,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -424,8 +439,8 @@ namespace openvrml {
                 virtual ~left_url_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const mfstring & value,
-                                              double timestamp)
+                virtual void event_side_effect(const mfstring & value,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -436,8 +451,8 @@ namespace openvrml {
                 virtual ~right_url_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const mfstring & value,
-                                              double timestamp)
+                virtual void event_side_effect(const mfstring & value,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -447,8 +462,8 @@ namespace openvrml {
                 virtual ~top_url_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const mfstring & value,
-                                              double timestamp)
+                virtual void event_side_effect(const mfstring & value,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -500,8 +515,10 @@ namespace openvrml {
             explicit billboard_class(openvrml::browser & browser);
             virtual ~billboard_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -530,8 +547,10 @@ namespace openvrml {
             explicit box_class(openvrml::browser & browser);
             virtual ~box_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -561,8 +580,10 @@ namespace openvrml {
             explicit collision_class(openvrml::browser & browser);
             virtual ~collision_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -587,8 +608,10 @@ namespace openvrml {
             explicit color_class(openvrml::browser & browser);
             virtual ~color_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -616,8 +639,10 @@ namespace openvrml {
             explicit color_interpolator_class(openvrml::browser & browser);
             virtual ~color_interpolator_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -630,8 +655,9 @@ namespace openvrml {
                 explicit set_fraction_listener(color_interpolator_node & node);
                 virtual ~set_fraction_listener() throw ();
 
-                virtual void process_event(const sffloat & value,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sffloat & value,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -653,8 +679,10 @@ namespace openvrml {
             explicit cone_class(openvrml::browser & browser);
             virtual ~cone_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -684,8 +712,10 @@ namespace openvrml {
             explicit coordinate_class(openvrml::browser & browser);
             virtual ~coordinate_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -714,8 +744,10 @@ namespace openvrml {
                 openvrml::browser & browser);
             virtual ~coordinate_interpolator_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -729,8 +761,9 @@ namespace openvrml {
                     coordinate_interpolator_node & node);
                 virtual ~set_fraction_listener() throw ();
 
-                virtual void process_event(const sffloat & value,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sffloat & value,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -752,8 +785,10 @@ namespace openvrml {
             explicit cylinder_class(openvrml::browser & browser);
             virtual ~cylinder_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -784,8 +819,10 @@ namespace openvrml {
             explicit cylinder_sensor_class(openvrml::browser & browser);
             virtual ~cylinder_sensor_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -834,8 +871,10 @@ namespace openvrml {
             explicit directional_light_class(openvrml::browser & browser);
             virtual ~directional_light_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -860,8 +899,10 @@ namespace openvrml {
             explicit elevation_grid_class(openvrml::browser & browser);
             virtual ~elevation_grid_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -874,8 +915,9 @@ namespace openvrml {
                 explicit set_height_listener(elevation_grid_node & node);
                 virtual ~set_height_listener() throw ();
 
-                virtual void process_event(const mffloat & height,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mffloat & height,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -913,8 +955,10 @@ namespace openvrml {
             explicit extrusion_class(openvrml::browser & browser);
             virtual ~extrusion_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -927,8 +971,9 @@ namespace openvrml {
                 explicit set_cross_section_listener(extrusion_node & node);
                 virtual ~set_cross_section_listener() throw ();
 
-                virtual void process_event(const mfvec2f & cross_section,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mfvec2f & cross_section,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -937,8 +982,9 @@ namespace openvrml {
                 explicit set_orientation_listener(extrusion_node & node);
                 virtual ~set_orientation_listener() throw ();
 
-                virtual void process_event(const mfrotation & orientation,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mfrotation & orientation,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -947,8 +993,9 @@ namespace openvrml {
                 explicit set_scale_listener(extrusion_node & node);
                 virtual ~set_scale_listener() throw ();
 
-                virtual void process_event(const mfvec2f & scale,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mfvec2f & scale,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -957,8 +1004,9 @@ namespace openvrml {
                 explicit set_spine_listener(extrusion_node & node);
                 virtual ~set_spine_listener() throw ();
 
-                virtual void process_event(const mfvec3f & spine,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mfvec3f & spine,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1008,8 +1056,11 @@ namespace openvrml {
             virtual void initialize(viewpoint_node * initialViewpoint,
                                     double timestamp) throw ();
             virtual void render(viewer & v) const throw ();
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1022,8 +1073,9 @@ namespace openvrml {
                 explicit set_bind_listener(fog_node & node);
                 virtual ~set_bind_listener() throw ();
 
-                virtual void process_event(const sfbool & bind,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sfbool & bind,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1049,8 +1101,10 @@ namespace openvrml {
             explicit font_style_class(openvrml::browser & browser);
             virtual ~font_style_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1094,8 +1148,10 @@ namespace openvrml {
             explicit image_texture_class(openvrml::browser & browser);
             virtual ~image_texture_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1108,8 +1164,8 @@ namespace openvrml {
                 virtual ~url_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const mfstring & url,
-                                              double timestamp)
+                virtual void event_side_effect(const mfstring & url,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1138,8 +1194,10 @@ namespace openvrml {
             explicit indexed_face_set_class(openvrml::browser & browser);
             virtual ~indexed_face_set_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1152,8 +1210,9 @@ namespace openvrml {
                     indexed_face_set_node & node);
                 virtual ~set_normal_index_listener() throw ();
 
-                virtual void process_event(const mfint32 & normal_index,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mfint32 & normal_index,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1163,8 +1222,9 @@ namespace openvrml {
                     indexed_face_set_node & node);
                 virtual ~set_tex_coord_index_listener() throw ();
 
-                virtual void process_event(const mfint32 & tex_coord_index,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const mfint32 & tex_coord_index,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1204,8 +1264,10 @@ namespace openvrml {
             explicit indexed_line_set_class(openvrml::browser & browser);
             virtual ~indexed_line_set_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1231,8 +1293,10 @@ namespace openvrml {
             explicit inline_class(openvrml::browser & browser);
             virtual ~inline_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1269,8 +1333,10 @@ namespace openvrml {
             explicit lod_class(openvrml::browser & browser);
             virtual ~lod_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1308,8 +1374,10 @@ namespace openvrml {
             explicit material_class(openvrml::browser & browser);
             virtual ~material_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1345,8 +1413,10 @@ namespace openvrml {
             explicit movie_texture_class(openvrml::browser & browser);
             virtual ~movie_texture_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1358,8 +1428,9 @@ namespace openvrml {
                 explicit set_speed_listener(movie_texture_node & node);
                 virtual ~set_speed_listener() throw ();
 
-                virtual void process_event(const sffloat & speed,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sffloat & speed,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1405,8 +1476,10 @@ namespace openvrml {
             explicit navigation_info_class(openvrml::browser & browser);
             virtual ~navigation_info_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1419,8 +1492,9 @@ namespace openvrml {
                 explicit set_bind_listener(navigation_info_node & node);
                 virtual ~set_bind_listener() throw ();
 
-                virtual void process_event(const sfbool & bind,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sfbool & bind,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1457,9 +1531,10 @@ namespace openvrml {
             explicit normal_class(openvrml::browser & browser);
             virtual ~normal_class() throw ();
 
+        private:
             virtual const node_type_ptr
-            create_type(const std::string & id,
-                        const node_interface_set & interfaces)
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1485,8 +1560,10 @@ namespace openvrml {
             explicit normal_interpolator_class(openvrml::browser & browser);
             virtual ~normal_interpolator_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1500,8 +1577,9 @@ namespace openvrml {
                     normal_interpolator_node & node);
                 virtual ~set_fraction_listener() throw ();
 
-                virtual void process_event(const sffloat & fraction,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sffloat & fraction,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1524,8 +1602,10 @@ namespace openvrml {
                 openvrml::browser & browser);
             virtual ~orientation_interpolator_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1539,8 +1619,9 @@ namespace openvrml {
                     orientation_interpolator_node & node);
                 virtual ~set_fraction_listener() throw ();
 
-                virtual void process_event(const sffloat & fraction,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sffloat & fraction,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1562,8 +1643,10 @@ namespace openvrml {
             explicit pixel_texture_class(openvrml::browser & browser);
             virtual ~pixel_texture_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1590,8 +1673,10 @@ namespace openvrml {
             explicit plane_sensor_class(openvrml::browser & browser);
             virtual ~plane_sensor_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1638,8 +1723,10 @@ namespace openvrml {
             explicit point_light_class(openvrml::browser & browser);
             virtual ~point_light_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1670,8 +1757,10 @@ namespace openvrml {
             explicit point_set_class(openvrml::browser & browser);
             virtual ~point_set_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interface) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1685,7 +1774,8 @@ namespace openvrml {
             bounding_sphere bsphere;
 
         public:
-            point_set_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
+            point_set_node(const node_type & type,
+                           const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~point_set_node() throw ();
 
             virtual bool modified() const;
@@ -1706,8 +1796,10 @@ namespace openvrml {
             explicit position_interpolator_class(openvrml::browser & browser);
             virtual ~position_interpolator_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1721,8 +1813,9 @@ namespace openvrml {
                     position_interpolator_node & node);
                 virtual ~set_fraction_listener() throw ();
 
-                virtual void process_event(const sffloat & fraction,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sffloat & fraction,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1744,8 +1837,10 @@ namespace openvrml {
             explicit proximity_sensor_class(openvrml::browser & browser);
             virtual ~proximity_sensor_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1783,8 +1878,10 @@ namespace openvrml {
             explicit scalar_interpolator_class(openvrml::browser & browser);
             virtual ~scalar_interpolator_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1798,8 +1895,9 @@ namespace openvrml {
                     scalar_interpolator_node & node);
                 virtual ~set_fraction_listener() throw ();
 
-                virtual void process_event(const sffloat & fraction,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sffloat & fraction,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -1821,9 +1919,11 @@ namespace openvrml {
             explicit shape_class(openvrml::browser & browser);
             virtual ~shape_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class shape_node : public abstract_base,
@@ -1836,7 +1936,8 @@ namespace openvrml {
             viewer::object_t viewerObject;
 
         public:
-            shape_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
+            shape_node(const node_type & type,
+                       const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~shape_node() throw ();
 
             virtual bool modified() const;
@@ -1853,9 +1954,11 @@ namespace openvrml {
             explicit sound_class(openvrml::browser & browser);
             virtual ~sound_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interface) const
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class sound_node : public abstract_base,
@@ -1874,7 +1977,8 @@ namespace openvrml {
             sfbool spatialize_;
 
         public:
-            sound_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
+            sound_node(const node_type & type,
+                       const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~sound_node() throw ();
 
         private:
@@ -1888,9 +1992,11 @@ namespace openvrml {
             explicit sphere_class(openvrml::browser & browser);
             virtual ~sphere_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class sphere_node : public abstract_base,
@@ -1919,9 +2025,11 @@ namespace openvrml {
             explicit sphere_sensor_class(openvrml::browser & browser);
             virtual ~sphere_sensor_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class sphere_sensor_node : public abstract_base,
@@ -1963,8 +2071,10 @@ namespace openvrml {
             explicit spot_light_class(openvrml::browser & browser);
             virtual ~spot_light_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -1998,8 +2108,10 @@ namespace openvrml {
             explicit switch_class(openvrml::browser & browser);
             virtual ~switch_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -2012,8 +2124,8 @@ namespace openvrml {
                 virtual ~choice_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const mfnode & choice,
-                                              double timestamp)
+                virtual void event_side_effect(const mfnode & choice,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2023,8 +2135,8 @@ namespace openvrml {
                 virtual ~which_choice_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const sfint32 & which_choice,
-                                              double timestamp)
+                virtual void event_side_effect(const sfint32 & which_choice,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2060,8 +2172,10 @@ namespace openvrml {
             explicit text_class(openvrml::browser & browser);
             virtual ~text_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -2074,8 +2188,8 @@ namespace openvrml {
                 explicit string_exposedfield(text_node & node);
                 virtual ~string_exposedfield() throw ();
 
-                virtual void do_process_event(const mfstring & string,
-                                              double timestamp)
+                virtual void event_side_effect(const mfstring & string,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2084,8 +2198,8 @@ namespace openvrml {
                 explicit font_style_exposedfield(text_node & node);
                 virtual ~font_style_exposedfield() throw ();
 
-                virtual void do_process_event(const sfnode & font_style,
-                                              double timestamp)
+                virtual void event_side_effect(const sfnode & font_style,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2094,8 +2208,8 @@ namespace openvrml {
                 explicit length_exposedfield(text_node & node);
                 virtual ~length_exposedfield() throw ();
 
-                virtual void do_process_event(const mffloat & length,
-                                              double timestamp)
+                virtual void event_side_effect(const mffloat & length,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2104,8 +2218,8 @@ namespace openvrml {
                 explicit max_extent_exposedfield(text_node & node);
                 virtual ~max_extent_exposedfield() throw ();
 
-                virtual void do_process_event(const sffloat & max_extent,
-                                              double timestamp)
+                virtual void event_side_effect(const sffloat & max_extent,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2167,8 +2281,10 @@ namespace openvrml {
             explicit texture_coordinate_class(openvrml::browser & browser);
             virtual ~texture_coordinate_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -2197,9 +2313,10 @@ namespace openvrml {
             explicit texture_transform_class(openvrml::browser & browser);
             virtual ~texture_transform_class() throw ();
 
+        private:
             virtual const node_type_ptr
-            create_type(const std::string & id,
-                        const node_interface_set & interfaces)
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -2229,9 +2346,10 @@ namespace openvrml {
             explicit time_sensor_class(openvrml::browser & browser);
             virtual ~time_sensor_class() throw ();
 
+        private:
             virtual const node_type_ptr
-            create_type(const std::string & id,
-                        const node_interface_set & interfaces)
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -2244,8 +2362,9 @@ namespace openvrml {
                 explicit set_cycle_interval_listener(time_sensor_node & node);
                 virtual ~set_cycle_interval_listener() throw ();
 
-                virtual void process_event(const sftime & cycle_interval,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sftime & cycle_interval,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2255,8 +2374,8 @@ namespace openvrml {
                 virtual ~enabled_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const sfbool & enabled,
-                                              double timestamp)
+                virtual void event_side_effect(const sfbool & enabled,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2265,8 +2384,9 @@ namespace openvrml {
                 explicit set_start_time_listener(time_sensor_node & node);
                 virtual ~set_start_time_listener() throw ();
 
-                virtual void process_event(const sftime & start_time,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sftime & start_time,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2311,9 +2431,11 @@ namespace openvrml {
             explicit touch_sensor_class(openvrml::browser & browser);
             virtual ~touch_sensor_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class touch_sensor_node : public abstract_base,
@@ -2352,9 +2474,10 @@ namespace openvrml {
             explicit transform_class(openvrml::browser & browser);
             virtual ~transform_class() throw ();
 
+        private:
             virtual const node_type_ptr
-            create_type(const std::string & id,
-                        const node_interface_set & interfaces)
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -2368,8 +2491,8 @@ namespace openvrml {
                 virtual ~center_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const sfvec3f & center,
-                                              double timestamp)
+                virtual void event_side_effect(const sfvec3f & center,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2379,8 +2502,8 @@ namespace openvrml {
                 virtual ~rotation_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const sfrotation & rotation,
-                                              double timestamp)
+                virtual void event_side_effect(const sfrotation & rotation,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2390,8 +2513,8 @@ namespace openvrml {
                 virtual ~scale_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const sfvec3f & scale,
-                                              double timestamp)
+                virtual void event_side_effect(const sfvec3f & scale,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2403,8 +2526,8 @@ namespace openvrml {
 
             private:
                 virtual void
-                do_process_event(const sfrotation & scale_orientation,
-                                 double timestamp)
+                event_side_effect(const sfrotation & scale_orientation,
+                                  double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2414,8 +2537,8 @@ namespace openvrml {
                 virtual ~translation_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const sfvec3f & translation,
-                                              double timestamp)
+                virtual void event_side_effect(const sfvec3f & translation,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2468,8 +2591,11 @@ namespace openvrml {
             virtual void
             initialize(openvrml::viewpoint_node * initial_viewpoint,
                        double timestamp) throw ();
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -2482,8 +2608,9 @@ namespace openvrml {
                 explicit set_bind_listener(viewpoint_node & node);
                 virtual ~set_bind_listener() throw ();
 
-                virtual void process_event(const sfbool & value,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const sfbool & value,
+                                              double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2493,8 +2620,8 @@ namespace openvrml {
                 virtual ~orientation_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const sfrotation & orientation,
-                                              double timestamp)
+                virtual void event_side_effect(const sfrotation & orientation,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2504,8 +2631,8 @@ namespace openvrml {
                 virtual ~position_exposedfield() throw ();
 
             private:
-                virtual void do_process_event(const sfvec3f & position,
-                                              double timestamp)
+                virtual void event_side_effect(const sfvec3f & position,
+                                               double timestamp)
                     throw (std::bad_alloc);
             };
 
@@ -2553,9 +2680,11 @@ namespace openvrml {
             explicit visibility_sensor_class(openvrml::browser & browser);
             virtual ~visibility_sensor_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+        private:
+            virtual const node_type_ptr
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class visibility_sensor_node : public abstract_base,
@@ -2589,9 +2718,10 @@ namespace openvrml {
             explicit world_info_class(openvrml::browser & browser);
             virtual ~world_info_class() throw ();
 
+        private:
             virtual const node_type_ptr
-            create_type(const std::string & id,
-                        const node_interface_set & interfaces)
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
         };
 

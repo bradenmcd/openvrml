@@ -64,11 +64,11 @@ namespace {
             throw (openvrml::unsupported_interface) = 0;
 
     protected:
-        vrml97_node_type(openvrml::node_class & node_class,
+        vrml97_node_type(const openvrml::node_class & node_class,
                          const std::string & id);
     };
 
-    vrml97_node_type::vrml97_node_type(openvrml::node_class & node_class,
+    vrml97_node_type::vrml97_node_type(const openvrml::node_class & node_class,
                                        const std::string & id):
         node_type(node_class, id)
     {}
@@ -272,7 +272,7 @@ namespace {
         mutable event_emitter_map_t event_emitter_map;
 
     public:
-        vrml97_node_type_impl(openvrml::node_class & node_class,
+        vrml97_node_type_impl(const openvrml::node_class & node_class,
                               const std::string & id);
         virtual ~vrml97_node_type_impl() throw ();
 
@@ -304,15 +304,16 @@ namespace {
         event_emitter(openvrml::node & node, const std::string & id) const
             throw (openvrml::unsupported_interface);
 
+    private:
         virtual const openvrml::node_interface_set &
-        interfaces() const throw ();
+        do_interfaces() const throw ();
         virtual const openvrml::node_ptr
-        create_node(const boost::shared_ptr<openvrml::scope> & scope,
-                    const openvrml::initial_value_map & initial_values) const
+        do_create_node(
+            const boost::shared_ptr<openvrml::scope> & scope,
+            const openvrml::initial_value_map & initial_values) const
             throw (openvrml::unsupported_interface, std::bad_cast,
                    std::bad_alloc);
 
-    private:
         const openvrml::field_value &
         do_field_value(const NodeT & node,
                        const std::string & id) const
@@ -353,9 +354,9 @@ namespace {
     {}
 
     template <typename NodeT>
-    vrml97_node_type_impl<NodeT>::vrml97_node_type_impl(
-        openvrml::node_class & node_class,
-        const std::string & id):
+    vrml97_node_type_impl<NodeT>::
+    vrml97_node_type_impl(const openvrml::node_class & node_class,
+                          const std::string & id):
         vrml97_node_type(node_class, id)
     {}
 
@@ -496,7 +497,7 @@ namespace {
 
     template <typename NodeT>
     const openvrml::node_interface_set &
-    vrml97_node_type_impl<NodeT>::interfaces() const
+    vrml97_node_type_impl<NodeT>::do_interfaces() const
         throw ()
     {
         return this->interfaces_;
@@ -505,8 +506,8 @@ namespace {
     template <typename NodeT>
     const openvrml::node_ptr
     vrml97_node_type_impl<NodeT>::
-    create_node(const boost::shared_ptr<openvrml::scope> & scope,
-                const openvrml::initial_value_map & initial_values) const
+    do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
+                   const openvrml::initial_value_map & initial_values) const
         throw (openvrml::unsupported_interface, std::bad_cast, std::bad_alloc)
     {
         using namespace openvrml;
@@ -727,8 +728,8 @@ abstract_indexed_set_node::set_color_index_listener::
  */
 void
 abstract_indexed_set_node::set_color_index_listener::
-process_event(const mfint32 & color_index,
-              const double timestamp)
+do_process_event(const mfint32 & color_index,
+                 const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -777,8 +778,8 @@ abstract_indexed_set_node::set_coord_index_listener::
  */
 void
 abstract_indexed_set_node::set_coord_index_listener::
-process_event(const mfint32 & coord_index,
-              const double timestamp)
+do_process_event(const mfint32 & coord_index,
+                 const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -1094,8 +1095,8 @@ anchor_class::~anchor_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-anchor_class::create_type(const std::string & id,
-                          const node_interface_set & interfaces)
+anchor_class::do_create_type(const std::string & id,
+                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -1361,8 +1362,8 @@ appearance_class::~appearance_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-appearance_class::create_type(const std::string & id,
-                              const node_interface_set & interfaces)
+appearance_class::do_create_type(const std::string & id,
+                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -1632,8 +1633,8 @@ audio_clip_class::~audio_clip_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-audio_clip_class::create_type(const std::string & id,
-                              const node_interface_set & interfaces)
+audio_clip_class::do_create_type(const std::string & id,
+                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -2160,8 +2161,8 @@ void background_class::render(viewer & v) const throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-background_class::create_type(const std::string & id,
-                              const node_interface_set & interfaces)
+background_class::do_create_type(const std::string & id,
+                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -2419,8 +2420,9 @@ background_node::set_bind_listener::~set_bind_listener() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void background_node::set_bind_listener::process_event(const sfbool & value,
-                                                       const double timestamp)
+void
+background_node::set_bind_listener::do_process_event(const sfbool & value,
+                                                     const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -2473,8 +2475,8 @@ background_node::back_url_exposedfield::~back_url_exposedfield() throw ()
  */
 void
 background_node::back_url_exposedfield::
-do_process_event(const mfstring & value,
-                 const double timestamp)
+event_side_effect(const mfstring & value,
+                  const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -2518,8 +2520,8 @@ background_node::bottom_url_exposedfield::~bottom_url_exposedfield() throw ()
  */
 void
 background_node::bottom_url_exposedfield::
-do_process_event(const mfstring & value,
-                 const double timestamp)
+event_side_effect(const mfstring & value,
+                  const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -2563,8 +2565,8 @@ background_node::front_url_exposedfield::~front_url_exposedfield() throw ()
  */
 void
 background_node::front_url_exposedfield::
-do_process_event(const mfstring & value,
-                 const double timestamp)
+event_side_effect(const mfstring & value,
+                  const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -2608,8 +2610,8 @@ background_node::left_url_exposedfield::~left_url_exposedfield() throw ()
  */
 void
 background_node::left_url_exposedfield::
-do_process_event(const mfstring & value,
-                 const double timestamp)
+event_side_effect(const mfstring & value,
+                  const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -2653,8 +2655,8 @@ background_node::right_url_exposedfield::~right_url_exposedfield() throw ()
  */
 void
 background_node::right_url_exposedfield::
-do_process_event(const mfstring & value,
-                 const double timestamp)
+event_side_effect(const mfstring & value,
+                  const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -2698,7 +2700,7 @@ background_node::top_url_exposedfield::~top_url_exposedfield() throw ()
  */
 void
 background_node::top_url_exposedfield::
-do_process_event(const mfstring & value,
+event_side_effect(const mfstring & value,
                  const double timestamp)
     throw (std::bad_alloc)
 {
@@ -3117,8 +3119,8 @@ billboard_class::~billboard_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-billboard_class::create_type(const std::string & id,
-                             const node_interface_set & interfaces)
+billboard_class::do_create_type(const std::string & id,
+                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -3405,8 +3407,8 @@ box_class::~box_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-box_class::create_type(const std::string & id,
-                       const node_interface_set & interfaces)
+box_class::do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
@@ -3540,8 +3542,8 @@ collision_class::~collision_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-collision_class::create_type(const std::string & id,
-                             const node_interface_set & interfaces)
+collision_class::do_create_type(const std::string & id,
+                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -3756,8 +3758,8 @@ color_class::~color_class() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-color_class::create_type(const std::string & id,
-                         const node_interface_set & interfaces)
+color_class::do_create_type(const std::string & id,
+                         const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
@@ -3871,8 +3873,8 @@ color_interpolator_class::~color_interpolator_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-color_interpolator_class::create_type(const std::string & id,
-                                      const node_interface_set & interfaces)
+color_interpolator_class::do_create_type(const std::string & id,
+                                      const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -3989,7 +3991,7 @@ color_interpolator_node::set_fraction_listener::~set_fraction_listener()
  */
 void
 color_interpolator_node::set_fraction_listener::
-process_event(const sffloat & value, const double timestamp)
+do_process_event(const sffloat & value, const double timestamp)
     throw (std::bad_alloc)
 {
     using std::vector;
@@ -4135,8 +4137,8 @@ cone_class::~cone_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-cone_class::create_type(const std::string & id,
-                        const node_interface_set & interfaces)
+cone_class::do_create_type(const std::string & id,
+                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -4301,8 +4303,8 @@ coordinate_class::~coordinate_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-coordinate_class::create_type(const std::string & id,
-                              const node_interface_set & interfaces)
+coordinate_class::do_create_type(const std::string & id,
+                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
@@ -4417,9 +4419,9 @@ coordinate_interpolator_class::~coordinate_interpolator_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-coordinate_interpolator_class::create_type(
+coordinate_interpolator_class::do_create_type(
     const std::string & id,
-    const node_interface_set & interfaces)
+    const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -4535,7 +4537,7 @@ coordinate_interpolator_node::set_fraction_listener::~set_fraction_listener()
  */
 void
 coordinate_interpolator_node::set_fraction_listener::
-process_event(const sffloat & fraction, const double timestamp)
+do_process_event(const sffloat & fraction, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -4676,8 +4678,8 @@ cylinder_class::~cylinder_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-cylinder_class::create_type(const std::string & id,
-                            const node_interface_set & interfaces)
+cylinder_class::do_create_type(const std::string & id,
+                            const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -4862,8 +4864,8 @@ cylinder_sensor_class::~cylinder_sensor_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-cylinder_sensor_class::create_type(const std::string & id,
-                                   const node_interface_set & interfaces)
+cylinder_sensor_class::do_create_type(const std::string & id,
+                                   const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -5311,8 +5313,8 @@ directional_light_class::~directional_light_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-directional_light_class::create_type(const std::string & id,
-                                     const node_interface_set & interfaces)
+directional_light_class::do_create_type(const std::string & id,
+                                     const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -5502,8 +5504,8 @@ elevation_grid_class::~elevation_grid_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-elevation_grid_class::create_type(const std::string & id,
-                                  const node_interface_set & interfaces)
+elevation_grid_class::do_create_type(const std::string & id,
+                                  const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -5721,7 +5723,7 @@ elevation_grid_node::set_height_listener::~set_height_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-elevation_grid_node::set_height_listener::process_event(const mffloat & height,
+elevation_grid_node::set_height_listener::do_process_event(const mffloat & height,
                                                         const double timestamp)
     throw (std::bad_alloc)
 {
@@ -5974,8 +5976,8 @@ extrusion_class::~extrusion_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-extrusion_class::create_type(const std::string & id,
-                             const node_interface_set & interfaces)
+extrusion_class::do_create_type(const std::string & id,
+                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -6180,7 +6182,7 @@ extrusion_node::set_cross_section_listener::~set_cross_section_listener()
  */
 void
 extrusion_node::set_cross_section_listener::
-process_event(const mfvec2f & cross_section, const double timestamp)
+do_process_event(const mfvec2f & cross_section, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -6228,7 +6230,7 @@ extrusion_node::set_orientation_listener::~set_orientation_listener()
  */
 void
 extrusion_node::set_orientation_listener::
-process_event(const mfrotation & orientation, const double timestamp)
+do_process_event(const mfrotation & orientation, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -6274,7 +6276,7 @@ extrusion_node::set_scale_listener::~set_scale_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-extrusion_node::set_scale_listener::process_event(const mfvec2f & scale,
+extrusion_node::set_scale_listener::do_process_event(const mfvec2f & scale,
                                                   const double timestamp)
     throw (std::bad_alloc)
 {
@@ -6321,7 +6323,7 @@ extrusion_node::set_spine_listener::~set_spine_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-extrusion_node::set_spine_listener::process_event(const mfvec3f & spine,
+extrusion_node::set_spine_listener::do_process_event(const mfvec3f & spine,
                                                   const double timestamp)
     throw (std::bad_alloc)
 {
@@ -6682,8 +6684,8 @@ void fog_class::render(viewer & v) const throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-fog_class::create_type(const std::string & id,
-                       const node_interface_set & interfaces)
+fog_class::do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -6809,7 +6811,7 @@ fog_node::set_bind_listener::~set_bind_listener() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void fog_node::set_bind_listener::process_event(const sfbool & bind,
+void fog_node::set_bind_listener::do_process_event(const sfbool & bind,
                                                 const double timestamp)
     throw (std::bad_alloc)
 {
@@ -6950,8 +6952,8 @@ font_style_class::~font_style_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-font_style_class::create_type(const std::string & id,
-                              const node_interface_set & interfaces)
+font_style_class::do_create_type(const std::string & id,
+                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -7283,8 +7285,8 @@ group_class::~group_class() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-group_class::create_type(const std::string & id,
-                         const node_interface_set & interfaces)
+group_class::do_create_type(const std::string & id,
+                         const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -7404,7 +7406,7 @@ group_node::add_children_listener::~add_children_listener() throw ()
  *
  * @exception std::bad_alloc        if memory allocation fails.
  */
-void group_node::add_children_listener::process_event(const mfnode & value,
+void group_node::add_children_listener::do_process_event(const mfnode & value,
                                                       const double timestamp)
     throw (std::bad_alloc)
 {
@@ -7476,7 +7478,7 @@ group_node::remove_children_listener::~remove_children_listener() throw ()
  * @brief Process an event.
  */
 void
-group_node::remove_children_listener::process_event(const mfnode & value,
+group_node::remove_children_listener::do_process_event(const mfnode & value,
                                                     const double timestamp)
     throw (std::bad_alloc)
 {
@@ -7528,7 +7530,7 @@ group_node::children_exposedfield::~children_exposedfield() throw ()
  * @brief Handle event.
  */
 void
-group_node::children_exposedfield::do_process_event(const mfnode & value,
+group_node::children_exposedfield::event_side_effect(const mfnode & value,
                                                     const double timestamp)
     throw (std::bad_alloc)
 {
@@ -7844,8 +7846,8 @@ image_texture_class::~image_texture_class() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-image_texture_class::create_type(const std::string & id,
-                                 const node_interface_set & interfaces)
+image_texture_class::do_create_type(const std::string & id,
+                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -7943,7 +7945,7 @@ image_texture_node::url_exposedfield::~url_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-image_texture_node::url_exposedfield::do_process_event(const mfstring & url,
+image_texture_node::url_exposedfield::event_side_effect(const mfstring & url,
                                                        const double timestamp)
     throw (std::bad_alloc)
 {
@@ -8097,8 +8099,8 @@ indexed_face_set_class::~indexed_face_set_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-indexed_face_set_class::create_type(const std::string & id,
-                                    const node_interface_set & interfaces)
+indexed_face_set_class::do_create_type(const std::string & id,
+                                    const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -8367,7 +8369,7 @@ indexed_face_set_node::set_normal_index_listener::
  */
 void
 indexed_face_set_node::set_normal_index_listener::
-process_event(const mfint32 & normal_index,
+do_process_event(const mfint32 & normal_index,
               const double timestamp)
     throw (std::bad_alloc)
 {
@@ -8417,7 +8419,7 @@ indexed_face_set_node::set_tex_coord_index_listener::
  */
 void
 indexed_face_set_node::set_tex_coord_index_listener::
-process_event(const mfint32 & tex_coord_index, const double timestamp)
+do_process_event(const mfint32 & tex_coord_index, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -8701,8 +8703,8 @@ indexed_line_set_class::~indexed_line_set_class() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-indexed_line_set_class::create_type(const std::string & id,
-                                    const node_interface_set & interfaces)
+indexed_line_set_class::do_create_type(const std::string & id,
+                                    const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -8910,8 +8912,8 @@ inline_class::~inline_class() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-inline_class::create_type(const std::string & id,
-                          const node_interface_set & interfaces)
+inline_class::do_create_type(const std::string & id,
+                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -9142,8 +9144,8 @@ lod_class::~lod_class() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-lod_class::create_type(const std::string & id,
-                       const node_interface_set & interfaces)
+lod_class::do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -9432,8 +9434,8 @@ material_class::~material_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-material_class::create_type(const std::string & id,
-                            const node_interface_set & interfaces)
+material_class::do_create_type(const std::string & id,
+                            const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -9718,8 +9720,8 @@ movie_texture_class::~movie_texture_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-movie_texture_class::create_type(const std::string & id,
-                                 const node_interface_set & interfaces)
+movie_texture_class::do_create_type(const std::string & id,
+                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -9905,7 +9907,7 @@ movie_texture_node::set_speed_listener::~set_speed_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-movie_texture_node::set_speed_listener::process_event(const sffloat & speed,
+movie_texture_node::set_speed_listener::do_process_event(const sffloat & speed,
                                                       const double timestamp)
     throw (std::bad_alloc)
 {
@@ -10309,8 +10311,8 @@ navigation_info_class::~navigation_info_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-navigation_info_class::create_type(const std::string & id,
-                                   const node_interface_set & interfaces)
+navigation_info_class::do_create_type(const std::string & id,
+                                   const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -10471,7 +10473,7 @@ navigation_info_node::set_bind_listener::~set_bind_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-navigation_info_node::set_bind_listener::process_event(const sfbool & bind,
+navigation_info_node::set_bind_listener::do_process_event(const sfbool & bind,
                                                        const double timestamp)
     throw (std::bad_alloc)
 {
@@ -10701,8 +10703,8 @@ normal_class::~normal_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-normal_class::create_type(const std::string & id,
-                          const node_interface_set & interfaces)
+normal_class::do_create_type(const std::string & id,
+                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
@@ -10815,8 +10817,8 @@ normal_interpolator_class::~normal_interpolator_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-normal_interpolator_class::create_type(const std::string & id,
-                                       const node_interface_set & interfaces)
+normal_interpolator_class::do_create_type(const std::string & id,
+                                       const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -10932,7 +10934,7 @@ normal_interpolator_node::set_fraction_listener::~set_fraction_listener()
  */
 void
 normal_interpolator_node::set_fraction_listener::
-process_event(const sffloat & fraction, const double timestamp)
+do_process_event(const sffloat & fraction, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -11094,8 +11096,8 @@ orientation_interpolator_class::~orientation_interpolator_class() throw ()
  */
 const node_type_ptr
 orientation_interpolator_class::
-create_type(const std::string & id,
-            const node_interface_set & interfaces)
+do_create_type(const std::string & id,
+            const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -11213,7 +11215,7 @@ orientation_interpolator_node::set_fraction_listener::~set_fraction_listener()
  */
 void
 orientation_interpolator_node::set_fraction_listener::
-process_event(const sffloat & fraction, const double timestamp)
+do_process_event(const sffloat & fraction, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -11374,8 +11376,8 @@ pixel_texture_class::~pixel_texture_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-pixel_texture_class::create_type(const std::string & id,
-                                 const node_interface_set & interfaces)
+pixel_texture_class::do_create_type(const std::string & id,
+                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -11535,8 +11537,8 @@ plane_sensor_class::~plane_sensor_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-plane_sensor_class::create_type(const std::string & id,
-                                const node_interface_set & interfaces)
+plane_sensor_class::do_create_type(const std::string & id,
+                                const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -11940,8 +11942,8 @@ point_light_class::~point_light_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-point_light_class::create_type(const std::string & id,
-                               const node_interface_set & interfaces)
+point_light_class::do_create_type(const std::string & id,
+                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -12219,8 +12221,8 @@ point_set_class::~point_set_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-point_set_class::create_type(const std::string & id,
-                             const node_interface_set & interfaces)
+point_set_class::do_create_type(const std::string & id,
+                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -12454,8 +12456,8 @@ position_interpolator_class::~position_interpolator_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-position_interpolator_class::create_type(const std::string & id,
-                                         const node_interface_set & interfaces)
+position_interpolator_class::do_create_type(const std::string & id,
+                                         const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -12572,7 +12574,7 @@ position_interpolator_node::set_fraction_listener::~set_fraction_listener()
  */
 void
 position_interpolator_node::set_fraction_listener::
-process_event(const sffloat & fraction, const double timestamp)
+do_process_event(const sffloat & fraction, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -12701,8 +12703,8 @@ proximity_sensor_class::~proximity_sensor_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-proximity_sensor_class::create_type(const std::string & id,
-                                    const node_interface_set & interfaces)
+proximity_sensor_class::do_create_type(const std::string & id,
+                                    const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -13062,8 +13064,8 @@ scalar_interpolator_class::~scalar_interpolator_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-scalar_interpolator_class::create_type(const std::string & id,
-                                       const node_interface_set & interfaces)
+scalar_interpolator_class::do_create_type(const std::string & id,
+                                       const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -13179,7 +13181,7 @@ scalar_interpolator_node::set_fraction_listener::~set_fraction_listener()
  */
 void
 scalar_interpolator_node::set_fraction_listener::
-process_event(const sffloat & fraction, const double timestamp)
+do_process_event(const sffloat & fraction, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -13305,8 +13307,8 @@ shape_class::~shape_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-shape_class::create_type(const std::string & id,
-                         const node_interface_set & interfaces)
+shape_class::do_create_type(const std::string & id,
+                         const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -13552,8 +13554,8 @@ sound_class::~sound_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-sound_class::create_type(const std::string & id,
-                         const node_interface_set & interfaces)
+sound_class::do_create_type(const std::string & id,
+                         const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -13872,8 +13874,8 @@ sphere_class::~sphere_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-sphere_class::create_type(const std::string & id,
-                          const node_interface_set & interfaces)
+sphere_class::do_create_type(const std::string & id,
+                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface(node_interface::field_id,
@@ -14005,8 +14007,8 @@ sphere_sensor_class::~sphere_sensor_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-sphere_sensor_class::create_type(const std::string & id,
-                                 const node_interface_set & interfaces)
+sphere_sensor_class::do_create_type(const std::string & id,
+                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -14370,8 +14372,8 @@ spot_light_class::~spot_light_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-spot_light_class::create_type(const std::string & id,
-                              const node_interface_set & interfaces)
+spot_light_class::do_create_type(const std::string & id,
+                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -14724,8 +14726,8 @@ switch_class::~switch_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-switch_class::create_type(const std::string & id,
-                          const node_interface_set & interfaces)
+switch_class::do_create_type(const std::string & id,
+                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -14817,7 +14819,7 @@ switch_node::choice_exposedfield::~choice_exposedfield() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void switch_node::choice_exposedfield::do_process_event(const mfnode & choice,
+void switch_node::choice_exposedfield::event_side_effect(const mfnode & choice,
                                                         const double timestamp)
     throw (std::bad_alloc)
 {
@@ -14870,7 +14872,7 @@ switch_node::which_choice_exposedfield::~which_choice_exposedfield() throw ()
  */
 void
 switch_node::which_choice_exposedfield::
-do_process_event(const sfint32 & which_choice,
+event_side_effect(const sfint32 & which_choice,
                  const double timestamp)
     throw (std::bad_alloc)
 {
@@ -15092,8 +15094,8 @@ text_class::~text_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-text_class::create_type(const std::string & id,
-                        const node_interface_set & interfaces)
+text_class::do_create_type(const std::string & id,
+                        const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -15220,7 +15222,7 @@ text_node::string_exposedfield::~string_exposedfield() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void text_node::string_exposedfield::do_process_event(const mfstring & string,
+void text_node::string_exposedfield::event_side_effect(const mfstring & string,
                                                       const double timestamp)
     throw (std::bad_alloc)
 {
@@ -15265,7 +15267,7 @@ text_node::font_style_exposedfield::~font_style_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-text_node::font_style_exposedfield::do_process_event(const sfnode & font_style,
+text_node::font_style_exposedfield::event_side_effect(const sfnode & font_style,
                                                      const double timestamp)
     throw (std::bad_alloc)
 {
@@ -15309,7 +15311,7 @@ text_node::length_exposedfield::~length_exposedfield() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void text_node::length_exposedfield::do_process_event(const mffloat & length,
+void text_node::length_exposedfield::event_side_effect(const mffloat & length,
                                                       const double timestamp)
     throw (std::bad_alloc)
 {
@@ -15354,7 +15356,7 @@ text_node::max_extent_exposedfield::~max_extent_exposedfield() throw ()
  */
 void
 text_node::max_extent_exposedfield::
-do_process_event(const sffloat & max_extent,
+event_side_effect(const sffloat & max_extent,
                  const double timestamp)
     throw (std::bad_alloc)
 {
@@ -16841,8 +16843,8 @@ texture_coordinate_class::~texture_coordinate_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-texture_coordinate_class::create_type(const std::string & id,
-                                      const node_interface_set & interfaces)
+texture_coordinate_class::do_create_type(const std::string & id,
+                                      const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
@@ -16955,8 +16957,8 @@ texture_transform_class::~texture_transform_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-texture_transform_class::create_type(const std::string & id,
-                                     const node_interface_set & interfaces)
+texture_transform_class::do_create_type(const std::string & id,
+                                     const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -17144,8 +17146,8 @@ time_sensor_class::~time_sensor_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-time_sensor_class::create_type(const std::string & id,
-                               const node_interface_set & interfaces)
+time_sensor_class::do_create_type(const std::string & id,
+                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -17331,7 +17333,7 @@ time_sensor_node::set_cycle_interval_listener::~set_cycle_interval_listener()
  */
 void
 time_sensor_node::set_cycle_interval_listener::
-process_event(const sftime & cycle_interval, const double timestamp)
+do_process_event(const sftime & cycle_interval, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -17382,7 +17384,7 @@ time_sensor_node::enabled_exposedfield::~enabled_exposedfield()
  */
 void
 time_sensor_node::enabled_exposedfield::
-do_process_event(const sfbool & enabled, const double timestamp)
+event_side_effect(const sfbool & enabled, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -17459,7 +17461,7 @@ time_sensor_node::set_start_time_listener::~set_start_time_listener()
  */
 void
 time_sensor_node::set_start_time_listener::
-process_event(const sftime & start_time, const double timestamp)
+do_process_event(const sftime & start_time, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -17789,8 +17791,8 @@ touch_sensor_class::~touch_sensor_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-touch_sensor_class::create_type(const std::string & id,
-                                const node_interface_set & interfaces)
+touch_sensor_class::do_create_type(const std::string & id,
+                                const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -18080,8 +18082,8 @@ transform_class::~transform_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-transform_class::create_type(const std::string & id,
-                             const node_interface_set & interfaces)
+transform_class::do_create_type(const std::string & id,
+                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -18296,7 +18298,7 @@ transform_node::center_exposedfield::~center_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-transform_node::center_exposedfield::do_process_event(const sfvec3f & center,
+transform_node::center_exposedfield::event_side_effect(const sfvec3f & center,
                                                       const double timestamp)
     throw (std::bad_alloc)
 {
@@ -18343,7 +18345,7 @@ transform_node::rotation_exposedfield::~rotation_exposedfield() throw ()
  */
 void
 transform_node::rotation_exposedfield::
-do_process_event(const sfrotation & rotation, const double timestamp)
+event_side_effect(const sfrotation & rotation, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -18387,7 +18389,7 @@ transform_node::scale_exposedfield::~scale_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-transform_node::scale_exposedfield::do_process_event(const sfvec3f & scale,
+transform_node::scale_exposedfield::event_side_effect(const sfvec3f & scale,
                                                      const double timestamp)
     throw (std::bad_alloc)
 {
@@ -18435,7 +18437,7 @@ transform_node::scale_orientation_exposedfield::
  */
 void
 transform_node::scale_orientation_exposedfield::
-do_process_event(const sfrotation & scale_orientation, const double timestamp)
+event_side_effect(const sfrotation & scale_orientation, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -18481,7 +18483,7 @@ transform_node::translation_exposedfield::~translation_exposedfield() throw ()
  */
 void
 transform_node::translation_exposedfield::
-do_process_event(const sfvec3f & translation, const double timestamp)
+event_side_effect(const sfvec3f & translation, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -18868,8 +18870,8 @@ void viewpoint_class::initialize(openvrml::viewpoint_node * initial_viewpoint,
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-viewpoint_class::create_type(const std::string & id,
-                             const node_interface_set & interfaces)
+viewpoint_class::do_create_type(const std::string & id,
+                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -19037,8 +19039,9 @@ viewpoint_node::set_bind_listener::~set_bind_listener() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void viewpoint_node::set_bind_listener::process_event(const sfbool & value,
-                                                       const double timestamp)
+void
+viewpoint_node::set_bind_listener::do_process_event(const sfbool & value,
+                                                    const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -19091,7 +19094,7 @@ viewpoint_node::orientation_exposedfield::~orientation_exposedfield() throw ()
  */
 void
 viewpoint_node::orientation_exposedfield::
-do_process_event(const sfrotation & orientation, const double timestamp)
+event_side_effect(const sfrotation & orientation, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -19136,7 +19139,7 @@ viewpoint_node::position_exposedfield::~position_exposedfield() throw ()
  */
 void
 viewpoint_node::position_exposedfield::
-do_process_event(const sfvec3f & position, const double timestamp)
+event_side_effect(const sfvec3f & position, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -19466,8 +19469,8 @@ visibility_sensor_class::~visibility_sensor_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-visibility_sensor_class::create_type(const std::string & id,
-                                     const node_interface_set & interfaces)
+visibility_sensor_class::do_create_type(const std::string & id,
+                                     const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -19760,8 +19763,8 @@ world_info_class::~world_info_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-world_info_class::create_type(const std::string & id,
-                              const node_interface_set & interfaces)
+world_info_class::do_create_type(const std::string & id,
+                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {

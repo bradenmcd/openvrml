@@ -31,12 +31,6 @@
 namespace openvrml {
 
 /**
- * @typedef scope_ptr
- *
- * @brief A reference-counted smart pointer to a scope.
- */
-
-/**
  * @class scope
  *
  * @brief The scope class keeps track of defined nodes and
@@ -62,13 +56,17 @@ namespace openvrml {
  */
 
 /**
- * @var const std::string scope::id
+ * @internal
  *
- * @brief scope identifier.
+ * @var const std::string scope::id_
+ *
+ * @brief <code>scope</code> identifier.
  */
 
 /**
- * @var const scope_ptr scope::parent
+ * @internal
+ *
+ * @var const scope_ptr scope::parent_
  *
  * @brief The parent scope; null if the scope is a root scope.
  */
@@ -93,6 +91,27 @@ scope::scope(const std::string & id,
  */
 scope::~scope()
 {}
+
+/**
+ * @brief <code>scope</code> identifier.
+ *
+ * @return the <code>scope</code> identifier.
+ */
+const std::string & scope::id() const throw ()
+{
+    return this->id_;
+}
+
+/**
+ * @brief The parent <code>scope</code>.
+ *
+ * @return the parent <code>scope</code>; or null if the <code>scope</code> is a
+ *         root <code>scope</code>.
+ */
+const boost::shared_ptr<scope> & scope::parent() const throw ()
+{
+    return this->parent_;
+}
 
 /**
  * @brief Add a node type.

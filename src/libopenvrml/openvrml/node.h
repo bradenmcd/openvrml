@@ -192,26 +192,29 @@ namespace openvrml {
         virtual ~node_class() throw () = 0;
 
         openvrml::browser & browser() const throw ();
-
-        virtual void initialize(viewpoint_node * initial_viewpoint,
-                                double time) throw ();
-        virtual void render(viewer & v) const throw ();
-        virtual const node_type_ptr
+        void initialize(viewpoint_node * initial_viewpoint, double time)
+            throw ();
+        void render(viewer & v) const throw ();
+        const node_type_ptr
         create_type(const std::string & id,
                     const node_interface_set & interfaces)
-            throw (unsupported_interface, std::bad_alloc) = 0;
+            throw (unsupported_interface, std::bad_alloc);
 
     protected:
         explicit node_class(openvrml::browser & b) throw ();
+
+    private:
+        virtual void do_initialize(viewpoint_node * initial_viewpoint,
+                                   double time)
+            throw ();
+        virtual void do_render(viewer & v) const throw ();
+        virtual const node_type_ptr
+        do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
+            throw (unsupported_interface, std::bad_alloc) = 0;
     };
 
     typedef boost::shared_ptr<node_class> node_class_ptr;
-
-    inline browser & node_class::browser() const throw ()
-    {
-        assert(this->browser_);
-        return *this->browser_;
-    }
 
 
     typedef std::map<std::string, boost::shared_ptr<field_value> >
@@ -219,7 +222,7 @@ namespace openvrml {
 
 
     class node_type : boost::noncopyable {
-        openvrml::node_class & node_class_;
+        const openvrml::node_class & node_class_;
         const std::string id_;
 
     public:
@@ -227,28 +230,23 @@ namespace openvrml {
 
         const openvrml::node_class & node_class() const throw ();
         const std::string & id() const throw ();
-
-        virtual const node_interface_set & interfaces() const throw () = 0;
-        virtual const node_ptr
-        create_node(const boost::shared_ptr<scope> & scope,
-                    const initial_value_map & initial_values =
-                    initial_value_map()) const
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
+        const node_interface_set & interfaces() const throw ();
+        const node_ptr create_node(const boost::shared_ptr<scope> & scope,
+                                   const initial_value_map & initial_values =
+                                   initial_value_map()) const
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
 
     protected:
-        node_type(openvrml::node_class & c, const std::string & id)
+        node_type(const openvrml::node_class & c, const std::string & id)
             throw (std::bad_alloc);
+
+    private:
+        virtual const node_interface_set & do_interfaces() const throw () = 0;
+        virtual const node_ptr
+        do_create_node(const boost::shared_ptr<scope> & scope,
+                       const initial_value_map & initial_values) const
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
     };
-
-    inline const node_class & node_type::node_class() const throw ()
-    {
-        return this->node_class_;
-    }
-
-    inline const std::string & node_type::id() const throw ()
-    {
-        return this->id_;
-    }
 
 
     class field_value_type_mismatch : public std::logic_error {
@@ -440,11 +438,6 @@ namespace openvrml {
         virtual transform_node * to_transform() throw ();
         virtual viewpoint_node * to_viewpoint() throw ();
     };
-
-    inline const node_type & node::type() const throw ()
-    {
-        return this->type_;
-    }
 
     inline const boost::shared_ptr<scope> & node::scope() const throw ()
     {
@@ -920,12 +913,12 @@ namespace openvrml {
                      typename FieldValue::value_type());
         virtual ~exposedfield() throw ();
 
-        virtual void process_event(const FieldValue & value, double timestamp)
-            throw (std::bad_alloc);
-
     private:
         virtual void do_process_event(const FieldValue & value,
                                       double timestamp)
+            throw (std::bad_alloc);
+        virtual void event_side_effect(const FieldValue & value,
+                                       double timestamp)
             throw (std::bad_alloc);
     };
 
@@ -944,8 +937,8 @@ namespace openvrml {
 
     template <typename FieldValue>
     inline void
-    exposedfield<FieldValue>::process_event(const FieldValue & value,
-                                            const double timestamp)
+    exposedfield<FieldValue>::do_process_event(const FieldValue & value,
+                                               const double timestamp)
         throw (std::bad_alloc)
     {
         static_cast<FieldValue &>(*this) = value;
@@ -956,8 +949,8 @@ namespace openvrml {
 
     template <typename FieldValue>
     inline void
-    exposedfield<FieldValue>::do_process_event(const FieldValue & value,
-                                               const double timestamp)
+    exposedfield<FieldValue>::event_side_effect(const FieldValue & value,
+                                                const double timestamp)
         throw (std::bad_alloc)
     {}
 }

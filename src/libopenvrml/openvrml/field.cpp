@@ -3557,7 +3557,9 @@ event_emitter::create(const field_value & value) throw (std::bad_alloc)
 }
 
 /**
- * @var const field_value & event_emitter::value
+ * @internal
+ *
+ * @var const field_value & event_emitter::value_
  *
  * @brief A reference to the field_value for the event_emitter.
  */
@@ -3578,7 +3580,7 @@ event_emitter::create(const field_value & value) throw (std::bad_alloc)
  */
 
 /**
- * @var double event_emitter::last_time
+ * @var double event_emitter::last_time_
  *
  * @brief The timestamp of the last event emitted.
  */
@@ -3599,6 +3601,18 @@ event_emitter::~event_emitter() throw ()
 {}
 
 /**
+ * @brief A reference to the <code>field_value</code> for the
+ *        <code>event_emitter</code>.
+ *
+ * @return a reference to the <code>field_value</code> for the
+ *         <code>event_emitter</code>.
+ */
+const field_value & event_emitter::value() const throw ()
+{
+    return this->value_;
+}
+
+/**
  * @brief Registered listeners.
  *
  * @return the set of registered event_listeners.
@@ -3616,6 +3630,26 @@ const event_emitter::listener_set & event_emitter::listeners() const throw ()
 event_emitter::listener_set & event_emitter::listeners() throw ()
 {
     return this->listeners_;
+}
+
+/**
+ * @brief The timestamp of the last event emitted.
+ *
+ * @return the timestamp of the last event emitted.
+ */
+double event_emitter::last_time() const throw ()
+{
+    return this->last_time_;
+}
+
+/**
+ * @brief Set the timestamp of the last event emitted.
+ *
+ * @param t the timestamp of the last event emitted.
+ */
+void event_emitter::last_time(const double t) throw ()
+{
+    this->last_time_ = t;
 }
 
 /**

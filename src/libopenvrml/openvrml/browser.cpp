@@ -69,9 +69,10 @@ namespace openvrml {
         explicit null_node_class(openvrml::browser & browser) throw ();
         virtual ~null_node_class() throw ();
 
+    private:
         virtual const node_type_ptr
-        create_type(const std::string & id,
-                    const node_interface_set & interfaces)
+        do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
             throw ();
     };
 
@@ -81,10 +82,11 @@ namespace openvrml {
         explicit null_node_type(null_node_class & nodeClass) throw ();
         virtual ~null_node_type() throw ();
 
-        virtual const node_interface_set & interfaces() const throw ();
+    private:
+        virtual const node_interface_set & do_interfaces() const throw ();
         virtual const node_ptr
-        create_node(const boost::shared_ptr<openvrml::scope> & scope,
-                    const initial_value_map & initial_values) const
+        do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
+                       const initial_value_map & initial_values) const
             throw ();
     };
 }
@@ -149,17 +151,17 @@ namespace {
             node_interface_set interfaces_;
 
         public:
-            proto_node_type(proto_node_class & node_class,
+            proto_node_type(const proto_node_class & node_class,
                             const std::string & id,
                             const node_interface_set & interfaces)
                 throw (unsupported_interface, std::bad_alloc);
             virtual ~proto_node_type() throw ();
 
-            virtual const node_interface_set & interfaces() const throw ();
+        private:
+            virtual const node_interface_set & do_interfaces() const throw ();
             virtual const node_ptr
-            create_node(const boost::shared_ptr<openvrml::scope> & scope,
-                        const initial_value_map & initial_values =
-                        initial_value_map()) const
+            do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
+                           const initial_value_map & initial_values) const
                 throw (std::bad_alloc);
         };
 
@@ -175,8 +177,8 @@ namespace {
         virtual ~proto_node_class() throw ();
 
         virtual const node_type_ptr
-        create_type(const std::string & id,
-                    const node_interface_set & interfaces)
+        do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
     };
 
@@ -219,8 +221,7 @@ namespace {
     class proto_node : public node {
         template <typename FieldValue>
         class proto_eventin : public field_value_listener<FieldValue> {
-            typedef std::set<field_value_listener<FieldValue> *>
-                listeners;
+            typedef std::set<field_value_listener<FieldValue> *> listeners;
             listeners listeners_;
 
         public:
@@ -229,11 +230,13 @@ namespace {
 
             explicit proto_eventin(proto_node & node);
             virtual ~proto_eventin() throw ();
-            virtual void process_event(const FieldValue & value,
-                                       double timestamp)
-                throw (std::bad_alloc);
 
             bool is(event_listener_type & listener) throw (std::bad_alloc);
+
+        protected:
+            virtual void do_process_event(const FieldValue & value,
+                                          double timestamp)
+                throw (std::bad_alloc);
         };
 
         static boost::shared_ptr<openvrml::event_listener>
@@ -242,8 +245,8 @@ namespace {
 
         static bool
         eventin_is(field_value::type_id field_type,
-                    openvrml::event_listener & impl_eventin,
-                    openvrml::event_listener & interface_eventin)
+                   openvrml::event_listener & impl_eventin,
+                   openvrml::event_listener & interface_eventin)
             throw (std::bad_alloc);
 
         template <typename FieldValue>
@@ -256,13 +259,14 @@ namespace {
             public:
                 FieldValue value;
 
-                explicit listener_t(proto_eventout & emitter,
-                                    proto_node & node,
-                                    const FieldValue & initial_value);
+                listener_t(proto_eventout & emitter,
+                           proto_node & node,
+                           const FieldValue & initial_value);
                 virtual ~listener_t() throw ();
 
-                virtual void process_event(const FieldValue & value,
-                                           double timestamp)
+            private:
+                virtual void do_process_event(const FieldValue & value,
+                                              double timestamp)
                     throw (std::bad_alloc);
             } listener;
 
@@ -297,8 +301,9 @@ namespace {
                                 const FieldValue & initial_value);
             virtual ~proto_exposedfield() throw ();
 
-            virtual void process_event(const FieldValue & value,
-                                        double timestamp)
+        private:
+            virtual void do_process_event(const FieldValue & value,
+                                          double timestamp)
                 throw (std::bad_alloc);
         };
 
@@ -867,7 +872,7 @@ namespace {
      * @exception std::bad_alloc        if memory allocation fails.
      */
     proto_node_class::
-    proto_node_type::proto_node_type(proto_node_class & node_class,
+    proto_node_type::proto_node_type(const proto_node_class & node_class,
                                      const std::string & id,
                                      const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc):
@@ -902,15 +907,15 @@ namespace {
      * @return the interfaces.
      */
     const node_interface_set &
-    proto_node_class::proto_node_type::interfaces() const throw ()
+    proto_node_class::proto_node_type::do_interfaces() const throw ()
     {
         return this->interfaces_;
     }
 
     const node_ptr
     proto_node_class::proto_node_type::
-    create_node(const boost::shared_ptr<openvrml::scope> & scope,
-                const initial_value_map & initial_values) const
+    do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
+                   const initial_value_map & initial_values) const
         throw (std::bad_alloc)
     {
         return node_ptr(new proto_node(*this, scope, initial_values));
@@ -978,7 +983,7 @@ namespace {
     template <typename FieldValue>
     void
     proto_node::proto_eventin<FieldValue>::
-    process_event(const FieldValue & value, const double timestamp)
+    do_process_event(const FieldValue & value, const double timestamp)
         throw (std::bad_alloc)
     {
         for (typename listeners::const_iterator listener =
@@ -1323,7 +1328,7 @@ namespace {
     template<typename FieldValue>
     void
     proto_node::proto_eventout<FieldValue>::listener_t::
-    process_event(const FieldValue & value, const double timestamp)
+    do_process_event(const FieldValue & value, const double timestamp)
         throw (std::bad_alloc)
     {
         if (timestamp > this->emitter.last_time()) {
@@ -1676,10 +1681,10 @@ namespace {
     template <typename FieldValue>
     void
     proto_node::proto_exposedfield<FieldValue>::
-    process_event(const FieldValue & value, const double timestamp)
+    do_process_event(const FieldValue & value, const double timestamp)
         throw (std::bad_alloc)
     {
-        this->proto_eventin<FieldValue>::process_event(value, timestamp);
+        this->proto_eventin<FieldValue>::do_process_event(value, timestamp);
         this->listener.value = value;
         node::emit_event(*this, timestamp);
     }
@@ -2408,8 +2413,9 @@ namespace {
     {}
 
     const node_type_ptr
-    proto_node_class::create_type(const std::string & id,
-                                  const node_interface_set & interfaces)
+    proto_node_class::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
         return node_type_ptr(new proto_node_type(*this, id, interfaces));
@@ -7076,8 +7082,8 @@ null_node_class::~null_node_class() throw ()
 {}
 
 const node_type_ptr
-null_node_class::create_type(const std::string & id,
-                             const node_interface_set & interfaces)
+null_node_class::do_create_type(const std::string & id,
+                                const node_interface_set & interfaces) const
     throw ()
 {
     assert(false);
@@ -7093,7 +7099,7 @@ null_node_type::null_node_type(null_node_class & nodeClass) throw ():
 null_node_type::~null_node_type() throw ()
 {}
 
-const node_interface_set & null_node_type::interfaces() const throw ()
+const node_interface_set & null_node_type::do_interfaces() const throw ()
 {
     assert(false);
     static const node_interface_set interfaces;
@@ -7101,8 +7107,9 @@ const node_interface_set & null_node_type::interfaces() const throw ()
 }
 
 const node_ptr
-null_node_type::create_node(const boost::shared_ptr<openvrml::scope> & scope,
-                            const initial_value_map & initial_values) const
+null_node_type::
+do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
+               const initial_value_map & initial_values) const
     throw ()
 {
     assert(false);

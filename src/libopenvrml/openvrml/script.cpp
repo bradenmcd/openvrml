@@ -142,8 +142,9 @@ script_node_class::~script_node_class() throw ()
  * unlike other node implementations, cannot provide the implementation of
  * an @c EXTERNPROTO. It is an error to call this method.
  */
-const node_type_ptr script_node_class::create_type(const std::string &,
-                                                   const node_interface_set &)
+const node_type_ptr
+script_node_class::do_create_type(const std::string &,
+                                  const node_interface_set &) const
     throw ()
 {
     assert(false);
@@ -380,7 +381,7 @@ script_node::script_node_type::add_interface(const node_interface & interface)
  *
  * @return the interfaces for the node.
  */
-const node_interface_set & script_node::script_node_type::interfaces() const
+const node_interface_set & script_node::script_node_type::do_interfaces() const
     throw ()
 {
     return this->interfaces_;
@@ -407,8 +408,8 @@ const node_interface_set & script_node::script_node_type::interfaces() const
  */
 const node_ptr
 script_node::script_node_type::
-create_node(const boost::shared_ptr<openvrml::scope> & scope,
-            const initial_value_map & initial_values) const
+do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
+               const initial_value_map & initial_values) const
     throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
     using std::insert_iterator;
@@ -480,7 +481,7 @@ create_node(const boost::shared_ptr<openvrml::scope> & scope,
  */
 
 /**
- * @fn script_node::script_event_listener::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn script_node::script_event_listener::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Process an event.
  *
@@ -768,8 +769,8 @@ script_node::set_url_listener_t::~set_url_listener_t() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void script_node::set_url_listener_t::process_event(const mfstring & value,
-                                                    const double timestamp)
+void script_node::set_url_listener_t::do_process_event(const mfstring & value,
+                                                       const double timestamp)
     throw (std::bad_alloc)
 {
     assert(dynamic_cast<openvrml::script_node *>(&this->node()));

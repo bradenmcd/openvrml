@@ -95,7 +95,9 @@ namespace {
             virtual ~dummy_listener() throw ()
             {}
 
-            virtual void process_event(const sfbool & value, double timestamp)
+        private:
+            virtual void do_process_event(const sfbool & value,
+                                          double timestamp)
                 throw (std::bad_alloc)
             {}
         };

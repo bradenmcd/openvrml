@@ -57,16 +57,6 @@ namespace openvrml {
         const node_type_ptr & first_type() const;
         node * find_node(const std::string & id) const;
     };
-
-    inline const std::string & scope::id() const throw ()
-    {
-        return this->id_;
-    }
-
-    inline const boost::shared_ptr<scope> & scope::parent() const throw ()
-    {
-        return this->parent_;
-    }
 }
 
 #endif

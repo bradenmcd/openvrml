@@ -55,9 +55,10 @@ namespace openvrml {
         script_node_class(openvrml::browser & browser);
         virtual ~script_node_class() throw ();
 
+    private:
         virtual const node_type_ptr
-        create_type(const std::string & id,
-                    const node_interface_set & interfaces)
+        do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
             throw ();
     };
 
@@ -103,10 +104,11 @@ namespace openvrml {
             void add_interface(const node_interface & interface)
                 throw (std::bad_alloc, std::invalid_argument);
 
-            virtual const node_interface_set & interfaces() const throw ();
+        private:
+            virtual const node_interface_set & do_interfaces() const throw ();
             virtual const node_ptr
-            create_node(const boost::shared_ptr<openvrml::scope> & scope,
-                        const initial_value_map & initial_values) const
+            do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
+                           const initial_value_map & initial_values) const
                 throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         };
 
@@ -118,8 +120,9 @@ namespace openvrml {
             script_event_listener(const std::string & id, script_node & node);
             virtual ~script_event_listener() throw ();
 
-            virtual void process_event(const FieldValue & value,
-                                       double timestamp)
+        private:
+            virtual void do_process_event(const FieldValue & value,
+                                          double timestamp)
                 throw (std::bad_alloc);
         };
 
@@ -154,8 +157,9 @@ namespace openvrml {
             explicit set_url_listener_t(script_node & node);
             virtual ~set_url_listener_t() throw ();
 
-            virtual void process_event(const mfstring & value,
-                                       double timestamp)
+        private:
+            virtual void do_process_event(const mfstring & value,
+                                          double timestamp)
                 throw (std::bad_alloc);
         };
 
@@ -224,7 +228,7 @@ namespace openvrml {
     {}
 
     template <typename FieldValue>
-    void script_node::script_event_listener<FieldValue>::process_event(
+    void script_node::script_event_listener<FieldValue>::do_process_event(
         const FieldValue & value,
         const double timestamp)
         throw (std::bad_alloc)
