@@ -80,8 +80,8 @@ namespace OpenVRML {
         };
 
 
-        class OPENVRML_SCOPE AbstractGeometry :
-                public AbstractBase, public GeometryNode {
+        class OPENVRML_SCOPE AbstractGeometry : public AbstractBase,
+                                                public GeometryNode {
         public:
             virtual ~AbstractGeometry() throw () = 0;
 
@@ -2103,9 +2103,9 @@ namespace OpenVRML {
             virtual SphereSensor * toSphereSensor() const;
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-            void activate( double timeStamp, bool isActive, double *p );
 
-            bool isEnabled() { return this->enabled.get(); }
+            void activate(double timeStamp, bool isActive, double * p);
+            bool isEnabled() const throw ();
 
         private:
             //

@@ -1204,10 +1204,10 @@ Anchor * Anchor::toAnchor() const
 /**
  * @brief Render the node.
  *
- * @param viewer
- * @param context
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
-void Anchor::render(Viewer & viewer, VrmlRenderContext context)
+void Anchor::render(Viewer & viewer, const VrmlRenderContext context)
 {
     viewer.setSensitive(this);
 
@@ -1426,6 +1426,12 @@ void Appearance::updateModified(NodePath & path, int flags)
     path.pop_front();
 }
 
+/**
+ * @brief Render the node.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
+ */
 void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
 {
     MaterialNode * const material = this->material.get()
@@ -2851,7 +2857,10 @@ Box::~Box() throw ()
 {}
 
 /**
- * @brief Insert the geometry when rendering.
+ * @brief Insert this geometry into @p viewer's display list.
+ *
+ * @param viewer    a Viewer.
+ * @param context   the rendering context.
  */
 Viewer::Object Box::insertGeometry(Viewer & viewer,
                                    const VrmlRenderContext context)
@@ -3439,7 +3448,7 @@ Cone::Cone(const NodeType & nodeType,
 Cone::~Cone() throw () {}
 
 /**
- * @brief Insert geometry when rendering.
+ * @brief Insert this geometry into @p viewer's display list.
  *
  * @param viewer    a Viewer.
  * @param context   the rendering context.
@@ -3867,7 +3876,7 @@ Cylinder::~Cylinder() throw () {
 }
 
 /**
- * @brief Insert geometry for rendering.
+ * @brief Insert this geometry into @p viewer's display list.
  *
  * @param viewer    a Viewer.
  * @param context   the rendering context.
@@ -4040,10 +4049,17 @@ CylinderSensor* CylinderSensor::toCylinderSensor() const {   // mgiger 6/16/00
 }
 
 /**
- * Store the ModelView matrix which is calculated at the time of rendering
- * in render-context. This matrix will be in use at the time of activation
+ * @brief Render the node.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
-void CylinderSensor::render(Viewer & viewer, VrmlRenderContext context) {
+void CylinderSensor::render(Viewer & viewer, VrmlRenderContext context)
+{
+    //
+    // Store the ModelView matrix which is calculated at the time of rendering
+    // in render-context. This matrix will be in use at the time of activation.
+    //
     this->setMVMatrix(context.getMatrix());
 }
 
@@ -4352,7 +4368,12 @@ DirectionalLight::DirectionalLight(const NodeType & nodeType,
 DirectionalLight::~DirectionalLight() throw () {}
 
 /**
+ * @brief Render the node.
+ *
  * This should be called before rendering any sibling nodes.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
 void DirectionalLight::render(Viewer & viewer, const VrmlRenderContext rc)
 {
@@ -4590,6 +4611,12 @@ void ElevationGrid::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
+/**
+ * @brief Insert this geometry into @p viewer's display list.
+ *
+ * @param viewer    a Viewer.
+ * @param context   the rendering context.
+ */
 Viewer::Object ElevationGrid::insertGeometry(Viewer & viewer,
                                              const VrmlRenderContext context)
 {
@@ -4906,6 +4933,12 @@ Extrusion::Extrusion(const NodeType & nodeType,
  */
 Extrusion::~Extrusion() throw () {}
 
+/**
+ * @brief Insert this geometry into @p viewer's display list.
+ *
+ * @param viewer    a Viewer.
+ * @param context   the rendering context.
+ */
 Viewer::Object Extrusion::insertGeometry(Viewer & viewer,
                                          const VrmlRenderContext context)
 {
@@ -5784,9 +5817,15 @@ void Group::updateModified(NodePath & path, int flags) {
 Node * Group::getParentTransform() { return this->parentTransform; }
 
 /**
+ * @brief Render the node.
+ *
  * Render each of the children.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
-void Group::render(Viewer & viewer, VrmlRenderContext context) {
+void Group::render(Viewer & viewer, VrmlRenderContext context)
+{
     if (context.getCullFlag() != BVolume::inside) {
         const BSphere * bs = static_cast<const BSphere *>(this->getBVolume());
         BSphere bv_copy(*bs);
@@ -5908,6 +5947,9 @@ const BVolume * Group::getBVolume() const
   return &this->bsphere;
 }
 
+/**
+ * @brief Recalculate the bounding volume.
+ */
 void Group::recalcBSphere() {
     this->bsphere.reset();
     for (size_t i = 0; i < this->children.getLength(); ++i) {
@@ -6019,7 +6061,14 @@ ImageTexture::~ImageTexture() throw () {
     // delete texObject...
 }
 
-void ImageTexture::render(Viewer & viewer, VrmlRenderContext context) {
+/**
+ * @brief Render the node.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
+ */
+void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
+{
     if (isModified()) {
         if (this->image) {
             delete this->image;        // URL is the only modifiable bit
@@ -6355,6 +6404,11 @@ void IndexedFaceSet::updateModified(NodePath& path, int flags) {
 }
 
 /**
+ * @brief Insert this geometry into @p viewer's display list.
+ *
+ * @param viewer    a Viewer.
+ * @param context   the rendering context.
+ *
  * @todo stripify, crease angle, generate normals ...
  */
 Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
@@ -6448,6 +6502,9 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer & viewer,
     return obj;
 }
 
+/**
+ * @brief Recalculate the bounding volume.
+ */
 void IndexedFaceSet::recalcBSphere() {
     // take the bvolume of all the points. technically, we should figure
     // out just which points are used by the index and just use those,
@@ -6664,6 +6721,11 @@ IndexedLineSet::IndexedLineSet(const NodeType & nodeType,
 IndexedLineSet::~IndexedLineSet() throw () {}
 
 /**
+ * @brief Insert this geometry into @p viewer's display list.
+ *
+ * @param viewer    a Viewer.
+ * @param context   the rendering context.
+ *
  * @todo colors
  */
 Viewer::Object IndexedLineSet::insertGeometry(Viewer & viewer,
@@ -6803,8 +6865,14 @@ Inline::~Inline() throw () {}
 
 /**
  * @brief Render the node.
+ *
+ * Render each of the children.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
-void Inline::render(Viewer & viewer, const VrmlRenderContext context) {
+void Inline::render(Viewer & viewer, const VrmlRenderContext context)
+{
     this->load();
     if (this->inlineScene) { this->inlineScene->render(viewer, context); }
 }
@@ -6985,7 +7053,12 @@ void LOD::updateModified(NodePath & path, int flags) {
 }
 
 /**
- * Render one of the children
+ * @brief Render the node.
+ *
+ * Render one of the children.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
 void LOD::render(Viewer & viewer, const VrmlRenderContext context)
 {
@@ -7036,8 +7109,7 @@ const BVolume * LOD::getBVolume() const {
 }
 
 /**
- * Construct a bounding sphere around this node's children. Store it
- * in @a bsphere.
+ * @brief Recalculate the bounding volume.
  */
 void LOD::recalcBSphere() {
     this->bsphere.reset();
@@ -7640,7 +7712,12 @@ void MovieTexture::update(const double currentTime) {
 }
 
 /**
+ * @brief Render the node.
+ *
  * Render a frame if there is one available.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
 void MovieTexture::render(Viewer & viewer, const VrmlRenderContext context)
 {
@@ -8712,6 +8789,12 @@ PixelTexture::~PixelTexture() throw ()
     // viewer.removeTextureObject(this->texObject); ...
 }
 
+/**
+ * @brief Render the node.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
+ */
 void PixelTexture::render(Viewer & viewer, const VrmlRenderContext context)
 {
     if (isModified()) {
@@ -8967,11 +9050,19 @@ void PlaneSensor::accumulateTransform(Node * const parent) {
 Node* PlaneSensor::getParentTransform() { return this->parentTransform; }
 
 /**
- * Store the ModelView matrix which is calculated at the time of rendering
- * in render-context. This matrix will be in use at the time of activation.
+ * @brief Render the node.
+ *
+ * Render a frame if there is one available.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
 void PlaneSensor::render(Viewer & viewer, const VrmlRenderContext context)
 {
+    //
+    // Store the ModelView matrix which is calculated at the time of rendering
+    // in render-context. This matrix will be in use at the time of activation.
+    //
     this->setMVMatrix(context.getMatrix());
 }
 
@@ -9279,14 +9370,19 @@ PointLight* PointLight::toPointLight() const
 { return (PointLight*) this; }
 
 /**
+ * @brief Render the scoped light.
+ *
  * This should be called before rendering any geometry nodes in the scene.
  * Since this is called from Scene::render() before traversing the
  * scene graph, the proper transformation matrix hasn't been set up.
  * Somehow it needs to figure out the accumulated xforms of its
  * parents and apply them before rendering. This is not easy with
  * DEF/USEd nodes...
+ *
+ * @param viewer    a Viewer.
  */
-void PointLight::renderScoped(Viewer * const viewer) {
+void PointLight::renderScoped(Viewer * const viewer)
+{
     if (this->on.get() && this->radius.get() > 0.0) {
         viewer->insertPointLight(this->ambientIntensity.get(),
                                  this->attenuation.get(),
@@ -9429,6 +9525,30 @@ const NodeTypePtr PointSetClass::createType(const std::string & id,
  */
 
 /**
+ * @var PointSet::PointSetClass
+ *
+ * @brief Class object for PointSet instances.
+ */
+
+/**
+ * @var SFNode PointSet::color
+ *
+ * @brief color exposedField.
+ */
+
+/**
+ * @var SFNode PointSet::coord
+ *
+ * @brief coord exposedField.
+ */
+
+/**
+ * @var BSphere PointSet::bsphere
+ *
+ * @brief Bounding volume.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node.
@@ -9473,6 +9593,12 @@ void PointSet::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
+/**
+ * @brief Insert this geometry into @p viewer's display list.
+ *
+ * @param viewer    a Viewer.
+ * @param context   the rendering context.
+ */
 Viewer::Object PointSet::insertGeometry(Viewer & viewer,
                                         const VrmlRenderContext context)
 {
@@ -9507,6 +9633,9 @@ Viewer::Object PointSet::insertGeometry(Viewer & viewer,
     return obj;
 }
 
+/**
+ * @brief Recalculate the bounding volume.
+ */
 void PointSet::recalcBSphere() {
     this->bsphere.reset();
     CoordinateNode * const coordinateNode = this->coord.get()
@@ -9653,6 +9782,31 @@ const NodeTypePtr PositionInterpolatorClass::
  *
  * @brief PositionInterpolator node instances.
  */
+
+/**
+ * @var PositionInterpolator::PositionInterpolatorClass
+ *
+ * @brief Class object for PositionInterpolator instances.
+ */
+
+/**
+ * @var MFFloat PositionInterpolator::key
+ *
+ * @brief key exposedField.
+ */
+
+/**
+ * @var MFVec3f PositionInterpolator::keyValue
+ *
+ * @brief keyValue exposedField.
+ */
+
+/**
+ * @var SFVec3f PositionInterpolator::value
+ *
+ * @brief value_changed eventOut.
+ */
+
 
 /**
  * @brief Constructor.
@@ -9862,6 +10016,60 @@ const NodeTypePtr
  */
 
 /**
+ * @var ProximitySensor::ProximitySensorClass
+ *
+ * @brief Class object for ProximitySensor instances.
+ */
+
+/**
+ * @var SFVec3f ProximitySensor::center
+ *
+ * @brief center exposedField.
+ */
+
+/**
+ * @var SFBool ProximitySensor::enabled
+ *
+ * @brief enabled exposedField.
+ */
+
+/**
+ * @var SFVec3f ProximitySensor::size
+ *
+ * @brief size exposedField.
+ */
+
+/**
+ * @var SFBool ProximitySensor::active
+ *
+ * @brief isActive eventOut.
+ */
+
+/**
+ * @var SFVec3f ProximitySensor::position
+ *
+ * @brief position_changed eventOut.
+ */
+
+/**
+ * @var SFVec3f ProximitySensor::orientation
+ *
+ * @brief orientation_changed eventOut.
+ */
+
+/**
+ * @var SFTime ProximitySensor::enterTime
+ *
+ * @brief enterTime eventOut.
+ */
+
+/**
+ * @var SFTime ProximitySensor::exitTime
+ *
+ * @brief exitTime eventOut.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node.
@@ -9887,9 +10095,11 @@ ProximitySensor::ProximitySensor(const NodeType & nodeType,
 ProximitySensor::~ProximitySensor() throw () {}
 
 /**
- * Generate proximity events. If necessary, events prior to the current
- * time are generated due to interpolation of enterTimes and exitTimes.
- * The timestamp should never be increased.
+ * @brief Render the node: generate proximity events.
+ *
+ * If necessary, events prior to the current time are generated due to
+ * interpolation of enterTimes and exitTimes. The timestamp should never be
+ * increased.
  *
  * This is in a render() method since the it needs the viewer position
  * with respect to the local coordinate system.
@@ -9903,6 +10113,9 @@ ProximitySensor::~ProximitySensor() throw () {}
  * I suppose the scene could keep the last viewer position in the global
  * coordinate system and it could be transformed all the way down the
  * scenegraph, but that sounds painful.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
 void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
 {
@@ -10107,6 +10320,30 @@ const NodeTypePtr ScalarInterpolatorClass::
  */
 
 /**
+ * @var ScalarInterpolator::ScalarInterpolatorClass
+ *
+ * @brief Class object for ScalarInterpolator instances.
+ */
+
+/**
+ * @var MFFloat ScalarInterpolator::key
+ *
+ * @brief key exposedField.
+ */
+
+/**
+ * @var MFFloat ScalarInterpolator::keyValue
+ *
+ * @brief keyValue exposedField.
+ */
+
+/**
+ * @var SFFloat ScalarInterpolator::value
+ *
+ * @brief value_changed eventOut.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node instance.
@@ -10114,13 +10351,15 @@ const NodeTypePtr ScalarInterpolatorClass::
  */
 ScalarInterpolator::ScalarInterpolator(const NodeType & nodeType,
                                        const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope) {}
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-ScalarInterpolator::~ScalarInterpolator() throw () {}
+ScalarInterpolator::~ScalarInterpolator() throw ()
+{}
 
 /**
  * @brief set_fraction eventIn handler.
@@ -10264,6 +10503,34 @@ const NodeTypePtr ShapeClass::createType(const std::string & id,
  */
 
 /**
+ * @var Shape::ShapeClass
+ *
+ * @brief Class object for Shape instances.
+ */
+
+/**
+ * @var SFNode Shape::appearance
+ *
+ * @brief appearance exposedField.
+ */
+
+/**
+ * @var SFNode Shape::geometry
+ *
+ * @brief geometry exposedField.
+ */
+
+/**
+ * @var Viewer::Object Shape::viewerObject
+ *
+ * @brief A reference to the node's previously used rendering data.
+ *
+ * If supported by the Viewer implementation, this member holds a reference
+ * to the node's rendering data once the node has already been rendered once.
+ * The intent is to capitalize on USE references in the VRML scene graph.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node.
@@ -10271,14 +10538,16 @@ const NodeTypePtr ShapeClass::createType(const std::string & id,
  */
 Shape::Shape(const NodeType & nodeType,
              const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        viewerObject(0) {}
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    viewerObject(0)
+{}
 
 /**
  * @brief Destructor.
  */
-Shape::~Shape() throw () {
+Shape::~Shape() throw ()
+{
     // need viewer to free viewerObject ...
 }
 
@@ -10313,6 +10582,12 @@ void Shape::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
+/**
+ * @brief Render the node.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
+ */
 void Shape::render(Viewer & viewer, const VrmlRenderContext context)
 {
     if (this->viewerObject && isModified()) {
@@ -10548,6 +10823,72 @@ const NodeTypePtr SoundClass::createType(const std::string & id,
  */
 
 /**
+ * @var Sound::SoundClass
+ *
+ * @brief Class object for Sound instances.
+ */
+
+/**
+ * @var SFVec3f Sound::direction
+ *
+ * @brief direction exposedField.
+ */
+
+/**
+ * @var SFFloat Sound::intensity
+ *
+ * @brief intensity exposedField.
+ */
+
+/**
+ * @var SFVec3f Sound::location
+ *
+ * @brief location exposedField.
+ */
+
+/**
+ * @var SFFloat Sound::maxBack
+ *
+ * @brief maxBack exposedField.
+ */
+
+/**
+ * @var SFFloat Sound::maxFront
+ *
+ * @brief maxFront exposedField.
+ */
+
+/**
+ * @var SFFloat Sound::minBack
+ *
+ * @brief minBack exposedField.
+ */
+
+/**
+ * @var SFFloat Sound::minFront
+ *
+ * @brief minFront exposedField.
+ */
+
+/**
+ * @var SFFloat Sound::priority
+ *
+ * @brief priority exposedField.
+ */
+
+/**
+ * @var SFNode Sound::source
+ *
+ * @brief source exposedField.
+ */
+
+/**
+ * @var SFBool Sound::spatialize
+ *
+ * @brief spatialize field.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the instance.
@@ -10584,7 +10925,14 @@ void Sound::updateModified(NodePath & path, int flags) {
     path.pop_front();
 }
 
-void Sound::render(Viewer & viewer, const VrmlRenderContext context) {
+/**
+ * @brief Render the node.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
+ */
+void Sound::render(Viewer & viewer, const VrmlRenderContext context)
+{
     // If this clip has been modified, update the internal data
     if (this->source.get() && this->source.get()->isModified()) {
         this->source.get()->render(viewer, context);
@@ -10789,6 +11137,24 @@ const NodeTypePtr SphereClass::createType(const std::string & id,
  */
 
 /**
+ * @var Sphere::SphereClass
+ *
+ * @brief Class object for Sphere instances.
+ */
+
+/**
+ * @var SFFloat Sphere::radius
+ *
+ * @brief radius field.
+ */
+
+/**
+ * @var BSphere Sphere::bsphere
+ *
+ * @brief Bounding volume.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node instance.
@@ -10807,6 +11173,12 @@ Sphere::Sphere(const NodeType & nodeType,
  */
 Sphere::~Sphere() throw () {}
 
+/**
+ * @brief Insert this geometry into @p viewer's display list.
+ *
+ * @param viewer    a Viewer.
+ * @param context   the rendering context.
+ */
 Viewer::Object Sphere::insertGeometry(Viewer & viewer,
                                       const VrmlRenderContext context)
 {
@@ -10929,6 +11301,60 @@ const NodeTypePtr
  */
 
 /**
+ * @var SphereSensor::SphereSensorClass
+ *
+ * @brief Class object for SphereSensor instances.
+ */
+
+/**
+ * @var SFBool SphereSensor::autoOffset
+ *
+ * @brief autoOffset exposedField.
+ */
+
+/**
+ * @var SFBool SphereSensor::enabled
+ *
+ * @brief enabled exposedField.
+ */
+
+/**
+ * @var SFRotation SphereSensor::offset
+ *
+ * @brief offset exposedField.
+ */
+
+/**
+ * @var SFBool SphereSensor::active
+ *
+ * @brief isActive eventOut.
+ */
+
+/**
+ * @var SFRotation SphereSensor::rotation
+ *
+ * @brief rotation_changed eventOut.
+ */
+
+/**
+ * @var SFVec3f SphereSensor::trackPoint
+ *
+ * @brief trackPoint_changed eventOut.
+ */
+
+/**
+ * @var SFVec3f SphereSensor::activationPoint
+ *
+ * @brief The start point of a drag operation.
+ */
+
+/**
+ * @var SFVec3f SphereSensor::centerPoint
+ *
+ * @brief Center point.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node instance.
@@ -10936,34 +11362,61 @@ const NodeTypePtr
  */
 SphereSensor::SphereSensor(const NodeType & nodeType,
                            const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        autoOffset(true),
-        enabled(true),
-        offset(0,1,0,0),
-        active(false) {
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    autoOffset(true),
+    enabled(true),
+    offset(0.0, 1.0, 0.0, 0.0),
+    active(false)
+{
     this->setModified();
 }
 
 /**
  * @brief Destructor.
  */
-SphereSensor::~SphereSensor() throw () {}
+SphereSensor::~SphereSensor() throw ()
+{}
 
-SphereSensor* SphereSensor::toSphereSensor() const {    // mgiger 6/16/00
-    return (SphereSensor*) this;
+/**
+ * @brief Cast to a SphereSensor.
+ *
+ * @return a pointer to the node.
+ */
+SphereSensor * SphereSensor::toSphereSensor() const
+{
+    return const_cast<SphereSensor *>(this);
 }
 
 /**
- * Store the ModelView matrix which is calculated at the time of rendering
- * in render-context. This matrix will be in use at the time of activation
+ * @brief Render the node.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
 void SphereSensor::render(Viewer & viewer, const VrmlRenderContext context)
 {
+    //
+    // Store the ModelView matrix which is calculated at the time of rendering
+    // in render-context. This matrix will be in use at the time of activation
+    //
     this->setMVMatrix(context.getMatrix());
 }
 
-void SphereSensor::activate(double timeStamp, bool isActive, double *p) {
+/**
+ * @brief Activate or deactivate the SphereSensor.
+ *
+ * Activating a drag sensor means that the pointing device button has been
+ * depressed and a drag operation has been initiated. The sensor is deactivated
+ * when the button is released at the end of the operation.
+ *
+ * @param timeStamp the current time.
+ * @param isActive  @c true if the drag operation is in progress; @c false
+ *                  otherwise.
+ * @param p         the pointing device position.
+ */
+void SphereSensor::activate(double timeStamp, bool isActive, double * p)
+{
     // Become active
     if (isActive && !this->active.get()) {
         this->active.set(isActive);
@@ -11025,6 +11478,16 @@ void SphereSensor::activate(double timeStamp, bool isActive, double *p) {
 
         this->emitEvent("rotation_changed", this->rotation, timeStamp);
     }
+}
+
+/**
+ * @brief Determine whether the SphereSensor is enabled.
+ *
+ * @return @c true if the SphereSensor is enabled; @c false otherwise.
+ */
+bool SphereSensor::isEnabled() const throw ()
+{
+    return this->enabled.get();
 }
 
 /**
@@ -11573,7 +12036,13 @@ void Switch::updateModified(NodePath & path, int flags) {
 }
 
 /**
- * @brief Render the selected child
+ * @brief Render the node.
+ *
+ * The child corresponding to @a whichChoice is rendered. Nothing is rendered if
+ * @a whichChoice is -1.
+ *
+ * @param viewer    a Viewer.
+ * @param context   a rendering context.
  */
 void Switch::render(Viewer & viewer, const VrmlRenderContext context)
 {
@@ -11597,9 +12066,7 @@ const BVolume* Switch::getBVolume() const {
 }
 
 /**
- * @brief Construct a bounding sphere around this node's children.
- *
- * Store it in bsphere.
+ * @brief Recalculate the bounding volume.
  */
 void Switch::recalcBSphere() {
     this->bsphere.reset();
@@ -14263,7 +14730,7 @@ Transform::~Transform() throw ()
 }
 
 /**
- * @brief Render the Transform.
+ * @brief Render the node.
  *
  * @param viewer    a Viewer.
  * @param context   the rendering context.
@@ -14359,7 +14826,7 @@ const BVolume * Transform::getBVolume() const
 }
 
 /**
- * @brief Recalculate the BSphere.
+ * @brief Recalculate the bounding volume.
  */
 void Transform::recalcBSphere()
 {
