@@ -31,8 +31,6 @@
 #   include <vector>
 #   include <sys/types.h>
 
-#   include <iostream>
-
 namespace openvrml {
 
 #   ifdef _WIN32

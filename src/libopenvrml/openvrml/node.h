@@ -24,7 +24,6 @@
 #   define OPENVRML_NODE_H
 
 #   include <deque>
-#   include <iostream>
 #   include <list>
 #   include <set>
 #   include <stdexcept>

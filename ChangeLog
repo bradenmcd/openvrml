@@ -1,5 +1,16 @@
 2005-01-16 Braden McDaniel  <braden@endoframe.com>
 
+	Eliminated unnecessary inclusion of <iostream>.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/basetypes.h
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2005-01-16 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/Makefile.am:  Removed reference to
 	openvrml/common.h.
 

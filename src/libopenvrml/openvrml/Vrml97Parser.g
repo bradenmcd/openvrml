@@ -123,7 +123,6 @@ ANTLR_RBRACE
 
 header "post_include_cpp" {
 # include <cctype>
-# include <iostream>
 # include <antlr/CommonToken.hpp>
 # include <boost/lexical_cast.hpp>
 # include <private.h>

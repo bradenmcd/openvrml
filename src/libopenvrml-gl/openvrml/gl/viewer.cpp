@@ -40,6 +40,9 @@
 
 # include <cmath>
 # include <limits>
+# ifndef NDEBUG
+#   include <iostream>
+# endif
 # include <boost/scoped_ptr.hpp>
 # include <openvrml/browser.h>
 # include <openvrml/vrml97node.h>
