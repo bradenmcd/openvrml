@@ -2,8 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2001  S. K. Bose
-// Copyright (C) 2003  Braden McDaniel
+// Copyright 2001  S. K. Bose
+// Copyright 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -64,28 +64,9 @@ namespace openvrml {
         void hsv(float h, float s, float v) throw ();
     };
 
-    inline color::color() throw ()
-    {}
-
-    inline color::color(const float (&rgb)[3]) throw ()
-    {
-        assert(rgb[0] >= 0.0 && rgb[0] <= 1.0);
-        this->rgb[0] = rgb[0];
-        assert(rgb[1] >= 0.0 && rgb[1] <= 1.0);
-        this->rgb[1] = rgb[1];
-        assert(rgb[2] >= 0.0 && rgb[2] <= 1.0);
-        this->rgb[2] = rgb[2];
-    }
-
-    inline color::color(float r, float g, float b) throw ()
-    {
-        assert(r >= 0.0 && r <= 1.0);
-        this->rgb[0] = r;
-        assert(g >= 0.0 && g <= 1.0);
-        this->rgb[1] = g;
-        assert(b >= 0.0 && b <= 1.0);
-        this->rgb[2] = b;
-    }
+    bool operator==(const color & lhs, const color & rhs) throw ();
+    bool operator!=(const color & lhs, const color & rhs) throw ();
+    std::ostream & operator<<(std::ostream & out, const color & c);
 
     inline const float & color::operator[](const size_t index) const throw ()
     {
@@ -123,16 +104,6 @@ namespace openvrml {
         this->rgb[2] = value;
     }
 
-    bool operator==(const color & lhs, const color & rhs)
-        throw ();
-
-    inline bool operator!=(const color & lhs, const color & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
-
-    std::ostream & operator<<(std::ostream & out, const color & c);
-
 
     class vec2f {
         float vec[2];
@@ -162,99 +133,14 @@ namespace openvrml {
         const vec2f normalize() const throw ();
     };
 
-    inline vec2f::vec2f() throw ()
-    {
-        this->vec[0] = 0.0;
-        this->vec[1] = 0.0;
-    }
-
-    inline vec2f::vec2f(const float (&vec)[2]) throw ()
-    {
-        //
-        // Ensure elements of vec are not NaN.
-        //
-        assert(vec[0] == vec[0]);
-        assert(vec[1] == vec[1]);
-
-        this->vec[0] = vec[0];
-        this->vec[1] = vec[1];
-    }
-
-    inline vec2f::vec2f(const float x, const float y) throw ()
-    {
-        //
-        // Ensure x and y are not NaN.
-        //
-        assert(x == x);
-        assert(y == y);
-
-        this->vec[0] = x;
-        this->vec[1] = y;
-    }
-
-    inline vec2f & vec2f::operator*=(const float scalar) throw ()
-    {
-        this->vec[0] *= scalar;
-        this->vec[1] *= scalar;
-        return *this;
-    }
-
-    inline const vec2f operator*(const vec2f & lhs, const float rhs) throw ()
-    {
-        vec2f result(lhs);
-        return result *= rhs;
-    }
-
-    inline const vec2f operator*(const float lhs, const vec2f & rhs) throw ()
-    {
-        vec2f result(rhs);
-        return result *= lhs;
-    }
-
-    inline vec2f & vec2f::operator/=(const float scalar) throw ()
-    {
-        assert(scalar != 0.0);
-        this->vec[0] /= scalar;
-        this->vec[1] /= scalar;
-        return *this;
-    }
-
-    inline const vec2f operator/(const vec2f & lhs, const float rhs) throw ()
-    {
-        vec2f result(lhs);
-        return result /= rhs;
-    }
-
-    inline vec2f & vec2f::operator+=(const vec2f & vec) throw ()
-    {
-        this->vec[0] += vec[0];
-        this->vec[1] += vec[1];
-        return *this;
-    }
-
-    inline const vec2f operator+(const vec2f & lhs, const vec2f & rhs) throw ()
-    {
-        vec2f result(lhs);
-        return result += rhs;
-    }
-
-    inline vec2f & vec2f::operator-=(const vec2f & vec) throw ()
-    {
-        this->vec[0] -= vec[0];
-        this->vec[1] -= vec[1];
-        return *this;
-    }
-
-    inline const vec2f operator-(const vec2f & lhs, const vec2f & rhs) throw ()
-    {
-        vec2f result(lhs);
-        return result -= rhs;
-    }
-
-    inline const vec2f vec2f::operator-() const throw ()
-    {
-        return vec2f(-this->vec[0], -this->vec[1]);
-    }
+    const vec2f operator*(const vec2f & lhs, float rhs) throw ();
+    const vec2f operator*(float lhs, const vec2f & rhs) throw ();
+    const vec2f operator/(const vec2f & lhs, float rhs) throw ();
+    const vec2f operator+(const vec2f & lhs, const vec2f & rhs) throw ();
+    const vec2f operator-(const vec2f & lhs, const vec2f & rhs) throw ();
+    bool operator==(const vec2f & lhs, const vec2f & rhs) throw ();
+    bool operator!=(const vec2f & lhs, const vec2f & rhs) throw ();
+    std::ostream & operator<<(std::ostream & out, const vec2f & v);
 
     inline const float & vec2f::operator[](const size_t index) const throw ()
     {
@@ -292,27 +178,6 @@ namespace openvrml {
         this->vec[1] = value;
     }
 
-    inline float vec2f::dot(const vec2f & vec) const throw ()
-    {
-        return this->vec[0] * vec[0]
-             + this->vec[1] * vec[1];
-    }
-
-    inline float vec2f::length() const throw ()
-    {
-        return float(sqrt(this->dot(*this)));
-    }
-
-    bool operator==(const vec2f & lhs, const vec2f & rhs)
-        throw ();
-
-    inline bool operator!=(const vec2f & lhs, const vec2f & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
-
-    std::ostream & operator<<(std::ostream & out, const vec2f & v);
-
 
     class mat4f;
 
@@ -348,133 +213,17 @@ namespace openvrml {
         const vec3f normalize() const throw ();
     };
 
-    inline vec3f::vec3f() throw ()
-    {
-        this->vec[0] = 0.0;
-        this->vec[1] = 0.0;
-        this->vec[2] = 0.0;
-    }
-
-    inline vec3f::vec3f(const float (&vec)[3]) throw ()
-    {
-        //
-        // Ensure the elements of vec are not NaN.
-        //
-        assert(vec[0] == vec[0]);
-        assert(vec[1] == vec[1]);
-        assert(vec[2] == vec[2]);
-
-        this->vec[0] = vec[0];
-        this->vec[1] = vec[1];
-        this->vec[2] = vec[2];
-    }
-
-    inline vec3f::vec3f(const float x, const float y, const float z) throw ()
-    {
-        //
-        // Ensure x, y, and z are not NaN.
-        //
-        assert(x == x);
-        assert(y == y);
-        assert(z == z);
-
-        this->vec[0] = x;
-        this->vec[1] = y;
-        this->vec[2] = z;
-    }
-
-    inline vec3f & vec3f::operator*=(const vec3f & vec) throw ()
-    {
-        vec3f temp;
-        temp.x(this->y() * vec.z() - this->z() * vec.y());
-        temp.y(this->z() * vec.x() - this->x() * vec.z());
-        temp.z(this->x() * vec.y() - this->y() * vec.x());
-        *this = temp;
-        return *this;
-    }
-
-    inline const vec3f operator*(const vec3f & lhs, const vec3f & rhs) throw ()
-    {
-        vec3f result(lhs);
-        return result *= rhs;
-    }
-
-    inline vec3f & vec3f::operator*=(const float scalar) throw ()
-    {
-        this->vec[0] *= scalar;
-        this->vec[1] *= scalar;
-        this->vec[2] *= scalar;
-        return *this;
-    }
-
-    inline const vec3f operator*(const vec3f & lhs, const float rhs) throw ()
-    {
-        vec3f result(lhs);
-        return result *= rhs;
-    }
-
-    inline const vec3f operator*(const float lhs, const vec3f & rhs) throw ()
-    {
-        vec3f result(rhs);
-        return result *= lhs;
-    }
-
-    inline const vec3f operator*(const vec3f & vec, const mat4f & mat) throw ()
-    {
-        vec3f result(vec);
-        return result *= mat;
-    }
-
-    const vec3f operator*(const mat4f & mat, const vec3f & vec)
-        throw ();
-
-    inline vec3f & vec3f::operator/=(const float scalar) throw ()
-    {
-        assert(scalar != 0.0);
-        this->vec[0] /= scalar;
-        this->vec[1] /= scalar;
-        this->vec[2] /= scalar;
-        return *this;
-    }
-
-    inline const vec3f operator/(const vec3f & lhs, const float rhs) throw ()
-    {
-        vec3f result(lhs);
-        return result /= rhs;
-    }
-
-    inline vec3f & vec3f::operator+=(const vec3f & vec) throw ()
-    {
-        this->vec[0] += vec[0];
-        this->vec[1] += vec[1];
-        this->vec[2] += vec[2];
-        return *this;
-    }
-
-    inline const vec3f operator+(const vec3f & lhs, const vec3f & rhs) throw ()
-    {
-        vec3f result(lhs);
-        return result += rhs;
-    }
-
-    inline vec3f & vec3f::operator-=(const vec3f & vec) throw ()
-    {
-        this->vec[0] -= vec[0];
-        this->vec[1] -= vec[1];
-        this->vec[2] -= vec[2];
-        return *this;
-    }
-
-    inline const vec3f operator-(const vec3f & lhs, const vec3f & rhs) throw ()
-    {
-        vec3f result(lhs);
-        return result -= rhs;
-    }
-
-    inline const vec3f vec3f::operator-() const throw()
-    {
-        return vec3f(-this->vec[0], -this->vec[1], -this->vec[2]);
-    }
+    const vec3f operator*(const vec3f & lhs, const vec3f & rhs) throw ();
+    const vec3f operator*(const vec3f & lhs, const float rhs) throw ();
+    const vec3f operator*(const float lhs, const vec3f & rhs) throw ();
+    const vec3f operator*(const vec3f & vec, const mat4f & mat) throw ();
+    const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ();
+    const vec3f operator/(const vec3f & lhs, const float rhs) throw ();
+    const vec3f operator+(const vec3f & lhs, const vec3f & rhs) throw ();
+    const vec3f operator-(const vec3f & lhs, const vec3f & rhs) throw ();
+    bool operator==(const vec3f & lhs, const vec3f & rhs) throw ();
+    bool operator!=(const vec3f & lhs, const vec3f & rhs) throw ();
+    std::ostream & operator<<(std::ostream & out, const vec3f & v);
 
     inline const float & vec3f::operator[](const size_t index) const throw ()
     {
@@ -527,28 +276,6 @@ namespace openvrml {
         this->vec[2] = value;
     }
 
-    inline float vec3f::dot(const vec3f & vec) const throw()
-    {
-        return this->vec[0] * vec[0]
-             + this->vec[1] * vec[1]
-             + this->vec[2] * vec[2];
-    }
-
-    inline float vec3f::length() const throw ()
-    {
-        return float(sqrt(this->dot(*this)));
-    }
-
-    bool operator==(const vec3f & lhs, const vec3f & rhs)
-        throw ();
-
-    inline bool operator!=(const vec3f & lhs, const vec3f & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
-
-    std::ostream & operator<<(std::ostream & out, const vec3f & v);
-
 
     class quatf;
 
@@ -584,20 +311,11 @@ namespace openvrml {
             throw ();
     };
 
-    inline const rotation operator*(const rotation & lhs, const rotation & rhs)
-        throw ()
-    {
-        rotation result(lhs);
-        return result *= rhs;
-    }
-
-    inline rotation::rotation() throw ()
-    {
-        this->rot[0] = 0.0;
-        this->rot[1] = 0.0;
-        this->rot[2] = 1.0;
-        this->rot[3] = 0.0;
-    }
+    const rotation operator*(const rotation & lhs, const rotation & rhs)
+        throw ();
+    bool operator==(const rotation & lhs, const rotation & rhs) throw ();
+    bool operator!=(const rotation & lhs, const rotation & rhs) throw ();
+    std::ostream & operator<<(std::ostream & out, const rotation & r);
 
     inline const float & rotation::operator[](const size_t index) const
         throw ()
@@ -635,23 +353,6 @@ namespace openvrml {
     {
         this->rot[3] = value;
     }
-
-    inline const rotation rotation::inverse() const throw ()
-    {
-        rotation result(*this);
-        result.rot[3] = -this->rot[3];
-        return result;
-    }
-
-    bool operator==(const rotation & lhs, const rotation & rhs)
-        throw ();
-
-    inline bool operator!=(const rotation & lhs, const rotation & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
-
-    std::ostream & operator<<(std::ostream & out, const rotation & r);
 
 
     class mat4f {
@@ -696,14 +397,8 @@ namespace openvrml {
         float det() const throw ();
     };
 
-    bool operator==(const mat4f & lhs, const mat4f & rhs)
-        throw ();
-
-    inline bool operator!=(const mat4f & lhs, const mat4f & rhs)
-        throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const mat4f & lhs, const mat4f & rhs) throw ();
+    bool operator!=(const mat4f & lhs, const mat4f & rhs) throw ();
 
     inline float (&mat4f::operator[](size_t index) throw ())[4]
     {
@@ -717,26 +412,9 @@ namespace openvrml {
         return this->mat[index];
     }
 
-    inline const mat4f operator*(const mat4f & lhs, const mat4f & rhs) throw ()
-    {
-        mat4f result(lhs);
-        return result *= rhs;
-    }
-
-    inline const mat4f operator*(const mat4f & mat, const float scalar)
-        throw ()
-    {
-        mat4f result(mat);
-        return result *= scalar;
-    }
-
-    inline const mat4f operator*(const float scalar, const mat4f & mat)
-        throw ()
-    {
-        mat4f result(mat);
-        return result *= scalar;
-    }
-
+    const mat4f operator*(const mat4f & lhs, const mat4f & rhs) throw ();
+    const mat4f operator*(const mat4f & mat, float scalar) throw ();
+    const mat4f operator*(float scalar, const mat4f & mat) throw ();
     std::ostream & operator<<(std::ostream & out, const mat4f & mat);
 
 
@@ -777,52 +455,15 @@ namespace openvrml {
         const quatf normalize() const throw ();
     };
 
-    bool operator==(const quatf & lhs, const quatf & rhs)
-        throw ();
-
-    inline bool operator!=(const quatf & lhs, const quatf & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
-
-    inline const quatf operator*(const quatf & lhs, const quatf & rhs) throw ()
-    {
-        quatf result(lhs);
-        return result *= rhs;
-    }
-
-    inline const quatf operator*(const quatf & quat, const float scalar)
-        throw ()
-    {
-        quatf result(quat);
-        return result *= scalar;
-    }
-
-    inline const quatf operator*(const float scalar, const quatf & quat)
-        throw ()
-    {
-        quatf result(quat);
-        return result *= scalar;
-    }
-
-    inline const quatf operator/(const quatf & quat, const float scalar)
-        throw ()
-    {
-        quatf result(quat);
-        return result /= scalar;
-    }
-
-    inline const quatf operator+(const quatf & lhs, const quatf & rhs) throw ()
-    {
-        quatf result(lhs);
-        return result += rhs;
-    }
-
-    inline const quatf operator-(const quatf & lhs, const quatf & rhs) throw ()
-    {
-        quatf result(lhs);
-        return result -= rhs;
-    }
+    const quatf operator*(const quatf & lhs, const quatf & rhs) throw ();
+    const quatf operator*(const quatf & quat, const float scalar) throw ();
+    const quatf operator*(const float scalar, const quatf & quat) throw ();
+    const quatf operator/(const quatf & quat, const float scalar) throw ();
+    const quatf operator+(const quatf & lhs, const quatf & rhs) throw ();
+    const quatf operator-(const quatf & lhs, const quatf & rhs) throw ();
+    bool operator==(const quatf & lhs, const quatf & rhs) throw ();
+    bool operator!=(const quatf & lhs, const quatf & rhs) throw ();
+    std::ostream & operator<<(std::ostream & out, const quatf & quat);
 
     inline const float & quatf::operator[](size_t index) const throw ()
     {
@@ -876,8 +517,6 @@ namespace openvrml {
         this->quat[3] = value;
     }
 
-    std::ostream & operator<<(std::ostream & out, const quatf & quat);
-
 
     class image {
         size_t x_;
@@ -920,11 +559,7 @@ namespace openvrml {
     };
 
     bool operator==(const image & lhs, const image & rhs) throw ();
-
-    inline bool operator!=(const image & lhs, const image & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator!=(const image & lhs, const image & rhs) throw ();
 
     template <typename InputIterator>
     image::image(const size_t x,
@@ -997,7 +632,9 @@ namespace openvrml {
         for (size_t component = this->comp_, i = index * this->comp_;
              component > 0;
              --component, ++i) {
-            this->array_[i] = (value >> (8 * (component - 1))) & 0x000000ff;
+            this->array_[i] =
+                static_cast<unsigned char>(
+                    (value >> (8 * (component - 1))) & 0x000000ff);
         }
     }
 

@@ -2,8 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2001  S. K. Bose
-// Copyright (C) 2003  Braden McDaniel
+// Copyright 2001  S. K. Bose
+// Copyright 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -58,28 +58,42 @@ namespace openvrml {
  */
 
 /**
- * @fn color::color() throw ()
- *
  * @brief Construct.
  */
+color::color() throw ()
+{}
 
 /**
- * @fn color::color(float (&rgb)[3]) throw ()
- *
  * @brief Construct from a 3-element float array.
  *
  * @param rgb   an array comprising red, green, and blue components.
  */
+color::color(const float (&rgb)[3]) throw ()
+{
+    assert(rgb[0] >= 0.0 && rgb[0] <= 1.0);
+    this->rgb[0] = rgb[0];
+    assert(rgb[1] >= 0.0 && rgb[1] <= 1.0);
+    this->rgb[1] = rgb[1];
+    assert(rgb[2] >= 0.0 && rgb[2] <= 1.0);
+    this->rgb[2] = rgb[2];
+}
 
 /**
- * @fn color::color(float r, float g, float b) throw ()
- *
  * @brief Construct from red, green, and blue components.
  *
  * @param r red component.
  * @param g green component.
  * @param b blue component.
  */
+color::color(float r, float g, float b) throw ()
+{
+    assert(r >= 0.0 && r <= 1.0);
+    this->rgb[0] = r;
+    assert(g >= 0.0 && g <= 1.0);
+    this->rgb[1] = g;
+    assert(b >= 0.0 && b <= 1.0);
+    this->rgb[2] = b;
+}
 
 /**
  * @fn const float & color::operator[](const size_t index) const throw ()
@@ -224,8 +238,6 @@ bool operator==(const color & lhs, const color & rhs) throw ()
 }
 
 /**
- * @fn bool operator!=(const color & lhs, const color & rhs) throw ()
- *
  * @relatesalso color
  *
  * @brief Compare for inequality.
@@ -236,6 +248,10 @@ bool operator==(const color & lhs, const color & rhs) throw ()
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const color & lhs, const color & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 /**
  * @relatesalso color
@@ -270,24 +286,34 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  */
 
 /**
- * @fn vec2f::vec2f() throw ()
- *
  * @brief Construct.
  */
+vec2f::vec2f() throw ()
+{
+    this->vec[0] = 0.0;
+    this->vec[1] = 0.0;
+}
 
 /**
- * @fn vec2f::vec2f(const float (&vec)[2]) throw ()
- *
  * @brief Construct from an array.
  *
  * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
  *
  * @param vec   an array comprising the vector components.
  */
+vec2f::vec2f(const float (&vec)[2]) throw ()
+{
+    //
+    // Ensure elements of vec are not NaN.
+    //
+    assert(vec[0] == vec[0]);
+    assert(vec[1] == vec[1]);
+
+    this->vec[0] = vec[0];
+    this->vec[1] = vec[1];
+}
 
 /**
- * @fn vec2f::vec2f(float x, float y) throw ()
- *
  * @brief Construct from @p x and @p y components.
  *
  * @pre @p x and @p y are valid numeric values (i.e., not NaN).
@@ -295,20 +321,33 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  * @param x x component.
  * @param y y component.
  */
+vec2f::vec2f(const float x, const float y) throw ()
+{
+    //
+    // Ensure x and y are not NaN.
+    //
+    assert(x == x);
+    assert(y == y);
+
+    this->vec[0] = x;
+    this->vec[1] = y;
+}
 
 /**
- * @fn vec2f & vec2f::operator*=(float scalar) throw ()
- *
  * @brief Multiply by a scalar.
  *
  * @param scalar    factor by which to multiply.
  *
  * @return a reference to the object.
  */
+vec2f & vec2f::operator*=(const float scalar) throw ()
+{
+    this->vec[0] *= scalar;
+    this->vec[1] *= scalar;
+    return *this;
+}
 
 /**
- * @fn const vec2f operator*(const vec2f & lhs, float rhs) throw ()
- *
  * @relatesalso vec2f
  *
  * @brief Multiply a vector by a scalar.
@@ -318,10 +357,13 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  *
  * @return the result vector.
  */
+const vec2f operator*(const vec2f & lhs, const float rhs) throw ()
+{
+    vec2f result(lhs);
+    return result *= rhs;
+}
 
 /**
- * @fn const vec2f operator*(float lhs, const vec2f & rhs) throw ()
- *
  * @relatesalso vec2f
  *
  * @brief Multiply a vector by a scalar.
@@ -331,10 +373,13 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  *
  * @return the result vector.
  */
+const vec2f operator*(const float lhs, const vec2f & rhs) throw ()
+{
+    vec2f result(rhs);
+    return result *= lhs;
+}
 
 /**
- * @fn vec2f & vec2f::operator/=(float scalar) throw ()
- *
  * @brief Divide by a scalar.
  *
  * @pre @p scalar is nonzero.
@@ -343,10 +388,15 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  *
  * @return a reference to the object.
  */
+vec2f & vec2f::operator/=(const float scalar) throw ()
+{
+    assert(scalar != 0.0);
+    this->vec[0] /= scalar;
+    this->vec[1] /= scalar;
+    return *this;
+}
 
 /**
- * @fn const vec2f operator/(const vec2f & lhs, float rhs) throw ()
- *
  * @relatesalso vec2f
  *
  * @brief Divide a vector by a scalar.
@@ -358,20 +408,27 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  *
  * @return the result vector.
  */
+const vec2f operator/(const vec2f & lhs, const float rhs) throw ()
+{
+    vec2f result(lhs);
+    return result /= rhs;
+}
 
 /**
- * @fn vec2f & vec2f::operator+=(const vec2f & vec) throw ()
- *
  * @brief Add a vector.
  *
  * @param vec   the vector to add.
  *
  * @return a reference to the object.
  */
+vec2f & vec2f::operator+=(const vec2f & vec) throw ()
+{
+    this->vec[0] += vec[0];
+    this->vec[1] += vec[1];
+    return *this;
+}
 
 /**
- * @fn const vec2f operator+(const vec2f & lhs, const vec2f & rhs) throw ()
- *
  * @relatesalso vec2f
  *
  * @brief Add two vectors.
@@ -381,20 +438,27 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  *
  * @return the result vector.
  */
+const vec2f operator+(const vec2f & lhs, const vec2f & rhs) throw ()
+{
+    vec2f result(lhs);
+    return result += rhs;
+}
 
 /**
- * @fn vec2f & vec2f::operator-=(const vec2f & vec) throw ()
- *
  * @brief Subtract a vector.
  *
  * @param vec   the vector to subtract.
  *
  * @return a reference to the object.
  */
+vec2f & vec2f::operator-=(const vec2f & vec) throw ()
+{
+    this->vec[0] -= vec[0];
+    this->vec[1] -= vec[1];
+    return *this;
+}
 
 /**
- * @fn const vec2f operator-(const vec2f & lhs, const vec2f & rhs) throw ()
- *
  * @relatesalso vec2f
  *
  * @brief Subtract two vectors.
@@ -404,14 +468,21 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  *
  * @return the result vector.
  */
+const vec2f operator-(const vec2f & lhs, const vec2f & rhs) throw ()
+{
+    vec2f result(lhs);
+    return result -= rhs;
+}
 
 /**
- * @fn const vec2f vec2f::operator-() const throw ()
- *
  * @brief Negate.
  *
  * @return the additive inverse of the vector.
  */
+const vec2f vec2f::operator-() const throw ()
+{
+    return vec2f(-this->vec[0], -this->vec[1]);
+}
 
 /**
  * @fn const float & vec2f::operator[](const size_t index) const throw ()
@@ -463,22 +534,27 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  */
 
 /**
- * @fn float vec2f::dot(const vec2f & vec) const throw ()
- *
  * @brief Dot product.
  *
  * @param vec
  *
  * @return the dot product of the vector and @p vec.
  */
+float vec2f::dot(const vec2f & vec) const throw ()
+{
+    return this->vec[0] * vec[0]
+        + this->vec[1] * vec[1];
+}
 
 /**
- * @fn float vec2f::length() const throw ()
- *
  * @brief Geometric length.
  *
  * @return the length of the vector.
  */
+float vec2f::length() const throw ()
+{
+    return float(sqrt(this->dot(*this)));
+}
 
 /**
  * @brief Normalize.
@@ -512,8 +588,6 @@ bool operator==(const vec2f & lhs, const vec2f & rhs) throw ()
 }
 
 /**
- * @fn bool operator!=(const vec2f & lhs, const vec2f & rhs) throw ()
- *
  * @relatesalso vec2f
  *
  * @brief Compare for inequality.
@@ -524,6 +598,10 @@ bool operator==(const vec2f & lhs, const vec2f & rhs) throw ()
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *         otherwise.
  */
+bool operator!=(const vec2f & lhs, const vec2f & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 /**
  * @relatesalso vec2f
@@ -558,24 +636,37 @@ std::ostream & operator<<(std::ostream & out, const vec2f & v)
  */
 
 /**
- * @fn vec3f::vec3f() throw ()
- *
  * @brief Construct.
  */
+vec3f::vec3f() throw ()
+{
+    this->vec[0] = 0.0;
+    this->vec[1] = 0.0;
+    this->vec[2] = 0.0;
+}
 
 /**
- * @fn vec3f::vec3f(const float (&vec)[3]) throw ()
- *
  * @brief Construct from an array.
  *
  * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
  *
  * @param vec   an array comprising the vector components.
  */
+vec3f::vec3f(const float (&vec)[3]) throw ()
+{
+    //
+    // Ensure the elements of vec are not NaN.
+    //
+    assert(vec[0] == vec[0]);
+    assert(vec[1] == vec[1]);
+    assert(vec[2] == vec[2]);
+
+    this->vec[0] = vec[0];
+    this->vec[1] = vec[1];
+    this->vec[2] = vec[2];
+}
 
 /**
- * @fn vec3f::vec3f(float x, float y, float z) throw ()
- *
  * @brief Construct from @p x, @p y, and @p z components.
  *
  * @pre @p x, @p y, and @p z are valid numeric values (i.e., not NaN).
@@ -584,20 +675,38 @@ std::ostream & operator<<(std::ostream & out, const vec2f & v)
  * @param y y component.
  * @param z z component.
  */
+vec3f::vec3f(const float x, const float y, const float z) throw ()
+{
+    //
+    // Ensure x, y, and z are not NaN.
+    //
+    assert(x == x);
+    assert(y == y);
+    assert(z == z);
+
+    this->vec[0] = x;
+    this->vec[1] = y;
+    this->vec[2] = z;
+}
 
 /**
- * @fn vec3f & vec3f::operator*=(const vec3f & vec) throw ()
- *
  * @brief Cross multiply.
  *
  * @param vec   vector by which to multiply.
  *
  * @return a reference to the object.
  */
+vec3f & vec3f::operator*=(const vec3f & vec) throw ()
+{
+    vec3f temp;
+    temp.x(this->y() * vec.z() - this->z() * vec.y());
+    temp.y(this->z() * vec.x() - this->x() * vec.z());
+    temp.z(this->x() * vec.y() - this->y() * vec.x());
+    *this = temp;
+    return *this;
+}
 
 /**
- * @fn const vec3f operator*(const vec3f & lhs, const vec3f & rhs) throw ()
- *
  * @relatesalso vec3f
  *
  * @brief Cross multiply two vectors.
@@ -607,6 +716,11 @@ std::ostream & operator<<(std::ostream & out, const vec2f & v)
  *
  * @return the result vector.
  */
+const vec3f operator*(const vec3f & lhs, const vec3f & rhs) throw ()
+{
+    vec3f result(lhs);
+    return result *= rhs;
+}
 
 /**
  * @brief Multiply by a matrix.
@@ -632,17 +746,20 @@ vec3f & vec3f::operator*=(const mat4f & mat) throw ()
 }
 
 /**
- * @fn const vec3f operator*(const vec3f & vec, const mat4f & mat) throw ()
- *
  * @relatesalso vec3f
  *
  * @brief Multiply a vector by a matrix.
  *
- * @param mat   a matrix.
  * @param vec   a 3-component vector.
+ * @param mat   a matrix.
  *
  * @return the result vector.
  */
+const vec3f operator*(const vec3f & vec, const mat4f & mat) throw ()
+{
+    vec3f result(vec);
+    return result *= mat;
+}
 
 /**
  * @relatesalso vec3f
@@ -668,18 +785,21 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
 }
 
 /**
- * @fn vec3f & vec3f::operator*=(float scalar) throw ()
- *
  * @brief Multiply by a scalar.
  *
  * @param scalar    factor by which to multiply.
  *
  * @return a reference to the object.
  */
+vec3f & vec3f::operator*=(const float scalar) throw ()
+{
+    this->vec[0] *= scalar;
+    this->vec[1] *= scalar;
+    this->vec[2] *= scalar;
+    return *this;
+}
 
 /**
- * @fn const vec3f operator*(const vec2f & lhs, float rhs) throw ()
- *
  * @relatesalso vec3f
  *
  * @brief Multiply a vector by a scalar.
@@ -689,10 +809,13 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @return the result vector.
  */
+const vec3f operator*(const vec3f & lhs, const float rhs) throw ()
+{
+    vec3f result(lhs);
+    return result *= rhs;
+}
 
 /**
- * @fn const vec3f operator*(float lhs, const vec2f & rhs) throw ()
- *
  * @relatesalso vec3f
  *
  * @brief Multiply a vector by a scalar.
@@ -702,10 +825,13 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @return the result vector.
  */
+const vec3f operator*(const float lhs, const vec3f & rhs) throw ()
+{
+    vec3f result(rhs);
+    return result *= lhs;
+}
 
 /**
- * @fn vec3f & vec3f::operator/=(float scalar) throw ()
- *
  * @brief Divide by a scalar.
  *
  * @pre @p scalar is nonzero.
@@ -714,10 +840,16 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @return a reference to the object.
  */
+vec3f & vec3f::operator/=(const float scalar) throw ()
+{
+    assert(scalar != 0.0);
+    this->vec[0] /= scalar;
+    this->vec[1] /= scalar;
+    this->vec[2] /= scalar;
+    return *this;
+}
 
 /**
- * @fn const vec3f operator/(const vec3f & lhs, float rhs) throw ()
- *
  * @relatesalso vec3f
  *
  * @brief Divide a vector by a scalar.
@@ -729,20 +861,28 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @return the result vector.
  */
+const vec3f operator/(const vec3f & lhs, const float rhs) throw ()
+{
+    vec3f result(lhs);
+    return result /= rhs;
+}
 
 /**
- * @fn vec3f & vec3f::operator+=(const vec3f & vec) throw ()
- *
  * @brief Add a vector.
  *
  * @param vec   the vector to add.
  *
  * @return a reference to the object.
  */
+vec3f & vec3f::operator+=(const vec3f & vec) throw ()
+{
+    this->vec[0] += vec[0];
+    this->vec[1] += vec[1];
+    this->vec[2] += vec[2];
+    return *this;
+}
 
 /**
- * @fn const vec3f operator+(const vec3f & lhs, const vec3f & rhs) throw ()
- *
  * @relatesalso vec3f
  *
  * @brief Add two vectors.
@@ -752,6 +892,11 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @return the result vector.
  */
+const vec3f operator+(const vec3f & lhs, const vec3f & rhs) throw ()
+{
+    vec3f result(lhs);
+    return result += rhs;
+}
 
 /**
  * @fn vec3f & vec3f::operator-=(const vec3f & vec) throw ()
@@ -762,10 +907,15 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @return a reference to the object.
  */
+vec3f & vec3f::operator-=(const vec3f & vec) throw ()
+{
+    this->vec[0] -= vec[0];
+    this->vec[1] -= vec[1];
+    this->vec[2] -= vec[2];
+    return *this;
+}
 
 /**
- * @fn const vec3f operator-(const vec3f & lhs, const vec3f & rhs) throw ()
- *
  * @relatesalso vec3f
  *
  * @brief Subtract two vectors.
@@ -775,6 +925,11 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @return the result vector.
  */
+const vec3f operator-(const vec3f & lhs, const vec3f & rhs) throw ()
+{
+    vec3f result(lhs);
+    return result -= rhs;
+}
 
 /**
  * @fn const vec3f vec3f::operator-() const throw ()
@@ -783,6 +938,10 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @return the additive inverse of the vector.
  */
+const vec3f vec3f::operator-() const throw()
+{
+    return vec3f(-this->vec[0], -this->vec[1], -this->vec[2]);
+}
 
 /**
  * @fn const float & vec3f::operator[](const size_t index) const throw ()
@@ -865,22 +1024,28 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  */
 
 /**
- * @fn float vec3f::dot(const vec3f & vec) const throw ()
- *
  * @brief Dot product.
  *
  * @param vec
  *
  * @return the dot product of the vector and @p vec.
  */
+float vec3f::dot(const vec3f & vec) const throw()
+{
+    return this->vec[0] * vec[0]
+        + this->vec[1] * vec[1]
+        + this->vec[2] * vec[2];
+}
 
 /**
- * @fn float vec3f::length() const throw ()
- *
  * @brief Geometric length.
  *
  * @return the length of the vector.
  */
+float vec3f::length() const throw ()
+{
+    return float(sqrt(this->dot(*this)));
+}
 
 /**
  * @brief Normalize.
@@ -914,8 +1079,6 @@ bool operator==(const vec3f & lhs, const vec3f & rhs) throw ()
 }
 
 /**
- * @fn bool operator!=(const vec3f & lhs, const vec3f & rhs) throw ()
- *
  * @relatesalso vec3f
  *
  * @brief Compare for inequality.
@@ -926,6 +1089,10 @@ bool operator==(const vec3f & lhs, const vec3f & rhs) throw ()
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const vec3f & lhs, const vec3f & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 /**
  * @relatesalso vec3f
@@ -967,10 +1134,15 @@ std::ostream & operator<<(std::ostream & out, const vec3f & v)
  */
 
 /**
- * @fn rotation::rotation() throw ()
- *
  * @brief Construct.
  */
+rotation::rotation() throw ()
+{
+    this->rot[0] = 0.0;
+    this->rot[1] = 0.0;
+    this->rot[2] = 1.0;
+    this->rot[3] = 0.0;
+}
 
 /**
  * @brief Construct from an array.
@@ -1103,6 +1275,12 @@ rotation & rotation::operator*=(const rotation & rot) throw ()
  *
  * @return the product of @p lhs and @p rhs.
  */
+const rotation operator*(const rotation & lhs, const rotation & rhs) throw ()
+{
+    rotation result(lhs);
+    return result *= rhs;
+}
+
 
 /**
  * @fn const float & rotation::operator[](const size_t index) const throw ()
@@ -1242,12 +1420,16 @@ void rotation::axis(const vec3f & axis) throw ()
  */
 
 /**
- * @fn const rotation rotation::inverse() const throw ()
- *
  * @brief Inverse rotation.
  *
  * @return the inverse rotation.
  */
+const rotation rotation::inverse() const throw ()
+{
+    rotation result(*this);
+    result.rot[3] = -this->rot[3];
+    return result;
+}
 
 /**
  * @brief Spherical Linear intERPolation.
@@ -1326,8 +1508,6 @@ bool operator==(const rotation & lhs, const rotation & rhs) throw ()
 }
 
 /**
- * @fn bool operator!=(const rotation & lhs, const rotation & rhs) throw ()
- *
  * @relatesalso rotation
  *
  * @brief Compare for inequality.
@@ -1337,6 +1517,10 @@ bool operator==(const rotation & lhs, const rotation & rhs) throw ()
  *
  * @return @c true if @p lhs is not equal to @p rhs; @c false otherwise.
  */
+bool operator!=(const rotation & lhs, const rotation & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 /**
  * @relatesalso rotation
@@ -1655,8 +1839,6 @@ mat4f & mat4f::operator*=(const float scalar) throw ()
 }
 
 /**
- * @fn const mat4f operator*(const mat4f & mat, const float scalar) throw ()
- *
  * @relatesalso mat4f
  *
  * @brief Multiply a matrix by a scalar value.
@@ -1666,10 +1848,13 @@ mat4f & mat4f::operator*=(const float scalar) throw ()
  *
  * @return the result matrix.
  */
+const mat4f operator*(const mat4f & mat, const float scalar) throw ()
+{
+    mat4f result(mat);
+    return result *= scalar;
+}
 
 /**
- * @fn const mat4f operator*(const float scalar, const mat4f & mat) throw ()
- *
  * @relatesalso mat4f
  *
  * @brief Multiply a scalar value by matrix.
@@ -1679,6 +1864,11 @@ mat4f & mat4f::operator*=(const float scalar) throw ()
  *
  * @return the result matrix.
  */
+const mat4f operator*(const float scalar, const mat4f & mat) throw ()
+{
+    mat4f result(mat);
+    return result *= scalar;
+}
 
 /**
  * @brief Multiply by another matrix.
@@ -1722,8 +1912,6 @@ mat4f & mat4f::operator*=(const mat4f & mat) throw ()
 }
 
 /**
- * @fn const mat4f operator*(const mat4f & lhs, const mat4f & rhs) throw ()
- *
  * @relatesalso mat4f
  *
  * @brief Multiply two matrices.
@@ -1733,6 +1921,12 @@ mat4f & mat4f::operator*=(const mat4f & mat) throw ()
  *
  * @return the result matrix.
  */
+const mat4f operator*(const mat4f & lhs, const mat4f & rhs) throw ()
+{
+    mat4f result(lhs);
+    return result *= rhs;
+}
+
 
 namespace {
 
@@ -2156,12 +2350,11 @@ std::ostream & operator<<(std::ostream & out, const mat4f & mat)
 bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0], fequal<float>());
+    return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0],
+                      fequal<float>());
 }
 
 /**
- * @fn bool operator!=(const mat4f & lhs, const mat4f & rhs) throw ()
- *
  * @relatesalso mat4f
  *
  * @brief Inequality comparison operator.
@@ -2169,6 +2362,10 @@ bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
  * @param lhs   a matrix.
  * @param rhs   a matrix.
  */
+bool operator!=(const mat4f & lhs, const mat4f & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -2316,8 +2513,6 @@ quatf & quatf::operator*=(const quatf & quat) throw ()
 }
 
 /**
- * @fn const quatf operator*(const quatf & lhs, const quatf & rhs) throw ()
- *
  * @relatesalso quatf
  *
  * @brief Multiply two quaternions.
@@ -2327,6 +2522,11 @@ quatf & quatf::operator*=(const quatf & quat) throw ()
  *
  * @return the product of @p lhs and @p rhs.
  */
+const quatf operator*(const quatf & lhs, const quatf & rhs) throw ()
+{
+    quatf result(lhs);
+    return result *= rhs;
+}
 
 /**
  * @brief Multiply by a scalar.
@@ -2345,8 +2545,6 @@ quatf & quatf::operator*=(const float scalar) throw ()
 }
 
 /**
- * @fn const quatf operator*(const quatf & quat, float scalar) throw ()
- *
  * @relatesalso quatf
  *
  * @brief Multiply a quaternion by a scalar.
@@ -2356,10 +2554,13 @@ quatf & quatf::operator*=(const float scalar) throw ()
  *
  * @return the product of @p quat and @p scalar.
  */
+const quatf operator*(const quatf & quat, const float scalar) throw ()
+{
+    quatf result(quat);
+    return result *= scalar;
+}
 
 /**
- * @fn const quatf operator*(float scalar, const quatf & quat) throw ()
- *
  * @relatesalso quatf
  *
  * @brief Multiply a scalar by a quaternion.
@@ -2369,6 +2570,11 @@ quatf & quatf::operator*=(const float scalar) throw ()
  *
  * @return the product of @p scalar and @p quat.
  */
+const quatf operator*(const float scalar, const quatf & quat) throw ()
+{
+    quatf result(quat);
+    return result *= scalar;
+}
 
 /**
  * @brief Divide by a scalar.
@@ -2388,8 +2594,6 @@ quatf & quatf::operator/=(const float scalar) throw ()
 }
 
 /**
- * @fn const quatf operator/(const quatf & quat, float scalar) throw ()
- *
  * @relatesalso quatf
  *
  * @brief Divide a quaternion by a scalar.
@@ -2399,6 +2603,11 @@ quatf & quatf::operator/=(const float scalar) throw ()
  *
  * @return the result of dividing @p quat by @p scalar.
  */
+const quatf operator/(const quatf & quat, const float scalar) throw ()
+{
+    quatf result(quat);
+    return result /= scalar;
+}
 
 /**
  * @brief Add a quaternion.
@@ -2417,8 +2626,6 @@ quatf & quatf::operator+=(const quatf & quat) throw ()
 }
 
 /**
- * @fn const quatf operator+(const quatf & lhs, const quatf & rhs) throw ()
- *
  * @relatesalso quatf
  *
  * @brief Add two quaternions.
@@ -2428,6 +2635,11 @@ quatf & quatf::operator+=(const quatf & quat) throw ()
  *
  * @return the sum of @p lhs and @p rhs.
  */
+const quatf operator+(const quatf & lhs, const quatf & rhs) throw ()
+{
+    quatf result(lhs);
+    return result += rhs;
+}
 
 /**
  * @brief Subtract a quaternion.
@@ -2446,8 +2658,6 @@ quatf & quatf::operator-=(const quatf & quat) throw ()
 }
 
 /**
- * @fn const quatf operator-(const quatf & lhs, const quatf & rhs) throw ()
- *
  * @relatesalso quatf
  *
  * @brief Take the difference between two quaternions.
@@ -2457,6 +2667,11 @@ quatf & quatf::operator-=(const quatf & quat) throw ()
  *
  * @return the difference between @p lhs and @p rhs.
  */
+const quatf operator-(const quatf & lhs, const quatf & rhs) throw ()
+{
+    quatf result(lhs);
+    return result -= rhs;
+}
 
 /**
  * @fn float quatf::operator[](size_t index) const throw ()
@@ -2637,8 +2852,6 @@ bool operator==(const quatf & lhs, const quatf & rhs) throw ()
 }
 
 /**
- * @fn bool operator!=(const quatf & lhs, const quatf & rhs) throw ()
- *
  * @relatesalso quatf
  *
  * @brief Compare for inequality.
@@ -2648,6 +2861,10 @@ bool operator==(const quatf & lhs, const quatf & rhs) throw ()
  *
  * @return @c true if @p lhs and @p rhs are not equal; @c false otherwise.
  */
+bool operator!=(const quatf & lhs, const quatf & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -2940,8 +3157,6 @@ bool operator==(const image & lhs, const image & rhs) throw ()
 }
 
 /**
- * @fn bool operator!=(const image & lhs, const image & rhs) throw ()
- *
  * @relatesalso image
  *
  * @brief Compare for inequality.
@@ -2951,6 +3166,10 @@ bool operator==(const image & lhs, const image & rhs) throw ()
  *
  * @return @c true if @p lhs and @p rhs are not equal; @c false otherwise.
  */
+bool operator!=(const image & lhs, const image & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 /**
  * @relatesalso image
