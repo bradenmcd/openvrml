@@ -12,8 +12,15 @@
 #include <config.h>
 #endif
 
+#ifdef macintosh
+extern char* strdup(const char*);
+#include <unix.h>
+#endif
+
 #include <string.h>
+#ifndef macintosh
 #include <malloc.h>
+#endif
 #include <vector>
 
 #include "VrmlNode.h"
