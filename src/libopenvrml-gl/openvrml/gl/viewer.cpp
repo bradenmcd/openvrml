@@ -1803,9 +1803,9 @@ extern "C" {
     void OPENVRML_GL_CALLBACK_ tessExtrusionBegin(const GLenum type,
                                                   void * const pdata)
     {
-        TessExtrusion * const p = static_cast<TessExtrusion *>(pdata);
+        const TessExtrusion & p = *static_cast<TessExtrusion *>(pdata);
         glBegin(type);
-        glNormal3fv(&p->N[0]);
+        glNormal3fv(&p.N[0]);
     }
 
     /**
@@ -1815,11 +1815,11 @@ extern "C" {
                                                    void * const pdata)
     {
         const size_t j = *static_cast<size_t *>(vdata);
-        TessExtrusion * const p = static_cast<TessExtrusion *>(pdata);
+        const TessExtrusion & p = *static_cast<TessExtrusion *>(pdata);
 
-        glTexCoord2f((p->crossSection[2 * j] - p->tcDeltaU) * p->tcScaleU,
-                     (p->crossSection[2 * j + 1] - p->tcDeltaV) * p->tcScaleV);
-        glVertex3fv(&(p->c[3 * (j + p->vOffset)]));
+        glTexCoord2f((p.crossSection[2 * j] - p.tcDeltaU) * p.tcScaleU,
+                     (p.crossSection[2 * j + 1] - p.tcDeltaV) * p.tcScaleV);
+        glVertex3fv(&(p.c[3 * (j + p.vOffset)]));
     }
 }
 
@@ -1878,11 +1878,15 @@ namespace {
                 GLdouble v[3];
                 // Mesa tesselator doesn;t like closed polys
                 size_t j = equalEndpts ? cs.size() - 2 : cs.size() - 1;
-                for (; j >= 0; --j) {
-                    v[0] = c[j].x();
-                    v[1] = c[j].y();
-                    v[2] = c[j].z();
-                    gluTessVertex(&tesselator, v, &j);
+                for (; j > 0; --j) {
+                    const size_t index = j - 1;
+                    v[0] = c[index].x();
+                    v[1] = c[index].y();
+                    v[2] = c[index].z();
+                    gluTessVertex(&tesselator,
+                                  v,
+                                  const_cast<GLvoid *>(
+                                      static_cast<const GLvoid *>(&index)));
                 }
                 gluTessEndContour(&tesselator);
                 gluTessEndPolygon(&tesselator);
@@ -1923,10 +1927,11 @@ namespace {
                 N = indexFaceNormal(0, 1, 2, c);
                 glNormal3fv(&N[0]);
 
-                for (size_t j = cs.size() - 1; j >= 0; --j) {
-                    glTexCoord2f((cs[j].x() - xz[0]) * dx,
-                                 (cs[j].y() - xz[2]) * dz);
-                    glVertex3fv(&c[j][0]);
+                for (size_t j = cs.size(); j > 0; --j) {
+                    const size_t index = j - 1;
+                    glTexCoord2f((cs[index].x() - xz[0]) * dx,
+                                 (cs[index].y() - xz[2]) * dz);
+                    glVertex3fv(&c[index][0]);
                 }
                 glEnd();
             }
