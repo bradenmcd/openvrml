@@ -214,7 +214,12 @@ ScriptJS::~ScriptJS()
 
 static double s_timeStamp;	// go away...
 
-// Run a specified script
+/**
+ * @brief Run a specified script.
+ *
+ * @todo Decide what to do if a call to a JavaScript function fails
+ *      (probably due to an error in the script).
+ */
 
 void ScriptJS::activate(double timeStamp, const char * fname,
                         const size_t argc, const VrmlField * argv[]) {
@@ -247,7 +252,16 @@ void ScriptJS::activate(double timeStamp, const char * fname,
         
         JSBool ok;
         ok = JS_CallFunctionValue(d_cx, d_globalObj, fval, argc, jsargv, &rval);
-        assert(ok);
+        //
+        // What should we do at this point if a function call fails? For now,
+        // just print a message for a debug build.
+        //
+# ifndef NDEBUG
+        if (!ok) {
+            cerr << "Call to " << fname << " in Script node "
+                 << this->scriptNode.name() << " failed." << endl;
+        }
+# endif
 
         // Free up args
         for (i = 0; i < argc; ++i) {
