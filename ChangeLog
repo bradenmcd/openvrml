@@ -12,6 +12,9 @@
           precision) rather than JavaScript integers.  ECMAScript
           doesn't have distinct integer and floating point types.
 
+        * src/openvrml/OpenVRML/vrml97node.cpp:  Fixed conditional
+          sections for OPENVRML_ENABLE_TEXT_NODE.
+
 2002-12-10  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp:  MSVC6 doesn't like in-class

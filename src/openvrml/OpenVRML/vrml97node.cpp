@@ -11494,11 +11494,13 @@ void Switch::processSet_whichChoice(const FieldValue & sfint32,
 TextClass::TextClass(Browser & browser):
     NodeClass(browser)
 {
+# if OPENVRML_ENABLE_TEXT_NODE
     FT_Error error = 0;
     error = FT_Init_FreeType(&this->freeTypeLibrary);
     if (error) {
         browser.err << "Error initializing FreeType library." << std::endl;
     }
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -11506,11 +11508,13 @@ TextClass::TextClass(Browser & browser):
  */
 TextClass::~TextClass() throw ()
 {
+# if OPENVRML_ENABLE_TEXT_NODE
     FT_Error error = 0;
     error = FT_Done_FreeType(this->freeTypeLibrary);
     if (error) {
         browser.err << "Error shutting down FreeType library." << std::endl;
     }
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -11629,10 +11633,12 @@ Text::Text(const NodeType & nodeType,
  */
 Text::~Text() throw ()
 {
+# if OPENVRML_ENABLE_TEXT_NODE
     if (this->face) {
         FT_Error ftError = FT_Done_Face(this->face);
         assert(ftError == FT_Err_Ok); // Surely this can't fail.
     }
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 bool Text::isModified() const {
@@ -11654,18 +11660,22 @@ void Text::clearFlags() {
 
 Viewer::Object Text::insertGeometry(Viewer * const viewer, VrmlRenderContext rc)
 {
-    Viewer::Object retval(0);
-    assert(this->textGeometry.coord.getLength() > 0);
-    assert(this->textGeometry.coordIndex.getLength() > 0);
-    assert(this->textGeometry.normal.getLength() > 0);
-    retval = viewer->insertShell(Viewer::MASK_CCW,
-                                 this->textGeometry.coord.getLength(),
-                                 &this->textGeometry.coord.getElement(0)[0],
-                                 this->textGeometry.coordIndex.getLength(),
-                                 &this->textGeometry.coordIndex.getElement(0),
-                                 0, 0, 0,
-                                 &this->textGeometry.normal.getElement(0)[0], 0, 0,
-                                 0, 0, 0);
+    const Viewer::Object retval =
+            viewer->insertShell(Viewer::MASK_CCW,
+                                this->textGeometry.coord.getLength(),
+                                (this->textGeometry.coord.getLength() > 0)
+                                    ? &this->textGeometry.coord.getElement(0)[0]
+                                    : 0,
+                                this->textGeometry.coordIndex.getLength(),
+                                (this->textGeometry.coordIndex.getLength() > 0)
+                                    ? &this->textGeometry.coordIndex.getElement(0)
+                                    : 0,
+                                0, 0, 0,
+                                (this->textGeometry.normal.getLength() > 0)
+                                    ? &this->textGeometry.normal.getElement(0)[0]
+                                    : 0,
+                                0, 0,
+                                0, 0, 0);
     if (this->fontStyle.get()) { this->fontStyle.get()->clearModified(); }
     return retval;
 }
@@ -12551,8 +12561,8 @@ namespace {
         }
         return -1;
     }
-# endif // OPENVRML_ENABLE_TEXT_NODE
 }
+# endif // OPENVRML_ENABLE_TEXT_NODE
 
 Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
                                    const float advanceWidth,
