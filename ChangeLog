@@ -1,3 +1,11 @@
+2003-09-01  Braden McDaniel  <braden@endoframe.com>
+
+	Added doc target to generate Doxygen documentation.
+
+	* Makefile.am:  Added doc target.
+	* configure.ac:  Check for doxygen.
+	* doc/Makefile.am:  Added doc target.
+
 2003-08-30  Braden McDaniel  <braden@endoframe.com>
 
 	Removed OPENVRML_SCOPE and OPENVRML_GL_SCOPE macros that were
