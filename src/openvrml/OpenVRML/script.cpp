@@ -223,59 +223,6 @@ const node_interface_set & script_node::script_node_type::interfaces() const
     return this->interfaces_;
 }
 
-namespace {
-    const field_value_ptr
-    default_field_value(const field_value::type_id field_type)
-        throw (std::bad_alloc)
-    {
-        switch (field_type) {
-        case field_value::sfbool_id:
-            return field_value_ptr(new sfbool);
-        case field_value::sfcolor_id:
-            return field_value_ptr(new sfcolor);
-        case field_value::sffloat_id:
-            return field_value_ptr(new sffloat);
-        case field_value::sfimage_id:
-            return field_value_ptr(new sfimage);
-        case field_value::sfint32_id:
-            return field_value_ptr(new sfint32);
-        case field_value::sfnode_id:
-            return field_value_ptr(new sfnode);
-        case field_value::sfrotation_id:
-            return field_value_ptr(new sfrotation);
-        case field_value::sfstring_id:
-            return field_value_ptr(new sfstring);
-        case field_value::sftime_id:
-            return field_value_ptr(new sftime);
-        case field_value::sfvec2f_id:
-            return field_value_ptr(new sfvec2f);
-        case field_value::sfvec3f_id:
-            return field_value_ptr(new sfvec3f);
-        case field_value::mfcolor_id:
-            return field_value_ptr(new mfcolor);
-        case field_value::mffloat_id:
-            return field_value_ptr(new mffloat);
-        case field_value::mfint32_id:
-            return field_value_ptr(new mfint32);
-        case field_value::mfnode_id:
-            return field_value_ptr(new mfnode);
-        case field_value::mfrotation_id:
-            return field_value_ptr(new mfrotation);
-        case field_value::mfstring_id:
-            return field_value_ptr(new mfstring);
-        case field_value::mftime_id:
-            return field_value_ptr(new mftime);
-        case field_value::mfvec2f_id:
-            return field_value_ptr(new mfvec2f);
-        case field_value::mfvec3f_id:
-            return field_value_ptr(new mfvec3f);
-        default:
-            assert(false);
-        }
-        return field_value_ptr(0);
-    }
-}
-
 /**
  * @brief Clone the Script node that has this node_type.
  *
@@ -306,21 +253,27 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
     //
     // Add the default field and eventOut values.
     //
-    for (node_interface_set::const_iterator itr(this->interfaces_.begin());
-            itr != this->interfaces_.end(); ++itr) {
-        if (itr->type == node_interface::field_id) {
+    for (node_interface_set::const_iterator interface =
+             this->interfaces_.begin();
+         interface != this->interfaces_.end();
+         ++interface) {
+        if (interface->type == node_interface::field_id) {
+            std::auto_ptr<field_value> value =
+                field_value::create(interface->field_type);
             const field_value_map_t::value_type
-                    value(itr->id, default_field_value(itr->field_type));
+                entry(interface->id, field_value_ptr(value));
             const bool succeeded =
-                    scriptNode.field_value_map_.insert(value).second;
+                scriptNode.field_value_map_.insert(entry).second;
             assert(succeeded);
-        } else if (itr->type == node_interface::eventout_id) {
-            const polled_eventout_value
-                    eventOutValue(default_field_value(itr->field_type), false);
+        } else if (interface->type == node_interface::eventout_id) {
+            std::auto_ptr<field_value> value =
+                field_value::create(interface->field_type);
+            const polled_eventout_value eventout_value =
+                polled_eventout_value(field_value_ptr(value), false);
             const eventout_value_map_t::value_type
-                value(itr->id, eventOutValue);
+                entry(interface->id, eventout_value);
             const bool succeeded =
-                    scriptNode.eventout_value_map_.insert(value).second;
+                scriptNode.eventout_value_map_.insert(entry).second;
             assert(succeeded);
         }
     }
@@ -449,9 +402,11 @@ void script_node::add_eventout(const field_value::type_id type,
     //
     // eventOut value.
     //
-    const polled_eventout_value eventOutValue(default_field_value(type), 0.0);
-    eventout_value_map_t::value_type value(id, eventOutValue);
-    const bool succeeded = this->eventout_value_map_.insert(value).second;
+    std::auto_ptr<field_value> value = field_value::create(type);
+    const polled_eventout_value eventout_value =
+        polled_eventout_value(field_value_ptr(value), 0.0);
+    eventout_value_map_t::value_type entry(id, eventout_value);
+    const bool succeeded = this->eventout_value_map_.insert(entry).second;
     assert(succeeded);
 }
 

@@ -72,6 +72,21 @@ field_value_ptr::field_value_ptr(field_value * const value)
 }
 
 /**
+ * @brief Construct.
+ *
+ * @param value an auto_ptr to a field_value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+field_value_ptr::field_value_ptr(std::auto_ptr<field_value> & value)
+    throw (std::bad_alloc):
+    value(value.get())
+{
+    this->count = new size_t(1); // Throws std::bad_alloc.
+    value.release();
+}
+
+/**
  * @brief Construct a copy.
  *
  * @param ptr the field_value_ptr to copy.

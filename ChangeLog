@@ -1,3 +1,23 @@
+2003-07-12  Braden McDaniel  <braden@endoframe.com>
+
+	Added factory function to field_value to create an instance of
+	one of its subclasses.
+
+	* src/openvrml/OpenVRML/browser.cpp
+	(ProtoNodeClass::addEventOut, ProtoNodeClass::addExposedField)
+	Use field_value::create.
+	* src/openvrml/OpenVRML/field.cpp (field_value::create):  Added
+	function.
+	* src/openvrml/OpenVRML/field.h (field_value::create):  Added
+	function.
+	* src/openvrml/OpenVRML/field_value_ptr.cpp:  Added conversion
+	from std::auto_ptr<field_value>.
+	* src/openvrml/OpenVRML/field_value_ptr.h:  Added conversion
+	from std::auto_ptr<field_value>.
+	* src/openvrml/OpenVRML/script.cpp
+	(script_node::script_node_type::create_node):  Use
+	field_value::create.
+
 2003-07-09  Braden McDaniel  <braden@endoframe.com>
 
 	Removed unnecessary function bounding_sphere::reset.

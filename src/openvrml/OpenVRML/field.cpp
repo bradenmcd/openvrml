@@ -194,6 +194,66 @@ std::ostream & operator<<(std::ostream & out, const field_value & value)
  */
 
 /**
+ * @brief Create a default instance of the type specified by @p type.
+ *
+ * @param type  field value type identifier.
+ *
+ * @return a default instance of the type specified by @p type.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<field_value> field_value::create(const type_id type)
+    throw (std::bad_alloc)
+{
+    using std::auto_ptr;
+    switch (type) {
+    case field_value::sfbool_id:
+        return auto_ptr<field_value>(new sfbool);
+    case field_value::sfcolor_id:
+        return auto_ptr<field_value>(new sfcolor);
+    case field_value::sffloat_id:
+        return auto_ptr<field_value>(new sffloat);
+    case field_value::sfimage_id:
+        return auto_ptr<field_value>(new sfimage);
+    case field_value::sfint32_id:
+        return auto_ptr<field_value>(new sfint32);
+    case field_value::sfnode_id:
+        return auto_ptr<field_value>(new sfnode);
+    case field_value::sfrotation_id:
+        return auto_ptr<field_value>(new sfrotation);
+    case field_value::sfstring_id:
+        return auto_ptr<field_value>(new sfstring);
+    case field_value::sftime_id:
+        return auto_ptr<field_value>(new sftime);
+    case field_value::sfvec2f_id:
+        return auto_ptr<field_value>(new sfvec2f);
+    case field_value::sfvec3f_id:
+        return auto_ptr<field_value>(new sfvec3f);
+    case field_value::mfcolor_id:
+        return auto_ptr<field_value>(new mfcolor);
+    case field_value::mffloat_id:
+        return auto_ptr<field_value>(new mffloat);
+    case field_value::mfint32_id:
+        return auto_ptr<field_value>(new mfint32);
+    case field_value::mfnode_id:
+        return auto_ptr<field_value>(new mfnode);
+    case field_value::mfrotation_id:
+        return auto_ptr<field_value>(new mfrotation);
+    case field_value::mfstring_id:
+        return auto_ptr<field_value>(new mfstring);
+    case field_value::mftime_id:
+        return auto_ptr<field_value>(new mftime);
+    case field_value::mfvec2f_id:
+        return auto_ptr<field_value>(new mfvec2f);
+    case field_value::mfvec3f_id:
+        return auto_ptr<field_value>(new mfvec3f);
+    default:
+        assert(false);
+    }
+    return auto_ptr<field_value>(0);
+}
+
+/**
  * @brief Constructor.
  */
 field_value::field_value() throw ()

@@ -46,6 +46,8 @@ namespace OpenVRML {
     public:
         explicit field_value_ptr(field_value * value = 0)
             throw (std::bad_alloc);
+        explicit field_value_ptr(std::auto_ptr<field_value> & value)
+            throw (std::bad_alloc);
         field_value_ptr(const field_value_ptr & ptr) throw ();
         ~field_value_ptr() throw ();
 

@@ -2259,57 +2259,33 @@ ImplNodeInterface::ImplNodeInterface(OpenVRML::node & node,
 {}
 
 namespace {
-    const field_value_ptr
-    default_field_value(const field_value::type_id field_type)
-    {
-        switch (field_type) {
-        case field_value::sfbool_id:     return field_value_ptr(new sfbool);
-        case field_value::sfcolor_id:    return field_value_ptr(new sfcolor);
-        case field_value::sffloat_id:    return field_value_ptr(new sffloat);
-        case field_value::sfimage_id:    return field_value_ptr(new sfimage);
-        case field_value::sfint32_id:    return field_value_ptr(new sfint32);
-        case field_value::sfnode_id:     return field_value_ptr(new sfnode);
-        case field_value::sfrotation_id: return field_value_ptr(new sfrotation);
-        case field_value::sfstring_id:   return field_value_ptr(new sfstring);
-        case field_value::sftime_id:     return field_value_ptr(new sftime);
-        case field_value::sfvec2f_id:    return field_value_ptr(new sfvec2f);
-        case field_value::sfvec3f_id:    return field_value_ptr(new sfvec3f);
-        case field_value::mfcolor_id:    return field_value_ptr(new mfcolor);
-        case field_value::mffloat_id:    return field_value_ptr(new mffloat);
-        case field_value::mfint32_id:    return field_value_ptr(new mfint32);
-        case field_value::mfnode_id:     return field_value_ptr(new mfnode);
-        case field_value::mfrotation_id: return field_value_ptr(new mfrotation);
-        case field_value::mfstring_id:   return field_value_ptr(new mfstring);
-        case field_value::mftime_id:     return field_value_ptr(new mftime);
-        case field_value::mfvec2f_id:    return field_value_ptr(new mfvec2f);
-        case field_value::mfvec3f_id:    return field_value_ptr(new mfvec3f);
-        default: assert(false);
-        }
-        return field_value_ptr(0);
-    }
 
     struct add_eventout_value_ : std::unary_function<node_interface, void> {
         add_eventout_value_(ProtoNode::EventOutValueMap & eventOutValueMap):
-                eventOutValueMap(&eventOutValueMap) {}
+            eventOutValueMap(&eventOutValueMap)
+        {}
 
-        void operator()(const node_interface & interface) const {
+        void operator()(const node_interface & interface) const
+        {
             if (interface.type == node_interface::eventout_id) {
-                const node::polled_eventout_value
-                    eventOutValue(default_field_value(interface.field_type),
-                                  0.0);
+                std::auto_ptr<field_value> value =
+                    field_value::create(interface.field_type);
+                const node::polled_eventout_value eventOutValue =
+                    node::polled_eventout_value(field_value_ptr(value), 0.0);
                 const ProtoNode::EventOutValueMap::value_type
-                        value(interface.id, eventOutValue);
+                    entry(interface.id, eventOutValue);
                 const bool succeeded =
-                        this->eventOutValueMap->insert(value).second;
+                    this->eventOutValueMap->insert(entry).second;
                 assert(succeeded);
             } else if (interface.type == node_interface::exposedfield_id) {
-                const node::polled_eventout_value
-                    eventOutValue(default_field_value(interface.field_type),
-                                  0.0);
+                std::auto_ptr<field_value> value =
+                    field_value::create(interface.field_type);
+                const node::polled_eventout_value eventOutValue =
+                    node::polled_eventout_value(field_value_ptr(value), 0.0);
                 const ProtoNode::EventOutValueMap::value_type
-                        value(interface.id + "_changed", eventOutValue);
+                    entry(interface.id + "_changed", eventOutValue);
                 const bool succeeded =
-                        this->eventOutValueMap->insert(value).second;
+                    this->eventOutValueMap->insert(entry).second;
                 assert(succeeded);
             }
         }
@@ -2341,7 +2317,8 @@ ProtoNode::ProtoNode(const node_type & nodeType) throw (std::bad_alloc):
  */
 ProtoNode::ProtoNode(const node_type & nodeType,
                      const scope_ptr & scope,
-                     const ProtoNode & n) throw (std::bad_alloc):
+                     const ProtoNode & n)
+    throw (std::bad_alloc):
     node(nodeType, scope)
 {
     assert(!n.implNodes.empty());
@@ -3631,12 +3608,14 @@ void ProtoNodeClass::addEventOut(const field_value::type_id type,
     //
     // Add a value to the ProtoNode's eventOutValueMap.
     //
-    const node::polled_eventout_value
-            eventOutValue(default_field_value(interface.field_type), false);
+    std::auto_ptr<field_value> value =
+        field_value::create(interface.field_type);
+    const node::polled_eventout_value eventOutValue =
+        node::polled_eventout_value(field_value_ptr(value), false);
     const ProtoNode::EventOutValueMap::value_type
-            value(interface.id, eventOutValue);
+        entry(interface.id, eventOutValue);
     const bool succeeded =
-            this->protoNode.eventOutValueMap.insert(value).second;
+        this->protoNode.eventOutValueMap.insert(entry).second;
     assert(succeeded);
 }
 
@@ -3652,7 +3631,8 @@ void ProtoNodeClass::addEventOut(const field_value::type_id type,
  */
 void ProtoNodeClass::addExposedField(const std::string & id,
                                      const field_value_ptr & defaultValue)
-        throw (std::invalid_argument, std::bad_alloc) {
+    throw (std::invalid_argument, std::bad_alloc)
+{
     const node_interface
         interface(node_interface::exposedfield_id, defaultValue->type(), id);
     this->protoNodeType.addInterface(interface);
@@ -3666,12 +3646,14 @@ void ProtoNodeClass::addExposedField(const std::string & id,
     // Add a value to the ProtoNode's eventOutValueMap.
     //
     {
-        const node::polled_eventout_value
-                eventOutValue(default_field_value(interface.field_type), 0.0);
+        std::auto_ptr<field_value> value =
+            field_value::create(interface.field_type);
+        const node::polled_eventout_value eventOutValue =
+            node::polled_eventout_value(field_value_ptr(value), 0.0);
         const ProtoNode::EventOutValueMap::value_type
-                value(interface.id + "_changed", eventOutValue);
+            entry(interface.id + "_changed", eventOutValue);
         const bool succeeded =
-                this->protoNode.eventOutValueMap.insert(value).second;
+            this->protoNode.eventOutValueMap.insert(entry).second;
         assert(succeeded);
     }
 }
@@ -3705,7 +3687,8 @@ void ProtoNodeClass::addField(const std::string & id,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ProtoNodeClass::addRootNode(const node_ptr & node) throw (std::bad_alloc) {
+void ProtoNodeClass::addRootNode(const node_ptr & node) throw (std::bad_alloc)
+{
     this->protoNode.addRootNode(node);
 }
 

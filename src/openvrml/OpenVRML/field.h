@@ -68,6 +68,9 @@ namespace OpenVRML {
             mfvec3f_id
         };
 
+        static std::auto_ptr<field_value> create(type_id type)
+            throw (std::bad_alloc);
+
         virtual ~field_value() throw () = 0;
 
         virtual std::auto_ptr<field_value> clone() const
