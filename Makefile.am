@@ -6,8 +6,6 @@ EXTRA_DIST = \
         openvrml.pc.in \
         openvrml-gl.pc.in \
         openvrml.spec.in \
-        INSTALL-MSVC6.txt \
-        Makefile.vc6 \
         lookat.xpm
 
 if ENABLE_GL_RENDERER

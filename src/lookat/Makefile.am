@@ -14,4 +14,4 @@ endif
 
 noinst_HEADERS = ViewerGlut.h glutint.h
 
-EXTRA_DIST = lookat.cpp ViewerGlut.cpp Makefile.vc6
+EXTRA_DIST = lookat.cpp ViewerGlut.cpp

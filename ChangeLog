@@ -1,5 +1,45 @@
 2003-09-25  Braden McDaniel  <braden@endoframe.com>
 
+	Removed Microsoft Visual C++ 6.0 project files and makefiles.
+
+	* INSTALL-MSVC6.txt:  Removed file.
+	* Makefile.am:  No longer distribute INSTALL-MSVC6.txt,
+	Makefile.vc6.
+	* Makefile.vc6:  Removed file.
+	* ide-projects/Makefile.am:  Removed Microsoft Visual C++ 6.0
+	project files from the distribution; added Microsoft
+	Visual C++ 7.0 project files to the distribution.
+	* ide-projects/Windows/VisualC6/config.h:  Removed file.
+	* ide-projects/Windows/VisualC6/openvrml.dsp:  Removed file.
+	* ide-projects/Windows/VisualC6/openvrml.dsw:  Removed file.
+	* ide-projects/Windows/VisualC6/lookat/lookat.dsp:  Removed
+	file.
+	* ide-projects/Windows/VisualC6/lookat/lookat.dsw:  Removed
+	file.
+	* ide-projects/Windows/VisualC6/openvrml-core/openvrmlcore.dsp:
+	Removed file.
+	* ide-projects/Windows/VisualC6/openvrml-core/openvrmlcore.dsw:
+	Removed file.
+	* ide-projects/Windows/VisualC6/openvrml-gl/openvrmlgl.dsp:
+	Removed file.
+	* ide-projects/Windows/VisualC6/openvrml-gl/openvrmlgl.dsw:
+	Removed file.
+	* ide-projects/Windows/VisualC6/tplib/antlr/libantlr.dsp:
+	Removed file.
+	* ide-projects/Windows/VisualC6/tplib/antlr/libantlr.dsw:
+	Removed file.
+	* src/libopenvrml/openvrml/Makefile.am:  Removed Makefile.vc6
+	from the distribution.
+	* src/libopenvrml/openvrml/Makefile.vc6:  Removed file.
+	* src/libopenvrml-gl/openvrml/gl/Makefile.am:  Removed
+	Makefile.vc6 from the distribution.
+	* src/libopenvrml-gl/openvrml/gl/Makefile.vc6:  Removed file.
+	* src/lookat/Makefile.am:  Removed Makefile.vc6 from the
+	distribution.
+	* src/lookat/Makefile.vc6:  Removed file.
+
+2003-09-25  Braden McDaniel  <braden@endoframe.com>
+
 	Doc-comment improvements.
 
 	* src/libopenvrml/openvrml/bounding_volume.cpp

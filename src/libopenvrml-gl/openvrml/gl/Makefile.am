@@ -25,4 +25,4 @@ libopenvrml_gl_la_SOURCES = viewer.cpp
 libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @GL_LIBS@
 endif
 
-EXTRA_DIST = viewer.cpp viewer.h Makefile.vc6
+EXTRA_DIST = viewer.cpp viewer.h

@@ -77,13 +77,19 @@ libopenvrml_la_SOURCES = \
         frustum.cpp \
         vrml97node.cpp
 
-libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
-@PNG_LIBS@ @Z_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE_LIBS@ @JS_LIBS@ @JNI_LIBS@
+libopenvrml_la_LDFLAGS = \
+        -version-info $(LIBRARY_VERSION) \
+        @JPEG_LIBS@ \
+        @PNG_LIBS@ \
+        @Z_LIBS@ \
+        @FONTCONFIG_LIBS@ \
+        @FREETYPE_LIBS@ \
+        @JS_LIBS@ \
+        @JNI_LIBS@
 
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/src/libantlr.la
 
 EXTRA_DIST = \
         Vrml97TokenTypes.txt \
         Vrml97Parser.g \
-        Vrml97ParserTokenTypes.txt \
-        Makefile.vc6
+        Vrml97ParserTokenTypes.txt
