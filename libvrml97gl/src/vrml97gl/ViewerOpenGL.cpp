@@ -22,6 +22,7 @@
 #include <stdio.h>		// sprintf
 #include <math.h>
 
+#include <vrml97/MathUtils.h>
 #include <vrml97/System.h>
 #include <vrml97/VrmlScene.h>
 #include <vrml97/VrmlNodeNavigationInfo.h>
@@ -41,18 +42,6 @@
 
 #define USE_TEXTURE_DISPLAY_LISTS 1
 
-// namespace {
-
-static const float FPTOLERANCE(1.0e-7);
-
-static bool FPZERO(double n);
-static bool FPEQUAL(double, double);
-static void Vnorm(float [3]);
-static float Vdot(const float [3], const float [3]);
-static void Vcross(float [3], const float [3], const float [3]);
-static void Vdiff(float [3], const float [3], const float [3]);
-
-// }
 
 //  Construct a viewer for the specified scene. I'm not happy with the
 //  mutual dependencies between VrmlScene/VrmlNodes and Viewers...
@@ -300,6 +289,76 @@ void ViewerOpenGL::getOrientation( float *orientation )
       orientation[2] = V[2];
       orientation[3] = acos( Vdot( L, Z ) );
     }
+}
+
+// Construct Billboard transformation matrix M  
+// S. K. Bose March 02/2000
+ 
+void ViewerOpenGL::getBillboardTransformMatrix(float M[4][4], float *axisOfRotation)
+{
+  GLfloat modelview[16],invert[9];
+  glGetFloatv (GL_MODELVIEW_MATRIX, modelview);
+  float pos[] = {-modelview[12], - modelview[13], -modelview[14]};
+  float v[3],y[3];
+
+  if(InvertMatrix3x3of4x4(modelview,invert))
+  {
+// Viewer position in local coordinate system
+   v[0] = pos[0] * invert[0] + pos[1] * invert[3] + pos[2] * invert[6];
+   v[1] = pos[0] * invert[1] + pos[1] * invert[4] + pos[2] * invert[7];
+   v[2] = pos[0] * invert[2] + pos[1] * invert[5] + pos[2] * invert[8];
+   Vnorm( v );
+// Viewer-alignment
+  if ( FPZERO(axisOfRotation[0]) &&
+       FPZERO(axisOfRotation[1]) &&
+       FPZERO(axisOfRotation[2]) )
+    {
+// Viewer's up vector
+	  y[0] = invert[3];
+	  y[1] = invert[4];
+	  y[2] = invert[5];
+      Vnorm( y );
+// get x-vector from the cross product of Viewer's
+// up vector and billboard-to-viewer vector. 
+     float x[3];
+     Vcross( x, y, v );
+	 Vnorm( x );
+     M[0][0] = x[0]; M[0][1] = x[1]; M[0][2] = x[2]; M[0][3] = 0.0;
+     M[1][0] = y[0]; M[1][1] = y[1]; M[1][2] = y[2]; M[1][3] = 0.0;
+     M[2][0] = v[0]; M[2][1] = v[1]; M[2][2] = v[2]; M[2][3] = 0.0,
+     M[3][0] = M[3][1] = M[3][2] = 0.0; M[3][3] = 1.0;
+    }
+
+  // use axis of rotation
+  else
+    {
+// axis of rotation will be the y-axis vector
+     y[0] = axisOfRotation[0];
+     y[1] = axisOfRotation[1];
+     y[2] = axisOfRotation[2];
+     Vnorm( y );
+
+// Plane defined by the axisOfRotation and billboard-to-viewer vector
+     float x[3];
+     Vcross( x, y, v );
+     Vnorm( x );
+// Get Z axis vector from cross product of X and Y
+     float z[3];
+     Vcross(z, x, y);
+// Transform Z axis vector of current coordinate system to new coordinate system.
+     float nz[3];
+     nz[0] = x[2]; nz[1] = y[2]; nz[2] = z[2];
+// calculate the angle by which the Z axis vector of current coordinate system
+// has to be rotated around the Y axis to new coordinate system.
+     float angle = acos(nz[2])*180/M_PI;
+     if(nz[0] > 0) angle = -angle;
+     glPushMatrix();
+     glLoadIdentity();
+     glRotatef(angle,y[0],y[1],y[2]);
+     glGetFloatv (GL_MODELVIEW_MATRIX,(float *) M);
+     glPopMatrix();	 
+  }
+  }
 }
 
 Viewer::RenderMode ViewerOpenGL::getRenderMode() 
@@ -2277,72 +2336,14 @@ void ViewerOpenGL::unsetTransform(float *center,
 
 void ViewerOpenGL::setBillboardTransform(float *axisOfRotation) 
 {
-  GLint viewport[4];
-  GLdouble modelview[16], projection[16];
-  glGetIntegerv (GL_VIEWPORT, viewport);
-  glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
+// Following code is modified by S. K. Bose March 02/2000 to fix the Billboardtransform
+// according to the specification.
 
-  for (int i=0; i<4; ++i)
-    for (int j=0; j<4; ++j)
-      projection[4*i+j] = (i == j) ? 1.0 : 0.0;
-
-  double dx, dy, dz, o[3];
-  float y[3], z[3];
-
-  gluUnProject( 0.0, 0.0, 0.0,
-		modelview, projection, viewport,
-		o, o+1, o+2);
-
-  // Rotate around specified axis
-  if (! FPZERO(axisOfRotation[0]) ||
-      ! FPZERO(axisOfRotation[1]) ||
-      ! FPZERO(axisOfRotation[2]) )
-    {
-      y[0] = axisOfRotation[0];
-      y[1] = axisOfRotation[1];
-      y[2] = axisOfRotation[2];
-    }
-
-  // Face the viewer
-  else
-    {
-      gluUnProject( 0.0, 1.0, 0.0,
-		    modelview, projection, viewport,
-		    &dx, &dy, &dz);
-      y[0] = dx - o[0];
-      y[1] = dy - o[1];
-      y[2] = dz - o[2];
-    }
-
-  gluUnProject( 0.0, 0.0, 1.0,
-		modelview, projection, viewport,
-		&dx, &dy, &dz);
-  z[0] = dx - o[0];
-  z[1] = dy - o[1];
-  z[2] = dz - o[2];
-
-  Vnorm( y );
-  Vnorm( z );
-
-
-  float m[16];
-  Vcross( m, y, z );
-  m[3] = 0.0;
-  m[4] = y[0];
-  m[5] = y[1];
-  m[6] = y[2];
-  m[7] = 0.0;
-  m[8] = z[0];
-  m[9] = z[1];
-  m[10] = z[2];
-  m[11] = 0.0;
-  m[12] = 0.0;
-  m[13] = 0.0;
-  m[14] = 0.0;
-  m[15] = 1.0;
+  float M[4][4];
+  getBillboardTransformMatrix(M, axisOfRotation);
 
   glPushMatrix();
-  glMultMatrixf(m);
+  glMultMatrixf(&M[0][0]);
 
 }
 
@@ -3009,46 +3010,4 @@ void ViewerOpenGL::text3(int *justify, float size, int n, const char **s)
   glPopAttrib();
 
 }
-
-// namespace {
-    
-static bool FPZERO(double n) {
-    return (fabs(n) < FPTOLERANCE);
-}
-    
-static bool FPEQUAL(double a, double b) {
-    return FPZERO(a - b);
-}
-    
-static void Vnorm(float V[3]) {
-    float vlen = static_cast<float>(sqrt(  (V[0] * V[0])
-                                         + (V[1] * V[1])
-                                         + (V[2] * V[2])));
-    if (! FPZERO(vlen)) {
-        V[0] /= vlen;
-        V[1] /= vlen;
-        V[2] /= vlen;
-    }
-}
-
-static float Vdot(const float A[3], const float B[3]) {
-    return ((A[0] * B[0]) + (A[1] * B[1]) + (A[2] * B[2]));
-}
-    
-static void Vcross(float V[3], const float A[3], const float B[3]) {
-    // Use temps so V can be A or B
-    float x ((A[1] * B[2]) - (A[2] * B[1]));
-    float y ((A[2] * B[0]) - (A[0] * B[2]));
-    float z ((A[0] * B[1]) - (A[1] * B[0]));
-    V[0] = x;
-    V[1] = y;
-    V[2] = z;
-}
-
-static void Vdiff(float V[3], const float A[3], const float B[3]) {
-    V[0] = A[0] - B[0];
-    V[1] = A[1] - B[1];
-    V[2] = A[2] - B[2];
-}
-// }
 
