@@ -3500,13 +3500,33 @@ void node_traverser::traverse(const std::vector<node_ptr> & nodes)
  *
  * If this method is called during a traversal, no more descendant
  * @link openvrml::node nodes@endlink will be traversed. Note that if
- * halt_traversal is called in the implementation of
+ * <code>halt_traversal</code> is called in the implementation of
  * <code>@link node_traverser::on_entering on_entering@endlink</code>,
- * <code>on_leaving</code> will still be called for the current node.
+ * <code>@link node_traverser::on_leaving on_leaving@endlink</code> will still
+ * be called for the current node and any parent nodes (that is, any node for
+ * which <code>@link node_traverser::on_entering on_entering@endlink</code> has
+ * been called). Implementations of
+ * <code>@link node_traverser::on_leaving on_leaving@endlink</code> can call
+ * <code>node_traverser::halted</code> to check whether the traversal has been
+ * halted.
  */
 void node_traverser::halt_traversal() throw ()
 {
     this->halt = true;
+}
+
+/**
+ * @brief Indicate whether the traversal has been halted.
+ *
+ * This function is useful in implementations of
+ * <code>@link node_traverser::on_leaving on_leaving@endlink</code> that need
+ * to check whether the traversal has been halted.
+ *
+ * @return @c true if the traversal has been halted; @c false otherwise.
+ */
+bool node_traverser::halted() throw ()
+{
+    return this->halt;
 }
 
 /**

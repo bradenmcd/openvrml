@@ -1,5 +1,13 @@
 2004-11-14 Braden McDaniel  <braden@endoframe.com>
 
+	Added member function "halted" to node_traversal; used to check
+	whether the traversal has been halted.
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+
+2004-11-14 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node.cpp:  Doc-comment improvements.
 
 2004-11-14 Braden McDaniel  <braden@endoframe.com>
