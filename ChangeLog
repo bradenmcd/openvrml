@@ -1,5 +1,9 @@
 2002-08-12  Braden McDaniel  <braden@endoframe.com>
 
+        * m4/gl.m4: Link against libm when checking for libGLU.
+
+2002-08-12  Braden McDaniel  <braden@endoframe.com>
+
         * src/openvrml/OpenVRML/field.cpp: Workarounds for a bug in
           gcc 3.1.
 

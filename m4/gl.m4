@@ -45,7 +45,7 @@ AC_CHECK_LIB(GL, glAccum,
              , ${GL_LIBS})
     
 AC_CHECK_LIB(GLU, gluBeginCurve,
-             [GL_LIBS="-lGLU ${GL_LIBS}"
+             [GL_LIBS="-lGLU -lm ${GL_LIBS}"
               AC_CHECK_HEADER(GL/glu.h,
                               [ov_have_gl=yes
                                AC_DEFINE(OPENVRML_GLU_H, [<GL/glu.h>],
@@ -56,7 +56,7 @@ AC_CHECK_LIB(GLU, gluBeginCurve,
                                                 AC_DEFINE(OPENVRML_GLU_H,
                                                           [<OpenGL/glu.h>],
                                                           [Header for OpenGL Utility Library])])])],
-             [ov_have_gl=no], ${GL_LIBS})
+             [ov_have_gl=no], -lm ${GL_LIBS})
 AC_LANG_POP(C)
     
 if test "X${ov_have_gl}" = Xyes; then
