@@ -22,7 +22,7 @@ class Doc {
 public:
 
   Doc(char const * url = 0, Doc const *relative = 0);
-  Doc(char const * url = 0, Doc2 const * relative = 0);
+  Doc(char const * url, Doc2 const * relative);
   Doc(Doc const *);
   Doc(Doc2 const *);
   ~Doc();

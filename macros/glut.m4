@@ -50,7 +50,7 @@ AC_DEFUN(OV_PATH_GLUT,
     AC_CHECK_LIB(glut, glutMainLoop,
       [
         ac_save_CPPFLAGS="${CPPFLAGS}"
-        CPPFLAGS="${CPPFLAGS} ${glut__Idir}"
+        CPPFLAGS="${CPPFLAGS} ${glut__Idir} ${X__cflags}"
         AC_CHECK_HEADER(GL/glut.h,
           have_glut=yes,
           have_glut=no

@@ -27,7 +27,7 @@
 #ifdef macintosh
 #define	htonl(x)	(x)
 #else
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__CYGWIN__)
 #include <winsock2.h>
 #else
 #include <sys/types.h>   /* to make netinet/in.h happy */
@@ -213,7 +213,7 @@ typedef char INT8;
 
 
 /* Code for unbound values in decoding tables */
-#define ERROR ((unsigned)-1)
+#define MPG_ERROR ((unsigned)-1)
 #define DCT_ERROR 63
 
 #define MACRO_BLOCK_STUFFING 34
@@ -311,7 +311,7 @@ static void j_rev_dct (DCTBLOCK);
  *
  * Results:
  *	The decoding table for macro_block_address_increment will
- *      be filled; illegal values will be filled as ERROR.
+ *      be filled; illegal values will be filled as MPG_ERROR.
  *
  * Side effects:
  *	The array mb_addr_inc will be filled.
@@ -323,7 +323,7 @@ static void init_mb_addr_inc(vb_entry *mb_addr_inc)
   int i, j, val;
 
   for (i = 0; i < 8; i++) {
-    mb_addr_inc[i].value = ERROR;
+    mb_addr_inc[i].value = MPG_ERROR;
     mb_addr_inc[i].num_bits = 0;
   }
 
@@ -331,7 +331,7 @@ static void init_mb_addr_inc(vb_entry *mb_addr_inc)
   mb_addr_inc[8].num_bits = 11;
 
   for (i = 9; i < 15; i++) {
-    mb_addr_inc[i].value = ERROR;
+    mb_addr_inc[i].value = MPG_ERROR;
     mb_addr_inc[i].num_bits = 0;
   }
 
@@ -339,7 +339,7 @@ static void init_mb_addr_inc(vb_entry *mb_addr_inc)
   mb_addr_inc[15].num_bits = 11;
 
   for (i = 16; i < 24; i++) {
-    mb_addr_inc[i].value = ERROR;
+    mb_addr_inc[i].value = MPG_ERROR;
     mb_addr_inc[i].num_bits = 0;
   }
 
@@ -378,7 +378,7 @@ static void init_mb_addr_inc(vb_entry *mb_addr_inc)
  *
  * Results:
  *	The decoding table for macro_block_type in predictive-coded
- *      pictures will be filled; illegal values will be filled as ERROR.
+ *      pictures will be filled; illegal values will be filled as MPG_ERROR.
  *
  * Side effects:
  *	The array mb_type_P will be filled.
@@ -391,7 +391,7 @@ static void init_mb_type_P(mb_type_entry *mb_type_P)
 
   mb_type_P[0].mb_quant = mb_type_P[0].mb_motion_forward 
     = mb_type_P[0].mb_motion_backward = mb_type_P[0].mb_pattern 
-      = mb_type_P[0].mb_intra = ERROR;
+      = mb_type_P[0].mb_intra = MPG_ERROR;
   mb_type_P[0].num_bits = 0;
 
   ASSIGN2(1, 2, 1, 0, 0, 0, 1, 6, mb_type_P)
@@ -413,7 +413,7 @@ static void init_mb_type_P(mb_type_entry *mb_type_P)
  *
  * Results:
  *	The decoding table for macro_block_type in bidirectionally-coded
- *      pictures will be filled; illegal values will be filled as ERROR.
+ *      pictures will be filled; illegal values will be filled as MPG_ERROR.
  *
  * Side effects:
  *	The array mb_type_B will be filled.
@@ -426,7 +426,7 @@ static void init_mb_type_B(mb_type_entry *mb_type_B)
 
   mb_type_B[0].mb_quant = mb_type_B[0].mb_motion_forward 
     = mb_type_B[0].mb_motion_backward = mb_type_B[0].mb_pattern 
-      = mb_type_B[0].mb_intra = ERROR;
+      = mb_type_B[0].mb_intra = MPG_ERROR;
   mb_type_B[0].num_bits = 0;
 
   ASSIGN2(1, 2, 1, 0, 0, 0, 1, 6, mb_type_B);
@@ -469,7 +469,7 @@ static void init_mb_type_B(mb_type_entry *mb_type_B)
  *
  * Results:
  *	The decoding table for the motion vectors will be filled;
- *      illegal values will be filled as ERROR.
+ *      illegal values will be filled as MPG_ERROR.
  *
  * Side effects:
  *	The array motion_vectors will be filled.
@@ -481,7 +481,7 @@ static void init_motion_vectors(motion_vectors_entry *motion_vectors)
   int i, j, val = 16;
 
   for (i = 0; i < 24; i++) {
-    motion_vectors[i].code = ERROR;
+    motion_vectors[i].code = MPG_ERROR;
     motion_vectors[i].num_bits = 0;
   }
 
@@ -2073,7 +2073,7 @@ static motion_vectors_entry  motion_vectors[2048];
 
 /* Decoding table for coded_block_pattern */
 static coded_block_pattern_entry coded_block_pattern[512] = 
-{ {(unsigned int)ERROR, 0}, {(unsigned int)ERROR, 0}, {39, 9}, {27, 9}, {59, 9}, {55, 9}, {47, 9}, {31, 9},
+{ {(unsigned int)MPG_ERROR, 0}, {(unsigned int)MPG_ERROR, 0}, {39, 9}, {27, 9}, {59, 9}, {55, 9}, {47, 9}, {31, 9},
     {58, 8}, {58, 8}, {54, 8}, {54, 8}, {46, 8}, {46, 8}, {30, 8}, {30, 8},
     {57, 8}, {57, 8}, {53, 8}, {53, 8}, {45, 8}, {45, 8}, {29, 8}, {29, 8},
     {38, 8}, {38, 8}, {26, 8}, {26, 8}, {37, 8}, {37, 8}, {25, 8}, {25, 8},
@@ -2156,7 +2156,7 @@ static vb_entry dct_dc_size_luminance[128] =
     {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, 
     {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, 
     {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, 
-    {6, 5}, {6, 5}, {6, 5}, {6, 5}, {7, 6}, {7, 6}, {8, 7}, {(unsigned int)ERROR, 0}
+    {6, 5}, {6, 5}, {6, 5}, {6, 5}, {7, 6}, {7, 6}, {8, 7}, {(unsigned int)MPG_ERROR, 0}
 };
 
 /* Decoding table for dct_dc_size_chrominance */
@@ -2192,7 +2192,7 @@ static vb_entry dct_dc_size_chrominance[256] =
     {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, 
     {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, 
     {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, 
-    {6, 6}, {6, 6}, {6, 6}, {6, 6}, {7, 7}, {7, 7}, {8, 8}, {(unsigned int)ERROR, 0}
+    {6, 6}, {6, 6}, {6, 6}, {6, 6}, {7, 7}, {7, 7}, {8, 8}, {(unsigned int)MPG_ERROR, 0}
 };
 
 int MPEGerrno = 0;

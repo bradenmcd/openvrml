@@ -341,7 +341,7 @@ protected:
   int d_activeSensitive;
   int d_overSensitive;
 
-  enum { MAXSENSITIVE = 200 };	// make dynamic?...
+  enum { MAXSENSITIVE = 1000 };	// make dynamic?...
   void *d_sensitiveObject[ MAXSENSITIVE ];
 
   bool d_selectMode;

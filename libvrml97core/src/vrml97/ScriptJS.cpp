@@ -12,14 +12,15 @@
 #include <config.h>
 #endif
 
-#include <stdio.h>
-#include <string.h>
+#if HAVE_JAVASCRIPT
+# include <stdio.h>
+# include <string.h>
 
-#ifdef _WIN32
-#include <strstrea.h>
-#else
-#include <strstream.h>
-#endif
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#  include <strstrea.h>
+# else
+#  include <strstream.h>
+# endif
 
 
 #include "ScriptJS.h"
@@ -2757,3 +2758,4 @@ ErrorReporter(JSContext *, const char *message, JSErrorReport *report)
     }
     theSystem->error("\n");
 }
+#endif // HAVE_JAVASCRIPT

@@ -15,8 +15,9 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__CYGWIN__)
 #include <string.h>
 #endif
 
@@ -84,7 +85,7 @@ void System::debug(const char *, ...)
 #endif
 }
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__CYGWIN__)
 
 // Windows
 
@@ -169,14 +170,10 @@ bool System::loadUrl(char *url, int np, char **parameters )
 
 // This won't work under windows or if netscape isn't running...
 
-# ifndef _WIN32
-#   include <stdlib.h>
-# endif
-
 bool System::loadUrl(const char * url, size_t np, char const * const * parameters )
 {
   if (! url) return false;
-#ifndef _WIN32
+# if defined(__CYGWIN__) || ! defined(_WIN32)
   char buf[1024];
   if (np)
     sprintf(buf,"/bin/csh -c \"netscape -remote 'openURL(%s, %s)'\" &",
@@ -190,7 +187,7 @@ bool System::loadUrl(const char * url, size_t np, char const * const * parameter
 }
 
 // added for working under windows (and is not needed for mac os)...
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__CYGWIN__)
 #include <sys/types.h>
 #include <winsock2.h>
 #include <string.h>
@@ -209,30 +206,27 @@ bool System::loadUrl(const char * url, size_t np, char const * const * parameter
 
 int System::connectSocket( const char *host, int port )
 {
-//#ifdef _WIN32
-//  return -1;
-//#endif
 #ifdef macintosh
   return -1;
 #else
   struct sockaddr_in sin;
   struct hostent *he;
 
-#ifdef _WIN32            
+#if defined(_WIN32) && !defined(__CYGWIN__)
   WSADATA wsaData;
   WORD wVersionRequested;
 #endif
 
   int sockfd = -1;
 
- #ifdef _WIN32   
+#if defined(_WIN32) && !defined(__CYGWIN__)
    wVersionRequested = MAKEWORD( 1, 0 );
    if (WSAStartup(wVersionRequested,&wsaData) == SOCKET_ERROR)
    {
-                theSystem->error("WSAStartup failed with error %d\n",WSAGetLastError());
-                WSACleanup();
-                return -1;
-        }
+     theSystem->error("WSAStartup failed with error %d\n",WSAGetLastError());
+     WSACleanup();
+     return -1;
+   }
 #endif                            
   memset( &sin, 0, sizeof(sin) );
   sin.sin_family = AF_INET;
@@ -258,11 +252,10 @@ int System::connectSocket( const char *host, int port )
       if (sockfd != -1)
 	if (connect( sockfd, (struct sockaddr *)&sin, sizeof(sin)) == -1)
 	  {
-#ifdef _WIN32                  
-                closesocket(sockfd);
-                WSACleanup();
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	    closesocket(sockfd);
+	    WSACleanup();
 #else
-
 	    close( sockfd );
 #endif
 	    sockfd = -1;
@@ -275,12 +268,12 @@ int System::connectSocket( const char *host, int port )
 
 
 #include <fcntl.h>		// open() modes
-#ifndef _WIN32
-#include <unistd.h>
+#if defined(_WIN32) && !defined(__CYGWIN__)
+# include <io.h>
 #else
-#include <io.h>
+# include <unistd.h>
 #endif
-#include <stdlib.h>
+
 #include <errno.h>
 
 const char *System::httpHost( const char *url, int *port )
@@ -306,10 +299,6 @@ const char *System::httpHost( const char *url, int *port )
 
 const char *System::httpFetch( const char *url )
 {
-// #ifdef _WIN32
-//  return 0;
-// #else
-
     int port = 80;
     const char *hostname = httpHost(url, &port);
     
@@ -323,7 +312,7 @@ const char *System::httpFetch( const char *url )
     if ((sockfd = System::connectSocket( hostname, port )) != -1) {
         theSystem->inform("connected.");
     } else {
-# ifdef _WIN32                          
+#if defined(_WIN32) && !defined(__CYGWIN__)
         theSystem->warn("Connect failed:  (errno %d)\n",
         WSAGetLastError());
         WSACleanup();
@@ -337,7 +326,7 @@ const char *System::httpFetch( const char *url )
   if (sockfd != -1 && (result = tempnam(0, "VR")))
     {
 
-# ifdef _WIN32
+#if defined(_WIN32) && !defined(__CYGWIN__)
       int fd = open(result, O_BINARY|O_RDWR|O_CREAT, 0777);
 #else
       int fd = open(result, O_RDWR|O_CREAT, 0777);
@@ -353,13 +342,13 @@ const char *System::httpFetch( const char *url )
 	  sprintf(request,"GET %s HTTP/1.0\nAccept: */*\n\r\n", abspath);
 
 	  int nbytes = strlen(request);
-#ifdef _WIN32                           
+#if defined(_WIN32) && !defined(__CYGWIN__)
           if(send(sockfd,request,nbytes,0) != nbytes)
 #else
 
 	  if (write(sockfd, request, nbytes) != nbytes)
 #endif
-#ifdef _WIN32                          
+#if defined(_WIN32) && !defined(__CYGWIN__)
           {
                 theSystem->warn("http GET failed:  (errno %d)\n",
                 WSAGetLastError());
@@ -374,8 +363,8 @@ const char *System::httpFetch( const char *url )
 	    {
 	      int gothdr = 0, nread = 0, nwrote = 0, nmore;
 	      char *start;
-#ifdef _WIN32                                   
-          while((nmore = recv(sockfd,request,sizeof(request)-1,0)) > 0)
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	      while ((nmore = recv(sockfd,request,sizeof(request)-1,0)) > 0)
 #else            
 	      while ((nmore = read(sockfd, request, sizeof(request)-1)) > 0)
 #endif
@@ -417,7 +406,7 @@ const char *System::httpFetch( const char *url )
     }
 
   if (sockfd != -1)
-#ifdef _WIN32   
+#if defined(_WIN32) && !defined(__CYGWIN__)
 	{
                 closesocket(sockfd);
                 WSACleanup();

@@ -186,7 +186,7 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
 
   // Check whether the frame should be advanced
   else if ( d_isActive.get() &&
-	    d_lastFrameTime + fabs(d_speed.get()) <= timeNow.get() )
+	    d_lastFrameTime + fabs(1/d_speed.get()) <= timeNow.get() )
     {
       if (d_speed.get() < 0.0)
 	--d_frame;
@@ -200,7 +200,7 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
   // Tell the scene when the next update is needed.
   if (d_isActive.get())
     {
-      double d = d_lastFrameTime + fabs(d_speed.get()) - timeNow.get();
+      double d = d_lastFrameTime + fabs(1/d_speed.get()) - timeNow.get();
       d_scene->setDelta( 0.9 * d );
     }
 

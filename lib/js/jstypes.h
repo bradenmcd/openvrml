@@ -71,7 +71,8 @@
 **
 **
 ***********************************************************************/
-#ifdef WIN32
+
+#if defined(_WIN32) && !defined(__CYGWIN__)
 /* These also work for __MWERKS__ */
 #define JS_EXTERN_API(__type) extern _declspec(dllexport) __type
 #define JS_EXPORT_API(__type) _declspec(dllexport) __type
@@ -131,7 +132,7 @@
 
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__CYGWIN__)
 #  ifdef __MWERKS__
 #    define JS_IMPORT_API(__x)      __x
 #  else
@@ -141,7 +142,7 @@
 #    define JS_IMPORT_API(__x)      JS_EXPORT_API (__x)
 #endif
 
-#if defined(_WIN32) && !defined(__MWERKS__)
+#if defined(_WIN32) && !defined(__CYGWIN__)  && !defined(__MWERKS__)
 #    define JS_IMPORT_DATA(__x)      _declspec(dllimport) __x
 #else
 #    define JS_IMPORT_DATA(__x)     __x
@@ -164,7 +165,7 @@
 #define JS_FRIEND_API(t)    JS_PUBLIC_API(t)
 #define JS_FRIEND_DATA(t)   JS_PUBLIC_DATA(t)
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__CYGWIN__)
 #   define JS_INLINE __inline
 #elif defined(__GNUC__)
 #   define JS_INLINE

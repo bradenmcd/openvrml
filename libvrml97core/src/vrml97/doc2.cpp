@@ -28,7 +28,7 @@
 #   include <config.h>
 # endif
 
-# ifdef _WIN32
+#if defined(_WIN32) && !defined(__CYGWIN__)
 #   include <winconfig.h>
 # endif
 
@@ -514,7 +514,7 @@ namespace {
     
     bool z::filebuf::is_open() const
     {
-        return this->file;
+        return (this->file != 0);
     }
     
     z::filebuf * z::filebuf::open(const char * path, int mode,

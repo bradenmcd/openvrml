@@ -30,7 +30,7 @@ class Doc2;
 header "post_include_cpp" {
 # include <memory>
 # include <assert.h>
-# ifdef _WIN32
+# if defined(_WIN32) && ! defined(__CYGWIN__)
 #   include <strstrea.h>
 # else
 #   include <strstream.h>

@@ -29,7 +29,7 @@ int VrmlNamespace::s_nNamespaces = 0;
 VrmlNamespace::VrmlNamespace( VrmlNamespace *parent ) :
   d_parent(parent)
 {
-	++s_nNamespaces;
+  ++s_nNamespaces;
 
   // Initialize typeList with built in nodes
   if (builtInList.size() == 0) defineBuiltIns();
@@ -49,8 +49,11 @@ VrmlNamespace::~VrmlNamespace()
 
   // Free builtins
   if ( --s_nNamespaces == 0 )
-	  for (i = builtInList.begin(); i != builtInList.end(); ++i)
-		(*i)->dereference();
+    {
+      for (i = builtInList.begin(); i != builtInList.end(); ++i)
+	(*i)->dereference();
+      builtInList.clear();
+    }
 }
 
 

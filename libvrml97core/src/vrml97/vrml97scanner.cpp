@@ -284,7 +284,7 @@ antlr::RefToken Vrml97Utf8Scanner::nextToken()
         _getNextChar();
     
         char prevChar('\0');
-        while ((_c != '"') && (prevChar != '\\')) {
+        while ((_c != '"') || (prevChar == '\\')) {
             tokenString += _c;
             prevChar = _c;
             _getNextChar();

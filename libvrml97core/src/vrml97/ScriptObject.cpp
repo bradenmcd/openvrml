@@ -22,7 +22,9 @@
 #include <string.h>
 
 // JavaScript
+#if HAVE_JAVASCRIPT
 # include "ScriptJS.h"
+#endif
 
 // Java via Sun JDK
 #if HAVE_JDK
@@ -43,13 +45,14 @@ ScriptObject *ScriptObject::create( VrmlNodeScript *node,
         if (! url[i]) continue;
 
         // Get the protocol & mimetype...
-
+#if HAVE_JAVASCRIPT
         // Need to handle external .js files too...
         if (strncmp(url[i], "javascript:", 11) == 0 ||
 	    strncmp(url[i], "vrmlscript:", 11) == 0 )
 	{
 	    return new ScriptJS( node, url[i]+11 );
 	}
+#endif // HAVE_JAVASCRIPT
 
 #if HAVE_JDK
         int slen = strlen(url[i]);
