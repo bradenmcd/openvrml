@@ -1,3 +1,8 @@
+2002-05-26  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/node.cpp: Allocate the default BSphere
+          statically.
+
 2002-05-25  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/script.cpp: Changed usage of

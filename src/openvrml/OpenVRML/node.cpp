@@ -1156,15 +1156,18 @@ void Node::clearFlags()
  * culled.
  *
  * @return this node's bounding volume
+ *
+ * @todo Should this return a reference?
  */
 const BVolume * Node::getBVolume() const {
-  static BSphere * inf_bsphere = 0;
-  if (!inf_bsphere) {
-    inf_bsphere = new BSphere();
-    inf_bsphere->setMAX();
-  }
-  const_cast<Node *>(this)->setBVolumeDirty(false);
-  return inf_bsphere;
+    static BSphere infBSphere;
+    static BSphere * infBSpherePtr = 0;
+    if (!infBSpherePtr) {
+        infBSpherePtr = &infBSphere;
+        infBSpherePtr->setMAX();
+    }
+    const_cast<Node *>(this)->setBVolumeDirty(false);
+    return infBSpherePtr;
 }
 
 
