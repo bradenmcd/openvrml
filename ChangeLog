@@ -1,3 +1,8 @@
+2004-05-14 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Fixed name
+	of combined_vertex_data_ for cl 13.10.3077.
+
 2004-05-09 Braden McDaniel  <braden@endoframe.com>
 
 	* openvrml.spec.in:  Corrected description of lookat RPM to

@@ -160,7 +160,7 @@ namespace {
     {}
 
 
-    struct combined_vertex_data {
+    struct combined_vertex_data_ {
         openvrml::color color;
         openvrml::vec3f normal;
         openvrml::vec2f tex_coord;
@@ -174,7 +174,7 @@ namespace {
         const std::vector<openvrml::vec3f> * face_normal;
         const std::vector<openvrml::int32> * face_normal_index;
         std::list<vertex_data> combined_vertices;
-        std::list< ::combined_vertex_data> combined_vertex_data;
+        std::list<combined_vertex_data_> combined_vertex_data;
 
         shell_tess_user_data();
     };
@@ -325,7 +325,7 @@ shell_tess_combine(GLdouble coords[3],
         new_vertex.coord[1] = coords[1];
         new_vertex.coord[2] = coords[2];
         *outData = &new_vertex;
-    } catch (std::bad_alloc & ex) {
+    } catch (std::bad_alloc &) {
         *outData = 0;
     }
 }
