@@ -5297,7 +5297,7 @@ void NodeMovieTexture::update( SFTime &timeNow )
   if (! d_isActive.get() &&
       d_startTime.get() <= timeNow.get() &&
       d_startTime.get() >= d_lastFrameTime &&
-      ( (d_stopTime.get() < d_startTime.get() || // valid stopTime
+      ( (d_stopTime.get() <= d_startTime.get() || // valid stopTime
      d_stopTime.get() > timeNow.get()) ||    // hasn't passed
     d_loop.get() ))
     {
