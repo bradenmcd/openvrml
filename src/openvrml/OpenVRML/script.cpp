@@ -2360,7 +2360,13 @@ JSBool getCurrentSpeed(JSContext * const cx, JSObject *,
                        uintN, jsval *, jsval * const rval)
     throw ()
 {
-    *rval = DOUBLE_TO_JSVAL(JS_NewDouble( cx, 0.0 )); //...
+    Script * const script =
+            static_cast<Script *>(JS_GetContextPrivate(cx));
+    assert(script);
+
+    float speed = script->getScriptNode().nodeType.nodeClass
+                      .browser.getCurrentSpeed();
+    *rval = DOUBLE_TO_JSVAL(JS_NewDouble( cx, speed ));
     return JS_TRUE;
 }
 

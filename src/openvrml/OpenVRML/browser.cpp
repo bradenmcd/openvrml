@@ -953,6 +953,17 @@ const char * Browser::getName() const throw () { return "OpenVRML"; }
 const char * Browser::getVersion() const throw () { return PACKAGE_VERSION; }
 
 /**
+ * @brief Get the average navigation speed in meters per second.
+ *
+ * @return the average navigation speed.
+ */
+float Browser::getCurrentSpeed() {
+    Vrml97Node::NavigationInfo * const navInfo = bindableNavigationInfoTop();
+    if (navInfo) { return navInfo->getSpeed(); }
+    return 0.0f;
+}
+
+/**
  * @brief Get the URI for the world.
  *
  * @return the URI for the world.

@@ -120,6 +120,7 @@ namespace OpenVRML {
 
         virtual const char * getName() const throw ();
         virtual const char * getVersion() const throw ();
+        float getCurrentSpeed();
         const std::string getWorldURI() const throw (std::bad_alloc);
         void replaceWorld(const MFNode & nodes);
         virtual void loadURI(const MFString & uri, const MFString & parameter)
