@@ -2239,7 +2239,7 @@ namespace {
                 assert(parameters.get());
                 
                 script->getScriptNode().nodeType.nodeClass
-                        .getScene().queueLoadUrl(url.get(), parameters.get());
+                        .getScene().queueLoadUrl(*url, *parameters);
                 return JS_TRUE;
             }
 
@@ -2270,7 +2270,7 @@ namespace {
                 
                 VrmlNamespace * ns = new VrmlNamespace(); // should be stored with nodes...
                 script->getScriptNode().nodeType.nodeClass
-                        .getScene().queueReplaceNodes(nodes.get(), ns);
+                        .getScene().queueReplaceNodes(*nodes, *ns);
                 
                 *rval = JSVAL_VOID;
                 return JS_TRUE;

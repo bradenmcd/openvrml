@@ -122,8 +122,8 @@ namespace OpenVRML {
         VrmlNamespace * getScope() { return this->scope; }
 
         // Queue an event to load URL/nodes (async so it can be called from a node)
-        void queueLoadUrl(MFString * url, MFString * parameters );
-        void queueReplaceNodes(MFNode * nodes, VrmlNamespace *ns );
+        void queueLoadUrl(const MFString & url, const MFString & parameters );
+        void queueReplaceNodes(const MFNode & nodes, VrmlNamespace & ns);
 
         void sensitiveEvent(Node * object, double timeStamp,
 		            bool isOver, bool isActive, double *point );

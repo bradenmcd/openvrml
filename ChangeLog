@@ -2,6 +2,8 @@
 
         * ScriptJDK.cpp: Updates to compile against JDK 1.4.
 
+        * Eliminated downcast methods from the FieldValue classes.
+
 2002-05-14  Braden McDaniel  <braden@endoframe.com>
 
         * Partial Inline node support.

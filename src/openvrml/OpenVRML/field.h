@@ -76,48 +76,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc) = 0;
         virtual ostream& print(ostream& os) const = 0;
         virtual Type type() const = 0;
-
-        // safe downcasts, const and non-const versions.
-        // These avoid casts of VrmlField* but are ugly in that this class
-        // must know of the existence of all of its subclasses...
-        virtual const SFBool *toSFBool() const;
-        virtual const SFColor *toSFColor() const;
-        virtual const SFFloat *toSFFloat() const;
-        virtual const SFImage *toSFImage() const;
-        virtual const SFInt32 *toSFInt32() const;
-        virtual const SFNode *toSFNode() const;
-        virtual const SFRotation *toSFRotation() const;
-        virtual const SFString *toSFString() const;
-        virtual const SFTime *toSFTime() const;
-        virtual const SFVec2f *toSFVec2f() const;
-        virtual const SFVec3f *toSFVec3f() const;
-        virtual const MFColor *toMFColor() const;
-        virtual const MFFloat *toMFFloat() const;
-        virtual const MFInt32 *toMFInt32() const;
-        virtual const MFNode *toMFNode() const;
-        virtual const MFRotation *toMFRotation() const;
-        virtual const MFString *toMFString() const;
-        virtual const MFVec2f *toMFVec2f() const;
-        virtual const MFVec3f *toMFVec3f() const;
-        virtual SFBool *toSFBool();
-        virtual SFColor *toSFColor();
-        virtual SFFloat *toSFFloat();
-        virtual SFImage *toSFImage();
-        virtual SFInt32 *toSFInt32();
-        virtual SFNode *toSFNode();
-        virtual SFRotation *toSFRotation();
-        virtual SFString *toSFString();
-        virtual SFTime *toSFTime();
-        virtual SFVec2f *toSFVec2f();
-        virtual SFVec3f *toSFVec3f();
-        virtual MFColor *toMFColor();
-        virtual MFFloat *toMFFloat();
-        virtual MFInt32 *toMFInt32();
-        virtual MFNode *toMFNode();
-        virtual MFRotation *toMFRotation();
-        virtual MFString *toMFString();
-        virtual MFVec2f *toMFVec2f();
-        virtual MFVec3f *toMFVec3f();
     };
 
 
@@ -138,8 +96,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFBool * toSFBool() const;
-        virtual SFBool * toSFBool();
     };
 
 
@@ -172,8 +128,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFColor * toSFColor() const;
-        virtual SFColor * toSFColor();
     };
 
 
@@ -194,8 +148,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFFloat * toSFFloat() const;
-        virtual SFFloat * toSFFloat();
     };
 
 
@@ -223,8 +175,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFImage * toSFImage() const;
-        virtual SFImage * toSFImage();
     };
 
 
@@ -245,8 +195,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFInt32 * toSFInt32() const;
-        virtual SFInt32 * toSFInt32();
     };
 
 
@@ -267,8 +215,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFNode * toSFNode() const;
-        virtual SFNode * toSFNode();
     };
 
 
@@ -309,8 +255,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFRotation * toSFRotation() const;
-        virtual SFRotation * toSFRotation();
 
     private:
         void toQuaternion(float theQuat[4]) const;
@@ -335,8 +279,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFString * toSFString() const;
-        virtual SFString * toSFString();
     };
 
 
@@ -357,8 +299,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFTime * toSFTime() const;
-        virtual SFTime * toSFTime();
     };
 
 
@@ -395,8 +335,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFVec2f * toSFVec2f() const;
-        virtual SFVec2f * toSFVec2f();
     };
 
 
@@ -436,8 +374,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const SFVec3f * toSFVec3f() const;
-        virtual SFVec3f * toSFVec3f();
     };
 
 
@@ -466,8 +402,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const MFColor * toMFColor() const;
-        virtual MFColor * toMFColor();
     };
 
 
@@ -496,8 +430,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const MFFloat * toMFFloat() const;
-        virtual MFFloat * toMFFloat();
     };
 
 
@@ -526,8 +458,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const MFInt32 * toMFInt32() const;
-        virtual MFInt32 * toMFInt32();
     };
 
 
@@ -556,8 +486,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const MFNode* toMFNode() const;
-        virtual MFNode* toMFNode();
     };
 
 
@@ -586,8 +514,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual ostream& print(ostream& os) const;
         virtual Type type() const;
-        virtual const MFRotation * toMFRotation() const;
-        virtual MFRotation * toMFRotation();
     };
 
 
@@ -611,8 +537,6 @@ namespace OpenVRML {
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const;
-        virtual const MFString * toMFString() const;
-        virtual MFString * toMFString();
         virtual ostream& print(ostream& os) const;
     };
 
@@ -670,8 +594,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const;
         virtual ostream& print(ostream& os) const;
-        virtual const MFVec2f * toMFVec2f() const;
-        virtual MFVec2f * toMFVec2f();
     };
 
 
@@ -700,8 +622,6 @@ namespace OpenVRML {
                 throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const;
         virtual ostream& print(ostream& os) const;
-        virtual const MFVec3f * toMFVec3f() const;
-        virtual MFVec3f * toMFVec3f();
     };
 }
 

@@ -686,21 +686,18 @@ double VrmlScene::getFrameRate() { return d_frameRate; }
 /**
  * Queue an event to load URL/nodes (async so it can be called from a node)
  */
-void VrmlScene::queueLoadUrl( MFString *url, MFString *parameters )
-{
-  if (! d_pendingNodes && ! d_pendingUrl)
-    {
-      d_pendingUrl = url->clone()->toMFString();
-      d_pendingParameters = parameters->clone()->toMFString();
+void VrmlScene::queueLoadUrl(const MFString & url,
+                             const MFString & parameters) {
+    if (!this->d_pendingNodes && !this->d_pendingUrl) {
+        this->d_pendingUrl = new MFString(url);
+        this->d_pendingParameters = new MFString(parameters);
     }
 }
 
-void VrmlScene::queueReplaceNodes( MFNode *nodes, VrmlNamespace *ns )
-{
-  if (! d_pendingNodes && ! d_pendingUrl)
-    {
-      d_pendingNodes = nodes->clone()->toMFNode();
-      d_pendingScope = ns;
+void VrmlScene::queueReplaceNodes(const MFNode & nodes, VrmlNamespace & ns) {
+    if (!this->d_pendingNodes && !this->d_pendingUrl) {
+        this->d_pendingNodes = new MFNode(nodes);
+        d_pendingScope = &ns;
     }
 }
 
