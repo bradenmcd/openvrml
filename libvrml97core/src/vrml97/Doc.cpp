@@ -74,8 +74,8 @@ void Doc::seturl(const char *url, Doc *relative)
 
       d_url = new char[strlen(path) + strlen(url) + 1];
       strcpy(d_url, path);
-      
-      if (strlen(url)>2 && url[0] == '.' && url[1] == '/')
+
+      if (strlen(url)>2 && url[0] == '.' && url[1] == SLASH)
         strcat(d_url, url+2); // skip "./"
       else
         strcat(d_url, url);
