@@ -17,6 +17,9 @@
 
         * src/openvrml/OpenVRML/browser.cpp:  Fixes for cl 13.00.9466.
 
+        * src/openvrml/OpenVRML/bvolume.cpp:  #include <limits> instead
+          of <float.h>.
+
 2003-03-12  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/lookat.cpp, src/openvrml/OpenVRML/ScriptJDK.cpp,
