@@ -60,9 +60,9 @@
  */
 
 VrmlMatrix::VrmlMatrix(float a11, float a12, float a13, float a14,
-		               float a21, float a22, float a23, float a24, 
-		               float a31, float a32, float a33, float a34, 
-		               float a41, float a42, float a43, float a44)
+                       float a21, float a22, float a23, float a24, 
+                       float a31, float a32, float a33, float a34, 
+                       float a41, float a42, float a43, float a44)
 {
     matrix[0][0] = a11;
     matrix[0][1] = a12;
@@ -93,8 +93,7 @@ VrmlMatrix::VrmlMatrix(float a11, float a12, float a13, float a14,
 
 VrmlMatrix::VrmlMatrix(const Matrix m)
 {
-
-	memcpy(matrix, m, sizeof(float[4][4]));
+    memcpy(matrix, m, sizeof(float[4][4]));
 }
 
 /**
@@ -106,7 +105,6 @@ VrmlMatrix::VrmlMatrix(const Matrix m)
 void
 VrmlMatrix::set(const Matrix m)
 {
-
     memcpy(matrix, m, sizeof(float[4][4]));
 }
 
@@ -144,38 +142,37 @@ VrmlMatrix::operator =(const VrmlMatrix &m)
 void
 VrmlMatrix::setRotate(const float axisAngle[4])
 {
-
  // Make sure axis is normalized.
 
-  assert(fpequal(length(axisAngle), 1.0));
+   assert(fpequal(length(axisAngle), 1.0));
 
-  float aa_norm[4];
-  aa_norm[0] = axisAngle[0];
-  aa_norm[1] = axisAngle[1];
-  aa_norm[2] = axisAngle[2];
-  aa_norm[3] = axisAngle[3];
+   float aa_norm[4];
+   aa_norm[0] = axisAngle[0];
+   aa_norm[1] = axisAngle[1];
+   aa_norm[2] = axisAngle[2];
+   aa_norm[3] = axisAngle[3];
 
-  double s = sin(aa_norm[3]);
-  double c = cos(aa_norm[3]);
-  double t = 1.0 - c;
-  double x = aa_norm[0];
-  double y = aa_norm[1];
-  double z = aa_norm[2];
+   double s = sin(aa_norm[3]);
+   double c = cos(aa_norm[3]);
+   double t = 1.0 - c;
+   double x = aa_norm[0];
+   double y = aa_norm[1];
+   double z = aa_norm[2];
 
-  matrix[0][0] = t*x*x + c;
-  matrix[1][0] = t*x*y - s*z;
-  matrix[2][0] = t*x*z + s*y;
-  matrix[3][0] = 0.0;
-  matrix[0][1] = t*x*y + s*z;
-  matrix[1][1] = t*y*y + c;
-  matrix[2][1] = t*y*z - s*x;
-  matrix[3][1] = 0.0;
-  matrix[0][2] = t*x*z - s*y;
-  matrix[1][2] = t*y*z + s*x;
-  matrix[2][2] = t*z*z + c;
-  matrix[3][2] = 0.0;
-  matrix[0][3] = matrix[1][3] = matrix[2][3] = 0.0;
-  matrix[3][3] = 1.0;
+   matrix[0][0] = t*x*x + c;
+   matrix[1][0] = t*x*y - s*z;
+   matrix[2][0] = t*x*z + s*y;
+   matrix[3][0] = 0.0;
+   matrix[0][1] = t*x*y + s*z;
+   matrix[1][1] = t*y*y + c;
+   matrix[2][1] = t*y*z - s*x;
+   matrix[3][1] = 0.0;
+   matrix[0][2] = t*x*z - s*y;
+   matrix[1][2] = t*y*z + s*x;
+   matrix[2][2] = t*z*z + c;
+   matrix[3][2] = 0.0;
+   matrix[0][3] = matrix[1][3] = matrix[2][3] = 0.0;
+   matrix[3][3] = 1.0;
 }
 
 /**
@@ -186,13 +183,13 @@ VrmlMatrix::setRotate(const float axisAngle[4])
 void
 VrmlMatrix::setRotate(const VrmlSFRotation &axisAngle)
 {
-  float aa_norm[4];
+   float aa_norm[4];
 
-  aa_norm[0] = axisAngle.getX();
-  aa_norm[1] = axisAngle.getY();
-  aa_norm[2] = axisAngle.getZ();
-  aa_norm[3] = axisAngle.getAngle();
-  setRotate(aa_norm);
+   aa_norm[0] = axisAngle.getX();
+   aa_norm[1] = axisAngle.getY();
+   aa_norm[2] = axisAngle.getZ();
+   aa_norm[3] = axisAngle.getAngle();
+   setRotate(aa_norm);
 }
 
 /**
@@ -284,7 +281,7 @@ VrmlMatrix::setTranslate(const float t[3])
 void
 VrmlMatrix::setTranslate(const VrmlSFVec3f &t)
 {
-	setTranslate(t.get());
+    setTranslate(t.get());
 }
 
 /**
@@ -319,8 +316,8 @@ VrmlMatrix::identity()
 {
     return VrmlMatrix(1.0, 0.0, 0.0, 0.0,
                       0.0, 1.0, 0.0, 0.0,
-		              0.0, 0.0, 1.0, 0.0, 
-		              0.0, 0.0, 0.0, 1.0);
+                      0.0, 0.0, 1.0, 0.0, 
+                      0.0, 0.0, 0.0, 1.0);
 }
 
 /**
@@ -334,16 +331,16 @@ VrmlMatrix::MMright(const VrmlMatrix &m)
 {
     // Trivial cases
     if (IS_IDENTITY(m))
-	return *this;
+      return *this;
     else if (IS_IDENTITY(matrix))
-	return (*this = m);
+      return (*this = m);
 	
-    Matrix	tmp;
+    Matrix    tmp;
 
 #define POSTMULT(i,j) (matrix[i][0]*m.matrix[0][j] + \
-			           matrix[i][1]*m.matrix[1][j] + \
-			           matrix[i][2]*m.matrix[2][j] + \
-			           matrix[i][3]*m.matrix[3][j])
+                       matrix[i][1]*m.matrix[1][j] + \
+                       matrix[i][2]*m.matrix[2][j] + \
+                       matrix[i][3]*m.matrix[3][j])
 
     tmp[0][0] = POSTMULT(0,0);
     tmp[0][1] = POSTMULT(0,1);
@@ -378,16 +375,16 @@ VrmlMatrix::MMleft(const VrmlMatrix &m)
 {
     // Trivial cases
     if (IS_IDENTITY(m))
-	return *this;
+        return *this;
     else if (IS_IDENTITY(matrix))
-	return (*this = m);
+        return (*this = m);
 	
-    Matrix	tmp;
+    Matrix    tmp;
 
 #define PREMULT(i,j) (m.matrix[i][0]*matrix[0][j] + \
-			          m.matrix[i][1]*matrix[1][j] + \
-			          m.matrix[i][2]*matrix[2][j] + \
-			          m.matrix[i][3]*matrix[3][j])
+                      m.matrix[i][1]*matrix[1][j] + \
+                      m.matrix[i][2]*matrix[2][j] + \
+                      m.matrix[i][3]*matrix[3][j])
 
     tmp[0][0] = PREMULT(0,0);
     tmp[0][1] = PREMULT(0,1);
@@ -421,19 +418,19 @@ VrmlMatrix::MMleft(const VrmlMatrix &m)
 void
 VrmlMatrix::MatrixXVec(const float src[3], float dst[3]) const
 {
-    float	x,y,z,w;
+    float    x,y,z,w;
     
     x = matrix[0][0]*src[0] + matrix[0][1]*src[1] +
-	    matrix[0][2]*src[2] + matrix[0][3];
+        matrix[0][2]*src[2] + matrix[0][3];
     y = matrix[1][0]*src[0] + matrix[1][1]*src[1] +
-	    matrix[1][2]*src[2] + matrix[1][3];
+        matrix[1][2]*src[2] + matrix[1][3];
     z = matrix[2][0]*src[0] + matrix[2][1]*src[1] +
-	    matrix[2][2]*src[2] + matrix[2][3];
+        matrix[2][2]*src[2] + matrix[2][3];
     w = matrix[3][0]*src[0] + matrix[3][1]*src[1] +
-	    matrix[3][2]*src[2] + matrix[3][3];
+        matrix[3][2]*src[2] + matrix[3][3];
     dst[0] = x/w;
-	dst[1] = y/w;
-	dst[2] = z/w;
+    dst[1] = y/w;
+    dst[2] = z/w;
 }
 /**
  * @brief Postmultiplies matrix by given column vector on right 
@@ -446,13 +443,13 @@ void
 VrmlMatrix::MatrixXVec(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const
 {
     float   sv[3],dv[3];
-	sv[0] = src[0];
-	sv[1] = src[1];
-	sv[2] = src[2];
+    sv[0] = src[0];
+    sv[1] = src[1];
+    sv[2] = src[2];
     MatrixXVec(sv , dv);
     dst[0] = dv[0];
-	dst[1] = dv[1];
-	dst[2] = dv[2];
+    dst[1] = dv[1];
+    dst[2] = dv[2];
 }
 
 /**
@@ -464,19 +461,19 @@ VrmlMatrix::MatrixXVec(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const
 void
 VrmlMatrix::VecXMatrix(const float src[3], float dst[3]) const
 {
-    float	x,y,z,w;
+    float    x,y,z,w;
     
     x = src[0]*matrix[0][0] + src[1]*matrix[1][0] +
-	    src[2]*matrix[2][0] + matrix[3][0];
+        src[2]*matrix[2][0] + matrix[3][0];
     y = src[0]*matrix[0][1] + src[1]*matrix[1][1] +
-	    src[2]*matrix[2][1] + matrix[3][1];
+        src[2]*matrix[2][1] + matrix[3][1];
     z = src[0]*matrix[0][2] + src[1]*matrix[1][2] +
-	    src[2]*matrix[2][2] + matrix[3][2];
+        src[2]*matrix[2][2] + matrix[3][2];
     w = src[0]*matrix[0][3] + src[1]*matrix[1][3] +
-	    src[2]*matrix[2][3] + matrix[3][3];
+        src[2]*matrix[2][3] + matrix[3][3];
     dst[0] = x/w;
-	dst[1] = y/w;
-	dst[2] = z/w;
+    dst[1] = y/w;
+    dst[2] = z/w;
 }
 
 /**
@@ -489,13 +486,13 @@ void
 VrmlMatrix::VecXMatrix(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const
 {
     float   sv[3],dv[3];
-	sv[0] = src[0];
-	sv[1] = src[1];
-	sv[2] = src[2];
+    sv[0] = src[0];
+    sv[1] = src[1];
+    sv[2] = src[2];
     VecXMatrix(sv , dv);
     dst[0] = dv[0];
-	dst[1] = dv[1];
-	dst[2] = dv[2];
+    dst[1] = dv[1];
+    dst[2] = dv[2];
 }
 
 /**
@@ -527,24 +524,24 @@ namespace
 void get_affine_inverse(const float in[4][4], float out[4][4]) {
     // Check if it is an affine matrix
     assert(! ( in[0][3] != 0.0 || in[1][3] != 0.0 || in[2][3] != 0.0 || 
-	 in[3][3] != 1.0 ));
+           in[3][3] != 1.0 ));
 
     double det;
     double pos, neg, temp;
 
     pos = neg = 0.0;
     temp =  in[0][0] * in[1][1] * in[2][2];
-	if(temp >= 0.0) pos += temp; else neg += temp;
+    if(temp >= 0.0) pos += temp; else neg += temp;
     temp =  in[0][1] * in[1][2] * in[2][0];
-	if(temp >= 0.0) pos += temp; else neg += temp;
+    if(temp >= 0.0) pos += temp; else neg += temp;
     temp =  in[0][2] * in[1][0] * in[2][1];
-	if(temp >= 0.0) pos += temp; else neg += temp;
+    if(temp >= 0.0) pos += temp; else neg += temp;
     temp = -in[0][2] * in[1][1] * in[2][0];
-	if(temp >= 0.0) pos += temp; else neg += temp;
+    if(temp >= 0.0) pos += temp; else neg += temp;
     temp = -in[0][1] * in[1][0] * in[2][2];
-	if(temp >= 0.0) pos += temp; else neg += temp;
+    if(temp >= 0.0) pos += temp; else neg += temp;
     temp = -in[0][0] * in[1][2] * in[2][1];
-	if(temp >= 0.0) pos += temp; else neg += temp;
+    if(temp >= 0.0) pos += temp; else neg += temp;
     det = pos + neg;
 
 #define PRECISION_LIMIT (1.0e-25)
@@ -569,14 +566,14 @@ void get_affine_inverse(const float in[4][4], float out[4][4]) {
     // Calculate -B * inverse(A) Do the translation part
 
     out[3][0] = -( in[3][0] * out[0][0] + 
-         		   in[3][1] * out[1][0] + 
-		           in[3][2] * out[2][0] );
+                   in[3][1] * out[1][0] + 
+                   in[3][2] * out[2][0] );
     out[3][1] = -( in[3][0] * out[0][1] + 
-		           in[3][1] * out[1][1] + 
-		           in[3][2] * out[2][1] );
+                   in[3][1] * out[1][1] + 
+                   in[3][2] * out[2][1] );
     out[3][2] = -( in[3][0] * out[0][2] + 
-		           in[3][1] * out[1][2] + 
-		           in[3][2] * out[2][2] );
+                   in[3][1] * out[1][2] + 
+                   in[3][2] * out[2][2] );
 
     // Fill in last column
     out[0][3] = out[1][3] = out[2][3] = 0.0;
@@ -589,7 +586,7 @@ void get_affine_inverse(const float in[4][4], float out[4][4]) {
 const VrmlMatrix
 VrmlMatrix::affine_inverse() const
 {
-	float in[4][4],out[4][4];
+    float in[4][4],out[4][4];
     memcpy(in, matrix, sizeof(float[4][4]));
     get_affine_inverse(in,out);
     return VrmlMatrix(out);
@@ -602,7 +599,7 @@ VrmlMatrix::affine_inverse() const
  */
 
 ostream& 
-VrmlMatrix::Mdump(ostream& o)
+VrmlMatrix::print(ostream& o)
 {
   for(int i=0; i<4; i++) {
     for(int j=0; j<4; j++) {
@@ -638,29 +635,29 @@ operator *(const VrmlMatrix &left, const VrmlMatrix &right)
  * @param m2 is given VrmlMatrix object
  */
 
-int
+bool
 operator ==(const VrmlMatrix &m1, const VrmlMatrix &m2)
 {
     return (
-	    m1.matrix[0][0] == m2.matrix[0][0] &&
-	    m1.matrix[0][1] == m2.matrix[0][1] &&
-	    m1.matrix[0][2] == m2.matrix[0][2] &&
-	    m1.matrix[0][3] == m2.matrix[0][3] &&
+            m1.matrix[0][0] == m2.matrix[0][0] &&
+            m1.matrix[0][1] == m2.matrix[0][1] &&
+            m1.matrix[0][2] == m2.matrix[0][2] &&
+            m1.matrix[0][3] == m2.matrix[0][3] &&
 
-	    m1.matrix[1][0] == m2.matrix[1][0] &&
-	    m1.matrix[1][1] == m2.matrix[1][1] &&
-	    m1.matrix[1][2] == m2.matrix[1][2] &&
-	    m1.matrix[1][3] == m2.matrix[1][3] &&
+            m1.matrix[1][0] == m2.matrix[1][0] &&
+            m1.matrix[1][1] == m2.matrix[1][1] &&
+            m1.matrix[1][2] == m2.matrix[1][2] &&
+            m1.matrix[1][3] == m2.matrix[1][3] &&
 
-	    m1.matrix[2][0] == m2.matrix[2][0] &&
-	    m1.matrix[2][1] == m2.matrix[2][1] &&
-	    m1.matrix[2][2] == m2.matrix[2][2] &&
-	    m1.matrix[2][3] == m2.matrix[2][3] &&
+            m1.matrix[2][0] == m2.matrix[2][0] &&
+            m1.matrix[2][1] == m2.matrix[2][1] &&
+            m1.matrix[2][2] == m2.matrix[2][2] &&
+            m1.matrix[2][3] == m2.matrix[2][3] &&
 
-	    m1.matrix[3][0] == m2.matrix[3][0] &&
-	    m1.matrix[3][1] == m2.matrix[3][1] &&
-	    m1.matrix[3][2] == m2.matrix[3][2] &&
-	    m1.matrix[3][3] == m2.matrix[3][3]
-	    );
+            m1.matrix[3][0] == m2.matrix[3][0] &&
+            m1.matrix[3][1] == m2.matrix[3][1] &&
+            m1.matrix[3][2] == m2.matrix[3][2] &&
+            m1.matrix[3][3] == m2.matrix[3][3]
+           );
 }
 
