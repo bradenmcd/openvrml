@@ -169,7 +169,8 @@ public:
      const std::string & node_id
 	);
 	public: void externproto(
-		openvrml::browser & browser, const boost::shared_ptr<openvrml::scope> & scope
+		openvrml::browser & browser,
+            const boost::shared_ptr<openvrml::scope> & scope
 	);
 	public: void proto(
 		openvrml::browser & browser, const boost::shared_ptr<openvrml::scope> & scope

@@ -4,7 +4,7 @@
 //
 // Copyright 1998  Chris Morley
 // Copyright 1999  Kumaran Santhanam
-// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or
@@ -1918,7 +1918,7 @@ void audio_clip_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.add_audio_clip(*this);
+    this->scene()->browser().add_audio_clip(*this);
 }
 
 /**
@@ -1929,7 +1929,7 @@ void audio_clip_node::do_initialize(const double timestamp)
 void audio_clip_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.remove_audio_clip(*this);
+    this->scene()->browser().remove_audio_clip(*this);
 }
 
 
@@ -9209,7 +9209,8 @@ inline_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-inline_node::inline_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+inline_node::inline_node(const node_type & type,
+                         const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
@@ -9236,7 +9237,7 @@ inline_node::~inline_node() throw ()
  * @param context   a rendering context.
  */
 void inline_node::do_render_child(openvrml::viewer & viewer,
-                         const rendering_context context)
+                                  const rendering_context context)
 {
     this->load();
     if (this->inlineScene) { this->inlineScene->render(viewer, context); }
@@ -9294,7 +9295,21 @@ void inline_node::activate(double time, bool isOver, bool isActive, double *p)
 /**
  * @brief Load the children from the URL.
  */
-void inline_node::load() {
+void inline_node::load()
+{
+    class inline_scene : public openvrml::scene {
+    public:
+        inline_scene(openvrml::browser & b, openvrml::scene * parent):
+            openvrml::scene(b, parent)
+        {}
+
+    private:
+        virtual void scene_loaded()
+        {
+            this->initialize(openvrml::browser::current_time());
+        }
+    };
+
     //
     // XXX Need to check whether Url has been modified.
     //
@@ -9304,10 +9319,9 @@ void inline_node::load() {
     this->bounding_volume_dirty(true);
 
     assert(this->scene());
-    this->inlineScene = new openvrml::scene(this->scene()->browser,
-                                            this->url_.mfstring::value,
-                                            this->scene());
-    this->inlineScene->initialize(browser::current_time());
+    this->inlineScene = new inline_scene(this->scene()->browser(),
+                                         this->scene());
+    this->inlineScene->load(this->url_.mfstring::value);
 }
 
 
@@ -10451,7 +10465,7 @@ void movie_texture_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.add_movie(*this);
+    this->scene()->browser().add_movie(*this);
 }
 
 /**
@@ -10462,7 +10476,7 @@ void movie_texture_node::do_initialize(const double timestamp)
 void movie_texture_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.remove_movie(*this);
+    this->scene()->browser().remove_movie(*this);
 }
 
 /**
@@ -12583,7 +12597,7 @@ void point_light_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.add_scoped_light(*this);
+    this->scene()->browser().add_scoped_light(*this);
 }
 
 /**
@@ -12594,7 +12608,7 @@ void point_light_node::do_initialize(const double timestamp)
 void point_light_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.remove_scoped_light(*this);
+    this->scene()->browser().remove_scoped_light(*this);
 }
 
 
@@ -15142,7 +15156,7 @@ void spot_light_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.add_scoped_light(*this);
+    this->scene()->browser().add_scoped_light(*this);
 }
 
 /**
@@ -15153,7 +15167,7 @@ void spot_light_node::do_initialize(const double timestamp)
 void spot_light_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.remove_scoped_light(*this);
+    this->scene()->browser().remove_scoped_light(*this);
 }
 
 
@@ -18237,7 +18251,7 @@ void time_sensor_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.add_time_sensor(*this);
+    this->scene()->browser().add_time_sensor(*this);
 }
 
 /**
@@ -18248,7 +18262,7 @@ void time_sensor_node::do_initialize(const double timestamp)
 void time_sensor_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.remove_time_sensor(*this);
+    this->scene()->browser().remove_time_sensor(*this);
 }
 
 
@@ -19890,7 +19904,7 @@ const sfvec3f & viewpoint_node::position() const
 void viewpoint_node::do_initialize(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.add_viewpoint(*this);
+    this->scene()->browser().add_viewpoint(*this);
     assert(dynamic_cast<const viewpoint_class *>(&this->type().node_class()));
     viewpoint_class & nodeClass =
         const_cast<viewpoint_class &>(
@@ -19929,7 +19943,7 @@ namespace {
 void viewpoint_node::do_relocate() throw (std::bad_alloc)
 {
     assert(this->scene());
-    const node_path path = this->scene()->browser.find_node(*this);
+    const node_path path = this->scene()->browser().find_node(*this);
     assert(!path.empty());
     this->parent_transform = mat4f();
     std::for_each(path.begin(), path.end(),
@@ -19949,7 +19963,7 @@ void viewpoint_node::do_shutdown(const double timestamp) throw ()
             static_cast<const viewpoint_class &>(this->type().node_class()));
     node_class.unbind(*this, timestamp);
     assert(this->scene());
-    this->scene()->browser.remove_viewpoint(*this);
+    this->scene()->browser().remove_viewpoint(*this);
 
     if (node_class.is_first(*this)) { node_class.reset_first(); }
 }

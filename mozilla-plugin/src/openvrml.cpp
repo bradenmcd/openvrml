@@ -53,23 +53,34 @@ namespace {
 
     class ScriptablePeer;
 
+    extern "C" gboolean request_data_available(GIOChannel * source,
+                                               GIOCondition condition,
+                                               gpointer data);
+
     class PluginInstance : boost::noncopyable {
 	friend class ScriptablePeer;
+        friend gboolean request_data_available(GIOChannel * source,
+                                               GIOCondition condition,
+                                               gpointer data);
 
+        const NPP npp;
         GdkNativeWindow window;
         int x, y;
         int width, height;
         pid_t player_pid;
-        int filedes[2];
+        int out_pipe[2], in_pipe[2];
+        GIOChannel * request_channel;
+        std::stringstream request_line;
 	nsCOMPtr<VrmlBrowser> scriptablePeer;
 
     public:
-        PluginInstance() throw (std::bad_alloc);
+        explicit PluginInstance(NPP npp) throw (std::bad_alloc);
         ~PluginInstance() throw ();
 
 	nsISupports * GetScriptablePeer() throw ();
         void SetWindow(NPWindow & window) throw (std::bad_alloc);
         void HandleEvent(void * event) throw ();
+        int in() const throw ();
         int out() const throw ();
     };
 
@@ -314,7 +325,7 @@ NPError NPP_New(const NPMIMEType pluginType,
     if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
 
     try {
-        instance->pdata = new PluginInstance;
+        instance->pdata = new PluginInstance(instance);
     } catch (std::bad_alloc &) {
         return NPERR_OUT_OF_MEMORY_ERROR;
     }
@@ -1016,16 +1027,22 @@ namespace {
     }
 
 
-    PluginInstance::PluginInstance() throw (std::bad_alloc):
+    PluginInstance::PluginInstance(NPP npp) throw (std::bad_alloc):
+        npp(npp),
         window(0),
         x(0),
         y(0),
         width(0),
         height(0),
         player_pid(0),
+        request_channel(0),
 	scriptablePeer(new ScriptablePeer(*this))
     {
-        int result = pipe(this->filedes);
+        int result = pipe(this->out_pipe);
+        if (result != 0) {
+            printerr(strerror(errno));
+        }
+        result = pipe(this->in_pipe);
         if (result != 0) {
             printerr(strerror(errno));
         }
@@ -1057,7 +1074,8 @@ namespace {
         } else {
             this->window = reinterpret_cast<GdkNativeWindow>(window.window);
 
-            fcntl(filedes[0], F_SETFD, 0);
+            fcntl(this->out_pipe[0], F_SETFD, 0);
+            fcntl(this->in_pipe[1], F_SETFD, 0);
 
             this->player_pid = fork();
             if (this->player_pid == 0) {
@@ -1065,7 +1083,11 @@ namespace {
                 using std::string;
                 using boost::lexical_cast;
 
-                int result = close(filedes[1]);
+                int result = close(this->out_pipe[1]);
+                if (result != 0) {
+                    _exit(EXIT_FAILURE);
+                }
+                result = close(this->in_pipe[0]);
                 if (result != 0) {
                     _exit(EXIT_FAILURE);
                 }
@@ -1085,16 +1107,24 @@ namespace {
                     socket_id_arg_c_str + socket_id_arg.length() + 1);
 
                 string read_fd_arg =
-                    "--read-fd=" + lexical_cast<string>(filedes[0]);
+                    "--read-fd=" + lexical_cast<string>(this->out_pipe[0]);
                 const char * read_fd_arg_c_str = read_fd_arg.c_str();
                 vector<char> read_fd_arg_vec(
                     read_fd_arg_c_str,
                     read_fd_arg_c_str + read_fd_arg.length() + 1);
 
+                string write_fd_arg =
+                    "--write-fd=" + lexical_cast<string>(this->in_pipe[1]);
+                const char * write_fd_arg_c_str = write_fd_arg.c_str();
+                vector<char> write_fd_arg_vec(
+                    write_fd_arg_c_str,
+                    write_fd_arg_c_str + write_fd_arg.length() + 1);
+
                 char * argv[] = {
                     &exec_path_vec.front(),
                     &socket_id_arg_vec.front(),
                     &read_fd_arg_vec.front(),
+                    &write_fd_arg_vec.front(),
                     0
                 };
 
@@ -1103,10 +1133,20 @@ namespace {
                     printerr(strerror(errno));
                 }
             } else if (this->player_pid > 0) {
-                int result = close(filedes[0]);
+                int result = close(this->out_pipe[0]);
                 if (result != 0) {
                     printerr(strerror(errno));
                 }
+                result = close(this->in_pipe[1]);
+                if (result != 0) {
+                    printerr(strerror(errno));
+                }
+                this->request_channel =
+                    g_io_channel_unix_new(this->in_pipe[0]);
+                g_io_add_watch(this->request_channel,
+                               G_IO_IN,
+                               request_data_available,
+                               this);
             } else if (this->player_pid < 0) {
                 printerr(strerror(errno));
             }
@@ -1116,8 +1156,74 @@ namespace {
     void PluginInstance::HandleEvent(void * event) throw ()
     {}
 
+    int PluginInstance::in() const throw ()
+    {
+        return this->in_pipe[0];
+    }
+
     int PluginInstance::out() const throw ()
     {
-        return this->filedes[1];
+        return this->out_pipe[1];
+    }
+
+    gboolean request_data_available(GIOChannel * source,
+                                    GIOCondition condition,
+                                    gpointer data)
+    {
+        using std::string;
+
+        PluginInstance & pluginInstance = *static_cast<PluginInstance *>(data);
+
+        const int fd = g_io_channel_unix_get_fd(source);
+        fd_set readfds;
+        gchar c;
+        do {
+            gsize bytes_read;
+            GError * error = 0;
+            const GIOStatus status =
+                g_io_channel_read_chars(source, &c, 1, &bytes_read, &error);
+            if (status == G_IO_STATUS_ERROR) {
+                if (error) {
+                    g_warning(error->message);
+                    g_error_free(error);
+                }
+                return false;
+            }
+            if (status == G_IO_STATUS_EOF) { return false; }
+            if (status == G_IO_STATUS_AGAIN) { continue; }
+            g_return_val_if_fail(status == G_IO_STATUS_NORMAL, false);
+
+            g_assert(bytes_read == 1);
+
+            if (c != '\n') { pluginInstance.request_line.put(c); }
+
+            FD_ZERO(&readfds);
+            FD_SET(fd, &readfds);
+
+            fd_set errorfds;
+            FD_ZERO(&errorfds);
+            FD_SET(fd, &errorfds);
+
+            timeval timeout = {};
+            int bits_set = select(fd + 1, &readfds, 0, &errorfds, &timeout);
+            if (FD_ISSET(fd, &errorfds) || bits_set < 0) {
+                g_warning(strerror(errno));
+                g_return_val_if_reached(false);
+            }
+        } while (c != '\n' && FD_ISSET(fd, &readfds));
+
+        if (c == '\n') {
+            string request_type;
+            pluginInstance.request_line >> request_type;
+            if (request_type == "get-url") {
+                string url, target;
+                pluginInstance.request_line >> url >> target;
+                NPN_GetURL(pluginInstance.npp,
+                           url.c_str(),
+                           target.empty() ? 0 : target.c_str());
+            }
+        }
+
+        return true;
     }
 } // namespace

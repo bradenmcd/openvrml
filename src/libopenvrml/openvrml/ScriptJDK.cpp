@@ -6821,7 +6821,7 @@ jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
         fid = getFid(env, jBrowser, "BrowserPtr", "I");
         if (!fid) return 0;
         env->SetIntField(jBrowser, fid,
-                         reinterpret_cast<int>(&node->scene()->browser));
+                         reinterpret_cast<int>(&node->scene()->browser()));
     } else {
         node * const n =
             reinterpret_cast<node *>(env->GetIntField(obj, fid));
@@ -6830,7 +6830,7 @@ jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
         fid = getFid(env, jBrowser, "BrowserPtr", "I");
         if (!fid) { return 0; }
         env->SetIntField(jBrowser, fid,
-                         reinterpret_cast<int>(&n->scene()->browser));
+                         reinterpret_cast<int>(&n->scene()->browser()));
     }
     return jBrowser;
 }

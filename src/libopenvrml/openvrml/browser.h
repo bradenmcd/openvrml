@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,17 @@
 #   include <openvrml/script.h>
 
 namespace openvrml {
+
+    class resource_istream : public std::istream {
+    public:
+        virtual ~resource_istream() = 0;
+        virtual const std::string url() const throw () = 0;
+        virtual const std::string type() const throw () = 0;
+
+    protected:
+        explicit resource_istream(std::streambuf * streambuf);
+    };
+
 
     class invalid_vrml : public std::runtime_error {
     public:
@@ -87,13 +98,37 @@ namespace openvrml {
 
     class viewer;
     class scene;
-    class Vrml97RootScope;
+    class vrml97_root_scope;
     class null_node_class;
     class null_node_type;
 
     class browser : boost::noncopyable {
         friend class Vrml97Parser;
-        friend class Vrml97RootScope;
+        friend class vrml97_root_scope;
+
+        class node_class_map {
+            mutable boost::mutex mutex_;
+            typedef std::map<std::string, node_class_ptr> map_t;
+            map_t map_;
+
+        public:
+            explicit node_class_map(browser & b);
+
+            node_class_map & operator=(const node_class_map & map);
+
+            void init(viewpoint_node * initial_viewpoint, double timestamp);
+            const node_class_ptr insert(const std::string & id,
+                                        const node_class_ptr & node_class);
+            const node_class_ptr find(const std::string & id) const;
+            void render(viewer & v);
+
+        private:
+            //
+            // No convenient way to make copy-construction thread-safe, and we
+            // don't really need it.
+            //
+            node_class_map(const node_class_map & map);            
+        };
 
     public:
         enum cb_reason {
@@ -107,8 +142,7 @@ namespace openvrml {
         mutable boost::recursive_mutex mutex_;
         std::auto_ptr<null_node_class> null_node_class_;
         std::auto_ptr<null_node_type> null_node_type_;
-        typedef std::map<std::string, node_class_ptr> node_class_map_t;
-        node_class_map_t node_class_map;
+        node_class_map node_class_map_;
         script_node_class script_node_class_;
         boost::scoped_ptr<scene> scene_;
         const node_ptr default_viewpoint_;
@@ -168,6 +202,7 @@ namespace openvrml {
         const std::list<viewpoint_node *> & viewpoints() const throw ();
         void viewer(openvrml::viewer * v) throw (viewer_in_use);
         openvrml::viewer * viewer() const throw ();
+        std::auto_ptr<resource_istream> get_resource(const std::string & uri);
 
         virtual const char * name() const throw ();
         virtual const char * version() const throw ();
@@ -176,8 +211,8 @@ namespace openvrml {
         void world_url(const std::string & str)
             throw (invalid_url, std::bad_alloc);
         void replace_world(const std::vector<node_ptr> & nodes);
-        virtual void load_url(const std::vector<std::string> & url,
-                              const std::vector<std::string> & parameter)
+        void load_url(const std::vector<std::string> & url,
+                      const std::vector<std::string> & parameter)
             throw (std::bad_alloc);
         virtual void description(const std::string & description);
         const std::vector<node_ptr> create_vrml_from_stream(std::istream & in);
@@ -232,27 +267,28 @@ namespace openvrml {
         void do_callbacks(cb_reason reason);
 
     private:
-        void init_node_class_map();
+        virtual std::auto_ptr<resource_istream>
+        do_get_resource(const std::string & uri) = 0;
     };
 
 
     class scene : boost::noncopyable {
+        struct load_scene;
+
         mutable boost::recursive_mutex mutex_;
+        openvrml::browser & browser_;
+        scene * const parent_;
         std::vector<node_ptr> nodes_;
         std::string url_;
 
     public:
-        openvrml::browser & browser;
-        scene * const parent;
-
-        explicit scene(openvrml::browser & browser,
-                       scene * parent = 0)
+        explicit scene(openvrml::browser & browser, scene * parent = 0)
             throw ();
-        scene(openvrml::browser & browser,
-              const std::vector<std::string> & url,
-              scene * parent = 0)
-            throw (invalid_vrml, no_alternative_url, std::bad_alloc);
+        virtual ~scene() throw ();
 
+        openvrml::browser & browser() throw ();
+        scene * parent() const throw ();
+        void load(const std::vector<std::string> & url) throw (std::bad_alloc);
         void initialize(double timestamp) throw (std::bad_alloc);
         const std::vector<node_ptr> & nodes() const throw ();
         void nodes(const std::vector<node_ptr> & n) throw (std::bad_alloc);
@@ -263,6 +299,9 @@ namespace openvrml {
                       const std::vector<std::string> & parameter)
                 throw (std::bad_alloc);
         void shutdown(double timestamp) throw ();
+
+    private:
+        virtual void scene_loaded();
     };
 
     inline const std::vector<node_ptr> & scene::nodes() const throw()

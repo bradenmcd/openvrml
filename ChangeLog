@@ -1,3 +1,48 @@
+2005-03-07 Braden McDaniel  <braden@endoframe.com>
+
+	Load the initial and inline worlds asynchronously.
+
+	These changes add a new abstract class
+	openvrml::resource_istream and a pure virtual function to
+	openvrml::browser--openvrml::browser::do_get_resource--making
+	openvrml::browser an abstract class as well.  Users of
+	libopenvrml are now responsible for inheriting both these
+	classes and implementing the required functionality.
+
+	* mozilla-plugin/src/openvrml.cpp:  Implemented communication
+	from the plug-in process back to the Web browser process for the
+	purpose of requesting new streams.
+	* mozilla-plugin/src/openvrml-player/player.cpp:  Implemented
+	openvrml::browser.
+	* src/libopenvrml/openvrml/ScriptJDK.cpp:  Updates for modified
+	openvrml::scene.
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g:  Modified to use
+	thread-safe openvrml::browser::node_class_map.
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/browser.cpp:  Removed
+	openvrml::scene constructor that took a URL.  Added
+	openvrml::scene::load function to load a scene asynchronously.
+	Made openvrml::browser::load_url asynchronous.
+	* src/libopenvrml/openvrml/browser.h:  Added abstract class
+	openvrml::resource_istream.  Added pure virtual function
+	openvrml::browser::do_get_resource.  Replaced
+	openvrml::browser::node_class_map_t typedef with
+	openvrml::browser::node_class_map, a thread-safe class.
+	* src/libopenvrml/openvrml/script.cpp:  Updates for modified
+	openvrml::scene.
+	* src/libopenvrml/openvrml/vrml97node.cpp:  Updates for modified
+	openvrml::scene.
+	* src/lookat/lookat.cpp:  Implemented openvrml::browser.
+	* test/Makefile.am:  Added libtest-openvrml.
+	* test/browser-create_vrml_from_stream.cpp:  Use test_browser.
+	* test/browser_basic.cpp:  Use test_browser.
+	* test/parse-anchor.cpp:  Use test_browser.
+	* test/test_browser.cpp:  Added file.
+	* test/test_browser.h:  Added file.
+	* test/parse/Makefile.am:  Use test_browser.
+	* test/parse/parse.cpp:  Use test_browser.
+
 2005-03-06 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Makefile.am:  Updated documentation dependencies.

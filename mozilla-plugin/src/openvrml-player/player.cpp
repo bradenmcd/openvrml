@@ -64,7 +64,8 @@ namespace {
 
     enum option_id {
         gtk_socket_id_id = 128,
-        read_fd_id
+        read_fd_id,
+        write_fd_id
     };
 
     argp_option options[] = {
@@ -82,12 +83,20 @@ namespace {
             0,
             "file descriptor for reading commands"
         },
+        {
+            "write-fd",
+            write_fd_id,
+            "WRITE_FD",
+            0,
+            "file descriptor for writing commands"
+        },
         {}
     };
 
     struct arguments {
         GdkNativeWindow socket_id;
         int read_fd;
+        int write_fd;
     };
 
     class GtkGLViewer : public openvrml::gl::viewer {
@@ -222,7 +231,7 @@ namespace {
 
         const std::string url_;
         std::string type_;
-        bounded_buffer<char_type, 16384> buf_;
+        bounded_buffer<int_type, 64> buf_;
         char_type c_;
         bool npstream_destroyed_;
 
@@ -239,6 +248,7 @@ namespace {
 
     plugin_streambuf::plugin_streambuf(const std::string & url):
         url_(url),
+        c_(traits_type::not_eof(this->c_)),
         npstream_destroyed_(false)
     {
         this->setg(&this->c_, &this->c_, &this->c_);
@@ -261,6 +271,7 @@ namespace {
 
     plugin_streambuf::int_type plugin_streambuf::underflow()
     {
+        if (this->c_ == traits_type::eof()) { return traits_type::eof(); }
         this->c_ = this->buf_.get();
         this->setg(&this->c_, &this->c_, &this->c_ + 1);
         return *this->gptr();
@@ -271,14 +282,93 @@ namespace {
         this->npstream_destroyed_ = true;
     }
 
-    typedef std::set<boost::shared_ptr<plugin_streambuf> >
-        uninitialized_plugin_streambuf_set_t;
+
+    class browser : public openvrml::browser {
+    public:
+        browser();
+
+    private:
+        virtual std::auto_ptr<openvrml::resource_istream>
+        do_get_resource(const std::string & uri);
+    };
+
+    class uninitialized_plugin_streambuf_set {
+        mutable boost::mutex mutex_;
+        typedef std::set<boost::shared_ptr<plugin_streambuf> > set_t;
+        set_t set_;
+
+        struct plugin_streambuf_has_url :
+            std::unary_function<boost::shared_ptr<plugin_streambuf>, bool> {
+
+            explicit plugin_streambuf_has_url(const std::string & url):
+                url_(&url)
+            {}
+
+            bool
+            operator()(const boost::shared_ptr<plugin_streambuf> & arg) const
+            {
+                return arg->url() == *this->url_;
+            }
+
+        private:
+            const std::string * url_;
+        };
+
+    public:
+        const boost::shared_ptr<plugin_streambuf>
+        find(const std::string & url) const;
+        bool insert(const boost::shared_ptr<plugin_streambuf> & streambuf);
+        bool erase(const boost::shared_ptr<plugin_streambuf> & streambuf);
+        size_t size() const;
+        const boost::shared_ptr<plugin_streambuf> front() const;
+    } uninitialized_plugin_streambuf_set_;
+
+    const boost::shared_ptr<plugin_streambuf>
+    uninitialized_plugin_streambuf_set::find(const std::string & url) const
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        set_t::const_iterator pos = find_if(this->set_.begin(),
+                                            this->set_.end(),
+                                            plugin_streambuf_has_url(url));
+        return pos == this->set_.end()
+            ? boost::shared_ptr<plugin_streambuf>()
+            : *pos;
+    }
+
+    bool
+    uninitialized_plugin_streambuf_set::
+    insert(const boost::shared_ptr<plugin_streambuf> & streambuf)
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        return this->set_.insert(streambuf).second;
+    }
+
+    bool
+    uninitialized_plugin_streambuf_set::
+    erase(const boost::shared_ptr<plugin_streambuf> & streambuf)
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        return this->set_.erase(streambuf) == 1;
+    }
+
+    size_t uninitialized_plugin_streambuf_set::size() const
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        return this->set_.size();
+    }
+
+    const boost::shared_ptr<plugin_streambuf>
+    uninitialized_plugin_streambuf_set::front() const
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        g_assert(!this->set_.empty());
+        return *this->set_.begin();
+    }
+
     typedef std::map<size_t, boost::shared_ptr<plugin_streambuf> >
         plugin_streambuf_map_t;
 
-    uninitialized_plugin_streambuf_set_t uninitialized_plugin_streambuf_set;
     plugin_streambuf_map_t plugin_streambuf_map;
-
 
     struct command_istream_reader {
         explicit command_istream_reader(command_istream & in,
@@ -306,36 +396,33 @@ namespace {
                     std::string type, url;
                     command_line_stream >> stream_id >> type >> url;
 
-                    uninitialized_plugin_streambuf_set_t::const_iterator pos =
-                        find_if(uninitialized_plugin_streambuf_set.begin(),
-                                uninitialized_plugin_streambuf_set.end(),
-                                plugin_streambuf_has_url(url));
+                    shared_ptr<plugin_streambuf> streambuf =
+                        uninitialized_plugin_streambuf_set_.find(url);
 
-                    shared_ptr<plugin_streambuf> streambuf;
-
-                    if (pos == uninitialized_plugin_streambuf_set.end()) {
+                    if (!streambuf) {
                         //
                         // If the world_url is empty, this is the primordial
                         // stream.
                         //
                         if (this->browser_->world_url().empty()) {
-                            g_assert(uninitialized_plugin_streambuf_set.size()
+                            g_assert(uninitialized_plugin_streambuf_set_.size()
                                      == 1);
                             streambuf =
-                                *uninitialized_plugin_streambuf_set.begin();
-                            uninitialized_plugin_streambuf_set.clear();
+                                uninitialized_plugin_streambuf_set_.front();
                             this->browser_->world_url(url);
                         } else {
                             g_warning("Attempt to create an unrequested "
                                       "stream.");
                             continue;
                         }
-                    } else {
-                        streambuf = *pos;
                     }
                     streambuf->init(type);
-                    bool succeeded = plugin_streambuf_map
+                    bool succeeded = ::plugin_streambuf_map
                         .insert(make_pair(stream_id, streambuf)).second;
+                    g_assert(succeeded);
+                    succeeded =
+                        ::uninitialized_plugin_streambuf_set_.erase(streambuf);
+                    g_assert(succeeded);
                 } else if (command == "destroy-stream") {
                     size_t stream_id;
                     command_line_stream >> stream_id;
@@ -365,48 +452,9 @@ namespace {
         }
 
     private:
-        struct plugin_streambuf_has_url :
-            std::unary_function<boost::shared_ptr<plugin_streambuf>, bool> {
-
-            explicit plugin_streambuf_has_url(const std::string & url):
-                url_(&url)
-            {}
-
-            bool
-            operator()(const boost::shared_ptr<plugin_streambuf> & arg) const
-            {
-                return arg->url() == *this->url_;
-            }
-
-        private:
-            const std::string * url_;
-        };
-
         command_istream * in_;
         openvrml::browser * browser_;
     };
-
-
-    class plugin_ostream : public std::ostream {
-        boost::shared_ptr<plugin_streambuf> streambuf_;
-
-    public:
-        plugin_ostream(const boost::shared_ptr<plugin_streambuf> & streambuf);
-        virtual ~plugin_ostream() throw ();
-
-        const boost::shared_ptr<plugin_streambuf> & shared_streambuf() const;
-    };
-
-    plugin_ostream::
-    plugin_ostream(const boost::shared_ptr<plugin_streambuf> & streambuf):
-        std::ostream(streambuf.get()),
-        streambuf_(streambuf)
-    {}
-
-    plugin_ostream::~plugin_ostream() throw ()
-    {
-        this->streambuf_->npstream_destroyed();
-    }
 
 
     class plugin_istream : public std::istream {
@@ -449,6 +497,8 @@ namespace {
     };
 
     GIOChannel * command_channel;
+    GIOChannel * request_channel;
+    int request_write_fd;
 }
 
 int main(int argc, char * argv[])
@@ -471,6 +521,7 @@ int main(int argc, char * argv[])
     arguments arguments;
     arguments.socket_id = 0;
     arguments.read_fd = 0;
+    arguments.write_fd = 0;
 
     char args_doc[] = "[URI]";
     char * const doc = 0;
@@ -499,12 +550,17 @@ int main(int argc, char * argv[])
                        static_cast<command_streambuf *>(command_in.rdbuf()));
     }
 
+    if (arguments.write_fd) {
+        ::request_write_fd = arguments.write_fd;
+        ::request_channel = g_io_channel_unix_new(arguments.write_fd);
+    }
+
     GtkWidget * window = arguments.socket_id
         ? gtk_plug_new(arguments.socket_id)
         : gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
     GtkGLViewer viewer(*(GTK_CONTAINER(window)));
-    openvrml::browser b(cout, cerr);
+    browser b;
     b.viewer(&viewer);
 
     gtk_widget_show_all(window);
@@ -518,7 +574,7 @@ int main(int argc, char * argv[])
     } else {
         shared_ptr<plugin_streambuf> initial_stream(new plugin_streambuf);
         bool succeeded =
-            uninitialized_plugin_streambuf_set.insert(initial_stream).second;
+            uninitialized_plugin_streambuf_set_.insert(initial_stream);
         g_return_val_if_fail(succeeded, EXIT_FAILURE);
         initial_stream_reader_thread
             .reset(threads.create_thread(initial_stream_reader(initial_stream,
@@ -556,6 +612,13 @@ error_t parse_opt(int key, char * arg, argp_state * state)
             args.read_fd = lexical_cast<int>(arg);
         } catch (bad_lexical_cast &) {
             argp_error(state, "READ_FD must be an unsigned integer");
+        }
+        break;
+    case write_fd_id:
+        try {
+            args.write_fd = lexical_cast<int>(arg);
+        } catch (bad_lexical_cast &) {
+            argp_error(state, "WRITE_FD must be an unsigned integer");
         }
         break;
     default:
@@ -710,6 +773,54 @@ namespace {
     {
         this->timer = 0;
         this->viewer::update();
+    }
+
+    browser::browser():
+        openvrml::browser(std::cout, std::cerr)
+    {}
+
+    std::auto_ptr<openvrml::resource_istream>
+    browser::do_get_resource(const std::string & uri)
+    {
+        class plugin_resource_istream : public openvrml::resource_istream {
+            boost::shared_ptr<plugin_streambuf> streambuf_;
+
+        public:
+            explicit plugin_resource_istream(const std::string & uri):
+                openvrml::resource_istream(0),
+                streambuf_(new plugin_streambuf(uri))
+            {
+                using std::ostringstream;
+
+                this->rdbuf(this->streambuf_.get());
+                bool succeeded =
+                    ::uninitialized_plugin_streambuf_set_
+                    .insert(this->streambuf_);
+                g_assert(succeeded);
+
+                ostringstream request;
+                request << "get-url " << uri << '\n';
+                gsize bytes_written;
+                g_io_channel_write_chars(::request_channel,
+                                         request.str().data(),
+                                         request.str().length(),
+                                         &bytes_written,
+                                         0);
+                g_io_channel_flush(::request_channel, 0);
+            }
+
+            virtual const std::string url() const throw ()
+            {
+                return this->streambuf_->url();
+            }
+
+            virtual const std::string type() const throw ()
+            {
+                return this->streambuf_->type();
+            }
+        };
+        return std::auto_ptr<openvrml::resource_istream>(
+            new plugin_resource_istream(uri));
     }
 
     gboolean command_data_available(GIOChannel * source,

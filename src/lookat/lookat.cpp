@@ -2,7 +2,7 @@
 //
 // lookat
 //
-// Copyright 2003  Braden McDaniel
+// Copyright 2003, 2004, 2005  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 # endif
 
 # include <iostream>
+# include <fstream>
 # include <SDL.h>
 # include <openvrml/browser.h>
 # include <openvrml/gl/viewer.h>
@@ -31,6 +32,16 @@
 extern "C" Uint32 update_timer_callback(Uint32 interval, void * param);
 
 namespace {
+
+    class browser : public openvrml::browser {
+    public:
+        browser();
+
+    private:
+        virtual std::auto_ptr<openvrml::resource_istream>
+        do_get_resource(const std::string & uri);
+    };
+
 
     class sdl_error : std::runtime_error {
     public:
@@ -75,8 +86,6 @@ int main(int argc, char * argv[])
     using std::vector;
 
     try {
-        using openvrml::browser;
-
         string inputUrl;
         string inputName;
 
@@ -110,7 +119,7 @@ int main(int argc, char * argv[])
         if (inputUrl.empty()) { inputUrl = inputName; }
 
         sdl_viewer v(inputUrl);
-        browser b(cout, cerr);
+        browser b;
         b.viewer(&v);
 
         vector<string> uri(1, inputUrl);
@@ -124,6 +133,63 @@ int main(int argc, char * argv[])
 }
 
 namespace {
+
+    browser::browser():
+        openvrml::browser(std::cout, std::cerr)
+    {}
+
+    std::auto_ptr<openvrml::resource_istream>
+    browser::do_get_resource(const std::string & uri)
+    {
+        using std::auto_ptr;
+        using std::invalid_argument;
+        using std::string;
+        using openvrml::resource_istream;
+
+        class file_resource_istream : public resource_istream {
+            std::string url_;
+            std::filebuf buf_;
+
+        public:
+            explicit file_resource_istream(const std::string & path):
+                resource_istream(&this->buf_)
+            {
+                this->buf_.open(path.c_str(), ios_base::in);
+            }
+
+            void url(const std::string & str) throw (std::bad_alloc)
+            {
+                this->url_ = str;
+            }
+
+            virtual const std::string url() const throw ()
+            {
+                return this->url_;
+            }
+
+            virtual const std::string type() const throw ()
+            {
+                return "application/octet-stream";
+            }
+        };
+
+        const string scheme = uri.substr(0, uri.find_first_of(':'));
+        if (scheme != "file") {
+            throw invalid_argument('\"' + scheme + "\" URI scheme not "
+                                   "supported");
+        }
+        //
+        // file://
+        //        ^
+        // 01234567
+        //
+        string path = uri.substr(uri.find_first_of('/', 7));
+
+        auto_ptr<resource_istream> in(new file_resource_istream(path));
+        static_cast<file_resource_istream *>(in.get())->url(uri);
+
+        return in;
+    }
 
     sdl_error::sdl_error(const std::string & message):
         std::runtime_error(message)

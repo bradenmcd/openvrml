@@ -1,7 +1,7 @@
 # include <cstdlib>
 # include <iostream>
 # include <sstream>
-# include <openvrml/browser.h>
+# include "test_browser.h"
 
 int main()
 {
@@ -9,7 +9,7 @@ int main()
     using namespace openvrml;
 
     try {
-        browser b(cout, cerr);
+        test_browser b;
 
         const char vrmlstring[] =
             "Anchor {"

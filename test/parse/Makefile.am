@@ -1,11 +1,11 @@
 SUBDIRS = testsuite
 
-AM_CPPFLAGS = -I$(top_srcdir)/src/libopenvrml
+AM_CPPFLAGS = -I$(top_srcdir)/src/libopenvrml -I$(srcdir)/..
 AM_LDFLAGS = @OPENVRML_RPATH@ @JNI_LIBS@
-LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 if ENABLE_TESTS
 noinst_PROGRAMS = parse
 endif
 
 parse_SOURCES = parse.cpp
+parse_LDADD = ../libtest-openvrml.la

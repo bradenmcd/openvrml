@@ -1449,7 +1449,7 @@ void script_node::assign_with_self_ref_check(const mfnode & inval,
 void script_node::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.add_script(*this);
+    this->scene()->browser().add_script(*this);
 
     this->events_received = 0;
     this->script_ = this->create_script();
@@ -1581,7 +1581,7 @@ event_emitter & script_node::do_event_emitter(const std::string & id)
 void script_node::do_shutdown(const double timestamp) throw ()
 {
     if (this->script_) { this->script_->shutdown(timestamp); }
-    this->scene()->browser.remove_script(*this);
+    this->scene()->browser().remove_script(*this);
 }
 
 /**
@@ -3065,7 +3065,7 @@ void errorReporter(JSContext * const cx,
         static_cast<js_::script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    openvrml::browser & browser = script->script_node().scene()->browser;
+    openvrml::browser & browser = script->script_node().scene()->browser();
 
     string nodeId = script->script_node().id();
     if (!nodeId.empty()) {
@@ -3398,8 +3398,8 @@ JSBool loadURL(JSContext * const cx,
         MFString::createFromJSObject(cx, arg1_obj);
     assert(parameters.get());
 
-    script.script_node().scene()->browser.load_url(url->value,
-                                                   parameters->value);
+    script.script_node().scene()->browser().load_url(url->value,
+                                                     parameters->value);
     return JS_TRUE;
 }
 
@@ -3432,7 +3432,7 @@ JSBool replaceWorld(JSContext * const cx,
         MFNode::createFromJSObject(cx, arg_obj);
     assert(nodes.get());
 
-    script.script_node().scene()->browser.replace_world(nodes->value);
+    script.script_node().scene()->browser().replace_world(nodes->value);
 
     *rval = JSVAL_VOID;
     return JS_TRUE;
@@ -3460,7 +3460,7 @@ JSBool createVrmlFromString(JSContext * const cx,
 
         assert(script.script_node().scene());
         openvrml::browser & browser =
-            script.script_node().scene()->browser;
+            script.script_node().scene()->browser();
         const std::vector<node_ptr> nodes =
             browser.create_vrml_from_stream(in);
 
@@ -3692,7 +3692,7 @@ JSBool setDescription(JSContext * const cx,
     assert(JS_GetContextPrivate(cx));
     js_::script & script =
         *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-    openvrml::browser & browser = script.script_node().scene()->browser;
+    openvrml::browser & browser = script.script_node().scene()->browser();
     browser.description(JS_GetStringBytes(str));
     *rval = JSVAL_VOID;
     return JS_TRUE;
@@ -4383,7 +4383,7 @@ JSBool SFNode::initObject(JSContext * const cx,
     istringstream in(JS_GetStringBytes(str));
 
     assert(script.script_node().scene());
-    openvrml::browser & browser = script.script_node().scene()->browser;
+    openvrml::browser & browser = script.script_node().scene()->browser();
     std::vector<node_ptr> nodes;
     try {
         nodes = browser.create_vrml_from_stream(in);

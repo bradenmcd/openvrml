@@ -618,7 +618,7 @@ vrmlScene[openvrml::browser & browser,
           std::vector<node_ptr> & nodes]
 options { defaultErrorHandler=false; }
 {
-    const boost::shared_ptr<openvrml::scope> scope(new Vrml97RootScope(browser, this->uri));
+    const boost::shared_ptr<openvrml::scope> scope(new vrml97_root_scope(browser, this->uri));
 }
     :   (statement[browser, nodes, scope])*
     ;
@@ -721,7 +721,7 @@ options { defaultErrorHandler=false; }
                 impl_id = '#' + proto_scope->id() + impl_id;
             } while ((proto_scope = proto_scope->parent()));
             impl_id = scope->id() + impl_id;
-            browser.node_class_map.insert(make_pair(impl_id, node_class));
+            browser.node_class_map_.insert(impl_id, node_class);
 
             //
             // PROTOs implicitly introduce a new node type as well.
@@ -917,21 +917,22 @@ options { defaultErrorHandler=false; }
                     std::string()]
     ;
 
-externproto[openvrml::browser & browser, const boost::shared_ptr<openvrml::scope> & scope]
+externproto[openvrml::browser & browser,
+            const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
 {
     openvrml::node_interface_set interfaces;
-    openvrml::mfstring urlList;
-    openvrml::node_type_ptr nodeType;
+    openvrml::mfstring url_list;
+    openvrml::node_type_ptr node_type;
 }
     : KEYWORD_EXTERNPROTO id:ID LBRACKET
         (externInterfaceDeclaration[interfaces])* RBRACKET
-        urlList=externprotoUrlList {
-            for (size_t i = 0; i < urlList.value.size(); ++i) {
-            	browser::node_class_map_t::const_iterator pos =
-                        browser.node_class_map.find(urlList.value[i]);
-                if (pos != browser.node_class_map.end()) {
-                    nodeType = pos->second->create_type(id->getText(),
+        url_list=externprotoUrlList {
+            for (size_t i = 0; i < url_list.value.size(); ++i) {
+                node_class_ptr node_class =
+                    browser.node_class_map_.find(url_list.value[i]);
+                if (node_class) {
+                    node_type = node_class->create_type(id->getText(),
                                                         interfaces);
                     break;
                 }
@@ -944,10 +945,10 @@ options { defaultErrorHandler=false; }
             // practice, this means that the ordinary way of using EXTERNPROTOs
             // in VRML worlds will fail.
             //
-            if (nodeType) {
-                if (!scope->add_type(nodeType)) {
+            if (node_type) {
+                if (!scope->add_type(node_type)) {
                     using antlr::SemanticException;
-                    throw SemanticException("Node type \"" + nodeType->id()
+                    throw SemanticException("Node type \"" + node_type->id()
                                             + "\" has already been defined in "
                                             " this scope.",
                                             this->uri,
