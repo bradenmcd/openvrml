@@ -477,21 +477,20 @@ void ViewerOpenGL::resetUserNavigation()
 
 void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
 {
-  //cout << "ViewerOpenGL::getuserNavigation()" << endl;
-  M.makeIdentity();
+  // The Matrix M should be an unit matrix
   VrmlMatrix tmp,rot(d_rotationMatrix); 
   float pos_vec[3];
   pos_vec[0] = d_zoom[0];
   pos_vec[1] = d_zoom[1];
   pos_vec[2] = d_zoom[2];
   tmp.setTranslate(pos_vec);
-  M = M.MMleft(tmp);
-  M = M.MMleft(rot);
+  M = M.multLeft(tmp);
+  M = M.multLeft(rot);
   pos_vec[0] = d_translatex;
   pos_vec[1] = d_translatey;
   pos_vec[2] = d_translatez;
   tmp.setTranslate(pos_vec);
-  M = M.MMleft(tmp);             
+  M = M.multLeft(tmp);             
 }
 
 // Generate a normal from 3 indexed points.
