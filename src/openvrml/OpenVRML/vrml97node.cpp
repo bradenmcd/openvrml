@@ -8912,7 +8912,7 @@ const NodeTypePtr
         NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "maxPosition"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfvec2f, "minPosition"),
-        NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "offset"),
+        NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "offset"),
         NodeInterface(NodeInterface::eventOut, FieldValue::sfbool, "isActive"),
         NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed"),
         NodeInterface(NodeInterface::eventOut, FieldValue::sfvec3f, "translation_changed")
