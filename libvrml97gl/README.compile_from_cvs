@@ -13,7 +13,7 @@ $ aclocal -I m4 -I /usr/local/share/aclocal
 
 3. Run automake:
 
-$ automake
+$ automake -a
 
 
 4. Run autoconf
