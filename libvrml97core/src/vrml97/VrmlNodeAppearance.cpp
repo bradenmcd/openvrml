@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeAppearance.cpp
 //
 
@@ -138,6 +137,7 @@ void VrmlNodeAppearance::render(Viewer *viewer)
       if (nTexComponents >= 3)
 	diffuse[0] = diffuse[1] = diffuse[2] = 1.0;
 
+      viewer->enableLighting(true);   // turn lighting on for this object
       viewer->setMaterial(m->ambientIntensity(),
 			  diffuse,
 			  m->emissiveColor(),

@@ -1,5 +1,11 @@
 2000-03-09  Chris Morley  <cmorley@vermontel.net>
 
+	* Ensure that lighting is turned back on when rendering Appearance nodes,
+	so not all geometry following a missing Material node is unlit (problem
+	reported by Michael Louka).
+
+2000-03-09  Chris Morley  <cmorley@vermontel.net>
+
 	* Fix elevationGrid color/normal per vertex.
 
 2000-03-08  Chris Morley  <cmorley@vermontel.net>
