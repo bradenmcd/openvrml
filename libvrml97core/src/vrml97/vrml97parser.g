@@ -523,7 +523,7 @@ nodeBodyElement[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNode & node
             if (   ((ft = nodeType.hasField(id->getText().c_str())) == VrmlField::NO_FIELD)
                 && ((ft = nodeType.hasExposedField(id->getText().c_str())) == VrmlField::NO_FIELD)) {
                 
-                throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\".");
+                throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\" (nodeBodyEl).");
             }
             
             VrmlField * fv = 0;
@@ -638,12 +638,16 @@ protoNodeBodyElement[Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNode & 
             VrmlNodeType const & nodeType(node.nodeType());
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
         }
-    :   id:ID
+    :   { nodeType.hasEventIn(LT(1)->getText().c_str()) != VrmlField::NO_FIELD ||
+	  nodeType.hasEventOut(LT(1)->getText().c_str()) != VrmlField::NO_FIELD }?
+      eventId:ID isStatement[protoNodeType, node, eventId->getText()]
+
+    | id:ID 
         {
             if (   ((ft = nodeType.hasField(id->getText().c_str())) == VrmlField::NO_FIELD)
                 && ((ft = nodeType.hasExposedField(id->getText().c_str())) == VrmlField::NO_FIELD)) {
                 
-                throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\".");
+                throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\" (protoNodeBodyEl).");
             }
             
             VrmlField * fv = 0;
