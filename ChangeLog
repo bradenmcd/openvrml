@@ -1,3 +1,14 @@
+2003-10-27  Braden McDaniel  <braden@endoframe.com>
+
+	Launch lookat with a shell script to set LD_LIBRARY_PATH
+	appropriately.
+
+	* configure.ac:  Generate lookat shell script.
+	* openvrml.spec.in:  Added lookat-bin to lookat package.
+	* src/lookat/Makefile.am:  Changed binary executable from
+	"lookat" to "lookat-bin".  "lookat" is now a shell script.
+	* src/lookat/lookat.in:  Added file.
+
 2003-10-26  Braden McDaniel  <braden@endoframe.com>
 
 	Added the beginning of a test suite.

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export LD_LIBRARY_PATH=@GRE_PATH@:@JDK_LIBRARY_PATH@:${LD_LIBRARY_PATH}
+dist_bin=`dirname $0`
+exec "${dist_bin}/lookat-bin" "$@"

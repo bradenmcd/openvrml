@@ -108,10 +108,14 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %files -n lookat
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
 %{prefix}/bin/lookat
+%{prefix}/bin/lookat-bin
 %{prefix}/share/pixmaps/lookat.xpm
 
 
 %changelog
+* Mon Oct 27 2003  Braden McDaniel  <braden@endoframe.com>
+- Added lookat-bin to lookat package.
+
 * Tue Sep 30 2003  Braden McDaniel  <braden@endoframe.com>
 - Added BuildRequires: boost-devel.
 
