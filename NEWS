@@ -1,5 +1,21 @@
+Changes new in version 0.9.1, 14 December, 2000 (not publicly released)
+=======================================================================
+
+- Changed library names from libvrml97 and libvrml97gl to libopenvrml
+  and libopenvrml-gl, respectively.
+
+- Changed header file installation locations.
+
+- API cleanup: improved const-correctness many places and changed many
+  of the VrmlField subclass methods to match the semantic used by the
+  corresponding objects in the ECMAScript binding.
+
+- JavaScript support restored to the default build.
+
+
 Changes new in version 0.9.0, 7 December, 2000
 ==============================================
+
 - Name change: the library is now called OpenVRML.
 
 - Project has moved to SourceForge:  <http://openvrml.sourceforge.net>
