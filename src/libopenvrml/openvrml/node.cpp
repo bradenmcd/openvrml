@@ -733,16 +733,6 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 
 
 /**
- * @fn To * node_cast(node * n) throw ()
- *
- * @brief Downcast a node to one of the abstract node types.
- *
- * @param n a node.
- *
- * @return a pointer to the downcast node, or 0 if the cast fails.
- */
-
-/**
  * @class node
  *
  * @brief A node in the scene graph.
@@ -1148,6 +1138,42 @@ void node::initialize(openvrml::scene & scene, const double timestamp)
 }
 
 /**
+ * @brief Called when the node is relocated to a new position in the scene
+ *      graph.
+ *
+ * This function delegates to the virtual function do_relocate. relocate
+ * should be called by eventIn handlers that receive nodes.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void node::relocate() throw (std::bad_alloc)
+{
+    typedef void (node::* Do_relocate)();
+
+    class RelocateTraverser : public node_traverser {
+        Do_relocate do_relocate;
+
+    public:
+        explicit RelocateTraverser(const Do_relocate do_relocate) throw ():
+            do_relocate(do_relocate)
+        {}
+
+        virtual ~RelocateTraverser() throw ()
+        {}
+
+    private:
+        virtual void on_entering(node & n) throw (std::bad_alloc)
+        {
+            (n.*this->do_relocate)();
+        }
+    };
+
+    Do_relocate do_reloc = &node::do_relocate;
+
+    RelocateTraverser(do_reloc).traverse(*this);
+}
+
+/**
  * @brief Generalized field mutator.
  *
  * @param id    the name of the field.
@@ -1316,6 +1342,18 @@ void node::shutdown(const double timestamp) throw ()
  */
 
 /**
+ * @brief Cast to a const script_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const script_node * node::to_script() const throw ()
+{
+    return 0;
+}
+
+/**
  * @brief Cast to a script_node.
  *
  * Default implementation returns 0.
@@ -1323,6 +1361,18 @@ void node::shutdown(const double timestamp) throw ()
  * @return 0
  */
 script_node * node::to_script() throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a const appearance_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const appearance_node * node::to_appearance() const throw ()
 {
     return 0;
 }
@@ -1340,6 +1390,18 @@ appearance_node * node::to_appearance() throw ()
 }
 
 /**
+ * @brief Cast to a const child_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const child_node * node::to_child() const throw ()
+{
+    return 0;
+}
+
+/**
  * @brief Cast to a child_node.
  *
  * Default implementation returns 0.
@@ -1347,6 +1409,18 @@ appearance_node * node::to_appearance() throw ()
  * @return 0
  */
 child_node * node::to_child() throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a const color_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const color_node * node::to_color() const throw ()
 {
     return 0;
 }
@@ -1364,6 +1438,18 @@ color_node * node::to_color() throw ()
 }
 
 /**
+ * @brief Cast to a const CoordinateNode.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const coordinate_node * node::to_coordinate() const throw ()
+{
+    return 0;
+}
+
+/**
  * @brief Cast to a coordinate_node.
  *
  * Default implementation returns 0.
@@ -1371,6 +1457,18 @@ color_node * node::to_color() throw ()
  * @return 0
  */
 coordinate_node * node::to_coordinate() throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a const FontStyleNode.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const font_style_node * node::to_font_style() const throw ()
 {
     return 0;
 }
@@ -1388,6 +1486,18 @@ font_style_node * node::to_font_style() throw ()
 }
 
 /**
+ * @brief Cast to a const geometry_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const geometry_node * node::to_geometry() const throw ()
+{
+    return 0;
+}
+
+/**
  * @brief Cast to a geometry_node.
  *
  * Default implementation returns 0.
@@ -1395,6 +1505,18 @@ font_style_node * node::to_font_style() throw ()
  * @return 0
  */
 geometry_node * node::to_geometry() throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a const grouping_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const grouping_node * node::to_grouping() const throw ()
 {
     return 0;
 }
@@ -1412,6 +1534,18 @@ grouping_node * node::to_grouping() throw ()
 }
 
 /**
+ * @brief Cast to a const material_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const material_node * node::to_material() const throw ()
+{
+    return 0;
+}
+
+/**
  * @brief Cast to a material_node.
  *
  * Default implementation returns 0.
@@ -1419,6 +1553,18 @@ grouping_node * node::to_grouping() throw ()
  * @return 0
  */
 material_node * node::to_material() throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a const normal_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const normal_node * node::to_normal() const throw ()
 {
     return 0;
 }
@@ -1436,6 +1582,18 @@ normal_node * node::to_normal() throw ()
 }
 
 /**
+ * @brief Cast to a const sound_source_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const sound_source_node * node::to_sound_source() const throw ()
+{
+    return 0;
+}
+
+/**
  * @brief Cast to a sound_source_node.
  *
  * Default implementation returns 0.
@@ -1443,6 +1601,18 @@ normal_node * node::to_normal() throw ()
  * @return 0
  */
 sound_source_node * node::to_sound_source() throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a const texture_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const texture_node * node::to_texture() const throw ()
 {
     return 0;
 }
@@ -1460,6 +1630,18 @@ texture_node * node::to_texture() throw ()
 }
 
 /**
+ * @brief Cast to a const texture_coordinate_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const texture_coordinate_node * node::to_texture_coordinate() const throw ()
+{
+    return 0;
+}
+
+/**
  * @brief Cast to a texture_coordinate_node.
  *
  * Default implementation returns 0.
@@ -1467,6 +1649,18 @@ texture_node * node::to_texture() throw ()
  * @return 0
  */
 texture_coordinate_node * node::to_texture_coordinate() throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a const texture_transform_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const texture_transform_node * node::to_texture_transform() const throw ()
 {
     return 0;
 }
@@ -1484,6 +1678,18 @@ texture_transform_node * node::to_texture_transform() throw ()
 }
 
 /**
+ * @brief Cast to a const transform_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const transform_node * node::to_transform() const throw ()
+{
+    return 0;
+}
+
+/**
  * @brief Cast to a transform_node.
  *
  * Default implementation returns 0.
@@ -1491,6 +1697,18 @@ texture_transform_node * node::to_texture_transform() throw ()
  * @return 0
  */
 transform_node * node::to_transform() throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a const viewpoint_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const viewpoint_node * node::to_viewpoint() const throw ()
 {
     return 0;
 }
@@ -1810,6 +2028,26 @@ bool node::bounding_volume_dirty() const
 }
 
 /**
+ * @brief Render this node.
+ *
+ * Actually, most of the rendering work is delegated to the viewer, but this
+ * method is responsible for traversal to the node's renderable children,
+ * including culling. Each node class needs to implement this routine
+ * appropriately. It's not abstract since it doesn't make sense to call render
+ * on some nodes. Alternative would be to break render out into a seperate
+ * mixins class, but that's probably overkill.
+ *
+ * @param viewer    viewer implementation responsible for actually doing the
+ *                  drawing.
+ * @param context   generic context argument; holds things like the accumulated
+ *                  modelview transform.
+ */
+void node::render(openvrml::viewer & viewer, const rendering_context context)
+{
+    this->modified(false);
+}
+
+/**
  * @brief Send an event from this node.
  */
 void node::emit_event(const std::string & id,
@@ -1914,6 +2152,20 @@ void node::do_initialize(const double timestamp) throw (std::bad_alloc)
 {}
 
 /**
+ * @brief node subclass-specific relocation update.
+ *
+ * This method is called by node::relocate. Subclasses of node should override
+ * this method for any subclass-specific updates that need to be performed
+ * following relocation of a node to a new position in the scene graph (for
+ * example, updating a NodePath).
+ *
+ * The default implementation of this method does nothing.
+ */
+void node::do_relocate() throw (std::bad_alloc)
+{}
+
+
+/**
  * @brief node subclass-specific shut down.
  *
  * This method is called by node::shutdown. Subclasses of node should
@@ -1953,26 +2205,14 @@ appearance_node::~appearance_node() throw ()
 {}
 
 /**
- * @brief Insert appearance when rendering.
+ * @brief Cast to an appearance_node.
  *
- * @param v                 viewer.
- * @param rendering_context context.
+ * @return a pointer to this appearance_node.
  */
-void appearance_node::render_appearance(viewer & v, rendering_context context)
+const appearance_node * appearance_node::to_appearance() const throw ()
 {
-    this->do_render_appearance(v, context);
-    this->modified(false);
+    return this;
 }
-
-/**
- * @brief render_appearance implementation.
- *
- * @param v                 viewer.
- * @param rendering_context context.
- */
-void appearance_node::do_render_appearance(viewer & v,
-                                           rendering_context context)
-{}
 
 /**
  * @brief Cast to an appearance_node.
@@ -2033,75 +2273,14 @@ child_node::~child_node() throw ()
 {}
 
 /**
- * @brief Called when the node is relocated to a new position in the scene
- *      graph.
+ * @brief Cast to a child_node.
  *
- * This function delegates to the virtual function do_relocate. relocate
- * should be called by eventIn handlers that receive nodes.
- *
- * @exception std::bad_alloc    if memory allocation fails.
+ * @return a pointer to this child_node.
  */
-void child_node::relocate() throw (std::bad_alloc)
+const child_node * child_node::to_child() const throw ()
 {
-    typedef void (child_node::* Do_relocate)();
-
-    class RelocateTraverser : public node_traverser {
-        Do_relocate do_relocate;
-
-    public:
-        explicit RelocateTraverser(const Do_relocate do_relocate) throw ():
-            do_relocate(do_relocate)
-        {}
-
-        virtual ~RelocateTraverser() throw ()
-        {}
-
-    private:
-        virtual void on_entering(node & n) throw (std::bad_alloc)
-        {
-            child_node * const child = node_cast<child_node *>(&n);
-            if (child) { (child->*this->do_relocate)(); }
-        }
-    };
-
-    Do_relocate do_reloc = &child_node::do_relocate;
-
-    RelocateTraverser(do_reloc).traverse(*this);
+    return this;
 }
-
-/**
- * @brief Render the node.
- *
- * Actually, most of the rendering work is delegated to the viewer, but this
- * method is responsible for traversal to the node's renderable children,
- * including culling. Each node class needs to implement this routine
- * appropriately. It's not abstract since it doesn't make sense to call render
- * on some nodes. Alternative would be to break render out into a seperate
- * mixins class, but that's probably overkill.
- *
- * @param v         viewer implementation responsible for actually doing the
- *                  drawing.
- * @param context   generic context argument; holds things like the accumulated
- *                  modelview transform.
- */
-void child_node::render_child(viewer & v, const rendering_context context)
-{
-    this->do_render_child(v, context);
-    this->modified(false);
-}
-
-/**
- * @brief render_child implementation.
- *
- * Rendered child nodes should override this method.
- *
- * @param v         viewer implementation responsible for actually doing the
- *                  drawing.
- * @param context   generic context argument; holds things like the accumulated
- *                  modelview transform.
- */
-void child_node::do_render_child(viewer & v, rendering_context context)
-{}
 
 /**
  * @brief Cast to a child_node.
@@ -2112,19 +2291,6 @@ child_node * child_node::to_child() throw ()
 {
     return this;
 }
-
-/**
- * @brief node subclass-specific relocation update.
- *
- * This method is called by child_node::relocate. Subclasses of child_node
- * should override this method for any subclass-specific updates that need to
- * be performed following relocation of a node to a new position in the scene
- * graph (for example, updating a node_path).
- *
- * The default implementation of this method does nothing.
- */
-void child_node::do_relocate() throw (std::bad_alloc)
-{}
 
 
 /**
@@ -2149,6 +2315,16 @@ color_node::color_node(const node_type & type, const scope_ptr & scope)
  */
 color_node::~color_node() throw ()
 {}
+
+/**
+ * @brief Cast to a color_node.
+ *
+ * @return a pointer to this color_node.
+ */
+const color_node * color_node::to_color() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a color_node.
@@ -2198,6 +2374,16 @@ coordinate_node::~coordinate_node() throw ()
  *
  * @return a pointer to this coordinate_node.
  */
+const coordinate_node * coordinate_node::to_coordinate() const throw ()
+{
+    return this;
+}
+
+/**
+ * @brief Cast to a coordinate_node.
+ *
+ * @return a pointer to this coordinate_node.
+ */
 coordinate_node * coordinate_node::to_coordinate() throw ()
 {
     return this;
@@ -2235,6 +2421,16 @@ font_style_node::font_style_node(const node_type & type,
  */
 font_style_node::~font_style_node() throw ()
 {}
+
+/**
+ * @brief Cast to a font_style_node.
+ *
+ * @return a pointer to this font_style_node.
+ */
+const font_style_node * font_style_node::to_font_style() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a font_style_node.
@@ -2340,18 +2536,24 @@ font_style_node * font_style_node::to_font_style() throw ()
 geometry_node::geometry_node(const node_type & type,
                              const scope_ptr & scope)
     throw ():
-    node(type, scope),
-    geometry_reference(0)
+    node(type, scope)
 {}
 
 /**
  * @brief Destroy.
- *
- * @todo We should call viewer::remove_object here; but we need a viewer
- *       reference to do that.
  */
 geometry_node::~geometry_node() throw ()
 {}
+
+/**
+ * @brief Cast to a geometry_node.
+ *
+ * @return a pointer to this geometry_node.
+ */
+const geometry_node * geometry_node::to_geometry() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a geometry_node.
@@ -2364,43 +2566,13 @@ geometry_node * geometry_node::to_geometry() throw ()
 }
 
 /**
- * @brief Insert geometry into a viewer.
+ * @fn viewer::object_t geometry_node::insert_geometry(openvrml::viewer & v, rendering_context context)
  *
  * @param v         viewer.
  * @param context   rendering context.
  *
  * @return object identifier for the inserted geometry.
  */
-viewer::object_t geometry_node::render_geometry(viewer & v,
-                                                rendering_context context)
-{
-    if (this->geometry_reference != 0 && this->modified()) {
-        v.remove_object(this->geometry_reference);
-        this->geometry_reference = 0;
-    }
-
-    if (this->geometry_reference != 0) {
-        v.insert_reference(this->geometry_reference);
-    } else {
-        this->geometry_reference = this->do_render_geometry(v, context);
-        this->modified(false);
-    }
-    return this->geometry_reference;
-}
-
-/**
- * @brief render_geometry implementation.
- *
- * @param v         viewer.
- * @param context   rendering context.
- *
- * @return object identifier for the inserted geometry.
- */
-viewer::object_t geometry_node::do_render_geometry(viewer & v,
-                                                   rendering_context context)
-{
-    return 0;
-}
 
 /**
  * @brief Get the color node (if any) associated with this geometry.
@@ -2441,6 +2613,16 @@ grouping_node::grouping_node(const node_type & type,
  */
 grouping_node::~grouping_node() throw ()
 {}
+
+/**
+ * @brief Cast to a grouping_node.
+ *
+ * @return a pointer to this grouping_node.
+ */
+const grouping_node * grouping_node::to_grouping() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a grouping_node.
@@ -2495,6 +2677,16 @@ material_node::material_node(const node_type & type, const scope_ptr & scope)
  */
 material_node::~material_node() throw ()
 {}
+
+/**
+ * @brief Cast to a material_node.
+ *
+ * @return a pointer to this material_node.
+ */
+const material_node * material_node::to_material() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a material_node.
@@ -2583,6 +2775,16 @@ normal_node::~normal_node() throw ()
  *
  * @return a pointer to this normal_node.
  */
+const normal_node * normal_node::to_normal() const throw ()
+{
+    return this;
+}
+
+/**
+ * @brief Cast to a normal_node.
+ *
+ * @return a pointer to this normal_node.
+ */
 normal_node * normal_node::to_normal() throw ()
 {
     return this;
@@ -2626,6 +2828,16 @@ sound_source_node::~sound_source_node() throw ()
  *
  * @return a pointer to this sound_source_node.
  */
+const sound_source_node * sound_source_node::to_sound_source() const throw ()
+{
+    return this;
+}
+
+/**
+ * @brief Cast to a sound_source_node.
+ *
+ * @return a pointer to this sound_source_node.
+ */
 sound_source_node * sound_source_node::to_sound_source() throw ()
 {
     return this;
@@ -2649,8 +2861,7 @@ sound_source_node * sound_source_node::to_sound_source() throw ()
  */
 texture_node::texture_node(const node_type & type, const scope_ptr & scope)
     throw ():
-    node(type, scope),
-    texture_reference(0)
+    node(type, scope)
 {}
 
 /**
@@ -2660,43 +2871,13 @@ texture_node::~texture_node() throw ()
 {}
 
 /**
- * @brief Insert a texture into a viewer.
+ * @brief Cast to a texture_node.
  *
- * @param v         viewer.
- * @param context   rendering context.
- *
- * @return object identifier for the inserted texture.
+ * @return a pointer to this texture_node.
  */
-viewer::texture_object_t
-texture_node::render_texture(viewer & v, rendering_context context)
+const texture_node * texture_node::to_texture() const throw ()
 {
-    if (this->texture_reference != 0 && this->modified()) {
-        v.remove_texture_object(this->texture_reference);
-        this->texture_reference = 0;
-    }
-
-    if (this->texture_reference != 0) {
-        v.insert_texture_reference(this->texture_reference,
-                                   this->components());
-    } else {
-        this->texture_reference = this->do_render_texture(v, context);
-        this->modified(false);
-    }
-    return this->texture_reference;
-}
-
-/**
- * @brief render_texture implementation.
- *
- * @param v         viewer.
- * @param context   rendering context.
- *
- * @return object identifier for the inserted texture.
- */
-viewer::texture_object_t
-texture_node::do_render_texture(viewer & v, rendering_context context)
-{
-    return 0;
+    return this;
 }
 
 /**
@@ -2802,6 +2983,17 @@ texture_coordinate_node::~texture_coordinate_node() throw ()
  *
  * @return a pointer to this texture_coordinate_node.
  */
+const texture_coordinate_node *
+texture_coordinate_node::to_texture_coordinate() const throw ()
+{
+    return this;
+}
+
+/**
+ * @brief Cast to a texture_coordinate_node.
+ *
+ * @return a pointer to this texture_coordinate_node.
+ */
 texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
     throw ()
 {
@@ -2842,29 +3034,15 @@ texture_transform_node::~texture_transform_node() throw ()
 {}
 
 /**
- * @brief Render the texture transform.
+ * @brief Cast to a texture_transform_node.
  *
- * @param v         viewer.
- * @param context   rendering context.
+ * @return a pointer to this texture_transform_node.
  */
-void
-texture_transform_node::render_texture_transform(viewer & v,
-                                                 rendering_context context)
+const texture_transform_node *
+texture_transform_node::to_texture_transform() const throw ()
 {
-    this->do_render_texture_transform(v, context);
-    this->modified(false);
+    return this;
 }
-
-/**
- * @brief Render the texture transform.
- *
- * @param v         viewer.
- * @param context   rendering context.
- */
-void
-texture_transform_node::do_render_texture_transform(viewer & v,
-                                                    rendering_context context)
-{}
 
 /**
  * @brief Cast to a texture_transform_node.
@@ -2909,6 +3087,16 @@ transform_node::~transform_node() throw ()
  *
  * @return a pointer to this transform_node.
  */
+const transform_node * transform_node::to_transform() const throw ()
+{
+    return this;
+}
+
+/**
+ * @brief Cast to a transform_node.
+ *
+ * @return a pointer to this transform_node.
+ */
 transform_node * transform_node::to_transform() throw ()
 {
     return this;
@@ -2947,6 +3135,16 @@ viewpoint_node::viewpoint_node(const node_type & type,
  */
 viewpoint_node::~viewpoint_node() throw ()
 {}
+
+/**
+ * @brief Cast to a viewpoint_node.
+ *
+ * @return a pointer to this viewpoint_node.
+ */
+const viewpoint_node * viewpoint_node::to_viewpoint() const throw ()
+{
+    return this;
+}
 
 /**
  * @brief Cast to a viewpoint_node.

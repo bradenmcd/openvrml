@@ -10,7 +10,7 @@ dnl GLUT is not found, "no_glut" is set to "yes".
 dnl
 dnl @copyright (C) 2003 Braden McDaniel
 dnl @license GNU GPL
-dnl @version 1.5
+dnl @version 1.6
 dnl @author Braden McDaniel <braden@endoframe.com>
 dnl
 AC_DEFUN([AX_CHECK_GLUT],
@@ -18,7 +18,8 @@ AC_DEFUN([AX_CHECK_GLUT],
 AC_REQUIRE([AC_PATH_XTRA])dnl
 
 if test "X$with_apple_opengl_framework" = "Xyes"; then
-  GLUT_CFLAGS="${GLU_CFLAGS} -framework GLUT"
+  GLUT_CFLAGS="-framework GLUT ${GLU_CFLAGS}"
+  GLUT_LIBS="-lobjc ${GL_LIBS}"
 else
   GLUT_CFLAGS=${GLU_CFLAGS}
 

@@ -29,11 +29,12 @@
 #   include <set>
 #   include <stdexcept>
 #   include <utility>
-#   include <boost/shared_ptr.hpp>
 #   include <openvrml/field.h>
+#   include <openvrml/field_value_ptr.h>
+#   include <openvrml/node_type_ptr.h>
+#   include <openvrml/scope_ptr.h>
 #   include <openvrml/viewer.h>
 #   include <openvrml/rendering_context.h>
-#   include <openvrml/scope.h>
 
 namespace openvrml {
 
@@ -129,8 +130,6 @@ namespace openvrml {
 
     class browser;
     class viewpoint_node;
-    class node_type;
-    typedef boost::shared_ptr<node_type> node_type_ptr;
 
     class node_class {
     public:
@@ -148,9 +147,6 @@ namespace openvrml {
     protected:
         explicit node_class(openvrml::browser & b) throw ();
     };
-
-    typedef boost::shared_ptr<node_class> node_class_ptr;
-
 
     class node_type {
     public:
@@ -226,34 +222,9 @@ namespace openvrml {
 
     std::ostream & operator<<(std::ostream & out, const node & n);
 
-    template <typename To>
-    To node_cast(node * n) throw ();
-
     class node {
         friend std::ostream & operator<<(std::ostream & out,
                                          const node & n);
-        friend script_node * node_cast<script_node *>(node * n) throw ();
-        friend appearance_node * node_cast<appearance_node *>(node * n)
-            throw ();
-        friend child_node * node_cast<child_node *>(node * n) throw ();
-        friend color_node * node_cast<color_node *>(node * n) throw ();
-        friend coordinate_node * node_cast<coordinate_node *>(node * n)
-            throw ();
-        friend font_style_node * node_cast<font_style_node *>(node * n)
-            throw ();
-        friend geometry_node * node_cast<geometry_node *>(node * n) throw ();
-        friend grouping_node * node_cast<grouping_node *>(node * n) throw ();
-        friend material_node * node_cast<material_node *>(node * n) throw ();
-        friend normal_node * node_cast<normal_node *>(node * n) throw ();
-        friend sound_source_node * node_cast<sound_source_node *>(node * n)
-            throw ();
-        friend texture_node * node_cast<texture_node *>(node * n) throw ();
-        friend texture_coordinate_node *
-        node_cast<texture_coordinate_node *>(node * n) throw ();
-        friend texture_transform_node *
-        node_cast<texture_transform_node *>(node * n) throw ();
-        friend transform_node * node_cast<transform_node *>(node * n) throw ();
-        friend viewpoint_node * node_cast<viewpoint_node *>(node * n) throw ();
 
     public:
         class route {
@@ -309,6 +280,7 @@ namespace openvrml {
 
         void initialize(openvrml::scene & scene, double timestamp)
             throw (std::bad_alloc);
+        void relocate() throw (std::bad_alloc);
 
         const field_value & field(const std::string & id) const
             throw (unsupported_interface);
@@ -321,6 +293,41 @@ namespace openvrml {
             throw (unsupported_interface);
 
         void shutdown(double timestamp) throw ();
+
+        virtual const script_node * to_script() const throw ();
+        virtual script_node * to_script() throw ();
+        virtual const appearance_node * to_appearance() const throw ();
+        virtual appearance_node * to_appearance() throw ();
+        virtual const child_node * to_child() const throw ();
+        virtual child_node * to_child() throw ();
+        virtual const color_node * to_color() const throw ();
+        virtual color_node * to_color() throw ();
+        virtual const coordinate_node * to_coordinate() const throw ();
+        virtual coordinate_node * to_coordinate() throw ();
+        virtual const font_style_node * to_font_style() const throw ();
+        virtual font_style_node * to_font_style() throw () ;
+        virtual const geometry_node * to_geometry() const throw ();
+        virtual geometry_node * to_geometry() throw ();
+        virtual const grouping_node * to_grouping() const throw ();
+        virtual grouping_node * to_grouping() throw ();
+        virtual const material_node * to_material() const throw ();
+        virtual material_node * to_material() throw ();
+        virtual const normal_node * to_normal() const throw ();
+        virtual normal_node * to_normal() throw ();
+        virtual const sound_source_node * to_sound_source() const throw ();
+        virtual sound_source_node * to_sound_source() throw ();
+        virtual const texture_node * to_texture() const throw ();
+        virtual texture_node * to_texture() throw ();
+        virtual const texture_coordinate_node * to_texture_coordinate() const
+            throw ();
+        virtual texture_coordinate_node * to_texture_coordinate() throw ();
+        virtual const texture_transform_node * to_texture_transform() const
+            throw ();
+        virtual texture_transform_node * to_texture_transform() throw ();
+        virtual const transform_node * to_transform() const throw ();
+        virtual transform_node * to_transform() throw ();
+        virtual const viewpoint_node * to_viewpoint() const throw ();
+        virtual viewpoint_node * to_viewpoint() throw ();
 
         virtual vrml97_node::anchor_node * to_anchor() const;
         virtual vrml97_node::audio_clip_node * to_audio_clip() const;
@@ -355,6 +362,9 @@ namespace openvrml {
 
         const routes_t & routes() const;
 
+        virtual void render(openvrml::viewer & viewer,
+                            rendering_context context);
+
     protected:
         node(const node_type & type, const scope_ptr & scope) throw ();
 
@@ -369,6 +379,7 @@ namespace openvrml {
         node & operator=(const node &);
 
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
+        virtual void do_relocate() throw (std::bad_alloc);
 
         virtual void do_field(const std::string & id,
                               const field_value & value)
@@ -383,23 +394,6 @@ namespace openvrml {
         do_eventout(const std::string & id) const
             throw (unsupported_interface) = 0;
         virtual void do_shutdown(double timestamp) throw ();
-
-        virtual script_node * to_script() throw ();
-        virtual appearance_node * to_appearance() throw ();
-        virtual child_node * to_child() throw ();
-        virtual color_node * to_color() throw ();
-        virtual coordinate_node * to_coordinate() throw ();
-        virtual font_style_node * to_font_style() throw () ;
-        virtual geometry_node * to_geometry() throw ();
-        virtual grouping_node * to_grouping() throw ();
-        virtual material_node * to_material() throw ();
-        virtual normal_node * to_normal() throw ();
-        virtual sound_source_node * to_sound_source() throw ();
-        virtual texture_node * to_texture() throw ();
-        virtual texture_coordinate_node * to_texture_coordinate() throw ();
-        virtual texture_transform_node * to_texture_transform() throw ();
-        virtual transform_node * to_transform() throw ();
-        virtual viewpoint_node * to_viewpoint() throw ();
     };
 
     inline const scope_ptr & node::scope() const throw ()
@@ -426,143 +420,13 @@ namespace openvrml {
         return !(lhs == rhs);
     }
 
-    template <>
-    inline script_node * node_cast<script_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_script()
-            : 0;
-    }
-
-    template <>
-    inline appearance_node * node_cast<appearance_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_appearance()
-            : 0;
-    }
-
-    template <>
-    inline child_node * node_cast<child_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_child()
-            : 0;
-    }
-
-    template <>
-    inline color_node * node_cast<color_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_color()
-            : 0;
-    }
-
-    template <>
-    inline coordinate_node * node_cast<coordinate_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_coordinate()
-            : 0;
-    }
-
-    template <>
-    inline font_style_node * node_cast<font_style_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_font_style()
-            : 0;
-    }
-
-    template <>
-    inline geometry_node * node_cast<geometry_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_geometry()
-            : 0;
-    }
-
-    template <>
-    inline grouping_node * node_cast<grouping_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_grouping()
-            : 0;
-    }
-
-    template <>
-    inline material_node * node_cast<material_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_material()
-            : 0;
-    }
-
-    template <>
-    inline normal_node * node_cast<normal_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_normal()
-            : 0;
-    }
-
-    template <>
-    inline sound_source_node * node_cast<sound_source_node *>(node * n)
-        throw ()
-    {
-        return n
-            ? n->to_sound_source()
-            : 0;
-    }
-
-    template <>
-    inline texture_node * node_cast<texture_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_texture()
-            : 0;
-    }
-
-    template <>
-    inline texture_coordinate_node *
-    node_cast<texture_coordinate_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_texture_coordinate()
-            : 0;
-    }
-
-    template <>
-    inline texture_transform_node *
-    node_cast<texture_transform_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_texture_transform()
-            : 0;
-    }
-
-    template <>
-    inline transform_node * node_cast<transform_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_transform()
-            : 0;
-    }
-
-    template <>
-    inline viewpoint_node * node_cast<viewpoint_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_viewpoint()
-            : 0;
-    }
-
 
     class appearance_node : public virtual node {
     public:
         virtual ~appearance_node() throw () = 0;
 
-        void render_appearance(viewer & v, rendering_context context);
+        virtual const appearance_node * to_appearance() const throw ();
+        virtual appearance_node * to_appearance() throw ();
 
         virtual const node_ptr & material() const throw () = 0;
         virtual const node_ptr & texture() const throw () = 0;
@@ -571,12 +435,6 @@ namespace openvrml {
     protected:
         appearance_node(const node_type & type, const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual appearance_node * to_appearance() throw ();
-
-        virtual void do_render_appearance(viewer & v,
-                                          rendering_context context);
     };
 
 
@@ -584,18 +442,11 @@ namespace openvrml {
     public:
         virtual ~child_node() throw () = 0;
 
-        void relocate() throw (std::bad_alloc);
-        void render_child(viewer & v, rendering_context context);
+        virtual const child_node * to_child() const throw ();
+        virtual child_node * to_child() throw ();
 
     protected:
         child_node(const node_type & type, const scope_ptr & scope) throw ();
-
-    private:
-        virtual child_node * to_child() throw ();
-
-        virtual void do_relocate() throw (std::bad_alloc);
-        virtual void do_render_child(viewer & v,
-                                     rendering_context context);
     };
 
 
@@ -603,14 +454,14 @@ namespace openvrml {
     public:
         virtual ~color_node() throw () = 0;
 
+        virtual const color_node * to_color() const throw ();
+        virtual color_node * to_color() throw ();
+
         virtual const std::vector<openvrml::color> & color() const
             throw () = 0;
 
     protected:
         color_node(const node_type & type, const scope_ptr & scope) throw ();
-
-    private:
-        virtual color_node * to_color() throw ();
     };
 
 
@@ -618,20 +469,23 @@ namespace openvrml {
     public:
         virtual ~coordinate_node() throw () = 0;
 
+        virtual const coordinate_node * to_coordinate() const throw ();
+        virtual coordinate_node * to_coordinate() throw ();
+
         virtual const std::vector<vec3f> & point() const throw () = 0;
 
     protected:
         coordinate_node(const node_type & type, const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual coordinate_node * to_coordinate() throw ();
     };
 
 
     class font_style_node : public virtual node {
     public:
         virtual ~font_style_node() throw () = 0;
+
+        virtual const font_style_node * to_font_style() const throw ();
+        virtual font_style_node * to_font_style() throw ();
 
         virtual const std::vector<std::string> & family() const
             throw () = 0;
@@ -648,37 +502,33 @@ namespace openvrml {
     protected:
         font_style_node(const node_type & type, const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual font_style_node * to_font_style() throw ();
     };
 
 
     class geometry_node : public virtual node {
-        viewer::object_t geometry_reference;
-
     public:
         virtual ~geometry_node() throw () = 0;
 
-        viewer::object_t render_geometry(viewer & v,
-                                         rendering_context context);
+        virtual const geometry_node * to_geometry() const throw ();
+        virtual geometry_node * to_geometry() throw ();
+
+        virtual viewer::object_t
+        insert_geometry(openvrml::viewer & v,
+                        rendering_context context) = 0;
         virtual const color_node * color() const throw ();
 
     protected:
         geometry_node(const node_type & type, const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual viewer::object_t
-        do_render_geometry(viewer & v, rendering_context context);
-
-        virtual geometry_node * to_geometry() throw ();
     };
 
 
     class grouping_node : public virtual child_node {
     public:
         virtual ~grouping_node() throw () = 0;
+
+        virtual const grouping_node * to_grouping() const throw ();
+        virtual grouping_node * to_grouping() throw ();
 
         virtual const std::vector<node_ptr> & children() const throw () = 0;
         virtual void activate(double timestamp, bool over, bool active,
@@ -687,15 +537,15 @@ namespace openvrml {
     protected:
         grouping_node(const node_type & type, const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual grouping_node * to_grouping() throw ();
     };
 
 
     class material_node : public virtual node {
     public:
         virtual ~material_node() throw () = 0;
+
+        virtual const material_node * to_material() const throw ();
+        virtual material_node * to_material() throw ();
 
         virtual float ambient_intensity() const throw () = 0;
         virtual const color & diffuse_color() const throw () = 0;
@@ -707,9 +557,6 @@ namespace openvrml {
     protected:
         material_node(const node_type & type, const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual material_node * to_material() throw ();
     };
 
 
@@ -717,37 +564,34 @@ namespace openvrml {
     public:
         virtual ~normal_node() throw () = 0;
 
+        virtual const normal_node * to_normal() const throw ();
+        virtual normal_node * to_normal() throw ();
+
         virtual const std::vector<vec3f> & vector() const throw () = 0;
 
     protected:
         normal_node(const node_type & type, const scope_ptr & scope) throw ();
-
-    private:
-        virtual normal_node * to_normal() throw ();
     };
 
 
     class sound_source_node : public virtual node {
     public:
         virtual ~sound_source_node() throw () = 0;
+        virtual const sound_source_node * to_sound_source() const throw ();
+        virtual sound_source_node * to_sound_source() throw ();
 
     protected:
         sound_source_node(const node_type & type, const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual sound_source_node * to_sound_source() throw ();
     };
 
 
     class texture_node : public virtual node {
-        viewer::texture_object_t texture_reference;
-
     public:
         virtual ~texture_node() throw () = 0;
 
-        viewer::texture_object_t render_texture(viewer & v,
-                                                rendering_context context);
+        virtual const texture_node * to_texture() const throw ();
+        virtual texture_node * to_texture() throw ();
 
         virtual size_t components() const throw () = 0;
         virtual size_t width() const throw () = 0;
@@ -759,12 +603,6 @@ namespace openvrml {
 
     protected:
         texture_node(const node_type & type, const scope_ptr & scope) throw ();
-
-    private:
-        virtual texture_node * to_texture() throw ();
-
-        virtual viewer::texture_object_t
-        do_render_texture(viewer & v, rendering_context context);
     };
 
 
@@ -772,15 +610,16 @@ namespace openvrml {
     public:
         virtual ~texture_coordinate_node() throw () = 0;
 
+        virtual const texture_coordinate_node * to_texture_coordinate() const
+            throw ();
+        virtual texture_coordinate_node * to_texture_coordinate() throw ();
+
         virtual const std::vector<vec2f> & point() const throw () = 0;
 
     protected:
         texture_coordinate_node(const node_type & type,
                                 const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual texture_coordinate_node * to_texture_coordinate() throw ();
     };
 
 
@@ -788,18 +627,14 @@ namespace openvrml {
     public:
         virtual ~texture_transform_node() throw () = 0;
 
-        void render_texture_transform(viewer & v, rendering_context context);
+        virtual const texture_transform_node * to_texture_transform() const
+            throw ();
+        virtual texture_transform_node * to_texture_transform() throw ();
 
     protected:
         texture_transform_node(const node_type & type,
                                const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual texture_transform_node * to_texture_transform() throw ();
-
-        virtual void
-        do_render_texture_transform(viewer & v, rendering_context context);
     };
 
 
@@ -807,20 +642,23 @@ namespace openvrml {
     public:
         virtual ~transform_node() throw () = 0;
 
+        virtual const transform_node * to_transform() const throw ();
+        virtual transform_node * to_transform() throw ();
+
         virtual const mat4f & transform() const throw () = 0;
 
     protected:
         transform_node(const node_type & type, const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual transform_node * to_transform() throw ();
     };
 
 
     class viewpoint_node : public virtual child_node {
     public:
         virtual ~viewpoint_node() throw () = 0;
+
+        virtual const viewpoint_node * to_viewpoint() const throw ();
+        virtual viewpoint_node * to_viewpoint() throw ();
 
         virtual const mat4f & transformation() const throw () = 0;
         virtual const mat4f & user_view_transform() const throw () = 0;
@@ -832,9 +670,6 @@ namespace openvrml {
     protected:
         viewpoint_node(const node_type & type, const scope_ptr & scope)
             throw ();
-
-    private:
-        virtual viewpoint_node * to_viewpoint() throw ();
     };
 
 

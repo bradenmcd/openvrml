@@ -23,6 +23,7 @@
 # ifndef OPENVRML_SCRIPT_H
 #   define OPENVRML_SCRIPT_H
 
+#   include <openvrml/field_value_ptr.h>
 #   include <openvrml/node.h>
 
 namespace openvrml {
@@ -120,6 +121,7 @@ namespace openvrml {
         const field_value_map_t & field_value_map() const throw ();
         const eventout_value_map_t & eventout_value_map() const throw ();
 
+        virtual const script_node * to_script() const throw ();
         virtual script_node * to_script() throw ();
 
     private:
@@ -144,7 +146,6 @@ namespace openvrml {
         do_eventout(const std::string & id) const
             throw (unsupported_interface);
         virtual void do_shutdown(double timestamp) throw ();
-        virtual void do_render_child(viewer & v, rendering_context context);
     };
 
     inline const script_node::field_value_map_t &

@@ -3348,7 +3348,7 @@ namespace {
         }
 
       /* Paulo Villegas - 26/1/1993: Correction for 4-byte alignment */
-      else if (num_read < request)
+      else if (num_read < int(request))
         {
           size_t num_read_rounded;
           unsigned char *index;
@@ -7050,7 +7050,7 @@ const char * img::url() const
  */
 
 /**
- * @fn const unsigned char * img::pixels() const
+ * @fn size_t img::pixels() const
  *
  * @brief Pixel data.
  *
@@ -7065,14 +7065,13 @@ const char * img::url() const
  * @return the pixel data for a frame of the currently loaded image; or 0 if
  *         @p frame is not valid.
  */
-const unsigned char * img::pixels(const size_t frame) const
+unsigned char * img::pixels(const size_t frame) const
 {
   return (frame < this->nframes_)
       ? this->frame_[frame]
       : 0;
 }
 
-# if 0
 /**
  * @fn void img::resize(size_t w, size_t h)
  *
@@ -7084,7 +7083,6 @@ const unsigned char * img::pixels(const size_t frame) const
  * @param w new width.
  * @param h new height.
  */
-# endif
 
 } // namespace openvrml
 

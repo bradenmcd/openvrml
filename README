@@ -1,4 +1,4 @@
-OpenVRML library version 0.14.99
+OpenVRML library version 0.14.3
 Copyright 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
 Copyright 2000, 2001, 2002, 2003 Braden McDaniel <braden@endoframe.com>
 Portions Copyright SGI and others
@@ -139,13 +139,9 @@ depends on.
      Development Kit.  OpenVRML does not include Script node Java
      support by default.
 
- --disable-api-docs
-     Do not build the API documentation.  By default, OpenVRML uses
-     doxygen to build API documentation.
-
  --disable-gl-renderer
      Do not build the GL renderer.  OpenVRML's GL renderer depends on
-     OpenGL/Mesa and GLUT.
+     OpenGL/Mesa.
 
  --disable-lookat
      Do not build lookat.  lookat depends on GLUT.

@@ -55,21 +55,10 @@
 
 #   ifdef NDEBUG
 #     define OPENVRML_GL_PRINT_MESSAGE_(message_)
-#     define OPENVRML_GL_PRINT_ERRORS_
 #   else
 #     define OPENVRML_GL_PRINT_MESSAGE_(message_) \
             std::cerr << __FILE__ << ":" << __LINE__ << ": " \
                       << message_ << std::endl
-#     define OPENVRML_GL_PRINT_ERRORS_ \
-            do { \
-                GLenum glerr; \
-                while ((glerr = glGetError()) != GL_NO_ERROR) { \
-                    const GLubyte * const error_str = gluErrorString(glerr); \
-                    const GLubyte * end; \
-                    for (end = error_str; *end; ++end) {} \
-                    OPENVRML_GL_PRINT_MESSAGE_(std::string(error_str, end)); \
-                } \
-            } while (false)
 #   endif
 
 namespace {
@@ -104,20 +93,34 @@ namespace {
         }
     }
 
-    class GLCapabilities {
+    class gl_capabilities {
     public:
-        GLint maxModelviewStackDepth;
+        GLint max_modelview_stack_depth;
 
-        GLCapabilities();
+        static const gl_capabilities * instance() throw (std::bad_alloc);
+
+    private:
+        static const gl_capabilities * instance_;
+
+        gl_capabilities();
     };
 
-    GLCapabilities::GLCapabilities()
+    const gl_capabilities * gl_capabilities::instance_(0);
+
+    const gl_capabilities * gl_capabilities::instance()
+        throw (std::bad_alloc)
     {
-        glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,
-                      &this->maxModelviewStackDepth);
+        if (!gl_capabilities::instance_) {
+            gl_capabilities::instance_ = new gl_capabilities;
+        }
+        return gl_capabilities::instance_;
     }
 
-    const GLCapabilities glCapabilities;
+    gl_capabilities::gl_capabilities()
+    {
+        glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,
+                      &this->max_modelview_stack_depth);
+    }
 }
 
 namespace openvrml {
@@ -315,7 +318,9 @@ void viewer::modelview_matrix_stack::push()
     glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
 # endif
     assert(matrixMode == GL_MODELVIEW);
-    if (this->size == size_t(glCapabilities.maxModelviewStackDepth - 1)) {
+    if (this->size
+        == size_t(gl_capabilities::instance()->max_modelview_stack_depth - 1))
+    {
         mat4f mat;
         glGetFloatv(GL_MODELVIEW_MATRIX, &mat[0][0]);
         this->spillover.push(mat);
@@ -962,7 +967,7 @@ viewer::insert_background(const std::vector<float> & groundAngle,
                           const std::vector<float> & skyAngle,
                           const std::vector<color> & skyColor,
                           size_t * whc,
-                          const unsigned char ** pixels)
+                          unsigned char ** pixels)
 {
     float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
 
@@ -1504,9 +1509,9 @@ viewer::object_t viewer::insert_cylinder(const float height,
     if (!bottom || !side || !top) { glDisable(GL_CULL_FACE); }
 
     if (bottom || side || top) {
-        static const size_t nfacets = 8; // Number of polygons for sides
-        static const size_t npts = 2 * nfacets;
-        static const size_t nfaces = nfacets * 5;
+        const size_t nfacets = 16; // Number of polygons for sides
+        const size_t npts = 2 * nfacets;
+        const size_t nfaces = nfacets * 5;
 
         float c[npts][3];                // coordinates
         float tc[npts][3];                // texture coordinates
@@ -3300,6 +3305,50 @@ void viewer::set_sensitive(node * object)
 }
 
 /**
+ * @brief Scale a texture.
+ *
+ * Scale an image to make sizes powers of two. This puts the data back
+ * into the memory pointed to by pixels, so there better be enough.
+ *
+ * @param w         current width.
+ * @param h         current height,
+ * @param newW      desired width.
+ * @param newH      desired height.
+ * @param nc        number of components.
+ * @param pixels    pixel data.
+ */
+void viewer::scale_texture(size_t w, size_t h,
+                           size_t newW, size_t newH,
+                           size_t nc,
+                           unsigned char* pixels)
+{
+    const GLenum fmt[] = {
+        GL_LUMINANCE,        // single component
+        GL_LUMINANCE_ALPHA,        // 2 components
+        GL_RGB,                // 3 components
+        GL_RGBA                // 4 components
+    };
+
+    std::vector<unsigned char> newpix(nc * newW * newH);
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    const GLint result = gluScaleImage(fmt[nc - 1],
+                                       GLsizei(w),
+                                       GLsizei(h),
+                                       GL_UNSIGNED_BYTE,
+                                       pixels,
+                                       GLsizei(newW),
+                                       GLsizei(newH),
+                                       GL_UNSIGNED_BYTE,
+                                       &newpix[0]);
+    if (result == GL_NO_ERROR) {
+        std::copy(newpix.begin(), newpix.end(), pixels);
+    }
+}
+
+
+/**
  * @brief Create a texture object.
  *
  * @param w             width.
@@ -3312,16 +3361,16 @@ void viewer::set_sensitive(node * object)
  *
  * @return a handle to the inserted texture.
  */
-viewer::texture_object_t viewer::insert_texture(size_t w,
-                                                size_t h,
-                                                const size_t nc,
-                                                bool repeat_s,
-                                                bool repeat_t,
-                                                const unsigned char * pixels,
-                                                bool retainHint)
+viewer::texture_object_t
+viewer::insert_texture(size_t w, size_t h, size_t nc,
+                       bool repeat_s,
+                       bool repeat_t,
+                       const unsigned char * pixels,
+                       bool retainHint)
 {
-    using std::vector;
-
+    //
+    // Pixels are lower left to upper right by row.
+    //
     static const GLenum fmt[] = {
         GL_LUMINANCE,       // single component
         GL_LUMINANCE_ALPHA, // 2 components
@@ -3329,49 +3378,6 @@ viewer::texture_object_t viewer::insert_texture(size_t w,
         GL_RGBA             // 4 components
     };
 
-    //
-    // Rescale the texture if necessary.
-    //
-    vector<GLubyte> rescaled_pixels;
-    const size_t size[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-    const size_t sizes = sizeof size / sizeof(size_t);
-    size_t i, j;
-    for (i = 0; i < sizes; ++i) { if (w < size[i]) { break; } }
-    for (j = 0; j < sizes; ++j) { if (h < size[j]) { break; } }
-
-    if (i > 0 && j > 0) {
-        if (w != size[i - 1] || h != size[j - 1]) {
-            const GLsizei new_w = size[i - 1];
-            const GLsizei new_h = size[j - 1];
-
-            //
-            // Throws std::bad_alloc.
-            //
-            rescaled_pixels.resize(nc * new_w * new_h);
-
-            glPixelStorei(GL_PACK_ALIGNMENT, 1);
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-            const GLint result = gluScaleImage(fmt[nc - 1],
-                                               GLsizei(w),
-                                               GLsizei(h),
-                                               GL_UNSIGNED_BYTE,
-                                               pixels,
-                                               new_w,
-                                               new_h,
-                                               GL_UNSIGNED_BYTE,
-                                               &rescaled_pixels[0]);
-            if (result == GL_NO_ERROR) {
-                assert(!rescaled_pixels.empty());
-                pixels = &rescaled_pixels[0];
-                w = new_w;
-                h = new_h;
-            }
-        }
-    }
-
-    //
-    // Pixels are lower left to upper right by row.
-    //
     GLuint glid = 0;
 
     if (this->select_mode) { return 0; }
@@ -3396,19 +3402,17 @@ viewer::texture_object_t viewer::insert_texture(size_t w,
                  fmt[nc - 1],
                  GL_UNSIGNED_BYTE,
                  pixels);
-    OPENVRML_GL_PRINT_ERRORS_;
 
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_S,
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
                     repeat_s ? GL_REPEAT : GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_T,
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                     repeat_t ? GL_REPEAT : GL_CLAMP);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     return texture_object_t(glid);
 }
+
 
 /**
  * @brief Insert a subcomponent of a texture as an OpenGL texture.

@@ -26,7 +26,7 @@
 # include <iostream>
 
 # if HAVE_APPLE_OPENGL_FRAMEWORK
-#   include <OpenGL/glut.h>
+#   include <GLUT/glut.h>
 # else
 #   include <GL/glut.h>
 # endif

@@ -23,6 +23,7 @@ header "post_include_hpp" {
 # include <memory>
 # include "field.h"
 # include "node_ptr.h"
+# include "field_value_ptr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }
 
@@ -976,7 +977,7 @@ options { defaultErrorHandler = false; }
             n.reset(new script_node(browser.script_node_class_, scope));
             if (!nodeId.empty()) { n->id(nodeId); }
 
-            script_node * const scriptNode = node_cast<script_node *>(n.get());
+            script_node * const scriptNode = n->to_script();
             assert(scriptNode);
         } LBRACE (
             nodeBodyElement[scope, *n]
@@ -1109,7 +1110,7 @@ options { defaultErrorHandler=false; }
             n.reset(new script_node(proto.browser.script_node_class_, scope));
             if (!nodeId.empty()) { n->id(nodeId); }
 
-            script_node * const scriptNode = node_cast<script_node *>(n.get());
+            script_node * const scriptNode = n->to_script();
             assert(scriptNode);
         }
         LBRACE (
@@ -1366,7 +1367,7 @@ returns [openvrml::field_value_ptr fv]
     ;
 
 nonNodeFieldValue[openvrml::field_value::type_id ft]
-returns [openvrml::field_value_ptr fv = openvrml::field_value_ptr()]
+returns [openvrml::field_value_ptr fv = openvrml::field_value_ptr(0)]
 options { defaultErrorHandler=false; }
 {
     using openvrml::field_value;

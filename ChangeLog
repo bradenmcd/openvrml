@@ -1,222 +1,110 @@
-2003-11-11  Braden McDaniel  <braden@endoframe.com>
+2003-11-16  Braden McDaniel  <braden@endoframe.com>
 
-	Cruft removal.
+	Updates for 0.14.3 release.
 
-	* src/libopenvrml/openvrml/img.h
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	* src/libopenvrml/openvrml/vrml97node.h
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
 
-2003-11-08  Braden McDaniel  <braden@endoframe.com>
+2003-11-16  Braden McDaniel  <braden@endoframe.com>
 
-	Removed node::render in favor of render_* member functions on the
-	derived abstract node types.
+	* openvrml.spec.in:  Removed glut/glut-devel dependency from
+	openvrml-gl/openvrml-gl-devel packages.  Added glut dependency
+	to lookat package.  Changed openvrml-gl's XFree86 dependency to
+	XFree86-Mesa-libGLU; changed minimum version of XFree86 from 4.2
+	to 4.3.  Removed unused ARCH_FLAGS variable from "configure"
+	invocation.  Added _smp_mflags macro to invocation of make.
 
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/node.cpp
-	* src/libopenvrml/openvrml/node.h
-	* src/libopenvrml/openvrml/script.cpp
-	* src/libopenvrml/openvrml/script.h
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	* src/libopenvrml/openvrml/vrml97node.h
+2003-11-13  Braden McDaniel  <braden@endoframe.com>
 
-2003-11-08  Braden McDaniel  <braden@endoframe.com>
+	Updated library version numbers.
 
-	* src/lookat/Makefile.am:  Removed lingering obsolete reference
-	to JNI_CFLAGS.
+	* src/libopenvrml/openvrml/Makefile.am
+	* src/libopenvrml-gl/openvrml/gl/Makefile.am
 
-2003-11-07  Braden McDaniel  <braden@endoframe.com>
+2003-11-12  Braden McDaniel  <braden@endoframe.com>
 
-	Enabled build of Script node Java binding by default.
-
-	* configure.ac:  Changed OV_WITH_JDK to OV_CHECK_JNI.
-	* openvrml.spec.in:  Now requires libgcj >= 3.3.
-	* m4/jdk.m4:  Replaced OV_WITH_JDK with OV_CHECK_JNI.
-	* src/libopenvrml/openvrml/Makefile.am:  JNI_CFLAGS autoconf
-	substitution no longer used.
-
-2003-11-04  Braden McDaniel  <braden@endoframe.com>
-
-	Added some more tests.
-
-	* test/Makefile.am
-	* test/browser-create_vrml_from_stream.cpp
-	* test/parse-anchor.cpp
-
-2003-11-03  Braden McDaniel  <braden@endoframe.com>
-
-	* openvrml.spec.in:  Removed lookat-bin from lookat package.
-	Added mozilla requirement for lookat.  lookat is now built with
-	-rpath for the Mozilla library directory; so the binary package
-	requires the same Mozilla version it was built against.
-
-2003-11-03  Braden McDaniel  <braden@endoframe.com>
-
-	Build executables with -rpath instead of setting
-	LD_LIBRARY_PATH.
+	Apply Rez utility to lookat executable when building with Apple's
+	OpenGL framework on Mac OS X.
 
 	* configure.ac
 	* src/lookat/Makefile.am
-	* src/lookat/lookat.in:  Removed file.
-	* test/Makefile.am
 
-2003-11-02  Braden McDaniel  <braden@endoframe.com>
+2003-11-10  Braden McDaniel  <braden@endoframe.com>
 
-	Removed viewer::scale_texture.  Instead, do any texture
-	rescaling in the implementation of viewer::insert_texture.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Made
+	gl_capabilities a singleton.  Apparently it's not safe to call
+	glGetIntegerv during static initialization.
 
-	* src/libopenvrml/openvrml/img.cpp
-	* src/libopenvrml/openvrml/img.h
-	* src/libopenvrml/openvrml/viewer.cpp
-	* src/libopenvrml/openvrml/viewer.h
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
-	* src/libopenvrml-gl/openvrml/gl/viewer.h
+2003-11-09  Braden McDaniel  <braden@endoframe.com>
 
-2003-11-02  Braden McDaniel  <braden@endoframe.com>
+	Factored libGLU check into its own macro (AX_CHECK_GLU).
+	(Merged changes from HEAD.)  Added -lobjc to GLUT_LIBS when
+	using the Apple OpenGL framework.
 
-	* configure.ac:  Don't optionally generate Makefiles--that
-	screws up make.
-
-2003-10-31  Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/img.cpp (img::img):  Initialize
-	img::nframes_ to 0. (Fixes crash on exit.)
-
-2003-10-31  Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/browser.cpp:  Don't render root nodes
-	that aren't child nodes.
-
-2003-10-27  Braden McDaniel  <braden@endoframe.com>
-
-	Launch lookat with a shell script to set LD_LIBRARY_PATH
-	appropriately.
-
-	* configure.ac:  Generate lookat shell script.
-	* openvrml.spec.in:  Added lookat-bin to lookat package.
-	* src/lookat/Makefile.am:  Changed binary executable from
-	"lookat" to "lookat-bin".  "lookat" is now a shell script.
-	* src/lookat/lookat.in:  Added file.
-
-2003-10-26  Braden McDaniel  <braden@endoframe.com>
-
-	Added the beginning of a test suite.
-
-	* Makefile.am:  Added "test" subdirectory.
-	* configure.ac:  Substitute GRE_PATH variable.
-	* m4/jdk.m4:  Modified OV_WITH_JDK to substitute JDK_LIBRARY_PATH
-	variable.
-	* test/Makefile.am:  Added file.
-	* test/browser_basic.cpp:  Added file.
-
-2003-10-23  Braden McDaniel  <braden@endoframe.com>
-
-	Move check for libGLU to AX_CHECK_GLU.
-
-	* openvrml-gl.pc.in
 	* m4/Makefile.am
 	* m4/ax_check_gl.m4
-	* m4/ax_check_glu.m4
+	* m4/ax_check_glu.m4:  Added file.
 	* m4/ax_check_glut.m4
-	* src/libopenvrml-gl/openvrml/gl/Makefile.am
 
-2003-10-21  Braden McDaniel  <braden@endoframe.com>
+2003-11-08  Braden McDaniel  <braden@endoframe.com>
 
-	Replace usage of node::to_<node> with node_cast.
+	Fixed GLUT includes when using Apple's OpenGL framework.
 
-	* src/libopenvrml/openvrml/Vrml97Parser.cpp
-	* src/libopenvrml/openvrml/Vrml97Parser.g
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/node.cpp
-	* src/libopenvrml/openvrml/node.h
-	* src/libopenvrml/openvrml/script.cpp
-	* src/libopenvrml/openvrml/script.h
-	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/lookat/ViewerGlut.cpp
+	* src/lookat/lookat.cpp
 
-2003-10-20  Braden McDaniel  <braden@endoframe.com>
+2003-11-08  Braden McDaniel  <braden@endoframe.com>
 
-	Merged changes from 0.14.2.
+	* src/libopenvrml/openvrml/img.cpp (img::~img):  Initialize
+	img::nframes_ to 0.  Fixes crash in img destruction.
+
+2003-10-19  Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.14.2 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+
+2003-10-17  Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  More crash-
+	inducing size_t carelessness fixed.
+
+2003-10-11  Braden McDaniel  <braden@endoframe.com>
 
 	* doc/doxygen-header:  Removed unsightly filename extensions
 	from URIs.
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	(elevation_grid_node::insert_geometry):  Added null checks for
-	SFNode fields.
-	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Fixed crashes
-	resulting from size_t carelessness.
 
-2003-10-14  Braden McDaniel  <braden@endoframe.com>
-
-	Generate Doxyfile from configure in order to take advantage of
-	PACKAGE_NAME and PACKAGE_VERSION substitutions.
-
-	* configure.ac:  Added doc/Doxyfile to AC_CONFIG_FILES.
-	* doc/Doxyfile:  Removed file.
-	* doc/Doxyfile.in:  Added file.
-	* doc/Makefile.am:  Use Doxfile in the builddir.
-
-2003-10-08  Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac:  Removed useless checks for zlib, libpng, and
-	libjpeg.
-
-2003-10-08  Braden McDaniel  <braden@endoframe.com>
-
-	Moved relocate member function from node to child_node.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/node.cpp
-	* src/libopenvrml/openvrml/node.h
-	* src/libopenvrml/openvrml/vrml97node.cpp
-
-2003-10-07  Braden McDaniel  <braden@endoframe.com>
-
-	Quelled some warnings from gcc.
+2003-10-11  Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
+	(elevation_grid_node::insert_geometry):  Fixed errors accessing
+	sfnode fields that could attempt to dereference a null pointer.
+
+2003-10-10  Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(viewer::insert_cylinder):  Fixed crash introduced by careless
+	use of size_t in a for loop.  Increased the number of sides
+	used to construct a cylinder from 8 to 16.
 
 2003-09-30  Braden McDaniel  <braden@endoframe.com>
 
-	Replace field_value_ptr, node_class_ptr, node_type_ptr, and
-	scope_ptr with instances of boost::shared_ptr.
+	Updated version to 0.14.1.
 
-	* openvrml.spec.in
-	* src/libopenvrml/openvrml/Makefile.am
-	* src/libopenvrml/openvrml/Vrml97Parser.cpp
-	* src/libopenvrml/openvrml/Vrml97Parser.g
-	* src/libopenvrml/openvrml/Vrml97Parser.hpp
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/browser.h
-	* src/libopenvrml/openvrml/field.h
-	* src/libopenvrml/openvrml/field_value_ptr.cpp
-	* src/libopenvrml/openvrml/field_value_ptr.h
-	* src/libopenvrml/openvrml/node.h
-	* src/libopenvrml/openvrml/node_class_ptr.cpp
-	* src/libopenvrml/openvrml/node_class_ptr.h
-	* src/libopenvrml/openvrml/node_type_ptr.cpp
-	* src/libopenvrml/openvrml/node_type_ptr.h
-	* src/libopenvrml/openvrml/private.h
-	* src/libopenvrml/openvrml/scope.h
-	* src/libopenvrml/openvrml/scope_ptr.cpp
-	* src/libopenvrml/openvrml/scope_ptr.h
-	* src/libopenvrml/openvrml/script.cpp
-	* src/libopenvrml/openvrml/script.h
-	* src/libopenvrml/openvrml/vrml97node.cpp
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
 
 2003-09-30  Braden McDaniel  <braden@endoframe.com>
-
-	Merge from 0.14.1.
 
 	* src/libopenvrml/openvrml/private.h:  Allow for 10 rounding
 	errors in computation of floating point error tolerance.
-
-2003-09-28  Braden McDaniel  <braden@endoframe.com>
-
-	Updated version to 0.14.99.
-
-	* README
-	* configure.ac
 
 2003-09-28  Braden McDaniel  <braden@endoframe.com>
 

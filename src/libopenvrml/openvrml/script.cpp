@@ -137,7 +137,7 @@ const node_type_ptr script_node_class::create_type(const std::string &,
     throw ()
 {
     assert(false);
-    return node_type_ptr();
+    return node_type_ptr(0);
 }
 
 
@@ -467,6 +467,16 @@ void script_node::add_field(const std::string & id,
     const field_value_map_t::value_type value(id, default_val);
     const bool succeeded = this->field_value_map_.insert(value).second;
     assert(succeeded);
+}
+
+/**
+ * @brief Return a pointer to this script_node.
+ *
+ * @return a pointer to this script_node.
+ */
+const script_node * script_node::to_script() const throw ()
+{
+    return this;
 }
 
 /**
@@ -822,17 +832,6 @@ void script_node::do_shutdown(const double timestamp) throw ()
     if (this->script_) { this->script_->shutdown(timestamp); }
     this->scene()->browser.remove_script(*this);
 }
-
-/**
- * @brief render_child implementation.
- *
- * @param v         viewer implementation responsible for actually doing the
- *                  drawing.
- * @param context   generic context argument; holds things like the accumulated
- *                  modelview transform.
- */
-void script_node::do_render_child(viewer & v, rendering_context context)
-{}
 
 } // namespace openvrml
 

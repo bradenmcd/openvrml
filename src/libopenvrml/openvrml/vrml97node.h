@@ -80,9 +80,14 @@ namespace openvrml {
         public:
             virtual ~abstract_geometry_node() throw () = 0;
 
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
+
         protected:
             abstract_geometry_node(const node_type & type,
                                    const scope_ptr & scope);
+
+            viewer::object_t viewerObject;
         };
 
 
@@ -211,6 +216,8 @@ namespace openvrml {
 
             virtual const openvrml::bounding_volume & bounding_volume() const;
             virtual bool modified() const;
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timeStamp, bool isOver, bool isActive,
@@ -220,8 +227,6 @@ namespace openvrml {
                                rendering_context context);
 
         protected:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
             //
             // eventIn handlers
             //
@@ -264,13 +269,12 @@ namespace openvrml {
             virtual anchor_node * to_anchor() const;
 
             virtual const openvrml::bounding_volume & bounding_volume() const;
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
             void activate();
 
         private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -311,6 +315,9 @@ namespace openvrml {
 
             virtual bool modified() const;
 
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
+
             //
             // appearance_node implementation
             //
@@ -319,9 +326,6 @@ namespace openvrml {
             virtual const node_ptr & texture_transform() const throw ();
 
         private:
-            virtual void do_render_appearance(viewer & v,
-                                              rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -517,10 +521,10 @@ namespace openvrml {
                            const scope_ptr & scope);
             virtual ~billboard_node() throw ();
 
-        private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
+        private:
             //
             // eventIn handlers
             //
@@ -552,12 +556,10 @@ namespace openvrml {
                      const scope_ptr & scope);
             virtual ~box_node() throw ();
 
-            virtual const openvrml::bounding_volume & bounding_volume() const;
-
-        private:
             virtual viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               rendering_context context);
+            insert_geometry(openvrml::viewer & viewer,
+                            rendering_context context);
+            virtual const openvrml::bounding_volume & bounding_volume() const;
         };
 
 
@@ -693,10 +695,9 @@ namespace openvrml {
                       const scope_ptr & scope);
             virtual ~cone_node() throw ();
 
-        private:
             virtual viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               rendering_context context);
+            insert_geometry(openvrml::viewer & viewer,
+                            rendering_context context);
         };
 
 
@@ -802,10 +803,9 @@ namespace openvrml {
                           const scope_ptr & scope);
             virtual ~cylinder_node() throw ();
 
-        private:
             virtual viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               rendering_context context);
+            insert_geometry(openvrml::viewer & viewer,
+                            rendering_context context);
         };
 
 
@@ -846,14 +846,13 @@ namespace openvrml {
 
             virtual cylinder_sensor_node * to_cylinder_sensor() const;
 
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
             void activate(double timeStamp, bool isActive, double *p);
 
             bool enabled() const;
 
         private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -899,10 +898,10 @@ namespace openvrml {
                                    const scope_ptr & scope);
             virtual ~directional_light_node() throw ();
 
-        private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
+        private:
             //
             // eventIn handlers
             //
@@ -947,12 +946,11 @@ namespace openvrml {
             virtual ~elevation_grid_node() throw ();
 
             virtual bool modified() const;
+            virtual viewer::object_t
+            insert_geometry(openvrml::viewer & viewer,
+                            rendering_context context);
 
         private:
-            virtual viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -1000,11 +998,11 @@ namespace openvrml {
                            const scope_ptr & scope);
             virtual ~extrusion_node() throw ();
 
-        private:
             virtual viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               rendering_context context);
+            insert_geometry(openvrml::viewer & viewer,
+                            rendering_context context);
 
+        private:
             //
             // eventIn handlers
             //
@@ -1138,17 +1136,22 @@ namespace openvrml {
         };
 
         class image_texture_node : public abstract_texture_node {
+
             friend class image_texture_class;
 
             mfstring url;
 
             img * image;
-            bool texture_needs_update;
+
+            viewer::texture_object_t texObject;
 
         public:
             image_texture_node(const node_type & type,
                                const scope_ptr & scope);
             virtual ~image_texture_node() throw ();
+
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
             virtual size_t components() const throw ();
             virtual size_t width() const throw ();
@@ -1157,11 +1160,6 @@ namespace openvrml {
             virtual const unsigned char * pixels() const throw ();
 
         private:
-            virtual viewer::texture_object_t
-            do_render_texture(viewer & v, rendering_context context);
-
-            void update_texture();
-
             //
             // eventIn handlers
             //
@@ -1203,13 +1201,12 @@ namespace openvrml {
             virtual ~indexed_face_set_node() throw ();
 
             virtual bool modified() const;
+            virtual viewer::object_t
+            insert_geometry(openvrml::viewer & viewer,
+                            rendering_context context);
             virtual const openvrml::bounding_volume & bounding_volume() const;
 
         private:
-            virtual viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -1249,10 +1246,9 @@ namespace openvrml {
                                   const scope_ptr & scope);
             virtual ~indexed_line_set_node() throw ();
 
-        private:
             virtual viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               rendering_context context);
+            insert_geometry(openvrml::viewer & viewer,
+                            rendering_context context);
         };
 
 
@@ -1282,6 +1278,8 @@ namespace openvrml {
                         const scope_ptr & scope);
             virtual ~inline_node() throw ();
 
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
             virtual inline_node * to_inline() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
@@ -1289,9 +1287,6 @@ namespace openvrml {
                                   double * p);
 
         private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
-
             void load();
 
             //
@@ -1330,6 +1325,8 @@ namespace openvrml {
             virtual ~lod_node() throw ();
 
             virtual bool modified() const;
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
             virtual const openvrml::bounding_volume & bounding_volume() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
@@ -1337,9 +1334,6 @@ namespace openvrml {
                                   double * p);
 
         private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -1438,6 +1432,8 @@ namespace openvrml {
             int frame, lastFrame;
             double lastFrameTime;
 
+            viewer::texture_object_t texObject;
+
         public:
             movie_texture_node(const node_type & type,
                                const scope_ptr & scope);
@@ -1446,6 +1442,9 @@ namespace openvrml {
             virtual movie_texture_node * to_movie_texture() const;
 
             void update(double time);
+
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
             virtual size_t components() const throw ();
             virtual size_t width() const throw ();
@@ -1457,8 +1456,6 @@ namespace openvrml {
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
-            virtual viewer::texture_object_t
-            do_render_texture(viewer & v, rendering_context context);
 
             //
             // eventIn handlers
@@ -1665,14 +1662,20 @@ namespace openvrml {
         };
 
         class pixel_texture_node : public abstract_texture_node {
+
             friend class pixel_texture_class;
 
             sfimage image;
+
+            viewer::texture_object_t texObject;
 
         public:
             pixel_texture_node(const node_type & type,
                                const scope_ptr & scope);
             virtual ~pixel_texture_node() throw ();
+
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
             virtual size_t components() const throw ();
             virtual size_t width() const throw ();
@@ -1681,9 +1684,6 @@ namespace openvrml {
             virtual const unsigned char * pixels() const throw ();
 
         private:
-            virtual viewer::texture_object_t
-            do_render_texture(viewer & v, rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -1727,14 +1727,13 @@ namespace openvrml {
 
             virtual plane_sensor_node * to_plane_sensor() const;
 
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
             void activate( double timeStamp, bool isActive, double *p );
 
             bool enabled() const;
 
         private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -1826,13 +1825,11 @@ namespace openvrml {
             virtual ~point_set_node() throw ();
 
             virtual bool modified() const;
+            virtual viewer::object_t insert_geometry(openvrml::viewer & viewer,
+                                                  rendering_context context);
             virtual const openvrml::bounding_volume & bounding_volume() const;
 
         private:
-            virtual viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -1914,10 +1911,10 @@ namespace openvrml {
                                   const scope_ptr & scope);
             virtual ~proximity_sensor_node() throw ();
 
-        private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
+        private:
             //
             // eventIn handlers
             //
@@ -1997,11 +1994,10 @@ namespace openvrml {
 
             virtual bool modified() const;
             virtual const openvrml::bounding_volume & bounding_volume() const;
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
         private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -2043,10 +2039,10 @@ namespace openvrml {
                        const scope_ptr & scope);
             virtual ~sound_node() throw ();
 
-        private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
+        private:
             //
             // eventIn handlers
             //
@@ -2101,12 +2097,10 @@ namespace openvrml {
                         const scope_ptr & scope);
             virtual ~sphere_node() throw ();
 
-            virtual const openvrml::bounding_volume & bounding_volume() const;
-
-        private:
             virtual viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               rendering_context context);
+            insert_geometry(openvrml::viewer & viewer,
+                            rendering_context context);
+            virtual const openvrml::bounding_volume & bounding_volume() const;
         };
 
 
@@ -2141,13 +2135,13 @@ namespace openvrml {
 
             virtual sphere_sensor_node * to_sphere_sensor() const;
 
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
+
             void activate(double timeStamp, bool isActive, double * p);
             bool isEnabled() const throw ();
 
         private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -2247,6 +2241,8 @@ namespace openvrml {
             virtual ~switch_node() throw ();
 
             virtual bool modified() const;
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
             virtual const openvrml::bounding_volume & bounding_volume() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
@@ -2254,9 +2250,6 @@ namespace openvrml {
                                   double * p);
 
         private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -2324,12 +2317,11 @@ namespace openvrml {
             virtual ~text_node() throw ();
 
             virtual bool modified() const;
+            virtual viewer::object_t
+            insert_geometry(openvrml::viewer & viewer,
+                            rendering_context context);
 
         private:
-            virtual viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               rendering_context context);
-
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
@@ -2420,10 +2412,10 @@ namespace openvrml {
                                    const scope_ptr & scope);
             virtual ~texture_transform_node() throw ();
 
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
+
         private:
-            virtual void
-            do_render_texture_transform(viewer & v,
-                                        rendering_context context);
             //
             // eventIn handlers
             //
@@ -2573,14 +2565,14 @@ namespace openvrml {
                            const scope_ptr & scope);
             virtual ~transform_node() throw ();
 
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
+
             virtual const openvrml::bounding_volume & bounding_volume() const;
 
             virtual const mat4f & transform() const throw ();
 
         private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
-
             //
             // eventIn handlers
             //
@@ -2715,10 +2707,10 @@ namespace openvrml {
                                    const scope_ptr & scope);
             virtual ~visibility_sensor_node() throw ();
 
-        private:
-            virtual void do_render_child(openvrml::viewer & viewer,
-                                         rendering_context context);
+            virtual void render(openvrml::viewer & viewer,
+                                rendering_context context);
 
+        private:
             //
             // eventIn handlers
             //
