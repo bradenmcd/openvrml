@@ -1,3 +1,10 @@
+2001-09-27 Thomas Flynn <tflynn@users.sourceforge.net>
+
+	* Update VrmlNodeScript::addToScene to use std::string instead of
+	  char*.
+
+	* Cleanups to VrmlNodeScript.cpp from Henri Manson.
+
 2001-09-20  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * If all "iostreams" are converted to standard "iostreams" 
