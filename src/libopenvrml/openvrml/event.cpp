@@ -34,15 +34,19 @@ namespace openvrml {
  */
 
 /**
- * @var node & event_listener::node
+ * @internal
  *
- * @brief The node to which the event_listener belongs.
+ * @var node & event_listener::node_
+ *
+ * @brief The <code>node</code> to which the <code>event_listener</code>
+ *        belongs.
  */
 
 /**
  * @brief Construct.
  *
- * @param node  the node to which the event_listener belongs.
+ * @param node  the <code>node</code> to which the <code>event_listener</code>
+ *              belongs.
  */
 event_listener::event_listener(openvrml::node & node) throw ():
     node_(node)
@@ -53,6 +57,16 @@ event_listener::event_listener(openvrml::node & node) throw ():
  */
 event_listener::~event_listener() throw ()
 {}
+
+/**
+ * @fn openvrml::node & event_listener::node() throw ()
+ *
+ * @brief The <code>node</code> to which the <code>event_listener</code>
+ *        belongs.
+ *
+ * @return the <code>node</code> to which the <code>event_listener</code>
+ *         belongs.
+ */
 
 
 /**
@@ -79,6 +93,20 @@ event_listener::~event_listener() throw ()
  * @fn void field_value_listener<FieldValue>::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Process an event.
+ *
+ * @param value     the event value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+
+/**
+ * @fn void field_value_listener<FieldValue>::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ *
+ * @brief Called by
+ *      <code>field_value_listener&lt;FieldValue&gt;::do_process_event</code>.
+ *
+ * Subclasses must implement this function.
  *
  * @param value     the event value.
  * @param timestamp the current time.
@@ -211,6 +239,17 @@ event_listener::~event_listener() throw ()
  * @class event_emitter
  *
  * @brief Abstract base class of event emitters.
+ */
+
+/**
+ * @var class event_emitter::node
+ *
+ * @brief The implementation of <code>node</code> calls
+ *        <code>event_emitter::emit_event</code>.
+ *
+ * The only things that should be emitting events are <code>node</code>s.
+ * Subclasses of <code>node</code> should call <code>node::emit_event</code> to
+ * emit an event.
  */
 
 /**

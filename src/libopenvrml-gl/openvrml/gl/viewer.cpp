@@ -901,8 +901,6 @@ namespace {
 
 /**
  * @brief Construct a viewer for the specified browser.
- *
- * @param b the browser.
  */
 viewer::viewer():
     gl_initialized(false),

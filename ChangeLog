@@ -1,3 +1,16 @@
+2005-01-10 Braden McDaniel  <braden@endoframe.com>
+
+	Replaced doc-comments for friend declarations. (Bug fixed in
+	Doxygen 1.4.)
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node_ptr.cpp
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2005-01-09 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed problem with an empty -rpath argument when configured with
