@@ -29,6 +29,7 @@ VrmlNodeType *VrmlNodeBox::defineType(VrmlNodeType *t)
     {
       if (st) return st;	// Define type only once.
       t = st = new VrmlNodeType("Box", creator);
+      t->reference();
     }
 
   VrmlNodeGeometry::defineType(t);	// Parent class

@@ -28,6 +28,7 @@ VrmlNodeType *VrmlNodeAudioClip::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("AudioClip", creator);
+      t->reference();
     }
 
   VrmlNode::defineType(t);	// Parent class

@@ -27,6 +27,7 @@ VrmlNodeType *VrmlNodePixelTexture::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("PixelTexture", creator);
+      t->reference();
     }
 
   VrmlNodeTexture::defineType(t);	// Parent class

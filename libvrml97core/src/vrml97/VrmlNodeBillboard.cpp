@@ -23,6 +23,7 @@ VrmlNodeType *VrmlNodeBillboard::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Billboard", creator);
+      t->reference();
     }
 
   VrmlNodeGroup::defineType(t);	// Parent class

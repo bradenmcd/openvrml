@@ -26,6 +26,7 @@ VrmlNodeType *VrmlNodeCone::defineType(VrmlNodeType *t)
     {
       if (st) return st;	// Only define type once.
       t = st = new VrmlNodeType("Cone", creator);
+      t->reference();
     }
 
   VrmlNodeGeometry::defineType(t);	// Parent class

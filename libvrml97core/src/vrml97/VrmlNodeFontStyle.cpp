@@ -23,6 +23,7 @@ VrmlNodeType *VrmlNodeFontStyle::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("FontStyle", creator);
+      t->reference();
     }
 
   VrmlNode::defineType(t);	// Parent class

@@ -25,6 +25,7 @@ VrmlNodeType *VrmlNodeSpotLight::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("SpotLight", creator);
+      t->reference();
     }
 
   VrmlNodeLight::defineType(t);	// Parent class

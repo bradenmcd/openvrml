@@ -36,6 +36,7 @@ VrmlNodeType *VrmlNodeOrientationInt::defineType(VrmlNodeType *t)
     {
       if (st) return st;		// Only define the type once.
       t = st = new VrmlNodeType("OrientationInterpolator", creator);
+      t->reference();
     }
 
   VrmlNodeChild::defineType(t);	// Parent class

@@ -28,6 +28,7 @@ VrmlNodeType *VrmlNodeMovieTexture::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("MovieTexture", creator);
+      t->reference();
     }
 
   VrmlNodeTexture::defineType(t);	// Parent class

@@ -23,6 +23,7 @@ VrmlNodeType *VrmlNodeColor::defineType(VrmlNodeType *t)
     {
       if (st) return st;	// Only define type once.
       t = st = new VrmlNodeType("Color", creator);
+      t->reference();
     }
 
   VrmlNode::defineType(t);	// Parent class

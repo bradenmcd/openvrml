@@ -32,6 +32,7 @@ VrmlNodeType *VrmlNodeFog::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Fog", creator);
+      t->reference();
     }
 
   VrmlNodeChild::defineType(t);	// Parent class

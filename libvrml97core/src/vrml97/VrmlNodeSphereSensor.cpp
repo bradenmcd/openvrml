@@ -34,6 +34,7 @@ VrmlNodeType *VrmlNodeSphereSensor::defineType(VrmlNodeType *t)
     {
       if (st) return st;		// Only define the type once.
       t = st = new VrmlNodeType("SphereSensor", creator);
+      t->reference();
     }
 
   VrmlNodeChild::defineType(t);	// Parent class

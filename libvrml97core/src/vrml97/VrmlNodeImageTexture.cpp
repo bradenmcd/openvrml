@@ -31,6 +31,7 @@ VrmlNodeType *VrmlNodeImageTexture::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("ImageTexture", creator);
+      t->reference();
     }
 
   VrmlNodeTexture::defineType(t);	// Parent class

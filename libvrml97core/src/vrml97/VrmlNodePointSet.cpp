@@ -25,6 +25,7 @@ VrmlNodeType *VrmlNodePointSet::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("PointSet", creator);
+      t->reference();
     }
 
   VrmlNodeGeometry::defineType(t);	// Parent class

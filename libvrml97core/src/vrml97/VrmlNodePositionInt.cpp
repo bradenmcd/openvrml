@@ -27,6 +27,7 @@ VrmlNodeType *VrmlNodePositionInt::defineType(VrmlNodeType *t)
     {
       if (st) return st;		// Only define the type once.
       t = st = new VrmlNodeType("PositionInterpolator", creator);
+      t->reference();
     }
 
   VrmlNodeChild::defineType(t);	// Parent class

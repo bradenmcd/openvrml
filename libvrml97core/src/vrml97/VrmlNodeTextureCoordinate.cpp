@@ -24,6 +24,7 @@ VrmlNodeType *VrmlNodeTextureCoordinate::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("TextureCoordinate", creator);
+      t->reference();
     }
 
   VrmlNode::defineType(t);	// Parent class

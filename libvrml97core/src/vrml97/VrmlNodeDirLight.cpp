@@ -24,6 +24,7 @@ VrmlNodeType *VrmlNodeDirLight::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("DirectionalLight", creator);
+      t->reference();
     }
 
   VrmlNodeLight::defineType(t);	// Parent class

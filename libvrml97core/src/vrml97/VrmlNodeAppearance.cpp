@@ -27,6 +27,7 @@ VrmlNodeType *VrmlNodeAppearance::defineType(VrmlNodeType *t)
     {
       if (st) return st;		// Only define the type once.
       t = st = new VrmlNodeType("Appearance", creator);
+      t->reference();
     }
 
   VrmlNode::defineType(t);	// Parent class

@@ -27,6 +27,7 @@ VrmlNodeType *VrmlNodeShape::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Shape", creator);
+      t->reference();
     }
 
   VrmlNodeChild::defineType(t);	// Parent class

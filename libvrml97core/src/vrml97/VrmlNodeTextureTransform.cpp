@@ -25,6 +25,7 @@ VrmlNodeType *VrmlNodeTextureTransform::defineType(VrmlNodeType *t)
     {
       if (st) return st;		// Only define the type once.
       t = st = new VrmlNodeType("TextureTransform", creator);
+      t->reference();
     }
 
   VrmlNode::defineType(t);	// Parent class

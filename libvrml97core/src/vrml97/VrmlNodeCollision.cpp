@@ -23,6 +23,7 @@ VrmlNodeType *VrmlNodeCollision::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Collision", creator);
+      t->reference();
     }
 
   VrmlNodeGroup::defineType(t);	// Parent class

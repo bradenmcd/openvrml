@@ -26,6 +26,7 @@ VrmlNodeType *VrmlNodeSphere::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Sphere", creator);
+      t->reference();
     }
 
   VrmlNodeGeometry::defineType(t);	// Parent class

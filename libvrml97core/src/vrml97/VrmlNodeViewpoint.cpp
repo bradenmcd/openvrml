@@ -31,6 +31,7 @@ VrmlNodeType *VrmlNodeViewpoint::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Viewpoint", creator);
+      t->reference();
     }
 
   VrmlNodeChild::defineType(t);	// Parent class

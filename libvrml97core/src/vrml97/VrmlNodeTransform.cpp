@@ -24,6 +24,7 @@ VrmlNodeType *VrmlNodeTransform::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Transform", creator);
+      t->reference();
     }
 
   VrmlNodeGroup::defineType(t);	// Parent class

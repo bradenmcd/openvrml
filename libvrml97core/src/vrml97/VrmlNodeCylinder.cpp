@@ -25,6 +25,7 @@ VrmlNodeType *VrmlNodeCylinder::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Cylinder", creator);
+      t->reference();
     }
 
   VrmlNodeGeometry::defineType(t);	// Parent class

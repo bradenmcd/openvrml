@@ -26,6 +26,7 @@ VrmlNodeType *VrmlNodeILineSet::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("IndexedLineSet", creator);
+      t->reference();
     }
 
   VrmlNodeIndexedSet::defineType(t);	// Parent class

@@ -30,6 +30,7 @@ VrmlNodeType *VrmlNodeColorInt::defineType(VrmlNodeType *t)
     {
       if (st) return st;		// Only define the type once.
       t = st = new VrmlNodeType("ColorInterpolator", creator);
+      t->reference();
     }
 
   VrmlNodeChild::defineType(t);	// Parent class

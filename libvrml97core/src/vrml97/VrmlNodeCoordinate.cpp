@@ -22,6 +22,7 @@ VrmlNodeType *VrmlNodeCoordinate::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Coordinate", creator);
+      t->reference();
     }
 
   VrmlNode::defineType(t);	// Parent class

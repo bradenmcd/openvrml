@@ -34,6 +34,7 @@ VrmlNodeType *VrmlNodePlaneSensor::defineType(VrmlNodeType *t)
     {
       if (st) return st;		// Only define the type once.
       t = st = new VrmlNodeType("PlaneSensor", creator);
+      t->reference();
     }
 
   VrmlNodeChild::defineType(t);	// Parent class

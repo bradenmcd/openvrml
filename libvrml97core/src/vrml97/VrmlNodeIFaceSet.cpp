@@ -25,6 +25,7 @@ VrmlNodeType *VrmlNodeIFaceSet::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("IndexedFaceSet", creator);
+      t->reference();
     }
 
   VrmlNodeIndexedSet::defineType(t);	// Parent class

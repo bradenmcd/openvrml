@@ -26,6 +26,7 @@ VrmlNodeType *VrmlNodeText::defineType(VrmlNodeType *t)
     {
       if (st) return st;	// Define type only once.
       t = st = new VrmlNodeType("Text", creator);
+      t->reference();
     }
 
   VrmlNodeGeometry::defineType(t);	// Parent class

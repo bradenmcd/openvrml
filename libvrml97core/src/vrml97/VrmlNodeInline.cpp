@@ -33,6 +33,7 @@ VrmlNodeType *VrmlNodeInline::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Inline", creator);
+      t->reference();
     }
 
   // Having Inline a subclass of Group is not right since

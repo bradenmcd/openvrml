@@ -24,6 +24,7 @@ VrmlNodeType *VrmlNodeExtrusion::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Extrusion", creator);
+      t->reference();
     }
 
   VrmlNodeGeometry::defineType(t);	// Parent class

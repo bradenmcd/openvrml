@@ -34,6 +34,7 @@ VrmlNodeType *VrmlNodeBackground::defineType(VrmlNodeType *t)
     {
       if (st) return st;	// Define the type once.
       t = st = new VrmlNodeType("Background", creator);
+      t->reference();
     }
 
   VrmlNodeChild::defineType(t);	// Parent class

@@ -32,6 +32,7 @@ VrmlNodeType *VrmlNodeAnchor::defineType(VrmlNodeType *t)
     {
       if (st) return st;
       t = st = new VrmlNodeType("Anchor", creator);
+      t->reference();
     }
 
   VrmlNodeGroup::defineType(t);	// Parent class

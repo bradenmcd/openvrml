@@ -30,6 +30,7 @@ VrmlNodeType *VrmlNodeSound::defineType(VrmlNodeType *t)
     {
       if (st) return st;		// Only define the type once.
       t = st = new VrmlNodeType("Sound", creator);
+      t->reference();
     }
 
   VrmlNodeChild::defineType(t);	// Parent class
