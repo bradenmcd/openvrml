@@ -25,8 +25,9 @@
 #   include <config.h>
 # endif
 
-# include <iostream>
 # include <algorithm>
+# include <iostream>
+# include <iterator>
 # ifdef OPENVRML_ENABLE_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
@@ -13154,10 +13155,11 @@ void Text::updateGeometry() throw (std::bad_alloc)
     float geometryXMin = 0.0, geometryXMax = 0.0;
     float geometryYMin = 0.0, geometryYMax = 0.0;
     size_t npolygons = 0;
-    for (Ucs4String::const_iterator string = this->ucs4String.begin();
+    const Ucs4String::const_iterator stringBegin = this->ucs4String.begin();
+    for (Ucs4String::const_iterator string = stringBegin;
             string != this->ucs4String.end(); ++string) {
         float penPos[2] = { 0.0, 0.0 };
-        const size_t line = string - this->ucs4String.begin();
+        const size_t line = std::distance(stringBegin, string);
         const float lineAdvance = size * spacing * line;
         if (horizontal) {
             if (topToBottom) {
