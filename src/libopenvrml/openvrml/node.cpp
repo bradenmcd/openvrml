@@ -1382,6 +1382,20 @@ material_node * node::to_material() throw ()
 /**
  * @internal
  *
+ * @brief Cast to a navigation_info_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0.
+ */
+navigation_info_node * node::to_navigation_info() throw ()
+{
+    return 0;
+}
+
+/**
+ * @internal
+ *
  * @brief Cast to a normal_node.
  *
  * Default implementation returns 0.
@@ -1513,16 +1527,6 @@ vrml97_node::abstract_light_node * node::to_light() const
  * @return 0.
  */
 vrml97_node::movie_texture_node * node::to_movie_texture() const
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a navigation_info_node.
- *
- * @return 0.
- */
-vrml97_node::navigation_info_node * node::to_navigation_info() const
 {
     return 0;
 }
@@ -2906,6 +2910,85 @@ material_node * material_node::to_material() throw ()
  * @brief Get the transparency.
  *
  * @return the transparency.
+ */
+
+
+/**
+ * @class navigation_info_node
+ *
+ * @ingroup nodes
+ *
+ * @brief Abstract base class for normal nodes.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param t     the node_type associated with the node.
+ * @param scope the Scope the node belongs to.
+ */
+navigation_info_node::
+navigation_info_node(const node_type & t,
+                     const boost::shared_ptr<openvrml::scope> & scope)
+    throw ():
+    node(t, scope),
+    child_node(t, scope)
+{}
+
+/**
+ * @brief Destroy.
+ */
+navigation_info_node::~navigation_info_node() throw ()
+{}
+
+/**
+ * @brief Cast to a navigation_info_node.
+ *
+ * @return a pointer to this navigation_info_node.
+ */
+navigation_info_node * navigation_info_node::to_navigation_info() throw ()
+{
+    return this;
+}
+
+/**
+ * @fn const std::vector<float> & navigation_info_node::avatar_size() const throw ()
+ *
+ * @brief Get the avatar dimensions.
+ *
+ * @return the avatar dimensions.
+ */
+
+/**
+ * @fn bool navigation_info_node::headlight() const throw ()
+ *
+ * @brief Get the state of the headlight.
+ *
+ * @return @c true if the headlight is on; @c false otherwise.
+ */
+
+/**
+ * @fn float navigation_info_node::speed() const throw ()
+ *
+ * @brief Get the current speed of the user view.
+ *
+ * @return the current speed of the user view.
+ */
+
+/**
+ * @fn const std::vector<std::string> & navigation_info_node::type() const throw ()
+ *
+ * @brief Get the navigation type.
+ *
+ * @return the navigation type.
+ */
+
+/**
+ * @fn float navigation_info_node::visibility_limit() const throw ()
+ *
+ * @brief Get the visibility limit.
+ *
+ * @return the visibility limit.
  */
 
 

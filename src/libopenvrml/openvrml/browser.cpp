@@ -2419,11 +2419,170 @@ namespace {
     }
 
 
+    class default_navigation_info : public navigation_info_node {
+    public:
+        explicit default_navigation_info(const null_node_type & type) throw ();
+        virtual ~default_navigation_info() throw ();
+
+        virtual const std::vector<float> & avatar_size() const throw ();
+        virtual bool headlight() const throw ();
+        virtual float speed() const throw ();
+        virtual const std::vector<std::string> & type() const throw ();
+        virtual float visibility_limit() const throw ();
+
+    private:
+        virtual void do_field(const std::string & id,
+                              const field_value & value)
+            throw ();
+        virtual const field_value & do_field(const std::string & id) const
+            throw ();
+        virtual void do_process_event(const std::string & id,
+                                      const field_value & value,
+                                      double timestamp)
+            throw ();
+        virtual const field_value & do_eventout(const std::string & id) const
+            throw ();
+
+        virtual openvrml::event_listener &
+        do_event_listener(const std::string & id)
+            throw (unsupported_interface);
+        virtual openvrml::event_emitter &
+        do_event_emitter(const std::string & id)
+            throw (unsupported_interface);
+    };
+
+    const boost::shared_ptr<openvrml::scope> null_scope_ptr;
+
+    /**
+     * @brief Construct.
+     *
+     * @param t node type.
+     */
+    default_navigation_info::default_navigation_info(const null_node_type & t)
+        throw ():
+        node(t, null_scope_ptr),
+        child_node(t, null_scope_ptr),
+        openvrml::navigation_info_node(t, null_scope_ptr)
+    {}
+
+    /**
+     * @brief Destroy
+     */
+    default_navigation_info::~default_navigation_info() throw ()
+    {}
+
+    /**
+     * @brief The avatar dimensions.
+     *
+     * @return [0.25, 1.6, 0.75]
+     */
+    const std::vector<float> & default_navigation_info::avatar_size() const
+        throw ()
+    {
+        static const float array[] = { 0.25, 1.6, 0.75 };
+        static const std::vector<float> vec(array, array + 3);
+        return vec;
+    }
+
+    /**
+     * @brief The headlight state.
+     *
+     * @return @c true
+     */
+    bool default_navigation_info::headlight() const throw ()
+    {
+        return true;
+    }
+
+    /**
+     * @brief The speed of the user view.
+     *
+     * @return 1.0
+     */
+    float default_navigation_info::speed() const throw ()
+    {
+        return 1.0;
+    }
+
+    /**
+     * @brief The navigation type.
+     *
+     * @return ["WALK", "ANY"]
+     */
+    const std::vector<std::string> & default_navigation_info::type() const
+        throw ()
+    {
+        static const char * array[] = { "WALK", "ANY" };
+        static const std::vector<std::string> vec(array, array + 2);
+        return vec;
+    }
+
+    /**
+     * @brief The visibility limit.
+     *
+     * @return 0.0
+     */
+    float default_navigation_info::visibility_limit() const throw ()
+    {
+        return 0.0;
+    }
+
+    void default_navigation_info::do_field(const std::string & id,
+                                           const field_value & value)
+        throw ()
+    {
+        assert(false);
+    }
+
+    const field_value &
+    default_navigation_info::do_field(const std::string & id) const
+        throw ()
+    {
+        assert(false);
+        static const sfbool value;
+        return value;
+    }
+
+    void default_navigation_info::do_process_event(const std::string & id,
+                                                   const field_value & value,
+                                                   double timestamp)
+        throw ()
+    {
+        assert(false);
+    }
+
+    const field_value &
+    default_navigation_info::do_eventout(const std::string & id) const throw ()
+    {
+        assert(false);
+        static const sfbool value;
+        return value;
+    }
+
+    event_listener &
+    default_navigation_info::do_event_listener(const std::string & id)
+        throw (unsupported_interface)
+    {
+        assert(false);
+        throw unsupported_interface(this->node::type(), id);
+        return *static_cast<openvrml::event_listener *>(0);
+    }
+
+    event_emitter &
+    default_navigation_info::do_event_emitter(const std::string & id)
+        throw (unsupported_interface)
+    {
+        assert(false);
+        throw unsupported_interface(this->node::type(), id);
+        return *static_cast<openvrml::event_emitter *>(0);
+    }
+
+
     class default_viewpoint : public viewpoint_node {
         mat4f userViewTransform;
 
     public:
-        explicit default_viewpoint(const null_node_type & nodeType) throw ();
+        explicit default_viewpoint(const null_node_type & type) throw ();
         virtual ~default_viewpoint() throw ();
 
         virtual const mat4f & transformation() const throw ();
@@ -2453,10 +2612,8 @@ namespace {
             throw (unsupported_interface);
     };
 
-    static const boost::shared_ptr<openvrml::scope> null_scope_ptr;
-
     /**
-     * @brief Constructor.
+     * @brief Construct.
      *
      * @param type  the browser's null_node_type instance.
      */
@@ -2468,7 +2625,7 @@ namespace {
     {}
 
     /**
-     * @brief Destructor.
+     * @brief Destroy.
      */
     default_viewpoint::~default_viewpoint() throw ()
     {}
@@ -2560,6 +2717,7 @@ namespace {
         throw unsupported_interface(this->type(), id);
         return *static_cast<openvrml::event_emitter *>(0);
     }
+
 
     class uri {
         struct grammar : public boost::spirit::grammar<grammar> {
@@ -3515,6 +3673,19 @@ viewer_in_use::~viewer_in_use() throw ()
  */
 
 /**
+ * @var node_ptr browser::default_navigation_info_
+ *
+ * @brief The "default" navigation_info_node used when no navigation_info_node
+ *        in the scene is bound.
+ */
+
+/**
+ * @var navigation_info_node * browser::active_navigation_info_
+ *
+ * @brief The currently "active" navigation_info_node.
+ */
+
+/**
  * @var std::list<viewpoint_node *> browser::viewpoint_list
  *
  * @brief A list of all the Viewpoint nodes in the browser.
@@ -3733,6 +3904,9 @@ browser::browser(std::ostream & out, std::ostream & err)
     scene_(0),
     default_viewpoint_(new default_viewpoint(*null_node_type_)),
     active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
+    default_navigation_info_(new default_navigation_info(*null_node_type_)),
+    active_navigation_info_(
+        node_cast<navigation_info_node *>(default_navigation_info_.get())),
     modified_(false),
     new_view(false),
     delta_time(DEFAULT_DELTA),
@@ -3745,6 +3919,7 @@ browser::browser(std::ostream & out, std::ostream & err)
     flags_need_updating(false)
 {
     assert(this->active_viewpoint_);
+    assert(this->active_navigation_info_);
     this->init_node_class_map();
 }
 
@@ -3758,9 +3933,7 @@ browser::~browser() throw ()
     if (this->scene_) { this->scene_->shutdown(now); }
     delete this->scene_;
     this->scene_ = 0;
-    this->navigation_info_stack.clear();
     assert(this->viewpoint_list.empty());
-    assert(this->navigation_infos.empty());
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
     assert(this->timers.empty());
@@ -3860,6 +4033,41 @@ void browser::reset_default_viewpoint() throw ()
     this->active_viewpoint_ =
         node_cast<viewpoint_node *>(this->default_viewpoint_.get());
     assert(this->active_viewpoint_);
+}
+
+/**
+ * @brief Get the active navigation_info_node.
+ *
+ * The active navigation_info_node is the one currently associated with the
+ * user view.
+ *
+ * @return the active navigation_info_node.
+ */
+navigation_info_node & browser::active_navigation_info() const throw ()
+{
+    return *this->active_navigation_info_;
+}
+
+/**
+ * @brief Set the active navigation_info_node.
+ *
+ * @param nav_info a navigation_info_node.
+ */
+void browser::active_navigation_info(navigation_info_node & nav_info) throw ()
+{
+    this->active_navigation_info_ = &nav_info;
+}
+
+/**
+ * @brief Reset the active navigation_info_node to the default.
+ */
+void browser::reset_default_navigation_info() throw ()
+{
+    assert(this->default_navigation_info_);
+    this->active_navigation_info_ =
+        node_cast<navigation_info_node *>(
+            this->default_navigation_info_.get());
+    assert(this->active_navigation_info_);
 }
 
 /**
@@ -3966,10 +4174,8 @@ const char * browser::version() const throw ()
  */
 float browser::current_speed()
 {
-    vrml97_node::navigation_info_node * const navInfo =
-        bindable_navigation_info_top();
-    if (navInfo) { return navInfo->speed(); }
-    return 0.0f;
+    navigation_info_node & nav_info = this->active_navigation_info();
+    return nav_info.speed();
 }
 
 /**
@@ -4050,9 +4256,7 @@ void browser::load_url(const std::vector<std::string> & url,
     this->scene_ = 0;
     this->active_viewpoint_ =
         node_cast<viewpoint_node *>(this->default_viewpoint_.get());
-    this->navigation_info_stack.clear();
     assert(this->viewpoint_list.empty());
-    assert(this->navigation_infos.empty());
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
     assert(this->timers.empty());
@@ -4088,18 +4292,6 @@ void browser::load_url(const std::vector<std::string> & url,
         //
         for_each(this->node_class_map.begin(), this->node_class_map.end(),
                  InitNodeClass(initialViewpoint, now));
-
-        //
-        // Send initial bind events to bindable nodes.
-        //
-        if (!this->navigation_infos.empty()) {
-            assert(this->navigation_infos.front());
-            event_listener & listener =
-                navigation_infos.front()->event_listener("set_bind");
-            assert(dynamic_cast<sfbool_listener *>(&listener));
-            static_cast<sfbool_listener &>(listener)
-                .process_event(sfbool(true), now);
-        }
 
         if (this->active_viewpoint_
             != node_cast<viewpoint_node *>(this->default_viewpoint_.get())) {
@@ -4552,10 +4744,8 @@ bool browser::update(double current_time)
  */
 bool browser::headlight_on()
 {
-    vrml97_node::navigation_info_node * const navInfo =
-        this->bindable_navigation_info_top();
-    if (navInfo) { return navInfo->headlight(); }
-    return true;
+    navigation_info_node & nav_info = this->active_navigation_info();
+    return nav_info.headlight();
 }
 
 namespace {
@@ -4587,14 +4777,11 @@ void browser::render()
         this->viewer_->reset_user_navigation();
         this->new_view = false;
     }
-    float avatarSize = 0.25;
-    float visibilityLimit = 0.0;
-    vrml97_node::navigation_info_node * ni =
-        this->bindable_navigation_info_top();
-    if (ni) {
-        avatarSize = ni->avatar_size()[0];
-        visibilityLimit = ni->visibility_limit();
-    }
+    navigation_info_node & nav_info = this->active_navigation_info();
+    const float avatarSize = nav_info.avatar_size().empty()
+        ? 0.25
+        : nav_info.avatar_size()[0];
+    const float visibilityLimit = nav_info.visibility_limit();
 
     // Activate the headlight.
     // ambient is supposed to be 0 according to the spec...
@@ -4697,111 +4884,6 @@ void browser::delta(const double d)
 double browser::delta() const
 {
     return this->delta_time;
-}
-
-/**
- * @brief Get the top node of a bind_stack_t.
- *
- * @return the top node of @p stack.
- */
-const node_ptr browser::bindable_top(const bind_stack_t & stack)
-{
-    return stack.empty() ? node_ptr(0) : stack.front();
-}
-
-/**
- * @brief Push a node onto a bind_stack_t.
- *
- * @param stack the bind_stack_t onto which to push @p node.
- * @param node  the node to push onto @p stack.
- */
-void browser::bindable_push(bind_stack_t & stack, const node_ptr & node)
-{
-    this->bindable_remove(stack, node); // Remove any existing reference
-    stack.push_front(node);
-    this->modified(true);
-}
-
-/**
- * @brief Remove a node from a bind_stack_t.
- *
- * @param stack the bind_stack_t from which to remove @p node.
- * @param node  the node to remove from @p stack.
- */
-void browser::bindable_remove(bind_stack_t & stack, const node_ptr & node)
-{
-    const bind_stack_t::iterator pos =
-        std::find(stack.begin(), stack.end(), node);
-    if (pos != stack.end()) {
-        stack.erase(pos);
-        this->modified(true);
-    }
-}
-
-/**
- * @brief Add a NavigationInfo node to the list of NavigationInfo nodes for the
- *      browser.
- *
- * @param node a NavigationInfo node.
- *
- * @pre @p node is not in the list of NavigationInfo nodes for the browser.
- */
-void browser::add_navigation_info(vrml97_node::navigation_info_node & node)
-{
-    assert(std::find(this->navigation_infos.begin(),
-                     this->navigation_infos.end(), &node)
-            == this->navigation_infos.end());
-    this->navigation_infos.push_back(&node);
-}
-
-/**
- * @brief Remove a NavigationInfo node from the list of NavigationInfo nodes
- *      for the browser.
- *
- * @param n  a NavigationInfo node.
- *
- * @pre @p n is in the list of NavigationInfo nodes for the browser.
- */
-void browser::remove_navigation_info(vrml97_node::navigation_info_node & n)
-{
-    assert(!this->navigation_infos.empty());
-    const std::list<node *>::iterator end = this->navigation_infos.end();
-    const std::list<node *>::iterator pos =
-            std::find(this->navigation_infos.begin(), end, &n);
-    assert(pos != end);
-    this->navigation_infos.erase(pos);
-}
-
-/**
- * @brief Get the active node on the bound NavigationInfo stack.
- *
- * @return the active node on the bound NavigationInfo stack.
- */
-vrml97_node::navigation_info_node * browser::bindable_navigation_info_top()
-{
-    node * const n = this->bindable_top(this->navigation_info_stack).get();
-    return n ? n->to_navigation_info() : 0;
-}
-
-/**
- * @brief Push a NavigationInfo node onto the bound NavigationInfo node stack.
- *
- * @param n a NavigationInfo node.
- */
-void browser::bindable_push(vrml97_node::navigation_info_node * n)
-{
-    this->bindable_push(this->navigation_info_stack, node_ptr(n));
-}
-
-/**
- * @brief Remove a NavigationInfo node from the bound NavigationInfo node
- *        stack.
- *
- * @param n a NavigationInfo node.
- */
-void browser::bindable_remove(vrml97_node::navigation_info_node * n)
-{
-    this->bindable_remove(this->navigation_info_stack, node_ptr(n));
 }
 
 /**

@@ -1,3 +1,15 @@
+2004-12-28 Braden McDaniel  <braden@endoframe.com>
+
+	Added abstract navigation_info_node to the core API.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
 2004-12-25 Braden McDaniel  <braden@endoframe.com>
 
 	Merged changes from 0.15.3 release.

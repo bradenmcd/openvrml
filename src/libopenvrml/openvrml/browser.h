@@ -81,10 +81,9 @@ namespace openvrml {
         scene * scene_;
         const node_ptr default_viewpoint_;
         viewpoint_node * active_viewpoint_;
+        const node_ptr default_navigation_info_;
+        navigation_info_node * active_navigation_info_;
         std::list<viewpoint_node *> viewpoint_list;
-        typedef std::list<node_ptr> bind_stack_t;
-        bind_stack_t navigation_info_stack;
-        std::list<node *> navigation_infos;
         std::list<node *> scoped_lights;
         std::list<script_node *> scripts;
         std::list<node *> timers;
@@ -129,6 +128,9 @@ namespace openvrml {
         viewpoint_node & active_viewpoint() const throw ();
         void active_viewpoint(viewpoint_node & viewpoint) throw ();
         void reset_default_viewpoint() throw ();
+        navigation_info_node & active_navigation_info() const throw ();
+        void active_navigation_info(navigation_info_node & nav_info) throw ();
+        void reset_default_navigation_info() throw ();
         void add_viewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc);
         void remove_viewpoint(viewpoint_node & viewpoint) throw ();
         const std::list<viewpoint_node *> & viewpoints() const throw ();
@@ -174,12 +176,6 @@ namespace openvrml {
         void delta(double d);
         double delta() const;
 
-        void add_navigation_info(vrml97_node::navigation_info_node &);
-        void remove_navigation_info(vrml97_node::navigation_info_node &);
-        vrml97_node::navigation_info_node *bindable_navigation_info_top();
-        void bindable_push(vrml97_node::navigation_info_node *);
-        void bindable_remove(vrml97_node::navigation_info_node *);
-
         void add_scoped_light(vrml97_node::abstract_light_node &);
         void remove_scoped_light(vrml97_node::abstract_light_node &);
 
@@ -200,10 +196,6 @@ namespace openvrml {
     protected:
         bool headlight_on();
         void do_callbacks(cb_reason reason);
-
-        const node_ptr bindable_top(const bind_stack_t & stack);
-        void bindable_push(bind_stack_t & stack, const node_ptr & node);
-        void bindable_remove(bind_stack_t & stack, const node_ptr & node);
 
     private:
         void init_node_class_map();

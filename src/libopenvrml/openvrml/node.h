@@ -269,6 +269,7 @@ namespace openvrml {
     class geometry_node;
     class grouping_node;
     class material_node;
+    class navigation_info_node;
     class normal_node;
     class sound_source_node;
     class texture_node;
@@ -283,7 +284,6 @@ namespace openvrml {
         class cylinder_sensor_node;
         class abstract_light_node;
         class movie_texture_node;
-        class navigation_info_node;
         class plane_sensor_node;
         class point_light_node;
         class sphere_sensor_node;
@@ -319,6 +319,8 @@ namespace openvrml {
         friend geometry_node * node_cast<geometry_node *>(node * n) throw ();
         friend grouping_node * node_cast<grouping_node *>(node * n) throw ();
         friend material_node * node_cast<material_node *>(node * n) throw ();
+        friend navigation_info_node *
+        node_cast<navigation_info_node *>(node * n) throw ();
         friend normal_node * node_cast<normal_node *>(node * n) throw ();
         friend sound_source_node * node_cast<sound_source_node *>(node * n)
             throw ();
@@ -386,7 +388,6 @@ namespace openvrml {
         virtual vrml97_node::cylinder_sensor_node * to_cylinder_sensor() const;
         virtual vrml97_node::abstract_light_node * to_light() const;
         virtual vrml97_node::movie_texture_node * to_movie_texture() const;
-        virtual vrml97_node::navigation_info_node * to_navigation_info() const;
         virtual vrml97_node::plane_sensor_node * to_plane_sensor() const;
         virtual vrml97_node::point_light_node * to_point_light() const;
         virtual vrml97_node::sphere_sensor_node * to_sphere_sensor() const;
@@ -433,6 +434,7 @@ namespace openvrml {
         virtual geometry_node * to_geometry() throw ();
         virtual grouping_node * to_grouping() throw ();
         virtual material_node * to_material() throw ();
+        virtual navigation_info_node * to_navigation_info() throw ();
         virtual normal_node * to_normal() throw ();
         virtual sound_source_node * to_sound_source() throw ();
         virtual texture_node * to_texture() throw ();
@@ -539,6 +541,15 @@ namespace openvrml {
     {
         return n
             ? n->to_normal()
+            : 0;
+    }
+
+    template <>
+    inline navigation_info_node * node_cast<navigation_info_node *>(node * n)
+        throw ()
+    {
+        return n
+            ? n->to_navigation_info()
             : 0;
     }
 
@@ -758,6 +769,26 @@ namespace openvrml {
 
     private:
         virtual material_node * to_material() throw ();
+    };
+
+
+    class navigation_info_node : public virtual child_node {
+    public:
+        virtual ~navigation_info_node() throw () = 0;
+
+        virtual const std::vector<float> & avatar_size() const throw () = 0;
+        virtual bool headlight() const throw () = 0;
+        virtual float speed() const throw () = 0;
+        virtual const std::vector<std::string> & type() const throw () = 0;
+        virtual float visibility_limit() const throw () = 0;
+
+    protected:
+        navigation_info_node(const node_type & type,
+                             const boost::shared_ptr<openvrml::scope> & scope)
+            throw ();
+
+    private:
+        virtual navigation_info_node * to_navigation_info() throw ();
     };
 
 
