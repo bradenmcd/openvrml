@@ -1,5 +1,14 @@
 2004-06-01 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/Makefile.am:  Define GTK_DISABLE_DEPRECATED.
+	* mozilla-plugin/src/openvrml.cpp:  Replace use of deprecated
+	GTK+ features.
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc:  Replace use of
+	deprecated GTK+ features; fixed bug with processing redraw
+	events generated from within the scene.
+
+2004-06-01 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node.cpp:  Created "Nodes" module in
 	Doxygen documentation.
 

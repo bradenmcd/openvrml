@@ -1022,6 +1022,7 @@ namespace {
 
     PluginInstance<gtk>::~PluginInstance() throw ()
     {
+        std::cout << "PluginInstance<gtk>::~PluginInstance" << std::endl;
         gtk_widget_destroy(this->plug);
     }
 
@@ -1051,9 +1052,9 @@ namespace {
             //
             // The plug-in window is unchanged. Resize the window and exit.
             //
-            gtk_widget_set_usize(this->vrmlBrowser,
-                                 window.width,
-                                 window.height);
+            gtk_widget_set_size_request(this->vrmlBrowser,
+                                        window.width,
+                                        window.height);
         } else {
             this->plug =
                 gtk_plug_new(reinterpret_cast<GdkNativeWindow>(window.window));

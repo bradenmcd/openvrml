@@ -1,7 +1,8 @@
 AM_CPPFLAGS = \
         -I$(top_srcdir)/../src/libopenvrml \
         -I$(top_srcdir)/../src/libopenvrml-gl \
-        -I$(mozincludedir)
+        -I$(mozincludedir) \
+        -DGTK_DISABLE_DEPRECATED
 AM_CXXFLAGS = @MOZILLA_PLUGIN_CFLAGS@ @GTKGLEXT_CFLAGS@
 
 idldir = $(datadir)/idl/openvrml-@PACKAGE_VERSION@

@@ -70,23 +70,26 @@ namespace {
     GdkGLConfig * gl_config = 0;
 }
 
-GtkType gtk_vrml_browser_get_type()
+GType gtk_vrml_browser_get_type()
 {
-    static GtkType vrml_browser_type = 0;
+    static GType vrml_browser_type = 0;
 
     if (!vrml_browser_type) {
-        GtkTypeInfo vrml_browser_info = {
-            "GtkVrmlBrowser",
-            sizeof (GtkVrmlBrowser),
+        GTypeInfo vrml_browser_info = {
             sizeof (GtkVrmlBrowserClass),
-            reinterpret_cast<GtkClassInitFunc>(gtk_vrml_browser_class_init),
-            reinterpret_cast<GtkObjectInitFunc>(gtk_vrml_browser_init),
-            0,
-            0,
-            static_cast<GtkClassInitFunc>(0)
+            0, // base_init
+            0, // base_finalize
+            reinterpret_cast<GClassInitFunc>(gtk_vrml_browser_class_init),
+            0, // class_finalize
+            0, // class_data
+            sizeof (GtkVrmlBrowser),
+            0, // n_preallocs
+            reinterpret_cast<GInstanceInitFunc>(gtk_vrml_browser_init)
         };
-        vrml_browser_type = gtk_type_unique(gtk_drawing_area_get_type(),
-                                            &vrml_browser_info);
+        vrml_browser_type = g_type_register_static(GTK_TYPE_DRAWING_AREA,
+                                                   "GtkVrmlBrowser",
+                                                   &vrml_browser_info,
+                                                   GTypeFlags(0));
     }
 
     return vrml_browser_type;
@@ -94,10 +97,7 @@ GtkType gtk_vrml_browser_get_type()
 
 GtkWidget * gtk_vrml_browser_new()
 {
-    GtkVrmlBrowser * const vrml_browser =
-        static_cast<GtkVrmlBrowser *>(
-            gtk_type_new(gtk_vrml_browser_get_type()));
-    return GTK_WIDGET(vrml_browser);
+    return GTK_WIDGET(g_object_new(GTK_TYPE_VRML_BROWSER, 0));
 }
 
 gboolean gtk_vrml_browser_load_url(GtkVrmlBrowser * const vrml_browser,
@@ -139,8 +139,7 @@ gtk_vrml_browser_class_init(GtkVrmlBrowserClass * const vrml_browser_class)
         GTK_OBJECT_CLASS(vrml_browser_class);
     object_class->destroy = gtk_vrml_browser_destroy;
 
-    GtkWidgetClass * const widget_class =
-            GTK_WIDGET_CLASS(vrml_browser_class);
+    GtkWidgetClass * const widget_class = GTK_WIDGET_CLASS(vrml_browser_class);
     widget_class->realize               = gtk_vrml_browser_realize;
     widget_class->expose_event          = gtk_vrml_browser_expose;
     widget_class->configure_event       = gtk_vrml_browser_configure;
@@ -180,6 +179,8 @@ void gtk_vrml_browser_destroy(GtkObject * const object)
 {
     g_return_if_fail(object);
     g_return_if_fail(GTK_IS_VRML_BROWSER(object));
+
+    while (gtk_events_pending()) { gtk_main_iteration(); }
 
     GtkVrmlBrowser * const vrml_browser(GTK_VRML_BROWSER(object));
     delete static_cast<GtkGLViewer *>(vrml_browser->viewer);
@@ -240,7 +241,7 @@ GtkGLViewer::GtkGLViewer(GtkVrmlBrowser & vrml_browser):
 
 GtkGLViewer::~GtkGLViewer()
 {
-    if (this->timer) { gtk_timeout_remove(timer); }
+    if (this->timer) { g_source_remove(timer); }
 }
 
 void GtkGLViewer::post_redraw()
@@ -304,19 +305,17 @@ gint timeout_callback(const gpointer ptr)
 
 void GtkGLViewer::set_timer(const double t)
 {
+    while (gtk_events_pending()) { gtk_main_iteration(); }
     if (!this->timer) {
-        this->timer = gtk_timeout_add(guint32(1000.0 * t),
-                                      GtkFunction(timeout_callback),
-                                      this);
+        this->timer = g_timeout_add(guint(1000.0 * t),
+                                    GtkFunction(timeout_callback),
+                                    this);
     }
 }
 
 void GtkGLViewer::timer_update()
 {
-    if (this->timer != 0) {
-        gtk_timeout_remove(this->timer);
-        this->timer = 0;
-    }
+    this->timer = 0;
     this->viewer::update();
 }
 
