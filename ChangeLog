@@ -1,5 +1,10 @@
 2004-08-30 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp:  Moved proto_node,
+	proto_node_class to unnamed namespace (from openvrml).
+
+2004-08-30 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc:  Added nothrow
 	exception specification to GtkGLViewer::~GtkGLViewer.
 

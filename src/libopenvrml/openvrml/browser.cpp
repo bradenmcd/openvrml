@@ -48,10 +48,6 @@
 
 namespace openvrml {
 
-    namespace {
-        class proto_impl_cloner;
-    }
-
     class Vrml97RootScope : public scope {
     public:
         Vrml97RootScope(const browser & browser,
@@ -59,6 +55,14 @@ namespace openvrml {
             throw (std::bad_alloc);
         virtual ~Vrml97RootScope() throw ();
     };
+}
+
+namespace {
+
+    using namespace openvrml;
+
+    class proto_node;
+    class proto_impl_cloner;
 
     class proto_node_class : public node_class {
         friend class proto_node;
@@ -279,9 +283,468 @@ namespace openvrml {
         virtual viewpoint_node * to_viewpoint() throw ();
     };
 
-} // namespace openvrml
 
+    class node_path_element {
+    public:
+        std::vector<node_ptr>::size_type index;
+        std::string field_id;
 
+        node_path_element();
+    };
+
+    node_path_element::node_path_element():
+        index(0)
+    {}
+
+    typedef std::list<node_path_element> node_path_t;
+
+    class path_getter : boost::noncopyable {
+        const node & objective;
+        node_path_t & node_path;
+        bool found;
+
+    public:
+        path_getter(const node & objective, node_path_t & node_path) throw ();
+
+        void get_path_from(const node_ptr & node) throw (std::bad_alloc);
+        void get_path_from(const std::vector<node_ptr> & nodes)
+            throw (std::bad_alloc);
+
+    private:
+        void traverse_children(node & n) throw (std::bad_alloc);
+    };
+
+    path_getter::path_getter(const node & objective, node_path_t & node_path)
+        throw ():
+        objective(objective),
+        node_path(node_path),
+        found(false)
+    {}
+
+    void path_getter::get_path_from(const node_ptr & node)
+        throw (std::bad_alloc)
+    {
+# ifndef NDEBUG
+        size_t initial_size = this->node_path.size();
+# endif
+        if (node) {
+            this->node_path.push_back(node_path_element());
+            if (node.get() == &objective) {
+                this->found = true;
+                return;
+            }
+            this->traverse_children(*node);
+            if (!this->found) { this->node_path.pop_back(); }
+        }
+        assert(this->node_path.size() == initial_size);
+    }
+
+    void path_getter::get_path_from(const std::vector<node_ptr> & nodes)
+        throw (std::bad_alloc)
+    {
+        this->node_path.push_back(node_path_element());
+        node_path_element & back = this->node_path.back();
+        while (back.index < nodes.size()) {
+            assert(&back == &this->node_path.back());
+            if (nodes[back.index].get() == &this->objective) {
+                this->found = true;
+                return;
+            }
+            if (nodes[back.index].get()) {
+                this->traverse_children(*nodes[back.index]);
+            }
+            //
+            // We need to bail early to avoid incrementing the counter.
+            //
+            if (this->found) { return; }
+            ++back.index;
+        }
+        if (!this->found) { this->node_path.pop_back(); }
+    }
+
+    void path_getter::traverse_children(node & n) throw (std::bad_alloc)
+    {
+        const node_interface_set & interfaces = n.type.interfaces();
+        node_path_element & back = this->node_path.back();
+        for (node_interface_set::const_iterator interface = interfaces.begin();
+             !this->found && interface != interfaces.end();
+             ++interface) {
+            assert(&back == &this->node_path.back());
+            if (interface->type == node_interface::field_id
+                || interface->type == node_interface::exposedfield_id) {
+                if (interface->field_type == field_value::sfnode_id) {
+                    back.field_id = interface->id;
+                    try {
+                        const sfnode & value =
+                            static_cast<const sfnode &>(
+                                n.field(interface->id));
+                        this->get_path_from(value.value);
+                    } catch (unsupported_interface & ex) {
+                        OPENVRML_PRINT_EXCEPTION_(ex);
+                    }
+                } else if (interface->field_type == field_value::mfnode_id) {
+                    back.field_id = interface->id;
+                    try {
+                        const mfnode & value =
+                            static_cast<const mfnode &>(
+                                n.field(interface->id));
+                        this->get_path_from(value.value);
+                    } catch (unsupported_interface & ex) {
+                        OPENVRML_PRINT_EXCEPTION_(ex);
+                    }
+                }
+            }
+        }
+    }
+
+    const node_path_t get_path(const std::vector<node_ptr> & root,
+                               const node & objective)
+        throw (std::bad_alloc)
+    {
+        node_path_t path;
+        path_getter(objective, path).get_path_from(root);
+        return path;
+    }
+
+    node * resolve_node_path(const node_path_t & path,
+                             const std::vector<node_ptr> & root)
+    {
+        using boost::next;
+        using boost::prior;
+        assert(!path.empty());
+        node * result = root[path.front().index].get();
+        const node_path_t::const_iterator before_end = prior(path.end());
+        for (node_path_t::const_iterator path_element = path.begin();
+             path_element != before_end;
+             ++path_element) {
+            assert(result);
+            try {
+                const field_value & field_val =
+                    result->field(path_element->field_id);
+                const field_value::type_id type = field_val.type();
+                if (type == field_value::sfnode_id) {
+                    result =
+                        static_cast<const sfnode &>(field_val).value.get();
+                } else if (type == field_value::mfnode_id) {
+                    result = static_cast<const mfnode &>(field_val)
+                        .value[next(path_element)->index].get();
+                }
+            } catch (unsupported_interface & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
+            }
+        }
+        return result;
+    }
+
+    class field_value_cloner {
+    protected:
+        const scope_ptr & target_scope;
+        std::set<node *> traversed_nodes;
+
+    public:
+        explicit field_value_cloner(const scope_ptr & target_scope):
+            target_scope(target_scope)
+        {
+            assert(target_scope);
+        }
+
+        virtual ~field_value_cloner()
+        {}
+
+        void clone_field_value(const node_ptr & src_node,
+                               const field_value & src,
+                               field_value & dest)
+            throw (std::bad_alloc)
+        {
+            assert(src.type() == dest.type());
+            const field_value::type_id type = src.type();
+            if (type == field_value::sfnode_id) {
+                this->clone_sfnode(src_node,
+                                   static_cast<const sfnode &>(src),
+                                   static_cast<sfnode &>(dest));
+            } else if (type == field_value::mfnode_id) {
+                this->clone_mfnode(src_node,
+                                   static_cast<const mfnode &>(src),
+                                   static_cast<mfnode &>(dest));
+            } else {
+                //
+                // Do a shallow copy for other types.
+                //
+                dest.assign(src);
+            }
+        }
+
+    private:
+        virtual const node_ptr clone_node(const node_ptr & n)
+            throw (std::bad_alloc)
+        {
+            using std::set;
+
+            assert(this->target_scope);
+
+            node_ptr result;
+
+            if (!n) { return result; }
+
+            const bool already_traversed =
+                (this->traversed_nodes.find(n.get())
+                 != this->traversed_nodes.end());
+
+            if (already_traversed) {
+                result.reset(this->target_scope->find_node(n->id()));
+                assert(result);
+            } else {
+                initial_value_map initial_values;
+                const node_interface_set & interfaces = n->type.interfaces();
+                for (node_interface_set::const_iterator interface =
+                         interfaces.begin();
+                     interface != interfaces.end();
+                     ++interface) {
+                    using std::string;
+                    const node_interface::type_id type = interface->type;
+                    const string & id = interface->id;
+                    if (type == node_interface::exposedfield_id
+                        || type == node_interface::field_id) {
+                        using std::auto_ptr;
+                        using boost::shared_ptr;
+                        auto_ptr<field_value> val =
+                            field_value::create(interface->field_type);
+                        assert(val->type() == n->field(id).type());
+                        this->clone_field_value(n, n->field(id), *val);
+                        bool succeeded =
+                            initial_values.insert(
+                                make_pair(id, shared_ptr<field_value>(val)))
+                            .second;
+                        assert(succeeded);
+                    }
+                }
+                result = n->type.create_node(this->target_scope,
+                                             initial_values);
+                if (!n->id().empty()) { result->id(n->id()); }
+            }
+            return result;
+        }
+
+        void clone_sfnode(const node_ptr & src_node,
+                          const sfnode & src,
+                          sfnode & dest)
+            throw (std::bad_alloc)
+        {
+            dest.value = (src.value == src_node)
+                       ? node_ptr::self
+                       : this->clone_node(src.value);
+        }
+
+        void clone_mfnode(const node_ptr & src_node,
+                          const mfnode & src,
+                          mfnode & dest)
+            throw (std::bad_alloc)
+        {
+            using std::swap;
+            using std::vector;
+            mfnode result(src.value.size());
+            for (vector<node_ptr>::size_type i = 0;
+                 i < src.value.size();
+                 ++i) {
+                result.value[i] = (src.value[i] == src_node)
+                                ? node_ptr::self
+                                : this->clone_node(src.value[i]);
+            }
+            swap(dest, result);
+        }
+    };
+
+    //
+    // Clone the implementation nodes.
+    //
+    class proto_impl_cloner : public field_value_cloner {
+        const proto_node_class & node_class;
+        const initial_value_map & initial_values_;
+
+    public:
+        proto_impl_cloner(const proto_node_class & node_class,
+                          const initial_value_map & initial_values,
+                          const scope_ptr & target_scope):
+            field_value_cloner(target_scope),
+            node_class(node_class),
+            initial_values_(initial_values)
+        {}
+
+        const std::vector<node_ptr> clone() throw (std::bad_alloc)
+        {
+            using std::vector;
+
+            vector<node_ptr> result(this->node_class.impl_nodes.size());
+
+            for (vector<node_ptr>::size_type i = 0;
+                 i < this->node_class.impl_nodes.size();
+                 ++i) {
+                result[i] = this->clone_node(this->node_class.impl_nodes[i]);
+                assert(result[i]);
+            }
+            return result;
+        }
+
+    private:
+        struct matches_is_target :
+            std::unary_function<proto_node_class::is_map_t::value_type, bool> {
+
+            explicit matches_is_target(
+                const proto_node_class::is_target & is_target):
+                is_target(&is_target)
+            {}
+
+            result_type operator()(const argument_type & is_map_value) const
+            {
+                return (is_map_value.second.impl_node
+                        == this->is_target->impl_node)
+                    && (is_map_value.second.impl_node_interface
+                        == this->is_target->impl_node_interface);
+            }
+
+        private:
+            const proto_node_class::is_target * is_target;
+        };
+
+        virtual const node_ptr clone_node(const node_ptr & n)
+            throw (std::bad_alloc)
+        {
+            using std::set;
+
+            assert(this->target_scope);
+
+            node_ptr result;
+
+            if (!n) { return result; }
+
+            const bool already_traversed =
+                (this->traversed_nodes.find(n.get())
+                 != this->traversed_nodes.end());
+
+            if (already_traversed) {
+                result.reset(this->target_scope->find_node(n->id()));
+                assert(result);
+            } else {
+                initial_value_map initial_values;
+                const node_interface_set & interfaces = n->type.interfaces();
+                for (node_interface_set::const_iterator interface =
+                         interfaces.begin();
+                     interface != interfaces.end();
+                     ++interface) {
+                    using std::string;
+                    const node_interface::type_id type = interface->type;
+                    const string & id = interface->id;
+                    if (type == node_interface::exposedfield_id
+                        || type == node_interface::field_id) {
+                        using std::auto_ptr;
+                        using std::find_if;
+                        using boost::shared_ptr;
+                        const field_value * src_val = 0;
+                        auto_ptr<field_value> dest_val =
+                            field_value::create(interface->field_type);
+                        assert(dest_val->type() == n->field(id).type());
+
+                        //
+                        // If the field/exposedField is IS'd, get the value
+                        // from the initial_values_, or alternatively the
+                        // default_values_.
+                        //
+                        typedef proto_node_class::is_target is_target;
+                        typedef proto_node_class::is_map_t is_map;
+                        typedef proto_node_class::default_value_map_t
+                            default_value_map;
+
+                        is_map::const_iterator is_mapping =
+                            find_if(this->node_class.is_map.begin(),
+                                    this->node_class.is_map.end(),
+                                    matches_is_target(
+                                        is_target(*n, interface->id)));
+                        if (is_mapping != this->node_class.is_map.end()) {
+                            using openvrml_::compose2;
+                            using std::logical_or;
+                            //
+                            // If an exposedField in the implementation is IS'd
+                            // to an eventIn or an eventOut in the interface,
+                            // we'll still get here.  So if the implementation
+                            // node interface is an exposedField, we need to
+                            // check to see if the PROTO interface is an
+                            // eventIn or an eventOut.
+                            //
+                            node_interface_set::const_iterator
+                                proto_interface =
+                                find_if(this->node_class.interfaces.begin(),
+                                        this->node_class.interfaces.end(),
+                                        compose2(logical_or<bool>(),
+                                                 bind2nd(node_interface_matches_exposedfield(),
+                                                         is_mapping->first),
+                                                 bind2nd(node_interface_matches_field(),
+                                                         is_mapping->first)));
+
+                            if (proto_interface
+                                != this->node_class.interfaces.end()) {
+                                initial_value_map::const_iterator
+                                    initial_value =
+                                    this->initial_values_.find(
+                                        is_mapping->first);
+                                if (initial_value
+                                    != this->initial_values_.end()) {
+                                    src_val = initial_value->second.get();
+                                } else {
+                                    default_value_map::const_iterator
+                                        default_value =
+                                        this->node_class.default_value_map
+                                        .find(is_mapping->first);
+                                    assert(default_value
+                                           != this->node_class
+                                           .default_value_map.end());
+                                    src_val = default_value->second.get();
+                                }
+                            } else {
+                                src_val = &n->field(id);
+                            }
+                        } else {
+                            src_val = &n->field(id);
+                        }
+
+                        assert(src_val);
+                        this->clone_field_value(n, *src_val, *dest_val);
+
+                        bool succeeded =
+                            initial_values.insert(
+                                make_pair(id,
+                                          shared_ptr<field_value>(dest_val)))
+                            .second;
+                        assert(succeeded);
+                    }
+                }
+                result = n->type.create_node(this->target_scope,
+                                             initial_values);
+                if (!n->id().empty()) { result->id(n->id()); }
+            }
+            return result;
+        }
+
+        void clone_sfnode(const sfnode & src, sfnode & dest)
+            throw (std::bad_alloc)
+        {
+            dest.value = this->clone_node(src.value);
+        }
+
+        void clone_mfnode(const mfnode & src, mfnode & dest)
+            throw (std::bad_alloc)
+        {
+            using std::swap;
+            using std::vector;
+            mfnode result(src.value.size());
+            for (vector<node_ptr>::size_type i = 0;
+                 i < src.value.size();
+                 ++i) {
+                result.value[i] = this->clone_node(src.value[i]);
+            }
+            swap(dest, result);
+        }
+    };
+} // namespace
 
 
 namespace openvrml {
@@ -1255,470 +1718,6 @@ proto_node::create_exposedfield(const field_value & initial_value,
     }
     assert(result.get());
     return result;
-}
-
-namespace {
-
-    class node_path_element {
-    public:
-        std::vector<node_ptr>::size_type index;
-        std::string field_id;
-
-        node_path_element();
-    };
-
-    node_path_element::node_path_element():
-        index(0)
-    {}
-
-    typedef std::list<node_path_element> node_path_t;
-
-    class path_getter : boost::noncopyable {
-        const node & objective;
-        node_path_t & node_path;
-        bool found;
-
-    public:
-        path_getter(const node & objective, node_path_t & node_path) throw ();
-
-        void get_path_from(const node_ptr & node) throw (std::bad_alloc);
-        void get_path_from(const std::vector<node_ptr> & nodes)
-            throw (std::bad_alloc);
-
-    private:
-        void traverse_children(node & n) throw (std::bad_alloc);
-    };
-
-    path_getter::path_getter(const node & objective, node_path_t & node_path)
-        throw ():
-        objective(objective),
-        node_path(node_path),
-        found(false)
-    {}
-
-    void path_getter::get_path_from(const node_ptr & node)
-        throw (std::bad_alloc)
-    {
-# ifndef NDEBUG
-        size_t initial_size = this->node_path.size();
-# endif
-        if (node) {
-            this->node_path.push_back(node_path_element());
-            if (node.get() == &objective) {
-                this->found = true;
-                return;
-            }
-            this->traverse_children(*node);
-            if (!this->found) { this->node_path.pop_back(); }
-        }
-        assert(this->node_path.size() == initial_size);
-    }
-
-    void path_getter::get_path_from(const std::vector<node_ptr> & nodes)
-        throw (std::bad_alloc)
-    {
-        this->node_path.push_back(node_path_element());
-        node_path_element & back = this->node_path.back();
-        while (back.index < nodes.size()) {
-            assert(&back == &this->node_path.back());
-            if (nodes[back.index].get() == &this->objective) {
-                this->found = true;
-                return;
-            }
-            if (nodes[back.index].get()) {
-                this->traverse_children(*nodes[back.index]);
-            }
-            //
-            // We need to bail early to avoid incrementing the counter.
-            //
-            if (this->found) { return; }
-            ++back.index;
-        }
-        if (!this->found) { this->node_path.pop_back(); }
-    }
-
-    void path_getter::traverse_children(node & n) throw (std::bad_alloc)
-    {
-        const node_interface_set & interfaces = n.type.interfaces();
-        node_path_element & back = this->node_path.back();
-        for (node_interface_set::const_iterator interface = interfaces.begin();
-             !this->found && interface != interfaces.end();
-             ++interface) {
-            assert(&back == &this->node_path.back());
-            if (interface->type == node_interface::field_id
-                || interface->type == node_interface::exposedfield_id) {
-                if (interface->field_type == field_value::sfnode_id) {
-                    back.field_id = interface->id;
-                    try {
-                        const sfnode & value =
-                            static_cast<const sfnode &>(
-                                n.field(interface->id));
-                        this->get_path_from(value.value);
-                    } catch (unsupported_interface & ex) {
-                        OPENVRML_PRINT_EXCEPTION_(ex);
-                    }
-                } else if (interface->field_type == field_value::mfnode_id) {
-                    back.field_id = interface->id;
-                    try {
-                        const mfnode & value =
-                            static_cast<const mfnode &>(
-                                n.field(interface->id));
-                        this->get_path_from(value.value);
-                    } catch (unsupported_interface & ex) {
-                        OPENVRML_PRINT_EXCEPTION_(ex);
-                    }
-                }
-            }
-        }
-    }
-
-    const node_path_t get_path(const std::vector<node_ptr> & root,
-                               const node & objective)
-        throw (std::bad_alloc)
-    {
-        node_path_t path;
-        path_getter(objective, path).get_path_from(root);
-        return path;
-    }
-
-    node * resolve_node_path(const node_path_t & path,
-                             const std::vector<node_ptr> & root)
-    {
-        using boost::next;
-        using boost::prior;
-        assert(!path.empty());
-        node * result = root[path.front().index].get();
-        const node_path_t::const_iterator before_end = prior(path.end());
-        for (node_path_t::const_iterator path_element = path.begin();
-             path_element != before_end;
-             ++path_element) {
-            assert(result);
-            try {
-                const field_value & field_val =
-                    result->field(path_element->field_id);
-                const field_value::type_id type = field_val.type();
-                if (type == field_value::sfnode_id) {
-                    result =
-                        static_cast<const sfnode &>(field_val).value.get();
-                } else if (type == field_value::mfnode_id) {
-                    result = static_cast<const mfnode &>(field_val)
-                        .value[next(path_element)->index].get();
-                }
-            } catch (unsupported_interface & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
-            }
-        }
-        return result;
-    }
-
-    class field_value_cloner {
-    protected:
-        const scope_ptr & target_scope;
-        std::set<node *> traversed_nodes;
-
-    public:
-        explicit field_value_cloner(const scope_ptr & target_scope):
-            target_scope(target_scope)
-        {
-            assert(target_scope);
-        }
-
-        virtual ~field_value_cloner()
-        {}
-
-        void clone_field_value(const node_ptr & src_node,
-                               const field_value & src,
-                               field_value & dest)
-            throw (std::bad_alloc)
-        {
-            assert(src.type() == dest.type());
-            const field_value::type_id type = src.type();
-            if (type == field_value::sfnode_id) {
-                this->clone_sfnode(src_node,
-                                   static_cast<const sfnode &>(src),
-                                   static_cast<sfnode &>(dest));
-            } else if (type == field_value::mfnode_id) {
-                this->clone_mfnode(src_node,
-                                   static_cast<const mfnode &>(src),
-                                   static_cast<mfnode &>(dest));
-            } else {
-                //
-                // Do a shallow copy for other types.
-                //
-                dest.assign(src);
-            }
-        }
-
-    private:
-        virtual const node_ptr clone_node(const node_ptr & n)
-            throw (std::bad_alloc)
-        {
-            using std::set;
-
-            assert(this->target_scope);
-
-            node_ptr result;
-
-            if (!n) { return result; }
-
-            const bool already_traversed =
-                (this->traversed_nodes.find(n.get())
-                 != this->traversed_nodes.end());
-
-            if (already_traversed) {
-                result.reset(this->target_scope->find_node(n->id()));
-                assert(result);
-            } else {
-                initial_value_map initial_values;
-                const node_interface_set & interfaces = n->type.interfaces();
-                for (node_interface_set::const_iterator interface =
-                         interfaces.begin();
-                     interface != interfaces.end();
-                     ++interface) {
-                    using std::string;
-                    const node_interface::type_id type = interface->type;
-                    const string & id = interface->id;
-                    if (type == node_interface::exposedfield_id
-                        || type == node_interface::field_id) {
-                        using std::auto_ptr;
-                        using boost::shared_ptr;
-                        auto_ptr<field_value> val =
-                            field_value::create(interface->field_type);
-                        assert(val->type() == n->field(id).type());
-                        this->clone_field_value(n, n->field(id), *val);
-                        bool succeeded =
-                            initial_values.insert(
-                                make_pair(id, shared_ptr<field_value>(val)))
-                            .second;
-                        assert(succeeded);
-                    }
-                }
-                result = n->type.create_node(this->target_scope,
-                                             initial_values);
-                if (!n->id().empty()) { result->id(n->id()); }
-            }
-            return result;
-        }
-
-        void clone_sfnode(const node_ptr & src_node,
-                          const sfnode & src,
-                          sfnode & dest)
-            throw (std::bad_alloc)
-        {
-            dest.value = (src.value == src_node)
-                       ? node_ptr::self
-                       : this->clone_node(src.value);
-        }
-
-        void clone_mfnode(const node_ptr & src_node,
-                          const mfnode & src,
-                          mfnode & dest)
-            throw (std::bad_alloc)
-        {
-            using std::swap;
-            using std::vector;
-            mfnode result(src.value.size());
-            for (vector<node_ptr>::size_type i = 0;
-                 i < src.value.size();
-                 ++i) {
-                result.value[i] = (src.value[i] == src_node)
-                                ? node_ptr::self
-                                : this->clone_node(src.value[i]);
-            }
-            swap(dest, result);
-        }
-    };
-
-    //
-    // Clone the implementation nodes.
-    //
-    class proto_impl_cloner : public field_value_cloner {
-        const proto_node_class & node_class;
-        const initial_value_map & initial_values_;
-
-    public:
-        proto_impl_cloner(const proto_node_class & node_class,
-                          const initial_value_map & initial_values,
-                          const scope_ptr & target_scope):
-            field_value_cloner(target_scope),
-            node_class(node_class),
-            initial_values_(initial_values)
-        {}
-
-        const std::vector<node_ptr> clone() throw (std::bad_alloc)
-        {
-            using std::vector;
-
-            vector<node_ptr> result(this->node_class.impl_nodes.size());
-
-            for (vector<node_ptr>::size_type i = 0;
-                 i < this->node_class.impl_nodes.size();
-                 ++i) {
-                result[i] = this->clone_node(this->node_class.impl_nodes[i]);
-                assert(result[i]);
-            }
-            return result;
-        }
-
-    private:
-        struct matches_is_target :
-            std::unary_function<proto_node_class::is_map_t::value_type, bool> {
-
-            explicit matches_is_target(
-                const proto_node_class::is_target & is_target):
-                is_target(&is_target)
-            {}
-
-            result_type operator()(const argument_type & is_map_value) const
-            {
-                return (is_map_value.second.impl_node
-                        == this->is_target->impl_node)
-                    && (is_map_value.second.impl_node_interface
-                        == this->is_target->impl_node_interface);
-            }
-
-        private:
-            const proto_node_class::is_target * is_target;
-        };
-
-        virtual const node_ptr clone_node(const node_ptr & n)
-            throw (std::bad_alloc)
-        {
-            using std::set;
-
-            assert(this->target_scope);
-
-            node_ptr result;
-
-            if (!n) { return result; }
-
-            const bool already_traversed =
-                (this->traversed_nodes.find(n.get())
-                 != this->traversed_nodes.end());
-
-            if (already_traversed) {
-                result.reset(this->target_scope->find_node(n->id()));
-                assert(result);
-            } else {
-                initial_value_map initial_values;
-                const node_interface_set & interfaces = n->type.interfaces();
-                for (node_interface_set::const_iterator interface =
-                         interfaces.begin();
-                     interface != interfaces.end();
-                     ++interface) {
-                    using std::string;
-                    const node_interface::type_id type = interface->type;
-                    const string & id = interface->id;
-                    if (type == node_interface::exposedfield_id
-                        || type == node_interface::field_id) {
-                        using std::auto_ptr;
-                        using std::find_if;
-                        using boost::shared_ptr;
-                        const field_value * src_val = 0;
-                        auto_ptr<field_value> dest_val =
-                            field_value::create(interface->field_type);
-                        assert(dest_val->type() == n->field(id).type());
-
-                        //
-                        // If the field/exposedField is IS'd, get the value
-                        // from the initial_values_, or alternatively the
-                        // default_values_.
-                        //
-                        typedef proto_node_class::is_target is_target;
-                        typedef proto_node_class::is_map_t is_map;
-                        typedef proto_node_class::default_value_map_t
-                            default_value_map;
-
-                        is_map::const_iterator is_mapping =
-                            find_if(this->node_class.is_map.begin(),
-                                    this->node_class.is_map.end(),
-                                    matches_is_target(
-                                        is_target(*n, interface->id)));
-                        if (is_mapping != this->node_class.is_map.end()) {
-                            using openvrml_::compose2;
-                            using std::logical_or;
-                            //
-                            // If an exposedField in the implementation is IS'd
-                            // to an eventIn or an eventOut in the interface,
-                            // we'll still get here.  So if the implementation
-                            // node interface is an exposedField, we need to
-                            // check to see if the PROTO interface is an
-                            // eventIn or an eventOut.
-                            //
-                            node_interface_set::const_iterator
-                                proto_interface =
-                                find_if(this->node_class.interfaces.begin(),
-                                        this->node_class.interfaces.end(),
-                                        compose2(logical_or<bool>(),
-                                                 bind2nd(node_interface_matches_exposedfield(),
-                                                         is_mapping->first),
-                                                 bind2nd(node_interface_matches_field(),
-                                                         is_mapping->first)));
-
-                            if (proto_interface
-                                != this->node_class.interfaces.end()) {
-                                initial_value_map::const_iterator
-                                    initial_value =
-                                    this->initial_values_.find(
-                                        is_mapping->first);
-                                if (initial_value
-                                    != this->initial_values_.end()) {
-                                    src_val = initial_value->second.get();
-                                } else {
-                                    default_value_map::const_iterator
-                                        default_value =
-                                        this->node_class.default_value_map
-                                        .find(is_mapping->first);
-                                    assert(default_value
-                                           != this->node_class
-                                           .default_value_map.end());
-                                    src_val = default_value->second.get();
-                                }
-                            } else {
-                                src_val = &n->field(id);
-                            }
-                        } else {
-                            src_val = &n->field(id);
-                        }
-
-                        assert(src_val);
-                        this->clone_field_value(n, *src_val, *dest_val);
-
-                        bool succeeded =
-                            initial_values.insert(
-                                make_pair(id,
-                                          shared_ptr<field_value>(dest_val)))
-                            .second;
-                        assert(succeeded);
-                    }
-                }
-                result = n->type.create_node(this->target_scope,
-                                             initial_values);
-                if (!n->id().empty()) { result->id(n->id()); }
-            }
-            return result;
-        }
-
-        void clone_sfnode(const sfnode & src, sfnode & dest)
-            throw (std::bad_alloc)
-        {
-            dest.value = this->clone_node(src.value);
-        }
-
-        void clone_mfnode(const mfnode & src, mfnode & dest)
-            throw (std::bad_alloc)
-        {
-            using std::swap;
-            using std::vector;
-            mfnode result(src.value.size());
-            for (vector<node_ptr>::size_type i = 0;
-                 i < src.value.size();
-                 ++i) {
-                result.value[i] = this->clone_node(src.value[i]);
-            }
-            swap(dest, result);
-        }
-    };
 }
 
 /**
