@@ -2458,7 +2458,7 @@ void ViewerOpenGL::setViewpoint(float *position,
   float field_of_view = fieldOfView * 180.0 / M_PI;
   float aspect = ((float) d_winWidth) / d_winHeight;
   float znear = (avatarSize > 0.0) ? (0.5 * avatarSize) : 0.01;
-  float zfar = (visibilityLimit > 0.0) ? visibilityLimit : 1000.0;
+  float zfar = (visibilityLimit > 0.0) ? visibilityLimit : 30000.0;
   gluPerspective(field_of_view, aspect, znear, zfar);
 
   VrmlFrustum frust(field_of_view, aspect, znear, zfar);
