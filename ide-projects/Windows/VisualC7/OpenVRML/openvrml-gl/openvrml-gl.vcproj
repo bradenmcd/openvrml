@@ -105,9 +105,6 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc">
 			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml-gl\openvrml\gl\common.h">
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml-gl\openvrml\gl\viewer.h">
 			</File>
 		</Filter>
