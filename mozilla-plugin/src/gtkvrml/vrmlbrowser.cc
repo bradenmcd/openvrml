@@ -315,12 +315,12 @@ gint timeout_callback(const gpointer ptr)
 
 void GtkGLViewer::set_timer(const double t)
 {
-    while (gtk_events_pending()) { gtk_main_iteration(); }
     if (!this->timer) {
-        this->timer = g_timeout_add(guint(1000.0 * t),
+        this->timer = g_timeout_add(guint(10.0 * (t + 1)),
                                     GtkFunction(timeout_callback),
                                     this);
     }
+    while (gtk_events_pending()) { gtk_main_iteration(); }
 }
 
 void GtkGLViewer::timer_update()

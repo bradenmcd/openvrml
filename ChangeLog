@@ -1,3 +1,8 @@
+2004-11-24 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
+	(GtkGLViewer::set_timer):  Fixed crash on plug-in shutdown.
+
 2004-11-23 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
