@@ -1,3 +1,7 @@
+2005-03-25 Braden McDaniel  <braden@endoframe.com>
+
+	* examples/sdl_viewer.cpp:  Code cleanup.
+
 2005-03-22 Braden McDaniel  <braden@endoframe.com>
 
 	* examples/sdl_viewer.cpp:  Removed lingering references to

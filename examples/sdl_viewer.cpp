@@ -79,57 +79,32 @@ namespace {
 
 int main(int argc, char * argv[])
 {
-    using std::exception;
     using std::cerr;
-    using std::cout;
     using std::endl;
-    using std::string;
-    using std::vector;
+
+    if (argc < 2) {
+        cerr << "Usage: " << argv[0] << " URL" << endl;
+        return EXIT_FAILURE;
+    }
 
     try {
-        string inputUrl;
-        string inputName;
+        using std::string;
+        using std::vector;
 
-        const char * const usage = " file.wrl\n";
+        const string url = argv[1];
 
-        for (int i = 1; i < argc; ++i) {
-            if (*argv[i] == '-') {
-                if (strcmp(argv[i], "-url") == 0) {
-                    inputUrl = argv[++i];
-                } else {
-                    cerr << "Error: unrecognized option " << argv[i] << '\n';
-                    cerr << "Usage: " << argv[0] << usage << endl;
-                    exit(EXIT_FAILURE);
-                }
-            } else if (inputName.empty()) {
-                inputName = argv[i];
-            } else {
-                cerr << "Usage: " << argv[0] << usage << endl;
-                exit(EXIT_FAILURE);
-            }
-        }
-
-        if (inputName.empty()) {
-            if (inputUrl.empty()) {
-                inputName = inputUrl;
-            } else {
-                inputName = inputUrl = "-"; // Read stdin
-            }
-        }
-
-        if (inputUrl.empty()) { inputUrl = inputName; }
-
-        sdl_viewer v(inputUrl);
+        sdl_viewer v(url);
         browser b;
         b.viewer(&v);
 
-        vector<string> uri(1, inputUrl);
+        vector<string> uri(1, url);
         vector<string> parameter;
         b.load_url(uri, parameter);
 
         v.run();
     } catch (std::exception & ex) {
         cerr << ex.what() << endl;
+        throw;
     }
 }
 
@@ -178,12 +153,12 @@ namespace {
                 using std::string;
                 using boost::algorithm::iequals;
                 string media_type = "application/octet-stream";
-                string::size_type dot_pos = this->url_.rfind('.');
+                const string::size_type dot_pos = this->url_.rfind('.');
                 if (dot_pos == string::npos
                     || this->url_.size() < dot_pos + 1) {
                     return media_type;
                 }
-                string ext = this->url_.substr(dot_pos + 1);
+                const string ext = this->url_.substr(dot_pos + 1);
                 if (iequals(ext, "wrl")) {
                     media_type = "model/vrml";
                 } else if (iequals(ext, "png")) {
