@@ -17,6 +17,13 @@
 class VrmlScene;
 
 
+/**
+ * The PlaneSensor node maps pointing device motion into
+ * two-dimensional translation in a plane parallel to the Z=0 plane of
+ * the local coordinate system. The PlaneSensor node uses the
+ * descendent geometry of its parent node to determine whether it is
+ * liable to generate events
+ */
 class VrmlNodePlaneSensor : public VrmlNodeChild {
 
 public:
@@ -44,7 +51,7 @@ public:
 
   bool isEnabled() { return d_enabled.get(); }
 
-private:
+protected:
 
   // Fields
   VrmlSFBool d_autoOffset;
@@ -60,6 +67,14 @@ private:
   VrmlSFVec3f d_activationPoint;
 
   VrmlNode *d_parentTransform;
+
+  /**
+   * Track the inverse transform matrix at the time of sensor
+   * activation. Mouse deltas are relative to the original
+   * transform. This matters because the transform stack on top of the
+   * sensor may be modified by the output of the sensor.
+   */
+  double d_activationMatrix[4][4];
 
 };
 

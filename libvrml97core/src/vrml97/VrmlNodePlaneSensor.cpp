@@ -64,6 +64,7 @@ VrmlNodePlaneSensor::VrmlNodePlaneSensor( VrmlScene *scene ) :
   d_parentTransform(0)
 {
   setModified();
+  Midentity(d_activationMatrix);
 }
 
 // need copy constructor for d_parentTransform ...
@@ -127,9 +128,9 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
       d_isActive.set(isActive);
 
       float V[3] = { p[0], p[1], p[2] };
-      double M[4][4];
-      inverseTransform( M );
-      VM( V, M, V );
+      //double M[4][4];
+      inverseTransform( d_activationMatrix );
+      VM( V, d_activationMatrix, V );
       d_activationPoint.set( V[0], V[1], V[2] );
 #if 0
       theSystem->warn(" planesensor: activate at (%g %g %g)\n",
@@ -161,16 +162,9 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
   else if ( isActive )
     {
       float V[3] = { p[0], p[1], p[2] };
-      double M[4][4];
-      inverseTransform( M );
-      VM( V, M, V );
-#if 0
-      theSystem->warn(" planesensor: track at (%g %g %g)\n",
-		      p[0],p[1],p[2]);
-      
-      theSystem->warn(" planesensor: local cd (%g %g %g)\n",
-		      V[0],V[1],V[2]);
-#endif
+      //double M[4][4];
+      //inverseTransform( M );
+      VM( V, d_activationMatrix, V );
       d_trackPoint.set( V[0], V[1], V[2] );
       eventOut( timeStamp, "trackPoint_changed", d_trackPoint );
 
