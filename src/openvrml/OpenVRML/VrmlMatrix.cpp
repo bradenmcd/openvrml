@@ -86,8 +86,22 @@ VrmlMatrix::VrmlMatrix() {
 /**
  * @brief Construct VrmlMatrix with given 16 elements in row-major order.
  *
- * @param fXX   16 elements in row-major order.
- *
+ * @param f11
+ * @param f12
+ * @param f13
+ * @param f14
+ * @param f21
+ * @param f22
+ * @param f23
+ * @param f24
+ * @param f31
+ * @param f32
+ * @param f33
+ * @param f34
+ * @param f41
+ * @param f42
+ * @param f43
+ * @param f44
  */
 VrmlMatrix::VrmlMatrix(float f11, float f12, float f13, float f14,
                        float f21, float f22, float f23, float f24, 
@@ -566,10 +580,11 @@ ostream & VrmlMatrix::print(ostream & o) {
  * @brief Set the matrix from  translation, rotation, scale, scaleOrientation,
  *      and center.
  *
- * @param translation   the translation.
- * @param rotation      the rotation.
- * @param scale         the scale orientation.
- * @param center        the center.
+ * @param translation       the translation.
+ * @param rotation          the rotation.
+ * @param scale             the scale.
+ * @param scaleOrientation  the scale orientation.
+ * @param center            the center.
  */
 void VrmlMatrix::setTransform(const SFVec3f & translation,
                               const SFRotation & rotation,

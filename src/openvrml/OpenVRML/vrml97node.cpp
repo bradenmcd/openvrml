@@ -489,7 +489,7 @@ const FieldValue & AbstractBase::getEventOutImpl(const std::string & id) const
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene to which this node belongs
+ * @param type  the NodeType for the node.
  */
 AbstractChild::AbstractChild(const NodeType & type):
         Node(type), AbstractBase(type), ChildNode(type) {}
@@ -508,7 +508,7 @@ AbstractChild::~AbstractChild() throw () {}
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene to which this node belongs
+ * @param type  the NodeType for the node.
  */
 AbstractGeometry::AbstractGeometry(const NodeType & type):
         Node(type), AbstractBase(type), GeometryNode(type), d_viewerObject(0) {}
@@ -668,7 +668,7 @@ void AbstractIndexedSet::processSet_coordIndex(const FieldValue & mfint32,
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene to which this node belongs.
+ * @param type  the NodeType for the node..
  */
 AbstractLight::AbstractLight(const NodeType & type):
         Node(type), AbstractChild(type), ambientIntensity(0.0),
@@ -750,6 +750,7 @@ void AbstractLight::processSet_intensity(const FieldValue & sffloat,
  * @brief set_on eventIn handler.
  *
  * @param sfbool    an SFBool value.
+ * @param timestamp the current time.
  *
  * @throw std::bad_cast if @p sfbool is not an SFBool.
  */
@@ -2308,8 +2309,9 @@ void Billboard::inverseTransform(VrmlMatrix & m)
  * Here we are dealing with VrmlMatrix format (Matrices are stored 
  * in row-major order).
  *
- * @param M gets a copy of the resulting transform
- * @param MV is input ModelView transformation matrix
+ * @param t_arg a pointer to a Billboard node.
+ * @param L_MV  input ModelView transformation matrix.
+ * @retval M    a copy of the resulting transform.
  */
 void Billboard::billboard_to_matrix(const Billboard* t_arg,
                                     const VrmlMatrix & L_MV, VrmlMatrix& M) {
@@ -2612,6 +2614,7 @@ void Collision::clearFlags() {
  * @brief set_collide eventIn handler.
  *
  * @param sfbool    an SFBool.
+ * @param timestamp the current time.
  *
  * @throw std::bad_cast if @p sfbool is not an SFBool.
  */
@@ -2708,6 +2711,7 @@ const MFColor & Color::getColor() const throw () { return this->color; }
  * @brief set_color eventIn handler.
  *
  * @param mfcolor   an MFColor.
+ * @param timestamp the current time.
  *
  * @throw std::bad_cast     if @p mfcolor is not an MFColor.
  * @throw std::bad_alloc    if memory allocation fails.
@@ -2884,6 +2888,7 @@ void ColorInterpolator::processSet_fraction(const FieldValue & sffloat,
  * @brief set_key eventIn handler.
  *
  * @param mffloat   an MFFloat.
+ * @param timestamp the current time.
  *
  * @throw std::bad_cast     if @p mffloat is not an MFFloat.
  * @throw std::bad_alloc    if memory allocation fails.
@@ -2899,6 +2904,7 @@ void ColorInterpolator::processSet_key(const FieldValue & mffloat,
  * @brief set_keyValue eventIn handler.
  *
  * @param mfcolor   an MFColor.
+ * @param timestamp the current time.
  *
  * @throw std::bad_cast     if @p mfcolor is not an MFColor.
  * @throw std::bad_alloc    if memory allocation fails.
@@ -3746,6 +3752,7 @@ void CylinderSensor::processSet_minAngle(const FieldValue & sffloat,
  * @brief set_offset eventIn handler.
  *
  * @param sffloat   an SFFloat value.
+ * @param timestamp the current time.
  *
  * @throw std::bad_cast if @p sffloat is not an SFFloat.
  */
@@ -7691,6 +7698,7 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
  * @brief set_key eventIn handler.
  *
  * @param mffloat   an MFFloat value.
+ * @param timestamp the current time.
  *
  * @throw std::bad_cast     if @p mffloat is not an MFFloat.
  * @throw std::bad_alloc    if memory allocation fails.
@@ -7706,6 +7714,7 @@ void NormalInterpolator::processSet_key(const FieldValue & mffloat,
  * @brief set_keyValue eventIn handler.
  *
  * @param mfvec3f   an MFVec3f value.
+ * @param timestamp the current time.
  *
  * @throw std::bad_cast     if @p mfvec3f is not an MFVec3f.
  * @throw std::bad_alloc    if memory allocation fails.
@@ -7897,6 +7906,7 @@ void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
  * @brief set_key eventIn handler.
  *
  * @param mffloat   an MFFloat value.
+ * @param timestamp the current time.
  *
  * @throw std::bad_cast     if @p mffloat is not an MFFloat.
  * @throw std::bad_alloc    if memory allocation fails.
@@ -7912,6 +7922,7 @@ void OrientationInterpolator::processSet_key(const FieldValue & mffloat,
  * @brief set_keyValue eventIn handler.
  *
  * @param mfrotation    an MFRotation value.
+ * @param timestamp     the current time.
  *
  * @throw std::bad_cast     if @p mfrotation is not an MFRotation.
  * @throw std::bad_alloc    if memory allocation fails.
@@ -8340,8 +8351,8 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p) {
 /**
  * @brief Get the modelview matrix. 
  *
- * @param return modelview matrix in VrmlMatrix format. 
-*/
+ * @return modelview matrix in VrmlMatrix format. 
+ */
 const VrmlMatrix & PlaneSensor::getMVMatrix() const {
     return this->M;
 }

@@ -1,5 +1,10 @@
 2002-05-20  Braden McDaniel  <braden@endoframe.com>
 
+        * src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/VrmlMatrix.cpp: Doxygen love.
+
+2002-05-20  Braden McDaniel  <braden@endoframe.com>
+
         * Makefile.am, src/Makefile.am: Add optionally built
           directories to EXTRA_DIST.
 
