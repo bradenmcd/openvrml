@@ -63,40 +63,6 @@ namespace {
 # endif
 
 
-    class ClassInfo : public nsIClassInfo {
-    public:
-        NS_IMETHOD GetFlags(PRUint32 * aFlags)
-        {
-            *aFlags = nsIClassInfo::PLUGIN_OBJECT | nsIClassInfo::DOM_OBJECT;
-            return NS_OK;
-        }
-
-        NS_IMETHOD GetImplementationLanguage(PRUint32 *aImplementationLanguage)
-        {
-	    *aImplementationLanguage = nsIProgrammingLanguage::CPLUSPLUS;
-            return NS_OK;
-        }
-
-        NS_IMETHOD GetInterfaces(PRUint32 *count, nsIID * **array)
-        {return NS_ERROR_NOT_IMPLEMENTED;}
-
-        NS_IMETHOD GetHelperForLanguage(PRUint32 language,
-                                        nsISupports **_retval)
-        {return NS_ERROR_NOT_IMPLEMENTED;}
-
-        NS_IMETHOD GetContractID(char * *aContractID)
-        {return NS_ERROR_NOT_IMPLEMENTED;}
-
-        NS_IMETHOD GetClassDescription(char * *aClassDescription)
-        {return NS_ERROR_NOT_IMPLEMENTED;}
-
-        NS_IMETHOD GetClassID(nsCID * *aClassID)
-        {return NS_ERROR_NOT_IMPLEMENTED;}
-
-        NS_IMETHOD GetClassIDNoAlloc(nsCID *aClassIDNoAlloc)
-        {return NS_ERROR_NOT_IMPLEMENTED;}
-    };
-
     template <Toolkit ToolkitType>
     class PluginInstance : boost::noncopyable {
     public:
@@ -109,7 +75,7 @@ namespace {
         void HandleEvent(void * event) throw ();
     };
 
-    class ScriptablePeer : public VrmlBrowser, public ClassInfo {
+    class ScriptablePeer : public nsIClassInfo, public VrmlBrowser {
 	PluginInstance<toolkit> & pluginInstance;
 
     public:
@@ -117,6 +83,7 @@ namespace {
         ~ScriptablePeer();
 
         NS_DECL_ISUPPORTS
+        NS_DECL_NSICLASSINFO
         NS_DECL_VRMLBROWSER
     };
 
@@ -853,7 +820,64 @@ namespace {
     ScriptablePeer::~ScriptablePeer()
     {}
 
-    NS_IMPL_ISUPPORTS2(ScriptablePeer, VrmlBrowser, nsIClassInfo)
+    NS_IMPL_ISUPPORTS2(ScriptablePeer, nsIClassInfo, VrmlBrowser)
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // nsIClassInfo implementation
+    //
+
+    NS_IMETHODIMP ScriptablePeer::GetFlags(PRUint32 * aFlags)
+    {
+        *aFlags = nsIClassInfo::PLUGIN_OBJECT | nsIClassInfo::DOM_OBJECT;
+        return NS_OK;
+    }
+
+    NS_IMETHODIMP
+    ScriptablePeer::
+    GetImplementationLanguage(PRUint32 * aImplementationLanguage)
+    {
+        *aImplementationLanguage = nsIProgrammingLanguage::CPLUSPLUS;
+        return NS_OK;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::GetInterfaces(PRUint32 * count,
+                                                nsIID *** array)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::GetHelperForLanguage(PRUint32 language,
+                                                       nsISupports ** _retval)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::GetContractID(char ** aContractID)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP
+    ScriptablePeer::GetClassDescription(char ** aClassDescription)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::GetClassID(nsCID ** aClassID)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    NS_IMETHODIMP ScriptablePeer::GetClassIDNoAlloc(nsCID * aClassIDNoAlloc)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // VrmlBrowser implementation
+    //
 
     NS_IMETHODIMP ScriptablePeer::GetName(char ** _retval)
     {
@@ -982,6 +1006,7 @@ namespace {
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
+
 
     PluginInstance<gtk>::PluginInstance(const std::string & initialURL)
         throw (std::bad_alloc):

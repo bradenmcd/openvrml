@@ -1,5 +1,10 @@
 2004-05-05 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp:  Moved implementation of
+	nsIClassInfo from a mix-in class to ScriptablePeer.
+
+2004-05-05 Braden McDaniel  <braden@endoframe.com>
+
 	Made the Mozilla plug-in scriptable.  Only a trivial amount of
 	functionality is currently exposed: you can get the name and
 	version of the plug-in.
