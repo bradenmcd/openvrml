@@ -91,8 +91,8 @@ class Vrml97Utf8Scanner : public antlr::TokenStream {
         istream &   _istm;
         size_t _line;
         size_t _col;
-        char        _c;
-        char        _prevChar;
+        int         _c;
+        int         _prevChar;
         int         _prevTokenType;
         bool        _readTooMuch;
         bool        _expectingFieldType;

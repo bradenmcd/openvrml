@@ -1,3 +1,9 @@
+2000-11-03  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed the character variables in the Vrml97Utf8Scanner from char to
+          int, since char_traits<T>::eof is an int_type, and EOF is typically
+          an int.
+
 2000-10-26  Braden McDaniel  <braden@endoframe.com>
 
         * Modified ANTLR's config.cpp to define NO_STATIC_CONSTS for gcc 2.96.
