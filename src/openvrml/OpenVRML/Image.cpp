@@ -984,7 +984,10 @@ namespace {
 
 extern "C" {
 #   include <jpeglib.h>
+    
+    typedef void (*JpegErrorExit)(j_common_ptr);
 }
+
 namespace {
 
     struct my_error_mgr {
@@ -1032,7 +1035,7 @@ namespace {
       /*cinfo.err = jpeg_std_error(&jerr);*/
       /* We set up the normal JPEG error routines, then override error_exit. */
       cinfo.err = jpeg_std_error(&jerr.pub);
-      jerr.pub.error_exit = my_error_exit;
+      jerr.pub.error_exit = reinterpret_cast<JpegErrorExit>(my_error_exit);
 
       /* Establish the setjmp return context for my_error_exit to use. */
       if (setjmp(jerr.setjmp_buffer)) {
