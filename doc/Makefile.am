@@ -5,7 +5,8 @@ EXTRA_DIST = Doxyfile.in openvrml.css doxygen-header doxygen-footer
 
 if WITH_DOXYGEN
 install-data-local:
-	doxygen
+	$(INSTALL) -d $(docdir)
+	$(DOXYGEN)
 
 uninstall-local:
 	rm -rf $(docdir)/manual
