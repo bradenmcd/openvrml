@@ -565,11 +565,11 @@ bool VrmlScene::save(const char *url)
 //
 // Script node API functions
 //
-const char *VrmlScene::getName() { return "LibVRML97"; }
+const char *VrmlScene::getName() { return "OpenVRML"; }
 
 const char *VrmlScene::getVersion() {
   static char vs[32];
-  sprintf(vs, "%d.%d.%d", LIBVRML97_MAJOR_VERSION, LIBVRML97_MINOR_VERSION, LIBVRML97_MICRO_VERSION);
+  sprintf(vs, "%d.%d.%d", OPENVRML_MAJOR_VERSION, OPENVRML_MINOR_VERSION, OPENVRML_MICRO_VERSION);
   return vs;
 }
 
