@@ -16,7 +16,8 @@ BuildRequires:  libjpeg-devel >= 6b
 BuildRequires:  fontconfig-devel >= 2.0
 BuildRequires:  freetype-devel >= 2.1.2
 BuildRequires:  mozilla-devel >= 1.2.1
-BuildRequires:  XFree86-devel >= 4.2
+BuildRequires:  libgcj-devel >= 3.3
+BuildRequires:  XFree86-devel >= 4.3
 BuildRequires:  glut-devel >= 3.7
 Requires:       zlib >= 1.1.3
 Requires:       libpng >= 1.0.12
@@ -24,6 +25,7 @@ Requires:       libjpeg >= 6b
 Requires:       fontconfig >= 2.0
 Requires:       freetype >= 2.1.2
 Requires:       mozilla >= 1.2.1
+Requires:       libgcj >= 3.3
 Prefix:         /usr
 
 %description
@@ -43,8 +45,7 @@ using OpenVRML
 Summary:        OpenGL renderer for OpenVRML
 Group:          System Environment/Libraries
 Requires:       %{name} = %{version}
-Requires:       XFree86 >= 4.2
-Requires:       glut >= 3.7
+Requires:       XFree86-Mesa-libGLU >= 4.3
 %description gl
 OpenGL renderer for OpenVRML.
 
@@ -52,8 +53,7 @@ OpenGL renderer for OpenVRML.
 Summary:        OpenVRML OpenGL renderer headers and static library.
 Group:          Development/Libraries
 Requires:       %{name}-gl = %{version}
-Requires:       XFree86-devel >= 4.2
-Requires:       glut-devel >= 3.7
+Requires:       XFree86-devel >= 4.3
 %description gl-devel
 Headers and static library that programmers will need to develop C++ programs
 using the OpenVRML OpenGL renderer.
@@ -63,6 +63,7 @@ Summary:        VRML viewer
 Group:          Applications/Multimedia
 Requires:       %{name}-gl = %{version}
 Requires:       mozilla = %(rpm -q mozilla --qf='%%{version}')
+Requires:       glut >= 3.7
 %description -n lookat
 GLUT-based VRML viewer.
 
@@ -113,6 +114,17 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Fri Nov 07 2003  Braden McDaniel  <braden@endoframe.com>
+- Added "BuildRequires: libgcj-devel >= 3.3" and analogous Requires. Script
+  node Java support is now included in the build, and older versions of libgcj
+  have a bug that prevents OpenVRML from compiling.
+- Removed glut requirement from opevrml-gl package. (Should have been done
+  some time ago.)
+- Added glut requirement to lookat package.
+- Changed XFree86 requirement of openvrml-gl to XFree86-Mesa-libGLU to
+  correspond to Fedora Core package name. Upped required version of XFree86 to
+  4.3 to correspond to this.
+
 * Mon Nov 03 2003  Braden McDaniel  <braden@endoframe.com>
 - Removed lookat-bin from lookat package.
 - Added mozilla requirement for lookat.  lookat is now built with -rpath for

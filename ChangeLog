@@ -1,3 +1,13 @@
+2003-11-07  Braden McDaniel  <braden@endoframe.com>
+
+	Enabled build of Script node Java binding by default.
+
+	* configure.ac:  Changed OV_WITH_JDK to OV_CHECK_JNI.
+	* openvrml.spec.in:  Now requires libgcj >= 3.3.
+	* m4/jdk.m4:  Replaced OV_WITH_JDK with OV_CHECK_JNI.
+	* src/libopenvrml/openvrml/Makefile.am:  JNI_CFLAGS autoconf
+	substitution no longer used.
+
 2003-11-04  Braden McDaniel  <braden@endoframe.com>
 
 	Added some more tests.

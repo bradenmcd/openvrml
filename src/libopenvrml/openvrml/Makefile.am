@@ -48,7 +48,6 @@ AM_CPPFLAGS = \
 AM_CXXFLAGS = \
         @FONTCONFIG_CFLAGS@ \
         @FREETYPE_CFLAGS@ \
-        @JNI_CFLAGS@ \
         @JS_CFLAGS@
 
 libopenvrml_la_SOURCES = \

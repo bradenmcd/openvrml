@@ -59,6 +59,8 @@ AC_PATH_PROG([FREETYPE_CONFIG], [freetype-config])
 
 PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
 
+OV_CHECK_JNI
+
 AX_CHECK_GLUT
 
 AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
@@ -110,7 +112,7 @@ if test "X$enable_text_node" = "Xno"; then
   FREETYPE_LIBS=""
 else
   if test "X$have_fontconfig" = "Xno" -o -z "$FREETYPE_CONFIG"; then
-    AC_MSG_ERROR([fontconfig and FreeType are required for Text node support.])
+    AC_MSG_FAILURE([fontconfig and FreeType are required for Text node support.])
   fi
   if test -n "${OPENVRML_PKG_REQUIRES}"; then
     OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
@@ -137,7 +139,7 @@ if test "X$enable_script_node_javascript" = "Xno"; then
   JS_LIBS=""
 else
   if test "X$have_js" = "Xno"; then
-    AC_MSG_ERROR([Mozilla JavaScript is required for Script node JavaScript support.])
+    AC_MSG_FAILURE([Mozilla JavaScript is required for Script node JavaScript support.])
   fi
   if test -n "${OPENVRML_PKG_REQUIRES}"; then
     OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
@@ -159,26 +161,17 @@ AC_SUBST([GRE_PATH])
 # Script node Java support
 #
 AC_ARG_ENABLE([script-node-java],
-              [AC_HELP_STRING([--enable-script-node-java],
-                              [enable Script node Java support])])
-if test "X$enable_script_node_java" != "Xyes"; then
-  JNI_CFLAGS=""
-  JNI_LIBS=""
-else
-  if test "X$no_jdk" = "Xyes"; then
-    AC_MSG_ERROR([The Java Development Kit is required for Script node Java support.])
+              [AC_HELP_STRING([--disable-script-node-java],
+                              [disable Script node Java support])])
+if test "X$enable_script_node_java" != "Xno"; then
+  if test "X$no_jni" = "Xyes"; then
+    AC_MSG_FAILURE([The Java Native Interface is required for Script node Java support.])
   fi
   AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVA], [1],
             [Defined if Script node Java support is enabled.])
-  if test -n "${OPENVRML_RPATH}" -a -n "${JDK_LIBRARY_PATH}"; then
-    OPENVRML_RPATH=":${OPENVRML_RPATH}"
-  fi
-  OPENVRML_RPATH="${JDK_LIBRARY_PATH}${OPENVRML_RPATH}"
 fi
-AC_SUBST([JNI_CFLAGS])
-AC_SUBST([JNI_LIBS])
 AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVA],
-               [test "X$enable_script_node_java" = "Xyes" -a "X$no_jdk" != "Xyes"])
+               [test "X$enable_script_node_java" != "Xno"])
 
 #
 # build GL renderer
@@ -188,7 +181,7 @@ AC_ARG_ENABLE([gl-renderer],
                               [do not build GL renderer])])
 if test "X$enable_gl_renderer" != "Xno"; then
   if test "X$no_gl" = "Xyes"; then
-    AC_MSG_ERROR([OpenGL/Mesa is required for the GL renderer])
+    AC_MSG_FAILURE([OpenGL/Mesa is required for the GL renderer])
   fi
   AC_CONFIG_FILES([openvrml-gl.pc])
 fi
@@ -202,7 +195,7 @@ AC_ARG_ENABLE([lookat],
               [AC_HELP_STRING([--disable-lookat], [do not build lookat])])
 if test "X$enable_lookat" != "Xno"; then
   if test "X$no_glut" = "Xyes"; then
-    AC_MSG_ERROR([glut is required for lookat])
+    AC_MSG_FAILURE([glut is required for lookat])
   fi
 fi
 AM_CONDITIONAL([ENABLE_LOOKAT],
