@@ -1,5 +1,11 @@
 2004-01-19 Braden McDaniel  <braden@endoframe.com>
 
+	Added doc-comment for "scope_ptr".
+
+	* src/libopenvrml/openvrml/scope.cpp
+
+2004-01-19 Braden McDaniel  <braden@endoframe.com>
+
 	Set ALWAYS_DETAILED_SEC and EXTRACT_LOCAL_CLASSES to YES.
 
 	* doc/Doxyfile.in

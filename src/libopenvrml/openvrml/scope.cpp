@@ -31,6 +31,12 @@
 namespace openvrml {
 
 /**
+ * @typedef scope_ptr
+ *
+ * @brief A reference-counted smart pointer to a scope.
+ */
+
+/**
  * @class scope
  *
  * @brief The scope class keeps track of defined nodes and
