@@ -1,3 +1,8 @@
+2002-06-30  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/doc2.cpp:  Use a reasonable value for
+          the buffer size for z::filebuf.
+
 2002-06-29  Braden McDaniel  <braden@endoframe.com>
 
         * README: Added documentation for --with-doxygen configure

@@ -56,7 +56,7 @@ namespace {
         };
 
         class filebuf : public std::streambuf {
-            enum { buffer_size = 10 };
+            enum { buffer_size = 16384 };
             char buffer[buffer_size];
             gzFile file;
 
