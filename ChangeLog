@@ -1,5 +1,19 @@
 2004-12-30 Braden McDaniel  <braden@endoframe.com>
 
+	Thread safety improvements (using Boost threads).  Also, added
+	browser::world_url mutator so that the world URI can be set
+	independently of browser::load_url.  This is needed for the
+	Mozilla plug-in, where the initial stream is delivered to the
+	plug-in at startup (i.e., the plug-in is not responsible for
+	initiating the fetch).
+
+	* src/libopenvrml/Makefile.am:  Link with libboost_thread.
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/node_ptr.cpp
+
+2004-12-30 Braden McDaniel  <braden@endoframe.com>
+
 	Use boost::scoped_ptr for browser::scene_.
 
 	* src/libopenvrml/openvrml/browser.cpp
