@@ -1,3 +1,9 @@
+2005-03-15 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.h:  Do not include
+	<iostream>.
+	* src/libopenvrml/openvrml/basetypes.cpp:  Include <ostream>.
+
 2005-01-26 Braden McDaniel  <braden@endoframe.com>
 
 	Updated package version to 0.15.6.
