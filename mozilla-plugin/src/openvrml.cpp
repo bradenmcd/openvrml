@@ -32,24 +32,70 @@
 # include <boost/spirit.hpp>
 # include <boost/spirit/phoenix.hpp>
 # include <openvrml/browser.h>
+# include <openvrml/gl/viewer.h>
 # if defined MOZ_X11
-#   include "gtkvrml/vrmlbrowser.h"
+#   include <X11/keysym.h>
+#   include <gdk/gdkx.h>
+#   include <gtk/gtk.h>
 #   include <gtk/gtkgl.h>
 # else
 #   error Unsupported toolkit.
 # endif
 # include "openvrml.h"
 
+extern "C" {
+    gboolean realize(GtkWidget * widget, GdkEvent * event, gpointer data);
+    gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
+                          gpointer data);
+    gboolean configure_event(GtkWidget * widget, GdkEventConfigure * event,
+                             gpointer data);
+    gboolean key_press_event(GtkWidget * widget, GdkEventKey * event,
+                             gpointer data);
+    gboolean button_press_event(GtkWidget * widget, GdkEventButton * event,
+                                gpointer data);
+    gboolean button_release_event(GtkWidget * widget, GdkEventButton * event,
+                                  gpointer data);
+    gboolean motion_notify_event(GtkWidget * widget, GdkEventMotion * event,
+                                 gpointer data);
+}
+
 namespace {
 
+    class PluginInstance;
+
+    class GtkGLViewer : public openvrml::gl::viewer {
+        PluginInstance & plugin_instance;
+        guint timer;
+
+    public:
+        bool redrawNeeded;
+
+        explicit GtkGLViewer(PluginInstance & plugin_instance);
+        virtual ~GtkGLViewer() throw ();
+
+        void timer_update();
+
+    protected:
+        //
+        // Implement pure virtual methods from openvrml::gl::viewer.
+        //
+        virtual void post_redraw();
+        virtual void set_cursor(openvrml::gl::viewer::cursor_style);
+        virtual void swap_buffers();
+        virtual void set_timer(double);
+    };
+
     class PluginInstance : boost::noncopyable {
+        friend class GtkGLViewer;
 	friend class ScriptablePeer;
 
         std::string initialURL;
         GtkWidget * plug;
-        GtkWidget * vrmlBrowser;
+        GtkWidget * drawingArea;
         gint x, y;
         gint width, height;
+        GtkGLViewer viewer;
+        openvrml::browser browser;
 	nsCOMPtr<VrmlBrowser> scriptablePeer;
 
     public:
@@ -83,6 +129,10 @@ char * NP_GetMIMEDescription()
 
 namespace {
     NPNetscapeFuncs mozillaFuncs;
+
+# ifdef MOZ_X11
+    GdkGLConfig * glConfig;
+# endif
 }
 
 /**
@@ -206,6 +256,16 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     static int argc = 0;
     static char ** argv = 0;
     if (!gtk_gl_init_check(&argc, &argv)) { return NPERR_GENERIC_ERROR; }
+
+    static const int attribList[] = {
+        // GDK_GL_ALPHA_SIZE, 1,
+        GDK_GL_DOUBLEBUFFER,
+        GDK_GL_DEPTH_SIZE, 1,
+        GDK_GL_RGBA,
+        GDK_GL_RED_SIZE, 1,
+        GDK_GL_ATTRIB_LIST_NONE
+    };
+    ::glConfig = gdk_gl_config_new(attribList);
 # endif // defined MOZ_X11
 
     return NPP_Initialize();
@@ -245,7 +305,8 @@ NPError NPP_Initialize()
 }
 
 void NPP_Shutdown()
-{}
+{
+}
 
 namespace {
 
@@ -1584,19 +1645,21 @@ namespace {
         throw (std::bad_alloc):
         initialURL(initialURL),
         plug(0),
-        vrmlBrowser(0),
+        drawingArea(0),
         x(0),
         y(0),
         width(0),
         height(0),
+        viewer(*this),
+        browser(std::cout, std::cerr),
 	scriptablePeer(new ScriptablePeer(*this))
-    {}
+    {
+        this->browser.viewer(&this->viewer);
+    }
 
     PluginInstance::~PluginInstance() throw ()
     {
-        gtk_container_remove(GTK_CONTAINER(this->plug), this->vrmlBrowser);
-        gtk_widget_destroy(this->vrmlBrowser);
-        gtk_widget_destroy(this->plug);
+        gtk_container_remove(GTK_CONTAINER(this->plug), this->drawingArea);
     }
 
     nsISupports * PluginInstance::GetScriptablePeer() throw ()
@@ -1613,8 +1676,7 @@ namespace {
         // simply to punt on the idea of gtk_vrml_browser ever being usable
         // from C.
         //
-        return *static_cast<openvrml::browser *>(
-            GTK_VRML_BROWSER(this->vrmlBrowser)->browser);
+        return *static_cast<openvrml::browser *>(0);
     }
 
     void PluginInstance::SetWindow(NPWindow & window)
@@ -1625,27 +1687,361 @@ namespace {
             //
             // The plug-in window is unchanged. Resize the window and exit.
             //
-            gtk_widget_set_size_request(this->vrmlBrowser,
+            gtk_widget_set_size_request(this->drawingArea,
                                         window.width,
                                         window.height);
         } else {
+            using std::vector;
+            using std::string;
+
             this->plug =
                 gtk_plug_new(reinterpret_cast<GdkNativeWindow>(window.window));
             if (!this->plug) { throw std::bad_alloc(); }
 
-            this->vrmlBrowser = gtk_vrml_browser_new();
-            if (!this->vrmlBrowser) { throw std::bad_alloc(); }
+            this->drawingArea = gtk_drawing_area_new();
+            if (!this->drawingArea) { throw std::bad_alloc(); }
 
-            gtk_container_add(GTK_CONTAINER(this->plug), this->vrmlBrowser);
+            assert(::glConfig);
+
+            static GdkGLContext * const shareList = 0;
+            static const gboolean direct = false;
+            static const int renderType = GDK_GL_RGBA_TYPE;
+            gtk_widget_set_gl_capability(this->drawingArea,
+                                         ::glConfig,
+                                         shareList,
+                                         direct,
+                                         renderType);
+
+            gtk_widget_add_events(this->drawingArea,
+                                  GDK_EXPOSURE_MASK
+                                  | GDK_BUTTON_PRESS_MASK
+                                  | GDK_BUTTON_RELEASE_MASK
+                                  | GDK_KEY_PRESS_MASK
+                                  | GDK_POINTER_MOTION_MASK);
+
+            g_signal_connect(G_OBJECT(this->drawingArea),
+                             "expose_event",
+                             G_CALLBACK(expose_event),
+                             &this->viewer);
+            g_signal_connect(G_OBJECT(this->drawingArea),
+                             "configure_event",
+                             G_CALLBACK(configure_event),
+                             &this->viewer);
+            g_signal_connect(G_OBJECT(this->drawingArea),
+                             "key_press_event",
+                             G_CALLBACK(key_press_event),
+                             &this->viewer);
+            g_signal_connect(G_OBJECT(this->drawingArea),
+                             "button_press_event",
+                             G_CALLBACK(button_press_event),
+                             &this->viewer);
+            g_signal_connect(G_OBJECT(this->drawingArea),
+                             "button_release_event",
+                             G_CALLBACK(button_release_event),
+                             &this->viewer);
+            g_signal_connect(G_OBJECT(this->drawingArea),
+                             "motion_notify_event",
+                             G_CALLBACK(motion_notify_event),
+                             &this->viewer);
+
+            gtk_container_add(GTK_CONTAINER(this->plug), this->drawingArea);
 
             gtk_widget_show_all(this->plug);
 
-            gtk_vrml_browser_load_url(GTK_VRML_BROWSER(this->vrmlBrowser),
-                                      this->initialURL.c_str());
+            const vector<string> uri(1, this->initialURL), parameter;
+            this->browser.load_url(uri, parameter);
+            this->viewer.timer_update();
         }
     }
 
     void PluginInstance::HandleEvent(void * event) throw ()
     {}
 
+    GtkGLViewer::GtkGLViewer(PluginInstance & plugin_instance):
+        plugin_instance(plugin_instance),
+        timer(0),
+        redrawNeeded(false)
+    {}
+
+    GtkGLViewer::~GtkGLViewer() throw ()
+    {
+        if (this->timer) { g_source_remove(timer); }
+    }
+
+    void GtkGLViewer::post_redraw()
+    {
+        if (!this->redrawNeeded) {
+            this->redrawNeeded = true;
+            gtk_widget_queue_draw(
+                GTK_WIDGET(this->plugin_instance.drawingArea));
+        }
+    }
+
+    void GtkGLViewer::set_cursor(cursor_style style)
+    {
+        GdkCursor * cursor(0);
+        GtkWidget * const widget =
+            GTK_WIDGET(this->plugin_instance.drawingArea);
+
+        switch(style) {
+        case cursor_inherit:
+            XDefineCursor(GDK_WINDOW_XDISPLAY(widget->window),
+                          GDK_WINDOW_XWINDOW(widget->window),
+                          None);
+            return;
+
+        case cursor_info:
+            cursor = gdk_cursor_new(GDK_HAND1);
+            break;
+
+        case cursor_cycle:
+            cursor = gdk_cursor_new(GDK_EXCHANGE);
+            break;
+
+        case cursor_up_down:
+            cursor = gdk_cursor_new(GDK_SB_V_DOUBLE_ARROW);
+            break;
+
+        case cursor_crosshair:
+            cursor = gdk_cursor_new(GDK_CROSSHAIR);
+            break;
+
+        default:
+            cursor = gdk_cursor_new(GDK_ARROW);
+        }
+
+        gdk_window_set_cursor(widget->window, cursor);
+        gdk_cursor_destroy(cursor);
+    }
+
+    void GtkGLViewer::swap_buffers()
+    {
+        GtkWidget * const widget =
+            GTK_WIDGET(this->plugin_instance.drawingArea);
+        GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);
+        gdk_gl_drawable_swap_buffers(gl_drawable);
+    }
+
+    gint timeout_callback(const gpointer ptr)
+    {
+        assert(ptr);
+        GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(ptr);
+        viewer.timer_update();
+        return false;
+    }
+
+    void GtkGLViewer::set_timer(const double t)
+    {
+        if (!this->timer) {
+            this->timer = g_timeout_add(guint(10.0 * (t + 1)),
+                                        GtkFunction(timeout_callback),
+                                        this);
+        }
+    }
+
+    void GtkGLViewer::timer_update()
+    {
+        this->timer = 0;
+        this->viewer::update();
+    }
 } // namespace
+
+gboolean realize(GtkWidget * widget, GdkEvent * event, gpointer data)
+{
+    
+}
+
+gboolean expose_event(GtkWidget * const widget,
+                      GdkEventExpose * const event,
+                      const gpointer data)
+{
+    GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);
+    g_assert(gl_drawable);
+    GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
+    g_assert(gl_context);
+    g_assert(data);
+    GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(data);
+    if (event->count == 0
+        && gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
+        viewer.redraw();
+    }
+    viewer.redrawNeeded = false;
+    return true;
+}
+
+gboolean configure_event(GtkWidget * const widget,
+                         GdkEventConfigure * const event,
+                         const gpointer data)
+{
+    GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);
+    g_assert(gl_drawable);
+    GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
+    g_assert(gl_context);
+    if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
+        g_assert(data);
+        GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(data);
+        viewer.resize(widget->allocation.width, widget->allocation.height);
+    }
+    return true;
+}
+
+gboolean key_press_event(GtkWidget * const widget,
+                         GdkEventKey * const event,
+                         const gpointer data)
+{
+    using openvrml::gl::viewer;
+
+    viewer::event_info info;
+    info.event = viewer::event_key_down;
+
+    switch (event->keyval) {
+    case XK_Home:
+        info.what = viewer::key_home;
+        break;
+
+    case XK_Left:
+        info.what = viewer::key_left;
+        break;
+
+    case XK_Up:
+        info.what = viewer::key_up;
+        break;
+
+    case XK_Right:
+        info.what = viewer::key_right;
+        break;
+
+    case XK_Down:
+        info.what = viewer::key_down;
+        break;
+
+    case XK_Page_Up:
+        info.what = viewer::key_page_up;
+        break;
+
+    case XK_Page_Down:
+        info.what = viewer::key_page_down;
+        break;
+
+    default:
+        if (event->length <= 0) { return true; }
+        info.what = event->string[0];
+    }
+    GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);
+    g_assert(gl_drawable);
+    GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
+    g_assert(gl_context);
+    if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
+        g_assert(data);
+        GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(data);
+        viewer.input(&info);
+    }
+    return true;
+}
+
+gboolean button_press_event(GtkWidget * const widget,
+                            GdkEventButton * const event,
+                            const gpointer data)
+{
+    using openvrml::gl::viewer;
+
+    viewer::event_info info;
+    info.event = viewer::event_mouse_click;
+
+    switch (event->button) {
+    case Button1:
+        info.what = 0;
+        break;
+
+    case Button2:
+        info.what = 1;
+        break;
+
+    case Button3:
+        info.what = 2;
+        break;
+    }
+
+    info.x = int(event->x);
+    info.y = int(event->y);
+    GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);
+    g_assert(gl_drawable);
+    GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
+    g_assert(gl_context);
+    if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
+        g_assert(data);
+        GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(data);
+        viewer.input(&info);
+    }
+    return true;
+}
+
+gboolean button_release_event(GtkWidget * const widget,
+                              GdkEventButton * const event,
+                              const gpointer data)
+{
+    using openvrml::gl::viewer;
+
+    viewer::event_info info;
+    info.event = viewer::event_mouse_release;
+
+    switch (event->button) {
+    case Button1:
+        info.what = 0;
+        break;
+
+    case Button2:
+        info.what = 1;
+        break;
+
+    case Button3:
+        info.what = 2;
+        break;
+    }
+
+    info.x = int(event->x);
+    info.y = int(event->y);
+    GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);
+    g_assert(gl_drawable);
+    GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
+    g_assert(gl_context);
+    if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
+        g_assert(data);
+        GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(data);
+        viewer.input(&info);
+    }
+    return true;
+}
+
+gboolean motion_notify_event(GtkWidget * const widget,
+                             GdkEventMotion * const event,
+                             const gpointer data)
+{
+    using openvrml::gl::viewer;
+
+    viewer::event_info info;
+    info.event = viewer::event_mouse_drag;
+    info.what = 0;
+    if (event->state & Button1Mask) {
+        info.what = 0;
+    } else if (event->state & Button2Mask) {
+        info.what = 1;
+    } else if (event->state & Button3Mask) {
+        info.what = 2;
+    } else {
+        info.event = viewer::event_mouse_move;
+    }
+
+    info.x = int(event->x);
+    info.y = int(event->y);
+    GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);
+    g_assert(gl_drawable);
+    GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
+    g_assert(gl_context);
+    if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
+        g_assert(data);
+        GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(data);
+        viewer.input(&info);
+    }
+    return true;
+}

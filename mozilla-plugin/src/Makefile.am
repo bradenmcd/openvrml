@@ -15,10 +15,9 @@ if ENABLE_MOZILLA_PLUGIN
 mozplugins_LTLIBRARIES = openvrml.la
 mozplugins_DATA = openvrml.xpt
 endif
-noinst_HEADERS = gtkvrml/vrmlbrowser.h
 dist_idl_DATA = openvrml.idl
 
-openvrml_la_SOURCES = openvrml.cpp gtkvrml/vrmlbrowser.cc
+openvrml_la_SOURCES = openvrml.cpp
 openvrml_la_LIBADD = \
         $(top_builddir)/../src/libopenvrml-gl/libopenvrml-gl.la \
         $(top_builddir)/../src/libopenvrml/libopenvrml.la \
