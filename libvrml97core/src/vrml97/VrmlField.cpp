@@ -778,7 +778,8 @@ const VrmlSFVec3f VrmlSFVec3f::divide(float number) const {
 }
 
 double VrmlSFVec3f::dot(const VrmlSFVec3f & vec) const {
-    return std::inner_product(this->d_x, this->d_x + 3, vec.d_x, 0.0);
+    return ((this->d_x[0] * vec.d_x[0]) + (this->d_x[1] * vec.d_x[1])
+            + (this->d_x[2] * vec.d_x[2]));
 }
 
 double VrmlSFVec3f::length() const {
