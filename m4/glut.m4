@@ -26,11 +26,11 @@ dnl "HAVE_GL_GLUT_H" is defined; otherwise, if the header "GLUT/glut.h" is
 dnl found, "HAVE_GLUT_GLUT_H" is defined. If GLUT is not found, "no_glut" is
 dnl set to "yes".
 dnl
-dnl @version $Id: glut.m4,v 1.7 2003-01-06 04:09:42 braden Exp $
+dnl @version $Id: glut.m4,v 1.8 2003-01-07 05:34:08 braden Exp $
 dnl @author Braden McDaniel <braden@endoframe.com>
 dnl
 AC_DEFUN(OV_CHECK_GLUT,
-[AC_REQUIRE([OV_CHECK_GL])dnl
+[AC_REQUIRE([AX_CHECK_GL])dnl
 AC_REQUIRE([AC_PATH_XTRA])dnl
 GLUT_LIBS="${GL_LIBS}"
 

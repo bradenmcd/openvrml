@@ -1,3 +1,8 @@
+2003-01-07  Braden McDaniel  <braden@endoframe.com>
+
+        * configure.ac, m4/Makefile.am, m4/ax_check_gl.m4, m4/gl.m4,
+          m4/glut.m4:  Replaced OV_CHECK_GL with AX_CHECK_GL.
+
 2003-01-05  Braden McDaniel  <braden@endoframe.com>
 
         * m4/gl.m4, m4/glut.m4:  Added ac-archive-style doc-comments.
