@@ -85,7 +85,7 @@ namespace OpenVRML {
         virtual object_t
         insert_elevation_grid(unsigned int mask,
                               const std::vector<float> & height,
-                              int32 xDimension, int32 zDimension,
+                              int32 x_dimension, int32 z_dimension,
                               float x_spacing, float z_spacing,
                               const std::vector<color> & color,
                               const std::vector<vec3f> & normal,

@@ -50,25 +50,6 @@ namespace OpenVRML {
         virtual ~NodeInterfaceTypeMismatch() throw ();
     };
 
-    namespace Vrml97Node {
-        class anchor;
-        class audio_clip;
-        class Background;
-        class CylinderSensor;
-        class Fog;
-        class Group;
-        class AbstractLight;
-        class MovieTexture;
-        class NavigationInfo;
-        class PlaneSensor;
-        class PointLight;
-        class SphereSensor;
-        class SpotLight;
-        class TimeSensor;
-        class TouchSensor;
-        class Viewpoint;
-    }
-
     class ProtoNode : public node {
         friend class ProtoNodeClass;
         friend class Vrml97Parser;
@@ -379,25 +360,25 @@ invalid_vrml::~invalid_vrml() throw ()
  */
 
 /**
- * @enum browser::CBReason
+ * @enum browser::cb_reason
  *
  * @brief Valid reasons for browser callback.
  */
 
 /**
- * @var browser::CBReason browser::DESTROY_WORLD
+ * @var browser::cb_reason browser::destroy_world_id
  *
  * @brief Destroy the world.
  */
 
 /**
- * @var browser::CBReason browser::REPLACE_WORLD
+ * @var browser::cb_reason browser::replace_world_id
  *
  * @brief Replace the world.
  */
 
 /**
- * @typedef browser::SceneCB
+ * @typedef browser::scene_cb
  *
  * @brief A pointer to a browser callback function.
  *
@@ -406,115 +387,109 @@ invalid_vrml::~invalid_vrml() throw ()
  */
 
 /**
- * @typedef browser::NodeClassMap
+ * @typedef browser::node_class_map_t
  *
  * @brief Maps URIs to @link node_class node_classes@endlink.
  */
 
 /**
- * @var browser::NodeClassMap browser::nodeClassMap
+ * @var browser::node_class_map_t browser::node_class_map
  *
  * @brief A map of URIs to node implementations.
  */
 
 /**
- * @var script_node_class browser::scriptNodeClass
+ * @var script_node_class browser::script_node_class_
  *
  * @brief node_class for Script nodes in the browser.
  */
 
 /**
- * @var scene * browser::scene
+ * @var scene * browser::scene_
  *
  * @brief Pointer to the root scene.
  */
 
 /**
- * @typedef browser::BindStack
- *
- * @brief A list of bound nodes.
- */
-
-/**
- * @var browser::BindStack browser::d_navigationInfoStack
- *
- * @brief The stack of bound NavigationInfo nodes.
- */
-
-/**
- * @var browser::BindStack browser::d_viewpointStack
- *
- * @brief The stack of bound Viewpoint nodes.
- */
-
-/**
- * @var std::list<Node *> browser::d_navigationInfos
- *
- * @brief A list of all the NavigationInfo nodes in the browser.
- */
-
-/**
- * @var std::list<Node *> browser::d_viewpoints
+ * @var std::list<viewpoint_node *> browser::viewpoint_list
  *
  * @brief A list of all the Viewpoint nodes in the browser.
  */
 
 /**
- * @var std::list<Node *> browser::d_scopedLights
+ * @typedef browser::bind_stack_t
+ *
+ * @brief A list of bound nodes.
+ */
+
+/**
+ * @var browser::bind_stack_t browser::navigation_info_stack
+ *
+ * @brief The stack of bound NavigationInfo nodes.
+ */
+
+/**
+ * @var std::list<node *> browser::navigation_infos
+ *
+ * @brief A list of all the NavigationInfo nodes in the browser.
+ */
+
+/**
+ * @var std::list<node *> browser::scoped_lights
  *
  * @brief A list of all the scoped light nodes in the browser.
  */
 
 /**
- * @var std::list<script_node *> browser::d_scripts
+ * @var std::list<script_node *> browser::scripts
  *
  * @brief A list of all the Script nodes in the browser.
  */
 
 /**
- * @var std::list<Node *> browser::d_timers
+ * @var std::list<node *> browser::timers
  *
  * @brief A list of all the TimeSensor nodes in the browser.
  */
 
 /**
- * @var std::list<Node *> browser::d_audioClips
+ * @var std::list<node *> browser::audio_clips
  *
  * @brief A list of all the AudioClip nodes in the browser.
  */
 
 /**
- * @var std::list<Node *> browser::d_movies
+ * @var std::list<node *> browser::movies
  *
  * @brief A list of all the MovieTexture nodes in the browser.
  */
 
 /**
- * @var std::list<Node *> browser::protoNodeList
+ * @var std::list<ProtoNode *> browser::proto_node_list
  *
  * @brief A list of all the prototype nodes in the browser.
  */
 
 /**
- * @var bool browser::d_modified
+ * @var bool browser::modified_
  *
  * @brief Flag to indicate whether the browser has been modified.
  */
 
 /**
- * @var bool browser::d_newView
+ * @var bool browser::new_view
  *
  * @brief Flag to indicate if the user has changed to a new view.
  */
 
 /**
- * @var double browser::d_deltaTime
+ * @var double browser::delta_time
  *
  * @brief Time elapsed since the last update.
  */
 
 /**
- * @typedef browser::SceneCBList
+ * @typedef browser::scene_cb_list_t
  *
  * @brief List of functions to call when the world is changed.
  */
@@ -552,19 +527,19 @@ invalid_vrml::~invalid_vrml() throw ()
  */
 
 /**
- * @var browser::SceneCBList browser::d_sceneCallbacks
+ * @var browser::scene_cb_list_t browser::scene_callbacks
  *
  * @brief List of functions to call when the world is changed.
  */
 
 /**
- * @var double browser::d_frameRate
+ * @var double browser::frame_rate_
  *
  * @brief Frame rate.
  */
 
 /**
- * @var browser::MAXEVENTS
+ * @var browser::max_events
  *
  * @brief The maximum number of events which may be queued.
  *
@@ -576,11 +551,11 @@ invalid_vrml::~invalid_vrml() throw ()
  */
 
 /**
- * @var browser::event browser::d_eventMem
+ * @var browser::event browser::event_mem
  *
  * @brief The event queue.
  *
- * @todo The event queue ought to be sorted by timeStamp.
+ * @todo The event queue ought to be sorted by timestamp.
  */
 
 /**
@@ -851,7 +826,7 @@ float browser::current_speed()
 {
     Vrml97Node::navigation_info_node * const navInfo =
         bindable_navigation_info_top();
-    if (navInfo) { return navInfo->getSpeed(); }
+    if (navInfo) { return navInfo->speed(); }
     return 0.0f;
 }
 
@@ -1192,7 +1167,7 @@ void browser::init_node_class_map() {
 /**
  * @brief Execute browser callback functions.
  *
- * @param reason    the CBReason to pass to the callback functions.
+ * @param reason    the cb_reason to pass to the callback functions.
  */
 void browser::do_callbacks(const cb_reason reason)
 {
@@ -1384,7 +1359,7 @@ bool browser::headlight_on()
 {
     Vrml97Node::navigation_info_node * const navInfo =
         this->bindable_navigation_info_top();
-    if (navInfo) { return navInfo->getHeadlightOn(); }
+    if (navInfo) { return navInfo->headlight(); }
     return true;
 }
 
@@ -1420,8 +1395,8 @@ void browser::render(OpenVRML::viewer & viewer)
     Vrml97Node::navigation_info_node * ni =
         this->bindable_navigation_info_top();
     if (ni) {
-        avatarSize = ni->getAvatarSize()[0];
-        visibilityLimit = ni->getVisibilityLimit();
+        avatarSize = ni->avatar_size()[0];
+        visibilityLimit = ni->visibility_limit();
     }
 
     // Activate the headlight.
@@ -1899,13 +1874,13 @@ unreachable_url::~unreachable_url() throw () {}
  */
 
 /**
- * @var mfnode scene::nodes
+ * @var mfnode scene::nodes_
  *
  * @brief The nodes for the scene.
  */
 
 /**
- * @var const std::string scene::uri
+ * @var const std::string scene::url_
  *
  * @brief The URI for the scene.
  *

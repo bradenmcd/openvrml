@@ -209,11 +209,10 @@ namespace OpenVRML {
 
 
             virtual object_t insert_box(const vec3f & size);
-
-            virtual object_t insert_cone(float h, float r, bool bottom,
-                                         bool side);
-            virtual object_t insert_cylinder(float h, float r, bool, bool,
-                                             bool);
+            virtual object_t insert_cone(float height, float radius,
+                                         bool bottom, bool side);
+            virtual object_t insert_cylinder(float height, float radius,
+                                             bool bottom, bool side, bool top);
 
             virtual object_t
             insert_elevation_grid(unsigned int mask,
@@ -253,7 +252,7 @@ namespace OpenVRML {
             virtual object_t insert_sphere(float radius);
 
             // Lights
-            virtual object_t insert_dir_light(float ambientItensity,
+            virtual object_t insert_dir_light(float ambientIntensity,
                                               float intensity,
                                               const color & color,
                                               const vec3f & direction);

@@ -702,6 +702,14 @@ abstract_child_node::~abstract_child_node() throw ()
  */
 
 /**
+ * @var viewer::object_t abstract_geometry_node::viewerObject
+ *
+ * @brief Handle for the renderer.
+ *
+ * @todo Move this to node?
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type for the node.
@@ -712,7 +720,7 @@ abstract_geometry_node::abstract_geometry_node(const node_type & type,
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
-    d_viewerObject(0)
+    viewerObject(0)
 {}
 
 /**
@@ -734,15 +742,15 @@ abstract_geometry_node::~abstract_geometry_node() throw ()
 void abstract_geometry_node::render(OpenVRML::viewer & viewer,
                               rendering_context context)
 {
-    if (this->d_viewerObject && this->modified()) {
-        viewer.remove_object(this->d_viewerObject);
-        this->d_viewerObject = 0;
+    if (this->viewerObject && this->modified()) {
+        viewer.remove_object(this->viewerObject);
+        this->viewerObject = 0;
     }
 
-    if (this->d_viewerObject) {
-        viewer.insert_reference(this->d_viewerObject);
+    if (this->viewerObject) {
+        viewer.insert_reference(this->viewerObject);
     } else {
-        this->d_viewerObject = this->insert_geometry(viewer, context);
+        this->viewerObject = this->insert_geometry(viewer, context);
         this->modified(false);
     }
 }
@@ -752,6 +760,36 @@ void abstract_geometry_node::render(OpenVRML::viewer & viewer,
  * @class abstract_indexed_set_node
  *
  * @brief Abstract base class for IndexedFaceSet and IndexedLineSet.
+ */
+
+/**
+ * @var sfnode abstract_indexed_set_node::color_
+ *
+ * @brief color exposedField.
+ */
+
+/**
+ * @var mfint32 abstract_indexed_set_node::colorIndex
+ *
+ * @brief colorIndex field.
+ */
+
+/**
+ * @var sfbool abstract_indexed_set_node::colorPerVertex
+ *
+ * @brief colorPerVertex field.
+ */
+
+/**
+ * @var sfnode abstract_indexed_set_node::coord
+ *
+ * @brief coord exposedField.
+ */
+
+/**
+ * @var mfint32 abstract_indexed_set_node::coordIndex
+ *
+ * @brief coordIndex field.
  */
 
 /**
@@ -802,6 +840,11 @@ void abstract_indexed_set_node::update_modified(node_path & path, int flags)
     path.pop_front();
 }
 
+/**
+ * @brief color_node.
+ *
+ * @return the color_node, or 0 if none is set.
+ */
 const OpenVRML::color_node * abstract_indexed_set_node::color() const throw ()
 {
     return this->color_.value
@@ -889,19 +932,43 @@ abstract_indexed_set_node::process_set_coordIndex(const field_value & value,
  */
 
 /**
+ * @var sffloat abstract_light_node::ambientIntensity
+ *
+ * @brief ambientIntensity exposedField.
+ */
+
+/**
+ * @var sfcolor abstract_light_node::color_
+ *
+ * @brief color exposedField.
+ */
+
+/**
+ * @var sffloat abstract_light_node::intensity_
+ *
+ * @brief intensity exposedField.
+ */
+
+/**
+ * @var sfbool abstract_light_node::on_
+ *
+ * @brief on exposedField.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type for the node.
  * @param scope     the scope to which the node belongs.
  */
 abstract_light_node::abstract_light_node(const node_type & type,
-                               const scope_ptr & scope):
+                                         const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
     ambientIntensity(0.0),
-    color(OpenVRML::color(1.0, 1.0, 1.0)),
-    intensity(1.0),
-    on(true)
+    color_(OpenVRML::color(1.0, 1.0, 1.0)),
+    intensity_(1.0),
+    on_(true)
 {}
 
 /**
@@ -918,6 +985,46 @@ abstract_light_node::~abstract_light_node() throw ()
 abstract_light_node * abstract_light_node::to_light() const
 {
     return const_cast<abstract_light_node *>(this);
+}
+
+/**
+ * @brief Ambient intensity.
+ *
+ * @return the ambient intensity.
+ */
+float abstract_light_node::ambient_intensity() const throw ()
+{
+    return this->ambientIntensity.value;
+}
+
+/**
+ * @brief Intensity.
+ *
+ * @return the intensity.
+ */
+float abstract_light_node::intensity() const throw ()
+{
+    return this->intensity_.value;
+}
+
+/**
+ * @brief Whether the light is on.
+ *
+ * @return @c true if the light is on; @c false otherwise.
+ */
+bool abstract_light_node::on() const throw ()
+{
+    return this->on_.value;
+}
+
+/**
+ * @brief Light color.
+ *
+ * @return the light color.
+ */
+const OpenVRML::color & abstract_light_node::color() const throw ()
+{
+    return this->color_.value;
 }
 
 /**
@@ -961,9 +1068,9 @@ void abstract_light_node::process_set_color(const field_value & value,
                                             const double timestamp)
     throw (std::bad_cast)
 {
-    this->color = dynamic_cast<const sfcolor &>(value);
+    this->color_ = dynamic_cast<const sfcolor &>(value);
     this->node::modified(true);
-    this->emit_event("color_changed", this->color, timestamp);
+    this->emit_event("color_changed", this->color_, timestamp);
 }
 
 /**
@@ -978,9 +1085,9 @@ void abstract_light_node::process_set_intensity(const field_value & value,
                                                 const double timestamp)
     throw (std::bad_cast)
 {
-    this->intensity = dynamic_cast<const sffloat &>(value);
+    this->intensity_ = dynamic_cast<const sffloat &>(value);
     this->node::modified(true);
-    this->emit_event("intensity_changed", this->intensity, timestamp);
+    this->emit_event("intensity_changed", this->intensity_, timestamp);
 }
 
 /**
@@ -995,9 +1102,9 @@ void abstract_light_node::process_set_on(const field_value & value,
                                          const double timestamp)
     throw (std::bad_cast)
 {
-    this->on = dynamic_cast<const sfbool &>(value);
+    this->on_ = dynamic_cast<const sfbool &>(value);
     this->node::modified(true);
-    this->emit_event("on_changed", this->on, timestamp);
+    this->emit_event("on_changed", this->on_, timestamp);
 }
 
 
@@ -1008,13 +1115,25 @@ void abstract_light_node::process_set_on(const field_value & value,
  */
 
 /**
+ * @var sfbool abstract_texture_node::repeatS
+ *
+ * @brief repeatS field.
+ */
+
+/**
+ * @var sfbool abstract_texture_node::repeatT
+ *
+ * @brief repeatT field.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type for the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 abstract_texture_node::abstract_texture_node(const node_type & type,
-                                 const scope_ptr & scope):
+                                             const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
     texture_node(type, scope),
@@ -1183,6 +1302,30 @@ anchor_class::create_type(const std::string & id,
  * @class anchor_node
  *
  * @brief Represents Anchor node instances.
+ */
+
+/**
+ * @var anchor_node::anchor_class
+ *
+ * @brief Class object for Anchor nodes.
+ */
+
+/**
+ * @var sfstring anchor_node::description
+ *
+ * @brief description exposedField
+ */
+
+/**
+ * @var mfstring anchor_node::parameter
+ *
+ * @brief parameter exposedField
+ */
+
+/**
+ * @var mfstring anchor_node::url
+ *
+ * @brief url exposedField
  */
 
 /**
@@ -1395,6 +1538,30 @@ appearance_class::create_type(const std::string & id,
  * @class appearance_node
  *
  * @brief Appearance node instances.
+ */
+
+/**
+ * @var appearance_node::appearance_class
+ *
+ * @brief Class object for Appearance nodes.
+ */
+
+/**
+ * @var sfnode appearance_node::material_
+ *
+ * @brief material exposedField.
+ */
+
+/**
+ * @var sfnode appearance_node::texture_
+ *
+ * @brief texture exposedField.
+ */
+
+/**
+ * @var sfnode appearance_node::textureTransform
+ *
+ * @brief textureTransform exposedField.
  */
 
 /**
@@ -1742,6 +1909,62 @@ audio_clip_class::create_type(const std::string & id,
  * @class audio_clip_node
  *
  * @brief AudioClip node instances.
+ *
+ * @todo Implement sound support.
+ */
+
+/**
+ * @var audio_clip_node::audio_clip_class
+ *
+ * @brief Class object for AudioClip nodes.
+ */
+
+/**
+ * @var sfstring audio_clip_node::description
+ *
+ * @brief description exposedField.
+ */
+
+/**
+ * @var sfbool audio_clip_node::loop
+ *
+ * @brief loop exposedField.
+ */
+
+/**
+ * @var sffloat audio_clip_node::pitch
+ *
+ * @brief pitch exposedField.
+ */
+
+/**
+ * @var sftime audio_clip_node::startTime
+ *
+ * @brief startTime exposedField.
+ */
+
+/**
+ * @var sftime audio_clip_node::stopTime
+ *
+ * @brief stopTime exposedField.
+ */
+
+/**
+ * @var mfstring audio_clip_node::url
+ *
+ * @brief url exposedField.
+ */
+
+/**
+ * @var sftime audio_clip_node::duration
+ *
+ * @brief duration_changed eventOut.
+ */
+
+/**
+ * @var sfbool audio_clip_node::active
+ *
+ * @brief isActive eventOut.
  */
 
 /**
@@ -1774,7 +1997,14 @@ audio_clip_node* audio_clip_node::to_audio_clip() const
     return (audio_clip_node*)this;
 }
 
-void audio_clip_node::update(const double currentTime)
+/**
+ * @brief Called to update the AudioClip for the current time.
+ *
+ * @param time  the current time.
+ *
+ * @todo Implement me!
+ */
+void audio_clip_node::update(double time)
 {}
 
 /**
@@ -1913,6 +2143,24 @@ void audio_clip_node::process_set_url(const field_value & value,
  */
 
 /**
+ * @typedef background_class::bound_nodes_t
+ *
+ * @brief A bound Background node stack.
+ */
+
+/**
+ * @var background_node * background_class::first
+ *
+ * @brief The first Background node in the initial scene graph.
+ */
+
+/**
+ * @var background_class::bound_nodes_t background_class::bound_nodes
+ *
+ * @brief The bound Background node stack.
+ */
+
+/**
  * @brief Construct.
  *
  * @param browser the browser associated with this class object.
@@ -1936,7 +2184,7 @@ background_class::~background_class() throw ()
  *
  * @param background    a Background node.
  */
-void background_class::setFirst(background_node & background) throw ()
+void background_class::set_first(background_node & background) throw ()
 {
     this->first = &background;
 }
@@ -1948,7 +2196,7 @@ void background_class::setFirst(background_node & background) throw ()
  *
  * @return @c true if the first node has already been set; @c false otherwise.
  */
-bool background_class::hasFirst() const throw ()
+bool background_class::has_first() const throw ()
 {
     return this->first;
 }
@@ -1961,7 +2209,8 @@ bool background_class::hasFirst() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void background_class::bind(background_node & background, const double timestamp)
+void background_class::bind(background_node & background,
+                            const double timestamp)
     throw (std::bad_alloc)
 {
     using std::find;
@@ -1969,23 +2218,24 @@ void background_class::bind(background_node & background, const double timestamp
     //
     // If the node is already the active node, do nothing.
     //
-    if (!this->boundNodes.empty() && &background == this->boundNodes.back()) {
+    if (!this->bound_nodes.empty()
+        && &background == this->bound_nodes.back()) {
         return;
     }
 
     //
     // If the node is already on the stack, remove it.
     //
-    const BoundNodes::iterator pos =
-        find(this->boundNodes.begin(), this->boundNodes.end(), &background);
-    if (pos != this->boundNodes.end()) { this->boundNodes.erase(pos); }
+    const bound_nodes_t::iterator pos =
+        find(this->bound_nodes.begin(), this->bound_nodes.end(), &background);
+    if (pos != this->bound_nodes.end()) { this->bound_nodes.erase(pos); }
 
     //
     // Send FALSE from the currently active node's isBound.
     //
-    if (!this->boundNodes.empty()) {
+    if (!this->bound_nodes.empty()) {
         background_node & current =
-                dynamic_cast<background_node &>(*this->boundNodes.back());
+            dynamic_cast<background_node &>(*this->bound_nodes.back());
         current.bound.value = false;
         current.emit_event("isBound", current.bound, timestamp);
     }
@@ -1993,7 +2243,7 @@ void background_class::bind(background_node & background, const double timestamp
     //
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
-    this->boundNodes.push_back(&background);
+    this->bound_nodes.push_back(&background);
     background.bound.value = true;
     background.emit_event("isBound", background.bound, timestamp);
 }
@@ -2004,25 +2254,26 @@ void background_class::bind(background_node & background, const double timestamp
  * @param background    the node to unbind.
  * @param timestamp     the current time.
  */
-void background_class::unbind(background_node & background, const double timestamp)
+void background_class::unbind(background_node & background,
+                              const double timestamp)
     throw ()
 {
     using std::find;
 
-    const BoundNodes::iterator pos =
-        find(this->boundNodes.begin(), this->boundNodes.end(), &background);
-    if (pos != this->boundNodes.end()) {
+    const bound_nodes_t::iterator pos =
+        find(this->bound_nodes.begin(), this->bound_nodes.end(), &background);
+    if (pos != this->bound_nodes.end()) {
         background.bound.value = false;
         background.emit_event("isBound", background.bound, timestamp);
 
-        if (pos == this->boundNodes.end() - 1
-                && this->boundNodes.size() > 1) {
-            background_node & newActive =
-                    dynamic_cast<background_node &>(**(this->boundNodes.end() - 2));
+        if (pos == this->bound_nodes.end() - 1
+            && this->bound_nodes.size() > 1) {
+            background_node & newActive = dynamic_cast<background_node &>
+                                          (**(this->bound_nodes.end() - 2));
             newActive.bound.value = true;
             newActive.emit_event("isBound", newActive.bound, timestamp);
         }
-        this->boundNodes.erase(pos);
+        this->bound_nodes.erase(pos);
     }
 }
 
@@ -2045,13 +2296,15 @@ namespace {
     /**
      * @brief Load and scale textures as needed.
      */
-    img * getTexture(const mfstring & urls, doc2 & baseDoc,
-                       img * tex, int thisIndex, OpenVRML::viewer & viewer)
+    img * getTexture(const std::vector<std::string> & urls,
+                     doc2 & baseDoc,
+                     img * tex,
+                     int thisIndex,
+                     OpenVRML::viewer & viewer)
     {
         // Check whether the url has already been loaded
-        size_t n = urls.value.size();
-        if (n > 0) {
-            for (int index=thisIndex-1; index >= 0; --index) {
+        if (!urls.empty()) {
+            for (int index = thisIndex - 1; index >= 0; --index) {
                 const char * currentTex = tex[index].url();
                 const std::string relPath = baseDoc.url_path();
                 int currentLen = currentTex ? strlen(currentTex) : 0;
@@ -2059,10 +2312,9 @@ namespace {
                 if (relPathLen >= currentLen) { relPathLen = 0; }
 
                 if (currentTex) {
-                    for (size_t i = 0; i < n; ++i) {
-                        if (urls.value[i] == currentTex
-                                || urls.value[i]
-                                    == (currentTex + relPathLen)) {
+                    for (size_t i = 0; i < urls.size(); ++i) {
+                        if (urls[i] == currentTex
+                            || urls[i]  == (currentTex + relPathLen)) {
                             return &tex[index];
                         }
                     }
@@ -2071,34 +2323,34 @@ namespace {
 
             // Have to load it
             if (!tex[thisIndex].try_urls(urls, &baseDoc)) {
-                std::cerr << "Error: couldn't read Background texture from URL "
-                          << urls << std::endl;
-            } else if ( tex[thisIndex].pixels() && tex[thisIndex].nc() ) {
+                using std::cerr;
+                using std::endl;
+                cerr << "Error: couldn't read Background texture from URL "
+                     << mfstring(urls.begin(), urls.end()) << endl;
+            } else if (tex[thisIndex].pixels() && tex[thisIndex].nc()) {
                 //
                 // The texture needs to be scaled.
                 //
 
                 // Ensure the image dimensions are powers of two
-                int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
-                const int nSizes = sizeof(sizes) / sizeof(int);
-                int w = tex[thisIndex].w();
-                int h = tex[thisIndex].h();
-                int i, j;
-                for (i=0; i<nSizes; ++i) {
-                    if (w < sizes[i]) { break; }
-                }
-                for (j=0; j<nSizes; ++j) {
-                    if (h < sizes[j]) { break; }
-                }
+                static const size_t size[] = {
+                    2, 4, 8, 16, 32, 64, 128, 256, 512, 1024
+                };
+                static const size_t sizes = sizeof size / sizeof (size_t);
+                size_t w = tex[thisIndex].w();
+                size_t h = tex[thisIndex].h();
+                size_t i, j;
+                for (i = 0; i < sizes; ++i) { if (w < size[i]) { break; } }
+                for (j = 0; j < sizes; ++j) { if (h < size[j]) { break; } }
 
                 if (i > 0 && j > 0) {
-                    // Always scale images down in size and reuse the same pixel
-                    // memory. This can cause some ugliness...
-                    if (w != sizes[i-1] || h != sizes[j-1]) {
-                        viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
+                    // Always scale images down in size and reuse the same
+                    // pixel memory. This can cause some ugliness...
+                    if (w != size[i - 1] || h != size[j - 1]) {
+                        viewer.scale_texture(w, h, size[i - 1], size[j - 1],
                                              tex[thisIndex].nc(),
                                              tex[thisIndex].pixels());
-                        tex[thisIndex].resize(sizes[i - 1], sizes[j - 1]);
+                        tex[thisIndex].resize(size[i - 1], size[j - 1]);
                     }
                 }
             }
@@ -2117,9 +2369,9 @@ namespace {
  */
 void background_class::render(OpenVRML::viewer & viewer) throw ()
 {
-    if (!this->boundNodes.empty()) {
-        assert(this->boundNodes.back());
-        background_node & background = *this->boundNodes.back();
+    if (!this->bound_nodes.empty()) {
+        assert(this->bound_nodes.back());
+        background_node & background = *this->bound_nodes.back();
 
         // Background isn't selectable, so don't waste the time.
         if (viewer.mode() == viewer::pick_mode) { return; }
@@ -2134,32 +2386,32 @@ void background_class::render(OpenVRML::viewer & viewer) throw ()
         } else {
             if (background.modified() || background.texPtr[0] == 0) {
                 doc2 baseDoc(background.scene()->url());
-                background.texPtr[0] = getTexture(background.backUrl,
+                background.texPtr[0] = getTexture(background.backUrl.value,
                                                   baseDoc,
                                                   background.tex,
                                                   0,
                                                   viewer);
-                background.texPtr[1] = getTexture(background.bottomUrl,
+                background.texPtr[1] = getTexture(background.bottomUrl.value,
                                                   baseDoc,
                                                   background.tex,
                                                   1,
                                                   viewer);
-                background.texPtr[2] = getTexture(background.frontUrl,
+                background.texPtr[2] = getTexture(background.frontUrl.value,
                                                   baseDoc,
                                                   background.tex,
                                                   2,
                                                   viewer);
-                background.texPtr[3] = getTexture(background.leftUrl,
+                background.texPtr[3] = getTexture(background.leftUrl.value,
                                                   baseDoc,
                                                   background.tex,
                                                   3,
                                                   viewer);
-                background.texPtr[4] = getTexture(background.rightUrl,
+                background.texPtr[4] = getTexture(background.rightUrl.value,
                                                   baseDoc,
                                                   background.tex,
                                                   4,
                                                   viewer);
-                background.texPtr[5] = getTexture(background.topUrl,
+                background.texPtr[5] = getTexture(background.topUrl.value,
                                                   baseDoc,
                                                   background.tex,
                                                   5,
@@ -2214,8 +2466,8 @@ void background_class::render(OpenVRML::viewer & viewer) throw ()
  *
  * @return a node_type_ptr to a node_type capable of creating Background nodes.
  *
- * @exception unsupported_interface  if @p interfaces includes an interface not
- *                              supported by background_class.
+ * @exception unsupported_interface if @p interfaces includes an interface not
+ *                                  supported by background_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
@@ -2375,10 +2627,103 @@ background_class::create_type(const std::string & id,
  */
 
 /**
+ * @var background_node::background_class
+ *
+ * @brief Class object for Background nodes.
+ */
+
+/**
+ * @var mffloat background_node::groundAngle
+ *
+ * @brief groundAngle exposedField.
+ */
+
+/**
+ * @var mfcolor background_node::groundColor
+ *
+ * @brief groundColor exposedField.
+ */
+
+/**
+ * @var mfstring background_node::backUrl
+ *
+ * @brief backUrl exposedField.
+ */
+
+/**
+ * @var mfstring background_node::bottomUrl
+ *
+ * @brief bottomUrl exposedField.
+ */
+
+/**
+ * @var mfstring background_node::frontUrl
+ *
+ * @brief frontUrl exposedField.
+ */
+
+/**
+ * @var mfstring background_node::leftUrl
+ *
+ * @brief leftUrl exposedField.
+ */
+
+/**
+ * @var mfstring background_node::rightUrl
+ *
+ * @brief rightUrl exposedField.
+ */
+
+/**
+ * @var mfstring background_node::topUrl
+ *
+ * @brief topUrl exposedField.
+ */
+
+/**
+ * @var mffloat background_node::skyAngle
+ *
+ * @brief skyAngle exposedField.
+ */
+
+/**
+ * @var mfcolor background_node::skyColor
+ *
+ * @brief skyColor exposedField.
+ */
+
+/**
+ * @var sfbool background_node::bound
+ *
+ * @brief isBound eventOut.
+ */
+
+/**
+ * @var img * background_node::texPtr[6]
+ *
+ * @brief Pointers to the @link img imgs@endlink in @a tex.
+ *
+ * The pointers are initialized to zero, and become non-null once the textures
+ * are loaded and, if necessary, resized.
+ */
+
+/**
+ * @var img background_node::tex[6]
+ *
+ * @brief Texture data.
+ */
+
+/**
+ * @var viewer::object_t background_node::viewerObject
+ *
+ * @brief Handle for the renderer.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 background_node::background_node(const node_type & type,
                                  const scope_ptr & scope):
@@ -2408,7 +2753,7 @@ void background_node::do_initialize(const double timestamp) throw ()
     assert(dynamic_cast<background_class *>(&this->type.node_class));
     background_class & nodeClass =
         static_cast<background_class &>(this->type.node_class);
-    if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
+    if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
 }
 
 /**
@@ -2750,6 +3095,101 @@ billboard_class::create_type(const std::string & id,
  */
 
 /**
+ * @var billboard_node::billboard_class
+ *
+ * @brief Class object for Billboard nodes.
+ */
+
+/**
+ * @var sfvec3f billboard_node::axisOfRotation
+ *
+ * @brief axisOfRotation exposedField.
+ */
+
+/**
+ * @var viewer::object_t billboard_node::xformObject
+ *
+ * @brief Handle for the renderer.
+ */
+
+/**
+ * @brief Get the bounding box transformation matrix.
+ *
+ * @param node      a pointer to a billboard_node.
+ * @param modelview input ModelView transformation matrix.
+ *
+ * @ return the bounding box transformation matrix.
+ */
+const mat4f billboard_node::billboard_to_matrix(const billboard_node & node,
+                                                const mat4f & modelview)
+{
+    const mat4f inverse_modelview = modelview.inverse();
+
+    mat4f result;
+
+    // Viewer position in local coordinate system
+    const vec3f position = vec3f(inverse_modelview[3][0],
+                                 inverse_modelview[3][1],
+                                 inverse_modelview[3][2]).normalize();
+
+    // Viewer-alignment
+    if ((node.axisOfRotation.value[0] == 0)
+            && (node.axisOfRotation.value[1] == 0)
+            && (node.axisOfRotation.value[2] == 0)) {
+        //
+        // Viewer's up vector
+        //
+        const vec3f up = vec3f(inverse_modelview[1][0],
+                               inverse_modelview[1][1],
+                               inverse_modelview[1][2]).normalize();
+
+        // get x-vector from the cross product of Viewer's
+        // up vector and billboard-to-viewer vector.
+        const vec3f X = up * position;
+
+        result[0][0] = X[0];
+        result[0][1] = X[1];
+        result[0][2] = X[2];
+        result[0][3] = 0.0;
+
+        result[1][0] = up[0];
+        result[1][1] = up[1];
+        result[1][2] = up[2];
+        result[1][3] = 0.0;
+
+        result[2][0] = position[0];
+        result[2][1] = position[1];
+        result[2][2] = position[2];
+        result[2][3] = 0.0;
+
+        result[3][0] = 0.0;
+        result[3][1] = 0.0;
+        result[3][2] = 0.0;
+        result[3][3] = 1.0;
+    } else { // use axis of rotation
+        // axis of rotation will be the y-axis vector
+        const vec3f Y(node.axisOfRotation.value);
+
+        // Plane defined by the axisOfRotation and billboard-to-viewer vector
+        const vec3f X = (Y * position).normalize();
+
+        // Get Z axis vector from cross product of X and Y
+        const vec3f Z = X * Y;
+
+        // Transform Z axis vector of current coordinate system to new
+        // coordinate system.
+        float nz[3] = { X[2], Y[2], Z[2] };
+
+        // calculate the angle by which the Z axis vector of current coordinate
+        // system has to be rotated around the Y axis to new coordinate system.
+        float angle = acos(nz[2]);
+        if(nz[0] > 0) { angle = -angle; }
+        result = mat4f::rotation(rotation(Y, angle));
+    }
+    return result;
+}
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
@@ -2776,15 +3216,14 @@ billboard_node::~billboard_node() throw ()
 /**
  * @brief Render the node.
  *
- * @param viewer    a Viewer.
+ * @param viewer    a viewer.
  * @param context   the rendering context.
  */
 void billboard_node::render(OpenVRML::viewer & viewer,
                             rendering_context context)
 {
-    mat4f LM;
     mat4f new_LM = context.matrix();
-    billboard_to_matrix(this, new_LM, LM);
+    mat4f LM = billboard_to_matrix(*this, new_LM);
     new_LM = LM * new_LM;
     context.matrix(new_LM);
 
@@ -2807,66 +3246,6 @@ void billboard_node::render(OpenVRML::viewer & viewer,
     }
 
     this->node::modified(false);
-}
-
-/**
- * @brief Calculate bb transformation matrix and store it in @p M.
- *
- * Here we are dealing with mat4f format (Matrices are stored
- * in row-major order).
- *
- * @param t_arg a pointer to a billboard_node.
- * @param L_MV  input ModelView transformation matrix.
- * @retval M    a copy of the resulting transform.
- */
-void billboard_node::billboard_to_matrix(const billboard_node* t_arg,
-                                         const mat4f & L_MV,
-                                         mat4f & M)
-{
-    mat4f MV = L_MV.inverse();
-
-    // Viewer position in local coordinate system
-    vec3f VP(MV[3][0], MV[3][1], MV[3][2]);
-    vec3f NVP = VP.normalize();
-
-    // Viewer-alignment
-    if ((t_arg->axisOfRotation.value[0] == 0)
-            && (t_arg->axisOfRotation.value[1] == 0)
-            && (t_arg->axisOfRotation.value[2] == 0)) {
-        //
-        // Viewer's up vector
-        //
-        vec3f Y(MV[1][0], MV[1][1], MV[1][2]);
-        vec3f NY = Y.normalize();
-
-        // get x-vector from the cross product of Viewer's
-        // up vector and billboard-to-viewer vector.
-        vec3f X = NY * NVP;
-        M[0][0] = X[0]; M[0][1] = X[1]; M[0][2] = X[2]; M[0][3] = 0.0;
-        M[1][0] = NY[0]; M[1][1] = NY[1]; M[1][2] = NY[2]; M[1][3] = 0.0;
-        M[2][0] = NVP[0]; M[2][1] = NVP[1]; M[2][2] = NVP[2]; M[2][3] = 0.0,
-        M[3][0] = M[3][1] = M[3][2] = 0.0; M[3][3] = 1.0;
-    } else { // use axis of rotation
-        // axis of rotation will be the y-axis vector
-        vec3f Y(t_arg->axisOfRotation.value);
-
-        // Plane defined by the axisOfRotation and billboard-to-viewer vector
-        vec3f X = (Y * VP).normalize();
-
-        // Get Z axis vector from cross product of X and Y
-        vec3f Z = X * Y;
-
-        // Transform Z axis vector of current coordinate system to new
-        // coordinate system.
-        float nz[3];
-        nz[0] = X[2]; nz[1] = Y[2]; nz[2] = Z[2];
-
-        // calculate the angle by which the Z axis vector of current coordinate
-        // system has to be rotated around the Y axis to new coordinate system.
-        float angle = acos(nz[2]);
-        if(nz[0] > 0) { angle = -angle; }
-        M = mat4f::rotation(rotation(Y, angle));
-    }
 }
 
 /**
@@ -2955,6 +3334,24 @@ const node_type_ptr box_class::create_type(const std::string & id,
  * @class box_node
  *
  * @brief Box node instances.
+ */
+
+/**
+ * @var box_node::box_class
+ *
+ * @brief Class object for Box nodes.
+ */
+
+/**
+ * @var sfvec3f box_node::size
+ *
+ * @brief size field.
+ */
+
+/**
+ * @var bounding_sphere box_node::bsphere
+ *
+ * @brief Bounding volume.
  */
 
 /**
@@ -3150,6 +3547,30 @@ collision_class::create_type(const std::string & id,
  */
 
 /**
+ * @var collision_node::collision_class
+ *
+ * @brief Class object for Collision nodes.
+ */
+
+/**
+ * @var sfbool collision_node::collide
+ *
+ * @brief collide exposedField.
+ */
+
+/**
+ * @var sfnode collision_node::proxy
+ *
+ * @brief proxy field.
+ */
+
+/**
+ * @var sftime collision_node::collideTime
+ *
+ * @brief collideTime eventOut.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
@@ -3263,6 +3684,18 @@ color_class::create_type(const std::string & id,
  * @class color_node
  *
  * @brief Color node instances.
+ */
+
+/**
+ * @var color_node::color_class
+ *
+ * @brief Class object for Color nodes.
+ */
+
+/**
+ * @var mfcolor color_node::color_
+ *
+ * @brief color exposedField.
  */
 
 /**
@@ -3416,6 +3849,30 @@ color_interpolator_class::create_type(const std::string & id,
  * @class color_interpolator_node
  *
  * @brief ColorInterpolator node instances.
+ */
+
+/**
+ * @var color_interpolator_node::color_interpolator_class
+ *
+ * @brief Class object for ColorInterpolator nodes.
+ */
+
+/**
+ * @var mffloat color_interpolator_node::key
+ *
+ * @brief key exposedField.
+ */
+
+/**
+ * @var mfcolor color_interpolator_node::keyValue
+ *
+ * @brief keyValue exposedField.
+ */
+
+/**
+ * @var sfcolor color_interpolator_node::value
+ *
+ * @brief value_changed eventOut.
  */
 
 /**
@@ -3625,6 +4082,36 @@ cone_class::create_type(const std::string & id,
  */
 
 /**
+ * @var cone_node::cone_class
+ *
+ * @brief Class object for Cone nodes.
+ */
+
+/**
+ * @var sfbool cone_node::bottom
+ *
+ * @brief bottom field.
+ */
+
+/**
+ * @var sffloat cone_node::bottomRadius
+ *
+ * @brief bottomRadius field.
+ */
+
+/**
+ * @var sffloat cone_node::height
+ *
+ * @brief height field.
+ */
+
+/**
+ * @var sfbool cone_node::side
+ *
+ * @brief side field.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
@@ -3731,6 +4218,18 @@ coordinate_class::create_type(const std::string & id,
  * @class coordinate_node
  *
  * @brief Coordinate node instances.
+ */
+
+/**
+ * @var coordinate_node::coordinate_class
+ *
+ * @brief Class object for Coordinate nodes.
+ */
+
+/**
+ * @var mfvec3f coordinate_node::point_
+ *
+ * @brief point exposedField.
  */
 
 /**
@@ -3886,6 +4385,30 @@ coordinate_interpolator_class::create_type(
  * @class coordinate_interpolator_node
  *
  * @brief CoordinateInterpolator node instances.
+ */
+
+/**
+ * @var coordinate_interpolator_node::coordinate_interpolator_class
+ *
+ * @brief Class object for CoordinateInterpolator nodes.
+ */
+
+/**
+ * @var mffloat coordinate_interpolator_node::key
+ *
+ * @brief key exposedField.
+ */
+
+/**
+ * @var mfvec3f coordinate_interpolator_node::keyValue
+ *
+ * @brief keyValue exposedField.
+ */
+
+/**
+ * @var mfvec3f coordinate_interpolator_node::value
+ *
+ * @brief value_changed eventOut.
  */
 
 /**
@@ -4109,6 +4632,42 @@ cylinder_class::create_type(const std::string & id,
  */
 
 /**
+ * @var cylinder_node::cylinder_class
+ *
+ * @brief Class object for Cylinder nodes.
+ */
+
+/**
+ * @var sfbool cylinder_node::bottom
+ *
+ * @brief bottom field.
+ */
+
+/**
+ * @var sffloat cylinder_node::height
+ *
+ * @brief height field.
+ */
+
+/**
+ * @var sffloat cylinder_node::radius
+ *
+ * @brief radius field.
+ */
+
+/**
+ * @var sfbool cylinder_node::side
+ *
+ * @brief side field.
+ */
+
+/**
+ * @var sfbool cylinder_node::top
+ *
+ * @brief top field.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
@@ -4136,7 +4695,7 @@ cylinder_node::~cylinder_node() throw ()
 /**
  * @brief Insert this geometry into @p viewer's display list.
  *
- * @param viewer    a Viewer.
+ * @param viewer    a viewer.
  * @param context   the rendering context.
  */
 viewer::object_t
@@ -4248,7 +4807,7 @@ cylinder_sensor_class::create_type(const std::string & id,
                 supportedInterfaces[2].id,
                 &cylinder_sensor_node::process_set_enabled,
                 node_field_ptr_ptr(new cylinder_sensor_type_t::sfbool_ptr(
-                                       &cylinder_sensor_node::enabled)));
+                                       &cylinder_sensor_node::enabled_)));
         } else if (*interface == supportedInterfaces[3]) {
             cylinderSensorNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
@@ -4302,10 +4861,98 @@ cylinder_sensor_class::create_type(const std::string & id,
  */
 
 /**
+ * @var cylinder_sensor_node::cylinder_sensor_class
+ *
+ * @brief Class object for CylinderSensor nodes.
+ */
+
+/**
+ * @var sfbool cylinder_sensor_node::autoOffset
+ *
+ * @brief autoOffset exposedField.
+ */
+
+/**
+ * @var sffloat cylinder_sensor_node::diskAngle
+ *
+ * @brief diskAngle exposedField.
+ */
+
+/**
+ * @var sfbool cylinder_sensor_node::enabled_
+ *
+ * @brief enabled exposedField.
+ */
+
+/**
+ * @var sffloat cylinder_sensor_node::maxAngle
+ *
+ * @brief maxAngle exposedField.
+ */
+
+/**
+ * @var sffloat cylinder_sensor_node::minAngle
+ *
+ * @brief minAngle exposedField.
+ */
+
+/**
+ * @var sffloat cylinder_sensor_node::offset
+ *
+ * @brief offset exposedField.
+ */
+
+/**
+ * @var sfbool cylinder_sensor_node::active
+ *
+ * @brief isActive eventOut.
+ */
+
+/**
+ * @var sfrotation cylinder_sensor_node::rotation
+ *
+ * @brief rotation_changed eventOut.
+ */
+
+/**
+ * @var sfvec3f cylinder_sensor_node::trackPoint
+ *
+ * @brief trackPoint_changed eventOut.
+ */
+
+/**
+ * @var float cylinder_sensor_node::rotation_val
+ *
+ * @brief The rotation value.
+ */
+
+/**
+ * @var vec3f cylinder_sensor_node::activationPoint
+ *
+ * @brief The activation point.
+ */
+
+/**
+ * @var bool cylinder_sensor_node::disk
+ */
+
+/**
+ * @var mat4f cylinder_sensor_node::activationMatrix
+ *
+ * @brief Activation matrix.
+ */
+
+/**
+ * @var mat4f cylinder_sensor_node::modelview
+ *
+ * @brief Modelview matrix.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 cylinder_sensor_node::cylinder_sensor_node(const node_type & type,
                                            const scope_ptr & scope):
@@ -4313,11 +4960,13 @@ cylinder_sensor_node::cylinder_sensor_node(const node_type & type,
     abstract_child_node(type, scope),
     autoOffset(true),
     diskAngle(0.262),
-    enabled(true),
+    enabled_(true),
     maxAngle(-1.0),
     minAngle(0.0),
     offset(0.0),
-    active(false)
+    active(false),
+    rotation_val(0.0),
+    disk(false)
 {
     this->node::modified(true);
 }
@@ -4330,8 +4979,11 @@ cylinder_sensor_node::~cylinder_sensor_node() throw ()
 
 /**
  * @brief Cast to a cylinder_sensor_node.
+ *
+ * @return a pointer to the cylinder_sensor_node.
  */
-cylinder_sensor_node* cylinder_sensor_node::to_cylinder_sensor() const {   // mgiger 6/16/00
+cylinder_sensor_node * cylinder_sensor_node::to_cylinder_sensor() const
+{
     return (cylinder_sensor_node*) this;
 }
 
@@ -4345,13 +4997,18 @@ void cylinder_sensor_node::render(OpenVRML::viewer & viewer,
                                   rendering_context context)
 {
     //
-    // Store the ModelView matrix which is calculated at the time of rendering
+    // Store the modelview matrix which is calculated at the time of rendering
     // in render-context. This matrix will be in use at the time of activation.
     //
     this->modelview = context.matrix();
 }
 
-void cylinder_sensor_node::activate(double timeStamp, bool isActive, double *p)
+/**
+ * @brief Called in response to user interaction.
+ */
+void cylinder_sensor_node::activate(double timeStamp,
+                                    bool isActive,
+                                    double * p)
 {
     using OpenVRML_::fpequal;
 
@@ -4360,24 +5017,19 @@ void cylinder_sensor_node::activate(double timeStamp, bool isActive, double *p)
         this->active.value = isActive;
 
         // set activation point in local coords
-        vec3f Vec(p[0], p[1], p[2]);
+        vec3f v(p[0], p[1], p[2]);
         this->activationMatrix = this->modelview.inverse();
-        Vec = Vec * this->activationMatrix;
-        this->activationPoint.value = Vec;
+        v *= this->activationMatrix;
+        this->activationPoint = v;
         // Bearing vector in local coordinate system
-        Vec[0] = this->activationMatrix[2][0];
-        Vec[1] = this->activationMatrix[2][1];
-        Vec[2] = this->activationMatrix[2][2];
-        vec3f BV(Vec);
-        vec3f Y(0,1,0);
-        BV = BV.normalize();
-        double ang = acos(BV.dot(Y));
+        v[0] = this->activationMatrix[2][0];
+        v[1] = this->activationMatrix[2][1];
+        v[2] = this->activationMatrix[2][2];
+        const vec3f bearing = v.normalize();
+        const vec3f up(0.0, 1.0, 0.0);
+        double ang = acos(bearing.dot(up));
         if (ang > pi_2) { ang = pi - ang; }
-        if (ang < this->diskAngle.value) {
-            disk.value = true;
-        } else {
-            disk.value = false;
-        }
+        this->disk = (ang < this->diskAngle.value);
         // send message
         this->emit_event("isActive", this->active, timeStamp);
     }
@@ -4389,7 +5041,7 @@ void cylinder_sensor_node::activate(double timeStamp, bool isActive, double *p)
 
         // save auto offset of rotation
         if (this->autoOffset.value) {
-            this->offset = rotation_val;
+            this->offset.value = rotation_val;
             this->emit_event("offset_changed", this->offset, timeStamp);
         }
     }
@@ -4404,15 +5056,11 @@ void cylinder_sensor_node::activate(double timeStamp, bool isActive, double *p)
         vec3f tempv;
         float rot, radius;
         vec3f dir1(Vec[0], 0, Vec[2]);
-        if (disk.value) {
-            radius = 1.0;
-        } else {
-            radius = dir1.length();    // get the radius
-        }
+        radius = this->disk
+               ? 1.0
+               : dir1.length();
         dir1 = dir1.normalize();
-        vec3f dir2(this->activationPoint.value.x(),
-                   0,
-                   this->activationPoint.value.z());
+        vec3f dir2(this->activationPoint.x(), 0, this->activationPoint.z());
         dir2 = dir2.normalize();
         tempv = dir2 * dir1;
         vec3f cx(tempv);
@@ -4430,11 +5078,21 @@ void cylinder_sensor_node::activate(double timeStamp, bool isActive, double *p)
                 rot = this->maxAngle.value;
             }
         }
-        rotation_val.value = rot;
+        this->rotation_val = rot;
         this->rotation.value = OpenVRML::rotation(0, 1, 0, rot);
 
         this->emit_event("rotation_changed", this->rotation, timeStamp);
     }
+}
+
+/**
+ * @brief Indicate whether the sensor is enabled.
+ *
+ * @return @c true if the sensor is enabled; @c false otherwise.
+ */
+bool cylinder_sensor_node::enabled() const
+{
+    return this->enabled_.value;
 }
 
 /**
@@ -4481,8 +5139,8 @@ void cylinder_sensor_node::process_set_enabled(const field_value & value,
                                                const double timestamp)
     throw (std::bad_cast)
 {
-    this->enabled = dynamic_cast<const sfbool &>(value);
-    this->emit_event("enabled_changed", this->enabled, timestamp);
+    this->enabled_ = dynamic_cast<const sfbool &>(value);
+    this->emit_event("enabled_changed", this->enabled_, timestamp);
 }
 
 /**
@@ -4616,7 +5274,7 @@ directional_light_class::create_type(const std::string & id,
                 &directional_light_node::process_set_color,
                 node_field_ptr_ptr(
                     new directional_light_type_t::sfcolor_ptr(
-                        &directional_light_node::color)));
+                        &directional_light_node::color_)));
         } else if (*interface == supportedInterfaces[2]) {
             directionalLightNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
@@ -4632,7 +5290,7 @@ directional_light_class::create_type(const std::string & id,
                 &directional_light_node::process_set_intensity,
                 node_field_ptr_ptr(
                     new directional_light_type_t::sffloat_ptr(
-                        &directional_light_node::intensity)));
+                        &directional_light_node::intensity_)));
         } else if (*interface == supportedInterfaces[4]) {
             directionalLightNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
@@ -4640,7 +5298,7 @@ directional_light_class::create_type(const std::string & id,
                 &directional_light_node::process_set_on,
                 node_field_ptr_ptr(
                     new directional_light_type_t::sfbool_ptr(
-                        &directional_light_node::on)));
+                        &directional_light_node::on_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -4655,13 +5313,25 @@ directional_light_class::create_type(const std::string & id,
  */
 
 /**
+ * @var directional_light_node::directional_light_class
+ *
+ * @brief Class object for DirectionalLight nodes.
+ */
+
+/**
+ * @var sfvec3f directional_light_node::direction
+ *
+ * @brief direction exposedField.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
 directional_light_node::directional_light_node(const node_type & type,
-                                   const scope_ptr & scope):
+                                               const scope_ptr & scope):
     node(type, scope),
     abstract_light_node(type, scope),
     direction(vec3f(0.0, 0.0, -1.0))
@@ -4677,16 +5347,16 @@ directional_light_node::~directional_light_node() throw () {}
  *
  * This should be called before rendering any sibling nodes.
  *
- * @param viewer    a Viewer.
+ * @param viewer    a viewer.
  * @param context   a rendering context.
  */
 void directional_light_node::render(OpenVRML::viewer & viewer,
                               const rendering_context rc)
 {
-    if (this->on.value) {
+    if (this->on_.value) {
         viewer.insert_dir_light(this->ambientIntensity.value,
-                                this->intensity.value,
-                                this->color.value,
+                                this->intensity_.value,
+                                this->color_.value,
                                 this->direction.value);
     }
     this->node::modified(false);
@@ -4867,6 +5537,90 @@ elevation_grid_class::create_type(const std::string & id,
  * @class elevation_grid_node
  *
  * @brief ElevationGrid node instances.
+ */
+
+/**
+ * @var elevation_grid_node::elevation_grid_class
+ *
+ * @brief Class object for ElevationGrid nodes.
+ */
+
+/**
+ * @var sfnode elevation_grid_node::color
+ *
+ * @brief color exposedField.
+ */
+
+/**
+ * @var sfnode elevation_grid_node::normal
+ *
+ * @brief normal exposedField.
+ */
+
+/**
+ * @var sfnode elevation_grid_node::texCoord
+ *
+ * @brief texCoord exposedField.
+ */
+
+/**
+ * @var sfbool elevation_grid_node::ccw
+ *
+ * @brief ccw field.
+ */
+
+/**
+ * @var sfbool elevation_grid_node::colorPerVertex
+ *
+ * @brief colorPerVertex field.
+ */
+
+/**
+ * @var sffloat elevation_grid_node::creaseAngle
+ *
+ * @brief creaseAngle field.
+ */
+
+/**
+ * @var mffloat elevation_grid_node::height
+ *
+ * @brief height field.
+ */
+
+/**
+ * @var sfbool elevation_grid_node::normalPerVertex
+ *
+ * @brief normalPerVertex field.
+ */
+
+/**
+ * @var sfbool elevation_grid_node::solid
+ *
+ * @brief solid field.
+ */
+
+/**
+ * @var sfint32 elevation_grid_node::xDimension
+ *
+ * @brief xDimension field.
+ */
+
+/**
+ * @var sffloat elevation_grid_node::xSpacing
+ *
+ * @brief xSpacing field.
+ */
+
+/**
+ * @var sfint32 elevation_grid_node::zDimension
+ *
+ * @brief zDimension field.
+ */
+
+/**
+ * @var sffloat elevation_grid_node::zSpacing
+ *
+ * @brief zSpacing field.
  */
 
 /**
@@ -5224,6 +5978,72 @@ namespace {
  */
 
 /**
+ * @var extrusion_node::extrusion_class
+ *
+ * @brief Class object for Extrusion nodes.
+ */
+
+/**
+ * @var sfbool extrusion_node::beginCap
+ *
+ * @brief beginCap field.
+ */
+
+/**
+ * @var sfbool extrusion_node::ccw
+ *
+ * @brief ccw field.
+ */
+
+/**
+ * @var sfbool extrusion_node::convex
+ *
+ * @brief convex field.
+ */
+
+/**
+ * @var sffloat extrusion_node::creaseAngle
+ *
+ * @brief creaseAngle field.
+ */
+
+/**
+ * @var mfvec2f extrusion_node::crossSection
+ *
+ * @brief crossSection field.
+ */
+
+/**
+ * @var sfbool extrusion_node::endCap
+ *
+ * @brief endCap field.
+ */
+
+/**
+ * @var mfrotation extrusion_node::orientation
+ *
+ * @brief orientation field.
+ */
+
+/**
+ * @var mfvec2f extrusion_node::scale
+ *
+ * @brief scale field.
+ */
+
+/**
+ * @var sfbool extrusion_node::solid
+ *
+ * @brief solid field.
+ */
+
+/**
+ * @var mfvec3f extrusion_node::spine
+ *
+ * @brief spine field.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
@@ -5240,7 +6060,8 @@ extrusion_node::extrusion_node(const node_type & type,
     crossSection(extrusionDefaultCrossSection_,
                  extrusionDefaultCrossSection_ + 5),
     endCap(true),
-    orientation(extrusionDefaultOrientation_, extrusionDefaultOrientation_ + 1),
+    orientation(extrusionDefaultOrientation_,
+                extrusionDefaultOrientation_ + 1),
     scale(extrusionDefaultScale_, extrusionDefaultScale_ + 1),
     solid(true),
     spine(extrusionDefaultSpine_, extrusionDefaultSpine_ + 2)
@@ -5357,6 +6178,24 @@ void extrusion_node::process_set_spine(const field_value & value,
  */
 
 /**
+ * @typedef fog_class::bound_nodes_t
+ *
+ * @brief A bound Fog node stack.
+ */
+
+/**
+ * @var fog_node * fog_class::first
+ *
+ * @brief The first Fog node in the initial scene graph.
+ */
+
+/**
+ * @var fog_class::bound_nodes_t fog_class::bound_nodes
+ *
+ * @brief The bound Fog node stack.
+ */
+
+/**
  * @brief Construct.
  *
  * @param browser the browser associated with this class object.
@@ -5380,7 +6219,7 @@ fog_class::~fog_class() throw ()
  *
  * @param fog   a Fog node.
  */
-void fog_class::setFirst(fog_node & fog) throw ()
+void fog_class::set_first(fog_node & fog) throw ()
 {
     this->first = &fog;
 }
@@ -5392,7 +6231,7 @@ void fog_class::setFirst(fog_node & fog) throw ()
  *
  * @return @c true if the first node has already been set; @c false otherwise.
  */
-bool fog_class::hasFirst() const throw ()
+bool fog_class::has_first() const throw ()
 {
     return this->first;
 }
@@ -5403,29 +6242,31 @@ bool fog_class::hasFirst() const throw ()
  * @param fog       the node to bind.
  * @param timestamp the current time.
  */
-void fog_class::bind(fog_node & fog, const double timestamp) throw (std::bad_alloc)
+void fog_class::bind(fog_node & fog, const double timestamp)
+    throw (std::bad_alloc)
 {
     using std::find;
 
     //
     // If the node is already the active node, do nothing.
     //
-    if (!this->boundNodes.empty() && &fog == this->boundNodes.back()) {
+    if (!this->bound_nodes.empty() && &fog == this->bound_nodes.back()) {
         return;
     }
 
     //
     // If the node is already on the stack, remove it.
     //
-    const BoundNodes::iterator pos =
-        find(this->boundNodes.begin(), this->boundNodes.end(), &fog);
-    if (pos != this->boundNodes.end()) { this->boundNodes.erase(pos); }
+    const bound_nodes_t::iterator pos =
+        find(this->bound_nodes.begin(), this->bound_nodes.end(), &fog);
+    if (pos != this->bound_nodes.end()) { this->bound_nodes.erase(pos); }
 
     //
     // Send FALSE from the currently active node's isBound.
     //
-    if (!this->boundNodes.empty()) {
-        fog_node & current = dynamic_cast<fog_node &>(*this->boundNodes.back());
+    if (!this->bound_nodes.empty()) {
+        fog_node & current =
+            dynamic_cast<fog_node &>(*this->bound_nodes.back());
         current.bound.value = false;
         current.emit_event("isBound", current.bound, timestamp);
     }
@@ -5433,7 +6274,7 @@ void fog_class::bind(fog_node & fog, const double timestamp) throw (std::bad_all
     //
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
-    this->boundNodes.push_back(&fog);
+    this->bound_nodes.push_back(&fog);
     fog.bound.value = true;
     fog.emit_event("isBound", fog.bound, timestamp);
 }
@@ -5446,20 +6287,20 @@ void fog_class::bind(fog_node & fog, const double timestamp) throw (std::bad_all
  */
 void fog_class::unbind(fog_node & fog, const double timestamp) throw ()
 {
-    const BoundNodes::iterator pos =
-            std::find(this->boundNodes.begin(), this->boundNodes.end(), &fog);
-    if (pos != this->boundNodes.end()) {
+    const bound_nodes_t::iterator pos =
+        std::find(this->bound_nodes.begin(), this->bound_nodes.end(), &fog);
+    if (pos != this->bound_nodes.end()) {
         fog.bound.value = false;
         fog.emit_event("isBound", fog.bound, timestamp);
 
-        if (pos == this->boundNodes.end() - 1
-                && this->boundNodes.size() > 1) {
+        if (pos == this->bound_nodes.end() - 1
+            && this->bound_nodes.size() > 1) {
             fog_node & newActive =
-                    dynamic_cast<fog_node &>(**(this->boundNodes.end() - 2));
+                dynamic_cast<fog_node &>(**(this->bound_nodes.end() - 2));
             newActive.bound.value = true;
             newActive.emit_event("isBound", newActive.bound, timestamp);
         }
-        this->boundNodes.erase(pos);
+        this->bound_nodes.erase(pos);
     }
 }
 
@@ -5487,8 +6328,8 @@ void fog_class::initialize(OpenVRML::viewpoint_node * initialViewpoint,
  */
 void fog_class::render(OpenVRML::viewer & viewer) throw ()
 {
-    if (!this->boundNodes.empty()) {
-        fog_node & fog = dynamic_cast<fog_node &>(*this->boundNodes.back());
+    if (!this->bound_nodes.empty()) {
+        fog_node & fog = dynamic_cast<fog_node &>(*this->bound_nodes.back());
         viewer.set_fog(fog.color.value,
                        fog.visibilityRange.value,
                        fog.fogType.value.c_str());
@@ -5570,6 +6411,36 @@ fog_class::create_type(const std::string & id,
  */
 
 /**
+ * @var fog_node::fog_class
+ *
+ * @brief Class object for Fog nodes.
+ */
+
+/**
+ * @var sfcolor fog_node::color
+ *
+ * @brief color exposedField.
+ */
+
+/**
+ * @var sfstring fog_node::fogType
+ *
+ * @brief fogType exposedField.
+ */
+
+/**
+ * @var sffloat fog_node::visibilityRange
+ *
+ * @brief visibilityRange exposedField.
+ */
+
+/**
+ * @var sfbool fog_node::bound
+ *
+ * @brief isBound eventOut.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
@@ -5599,7 +6470,7 @@ fog_node::~fog_node() throw ()
 void fog_node::do_initialize(const double timestamp) throw ()
 {
     fog_class & nodeClass = static_cast<fog_class &>(this->type.node_class);
-    if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
+    if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
 }
 
 /**
@@ -5826,6 +6697,66 @@ font_style_class::create_type(const std::string & id,
  * @class font_style_node
  *
  * @brief FontStyle node instances.
+ */
+
+/**
+ * @var font_style_node::font_style_class
+ *
+ * @brief Class object for FontStyle nodes.
+ */
+
+/**
+ * @var mfstring font_style_node::family_
+ *
+ * @brief family field.
+ */
+
+/**
+ * @var sfbool font_style_node::horizontal_
+ *
+ * @brief horizontal field.
+ */
+
+/**
+ * @var mfstring font_style_node::justify_
+ *
+ * @brief justify field.
+ */
+
+/**
+ * @var sfstring font_style_node::language_
+ *
+ * @brief language field.
+ */
+
+/**
+ * @var sfbool font_style_node::leftToRight
+ *
+ * @brief leftToRight field.
+ */
+
+/**
+ * @var sffloat font_style_node::size_
+ *
+ * @brief size field.
+ */
+
+/**
+ * @var sffloat font_style_node::spacing_
+ *
+ * @brief spacing field.
+ */
+
+/**
+ * @var sfstring font_style_node::style_
+ *
+ * @brief style field.
+ */
+
+/**
+ * @var sfbool font_style_node::topToBottom
+ *
+ * @brief topToBottom field.
  */
 
 namespace {
@@ -6059,9 +6990,39 @@ group_class::create_type(const std::string & id,
  */
 
 /**
+ * @var group_node::group_class
+ *
+ * @brief Class object for Group nodes.
+ */
+
+/**
+ * @var sfvec3f group_node::bboxCenter
+ *
+ * @brief bboxCenter field.
+ */
+
+/**
+ * @var sfvec3f group_node::bboxSize
+ *
+ * @brief bboxSize field.
+ */
+
+/**
+ * @var mfnode group_node::children_
+ *
+ * @brief children exposedField.
+ */
+
+/**
+ * @var viewer::object_t group_node::viewerObject
+ *
+ * @brief Handle for the renderer.
+ */
+
+/**
  * @var bounding_sphere group_node::bsphere
  *
- * @brief Cached copy of the bsphere enclosing this node's children.
+ * @brief Cached copy of the bounding_sphere enclosing this node's children.
  */
 
 /**
@@ -6281,7 +7242,7 @@ void group_node::render_nocull(OpenVRML::viewer & viewer, rendering_context cont
                     || (kid->to_plane_sensor()
                         && kid->to_plane_sensor()->enabled())
                     || (kid->to_cylinder_sensor()
-                        && kid->to_cylinder_sensor()->isEnabled())
+                        && kid->to_cylinder_sensor()->enabled())
                     || (kid->to_sphere_sensor()
                         && kid->to_sphere_sensor()->isEnabled())) {
                 if (++nSensors == 1) { viewer.set_sensitive(this); }
@@ -6334,7 +7295,7 @@ void group_node::activate(double time, bool isOver, bool isActive, double *p)
                     && node->to_plane_sensor()->enabled()) {
                 node->to_plane_sensor()->activate(time, isActive, p);
             } else if (node->to_cylinder_sensor()
-                    && node->to_cylinder_sensor()->isEnabled()) {
+                    && node->to_cylinder_sensor()->enabled()) {
                 node->to_cylinder_sensor()->activate(time, isActive, p);
             } else if (node->to_sphere_sensor()
                     && node->to_sphere_sensor()->isEnabled()) {
@@ -6463,22 +7424,48 @@ image_texture_class::create_type(const std::string & id,
  */
 
 /**
+ * @var image_texture_node::image_texture_class
+ *
+ * @brief Class object for ImageTexture nodes.
+ */
+
+/**
+ * @var mfstring image_texture_node::url
+ *
+ * @brief url exposedField.
+ */
+
+/**
+ * @var img * image_texture_node::image
+ *
+ * @brief Image data.
+ */
+
+/**
+ * @var viewer::texture_object_t image_texture_node::texObject
+ *
+ * @brief Handler for the renderer.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
 image_texture_node::image_texture_node(const node_type & type,
-                           const scope_ptr & scope):
-        node(type, scope),
-        abstract_texture_node(type, scope),
-        image(0),
-        texObject(0) {}
+                                       const scope_ptr & scope):
+    node(type, scope),
+    abstract_texture_node(type, scope),
+    image(0),
+    texObject(0)
+{}
 
 /**
  * @brief Destroy.
  */
-image_texture_node::~image_texture_node() throw () {
+image_texture_node::~image_texture_node() throw ()
+{
     delete this->image;
     // delete texObject...
 }
@@ -6489,7 +7476,8 @@ image_texture_node::~image_texture_node() throw () {
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void image_texture_node::render(OpenVRML::viewer & viewer, rendering_context context)
+void image_texture_node::render(OpenVRML::viewer & viewer,
+                                rendering_context context)
 {
     if (modified()) {
         if (this->image) {
@@ -6509,7 +7497,7 @@ void image_texture_node::render(OpenVRML::viewer & viewer, rendering_context con
     if (!this->image && this->url.value.size() > 0) {
         doc2 baseDoc(this->scene()->url());
         this->image = new img;
-        if (!this->image->try_urls(this->url, &baseDoc)) {
+        if (!this->image->try_urls(this->url.value, &baseDoc)) {
             OPENVRML_PRINT_MESSAGE_("Couldn't read ImageTexture from URL "
                                     + this->url.value[0]);
         }
@@ -6554,26 +7542,51 @@ void image_texture_node::render(OpenVRML::viewer & viewer, rendering_context con
     this->node::modified(false);
 }
 
+/**
+ * @brief The number of components.
+ *
+ * @return the number of components.
+ */
 size_t image_texture_node::components() const throw ()
 {
     return this->image ? this->image->nc() : 0;
 }
 
+/**
+ * @brief The image width in pixels.
+ *
+ * @return the image width in pixels.
+ */
 size_t image_texture_node::width() const throw ()
 {
     return this->image ? this->image->w() : 0;
 }
 
+/**
+ * @brief The image height in pixels.
+ *
+ * @return the image height in pixels.
+ */
 size_t image_texture_node::height() const throw ()
 {
     return this->image ? this->image->h() : 0;
 }
 
+/**
+ * @brief The number of frames.
+ *
+ * @return 0.
+ */
 size_t image_texture_node::frames() const throw ()
 {
     return 0;
 }
 
+/**
+ * @brief The image pixel data.
+ *
+ * @return the image pixel data.
+ */
 const unsigned char * image_texture_node::pixels() const throw ()
 {
     return this->image ? this->image->pixels() : 0;
@@ -6783,20 +7796,86 @@ indexed_face_set_class::create_type(const std::string & id,
  */
 
 /**
+ * @var indexed_face_set_node::indexed_face_set_class
+ *
+ * @brief Class object for IndexedFaceSet nodes.
+ */
+
+/**
+ * @var sfbool indexed_face_set_node::ccw
+ *
+ * @brief ccw field.
+ */
+
+/**
+ * @var sfbool indexed_face_set_node::convex
+ *
+ * @brief convex field.
+ */
+
+/**
+ * @var sffloat indexed_face_set_node::creaseAngle
+ *
+ * @brief creaseAngle field.
+ */
+
+/**
+ * @var sfnode indexed_face_set_node::normal
+ *
+ * @brief normal exposedField.
+ */
+
+/**
+ * @var mfint32 indexed_face_set_node::normalIndex
+ *
+ * @brief set_normalIndex eventIn.
+ */
+
+/**
+ * @var sfbool indexed_face_set_node::normalPerVertex
+ *
+ * @brief normalPerVertex field.
+ */
+
+/**
+ * @var sfbool indexed_face_set_node::solid
+ *
+ * @brief solid field.
+ */
+
+/**
+ * @var sfnode indexed_face_set_node::texCoord
+ *
+ * @brief texCoord exposedField.
+ */
+
+/**
+ * @var mfint32 indexed_face_set_node::texCoordIndex
+ *
+ * @brief set_texCoordIndex eventIn.
+ */
+
+/**
+ * @var bounding_sphere indexed_face_set_node::bsphere
+ *
+ * @brief Bounding volume.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
 indexed_face_set_node::indexed_face_set_node(const node_type & type,
-                               const scope_ptr & scope):
-        node(type, scope),
-        abstract_indexed_set_node(type, scope),
-        ccw(true),
-        convex(true),
-        creaseAngle(0.0),
-        normalPerVertex(true),
-        solid(true) {
+                                             const scope_ptr & scope):
+    node(type, scope),
+    abstract_indexed_set_node(type, scope),
+    ccw(true),
+    convex(true),
+    creaseAngle(0.0),
+    normalPerVertex(true),
+    solid(true) {
     this->bounding_volume_dirty(true);
 }
 
@@ -7155,6 +8234,12 @@ indexed_line_set_class::create_type(const std::string & id,
  */
 
 /**
+ * @var indexed_line_set_node::indexed_line_set_class
+ *
+ * @brief Class object for IndexedLineSet nodes.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node.
@@ -7297,13 +8382,49 @@ inline_class::create_type(const std::string & id,
  */
 
 /**
+ * @var inline_node::inline_class
+ *
+ * @brief Class object for Inline nodes.
+ */
+
+/**
+ * @var sfvec3f inline_node::bboxCenter
+ *
+ * @brief bboxCenter field.
+ */
+
+/**
+ * @var sfvec3f inline_node::bboxSize
+ *
+ * @brief bboxSize field.
+ */
+
+/**
+ * @var mfstring inline_node::url
+ *
+ * @brief url exposedField.
+ */
+
+/**
+ * @var scene * inline_node::inlineScene
+ *
+ * @brief The contained scene.
+ */
+
+/**
+ * @var bool inline_node::hasLoaded
+ *
+ * @brief Flag to indicate whether the scene has been loaded.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with this node.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 inline_node::inline_node(const node_type & type,
-               const scope_ptr & scope):
+                         const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -7317,7 +8438,8 @@ inline_node::inline_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-inline_node::~inline_node() throw () {}
+inline_node::~inline_node() throw ()
+{}
 
 /**
  * @brief Render the node.
@@ -7327,13 +8449,22 @@ inline_node::~inline_node() throw () {}
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void inline_node::render(OpenVRML::viewer & viewer, const rendering_context context)
+void inline_node::render(OpenVRML::viewer & viewer,
+                         const rendering_context context)
 {
     this->load();
     if (this->inlineScene) { this->inlineScene->render(viewer, context); }
 }
 
-inline_node * inline_node::to_inline() const { return const_cast<inline_node *>(this); }
+/**
+ * @brief Cast to an inline_node.
+ *
+ * @return a pointer to the inline_node.
+ */
+inline_node * inline_node::to_inline() const
+{
+    return const_cast<inline_node *>(this);
+}
 
 /**
  * @brief Get the children in the scene graph.
@@ -7364,7 +8495,7 @@ void inline_node::activate(double time, bool isOver, bool isActive, double *p)
                     && node->to_plane_sensor()->enabled()) {
                 node->to_plane_sensor()->activate(time, isActive, p);
             } else if (node->to_cylinder_sensor()
-                    && node->to_cylinder_sensor()->isEnabled()) {
+                    && node->to_cylinder_sensor()->enabled()) {
                 node->to_cylinder_sensor()->activate(time, isActive, p);
             } else if (node->to_sphere_sensor()
                     && node->to_sphere_sensor()->isEnabled()) {
@@ -7445,13 +8576,21 @@ lod_class::~lod_class() throw () {}
  *                              supported by lod_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr lod_class::create_type(const std::string & id,
-                                       const node_interface_set & interfaces)
-        throw (unsupported_interface, std::bad_alloc) {
+const node_type_ptr
+lod_class::create_type(const std::string & id,
+                       const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "level"),
-        node_interface(node_interface::field_id, field_value::sfvec3f_id, "center"),
-        node_interface(node_interface::field_id, field_value::mffloat_id, "range")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "level"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::field_id,
+                       field_value::mffloat_id,
+                       "range")
     };
     const node_type_ptr type(new vrml97_node_type_impl<lod_node>(*this, id));
     vrml97_node_type_impl<lod_node> & lodNodeType =
@@ -7492,6 +8631,36 @@ const node_type_ptr lod_class::create_type(const std::string & id,
  */
 
 /**
+ * @var lod_node::lod_class
+ *
+ * @brief Class object for LOD nodes.
+ */
+
+/**
+ * @var mfnode lod_node::level
+ *
+ * @brief level exposedField.
+ */
+
+/**
+ * @var sfvec3f lod_node::center
+ *
+ * @brief center field.
+ */
+
+/**
+ * @var mffloat lod_node::range
+ *
+ * @brief range field.
+ */
+
+/**
+ * @var mfnode lod_node::children_
+ *
+ * @brief Caches the active level for fast access by lod_node::children.
+ */
+
+/**
  * @var bounding_sphere lod_node::bsphere
  *
  * @brief Cached copy of the bounding_sphere enclosing this node's children.
@@ -7501,10 +8670,10 @@ const node_type_ptr lod_class::create_type(const std::string & id,
  * @brief Construct.
  *
  * @param type  the node_type associated with this node.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 lod_node::lod_node(const node_type & type,
-         const scope_ptr & scope):
+                   const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -7517,7 +8686,8 @@ lod_node::lod_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-lod_node::~lod_node() throw () {}
+lod_node::~lod_node() throw ()
+{}
 
 /**
  * @brief Determine whether the node has been modified.
@@ -7525,7 +8695,8 @@ lod_node::~lod_node() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool lod_node::modified() const {
+bool lod_node::modified() const
+{
     if (this->modified_) { return true; }
 
     // This should really check which range is being rendered...
@@ -7542,7 +8713,8 @@ bool lod_node::modified() const {
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void lod_node::update_modified(node_path & path, int flags) {
+void lod_node::update_modified(node_path & path, int flags)
+{
     //
     // what happens if one of the other children suddenly becomes the one
     // selected? to be safe: check them all. this potentially means some
@@ -7564,7 +8736,8 @@ void lod_node::update_modified(node_path & path, int flags) {
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void lod_node::render(OpenVRML::viewer & viewer, const rendering_context context)
+void lod_node::render(OpenVRML::viewer & viewer,
+                      const rendering_context context)
 {
     this->node::modified(false);
     if (this->level.value.size() <= 0) { return; }
@@ -7605,7 +8778,8 @@ void lod_node::render(OpenVRML::viewer & viewer, const rendering_context context
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & lod_node::bounding_volume() const {
+const bounding_volume & lod_node::bounding_volume() const
+{
     if (this->bounding_volume_dirty()) {
         const_cast<lod_node *>(this)->recalcBSphere();
     }
@@ -7636,7 +8810,7 @@ void lod_node::activate(double time, bool isOver, bool isActive, double *p)
                 && node->to_plane_sensor()->enabled()) {
             node->to_plane_sensor()->activate(time, isActive, p);
         } else if (node->to_cylinder_sensor()
-                && node->to_cylinder_sensor()->isEnabled()) {
+                && node->to_cylinder_sensor()->enabled()) {
             node->to_cylinder_sensor()->activate(time, isActive, p);
         } else if (node->to_sphere_sensor()
                 && node->to_sphere_sensor()->isEnabled()) {
@@ -7648,7 +8822,8 @@ void lod_node::activate(double time, bool isOver, bool isActive, double *p)
 /**
  * @brief Recalculate the bounding volume.
  */
-void lod_node::recalcBSphere() {
+void lod_node::recalcBSphere()
+{
     this->bsphere = bounding_sphere();
 
     // let's say our bsphere is the union of the bspheres of all the
@@ -7682,8 +8857,10 @@ void lod_node::recalcBSphere() {
  * @exception std::bad_cast     if @p value is not an mfnode.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void lod_node::process_set_level(const field_value & value, const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+void lod_node::process_set_level(const field_value & value,
+                                 const double timestamp)
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->level = dynamic_cast<const mfnode &>(value);
     this->node::modified(true);
     this->emit_event("level_changed", this->level, timestamp);
@@ -7795,6 +8972,48 @@ material_class::create_type(const std::string & id,
  * @class material_node
  *
  * @brief Material node instances.
+ */
+
+/**
+ * @var material_node::material_class
+ *
+ * @brief Class object for Material nodes.
+ */
+
+/**
+ * @var sffloat material_node::ambientIntensity
+ *
+ * @brief ambientIntensity exposedField.
+ */
+
+/**
+ * @var sfcolor material_node::diffuseColor
+ *
+ * @brief diffuseColor exposedField.
+ */
+
+/**
+ * @var sfcolor material_node::emissiveColor
+ *
+ * @brief emissiveColor exposedField.
+ */
+
+/**
+ * @var sffloat material_node::shininess_
+ *
+ * @brief shininess exposedField.
+ */
+
+/**
+ * @var sfcolor material_node::specularColor
+ *
+ * @brief specularColor exposedField.
+ */
+
+/**
+ * @var sffloat material_node::transparency_
+ *
+ * @brief transparency exposedField.
  */
 
 /**
@@ -8134,22 +9353,101 @@ movie_texture_class::create_type(const std::string & id,
  */
 
 /**
+ * @var movie_texture_node::movie_texture_class
+ *
+ * @brief Class object for MovieTexture nodes.
+ */
+
+/**
+ * @var sfbool movie_texture_node::loop
+ *
+ * @brief loop exposedField.
+ */
+
+/**
+ * @var sffloat movie_texture_node::speed
+ *
+ * @brief speed exposedField.
+ */
+
+/**
+ * @var sftime movie_texture_node::startTime
+ *
+ * @brief startTime exposedField.
+ */
+
+/**
+ * @var sftime movie_texture_node::stopTime
+ *
+ * @brief stopTime exposedField.
+ */
+
+/**
+ * @var mfstring movie_texture_node::url
+ *
+ * @brief url exposedField.
+ */
+
+/**
+ * @var sftime movie_texture_node::duration
+ *
+ * @brief duration_changed eventOut.
+ */
+
+/**
+ * @var sfbool movie_texture_node::active
+ *
+ * @brief isActive eventOut.
+ */
+
+/**
+ * @var img * movie_texture_node::image
+ *
+ * @brief Image data.
+ */
+
+/**
+ * @var int movie_texture_node::frame
+ *
+ * @brief Index of the currently shown frame.
+ */
+
+/**
+ * @var int movie_texture_node::lastFrame
+ *
+ * @brief Index of the previously shown frame.
+ */
+
+/**
+ * @var double movie_texture_node::lastFrameTime
+ *
+ * @brief Timestamp corresponding to the showing of the previous frame.
+ */
+
+/**
+ * @var viewer::texture_object_t movie_texture_node::texObject
+ *
+ * @brief Handle for the renderer.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 movie_texture_node::movie_texture_node(const node_type & type,
-                           const scope_ptr & scope):
-        node(type, scope),
-        abstract_texture_node(type, scope),
-        loop(false),
-        speed(1.0),
-        image(0),
-        frame(0),
-        lastFrame(-1),
-        lastFrameTime(-1.0),
-        texObject(0) {}
+                                       const scope_ptr & scope):
+    node(type, scope),
+    abstract_texture_node(type, scope),
+    loop(false),
+    speed(1.0),
+    image(0),
+    frame(0),
+    lastFrame(-1),
+    lastFrameTime(-1.0),
+    texObject(0)
+{}
 
 /**
  * @brief Destroy.
@@ -8159,10 +9457,20 @@ movie_texture_node::~movie_texture_node() throw ()
     delete this->image;
 }
 
+/**
+ * @brief Cast to a movie_texture_node.
+ *
+ * @return a pointer to the movie_texture_node.
+ */
 movie_texture_node* movie_texture_node::to_movie_texture() const
 { return (movie_texture_node*) this; }
 
-void movie_texture_node::update(const double currentTime)
+/**
+ * @brief Update the node for the current timestamp.
+ *
+ * @param time  the current time.
+ */
+void movie_texture_node::update(const double time)
 {
     if (modified()) {
         if (this->image) {
@@ -8192,14 +9500,14 @@ void movie_texture_node::update(const double currentTime)
     if (!this->image && this->url.value.size() > 0) {
         doc2 baseDoc(this->scene()->url());
         this->image = new img;
-        if (!this->image->try_urls(this->url, &baseDoc)) {
+        if (!this->image->try_urls(this->url.value, &baseDoc)) {
             std::cerr << "Error: couldn't read MovieTexture from URL "
                       << this->url << std::endl;
         }
 
         int nFrames = this->image->nframes();
         this->duration = sftime((nFrames >= 0) ? double(nFrames) : double(-1));
-        this->emit_event("duration_changed", this->duration, currentTime);
+        this->emit_event("duration_changed", this->duration, time);
         this->frame = (this->speed.value >= 0) ? 0 : nFrames-1;
         // Set the last frame equal to the start time.
         // This is needed to properly handle the case where the startTime
@@ -8214,29 +9522,29 @@ void movie_texture_node::update(const double currentTime)
     // See section 4.6.9 of the VRML97 spec for a detailed explanation
     // of the logic here.
     if (!this->active.value) {
-        if (currentTime >= this->startTime.value) {
-            if (currentTime >= this->stopTime.value) {
+        if (time >= this->startTime.value) {
+            if (time >= this->stopTime.value) {
                 if (this->startTime.value >= this->stopTime.value) {
                     if (this->loop.value) {
                         this->active.value = true;
-                        this->emit_event("isActive", this->active, currentTime);
-                        this->lastFrameTime = currentTime;
+                        this->emit_event("isActive", this->active, time);
+                        this->lastFrameTime = time;
                         this->frame = (this->speed.value >= 0) ? 0 :
                                          this->image->nframes() - 1;
                         this->modified(true);
 	            } else if (this->startTime.value > this->lastFrameTime) {
                         this->active.value = true;
-                        this->emit_event("isActive", this->active, currentTime);
-                        this->lastFrameTime = currentTime;
+                        this->emit_event("isActive", this->active, time);
+                        this->lastFrameTime = time;
                         this->frame = (this->speed.value >= 0) ? 0 :
                                          this->image->nframes() - 1;
                         this->modified(true);
 	            }
 	        }
-            } else if (this->stopTime.value > currentTime) {
+            } else if (this->stopTime.value > time) {
                 this->active.value = true;
-                this->emit_event("isActive", this->active, currentTime);
-                this->lastFrameTime = currentTime;
+                this->emit_event("isActive", this->active, time);
+                this->lastFrameTime = time;
                 this->frame = (this->speed.value >= 0) ? 0 :
                                  this->image->nframes() - 1;
                 this->modified(true);
@@ -8246,10 +9554,10 @@ void movie_texture_node::update(const double currentTime)
     // Check whether stopTime has passed
     else if (this->active.value
              && ((this->stopTime.value > this->startTime.value
-		  && this->stopTime.value <= currentTime))
+		  && this->stopTime.value <= time))
              || ((this->frame < 0) && !this->loop.value)) {
         this->active.value = false;
-        this->emit_event("isActive", this->active, currentTime);
+        this->emit_event("isActive", this->active, time);
         this->modified(true);
     } else if (this->frame < 0 && this->loop.value) {
         // Reset frame to 0 to begin loop again.
@@ -8259,21 +9567,21 @@ void movie_texture_node::update(const double currentTime)
     // Check whether the frame should be advanced
     else if (this->active.value
              && this->lastFrameTime + fabs(1 / this->speed.value)
-                <= currentTime) {
+                <= time) {
         if (this->speed.value < 0.0) {
             --this->frame;
         } else {
             ++this->frame;
         }
 
-        this->lastFrameTime = currentTime;
+        this->lastFrameTime = time;
         this->modified(true);
     }
 
     // Tell the scene when the next update is needed.
     if (this->active.value) {
         double d = this->lastFrameTime + fabs(1 / this->speed.value)
-                    - currentTime;
+                    - time;
         this->type.node_class.browser.delta(0.9 * d);
     }
 }
@@ -8334,26 +9642,51 @@ void movie_texture_node::render(OpenVRML::viewer & viewer,
     this->node::modified(false);
 }
 
+/**
+ * @brief The number of components.
+ *
+ * @return the number of components.
+ */
 size_t movie_texture_node::components() const throw ()
 {
     return this->image ? this->image->nc() : 0;
 }
 
+/**
+ * @brief The width in pixels.
+ *
+ * @return the width in pixels.
+ */
 size_t movie_texture_node::width() const throw ()
 {
     return this->image ? this->image->w() : 0;
 }
 
+/**
+ * @brief The height in pixels.
+ *
+ * @return the height in pixels.
+ */
 size_t movie_texture_node::height() const throw ()
 {
     return this->image ? this->image->h() : 0;
 }
 
+/**
+ * @brief The number of frames.
+ *
+ * @return the number of frames.
+ */
 size_t movie_texture_node::frames() const throw ()
 {
     return this->image ? this->image->nframes() : 0;
 }
 
+/**
+ * @brief Pixel data for the current frame.
+ *
+ * @return pixel data for the current frame.
+ */
 const unsigned char * movie_texture_node::pixels() const throw ()
 {
     return this->image ? this->image->pixels() : 0;
@@ -8545,14 +9878,14 @@ navigation_info_class::create_type(const std::string & id,
                 supportedInterfaces[2].id,
                 &navigation_info_node::process_set_headlight,
                 node_field_ptr_ptr(new node_field_ptr_impl<navigation_info_node, sfbool>
-                                    (&navigation_info_node::headlight)));
+                                    (&navigation_info_node::headlight_)));
         } else if (*interface == supportedInterfaces[3]) {
             navigationInfoNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &navigation_info_node::process_set_speed,
                 node_field_ptr_ptr(new node_field_ptr_impl<navigation_info_node, sffloat>
-                                    (&navigation_info_node::speed)));
+                                    (&navigation_info_node::speed_)));
         } else if (*interface == supportedInterfaces[4]) {
             navigationInfoNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
@@ -8592,18 +9925,60 @@ namespace {
  */
 
 /**
+ * @var navigation_info_node::navigation_info_class
+ *
+ * @brief Class object for NavigationInfo nodes.
+ */
+
+/**
+ * @var mffloat navigation_info_node::avatarSize
+ *
+ * @brief avatarSize exposedField.
+ */
+
+/**
+ * @var sfbool navigation_info_node::headlight_
+ *
+ * @brief headlight exposedField.
+ */
+
+/**
+ * @var sffloat navigation_info_node::speed_
+ *
+ * @brief speed exposedField.
+ */
+
+/**
+ * @var mfstring navigation_info_node::type
+ *
+ * @brief type exposedField.
+ */
+
+/**
+ * @var sffloat navigation_info_node::visibilityLimit
+ *
+ * @brief visibilityLimit exposedField.
+ */
+
+/**
+ * @var sfbool navigation_info_node::bound
+ *
+ * @brief isBound eventOut.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
 navigation_info_node::navigation_info_node(const node_type & type,
-                               const scope_ptr & scope):
+                                           const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
     avatarSize(avatarSize_, avatarSize_ + 3),
-    headlight(true),
-    speed(1.0),
+    headlight_(true),
+    speed_(1.0),
     type(type_, type_ + 2),
     visibilityLimit(0.0),
     bound(false)
@@ -8615,8 +9990,55 @@ navigation_info_node::navigation_info_node(const node_type & type,
 navigation_info_node::~navigation_info_node() throw ()
 {}
 
+/**
+ * @brief Cast to a navigation_info_node.
+ *
+ * @return A pointer to the navigation_info_node.
+ */
 navigation_info_node* navigation_info_node::to_navigation_info() const
 { return (navigation_info_node*) this; }
+
+/**
+ * @brief The avatar size.
+ *
+ * @return the avatar size.
+ */
+const float * navigation_info_node::avatar_size() const
+{
+    return !this->avatarSize.value.empty()
+        ? &this->avatarSize.value[0]
+        : 0;
+}
+
+/**
+ * @brief The headlight state.
+ *
+ * @return @c true if the headlight is on; @c false otherwise.
+ */
+bool navigation_info_node::headlight() const
+{
+    return this->headlight_.value;
+}
+
+/**
+ * @brief The speed.
+ *
+ * @return the speed.
+ */
+float navigation_info_node::speed() const
+{
+    return this->speed_.value;
+}
+
+/**
+ * @brief The visibility limit.
+ *
+ * @return the visibility limit.
+ */
+float navigation_info_node::visibility_limit() const
+{
+    return this->visibilityLimit.value;
+}
 
 /**
  * @brief Initialize.
@@ -8653,7 +10075,7 @@ void navigation_info_node::do_shutdown(const double timestamp) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void navigation_info_node::process_set_avatarSize(const field_value & value,
-                                           const double timestamp)
+                                                  const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->avatarSize = dynamic_cast<const mffloat &>(value);
     this->node::modified(true);
@@ -8670,7 +10092,7 @@ void navigation_info_node::process_set_avatarSize(const field_value & value,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void navigation_info_node::process_set_bind(const field_value & value,
-                                     const double timestamp)
+                                            const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     navigation_info_node * current =
@@ -8711,12 +10133,12 @@ void navigation_info_node::process_set_bind(const field_value & value,
  * @exception std::bad_cast     if @p value is not an sfbool.
  */
 void navigation_info_node::process_set_headlight(const field_value & value,
-                                          const double timestamp)
+                                                 const double timestamp)
     throw (std::bad_cast)
 {
-    this->headlight = dynamic_cast<const sfbool &>(value);
+    this->headlight_ = dynamic_cast<const sfbool &>(value);
     this->node::modified(true);
-    this->emit_event("headlight_changed", this->headlight, timestamp);
+    this->emit_event("headlight_changed", this->headlight_, timestamp);
 }
 
 /**
@@ -8728,12 +10150,12 @@ void navigation_info_node::process_set_headlight(const field_value & value,
  * @exception std::bad_cast     if @p value is not an sffloat.
  */
 void navigation_info_node::process_set_speed(const field_value & value,
-                                      const double timestamp)
+                                             const double timestamp)
     throw (std::bad_cast)
 {
-    this->speed = dynamic_cast<const sffloat &>(value);
+    this->speed_ = dynamic_cast<const sffloat &>(value);
     this->node::modified(true);
-    this->emit_event("speed_changed", this->speed, timestamp);
+    this->emit_event("speed_changed", this->speed_, timestamp);
 }
 
 /**
@@ -8746,7 +10168,7 @@ void navigation_info_node::process_set_speed(const field_value & value,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void navigation_info_node::process_set_type(const field_value & value,
-                                     const double timestamp)
+                                            const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     this->type = dynamic_cast<const mfstring &>(value);
@@ -9502,6 +10924,12 @@ pixel_texture_class::create_type(const std::string & id,
  */
 
 /**
+ * @var viewer::texture_object_t pixel_texture_node::texObject
+ *
+ * @brief Handle for the renderer.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node.
@@ -9843,6 +11271,8 @@ plane_sensor_class::create_type(const std::string & id,
 
 /**
  * @var mat4f plane_sensor_node::activationMatrix
+ *
+ * @brief Activation matrix.
  */
 
 /**
@@ -10138,14 +11568,14 @@ point_light_class::create_type(const std::string & id,
                 supportedInterfaces[2].id,
                 &point_light_node::process_set_color,
                 node_field_ptr_ptr(new node_field_ptr_impl<point_light_node, sfcolor>
-                                    (&point_light_node::color)));
+                                    (&point_light_node::color_)));
         } else if (*interface == supportedInterfaces[3]) {
             pointLightNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &point_light_node::process_set_intensity,
                 node_field_ptr_ptr(new node_field_ptr_impl<point_light_node, sffloat>
-                                    (&point_light_node::intensity)));
+                                    (&point_light_node::intensity_)));
         } else if (*interface == supportedInterfaces[4]) {
             pointLightNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
@@ -10159,7 +11589,7 @@ point_light_class::create_type(const std::string & id,
                 supportedInterfaces[5].id,
                 &point_light_node::process_set_on,
                 node_field_ptr_ptr(new node_field_ptr_impl<point_light_node, sfbool>
-                                    (&point_light_node::on)));
+                                    (&point_light_node::on_)));
         } else if (*interface == supportedInterfaces[6]) {
             pointLightNodeType.add_exposedfield(
                 supportedInterfaces[6].field_type,
@@ -10245,15 +11675,15 @@ point_light_node* point_light_node::to_point_light() const
  * parents and apply them before rendering. This is not easy with
  * DEF/USEd nodes...
  *
- * @param viewer    a Viewer.
+ * @param viewer    a viewer.
  */
 void point_light_node::renderScoped(OpenVRML::viewer & viewer)
 {
-    if (this->on.value && this->radius.value > 0.0) {
+    if (this->on_.value && this->radius.value > 0.0) {
         viewer.insert_point_light(this->ambientIntensity.value,
                                   this->attenuation.value,
-                                  this->color.value,
-                                  this->intensity.value,
+                                  this->color_.value,
+                                  this->intensity_.value,
                                   this->location.value,
                                   this->radius.value);
     }
@@ -12621,7 +14051,7 @@ spot_light_class::create_type(const std::string & id,
                 supportedInterfaces[3].id,
                 &spot_light_node::process_set_color,
                 node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sfcolor>
-                                    (&spot_light_node::color)));
+                                    (&spot_light_node::color_)));
         } else if (*interface == supportedInterfaces[4]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
@@ -12642,7 +14072,7 @@ spot_light_class::create_type(const std::string & id,
                 supportedInterfaces[6].id,
                 &spot_light_node::process_set_intensity,
                 node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sffloat>
-                                    (&spot_light_node::intensity)));
+                                    (&spot_light_node::intensity_)));
         } else if (*interface == supportedInterfaces[7]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[7].field_type,
@@ -12656,7 +14086,7 @@ spot_light_class::create_type(const std::string & id,
                 supportedInterfaces[8].id,
                 &spot_light_node::process_set_on,
                 node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sfbool>
-                                    (&spot_light_node::on)));
+                                    (&spot_light_node::on_)));
         } else if (*interface == supportedInterfaces[9]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[9].field_type,
@@ -12767,14 +14197,14 @@ spot_light_node * spot_light_node::to_spot_light() const
  */
 void spot_light_node::renderScoped(OpenVRML::viewer & viewer)
 {
-    if (this->on.value && this->radius.value > 0.0) {
+    if (this->on_.value && this->radius.value > 0.0) {
         viewer.insert_spot_light(this->ambientIntensity.value,
                                  this->attenuation.value,
                                  this->beamWidth.value,
-                                 this->color.value,
+                                 this->color_.value,
                                  this->cutOffAngle.value,
                                  this->direction.value,
-                                 this->intensity.value,
+                                 this->intensity_.value,
                                  this->location.value,
                                  this->radius.value);
     }
@@ -13131,7 +14561,7 @@ void switch_node::activate(double time, bool isOver, bool isActive, double *p)
                 && node->to_plane_sensor()->enabled()) {
             node->to_plane_sensor()->activate(time, isActive, p);
         } else if (node->to_cylinder_sensor()
-                && node->to_cylinder_sensor()->isEnabled()) {
+                && node->to_cylinder_sensor()->enabled()) {
             node->to_cylinder_sensor()->activate(time, isActive, p);
         } else if (node->to_sphere_sensor()
                 && node->to_sphere_sensor()->isEnabled()) {
@@ -17094,8 +18524,8 @@ void visibility_sensor_node::render(OpenVRML::viewer & viewer,
         if (inside) {
             navigation_info_node * ni =
                 this->type.node_class.browser.bindable_navigation_info_top();
-            if (ni && !fpzero(ni->getVisibilityLimit())
-                    && xyz[0][2] < -(ni->getVisibilityLimit())) {
+            if (ni && !fpzero(ni->visibility_limit())
+                    && xyz[0][2] < -(ni->visibility_limit())) {
                 inside = false;
             }
         }

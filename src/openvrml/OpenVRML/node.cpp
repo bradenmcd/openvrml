@@ -36,15 +36,15 @@ namespace OpenVRML {
  *
  * @brief Exception to indicate that a node interface is not supported.
  *
- * This exception is thrown by node::setField and node::processEvent to
+ * This exception is thrown by node::field and node::process_event to
  * indicate that the node doesn't support the interface through which the
  * caller is trying to modify the node. It is also thrown by
- * node_class::createType if the class object doesn't support an interface
+ * node_class::create_type if the class object doesn't support an interface
  * specified in the node_interface_set given to that method.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
  * @param message   An informative error message.
  */
@@ -53,15 +53,14 @@ unsupported_interface::unsupported_interface(const std::string & message):
 {}
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param type      the node type.
- * @param interfaceId   the name of the interface that is not available.
+ * @param type          the node type.
+ * @param interface_id  the name of the interface that is not available.
  */
 unsupported_interface::unsupported_interface(const node_type & type,
-                                             const std::string & interfaceId):
-    std::runtime_error(type.id + " has no interface \"" + interfaceId
-                       + '"')
+                                             const std::string & interface_id):
+    std::runtime_error(type.id + " has no interface \"" + interface_id + '"')
 {}
 
 namespace {
@@ -74,11 +73,11 @@ namespace {
 }
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
- * @param type      the node type.
- * @param interfaceType the type of the interface that is not available.
- * @param interfaceId   the name of the interface that is not available.
+ * @param type              the node type.
+ * @param interface_type    the type of the interface that is not available.
+ * @param interface_id      the name of the interface that is not available.
  */
 unsupported_interface::unsupported_interface(
     const node_type & type,
@@ -89,7 +88,7 @@ unsupported_interface::unsupported_interface(
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
 unsupported_interface::~unsupported_interface() throw ()
 {}
@@ -472,7 +471,7 @@ void node_class::render(OpenVRML::viewer & viewer) throw ()
 /**
  * @class node_type
  *
- * @brief Type information object for @link node nodes@endlink.
+ * @brief Type information object for @link OpenVRML::node nodes@endlink.
  */
 
 /**
@@ -490,14 +489,14 @@ void node_class::render(OpenVRML::viewer & viewer) throw ()
 /**
  * @brief Constructor.
  *
- * @param nodeClass the class object associated with the node_type.
- * @param id        the name for the node_type.
+ * @param c     the class object associated with the node_type.
+ * @param id    the name for the node_type.
  *
  * @throw std::bad_alloc    if memory allocation fails.
  */
-node_type::node_type(OpenVRML::node_class & node_class, const std::string & id)
+node_type::node_type(OpenVRML::node_class & c, const std::string & id)
     throw (std::bad_alloc):
-    node_class(node_class),
+    node_class(c),
     id(id)
 {}
 
@@ -2829,6 +2828,14 @@ texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
 {
     return this;
 }
+
+/**
+ * @fn const std::vector<vec2f> & texture_coordinate_node::point() const throw ()
+ *
+ * @brief The texture coordinates.
+ *
+ * @return the texture coordinates.
+ */
 
 
 /**

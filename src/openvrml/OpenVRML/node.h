@@ -169,7 +169,7 @@ namespace OpenVRML {
             throw (std::bad_alloc) = 0;
 
     protected:
-        node_type(OpenVRML::node_class & node_class, const std::string & id)
+        node_type(OpenVRML::node_class & c, const std::string & id)
             throw (std::bad_alloc);
     };
 

@@ -23,13 +23,14 @@
 #   define OPENVRML_IMG_H
 
 #   include <stddef.h>
+#   include <string>
+#   include <vector>
 #   include <OpenVRML/common.h>
 
 namespace OpenVRML {
 
     class doc;
     class doc2;
-    class mfstring;
 
     class OPENVRML_SCOPE img {
         doc * url_;
@@ -43,7 +44,8 @@ namespace OpenVRML {
 
         bool set_url(const char * url, const doc2 * relative = 0);
 
-        bool try_urls(const mfstring & urls, const doc2 * relative = 0);
+        bool try_urls(const std::vector<std::string> & urls,
+                      const doc2 * relative = 0);
 
         const char * url() const;
 

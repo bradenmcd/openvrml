@@ -87,7 +87,7 @@ namespace OpenVRML {
             abstract_geometry_node(const node_type & type,
                                    const scope_ptr & scope);
 
-            viewer::object_t d_viewerObject; // move to Node? ...
+            viewer::object_t viewerObject;
         };
 
 
@@ -133,9 +133,9 @@ namespace OpenVRML {
         class OPENVRML_SCOPE abstract_light_node : public abstract_child_node {
         protected:
             sffloat ambientIntensity;
-            sfcolor color;
-            sffloat intensity;
-            sfbool on;
+            sfcolor color_;
+            sffloat intensity_;
+            sfbool on_;
 
         public:
             virtual ~abstract_light_node() throw () = 0;
@@ -143,25 +143,10 @@ namespace OpenVRML {
             virtual void renderScoped(OpenVRML::viewer & viewer);
             virtual abstract_light_node * to_light() const;
 
-            float getAmbientIntensity() const
-            {
-                return this->ambientIntensity.value;
-            }
-
-            float getIntensity() const
-            {
-                return this->intensity.value;
-            }
-
-            bool getOn() const
-            {
-                return this->on.value;
-            }
-
-            const OpenVRML::color & getColor() const
-            {
-                return this->color.value;
-            }
+            float ambient_intensity() const throw ();
+            float intensity() const throw ();
+            bool on() const throw ();
+            const OpenVRML::color & color() const throw ();
 
         protected:
             abstract_light_node(const node_type & type,
@@ -222,7 +207,6 @@ namespace OpenVRML {
             sfvec3f bboxCenter;
             sfvec3f bboxSize;
             mfnode children_;
-            sfstring relative;
 
             viewer::object_t viewerObject;
 
@@ -383,8 +367,6 @@ namespace OpenVRML {
             sftime duration;
             sfbool active;
 
-            sfstring relativeUrl;
-
         public:
             audio_clip_node(const node_type & type,
                             const scope_ptr & scope);
@@ -425,17 +407,17 @@ namespace OpenVRML {
         class background_node;
 
         class OPENVRML_SCOPE background_class : public node_class {
-            typedef std::vector<background_node *> BoundNodes;
+            typedef std::vector<background_node *> bound_nodes_t;
 
             background_node * first;
-            BoundNodes boundNodes;
+            bound_nodes_t bound_nodes;
 
         public:
             explicit background_class(OpenVRML::browser & browser);
             virtual ~background_class() throw ();
 
-            void setFirst(background_node & background) throw ();
-            bool hasFirst() const throw ();
+            void set_first(background_node & background) throw ();
+            bool has_first() const throw ();
             void bind(background_node & background, double timestamp)
                 throw (std::bad_alloc);
             void unbind(background_node & background, double timestamp)
@@ -464,8 +446,6 @@ namespace OpenVRML {
             mfcolor skyColor;
             sfbool bound;
 
-            sfstring relativeUrl;
-
             // Texture caches
             img * texPtr[6];
             img tex[6];
@@ -490,7 +470,7 @@ namespace OpenVRML {
             void process_set_groundAngle(const field_value & value,
                                         double timestamp)
                     throw (std::bad_cast, std::bad_alloc);
-            void process_set_groundColor(const field_value & mfcolor,
+            void process_set_groundColor(const field_value & value,
                                         double timestamp)
                     throw (std::bad_cast, std::bad_alloc);
             void process_set_backUrl(const field_value & value,
@@ -514,7 +494,7 @@ namespace OpenVRML {
             void process_set_skyAngle(const field_value & value,
                                      double timestamp)
                     throw (std::bad_cast, std::bad_alloc);
-            void process_set_skyColor(const field_value & mfcolor,
+            void process_set_skyColor(const field_value & value,
                                      double timestamp)
                     throw (std::bad_cast, std::bad_alloc);
         };
@@ -538,9 +518,8 @@ namespace OpenVRML {
             viewer::object_t xformObject;
 
         public:
-            static void billboard_to_matrix(const billboard_node * t_arg,
-                                            const mat4f & MV,
-                                            mat4f & M);
+            static const mat4f billboard_to_matrix(const billboard_node & node,
+                                                   const mat4f & modelview);
 
             billboard_node(const node_type & type,
                            const scope_ptr & scope);
@@ -550,14 +529,6 @@ namespace OpenVRML {
                                 rendering_context context);
 
         private:
-# if 0
-            //
-            // field mutators
-            //
-            void setAxisOfRotation(const field_value & value)
-                    throw (std::bad_cast);
-# endif
-
             //
             // eventIn handlers
             //
@@ -611,7 +582,7 @@ namespace OpenVRML {
 
             sfbool collide;
             sfnode proxy;
-            sftime collideTime;  // eventOut
+            sftime collideTime;
 
         public:
             collision_node(const node_type & type,
@@ -658,18 +629,10 @@ namespace OpenVRML {
                 throw ();
 
         private:
-# if 0
-            //
-            // field mutators
-            //
-            void setColor(const field_value & mfcolor)
-                    throw (std::bad_cast, std::bad_alloc);
-# endif
-
             //
             // eventIn handlers
             //
-            void process_set_color(const field_value & mfcolor,
+            void process_set_color(const field_value & value,
                                    double timestamp)
                 throw (std::bad_cast, std::bad_alloc);
         };
@@ -699,16 +662,6 @@ namespace OpenVRML {
             virtual ~color_interpolator_node() throw ();
 
         private:
-# if 0
-            //
-            // field mutators
-            //
-            void setKey(const field_value & value)
-                    throw (std::bad_cast, std::bad_alloc);
-            void setKeyValue(const field_value & mfcolor)
-                    throw (std::bad_cast, std::bad_alloc);
-# endif
-
             //
             // eventIn handlers
             //
@@ -718,7 +671,7 @@ namespace OpenVRML {
             void process_set_key(const field_value & value,
                                  double timestamp)
                 throw (std::bad_cast, std::bad_alloc);
-            void process_set_keyValue(const field_value & mfcolor,
+            void process_set_keyValue(const field_value & value,
                                       double timestamp)
                 throw (std::bad_cast, std::bad_alloc);
         };
@@ -781,14 +734,6 @@ namespace OpenVRML {
             virtual const std::vector<vec3f> & point() const throw ();
 
         private:
-# if 0
-            //
-            // field mutators
-            //
-            void setPoint(const field_value & value)
-                throw (std::bad_cast, std::bad_alloc);
-# endif
-
             //
             // eventIn handlers
             //
@@ -825,16 +770,6 @@ namespace OpenVRML {
             virtual ~coordinate_interpolator_node() throw ();
 
         private:
-# if 0
-            //
-            // field mutators
-            //
-            void setKey(const field_value & value)
-                    throw (std::bad_cast, std::bad_alloc);
-            void setKeyValue(const field_value & value)
-                    throw (std::bad_cast, std::bad_alloc);
-# endif
-
             //
             // eventIn handlers
             //
@@ -897,7 +832,7 @@ namespace OpenVRML {
 
             sfbool autoOffset;
             sffloat diskAngle;
-            sfbool enabled;
+            sfbool enabled_;
             sffloat maxAngle;
             sffloat minAngle;
             sffloat offset;
@@ -905,9 +840,9 @@ namespace OpenVRML {
             sfrotation rotation;
             sfvec3f trackPoint;
 
-            sffloat rotation_val;
-            sfvec3f activationPoint;
-            sfbool disk;
+            float rotation_val;
+            vec3f activationPoint;
+            bool disk;
             mat4f activationMatrix;
             mat4f modelview;
 
@@ -920,9 +855,9 @@ namespace OpenVRML {
 
             virtual void render(OpenVRML::viewer & viewer,
                                 rendering_context context);
-            void activate( double timeStamp, bool isActive, double *p );
+            void activate(double timeStamp, bool isActive, double *p);
 
-            bool isEnabled() { return this->enabled.value; }
+            bool enabled() const;
 
         private:
             //
@@ -1049,8 +984,8 @@ namespace OpenVRML {
             virtual ~extrusion_class() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+                                                    const node_interface_set &)
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE extrusion_node : public abstract_geometry_node {
@@ -1098,17 +1033,17 @@ namespace OpenVRML {
         class fog_node;
 
         class OPENVRML_SCOPE fog_class : public node_class {
-            typedef std::vector<fog_node *> BoundNodes;
+            typedef std::vector<fog_node *> bound_nodes_t;
 
             fog_node * first;
-            BoundNodes boundNodes;
+            bound_nodes_t bound_nodes;
 
         public:
             explicit fog_class(OpenVRML::browser & browser);
             virtual ~fog_class() throw ();
 
-            void setFirst(fog_node & fog) throw ();
-            bool hasFirst() const throw ();
+            void set_first(fog_node & fog) throw ();
+            bool has_first() const throw ();
             void bind(fog_node & fog, double timestamp) throw (std::bad_alloc);
             void unbind(fog_node & fog, double timestamp) throw ();
 
@@ -1572,8 +1507,8 @@ namespace OpenVRML {
             friend class navigation_info_class;
 
             mffloat avatarSize;
-            sfbool headlight;
-            sffloat speed;
+            sfbool headlight_;
+            sffloat speed_;
             mfstring type;
             sffloat visibilityLimit;
             sfbool bound;
@@ -1585,27 +1520,10 @@ namespace OpenVRML {
 
             virtual navigation_info_node * to_navigation_info() const;
 
-            const float * getAvatarSize()
-            {
-                return !this->avatarSize.value.empty()
-                        ? &this->avatarSize.value[0]
-                        : 0;
-            }
-
-            bool getHeadlightOn()
-            {
-                return this->headlight.value;
-            }
-
-            float getSpeed()
-            {
-                return this->speed.value;
-            }
-
-            float getVisibilityLimit()
-            {
-                return this->visibilityLimit.value;
-            }
+            const float * avatar_size() const;
+            bool headlight() const;
+            float speed() const;
+            float visibility_limit() const;
 
         private:
             virtual void do_initialize(double timestamp)

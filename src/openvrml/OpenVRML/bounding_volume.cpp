@@ -139,9 +139,9 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @fn void bounding_volume::extend(const float p[3])
+ * @fn void bounding_volume::extend(const vec3f & p)
  *
- * @brief Extend this bvolume to enclose the given point.
+ * @brief Extend the bounding volume to enclose the given point.
  *
  * @param p a point
  */
@@ -232,10 +232,16 @@ bounding_volume::~bounding_volume() {}
  * @brief The radius of the sphere.
  */
 
+/**
+ * @brief Construct.
+ */
 bounding_sphere::bounding_sphere():
     radius_(-1.0)
 {}
 
+/**
+ * @brief Destroy.
+ */
 bounding_sphere::~bounding_sphere()
 {}
 
@@ -253,6 +259,23 @@ namespace {
     }
 }
 
+/**
+ * @brief Intersect this bvolume with a frustum.
+ *
+ * The test assumes that the frustum is in the canonical
+ * looking-down-negative-z orientation, so the bounding volume is going to have
+ * to be transformed into the frustum's space. (Alternatives include
+ * transforming the frustum into the bounding volume's space, or transforming
+ * both of them into the projection space. Lots of tradeoffs involved, but
+ * transforming the bounding volume is probably the simplest approach overall.)
+ *
+ * @param frustum   the frustum.
+ *
+ * @return inside, outside, or partial.
+ *
+ * @see bounding_volume::transform
+ * @see bounding_volume::ortho_transform
+ */
 bounding_volume::intersection
 bounding_sphere::intersect_frustum(const OpenVRML::frustum & frustum) const
 {
@@ -309,8 +332,27 @@ bounding_sphere::intersect_frustum(const OpenVRML::frustum & frustum) const
     return code;
 }
 
-void
-bounding_sphere::extend(const bounding_volume & bv)
+/**
+ * @fn void bounding_volume::extend(const bounding_volume & b)
+ *
+ * @brief Extend this bvolume to enclose the given bvolume.
+ *
+ * This is tricky, because C++ doesn't provide us a way to figure out exactly
+ * what sort of bvolume we have been passed, yet we have to know in order to do
+ * the appropriate math. What we really need is double dispatch but C++ does
+ * not provide it.
+ *
+ * What the implementation will probably do is use dynamic_cast to test for the
+ * actual type of the parameter, and redispatch to  extend(sphere) or
+ * extend(box).  Alternatively, we could use the double dispatch pattern as
+ * described in the Gang of Four patterns book.
+ *
+ * We need this because nodes like Group don't know until runtime exactly
+ * what sort of bounding volumes their children will have.
+ *
+ * @param bv    a bounding volume.
+ */
+void bounding_sphere::extend(const bounding_volume & bv)
 {
   const bounding_sphere * bs = 0;
   const axis_aligned_bounding_box * ab = 0;
@@ -378,11 +420,22 @@ void bounding_sphere::extend(const vec3f & p)
 }
 
 /**
+ * @fn void bounding_volume::extend(const axis_aligned_bounding_box & b)
+ *
+ * @brief Extend this bvolume to enclose the given box.
+ *
  * @todo Implement me!
+ *
+ * @param b an axis-aligned box
  */
 void bounding_sphere::extend(const axis_aligned_bounding_box & b) {
 }
 
+/**
+ * @brief Extend this bvolume to enclose the given sphere.
+ *
+ * @param b a bounding sphere
+ */
 void bounding_sphere::extend(const bounding_sphere & b)
 {
     if (this->maximized()) { return; }
@@ -593,14 +646,18 @@ void bounding_sphere::transform(const mat4f & M)
  * @todo This class is currently just a placeholder.
  */
 
-axis_aligned_bounding_box::~axis_aligned_bounding_box() {}
+/**
+ * @brief Destroy.
+ */
+axis_aligned_bounding_box::~axis_aligned_bounding_box()
+{}
 
 /**
  * @todo Implement me!
  */
 bounding_volume::intersection
-axis_aligned_bounding_box::intersect_frustum(
-    const OpenVRML::frustum & frustum) const
+axis_aligned_bounding_box::
+intersect_frustum(const OpenVRML::frustum & frustum) const
 {
     return bounding_volume::partial;
 }

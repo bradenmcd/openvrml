@@ -920,24 +920,26 @@ const unsigned char * sfimage::array() const throw ()
 /**
  * @brief Set the image.
  *
- * @param width width in pixels
- * @param height height in pixels
- * @param components number of components
- * @param pixels array of (width * height * components) bytes comprising the
- *        image data.
+ * @param x     width in pixels
+ * @param y     height in pixels
+ * @param comp  number of components
+ * @param array array of (width * height * components) bytes comprising the
+ *              image data.
  */
-void sfimage::set(size_t width, size_t height, size_t components,
-                  const unsigned char * pixels)
+void sfimage::set(const size_t x,
+                  const size_t y,
+                  const size_t comp,
+                  const unsigned char * array)
     throw (std::bad_alloc)
 {
     delete this->d_pixels;
 
-    this->d_w = width;
-    this->d_h = height;
-    this->d_nc = components;
+    this->d_w = x;
+    this->d_h = y;
+    this->d_nc = comp;
 
-    this->d_pixels = new unsigned char[width * height * components];
-    std::copy(pixels, pixels + (width * height * components), this->d_pixels);
+    this->d_pixels = new unsigned char[x * y * comp];
+    std::copy(array, array + (x * y * comp), this->d_pixels);
 }
 
 /**

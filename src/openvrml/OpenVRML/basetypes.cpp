@@ -46,8 +46,14 @@ namespace OpenVRML {
  *
  * @brief A color.
  *
- * VRML colors are represented as three single precision floating point components--red, blue,
- * and green--ranging from 0.0 to 1.0.
+ * VRML colors are represented as three single precision floating point
+ * components--red, green, and blue--ranging from 0.0 to 1.0.
+ */
+
+/**
+ * @var float color::rgb[3]
+ *
+ * @brief RGB triplet.
  */
 
 /**
@@ -207,7 +213,8 @@ void color::hsv(float h, const float s, const float v) throw ()
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 bool operator==(const color & lhs, const color & rhs) throw ()
 {
@@ -253,6 +260,12 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  * @ingroup basetypes
  *
  * @brief Two-component single precision vector.
+ */
+
+/**
+ * @var float vec2f::vec[2]
+ *
+ * @brief Vector components.
  */
 
 /**
@@ -476,7 +489,8 @@ const vec2f vec2f::normalize() const throw ()
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
  */
 bool operator==(const vec2f & lhs, const vec2f & rhs) throw ()
 {
@@ -496,7 +510,7 @@ bool operator==(const vec2f & lhs, const vec2f & rhs) throw ()
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
- *      otherwise.
+ *         otherwise.
  */
 
 /**
@@ -521,6 +535,12 @@ std::ostream & operator<<(std::ostream & out, const vec2f & v)
  * @ingroup basetypes
  *
  * @brief Three-component single precision vector.
+ */
+
+/**
+ * @var float vec3f::vec[3]
+ *
+ * @brief Vector components.
  */
 
 /**
@@ -2432,10 +2452,10 @@ const quatf quatf::inverse() const throw ()
 /**
  * @brief Get the norm.
  *
- * @note <i>n</i>(<b>q</b>) = <i>q<sub>x</sub><i><sup>2</sup>
- *                            + <i>q<sub>y</sub><i><sup>2</sup>
- *                            + <i>q<sub>z</sub><i><sup>2</sup>
- *                            + <i>q<sub>w</sub><i><sup>2</sup>
+ * @note <i>n</i>(<b>q</b>) = <i>q<sub>x</sub></i><sup>2</sup>
+ *                            + <i>q<sub>y</sub></i><sup>2</sup>
+ *                            + <i>q<sub>z</sub></i><sup>2</sup>
+ *                            + <i>q<sub>w</sub></i><sup>2</sup>
  *
  * @return the norm.
  */

@@ -2977,7 +2977,7 @@ namespace {
  * @brief Set the viewpoint.
  *
  * @param position          position.
- * @param orienation        orientation.
+ * @param orientation       orientation.
  * @param fieldOfView       field of view.
  * @param avatarSize        avatar size.
  * @param visibilityLimit   visiblity limit.
@@ -3211,7 +3211,7 @@ void ViewerOpenGL::zoom(float z)
     GLdouble y_c = d_winHeight/2;
     GLdouble z_c = 0.5;
     float visibilityLimit=0.0;
-    if (nav) { visibilityLimit = nav->getVisibilityLimit(); }
+    if (nav) { visibilityLimit = nav->visibility_limit(); }
     if (fpzero(visibilityLimit)) { visibilityLimit = 30000.0; }
     GLdouble ox, oy, oz;
     gluUnProject(x_c, y_c, z_c, modelview, projection, viewport, &ox, &oy, &oz);
@@ -3225,7 +3225,7 @@ void ViewerOpenGL::zoom(float z)
     if (dist < 1.0e-25) { return; }
     dist = sqrt(dist);
     float speed = 1.0;
-    if (nav) { speed = nav->getSpeed(); }
+    if (nav) { speed = nav->speed(); }
     dist = speed / dist;
     if (fpzero(dist)) { return; }
     dx *= dist;

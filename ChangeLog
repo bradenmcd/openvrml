@@ -1,3 +1,32 @@
+2003-07-15  Braden McDaniel  <braden@endoframe.com>
+
+	Doxygen doc improvements.
+
+	* doc/Doxyfile:  Eliminated appearance of OPENVRML_SCOPE macro
+	in docs.
+	* src/openvrml/OpenVRML/basetypes.cpp:  Doxygen doc
+	improvements.
+	* src/openvrml/OpenVRML/basetypes.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/bounding_volume.cpp:  Doxygen doc
+	improvements.
+	* src/openvrml/OpenVRML/browser.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/field.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/field.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/img.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/img.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/node.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/node.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/script.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/viewer.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/viewer.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/vrml97node.cpp:  Doxygen doc
+	improvements.
+	* src/openvrml/OpenVRML/vrml97node.h:  Doxygen doc improvements.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Doxygen doc
+	improvements.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Doxygen doc
+	improvements.
+
 2003-07-12  Braden McDaniel  <braden@endoframe.com>
 
 	Added factory function to field_value to create an instance of

@@ -111,7 +111,7 @@ script::~script() {}
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
  * @param browser   the browser to be associated with the script_node_class.
  */
@@ -120,7 +120,7 @@ script_node_class::script_node_class(OpenVRML::browser & browser):
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
 script_node_class::~script_node_class() throw ()
 {}

@@ -37,7 +37,6 @@
 # include "img.h"
 # include "doc.h"
 # include "system.h"
-# include "field.h"
 
 /************************************************************************
 	GIF File Reader
@@ -6823,7 +6822,15 @@ typedef enum {
 
 static ImageFileType imageFileType(const char *, FILE *);
 
+/**
+ * @class img
+ *
+ * @brief Image data.
+ */
 
+/**
+ * @brief Construct.
+ */
 img::img():
     url_(0),
     w_(0),
@@ -6833,7 +6840,9 @@ img::img():
     frame_(0)
 {}
 
-
+/**
+ * @brief Destroy.
+ */
 img::~img()
 {
   delete url_;
@@ -6841,6 +6850,15 @@ img::~img()
   if (frame_) free(frame_);
 }
 
+/**
+ * @brief Load an image.
+ *
+ * @param url       a URI.
+ * @param relative  URI to which @p url is relative; or 0 if @p url is an
+ *                  absolute URI.
+ *
+ * @return @c true if the image is loaded successfully; @c false otherwise.
+ */
 bool img::set_url(const char * const url, const doc2 * const relative)
 {
     if (this->url_) {
@@ -6899,18 +6917,34 @@ bool img::set_url(const char * const url, const doc2 * const relative)
     return (this->pixels_ != 0);
 }
 
-bool img::try_urls(const mfstring & urls, const doc2 * const relative) {
+/**
+ * @brief Call img::set_url for each URI in @p urls until one successfully
+ *        loads an image.
+ *
+ * @param urls      URIs.
+ * @param relative  URI to which the URIs in @p urls are relative; or 0 if
+ *                  all the URIs in @p urls are absolute.
+ *
+ * @return @c true if an image is successfully loaded from any of the URIs in
+ *         @p urls; @c false otherwise.
+ */
+bool img::try_urls(const std::vector<std::string> & urls,
+                   const doc2 * const relative)
+{
     size_t i(0);
-    for (; i < urls.value.size(); ++i) {
-        if (!urls.value[i].empty()
-            && this->set_url(urls.value[i].c_str(), relative)) {
+    for (; i < urls.size(); ++i) {
+        if (!urls[i].empty() && this->set_url(urls[i].c_str(), relative)) {
             break;
         }
     }
-
-    return (i < urls.value.size());
+    return (i < urls.size());
 }
 
+/**
+ * @brief The URI of the currently loaded image.
+ *
+ * @return the URI of the currently loaded image; or 0 if no image is loaded.
+ */
 const char * img::url() const
 {
     return this->url_
@@ -6950,7 +6984,14 @@ static ImageFileType imageFileType(const char *url, FILE *)
     return ImageFile_UNKNOWN;
 }
 
-
+/**
+ * @brief The pixel data for a frrame of the currently loaded image.
+ *
+ * @param frame the frame of interest.
+ *
+ * @return the pixel data for a frame of the currently loaded image; or 0 if
+ *         @p frame is not valid.
+ */
 unsigned char * img::pixels(int frame) const
 {
   return (frame < this->nframes_)

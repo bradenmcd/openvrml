@@ -119,9 +119,25 @@ viewer::viewer(OpenVRML::browser & browser):
 {}
 
 /**
+ * @fn viewer::viewer(const viewer &)
+ *
+ * @brief Not implemented.
+ *
+ * viewer is not copyable.
+ */
+
+/**
  * @brief Destroy.
  */
 viewer::~viewer() {}
+
+/**
+ * @fn viewer & viewer::operator=(const viewer &)
+ *
+ * @brief Not implemented.
+ *
+ * viewer is not copyable.
+ */
 
 /**
  * @fn viewer::rendering_mode viewer::mode()
@@ -396,7 +412,7 @@ viewer::~viewer() {}
  * @brief Set the viewpoint.
  *
  * @param position          position.
- * @param orienation        orientation.
+ * @param orientation       orientation.
  * @param field_of_view     field of view.
  * @param avatar_size       avatar size.
  * @param visibility_limit  visiblity limit.
@@ -453,19 +469,26 @@ viewer::intersect_view_volume(const bounding_volume & bvolume) const
  */
 
 /**
- * @todo We're forcing everybody to carry around a frust
- * whether they want it or not. It shouldn't be used except
- * for debugging and stuff since it might not be valid in some
- * implementations
+ * @todo We're forcing everybody to carry around a frustum
+ *       whether they want it or not. It shouldn't be used except
+ *       for debugging and stuff since it might not be valid in some
+ *       implementations
+ *
+ * @return the frustum.
  */
 const frustum & viewer::frustum() const
 {
     return this->frustum_;
 }
 
-void viewer::frustum(const OpenVRML::frustum & frustum)
+/**
+ * @brief Set the frustum.
+ *
+ * @param f new frustum value.
+ */
+void viewer::frustum(const OpenVRML::frustum & f)
 {
-    this->frustum_ = frustum;
+    this->frustum_ = f;
 }
 
 } // namespace OpenVRML

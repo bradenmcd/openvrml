@@ -292,7 +292,7 @@ namespace OpenVRML {
         virtual type_id type() const throw ();
 
     private:
-        virtual void print(std::ostream & os) const;
+        virtual void print(std::ostream & out) const;
     };
 
     inline bool operator==(const sfrotation & lhs, const sfrotation & rhs)
