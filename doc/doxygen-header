@@ -35,15 +35,66 @@ a.qindex:visited {
 }
 a.qindex:hover {
   text-decoration: inherit;
-  background-color: inherit
+  background-color: transparent;
+}
+a.qindexHL {
+  text-decoration: inherit;
+  font-weight: inherit;
+  background-color: transparent;
+  color: inherit;
+}
+a.qindexHL:hover {
+  text-decoration: inherit;
+  background-color: transparent;
+  color: inherit;
+}
+a.qindexHL:visited {
+  text-decoration: inherit;
+  background-color: transparent;
+  color: inherit;
+}
+a.el {
+  text-decoration: inherit;
+  font-weight: inherit
+}
+a.elRef {
+  font-weight: inherit
+}
+a.code {
+  text-decoration: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+a.codeRef {
+  font-weight: normal;
+  color: inherit;
+}
+a:hover {
+  text-decoration: inherit;
+  background-color: inherit;
 }
 
-div.qindex :link {
+h1 {
+  line-height: 1.2em;
+}
+
+div.qindex {
+  font-size: smaller;
+}
+
+div.qindex .qindex:link, div.qindex .qindex:visited {
+  font-weight: inherit;
+}
+
+div.qindex .qindexHL:link, div.qindex .qindexHL:visited {
   font-weight: bold;
 }
 
-td.memItemLeft, td.memItemRight {
-  font-family: monospace;
+td.memItemLeft, td.memItemRight, .mdRow td {
+  font-family: "Bitstream Vera Sans Mono",
+               "LucidaTypewriter",
+               "Lucida Console",
+               monospace;
 }
 
 td.memItemLeft, td.memItemRight, td.mdescLeft, td.mdescRight {
@@ -60,7 +111,6 @@ td.memItemLeft, td.memItemRight, td.mdescLeft, td.mdescRight {
 
 .mdRow td {
   background-color: rgb(95%, 95%, 95%);
-  font-family: monospace;
 }
 
 .mdRow td code {
