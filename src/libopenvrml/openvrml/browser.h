@@ -29,9 +29,8 @@
 #   include <list>
 #   include <map>
 #   include <string>
-#   include <boost/scoped_ptr.hpp>
 #   include <boost/utility.hpp>
-#   include <boost/thread/recursive_mutex.hpp>
+#   include <openvrml/common.h>
 #   include <openvrml/script.h>
 
 namespace openvrml {
@@ -49,41 +48,11 @@ namespace openvrml {
         virtual ~invalid_vrml() throw ();
     };
 
-
     class viewer_in_use : public std::invalid_argument {
     public:
         viewer_in_use();
         virtual ~viewer_in_use() throw ();
     };
-
-
-    class bad_url : public std::runtime_error {
-    public:
-        bad_url(const std::string & message);
-        virtual ~bad_url() throw ();
-    };
-
-
-    class invalid_url : public bad_url {
-    public:
-        invalid_url();
-        virtual ~invalid_url() throw ();
-    };
-
-
-    class unreachable_url : public bad_url {
-    public:
-        unreachable_url();
-        virtual ~unreachable_url() throw ();
-    };
-
-
-    class no_alternative_url : public bad_url {
-    public:
-        no_alternative_url();
-        virtual ~no_alternative_url() throw ();
-    };
-
 
     class viewer;
     class scene;
@@ -104,18 +73,18 @@ namespace openvrml {
         typedef void (*scene_cb)(cb_reason reason);
 
     private:
-        mutable boost::recursive_mutex mutex_;
         std::auto_ptr<null_node_class> null_node_class_;
         std::auto_ptr<null_node_type> null_node_type_;
         typedef std::map<std::string, node_class_ptr> node_class_map_t;
         node_class_map_t node_class_map;
         script_node_class script_node_class_;
-        boost::scoped_ptr<scene> scene_;
+        scene * scene_;
         const node_ptr default_viewpoint_;
         viewpoint_node * active_viewpoint_;
-        const node_ptr default_navigation_info_;
-        navigation_info_node * active_navigation_info_;
         std::list<viewpoint_node *> viewpoint_list;
+        typedef std::list<node_ptr> bind_stack_t;
+        bind_stack_t navigation_info_stack;
+        std::list<node *> navigation_infos;
         std::list<node *> scoped_lights;
         std::list<script_node *> scripts;
         std::list<node *> timers;
@@ -160,21 +129,16 @@ namespace openvrml {
         viewpoint_node & active_viewpoint() const throw ();
         void active_viewpoint(viewpoint_node & viewpoint) throw ();
         void reset_default_viewpoint() throw ();
-        navigation_info_node & active_navigation_info() const throw ();
-        void active_navigation_info(navigation_info_node & nav_info) throw ();
-        void reset_default_navigation_info() throw ();
         void add_viewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc);
         void remove_viewpoint(viewpoint_node & viewpoint) throw ();
         const std::list<viewpoint_node *> & viewpoints() const throw ();
         void viewer(openvrml::viewer * v) throw (viewer_in_use);
-        openvrml::viewer * viewer() const throw ();
+        openvrml::viewer * viewer() throw ();
 
         virtual const char * name() const throw ();
         virtual const char * version() const throw ();
         float current_speed();
         const std::string world_url() const throw (std::bad_alloc);
-        void world_url(const std::string & str)
-            throw (invalid_url, std::bad_alloc);
         void replace_world(const std::vector<node_ptr> & nodes);
         virtual void load_url(const std::vector<std::string> & url,
                               const std::vector<std::string> & parameter)
@@ -210,6 +174,12 @@ namespace openvrml {
         void delta(double d);
         double delta() const;
 
+        void add_navigation_info(vrml97_node::navigation_info_node &);
+        void remove_navigation_info(vrml97_node::navigation_info_node &);
+        vrml97_node::navigation_info_node *bindable_navigation_info_top();
+        void bindable_push(vrml97_node::navigation_info_node *);
+        void bindable_remove(vrml97_node::navigation_info_node *);
+
         void add_scoped_light(vrml97_node::abstract_light_node &);
         void remove_scoped_light(vrml97_node::abstract_light_node &);
 
@@ -231,13 +201,43 @@ namespace openvrml {
         bool headlight_on();
         void do_callbacks(cb_reason reason);
 
+        const node_ptr bindable_top(const bind_stack_t & stack);
+        void bindable_push(bind_stack_t & stack, const node_ptr & node);
+        void bindable_remove(bind_stack_t & stack, const node_ptr & node);
+
     private:
         void init_node_class_map();
     };
 
 
+    class bad_url : public std::runtime_error {
+    public:
+        bad_url(const std::string & message);
+        virtual ~bad_url() throw ();
+    };
+
+
+    class invalid_url : public bad_url {
+    public:
+        invalid_url();
+        virtual ~invalid_url() throw ();
+    };
+
+
+    class unreachable_url : public bad_url {
+    public:
+        unreachable_url();
+        virtual ~unreachable_url() throw ();
+    };
+
+
+    class no_alternative_url : public bad_url {
+    public:
+        no_alternative_url();
+        virtual ~no_alternative_url() throw ();
+    };
+
     class scene : boost::noncopyable {
-        mutable boost::recursive_mutex mutex_;
         std::vector<node_ptr> nodes_;
         std::string url_;
 
@@ -245,9 +245,6 @@ namespace openvrml {
         openvrml::browser & browser;
         scene * const parent;
 
-        explicit scene(openvrml::browser & browser,
-                       scene * parent = 0)
-            throw ();
         scene(openvrml::browser & browser,
               const std::vector<std::string> & url,
               scene * parent = 0)
@@ -255,9 +252,7 @@ namespace openvrml {
 
         void initialize(double timestamp) throw (std::bad_alloc);
         const std::vector<node_ptr> & nodes() const throw ();
-        void nodes(const std::vector<node_ptr> & n) throw (std::bad_alloc);
         const std::string url() const throw (std::bad_alloc);
-        void url(const std::string & str) throw (invalid_url, std::bad_alloc);
         void render(openvrml::viewer & viewer, rendering_context context);
         void load_url(const std::vector<std::string> & url,
                       const std::vector<std::string> & parameter)

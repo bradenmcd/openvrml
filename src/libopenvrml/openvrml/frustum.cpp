@@ -23,7 +23,7 @@
 #   include <config.h>
 # endif
 
-# include <private.h>
+# include "private.h"
 # include "basetypes.h"
 # include "frustum.h"
 
@@ -124,7 +124,7 @@ frustum::frustum():
  *
  */
 frustum::frustum(float fovy, float aspect, double z_near, double z_far):
-    fovy(float((fovy / 360.0) * 2.0 * openvrml_::pi)),
+    fovy(float((fovy / 360.0) * 2.0 * pi)),
     fovx(float(2.0 * atan(float(tan(this->fovy / 2.0)) * aspect))),
     z_near(z_near),
     z_far(z_far)

@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2002, 2003, 2004, 2005  Braden McDaniel
+// Copyright 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,7 @@
 # include <algorithm>
 # include <sstream>
 # include <boost/lexical_cast.hpp>
+# include "private.h"
 # include "node.h"
 # include "scope.h"
 # include "browser.h"
@@ -498,45 +499,17 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  * non-conflicting.
  */
 
-namespace {
-
-    /**
-     * @internal
-     */
-    struct interface_id_matches_ :
-            std::unary_function<openvrml::node_interface, bool> {
-        explicit interface_id_matches_(const std::string & interface_id):
-            interface_id(&interface_id)
-        {}
-
-        bool operator()(const openvrml::node_interface & interface) const
-        {
-            static const char eventin_prefix[] = "set_";
-            static const char eventout_suffix[] = "_changed";
-
-            return interface.id == *this->interface_id
-                || (interface.type == node_interface::exposedfield_id
-                    && (eventin_prefix + interface.id == *this->interface_id
-                        || (interface.id + eventout_suffix
-                            == *this->interface_id)))
-                || (interface.type == node_interface::eventin_id
-                    && interface.id == eventin_prefix + *this->interface_id)
-                || (interface.type == node_interface::eventout_id
-                    && interface.id == *this->interface_id + eventout_suffix);
-        }
-
-    private:
-        const std::string * interface_id;
-    };
-}
-
 /**
  * @ingroup nodes
  *
  * @brief Find an interface matching @p id.
  *
  * If no interface is found with an interface identifier that is an exact match
- * for @p id, this method will look for @c set_ and @c _changed variants.
+ * for @p id, this function will look for @c set_ and @c _changed variants. If
+ * @p interfaces contains a field @c zzz along with an eventIn @c set_zzz
+ * and/or an eventOut @c zzz_changed, the eventIn or eventOut will only be
+ * found if the @c set_zzz or @c zzz_changed form, respectively, is used for
+ * @p id.
  *
  * @param interfaces    a set of <code>node_interface</code>s.
  * @param id            the interface id to look for.
@@ -548,8 +521,21 @@ const node_interface_set::const_iterator
 find_interface(const node_interface_set & interfaces, const std::string & id)
     throw ()
 {
-    return std::find_if(interfaces.begin(), interfaces.end(),
-                        interface_id_matches_(id));
+    node_interface_set::const_iterator pos =
+        std::find_if(interfaces.begin(), interfaces.end(),
+                     bind2nd(node_interface_matches_field(), id));
+    if (pos == interfaces.end()) {
+        using openvrml_::compose2;
+        using std::logical_or;
+
+        pos = std::find_if(interfaces.begin(), interfaces.end(),
+                           compose2(logical_or<bool>(),
+                                    bind2nd(node_interface_matches_eventin(),
+                                            id),
+                                    bind2nd(node_interface_matches_eventout(),
+                                            id)));
+    }
+    return pos;
 }
 
 
@@ -1218,7 +1204,6 @@ const std::string & node::id() const throw ()
 void node::initialize(openvrml::scene & scene, const double timestamp)
     throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (!this->scene_) {
         this->scene_ = &scene;
         this->do_initialize(timestamp);
@@ -1263,7 +1248,6 @@ void node::initialize(openvrml::scene & scene, const double timestamp)
 const field_value & node::field(const std::string & id) const
     throw (unsupported_interface)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->do_field(id);
 }
 
@@ -1289,10 +1273,6 @@ const field_value & node::field(const std::string & id) const
 event_listener & node::event_listener(const std::string & id)
     throw (unsupported_interface)
 {
-    //
-    // No need to lock here; the set of event listeners for a node instance
-    // cannot change.
-    //
     return this->do_event_listener(id);
 }
 
@@ -1306,10 +1286,6 @@ event_listener & node::event_listener(const std::string & id)
 event_emitter & node::event_emitter(const std::string & id)
     throw (unsupported_interface)
 {
-    //
-    // No need to lock here; the set of event emitters for a node instance
-    // cannot change.
-    //
     return this->do_event_emitter(id);
 }
 
@@ -1325,7 +1301,6 @@ event_emitter & node::event_emitter(const std::string & id)
  */
 void node::shutdown(const double timestamp) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (this->scene_) {
         this->do_shutdown(timestamp);
         this->scene_ = 0;
@@ -1495,20 +1470,6 @@ material_node * node::to_material() throw ()
 /**
  * @internal
  *
- * @brief Cast to a navigation_info_node.
- *
- * Default implementation returns 0.
- *
- * @return 0.
- */
-navigation_info_node * node::to_navigation_info() throw ()
-{
-    return 0;
-}
-
-/**
- * @internal
- *
  * @brief Cast to a normal_node.
  *
  * Default implementation returns 0.
@@ -1645,6 +1606,16 @@ vrml97_node::movie_texture_node * node::to_movie_texture() const
 }
 
 /**
+ * @brief Cast to a navigation_info_node.
+ *
+ * @return 0.
+ */
+vrml97_node::navigation_info_node * node::to_navigation_info() const
+{
+    return 0;
+}
+
+/**
  * @brief Cast to a plane_sensor_node.
  *
  * @return 0.
@@ -1723,7 +1694,6 @@ vrml97_node::touch_sensor_node * node::to_touch_sensor() const
  */
 void node::modified(const bool value)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->modified_ = value;
     if (this->modified_) { this->type_.node_class().browser().modified(true); }
 }
@@ -1739,7 +1709,6 @@ void node::modified(const bool value)
  */
 bool node::modified() const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->modified_;
 }
 
@@ -1789,7 +1758,6 @@ void node::bounding_volume(const openvrml::bounding_volume & v)
  */
 void node::bounding_volume_dirty(const bool value)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->bounding_volume_dirty_ = value;
     if (value) { // only if dirtying, not clearing
         this->type_.node_class().browser().flags_need_updating = true;
@@ -1802,7 +1770,6 @@ void node::bounding_volume_dirty(const bool value)
  */
 bool node::bounding_volume_dirty() const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (this->type_.node_class().browser().flags_need_updating) {
         this->type_.node_class().browser().update_flags();
         this->type_.node_class().browser().flags_need_updating = false;
@@ -1864,7 +1831,6 @@ namespace {
  */
 std::ostream & node::print(std::ostream & out, const size_t indent) const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     for (size_t i = 0; i < indent; ++i) { out << ' '; }
     std::string nodeId = this->id();
     if (!nodeId.empty()) { out << "DEF " << nodeId << " "; }
@@ -2387,7 +2353,6 @@ appearance_node::~appearance_node() throw ()
  */
 void appearance_node::render_appearance(viewer & v, rendering_context context)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
     this->do_render_appearance(v, context);
     this->modified(false);
 }
@@ -2451,8 +2416,7 @@ appearance_node * appearance_node::to_appearance() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-child_node::child_node(const node_type & type,
-                       const boost::shared_ptr<openvrml::scope> & scope)
+child_node::child_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2474,8 +2438,6 @@ child_node::~child_node() throw ()
  */
 void child_node::relocate() throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
-
     typedef void (child_node::* Do_relocate)();
 
     class RelocateTraverser : public node_traverser {
@@ -2519,7 +2481,6 @@ void child_node::relocate() throw (std::bad_alloc)
  */
 void child_node::render_child(viewer & v, const rendering_context context)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
     this->do_render_child(v, context);
     this->modified(false);
 }
@@ -2662,9 +2623,9 @@ coordinate_node * coordinate_node::to_coordinate() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-font_style_node::
-font_style_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope) throw ():
+font_style_node::font_style_node(const node_type & type,
+                                 const boost::shared_ptr<openvrml::scope> & scope)
+    throw ():
     node(type, scope)
 {}
 
@@ -2828,8 +2789,6 @@ geometry_node * geometry_node::to_geometry() throw ()
 viewer::object_t geometry_node::render_geometry(viewer & v,
                                                 rendering_context context)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
-
     if (this->geometry_reference != 0 && this->modified()) {
         v.remove_object(this->geometry_reference);
         this->geometry_reference = 0;
@@ -2854,7 +2813,6 @@ viewer::object_t geometry_node::render_geometry(viewer & v,
  */
 bool geometry_node::emissive() const throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
     return this->do_emissive();
 }
 
@@ -2969,8 +2927,7 @@ grouping_node * grouping_node::to_grouping() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-material_node::material_node(const node_type & type,
-                             const boost::shared_ptr<openvrml::scope> & scope)
+material_node::material_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -3037,85 +2994,6 @@ material_node * material_node::to_material() throw ()
  * @brief Get the transparency.
  *
  * @return the transparency.
- */
-
-
-/**
- * @class navigation_info_node
- *
- * @ingroup nodes
- *
- * @brief Abstract base class for normal nodes.
- */
-
-/**
- * @brief Construct.
- *
- * @param t     the node_type associated with the node.
- * @param scope the Scope the node belongs to.
- */
-navigation_info_node::
-navigation_info_node(const node_type & t,
-                     const boost::shared_ptr<openvrml::scope> & scope)
-    throw ():
-    node(t, scope),
-    child_node(t, scope)
-{}
-
-/**
- * @brief Destroy.
- */
-navigation_info_node::~navigation_info_node() throw ()
-{}
-
-/**
- * @brief Cast to a navigation_info_node.
- *
- * @return a pointer to this navigation_info_node.
- */
-navigation_info_node * navigation_info_node::to_navigation_info() throw ()
-{
-    return this;
-}
-
-/**
- * @fn const std::vector<float> & navigation_info_node::avatar_size() const throw ()
- *
- * @brief Get the avatar dimensions.
- *
- * @return the avatar dimensions.
- */
-
-/**
- * @fn bool navigation_info_node::headlight() const throw ()
- *
- * @brief Get the state of the headlight.
- *
- * @return @c true if the headlight is on; @c false otherwise.
- */
-
-/**
- * @fn float navigation_info_node::speed() const throw ()
- *
- * @brief Get the current speed of the user view.
- *
- * @return the current speed of the user view.
- */
-
-/**
- * @fn const std::vector<std::string> & navigation_info_node::type() const throw ()
- *
- * @brief Get the navigation type.
- *
- * @return the navigation type.
- */
-
-/**
- * @fn float navigation_info_node::visibility_limit() const throw ()
- *
- * @brief Get the visibility limit.
- *
- * @return the visibility limit.
  */
 
 
@@ -3220,8 +3098,7 @@ sound_source_node * sound_source_node::to_sound_source() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-texture_node::texture_node(const node_type & type,
-                           const boost::shared_ptr<openvrml::scope> & scope)
+texture_node::texture_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
     texture_reference(0)
@@ -3253,8 +3130,6 @@ texture_node::~texture_node() throw ()
  */
 viewer::texture_object_t texture_node::render_texture(viewer & v)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
-
     if (this->texture_reference != 0 && this->modified()) {
         v.remove_texture_object(this->texture_reference);
         this->texture_reference = 0;
@@ -3346,9 +3221,8 @@ texture_node * texture_node::to_texture() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-texture_coordinate_node::
-texture_coordinate_node(const node_type & type,
-                        const boost::shared_ptr<openvrml::scope> & scope)
+texture_coordinate_node::texture_coordinate_node(const node_type & type,
+                                                 const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -3393,9 +3267,8 @@ texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-texture_transform_node::
-texture_transform_node(const node_type & type,
-                       const boost::shared_ptr<openvrml::scope> & scope)
+texture_transform_node::texture_transform_node(const node_type & type,
+                                               const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}

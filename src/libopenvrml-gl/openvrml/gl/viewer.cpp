@@ -40,9 +40,6 @@
 
 # include <cmath>
 # include <limits>
-# ifndef NDEBUG
-#   include <iostream>
-# endif
 # include <boost/scoped_ptr.hpp>
 # include <openvrml/browser.h>
 # include <openvrml/vrml97node.h>
@@ -84,11 +81,6 @@
 # endif
 
 namespace {
-
-    const double pi     = 3.14159265358979323846;
-    const double pi_2   = 1.57079632679489661923;
-    const double pi_4   = 0.78539816339744830962;
-    const double inv_pi = 0.31830988618379067154;
 
     template <typename Float>
     inline Float fabs(const Float f)
@@ -1529,6 +1521,8 @@ namespace {
                          float tc[][3],
                          int faces[])
     {
+        using openvrml::pi;
+
         double angle, x, y;
         int i, polyIndex;
 
@@ -2945,6 +2939,9 @@ namespace {
                        float tc[][3],
                        int *faces)
     {
+        using openvrml::pi;
+        using openvrml::pi_2;
+
         double r, angle, x, y, z;
         int i, j, polyIndex;
 
@@ -3885,12 +3882,13 @@ void viewer::zoom(const float z)
     glGetIntegerv (GL_VIEWPORT, viewport);
     glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
-    navigation_info_node & nav_info =
-        this->browser()->active_navigation_info();
+    vrml97_node::navigation_info_node * const nav =
+        this->browser()->bindable_navigation_info_top();
     GLdouble x_c = this->win_width / 2;
     GLdouble y_c = this->win_height / 2;
     GLdouble z_c = 0.5;
-    float visibilityLimit = nav_info.visibility_limit();
+    float visibilityLimit = 0.0;
+    if (nav) { visibilityLimit = nav->visibility_limit(); }
     if (fequal<float>()(visibilityLimit, 0.0f)) { visibilityLimit = 30000.0; }
     GLdouble ox, oy, oz;
     gluUnProject(x_c, y_c, z_c,
@@ -3911,7 +3909,8 @@ void viewer::zoom(const float z)
     double dist = dx * dx + dy * dy + dz * dz;
     if (dist < 1.0e-25) { return; }
     dist = sqrt(dist);
-    float speed = nav_info.speed();
+    float speed = 1.0;
+    if (nav) { speed = nav->speed(); }
     dist = speed / dist;
     if (fequal<float>()(float(dist), 0.0f)) { return; }
     dx *= dist;

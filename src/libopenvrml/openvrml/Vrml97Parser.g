@@ -123,11 +123,12 @@ ANTLR_RBRACE
 
 header "post_include_cpp" {
 # include <cctype>
+# include <iostream>
 # include <antlr/CommonToken.hpp>
 # include <boost/lexical_cast.hpp>
-# include <private.h>
 # include "scope.h"
 # include "script.h"
+# include "private.h"
 
 namespace {
 
@@ -1950,21 +1951,19 @@ options { defaultErrorHandler=false; }
         float x, y, z, angle;
     }
     : x=floatValue y=floatValue z=floatValue angle=floatValue {
-            r.x(x);
-            r.y(y);
-            r.z(z);
-            r.angle(angle);
+            vec3f axis(x, y, z);
 
-            const float axisLength = r.axis().length();
+            const float axisLength = axis.length();
             if (!fequal<float>()(axisLength, 1.0f)) {
                 this->reportWarning("The axis component of a rotation must be "
                                     "a normalized vector.");
                 if (fequal<float>()(axisLength, 0.0f)) {
-                    r.z(1.0);
+                    axis.z(1.0);
                 } else {
-                    r.axis(r.axis().normalize());
+                    axis = axis.normalize();
                 }
             }
+            r = rotation(axis, angle);
         }
     ;
 

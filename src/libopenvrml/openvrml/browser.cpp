@@ -46,7 +46,7 @@
 # ifdef OPENVRML_ENABLE_GZIP
 #   include <zlib.h>
 # endif
-# include <private.h>
+# include "private.h"
 # include "browser.h"
 # include "viewer.h"
 # include "scope.h"
@@ -2419,170 +2419,11 @@ namespace {
     }
 
 
-    class default_navigation_info : public navigation_info_node {
-    public:
-        explicit default_navigation_info(const null_node_type & type) throw ();
-        virtual ~default_navigation_info() throw ();
-
-        virtual const std::vector<float> & avatar_size() const throw ();
-        virtual bool headlight() const throw ();
-        virtual float speed() const throw ();
-        virtual const std::vector<std::string> & type() const throw ();
-        virtual float visibility_limit() const throw ();
-
-    private:
-        virtual void do_field(const std::string & id,
-                              const field_value & value)
-            throw ();
-        virtual const field_value & do_field(const std::string & id) const
-            throw ();
-        virtual void do_process_event(const std::string & id,
-                                      const field_value & value,
-                                      double timestamp)
-            throw ();
-        virtual const field_value & do_eventout(const std::string & id) const
-            throw ();
-
-        virtual openvrml::event_listener &
-        do_event_listener(const std::string & id)
-            throw (unsupported_interface);
-        virtual openvrml::event_emitter &
-        do_event_emitter(const std::string & id)
-            throw (unsupported_interface);
-    };
-
-    const boost::shared_ptr<openvrml::scope> null_scope_ptr;
-
-    /**
-     * @brief Construct.
-     *
-     * @param t node type.
-     */
-    default_navigation_info::default_navigation_info(const null_node_type & t)
-        throw ():
-        node(t, null_scope_ptr),
-        child_node(t, null_scope_ptr),
-        openvrml::navigation_info_node(t, null_scope_ptr)
-    {}
-
-    /**
-     * @brief Destroy
-     */
-    default_navigation_info::~default_navigation_info() throw ()
-    {}
-
-    /**
-     * @brief The avatar dimensions.
-     *
-     * @return [0.25, 1.6, 0.75]
-     */
-    const std::vector<float> & default_navigation_info::avatar_size() const
-        throw ()
-    {
-        static const float array[] = { 0.25, 1.6, 0.75 };
-        static const std::vector<float> vec(array, array + 3);
-        return vec;
-    }
-
-    /**
-     * @brief The headlight state.
-     *
-     * @return @c true
-     */
-    bool default_navigation_info::headlight() const throw ()
-    {
-        return true;
-    }
-
-    /**
-     * @brief The speed of the user view.
-     *
-     * @return 1.0
-     */
-    float default_navigation_info::speed() const throw ()
-    {
-        return 1.0;
-    }
-
-    /**
-     * @brief The navigation type.
-     *
-     * @return ["WALK", "ANY"]
-     */
-    const std::vector<std::string> & default_navigation_info::type() const
-        throw ()
-    {
-        static const char * array[] = { "WALK", "ANY" };
-        static const std::vector<std::string> vec(array, array + 2);
-        return vec;
-    }
-
-    /**
-     * @brief The visibility limit.
-     *
-     * @return 0.0
-     */
-    float default_navigation_info::visibility_limit() const throw ()
-    {
-        return 0.0;
-    }
-
-    void default_navigation_info::do_field(const std::string & id,
-                                           const field_value & value)
-        throw ()
-    {
-        assert(false);
-    }
-
-    const field_value &
-    default_navigation_info::do_field(const std::string & id) const
-        throw ()
-    {
-        assert(false);
-        static const sfbool value;
-        return value;
-    }
-
-    void default_navigation_info::do_process_event(const std::string & id,
-                                                   const field_value & value,
-                                                   double timestamp)
-        throw ()
-    {
-        assert(false);
-    }
-
-    const field_value &
-    default_navigation_info::do_eventout(const std::string & id) const throw ()
-    {
-        assert(false);
-        static const sfbool value;
-        return value;
-    }
-
-    event_listener &
-    default_navigation_info::do_event_listener(const std::string & id)
-        throw (unsupported_interface)
-    {
-        assert(false);
-        throw unsupported_interface(this->node::type(), id);
-        return *static_cast<openvrml::event_listener *>(0);
-    }
-
-    event_emitter &
-    default_navigation_info::do_event_emitter(const std::string & id)
-        throw (unsupported_interface)
-    {
-        assert(false);
-        throw unsupported_interface(this->node::type(), id);
-        return *static_cast<openvrml::event_emitter *>(0);
-    }
-
-
     class default_viewpoint : public viewpoint_node {
         mat4f userViewTransform;
 
     public:
-        explicit default_viewpoint(const null_node_type & type) throw ();
+        explicit default_viewpoint(const null_node_type & nodeType) throw ();
         virtual ~default_viewpoint() throw ();
 
         virtual const mat4f & transformation() const throw ();
@@ -2612,8 +2453,10 @@ namespace {
             throw (unsupported_interface);
     };
 
+    static const boost::shared_ptr<openvrml::scope> null_scope_ptr;
+
     /**
-     * @brief Construct.
+     * @brief Constructor.
      *
      * @param type  the browser's null_node_type instance.
      */
@@ -2625,7 +2468,7 @@ namespace {
     {}
 
     /**
-     * @brief Destroy.
+     * @brief Destructor.
      */
     default_viewpoint::~default_viewpoint() throw ()
     {}
@@ -2717,7 +2560,6 @@ namespace {
         throw unsupported_interface(this->type(), id);
         return *static_cast<openvrml::event_emitter *>(0);
     }
-
 
     class uri {
         struct grammar : public boost::spirit::grammar<grammar> {
@@ -3697,19 +3539,6 @@ viewer_in_use::~viewer_in_use() throw ()
  */
 
 /**
- * @var node_ptr browser::default_navigation_info_
- *
- * @brief The "default" navigation_info_node used when no navigation_info_node
- *        in the scene is bound.
- */
-
-/**
- * @var navigation_info_node * browser::active_navigation_info_
- *
- * @brief The currently "active" navigation_info_node.
- */
-
-/**
  * @var std::list<viewpoint_node *> browser::viewpoint_list
  *
  * @brief A list of all the Viewpoint nodes in the browser.
@@ -3925,12 +3754,9 @@ browser::browser(std::ostream & out, std::ostream & err)
     null_node_class_(new null_node_class(*this)),
     null_node_type_(new null_node_type(*null_node_class_)),
     script_node_class_(*this),
-    scene_(new scene(*this)),
+    scene_(0),
     default_viewpoint_(new default_viewpoint(*null_node_type_)),
     active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
-    default_navigation_info_(new default_navigation_info(*null_node_type_)),
-    active_navigation_info_(
-        node_cast<navigation_info_node *>(default_navigation_info_.get())),
     modified_(false),
     new_view(false),
     delta_time(DEFAULT_DELTA),
@@ -3943,7 +3769,6 @@ browser::browser(std::ostream & out, std::ostream & err)
     flags_need_updating(false)
 {
     assert(this->active_viewpoint_);
-    assert(this->active_navigation_info_);
     this->init_node_class_map();
 }
 
@@ -3955,12 +3780,17 @@ browser::~browser() throw ()
     const double now = browser::current_time();
 
     if (this->scene_) { this->scene_->shutdown(now); }
+    delete this->scene_;
+    this->scene_ = 0;
+    this->navigation_info_stack.clear();
     assert(this->viewpoint_list.empty());
+    assert(this->navigation_infos.empty());
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
     assert(this->timers.empty());
     assert(this->audio_clips.empty());
     assert(this->movies.empty());
+    this->node_class_map.clear();
 }
 
 /**
@@ -3970,7 +3800,6 @@ browser::~browser() throw ()
  */
 const std::vector<node_ptr> & browser::root_nodes() const throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(this->scene_);
     return this->scene_->nodes();
 }
@@ -3989,7 +3818,6 @@ const std::vector<node_ptr> & browser::root_nodes() const throw ()
 const node_path browser::find_node(const node & n) const
     throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(this->scene_);
 
     class FindNodeTraverser : public node_traverser {
@@ -4034,7 +3862,6 @@ const node_path browser::find_node(const node & n) const
  */
 viewpoint_node & browser::active_viewpoint() const throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return *this->active_viewpoint_;
 }
 
@@ -4045,7 +3872,6 @@ viewpoint_node & browser::active_viewpoint() const throw ()
  */
 void browser::active_viewpoint(viewpoint_node & viewpoint) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->active_viewpoint_ = &viewpoint;
 }
 
@@ -4054,49 +3880,10 @@ void browser::active_viewpoint(viewpoint_node & viewpoint) throw ()
  */
 void browser::reset_default_viewpoint() throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(this->default_viewpoint_);
     this->active_viewpoint_ =
         node_cast<viewpoint_node *>(this->default_viewpoint_.get());
     assert(this->active_viewpoint_);
-}
-
-/**
- * @brief Get the active navigation_info_node.
- *
- * The active navigation_info_node is the one currently associated with the
- * user view.
- *
- * @return the active navigation_info_node.
- */
-navigation_info_node & browser::active_navigation_info() const throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    return *this->active_navigation_info_;
-}
-
-/**
- * @brief Set the active navigation_info_node.
- *
- * @param nav_info a navigation_info_node.
- */
-void browser::active_navigation_info(navigation_info_node & nav_info) throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    this->active_navigation_info_ = &nav_info;
-}
-
-/**
- * @brief Reset the active navigation_info_node to the default.
- */
-void browser::reset_default_navigation_info() throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->default_navigation_info_);
-    this->active_navigation_info_ =
-        node_cast<navigation_info_node *>(
-            this->default_navigation_info_.get());
-    assert(this->active_navigation_info_);
 }
 
 /**
@@ -4110,7 +3897,6 @@ void browser::reset_default_navigation_info() throw ()
  */
 void browser::add_viewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(std::find(this->viewpoint_list.begin(), this->viewpoint_list.end(),
                      &viewpoint) == this->viewpoint_list.end());
     this->viewpoint_list.push_back(&viewpoint);
@@ -4126,7 +3912,6 @@ void browser::add_viewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc)
  */
 void browser::remove_viewpoint(viewpoint_node & viewpoint) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->viewpoint_list.empty());
     typedef std::list<viewpoint_node *> viewpoint_list_t;
     const viewpoint_list_t::iterator end = this->viewpoint_list.end();
@@ -4145,7 +3930,6 @@ void browser::remove_viewpoint(viewpoint_node & viewpoint) throw ()
  */
 const std::list<viewpoint_node *> & browser::viewpoints() const throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->viewpoint_list;
 }
 
@@ -4159,7 +3943,6 @@ const std::list<viewpoint_node *> & browser::viewpoints() const throw ()
  */
 void browser::viewer(openvrml::viewer * v) throw (viewer_in_use)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (v && v->browser_) { throw viewer_in_use(); }
     if (this->viewer_) { this->viewer_->browser_ = 0; }
     this->viewer_ = v;
@@ -4171,9 +3954,8 @@ void browser::viewer(openvrml::viewer * v) throw (viewer_in_use)
  *
  * @return the current <code>viewer</code>.
  */
-viewer * browser::viewer() const throw ()
+viewer * browser::viewer() throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->viewer_;
 }
 
@@ -4208,9 +3990,10 @@ const char * browser::version() const throw ()
  */
 float browser::current_speed()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    navigation_info_node & nav_info = this->active_navigation_info();
-    return nav_info.speed();
+    vrml97_node::navigation_info_node * const navInfo =
+        bindable_navigation_info_top();
+    if (navInfo) { return navInfo->speed(); }
+    return 0.0f;
 }
 
 /**
@@ -4220,75 +4003,42 @@ float browser::current_speed()
  */
 const std::string browser::world_url() const throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-    return this->scene_->url(); // Throws std::bad_alloc.
+    static const std::string empty_string;
+    return this->scene_
+        ? this->scene_->url() // Throws std::bad_alloc.
+        : empty_string;
 }
 
 /**
- * @brief Set the URI for the world.
- *
- * This function does nothing other than change the URI returned by
- * the browser::world_url accessor. It does not result in loading a new world.
- *
- * @param str   a valid URI.
- *
- * @exception invalid_url       if @p str is not a valid URI.
- * @exception std::bad_alloc    if memory allocation fails.
+ * @todo Implement me!
  */
-void browser::world_url(const std::string & str)
-    throw (invalid_url, std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-    this->scene_->url(str);
-}
+void browser::replace_world(const std::vector<node_ptr> & nodes)
+{}
 
 namespace {
     typedef std::map<std::string, node_class_ptr> node_class_map_t;
 
-    struct init_node_class : std::unary_function<void,
-                                                 node_class_map_t::value_type>
+    struct InitNodeClass : std::unary_function<void,
+                                               node_class_map_t::value_type>
     {
-        init_node_class(viewpoint_node * initial_viewpoint, const double time)
+        explicit InitNodeClass(viewpoint_node * initialViewpoint,
+                               const double time)
             throw ():
-            initial_viewpoint_(initial_viewpoint),
-            time_(time)
+            initialViewpoint(initialViewpoint),
+            time(time)
         {}
 
         void operator()(const node_class_map_t::value_type & value) const
             throw ()
         {
             assert(value.second);
-            value.second->initialize(this->initial_viewpoint_, this->time_);
+            value.second->initialize(this->initialViewpoint, this->time);
         }
 
     private:
-        viewpoint_node * initial_viewpoint_;
-        double time_;
+        viewpoint_node * initialViewpoint;
+        double time;
     };
-}
-
-/**
- * @brief Replace the root nodes of the world.
- *
- * @param nodes new root nodes for the world.
- */
-void browser::replace_world(const std::vector<node_ptr> & nodes)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    const double now = browser::current_time();
-    this->scene_->shutdown(now);
-    this->scene_->nodes(nodes);
-    this->scene_->initialize(now);
-    //
-    // Initialize the node_classes.
-    //
-    viewpoint_node * const initial_viewpoint = 0;
-    for_each(this->node_class_map.begin(), this->node_class_map.end(),
-             init_node_class(initial_viewpoint, now));
-    this->modified(true);
-    this->new_view = true; // Force resetUserNav
 }
 
 /**
@@ -4310,8 +4060,6 @@ void browser::load_url(const std::vector<std::string> & url,
                        const std::vector<std::string> & parameter)
     throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-
     using std::for_each;
     using std::list;
     using std::string;
@@ -4322,10 +4070,13 @@ void browser::load_url(const std::vector<std::string> & url,
     // Clear out the current scene.
     //
     if (this->scene_) { this->scene_->shutdown(now); }
-    this->scene_.reset();
+    delete this->scene_;
+    this->scene_ = 0;
     this->active_viewpoint_ =
         node_cast<viewpoint_node *>(this->default_viewpoint_.get());
+    this->navigation_info_stack.clear();
     assert(this->viewpoint_list.empty());
+    assert(this->navigation_infos.empty());
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
     assert(this->timers.empty());
@@ -4338,7 +4089,7 @@ void browser::load_url(const std::vector<std::string> & url,
     //
     this->init_node_class_map();
     try {
-        this->scene_.reset(new scene(*this, url));
+        this->scene_ = new scene(*this, url);
         this->scene_->initialize(now);
 
         //
@@ -4360,7 +4111,19 @@ void browser::load_url(const std::vector<std::string> & url,
         // Initialize the node_classes.
         //
         for_each(this->node_class_map.begin(), this->node_class_map.end(),
-                 init_node_class(initialViewpoint, now));
+                 InitNodeClass(initialViewpoint, now));
+
+        //
+        // Send initial bind events to bindable nodes.
+        //
+        if (!this->navigation_infos.empty()) {
+            assert(this->navigation_infos.front());
+            event_listener & listener =
+                navigation_infos.front()->event_listener("set_bind");
+            assert(dynamic_cast<sfbool_listener *>(&listener));
+            static_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), now);
+        }
 
         if (this->active_viewpoint_
             != node_cast<viewpoint_node *>(this->default_viewpoint_.get())) {
@@ -4554,7 +4317,6 @@ void browser::init_node_class_map() {
  */
 void browser::do_callbacks(const cb_reason reason)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     scene_cb_list_t::iterator cb, cbend = this->scene_callbacks.end();
     for (cb = this->scene_callbacks.begin(); cb != cbend; ++cb) {
         (*cb)(reason);
@@ -4568,7 +4330,6 @@ void browser::do_callbacks(const cb_reason reason)
  */
 void browser::add_world_changed_callback(const scene_cb cb)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->scene_callbacks.push_front(cb);
 }
 
@@ -4579,7 +4340,6 @@ void browser::add_world_changed_callback(const scene_cb cb)
  */
 double browser::frame_rate() const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->frame_rate_;
 }
 
@@ -4596,7 +4356,6 @@ void browser::queue_event(double timestamp,
                           const node_ptr & to_node,
                           const std::string & to_eventin)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     event * e = &this->event_mem[this->last_event];
     e->timestamp = timestamp;
     e->value = value;
@@ -4620,7 +4379,6 @@ void browser::queue_event(double timestamp,
  */
 bool browser::events_pending()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->first_event != this->last_event;
 }
 
@@ -4630,7 +4388,6 @@ bool browser::events_pending()
  */
 void browser::flush_events()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     while (this->first_event != this->last_event) {
         event *e = &this->event_mem[this->first_event];
         this->first_event = (this->first_event + 1) % max_events;
@@ -4649,7 +4406,6 @@ void browser::sensitive_event(node * const n,
                               const bool is_active,
                               double * const point)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (n) {
         vrml97_node::anchor_node * a = n->to_anchor();
         if (a) {
@@ -4704,8 +4460,6 @@ namespace {
  */
 bool browser::update(double current_time)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-
     if (current_time <= 0.0) { current_time = browser::current_time(); }
 
     this->delta_time = DEFAULT_DELTA;
@@ -4822,8 +4576,10 @@ bool browser::update(double current_time)
  */
 bool browser::headlight_on()
 {
-    navigation_info_node & nav_info = this->active_navigation_info();
-    return nav_info.headlight();
+    vrml97_node::navigation_info_node * const navInfo =
+        this->bindable_navigation_info_top();
+    if (navInfo) { return navInfo->headlight(); }
+    return true;
 }
 
 namespace {
@@ -4849,18 +4605,20 @@ namespace {
  */
 void browser::render()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (!this->viewer_) { return; }
 
     if (this->new_view) {
         this->viewer_->reset_user_navigation();
         this->new_view = false;
     }
-    navigation_info_node & nav_info = this->active_navigation_info();
-    const float avatarSize = nav_info.avatar_size().empty()
-        ? 0.25
-        : nav_info.avatar_size()[0];
-    const float visibilityLimit = nav_info.visibility_limit();
+    float avatarSize = 0.25;
+    float visibilityLimit = 0.0;
+    vrml97_node::navigation_info_node * ni =
+        this->bindable_navigation_info_top();
+    if (ni) {
+        avatarSize = ni->avatar_size()[0];
+        visibilityLimit = ni->visibility_limit();
+    }
 
     // Activate the headlight.
     // ambient is supposed to be 0 according to the spec...
@@ -4932,7 +4690,6 @@ void browser::render()
  */
 void browser::modified(const bool value)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->modified_ = value;
 }
 
@@ -4943,7 +4700,6 @@ void browser::modified(const bool value)
  */
 bool browser::modified() const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->modified_;
 }
 
@@ -4954,7 +4710,6 @@ bool browser::modified() const
  */
 void browser::delta(const double d)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (d < this->delta_time) { this->delta_time = d; }
 }
 
@@ -4965,8 +4720,112 @@ void browser::delta(const double d)
  */
 double browser::delta() const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->delta_time;
+}
+
+/**
+ * @brief Get the top node of a bind_stack_t.
+ *
+ * @return the top node of @p stack.
+ */
+const node_ptr browser::bindable_top(const bind_stack_t & stack)
+{
+    return stack.empty() ? node_ptr(0) : stack.front();
+}
+
+/**
+ * @brief Push a node onto a bind_stack_t.
+ *
+ * @param stack the bind_stack_t onto which to push @p node.
+ * @param node  the node to push onto @p stack.
+ */
+void browser::bindable_push(bind_stack_t & stack, const node_ptr & node)
+{
+    this->bindable_remove(stack, node); // Remove any existing reference
+    stack.push_front(node);
+    this->modified(true);
+}
+
+/**
+ * @brief Remove a node from a bind_stack_t.
+ *
+ * @param stack the bind_stack_t from which to remove @p node.
+ * @param node  the node to remove from @p stack.
+ */
+void browser::bindable_remove(bind_stack_t & stack, const node_ptr & node)
+{
+    const bind_stack_t::iterator pos =
+        std::find(stack.begin(), stack.end(), node);
+    if (pos != stack.end()) {
+        stack.erase(pos);
+        this->modified(true);
+    }
+}
+
+/**
+ * @brief Add a NavigationInfo node to the list of NavigationInfo nodes for the
+ *      browser.
+ *
+ * @param node a NavigationInfo node.
+ *
+ * @pre @p node is not in the list of NavigationInfo nodes for the browser.
+ */
+void browser::add_navigation_info(vrml97_node::navigation_info_node & node)
+{
+    assert(std::find(this->navigation_infos.begin(),
+                     this->navigation_infos.end(), &node)
+            == this->navigation_infos.end());
+    this->navigation_infos.push_back(&node);
+}
+
+/**
+ * @brief Remove a NavigationInfo node from the list of NavigationInfo nodes
+ *      for the browser.
+ *
+ * @param n  a NavigationInfo node.
+ *
+ * @pre @p n is in the list of NavigationInfo nodes for the browser.
+ */
+void browser::remove_navigation_info(vrml97_node::navigation_info_node & n)
+{
+    assert(!this->navigation_infos.empty());
+    const std::list<node *>::iterator end = this->navigation_infos.end();
+    const std::list<node *>::iterator pos =
+            std::find(this->navigation_infos.begin(), end, &n);
+    assert(pos != end);
+    this->navigation_infos.erase(pos);
+}
+
+/**
+ * @brief Get the active node on the bound NavigationInfo stack.
+ *
+ * @return the active node on the bound NavigationInfo stack.
+ */
+vrml97_node::navigation_info_node * browser::bindable_navigation_info_top()
+{
+    node * const n = this->bindable_top(this->navigation_info_stack).get();
+    return n ? n->to_navigation_info() : 0;
+}
+
+/**
+ * @brief Push a NavigationInfo node onto the bound NavigationInfo node stack.
+ *
+ * @param n a NavigationInfo node.
+ */
+void browser::bindable_push(vrml97_node::navigation_info_node * n)
+{
+    this->bindable_push(this->navigation_info_stack, node_ptr(n));
+}
+
+/**
+ * @brief Remove a NavigationInfo node from the bound NavigationInfo node
+ *        stack.
+ *
+ * @param n a NavigationInfo node.
+ */
+void browser::bindable_remove(vrml97_node::navigation_info_node * n)
+{
+    this->bindable_remove(this->navigation_info_stack, node_ptr(n));
 }
 
 /**
@@ -4976,9 +4835,7 @@ double browser::delta() const
  *
  * @pre @p light is not in the list of light nodes for the browser.
  */
-void browser::add_scoped_light(vrml97_node::abstract_light_node & light)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+void browser::add_scoped_light(vrml97_node::abstract_light_node & light) {
     assert(std::find(this->scoped_lights.begin(), this->scoped_lights.end(),
                      &light) == this->scoped_lights.end());
     this->scoped_lights.push_back(&light);
@@ -4993,7 +4850,6 @@ void browser::add_scoped_light(vrml97_node::abstract_light_node & light)
  */
 void browser::remove_scoped_light(vrml97_node::abstract_light_node & light)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->scoped_lights.empty());
     const std::list<node *>::iterator end = this->scoped_lights.end();
     const std::list<node *>::iterator pos =
@@ -5010,7 +4866,6 @@ void browser::remove_scoped_light(vrml97_node::abstract_light_node & light)
  * @pre @p movie is not in the list of MovieTexture nodes for the browser.
  */
 void browser::add_movie(vrml97_node::movie_texture_node & movie) {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(std::find(this->movies.begin(), this->movies.end(), &movie)
             == this->movies.end());
     this->movies.push_back(&movie);
@@ -5025,7 +4880,6 @@ void browser::add_movie(vrml97_node::movie_texture_node & movie) {
  */
 void browser::remove_movie(vrml97_node::movie_texture_node & movie)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->movies.empty());
     const std::list<node *>::iterator end = this->movies.end();
     const std::list<node *>::iterator pos =
@@ -5041,9 +4895,7 @@ void browser::remove_movie(vrml97_node::movie_texture_node & movie)
  *
  * @pre @p script is not in the list of Script nodes for the browser.
  */
-void browser::add_script(script_node & script)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+void browser::add_script(script_node & script) {
     assert(std::find(this->scripts.begin(), this->scripts.end(), &script)
             == this->scripts.end());
     this->scripts.push_back(&script);
@@ -5056,9 +4908,7 @@ void browser::add_script(script_node & script)
  *
  * @pre @p script is in the list of Script nodes for the browser.
  */
-void browser::remove_script(script_node & script)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+void browser::remove_script(script_node & script) {
     assert(!this->scripts.empty());
     typedef std::list<script_node *> script_node_list_t;
     const script_node_list_t::iterator end = this->scripts.end();
@@ -5077,7 +4927,6 @@ void browser::remove_script(script_node & script)
  */
 void browser::add_time_sensor(vrml97_node::time_sensor_node & timer)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(std::find(this->timers.begin(), this->timers.end(), &timer)
            == this->timers.end());
     this->timers.push_back(&timer);
@@ -5092,7 +4941,6 @@ void browser::add_time_sensor(vrml97_node::time_sensor_node & timer)
  */
 void browser::remove_time_sensor(vrml97_node::time_sensor_node & timer)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->timers.empty());
     const std::list<node *>::iterator end = this->timers.end();
     const std::list<node *>::iterator pos =
@@ -5111,7 +4959,6 @@ void browser::remove_time_sensor(vrml97_node::time_sensor_node & timer)
  */
 void browser::add_audio_clip(vrml97_node::audio_clip_node & audio_clip)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(std::find(this->audio_clips.begin(), this->audio_clips.end(),
                      &audio_clip) == this->audio_clips.end());
     this->audio_clips.push_back(&audio_clip);
@@ -5126,7 +4973,6 @@ void browser::add_audio_clip(vrml97_node::audio_clip_node & audio_clip)
  */
 void browser::remove_audio_clip(vrml97_node::audio_clip_node & audio_clip)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->audio_clips.empty());
     const std::list<node *>::iterator end = this->audio_clips.end();
     const std::list<node *>::iterator pos =
@@ -5343,17 +5189,6 @@ namespace {
 }
 
 /**
- * @brief Construct.
- *
- * @param browser   the browser associated with the scene.
- * @param parent    the parent scene.
- */
-scene::scene(openvrml::browser & browser, scene * parent) throw ():
-    browser(browser),
-    parent(parent)
-{}
-
-/**
  * @brief Construct a scene from a URI.
  *
  * @param browser   the browser associated with the scene.
@@ -5444,7 +5279,6 @@ scene::scene(openvrml::browser & browser,
  */
 void scene::initialize(const double timestamp) throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
@@ -5465,19 +5299,6 @@ void scene::initialize(const double timestamp) throw (std::bad_alloc)
  */
 
 /**
- * @brief Set the root nodes for the scene.
- *
- * @param n the new root nodes for the scene.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void scene::nodes(const std::vector<node_ptr> & n) throw (std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    this->nodes_ = n;
-}
-
-/**
  * @brief Get the absolute URI for the scene.
  *
  * @return the absolute URI for the scene.
@@ -5486,7 +5307,6 @@ void scene::nodes(const std::vector<node_ptr> & n) throw (std::bad_alloc)
  */
 const std::string scene::url() const throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     using std::string;
     return this->parent
             ? string(uri(this->url_).resolve_against(uri(this->parent->url())))
@@ -5494,33 +5314,13 @@ const std::string scene::url() const throw (std::bad_alloc)
 }
 
 /**
- * @brief Set the URI for the scene.
- *
- * Generally this function is used in conjunction with the two-argument
- * constructor (that does not take an alternative URI list) and the
- * scene::nodes mutator function.
- *
- * @param str   a valid URI.
- *
- * @exception invalid_url       if @p str is not a valid URI.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void scene::url(const std::string & str) throw (invalid_url, std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    uri id(str); // Make sure we have a valid URI.
-    this->url_ = str;
-}
-
-/**
  * @brief Render the scene.
  *
- * @param viewer    a viewer to render to.
+ * @param viewer    a Viewer to render to.
  * @param context   a rendering_context.
  */
 void scene::render(openvrml::viewer & viewer, rendering_context context)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
@@ -5560,8 +5360,6 @@ void scene::load_url(const std::vector<std::string> & url,
                      const std::vector<std::string> & parameter)
     throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-
     using std::string;
 
     if (!url.empty()) {
@@ -5601,7 +5399,6 @@ void scene::load_url(const std::vector<std::string> & url,
  */
 void scene::shutdown(const double timestamp) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {

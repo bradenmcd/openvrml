@@ -20,7 +20,6 @@
 //
 
 # include <cassert>
-# include <boost/thread/recursive_mutex.hpp>
 # include "node_ptr.h"
 # include "browser.h"
 
@@ -43,7 +42,6 @@ namespace openvrml {
 namespace {
     typedef std::map<openvrml::node *, size_t> count_map_t;
     count_map_t count_map;
-    boost::recursive_mutex count_map_mutex;
 }
 
 /**
@@ -142,7 +140,6 @@ const node_ptr node_ptr::self(new self_ref_node);
 node_ptr::node_ptr(node * const node) throw (std::bad_alloc):
     count_ptr(0)
 {
-    boost::recursive_mutex::scoped_lock lock(count_map_mutex);
     if (node) {
         count_map_t::iterator pos = count_map.find(node);
         if (pos == count_map.end()) {
@@ -165,7 +162,6 @@ node_ptr::node_ptr(node * const node) throw (std::bad_alloc):
 node_ptr::node_ptr(const node_ptr & ptr) throw ():
     count_ptr(ptr.count_ptr)
 {
-    boost::recursive_mutex::scoped_lock lock(count_map_mutex);
     if (this->count_ptr) {
         ++this->count_ptr->second;
     }
@@ -228,7 +224,6 @@ node_ptr::node_ptr(const node_ptr & ptr) throw ():
  */
 void node_ptr::reset(node * const node) throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(count_map_mutex);
     if (this->count_ptr && this->count_ptr->first == node) {
         return;
     }
@@ -252,7 +247,6 @@ void node_ptr::reset(node * const node) throw (std::bad_alloc)
  */
 void node_ptr::dispose() throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(count_map_mutex);
     if (this->count_ptr) {
         --this->count_ptr->second;
         if (this->count_ptr->second == 0) {
@@ -271,7 +265,6 @@ void node_ptr::dispose() throw ()
  */
 void node_ptr::share(std::map<node *, size_t>::value_type * count_ptr) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(count_map_mutex);
     if (this->count_ptr != count_ptr) {
         if (count_ptr) { ++count_ptr->second; }
         this->dispose();
