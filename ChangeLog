@@ -5,6 +5,13 @@
         * src/openvrml/OpenVRML/private.h,
           src/openvrml/OpenVRML/VrmlMatrix.h: #include <stddef.h>.
 
+        * src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.cpp,
+          src/openvrml/OpenVRML/VrmlNamespace.cpp,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp: Removed vestigal
+          '#include "proto.h"'.
+
 2002-06-16  Braden McDaniel  <braden@endoframe.com>
 
         * README, doc/Makefile.am: Removed "conformance.html" from the

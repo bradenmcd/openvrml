@@ -31,7 +31,6 @@
 # include "bvolume.h"
 # include "VrmlRenderContext.h"
 # include "doc2.hpp"
-# include "proto.h" // Instances of PROTOtyped nodes
 
 namespace OpenVRML {
 
