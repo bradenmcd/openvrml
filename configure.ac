@@ -162,7 +162,7 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 AC_OUTPUT([Makefile \
 doc/Makefile \
-macros/Makefile \
+m4/Makefile \
 models/Makefile \
 models/audio/Makefile \
 models/textures/Makefile \

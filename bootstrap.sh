@@ -1,5 +1,5 @@
 libtoolize --automake
-aclocal -I ./macros
+aclocal -I ./m4
 autoconf
 autoheader
 automake -a
