@@ -1,3 +1,16 @@
+2002-09-23  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * src/openvrml/OpenVRML/field.cpp: VC++6.0 complains about
+          reference to a zero-sized array at "typedef value_type 
+          & reference" within array_vector class definition. Though
+          ArraySize is passed as an argument in template declaration.
+          To get rid of this spurious complain "enum {_ArraySize = 
+          ArraySize}" is declared.
+
+        * src/openvrml/OpenVRML/field.cpp: reverse_iterator template
+          definition in VC++6.0 does not take one argument and some
+          other fixes for VC++6.0.
+   
 2002-09-23  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/ScriptJDK.cpp: Use std::copy instead of

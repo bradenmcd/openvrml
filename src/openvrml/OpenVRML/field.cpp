@@ -2465,13 +2465,19 @@ namespace {
         size_t capacity_;
 
     public:
-        typedef ElementType value_type[ArraySize];
+        enum {_ArraySize = ArraySize};
+        typedef ElementType value_type[_ArraySize];
         typedef value_type & reference;
         typedef const value_type & const_reference;
         typedef ElementType (*iterator)[ArraySize];
         typedef const ElementType (*const_iterator)[ArraySize];
+#if defined (_WIN32)
+        typedef std::reverse_iterator<iterator,char,char&,char*,int> reverse_iterator;
+        typedef std::reverse_iterator<const_iterator,char,char&,char*,int> const_reverse_iterator;        
+#else
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+#endif
         typedef size_t size_type;
         typedef ptrdiff_t difference_type;
 
@@ -2782,7 +2788,7 @@ namespace {
 
         void resize(size_type size)
         {
-            ElementType value[ArraySize] = {};
+            ElementType value[ArraySize];
             this->resize(size, value);
         }
 
@@ -3935,7 +3941,7 @@ void MFString::print(std::ostream & out) const
     
     out << '[';
     if (this->getLength() > 1) {
-        for (vector<string>::const_iterator i(this->values.begin());
+        for (std::vector<string>::const_iterator i(this->values.begin());
                 i != this->values.end() - 1; ++i) {
             out << '\"' << *i << "\", ";
         }
