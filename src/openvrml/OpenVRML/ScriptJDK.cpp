@@ -83,12 +83,27 @@ ScriptJDK::ScriptJDK( VrmlNodeScript *node,
     jint res;
     JavaVMOption options[4];
     
-    options[0].optionString = "-Djava.class.path=.";
+    /* get the currently defined CLASSPATH env variable */
+    char* classPath = getenv("CLASSPATH");
+
+    ostrstream appendedClassPath;
+
+    appendedClassPath << "-Djava.class.path=" << classPath 
+#ifndef _WIN32
+		      << PATH_SEPARATOR << "/usr/local/share/java/vrml.jar" 
+#endif
+		      << ends;
+
+    appendedClassPath.freeze(false);
+
+    options[0].optionString = appendedClassPath.str();
     options[1].optionString = "-verbose:class";
     options[2].optionString = "-verbose:jni";
+    options[3].optionString = "-Djava.library.path=/usr/local/lib";
+
     vm_args.version = JNI_VERSION_1_2;
     vm_args.options = options;
-    vm_args.nOptions = 3;
+    vm_args.nOptions = 4;
     
     /* Create the Java VM */
     res = JNI_CreateJavaVM(&d_jvm, (void**) &d_env, &vm_args);
@@ -103,6 +118,7 @@ ScriptJDK::ScriptJDK( VrmlNodeScript *node,
     jthrowable exception;
     strcpy(fqClassName, "");
     strcat(fqClassName, className);
+
     d_class = d_env->FindClass(fqClassName);
     if (d_class == 0) 
     {
@@ -110,23 +126,20 @@ ScriptJDK::ScriptJDK( VrmlNodeScript *node,
       return;
     }
 
-    /* TODO Compile fails here */
     // Call constructor
+    jmethodID ctorId = d_env->GetMethodID(d_class, "<init>", "()V");
 
-    //    jmethodID ctorId = d_env->GetMethodId(d_class, "<init>", 
-    //				  "()V");
-    //if (ctorId != 0)
-    //  d_object = d_env->NewObject(d_class, ctorID);
+    if (ctorId != 0)
+      d_object = d_env->NewObject(d_class, ctorId);
 
     jfieldID fid = d_env->GetFieldID(d_class, "NodePtr", "I");
     d_env->SetIntField(d_object, fid, (int) scriptNode());
 
     // Cache other method IDs
     d_processEventID =
-      d_env->GetStaticMethodID(d_class, "processEvent",
-			       "(Lvrml/Event;)V");
+      d_env->GetMethodID(d_class, "processEvent", "(Lvrml/Event;)V");
 
-    if ((exception = d_env->ExceptionOccurred()) != NULL)
+    if (d_env->ExceptionOccurred())
     {
       d_env->ExceptionDescribe();
       d_env->ExceptionClear();
@@ -158,19 +171,34 @@ void ScriptJDK::activate( double timeStamp,
 			  size_t argc,
 			  const VrmlField * const argv[] )
 {
-  /* Remove VrmlEvent stuff for now as it is not used by the library */
-
   if (argc == 2 && d_processEventID != 0)
   {
     jclass clazz;
     jfieldID fid;
     jobject jEvent;
-    
+    VrmlEvent* pEvent;    
+
     clazz = d_env->FindClass("vrml/Event");
+
+    if (clazz == 0)
+    {
+      theSystem->error( "Can't find Java class vrml/Event");
+      return;
+    }
+
     jEvent = d_env->AllocObject(clazz);
     fid = getFid(d_env, jEvent, "EventPtr", "I");
+    pEvent = new VrmlEvent(timeStamp, fname.c_str(), argv[0]);
+    d_env->SetIntField(jEvent, fid, (int) pEvent);
     d_env->CallVoidMethod(d_object, d_processEventID, jEvent);
     d_env->DeleteLocalRef(jEvent); 
+    delete pEvent;
+
+    if (d_env->ExceptionOccurred())
+    {
+      d_env->ExceptionDescribe();
+      d_env->ExceptionClear();
+    }
   }
   else if (argc == 0)
   {
@@ -179,6 +207,12 @@ void ScriptJDK::activate( double timeStamp,
     
     if (initID != 0)
       d_env->CallVoidMethod(d_object, initID);
+    
+    if (d_env->ExceptionOccurred())
+    {
+      d_env->ExceptionDescribe();
+      d_env->ExceptionClear();
+    }
   }
 }
 
@@ -362,7 +396,6 @@ JNIEXPORT void JNICALL Java_vrml_field_SFBool_setValue__Lvrml_field_SFBool_2
 // ConstSFColor
 //
 
-
 JNIEXPORT void JNICALL Java_vrml_field_ConstSFColor_CreateObject
   (JNIEnv *env, jobject obj, jfloat r, jfloat g, jfloat b)
 {
@@ -472,6 +505,39 @@ JNIEXPORT void JNICALL Java_vrml_field_SFColor_setValue__Lvrml_field_SFColor_2
   fid = getFid(env, value, "FieldPtr", "I");
   pNewSFColor = (VrmlSFColor*) env->GetIntField(value, fid);
   pSFColor->set(pNewSFColor->get());
+}
+
+JNIEXPORT jfloat JNICALL Java_vrml_field_SFColor_getRed
+  (JNIEnv *env, jobject obj)
+{
+  jfieldID fid;
+  VrmlSFColor* pSFColor;
+  
+  fid = getFid(env, obj, "FieldPtr", "I");
+  pSFColor = (VrmlSFColor*) env->GetIntField(obj, fid);
+  return (jfloat) pSFColor->getR();
+}
+
+JNIEXPORT jfloat JNICALL Java_vrml_field_SFColor_getGreen
+  (JNIEnv *env, jobject obj)
+{
+  jfieldID fid;
+  VrmlSFColor* pSFColor;
+  
+  fid = getFid(env, obj, "FieldPtr", "I");
+  pSFColor = (VrmlSFColor*) env->GetIntField(obj, fid);
+  return (jfloat) pSFColor->getG();
+}
+
+JNIEXPORT jfloat JNICALL Java_vrml_field_SFColor_getBlue
+  (JNIEnv *env, jobject obj)
+{
+  jfieldID fid;
+  VrmlSFColor* pSFColor;
+  
+  fid = getFid(env, obj, "FieldPtr", "I");
+  pSFColor = (VrmlSFColor*) env->GetIntField(obj, fid);
+  return (jfloat) pSFColor->getB();
 }
 
 //
@@ -3175,7 +3241,6 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
   FieldPtr = pScript->getField(fieldName);
   sprintf(clazzName, "vrml/field/%s", FieldPtr->fieldTypeName());
   clazz = env->FindClass(clazzName);
-  
   env->ReleaseStringUTFChars(jstrFieldName, fieldName );
   Field = env->AllocObject(clazz);
   fid = env->GetFieldID(clazz, "FieldPtr", "I");
@@ -3186,11 +3251,27 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
   (JNIEnv *env, jobject obj, jstring jstrEventOutName)
 {
-  jobject EventOut;
+  jfieldID fid;
+  VrmlNodeScript* pScript;
+  jobject eventOut;
+  jclass clazz;
+  VrmlField::VrmlFieldType eventOutType;
+  const VrmlField* fieldPtr;
+  char clazzName[256];
 
-  cout << "TODO: Implement Java_vrml_node_Script_getEventOut" << endl;
-
-  return EventOut;
+  const char *eventOutName = env->GetStringUTFChars(jstrEventOutName , 0);
+  fid = getFid(env, obj, "NodePtr", "I");
+  pScript = (VrmlNodeScript*) env->GetIntField(obj, fid);
+  eventOutType = pScript->hasEventOut(eventOutName);
+  sprintf(clazzName, "vrml/field/%s", VrmlField::getFieldName(eventOutType));
+  clazz = env->FindClass(clazzName);
+  eventOut = env->AllocObject(clazz);
+  fid = env->GetFieldID(clazz, "FieldPtr", "I");
+  fieldPtr = pScript->getField(eventOutName);
+  env->SetIntField(eventOut, fid, (int) fieldPtr);
+  env->ReleaseStringUTFChars(jstrEventOutName, eventOutName);
+  
+  return eventOut;
 }
 
 //
@@ -3266,7 +3347,7 @@ JNIEXPORT jstring JNICALL Java_vrml_Event_getName
 {
   cout << "TODO: Implement Java_vrml_Event_getName" << endl;
 
-  return env->NewStringUTF("blah");
+  return env->NewStringUTF("isActive");
 }
 
 JNIEXPORT jdouble JNICALL Java_vrml_Event_getTimeStamp
