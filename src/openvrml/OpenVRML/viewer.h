@@ -64,7 +64,6 @@ namespace OpenVRML {
         virtual rendering_mode mode() = 0;
         virtual double frame_rate() = 0;
         virtual void reset_user_navigation() = 0;
-        virtual void get_user_navigation(mat4f & mat) = 0;
 
         virtual object_t begin_object(const char *, bool = false) = 0;
         virtual void end_object() = 0;

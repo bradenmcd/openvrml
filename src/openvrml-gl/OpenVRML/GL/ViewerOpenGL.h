@@ -195,7 +195,6 @@ namespace OpenVRML {
 
             //
             virtual void reset_user_navigation();
-            virtual void get_user_navigation(mat4f & M);
 
             // Scope dirlights, open/close display lists
             virtual object_t begin_object(const char *name, bool retain);

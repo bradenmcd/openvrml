@@ -1,5 +1,18 @@
 2003-05-31  Braden McDaniel  <braden@endoframe.com>
 
+	Removed unused, unnecessary function viewer::get_user_navigation.
+
+	* src/openvrml/OpenVRML/viewer.cpp: Removed doc-comment for
+	viewer::get_user_navigation.
+	* src/openvrml/OpenVRML/viewer.h (viewer::get_user_navigation):
+	Removed function declaration.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp
+	(viewer::get_user_navigation):  Removed function definition.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h
+	(viewer::get_user_navigation):  Removed function declaration.
+
+2003-05-31  Braden McDaniel  <braden@endoframe.com>
+
 	Applied naming convention changes: Viewer -> viewer.
 
 	* src/openvrml/OpenVRML/viewer.cpp:  Added.  Replaces

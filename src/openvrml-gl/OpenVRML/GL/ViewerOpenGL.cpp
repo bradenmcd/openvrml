@@ -530,13 +530,6 @@ void ViewerOpenGL::reset_user_navigation()
     wsPostRedraw();
 }
 
-void ViewerOpenGL::get_user_navigation(mat4f & M)
-{
-    // The Matrix M should be a unit matrix
-    viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
-    M = activeViewpoint.user_view_transform() * M;
-}
-
 namespace {
     // Generate a normal from 3 indexed points.
     const vec3f indexFaceNormal(const int i1,

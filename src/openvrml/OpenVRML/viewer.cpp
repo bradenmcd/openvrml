@@ -146,14 +146,6 @@ viewer::~viewer() {}
  */
 
 /**
- * @fn void viewer::get_user_navigation(mat4f & mat)
- *
- * @brief Get the user's navigation from the last bound viewpoint.
- *
- * @retval mat    orthonormal navigation transformation.
- */
-
-/**
  * @fn viewer::object_t viewer::begin_object(const char *, bool)
  *
  * @brief Begin a display list.
