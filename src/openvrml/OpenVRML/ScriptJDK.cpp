@@ -259,7 +259,7 @@ void ScriptJDK::activate( double timeStamp,
       d_env->ExceptionClear();
     }
   }
-  else if (argc == 0)
+  else if (argc == 1)
   {
     // Call initialize()
     jmethodID initID = d_env->GetMethodID(d_class, fname.c_str(),"()V");
