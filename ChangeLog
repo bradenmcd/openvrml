@@ -22,6 +22,10 @@
           src/openvrml/OpenVRML/vrml97node.cpp: Quell a bunch of
           warnings from gcc -Wall.
 
+        * src/openvrml/OpenVRML/Makefile.am: Incremented libopenvrml
+          library version to 2:2:0.
+
+
 2002-06-19  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.2.
