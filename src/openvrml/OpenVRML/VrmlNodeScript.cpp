@@ -32,6 +32,7 @@
 # include <memory>
 # include <vector>
 # include <algorithm>
+# include <iostream>
 # if defined(_WIN32) && !defined(__CYGWIN__)
 #   include <strstrea.h>
 # else
@@ -214,8 +215,8 @@ VrmlNodeScript* VrmlNodeScript::toScript() const
 { return (VrmlNodeScript*) this; }
 
 void VrmlNodeScript::addToScene(VrmlScene * const scene,
-                                const char * const relUrl) {
-    this->d_relativeUrl.set(relUrl);
+                                const std::string& relativeUrl) {
+    this->d_relativeUrl.set(relativeUrl);
     if (this->d_scene == scene) {
         return;
     }
@@ -1413,8 +1414,8 @@ namespace {
                 //
 # ifndef NDEBUG
                 if (!ok) {
-                    cerr << "Call to " << fname << " in Script node "
-                         << this->scriptNode.getId() << " failed." << endl;
+                    cerr << "Call to " << fname.c_str() << " in Script node "
+                         << this->scriptNode.getId().c_str() << " failed." << endl;
                 }
 # endif
 
@@ -1748,7 +1749,7 @@ namespace {
 			               0, eventOut_setProperty, //getter, setter
 			               JSPROP_PERMANENT)) {
 # ifndef NDEBUG
-                    cerr << "Attempt to define \"" << (*i)->name
+                    cerr << "Attempt to define \"" << (*i)->name.c_str()
                          << "\" on global object failed." << endl;
 # endif
                     return false;
@@ -2552,8 +2553,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
-            const VrmlSFColor & thisColor
-                    (static_cast<VrmlSFColor &>(sfdata->getFieldValue()));
+            const VrmlSFColor & thisColor =
+                    static_cast<VrmlSFColor &>(sfdata->getFieldValue());
 
             if (JSVAL_IS_INT(id)) {
                 if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 2) {
@@ -2573,8 +2574,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
-            VrmlSFColor & thisColor
-                    (static_cast<VrmlSFColor &>(sfdata->getFieldValue()));
+            VrmlSFColor & thisColor =
+                    static_cast<VrmlSFColor &>(sfdata->getFieldValue());
 
             if (!JSVAL_IS_INT(id)
                     || JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 2) {
@@ -2601,8 +2602,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
-            VrmlSFColor & thisColor
-                    (static_cast<VrmlSFColor &>(sfdata->getFieldValue()));
+            VrmlSFColor & thisColor =
+                    static_cast<VrmlSFColor &>(sfdata->getFieldValue());
             
             jsdouble h, s, v;
             
@@ -2627,8 +2628,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
-            VrmlSFColor & thisColor
-                    (static_cast<VrmlSFColor &>(sfdata->getFieldValue()));
+            VrmlSFColor & thisColor =
+                    static_cast<VrmlSFColor &>(sfdata->getFieldValue());
             
             float hsv[3];
             
@@ -3012,8 +3013,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFNode *>(&sfdata->getFieldValue()));
-            const VrmlSFNode & thisNode
-                    (static_cast<VrmlSFNode &>(sfdata->getFieldValue()));
+            const VrmlSFNode & thisNode =
+                    static_cast<VrmlSFNode &>(sfdata->getFieldValue());
             
             if (!thisNode.get()) {
                 return JS_FALSE;
@@ -3050,8 +3051,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFNode *>(&sfdata->getFieldValue()));
-            VrmlSFNode & thisNode
-                    (static_cast<VrmlSFNode &>(sfdata->getFieldValue()));
+            VrmlSFNode & thisNode =
+                    static_cast<VrmlSFNode &>(sfdata->getFieldValue());
             
             VrmlNodePtr nodePtr = thisNode.get();
             
@@ -3293,8 +3294,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            const VrmlSFRotation & thisRot =
+                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
 
             if (JSVAL_IS_INT(id)) {
                 if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 3) {
@@ -3318,7 +3319,7 @@ namespace {
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
             VrmlSFRotation & thisRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+                    =static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
 
             if (!JSVAL_IS_INT(id)) {
                 return JS_FALSE;
@@ -3365,8 +3366,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            const VrmlSFRotation & thisRot =
+                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
             sfdata = 0;
             
             JSObject * const robj =
@@ -3378,8 +3379,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            VrmlSFVec3f & resultVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             try {
                 resultVec = thisRot.getAxis();
@@ -3401,8 +3402,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            const VrmlSFRotation & thisRot =
+                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
             sfdata = 0;
 
             JSObject * const robj =
@@ -3416,8 +3417,8 @@ namespace {
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>
                         (&sfdata->getFieldValue()));
-            VrmlSFRotation & resultRot
-                (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            VrmlSFRotation & resultRot =
+                static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
 
             try {
                 resultRot = thisRot.inverse();
@@ -3441,8 +3442,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            const VrmlSFRotation & thisRot =
+                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
             sfdata = 0;
 
             //
@@ -3458,8 +3459,8 @@ namespace {
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & argRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            const VrmlSFRotation & argRot =
+                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
             
             //
             // Construct the result object.
@@ -3474,8 +3475,8 @@ namespace {
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>
                         (&sfdata->getFieldValue()));
-            VrmlSFRotation & resultRot
-                (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            VrmlSFRotation & resultRot =
+                static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
             
             try {
                 resultRot = thisRot.multiply(argRot);
@@ -3499,8 +3500,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            const VrmlSFRotation & thisRot =
+                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -3515,8 +3516,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & argVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -3531,8 +3532,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            VrmlSFVec3f & resultVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             try {
                 resultVec = thisRot.multVec(argVec);
@@ -3556,8 +3557,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            VrmlSFRotation & thisRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            VrmlSFRotation & thisRot =
+                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -3573,8 +3574,8 @@ namespace {
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & argVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             thisRot.setAxis(argVec); // XXX Throws? Nah ...
             
@@ -3591,8 +3592,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            const VrmlSFRotation & thisRot =
+                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -3608,8 +3609,8 @@ namespace {
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & argRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            const VrmlSFRotation & argRot =
+                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -3633,8 +3634,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            VrmlSFRotation & resultRot
-                    (static_cast<VrmlSFRotation &>(sfdata->getFieldValue()));
+            VrmlSFRotation & resultRot =
+                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
             
             try {
                 resultRot = thisRot.slerp(argRot, factor);
@@ -3780,8 +3781,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & thisVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
 
             if (JSVAL_IS_INT(id)) {
                 if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 1) {
@@ -3801,8 +3802,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & thisVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            VrmlSFVec2f & thisVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             
             if (!JSVAL_IS_INT(id)) {
                 return JS_FALSE;
@@ -3830,8 +3831,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & thisVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -3847,8 +3848,8 @@ namespace {
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & argVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & argVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -3863,8 +3864,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            VrmlSFVec2f & resultVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
 
             resultVec = thisVec.add(argVec); // XXX Throws? Nah ...
             
@@ -3880,8 +3881,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & thisVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -3906,8 +3907,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            VrmlSFVec2f & resultVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
 
             resultVec = thisVec.divide(divisor); // XXX throws? nah...
 
@@ -3923,8 +3924,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & thisVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -3940,8 +3941,8 @@ namespace {
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & argVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & argVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             sfdata = 0;
 
             *rval = DOUBLE_TO_JSVAL(thisVec.dot(argVec));
@@ -3954,8 +3955,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & thisVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             
             if (!JS_NewDoubleValue(cx, thisVec.length(), rval)) {
                 return JS_FALSE;
@@ -3972,8 +3973,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & thisVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -3997,8 +3998,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            VrmlSFVec2f & resultVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.multiply(factor); // XXX throws? nah...
             
@@ -4012,8 +4013,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & thisVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4028,8 +4029,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            VrmlSFVec2f & resultVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.negate(); // XXX Throws? Nah ...
             
@@ -4043,8 +4044,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & thisVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4059,8 +4060,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            VrmlSFVec2f & resultVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.normalize(); // XXX Throws? Nah ...
             
@@ -4076,8 +4077,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & thisVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4093,8 +4094,8 @@ namespace {
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & argVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            const VrmlSFVec2f & argVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4109,8 +4110,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec
-                    (static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()));
+            VrmlSFVec2f & resultVec =
+                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.subtract(argVec); // XXX Throws? Nah ...
             
@@ -4245,8 +4246,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             if (JSVAL_IS_INT(id)) {
                 if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 2) {
@@ -4266,8 +4267,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
 
             if (!JSVAL_IS_INT(id)) {
                 return JS_FALSE;
@@ -4293,8 +4294,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4310,8 +4311,8 @@ namespace {
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & argVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4326,8 +4327,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            VrmlSFVec3f & resultVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.add(argVec); // XXX Throws? Nah ...
             
@@ -4343,8 +4344,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4360,8 +4361,8 @@ namespace {
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & argVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4377,8 +4378,8 @@ namespace {
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            VrmlSFVec3f & resultVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.cross(argVec); // XXX Throws? Nah ...
             
@@ -4394,8 +4395,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4419,8 +4420,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            VrmlSFVec3f & resultVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.divide(divisor); // XXX Throws? Nah ...
             
@@ -4436,8 +4437,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4453,8 +4454,8 @@ namespace {
                     (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & argVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
 
             *rval = DOUBLE_TO_JSVAL(thisVec.dot(argVec));
             return JS_TRUE;
@@ -4466,8 +4467,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             if (!JS_NewDoubleValue(cx, thisVec.length(), rval)) {
                 return JS_FALSE;
@@ -4484,8 +4485,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4509,8 +4510,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            VrmlSFVec3f & resultVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.multiply(factor); // XXX Throws? Nah ...
             
@@ -4524,8 +4525,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4540,8 +4541,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            VrmlSFVec3f & resultVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.negate(); // Throws? Nah ...
             
@@ -4555,8 +4556,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4571,8 +4572,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            VrmlSFVec3f & resultVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.normalize(); // XXX Throws? Nah ...
             
@@ -4588,8 +4589,8 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & thisVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4605,8 +4606,8 @@ namespace {
                     (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            const VrmlSFVec3f & argVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             sfdata = 0;
             
             //
@@ -4621,8 +4622,8 @@ namespace {
             sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
             assert(sfdata);
             assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec
-                    (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+            VrmlSFVec3f & resultVec =
+                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
             
             resultVec = thisVec.subtract(argVec); // XXX Throws? Nah ...
             
@@ -5229,7 +5230,7 @@ namespace {
                   JS_EnumerateStub, JS_ResolveStub,
                   JS_ConvertStub, finalize };
         
-        JSClass & MFColor::sfjsclass(SFColor::jsclass);
+        JSClass & MFColor::sfjsclass = SFColor::jsclass;
         
         VrmlMFColor * MFColor::createFromJSObject(JSContext * const cx,
                                                   JSObject * const obj) {
