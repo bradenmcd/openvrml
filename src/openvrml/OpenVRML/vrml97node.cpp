@@ -465,8 +465,7 @@ namespace {
     {
         typename FieldValueMap::iterator itr = this->fieldValueMap.find(id);
         if (itr == this->fieldValueMap.end()) {
-            throw UnsupportedInterface(node.nodeType.id
-                                        + " node has no field " + id);
+            throw UnsupportedInterface(node.nodeType, NodeInterface::field, id);
         }
         itr->second->dereference(node).assign(newVal);
     }
@@ -480,8 +479,7 @@ namespace {
         const typename FieldValueMap::const_iterator itr =
                 this->fieldValueMap.find(id);
         if (itr == this->fieldValueMap.end()) {
-            throw UnsupportedInterface(node.nodeType.id + " node has no field "
-                                       + id);
+            throw UnsupportedInterface(node.nodeType, NodeInterface::field, id);
         }
         return itr->second->dereference(node);
     }
@@ -500,8 +498,9 @@ namespace {
             itr = this->eventInHandlerMap.find("set_" + id);
         }
         if (itr == this->eventInHandlerMap.end()) {
-            throw UnsupportedInterface(node.nodeType.id
-                                        + " node has no eventIn " + id);
+            throw UnsupportedInterface(node.nodeType,
+                                       NodeInterface::eventIn,
+                                       id);
         }
         (node.*(itr->second))(value, timestamp);
     }
@@ -519,8 +518,9 @@ namespace {
             itr = this->eventOutValueMap.find(id + "_changed");
         }
         if (itr == this->eventOutValueMap.end()) {
-            throw UnsupportedInterface(node.nodeType.id
-                                        + " node has no eventOut " + id);
+            throw UnsupportedInterface(node.nodeType,
+                                       NodeInterface::eventOut,
+                                       id);
         }
         return itr->second->dereference(node);
     }

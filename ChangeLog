@@ -1,3 +1,8 @@
+2002-12-23  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/vrml97node.cpp:  Use newer
+          UnsupportedInterface constructor.
+
 2002-12-21  Braden McDaniel  <braden@endoframe.com>
 
         * m4/gl.m4:  Only use $x_includes and $x_libraries if those
@@ -5,6 +10,9 @@
 
         * README, configure.ac, doc/Doxyfile:  Updated version number to
           0.13.99 (pre-release).
+
+        * src/openvrml/OpenVRML/vrml97node.cpp:  Fixed justify "END"
+          for horizontal major alignment.
 
 2002-12-20  S. K. Bose  <bose@pavan.barc.ernet.in>
 
