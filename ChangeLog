@@ -1,3 +1,12 @@
+2001-06-13  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * In "VrmlNodePtr.h" as "pointer" is not a member of std::map 
+          (though it is in standard) in containers library of MSVC++6.0,
+          "value_type" can be used (it is also in standard). Though 
+          I have used "WIN32" preprocessing directive for making 
+          equivalent of "countPtr", but I hope this will work for other 
+          compiler as well.
+ 
 2001-06-12  Braden McDaniel <braden@endoframe.com>
 
         * Used classes and namespaces to organize functions in the

@@ -45,7 +45,12 @@ class OPENVRML_SCOPE VrmlNodePtr {
 
     friend class VrmlNodeScript;
 
+#if defined(_WIN32)
+     typedef CountMap::value_type Value;
+     Value* countPtr; 
+#else
     CountMap::pointer countPtr;
+#endif
 
 public:
     explicit VrmlNodePtr(VrmlNode * node = 0);
