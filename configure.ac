@@ -4,6 +4,8 @@ AM_INIT_AUTOMAKE([$PACKAGE_TARNAME], [$PACKAGE_VERSION])
 
 AM_CONFIG_HEADER([config.h])
 
+REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
+
 #
 # Checks for programs.
 #
@@ -36,7 +38,7 @@ AC_CHECK_LIB([jpeg], [jpeg_read_header],
 AC_CHECK_HEADER([jpeglib.h], ,
                 [have_libjpeg=no])
 
-PKG_CHECK_MODULES([JS], [mozilla-js >= 1.2.1], , [have_js=no])
+PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
 
 OV_WITH_GL
 OV_WITH_GLUT
@@ -82,6 +84,10 @@ else
   if test "X$have_js" = "Xno"; then
     AC_MSG_ERROR([Mozilla JavaScript is required for Script node JavaScript support.])
   fi
+  if test -n "${OPENVRML_PKG_REQUIRES}"; then
+    REQUIRE_MOZILLA_JS="${OPENVRML_PKG_REQUIRES},"
+  fi
+  OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_MOZILLA_JS}"
   AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1], [Defined if Script node JavaScript support is enabled.])
 fi
 AC_SUBST([JS_CFLAGS])
@@ -172,6 +178,8 @@ if test "X$with_ftflib" = "Xyes"; then
     AC_MSG_ERROR([At least SerifPlain, SansPlain and TypewriterPlain fonts must exist to support font. Check TrueType (*.ttf) or Type1 (*.pfa,*.pfb) in your system.])
   fi
 fi
+
+AC_SUBST([OPENVRML_PKG_REQUIRES])
     
 AC_OUTPUT([Makefile \
 doc/Makefile \

@@ -5,6 +5,7 @@ includedir=@includedir@
 
 Name: OpenVRML
 Description: VRML97 run-time library.
-Version: @VERSION@
-Libs: -L${libdir} -lopenvrml @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @JS_LIBS@ @JNI_LIBS@
+Version: @PACKAGE_VERSION@
+Requires: @OPENVRML_PKG_REQUIRES@
+Libs: -L${libdir} -lopenvrml @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @JNI_LIBS@
 Cflags: -I${includedir}
