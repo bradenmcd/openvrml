@@ -560,7 +560,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
       glDisable( GL_LIGHTING );
 
       glPushMatrix();
-      glLoadIdentity();
+//      glLoadIdentity();
 
       // Undo translation
 //      glTranslatef( d_position[0], d_position[1], d_position[2] );
