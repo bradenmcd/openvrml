@@ -23,7 +23,7 @@
 # endif
 
 # include "private.h"
-# include "MathUtils.h"
+# include "basetypes.h"
 # include "VrmlFrustum.h"
 
 namespace OpenVRML {
@@ -154,8 +154,7 @@ void VrmlFrustum::update()
     float NT =  z_near * cy;
     float NB = -NT;
 
-    float tmp0[3];
-    float tmp1[3];
+    vec3f tmp0, tmp1;
 
     tmp0[0] = NL;
     tmp0[1] = NB;
@@ -165,8 +164,11 @@ void VrmlFrustum::update()
     tmp1[1] = NT;
     tmp1[2] = -z_near;
 
-    Vcross(left_plane, tmp0, tmp1);
-    normalize(left_plane);
+    vec3f v;
+    v = (tmp0 * tmp1).normalize();
+    left_plane[0] = v.x();
+    left_plane[1] = v.y();
+    left_plane[2] = v.z();
     left_plane[3] = 0;
 
     right_plane[0] = -left_plane[0];
@@ -182,8 +184,10 @@ void VrmlFrustum::update()
     tmp1[1] = NT;
     tmp1[2] = -z_near;
 
-    Vcross(top_plane, tmp0, tmp1);
-    normalize(top_plane);
+    v = (tmp0 * tmp1).normalize();
+    top_plane[0] = v.x();
+    top_plane[1] = v.y();
+    top_plane[2] = v.z();
     top_plane[3] = 0;
 
     bot_plane[0] = 0;

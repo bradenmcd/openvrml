@@ -45,7 +45,6 @@ extern "C" {
 # include "Audio.h"
 # include "sound.h"
 # include "private.h"
-# include "MathUtils.h"
 # include "System.h"
 
 /**
@@ -6522,7 +6521,7 @@ void IndexedFaceSet::recalcBSphere()
     if (coordinateNode) {
         const std::vector<vec3f> & coord = coordinateNode->getPoint();
         this->bsphere.reset();
-        this->bsphere.enclose(&coord[0][0], coord.size());
+        this->bsphere.enclose(coord);
     }
     this->setBVolumeDirty(false);
 }

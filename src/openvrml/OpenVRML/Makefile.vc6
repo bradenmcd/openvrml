@@ -268,7 +268,7 @@ LINKFLAGS = wsock32.lib /nologo /subsystem:windows /dll /incremental:no\
 OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\browser$(O) $(BINOUTDIR)\bvolume$(O) \
        $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOUTDIR)\dummysound$(O)\
        $(BINOUTDIR)\field$(O) $(BINOUTDIR)\fieldvalueptr$(O) $(BINOUTDIR)\Image$(O)\
-       $(BINOUTDIR)\MathUtils$(O) $(BINOUTDIR)\node$(O) $(BINOUTDIR)\nodeclassptr$(O)\
+       $(BINOUTDIR)\node$(O) $(BINOUTDIR)\nodeclassptr$(O)\
        $(BINOUTDIR)\nodeptr$(O) $(BINOUTDIR)\nodetypeptr$(O) $(BINOUTDIR)\scope$(O) \
        $(BINOUTDIR)\scopeptr$(O) $(BINOUTDIR)\script$(O) $(BINOUTDIR)\ScriptJDK$(O) \
        $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O) $(BINOUTDIR)\vrml97node$(O)\
@@ -342,7 +342,7 @@ $(BINOUTDIR)\browser.obj :  $(SOURCE)\browser.cpp $(SOURCE)\browser.h\
 !ENDIF
                               $(SOURCE)\Doc2.hpp $(SOURCE)\System.h\
                               $(SOURCE)\Viewer.h $(SOURCE)\private.h \
-                              $(SOURCE)\MathUtils.h $(SOURCE)\scope.h\
+                              $(SOURCE)\scope.h\
                               $(SOURCE)\vrml97node.h\
                               $(SOURCE)\VrmlRenderContext.h\
                               $(SOURCE)\script.h\
@@ -355,7 +355,6 @@ $(BINOUTDIR)\browser.obj :  $(SOURCE)\browser.cpp $(SOURCE)\browser.h\
 $(BINOUTDIR)\bvolume.obj : $(SOURCE)\bvolume.cpp $(SOURCE)\bvolume.h\
                            $(SOURCE)\private.h $(SOURCE)\field.h\
                            $(SOURCE)\VrmlMatrix.h $(SOURCE)\VrmlFrustum.h\
-                           $(SOURCE)\MathUtils.h                							
                            $(CPP) $(CFLAGS) $(SOURCE)\bvolume.cpp
 
 $(BINOUTDIR)\Doc.obj :  $(SOURCE)\Doc.cpp $(SOURCE)\Doc.h $(SOURCE)\common.h\
@@ -397,15 +396,11 @@ $(BINOUTDIR)\Image.obj : $(SOURCE)\Image.cpp $(SOURCE)\Image.h $(SOURCE)\common.
 !ENDIF
                          /I .\ /D XMD_H $(SOURCE)\Image.cpp
 						   						   							 
-$(BINOUTDIR)\MathUtils.obj : $(SOURCE)\MathUtils.cpp $(SOURCE)\MathUtils.h 
-                             $(CPP) $(CFLAGS) $(SOURCE)\MathUtils.cpp
-
 $(BINOUTDIR)\node.obj :  $(SOURCE)\node.cpp $(SOURCE)\node.h\
                          $(SOURCE)\field.h\
                          $(SOURCE)\fieldvalueptr.h\
                          $(SOURCE)\nodetypeptr.h\
                          $(SOURCE)\doc2.hpp\
-                         $(SOURCE)\MathUtils.h\
                          $(SOURCE)\bvolume.h\
                          $(SOURCE)\browser.h\
                          $(SOURCE)\VrmlRenderContext.h\
@@ -466,7 +461,6 @@ $(BINOUTDIR)\script.obj : $(SOURCE)\script.cpp $(SOURCE)\script.h\
 $(BINOUTDIR)\ScriptJDK.obj : $(SOURCE)\ScriptJDK.cpp $(SOURCE)\ScriptJDK.h\
                              $(SOURCE)\common.h\
                              $(SOURCE)\doc2.hpp\
-                             $(SOURCE)\MathUtils.h\
                              $(SOURCE)\System.h\
                              $(SOURCE)\script.h\
                              $(SOURCE)\node.h\
@@ -484,7 +478,6 @@ $(BINOUTDIR)\System.obj : $(SOURCE)\System.cpp $(SOURCE)\System.h $(SOURCE)\comm
                           $(CPP) $(CFLAGS) $(SOURCE)\System.cpp
 
 $(BINOUTDIR)\Viewer.obj : $(SOURCE)\Viewer.cpp $(SOURCE)\Viewer.h\
-                          $(SOURCE)\MathUtils.h\
                           $(SOURCE)\private.h\
                           $(SOURCE)\VrmlFrustum.h\
                           $(SOURCE)\node.h\
@@ -499,7 +492,6 @@ $(BINOUTDIR)\vrml97node.obj : $(SOURCE)\vrml97node.cpp $(SOURCE)\vrml97node.h \
                               $(SOURCE)\doc2.hpp\
                               $(SOURCE)\Audio.h\
                               $(SOURCE)\Sound.h\
-                              $(SOURCE)\MathUtils.h\
                               $(SOURCE)\Viewer.h\
                               $(SOURCE)\field.h\
                               $(SOURCE)\Image.h\
@@ -514,7 +506,7 @@ $(BINOUTDIR)\vrml97node.obj : $(SOURCE)\vrml97node.cpp $(SOURCE)\vrml97node.h \
                               $(SOURCE)\vrml97node.cpp
 
 $(BINOUTDIR)\VrmlFrustum.obj : $(SOURCE)\VrmlFrustum.cpp $(SOURCE)\VrmlFrustum.h\
-                               $(SOURCE)\MathUtils.h $(SOURCE)\common.h 							
+                               $(SOURCE)\common.h 							
                                $(CPP) $(CFLAGS) /I .\ $(SOURCE)\VrmlFrustum.cpp
 
 

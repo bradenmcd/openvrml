@@ -22,6 +22,7 @@
 #   define OPENVRML_BVOLUME_H
 
 #   include <iosfwd>
+#   include <vector>
 #   include <OpenVRML/basetypes.h>
 
 namespace OpenVRML {
@@ -44,7 +45,7 @@ namespace OpenVRML {
         virtual void extend(const vec3f & p) = 0;
         virtual void extend(const AABox & b) = 0;
         virtual void extend(const BSphere & b) = 0;
-        virtual void enclose(const float* p, int n) = 0;
+        virtual void enclose(const std::vector<vec3f> & points) = 0;
         virtual void orthoTransform(const mat4f & M) = 0;
         virtual void transform(const mat4f & M) = 0;
     };
@@ -67,7 +68,7 @@ namespace OpenVRML {
         virtual void extend(const vec3f & p);
         virtual void extend(const AABox & b);
         virtual void extend(const BSphere & b);
-        virtual void enclose(const float* p, int n);
+        virtual void enclose(const std::vector<vec3f> & points);
 
         virtual bool isMAX() const;
         virtual void setMAX();
@@ -92,7 +93,7 @@ namespace OpenVRML {
         virtual void extend(const vec3f & p);
         virtual void extend(const AABox & b);
         virtual void extend(const BSphere & b);
-        virtual void enclose(const float* p, int n);
+        virtual void enclose(const std::vector<vec3f> & points);
         virtual bool isMAX() const;
         virtual void setMAX();
         virtual void orthoTransform(const mat4f & M);

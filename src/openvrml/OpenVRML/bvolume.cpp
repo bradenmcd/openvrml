@@ -23,7 +23,6 @@
 # include "bvolume.h"
 # include "field.h"
 # include "VrmlFrustum.h"
-# include "MathUtils.h"
 
 namespace OpenVRML {
 
@@ -162,14 +161,13 @@ BVolume::~BVolume() {}
  */
 
 /**
- * @fn void BVolume::enclose(const float * p, int n)
+ * @fn void BVolume::enclose(const std::vector<vec3f> & points)
  *
  * @brief Enclose the given set of points.
  *
  * This resets the volume from any previous values.
  *
- * @param p array of floats, each set of 3 represents a point
- * @param n number of points (not number of floats!)
+ * @param points    points.
  */
 
 /**
@@ -450,8 +448,14 @@ void BSphere::extend(const BSphere & b)
     this->center = vec3f(cx, cy, cz);
 }
 
-
-void BSphere::enclose(const float* p, int n)
+/**
+ * @brief Enclose the given set of points.
+ *
+ * This resets the volume from any previous values.
+ *
+ * @param points    points.
+ */
+void BSphere::enclose(const std::vector<vec3f> & points)
 {
     // doing an extend() for each point is ok, but there are
     // faster algorithms reference "An Efficient Bounding Sphere"
@@ -459,42 +463,44 @@ void BSphere::enclose(const float* p, int n)
     // passes over the points, so it isn't appropriate for incremental
     // updates, but it would be good here...
     // for(int i=0; i<n; ++i)
-    // this->extend(&p[i*3]);
+    // this->extend(&p[i]);
     //
 
     this->reset();
 
-    if (n < 1) { return; }
+    if (points.size() < 1) { return; }
 
-    const float* min_p[3] = { &p[0], &p[0], &p[0] };
-    const float* max_p[3] = { &p[0], &p[0], &p[0] };
+    const vec3f * min_p[3] = { &points[0], &points[0], &points[0] };
+    const vec3f * max_p[3] = { &points[0], &points[0], &points[0] };
 
-    // find the 6 points with: minx, maxx, miny, maxy, minz, maxz
     //
-    int i;
-    for (i=1; i<n; ++i) {
-        const float* pi = &p[i*3];
-        if (pi[0] < (min_p[0])[0]) min_p[0] = pi;
-        if (pi[1] < (min_p[1])[1]) min_p[1] = pi;
-        if (pi[2] < (min_p[2])[2]) min_p[2] = pi;
+    // Find the 6 points with: minx, maxx, miny, maxy, minz, maxz.
+    //
+    size_t i;
+    for (i = 1; i < points.size(); ++i) {
+        const vec3f & pi = points[i];
+        if (pi.x() < min_p[0]->x()) { min_p[0] = &pi; }
+        if (pi.y() < min_p[1]->y()) { min_p[1] = &pi; }
+        if (pi.z() < min_p[2]->z()) { min_p[2] = &pi; }
 
-        if (pi[0] > (max_p[0])[0]) max_p[0] = pi;
-        if (pi[1] > (max_p[1])[1]) max_p[1] = pi;
-        if (pi[2] > (max_p[2])[2]) max_p[2] = pi;
+        if (pi.x() > max_p[0]->x()) { max_p[0] = &pi; }
+        if (pi.y() > max_p[1]->y()) { max_p[1] = &pi; }
+        if (pi.z() > max_p[2]->z()) { max_p[2] = &pi; }
     }
 
-    // pick the two points most distant from one another
     //
-    float span[3];
-    Vdiff(span, max_p[0], min_p[0]);
-    float dx = span[0]*span[0] + span[1]*span[1] + span[2]*span[2];
-    Vdiff(span, max_p[1], min_p[1]);
-    float dy = span[0]*span[0] + span[1]*span[1] + span[2]*span[2];
-    Vdiff(span, max_p[2], min_p[2]);
-    float dz = span[0]*span[0] + span[1]*span[1] + span[2]*span[2];
+    // Pick the two points most distant from one another.
+    //
+    vec3f span;
+    span = *max_p[0] - *min_p[0];
+    float dx = span.dot(span);
+    span = *max_p[1] - *min_p[1];
+    float dy = span.dot(span);
+    span = *max_p[2] - *min_p[2];
+    float dz = span.dot(span);
 
-    const float* max_span0 = min_p[0];
-    const float* max_span1 = max_p[0];
+    const vec3f * max_span0 = min_p[0];
+    const vec3f * max_span1 = max_p[0];
     float max_span_dist = dx;
     if (dy > max_span_dist) {
         max_span0 = min_p[1];
@@ -507,15 +513,11 @@ void BSphere::enclose(const float* p, int n)
         max_span_dist = dz;
     }
 
-    this->center.x((max_span0[0] + max_span1[0]) / 2.0);
-    this->center.y((max_span0[1] + max_span1[2]) / 2.0);
-    this->center.z((max_span0[2] + max_span1[2]) / 2.0);
+    this->center = (*max_span0 + *max_span1) / 2.0;
 
     this->radius = float(sqrt(this->center.dot(this->center)));
 
-    for (i=0; i<n; ++i) {
-        this->extend(vec3f(p[i * 3], p[i * 3 + 1], p[i * 3 + 2]));
-    }
+    for (i = 0; i < points.size(); ++i) { this->extend(points[i]); }
 }
 
 
@@ -641,10 +643,17 @@ AABox::extend(const BSphere& b)
 {
 }
 
-void
-AABox::enclose(const float* p, int n)
-{
-}
+/**
+ * @brief Enclose the given set of points.
+ *
+ * This resets the volume from any previous values.
+ *
+ * @param points    points.
+ *
+ * @todo Implement me!
+ */
+void AABox::enclose(const std::vector<vec3f> & points)
+{}
 
 void
 AABox::setMAX()

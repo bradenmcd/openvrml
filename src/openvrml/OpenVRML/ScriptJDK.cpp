@@ -89,7 +89,6 @@
 #   include <vrml_node_Script.h>
 
 #   include "doc2.hpp"
-#   include "MathUtils.h"
 #   include "System.h"
 #   include "script.h"
 #   include "browser.h"

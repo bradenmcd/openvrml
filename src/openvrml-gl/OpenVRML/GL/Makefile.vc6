@@ -98,7 +98,6 @@ $(GLBINOUTDIR)\OpenGLEvent.obj :  $(GLSOURCE)\OpenGLEvent.cpp \
 $(GLBINOUTDIR)\ViewerOpenGL.obj :  $(GLSOURCE)\ViewerOpenGL.cpp\
 						$(CORESOURCE)\system.h\
 						$(CORESOURCE)\viewer.h\
-						$(CORESOURCE)\MathUtils.h\
 						$(CORESOURCE)\browser.h\
 						$(CORESOURCE)\vrml97node.h\
 						$(CORESOURCE)\bvolume.h\

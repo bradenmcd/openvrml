@@ -36,7 +36,6 @@
 # include "browser.h"
 # include "doc2.hpp"
 # include "Viewer.h"
-# include "MathUtils.h"
 # include "scope.h"
 # include "VrmlRenderContext.h"
 # include "script.h"

@@ -21,14 +21,12 @@
 //  Abstract base class for display of VRML models
 //
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
-#include "Viewer.h"
-#include "private.h"
-#include "MathUtils.h"
-#include "browser.h"
+# include "Viewer.h"
+# include "private.h"
 
 namespace OpenVRML {
 

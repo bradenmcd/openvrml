@@ -27,7 +27,6 @@
 # include "node.h"
 # include "scope.h"
 # include "browser.h"
-# include "MathUtils.h"
 # include "bvolume.h"
 # include "VrmlRenderContext.h"
 # include "doc2.hpp"

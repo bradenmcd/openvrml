@@ -1,3 +1,21 @@
+2003-03-27  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml/OpenVRML/Makefile.vc6,
+          src/openvrml/OpenVRML/MathUtils.cpp,
+          src/openvrml/OpenVRML/MathUtils.h,
+          src/openvrml/OpenVRML/ScriptJDK.cpp,
+          src/openvrml/OpenVRML/Viewer.cpp,
+          src/openvrml/OpenVRML/VrmlFrustum.cpp,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/bvolume.cpp,
+          src/openvrml/OpenVRML/bvolume.h,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml-gl/OpenVRML/GL/Makefile.vc6,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Removed
+          remaining dependencies on MathUtils.*.
+
 2003-03-26  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac:  Use AC_HELP_STRING for help strings.

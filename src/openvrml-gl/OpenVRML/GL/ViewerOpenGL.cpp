@@ -37,10 +37,8 @@
 #   include <GL/glu.h>
 # endif
 
-# include <stdio.h> // sprintf
 # include <math.h>
 
-# include <OpenVRML/MathUtils.h>
 # include <OpenVRML/System.h>
 # include <OpenVRML/browser.h>
 # include <OpenVRML/vrml97node.h>
@@ -538,17 +536,16 @@ void ViewerOpenGL::getUserNavigation(mat4f & M)
 
 namespace {
     // Generate a normal from 3 indexed points.
-    void indexFaceNormal(const int i1,
-                         const int i2,
-                         const int i3,
-                         const float * const p,
-                         float * N)
+    const vec3f indexFaceNormal(const int i1,
+                                const int i2,
+                                const int i3,
+                                const std::vector<vec3f> & points)
     {
         float V1[3], V2[3];
 
-        Vdiff(V1, &p[i2], &p[i3]);
-        Vdiff(V2, &p[i2], &p[i1]);
-        Vcross(N, V1, V2);
+        const vec3f v1 = points[i2] - points[i3];
+        const vec3f v2 = points[i2] - points[i1];
+        return v1 * v2;
     }
 }
 
@@ -1174,13 +1171,13 @@ namespace {
 
     // Compute a normal at vert i,j of an ElevationGrid.
 
-    void elevationVertexNormal(const int i, const int j,
-                               const int nx, const int nz,
-                               const float dx, const float dz,
-                               const std::vector<float>::const_iterator height,
-                               float N[])
+    const vec3f elevationVertexNormal(
+            const int i, const int j,
+            const int nx, const int nz,
+            const float dx, const float dz,
+            const std::vector<float>::const_iterator height)
     {
-        float Vx[3], Vz[3];
+        vec3f Vx, Vz;
 
         if (i > 0 && i < nx - 1) {
             Vx[0] = 2.0 * dx;
@@ -1206,7 +1203,7 @@ namespace {
             Vz[2] = dz;
         }
 
-        Vcross(N, Vz, Vx);
+        return Vz * Vx;
     }
 }
 
@@ -1281,13 +1278,12 @@ ViewerOpenGL::insertElevationGrid(const unsigned int mask,
                 glNormal3fv(&(*n)[0]);
             } else if (normal.empty()) {
                 if (mask & MASK_NORMAL_PER_VERTEX) {
-                    float N[3];
-                    elevationVertexNormal(i, j,
-                                          xDimension, zDimension,
-                                          xSpacing, zSpacing,
-                                          h,
-                                          N);
-                    glNormal3fv(N);
+                    const vec3f N =
+                            elevationVertexNormal(i, j,
+                                                  xDimension, zDimension,
+                                                  xSpacing, zSpacing,
+                                                  h);
+                    glNormal3fv(&N[0]);
                 } else if (i < xDimension - 1) {
                     //
                     // Normal per face.
@@ -1320,13 +1316,12 @@ ViewerOpenGL::insertElevationGrid(const unsigned int mask,
                 if (!normal.empty()) {
                     glNormal3fv(&(*(n + xDimension))[0]);
                 } else {
-                    float N[3];
-                    elevationVertexNormal(i, j + 1,
-                                          xDimension, zDimension,
-                                          xSpacing, zSpacing,
-                                          h + xDimension,
-                                          N);
-                    glNormal3fv(N);
+                    const vec3f N =
+                            elevationVertexNormal(i, j + 1,
+                                                  xDimension, zDimension,
+                                                  xSpacing, zSpacing,
+                                                  h + xDimension);
+                    glNormal3fv(&N[0]);
                 }
             }
 
@@ -1370,7 +1365,7 @@ namespace {
         float tcDeltaU, tcDeltaV;
         float tcScaleU, tcScaleV;
         int vOffset;
-        float N[3]; // Normal
+        vec3f N; // Normal
     };
 
     void OPENVRML_GL_CALLBACK_ tessExtrusionBegin(const GLenum type, void * const pdata)
@@ -1434,7 +1429,7 @@ void ViewerOpenGL::insertExtrusionCaps(const unsigned int mask,
                                      xz[0], xz[2],
                                      dx, dz,
                                      0 };
-            indexFaceNormal(0, 1, 2, &c[0][0], bottom.N);
+            bottom.N = indexFaceNormal(0, 1, 2, c);
 
             gluTessBeginPolygon(this->tesselator, &bottom);
             gluTessBeginContour(this->tesselator);
@@ -1458,7 +1453,7 @@ void ViewerOpenGL::insertExtrusionCaps(const unsigned int mask,
                                   xz[0], xz[2],
                                   dx, dz,
                                   n };
-            indexFaceNormal(3 * n + 2, 3 * n + 1, 3 * n, &c[0][0], top.N);
+            top.N = indexFaceNormal(n + 2, n + 1, n, c);
 
             gluTessBeginPolygon(this->tesselator, &top);
             gluTessBeginContour(this->tesselator);
@@ -1479,12 +1474,12 @@ void ViewerOpenGL::insertExtrusionCaps(const unsigned int mask,
         //
         // Convex (or not GLU1.2 ...)
         //
-        float N[3];                        // Normal
+        vec3f N; // Normal
 
         if (mask & MASK_BOTTOM) {
             glBegin(GL_POLYGON);
-            indexFaceNormal(0, 1, 2, &c[0][0], N);
-            glNormal3fv(N);
+            N = indexFaceNormal(0, 1, 2, c);
+            glNormal3fv(&N[0]);
 
             for (int j = cs.size() - 1; j >= 0; --j) {
                 glTexCoord2f((cs[j].x() - xz[0]) * dx,
@@ -1497,8 +1492,8 @@ void ViewerOpenGL::insertExtrusionCaps(const unsigned int mask,
         if (mask & MASK_TOP) {
             int n = (nSpine - 1) * cs.size();
             glBegin(GL_POLYGON);
-            indexFaceNormal(3 * n + 2, 3 * n + 1, 3 * n, &c[0][0], N);
-            glNormal3fv( N );
+            N = indexFaceNormal(n + 2, n + 1, n, c);
+            glNormal3fv(&N[0]);
 
             for (size_t j = 0; j < cs.size(); ++j) {
                 glTexCoord2f((cs[j].x() - xz[0]) * dx,
@@ -1979,122 +1974,120 @@ namespace {
         params[3] = 1.0 / params[3];
     }
 
-
-// Address of _ith entry of indexed triplet array _v. yummy
-#define INDEX_VAL(_v,_i) \
-&((_v).v[ 3*(((_v).ni > 0) ? (_v).i[_i] : (_i)) ])
-
-#define INDEX_VTX_VAL(_v,_f,_i) \
- &((_v).v[ 3*(((_v).ni > 0) ? (_v).i[_i] : (_f)[_i]) ])
-
-    struct IndexData {
-        const float * v; // data values
-        size_t ni; const int32 * i; // number of indices, index pointer
-    };
-
     /**
      * @internal
      */
     struct ShellData {
         unsigned int mask;
-        const float * points;
-        size_t nfaces; const int32 * faces; // face list
-        IndexData texCoord; // texture coordinates and indices
-        IndexData normal; // normals and indices
-        IndexData color; // colors and indices
+        const std::vector<vec3f> & coord;
+        const std::vector<int32> & coordIndex;
+        const std::vector<OpenVRML::color> & color;
+        const std::vector<int32> & colorIndex;
+        const std::vector<vec3f> & normal;
+        const std::vector<int32> & normalIndex;
+        const std::vector<vec2f> & texCoord;
+        const std::vector<int32> & texCoordIndex;
         int *texAxes;
         float *texParams;
         size_t nf, i;
     };
 
-    void insertShellConvex(ShellData * s)
+    void insertShellConvex(ShellData * const s)
     {
-      float N[3];
-      size_t i, nf = 0;                        // Number of faces
+        vec3f N;
+        size_t i, nf = 0;                        // Number of faces
 
-      for (i = 0; i<s->nfaces; ++i)
-        {
-          if (i == 0 || s->faces[i] == -1)
-            {
-              if (i > 0) glEnd();
-              if (i == s->nfaces-1) break;
+        for (i = 0; i < s->coordIndex.size(); ++i) {
+            if (i == 0 || s->coordIndex[i] == -1) {
+                if (i > 0) { glEnd(); }
+                if (i == s->coordIndex.size() - 1) { break; }
 
-              glBegin(GL_POLYGON);
+                glBegin(GL_POLYGON);
 
-              // Per-face attributes
-              if (s->color.v && ! (s->mask & Viewer::MASK_COLOR_PER_VERTEX))
-                glColor3fv( INDEX_VAL(s->color, nf) );
+                // Per-face attributes
+                if (!s->color.empty()
+                        && !(s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
+                    const size_t index = !s->colorIndex.empty()
+                                       ? s->colorIndex[nf]
+                                       : nf;
+                    glColor3fv(&s->color[index][0]);
+                }
 
-              if (! (s->mask & Viewer::MASK_NORMAL_PER_VERTEX))
-                {
-                  int i1 = (i == 0) ? 0 : i+1;
-                  if (s->normal.v)
-                    glNormal3fv( INDEX_VAL(s->normal, nf) );
-                  else if (i < s->nfaces - 4 &&
-                           s->faces[i1] >= 0 &&
-                           s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
-                    {
-                      indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
-                                       3*s->faces[i1+2], s->points, N );
+                if (! (s->mask & Viewer::MASK_NORMAL_PER_VERTEX)) {
+                    int i1 = (i == 0)
+                           ? 0
+                           : i + 1;
+                    if (!s->normal.empty()) {
+                        const size_t index = !s->normalIndex.empty()
+                                           ? s->normalIndex[nf]
+                                           : nf;
+                        glNormal3fv(&s->normal[index][0]);
+                    } else if (i < s->coordIndex.size() - 4
+                        && s->coordIndex[i1] >= 0
+                        && s->coordIndex[i1 + 1] >= 0
+                        && s->coordIndex[i1 + 2] >= 0) {
+                        N = indexFaceNormal(s->coordIndex[i1],
+                                            s->coordIndex[i1 + 1],
+                                            s->coordIndex[i1 + 2],
+                                            s->coord);
 
-                      // Lukas: flip normal if primitiv-orientation is clockwise
-                      if (!(s->mask & Viewer::MASK_CCW))
-                        for (int k=0;k<3;k++) // flip Normal
-                          N[k] = -N[k];
-                            glNormal3fv( N );
+                        // Flip normal if primitiv-orientation is clockwise
+                        if (!(s->mask & Viewer::MASK_CCW)) { N = -N; }
+                        glNormal3fv(&N[0]);
                     }
                 }
 
-              ++nf;                        //
+                ++nf;
             }
 
-          if (s->faces[i] >= 0)
-            {
-              // Per-vertex attributes
-              if (s->color.v && (s->mask & Viewer::MASK_COLOR_PER_VERTEX) )
-                glColor3fv( INDEX_VTX_VAL(s->color, s->faces, i) );
-
-              if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX)
-                {
-                  if (s->normal.v)
-                    glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
-                  else
-                    ; // Generate per-vertex normal here...
+            if (s->coordIndex[i] >= 0) {
+                // Per-vertex attributes
+                if (!s->color.empty()
+                        && (s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
+                    const size_t index = !s->colorIndex.empty()
+                                       ? s->colorIndex[i]
+                                       : s->coordIndex[i];
+                    glColor3fv(&s->color[index][0]);
                 }
 
-              const float * v = &s->points[3*s->faces[i]];
-              if (s->texCoord.v)
-                {
-                  int tcindex;
-                  if (s->texCoord.ni > 0)
-                    tcindex = 2 * s->texCoord.i[i];
-                  else
-                    tcindex = 2 * s->faces[i];
-                  glTexCoord2f( s->texCoord.v[ tcindex ],
-                                s->texCoord.v[ tcindex+1 ] );
-                }
-              else
-                {
-                  float c0, c1;
-                  c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
-                  c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
-                  glTexCoord2f( c0, c1 );
+                if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX) {
+                    if (!s->normal.empty()) {
+                        const size_t index = !s->normalIndex.empty()
+                                           ? s->normalIndex[i]
+                                           : s->coordIndex[i];
+                        glNormal3fv(&s->normal[index][0]);
+                    } else {
+                        ; // Generate per-vertex normal here...
+                    }
                 }
 
-              glVertex3fv( v );
+                const vec3f & v = s->coord[s->coordIndex[i]];
+                if (!s->texCoord.empty()) {
+                    const size_t index = !s->texCoordIndex.empty()
+                                       ? s->texCoordIndex[i]
+                                       : s->coordIndex[i];
+                    glTexCoord2fv(&s->texCoord[index][0]);
+                } else {
+                    float c0, c1;
+                    c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
+                    c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
+                    glTexCoord2f(c0, c1);
+                }
+
+                glVertex3fv(&v[0]);
             }
         }
 
-      // Watch out for no terminating -1 in face list
-      // two ways to break out:
-      //   i>0 && i==nfaces-1 && faces[i] == -1
-      //   i==nfaces
-      //
-      if (i>=s->nfaces) {
-        if (s->faces[i-1] >= 0) glEnd();
-      } else {
-        if (s->faces[i] >= 0) glEnd();
-      }
+        // Watch out for no terminating -1 in face list
+        // two ways to break out:
+        //   i > 0 && i == coordIndex.size() - 1 && coordIndex[i] == -1
+        //   i == coordIndex.size()
+        //
+        if (i >= s->coordIndex.size()) {
+            if (s->coordIndex[i - 1] >= 0) { glEnd(); }
+        } else {
+            if (s->coordIndex[i] >= 0) { glEnd(); }
+        }
     }
 
     void OPENVRML_GL_CALLBACK_ tessShellBegin(GLenum type, void * pdata)
@@ -2105,29 +2098,33 @@ namespace {
         glBegin(type);
 
         // Per-face attributes
-        if (s->color.v && ! (s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
-            glColor3fv(INDEX_VAL(s->color, s->nf));
+        if (!s->color.empty() && !(s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
+            const size_t index = !s->colorIndex.empty()
+                               ? s->colorIndex[s->nf]
+                               : s->nf;
+            glColor3fv(&s->color[index][0]);
         }
 
         if (!(s->mask & Viewer::MASK_NORMAL_PER_VERTEX)) {
             int i1 = (s->i == 0)
                    ? 0
                    : s->i - 1;
-            if (s->normal.v) {
-                glNormal3fv(INDEX_VAL(s->normal, s->nf));
-            } else if (s->i < s->nfaces - 4
-                    && s->faces[i1] >= 0
-                    && s->faces[i1 + 1] >= 0
-                    && s->faces[i1 + 2] >= 0) {
-                indexFaceNormal(3 * s->faces[i1],
-                                3 * s->faces[i1 + 1],
-                                3 * s->faces[i1 + 2], s->points, N);
-                // Lukas: flip normal if primitiv-orientation is clockwise
-                if (!(s->mask & Viewer::MASK_CCW)) {
-                    // flip Normal
-                    for (size_t k = 0; k < 3; k++) { N[k] = -N[k]; }
-                }
-                glNormal3fv( N );
+            if (!s->normal.empty()) {
+                const size_t index = !s->normalIndex.empty()
+                                   ? s->normalIndex[s->nf]
+                                   : s->nf;
+                glNormal3fv(&s->normal[index][0]);
+            } else if (s->i < s->coordIndex.size() - 4
+                    && s->coordIndex[i1] >= 0
+                    && s->coordIndex[i1 + 1] >= 0
+                    && s->coordIndex[i1 + 2] >= 0) {
+                vec3f normal = indexFaceNormal(s->coordIndex[i1],
+                                               s->coordIndex[i1 + 1],
+                                               s->coordIndex[i1 + 2],
+                                               s->coord);
+                // Flip normal if primitiv-orientation is clockwise.
+                if (!(s->mask & Viewer::MASK_CCW)) { normal = -normal; }
+                glNormal3fv(&normal[0]);
               }
           }
     }
@@ -2138,28 +2135,30 @@ namespace {
         ShellData * s = static_cast<ShellData *>(pdata);
 
         // Per-vertex attributes
-        if (s->color.v && (s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
-            glColor3fv(INDEX_VTX_VAL(s->color, s->faces, i));
+        if (!s->color.empty() && (s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
+            const size_t index = !s->colorIndex.empty()
+                               ? s->colorIndex[i]
+                               : s->coordIndex[i];
+            glColor3fv(&s->color[index][0]);
         }
 
         if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX) {
-            if (s->normal.v) {
-                glNormal3fv(INDEX_VTX_VAL(s->normal, s->faces, i));
+            if (!s->normal.empty()) {
+                const size_t index = !s->normalIndex.empty()
+                                   ? s->normalIndex[i]
+                                   : s->coordIndex[i];
+                glNormal3fv(&s->normal[index][0]);
             } else {
                 ; // Generate per-vertex normal here...
             }
         }
 
-        const float * v = &s->points[3 * s->faces[i]];
-        if (s->texCoord.v) {
-            int tcindex;
-            if (s->texCoord.ni > 0) {
-                tcindex = 2 * s->texCoord.i[i];
-            } else {
-                tcindex = 2 * s->faces[i];
-            }
-            glTexCoord2f(s->texCoord.v[tcindex],
-                         s->texCoord.v[tcindex + 1]);
+        const vec3f & v = s->coord[s->coordIndex[i]];
+        if (!s->texCoord.empty()) {
+            const size_t index = !s->texCoordIndex.empty()
+                               ? s->texCoordIndex[i]
+                               : s->coordIndex[i];
+            glTexCoord2fv(&s->texCoord[index][0]);
         } else {
             float c0, c1;
             c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
@@ -2167,49 +2166,43 @@ namespace {
             glTexCoord2f(c0, c1);
         }
 
-        glVertex3fv(v );
+        glVertex3fv(&v[0]);
     }
 
     void insertShellTess(GLUtesselator * tesselator, ShellData * s)
     {
-      gluTessCallback(tesselator, GLU_TESS_BEGIN_DATA,
-                      reinterpret_cast<TessCB>(tessShellBegin));
-      gluTessCallback(tesselator, GLU_TESS_VERTEX_DATA,
-                      reinterpret_cast<TessCB>(tessShellVertex));
-      gluTessCallback(tesselator, GLU_TESS_END, glEnd);
+        gluTessCallback(tesselator, GLU_TESS_BEGIN_DATA,
+                        reinterpret_cast<TessCB>(tessShellBegin));
+        gluTessCallback(tesselator, GLU_TESS_VERTEX_DATA,
+                        reinterpret_cast<TessCB>(tessShellVertex));
+        gluTessCallback(tesselator, GLU_TESS_END, glEnd);
 
-      size_t i;
-      for (i = 0; i<s->nfaces; ++i)
-        {
-          if (i == 0 || s->faces[i] == -1)
-            {
-              if (i > 0)
-                {
-                  gluTessEndContour(tesselator);
-                  gluTessEndPolygon(tesselator);
-                  ++ s->nf;
+        size_t i;
+        for (i = 0; i < s->coordIndex.size(); ++i) {
+            if (i == 0 || s->coordIndex[i] == -1) {
+                if (i > 0) {
+                    gluTessEndContour(tesselator);
+                    gluTessEndPolygon(tesselator);
+                    ++s->nf;
                 }
-              if (i == s->nfaces-1) break;
-              gluTessBeginPolygon(tesselator, s);
-              gluTessBeginContour(tesselator);
-              s->i = i;
+                if (i == s->coordIndex.size() - 1) { break; }
+                gluTessBeginPolygon(tesselator, s);
+                gluTessBeginContour(tesselator);
+                s->i = i;
             }
 
-          if (s->faces[i] >= 0)
-            {
-              GLdouble v[3];
-              v[0] = s->points[3*s->faces[i]+0];
-              v[1] = s->points[3*s->faces[i]+1];
-              v[2] = s->points[3*s->faces[i]+2];
-              gluTessVertex(tesselator, v, (void*)i);
+            if (s->coordIndex[i] >= 0) {
+                GLdouble v[3] = { s->coord[s->coordIndex[i]].x(),
+                                  s->coord[s->coordIndex[i]].y(),
+                                  s->coord[s->coordIndex[i]].z() };
+                gluTessVertex(tesselator, v, (void*)i);
             }
         }
 
-      // Watch out for no terminating -1 in face list
-      if (i > 1 && s->faces[i-1] >= 0)
-        {
-          gluTessEndContour(tesselator);
-          gluTessEndPolygon(tesselator);
+        // Watch out for no terminating -1 in face list
+        if (i > 1 && s->coordIndex[i - 1] >= 0) {
+            gluTessEndContour(tesselator);
+            gluTessEndPolygon(tesselator);
         }
     }
 }
@@ -2288,10 +2281,11 @@ ViewerOpenGL::insertShell(unsigned int mask,
     // Should build tri strips (probably at the VrmlNode level)...
 
     ShellData s = {
-        mask, &coord[0][0], coordIndex.size(), &coordIndex[0],
-        { &texCoord[0][0], texCoordIndex.size(), &texCoordIndex[0] },
-        { &normal[0][0], normalIndex.size(), &normalIndex[0] },
-        { &color[0][0], colorIndex.size(), &colorIndex[0] },
+        mask,
+        coord, coordIndex,
+        color, colorIndex,
+        normal, normalIndex,
+        texCoord, texCoordIndex,
         texAxes, texParams, 0
     };
 

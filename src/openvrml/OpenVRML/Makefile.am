@@ -29,7 +29,6 @@ libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
 
 libopenvrml_la_SOURCES = \
         basetypes.cpp \
-        MathUtils.cpp \
         Doc.cpp \
         doc2.cpp \
         dummysound.cpp \
@@ -59,7 +58,6 @@ OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = \
         common.h \
         basetypes.h \
-        MathUtils.h \
         Doc.h \
         doc2.hpp \
         Image.h \
