@@ -1,4 +1,0 @@
-proc parse_start { world } {
-    global tool
-    exec ../$tool < $world
-}

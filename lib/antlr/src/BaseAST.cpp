@@ -1,21 +1,22 @@
 /* ANTLR Translator Generator
  * Project led by Terence Parr at http://www.jGuru.com
- * Software rights: http://www.antlr.org/RIGHTS.html
+ * Software rights: http://www.antlr.org/license.html
  *
  * $Id$
  */
+
+#include <iostream>
 
 #include "antlr/config.hpp"
 #include "antlr/AST.hpp"
 #include "antlr/BaseAST.hpp"
 
-#include <typeinfo>
-#include <iostream>
-
 ANTLR_USING_NAMESPACE(std)
 #ifdef ANTLR_CXX_SUPPORTS_NAMESPACE
 namespace antlr {
 #endif
+
+const char* const BaseAST::TYPE_NAME = "BaseAST";
 
 //bool BaseAST::verboseStringConversion;
 //ANTLR_USE_NAMESPACE(std)vector<ANTLR_USE_NAMESPACE(std)string> BaseAST::tokenNames;
@@ -35,12 +36,12 @@ BaseAST::BaseAST(const BaseAST& other)
 
 const char* BaseAST::typeName( void ) const
 {
-	return "BaseAST";
+	return BaseAST::TYPE_NAME;
 }
 
 RefAST BaseAST::clone( void ) const
 {
-	cerr << "BaseAST::clone()" << endl;
+	ANTLR_USE_NAMESPACE(std)cerr << "BaseAST::clone()" << ANTLR_USE_NAMESPACE(std)endl;
 	return nullAST;
 }
 
@@ -59,6 +60,23 @@ void BaseAST::addChild( RefAST c )
 	}
 	else
 		down = c;
+}
+
+size_t BaseAST::getNumberOfChildren() const
+{
+	RefBaseAST t = this->down;
+	size_t n = 0;
+	if( t )
+	{
+		n = 1;
+		while( t->right )
+		{
+			t = t->right;
+			n++;
+		}
+		return n;
+	}
+	return n;
 }
 
 void BaseAST::doWorkForFindAll(
@@ -215,11 +233,11 @@ ANTLR_USE_NAMESPACE(std)vector<RefAST> BaseAST::findAllPartial(RefAST target)
 	return roots;
 }
 
-void BaseAST::setText(const ANTLR_USE_NAMESPACE(std)string& txt)
+void BaseAST::setText( const ANTLR_USE_NAMESPACE(std)string& )
 {
 }
 
-void BaseAST::setType(int type)
+void BaseAST::setType( int )
 {
 }
 
@@ -309,7 +327,12 @@ void BaseAST::toStream( ANTLR_USE_NAMESPACE(std)ostream& out ) const
 
 // this is nasty, but it makes the code generation easier
 ANTLR_API RefAST nullAST;
-extern ANTLR_API AST* const nullASTptr=0;
+
+#if defined(_MSC_VER) && !defined(__ICL) // Microsoft Visual C++
+extern ANTLR_API AST* const nullASTptr = 0;
+#else
+ANTLR_API AST* const nullASTptr = 0;
+#endif
 
 #ifdef ANTLR_CXX_SUPPORTS_NAMESPACE
 }
