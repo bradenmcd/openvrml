@@ -20,8 +20,11 @@ AC_DEFUN(VRML_PATH_PNG,
     AC_LANG_SAVE
     AC_LANG_C
     
+    dnl recent versions of libpng need pow(3M)
+    AC_CHECK_LIBM
+
     ac_save_LDFLAGS="${LFDLAGS}"
-    LDFLAGS="${LDFLAGS} ${ZLIB_CFLAGS} ${png__Ldir}"
+    LDFLAGS="${LDFLAGS} ${ZLIB_CFLAGS} ${png__Ldir} ${LIBM}"
     
     AC_CHECK_LIB(png, png_read_info,
       [
