@@ -1,5 +1,7 @@
 2002-07-18  Thomas Flynn  <tflynn@users.sourceforge.net>
 
+        * Fix a number of problems in the JSAI code.
+
         * Improve output format of SFImage::print.
 
         * Update conformance test results.
