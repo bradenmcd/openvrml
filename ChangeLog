@@ -3,6 +3,8 @@
         * src/openvrml/OpenVRML/doc2.cpp:  Use a reasonable value for
           the buffer size for z::filebuf.
 
+        * NEWS:  Updates for 0.12.3 release.
+
 2002-06-29  Braden McDaniel  <braden@endoframe.com>
 
         * README: Added documentation for --with-doxygen configure
