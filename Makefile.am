@@ -1,8 +1,8 @@
 AUTOMAKE_OPTIONS = 1.5 foreign
 
-SUBDIRS = doc macros models lib @JAVA_SUBDIR@ src
+SUBDIRS = doc m4 models lib @JAVA_SUBDIR@ src
 
-ACLOCAL_AMFLAGS = -I macros
+ACLOCAL_AMFLAGS = -I m4
 
 IDE_PROJECT_FILES = \
         ide-projects/Macintosh/CodeWarrior5/JavaScript.mcp \
