@@ -59,7 +59,7 @@ public:
 
   virtual void eventIn(double timeStamp,
 		       const char *eventName,
-		       const VrmlField *fieldValue);
+		       const VrmlField & fieldValue);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
@@ -94,8 +94,8 @@ public:
   VrmlField::VrmlFieldType hasInterface(char const *) const;
 
   // Set field/event values
-  void setEventIn(const char *, const VrmlField *);
-  void setEventOut(const char *, const VrmlField *);
+  void setEventIn(const char *, const VrmlField &);
+  void setEventOut(const char *, const VrmlField &);
   // setField declared above as virtual
 
   // Fields and events defined for this Script
@@ -127,7 +127,7 @@ private:
   void add(FieldList &, const char *, VrmlField::VrmlFieldType);
   VrmlField::VrmlFieldType has(const FieldList &, const char *) const;
   VrmlField* get(const FieldList &, const char *) const;
-  void set(const FieldList &, const char *, const VrmlField *);
+  void set(const FieldList &, const char *, const VrmlField &);
 
   int d_eventsReceived;
 };

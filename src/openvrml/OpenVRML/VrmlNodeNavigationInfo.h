@@ -49,7 +49,7 @@ public:
 
   virtual void eventIn(double timeStamp,
 		       const char *eventName,
-		       const VrmlField *fieldValue);
+		       const VrmlField & fieldValue);
 
   // Get a field or eventOut by name.
   virtual const VrmlField *getField(const char *fieldName) const;

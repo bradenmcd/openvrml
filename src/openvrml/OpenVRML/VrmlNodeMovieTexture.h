@@ -55,7 +55,7 @@ public:
 
   virtual void eventIn(double timeStamp,
 		       const char *eventName,
-		       const VrmlField *fieldValue);
+		       const VrmlField & fieldValue);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);

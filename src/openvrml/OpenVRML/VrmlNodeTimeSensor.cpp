@@ -224,7 +224,7 @@ void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
 
 void VrmlNodeTimeSensor::eventIn(double timeStamp,
 				 const char *eventName,
-				 const VrmlField *fieldValue)
+				 const VrmlField & fieldValue)
 {
   const char *origEventName = eventName;
   if ( strncmp(eventName, "set_", 4) == 0 )
@@ -239,18 +239,18 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
       if (! d_isActive.get())
 	{
 	  d_lastTime = timeStamp;
-	  setField(eventName, *fieldValue);
+	  setField(eventName, fieldValue);
 	  char eventOutName[256];
 	  strcpy(eventOutName, eventName);
 	  strcat(eventOutName, "_changed");
-	  eventOut(timeStamp, eventOutName, *fieldValue);
+	  eventOut(timeStamp, eventOutName, fieldValue);
 	}
     }
 
   // Shutdown if set_enabled FALSE is received when active
   else if ( strcmp(eventName, "enabled") == 0 )
     {
-      setField(eventName, *fieldValue);
+      setField(eventName, fieldValue);
       if ( d_isActive.get() && ! d_enabled.get() )
 	{
 	  d_isActive.set(false);
@@ -272,7 +272,7 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
 	  eventOut(timeStamp, "isActive", d_isActive);
 	}
 
-      eventOut(timeStamp, "enabled_changed", *fieldValue);
+      eventOut(timeStamp, "enabled_changed", fieldValue);
 
     }
 

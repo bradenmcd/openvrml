@@ -92,18 +92,18 @@ ostream& VrmlNodeColorInt::printFields(ostream& os, int indent)
 
 void VrmlNodeColorInt::eventIn(double timeStamp,
 			       const char *eventName,
-			       const VrmlField *fieldValue)
+			       const VrmlField & fieldValue)
 {
   if (strcmp(eventName, "set_fraction") == 0)
     {
-      if (! fieldValue->toSFFloat() )
+      if (!dynamic_cast<const VrmlSFFloat *>(&fieldValue))
 	{
 	  theSystem->error
 	    ("Invalid type for %s eventIn %s (expected SFFloat).\n",
 		nodeType().getName(), eventName);
 	  return;
 	}
-      float f = fieldValue->toSFFloat()->get();
+      float f = static_cast<const VrmlSFFloat &>(fieldValue).get();
 
       int n = d_key.getLength() - 1;
       if (f < d_key[0])

@@ -228,7 +228,7 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
 
 void VrmlNodeMovieTexture::eventIn(double timeStamp,
 				   const char *eventName,
-				   const VrmlField *fieldValue)
+				   const VrmlField & fieldValue)
 {
   const char *origEventName = eventName;
   if ( strncmp(eventName, "set_", 4) == 0 )
@@ -239,8 +239,8 @@ void VrmlNodeMovieTexture::eventIn(double timeStamp,
     {
       if (! d_isActive.get())
 	{
-	  setField(eventName, *fieldValue);
-	  eventOut(timeStamp, "speed_changed", *fieldValue);
+	  setField(eventName, fieldValue);
+	  eventOut(timeStamp, "speed_changed", fieldValue);
 	  setModified();
 	}
     }

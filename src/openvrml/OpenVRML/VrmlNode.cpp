@@ -630,7 +630,7 @@ void VrmlNode::inverseTransform(double m[4][4])
  */
 void VrmlNode::eventIn(double timeStamp,
 		       const char *eventName,
-		       const VrmlField *fieldValue)
+		       const VrmlField & fieldValue)
 {
 #ifdef VRML_NODE_DEBUG
   cout << "eventIn "
@@ -652,10 +652,10 @@ void VrmlNode::eventIn(double timeStamp,
   // Handle exposedFields 
   if ( nodeType().hasExposedField( eventName ) )
     {
-      setField(eventName, *fieldValue);
+      setField(eventName, fieldValue);
       char eventOutName[256];
       sprintf(eventOutName, "%s_changed", eventName);
-      eventOut(timeStamp, eventOutName, *fieldValue);
+      eventOut(timeStamp, eventOutName, fieldValue);
       setModified();
     }
 
@@ -663,7 +663,7 @@ void VrmlNode::eventIn(double timeStamp,
   else if ( nodeType().hasEventIn( origEventName ) &&
 	    nodeType().hasField( eventName ) )
     {
-      setField(eventName, *fieldValue);
+      setField(eventName, fieldValue);
       setModified();
     }
 

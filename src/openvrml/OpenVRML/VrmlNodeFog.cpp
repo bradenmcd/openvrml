@@ -117,17 +117,18 @@ ostream& VrmlNodeFog::printFields(ostream& os, int indent)
 
 void VrmlNodeFog::eventIn(double timeStamp,
 			  const char *eventName,
-			  const VrmlField *fieldValue)
+			  const VrmlField & fieldValue)
 {
   if (strcmp(eventName, "set_bind") == 0)
     {
       VrmlNodeFog *current = d_scene->bindableFogTop();
-      const VrmlSFBool *b = fieldValue->toSFBool();
+      const VrmlSFBool * const b =
+                dynamic_cast<const VrmlSFBool *>(&fieldValue);
       
       if (! b)
 	{
 	  cerr << "Error: invalid value for Fog::set_bind eventIn "
-	       << (*fieldValue) << endl;
+	       << fieldValue << endl;
 	  return;
 	}
 

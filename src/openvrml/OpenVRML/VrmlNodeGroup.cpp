@@ -441,14 +441,12 @@ void VrmlNodeGroup::removeChildren() {
 
 void VrmlNodeGroup::eventIn(double timeStamp,
 			    const char *eventName,
-			    const VrmlField *fieldValue)
+			    const VrmlField & fieldValue)
 {
-  if (! fieldValue) return;
-
   if (strcmp(eventName, "addChildren") == 0)
     {
-      if ( fieldValue->toMFNode() )      // check that fieldValue is MFNode
-	addChildren( *(fieldValue->toMFNode()) );
+      if (dynamic_cast<const VrmlMFNode *>(&fieldValue))      // check that fieldValue is MFNode
+	addChildren(static_cast<const VrmlMFNode &>(fieldValue));
       else
 	theSystem->error("VrmlNodeGroup.%s %s eventIn invalid field type.\n",
 		      name(), eventName);
@@ -456,8 +454,8 @@ void VrmlNodeGroup::eventIn(double timeStamp,
 
   else if (strcmp(eventName, "removeChildren") == 0)
     {
-      if ( fieldValue->toMFNode() )      // check that fieldValue is MFNode
-	removeChildren( *(fieldValue->toMFNode()) );
+      if (dynamic_cast<const VrmlMFNode *>(&fieldValue))      // check that fieldValue is MFNode
+	removeChildren(static_cast<const VrmlMFNode &>(fieldValue));
       else
 	theSystem->error("VrmlNodeGroup.%s %s eventIn invalid field type.\n",
 		      name(), eventName);

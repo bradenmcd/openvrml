@@ -299,7 +299,7 @@ static char *objToEventOut( JSContext *cx, JSObject *obj )
 // Check whether we are modifying a prop on an eventOut object, and if so,
 // notify the script.
 
-static void checkEventOut( JSContext *cx, JSObject *obj, VrmlField *val )
+static void checkEventOut(JSContext *cx, JSObject *obj, const VrmlField & val)
 {
   char *eventOut = 0;
   ScriptJS *script = 0;
@@ -308,7 +308,7 @@ static void checkEventOut( JSContext *cx, JSObject *obj, VrmlField *val )
       (script = objToScript( cx, JS_GetParent( cx, obj ))) != 0)
     {
       VrmlNodeScript *scriptNode = script->scriptNode();
-      scriptNode->setEventOut( eventOut, val );
+      scriptNode->setEventOut(eventOut, val);
     }
 }
 
@@ -425,7 +425,7 @@ color_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
       JS_ValueToNumber( cx, *vp, &d ))
     {
       (*sfColor)[JSVAL_TO_INT(id)] = d;
-      checkEventOut(cx, obj, sfColor);
+      checkEventOut(cx, obj, *sfColor);
       return JS_TRUE;
     }
 
@@ -628,7 +628,7 @@ node_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	    script->browser()->queueEvent( s_timeStamp, f, n, eventIn );
 	}
 
-      checkEventOut( cx, obj, sfn );
+      checkEventOut(cx, obj, *sfn);
     }
   return JS_TRUE;
 }
@@ -681,7 +681,7 @@ vec2f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
       JS_ValueToNumber( cx, *vp, &d ))
     {
       (*sfVec2f)[JSVAL_TO_INT(id)] = d;
-      checkEventOut(cx, obj, sfVec2f);
+      checkEventOut(cx, obj, *sfVec2f);
       return JS_TRUE;
     }
 
@@ -736,7 +736,7 @@ vec3f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
       JS_ValueToNumber( cx, *vp, &d ))
     {
       (*v)[JSVAL_TO_INT(id)] = d;
-      checkEventOut( cx, obj, v );
+      checkEventOut(cx, obj, *v);
       return JS_TRUE;
     }
 
@@ -830,7 +830,7 @@ rot_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
       JS_ValueToNumber( cx, *vp, &d ))
     {
       (*v)[ JSVAL_TO_INT(id) ] = d;
-      checkEventOut( cx, obj, v );
+      checkEventOut(cx, obj, *v);
       return JS_TRUE;
     }
 
@@ -2316,7 +2316,7 @@ eventOut_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *val)
       return JS_FALSE;
     }
 
-  scriptNode->setEventOut( eventName, f );
+  scriptNode->setEventOut(eventName, *f);
   if (f) delete f;
 
   // Don't overwrite the property value.
@@ -2628,7 +2628,7 @@ static JSBool createVrmlFromURL(JSContext* cx, JSObject* b,
 	  if (nn)
 	    nn->eventIn( s_timeStamp, // fix me...
 			 event,
-			 kids );
+			 *kids );
 	  delete node;
 	  delete kids;
 	  delete url;

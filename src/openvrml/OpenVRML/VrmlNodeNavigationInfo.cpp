@@ -128,17 +128,17 @@ ostream& VrmlNodeNavigationInfo::printFields(ostream& os, int indent)
 
 void VrmlNodeNavigationInfo::eventIn(double timeStamp,
 				     const char *eventName,
-				     const VrmlField *fieldValue)
+				     const VrmlField & fieldValue)
 {
   if (strcmp(eventName, "set_bind") == 0)
     {
       VrmlNodeNavigationInfo *current = d_scene->bindableNavigationInfoTop();
-      const VrmlSFBool *b = fieldValue->toSFBool();
-      
+      const VrmlSFBool * const b =
+                dynamic_cast<const VrmlSFBool *>(&fieldValue);
       if (! b)
 	{
 	  cerr << "Error: invalid value for NavigationInfo::set_bind eventIn "
-	       << (*fieldValue) << endl;
+	       << fieldValue << endl;
 	  return;
 	}
 

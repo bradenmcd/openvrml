@@ -228,7 +228,7 @@ void VrmlNodeScript::update( VrmlSFTime &timeNow )
 
 void VrmlNodeScript::eventIn(double timeStamp,
 			     const char *eventName,
-			     const VrmlField *fieldValue)
+			     const VrmlField & fieldValue)
 {
   if (! d_script ) initialize( timeStamp );
   if (! d_script ) return;
@@ -242,7 +242,7 @@ void VrmlNodeScript::eventIn(double timeStamp,
     }
 #if 0
   cerr << "eventIn Script::" << name() << "." << origEventName
-       << " " << (*fieldValue) << ", valid " << valid
+       << " " << fieldValue << ", valid " << valid
        << ", d_script " << (unsigned long)d_script
        << endl;
 #endif
@@ -251,7 +251,7 @@ void VrmlNodeScript::eventIn(double timeStamp,
       setEventIn( eventName, fieldValue );
 
       VrmlSFTime ts( timeStamp );
-      const VrmlField *args[] = { fieldValue, &ts };
+      const VrmlField *args[] = { &fieldValue, &ts };
 
       FieldList::const_iterator i;
       for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
@@ -293,7 +293,7 @@ void VrmlNodeScript::addField(const char *ename, VrmlField::VrmlFieldType t,
 			      const VrmlField * val)
 {
   add(d_fields, ename, t);
-  if (val) set(d_fields, ename, val);
+  if (val) set(d_fields, ename, *val);
 }
 
 void VrmlNodeScript::add(FieldList &recs,
@@ -422,7 +422,7 @@ void VrmlNodeScript::setField(const char *fieldName,
   else if ( (ft = hasField(fieldName)) != 0 )
     {
       if (ft == VrmlField::fieldType( fieldValue.fieldTypeName() ))
-	set( d_fields, fieldName, &fieldValue );
+	set(d_fields, fieldName, fieldValue);
       else
 	theSystem->error("Invalid type (%s) for %s field of Script node.\n",
 		      fieldValue.fieldTypeName(), fieldName );
@@ -432,17 +432,17 @@ void VrmlNodeScript::setField(const char *fieldName,
 }
 
 void
-VrmlNodeScript::setEventIn(const char *fname, const VrmlField *value)
+VrmlNodeScript::setEventIn(const char *fname, const VrmlField & value)
 {
   set(d_eventIns, fname, value);
 }
 
 void
-VrmlNodeScript::setEventOut(const char *fname, const VrmlField *value)
+VrmlNodeScript::setEventOut(const char *fname, const VrmlField & value)
 {
 #if 0
   cerr << "Script::" << name() << " setEventOut(" << fname << ", "
-       << (*value) << endl;
+       << value << endl;
 #endif
   set(d_eventOuts, fname, value);
 }
@@ -450,14 +450,14 @@ VrmlNodeScript::setEventOut(const char *fname, const VrmlField *value)
 void
 VrmlNodeScript::set(const FieldList &recs,
 		    const char *fname,
-		    const VrmlField *value)
+		    const VrmlField & value)
 {
   FieldList::const_iterator i;
   for (i = recs.begin(); i != recs.end(); ++i) {
     if (strcmp((*i)->name, fname) == 0)
       {
 	delete ((*i)->value);
-	(*i)->value = value->clone();
+	(*i)->value = value.clone();
 	(*i)->modified = true;
 	return;
       }

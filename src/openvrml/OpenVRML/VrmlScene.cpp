@@ -262,19 +262,19 @@ void VrmlScene::replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
 
   if (d_backgrounds->size() > 0 &&
       (bindable = d_backgrounds->front()) != 0)
-    bindable->eventIn( timeNow, "set_bind", &flag );
+    bindable->eventIn(timeNow, "set_bind", flag);
 
   if (d_fogs->size() > 0 &&
       (bindable = d_fogs->front()) != 0)
-    bindable->eventIn( timeNow, "set_bind", &flag );
+    bindable->eventIn(timeNow, "set_bind", flag);
 
   if (d_navigationInfos->size() > 0 &&
       (bindable = d_navigationInfos->front()) != 0)
-    bindable->eventIn( timeNow, "set_bind", &flag );
+    bindable->eventIn(timeNow, "set_bind", flag);
 
   if (d_viewpoints->size() > 0 &&
       (bindable = d_viewpoints->front()) != 0)
-    bindable->eventIn( timeNow, "set_bind", &flag );
+    bindable->eventIn(timeNow, "set_bind", flag);
 
   // Notify anyone interested that the world has changed
   doCallbacks( REPLACE_WORLD );
@@ -309,7 +309,7 @@ bool VrmlScene::load(const char *url, const char *localCopy)
         
         // spec: ignore if named viewpoint not found
         if (vp) {
-	    vp->eventIn( theSystem->time(), "set_bind", &flag );
+	    vp->eventIn(theSystem->time(), "set_bind", flag);
 	    setModified();
 	}
         
@@ -343,7 +343,7 @@ bool VrmlScene::load(const char *url, const char *localCopy)
             VrmlNode * vp = d_namespace->findNode(sourceUrl->urlModifier() + 1);
             double timeNow = theSystem->time();
             if (vp) {
-                vp->eventIn(timeNow, "set_bind", &flag);
+                vp->eventIn(timeNow, "set_bind", flag);
             }
 	}
         
@@ -768,7 +768,7 @@ bool VrmlScene::update( double timeStamp )
 			   n->nodeType().getName(), n->name());
 	  n->addToScene((VrmlScene*)this, urlDoc()->url() );
 	}
-      n->eventIn(e->timeStamp, e->toEventIn, e->value);
+      n->eventIn(e->timeStamp, e->toEventIn, *e->value);
       // this needs to change if event values are shared...
       delete e->value;
     }
@@ -1192,7 +1192,7 @@ void VrmlScene::nextViewpoint()
 
 	VrmlSFBool flag(true);
 	if ((*i) && (vp = (*i)->toViewpoint()) != 0)
-	  vp->eventIn( theSystem->time(), "set_bind", &flag );
+	  vp->eventIn(theSystem->time(), "set_bind", flag);
 
 	return;
       }
@@ -1212,7 +1212,7 @@ void VrmlScene::prevViewpoint()
 
 	VrmlSFBool flag(true);
 	if ( *(--i) && (vp = (*i)->toViewpoint()) != 0 )
-	  vp->eventIn( theSystem->time(), "set_bind", &flag );
+	  vp->eventIn(theSystem->time(), "set_bind", flag);
 
 	return;
       }
@@ -1246,7 +1246,7 @@ void VrmlScene::setViewpoint(const char *name, const char *description)
 	VrmlNodeViewpoint *vp;
 	VrmlSFBool flag(true);
 	if ((vp = (VrmlNodeViewpoint*) *i) != 0)
-	  vp->eventIn( theSystem->time(), "set_bind", &flag );
+	  vp->eventIn(theSystem->time(), "set_bind", flag);
 	return;
       }
 }
@@ -1262,7 +1262,7 @@ void VrmlScene::setViewpoint(int nvp)
 	VrmlNodeViewpoint *vp;
 	VrmlSFBool flag(true);
 	if ((vp = (VrmlNodeViewpoint*) *i) != 0)
-	  vp->eventIn( theSystem->time(), "set_bind", &flag );
+	  vp->eventIn(theSystem->time(), "set_bind", flag);
 	return;
       }
     ++j;

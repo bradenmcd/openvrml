@@ -1,3 +1,8 @@
+2001-02-14  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed VrmlNode::eventIn() to take a reference to a VrmlField
+          rather than a pointer.
+
 2001-02-06  Braden McDaniel  <braden@endoframe.com>
 
         * Fixed VrmlNodeGroup::removeChildren() to account for nulls in

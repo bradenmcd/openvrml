@@ -225,7 +225,7 @@ public:
 
   virtual void eventIn(double timeStamp,
 		       const char *eventName,
-		       const VrmlField *fieldValue);
+		       const VrmlField & fieldValue);
 
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 

@@ -484,7 +484,7 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
 
 void VrmlNodeProto::eventIn(double timeStamp,
 			    const char *eventName,
-			    const VrmlField *fieldValue)
+			    const VrmlField & fieldValue)
 {
   if (! d_instantiated)
     {
@@ -500,7 +500,7 @@ void VrmlNodeProto::eventIn(double timeStamp,
 #if 0
   cerr << "eventIn " << nodeType()->getName()
        << "::" << name() << "." << origEventName
-       << " " << (*fieldValue) << endl;
+       << " " << fieldValue << endl;
 #endif
 
   EventDispatchList::iterator i;
