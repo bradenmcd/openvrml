@@ -1138,42 +1138,6 @@ void node::initialize(openvrml::scene & scene, const double timestamp)
 }
 
 /**
- * @brief Called when the node is relocated to a new position in the scene
- *      graph.
- *
- * This function delegates to the virtual function do_relocate. relocate
- * should be called by eventIn handlers that receive nodes.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void node::relocate() throw (std::bad_alloc)
-{
-    typedef void (node::* Do_relocate)();
-
-    class RelocateTraverser : public node_traverser {
-        Do_relocate do_relocate;
-
-    public:
-        explicit RelocateTraverser(const Do_relocate do_relocate) throw ():
-            do_relocate(do_relocate)
-        {}
-
-        virtual ~RelocateTraverser() throw ()
-        {}
-
-    private:
-        virtual void on_entering(node & n) throw (std::bad_alloc)
-        {
-            (n.*this->do_relocate)();
-        }
-    };
-
-    Do_relocate do_reloc = &node::do_relocate;
-
-    RelocateTraverser(do_reloc).traverse(*this);
-}
-
-/**
  * @brief Generalized field mutator.
  *
  * @param id    the name of the field.
@@ -2152,20 +2116,6 @@ void node::do_initialize(const double timestamp) throw (std::bad_alloc)
 {}
 
 /**
- * @brief node subclass-specific relocation update.
- *
- * This method is called by node::relocate. Subclasses of node should override
- * this method for any subclass-specific updates that need to be performed
- * following relocation of a node to a new position in the scene graph (for
- * example, updating a NodePath).
- *
- * The default implementation of this method does nothing.
- */
-void node::do_relocate() throw (std::bad_alloc)
-{}
-
-
-/**
  * @brief node subclass-specific shut down.
  *
  * This method is called by node::shutdown. Subclasses of node should
@@ -2273,6 +2223,43 @@ child_node::~child_node() throw ()
 {}
 
 /**
+ * @brief Called when the node is relocated to a new position in the scene
+ *      graph.
+ *
+ * This function delegates to the virtual function do_relocate. relocate
+ * should be called by eventIn handlers that receive nodes.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void child_node::relocate() throw (std::bad_alloc)
+{
+    typedef void (child_node::* Do_relocate)();
+
+    class RelocateTraverser : public node_traverser {
+        Do_relocate do_relocate;
+
+    public:
+        explicit RelocateTraverser(const Do_relocate do_relocate) throw ():
+            do_relocate(do_relocate)
+        {}
+
+        virtual ~RelocateTraverser() throw ()
+        {}
+
+    private:
+        virtual void on_entering(node & n) throw (std::bad_alloc)
+        {
+            child_node * const child = n.to_child();
+            if (child) { (child->*this->do_relocate)(); }
+        }
+    };
+
+    Do_relocate do_reloc = &child_node::do_relocate;
+
+    RelocateTraverser(do_reloc).traverse(*this);
+}
+
+/**
  * @brief Cast to a child_node.
  *
  * @return a pointer to this child_node.
@@ -2291,6 +2278,19 @@ child_node * child_node::to_child() throw ()
 {
     return this;
 }
+
+/**
+ * @brief node subclass-specific relocation update.
+ *
+ * This method is called by child_node::relocate. Subclasses of child_node
+ * should override this method for any subclass-specific updates that need to
+ * be performed following relocation of a node to a new position in the scene
+ * graph (for example, updating a node_path).
+ *
+ * The default implementation of this method does nothing.
+ */
+void child_node::do_relocate() throw (std::bad_alloc)
+{}
 
 
 /**

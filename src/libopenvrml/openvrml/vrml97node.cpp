@@ -6909,6 +6909,9 @@ group_node::~group_node() throw ()
  *
  * @exception std::bad_cast     if @p value is not an mfnode.
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @todo This function should throw an exception if there is an attempt to
+ *       add a node that is not a child_node.
  */
 void group_node::process_addChildren(const field_value & value,
                                      const double timestamp)
@@ -6918,9 +6921,12 @@ void group_node::process_addChildren(const field_value & value,
     size_t nNow = this->children_.value.size();
 
     for (size_t i = 0; i < newChildren.value.size(); ++i) {
-        const node_ptr & child = newChildren.value[i];
-        if (child && child->to_child()) {
-            this->children_.value.push_back(child);
+        const node_ptr & n = newChildren.value[i];
+        child_node * const child = n
+                                 ? n->to_child()
+                                 : 0;
+        if (child) {
+            this->children_.value.push_back(n);
             child->relocate();
         } else {
             OPENVRML_PRINT_MESSAGE_("Attempt to add a " + child->type.id
@@ -6977,18 +6983,38 @@ void group_node::process_removeChildren(const field_value & value,
  *
  * @exception std::bad_cast     if @p value is not an mfnode.
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @todo This function should throw an exception if there is an element of
+ *       @p value is not a child_node.
  */
 void group_node::process_set_children(const field_value & value,
                                       const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->children_ = dynamic_cast<const mfnode &>(value);
+    using std::swap;
+    using std::vector;
 
-    for (size_t i = 0; i < this->children_.value.size(); ++i) {
-        if (children_.value[i]) {
-            children_.value[i]->relocate();
+    const mfnode & new_children = dynamic_cast<const mfnode &>(value);
+    mfnode children(new_children.value.size());
+
+    for (vector<node_ptr>::size_type i = 0;
+         i < new_children.value.size();
+         ++i) {
+        const node_ptr & n = new_children.value[i];
+        child_node * const child = n
+                                 ? n->to_child()
+                                 : 0;
+        if (!n || child) {
+            children.value[i] = n;
+            if (child) { child->relocate(); }
+        } else {
+            OPENVRML_PRINT_MESSAGE_("Attempt to add a " + child->type.id
+                                    + " node as a child of a " + this->type.id
+                                    + " node.");
         }
     }
+
+    swap(this->children_, children);
 
     this->node::modified(true);
     this->bounding_volume_dirty(true);

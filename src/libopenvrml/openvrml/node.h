@@ -284,7 +284,6 @@ namespace openvrml {
 
         void initialize(openvrml::scene & scene, double timestamp)
             throw (std::bad_alloc);
-        void relocate() throw (std::bad_alloc);
 
         const field_value & field(const std::string & id) const
             throw (unsupported_interface);
@@ -383,7 +382,6 @@ namespace openvrml {
         node & operator=(const node &);
 
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
-        virtual void do_relocate() throw (std::bad_alloc);
 
         virtual void do_field(const std::string & id,
                               const field_value & value)
@@ -446,11 +444,16 @@ namespace openvrml {
     public:
         virtual ~child_node() throw () = 0;
 
+        void relocate() throw (std::bad_alloc);
+
         virtual const child_node * to_child() const throw ();
         virtual child_node * to_child() throw ();
 
     protected:
         child_node(const node_type & type, const scope_ptr & scope) throw ();
+
+    private:
+        virtual void do_relocate() throw (std::bad_alloc);
     };
 
 

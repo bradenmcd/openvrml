@@ -2137,7 +2137,9 @@ void scene::initialize(const double timestamp) throw (std::bad_alloc)
          ++node) {
         assert(*node);
         (*node)->initialize(*this, timestamp);
-        (*node)->relocate();
+        child_node * const child = (*node)->to_child();
+        assert(child);
+        child->relocate();
     }
 }
 

@@ -1,3 +1,12 @@
+2003-10-08  Braden McDaniel  <braden@endoframe.com>
+
+	Moved relocate member function from node to child_node.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2003-10-07  Braden McDaniel  <braden@endoframe.com>
 
 	Quelled some warnings from gcc.
