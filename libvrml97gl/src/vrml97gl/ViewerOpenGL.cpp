@@ -796,9 +796,7 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 	      glVertex3fv(   &c [i][0] );
 	    }
 
-	  glNormal3f( c[nfacets][1] + 0.5 * h,
-		      c[nfacets][0],
-		      c[nfacets][2] );
+	  glNormal3f( c[nfacets][0], Ny, c[nfacets][2] );
 	  glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
 	  glVertex3fv(   &c [nfacets][0] );
 	  glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
