@@ -6,6 +6,8 @@
 
         * NEWS:  Updates for 0.12.4 release.
 
+        * m4/gl.m4:  Fixed bug in libGL detection macro (missing comma).
+
 2002-06-30  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/doc2.cpp:  Use a reasonable value for

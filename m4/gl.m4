@@ -49,7 +49,7 @@ AC_CHECK_LIB(GLU, gluBeginCurve,
               AC_CHECK_HEADER(GL/glu.h,
                               [ov_have_gl=yes
                                AC_DEFINE(OPENVRML_GLU_H, [<GL/glu.h>],
-                                         [Header for OpenGL Utility Library])]
+                                         [Header for OpenGL Utility Library])],
                               [# Mac OS X thinks different
                                AC_CHECK_HEADER(OpenGL/glu.h,
                                                [ov_have_gl=yes
