@@ -1,3 +1,11 @@
+2000-03-13    <chris@quiller.morley.com>
+
+	* Put in S K Bose's Billboard code and the MathUtils
+	  for the axis-aligned bbox culling.
+
+	* Fixed the last reported crashes with the NIST tests
+	  (invalid VrmlNamespace references by EXTERNPROTOs).
+
 2000-03-11  Braden McDaniel  <braden@endoframe.com>
 
         * Named the render mode enumerant in Viewer;
