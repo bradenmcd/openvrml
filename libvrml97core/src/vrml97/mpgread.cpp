@@ -157,7 +157,7 @@ static MPEG *MPEGOpen  (FILE *, int);
 static void  MPEGClose (MPEG *);
 static int   MPEGAdvanceFrame (MPEG *);
 static int   MPEGConvertImage (MPEG *, int, unsigned char *);
-static int   MPEGRewind (MPEG *);
+/*static int   MPEGRewind (MPEG *); Not used */
 
 
 unsigned char *mpgread (FILE *fp, int *w, int *h, int *nc, int *nf,
@@ -3104,14 +3104,16 @@ static void
 ProcessSkippedBFrameMBlocks(MPEG *m)
 {
   int row_size, half_row, mb_row, mb_col, row, col, rr;
-  int right_half_for, down_half_for, c_right_half_for, c_down_half_for;
-  int right_half_back, down_half_back, c_right_half_back, c_down_half_back;
-  int addr, right_for, down_for;
+  int right_half_for = 0, down_half_for = 0,
+    c_right_half_for = 0, c_down_half_for = 0;
+  int right_half_back = 0, down_half_back = 0,
+    c_right_half_back = 0, c_down_half_back = 0;
+  int addr, right_for = 0, down_for = 0;
   int recon_right_for, recon_down_for;
   int recon_right_back, recon_down_back;
-  int right_back, down_back;
-  int c_right_for, c_down_for;
-  int c_right_back, c_down_back;
+  int right_back = 0, down_back = 0;
+  int c_right_for = 0, c_down_for = 0;
+  int c_right_back = 0, c_down_back = 0;
   unsigned char forw_lum[256];
   unsigned char forw_cr[64], forw_cb[64];
   unsigned char back_lum[256], back_cr[64], back_cb[64];
@@ -3668,7 +3670,7 @@ static void
 ReconPMBlock(MPEG *m, int bnum, int recon_right_for, int recon_down_for, int zflag)
 {
   int mb_row, mb_col, row, col, row_size, rr;
-  unsigned char *dest, *past;
+  unsigned char *dest, *past = 0;
   static int right_for, down_for, right_half_for, down_half_for;
   unsigned char *rindex1, *rindex2;
   unsigned char *index;
@@ -3959,7 +3961,7 @@ static void
 ReconBMBlock(MPEG *m, int bnum, int recon_right_back, int recon_down_back, int zflag)
 {
   int mb_row, mb_col, row, col, row_size, rr;
-  unsigned char *dest, *future;
+  unsigned char *dest, *future = 0;
   int right_back, down_back, right_half_back, down_half_back;
   unsigned char *rindex1, *rindex2;
   unsigned char *index;
@@ -4241,7 +4243,7 @@ ReconBiMBlock(MPEG *m, int bnum, int recon_right_for, int recon_down_for,
 	      int recon_right_back, int recon_down_back, int zflag)
 {
   int mb_row, mb_col, row, col, row_size, rr;
-  unsigned char *dest, *past, *future;
+  unsigned char *dest, *past = 0, *future = 0;
   int right_for, down_for, right_half_for, down_half_for;
   int right_back, down_back, right_half_back, down_half_back;
   unsigned char *index, *rindex1, *bindex1;
@@ -4835,7 +4837,7 @@ static void ParseReconBlock(MPEG *m, int n)
   42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
   58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63};
 
-  int coeffCount;
+  int coeffCount = 0;
   Block *blockPtr = &m->block;
 
   if (m->buf_length < 100)
@@ -4843,7 +4845,7 @@ static void ParseReconBlock(MPEG *m, int n)
 
   {
     int diff;
-    int size, level, i, run, pos, coeff;
+    int size, level = 0, i, run, pos, coeff;
     short int *reconptr;
     unsigned char *iqmatrixptr, *niqmatrixptr;
     int qscale;
@@ -5107,7 +5109,7 @@ static int parse_macro_block(MPEG *m)
   } while (addr_incr == MB_STUFFING);
   m->mblock.mb_address += addr_incr;
 
-  if (m->mblock.mb_address > (m->mb_height * m->mb_width - 1))
+  if (m->mblock.mb_address > ((int)m->mb_height * (int)m->mb_width - 1))
     return 0;
 
   /*
@@ -5574,12 +5576,14 @@ int MPEGAdvanceFrame (MPEG *m)
   return 0;
 }
 
+#if 0
+/* Not used */
 int MPEGRewind(MPEG *m)
 {
   rewind(m->fp);
   return init_mpeg(m);
 }
-
+#endif
 
 /*
  * We'll define the "ConvertColor" macro here to do fixed point arithmetic
