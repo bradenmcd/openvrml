@@ -2,6 +2,7 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
+// Copyright (C) 2001  Braden McDaniel
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,13 +18,6 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
-
-//  ScriptObject.cpp
-//  An abstract class to encapsulate the interface between the VRML97
-//  scene graph and the supported scripting languages.
-//
-
-
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
