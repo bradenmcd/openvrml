@@ -30,7 +30,7 @@
 #   include <stdexcept>
 #   include <utility>
 #   include <OpenVRML/field.h>
-#   include <OpenVRML/fieldvalueptr.h>
+#   include <OpenVRML/field_value_ptr.h>
 #   include <OpenVRML/nodetypeptr.h>
 #   include <OpenVRML/scopeptr.h>
 #   include <OpenVRML/Viewer.h>
@@ -244,11 +244,12 @@ namespace OpenVRML {
         typedef std::list<route> routes_t;
 
         struct polled_eventout_value {
-            const FieldValuePtr value;
+            const field_value_ptr value;
             bool modified;
 
             polled_eventout_value();
-            polled_eventout_value(const FieldValuePtr & value, bool modified);
+            polled_eventout_value(const field_value_ptr & value,
+                                  bool modified);
         };
 
     private:

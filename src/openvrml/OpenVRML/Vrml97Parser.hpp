@@ -13,7 +13,7 @@
 # include <memory>
 # include "field.h"
 # include "nodeptr.h"
-# include "fieldvalueptr.h"
+# include "field_value_ptr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }
 
@@ -181,7 +181,7 @@ public:
 	public: OpenVRML::node_interface::type_id  eventInterfaceType();
 	public: OpenVRML::field_value::type_id  fieldType();
 	public: OpenVRML::node_interface::type_id  fieldInterfaceType();
-	public: OpenVRML::FieldValuePtr  fieldValue(
+	public: OpenVRML::field_value_ptr  fieldValue(
 		OpenVRML::Browser & browser,
            const OpenVRML::ScopePtr & scope,
            OpenVRML::field_value::type_id ft
@@ -227,7 +227,7 @@ public:
                                 const OpenVRML::ScopePtr & scope,
                                 OpenVRML::ScriptNode & node
 	);
-	public: OpenVRML::FieldValuePtr  protoFieldValue(
+	public: OpenVRML::field_value_ptr  protoFieldValue(
 		OpenVRML::ProtoNodeClass & proto,
                 const OpenVRML::ScopePtr & scope,
                 OpenVRML::field_value::type_id ft
@@ -241,50 +241,50 @@ public:
                                      const OpenVRML::ScopePtr & scope,
                                      OpenVRML::ScriptNode & node
 	);
-	public: OpenVRML::FieldValuePtr  nodeFieldValue(
+	public: OpenVRML::field_value_ptr  nodeFieldValue(
 		OpenVRML::Browser & browser,
                const OpenVRML::ScopePtr & scope,
                OpenVRML::field_value::type_id ft
 	);
-	public: OpenVRML::FieldValuePtr  nonNodeFieldValue(
+	public: OpenVRML::field_value_ptr  nonNodeFieldValue(
 		OpenVRML::field_value::type_id ft
 	);
-	public: OpenVRML::FieldValuePtr  protoNodeFieldValue(
+	public: OpenVRML::field_value_ptr  protoNodeFieldValue(
 		OpenVRML::ProtoNodeClass & proto,
                     const OpenVRML::ScopePtr & scope,
                     OpenVRML::field_value::type_id ft
 	);
-	public: OpenVRML::FieldValuePtr  sfBoolValue();
-	public: OpenVRML::FieldValuePtr  sfColorValue();
-	public: OpenVRML::FieldValuePtr  sfFloatValue();
-	public: OpenVRML::FieldValuePtr  sfImageValue();
-	public: OpenVRML::FieldValuePtr  sfInt32Value();
-	public: OpenVRML::FieldValuePtr  sfRotationValue();
-	public: OpenVRML::FieldValuePtr  sfStringValue();
-	public: OpenVRML::FieldValuePtr  sfTimeValue();
-	public: OpenVRML::FieldValuePtr  sfVec2fValue();
-	public: OpenVRML::FieldValuePtr  sfVec3fValue();
-	public: OpenVRML::FieldValuePtr  mfColorValue();
-	public: OpenVRML::FieldValuePtr  mfFloatValue();
-	public: OpenVRML::FieldValuePtr  mfInt32Value();
-	public: OpenVRML::FieldValuePtr  mfRotationValue();
-	public: OpenVRML::FieldValuePtr  mfStringValue();
-	public: OpenVRML::FieldValuePtr  mfTimeValue();
-	public: OpenVRML::FieldValuePtr  mfVec2fValue();
-	public: OpenVRML::FieldValuePtr  mfVec3fValue();
-	public: OpenVRML::FieldValuePtr  sfNodeValue(
+	public: OpenVRML::field_value_ptr  sfBoolValue();
+	public: OpenVRML::field_value_ptr  sfColorValue();
+	public: OpenVRML::field_value_ptr  sfFloatValue();
+	public: OpenVRML::field_value_ptr  sfImageValue();
+	public: OpenVRML::field_value_ptr  sfInt32Value();
+	public: OpenVRML::field_value_ptr  sfRotationValue();
+	public: OpenVRML::field_value_ptr  sfStringValue();
+	public: OpenVRML::field_value_ptr  sfTimeValue();
+	public: OpenVRML::field_value_ptr  sfVec2fValue();
+	public: OpenVRML::field_value_ptr  sfVec3fValue();
+	public: OpenVRML::field_value_ptr  mfColorValue();
+	public: OpenVRML::field_value_ptr  mfFloatValue();
+	public: OpenVRML::field_value_ptr  mfInt32Value();
+	public: OpenVRML::field_value_ptr  mfRotationValue();
+	public: OpenVRML::field_value_ptr  mfStringValue();
+	public: OpenVRML::field_value_ptr  mfTimeValue();
+	public: OpenVRML::field_value_ptr  mfVec2fValue();
+	public: OpenVRML::field_value_ptr  mfVec3fValue();
+	public: OpenVRML::field_value_ptr  sfNodeValue(
 		OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope
 	);
-	public: OpenVRML::FieldValuePtr  mfNodeValue(
+	public: OpenVRML::field_value_ptr  mfNodeValue(
 		OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope
 	);
-	public: OpenVRML::FieldValuePtr  protoSfNodeValue(
+	public: OpenVRML::field_value_ptr  protoSfNodeValue(
 		OpenVRML::ProtoNodeClass & proto,
                  const OpenVRML::ScopePtr & scope
 	);
-	public: OpenVRML::FieldValuePtr  protoMfNodeValue(
+	public: OpenVRML::field_value_ptr  protoMfNodeValue(
 		OpenVRML::ProtoNodeClass & proto,
                  const OpenVRML::ScopePtr & scope
 	);

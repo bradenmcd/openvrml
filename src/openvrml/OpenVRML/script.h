@@ -23,8 +23,8 @@
 # ifndef OPENVRML_SCRIPT_H
 #   define OPENVRML_SCRIPT_H
 
-#   include "fieldvalueptr.h"
-#   include "node.h"
+#   include <OpenVRML/field_value_ptr.h>
+#   include <OpenVRML/node.h>
 
 namespace OpenVRML {
 
@@ -66,7 +66,7 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE ScriptNode : public child_node {
     public:
-        typedef std::map<std::string, FieldValuePtr> FieldValueMap;
+        typedef std::map<std::string, field_value_ptr> FieldValueMap;
         typedef std::map<std::string, polled_eventout_value> EventOutValueMap;
 
     private:
@@ -109,7 +109,7 @@ namespace OpenVRML {
         void addEventOut(field_value::type_id type_id, const std::string & id)
             throw (std::invalid_argument, std::bad_alloc);
         void addField(const std::string & id,
-                      const FieldValuePtr & defaultValue)
+                      const field_value_ptr & defaultValue)
             throw (std::invalid_argument, std::bad_alloc);
 
         void update(double timestamp);

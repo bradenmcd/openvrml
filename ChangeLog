@@ -1,3 +1,20 @@
+2003-05-22  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml/OpenVRML/Vrml97Parser.cpp,
+          src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.hpp,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/field_value_ptr.cpp,
+          src/openvrml/OpenVRML/field_value_ptr.h,
+          src/openvrml/OpenVRML/fieldvalueptr.cpp,
+          src/openvrml/OpenVRML/fieldvalueptr.h,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/script.cpp,
+          src/openvrml/OpenVRML/script.h:  Applied new naming convention
+	  for field_value_ptr class.
+
 2003-05-21  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/lookat.cpp, src/openvrml/OpenVRML/ScriptJDK.cpp,
@@ -21,7 +38,7 @@
           src/openvrml/OpenVRML/vrml97node.cpp,
           src/openvrml/OpenVRML/vrml97node.h,
           src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Appled new naming
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Applied new naming
           convention for node classes.
 
 2003-05-16  Braden McDaniel  <braden@endoframe.com>

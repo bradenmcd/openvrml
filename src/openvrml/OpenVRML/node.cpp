@@ -817,7 +817,7 @@ node::route::route(const route & route):
  */
 
 /**
- * @var const FieldValuePtr Node::polled_eventout_value::value
+ * @var const field_value_ptr Node::polled_eventout_value::value
  *
  * @brief The value.
  */
@@ -841,8 +841,9 @@ node::polled_eventout_value::polled_eventout_value():
  * @param value     the value.
  * @param modified  a flag to indicate whether the eventOut has been modified.
  */
-node::polled_eventout_value::polled_eventout_value(const FieldValuePtr & value,
-                                                   const bool modified):
+node::polled_eventout_value::polled_eventout_value(
+    const field_value_ptr & value,
+    const bool modified):
     value(value),
     modified(modified)
 {}

@@ -83,7 +83,7 @@ namespace OpenVRML {
                               const std::string & interfaceId);
         };
         typedef std::multimap<std::string, ImplNodeInterface> ISMap;
-        typedef std::map<std::string, FieldValuePtr> FieldValueMap;
+        typedef std::map<std::string, field_value_ptr> FieldValueMap;
         typedef std::map<std::string, polled_eventout_value> EventOutValueMap;
 
         ISMap isMap;
@@ -205,7 +205,7 @@ namespace OpenVRML {
         friend class ProtoNodeType;
 
     private:
-        typedef std::map<std::string, FieldValuePtr> DefaultValueMap;
+        typedef std::map<std::string, field_value_ptr> DefaultValueMap;
 
         ProtoNodeType protoNodeType;
         DefaultValueMap defaultValueMap;
@@ -220,10 +220,10 @@ namespace OpenVRML {
         void addEventOut(field_value::type_id, const std::string & id)
             throw (std::invalid_argument, std::bad_alloc);
         void addExposedField(const std::string & id,
-                             const FieldValuePtr & defaultValue)
+                             const field_value_ptr & defaultValue)
             throw (std::invalid_argument, std::bad_alloc);
         void addField(const std::string & id,
-                      const FieldValuePtr & defaultValue)
+                      const field_value_ptr & defaultValue)
             throw (std::invalid_argument, std::bad_alloc);
         void addRootNode(const NodePtr & node) throw (std::bad_alloc);
         void addIS(node & implNode,
@@ -2198,33 +2198,33 @@ ImplNodeInterface::ImplNodeInterface(OpenVRML::node & node,
 {}
 
 namespace {
-    const FieldValuePtr
+    const field_value_ptr
     default_field_value(const field_value::type_id field_type)
     {
         switch (field_type) {
-        case field_value::sfbool_id:     return FieldValuePtr(new sfbool);
-        case field_value::sfcolor_id:    return FieldValuePtr(new sfcolor);
-        case field_value::sffloat_id:    return FieldValuePtr(new sffloat);
-        case field_value::sfimage_id:    return FieldValuePtr(new sfimage);
-        case field_value::sfint32_id:    return FieldValuePtr(new sfint32);
-        case field_value::sfnode_id:     return FieldValuePtr(new sfnode);
-        case field_value::sfrotation_id: return FieldValuePtr(new sfrotation);
-        case field_value::sfstring_id:   return FieldValuePtr(new sfstring);
-        case field_value::sftime_id:     return FieldValuePtr(new sftime);
-        case field_value::sfvec2f_id:    return FieldValuePtr(new sfvec2f);
-        case field_value::sfvec3f_id:    return FieldValuePtr(new sfvec3f);
-        case field_value::mfcolor_id:    return FieldValuePtr(new mfcolor);
-        case field_value::mffloat_id:    return FieldValuePtr(new mffloat);
-        case field_value::mfint32_id:    return FieldValuePtr(new mfint32);
-        case field_value::mfnode_id:     return FieldValuePtr(new mfnode);
-        case field_value::mfrotation_id: return FieldValuePtr(new mfrotation);
-        case field_value::mfstring_id:   return FieldValuePtr(new mfstring);
-        case field_value::mftime_id:     return FieldValuePtr(new mftime);
-        case field_value::mfvec2f_id:    return FieldValuePtr(new mfvec2f);
-        case field_value::mfvec3f_id:    return FieldValuePtr(new mfvec3f);
+        case field_value::sfbool_id:     return field_value_ptr(new sfbool);
+        case field_value::sfcolor_id:    return field_value_ptr(new sfcolor);
+        case field_value::sffloat_id:    return field_value_ptr(new sffloat);
+        case field_value::sfimage_id:    return field_value_ptr(new sfimage);
+        case field_value::sfint32_id:    return field_value_ptr(new sfint32);
+        case field_value::sfnode_id:     return field_value_ptr(new sfnode);
+        case field_value::sfrotation_id: return field_value_ptr(new sfrotation);
+        case field_value::sfstring_id:   return field_value_ptr(new sfstring);
+        case field_value::sftime_id:     return field_value_ptr(new sftime);
+        case field_value::sfvec2f_id:    return field_value_ptr(new sfvec2f);
+        case field_value::sfvec3f_id:    return field_value_ptr(new sfvec3f);
+        case field_value::mfcolor_id:    return field_value_ptr(new mfcolor);
+        case field_value::mffloat_id:    return field_value_ptr(new mffloat);
+        case field_value::mfint32_id:    return field_value_ptr(new mfint32);
+        case field_value::mfnode_id:     return field_value_ptr(new mfnode);
+        case field_value::mfrotation_id: return field_value_ptr(new mfrotation);
+        case field_value::mfstring_id:   return field_value_ptr(new mfstring);
+        case field_value::mftime_id:     return field_value_ptr(new mftime);
+        case field_value::mfvec2f_id:    return field_value_ptr(new mfvec2f);
+        case field_value::mfvec3f_id:    return field_value_ptr(new mfvec3f);
         default: assert(false);
         }
-        return FieldValuePtr(0);
+        return field_value_ptr(0);
     }
 
     struct add_eventout_value_ : std::unary_function<node_interface, void> {
@@ -2600,7 +2600,7 @@ ProtoNode::ProtoNode(const node_type & nodeType,
         // Node field values need to be cloned; everything else we can just
         // copy.
         //
-        FieldValuePtr fieldValue;
+        field_value_ptr fieldValue;
         const field_value::type_id type = i->second->type();
         if (type == field_value::sfnode_id) {
             const sfnode & node = static_cast<const sfnode &>(*i->second);
@@ -3502,7 +3502,7 @@ ProtoNodeClass::ProtoNodeType::addInterface(const node_interface & interface)
  */
 
 /**
- * @var std::map<std::string, FieldValuePtr> ProtoNodeClass::defaultValueMap
+ * @var std::map<std::string, field_value_ptr> ProtoNodeClass::defaultValueMap
  *
  * @brief A map containing the default values for fields and exposedFields for
  *      the PROTO.
@@ -3587,7 +3587,7 @@ void ProtoNodeClass::addEventOut(const field_value::type_id type,
  * @exception std::bad_alloc        if memory allocation fails.
  */
 void ProtoNodeClass::addExposedField(const std::string & id,
-                                     const FieldValuePtr & defaultValue)
+                                     const field_value_ptr & defaultValue)
         throw (std::invalid_argument, std::bad_alloc) {
     const node_interface
         interface(node_interface::exposedfield_id, defaultValue->type(), id);
@@ -3623,8 +3623,9 @@ void ProtoNodeClass::addExposedField(const std::string & id,
  * @exception std::bad_alloc        if memory allocation fails.
  */
 void ProtoNodeClass::addField(const std::string & id,
-                              const FieldValuePtr & defaultValue)
-        throw (std::invalid_argument, std::bad_alloc) {
+                              const field_value_ptr & defaultValue)
+    throw (std::invalid_argument, std::bad_alloc)
+{
     const node_interface
             interface(node_interface::field_id, defaultValue->type(), id);
     this->protoNodeType.addInterface(interface);

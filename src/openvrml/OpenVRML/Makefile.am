@@ -23,7 +23,7 @@ AM_CXXFLAGS = \
         @JNI_CFLAGS@ \
         @JS_CFLAGS@
 
-lib_LTLIBRARIES = libopenvrml.la 
+lib_LTLIBRARIES = libopenvrml.la
 libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
 @PNG_LIBS@ @Z_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE_LIBS@ @JS_LIBS@ @JNI_LIBS@
 
@@ -36,7 +36,7 @@ libopenvrml_la_SOURCES = \
         Audio.cpp \
         System.cpp \
         field.cpp \
-        fieldvalueptr.cpp \
+        field_value_ptr.cpp \
         scope.cpp \
         scopeptr.cpp \
         node.cpp \
@@ -64,7 +64,7 @@ OpenVRMLinclude_HEADERS = \
         Audio.h \
         System.h \
         field.h \
-        fieldvalueptr.h \
+        field_value_ptr.h \
         scope.h \
         scopeptr.h \
         node.h \
