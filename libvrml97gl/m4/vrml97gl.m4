@@ -245,10 +245,12 @@ AC_DEFUN(AM_PATH_VRMLGL,
       have_vrmlgl=no
     )
     LIBS="$ac_save_LIBS"
+    AC_LANG_RESTORE
     
     if test $have_vrmlgl = yes; then
       AC_MSG_RESULT([yes])
-      VRMLGL_LIBS="-lvrml97gl $VRML_LIBS $GLUT_LIBS"
+      VRMLGL_CXXFLAGS="${VRML_CXXFLAGS} ${GLUT_CFLAGS}"
+      VRMLGL_LIBS="-lvrml97gl ${VRML_LIBS} ${GLUT_LIBS}"
       ifelse([$1], , :, [$1])
     else
       AC_MSG_RESULT([no])
@@ -256,7 +258,7 @@ AC_DEFUN(AM_PATH_VRMLGL,
       ifelse([$2], , :, [$2])
     fi
     
-    AC_LANG_RESTORE
+    AC_SUBST(VRMLGL_CXXFLAGS)
     AC_SUBST(VRMLGL_LIBS)
   ]
 )

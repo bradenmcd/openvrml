@@ -76,7 +76,7 @@ AC_DEFUN(VRML_PATH_PNG,
     AC_LANG_C
     
     ac_save_LIBS="${LIBS}"
-    LIBS="${ZLIB_LIBS} ${png__Ldir} ${LIBS}"
+    LIBS="${png__Ldir} ${ZLIB_LIBS} ${LIBS}"
     AC_CHECK_LIB(png, png_read_info,
       [
         ac_save_CPPFLAGS="${CPPFLAGS}"
@@ -84,14 +84,15 @@ AC_DEFUN(VRML_PATH_PNG,
         AC_CHECK_HEADER(png.h,
           [
             have_png=yes
-            PNG_CFLAGS="${ZLIB_CFLAGS} ${png__Idir}"
-            PNG_LIBS="${ZLIB_LIBS} ${png__Ldir} -lpng"
+            PNG_CFLAGS="${png__Idir} ${ZLIB_CFLAGS}"
+            PNG_LIBS="${png__Ldir} -lpng ${ZLIB_LIBS} -lm"
           ],
           have_png=no
         )
         CPPFLAGS="${ac_save_CPPFLAGS}"
       ],
-      have_png=no
+      have_png=no,
+      -lm
     )
     LIBS="${ac_save_LIBS}"
     
