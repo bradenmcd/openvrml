@@ -3,21 +3,21 @@
 //
 // Copyright (C) 2001  S. K. Bose
 // Copyright (C) 2003  Braden McDaniel
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # include <assert.h>
 # include <numeric>
@@ -132,7 +132,7 @@ namespace OpenVRML {
  * @param value the new component value.
  */
 
-// Conversion functions between RGB each in [0,1] and HSV with  
+// Conversion functions between RGB each in [0,1] and HSV with
 // h in [0,360), s,v in [0,1]. From Foley, van Dam p615-616.
 
 /**
@@ -144,16 +144,16 @@ void color::hsv(float (&result)[3]) const throw ()
 {
     const float maxrgb = *std::max_element(this->rgb, this->rgb + 3);
     const float minrgb = *std::min_element(this->rgb, this->rgb + 3);
-    
+
     result[0] = 0.0;
     result[1] = (maxrgb > 0.0) ? ((maxrgb - minrgb) / maxrgb) : 0.0;
     result[2] = maxrgb;
-    
+
     if (result[1] != 0.0) {
         const float rc = (maxrgb - rgb[0]) / (maxrgb - minrgb);
         const float gc = (maxrgb - rgb[1]) / (maxrgb - minrgb);
         const float bc = (maxrgb - rgb[2]) / (maxrgb - minrgb);
-        
+
         if (this->rgb[0] == maxrgb) {
             result[0] = bc - gc;
         } else if (this->rgb[1] == maxrgb) {
@@ -161,7 +161,7 @@ void color::hsv(float (&result)[3]) const throw ()
         } else {
             result[0] = 4 + gc - rc;
         }
-        
+
         result[0] *= 60.0;
         if (result[0] < 0.0) { result[0] += 360.0; }
     }
@@ -1082,7 +1082,7 @@ namespace {
         using OpenVRML_::length;
         using OpenVRML_::fpequal;
         using OpenVRML_::normalize;
-    
+
         const float axis_length = length(axis);
         if (fpequal(axis_length, 0.0)) {
             axis[2] = 1.0;
@@ -1151,15 +1151,15 @@ const rotation rotation::slerp(const rotation & dest_rot, const float t) const
     throw ()
 {
     using OpenVRML_::fptolerance;
-    
+
     quatf from_quat(*this), to_quat(dest_rot);
-    
+
     //
     // Calculate cosine.
     //
     double cosom = std::inner_product(&from_quat[0], &from_quat[0] + 4,
                                       &to_quat[0], 0.0);
-    
+
     //
     // Adjust signs (if necessary).
     //
@@ -1170,7 +1170,7 @@ const rotation rotation::slerp(const rotation & dest_rot, const float t) const
     } else {
         to1 = to_quat;
     }
-    
+
     //
     // Calculate coefficients.
     //
@@ -1188,7 +1188,7 @@ const rotation rotation::slerp(const rotation & dest_rot, const float t) const
         scale0 = 1.0 - t;
         scale1 = t;
     }
-    
+
     //
     // Calculate the final values.
     //
@@ -1519,6 +1519,7 @@ mat4f & mat4f::operator*=(const float scalar) throw ()
     this->mat[3][1] *= scalar;
     this->mat[3][2] *= scalar;
     this->mat[3][3] *= scalar;
+    return *this;
 }
 
 /**
@@ -2169,7 +2170,7 @@ quatf & quatf::operator*=(const quatf & quat) throw ()
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return the product of @p lhs and @p rhs. 
+ * @return the product of @p lhs and @p rhs.
  */
 
 /**
@@ -2269,7 +2270,7 @@ quatf & quatf::operator+=(const quatf & quat) throw ()
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return the sum of @p lhs and @p rhs. 
+ * @return the sum of @p lhs and @p rhs.
  */
 
 /**
@@ -2298,7 +2299,7 @@ quatf & quatf::operator-=(const quatf & quat) throw ()
  * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
- * @return the difference between @p lhs and @p rhs. 
+ * @return the difference between @p lhs and @p rhs.
  */
 
 /**

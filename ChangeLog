@@ -4,6 +4,9 @@
           src/openvrml/OpenVRML/System.h:  Fixes to compile with cl
           (POSIXy functions start with an underscore).
 
+        * src/openvrml/OpenVRML/basetypes.cpp: mat4f::operator*= needs
+          to return.
+
 2003-03-12  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/lookat.cpp, src/openvrml/OpenVRML/ScriptJDK.cpp,
