@@ -1,4 +1,1 @@
-SUBDIRS = src
-
-m4datadir = $(datadir)/aclocal
-m4data_DATA = vrml97.m4
+SUBDIRS = m4 src
