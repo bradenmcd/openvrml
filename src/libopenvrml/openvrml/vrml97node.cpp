@@ -1238,6 +1238,12 @@ anchor_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var anchor_node::anchor_class
+ *
+ * @brief Class object for Anchor nodes.
+ */
+
+/**
  * @var exposedfield<sfstring> anchor_node::description_
  *
  * @brief description exposedField
@@ -1435,6 +1441,12 @@ appearance_class::do_create_type(const std::string & id,
  * @class appearance_node
  *
  * @brief Appearance node instances.
+ */
+
+/**
+ * @var appearance_node::appearance_class
+ *
+ * @brief Class object for Appearance nodes.
  */
 
 /**
@@ -1781,6 +1793,12 @@ audio_clip_class::do_create_type(const std::string & id,
  * @brief AudioClip node instances.
  *
  * @todo Implement sound support.
+ */
+
+/**
+ * @var audio_clip_node::audio_clip_class
+ *
+ * @brief Class object for AudioClip nodes.
  */
 
 /**
@@ -2410,6 +2428,12 @@ background_class::do_create_type(const std::string & id,
  * @class background_node
  *
  * @brief Background node instances.
+ */
+
+/**
+ * @var background_node::background_class
+ *
+ * @brief Class object for Background nodes.
  */
 
 /**
@@ -3251,6 +3275,12 @@ billboard_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var billboard_node::billboard_class
+ *
+ * @brief Class object for Billboard nodes.
+ */
+
+/**
  * @var exposedfield<sfvec3f> billboard_node::axis_of_rotation_
  *
  * @brief axisOfRotation exposedField.
@@ -3466,6 +3496,12 @@ box_class::do_create_type(const std::string & id,
  * @class box_node
  *
  * @brief Box node instances.
+ */
+
+/**
+ * @var box_node::box_class
+ *
+ * @brief Class object for Box nodes.
  */
 
 /**
@@ -3693,6 +3729,12 @@ collision_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var collision_node::collision_class
+ *
+ * @brief Class object for Collision nodes.
+ */
+
+/**
  * @var sfbool collision_node::collide_
  *
  * @brief collide exposedField.
@@ -3825,6 +3867,12 @@ color_class::do_create_type(const std::string & id,
  * @class color_node
  *
  * @brief Color node instances.
+ */
+
+/**
+ * @var color_node::color_class
+ *
+ * @brief Class object for Color nodes.
  */
 
 /**
@@ -3980,6 +4028,12 @@ color_interpolator_class::do_create_type(const std::string & id,
  * @class color_interpolator_node
  *
  * @brief ColorInterpolator node instances.
+ */
+
+/**
+ * @var color_interpolator_node::color_interpolator_class
+ *
+ * @brief Class object for ColorInterpolator nodes.
  */
 
 /**
@@ -4231,6 +4285,12 @@ cone_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var cone_node::cone_class
+ *
+ * @brief Class object for Cone nodes.
+ */
+
+/**
  * @var sfbool cone_node::bottom
  *
  * @brief bottom field.
@@ -4370,6 +4430,12 @@ coordinate_class::do_create_type(const std::string & id,
  * @class coordinate_node
  *
  * @brief Coordinate node instances.
+ */
+
+/**
+ * @var coordinate_node::coordinate_class
+ *
+ * @brief Class object for Coordinate nodes.
  */
 
 /**
@@ -4526,6 +4592,12 @@ coordinate_interpolator_class::do_create_type(
  * @class coordinate_interpolator_node
  *
  * @brief CoordinateInterpolator node instances.
+ */
+
+/**
+ * @var class coordinate_interpolator_node::coordinate_interpolator_class
+ *
+ * @brief Class object for CoordinateInterpolator nodes.
  */
 
 /**
@@ -4777,6 +4849,12 @@ cylinder_class::do_create_type(const std::string & id,
  * @class cylinder_node
  *
  * @brief Cylinder node instances.
+ */
+
+/**
+ * @var cylinder_node::cylinder_class
+ *
+ * @brief Class object for Cylinder nodes.
  */
 
 /**
@@ -5045,6 +5123,12 @@ cylinder_sensor_class::do_create_type(const std::string & id,
  * @class cylinder_sensor_node
  *
  * @brief CylinderSensor node instances.
+ */
+
+/**
+ * @var cylinder_sensor_node::cylinder_sensor_class
+ *
+ * @brief Class object for CylinderSensor nodes.
  */
 
 /**
@@ -5451,6 +5535,12 @@ directional_light_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var directional_light_node::directional_light_class
+ *
+ * @brief Class object for DirectionalLight nodes.
+ */
+
+/**
  * @var exposedfield<sfvec3f> directional_light_node::direction_
  *
  * @brief direction exposedField.
@@ -5714,6 +5804,12 @@ elevation_grid_class::do_create_type(const std::string & id,
  * @class elevation_grid_node
  *
  * @brief ElevationGrid node instances.
+ */
+
+/**
+ * @var elevation_grid_node::elevation_grid_class
+ *
+ * @brief Class object for ElevationGrid nodes.
  */
 
 /**
@@ -6171,6 +6267,12 @@ extrusion_class::do_create_type(const std::string & id,
  * @class extrusion_node
  *
  * @brief Extrusion node instances.
+ */
+
+/**
+ * @var extrusion_node::extrusion_class
+ *
+ * @brief Class object for Extrusion nodes.
  */
 
 /**
@@ -6829,6 +6931,12 @@ fog_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var class fog_node::fog_class
+ *
+ * @brief Class object for Fog nodes.
+ */
+
+/**
  * @internal
  *
  * @class fog_node::set_bind_listener
@@ -7118,6 +7226,12 @@ font_style_class::do_create_type(const std::string & id,
  * @class font_style_node
  *
  * @brief FontStyle node instances.
+ */
+
+/**
+ * @var font_style_node::font_style_class
+ *
+ * @brief Class object for FontStyle nodes.
  */
 
 /**
@@ -7421,6 +7535,12 @@ group_class::do_create_type(const std::string & id,
  * @class group_node
  *
  * @brief Represents Group node instances.
+ */
+
+/**
+ * @var group_node::group_class
+ *
+ * @brief Class object for Group nodes.
  */
 
 /**
@@ -7964,6 +8084,12 @@ image_texture_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var class image_texture_node::image_texture_class
+ *
+ * @brief Class object for ImageTexture nodes.
+ */
+
+/**
  * @internal
  *
  * @class image_texture_node::url_exposedfield
@@ -8485,6 +8611,12 @@ do_process_event(const mfint32 & tex_coord_index, const double timestamp)
 }
 
 /**
+ * @var indexed_face_set_node::indexed_face_set_class
+ *
+ * @brief Class object for IndexedFaceSet nodes.
+ */
+
+/**
  * @var indexed_face_set_node::set_normal_index_listener indexed_face_set_node::set_normal_index_listener_
  *
  * @brief set_normalIndex eventIn handler.
@@ -8866,6 +8998,12 @@ indexed_line_set_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var indexed_line_set_node::indexed_line_set_class
+ *
+ * @brief Class object for IndexedLineSet nodes.
+ */
+
+/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node.
@@ -9024,6 +9162,12 @@ inline_class::do_create_type(const std::string & id,
  * @class inline_node
  *
  * @brief Represents Inline node instances.
+ */
+
+/**
+ * @var inline_node::inline_class
+ *
+ * @brief Class object for Inline nodes.
  */
 
 /**
@@ -9254,6 +9398,12 @@ lod_class::do_create_type(const std::string & id,
  * @class lod_node
  *
  * @brief Represents LOD node instances.
+ */
+
+/**
+ * @var lod_node::lod_class
+ *
+ * @brief Class object for LOD nodes.
  */
 
 /**
@@ -9615,6 +9765,12 @@ material_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var material_node::material_class
+ *
+ * @brief Class object for Material nodes.
+ */
+
+/**
  * @var exposedfield<sffloat> material_node::ambient_intensity_
  *
  * @brief ambientIntensity exposedField.
@@ -9917,6 +10073,12 @@ movie_texture_class::do_create_type(const std::string & id,
  * @class movie_texture_node
  *
  * @brief MovieTexture node instances.
+ */
+
+/**
+ * @var class movie_texture_node::movie_texture_class
+ *
+ * @brief Class object for MovieTexture nodes.
  */
 
 /**
@@ -10649,6 +10811,12 @@ navigation_info_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var class navigation_info_node::navigation_info_class
+ *
+ * @brief Class object for NavigationInfo nodes.
+ */
+
+/**
  * @internal
  *
  * @class navigation_info_node::set_bind_listener
@@ -10948,6 +11116,12 @@ normal_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var normal_node::normal_class
+ *
+ * @brief Class object for Normal nodes.
+ */
+
+/**
  * @var exposedfield<mfvec3f> normal_node::vector_
  *
  * @brief vector exposedField.
@@ -11099,6 +11273,12 @@ normal_interpolator_class::do_create_type(const std::string & id,
  * @class normal_interpolator_node
  *
  * @brief NormalInterpolator node instances.
+ */
+
+/**
+ * @var class normal_interpolator_node::normal_interpolator_class
+ *
+ * @brief Class object for NormalInterpolator nodes.
  */
 
 /**
@@ -11383,6 +11563,12 @@ do_create_type(const std::string & id,
  */
 
 /**
+ * @var class orientation_interpolator_node::orientation_interpolator_class
+ *
+ * @brief Class object for OrientationInterpolator nodes.
+ */
+
+/**
  * @internal
  *
  * @class orientation_interpolator_node::set_fraction_listener
@@ -11642,6 +11828,12 @@ pixel_texture_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var pixel_texture_node::pixel_texture_class
+ *
+ * @brief Class object for PixelTexture nodes.
+ */
+
+/**
  * @var sfimage pixel_texture_node::image_
  *
  * @brief image exposedField.
@@ -11881,6 +12073,12 @@ plane_sensor_class::do_create_type(const std::string & id,
  * the local coordinate system. The PlaneSensor node uses the descendent
  * geometry of its parent node to determine whether it is liable to generate
  * events.
+ */
+
+/**
+ * @var plane_sensor_node::plane_sensor_class
+ *
+ * @brief Class object for PlaneSensor instances.
  */
 
 /**
@@ -12290,6 +12488,12 @@ point_light_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var point_light_node::point_light_class
+ *
+ * @brief Class object for PointLight instances.
+ */
+
+/**
  * @var exposedfield<sfvec3f> point_light_node::attenuation_
  *
  * @brief attenuation exposedField.
@@ -12480,6 +12684,12 @@ point_set_class::do_create_type(const std::string & id,
  * @class point_set_node
  *
  * @brief Represents PointSet node instances.
+ */
+
+/**
+ * @var point_set_node::point_set_class
+ *
+ * @brief Class object for PointSet instances.
  */
 
 /**
@@ -12739,6 +12949,12 @@ position_interpolator_class::do_create_type(const std::string & id,
  * @class position_interpolator_node
  *
  * @brief PositionInterpolator node instances.
+ */
+
+/**
+ * @var class position_interpolator_node::position_interpolator_class
+ *
+ * @brief Class object for PositionInterpolator nodes.
  */
 
 /**
@@ -13028,6 +13244,12 @@ proximity_sensor_class::do_create_type(const std::string & id,
  * @class proximity_sensor_node
  *
  * @brief Represents ProximitySensor node instances.
+ */
+
+/**
+ * @var proximity_sensor_node::proximity_sensor_class
+ *
+ * @brief Class object for ProximitySensor instances.
  */
 
 /**
@@ -13349,6 +13571,12 @@ scalar_interpolator_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var class scalar_interpolator_node::scalar_interpolator_class
+ *
+ * @brief Class object for ScalarInterpolator nodes.
+ */
+
+/**
  * @internal
  *
  * @class scalar_interpolator_node::set_fraction_listener
@@ -13566,6 +13794,12 @@ shape_class::do_create_type(const std::string & id,
  * @class shape_node
  *
  * @brief Represents Shape node instances.
+ */
+
+/**
+ * @var shape_node::shape_class
+ *
+ * @brief Class object for Shape instances.
  */
 
 /**
@@ -13938,6 +14172,12 @@ sound_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var sound_node::sound_class
+ *
+ * @brief Class object for Sound instances.
+ */
+
+/**
  * @var exposedfield<sfvec3f> sound_node::direction_
  *
  * @brief direction exposedField.
@@ -14109,6 +14349,12 @@ sphere_class::do_create_type(const std::string & id,
  * @class sphere_node
  *
  * @brief Sphere node instances.
+ */
+
+/**
+ * @var sphere_node::sphere_class
+ *
+ * @brief Class object for Sphere instances.
  */
 
 /**
@@ -14312,6 +14558,12 @@ sphere_sensor_class::do_create_type(const std::string & id,
  * @class sphere_sensor_node
  *
  * @brief SphereSensor node instances.
+ */
+
+/**
+ * @var sphere_sensor_node::sphere_sensor_class
+ *
+ * @brief Class object for SphereSensor instances.
  */
 
 /**
@@ -14771,6 +15023,12 @@ spot_light_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var spot_light_node::spot_light_class
+ *
+ * @brief Class object for SpotLight instances.
+ */
+
+/**
  * @var exposedfield<sfvec3f> spot_light_node::attenuation_
  *
  * @brief attenuation exposedField.
@@ -14988,6 +15246,12 @@ switch_class::do_create_type(const std::string & id,
  * @class switch_node
  *
  * @brief Switch node instances.
+ */
+
+/**
+ * @var class switch_node::switch_class
+ *
+ * @brief Class object for Switch nodes.
  */
 
 /**
@@ -15391,6 +15655,12 @@ text_class::do_create_type(const std::string & id,
  * @class text_node
  *
  * @brief Text node instances.
+ */
+
+/**
+ * @var class text_node::text_class
+ *
+ * @brief Class object for Text nodes.
  */
 
 /**
@@ -17089,6 +17359,12 @@ texture_coordinate_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var texture_coordinate_node::texture_coordinate_class
+ *
+ * @brief Class object for TextureCoordinate instances.
+ */
+
+/**
  * @var exposedfield<mfvec2f> texture_coordinate_node::point_
  *
  * @brief point exposedField.
@@ -17251,6 +17527,12 @@ texture_transform_class::do_create_type(const std::string & id,
  * @class texture_transform_node
  *
  * @brief TextureTransform node instances.
+ */
+
+/**
+ * @var texture_transform_node::texture_transform_class
+ *
+ * @brief Class object for TextureTransform instances.
  */
 
 /**
@@ -17498,6 +17780,12 @@ time_sensor_class::do_create_type(const std::string & id,
  * @class time_sensor_node
  *
  * @brief TimeSensor node instances.
+ */
+
+/**
+ * @var class time_sensor_node::time_sensor_class
+ *
+ * @brief Class object for TimeSensor nodes.
  */
 
 /**
@@ -18097,6 +18385,12 @@ touch_sensor_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var touch_sensor_node::touch_sensor_class
+ *
+ * @brief Class object for TouchSensor instances.
+ */
+
+/**
  * @var exposedfield<sfbool> touch_sensor_node::enabled_
  *
  * @brief enabled exposedField.
@@ -18465,6 +18759,12 @@ transform_class::do_create_type(const std::string & id,
  * @class transform_node
  *
  * @brief Transform node instances.
+ */
+
+/**
+ * @var class transform_node::transform_class
+ *
+ * @brief Class object for Transform nodes.
  */
 
 /**
@@ -19235,6 +19535,12 @@ viewpoint_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var class viewpoint_node::viewpoint_class
+ *
+ * @brief Class object for Viewpoint nodes.
+ */
+
+/**
  * @internal
  *
  * @class viewpoint_node::set_bind_listener
@@ -19807,6 +20113,12 @@ visibility_sensor_class::do_create_type(const std::string & id,
  */
 
 /**
+ * @var visibility_sensor_node::visibility_sensor_class
+ *
+ * @brief Class object for VisibilitySensor instances.
+ */
+
+/**
  * @var exposedfield<sfvec3f> visibility_sensor_node::center_
  *
  * @brief center exposedField.
@@ -20039,6 +20351,12 @@ world_info_class::do_create_type(const std::string & id,
  * @class world_info_node
  *
  * @brief WorldInfo node instances.
+ */
+
+/**
+ * @var world_info_node::world_info_class
+ *
+ * @brief Class object for WorldInfo instances.
  */
 
 /**

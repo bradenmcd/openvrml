@@ -1,11 +1,12 @@
 AC_PREREQ([2.53])
 AC_INIT([OpenVRML Mozilla Plugin], [0.15.99],
         [openvrml-develop@lists.sourceforge.net])
-AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004 Braden McDaniel])
+AC_COPYRIGHT([Portions copyright 2004, 2005 Braden McDaniel])
 AC_CONFIG_SUBDIRS([lib/gtkglext])
 AC_CONFIG_FILES([Makefile]
                 [lib/Makefile]
-                [src/Makefile])
+                [src/Makefile]
+                [src/openvrml-player/Makefile])
 AM_INIT_AUTOMAKE([1.7 foreign])
 
 AC_PROG_CXX
@@ -15,6 +16,7 @@ AC_ENABLE_SHARED
 enable_shared=yes
 AC_PROG_LIBTOOL
 
+PKG_CHECK_MODULES([MOZILLA_XPCOM], [mozilla-xpcom], , [have_mozilla_xpcom=no])
 PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 1.6],
                   , [have_mozilla_plugin=no])
 mozversion=`$PKG_CONFIG --modversion mozilla-plugin`

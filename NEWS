@@ -1,3 +1,19 @@
+Changes new in version 0.15.5, 10 January, 2005
+===============================================
+
+- Mozilla plug-in is now out-of-process. This addresses the
+  interactivity issues present in 0.15.4 and provides an overall more
+  robust design for the plug-in.
+
+- Fixed bugs in openvrml::browser::find_node and
+  openvrml::node_traverser.
+
+- Fixed a problem with the build system when configuring with
+  --disable-script-node-javascript.
+
+- Updated API documentation to use Doxygen 1.4.
+
+
 Changes new in version 0.15.4, 29 December, 2004
 ================================================
 

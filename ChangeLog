@@ -1,3 +1,56 @@
+2005-01-10 Braden McDaniel  <braden@endoframe.com>
+
+	Merged changes from 0.15.5 release.
+
+	* NEWS:  Updates for 0.15.5 release.
+	* README
+	* configure.ac:  Fixed problem with an empty -rpath argument
+	when configured with --disable-script-node-javascript.
+	* openvrml.spec.in:  Added openvrml-player to the
+	openvrml-mozilla-plugin package.
+	* doc/Doxyfile:  Updates for Doxygen 1.4.
+	* doc/doxygen-header:  Updates for Doxygen 1.4
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac:  Added subdirectory for
+	openvrml-player.
+	* mozilla-plugin/src/Makefile.am:  No longer link openvrml.so
+	with GTK/OpenGL/GtkGLExt.
+	* mozilla-plugin/src/openvrml.cpp:  Made the Mozilla plug-in
+	out-of-process.  openvrml.so is now just a stub that launches
+	openvrml-player.
+	* mozilla-plugin/src/openvrml-player/Makefile.am:  Added file.
+	* mozilla-plugin/src/openvrml-player/player.cpp:  Added file.
+	* src/libopenvrml/Makefile.am:  Incremented library version to
+	5:2:0.
+	* src/libopenvrml/openvrml/browser.cpp (browser::find_node):
+	Don't pop nodes off of the node path if the traversal has been
+	halted.
+	* src/libopenvrml/openvrml/browser.cpp:  Replaced doc-comments
+	for friend declarations. (Bug fixed in Doxygen 1.4.)
+	* src/libopenvrml/openvrml/event.cpp:  Replaced doc-comments for
+	friend declarations. (Bug fixed in Doxygen 1.4.)
+	* src/libopenvrml/openvrml/node.cpp
+	(node_traverser::do_traversal):  Check whether the traversal has
+	been halted when iterating over an MFNode field.
+	* src/libopenvrml/openvrml/node.cpp:  Replaced doc-comments for
+	friend declarations. (Bug fixed in Doxygen 1.4.)
+	* src/libopenvrml/openvrml/node_ptr.cpp:  Replaced doc-comments
+	for friend declarations. (Bug fixed in Doxygen 1.4.)
+	* src/libopenvrml/openvrml/scope.cpp:  Replaced doc-comments for
+	friend declarations. (Bug fixed in Doxygen 1.4.)
+	* src/libopenvrml/openvrml/script.cpp:  Replaced doc-comments
+	for friend declarations. (Bug fixed in Doxygen 1.4.)
+	* src/libopenvrml/openvrml/viewer.cpp:  Explicitly qualify
+	openvrml::browser to make doxygen happy.
+	* src/libopenvrml/openvrml/vrml97node.cpp:  Replaced doc-comments
+	for friend declarations. (Bug fixed in Doxygen 1.4.)
+	* src/lookat/Makefile.am:  Fixed problem with an empty -rpath
+	argument when configured with --disable-script-node-javascript.
+	* test/Makefile.am:  Fixed problem with an empty -rpath argument
+	when configured with --disable-script-node-javascript.
+	* test/parse/Makefile.am:  Fixed problem with an empty -rpath
+	argument when configured with --disable-script-node-javascript.
+
 2004-12-30 Braden McDaniel  <braden@endoframe.com>
 
 	Thread safety improvements (using Boost threads).  Also, added

@@ -1,4 +1,4 @@
-# Doxyfile 1.3.9.1
+# Doxyfile 1.4.0
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -55,7 +55,8 @@ GENERATE_DEPRECATEDLIST= YES
 ENABLED_SECTIONS       = 
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = NO
-SHOW_DIRECTORIES       = YES
+SHOW_DIRECTORIES       = NO
+FILE_VERSION_FILTER    = 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
@@ -63,6 +64,7 @@ QUIET                  = YES
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = NO
 WARN_FORMAT            = "$file:$line: $text"
 WARN_LOGFILE           = 
 #---------------------------------------------------------------------------
@@ -201,18 +203,22 @@ HIDE_UNDOC_RELATIONS   = YES
 HAVE_DOT               = YES
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = NO
+GROUP_GRAPHS           = YES
 UML_LOOK               = NO
 TEMPLATE_RELATIONS     = YES
 INCLUDE_GRAPH          = YES
 INCLUDED_BY_GRAPH      = YES
 CALL_GRAPH             = NO
 GRAPHICAL_HIERARCHY    = YES
+DIRECTORY_GRAPH        = NO
 DOT_IMAGE_FORMAT       = png
 DOT_PATH               = 
 DOTFILE_DIRS           = 
 MAX_DOT_GRAPH_WIDTH    = 640
 MAX_DOT_GRAPH_HEIGHT   = 480
 MAX_DOT_GRAPH_DEPTH    = 0
+DOT_TRANSPARENT        = YES
+DOT_MULTI_TARGETS      = YES
 GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES
 #---------------------------------------------------------------------------

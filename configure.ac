@@ -1,6 +1,6 @@
 AC_INIT([OpenVRML], [0.15.99], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
-AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004 Braden McDaniel])
+AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
                 [doc/Makefile]
                 [m4/Makefile]
@@ -165,10 +165,10 @@ else
   AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
             [Defined if Script node JavaScript support is enabled.])
   GRE_PATH=`$PKG_CONFIG --libs-only-L mozilla-js | sed -e 's/^-L//' -e 's/ *$//'`
-  if test -n "${OPENVRML_RPATH}" -a -n "${GRE_PATH}"; then
-    OPENVRML_RPATH=":${OPENVRML_RPATH}"
+  if test -n "${openvrml_run_path}" -a -n "${GRE_PATH}"; then
+    openvrml_run_path=":${openvrml_run_path}"
   fi
-  OPENVRML_RPATH="${GRE_PATH}${OPENVRML_RPATH}"
+  openvrml_run_path="${GRE_PATH}${openvrml_run_path}"
 fi
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
@@ -250,6 +250,9 @@ AM_CONDITIONAL([ENABLE_SHARED], [test "X$enable_shared" != "Xno"])
 # Optional dependencies (substituted in the pkg-config metadata files).
 #
 AC_SUBST([OPENVRML_PKG_REQUIRES])
+if test -n "${openvrml_run_path}"; then 
+  OPENVRML_RPATH="-rpath ${openvrml_run_path}"
+fi
 AC_SUBST([OPENVRML_RPATH])
 
 AC_ARG_VAR([XPIDL], [Mozilla XPCOM IDL compiler])

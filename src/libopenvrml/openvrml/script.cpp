@@ -383,6 +383,12 @@ script_node_class::do_create_type(const std::string &,
  */
 
 /**
+ * @var class script_node::script
+ *
+ * @brief Abstract base class for script runtimes.
+ */
+
+/**
  * @typedef script_node::field_value_map_t
  *
  * @brief A std::map that keys field values on their field name.

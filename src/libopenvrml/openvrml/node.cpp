@@ -936,6 +936,108 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @fn std::ostream & node::operator<<(std::ostream & out, const node & n)
+ *
+ * @brief Stream output.
+ */
+
+/**
+ * @fn script_node * node::node_cast<script_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>script_node</code>.
+ */
+
+/**
+ * @fn appearance_node * node::node_cast<appearance_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>appearance_node</code>.
+ */
+
+/**
+ * @fn child_node * node::node_cast<child_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>child_node</code>.
+ */
+
+/**
+ * @fn color_node * node::node_cast<color_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>color_node</code>.
+ */
+
+/**
+ * @fn coordinate_node * node::node_cast<coordinate_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>coordinate_node</code>.
+ */
+
+/**
+ * @fn font_style_node * node::node_cast<font_style_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>font_style_node</code>.
+ */
+
+/**
+ * @fn geometry_node * node::node_cast<geometry_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>geometry_node</code>.
+ */
+
+/**
+ * @fn grouping_node * node::node_cast<grouping_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>grouping_node</code>.
+ */
+
+/**
+ * @fn material_node * node::node_cast<material_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>material_node</code>.
+ */
+
+/**
+ * @fn normal_node * node::node_cast<normal_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>normal_node</code>.
+ */
+
+/**
+ * @fn sound_source_node * node::node_cast<sound_source_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>sound_source_node</code>.
+ */
+
+/**
+ * @fn texture_node * node::node_cast<texture_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>texture_node</code>.
+ */
+
+/**
+ * @fn texture_coordinate_node * node::node_cast<texture_coordinate_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>texture_coordinate_node</code>.
+ */
+
+/**
+ * @fn texture_transform_node * node::node_cast<texture_transform_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>texture_transform_node</code>.
+ */
+
+/**
+ * @fn transform_node * node::node_cast<transform_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>transform_node</code>.
+ */
+
+/**
+ * @fn viewpoint_node * node::node_cast<viewpoint_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>viewpoint_node</code>.
+ */
+
+/**
  * @internal
  *
  * @var scope_ptr node::scope_
@@ -3645,7 +3747,9 @@ void node_traverser::do_traversal(node & n)
                 } else if (interface->field_type == field_value::mfnode_id) {
                     const mfnode & children =
                         static_cast<const mfnode &>(n.field(interface->id));
-                    for (size_t i = 0; i < children.value.size(); ++i) {
+                    for (size_t i = 0;
+                         i < children.value.size() && !this->halt;
+                         ++i) {
                         if (children.value[i]) {
                             this->do_traversal(*children.value[i]);
                         }
