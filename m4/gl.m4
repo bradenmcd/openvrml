@@ -28,11 +28,12 @@
 #
 AC_DEFUN([OV_WITH_GL],
 [AC_REQUIRE([AC_PATH_X])dnl
+AC_REQUIRE([ACX_PTHREAD])dnl
 AC_ARG_WITH([gl], [  --with-gl               use OpenGL/Mesa])
 if test "X$with_gl" = "Xno"; then
   no_gl=yes
 else
-  GL_LIBS="-lpthread -lm"
+  GL_LIBS="${PTHREAD_LIBS} -lm"
 
   #
   # If X is present, use x_includes and x_libraries.

@@ -17,6 +17,10 @@
         * configure.ac, m4/gl.m4, m4/glut.m4: OV_WITH_GL only needs to
           AC_REQUIRE([AC_PATH_X]), not AC_PATH_XTRA.
 
+        * configure.ac, m4/Makefile.am, m4/acx_pthread.m4, m4/gl.m4: Use
+          ACX_PTHREAD (from the Autoconf Macro Archive) to check for
+          pthreads. (Nvidia OpenGL implementation, for one, needs this.)
+
 2002-10-30  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp, 
