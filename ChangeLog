@@ -5,6 +5,14 @@
 
         * Update ScriptJDK.cpp to include nodeptr.h instead of VrmlNodePtr.h 
 
+        * Add flags to Field.java to indicate if the value is an
+          eventIn, eventOut or exposedField.
+
+        * Reimplement Script_getEventIn, Script_getEventOut and
+          Script_getField in ScriptJDK.cpp
+
+        * Checkin test world and class for JSAI functionality.
+
 2001-11-25  Braden McDaniel  <braden@endoframe.com>
 
         * Moved NodeVisitor implementation to `node.h' and `node.cpp'.
