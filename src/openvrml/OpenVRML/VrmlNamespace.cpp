@@ -22,6 +22,7 @@
 #   include <config.h>
 # endif
 
+# include <algorithm>
 # include <stack>
 # include "VrmlNamespace.h"
 # include "node.h"
@@ -34,10 +35,10 @@
 #   include <typeinfo>
 # endif
 
-using namespace OpenVRML;
+namespace OpenVRML {
 
 /**
- * @class OpenVRML::VrmlNamespace
+ * @class VrmlNamespace
  *
  * @brief The VrmlNamespace class keeps track of defined nodes and
  *      prototypes.
@@ -49,91 +50,12 @@ using namespace OpenVRML;
  * namespace are available.
  */
 
-// This should at least be a sorted vector...
-std::list<OpenVRML::NodeTypePtr> OpenVRML::VrmlNamespace::builtInList;
+typedef std::list<NodeTypePtr> NodeTypeList;
 
-// Ref count of namespaces so builtins can be freed
-int OpenVRML::VrmlNamespace::s_nNamespaces;
+VrmlNamespace::VrmlNamespace(VrmlNamespace * parent):
+        parent(parent) {}
 
-OpenVRML::VrmlNamespace::VrmlNamespace(VrmlNamespace * parent):
-        d_parent(parent) {
-    ++s_nNamespaces;
-
-    // Initialize typeList with built in nodes
-    if (builtInList.empty()) {
-        defineBuiltIns();
-    }
-}
-
-OpenVRML::VrmlNamespace::~VrmlNamespace() {
-    // Free builtins
-    if ( --s_nNamespaces == 0 ) {
-        builtInList.clear();
-    }
-}
-
-void OpenVRML::VrmlNamespace::addBuiltIn(const NodeTypePtr & nodeType) {
-    builtInList.push_front(nodeType);
-}
-
-void OpenVRML::VrmlNamespace::defineBuiltIns()
-{
-  addBuiltIn( NodeAnchor::defineType() );
-  addBuiltIn( NodeAppearance::defineType() );
-  addBuiltIn( NodeAudioClip::defineType() );
-  addBuiltIn( NodeBackground::defineType() );
-  addBuiltIn( NodeBillboard::defineType() );
-  addBuiltIn( NodeBox::defineType() );
-  addBuiltIn( NodeCollision::defineType() );
-  addBuiltIn( NodeColor::defineType() );
-  addBuiltIn( NodeColorInt::defineType() );
-  addBuiltIn( NodeCone::defineType() );
-  addBuiltIn( NodeCoordinate::defineType() );
-  addBuiltIn( NodeCoordinateInt::defineType() );
-  addBuiltIn( NodeCylinder::defineType() );
-  addBuiltIn( NodeCylinderSensor::defineType() );
-  addBuiltIn( NodeDirLight::defineType() );
-  addBuiltIn( NodeElevationGrid::defineType() );
-  addBuiltIn( NodeExtrusion::defineType() );
-  addBuiltIn( NodeFog::defineType() );
-  addBuiltIn( NodeFontStyle::defineType() );
-  addBuiltIn( NodeGroup::defineType() );
-  addBuiltIn( NodeIFaceSet::defineType() );
-  addBuiltIn( NodeILineSet::defineType() );
-  addBuiltIn( NodeImageTexture::defineType() );
-  addBuiltIn( NodeInline::defineType() );
-  addBuiltIn( NodeLOD::defineType() );
-  addBuiltIn( NodeMaterial::defineType() );
-  addBuiltIn( NodeMovieTexture::defineType() );
-  addBuiltIn( NodeNavigationInfo::defineType() );
-  addBuiltIn( NodeNormal::defineType() );
-  addBuiltIn( NodeNormalInt::defineType() );
-  addBuiltIn( NodeOrientationInt::defineType() );
-  addBuiltIn( NodePixelTexture::defineType() );
-  addBuiltIn( NodePlaneSensor::defineType() );
-  addBuiltIn( NodePointLight::defineType() );
-  addBuiltIn( NodePointSet::defineType() );
-  addBuiltIn( NodePositionInt::defineType() );
-  addBuiltIn( NodeProximitySensor::defineType() );
-  addBuiltIn( NodeScalarInt::defineType() );
-  addBuiltIn(ScriptNode::defineType());
-  addBuiltIn( NodeShape::defineType() );
-  addBuiltIn( NodeSound::defineType() );
-  addBuiltIn( NodeSphere::defineType() );
-  addBuiltIn( NodeSphereSensor::defineType() );
-  addBuiltIn( NodeSpotLight::defineType() );
-  addBuiltIn( NodeSwitch::defineType() );
-  addBuiltIn( NodeText::defineType() );
-  addBuiltIn( NodeTextureCoordinate::defineType() );
-  addBuiltIn( NodeTextureTransform::defineType() );
-  addBuiltIn( NodeTimeSensor::defineType() );
-  addBuiltIn( NodeTouchSensor::defineType() );
-  addBuiltIn( NodeTransform::defineType() );
-  addBuiltIn( NodeViewpoint::defineType() );
-  addBuiltIn( NodeVisibilitySensor::defineType() );
-  addBuiltIn( NodeWorldInfo::defineType() );
-}
-
+VrmlNamespace::~VrmlNamespace() {}
 
 /**
  * @brief Add a node type.
@@ -144,957 +66,1106 @@ void OpenVRML::VrmlNamespace::defineBuiltIns()
  *
  * @todo Throw std::invalid_argument if the argument type is already defined.
  */
-void OpenVRML::VrmlNamespace::addNodeType(const NodeTypePtr & nodeType) {
-    assert(!this->findType(nodeType->getId()));
-    this->d_typeList.push_front(nodeType);
+void VrmlNamespace::addNodeType(const NodeTypePtr & nodeType) {
+    assert(nodeType);
+    assert(!this->findType(nodeType->id));
+    this->typeList.push_front(nodeType);
 }
 
 /**
  * @brief Find a node type, given a type name. Returns NULL if type is
  *      not defined.
  */
-const OpenVRML::NodeTypePtr
-        OpenVRML::VrmlNamespace::findType(const std::string & name) const {
-    // Look through the PROTO stack:
-    NodeTypePtr nt(findPROTO(name));
-    if (nt) {
-        return nt;
+const NodeTypePtr VrmlNamespace::findType(const std::string & id) const {
+    //
+    // Look through the types unique to this scope.
+    //
+    for (NodeTypeList::const_iterator itr(this->typeList.begin());
+            itr != this->typeList.end(); ++itr) {
+        assert(*itr);
+        if (id == (*itr)->id) { return *itr; }
     }
     
-    // Look in parent scope for the type
-    if (d_parent) {
-        return d_parent->findType(name);
-    }
-    
-    // Look through the built ins
-    for (std::list<NodeTypePtr>::iterator i = builtInList.begin();
-            i != builtInList.end(); ++i) {
-        nt = *i;
-        assert(nt);
-        if (name == nt->getId()) {
-            return nt;
-        }
-    }
+    //
+    // Look in the parent scope for the type.
+    //
+    if (this->parent) { return this->parent->findType(id); }
     
     return NodeTypePtr(0);
 }
 
-/**
- * @brief Find a nodeType, given a PROTO name.
- */
-const OpenVRML::NodeTypePtr
-        OpenVRML::VrmlNamespace::findPROTO(const std::string & name) const {
-    for (std::list<NodeTypePtr>::const_iterator i(d_typeList.begin());
-          i != d_typeList.end(); ++i) {
-        assert(*i);
-        if (name == (*i)->getId()) {
-	    return *i;
-        }
-    }
+const NodeTypePtr VrmlNamespace::firstType() const {
+    if (!this->typeList.empty()) { return this->typeList.front(); }
     return NodeTypePtr(0);
 }
 
-
-const OpenVRML::NodeTypePtr OpenVRML::VrmlNamespace::firstType() const {
-    // Top of the PROTO stack (should make sure it has an implementation...)
-    if (!this->d_typeList.empty()) {
-        return d_typeList.front();
-    }
-    return NodeTypePtr(0);
+void VrmlNamespace::addNodeName(Node & namedNode) {
+    // We could remove any existing node with this name, but
+    // since we are just pushing this one onto the front of
+    // the list, the other name won't be found. If we do
+    // something smart with this list (like sorting), this
+    // will need to change.
+    this->nameList.push_front(&namedNode);
 }
 
-void OpenVRML::VrmlNamespace::addNodeName(Node & namedNode) {
-  // We could remove any existing node with this name, but
-  // since we are just pushing this one onto the front of
-  // the list, the other name won't be found. If we do
-  // something smart with this list (like sorting), this
-  // will need to change.
-  d_nameList.push_front(&namedNode);
-}
-
-void OpenVRML::VrmlNamespace::removeNodeName(Node & namedNode) {
-    for (std::list<Node *>::iterator i(this->d_nameList.begin());
-            i != this->d_nameList.end(); ++i) {
+void VrmlNamespace::removeNodeName(Node & namedNode) {
+    for (std::list<Node *>::iterator i(this->nameList.begin());
+            i != this->nameList.end(); ++i) {
         if (*i == &namedNode) {
-            this->d_nameList.erase(i);
+            this->nameList.erase(i);
             return;
         }
     }
 }
 
-
-OpenVRML::Node *
-        OpenVRML::VrmlNamespace::findNode(const std::string & nodeId) const {
-    for (std::list<Node *>::const_iterator nodeItr(d_nameList.begin());
-            nodeItr != d_nameList.end(); ++nodeItr) {
-        if (nodeId == (*nodeItr)->getId()) {
-            return *nodeItr;
-        }
+Node * VrmlNamespace::findNode(const std::string & id) const {
+    for (std::list<Node *>::const_iterator itr(this->nameList.begin());
+            itr != this->nameList.end(); ++itr) {
+        if (id == (*itr)->getId()) { return *itr; }
     }
     return 0;
 }
 
+
 namespace {
-    
-    class NodeCloneVisitor : public NodeVisitor {
+    class AddInterfaceToSet_ : std::unary_function<NodeInterface, void> {
+        NodeInterfaceSet & nodeInterfaceSet;
+        
     public:
-        NodeCloneVisitor(VrmlNamespace & ns): ns(ns) {}
+        AddInterfaceToSet_(NodeInterfaceSet & nodeInterfaceSet):
+                nodeInterfaceSet(nodeInterfaceSet) {}
         
-        virtual ~NodeCloneVisitor() {}
-        
-        const MFNode clone(const MFNode & mfnode) {
-            MFNode clonedNodes(this->visitChildren(mfnode));
-            assert(this->rootNodeStack.size() == 0);
-            
-            for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                mfnode.getElement(i)->resetVisitedFlag();
-            }
-            
-            return clonedNodes;
+        void operator()(const NodeInterface & nodeInterface) const
+                throw (std::invalid_argument, std::bad_alloc) {
+            this->nodeInterfaceSet.add(nodeInterface);
         }
-        
-        virtual void visit(NodeAnchor & node) {
-            const NodePtr clonedNode(new NodeAnchor(node));
-            this->rootNodeStack.push(clonedNode);
-            clonedNode->toAnchor()
-                    ->setChildren(this->visitChildren(node.getChildren()));
-        }
-        
-        virtual void visit(NodeAppearance & node) {
-            const NodePtr clonedNode(new NodeAppearance(node));
-            this->rootNodeStack.push(clonedNode);
-            
-            if (node.getMaterial().get()) {
-                this->visitNode(*node.getMaterial().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toMaterial());
-                clonedNode->toAppearance()
-                        ->setMaterial(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-            
-            if (node.getTexture().get()) {
-                this->visitNode(*node.getTexture().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toTexture());
-                clonedNode->toAppearance()
-                        ->setTexture(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-            
-            if (node.getTextureTransform().get()) {
-                this->visitNode(*node.getTextureTransform().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toTextureTransform());
-                clonedNode->toAppearance()
-                        ->setTextureTransform(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-        }
-        
-        virtual void visit(NodeAudioClip & node) {
-            this->rootNodeStack.push(NodePtr(new NodeAudioClip(node)));
-        }
-        
-        virtual void visit(NodeBackground & node) {
-            this->rootNodeStack.push(NodePtr(new NodeBackground(node)));
-        }
-        
-        virtual void visit(NodeBillboard & node) {
-            const NodePtr clonedNode(new NodeBillboard(node));
-            this->rootNodeStack.push(clonedNode);
-            clonedNode->toBillboard()
-                    ->setChildren(this->visitChildren(node.getChildren()));
-        }
-        
-        virtual void visit(NodeBox & node) {
-            this->rootNodeStack.push(NodePtr(new NodeBox(node)));
-        }
-        
-        virtual void visit(NodeCollision & node) {
-            const NodePtr clonedNode(new NodeCollision(node));
-            this->rootNodeStack.push(clonedNode);
-            clonedNode->toCollision()
-                    ->setChildren(this->visitChildren(node.getChildren()));
-            if (node.getProxy().get()) {
-                this->visitNode(*node.getProxy().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toChild());
-                clonedNode->toCollision()
-                        ->setProxy(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-        }
-        
-        virtual void visit(NodeColor & node) {
-            this->rootNodeStack.push(NodePtr(new NodeColor(node)));
-        }
-        
-        virtual void visit(NodeColorInt & node) {
-            this->rootNodeStack.push(NodePtr(new NodeColorInt(node)));
-        }
-        
-        virtual void visit(NodeCone & node) {
-            this->rootNodeStack.push(NodePtr(new NodeCone(node)));
-        }
-        
-        virtual void visit(NodeCoordinate & node) {
-            this->rootNodeStack.push(NodePtr(new NodeCoordinate(node)));
-        }
-        
-        virtual void visit(NodeCoordinateInt & node) {
-            this->rootNodeStack.push(NodePtr(new NodeCoordinateInt(node)));
-        }
-        
-        virtual void visit(NodeCylinder & node) {
-            this->rootNodeStack.push(NodePtr(new NodeCylinder(node)));
-        }
-        
-        virtual void visit(NodeCylinderSensor & node) {
-            this->rootNodeStack.push(NodePtr(new NodeCylinderSensor(node)));
-        }
-        
-        virtual void visit(NodeDirLight & node) {
-            this->rootNodeStack.push(NodePtr(new NodeDirLight(node)));
-        }
-        
-        virtual void visit(NodeElevationGrid & node) {
-            const NodePtr clonedNode(new NodeElevationGrid(node));
-            this->rootNodeStack.push(clonedNode);
-            
-            if (node.getColor().get()) {
-                this->visitNode(*node.getColor().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toColor());
-                clonedNode->toElevationGrid()
-                        ->setColor(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-            
-            if (node.getNormal().get()) {
-                this->visitNode(*node.getNormal().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toNormal());
-                clonedNode->toElevationGrid()
-                        ->setNormal(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-            
-            if (node.getTexCoord().get()) {
-                this->visitNode(*node.getTexCoord().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toTextureCoordinate());
-                clonedNode->toElevationGrid()
-                        ->setTexCoord(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-        }
-        
-        virtual void visit(NodeExtrusion & node) {
-            this->rootNodeStack.push(NodePtr(new NodeExtrusion(node)));
-        }
-        
-        virtual void visit(NodeFog & node) {
-            this->rootNodeStack.push(NodePtr(new NodeFog(node)));
-        }
-        
-        virtual void visit(NodeFontStyle & node) {
-            this->rootNodeStack.push(NodePtr(new NodeFontStyle(node)));
-        }
-        
-        virtual void visit(NodeGroup & node) {
-            const NodePtr clonedNode(new NodeGroup(node));
-            this->rootNodeStack.push(clonedNode);
-            static_cast<NodeGroup *>(clonedNode.get())
-                    ->setChildren(this->visitChildren(node.getChildren()));
-        }
-        
-        virtual void visit(NodeIFaceSet & node) {
-            const NodePtr clonedNode(new NodeIFaceSet(node));
-            this->rootNodeStack.push(clonedNode);
-            
-            if (node.getColor().get()) {
-                this->visitNode(*node.getColor().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toColor());
-                static_cast<NodeIFaceSet *>(clonedNode.get())
-                        ->setColor(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-            
-            if (node.getCoord().get()) {
-                this->visitNode(*node.getCoord().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toCoordinate());
-                static_cast<NodeIFaceSet *>(clonedNode.get())
-                        ->setCoord(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-            
-            if (node.getNormal().get()) {
-                this->visitNode(*node.getNormal().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toNormal());
-                static_cast<NodeIFaceSet *>(clonedNode.get())
-                        ->setNormal(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-            
-            if (node.getTexCoord().get()) {
-                this->visitNode(*node.getTexCoord().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toTextureCoordinate());
-                static_cast<NodeIFaceSet *>(clonedNode.get())
-                        ->setTexCoord(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-        }
-        
-        virtual void visit(NodeILineSet & node) {
-            const NodePtr clonedNode(new NodeILineSet(node));
-            this->rootNodeStack.push(clonedNode);
-            
-            if (node.getColor().get()) {
-                this->visitNode(*node.getColor().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toColor());
-                static_cast<NodeILineSet *>(clonedNode.get())
-                        ->setColor(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-            
-            if (node.getCoord().get()) {
-                this->visitNode(*node.getCoord().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toCoordinate());
-                static_cast<NodeILineSet *>(clonedNode.get())
-                        ->setCoord(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-        }
-        
-        virtual void visit(NodeImageTexture & node) {
-            this->rootNodeStack.push(NodePtr(new NodeImageTexture(node)));
-        }
-        
-        virtual void visit(NodeInline & node) {
-            this->rootNodeStack.push(NodePtr(new NodeInline(node)));
-        }
-        
-        virtual void visit(NodeLOD & node) {
-            const NodePtr clonedNode(new NodeLOD(node));
-            this->rootNodeStack.push(clonedNode);
-            static_cast<NodeLOD *>(clonedNode.get())
-                    ->setLevel(this->visitChildren(node.getLevel()));
-        }
-        
-        virtual void visit(NodeMaterial & node) {
-            this->rootNodeStack.push(NodePtr(new NodeMaterial(node)));
-        }
-        
-        virtual void visit(NodeMovieTexture & node) {
-            this->rootNodeStack.push(NodePtr(new NodeMovieTexture(node)));
-        }
-        
-        virtual void visit(NodeNavigationInfo & node) {
-            this->rootNodeStack.push(NodePtr(new NodeNavigationInfo(node)));
-        }
-        
-        virtual void visit(NodeNormal & node) {
-            this->rootNodeStack.push(NodePtr(new NodeNormal(node)));
-        }
-        
-        virtual void visit(NodeNormalInt & node) {
-            this->rootNodeStack.push(NodePtr(new NodeNormalInt(node)));
-        }
-        
-        virtual void visit(NodeOrientationInt & node) {
-            this->rootNodeStack.push(NodePtr(new NodeOrientationInt(node)));
-        }
-        
-        virtual void visit(NodePixelTexture & node) {
-            this->rootNodeStack.push(NodePtr(new NodePixelTexture(node)));
-        }
-        
-        virtual void visit(NodePlaneSensor & node) {
-            this->rootNodeStack.push(NodePtr(new NodePlaneSensor(node)));
-        }
-        
-        virtual void visit(NodePointLight & node) {
-            this->rootNodeStack.push(NodePtr(new NodePointLight(node)));
-        }
-        
-        virtual void visit(NodePointSet & node) {
-            const NodePtr clonedNode(new NodePointSet(node));
-            this->rootNodeStack.push(clonedNode);
-            
-            if (node.getColor().get()) {
-                this->visitNode(*node.getColor().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toColor());
-                static_cast<NodePointSet *>(clonedNode.get())
-                        ->setColor(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-            
-            if (node.getCoord().get()) {
-                this->visitNode(*node.getCoord().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toCoordinate());
-                clonedNode.get()->toPointSet()
-                        ->setCoord(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-        }
-        
-        virtual void visit(NodePositionInt & node) {
-            this->rootNodeStack.push(NodePtr(new NodePositionInt(node)));
-        }
-        
-        virtual void visit(ProtoNode & node) {
-            const NodePtr clonedNode(new ProtoNode(node));
-            clonedNode->addToScene(node.scene(),
-                                   clonedNode->type.getActualUrl());
-            this->rootNodeStack.push(clonedNode);
-        }
-        
-        virtual void visit(NodeProximitySensor & node) {
-            this->rootNodeStack.push(NodePtr(new NodeProximitySensor(node)));
-        }
-        
-        virtual void visit(NodeScalarInt & node) {
-            this->rootNodeStack.push(NodePtr(new NodeScalarInt(node)));
-        }
-        
-        virtual void visit(ScriptNode & node) {
-            const NodePtr clonedNode(new ScriptNode(node));
-            this->rootNodeStack.push(clonedNode);
-            for (ScriptNode::FieldList::const_iterator 
-                    i = node.fields().begin(),
-                    j = static_cast<ScriptNode *>(clonedNode.get())
-                            ->fields().begin();
-                    i != node.fields().end(); ++i, ++j) {
-                assert((*i)->value);
-                if ((*i)->type == FieldValue::sfnode) {
-                    assert(dynamic_cast<SFNode *>((*i)->value));
-                    if (static_cast<SFNode *>((*i)->value)->get()) {
-                        visitNode(*static_cast<SFNode *>((*i)->value)->get());
-                        static_cast<SFNode *>((*j)->value)
-                                ->set(this->rootNodeStack.top());
-                        this->rootNodeStack.pop();
-                    }
-                } else if ((*i)->type == FieldValue::mfnode) {
-                    assert(dynamic_cast<MFNode *>((*i)->value));
-                    static_cast<MFNode &>(*(*j)->value) =
-                        visitChildren(static_cast<MFNode &>(*(*i)->value));
-                }
-            }
-        }
-        
-        virtual void visit(NodeShape & node) {
-            const NodePtr clonedNode(new NodeShape(node));
-            this->rootNodeStack.push(clonedNode);
-            
-            if (node.getAppearance().get()) {
-                this->visitNode(*node.getAppearance().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toAppearance());
-                static_cast<NodeShape *>(clonedNode.get())
-                        ->setAppearance(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-            
-            if (node.getGeometry().get()) {
-                this->visitNode(*node.getGeometry().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toGeometry());
-                static_cast<NodeShape *>(clonedNode.get())
-                        ->setGeometry(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-        }
-        
-        /**
-         * @todo The assertion here will fail if a MovieTexture node is used
-         *       as a sound source.
-         */
-        virtual void visit(NodeSound & node) {
-            const NodePtr clonedNode(new NodeSound(node));
-            this->rootNodeStack.push(clonedNode);
-            
-            if (node.getSource().get()) {
-                this->visitNode(*node.getSource().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toAudioClip());
-                static_cast<NodeSound *>(clonedNode.get())
-                        ->setSource(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-        }
-        
-        virtual void visit(NodeSphere & node) {
-            this->rootNodeStack.push(NodePtr(new NodeSphere(node)));
-        }
-        
-        virtual void visit(NodeSphereSensor & node) {
-            this->rootNodeStack.push(NodePtr(new NodeSphereSensor(node)));
-        }
-        
-        virtual void visit(NodeSpotLight & node) {
-            this->rootNodeStack.push(NodePtr(new NodeSpotLight(node)));
-        }
-        
-        virtual void visit(NodeSwitch & node) {
-            const NodePtr clonedNode(new NodeSwitch(node));
-            this->rootNodeStack.push(clonedNode);
-            static_cast<NodeSwitch *>(clonedNode.get())
-                    ->setChoice(this->visitChildren(node.getChoice()));
-        }
-        
-        virtual void visit(NodeText & node) {
-            const NodePtr clonedNode(new NodeText(node));
-            this->rootNodeStack.push(clonedNode);
-            
-            if (node.getFontStyle().get()) {
-                this->visitNode(*node.getFontStyle().get());
-                assert(this->rootNodeStack.top());
-                assert(this->rootNodeStack.top()->toFontStyle());
-                static_cast<NodeText *>(clonedNode.get())
-                        ->setFontStyle(SFNode(this->rootNodeStack.top()));
-                this->rootNodeStack.pop();
-            }
-        }
-        
-        virtual void visit(NodeTextureCoordinate & node) {
-            this->rootNodeStack.push(NodePtr(new NodeTextureCoordinate(node)));
-        }
-        
-        virtual void visit(NodeTextureTransform & node) {
-            this->rootNodeStack.push(NodePtr(new NodeTextureTransform(node)));
-        }
-        
-        virtual void visit(NodeTimeSensor & node) {
-            this->rootNodeStack.push(NodePtr(new NodeTimeSensor(node)));
-        }
-        
-        virtual void visit(NodeTouchSensor & node) {
-            this->rootNodeStack.push(NodePtr(new NodeTouchSensor(node)));
-        }
-        
-        virtual void visit(NodeTransform & node) {
-            const NodePtr clonedNode(new NodeTransform(node));
-            this->rootNodeStack.push(clonedNode);
-            static_cast<NodeTransform *>(clonedNode.get())
-                    ->setChildren(this->visitChildren(node.getChildren()));
-        }
-        
-        virtual void visit(NodeViewpoint & node) {
-            this->rootNodeStack.push(NodePtr(new NodeViewpoint(node)));
-        }
-        
-        virtual void visit(NodeVisibilitySensor & node) {
-            this->rootNodeStack.push(NodePtr(new NodeVisibilitySensor(node)));
-        }
-        
-        virtual void visit(NodeWorldInfo & node) {
-            this->rootNodeStack.push(NodePtr(new NodeWorldInfo(node)));
-        }
-        
-    private:
-        //
-        // Not copyable.
-        //
-        NodeCloneVisitor(const NodeCloneVisitor &);
-        NodeCloneVisitor & operator=(const NodeCloneVisitor &);
-        
-        const MFNode visitChildren(const MFNode & children) {
-            MFNode clonedChildren(children.getLength());
-            for (size_t i = 0; i < clonedChildren.getLength(); ++i) {
-                if (children.getElement(i)) {
-                    this->visitNode(*children.getElement(i));
-                    assert(this->rootNodeStack.top());
-                    clonedChildren.setElement(i, this->rootNodeStack.top());
-                    this->rootNodeStack.pop();
-                }
-            }
-            return clonedChildren;
-        }
-        
-        void visitNode(Node & node) {
-            if (node.accept(*this)) {
-                assert(this->rootNodeStack.size() > 0);
-                assert(typeid(node) == typeid(*this->rootNodeStack.top()));
-                const std::string & nodeId =
-                        this->rootNodeStack.top()->getId();
-                if (!this->rootNodeStack.top()->getId().empty()) {
-                    this->ns.addNodeName(*this->rootNodeStack.top());
-                }
-            } else {
-                assert(this->ns.findNode(node.getId()));
-                this->rootNodeStack
-                        .push(NodePtr(this->ns.findNode(node.getId())));
-            }
-        }
-        
-        VrmlNamespace & ns;
-        std::stack<NodePtr> rootNodeStack;
     };
     
-    class NodeRouteCopyVisitor : public NodeVisitor {
+    class Vrml97NodeInterfaceSet_ : public NodeInterfaceSet {
     public:
-        NodeRouteCopyVisitor(VrmlNamespace & ns): ns(ns) {}
-        
-        virtual ~NodeRouteCopyVisitor() {}
-        
-        void copyRoutes(const MFNode & mfnode) {
-            this->visitChildren(mfnode);
-            
-            for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                mfnode.getElement(i)->resetVisitedFlag();
-            }
+        Vrml97NodeInterfaceSet_(const NodeInterface * const begin,
+                                const NodeInterface * const end) {
+            std::for_each(begin, end, AddInterfaceToSet_(*this));
         }
-        
-        virtual void visit(NodeAnchor & node) {
-            this->copyRoutesFromNode(node);
-            this->visitChildren(node.getChildren());
-        }
-        
-        virtual void visit(NodeAppearance & node) {
-            this->copyRoutesFromNode(node);
-            if (node.getMaterial().get()) {
-                node.getMaterial().get()->accept(*this);
-            }
-            if (node.getTexture().get()) {
-                node.getTexture().get()->accept(*this);
-            }
-            if (node.getTextureTransform().get()) {
-                node.getTextureTransform().get()->accept(*this);
-            }
-        }
-        
-        virtual void visit(NodeAudioClip & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeBackground & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeBillboard & node) {
-            this->copyRoutesFromNode(node);
-            this->visitChildren(node.getChildren());
-        }
-        
-        virtual void visit(NodeBox & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeCollision & node) {
-            this->copyRoutesFromNode(node);
-            this->visitChildren(node.getChildren());
-        }
-        
-        virtual void visit(NodeColor & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeColorInt & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeCone & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeCoordinate & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeCoordinateInt & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeCylinder & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeCylinderSensor & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeDirLight & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeElevationGrid & node) {
-            this->copyRoutesFromNode(node);
-            if (node.getColor().get()) {
-                node.getColor().get()->accept(*this);
-            }
-            if (node.getNormal().get()) {
-                node.getNormal().get()->accept(*this);
-            }
-            if (node.getTexCoord().get()) {
-                node.getTexCoord().get()->accept(*this);
-            }
-        }
-        
-        virtual void visit(NodeExtrusion & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeFog & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeFontStyle & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeGroup & node) {
-            this->copyRoutesFromNode(node);
-            this->visitChildren(node.getChildren());
-        }
-        
-        virtual void visit(NodeIFaceSet & node) {
-            this->copyRoutesFromNode(node);
-            if (node.getColor().get()) {
-                node.getColor().get()->accept(*this);
-            }
-            if (node.getCoord().get()) {
-                node.getCoord().get()->accept(*this);
-            }
-            if (node.getNormal().get()) {
-                node.getNormal().get()->accept(*this);
-            }
-            if (node.getTexCoord().get()) {
-                node.getTexCoord().get()->accept(*this);
-            }
-        }
-        
-        virtual void visit(NodeILineSet & node) {
-            this->copyRoutesFromNode(node);
-            if (node.getColor().get()) {
-                node.getColor().get()->accept(*this);
-            }
-            if (node.getCoord().get()) {
-                node.getCoord().get()->accept(*this);
-            }
-        }
-        
-        virtual void visit(NodeImageTexture & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeInline & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeLOD & node) {
-            this->copyRoutesFromNode(node);
-            this->visitChildren(node.getLevel());
-        }
-        
-        virtual void visit(NodeMaterial & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeMovieTexture & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeNavigationInfo & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeNormal & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeNormalInt & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeOrientationInt & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodePixelTexture & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodePlaneSensor & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodePointLight & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodePointSet & node) {
-            this->copyRoutesFromNode(node);
-            if (node.getColor().get()) {
-                node.getColor().get()->accept(*this);
-            }
-            if (node.getCoord().get()) {
-                node.getCoord().get()->accept(*this);
-            }
-       }
-        
-        virtual void visit(NodePositionInt & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(ProtoNode & node) {
-            this->copyRoutesFromNode(node);
-            //
-            // What about the fields of a PROTO'd node?
-            //
-        }
-        
-        virtual void visit(NodeProximitySensor & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeScalarInt & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(ScriptNode & node) {
-            this->copyRoutesFromNode(node);
-            for (ScriptNode::FieldList::const_iterator
-                    i = node.fields().begin(); i != node.fields().end(); ++i) {
-                assert((*i)->value);
-                if ((*i)->type == FieldValue::sfnode) {
-                    assert(dynamic_cast<SFNode *>((*i)->value));
-                    if (static_cast<SFNode *>((*i)->value)->get()) {
-                        static_cast<SFNode *>((*i)->value)->get()
-                                ->accept(*this);
-                    }
-                } else if ((*i)->type == FieldValue::mfnode) {
-                    assert(dynamic_cast<MFNode *>((*i)->value));
-                    this->visitChildren(static_cast<MFNode &>(*(*i)->value));
-                }
-            }
-        }
-        
-        virtual void visit(NodeShape & node) {
-            this->copyRoutesFromNode(node);
-            if (node.getAppearance().get()) {
-                node.getAppearance().get()->accept(*this);
-            }
-            if (node.getGeometry().get()) {
-                node.getGeometry().get()->accept(*this);
-            }
-        }
-        
-        virtual void visit(NodeSound & node) {
-            this->copyRoutesFromNode(node);
-            if (node.getSource().get()) {
-                node.getSource().get()->accept(*this);
-            }
-        }
-        
-        virtual void visit(NodeSphere & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeSphereSensor & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeSpotLight & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeSwitch & node) {
-            this->copyRoutesFromNode(node);
-            this->visitChildren(node.getChoice());
-        }
-        
-        virtual void visit(NodeText & node) {
-            this->copyRoutesFromNode(node);
-            if (node.getFontStyle().get()) {
-                node.getFontStyle().get()->accept(*this);
-            }
-        }
-        
-        virtual void visit(NodeTextureCoordinate & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeTextureTransform & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeTimeSensor & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeTouchSensor & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeTransform & node) {
-            this->copyRoutesFromNode(node);
-            this->visitChildren(node.getChildren());
-        }
-        
-        virtual void visit(NodeViewpoint & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeVisibilitySensor & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(NodeWorldInfo & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-    private:
-        //
-        // Not copyable.
-        //
-        NodeRouteCopyVisitor(const NodeRouteCopyVisitor &);
-        NodeRouteCopyVisitor & operator=(const NodeRouteCopyVisitor &);
-        
-        void copyRoutesFromNode(Node & node) {
-            const std::string & fromNodeId = node.getId();
-            if (!fromNodeId.empty()) {
-                Node * fromNode = this->ns.findNode(fromNodeId);
-                assert(fromNode);
-		
-		Node::RouteList routes = node.getRoutes();
-
-		Node::RouteList::iterator i;
-		
-		for (i = routes.begin(); i != routes.end(); ++i)
-		{
-		  const std::string& toNodeId = (*i)->toNode->getId();
-		  assert(this->ns.findNode(toNodeId));
-		  fromNode->addRoute((*i)->fromEventOut,
-				     NodePtr(this->ns.findNode(toNodeId)),
-				     (*i)->toEventIn);
-		}
-            }
-        }
-        
-        void visitChildren(const MFNode & children) {
-            for (size_t i = 0; i < children.getLength(); ++i) {
-                if (children.getElement(i)) {
-                    children.getElement(i)->accept(*this);
-                }
-            }
-        }
-        
-        VrmlNamespace & ns;
     };
 }
 
-const OpenVRML::MFNode
-        OpenVRML::VrmlNamespace::cloneNodes(const MFNode & mfnode) {
-    MFNode clonedNodes(NodeCloneVisitor(*this).clone(mfnode));
-    NodeRouteCopyVisitor(*this).copyRoutes(mfnode);
-    return clonedNodes;
+Vrml97RootNamespace::Vrml97RootNamespace(const NodeClassMap & nodeClassMap) {
+    NodeClassMap::const_iterator pos;
+    
+    //
+    // Anchor node
+    //
+    static const NodeInterface anchorInterfaces[] = {
+        { NodeInterface::eventIn, FieldValue::mfnode, "addChildren" },
+        { NodeInterface::eventIn, FieldValue::mfnode, "removeChildren" },
+        { NodeInterface::exposedField, FieldValue::mfnode, "children" },
+        { NodeInterface::exposedField, FieldValue::sfstring, "description" },
+        { NodeInterface::exposedField, FieldValue::mfstring, "parameter" },
+        { NodeInterface::exposedField, FieldValue::mfstring, "url" },
+        { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
+        { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            anchorInterfaceSet(anchorInterfaces, anchorInterfaces + 8);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Anchor");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Anchor", anchorInterfaceSet));
+    
+    //
+    // Appearance node
+    //
+    static const NodeInterface appearanceInterfaces[] = {
+        { NodeInterface::exposedField, FieldValue::sfnode, "material" },
+        { NodeInterface::exposedField, FieldValue::sfnode, "texture" },
+        { NodeInterface::exposedField, FieldValue::sfnode, "textureTransform" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            appearanceInterfaceSet(appearanceInterfaces,
+                                   appearanceInterfaces + 3);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Appearance");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Appearance",
+                                              appearanceInterfaceSet));
+    
+    //
+    // AudioClip node
+    //
+    static const NodeInterface audioClipInterfaces[] = {
+        { NodeInterface::exposedField, FieldValue::sfstring, "description" },
+        { NodeInterface::exposedField, FieldValue::sfbool, "loop" },
+        { NodeInterface::exposedField, FieldValue::sffloat, "pitch" },
+        { NodeInterface::exposedField, FieldValue::sftime, "startTime" },
+        { NodeInterface::exposedField, FieldValue::sftime, "stopTime" },
+        { NodeInterface::exposedField, FieldValue::mfstring, "url" },
+        { NodeInterface::eventOut, FieldValue::sftime, "duration_changed" },
+        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            audioClipInterfaceSet(audioClipInterfaces,
+                                  audioClipInterfaces + 8);
+    pos = nodeClassMap.find("urn:X-openvrml:node:AudioClip");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("AudioClip",
+                                              audioClipInterfaceSet));
+    
+    //
+    // Background node
+    //
+    static const NodeInterface backgroundInterfaces[] = {
+        { NodeInterface::eventIn, FieldValue::sfbool, "set_bind" },
+        { NodeInterface::exposedField, FieldValue::mffloat, "groundAngle" },
+        { NodeInterface::exposedField, FieldValue::mfcolor, "groundColor" },
+        { NodeInterface::exposedField, FieldValue::mfstring, "backUrl" },
+        { NodeInterface::exposedField, FieldValue::mfstring, "bottomUrl" },
+        { NodeInterface::exposedField, FieldValue::mfstring, "frontUrl" },
+        { NodeInterface::exposedField, FieldValue::mfstring, "leftUrl" },
+        { NodeInterface::exposedField, FieldValue::mfstring, "rightUrl" },
+        { NodeInterface::exposedField, FieldValue::mfstring, "topUrl" },
+        { NodeInterface::exposedField, FieldValue::mffloat, "skyAngle" },
+        { NodeInterface::exposedField, FieldValue::mfcolor, "skyColor" },
+        { NodeInterface::eventOut, FieldValue::sfbool, "isBound" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            backgroundInterfaceSet(backgroundInterfaces,
+                                  backgroundInterfaces + 12);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Background");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Background",
+                                              backgroundInterfaceSet));
+    
+    //
+    // Billboard node
+    //
+    static const NodeInterface billboardInterfaces[] = {
+        { NodeInterface::eventIn, FieldValue::mfnode, "addChildren" },
+        { NodeInterface::eventIn, FieldValue::mfnode, "removeChildren" },
+        { NodeInterface::exposedField, FieldValue::sfvec3f, "axisOfRotation" },
+        { NodeInterface::exposedField, FieldValue::mfnode, "children" },
+        { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
+        { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            billboardInterfaceSet(billboardInterfaces,
+                                  billboardInterfaces + 6);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Billboard");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Billboard",
+                                              billboardInterfaceSet));
+    
+    //
+    // Box node
+    //
+    static const NodeInterface boxInterface =
+            { NodeInterface::field, FieldValue::sfvec3f, "size" };
+    static const Vrml97NodeInterfaceSet_
+            boxInterfaceSet(&boxInterface, &boxInterface + 1);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Box");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Box", boxInterfaceSet));
+    
+    //
+    // Collision node
+    //
+    static const NodeInterface collisionInterfaces[] = {
+        { NodeInterface::eventIn, FieldValue::mfnode, "addChildren" },
+        { NodeInterface::eventIn, FieldValue::mfnode, "removeChildren" },
+        { NodeInterface::exposedField, FieldValue::mfnode, "children" },
+        { NodeInterface::exposedField, FieldValue::sfbool, "collide" },
+        { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
+        { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" },
+        { NodeInterface::field, FieldValue::sfnode, "proxy" },
+        { NodeInterface::eventOut, FieldValue::sftime, "collideTime" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            collisionInterfaceSet(collisionInterfaces, collisionInterfaces + 8);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Collision");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Collision",
+                                              collisionInterfaceSet));
+    
+    //
+    // Color node
+    //
+    static const NodeInterface colorInterface =
+            { NodeInterface::exposedField, FieldValue::mfcolor, "color" };
+    static const Vrml97NodeInterfaceSet_
+            colorInterfaceSet(&colorInterface, &colorInterface + 1);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Color");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Color", colorInterfaceSet));
+    
+    //
+    // ColorInterpolator node
+    //
+    static const NodeInterface colorInterpolatorInterfaces[] = {
+        { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
+        { NodeInterface::exposedField, FieldValue::mffloat, "key" },
+        { NodeInterface::exposedField, FieldValue::mfcolor, "keyValue" },
+        { NodeInterface::eventOut, FieldValue::sfcolor, "value_changed" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            colorInterpolatorInterfaceSet(colorInterpolatorInterfaces,
+                                          colorInterpolatorInterfaces + 4);
+    pos = nodeClassMap.find("urn:X-openvrml:node:ColorInterpolator");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("ColorInterpolator",
+                                              colorInterpolatorInterfaceSet));
+    
+    //
+    // Cone node
+    //
+    static const NodeInterface coneInterfaces[] = {
+        { NodeInterface::field, FieldValue::sffloat, "bottomRadius" },
+        { NodeInterface::field, FieldValue::sffloat, "height" },
+        { NodeInterface::field, FieldValue::sfbool, "side" },
+        { NodeInterface::field, FieldValue::sfbool, "bottom" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            coneInterfaceSet(coneInterfaces, coneInterfaces + 4);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Cone");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Cone", coneInterfaceSet));
+    
+    //
+    // Coordinate node
+    //
+    static const NodeInterface coordinateInterface =
+            { NodeInterface::exposedField, FieldValue::mfvec3f, "point" };
+    static const Vrml97NodeInterfaceSet_
+            coordinateInterfaceSet(&coordinateInterface,
+                                   &coordinateInterface + 1);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Coordinate");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Coordinate",
+                                              coordinateInterfaceSet));
+    
+    //
+    // CoordinateInterpolator node
+    //
+    static const NodeInterface coordinateInterpolatorInterfaces[] = {
+        { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
+        { NodeInterface::exposedField, FieldValue::mffloat, "key" },
+        { NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue" },
+        { NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            coordinateInterpolatorInterfaceSet(coordinateInterpolatorInterfaces,
+                                               coordinateInterpolatorInterfaces + 4);
+    pos = nodeClassMap.find("urn:X-openvrml:node:CoordinateInterpolator");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("CoordinateInterpolator",
+                                              coordinateInterpolatorInterfaceSet));
+    
+    //
+    // Cylinder node
+    //
+    static const NodeInterface cylinderInterfaces[] = {
+        { NodeInterface::field, FieldValue::sfbool, "bottom" },
+        { NodeInterface::field, FieldValue::sffloat, "height" },
+        { NodeInterface::field, FieldValue::sffloat, "radius" },
+        { NodeInterface::field, FieldValue::sfbool, "side" },
+        { NodeInterface::field, FieldValue::sfbool, "top" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            cylinderInterfaceSet(cylinderInterfaces, cylinderInterfaces + 5);
+    pos = nodeClassMap.find("urn:X-openvrml:node:Cylinder");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("Cylinder",
+                                              cylinderInterfaceSet));
+    
+    //
+    // CylinderSensor node
+    //
+    static const NodeInterface cylinderSensorInterfaces[] = {
+        { NodeInterface::exposedField, FieldValue::sfbool, "autoOffset" },
+        { NodeInterface::exposedField, FieldValue::sffloat, "diskAngle" },
+        { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
+        { NodeInterface::exposedField, FieldValue::sffloat, "maxAngle" },
+        { NodeInterface::exposedField, FieldValue::sffloat, "minAngle" },
+        { NodeInterface::exposedField, FieldValue::sffloat, "offset" },
+        { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
+        { NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed" },
+        { NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            cylinderSensorInterfaceSet(cylinderSensorInterfaces,
+                                       cylinderSensorInterfaces + 9);
+    pos = nodeClassMap.find("urn:X-openvrml:node:CylinderSensor");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("CylinderSensor",
+                                              cylinderSensorInterfaceSet));
+    
+    //
+    // DirectionalLight node
+    //
+    static const NodeInterface directionalLightInterfaces[] = {
+        { NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity" },
+        { NodeInterface::exposedField, FieldValue::sfcolor, "color" },
+        { NodeInterface::exposedField, FieldValue::sfvec3f, "direction" },
+        { NodeInterface::exposedField, FieldValue::sffloat, "intensity" },
+        { NodeInterface::exposedField, FieldValue::sfbool, "on" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            directionalLightInterfaceSet(directionalLightInterfaces,
+                                         directionalLightInterfaces + 5);
+    pos = nodeClassMap.find("urn:X-openvrml:node:DirectionalLight");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("DirectionalLight",
+                                              directionalLightInterfaceSet));
+    
+    //
+    // ElevationGrid node
+    //
+    static const NodeInterface elevationGridInterfaces[] = {
+        { NodeInterface::eventIn, FieldValue::mffloat, "set_height" },
+        { NodeInterface::exposedField, FieldValue::sfnode, "color" },
+        { NodeInterface::exposedField, FieldValue::sfnode, "normal" },
+        { NodeInterface::exposedField, FieldValue::sfnode, "texCoord" },
+        { NodeInterface::field, FieldValue::mffloat, "height" },
+        { NodeInterface::field, FieldValue::sfbool, "ccw" },
+        { NodeInterface::field, FieldValue::sfbool, "colorPerVertex" },
+        { NodeInterface::field, FieldValue::sffloat, "creaseAngle" },
+        { NodeInterface::field, FieldValue::sfbool, "normalPerVertex" },
+        { NodeInterface::field, FieldValue::sfbool, "solid" },
+        { NodeInterface::field, FieldValue::sfint32, "xDimension" },
+        { NodeInterface::field, FieldValue::sffloat, "xSpacing" },
+        { NodeInterface::field, FieldValue::sfint32, "zDimension" },
+        { NodeInterface::field, FieldValue::sffloat, "zSpacing" }
+    };
+    static const Vrml97NodeInterfaceSet_
+            elevationGridInterfaceSet(elevationGridInterfaces,
+                                         elevationGridInterfaces + 14);
+    pos = nodeClassMap.find("urn:X-openvrml:node:ElevationGrid");
+    assert(pos != nodeClassMap.end());
+    this->addNodeType(pos->second->createType("ElevationGrid",
+                                              elevationGridInterfaceSet));
+    
+    //
+    // Extrusion node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::mfvec2f, "set_crossSection" },
+            { NodeInterface::eventIn, FieldValue::mfrotation, "set_orientation" },
+            { NodeInterface::eventIn, FieldValue::mfvec2f, "set_scale" },
+            { NodeInterface::eventIn, FieldValue::mfvec3f, "set_spine" },
+            { NodeInterface::field, FieldValue::sfbool, "beginCap" },
+            { NodeInterface::field, FieldValue::sfbool, "ccw" },
+            { NodeInterface::field, FieldValue::sfbool, "convex" },
+            { NodeInterface::field, FieldValue::sffloat, "creaseAngle" },
+            { NodeInterface::field, FieldValue::mfvec2f, "crossSection" },
+            { NodeInterface::field, FieldValue::sfbool, "endCap" },
+            { NodeInterface::field, FieldValue::mfrotation, "orientation" },
+            { NodeInterface::field, FieldValue::mfvec2f, "scale" },
+            { NodeInterface::field, FieldValue::sfbool, "solid" },
+            { NodeInterface::field, FieldValue::mfvec3f, "spine" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 14);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Extrusion");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Extrusion",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Fog node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::sfbool, "set_bind" },
+            { NodeInterface::exposedField, FieldValue::sfcolor, "color" },
+            { NodeInterface::exposedField, FieldValue::sfstring, "fogType" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "visibilityRange" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isBound" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Fog");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Fog", nodeInterfaceSet));
+    }
+    
+    //
+    // FontStyle node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::field, FieldValue::mfstring, "family" },
+            { NodeInterface::field, FieldValue::sfbool, "horizontal" },
+            { NodeInterface::field, FieldValue::mfstring, "justify" },
+            { NodeInterface::field, FieldValue::sfstring, "language" },
+            { NodeInterface::field, FieldValue::sfbool, "leftToRight" },
+            { NodeInterface::field, FieldValue::sffloat, "size" },
+            { NodeInterface::field, FieldValue::sffloat, "spacing" },
+            { NodeInterface::field, FieldValue::sfstring, "style" },
+            { NodeInterface::field, FieldValue::sfbool, "topToBottom" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
+        pos = nodeClassMap.find("urn:X-openvrml:node:FontStyle");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("FontStyle",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Group node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::mfnode, "addChildren" },
+            { NodeInterface::eventIn, FieldValue::mfnode, "removeChildren" },
+            { NodeInterface::exposedField, FieldValue::mfnode, "children" },
+            { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
+            { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Group");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Group",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // ImageTexture node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::mfstring, "url" },
+            { NodeInterface::field, FieldValue::sfbool, "repeatS" },
+            { NodeInterface::field, FieldValue::sfbool, "repeatT" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
+        pos = nodeClassMap.find("urn:X-openvrml:node:ImageTexture");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("ImageTexture",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // IndexedFaceSet node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex" },
+            { NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex" },
+            { NodeInterface::eventIn, FieldValue::mfint32, "set_normalIndex" },
+            { NodeInterface::eventIn, FieldValue::mfint32, "set_texCoordIndex" },
+            { NodeInterface::exposedField, FieldValue::sfnode, "color" },
+            { NodeInterface::exposedField, FieldValue::sfnode, "coord" },
+            { NodeInterface::exposedField, FieldValue::sfnode, "normal" },
+            { NodeInterface::exposedField, FieldValue::sfnode, "texCoord" },
+            { NodeInterface::field, FieldValue::sfbool, "ccw" },
+            { NodeInterface::field, FieldValue::mfint32, "colorIndex" },
+            { NodeInterface::field, FieldValue::sfbool, "colorPerVertex" },
+            { NodeInterface::field, FieldValue::sfbool, "convex" },
+            { NodeInterface::field, FieldValue::mfint32, "coordIndex" },
+            { NodeInterface::field, FieldValue::sffloat, "creaseAngle" },
+            { NodeInterface::field, FieldValue::mfint32, "normalIndex" },
+            { NodeInterface::field, FieldValue::sfbool, "normalPerVertex" },
+            { NodeInterface::field, FieldValue::sfbool, "solid" },
+            { NodeInterface::field, FieldValue::mfint32, "texCoordIndex" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 18);
+        pos = nodeClassMap.find("urn:X-openvrml:node:IndexedFaceSet");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("IndexedFaceSet",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // IndexedLineSet node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::mfint32, "set_colorIndex" },
+            { NodeInterface::eventIn, FieldValue::mfint32, "set_coordIndex" },
+            { NodeInterface::exposedField, FieldValue::sfnode, "color" },
+            { NodeInterface::exposedField, FieldValue::sfnode, "coord" },
+            { NodeInterface::field, FieldValue::mfint32, "colorIndex" },
+            { NodeInterface::field, FieldValue::sfbool, "colorPerVertex" },
+            { NodeInterface::field, FieldValue::mfint32, "coordIndex" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
+        pos = nodeClassMap.find("urn:X-openvrml:node:IndexedLineSet");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("IndexedLineSet",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Inline node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::mfstring, "url" },
+            { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
+            { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Inline");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Inline", nodeInterfaceSet));
+    }
+    
+    //
+    // LOD node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::mfnode, "level" },
+            { NodeInterface::field, FieldValue::sfvec3f, "center" },
+            { NodeInterface::field, FieldValue::mffloat, "range" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
+        pos = nodeClassMap.find("urn:X-openvrml:node:LOD");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("LOD", nodeInterfaceSet));
+    }
+    
+    //
+    // Material node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity" },
+            { NodeInterface::exposedField, FieldValue::sfcolor, "diffuseColor" },
+            { NodeInterface::exposedField, FieldValue::sfcolor, "emissiveColor" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "shininess" },
+            { NodeInterface::exposedField, FieldValue::sfcolor, "specularColor" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "transparency" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Material");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Material",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // MovieTexture node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfbool, "loop" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "speed" },
+            { NodeInterface::exposedField, FieldValue::sftime, "startTime" },
+            { NodeInterface::exposedField, FieldValue::sftime, "stopTime" },
+            { NodeInterface::exposedField, FieldValue::mfstring, "url" },
+            { NodeInterface::field, FieldValue::sfbool, "repeatS" },
+            { NodeInterface::field, FieldValue::sfbool, "repeatT" },
+            { NodeInterface::eventOut, FieldValue::sftime, "duration_changed" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isActive" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
+        pos = nodeClassMap.find("urn:X-openvrml:node:MovieTexture");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("MovieTexture",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // NavigationInfo node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::sfbool, "set_bind" },
+            { NodeInterface::exposedField, FieldValue::mffloat, "avatarSize" },
+            { NodeInterface::exposedField, FieldValue::sfbool, "headlight" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "speed" },
+            { NodeInterface::exposedField, FieldValue::mfstring, "type" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "visibilityLimit" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isBound" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
+        pos = nodeClassMap.find("urn:X-openvrml:node:NavigationInfo");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("NavigationInfo",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Normal node
+    //
+    {
+        static const NodeInterface nodeInterface =
+                { NodeInterface::exposedField, FieldValue::mfvec3f, "vector" };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Normal");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Normal",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // NormalInterpolator node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
+            { NodeInterface::exposedField, FieldValue::mffloat, "key" },
+            { NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue" },
+            { NodeInterface::eventOut, FieldValue::mfvec3f, "value_changed" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:NormalInterpolator");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("NormalInterpolator",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // OrientationInterpolator node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
+            { NodeInterface::exposedField, FieldValue::mffloat, "key" },
+            { NodeInterface::exposedField, FieldValue::mfrotation, "keyValue" },
+            { NodeInterface::eventOut, FieldValue::sfrotation, "value_changed" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:OrientationInterpolator");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("OrientationInterpolator",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // PixelTexture node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfimage, "image" },
+            { NodeInterface::field, FieldValue::sfbool, "repeatS" },
+            { NodeInterface::field, FieldValue::sfbool, "repeatT" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
+        pos = nodeClassMap.find("urn:X-openvrml:node:PixelTexture");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("PixelTexture",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // PlaneSensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfbool, "autoOffset" },
+            { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
+            { NodeInterface::exposedField, FieldValue::sfvec2f, "maxPosition" },
+            { NodeInterface::exposedField, FieldValue::sfvec2f, "minPosition" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "offset" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
+            { NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed" },
+            { NodeInterface::eventOut, FieldValue::sfvec3f, "translation_changed" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
+        pos = nodeClassMap.find("urn:X-openvrml:node:PlaneSensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("PlaneSensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // PointLight node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation" },
+            { NodeInterface::exposedField, FieldValue::sfcolor, "color" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "intensity" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "location" },
+            { NodeInterface::exposedField, FieldValue::sfbool, "on" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "radius" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
+        pos = nodeClassMap.find("urn:X-openvrml:node:PointLight");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("PointLight",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // PointSet node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfnode, "color" },
+            { NodeInterface::exposedField, FieldValue::sfnode, "coord" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
+        pos = nodeClassMap.find("urn:X-openvrml:node:PointSet");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("PointSet",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // PositionInterpolator node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
+            { NodeInterface::exposedField, FieldValue::mffloat, "key" },
+            { NodeInterface::exposedField, FieldValue::mfvec3f, "keyValue" },
+            { NodeInterface::eventOut, FieldValue::sfvec3f, "value_changed" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:PositionInterpolator");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("PositionInterpolator",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // ProximitySensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "center" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "size" },
+            { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
+            { NodeInterface::eventOut, FieldValue::sfvec3f, "position_changed" },
+            { NodeInterface::eventOut, FieldValue::sfrotation, "orientation_changed" },
+            { NodeInterface::eventOut, FieldValue::sftime, "enterTime" },
+            { NodeInterface::eventOut, FieldValue::sftime, "exitTime" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
+        pos = nodeClassMap.find("urn:X-openvrml:node:ProximitySensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("ProximitySensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // ScalarInterpolator node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::sffloat, "set_fraction" },
+            { NodeInterface::exposedField, FieldValue::mffloat, "key" },
+            { NodeInterface::exposedField, FieldValue::mffloat, "keyValue" },
+            { NodeInterface::eventOut, FieldValue::sffloat, "value_changed" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:ScalarInterpolator");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("ScalarInterpolator",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Shape node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfnode, "appearance" },
+            { NodeInterface::exposedField, FieldValue::sfnode, "geometry" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Shape");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Shape", nodeInterfaceSet));
+    }
+    
+    //
+    // Sound node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "direction" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "intensity" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "location" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "maxBack" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "maxFront" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "minBack" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "minFront" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "priority" },
+            { NodeInterface::exposedField, FieldValue::sfnode, "source" },
+            { NodeInterface::field, FieldValue::sfbool, "spatialize" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Sound");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Sound", nodeInterfaceSet));
+    }
+    
+    //
+    // Sphere node
+    //
+    {
+        static const NodeInterface nodeInterface =
+                { NodeInterface::field, FieldValue::sffloat, "radius" };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Sphere");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Sphere", nodeInterfaceSet));
+    }
+    
+    //
+    // SphereSensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfbool, "autoOffset" },
+            { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "offset" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
+            { NodeInterface::eventOut, FieldValue::sfrotation, "rotation_changed" },
+            { NodeInterface::eventOut, FieldValue::sfvec3f, "trackPoint_changed" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
+        pos = nodeClassMap.find("urn:X-openvrml:node:SphereSensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("SphereSensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // SpotLight node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "beamWidth" },
+            { NodeInterface::exposedField, FieldValue::sfcolor, "color" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "cutOffAngle" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "direction" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "intensity" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "location" },
+            { NodeInterface::exposedField, FieldValue::sfbool, "on" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "radius" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
+        pos = nodeClassMap.find("urn:X-openvrml:node:SpotLight");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("SpotLight",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Switch node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::mfnode, "choice" },
+            { NodeInterface::exposedField, FieldValue::sfint32, "whichChoice" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Switch");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Switch", nodeInterfaceSet));
+    }
+    
+    //
+    // Text node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::mfstring, "string" },
+            { NodeInterface::exposedField, FieldValue::sfnode, "fontStyle" },
+            { NodeInterface::exposedField, FieldValue::mffloat, "length" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "maxExtent" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Text");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Text", nodeInterfaceSet));
+    }
+    
+    //
+    // TextureCoordinate node
+    //
+    {
+        static const NodeInterface nodeInterface =
+                { NodeInterface::exposedField, FieldValue::mfvec2f, "point" };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
+        pos = nodeClassMap.find("urn:X-openvrml:node:TextureCoordinate");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("TextureCoordinate",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // TextureTransform node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfvec2f, "center" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "rotation" },
+            { NodeInterface::exposedField, FieldValue::sfvec2f, "scale" },
+            { NodeInterface::exposedField, FieldValue::sfvec2f, "translation" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
+        pos = nodeClassMap.find("urn:X-openvrml:node:TextureTransform");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("TextureTransform",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // TimeSensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sftime, "cycleInterval" },
+            { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
+            { NodeInterface::exposedField, FieldValue::sfbool, "loop" },
+            { NodeInterface::exposedField, FieldValue::sftime, "startTime" },
+            { NodeInterface::exposedField, FieldValue::sftime, "stopTime" },
+            { NodeInterface::eventOut, FieldValue::sftime, "cycleTime" },
+            { NodeInterface::eventOut, FieldValue::sffloat, "fraction_changed" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
+            { NodeInterface::eventOut, FieldValue::sftime, "time" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
+        pos = nodeClassMap.find("urn:X-openvrml:node:TimeSensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("TimeSensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // TouchSensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
+            { NodeInterface::eventOut, FieldValue::sfvec3f, "hitNormal_changed" },
+            { NodeInterface::eventOut, FieldValue::sfvec3f, "hitPoint_changed" },
+            { NodeInterface::eventOut, FieldValue::sfvec2f, "hitTexCoord_changed" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isActive" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isOver" },
+            { NodeInterface::eventOut, FieldValue::sftime, "touchTime" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
+        pos = nodeClassMap.find("urn:X-openvrml:node:TouchSensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("TouchSensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Transform node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::mfnode, "addChildren" },
+            { NodeInterface::eventIn, FieldValue::mfnode, "removeChildren" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "center" },
+            { NodeInterface::exposedField, FieldValue::mfnode, "children" },
+            { NodeInterface::exposedField, FieldValue::sfrotation, "rotation" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "scale" },
+            { NodeInterface::exposedField, FieldValue::sfrotation, "scaleOrientation" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "translation" },
+            { NodeInterface::field, FieldValue::sfvec3f, "bboxCenter" },
+            { NodeInterface::field, FieldValue::sfvec3f, "bboxSize" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Transform");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Transform",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // Viewpoint node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::eventIn, FieldValue::sfbool, "set_bind" },
+            { NodeInterface::exposedField, FieldValue::sffloat, "fieldOfView" },
+            { NodeInterface::exposedField, FieldValue::sfbool, "jump" },
+            { NodeInterface::exposedField, FieldValue::sfrotation, "orientation" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "position" },
+            { NodeInterface::field, FieldValue::sfstring, "description" },
+            { NodeInterface::eventOut, FieldValue::sftime, "bindTime" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isBound" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
+        pos = nodeClassMap.find("urn:X-openvrml:node:Viewpoint");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("Viewpoint",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // VisibilitySensor node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "center" },
+            { NodeInterface::exposedField, FieldValue::sfbool, "enabled" },
+            { NodeInterface::exposedField, FieldValue::sfvec3f, "size" },
+            { NodeInterface::eventOut, FieldValue::sftime, "enterTime" },
+            { NodeInterface::eventOut, FieldValue::sftime, "exitTime" },
+            { NodeInterface::eventOut, FieldValue::sfbool, "isActive" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
+        pos = nodeClassMap.find("urn:X-openvrml:node:VisibilitySensor");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("VisibilitySensor",
+                                                  nodeInterfaceSet));
+    }
+    
+    //
+    // WorldInfo node
+    //
+    {
+        static const NodeInterface nodeInterfaces[] = {
+            { NodeInterface::field, FieldValue::mfstring, "info" },
+            { NodeInterface::field, FieldValue::sfstring, "title" }
+        };
+        static const Vrml97NodeInterfaceSet_
+                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
+        pos = nodeClassMap.find("urn:X-openvrml:node:WorldInfo");
+        assert(pos != nodeClassMap.end());
+        this->addNodeType(pos->second->createType("WorldInfo",
+                                                  nodeInterfaceSet));
+    }
 }
+
+Vrml97RootNamespace::~Vrml97RootNamespace() {}
+
+} // namespace OpenVRML
+

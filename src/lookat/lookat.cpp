@@ -120,7 +120,7 @@ main(int argc, char **argv)
 
   if (! inputUrl) inputUrl = inputName;
 
-  vrmlScene = new VrmlScene(inputUrl, inputName);
+  vrmlScene = new VrmlScene(inputUrl);
 
   if (outputName)
     {

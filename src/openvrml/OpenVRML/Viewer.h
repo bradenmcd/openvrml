@@ -21,17 +21,16 @@
 //  Abstract base class for display of VRML models
 //
 
-#ifndef VIEWER_H
-#define VIEWER_H
+# ifndef OPENVRML_VIEWER_H
+#   define OPENVRML_VIEWER_H
 
-#include <stddef.h>
-#include "common.h"
-#include "VrmlFrustum.h"
+#   include <stddef.h>
+#   include "common.h"
+#   include "node.h"
+#   include "VrmlFrustum.h"
 
 namespace OpenVRML {
 
-    class VrmlScene;
-    class BVolume;
     class BSphere;
     class AABox;
     class SFVec3f;
@@ -186,7 +185,7 @@ namespace OpenVRML {
 
         virtual void setMaterialMode( int nTexComponents, bool geometryColor ) = 0;
 
-        virtual void setSensitive(void *object) = 0;
+        virtual void setSensitive(Node * object) = 0;
 
         virtual void scaleTexture(size_t /*w*/, size_t /*h*/,
 			          size_t /*newW*/, size_t /*newH*/,
@@ -286,4 +285,4 @@ namespace OpenVRML {
     };
 }
 
-#endif // VIEWER_H
+# endif // OPENVRML_VIEWER_H

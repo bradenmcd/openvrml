@@ -116,6 +116,10 @@ if test "X$with_jdk" = "Xyes"; then
   if test -z "${JAR}"; then
     AC_MSG_ERROR([Java archive utility not found.])
   fi
+  AC_PATH_PROG(JAVAH, javah)
+  if test -z "${JAVAH}"; then
+    AC_MSG_ERROR([JNI header generator not found.])
+  fi
   OV_CHECK_JNI
   if test "X$no_jni" = "Xyes"; then
     AC_MSG_ERROR([Java Native Interface not found.])

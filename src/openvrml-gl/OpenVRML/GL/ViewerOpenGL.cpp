@@ -232,22 +232,12 @@ Viewer::Object ViewerOpenGL::beginObject(const char *,
   // Finish setup stuff before first object
   if (1 == ++d_nObjects)
     {
-      //cout << "ViewerOpenGL::beginObject():rot/trans:match" << endl;
       // Finish specifying the view (postponed to make Background easier)
       glPushMatrix();
       glTranslatef(d_zoom[0], d_zoom[1], d_zoom[2]); // M = M * T
       glMultMatrixf(&d_rotationMatrix[0][0]);                  // M = M * R 
       glTranslatef(d_translatex, d_translatey, d_translatez);  // M = M * T 
       if (!d_lit) glDisable(GL_LIGHTING);
-
-      //GLfloat actual_gl_mv[16];
-      //glGetFloatv(GL_MODELVIEW_MATRIX, actual_gl_mv);
-      //for(int i=0; i<4; i++) {
-      //for(int j=0; j<4; j++)
-      //cout << actual_gl_mv[i+j*4] << " ";
-      //cout << endl;
-      //}
-      //cout << endl;
     }
 
   ++d_nestedObjects;
@@ -276,7 +266,6 @@ void ViewerOpenGL::endObject()
 
   if (--d_nestedObjects == 0)
     {
-      //cout << "ViewerOpenGL::endObject():pop" << endl;
       glPopMatrix();
     }
 }
@@ -1134,9 +1123,7 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 	    s0 = s1 = ((float) i) / (nx-1);
 
 	  glTexCoord2f( s0, t0 );
-          //cout << "ViewerOpenGL::insertElevationGrid():(s0,t0)=" << s0 << "," << t0 << endl;
 	  glVertex3f( x, *height, z );
-          //cout << "ViewerOpenGL::insertElevationGrid():(x,y,z)=" << x << "," << *height << "," << z << endl;
 
 	  // Vertex from next row
 	  if (colors && (mask & MASK_COLOR_PER_VERTEX))
@@ -1159,9 +1146,7 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 	    }
 
 	  glTexCoord2f( s1, t1 );
-          //cout << "ViewerOpenGL::insertElevationGrid():(s1,t1)=" << s1 << "," << t1 << endl;
 	  glVertex3f( x, *(height+nx), z+dz );
-          //cout << "ViewerOpenGL::insertElevationGrid():(x,y,z)=" << x << "," << *(height+nx) << "," << z+dz << endl;
 
 	  ++height;
 	  if ( colors ) colors += 3;
@@ -1931,14 +1916,10 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
 	  glVertex3fv( &c[n+j][0] );
 	}
 
-      //glTexCoord2f( tc[n+numLatLong][0], tc[n+numLatLong][1] );
-      //cout << "ViewerOpenGL::insertSphere():" << tc[n+numLatLong][0] << "," << tc[n+numLatLong][1] << endl;
       glTexCoord2f( 1.0, tc[n+numLatLong][1] );
       glNormal3fv( &c[n+numLatLong][0] );
       glVertex3fv( &c[n+numLatLong][0] );
 
-      //glTexCoord2f( tc[n][0], tc[n][1] );
-      //cout << "ViewerOpenGL::insertSphere():" << tc[n][0] << "," << tc[n][1] << endl;
       glTexCoord2f( 1.0, tc[n][1] );
       glNormal3fv( &c[n][0] );
       glVertex3fv( &c[n][0] );
@@ -2272,26 +2253,19 @@ void ViewerOpenGL::setMaterialMode (int textureComponents,
 
 }
 
-void ViewerOpenGL::setSensitive(void *object)
-{
-  if (object)
-    {
-      // should make this dynamic...
-      if (d_nSensitive == MAXSENSITIVE)
-	{
-	  theSystem->error("Internal Error: too many sensitive objects.\n");
-	  return;
-	}
+void ViewerOpenGL::setSensitive(Node * object) {
+    if (object) {
+        // should make this dynamic...
+        if (this->d_nSensitive == MAXSENSITIVE) {
+            theSystem->error("Internal Error: too many sensitive objects.\n");
+            return;
+        }
 
-      // push name, increment object count
-      d_sensitiveObject[ d_nSensitive ] = object;
-      glPushName( ++d_nSensitive ); // array index+1
-
-    }
-
-  else
-    {
-      glPopName( );
+        // push name, increment object count
+        this->d_sensitiveObject[this->d_nSensitive] = object;
+        glPushName(++this->d_nSensitive); // array index+1
+    } else {
+        glPopName( );
     }
 }
 
@@ -2473,7 +2447,6 @@ void ViewerOpenGL::setTransform(const float center[3],
 				const float scaleOrientation[4],
 				const float translation[3]) 
 {
-  //cout << "ViewerOpenGL::setTransform()" << endl;
   glTranslatef(translation[0], translation[1], translation[2]);
   glTranslatef(center[0], center[1], center[2]);
 
@@ -2577,9 +2550,6 @@ void ViewerOpenGL::setViewpoint(const float *position,
 				float avatarSize,
 				float visibilityLimit)
 {
-  //cout << "ViewerOpenGL::setViewpoint()" << endl;
-  //cout << "  p:(" << position[0] << ","<< position[1] << ","<< position[2] << ")" << endl;
-
   glMatrixMode( GL_PROJECTION );
   if (! d_selectMode) glLoadIdentity();
 
@@ -2591,7 +2561,6 @@ void ViewerOpenGL::setViewpoint(const float *position,
 
   VrmlFrustum frust(field_of_view, aspect, znear, zfar);
   this->setFrustum(frust);
-  //frust.dump(cout) << endl;
 
   glMatrixMode(GL_MODELVIEW);
 
@@ -2607,24 +2576,9 @@ void ViewerOpenGL::setViewpoint(const float *position,
   d_position[1] = position[1] + d_translatey;
   d_position[2] = position[2] + d_translatez;
 
-  //d_orientation[0] = orientation[0];
-  //d_orientation[1] = orientation[1];
-  //d_orientation[2] = orientation[2];
-  //d_orientation[3] = orientation[3];
-  
   gluLookAt(position[0], position[1], position[2],
 	    target[0]+d_target[0], target[1]+d_target[1], target[2]+d_target[2],
 	    up[0], up[1], up[2]);
-
-  //cout << "ViewerOpenGL::setViewpoint():match:" << endl;
-  //GLfloat actual_gl_mv[16];
-  //glGetFloatv(GL_MODELVIEW_MATRIX, actual_gl_mv);
-  //for(int i=0; i<4; i++) {
-  //for(int j=0; j<4; j++)
-  //cout << actual_gl_mv[i+j*4] << " ";
-  //cout << endl;
-  //}
-  //cout << endl;
 
 #if 0
   double MV[4][4];
@@ -2810,85 +2764,88 @@ void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
    wsPostRedraw();
 }                
 
-void ViewerOpenGL::step( float x, float y, float z )
-{
-  GLint viewport[4];
-  GLdouble modelview[16], projection[16];
-  glGetIntegerv (GL_VIEWPORT, viewport);
-  glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
-  glGetDoublev (GL_PROJECTION_MATRIX, projection);
-  NodeNavigationInfo * nav = this->scene.bindableNavigationInfoTop();
-  GLdouble x_c = d_winWidth/2;
-  GLdouble y_c = d_winHeight/2;
-  GLdouble z_c = 0.5;
-  float visibilityLimit=0.0;
-  if (nav) visibilityLimit = nav->visibilityLimit();
-  if(fpzero(visibilityLimit))visibilityLimit=30000.0;
-  GLdouble ox, oy, oz;
-  gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
-                &ox, &oy, &oz);
-  GLdouble dx, dy, dz;
-  x_c = x_c + 100.*x;
-  y_c = y_c + 100.*y;
-  z_c = z_c + 100.*z/visibilityLimit;
-  gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
-                &dx, &dy, &dz);
-  dx -= ox; dy -= oy; dz -= oz;
-  VrmlMatrix rot_mat(d_rotationMatrix);
-  float vx[3];
-  vx[0] = dx;
-  vx[1] = dy;
-  vx[2] = dz;
-  float d[3];
-  rot_mat.multMatrixVec(vx, d);
-  double dist = d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
-  if (dist < 1.0e-25 )return;
-  dist = sqrt(dist);
-  float speed = 1.0;
-  if (nav) speed = nav->speed();
-  dist = speed / dist;
-  if (fpzero(dist))return;
-  d[0] *= dist; d[1] *= dist; d[2] *= dist;
-  this->d_translatex += d[0];
-  this->d_translatey += d[1];
-  this->d_translatez += d[2];
-  wsPostRedraw();
+void ViewerOpenGL::step(float x, float y, float z) {
+    GLint viewport[4];
+    GLdouble modelview[16], projection[16];
+    glGetIntegerv (GL_VIEWPORT, viewport);
+    glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
+    glGetDoublev (GL_PROJECTION_MATRIX, projection);
+    Vrml97Node::NavigationInfo * nav = this->scene.bindableNavigationInfoTop();
+    GLdouble x_c = d_winWidth/2;
+    GLdouble y_c = d_winHeight/2;
+    GLdouble z_c = 0.5;
+    float visibilityLimit=0.0;
+    if (nav) { visibilityLimit = nav->getVisibilityLimit(); }
+    if (fpzero(visibilityLimit)) { visibilityLimit = 30000.0; }
+    GLdouble ox, oy, oz;
+    gluUnProject(x_c, y_c, z_c, modelview, projection, viewport, &ox, &oy, &oz);
+    GLdouble dx, dy, dz;
+    x_c = x_c + 100.0 * x;
+    y_c = y_c + 100.0 * y;
+    z_c = z_c + 100.0 * z / visibilityLimit;
+    gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
+                  &dx, &dy, &dz);
+    dx -= ox;
+    dy -= oy;
+    dz -= oz;
+    VrmlMatrix rot_mat(d_rotationMatrix);
+    float vx[3];
+    vx[0] = dx;
+    vx[1] = dy;
+    vx[2] = dz;
+    float d[3];
+    rot_mat.multMatrixVec(vx, d);
+    double dist = d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
+    if (dist < 1.0e-25) { return; }
+    dist = sqrt(dist);
+    float speed = 1.0;
+    if (nav) { speed = nav->getSpeed(); }
+    dist = speed / dist;
+    if (fpzero(dist)) { return; }
+    d[0] *= dist;
+    d[1] *= dist;
+    d[2] *= dist;
+    this->d_translatex += d[0];
+    this->d_translatey += d[1];
+    this->d_translatez += d[2];
+    wsPostRedraw();
 }
 
-void ViewerOpenGL::zoom( float z )
-{
-  GLint viewport[4];
-  GLdouble modelview[16], projection[16];
-  glGetIntegerv (GL_VIEWPORT, viewport);
-  glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
-  glGetDoublev (GL_PROJECTION_MATRIX, projection);
-  NodeNavigationInfo * nav = this->scene.bindableNavigationInfoTop();
-  GLdouble x_c = d_winWidth/2;
-  GLdouble y_c = d_winHeight/2;
-  GLdouble z_c = 0.5;
-  float visibilityLimit=0.0;
-  if (nav) visibilityLimit = nav->visibilityLimit();
-  if (fpzero(visibilityLimit))visibilityLimit=30000.0;
-  GLdouble ox, oy, oz;
-  gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
-                &ox, &oy, &oz);
-  z_c = z_c-100.*z/visibilityLimit;
-  GLdouble dx, dy, dz;
-  gluUnProject( x_c, y_c, z_c, modelview, projection, viewport,
-                &dx, &dy, &dz);
-  dx -= ox; dy -= oy; dz -= oz;
-  double dist = dx * dx + dy * dy + dz * dz;
-  if (dist < 1.0e-25 )return;
-  dist = sqrt(dist);
-  float speed = 1.0;
-  if (nav) speed = nav->speed();
-  dist = speed / dist;
-  if (fpzero(dist)) return;
-  dx *= dist; dy *= dist; dz *= dist;
-  this->d_zoom[0] += dx;
-  this->d_zoom[1] += dy;
-  this->d_zoom[2] += dz;
-  wsPostRedraw();
+void ViewerOpenGL::zoom(float z) {
+    GLint viewport[4];
+    GLdouble modelview[16], projection[16];
+    glGetIntegerv (GL_VIEWPORT, viewport);
+    glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
+    glGetDoublev (GL_PROJECTION_MATRIX, projection);
+    Vrml97Node::NavigationInfo * nav = this->scene.bindableNavigationInfoTop();
+    GLdouble x_c = d_winWidth/2;
+    GLdouble y_c = d_winHeight/2;
+    GLdouble z_c = 0.5;
+    float visibilityLimit=0.0;
+    if (nav) { visibilityLimit = nav->getVisibilityLimit(); }
+    if (fpzero(visibilityLimit)) { visibilityLimit = 30000.0; }
+    GLdouble ox, oy, oz;
+    gluUnProject(x_c, y_c, z_c, modelview, projection, viewport, &ox, &oy, &oz);
+    z_c = z_c - 100.0 * z / visibilityLimit;
+    GLdouble dx, dy, dz;
+    gluUnProject(x_c, y_c, z_c, modelview, projection, viewport, &dx, &dy, &dz);
+    dx -= ox;
+    dy -= oy;
+    dz -= oz;
+    double dist = dx * dx + dy * dy + dz * dz;
+    if (dist < 1.0e-25) { return; }
+    dist = sqrt(dist);
+    float speed = 1.0;
+    if (nav) { speed = nav->getSpeed(); }
+    dist = speed / dist;
+    if (fpzero(dist)) { return; }
+    dx *= dist;
+    dy *= dist;
+    dz *= dist;
+    this->d_zoom[0] += dx;
+    this->d_zoom[1] += dy;
+    this->d_zoom[2] += dz;
+    wsPostRedraw();
 }
 
 void ViewerOpenGL::handleKey(int key)
@@ -2989,11 +2946,11 @@ void ViewerOpenGL::handleKey(int key)
       wsPostRedraw();
       theSystem->inform(" Drawing polygons in %s mode.", d_wireframe ? "wireframe" : "filled");
       break;
-#ifndef macintosh
+# if 0
     case 'q':
       this->scene.destroyWorld();	// may not return
       break;
-#endif
+# endif
     default:
       break;
     }
@@ -3078,205 +3035,199 @@ void ViewerOpenGL::handleMouseDrag(int x, int y)
 }
 
 
-// Check for pickable objects.
+/**
+ * Check for pickable objects.
+ */
+bool ViewerOpenGL::checkSensitive(const int x, const int y,
+                                  const EventType mouseEvent) {
+    double timeNow = theSystem->time();
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
 
-bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
-{
-  double timeNow = theSystem->time();
-  GLint viewport[4];
-  glGetIntegerv( GL_VIEWPORT, viewport );
+    GLuint selectBuffer[4 * MAXSENSITIVE];
+    glSelectBuffer(4 * MAXSENSITIVE, selectBuffer);
 
-  GLuint selectBuffer[ 4*MAXSENSITIVE ];
-  glSelectBuffer( 4*MAXSENSITIVE, selectBuffer );
+    glRenderMode(GL_SELECT);
+    this->d_selectMode = true;
 
-  (void) glRenderMode( GL_SELECT );
-  d_selectMode = true;
+    glInitNames();
+    glPushName(0);
 
-  glInitNames();
-  glPushName(0);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluPickMatrix(GLdouble(x), GLdouble(viewport[3] - y),
+		  2.0, 2.0, viewport);
 
-  glMatrixMode( GL_PROJECTION );
-  glPushMatrix();
-  glLoadIdentity();
-  gluPickMatrix( (GLdouble) x, (GLdouble)(viewport[3] - y),
-		 2.0, 2.0, viewport );
+    // Set up the global attributes
+    glDisable(GL_FOG);
+    glDisable(GL_TEXTURE_2D);
 
-  // Set up the global attributes
-  glDisable( GL_FOG );
-  glDisable( GL_TEXTURE_2D );
+    glFrontFace(GL_CCW);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
-  glFrontFace( GL_CCW );
-  glEnable( GL_CULL_FACE );
-  glCullFace( GL_BACK );
+    glDisable(GL_LIGHTING);
+    glDisable(GL_COLOR_MATERIAL);
 
-  glDisable( GL_LIGHTING );
-  glDisable( GL_COLOR_MATERIAL );
+    glShadeModel(GL_FLAT);
 
-  glShadeModel( GL_FLAT );
+    this->d_nObjects = 0;
+    this->d_nestedObjects = 0;
 
-  d_nObjects = 0;
-  d_nestedObjects = 0;
+    this->d_nSensitive = 0;
 
-  d_nSensitive = 0;
-
-  // Clean out any defined lights
-  for (int i=0; i<MAX_LIGHTS; ++i)
-    {
-      d_lightInfo[i].lightType = LIGHT_UNUSED;
-      GLenum light = (GLenum) (GL_LIGHT0 + i);
-      glDisable( light );
+    // Clean out any defined lights
+    for (int i=0; i < MAX_LIGHTS; ++i) {
+        this->d_lightInfo[i].lightType = LIGHT_UNUSED;
+        GLenum light = GLenum(GL_LIGHT0 + i);
+        glDisable(light);
     }
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-  this->scene.render(this);
+    this->scene.render(this);
 
-  d_selectMode = false;
+    this->d_selectMode = false;
 
-  // select closest hit
-  GLuint closest = 0, minz = 0xffffffff;
-      
-  int selected = 0;		// nothing selected
-  int hits = glRenderMode( GL_RENDER );
-  if (hits > 0)
-    {
-      // selectBuffer[] = { N1, z1, z2, name1, ..., nameN1, N2, ... }
-      GLuint *sel = selectBuffer;
+    // select closest hit
+    GLuint closest = 0, minz = 0xffffffff;
 
-      for (int nh=0; nh<hits; ++nh, sel+=(3+sel[0]))
-	{
-	  if (sel[1] <= minz)
-	    {
-	      minz = sel[1];		// z1
-	      closest = sel[2+sel[0]];  // nameN (most deeply nested)
-	    }
-	}
+    int selected = 0;   // nothing selected
+    int hits = glRenderMode(GL_RENDER);
+    if (hits > 0) {
+        // selectBuffer[] = { N1, z1, z2, name1, ..., nameN1, N2, ... }
+        GLuint * sel = selectBuffer;
 
-      if (closest > 0 && closest <= (GLuint)d_nSensitive)
-	{
-	  selected = closest;
-	}
+        for (int nh=0; nh < hits; ++nh, sel += (3 + sel[0])) {
+            if (sel[1] <= minz) {
+                minz = sel[1];  // z1
+                closest = sel[2 + sel[0]];  // nameN (most deeply nested)
+            }
+        }
+
+        if (closest > 0 && closest <= GLuint(this->d_nSensitive)) {
+            selected = closest;
+        }
     }
 
-  wsSetCursor( selected ? CURSOR_INFO : CURSOR_INHERIT );
+    this->wsSetCursor(selected ? CURSOR_INFO : CURSOR_INHERIT);
 
-  // Compute & store the world coords of the pick if something
-  // was already active or is about to become active. The window
-  // Z coord is retained when a drag is started on a sensitive
-  // so the drag stays in the same plane even if the mouse moves
-  // off the original sensitive object.
+    //
+    // Compute & store the world coords of the pick if something
+    // was already active or is about to become active. The window
+    // Z coord is retained when a drag is started on a sensitive
+    // so the drag stays in the same plane even if the mouse moves
+    // off the original sensitive object.
+    //
+    double selectCoord[3] = { 0.0, 0.0, 0.0 };
 
-  double selectCoord[3] = { 0.0, 0.0, 0.0 };
+    if (this->d_activeSensitive || selected) {
+        if (!this->d_activeSensitive) {
+            this->d_selectZ = minz / double(0xffffffff);
+        }
 
-  if (d_activeSensitive || selected)
-    {
-      if (! d_activeSensitive)
-	d_selectZ = minz / (double)0xffffffff;
+        GLint viewport[4];
+        GLdouble modelview[16], projection[16];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        glGetDoublev(GL_PROJECTION_MATRIX, projection);
+  //      glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
 
-      GLint viewport[4];
-      GLdouble modelview[16], projection[16];
-      glGetIntegerv (GL_VIEWPORT, viewport);
-      glGetDoublev (GL_PROJECTION_MATRIX, projection);
-//      glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
+        //
+        // make modelview as an unit matrix as this is taken care in the core side
+        // during render traversal.
+        //
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                modelview[4 * i + j] = (i == j) ? 1.0 : 0.0;
+            }
+        }
 
-//   make modelview as an unit matrix as this is taken care in the core side
-//   during render traversal.
+        GLdouble dx, dy, dz;
+        gluUnProject(GLdouble(x), GLdouble(viewport[3] - y), this->d_selectZ,
+                     modelview, projection, viewport,
+                     &dx, &dy, &dz);
 
-      for (int i=0; i<4; ++i)
-        for (int j=0; j<4; ++j)
-          modelview[4*i+j] = (i == j) ? 1.0 : 0.0;
-
-      GLdouble dx, dy, dz;
-      gluUnProject( (GLdouble) x, (GLdouble) (viewport[3] - y), d_selectZ,
-		    modelview, projection, viewport,
-		    &dx, &dy, &dz);
-
-      selectCoord[0] = dx;
-      selectCoord[1] = dy;
-      selectCoord[2] = dz;
+        selectCoord[0] = dx;
+        selectCoord[1] = dy;
+        selectCoord[2] = dz;
     }
 
-  bool wasActive = false;
-// To unset PickMatrix...
-  glMatrixMode( GL_PROJECTION );
-  glPopMatrix();
+    bool wasActive = false;
+  // To unset PickMatrix...
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
 
-  // Sanity check. This can happen when the world gets replaced
-  // by clicking on an anchor - the current sensitive object goes
-  // away, but these variables are not reset.
-  if ( d_activeSensitive > d_nSensitive )
-    d_activeSensitive = 0;
-  if ( d_overSensitive > d_nSensitive )
-    d_overSensitive = 0;
-
-  // An active sensitive object "grabs" the mouse until button released
-  if (d_activeSensitive)
-    {
-      if (mouseEvent == EVENT_MOUSE_RELEASE ||
-	  mouseEvent == EVENT_MOUSE_MOVE)
-	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
-				   timeNow,
-				   selected == d_activeSensitive, false,
-				   selectCoord );
-	  d_activeSensitive = 0;
-	}
-      else			// _DRAG
-	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
-				   timeNow,
-				   selected == d_activeSensitive, true,
-				   selectCoord );
-	}
-      wasActive = true;
+    // Sanity check. This can happen when the world gets replaced
+    // by clicking on an anchor - the current sensitive object goes
+    // away, but these variables are not reset.
+    if (this->d_activeSensitive > this->d_nSensitive) {
+        this->d_activeSensitive = 0;
+    }
+    if (this->d_overSensitive > this->d_nSensitive) {
+        this->d_overSensitive = 0;
     }
 
-  // A click down over a sensitive object initiates an active grab and
-  // mouse over events are no longer relevant.
-  else if (mouseEvent == EVENT_MOUSE_CLICK && selected != 0)
-    {
-      if (d_overSensitive && d_overSensitive != selected)
-	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
-				   timeNow,
-				   false, false, // isOver, isActive
-				   selectCoord );
-	  d_overSensitive = 0;
+    // An active sensitive object "grabs" the mouse until button released
+    if (this->d_activeSensitive) {
+        if (mouseEvent == EVENT_MOUSE_RELEASE
+                || mouseEvent == EVENT_MOUSE_MOVE) {
+            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
+                                       timeNow,
+                                       selected == this->d_activeSensitive,
+                                       false,
+                                       selectCoord);
+	    this->d_activeSensitive = 0;
+        } else {
+            // _DRAG
+	    this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
+                                       timeNow,
+                                       selected == this->d_activeSensitive,
+                                       true,
+                                       selectCoord);
 	}
-      d_activeSensitive = selected;
-      this->scene.sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
-			       timeNow,
-			       true, true,  // isOver, isActive
-			       selectCoord );
+        wasActive = true;
+    } else if (mouseEvent == EVENT_MOUSE_CLICK && selected) {
+        //
+        // A click down over a sensitive object initiates an active grab and
+        // mouse over events are no longer relevant.
+        //
+        if (d_overSensitive && d_overSensitive != selected) {
+            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
+                                       timeNow,
+                                       false, false, // isOver, isActive
+                                       selectCoord);
+	    this->d_overSensitive = 0;
+        }
+        this->d_activeSensitive = selected;
+        this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
+                                   timeNow,
+                                   true, true, // isOver, isActive
+                                   selectCoord);
+    } else if (mouseEvent == EVENT_MOUSE_MOVE) {
+        // Handle isOver events (coords are bogus)
+        if (d_overSensitive && d_overSensitive != selected) {
+            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
+                                       timeNow,
+                                       false, false, // isOver, isActive
+                                       selectCoord);
+        }
+        this->d_overSensitive = selected;
+        if (this->d_overSensitive) {
+            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
+                                       timeNow,
+                                       true, false,  // isOver, isActive
+                                       selectCoord);
+        }
     }
 
-  // Handle isOver events (coords are bogus)
-  else if (mouseEvent == EVENT_MOUSE_MOVE)
-    {
-      if (d_overSensitive && d_overSensitive != selected)
-	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
-				   timeNow,
-				   false, false, // isOver, isActive
-				   selectCoord );
-	}
-      d_overSensitive = selected;
-      if (d_overSensitive)
-	this->scene.sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
-				 timeNow,
-				 true, false,  // isOver, isActive
-				 selectCoord );
-    }
+    // Was event handled here?
+    if (this->d_activeSensitive || wasActive) { this->update(timeNow); }
 
-
-  // Was event handled here?
-  if (d_activeSensitive || wasActive)
-    update( timeNow );
-
-  // Everything is handled except down clicks where nothing was selected
-  // and up clicks where nothing was active.
-  return d_activeSensitive || wasActive;
+    // Everything is handled except down clicks where nothing was selected
+    // and up clicks where nothing was active.
+    return this->d_activeSensitive || wasActive;
 }
 
 // Text rendering
@@ -3392,10 +3343,8 @@ static GLfloat grey[] = {0.5f, 0.5f, 0.5f, 1.0f};
 
 void ViewerOpenGL::drawBSphere(const BSphere & bs, int flag) {
   if (!d_drawBSpheres) return;
-  //cout << "ViewerOpenGL::insertBSphere(" << bs.getRadius() << ")" << endl;
   if (bs.isMAX()) return;
   if (bs.getRadius()==-1.0) return;
-  //bs.dump(cout);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
   //glEnable(GL_LIGHTING);
@@ -3407,7 +3356,6 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs, int flag) {
   glTranslatef(c[0], c[1], c[2]);
   sph = gluNewQuadric();
   if (flag == BVolume::BV_OUTSIDE) {
-    //cout << "out" << endl;
     //glDisable(GL_LIGHTING);
     //glEnable(GL_LIGHTING);
     gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
@@ -3416,7 +3364,6 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs, int flag) {
     glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
     gluSphere(sph, bs.getRadius(), 5, 5);
   } else if (flag == BVolume::BV_PARTIAL) {
-    //cout << "par" << endl;
     //glEnable(GL_LIGHTING);
     gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
     //gluQuadricDrawStyle(sph, GLU_FILL);
@@ -3425,7 +3372,6 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs, int flag) {
     glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
     gluSphere(sph, bs.getRadius(), 8, 8);
   } else if (flag == BVolume::BV_INSIDE) {
-    //cout << "ins" << endl;
     //glEnable(GL_LIGHTING);
     gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
     //gluQuadricDrawStyle(sph, GLU_FILL);
@@ -3434,7 +3380,6 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs, int flag) {
     glColor3f(1.0, 0.5, 0.5);
     gluSphere(sph, bs.getRadius(), 8, 8);
   } else {
-    //cout << "oth" << endl;
     //glEnable(GL_LIGHTING);
     gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
     gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);

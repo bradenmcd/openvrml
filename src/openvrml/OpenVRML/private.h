@@ -74,6 +74,107 @@ namespace {
                 vec[2] /= len;
             }
         }
+        
+        
+        template <typename T>
+            class SharedPtr {
+                T * data;
+                size_t * count;
+
+            public:
+                explicit SharedPtr(T * data = 0);
+                SharedPtr(const SharedPtr<T> & sharedPtr);
+                ~SharedPtr();
+
+                SharedPtr<T> & operator=(const SharedPtr<T> & sharedPtr);
+
+                T & operator*() const;
+                T * operator->() const;
+                T * get() const;
+
+                void reset(T * data = 0);
+
+            private:
+                void dispose();
+                void share(T * data, size_t * count);
+            };
+
+        template <typename T>
+            SharedPtr<T>::SharedPtr(T * data): data(data) {
+                try {
+                    this->count = new size_t(1);
+                } catch (...) {
+                    delete data;
+                    throw;
+                }
+            }
+
+        template <typename T>
+            SharedPtr<T>::SharedPtr(const SharedPtr<T> & sharedPtr):
+                    data(sharedPtr.data) {
+                ++*(this->count = sharedPtr.count);
+            }
+
+        template <typename T>
+            SharedPtr<T>::~SharedPtr() { this->dispose(); }
+        
+        template <typename T>
+            SharedPtr<T> &
+                    SharedPtr<T>::operator=(const SharedPtr<T> & sharedPtr) {
+                this->share(sharedPtr.data, sharedPtr.count);
+                return *this;
+            }
+
+        template <typename T>
+            T & SharedPtr<T>::operator*() const { return *this->data; }
+
+        template <typename T>
+            T * SharedPtr<T>::operator->() const { return this->data; }
+
+        template <typename T>
+            T * SharedPtr<T>::get() const { return this->data; }
+
+        template <typename T>
+            void SharedPtr<T>::reset(T * data) {
+                assert(data != this->data); // fail on self-assignment
+                if (--*this->count == 0) {
+                    delete this->data;
+                } else {
+                    try {
+                        this->data = new size_t;
+                    } catch (...) {
+                        ++*this->count;
+                        delete data;
+                        throw;
+                    }
+                }
+                *this->count = 1;
+                this->data = data;
+            }
+        
+        template <typename T>
+            void SharedPtr<T>::dispose() {
+                if (--*this->count == 0) {
+                    delete this->data;
+                    delete this->count;
+                }
+            }
+        
+        template <typename T>
+            void SharedPtr<T>::share(T * data, size_t * count) {
+                if (this->count != count) {
+                    ++*count;
+                    this->dispose();
+                    this->data = data;
+                    this->count = count;
+                }
+            }
+        
+        template <typename T, typename U>
+            inline bool operator==(const SharedPtr<T> & a,
+                                   const SharedPtr<T> & b) {
+                return a.get() == b.get();
+            }
     }
 }
 

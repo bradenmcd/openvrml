@@ -1,4 +1,52 @@
+2002-05-14  Braden McDaniel  <braden@endoframe.com>
+
+        * Partial Inline node support.
+
+        * Generate JNI headers.
+
+        * macros/gl.m4: Added "-pthread" to GL_LIBS.
+
+        * src/openvrml/OpenVRML/Makefile.am: Removed duplicate listing of
+          "nodetypeptr.cpp".
+
+2002-05-12  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed problem rendering Color nodes.
+
+2002-05-02  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed bug where exposedField eventOuts weren't getting
+          found by the ProtoNode::addIS code.
+
+2002-05-02  Braden McDaniel  <braden@endoframe.com>
+
+        * Events now propagate out of PROTOs. ProtoNode now has an
+          "update" method, and prototype instances are polled for posted
+          events like time-dependent nodes, device sensors, and scripts.
+
+2002-04-30  Braden McDaniel  <braden@endoframe.com>
+
+        * ScriptNodes weren't getting initialized; they are now.
+
+        * Initial implementation for propagating events out of prototype
+          instances; doesn't seem to be working yet.
+
+2002-04-29  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed ViewerOpenGL::d_sensitiveObject to a Node * array from
+          a void * array. Only nodes are ever getting put into the
+          array, and there seem to be problems converting from a void *
+          to a Node * now that Node is a virtual base.
+
+2002-04-28  Braden McDaniel  <braden@endoframe.com>
+
+        * Various bug fixes for PROTO support.
+
+        * Fixed setup problem for Billboard nodes.
+
 2002-04-28  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * Get ScriptJDK compiling again.
 
         * Update JSAI Test world and class.
 
@@ -6,9 +54,128 @@
 
         * Fix a couple of bugs with MF* construction in ScriptJDK.
 
+2002-04-25  Braden McDaniel  <braden@endoframe.com>
+
+        * Made Nodes non-copyable.
+
+2002-04-24  Braden McDaniel  <braden@endoframe.com>
+
+        * More bug fixes for PROTOs. Closer, but not working yet.
+
+        * proto.cpp: Factored field value cloning into a functor.
+
+        * proto.cpp: Added cast methods for nodes in Vrml97Node
+          namespace.
+
+        * proto.cpp: Moved the helper classes for cloning to be private
+          friends of ProtoNode.
+
+        * proto.cpp: IS statements weren't getting duplicated as part
+          of the node cloning process; they are now. PROTOs now work
+          (for small values of "work").
+
+2002-04-23  Braden McDaniel  <braden@endoframe.com>
+
+        * Initial (non-working) rearchitected PROTO implementation.
+
+        * Various fixes to PROTO implementation; still not working yet.
+
 2002-04-14  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * Add additional comments to java classes.
+
+2002-03-22  Braden McDaniel  <braden@endoframe.com>
+
+        * Some Doxygen love.
+
+2002-03-21  Braden McDaniel  <braden@endoframe.com>
+
+        * Removed redundant getDescription method on Viewpoint.
+
+2002-03-19  Braden McDaniel  <braden@endoframe.com>
+
+        * Removed some debug output.
+
+2002-03-18  Braden McDaniel  <braden@endoframe.com>
+
+        * Cast methods on Node do not throw exceptions.
+
+        * Made ScriptNodeType a private member of ScriptNode.
+
+        * Removed WorldInfo::getTitle (unused method).
+
+2002-03-17  Braden McDaniel  <braden@endoframe.com>
+
+        * Node destructors cannot throw exceptions.
+
+2002-03-16  Braden McDaniel  <braden@endoframe.com>
+
+        * The old architecture used Transform::setField to set the
+          dirty bit for the cached transformation matrix. Since there is
+          no more setField method specific to Transform, just start with
+          the dirty bit set.
+
+2002-03-15  Braden McDaniel  <braden@endoframe.com>
+
+        * Was accidentally calling Vrml97NodeType<>::dispatchEventIn
+          recursively instead of calling dispatchEvenInImpl.
+
+2002-03-14  Braden McDaniel  <braden@endoframe.com>
+
+        * node.cpp should include <algorithm>.
+
+        * Disabled a bunch of code that allowed VrmlScene to load a new
+          scene into itself.
+
+2002-03-13  Braden McDaniel  <braden@endoframe.com>
+
+        * Finished VrmlScene::initScope implementation.
+
+        * Fixed bug in WorldInfo node type definition.
+
+        * Made urlModifier in Doc and Doc2 return 0 in the case of no
+          fragment identifier. (This is apparently what other code was
+          expecting.)
+
+        * Call the SemanticException constructor with the line number in
+          Vrml97Parser::routeStatement.
+
+        * Corrected end iterator for TimeSensor NodeInterfaceSet in
+          VrmlScene::initScope.
+
+        * Fixed interface id matching methods on NodeType.
+
+2002-03-12  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed a bug where iterators weren't getting initialized in the
+          createType methods.
+
+2002-03-11  Braden McDaniel  <braden@endoframe.com>
+
+        * Finished implementing nodes. (Yea!)
+
+2002-03-09  Braden McDaniel  <braden@endoframe.com>
+
+        * Nodes through ImageTexture are now implemented.
+
+        * Changed TextureNode interface to return nComponents, width,
+          height, nFrames, and pixels individually. Long term I'd like
+          just to have an SFImage accessor in place of these; but right
+          now this yields the fewest code changes.
+
+2002-03-08  Braden McDaniel  <braden@endoframe.com>
+
+        * Don't throw InvalidValue when a field value doesn't meet
+          requirements established in the spec. The checking takes too
+          long and would kill performance.
+
+        * Nodes through Extrusion are implemented now. We now compile
+          and link since the createType methods of the remaining
+          NodeClasses are implemented but empty.
+
+2002-03-07  Braden McDaniel  <braden@endoframe.com>
+
+        * Use experimental URNs.
 
 2002-03-03  Braden McDaniel  <braden@endoframe.com>
 
@@ -18,6 +185,8 @@
         * MathUtils.h: Made Vlength const-correct.
 
         * Doxyfile.in: various tweaks.
+
+        * Initial rearchitecture checkin. Much breakage.
 
 2002-03-02  Braden McDaniel  <braden@endoframe.com>
 

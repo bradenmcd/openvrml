@@ -160,7 +160,7 @@ namespace OpenVRML {
 
             virtual void setMaterialMode( int nTexComponents, bool geometryColor );
 
-            virtual void setSensitive(void *object);
+            virtual void setSensitive(Node * object);
 
             virtual void scaleTexture(size_t /*w*/, size_t /*h*/,
 			              size_t /*newW*/, size_t /*newH*/,
@@ -359,7 +359,7 @@ namespace OpenVRML {
             int d_overSensitive;
 
             enum { MAXSENSITIVE = 1000 };	// make dynamic?...
-            void *d_sensitiveObject[ MAXSENSITIVE ];
+            Node * d_sensitiveObject[MAXSENSITIVE];
 
             bool d_selectMode;
             double d_selectZ;		// window Z coord of last selection

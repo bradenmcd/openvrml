@@ -545,7 +545,7 @@ namespace OpenVRML {
         size_t getLength() const throw ();
         void setLength(size_t length);
         bool exists(const Node & node) const;
-        bool addNode(Node & node);
+        bool addNode(const NodePtr & node);
         bool removeNode(const Node & node);
         void insertElement(size_t index, const NodePtr & node);
         void removeElement(size_t index);

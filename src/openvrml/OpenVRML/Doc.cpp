@@ -234,7 +234,7 @@ char const * Doc::urlProtocol() const
 char const * Doc::urlModifier() const
 {
   char *mod = d_url ? strrchr(d_url,'#') : 0;
-  return mod ? mod : "";
+  return mod;
 }
 
 char const * Doc::localName()

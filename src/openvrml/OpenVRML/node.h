@@ -24,109 +24,114 @@
 #   include <string.h>
 #   include <iostream.h>
 #   include <list>
+#   include <set>
+#   include <stdexcept>
 #   include <string>
+#   include <typeinfo>
 #   include <vector>
-#   include <iostream.h>
 #   include "common.h"
 #   include "field.h"
-#   include "System.h" // error
+#   include "fieldvalueptr.h"
+#   include "nodetypeptr.h"
 #   include "VrmlRenderContext.h"
 
 namespace OpenVRML {
 
-    class Doc2;
-    class VrmlNamespace;
+    class UnsupportedInterface : public std::invalid_argument {
+    public:
+        UnsupportedInterface(const std::string & message);
+        virtual ~UnsupportedInterface() throw ();
+    };
+    
+    
+    struct OPENVRML_SCOPE NodeInterface {
+        enum Type { invalidType, eventIn, eventOut, exposedField, field };
+
+        Type type;
+        FieldValue::Type fieldType;
+        std::string id;
+    };
+    
+    bool operator==(const NodeInterface & rhs, const NodeInterface & lhs);
+    
+    
+    class OPENVRML_SCOPE NodeInterfaceSet {
+        struct IdLess :
+                std::binary_function<NodeInterface, NodeInterface, bool> {
+            bool operator()(const NodeInterface & lhs,
+                            const NodeInterface & rhs) const {
+                return lhs.id < rhs.id;
+            }
+        };
+        
+        std::set<NodeInterface, IdLess> nodeInterfaceSet;
+        
+    public:
+        typedef std::set<NodeInterface, IdLess>::const_iterator const_iterator;
+        
+        void add(const NodeInterface & nodeInterface)
+                throw (std::invalid_argument, std::bad_alloc);
+        const_iterator begin() const throw ();
+        const_iterator end() const throw ();
+    };
+    
+    inline NodeInterfaceSet::const_iterator
+            NodeInterfaceSet::begin() const throw () {
+        return this->nodeInterfaceSet.begin();
+    }
+    
+    inline NodeInterfaceSet::const_iterator
+            NodeInterfaceSet::end() const throw () {
+        return this->nodeInterfaceSet.end();
+    }
+    
+    
     class VrmlScene;
-
-    ostream & operator<<(ostream & os, const Node & f);
-
+    
+    class OPENVRML_SCOPE NodeClass {
+        VrmlScene * scene;
+    
+    public:
+        virtual ~NodeClass() throw () = 0;
+        
+        VrmlScene & getScene() const throw ();
+        
+        virtual const NodeTypePtr
+                createType(const std::string & id,
+                           const NodeInterfaceSet & interfaces)
+                throw (UnsupportedInterface, std::bad_alloc) = 0;
+    
+    protected:
+        explicit NodeClass(VrmlScene & scene) throw ();
+    };
+    
+    inline VrmlScene & NodeClass::getScene() const throw () {
+        return *this->scene;
+    }
+    
     class OPENVRML_SCOPE NodeType {
     public:
-        struct NodeFieldRec {
-            NodePtr node;
-            std::string fieldName;
-        };
-        typedef std::list<NodeFieldRec *> ISMap;
-        struct ProtoField {
-            std::string name;
-            FieldValue::Type type;
-            FieldValue * defaultValue;
-            ISMap thisIS;
-        };
-        typedef std::list<ProtoField *> FieldList;
-
-    private:
-        std::string id;
-        VrmlNamespace * d_namespace;
-        const MFString * d_url; // Where the EXTERNPROTO could be.
-        mutable std::string actualUrl;	// The URL actually used.
-        Doc2 *d_relative;
-        mutable MFNode implNodes;
-        // Pointer to function to create instances
-        const NodePtr (*d_creator)(VrmlScene *const);	
-        // Fields defined for this node type
-        mutable FieldList d_eventIns;
-        mutable FieldList d_eventOuts;
-        mutable FieldList d_fields;
-        mutable bool d_fieldsInitialized;
-
-    public:
-        NodeType(const std::string & id,
-	         const NodePtr (*creator)(VrmlScene * const scene) = 0);
-        ~NodeType();
-
-        const NodePtr newNode(VrmlScene * scene = 0) const;
-
-        const std::string & getId() const;
-        VrmlNamespace * getScope() const;
-        void setScope(VrmlNamespace & scope);
-
-        // Routines for adding/getting eventIns/Outs/fields to this type
-        void addEventIn(const std::string & name, FieldValue::Type type);
-        void addEventOut(const std::string & name, FieldValue::Type type);
-        void addField(const std::string & name, FieldValue::Type type,
-		      const FieldValue * defaultVal = 0);
-        void addExposedField(const std::string & name,
-                             FieldValue::Type type,
-		             const FieldValue * defaultVal = 0);
-
-        const FieldValue * fieldDefault(const std::string & name) const;
-        void setFieldDefault(const std::string & name, const FieldValue * value);
-
-        FieldValue::Type hasEventIn(const std::string & id) const;
-        FieldValue::Type hasEventOut(const std::string & id) const;
-        FieldValue::Type hasField(const std::string & id) const;
-        FieldValue::Type hasExposedField(const std::string & id) const;
-        FieldValue::Type hasInterface(const std::string & id) const;
-
-        void setUrl(const MFString & url, const Doc2 * relative = 0);
-        void setActualUrl(const std::string & url);
-        const std::string & getActualUrl() const;
-
-        // Add a node to a PROTO implementation
-        void addNode(Node & implNode);
-
-        // Add an IS linkage to one of the PROTO interface fields/events.
-        void addIS(const std::string & isFieldName, Node & implNode,
-	           const std::string & implFieldName);
-
-
-        const MFNode & getImplementationNodes() const;
-
-        const NodePtr firstNode() const;
-
-        const ISMap * getFieldISMap(const std::string & fieldName) const;
-
-        const FieldList & fields() const { return d_fields; }
-        const FieldList & eventIns() const { return d_eventIns; }
-        const FieldList & eventOuts() const { return d_eventOuts; }
-
-    private:
-        void fetchImplementation() const;
-        FieldValue::Type has(const FieldList &, const std::string & id) const;
+        NodeClass & nodeClass;
+        const std::string id;
+    
+        virtual ~NodeType() throw () = 0;
+        
+        FieldValue::Type hasEventIn(const std::string & id) const throw ();
+        FieldValue::Type hasEventOut(const std::string & id) const throw ();
+        FieldValue::Type hasField(const std::string & id) const throw ();
+        FieldValue::Type hasExposedField(const std::string & id) const throw ();
+        FieldValue::Type hasInterface(const std::string & id) const throw ();
+        
+        virtual const NodeInterfaceSet & getInterfaces() const throw () = 0;
+        virtual const NodePtr createNode() const throw (std::bad_alloc) = 0;
+    
+    protected:
+        NodeType(NodeClass & nodeClass, const std::string & id)
+            throw (std::bad_alloc);
     };
 
 
+    class VrmlNamespace;
     class Route;
     class Viewer;
     class NodeType;
@@ -135,145 +140,133 @@ namespace OpenVRML {
     class NodeVisitor;
     class BVolume;
     class ScriptNode;
-    class ProtoNode;
-    class NodeAnchor;
-    class NodeAppearance;
-    class NodeAudioClip;
-    class NodeBackground;
-    class NodeBillboard;
-    class NodeBox;
-    class NodeChild;
-    class NodeCollision;
-    class NodeColor;
-    class NodeColorInt;
-    class NodeCone;
-    class NodeCoordinate;
-    class NodeCoordinateInt;
-    class NodeCylinder;
-    class NodeCylinderSensor;
-    class NodeDirLight;
-    class NodeElevationGrid;
-    class NodeExtrusion;
-    class NodeFog;
-    class NodeFontStyle;
-    class NodeGeometry;
-    class NodeGroup;
-    class NodeIFaceSet;
-    class NodeILineSet;
-    class NodeInline;
-    class NodeImageTexture;
-    class NodeLight;
-    class NodeLOD;
-    class NodeMaterial;
-    class NodeMovieTexture;
-    class NodeNavigationInfo;
-    class NodeNormal;
-    class NodeNormalInt;
-    class NodeOrientationInt;
-    class NodePixelTexture;
-    class NodePlaneSensor;
-    class NodePointLight;
-    class NodePointSet;
-    class NodePositionInt;
-    class NodeProximitySensor;
-    class NodeScalarInt;
-    class NodeShape;
-    class NodeSphere;
-    class NodeSphereSensor;
-    class NodeSound;
-    class NodeSpotLight;
-    class NodeSwitch;
-    class NodeText;
-    class NodeTexture;
-    class NodeTextureCoordinate;
-    class NodeTextureTransform;
-    class NodeTimeSensor;
-    class NodeTouchSensor;
-    class NodeTransform;
-    class NodeViewpoint;
-    class NodeVisibilitySensor;
-    class NodeWorldInfo;
+    class AppearanceNode;
+    class ChildNode;
+    class ColorNode;
+    class CoordinateNode;
+    class FontStyleNode;
+    class GeometryNode;
+    class MaterialNode;
+    class NormalNode;
+    class SoundSourceNode;
+    class TextureNode;
+    class TextureCoordinateNode;
+    class TextureTransformNode;
+    
+    namespace Vrml97Node {
+        class Anchor;
+        class AudioClip;
+        class Background;
+        class CylinderSensor;
+        class Fog;
+        class Group;
+        class Inline;
+        class AbstractLight;
+        class MovieTexture;
+        class NavigationInfo;
+        class PlaneSensor;
+        class PointLight;
+        class SphereSensor;
+        class SpotLight;
+        class TimeSensor;
+        class TouchSensor;
+        class Viewpoint;
+    }
 
     class OPENVRML_SCOPE Node {
         friend ostream & operator<<(ostream & os, const Node & f);
+    
+    public:
+        typedef std::list<Route> RouteList;
+        
+        struct ProtoEventOutValue {
+            const FieldValuePtr value;
+            bool modified;
+        };
 
+    private:
         std::string id;
+        RouteList routes;
+        
+        typedef std::map<std::string, ProtoEventOutValue *> EventOutISMap;
+        EventOutISMap eventOutISMap;
 
     public:
-        const NodeType & type;
-        typedef std::list<Route *> RouteList;
+        const NodeType & nodeType;
 
-        virtual ~Node() = 0;
+        virtual ~Node() throw () = 0;
 
         const std::string & getId() const;
         void setId(const std::string & nodeId, VrmlNamespace * ns = 0);
+        
+        ostream & print(ostream & os, int indent) const;
+        ostream & printFields(ostream & os, int indent) const;
 
-        virtual bool accept(NodeVisitor & visitor) = 0;
-        virtual void resetVisitedFlag();
-        virtual const FieldValue * getField(const std::string & fieldId) const;
-        virtual void setField(const std::string & fieldId,
-                              const FieldValue & fieldValue);
-        virtual void eventIn(double timeStamp,
-		             const std::string & eventName,
-		             const FieldValue & fieldValue);
-        virtual const MFNode getChildren() const;
-        virtual void addToScene(VrmlScene *, const std::string & relativeUrl);
+        bool accept(NodeVisitor & visitor);
+        void resetVisitedFlag();
+        
+        const MFNode getChildren() const;
 
-        virtual ScriptNode * toScript() const;
-        virtual NodeAnchor * toAnchor() const;
-        virtual NodeAppearance * toAppearance() const;
-        virtual NodeAudioClip * toAudioClip() const;
-        virtual NodeBackground * toBackground() const;
-        virtual NodeBillboard * toBillboard() const;
-        virtual NodeBox * toBox() const;
-        virtual NodeChild * toChild() const;
-        virtual NodeCollision * toCollision() const;
-        virtual NodeColor * toColor() const;
-        virtual NodeCone * toCone() const;
-        virtual NodeCoordinate * toCoordinate() const;
-        virtual NodeCylinder * toCylinder() const;
-        virtual NodeCylinderSensor * toCylinderSensor() const;
-        virtual NodeDirLight * toDirLight() const;
-        virtual NodeElevationGrid * toElevationGrid() const;
-        virtual NodeExtrusion * toExtrusion() const;
-        virtual NodeFog * toFog() const;
-        virtual NodeFontStyle * toFontStyle() const;
-        virtual NodeGeometry * toGeometry() const;
-        virtual NodeGroup * toGroup() const;
-        virtual NodeIFaceSet * toIFaceSet() const;
-        virtual NodeImageTexture * toImageTexture() const;
-        virtual NodeInline * toInline() const;
-        virtual NodeLOD * toLOD() const;
-        virtual NodeLight * toLight() const;
-        virtual NodeMaterial * toMaterial() const;
-        virtual NodeMovieTexture * toMovieTexture() const;
-        virtual NodeNavigationInfo * toNavigationInfo() const;
-        virtual NodeNormal * toNormal() const;
-        virtual NodeOrientationInt * toOrientationInt() const;
-        virtual NodePixelTexture * toPixelTexture() const;
-        virtual NodePlaneSensor * toPlaneSensor() const;
-        virtual NodePointLight * toPointLight() const;
-        virtual NodePointSet * toPointSet() const;
-        virtual NodePositionInt * toPositionInt() const;
-        virtual NodeScalarInt * toScalarInt() const;
-        virtual NodeShape * toShape() const;
-        virtual NodeSound * toSound() const;
-        virtual NodeSphere * toSphere() const;
-        virtual NodeSphereSensor * toSphereSensor() const;
-        virtual NodeSpotLight * toSpotLight() const;
-        virtual NodeSwitch * toSwitch() const;
-        virtual NodeTexture * toTexture() const;
-        virtual NodeTextureCoordinate * toTextureCoordinate() const;
-        virtual NodeTextureTransform * toTextureTransform() const;
-        virtual NodeTimeSensor * toTimeSensor() const;
-        virtual NodeTouchSensor * toTouchSensor() const;
-        virtual NodeTransform * toTransform() const;
-        virtual NodeViewpoint * toViewpoint() const;
+        void addEventOutIS(const std::string & eventOut,
+                           ProtoEventOutValue * eventOutValue)
+                throw (UnsupportedInterface, std::bad_alloc);
 
-        // Write self
-        ostream& print(ostream& os, int indent) const;
-        virtual ostream& printFields(ostream& os, int indent);
-        static ostream& printField(ostream&, int, const char*, const FieldValue &);
+        void setField(const std::string & id, const FieldValue & value)
+                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        const FieldValue & getField(const std::string & id) const
+                throw (UnsupportedInterface);
+        void processEvent(const std::string & id, const FieldValue & value,
+                          double timestamp)
+                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        const FieldValue & getEventOut(const std::string & id) const
+                throw (UnsupportedInterface);
+        
+        virtual const ScriptNode * toScript() const throw ();
+        virtual ScriptNode * toScript() throw ();
+        virtual const AppearanceNode * toAppearance() const throw ();
+        virtual AppearanceNode * toAppearance() throw ();
+        virtual const ChildNode * toChild() const throw ();
+        virtual ChildNode * toChild() throw ();
+        virtual const ColorNode * toColor() const throw ();
+        virtual ColorNode * toColor() throw ();
+        virtual const CoordinateNode * toCoordinate() const throw ();
+        virtual CoordinateNode * toCoordinate() throw ();
+        virtual const FontStyleNode * toFontStyle() const throw ();
+        virtual FontStyleNode * toFontStyle() throw () ;
+        virtual const GeometryNode * toGeometry() const throw ();
+        virtual GeometryNode * toGeometry() throw ();
+        virtual const MaterialNode * toMaterial() const throw ();
+        virtual MaterialNode * toMaterial() throw ();
+        virtual const NormalNode * toNormal() const throw ();
+        virtual NormalNode * toNormal() throw ();
+        virtual const SoundSourceNode * toSoundSource() const throw ();
+        virtual SoundSourceNode * toSoundSource() throw ();
+        virtual const TextureNode * toTexture() const throw ();
+        virtual TextureNode * toTexture() throw ();
+        virtual const TextureCoordinateNode * toTextureCoordinate() const
+                throw ();
+        virtual TextureCoordinateNode * toTextureCoordinate() throw ();
+        virtual const TextureTransformNode * toTextureTransform() const
+                throw ();
+        virtual TextureTransformNode * toTextureTransform() throw ();
+        
+        virtual Vrml97Node::Anchor * toAnchor() const;
+        virtual Vrml97Node::AudioClip * toAudioClip() const;
+        virtual Vrml97Node::Background * toBackground() const;
+        virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
+        virtual Vrml97Node::Fog * toFog() const;
+        virtual Vrml97Node::Group * toGroup() const;
+        virtual Vrml97Node::Inline * toInline() const;
+        virtual Vrml97Node::AbstractLight * toLight() const;
+        virtual Vrml97Node::MovieTexture * toMovieTexture() const;
+        virtual Vrml97Node::NavigationInfo * toNavigationInfo() const;
+        virtual Vrml97Node::PlaneSensor * toPlaneSensor() const;
+        virtual Vrml97Node::PointLight * toPointLight() const;
+        virtual Vrml97Node::SphereSensor * toSphereSensor() const;
+        virtual Vrml97Node::SpotLight * toSpotLight() const;
+        virtual Vrml97Node::TimeSensor * toTimeSensor() const;
+        virtual Vrml97Node::TouchSensor * toTouchSensor() const;
+        virtual Vrml97Node::Viewpoint * toViewpoint() const;
 
         // Indicate that the node state has changed, need to re-render
         void setModified();
@@ -310,10 +303,7 @@ namespace OpenVRML {
         // Delete a ROUTE from a field in this node
         void deleteRoute(const std::string & fromEventOut, const NodePtr & toNode, const std::string & toEventIn);
 
-        RouteList getRoutes();
-
-        const FieldValue * getEventOut(const std::string & fieldName) const;
-
+        const RouteList & getRoutes() const;
 
         virtual void render(Viewer *, VrmlRenderContext rc);
 
@@ -326,132 +316,232 @@ namespace OpenVRML {
 
         virtual void inverseTransform(VrmlMatrix &);
 
-        VrmlScene *scene() { return d_scene; }
-
     protected:
-        Node(const NodeType & nodeType, VrmlScene * scene);
-        Node(const Node &);
-
-        enum { INDENT_INCREMENT = 4 };
+        explicit Node(const NodeType & nodeType);
 
         // Send a named event from this node.
-        void eventOut(double timeStamp, const std::string & eventName,
-		      const FieldValue & fieldValue);
-
-        // Scene this node belongs to
-        VrmlScene *d_scene;
+        void emitEvent(const std::string & id, const FieldValue & fieldValue,
+                       double timestamp)
+                throw (std::bad_cast, std::bad_alloc);
 
         // True if a field changed since last render
         bool d_modified;
         bool d_flag;
         bool d_bvol_dirty;
         bool visited;
-
-        // Routes from this node (clean this up, add RouteList ...)
-        RouteList d_routes;
+    
+    private:
+        // Not copyable.
+        Node(const Node &);
+        Node & operator=(const Node &);
+        
+        virtual void setFieldImpl(const std::string & id,
+                                  const FieldValue & value)
+                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
+        
+        virtual const FieldValue & getFieldImpl(const std::string & id) const
+                throw (UnsupportedInterface) = 0;
+        
+        virtual void processEventImpl(const std::string & id,
+                                      const FieldValue & value,
+                                      double timestamp)
+                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
+        
+        virtual const FieldValue & getEventOutImpl(const std::string & id) const
+                throw (UnsupportedInterface) = 0;
     };
 
-
+    
+    class OPENVRML_SCOPE AppearanceNode : public virtual Node {
+    public:
+        virtual ~AppearanceNode() throw () = 0;
+    
+        virtual const AppearanceNode * toAppearance() const throw ();
+        virtual AppearanceNode * toAppearance() throw ();
+        
+        virtual const SFNode & getMaterial() const throw () = 0;
+        virtual const SFNode & getTexture() const throw () = 0;
+        virtual const SFNode & getTextureTransform() const throw () = 0;
+    
+    protected:
+        explicit AppearanceNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE ChildNode : public virtual Node {
+    public:
+        virtual ~ChildNode() throw () = 0;
+        
+        virtual const ChildNode * toChild() const throw ();
+        virtual ChildNode * toChild() throw ();
+    
+    protected:
+        explicit ChildNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE ColorNode : public virtual Node {
+    public:
+        virtual ~ColorNode() throw () = 0;
+        
+        virtual const ColorNode * toColor() const throw ();
+        virtual ColorNode * toColor() throw ();
+        
+        virtual const MFColor & getColor() const throw () = 0;
+    
+    protected:
+        explicit ColorNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE CoordinateNode : public virtual Node {
+    public:
+        virtual ~CoordinateNode() throw () = 0;
+        
+        virtual const CoordinateNode * toCoordinate() const throw ();
+        virtual CoordinateNode * toCoordinate() throw ();
+        
+        virtual const MFVec3f & getPoint() const throw () = 0;
+    
+    protected:
+        explicit CoordinateNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE FontStyleNode : public virtual Node {
+    public:
+        virtual ~FontStyleNode() throw () = 0;
+        
+        virtual const FontStyleNode * toFontStyle() const throw ();
+        virtual FontStyleNode * toFontStyle() throw ();
+    
+        virtual const MFString & getFamily() const throw () = 0;
+        virtual const SFBool & getHorizontal() const throw () = 0;
+        virtual const MFString & getJustify() const throw () = 0;
+        virtual const SFString & getLanguage() const throw () = 0;
+        virtual const SFBool & getLeftToRight() const throw () = 0;
+        virtual const SFFloat & getSize() const throw () = 0;
+        virtual const SFFloat & getSpacing() const throw () = 0;
+        virtual const SFString & getStyle() const throw () = 0;
+        virtual const SFBool & getTopToBottom() const throw () = 0;
+        
+    protected:
+        explicit FontStyleNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE GeometryNode : public virtual Node {
+    public:
+        virtual ~GeometryNode() throw () = 0;
+        
+        virtual const GeometryNode * toGeometry() const throw ();
+        virtual GeometryNode * toGeometry() throw ();
+        
+        virtual const ColorNode * getColor() const throw ();
+    
+    protected:
+        explicit GeometryNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE MaterialNode : public virtual Node {
+    public:
+        virtual ~MaterialNode() throw () = 0;
+    
+        virtual const MaterialNode * toMaterial() const throw ();
+        virtual MaterialNode * toMaterial() throw ();
+        
+        virtual const SFFloat & getAmbientIntensity() const throw () = 0;
+        virtual const SFColor & getDiffuseColor() const throw () = 0;
+        virtual const SFColor & getEmissiveColor() const throw () = 0;
+        virtual const SFFloat & getShininess() const throw () = 0;
+        virtual const SFColor & getSpecularColor() const throw () = 0;
+        virtual const SFFloat & getTransparency() const throw () = 0;
+    
+    protected:
+        explicit MaterialNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE NormalNode : public virtual Node {
+    public:
+        virtual ~NormalNode() throw () = 0;
+        
+        virtual const NormalNode * toNormal() const throw ();
+        virtual NormalNode * toNormal() throw ();
+        
+        virtual const MFVec3f & getVector() const throw () = 0;
+    
+    protected:
+        explicit NormalNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE SoundSourceNode : public virtual Node {
+    public:
+        virtual ~SoundSourceNode() throw () = 0;
+        virtual const SoundSourceNode * toSoundSource() const throw ();
+        virtual SoundSourceNode * toSoundSource() throw ();
+    
+    protected:
+        explicit SoundSourceNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE TextureNode : public virtual Node {
+    public:
+        virtual ~TextureNode() throw () = 0;
+    
+        virtual const TextureNode * toTexture() const throw ();
+        virtual TextureNode * toTexture() throw ();
+        
+        virtual size_t nComponents() const throw () = 0;
+        virtual size_t width() const throw () = 0;
+        virtual size_t height() const throw () = 0;
+        virtual size_t nFrames() const throw () = 0;
+        virtual const unsigned char * pixels() const throw () = 0;
+        virtual const SFBool & getRepeatS() const throw () = 0;
+        virtual const SFBool & getRepeatT() const throw () = 0;
+    
+    protected:
+        explicit TextureNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE TextureCoordinateNode : public virtual Node {
+    public:
+        virtual ~TextureCoordinateNode() throw () = 0;
+        
+        virtual const TextureCoordinateNode * toTextureCoordinate() const
+                throw ();
+        virtual TextureCoordinateNode * toTextureCoordinate() throw ();
+        
+        virtual const MFVec2f & getPoint() const throw () = 0;
+    
+    protected:
+        explicit TextureCoordinateNode(const NodeType &);
+    };
+    
+    
+    class OPENVRML_SCOPE TextureTransformNode : public virtual Node {
+    public:
+        virtual ~TextureTransformNode() throw () = 0;
+        
+        virtual const TextureTransformNode * toTextureTransform() const throw ();
+        virtual TextureTransformNode * toTextureTransform() throw ();
+    
+    protected:
+        explicit TextureTransformNode(const NodeType &);
+    };
+    
+    
     class OPENVRML_SCOPE NodeVisitor {
     public:
         virtual ~NodeVisitor() = 0;
-
-        virtual void visit(ScriptNode & node) = 0;
-        virtual void visit(ProtoNode & node) = 0;
-        virtual void visit(NodeAnchor & node) = 0;
-        virtual void visit(NodeAppearance & node) = 0;
-        virtual void visit(NodeAudioClip & node) = 0;
-        virtual void visit(NodeBackground & node) = 0;
-        virtual void visit(NodeBillboard & node) = 0;
-        virtual void visit(NodeBox & node) = 0;
-        virtual void visit(NodeCollision & node) = 0;
-        virtual void visit(NodeColor & node) = 0;
-        virtual void visit(NodeColorInt & node) = 0;
-        virtual void visit(NodeCone & node) = 0;
-        virtual void visit(NodeCoordinate & node) = 0;
-        virtual void visit(NodeCoordinateInt & node) = 0;
-        virtual void visit(NodeCylinder & node) = 0;
-        virtual void visit(NodeCylinderSensor & node) = 0;
-        virtual void visit(NodeDirLight & node) = 0;
-        virtual void visit(NodeElevationGrid & node) = 0;
-        virtual void visit(NodeExtrusion & node) = 0;
-        virtual void visit(NodeFog & node) = 0;
-        virtual void visit(NodeFontStyle & node) = 0;
-        virtual void visit(NodeGroup & node) = 0;
-        virtual void visit(NodeIFaceSet & node) = 0;
-        virtual void visit(NodeILineSet & node) = 0;
-        virtual void visit(NodeImageTexture & node) = 0;
-        virtual void visit(NodeInline & node) = 0;
-        virtual void visit(NodeLOD & node) = 0;
-        virtual void visit(NodeMaterial & node) = 0;
-        virtual void visit(NodeMovieTexture & node) = 0;
-        virtual void visit(NodeNavigationInfo & node) = 0;
-        virtual void visit(NodeNormal & node) = 0;
-        virtual void visit(NodeNormalInt & node) = 0;
-        virtual void visit(NodeOrientationInt & node) = 0;
-        virtual void visit(NodePixelTexture & node) = 0;
-        virtual void visit(NodePlaneSensor & node) = 0;
-        virtual void visit(NodePointLight & node) = 0;
-        virtual void visit(NodePointSet & node) = 0;
-        virtual void visit(NodePositionInt & node) = 0;
-        virtual void visit(NodeProximitySensor & node) = 0;
-        virtual void visit(NodeScalarInt & node) = 0;
-        virtual void visit(NodeShape & node) = 0;
-        virtual void visit(NodeSound & node) = 0;
-        virtual void visit(NodeSphere & node) = 0;
-        virtual void visit(NodeSphereSensor & node) = 0;
-        virtual void visit(NodeSpotLight & node) = 0;
-        virtual void visit(NodeSwitch & node) = 0;
-        virtual void visit(NodeText & node) = 0;
-        virtual void visit(NodeTextureCoordinate & node) = 0;
-        virtual void visit(NodeTextureTransform & node) = 0;
-        virtual void visit(NodeTimeSensor & node) = 0;
-        virtual void visit(NodeTouchSensor & node) = 0;
-        virtual void visit(NodeTransform & node) = 0;
-        virtual void visit(NodeViewpoint & node) = 0;
-        virtual void visit(NodeVisibilitySensor & node) = 0;
-        virtual void visit(NodeWorldInfo & node) = 0;
+    
+        virtual void visit(Node & node) = 0;
     };
 }
-
-// Ugly macro used in printFields
-#define PRINT_FIELD(_f) printField(os,indent+INDENT_INCREMENT,#_f,d_##_f)
-
-// Ugly macros used in setField
-
-#define TRY_FIELD(_f,_t) \
-(fieldId == #_f) {\
-    if ( fieldValue.to##_t() )\
-      d_##_f = (_t &)fieldValue;\
-    else \
-      theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
-	    fieldValue.typeName(), #_f, this->type.getId().c_str(), #_t);\
-  }
-
-// For SFNode fields. Allow un-fetched EXTERNPROTOs to succeed...
-#define TRY_SFNODE_FIELD(_f,_n) \
-(fieldId == #_f) { \
-    SFNode *x=(SFNode*)&fieldValue; \
-    if (fieldValue.toSFNode() \
-            && (!x->get() || x->get()->to##_n() \
-                || dynamic_cast<ProtoNode *>(x->get().get()))) \
-        d_##_f = (SFNode &)fieldValue; \
-    else \
-      theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
-	    fieldValue.typeName(), #_f, this->type.getId().c_str(), #_n);\
-  }
-
-#define TRY_SFNODE_FIELD2(_f,_n1,_n2) \
-(fieldId == #_f) { \
-    SFNode *x=(SFNode*)&fieldValue; \
-    if (fieldValue.toSFNode() && \
-	((!x->get()) || x->get()->to##_n1() || x->get()->to##_n2() || \
-	 dynamic_cast<ProtoNode *>(x->get().get()))) \
-      d_##_f = (SFNode &)fieldValue; \
-    else \
-      theSystem->error("Invalid type (%s) for %s field of %s node (expected %s or %s).\n",\
-	    fieldValue.typeName(), #_f, this->type.getId().c_str(), #_n1, #_n2);\
-  }
 
 # endif
 

@@ -21,29 +21,24 @@
 #ifndef VRMLNAMESPACE_H
 #define VRMLNAMESPACE_H
 
-#include <list>
-#include "common.h"
-#include "field.h"
-#include "nodetypeptr.h"
+# include <list>
+# include <map>
+# include "common.h"
+# include "field.h"
+# include "nodeclassptr.h"
+# include "nodetypeptr.h"
 
 namespace OpenVRML {
 
     class OPENVRML_SCOPE VrmlNamespace {
-        static std::list<NodeTypePtr> builtInList;
-        static int s_nNamespaces;
-
-        // Defined node types (PROTOs) for this namespace
-        std::list<NodeTypePtr> d_typeList;
-
-        // Defined node names for this namespace
-        std::list<Node *> d_nameList;
-
-        // Parent namespace
-        VrmlNamespace *d_parent;
-
+        std::list<NodeTypePtr> typeList;
+        std::list<Node *> nameList;
+    
     public:
+        VrmlNamespace * const parent;
+        
         VrmlNamespace(VrmlNamespace * parent = 0);
-        ~VrmlNamespace();
+        virtual ~VrmlNamespace();
 
         void addNodeType(const NodeTypePtr & nodeType);
 
@@ -56,19 +51,25 @@ namespace OpenVRML {
         void removeNodeName(Node & namedNode);
 
         const NodeTypePtr findType(const std::string & name) const;
-        const NodeTypePtr findPROTO(const std::string & name) const;
 
         // Return the first node type in scope (default EXTERNPROTO implementation)
         const NodeTypePtr firstType() const;
 
         // Find a node by name.
         Node * findNode(const std::string & name) const;
-
-        const MFNode cloneNodes(const MFNode & mfnode);
-
+    
     private:
-        void addBuiltIn(const NodeTypePtr & nodeType);
-        void defineBuiltIns();
+        // Not copyable.
+        VrmlNamespace(const VrmlNamespace &);
+        VrmlNamespace & operator=(const VrmlNamespace &);
+    };
+    
+    typedef std::map<std::string, NodeClassPtr> NodeClassMap;
+        
+    class OPENVRML_SCOPE Vrml97RootNamespace : public VrmlNamespace {
+    public:
+        Vrml97RootNamespace(const NodeClassMap & nodeClassMap);
+        virtual ~Vrml97RootNamespace();
     };
 }
 

@@ -260,12 +260,14 @@ static FieldValue* getFieldValue(JNIEnv *env, jobject obj)
   bool exposedField = static_cast<bool>(env->GetBooleanField(obj, fid));
   fid = getFid(env, obj, "FieldPtr", "I");
 
-  if (eventOut || eventIn || exposedField)
+  cout << "TODO: Implement getFieldValue" << endl;
+
+  if (eventOut)
   {
-    ScriptNode::ScriptField* pScriptField =
-      (ScriptNode::ScriptField*) env->GetIntField(obj, fid);
-    fieldPtr = static_cast<FieldValue*>(pScriptField->value);
-    pScriptField->modified = true;
+    ScriptNode::EventOutValue* eventOutPtr =
+      (ScriptNode::EventOutValue*)env->GetIntField(obj, fid);
+    fieldPtr = static_cast<FieldValue*>(eventOutPtr->value.get());
+    eventOutPtr->modified = true;
   }
   else
   {
@@ -2523,7 +2525,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_BaseNode_2
   MFNode* pMFNode = static_cast<MFNode*>(getFieldValue(env, obj));
   jfieldID fid = getFid(env, value, "NodePtr", "I");
   Node* pNewNode = (Node*) env->GetIntField(value, fid);
-  pMFNode->addNode(*pNewNode); 
+  pMFNode->addNode(NodePtr(pNewNode));
 }
 
 JNIEXPORT void JNICALL 
@@ -2532,7 +2534,7 @@ Java_vrml_field_MFNode_addValue__Lvrml_field_ConstSFNode_2
 {
   MFNode* pMFNode = static_cast<MFNode*>(getFieldValue(env, obj));
   SFNode* pSFNode = static_cast<SFNode*>(getFieldValue(env, value));
-  pMFNode->addNode(*(pSFNode->get().get())); 
+  pMFNode->addNode(pSFNode->get());
 }
 
 JNIEXPORT void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_field_SFNode_2
@@ -3916,38 +3918,31 @@ JNIEXPORT jstring JNICALL Java_vrml_field_MFVec3f_toString
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
   (JNIEnv *env, jobject obj, jstring jstrFieldName)
 {
-  FieldValue::Type fieldType;
-  const ScriptNode::ScriptField* scriptFieldPtr;
   const char *charFieldName = env->GetStringUTFChars(jstrFieldName, 0);
   std::string fieldName(charFieldName);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   ScriptNode* pScript = (ScriptNode*) env->GetIntField(obj, fid);
   jobject Field;
 
-  if ((fieldType = pScript->hasField(fieldName)) !=
-       FieldValue::invalidType)
-  {
-    ScriptNode::FieldList& exposedFields = pScript->fields();
-    for (ScriptNode::FieldList::const_iterator i(exposedFields.begin()); 
-          i != exposedFields.end(); ++i) {
-      if ((*i)->name == fieldName) {
-        scriptFieldPtr = (*i);
-      }
-    }
+  ScriptNode::FieldValueMap fieldMap = pScript->getFieldValueMap();
+  ScriptNode::FieldValueMap::iterator iter = fieldMap.find(fieldName);
 
+  if (iter != fieldMap.end())
+  {
+    // Then we've found the field
+    const FieldValue* fieldPtr = iter->second.get();
     char clazzName[256];
-    const FieldValue* temp = scriptFieldPtr->value;
-    sprintf(clazzName, "vrml/field/%s", temp->typeName());
+    sprintf(clazzName, "vrml/field/%s", fieldPtr->typeName());
     jclass clazz = env->FindClass(clazzName);
     Field = env->AllocObject(clazz);
     fid = getFid(env, Field, "FieldPtr", "I");
-    env->SetIntField(Field, fid, (int) scriptFieldPtr);
+    env->SetIntField(Field, fid, (int) fieldPtr);
   }
   else
   {
     // Field doesn't exist, throw an exception
     // TODO: Add exception
-    return 0;
+    return 0;  
   }
 
   fid = getFid(env, Field,"isExposedField", "Z");
@@ -3959,8 +3954,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
   (JNIEnv *env, jobject obj, jstring jstrEventOutName)
 {
-  FieldValue::Type eventOutType;
-  const ScriptNode::ScriptField* fieldPtr;
+  ScriptNode::EventOutValue eventOutValue;
   char clazzName[256];
   jobject eventOut;
   jclass clazz;
@@ -3969,45 +3963,25 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   ScriptNode* pScript = (ScriptNode*) env->GetIntField(obj, fid);
 
-  if ((eventOutType = pScript->hasEventOut(eventOutName)) !=
-       FieldValue::invalidType)
+  ScriptNode::EventOutValueMap eventOutMap = pScript->getEventOutValueMap();
+  ScriptNode::EventOutValueMap::iterator iter = eventOutMap.find(eventOutName);
+
+  if (iter != eventOutMap.end())
   {
+    eventOutValue = iter->second;
+    // Found the eventOut
     char clazzName[256];
-    sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventOutType));
+    sprintf(clazzName, "vrml/field/%s", iter->second.value->typeName());
     clazz = env->FindClass(clazzName);
     eventOut = env->AllocObject(clazz);
     fid = getFid(env, eventOut, "FieldPtr", "I");
-    ScriptNode::FieldList& eventOuts = pScript->eventOuts();
-    for (ScriptNode::FieldList::const_iterator i(eventOuts.begin()); 
-          i != eventOuts.end(); ++i) {
-      if ((*i)->name == eventOutName) {
-        fieldPtr = (*i);
-      }
-    }
-  }
-  else if ((eventOutType = pScript->hasField(eventOutName)) !=
-            FieldValue::invalidType)
-  {
-    char clazzName[256];
-    sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventOutType));
-    clazz = env->FindClass(clazzName);
-    eventOut = env->AllocObject(clazz);
-    fid = getFid(env, eventOut, "FieldPtr", "I");
-    ScriptNode::FieldList& fields = pScript->fields();
-    for (ScriptNode::FieldList::const_iterator i(fields.begin()); 
-           i != fields.end(); ++i) { 
-      if ((*i)->name == eventOutName) {
-        fieldPtr = (*i);
-      }
-    }
+    env->SetIntField(eventOut, fid, (int) &eventOutValue);
   }
   else
   {
     // TODO: throw an exception as the given event out doesn't exist
     return 0;
   }
-
-  env->SetIntField(eventOut, fid, (int) fieldPtr);
 
   fid = getFid(env, eventOut,"isEventOut", "Z");
   env->SetBooleanField(eventOut, fid, true);
@@ -4019,6 +3993,8 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventIn
   (JNIEnv *env, jobject obj, jstring jstrEventInName)
 {
+  // TODO: This method needs to be revisited
+  /*
   FieldValue::Type eventInType;
   const ScriptNode::ScriptField* fieldPtr;
   jobject eventIn;
@@ -4078,6 +4054,9 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventIn
   env->ReleaseStringUTFChars(jstrEventInName, charEventIn);
   
   return eventIn;
+  */
+
+  return 0;
 }
 
 JNIEXPORT jstring JNICALL Java_vrml_node_Script_toString
@@ -4115,7 +4094,8 @@ JNIEXPORT jobject JNICALL Java_vrml_BaseNode_getBrowser
   jclass clazz = env->FindClass("vrml/Browser");
   jobject jBrowser = env->AllocObject(clazz);
   fid = getFid(env, jBrowser, "BrowserPtr", "I");
-  env->SetIntField(jBrowser, fid, (int) pNode->scene());	
+  env->SetIntField(jBrowser, fid,
+                   (int) &(pNode->nodeType.nodeClass.getScene()));
   return jBrowser;
 }
 
@@ -4158,7 +4138,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventOut
   (JNIEnv *env, jobject obj, jstring jstrEventOutName)
 {
   // TODO: This method needs to be revisited
-
+  /*
   const char *eventOutName = env->GetStringUTFChars(jstrEventOutName , 0);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   Node* pNode = (Node*) env->GetIntField(obj, fid);
@@ -4179,13 +4159,15 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventOut
   env->ReleaseStringUTFChars(jstrEventOutName, eventOutName);
 
   return eventOut;
+  */
+  return 0;
 }
 
 JNIEXPORT jobject JNICALL Java_vrml_node_Node_getExposedField
   (JNIEnv *env, jobject obj, jstring jstrExposedFieldName)
 {
   // TODO: This method needs to be revisited
-
+  /*
   const char *exposedFieldName = 
     env->GetStringUTFChars(jstrExposedFieldName , 0);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
@@ -4207,6 +4189,9 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getExposedField
   env->ReleaseStringUTFChars(jstrExposedFieldName, exposedFieldName);
 
   return exposedField;
+
+  */
+  return 0;
 }
 
 JNIEXPORT jstring JNICALL Java_vrml_node_Node_toString

@@ -27,7 +27,7 @@
 # `yes'.
 #
 AC_DEFUN(OV_CHECK_GL,
-[GL_LIBS="-lm"
+[GL_LIBS="-lpthread -lm"
 AC_LANG_PUSH(C)
 ov_have_gl=no
 AC_CHECK_LIB(GL, glAccum,

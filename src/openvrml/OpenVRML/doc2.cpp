@@ -250,7 +250,7 @@ const char * Doc2::urlProtocol() const {
 
 const char * Doc2::urlModifier() const {
     const char * mod = url_ ? strrchr(url_, '#') : 0;
-    return mod ? mod : "";
+    return mod;
 }
 
 const char * Doc2::localName() {

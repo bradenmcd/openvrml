@@ -21,23 +21,32 @@
 # ifndef OPENVRML_VRMLSCENE_H
 #   define OPENVRML_VRMLSCENE_H
 
-#include <list>
-#include "common.h"
-#include "vrml97node.h"
+#   include <list>
+#   include <map>
+#   include "common.h"
+#   include "nodeclassptr.h"
+#   include "script.h"
+#   include "VrmlNamespace.h"
+#   include "vrml97node.h"
 
 namespace OpenVRML {
 
-    class Node;
     class Doc2;
     class Viewer;
-    class VrmlNamespace;
-    class NodeType;
+    class ProtoNode;
 
+    typedef std::map<std::string, NodeClassPtr> NodeClassMap;
+        
     class OPENVRML_SCOPE VrmlScene {
+        friend class Vrml97Parser;
+        friend class ProtoNodeClass;
+        friend class Vrml97Node::Inline;
+        
+        NodeClassMap nodeClassMap;
+        ScriptNodeClass scriptNodeClass;
         Doc2 * d_url;
-        Doc2 * d_urlLocal;
         MFNode nodes;
-        VrmlNamespace * d_namespace;
+        VrmlNamespace * scope;
         typedef std::list<NodePtr> BindStack;
         BindStack d_backgroundStack;
         BindStack d_fogStack;
@@ -48,36 +57,38 @@ namespace OpenVRML {
         std::list<Node *> d_navigationInfos;
         std::list<Node *> d_viewpoints;
         std::list<Node *> d_scopedLights;
-        std::list<Node *> d_scripts;
+        std::list<ScriptNode *> d_scripts;
         std::list<Node *> d_timers;
         std::list<Node *> d_audioClips;
         std::list<Node *> d_movies;
+        std::list<ProtoNode *> protoNodeList;
         bool d_modified;
         bool d_newView;
         double d_deltaTime;
 
     public:
-        static MFNode * readWrl(const MFString & urls, Doc2 * relative,
-                                VrmlNamespace * ns);
-        static MFNode * readWrl(Doc2 * url, VrmlNamespace * ns );
-        static const MFNode readString(char const * vrmlString,
-                                           VrmlNamespace * ns);
-
+# if 0
         static const NodeTypePtr readPROTO(const MFString & url,
                                            const Doc2 * relative = 0);
+# endif
 
-        explicit VrmlScene(const std::string & url = std::string(),
-                           const std::string & localCopy = std::string());
+        explicit VrmlScene(const std::string & url);
         virtual ~VrmlScene();
+
+        MFNode * readWrl(const MFString & urls, Doc2 * relative,
+                         VrmlNamespace * ns);
+        MFNode * readWrl(Doc2 * url, VrmlNamespace * ns );
+        const MFNode readString(char const * vrmlString, VrmlNamespace * ns);
 
         const MFNode & getRootNodes() const throw ();
 
+# if 0
         // Destroy world (just passes destroy request up to client)
         void destroyWorld();
 
         // Replace world with nodes, recording url as the source URL.
-        void replaceWorld(MFNode & nodes, VrmlNamespace * ns,
-		          Doc2 * url=0, Doc2 * urlLocal=0);
+        void replaceWorld(MFNode & nodes, VrmlNamespace * ns, Doc2 * url = 0);
+# endif
 
         // A way to let the app know when a world is loaded, changed, etc.
         typedef void (*SceneCB)( int reason );
@@ -93,12 +104,13 @@ namespace OpenVRML {
         // Load a generic file (possibly non-VRML)
         bool loadUrl(const MFString & url, const MFString & parameters = MFString());
 
+# if 0
         // Load a VRML file
-        bool load(const std::string & url,
-                  const std::string & localCopy = std::string());
+        bool load(const std::string & url);
 
         // Load a VRML string
         bool loadFromString(const char *string);
+# endif
 
         // Save the scene to a file
         bool save(const char *url);
@@ -107,14 +119,14 @@ namespace OpenVRML {
         Doc2 * urlDoc() { return d_url; }
 
         // Types and node names defined in this scope
-        VrmlNamespace *scope() { return d_namespace; }
+        VrmlNamespace * getScope() { return this->scope; }
 
         // Queue an event to load URL/nodes (async so it can be called from a node)
         void queueLoadUrl(MFString * url, MFString * parameters );
         void queueReplaceNodes(MFNode * nodes, VrmlNamespace *ns );
 
-        void sensitiveEvent( void *object, double timeStamp,
-		             bool isOver, bool isActive, double *point );
+        void sensitiveEvent(Node * object, double timeStamp,
+		            bool isOver, bool isActive, double *point );
 
         // Queue an event for a given node
         void queueEvent(double timeStamp, FieldValue * value,
@@ -152,32 +164,32 @@ namespace OpenVRML {
         //    void bindableRemove(NodeType *);
 
         // Background
-        void addBackground(NodeBackground &);
-        void removeBackground(NodeBackground &);
-        NodeBackground * bindableBackgroundTop();
-        void bindablePush( NodeBackground * );
-        void bindableRemove( NodeBackground * );
+        void addBackground(Vrml97Node::Background &);
+        void removeBackground(Vrml97Node::Background &);
+        Vrml97Node::Background * bindableBackgroundTop();
+        void bindablePush(Vrml97Node::Background *);
+        void bindableRemove(Vrml97Node::Background *);
 
         // Fog
-        void addFog(NodeFog &);
-        void removeFog(NodeFog &);
-        NodeFog *bindableFogTop();
-        void bindablePush( NodeFog * );
-        void bindableRemove( NodeFog * );
+        void addFog(Vrml97Node::Fog &);
+        void removeFog(Vrml97Node::Fog &);
+        Vrml97Node::Fog *bindableFogTop();
+        void bindablePush( Vrml97Node::Fog * );
+        void bindableRemove( Vrml97Node::Fog * );
 
         // NavigationInfo
-        void addNavigationInfo(NodeNavigationInfo &);
-        void removeNavigationInfo(NodeNavigationInfo &);
-        NodeNavigationInfo *bindableNavigationInfoTop();
-        void bindablePush( NodeNavigationInfo * );
-        void bindableRemove( NodeNavigationInfo * );
+        void addNavigationInfo(Vrml97Node::NavigationInfo &);
+        void removeNavigationInfo(Vrml97Node::NavigationInfo &);
+        Vrml97Node::NavigationInfo *bindableNavigationInfoTop();
+        void bindablePush(Vrml97Node::NavigationInfo *);
+        void bindableRemove(Vrml97Node::NavigationInfo *);
 
         // Viewpoint
-        void addViewpoint(NodeViewpoint &);
-        void removeViewpoint(NodeViewpoint &);
-        NodeViewpoint *bindableViewpointTop();
-        void bindablePush( NodeViewpoint * );
-        void bindableRemove( NodeViewpoint * );
+        void addViewpoint(Vrml97Node::Viewpoint &);
+        void removeViewpoint(Vrml97Node::Viewpoint &);
+        Vrml97Node::Viewpoint *bindableViewpointTop();
+        void bindablePush(Vrml97Node::Viewpoint *);
+        void bindableRemove(Vrml97Node::Viewpoint *);
 
         // Viewpoint navigation
         void nextViewpoint();
@@ -190,24 +202,25 @@ namespace OpenVRML {
         // Other (non-bindable) node types that the scene needs access to:
 
         // Scene-scoped lights
-        void addScopedLight(NodeLight &);
-        void removeScopedLight(NodeLight &);
-
-        // Scripts
-        void addScript(ScriptNode &);
-        void removeScript(ScriptNode &);
+        void addScopedLight(Vrml97Node::AbstractLight &);
+        void removeScopedLight(Vrml97Node::AbstractLight &);
 
         // TimeSensors
-        void addTimeSensor(NodeTimeSensor &);
-        void removeTimeSensor(NodeTimeSensor &);
+        void addTimeSensor(Vrml97Node::TimeSensor &);
+        void removeTimeSensor(Vrml97Node::TimeSensor &);
 
         // AudioClips
-        void addAudioClip(NodeAudioClip &);
-        void removeAudioClip(NodeAudioClip &);
+        void addAudioClip(Vrml97Node::AudioClip &);
+        void removeAudioClip(Vrml97Node::AudioClip &);
 
         // MovieTextures
-        void addMovie(NodeMovieTexture &);
-        void removeMovie(NodeMovieTexture &);
+        void addMovie(Vrml97Node::MovieTexture &);
+        void removeMovie(Vrml97Node::MovieTexture &);
+        
+        void addProto(ProtoNode & node);
+        void removeProto(ProtoNode & node);
+        void addScript(ScriptNode &);
+        void removeScript(ScriptNode &);
 
         /**
          * True if the bvolume dirty flag has been set on a node in the
@@ -261,6 +274,14 @@ namespace OpenVRML {
         Event d_eventMem[MAXEVENTS];
         size_t d_firstEvent;
         size_t d_lastEvent;
+    
+    private:
+        // Not copyable.
+        VrmlScene(const VrmlScene &);
+        VrmlScene & operator=(const VrmlScene &);
+        
+        void initNodeClassMap();
+        void initScope();
     };
 }
 

@@ -25,6 +25,7 @@
 #   include <stddef.h>
 #   include <string>
 #   include "common.h"
+#   include "fieldvalueptr.h"
 #   include "vrml97node.h"
 
 namespace OpenVRML {
@@ -52,94 +53,114 @@ namespace OpenVRML {
         Script(const Script &);
         Script & operator=(const Script &);
     };
-
-
+    
+    
+    class OPENVRML_SCOPE ScriptNodeClass : public NodeClass {
+    public:
+        ScriptNodeClass(VrmlScene & scene);
+        virtual ~ScriptNodeClass() throw ();
+        
+        virtual const NodeTypePtr createType(const std::string & id,
+                                             const NodeInterfaceSet &) throw ();
+    };
+    
+    
     class Doc;
     class VrmlScene;
 
-    class OPENVRML_SCOPE ScriptNode : public NodeChild {
+    class OPENVRML_SCOPE ScriptNode : public ChildNode {
     public:
-        // Per-script field type
-        struct ScriptField {
-            std::string name;
-            FieldValue * value;
-            FieldValue::Type type;
+        struct EventOutValue {
+            FieldValuePtr value;
             bool modified;
         };
-
-        typedef std::list<ScriptField *> FieldList;
-
-    private:
-        // Fields
-        SFBool d_directOutput;
-        SFBool d_mustEvaluate;
-        MFString d_url;
-
-        SFString d_relativeUrl;
-
-        // The script language-dependent part
-        Script * script;
-
-        // Fields and events defined for this Script
-        FieldList d_eventIns;
-        FieldList d_eventOuts;
-        FieldList d_fields;
-
-        int d_eventsReceived;
-
-    public:
-        // Define the fields of Script nodes
-        static const NodeTypePtr
-                defineType(NodeTypePtr nodeType = NodeTypePtr(0));
-
-        ScriptNode(VrmlScene * scene = 0);
-        ScriptNode(const ScriptNode &);
-        virtual ~ScriptNode();
-
-        void initialize(double timeStamp);
-        void update(const SFTime & now);
-        void shutdown(double timeStamp);
-        void addEventIn(const std::string & name, FieldValue::Type type);
-        void addEventOut(const std::string & name, FieldValue::Type type);
-        void addField(const std::string & name, FieldValue::Type type,
-		      const FieldValue * defaultVal = 0);
-        FieldValue::Type hasEventIn(const std::string & id) const;
-        FieldValue::Type hasEventOut(const std::string & id) const;
-        FieldValue::Type hasField(const std::string & id) const;
-        FieldValue::Type hasInterface(const std::string & id) const;
-        void setEventIn(const std::string &, const FieldValue &);
-        void setEventOut(const std::string &, const FieldValue &);
-        FieldList & eventIns();
-        FieldList & eventOuts() { return d_eventOuts; }
-        FieldList & fields() { return d_fields; }
-        VrmlScene * browser() { return d_scene; }
         
-        virtual bool accept(NodeVisitor & visitor);
-        virtual void resetVisitedFlag();
-        virtual const FieldValue * getField(const std::string & fieldId) const;
-        virtual void setField(const std::string & fieldId,
-                              const FieldValue & fieldValue);
-        virtual void eventIn(double timeStamp, const std::string & eventName,
-		             const FieldValue & fieldValue);
-        virtual const MFNode getChildren() const;
-        virtual void addToScene(VrmlScene * scene,
-                                const std::string & relativeUrl);
+        typedef std::map<std::string, FieldValuePtr> FieldValueMap;
+        typedef std::map<std::string, EventOutValue> EventOutValueMap;
+    
+    private:
+        class ScriptNodeType : public NodeType {
+            NodeInterfaceSet interfaces;
 
-        virtual ScriptNode * toScript() const;
+        public:
+            ScriptNodeType(ScriptNodeClass & nodeClass);
+            virtual ~ScriptNodeType() throw ();
 
-        virtual ostream& printFields(ostream& os, int indent);
+            void addInterface(const NodeInterface & interface)
+                    throw (std::invalid_argument);
 
+            virtual const NodeInterfaceSet & getInterfaces() const throw ();
+            virtual const NodePtr createNode() const throw (std::bad_alloc);
+        };
+    
+        ScriptNodeType scriptNodeType;
+        SFBool directOutput;
+        SFBool mustEvaluate;
+        MFString url;
+        FieldValueMap fieldValueMap;
+        EventOutValueMap eventOutValueMap;
+        Script * script;
+        int eventsReceived;
+    
+    public:
+        ScriptNode(ScriptNodeClass & nodeClass);
+        virtual ~ScriptNode() throw ();
+        
+        void setUrl(const MFString & value, double timestamp);
+        const MFString & getUrl() const;
+        
+        void addEventIn(FieldValue::Type type, const std::string & id)
+                throw (std::invalid_argument, std::bad_alloc);
+        void addEventOut(FieldValue::Type type, const std::string & id)
+                throw (std::invalid_argument, std::bad_alloc);
+        void addField(const std::string & id,
+                      const FieldValuePtr & defaultValue)
+                throw (std::invalid_argument, std::bad_alloc);
+        
+        void initialize(double timestamp);
+        void update(double timestamp);
+        void shutdown(double timestamp);
+        
+        void setEventOut(const std::string & id, const FieldValue & value)
+                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        
+        const FieldValueMap & getFieldValueMap() const throw ();
+        const EventOutValueMap & getEventOutValueMap() const throw ();
+        
+        virtual const ScriptNode * toScript() const throw ();
+        virtual ScriptNode * toScript() throw ();
+    
     private:
         Script * createScript();
         
         void assignWithSelfRefCheck(const SFNode &, SFNode &) const throw ();
         void assignWithSelfRefCheck(const MFNode &, MFNode &) const throw ();
-
-        // Generic field/event test/value methods
-        FieldValue::Type has(const FieldList &, const std::string &) const;
-        FieldValue * get(const FieldList &, const std::string &) const;
-        void set(const FieldList &, const std::string &, const FieldValue &);
+        
+        virtual void setFieldImpl(const std::string & id,
+                                  const FieldValue & value)
+                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        
+        virtual const FieldValue & getFieldImpl(const std::string & id) const
+                throw (UnsupportedInterface);
+        
+        virtual void processEventImpl(const std::string & id,
+                                      const FieldValue & value,
+                                      double timestamp)
+                throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
+        
+        virtual const FieldValue & getEventOutImpl(const std::string & id) const
+                throw (UnsupportedInterface);
     };
+    
+    inline const ScriptNode::FieldValueMap &
+            ScriptNode::getFieldValueMap() const throw () {
+        return this->fieldValueMap;
+    }
+    
+    inline const ScriptNode::EventOutValueMap &
+            ScriptNode::getEventOutValueMap() const throw () {
+        return this->eventOutValueMap;
+    }
 }
 
 # endif

@@ -43,6 +43,7 @@
 # include "VrmlNamespace.h"
 # include "VrmlScene.h"
 # include "doc2.hpp"
+# include "System.h"
 # include "ScriptJDK.h"
 
 namespace OpenVRML {
@@ -66,14 +67,26 @@ namespace OpenVRML {
  * @brief Constructor.
  *
  * @param scriptNode    a reference to the ScriptNode that uses this Script
- *      object.
+ *                      object.
  */
 Script::Script(ScriptNode & scriptNode): scriptNode(scriptNode) {}
+
+/**
+ * @fn Script::Script(const Script &)
+ *
+ * @brief Non-copyable. Copy constructor declared but not defined.
+ */
 
 /**
  * @brief Destructor.
  */
 Script::~Script() {}
+
+/**
+ * @fn Script & Script::operator=(const Script &)
+ *
+ * @brief Non-copyable. Assignment operator declared but not defined.
+ */
 
 /**
  * @fn void Script::initialize(double timestamp)
@@ -99,194 +112,328 @@ Script::~Script() {}
  * @brief Shut down the Script node.
  */
 
+
+/**
+ * @class ScriptNodeClass
+ *
+ * @brief Class object for @link ScriptNode ScriptNodes@endlink.
+ */
+
+/**
+ * @brief Constructor.
+ */
+ScriptNodeClass::ScriptNodeClass(VrmlScene & scene): NodeClass(scene) {}
+
+/**
+ * @brief Destructor.
+ */
+ScriptNodeClass::~ScriptNodeClass() throw () {}
+
+/**
+ * @brief Not implemented.
+ *
+ * This method is not implemented because the Script node implementation,
+ * unlike other node implementations, cannot provide the implementation of
+ * an @c EXTERNPROTO. It is an error to call this method.
+ */
+const NodeTypePtr ScriptNodeClass::createType(const std::string &,
+                                              const NodeInterfaceSet &)
+        throw () {
+    assert(false);
+    return NodeTypePtr(0);
+}
+
+
 /**
  * @class ScriptNode
  *
  * @brief Represents a VRML Script node.
  */
 
+/**
+ * @struct ScriptNode::EventOutValue
+ *
+ * @brief Couples a FieldValue with a boolean flag indicating whether the value
+ *      has been modified during the current event cascade.
+ */
+ 
+/**
+ * @typedef ScriptNode::FieldValueMap
+ *
+ * @brief A std::map that keys field values on their field name.
+ */
+
+/**
+ * @typedef ScriptNode::EventOutValueMap
+ *
+ * @brief A std::map that keys eventOut values on their eventOut name.
+ */
+
+/**
+ * @class ScriptNode::ScriptNodeType
+ *
+ * @brief Type objects for @link ScriptNode ScriptNodes@endlink.
+ *
+ * @see ScriptNode::scriptNodeType
+ */
+
+/**
+ * @brief Constructor.
+ */
+ScriptNode::ScriptNodeType::ScriptNodeType(ScriptNodeClass & nodeClass):
+        NodeType(nodeClass, "Script") {
+    static const NodeInterface interfaces[] = {
+        { NodeInterface::exposedField, FieldValue::mfstring, "url" },
+        { NodeInterface::field, FieldValue::sfbool, "directOutput" },
+        { NodeInterface::field, FieldValue::sfbool, "mustEvaluate" }
+    };
+    this->interfaces.add(interfaces[0]);
+    this->interfaces.add(interfaces[1]);
+    this->interfaces.add(interfaces[2]);
+}
+
+/**
+ * @brief Destructor.
+ */
+ScriptNode::ScriptNodeType::~ScriptNodeType() throw () {}
+
+/**
+ * @brief Add an interface.
+ */
+void ScriptNode::ScriptNodeType::addInterface(const NodeInterface & interface)
+        throw (std::invalid_argument) {
+    this->interfaces.add(interface);
+}
+
+/**
+ * @brief Get the interfaces for the node.
+ */
+const NodeInterfaceSet & ScriptNode::ScriptNodeType::getInterfaces() const
+        throw () {
+    return this->interfaces;
+}
+
 namespace {
-    /**
-     * Script factory. Add each Script to the scene for fast access.
-     */
-    const NodePtr creator(VrmlScene * const scene) {
-        return NodePtr(new ScriptNode(scene));
+    const FieldValuePtr defaultFieldValue(const FieldValue::Type fieldType) {
+        switch (fieldType) {
+        case FieldValue::sfbool:        return FieldValuePtr(new SFBool);
+        case FieldValue::sfcolor:       return FieldValuePtr(new SFColor);
+        case FieldValue::sffloat:       return FieldValuePtr(new SFFloat);
+        case FieldValue::sfimage:       return FieldValuePtr(new SFImage);
+        case FieldValue::sfint32:       return FieldValuePtr(new SFInt32);
+        case FieldValue::sfnode:        return FieldValuePtr(new SFNode);
+        case FieldValue::sfrotation:    return FieldValuePtr(new SFRotation);
+        case FieldValue::sfstring:      return FieldValuePtr(new SFString);
+        case FieldValue::sftime:        return FieldValuePtr(new SFTime);
+        case FieldValue::sfvec2f:       return FieldValuePtr(new SFVec2f);
+        case FieldValue::sfvec3f:       return FieldValuePtr(new SFVec3f);
+        case FieldValue::mfcolor:       return FieldValuePtr(new MFColor);
+        case FieldValue::mffloat:       return FieldValuePtr(new MFFloat);
+        case FieldValue::mfint32:       return FieldValuePtr(new MFInt32);
+        case FieldValue::mfnode:        return FieldValuePtr(new MFNode);
+        case FieldValue::mfrotation:    return FieldValuePtr(new MFRotation);
+        case FieldValue::mfstring:      return FieldValuePtr(new MFString);
+        case FieldValue::mftime:        return FieldValuePtr(new MFTime);
+        case FieldValue::mfvec2f:       return FieldValuePtr(new MFVec2f);
+        case FieldValue::mfvec3f:       return FieldValuePtr(new MFVec3f);
+        default: assert(false);
+        }
     }
 }
 
 /**
- * Define the built in NodeType:: "Script" fields
+ * @brief Clone the Script node that has this NodeType.
+ *
+ * Since the NodeType for a ScriptNode is only available once a ScriptNode
+ * is instantiated, you have to have a ScriptNode instance in order to be able
+ * to use this method. The "primordial" ScriptNode instance must be created with
+ * a call to the ScriptNode constructor.
  */
-const NodeTypePtr ScriptNode::defineType(NodeTypePtr nodeType) {
-    static NodeTypePtr st(0);
-
-    if (!nodeType) {
-        if (st) {
-            return st; // Only define the type once.
+const NodePtr ScriptNode::ScriptNodeType::createNode() const
+        throw (std::bad_alloc) {
+    const NodePtr node(new ScriptNode(static_cast<ScriptNodeClass &>(this->nodeClass)));
+    ScriptNode & scriptNode(dynamic_cast<ScriptNode &>(*node));
+    
+    //
+    // Copy the interfaces.
+    //
+    scriptNode.scriptNodeType.interfaces = this->interfaces;
+    
+    //
+    // Add the default field and eventOut values.
+    //
+    for (NodeInterfaceSet::const_iterator itr(this->interfaces.begin());
+            itr != this->interfaces.end(); ++itr) {
+        if (itr->type == NodeInterface::field) {
+            const FieldValueMap::value_type
+                    value(itr->id, defaultFieldValue(itr->fieldType));
+            const bool succeeded =
+                    scriptNode.fieldValueMap.insert(value).second;
+            assert(succeeded);
+        } else if (itr->type == NodeInterface::eventOut) {
+            EventOutValue eventOutValue =
+                    { defaultFieldValue(itr->fieldType), false };
+            const EventOutValueMap::value_type value(itr->id, eventOutValue);
+            const bool succeeded =
+                    scriptNode.eventOutValueMap.insert(value).second;
+            assert(succeeded);
         }
-        st.reset(new NodeType("Script", creator));
-        nodeType = st;
-    }
-
-    nodeType->addExposedField("url", FieldValue::mfstring);
-    nodeType->addField("directOutput", FieldValue::sfbool);
-    nodeType->addField("mustEvaluate", FieldValue::sfbool);
-
-    return nodeType;
-}
-
-ScriptNode::ScriptNode(VrmlScene * const scene):
-        NodeChild(*defineType(), scene), d_directOutput(false),
-        d_mustEvaluate(false), script(0), d_eventsReceived(0) {
-    if (this->d_scene) {
-        this->d_scene->addScript(*this);
-    }
-}
-
-ScriptNode::ScriptNode(const ScriptNode & node):
-        NodeChild(node), d_directOutput(node.d_directOutput),
-        d_mustEvaluate(node.d_mustEvaluate), d_url(node.d_url), script(0),
-        d_eventIns(0), d_eventOuts(0), d_fields(0), d_eventsReceived(0) {
-  // add eventIn/eventOut/fields from source Script
-  FieldList::const_iterator i;
-
-  for (i = node.d_eventIns.begin(); i != node.d_eventIns.end(); ++i)
-    addEventIn( (*i)->name, (*i)->type );
-  for (i = node.d_eventOuts.begin(); i != node.d_eventOuts.end(); ++i)
-    addEventOut( (*i)->name, (*i)->type );
-  for (i = node.d_fields.begin(); i != node.d_fields.end(); ++i)
-    addField(  (*i)->name, (*i)->type, (*i)->value );
-}
-
-
-ScriptNode::~ScriptNode()
-{
-  shutdown( theSystem->time() );
-
-  // removeScript ought to call shutdown...
-  if (d_scene) d_scene->removeScript(*this);
-
-  delete script;
-
-  // delete eventIn/eventOut/field ScriptField list contents
-  FieldList::iterator i;
-  for (i = d_eventIns.begin(); i != d_eventIns.end(); ++i)
-    {
-      ScriptField *r = *i;
-      delete r->value;
-      delete r;
-    }
-  for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
-    {
-      ScriptField *r = *i;
-      delete r->value;
-      delete r;
-    }
-  for (i = d_fields.begin(); i != d_fields.end(); ++i)
-    {
-      ScriptField *r = *i;
-      delete r->value;
-      delete r;
-    }
-}
-
-bool ScriptNode::accept(NodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
     }
     
-    return false;
+    return node;
 }
 
-void ScriptNode::resetVisitedFlag() {
-    if (this->visited) {
-        this->visited = false;
-        for (FieldList::const_iterator itr = this->d_fields.begin();
-                itr != this->d_fields.end(); ++itr) {
-            assert((*itr)->value);
-            if ((*itr)->type == FieldValue::sfnode) {
-                assert(dynamic_cast<OpenVRML::SFNode *>((*itr)->value));
-                static_cast<OpenVRML::SFNode *>((*itr)->value)
-                        ->get()->resetVisitedFlag();
-            } else if ((*itr)->type == FieldValue::mfnode) {
-                assert(dynamic_cast<OpenVRML::MFNode *>((*itr)->value));
-                OpenVRML::MFNode & mfnode =
-                        static_cast<OpenVRML::MFNode &>(*(*itr)->value);
-                for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                    mfnode.getElement(i)->resetVisitedFlag();
-                }
-            }
-        }
-    }
+/**
+ * @var ScriptNode::ScriptNodeType ScriptNode::scriptNodeType
+ *
+ * @brief Type object for the ScriptNode instance.
+ *
+ * Script node @link NodeType NodeTypes@endlink are significantly different
+ * from other @link NodeType NodeTypes@endlink. While most @link NodeType NodeTypes@endlink
+ * are shared by the Node instances they spawn, the ScriptNodeType is unique
+ * to a ScriptNode instance, and it shares the ScriptNodeInstance's lifetime.
+ * This reflects the fact that Script nodes in VRML get their functionality
+ * by the addition of fields, eventIns, and eventOuts on a per-instance basis.
+ *
+ * For ScriptNode instances, Node::nodeType is an alias for the scriptNodeType
+ * object.
+ */
+
+/**
+ * @var SFBool ScriptNode::directOutput
+ *
+ * @brief directOutput field.
+ */
+
+/**
+ * @var SFBool ScriptNode::mustEvaluate
+ *
+ * @brief mustEvaluate field.
+ */
+
+/**
+ * @var MFString ScriptNode::url
+ *
+ * @brief url exposedField.
+ */
+
+/**
+ * @var ScriptNode::FieldValueMap ScriptNode::fieldValueMap
+ *
+ * @brief Maps user-defined field names to their values.
+ */
+
+/**
+ * @var ScriptNode::EventOutValueMap ScriptNode::eventOutValueMap
+ *
+ * @brief Maps user-defined eventOut names to their values.
+ */
+
+/**
+ * @var Script * ScriptNode::script
+ *
+ * @brief A pointer to a Script object.
+ */
+
+/**
+ * @var int ScriptNode::eventsReceived
+ *
+ * @brief A count of the number of events received since ScriptNode::update
+ *      was called.
+ */
+
+/**
+ * @brief Constructor.
+ */
+ScriptNode::ScriptNode(ScriptNodeClass & nodeClass):
+        Node(this->scriptNodeType), ChildNode(this->scriptNodeType),
+        scriptNodeType(nodeClass), directOutput(false), mustEvaluate(false),
+        script(0), eventsReceived(0) {
+    this->nodeType.nodeClass.getScene().addScript(*this);
 }
 
-namespace {
-    struct AccumulateNodes_ :
-            public std::unary_function<ScriptNode::FieldList::value_type, void> {
-        explicit AccumulateNodes_(MFNode & children): children(children) {}
-        
-        result_type operator()(argument_type scriptField) {
-            if (scriptField->type == FieldValue::sfnode) {
-                assert(dynamic_cast<SFNode *>(scriptField->value));
-                this->children.setLength(this->children.getLength() + 1);
-                this->children.setElement(this->children.getLength() - 1,
-                        static_cast<SFNode *>(scriptField->value)->get());
-            } else if (scriptField->type == FieldValue::mfnode) {
-                assert(dynamic_cast<MFNode *>(scriptField->value));
-                MFNode & nodes = *static_cast<MFNode *>(scriptField->value);
-                this->children.setLength(children.getLength()
-                                            + nodes.getLength());
-                for (size_t i = 0; i < nodes.getLength(); ++i) {
-                    this->children.setElement(this->children.getLength() + i,
-                                              nodes.getElement(i));
-                }
-            }
-        }
+/**
+ * @brief Destructor.
+ */
+ScriptNode::~ScriptNode() throw () {
+    this->shutdown(theSystem->time());
+
+    // removeScript ought to call shutdown...
+    this->nodeType.nodeClass.getScene().removeScript(*this);
+
+    delete script;
+}
+
+void ScriptNode::setUrl(const MFString & value, const double timestamp) {
+    delete this->script;
+    this->script = 0;
+    this->url = value;
+    this->initialize(timestamp);
     
-    private:
-        MFNode & children;
-    };
+    //
+    // url is an exposedField.
+    //
+    this->emitEvent("url_changed", this->url, timestamp);
 }
 
-const MFNode ScriptNode::getChildren() const {
-    MFNode children;
-    std::for_each(this->d_fields.begin(), this->d_fields.end(),
-                  AccumulateNodes_(children));
-    return children;
+const MFString & ScriptNode::getUrl() const {
+    return this->url;
 }
 
-ScriptNode * ScriptNode::toScript() const {
-    return const_cast<ScriptNode *>(this);
+void ScriptNode::addEventIn(const FieldValue::Type type, const std::string & id)
+        throw (std::invalid_argument, std::bad_alloc) {
+    const NodeInterface interface = { NodeInterface::eventIn, type, id };
+    this->scriptNodeType.addInterface(interface);
 }
 
-void ScriptNode::addToScene(VrmlScene * const scene,
-                            const std::string& relativeUrl) {
-    this->d_relativeUrl.set(relativeUrl);
-    if (this->d_scene == scene) {
-        return;
-    }
-    if ((this->d_scene = scene)) {
-        this->initialize(theSystem->time());
-        this->d_scene->addScript(*this);
-    }
+void ScriptNode::addEventOut(const FieldValue::Type type,
+                             const std::string & id)
+        throw (std::invalid_argument, std::bad_alloc) {
+    const NodeInterface interface = { NodeInterface::eventOut, type, id };
+    this->scriptNodeType.addInterface(interface);
+    
+    //
+    // eventOut value.
+    //
+    const EventOutValue eventOutValue = { defaultFieldValue(type), 0.0 };
+    EventOutValueMap::value_type value(id, eventOutValue);
+    const bool succeeded = this->eventOutValueMap.insert(value).second;
+    assert(succeeded);
 }
 
-
-ostream & ScriptNode::printFields(ostream & os, int indent) {
-  if (d_url.getLength() > 0) PRINT_FIELD(url);
-  if (d_directOutput.get()) PRINT_FIELD(directOutput);
-  if (d_mustEvaluate.get()) PRINT_FIELD(mustEvaluate);
-
-  return os;
+void ScriptNode::addField(const std::string & id,
+                          const FieldValuePtr & defaultVal)
+        throw (std::invalid_argument, std::bad_alloc) {
+    const NodeInterface interface =
+            { NodeInterface::field, defaultVal->type(), id };
+    this->scriptNodeType.addInterface(interface);
+    
+    //
+    // field value.
+    //
+    const FieldValueMap::value_type value(id, defaultVal);
+    const bool succeeded = this->fieldValueMap.insert(value).second;
+    assert(succeeded);
 }
 
+/**
+ * @brief Return a pointer to this ScriptNode.
+ *
+ * @return a pointer to this ScriptNode.
+ */
+const ScriptNode * ScriptNode::toScript() const throw () { return this; }
+
+/**
+ * @brief Return a pointer to this ScriptNode.
+ *
+ * @return a pointer to this ScriptNode.
+ */
+ScriptNode * ScriptNode::toScript() throw () { return this; }
 
 void ScriptNode::initialize(const double timestamp) {
     assert(!this->script);
 
-    this->d_eventsReceived = 0;
+    this->eventsReceived = 0;
     this->script = this->createScript();
     if (this->script) {
         this->script->initialize(timestamp);
@@ -295,10 +442,11 @@ void ScriptNode::initialize(const double timestamp) {
     //
     // For each modified eventOut, send an event.
     //
-    for (FieldList::const_iterator i = this->d_eventOuts.begin();
-            i != this->d_eventOuts.end(); ++i) {
-        if ((*i)->modified) {
-            this->eventOut(timestamp, (*i)->name, *((*i)->value));
+    for (EventOutValueMap::iterator itr(this->eventOutValueMap.begin());
+            itr != this->eventOutValueMap.end(); ++itr) {
+        if (itr->second.modified) {
+            this->emitEvent(itr->first, *itr->second.value, timestamp);
+            itr->second.modified = false;
         }
     }
 }
@@ -309,19 +457,21 @@ void ScriptNode::shutdown(const double timestamp) {
     }
 }
 
-void ScriptNode::update(const SFTime & timeNow) {
-    if (this->d_eventsReceived > 0) {
-        this->d_eventsReceived = 0;
+void ScriptNode::update(const double currentTime) {
+    if (this->eventsReceived > 0) {
+        this->eventsReceived = 0;
         if (this->script) {
-            this->script->eventsProcessed(timeNow.get());
+            this->script->eventsProcessed(currentTime);
         }
         
-        // For each modified eventOut, send an event
-        for (FieldList::const_iterator i = d_eventOuts.begin();
-                i != d_eventOuts.end(); ++i) {
-            if ((*i)->modified) {
-                this->eventOut(timeNow.get(), (*i)->name, *((*i)->value));
-                (*i)->modified = false;
+        //
+        // For each modified eventOut, send an event.
+        //
+        for (EventOutValueMap::iterator itr = eventOutValueMap.begin();
+                itr != eventOutValueMap.end(); ++itr) {
+            if (itr->second.modified) {
+                this->emitEvent(itr->first, *itr->second.value, currentTime);
+                itr->second.modified = false;
             }
         }
     }
@@ -346,7 +496,7 @@ void ScriptNode::assignWithSelfRefCheck(const SFNode & inval,
     // *decremented* it to accommodate creating a cycle between
     // refcounted objects.
     //
-    if (oldNode && (static_cast <ScriptNode *>(oldNode.countPtr->first) == this)) {
+    if (oldNode && (dynamic_cast<ScriptNode *>(oldNode.countPtr->first) == this)) {
         ++oldNode.countPtr->second;
     }
 
@@ -362,7 +512,7 @@ void ScriptNode::assignWithSelfRefCheck(const SFNode & inval,
     // refcount from ever dropping to zero.
     //
     const NodePtr & newNode = static_cast<SFNode &>(retval).get();
-    if (static_cast <ScriptNode *>(newNode.countPtr->first) == this) {
+    if (dynamic_cast<ScriptNode *>(newNode.countPtr->first) == this) {
         --(newNode.countPtr->second);
     }
 }
@@ -372,7 +522,7 @@ void ScriptNode::assignWithSelfRefCheck(const MFNode & inval,
     size_t i;
     for (i = 0; i < retval.getLength(); ++i) {
         const NodePtr & oldNode = retval.getElement(i);
-        if (oldNode && (static_cast <ScriptNode *>(oldNode.countPtr->first) == this)) {
+        if (oldNode && (dynamic_cast<ScriptNode *>(oldNode.countPtr->first) == this)) {
             ++oldNode.countPtr->second;
         }
     }
@@ -381,301 +531,137 @@ void ScriptNode::assignWithSelfRefCheck(const MFNode & inval,
 
     for (i = 0; i < retval.getLength(); ++i) {
         const NodePtr & newNode = retval.getElement(i);
-        if (newNode && (static_cast <ScriptNode *>(newNode.countPtr->first) == this)) {
+        if (newNode && (dynamic_cast<ScriptNode *>(newNode.countPtr->first) == this)) {
             --(newNode.countPtr->second);
         }
     }
 }
 
-void ScriptNode::eventIn(double timeStamp,
-                         const std::string & eventName,
-                         const FieldValue & fieldValue) {
-    if (!this->script) {
-        this->initialize(timeStamp);
-    }
-    if (!this->script) {
-        return;
-    }
-    
-    static const char * eventInPrefix = "set_";
-    std::string basicEventName;
-    if (std::equal(eventInPrefix, eventInPrefix + 4, eventName.begin())) {
-        basicEventName = eventName.substr(4);
+/**
+ * @brief Set the value of one of the node's fields.
+ */
+void ScriptNode::setFieldImpl(const std::string & id, const FieldValue & value)
+        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    FieldValueMap::iterator itr;
+    if (id == "url") {
+        //
+        // Don't call setUrl() here, as that will emit a "url_changed" event.
+        //
+        this->url = dynamic_cast<const MFString &>(value);
+    } else if (id == "directOutput") {
+        this->directOutput = dynamic_cast<const SFBool &>(value);
+    } else if (id == "mustEvaluate") {
+        this->mustEvaluate = dynamic_cast<const SFBool &>(value);
+    } else if (!((itr = this->fieldValueMap.find(id))
+            == this->fieldValueMap.end())) {
+        if (itr->second->type() == FieldValue::sfnode) {
+            this->assignWithSelfRefCheck(dynamic_cast<const SFNode &>(value),
+                                         static_cast<SFNode &>(*itr->second));
+        } else if (itr->second->type() == FieldValue::mfnode) {
+            this->assignWithSelfRefCheck(dynamic_cast<const MFNode &>(value),
+                                         static_cast<MFNode &>(*itr->second));
+        } else {
+            itr->second->assign(value); // Throws std::bad_cast.
+        }
     } else {
-        basicEventName = eventName;
+        throw UnsupportedInterface("Script node has no field \"" + id + "\".");
     }
-    bool valid = (this->hasEventIn(eventName)
-                || this->hasEventIn(basicEventName));
-    if (valid) {
-        this->setEventIn(eventName, fieldValue);
+}
 
-        SFTime ts( timeStamp );
-        const FieldValue *args[] = { &fieldValue, &ts };
+/**
+ * @brief Get the value of a field.
+ */
+const FieldValue & ScriptNode::getFieldImpl(const std::string & id) const
+        throw (UnsupportedInterface) {
+    FieldValueMap::const_iterator itr;
+    if (id == "url") {
+        return this->url;
+    } else if (id == "directOutput") {
+        return this->directOutput;
+    } else if (id == "mustEvaluate") {
+        return this->mustEvaluate;
+    } else if ((itr = this->fieldValueMap.find(id))
+            != this->fieldValueMap.end()) {
+        return *itr->second;
+    }
+    throw UnsupportedInterface("Script node has no field \"" + id + "\".");
+}
 
-        FieldList::const_iterator i;
-        for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i) {
-            (*i)->modified = false;
-        }
-
-        this->script->processEvent(eventName, fieldValue, timeStamp);
+void ScriptNode::processEventImpl(const std::string & id,
+                                  const FieldValue & value,
+                                  const double timestamp)
+        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    if (!this->nodeType.hasEventIn(id)) {
+        throw UnsupportedInterface("Script node has no eventIn \"" + id
+                                   + "\".");
+    }
+    
+    if (!this->script) { return; }
+    
+    if (id == "url" || id == "set_url") {
+        this->setUrl(dynamic_cast<const MFString &>(value), timestamp);
+    } else {
+        //
+        // Hand the event off to script code.
+        //
+        this->script->processEvent(id, value, timestamp);
         
-        // For each modified eventOut, send an event
-        for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i) {
-            if ((*i)->modified) {
-                this->eventOut(timeStamp, (*i)->name, *((*i)->value));
+        //
+        // For each modified eventOut, emit an event.
+        //
+        for (EventOutValueMap::iterator itr(this->eventOutValueMap.begin());
+                itr != this->eventOutValueMap.end(); ++itr) {
+            if (itr->second.modified) {
+                this->emitEvent(itr->first, *itr->second.value, timestamp);
+                itr->second.modified = false;
             }
         }
-
-        ++d_eventsReceived;	// call eventsProcessed later
-    }
-
-    // Let the generic code handle the rest.
-    else {
-        this->Node::eventIn(timeStamp, eventName, fieldValue);
-    }
-
-    // Scripts shouldn't generate redraws.
-    clearModified();
-}
-
-
-
-// add events/fields
-
-namespace {
-    void add(ScriptNode::FieldList & recs, const std::string & ename,
-             FieldValue::Type type) {
-        ScriptNode::ScriptField * const scriptField =
-                new ScriptNode::ScriptField;
-        scriptField->name = ename;
-        scriptField->type = type;
-        scriptField->modified = false;
-        switch (type) {
-        case FieldValue::sfbool:
-            scriptField->value = new SFBool();
-            break;
-        case FieldValue::sfcolor:
-            scriptField->value = new SFColor();
-            break;
-        case FieldValue::sffloat:
-            scriptField->value = new SFFloat();
-            break;
-        case FieldValue::sfimage:
-            scriptField->value = new SFImage();
-            break;
-        case FieldValue::sfint32:
-            scriptField->value = new SFInt32();
-            break;
-        case FieldValue::sfnode:
-            scriptField->value = new SFNode();
-            break;
-        case FieldValue::sfrotation:
-            scriptField->value = new SFRotation();
-            break;
-        case FieldValue::sfstring:
-            scriptField->value = new SFString();
-            break;
-        case FieldValue::sftime:
-            scriptField->value = new SFTime();
-            break;
-        case FieldValue::sfvec2f:
-            scriptField->value = new SFVec2f();
-            break;
-        case FieldValue::sfvec3f:
-            scriptField->value = new SFVec3f();
-            break;
-        case FieldValue::mfcolor:
-            scriptField->value = new MFColor();
-            break;
-        case FieldValue::mffloat:
-            scriptField->value = new MFFloat();
-            break;
-        case FieldValue::mfint32:
-            scriptField->value = new MFInt32();
-            break;
-        case FieldValue::mfnode:
-            scriptField->value = new MFNode();
-            break;
-        case FieldValue::mfrotation:
-            scriptField->value = new MFRotation();
-            break;
-        case FieldValue::mfstring:
-            scriptField->value = new MFString();
-            break;
-        case FieldValue::mftime:
-            scriptField->value = new MFTime();
-            break;
-        case FieldValue::mfvec2f:
-            scriptField->value = new MFVec2f();
-            break;
-        case FieldValue::mfvec3f:
-            scriptField->value = new MFVec3f();
-            break;
-        default:
-            assert(false);
-            break;
-        }
-        
-        recs.push_front(scriptField);
-    }
-}
-
-void ScriptNode::addEventIn(const std::string & ename, FieldValue::Type t) {
-    add(this->d_eventIns, ename, t);
-}
-
-void ScriptNode::addEventOut(const std::string & ename, FieldValue::Type t) {
-    add(this->d_eventOuts, ename, t);
-}
-
-void ScriptNode::addField(const std::string & ename,
-                          FieldValue::Type t,
-			  const FieldValue * val) {
-    add(this->d_fields, ename, t);
-    if (val) {
-        this->set(this->d_fields, ename, *val);
-    }
-}
-
-FieldValue * ScriptNode::get(const FieldList & recs,
-                             const std::string & fieldId) const {
-    for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
-        if ((*i)->name == fieldId) {
-            return (*i)->value;
-        }
-    }
-    return 0;
-}
-
-// has
-
-FieldValue::Type ScriptNode::hasEventIn(const std::string & id) const {
-    return has(d_eventIns, id);
-}
-
-FieldValue::Type ScriptNode::hasEventOut(const std::string & id) const {
-    return has(d_eventOuts, id);
-}
-
-FieldValue::Type ScriptNode::hasField(const std::string & id) const {
-    return has(d_fields, id);
-}
-
-FieldValue::Type ScriptNode::hasInterface(const std::string & id) const {
-    FieldValue::Type fieldType = FieldValue::invalidType;
-    
-    if ((fieldType = this->hasField(id)) != FieldValue::invalidType) {
-        return fieldType;
+        ++this->eventsReceived;
     }
     
-    if ((fieldType = this->hasEventIn(id)) != FieldValue::invalidType) {
-        return fieldType;
+    //
+    // Script nodes shouldn't generate redraws.
+    //
+    this->clearModified();
+}
+
+/**
+ * @brief Set the value of one of the node's eventOuts.
+ *
+ * This method is intended to be used by scripting language bindings to
+ * set the value of eventOuts in response to script code.
+ */
+void ScriptNode::setEventOut(const std::string & id, const FieldValue & value)
+        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    const EventOutValueMap::iterator itr(this->eventOutValueMap.find(id));
+    if (itr == this->eventOutValueMap.end()) {
+        throw UnsupportedInterface("Script node has no eventOut \"" + id
+                                    + "\".");
     }
     
-    if ((fieldType = this->hasEventOut(id)) != FieldValue::invalidType) {
-        return fieldType;
+    if (itr->second.value->type() == FieldValue::sfnode) {
+        this->assignWithSelfRefCheck(dynamic_cast<const SFNode &>(value),
+                                     static_cast<SFNode &>(*itr->second.value));
+    } else if (itr->second.value->type() == FieldValue::mfnode) {
+        this->assignWithSelfRefCheck(dynamic_cast<const MFNode &>(value),
+                                     static_cast<MFNode &>(*itr->second.value));
+    } else {
+        itr->second.value->assign(value); // Throws std::bad_cast.
     }
-    
-    return fieldType;
+    itr->second.modified = true;
 }
 
-FieldValue::Type ScriptNode::has(const FieldList & recs,
-                                 const std::string & id) const {
-    for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
-        if ((*i)->name == id) {
-            return (*i)->type;
-        }
+const FieldValue & ScriptNode::getEventOutImpl(const std::string & id) const
+        throw (UnsupportedInterface) {
+    FieldValueMap::const_iterator itr;
+    if (id == "url" || id == "url_changed") {
+        return this->url;
+    } else if ((itr = this->fieldValueMap.find(id)) != this->fieldValueMap.end()
+            || (itr = this->fieldValueMap.find(id + "_changed"))
+                != this->fieldValueMap.end()) {
+        return *itr->second;
     }
-    return FieldValue::invalidType;
-}
-
-// Get the value of a field or eventOut.
-
-const FieldValue * ScriptNode::getField(const std::string & fieldId) const {
-    // exposedFields
-    if (fieldId == "url") {
-        return &d_url;
-    }
-
-    // look up 
-    else if (this->hasField(fieldId)) {
-        return get(d_fields, fieldId);
-    }
-
-    // look up event outs
-    else if (this->hasEventOut(fieldId)) {
-        return get(d_eventOuts, fieldId);
-    }
-
-    return this->NodeChild::getField(fieldId);
-}
-
-
-// Set the value of one of the node fields/events.
-// setField is public so the parser can access it.
-
-void ScriptNode::setField(const std::string & fieldId,
-                          const FieldValue & fieldValue) {
-  FieldValue::Type ft;
-
-  if TRY_FIELD(url, MFString)	// need to re-initialize() if url changes...
-  else if TRY_FIELD(directOutput, SFBool)
-  else if TRY_FIELD(mustEvaluate, SFBool)
-  else if ( (ft = hasField(fieldId)) != 0 )
-    {
-      if (ft == FieldValue::type(fieldValue.typeName()))
-	set(d_fields, fieldId, fieldValue);
-      else
-	theSystem->error("Invalid type (%s) for %s field of Script node.\n",
-                         fieldValue.typeName(), fieldId.c_str());
-    }
-  else
-    this->NodeChild::setField(fieldId, fieldValue);
-}
-
-ScriptNode::FieldList & ScriptNode::eventIns() {
-    return this->d_eventIns;
-}
-
-void ScriptNode::setEventIn(const std::string & fname,
-                            const FieldValue & value) {
-    this->set(d_eventIns, fname, value);
-}
-
-void ScriptNode::setEventOut(const std::string & fname,
-                             const FieldValue & value) {
-    this->set(d_eventOuts, fname, value);
-}
-
-void ScriptNode::set(const FieldList & recs,
-                     const std::string & fieldId,
-                     const FieldValue & value) {
-    for (FieldList::const_iterator itr = recs.begin(); itr != recs.end();
-            ++itr) {
-        if ((*itr)->name == fieldId) {
-            assert((*itr)->value);
-            //
-            // Script nodes can be self referential! Check this condition,
-            // and "undo" the refcounting: decrement the refcount on any
-            // self-references we acquire ownership of, and increment the
-            // refcount on any self-references for which we relinquish
-            // ownership.
-            //
-            const FieldValue::Type fieldType((*itr)->value->type());
-            if (fieldType == FieldValue::sfnode) {
-                this->assignWithSelfRefCheck(dynamic_cast<const SFNode &>(value),
-                                             static_cast<SFNode &>(*(*itr)->value));
-            } else if (fieldType == FieldValue::mfnode) {
-                this->assignWithSelfRefCheck(dynamic_cast<const MFNode &>(value),
-                                             static_cast<MFNode &>(*(*itr)->value));
-            } else {
-	        (*itr)->value->assign(value);
-            }
-            
-	    (*itr)->modified = true;
-	    return;
-        }
-    }
+    throw UnsupportedInterface("Script has no eventOut \"" + id + "\".");
 }
 
 } // namespace OpenVRML
@@ -697,7 +683,7 @@ namespace {
         public:
             Script(OpenVRML::ScriptNode & scriptNode,
                    const std::string & source)
-                throw (std::bad_alloc);
+                    throw (std::bad_alloc);
             virtual ~Script();
 
             virtual void initialize(double timeStamp);
@@ -727,8 +713,8 @@ namespace OpenVRML {
 
 Script * ScriptNode::createScript() {
     // Try each url until we find one we like
-    for (size_t i = 0; i < this->d_url.getLength(); ++i) {
-        if (this->d_url.getElement(i).length() == 0) continue;
+    for (size_t i = 0; i < this->url.getLength(); ++i) {
+        if (this->url.getElement(i).length() == 0) continue;
 
         // Get the protocol & mimetype...
 # ifdef OPENVRML_HAVE_SPIDERMONKEY
@@ -736,11 +722,11 @@ Script * ScriptNode::createScript() {
         const char javascriptScheme[] = "javascript:";
         const char vrmlscriptScheme[] = "vrmlscript:";
         if (std::equal(javascriptScheme, javascriptScheme + 11,
-                       this->d_url.getElement(i).begin())
+                       this->url.getElement(i).begin())
                 || std::equal(vrmlscriptScheme, vrmlscriptScheme + 11,
-                              this->d_url.getElement(i).begin())) {
-            return new JavaScript_::Script(*this,
-                                        this->d_url.getElement(i).substr(11));
+                              this->url.getElement(i).begin())) {
+            return new JavaScript_::
+                            Script(*this, this->url.getElement(i).substr(11));
 	}
 # endif
 
@@ -748,19 +734,17 @@ Script * ScriptNode::createScript() {
 	const char javaExtension1[] = ".class";
 	const char javaExtension2[] = ".CLASS";
 
-        int slen = this->d_url.getElement(i).length();
+        int slen = this->url.getElement(i).length();
 
         if (slen > 6  &&
 	    (std::equal(javaExtension1, javaExtension1 + 6, 
-			this->d_url.getElement(i).end() - 6) ||
+			this->url.getElement(i).end() - 6) ||
 	     std::equal(javaExtension2, javaExtension2 + 6, 
-			this->d_url.getElement(i).end() - 6)))
+			this->url.getElement(i).end() - 6)))
 	{
 	  Doc2 *relative = 0;
-	  if ( browser() ) {
-	    relative = browser()->urlDoc();
-	  }
-	  Doc2 doc(this->d_url.getElement(i), relative);
+          relative = this->nodeType.nodeClass.getScene().urlDoc();
+	  Doc2 doc(this->url.getElement(i), relative);
 	  if ( doc.localName() ) {
 	    return new ScriptJDK(*this, doc.urlBase(), doc.localPath());
 	  }
@@ -1730,7 +1714,8 @@ namespace {
 
             ScriptNode & scriptNode = script->getScriptNode();
 
-            const FieldValue::Type fieldType = scriptNode.hasEventOut(eventId);
+            const FieldValue::Type fieldType =
+                    scriptNode.nodeType.hasEventOut(eventId);
             //
             // If this assertion is false, then we accidentally gave this
             // setter to an object that doesn't correspond to an eventOut!
@@ -1771,7 +1756,8 @@ namespace {
 
             ScriptNode & scriptNode = script->getScriptNode();
 
-            const FieldValue::Type fieldType = scriptNode.hasField(fieldId);
+            const FieldValue::Type fieldType =
+                    scriptNode.nodeType.hasField(fieldId);
             //
             // If this assertion is false, then we accidentally gave this
             // setter to an object that doesn't correspond to a field!
@@ -1861,49 +1847,58 @@ namespace {
             JSObject * const globalObj = JS_GetGlobalObject(this->cx);
             assert(globalObj);
             
-            ScriptNode::FieldList::iterator i;
-            for (i = this->scriptNode.fields().begin();
-                    i != this->scriptNode.fields().end(); ++i) {
-                jsval val = vrmlFieldToJSVal(*(*i)->value, false);
-                if (JSVAL_IS_OBJECT(val)) {
-                    FieldData * const fieldData =
-                            static_cast<FieldData *>
-                                (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
-                    fieldData->scriptFieldId = &(*i)->name;
-                }
-                if (!JS_DefineProperty(this->cx, globalObj,
-                                       (*i)->name.c_str(), val,
-                                       0, field_setProperty, // getter, setter
-                                       JSPROP_PERMANENT)) {
+            {
+                ScriptNode::FieldValueMap::const_iterator
+                        itr(this->scriptNode.getFieldValueMap().begin());
+                for (; itr != this->scriptNode.getFieldValueMap().end();
+                        ++itr) {
+                    assert(itr->second);
+                    jsval val = vrmlFieldToJSVal(*itr->second, false);
+                    if (JSVAL_IS_OBJECT(val)) {
+                        FieldData * const fieldData =
+                                static_cast<FieldData *>
+                                    (JS_GetPrivate(this->cx,
+                                                   JSVAL_TO_OBJECT(val)));
+                        fieldData->scriptFieldId = &itr->first;
+                    }
+                    if (!JS_DefineProperty(this->cx, globalObj,
+                                           itr->first.c_str(), val,
+                                           0, field_setProperty, // getter, setter
+                                           JSPROP_PERMANENT)) {
 # ifndef NDEBUG
-                    cerr << "Attempt to define \"" << (*i)->name.c_str()
-                         << "\" on global object failed." << endl;
+                        cerr << "Attempt to define \"" << itr->first.c_str()
+                             << "\" on global object failed." << endl;
 # endif
-                    return false;
+                        return false;
+                    }
                 }
             }
 
-            for (i = this->scriptNode.eventOuts().begin();
-                    i != this->scriptNode.eventOuts().end(); ++i) {
-                assert((*i)->value);
-                jsval val = vrmlFieldToJSVal(*(*i)->value, false);
-                if (JSVAL_IS_OBJECT(val)) {
-                    FieldData * const fieldData =
-                            static_cast<FieldData *>
-                                (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
-                    fieldData->scriptFieldId = &(*i)->name;
-                    fieldData->isEventOut = true;
-                }
-                
-                if (!JS_DefineProperty(this->cx, globalObj,
-                                       (*i)->name.c_str(), val,
-			               0, eventOut_setProperty, // getter, setter
-			               JSPROP_PERMANENT)) {
+            {
+                ScriptNode::EventOutValueMap::const_iterator itr;
+                for (itr = this->scriptNode.getEventOutValueMap().begin();
+                        itr != this->scriptNode.getEventOutValueMap().end();
+                        ++itr) {
+                    assert(itr->second.value);
+                    jsval val = vrmlFieldToJSVal(*itr->second.value, false);
+                    if (JSVAL_IS_OBJECT(val)) {
+                        FieldData * const fieldData =
+                                static_cast<FieldData *>
+                                    (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
+                        fieldData->scriptFieldId = &itr->first;
+                        fieldData->isEventOut = true;
+                    }
+
+                    if (!JS_DefineProperty(this->cx, globalObj,
+                                           itr->first.c_str(), val,
+			                   0, eventOut_setProperty, // getter, setter
+			                   JSPROP_PERMANENT)) {
 # ifndef NDEBUG
-                    cerr << "Attempt to define \"" << (*i)->name.c_str()
-                         << "\" on global object failed." << endl;
+                        cerr << "Attempt to define \"" << itr->first.c_str()
+                             << "\" on global object failed." << endl;
 # endif
-                    return false;
+                        return false;
+                    }
                 }
             }
         }
@@ -2144,12 +2139,10 @@ namespace {
                 Script * const script =
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-                if (!script->getScriptNode().scene()) {
-                    return JS_FALSE;
-                }
 
                 const char * const name =
-                        script->getScriptNode().scene()->getName();
+                        script->getScriptNode().nodeType.nodeClass
+                            .getScene().getName();
                 *rval = STRING_TO_JSVAL(JS_InternString(cx, name));
                 return JS_TRUE;
             }
@@ -2159,12 +2152,10 @@ namespace {
                 Script * const script =
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-                if (!script->getScriptNode().scene()) {
-                    return JS_FALSE;
-                }
 
                 const char * const version =
-                        script->getScriptNode().scene()->getVersion();
+                        script->getScriptNode().nodeType.nodeClass
+                            .getScene().getVersion();
                 *rval = STRING_TO_JSVAL(JS_InternString(cx, version));
                 return JS_TRUE;
             }
@@ -2181,12 +2172,10 @@ namespace {
                 Script * const script =
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-                if (!script->getScriptNode().scene()) {
-                    return JS_FALSE;
-                }
 
                 *rval = DOUBLE_TO_JSVAL(JS_NewDouble(cx,
-                            script->getScriptNode().scene()->getFrameRate()));
+                            script->getScriptNode().nodeType.nodeClass
+                                .getScene().getFrameRate()));
                 return JS_TRUE;
             }
 
@@ -2195,13 +2184,12 @@ namespace {
                 Script * const script =
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-                if (!script->getScriptNode().scene()) {
-                    return JS_FALSE;
-                }
 
                 const char * url = 0;
-                if (script->getScriptNode().scene()->urlDoc()) {
-                    url = script->getScriptNode().scene()->urlDoc()->url();
+                if (script->getScriptNode().nodeType.nodeClass
+                        .getScene().urlDoc()) {
+                    url = script->getScriptNode().nodeType.nodeClass
+                            .getScene().urlDoc()->url();
                 }
                 if (!url) {
                     url = "";
@@ -2221,9 +2209,6 @@ namespace {
                 Script * const script =
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-                if (!script->getScriptNode().scene()) {
-                    return JS_FALSE;
-                }
 
                 //
                 // Make sure our first argument (the URL) is an MFString.
@@ -2253,8 +2238,8 @@ namespace {
                                                     JSVAL_TO_OBJECT(argv[1])));
                 assert(parameters.get());
                 
-                script->getScriptNode().scene()->queueLoadUrl(url.get(),
-                                                              parameters.get());
+                script->getScriptNode().nodeType.nodeClass
+                        .getScene().queueLoadUrl(url.get(), parameters.get());
                 return JS_TRUE;
             }
 
@@ -2269,9 +2254,6 @@ namespace {
                 Script * const script =
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-                if (!script->getScriptNode().scene()) {
-                    return JS_FALSE;
-                }
                 
                 //
                 // Make sure our argument is an MFNode.
@@ -2287,7 +2269,8 @@ namespace {
                 assert(nodes.get());
                 
                 VrmlNamespace * ns = new VrmlNamespace(); // should be stored with nodes...
-                script->getScriptNode().scene()->queueReplaceNodes(nodes.get(), ns);
+                script->getScriptNode().nodeType.nodeClass
+                        .getScene().queueReplaceNodes(nodes.get(), ns);
                 
                 *rval = JSVAL_VOID;
                 return JS_TRUE;
@@ -2299,6 +2282,10 @@ namespace {
                                         jsval * const rval) throw () {
                 assert(argc >= 1);
 
+                Script * const script =
+                        static_cast<Script *>(JS_GetContextPrivate(cx));
+                assert(script);
+                
                 //
                 // Make sure our argument is a string.
                 //
@@ -2311,7 +2298,8 @@ namespace {
 
                 char *vrmlString = JS_GetStringBytes(str);
                 VrmlNamespace ns;
-                OpenVRML::MFNode kids(VrmlScene::readString(vrmlString, &ns));
+                OpenVRML::MFNode kids(script->getScriptNode().nodeType.nodeClass
+                                      .getScene().readString(vrmlString, &ns));
 
                 if (kids.getLength() == 0) {
                     *rval = JSVAL_NULL;
@@ -2336,11 +2324,9 @@ namespace {
                 Script * const script =
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-                if (!script->getScriptNode().scene()) {
-                    return JS_FALSE;
-                }
                 
-                Doc2 * relative = script->getScriptNode().scene()->urlDoc();
+                Doc2 * relative = script->getScriptNode().nodeType.nodeClass
+                        .getScene().urlDoc();
                 
                 //
                 // Make sure our first argument (the URL) is an MFString.
@@ -2386,14 +2372,15 @@ namespace {
                 
 	        VrmlNamespace ns;	// this is a problem...
 	        std::auto_ptr<OpenVRML::MFNode>
-                        kids(VrmlScene::readWrl(*url, relative, &ns));
+                        kids(script->getScriptNode().nodeType.nodeClass
+                                .getScene().readWrl(*url, relative, &ns));
                 
                 if (!kids.get()) {
                     return JS_FALSE;
                 }
                 
-	        node->eventIn(s_timeStamp, // fix me...
-			      eventInId, *kids);
+	        node->processEvent(eventInId, *kids,
+                                   s_timeStamp); // fix me...
                 
                 *rval = JSVAL_VOID;
                 return JS_TRUE;
@@ -3118,6 +3105,10 @@ namespace {
                 throw () {
             assert(argc >= 1);
 
+            Script * const script =
+                    static_cast<Script *>(JS_GetContextPrivate(cx));
+            assert(script);
+            
             //
             // Make sure our argument is a string.
             //
@@ -3130,8 +3121,8 @@ namespace {
 
             VrmlNamespace vrmlNamespace;
             const OpenVRML::MFNode nodes =
-                    VrmlScene::readString(JS_GetStringBytes(str),
-                                          &vrmlNamespace);
+                    script->getScriptNode().nodeType.nodeClass.getScene()
+                        .readString(JS_GetStringBytes(str), &vrmlNamespace);
             //
             // Fail if the string does not produce exactly one node.
             //
@@ -3182,13 +3173,11 @@ namespace {
             JSString * str = 0;
             if (JSVAL_IS_STRING(id) && ((str = JSVAL_TO_STRING(id)))) {
                 char * eventOut = JS_GetStringBytes(str);
-                const FieldValue * const fieldVal =
+                const FieldValue & fieldVal =
                         thisNode.get()->getEventOut(eventOut);
 
                 // convert event out value to jsval...
-                if (fieldVal) {
-	            *vp = script->vrmlFieldToJSVal(*fieldVal, false);
-	        }
+                *vp = script->vrmlFieldToJSVal(fieldVal, false);
 
                 // If JS_FALSE is returned, apparently the parent object is
                 // not searched for the property, so stuff like toString()
@@ -3222,7 +3211,7 @@ namespace {
             
 	    // convert vp to field, send eventIn to node
             FieldValue::Type expectType;
-            if ((expectType = nodePtr->type.hasEventIn(eventInId))) {
+            if ((expectType = nodePtr->nodeType.hasEventIn(eventInId))) {
                 FieldValue * const fieldValue =
                         createFieldValueFromJsval(cx, *vp, expectType);
                 if (!fieldValue) {
@@ -3235,12 +3224,10 @@ namespace {
 	        Script * const script = 
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-	        if (script->getScriptNode().scene()) {
-	            script->getScriptNode().scene()
-                            ->queueEvent(s_timeStamp, fieldValue, nodePtr,
-                                         eventInId);
-	        }
-            } else if (expectType = nodePtr->type.hasField(eventInId)) {
+                script->getScriptNode().nodeType.nodeClass.getScene()
+                        .queueEvent(s_timeStamp, fieldValue, nodePtr,
+                                    eventInId);
+            } else if (expectType = nodePtr->nodeType.hasField(eventInId)) {
 	        FieldValue * const fieldValue =
 		        createFieldValueFromJsval(cx, *vp, expectType);
 		if (!fieldValue) {
@@ -3253,11 +3240,9 @@ namespace {
 		Script * const script = 
 		        static_cast<Script *>(JS_GetContextPrivate(cx));
 		assert(script);
-		if (script->getScriptNode().scene()) {
-		    script->getScriptNode().scene()
-		            ->queueEvent(s_timeStamp, fieldValue, nodePtr,
-					 eventInId);
-		}
+		script->getScriptNode().nodeType.nodeClass.getScene()
+                        .queueEvent(s_timeStamp, fieldValue, nodePtr,
+                                    eventInId);
 	    }
             
             checkEventOut(cx, obj, thisNode);

@@ -2822,17 +2822,17 @@ bool MFNode::exists(const Node & node) const {
 /**
  * @brief Add a node.
  *
- * Add <var>node</var> to the array if it isn't already part of this MFNode.
+ * Add @p node to the array if it isn't already part of this MFNode.
  * This method will <strong>not</strong> add NULLs.
  *
  * @param node a pointer to the node to add
  *
- * @return <code>true</code> if a node was added, <code>false</code>
- *         otherwise
+ * @return @c true if a node was added, @c false otherwise.
  */
-bool MFNode::addNode(Node & node) {
-    if (!this->exists(node)) {
-        this->nodes.push_back(NodePtr(&node));
+bool MFNode::addNode(const NodePtr & node) {
+    assert(node);
+    if (!this->exists(*node)) {
+        this->nodes.push_back(node);
         return true;
     }
     
