@@ -5,6 +5,8 @@
         * Doxyfile.in: Fixed package name and version; don't show "used
           files" in the output.
 
+        * Doxygen stylesheet changes.
+
 2002-02-08  Braden McDaniel  <braden@endoframe.com>
 
         * Applied patch from Frederic Devernay
