@@ -204,18 +204,18 @@ namespace OpenVRML {
     class viewpoint_node;
 
     namespace Vrml97Node {
-        class Anchor;
-        class AudioClip;
-        class CylinderSensor;
-        class AbstractLight;
-        class MovieTexture;
-        class NavigationInfo;
-        class PlaneSensor;
-        class PointLight;
-        class SphereSensor;
-        class SpotLight;
-        class TimeSensor;
-        class TouchSensor;
+        class anchor_node;
+        class audio_clip_node;
+        class cylinder_sensor_node;
+        class abstract_light_node;
+        class movie_texture_node;
+        class navigation_info_node;
+        class plane_sensor_node;
+        class point_light_node;
+        class sphere_sensor_node;
+        class spot_light_node;
+        class time_sensor_node;
+        class touch_sensor_node;
     }
 
     class scene;
@@ -328,18 +328,18 @@ namespace OpenVRML {
         virtual const viewpoint_node * to_viewpoint() const throw ();
         virtual viewpoint_node * to_viewpoint() throw ();
 
-        virtual Vrml97Node::Anchor * to_anchor() const;
-        virtual Vrml97Node::AudioClip * to_audio_clip() const;
-        virtual Vrml97Node::CylinderSensor * to_cylinder_sensor() const;
-        virtual Vrml97Node::AbstractLight * to_light() const;
-        virtual Vrml97Node::MovieTexture * to_movie_texture() const;
-        virtual Vrml97Node::NavigationInfo * to_navigation_info() const;
-        virtual Vrml97Node::PlaneSensor * to_plane_sensor() const;
-        virtual Vrml97Node::PointLight * to_point_light() const;
-        virtual Vrml97Node::SphereSensor * to_sphere_sensor() const;
-        virtual Vrml97Node::SpotLight * to_spot_light() const;
-        virtual Vrml97Node::TimeSensor * to_time_sensor() const;
-        virtual Vrml97Node::TouchSensor * to_touch_sensor() const;
+        virtual Vrml97Node::anchor_node * to_anchor() const;
+        virtual Vrml97Node::audio_clip_node * to_audio_clip() const;
+        virtual Vrml97Node::cylinder_sensor_node * to_cylinder_sensor() const;
+        virtual Vrml97Node::abstract_light_node * to_light() const;
+        virtual Vrml97Node::movie_texture_node * to_movie_texture() const;
+        virtual Vrml97Node::navigation_info_node * to_navigation_info() const;
+        virtual Vrml97Node::plane_sensor_node * to_plane_sensor() const;
+        virtual Vrml97Node::point_light_node * to_point_light() const;
+        virtual Vrml97Node::sphere_sensor_node * to_sphere_sensor() const;
+        virtual Vrml97Node::spot_light_node * to_spot_light() const;
+        virtual Vrml97Node::time_sensor_node * to_time_sensor() const;
+        virtual Vrml97Node::touch_sensor_node * to_touch_sensor() const;
 
         // Indicate that the node state has changed, need to re-render
         virtual bool modified() const;

@@ -1,3 +1,19 @@
+2003-07-06  Braden McDaniel  <braden@endoframe.com>
+
+	Applied naming convention changes to VRML97 node implementation
+	classes.
+
+	* src/openvrml/OpenVRML/browser.cpp:  Naming convention changes.
+	* src/openvrml/OpenVRML/browser.h:  Naming convention changes.
+	* src/openvrml/OpenVRML/node.cpp:  Naming convention changes.
+	* src/openvrml/OpenVRML/node.h:  Naming convention changes.
+	* src/openvrml/OpenVRML/vrml97node.cpp:  Naming convention
+	changes.
+	* src/openvrml/OpenVRML/vrml97node.h:  Naming convention
+	changes.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Naming
+	convention changes.
+
 2003-06-08  Braden McDaniel  <braden@endoframe.com>
 
 	Applied naming convention changes:

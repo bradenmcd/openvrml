@@ -51,8 +51,8 @@ namespace OpenVRML {
     };
 
     namespace Vrml97Node {
-        class Anchor;
-        class AudioClip;
+        class anchor;
+        class audio_clip;
         class Background;
         class CylinderSensor;
         class Fog;
@@ -143,18 +143,18 @@ namespace OpenVRML {
         virtual const viewpoint_node * to_viewpoint() const throw ();
         virtual viewpoint_node * to_viewpoint() throw ();
 
-        virtual Vrml97Node::Anchor * to_anchor() const;
-        virtual Vrml97Node::AudioClip * to_audio_clip() const;
-        virtual Vrml97Node::CylinderSensor * to_cylinder_sensor() const;
-        virtual Vrml97Node::AbstractLight * to_light() const;
-        virtual Vrml97Node::MovieTexture * to_movie_texture() const;
-        virtual Vrml97Node::NavigationInfo * to_navigation_info() const;
-        virtual Vrml97Node::PlaneSensor * to_plane_sensor() const;
-        virtual Vrml97Node::PointLight * to_point_light() const;
-        virtual Vrml97Node::SphereSensor * to_sphere_sensor() const;
-        virtual Vrml97Node::SpotLight * to_spot_light() const;
-        virtual Vrml97Node::TimeSensor * to_time_sensor() const;
-        virtual Vrml97Node::TouchSensor * to_touch_sensor() const;
+        virtual Vrml97Node::anchor_node * to_anchor() const;
+        virtual Vrml97Node::audio_clip_node * to_audio_clip() const;
+        virtual Vrml97Node::cylinder_sensor_node * to_cylinder_sensor() const;
+        virtual Vrml97Node::abstract_light_node * to_light() const;
+        virtual Vrml97Node::movie_texture_node * to_movie_texture() const;
+        virtual Vrml97Node::navigation_info_node * to_navigation_info() const;
+        virtual Vrml97Node::plane_sensor_node * to_plane_sensor() const;
+        virtual Vrml97Node::point_light_node * to_point_light() const;
+        virtual Vrml97Node::sphere_sensor_node * to_sphere_sensor() const;
+        virtual Vrml97Node::spot_light_node * to_spot_light() const;
+        virtual Vrml97Node::time_sensor_node * to_time_sensor() const;
+        virtual Vrml97Node::touch_sensor_node * to_touch_sensor() const;
 
         virtual void render(OpenVRML::viewer & viewer,
                             rendering_context context);
@@ -849,7 +849,7 @@ const char * browser::version() const throw ()
  */
 float browser::current_speed()
 {
-    Vrml97Node::NavigationInfo * const navInfo =
+    Vrml97Node::navigation_info_node * const navInfo =
         bindable_navigation_info_top();
     if (navInfo) { return navInfo->getSpeed(); }
     return 0.0f;
@@ -1082,111 +1082,111 @@ void browser::create_vrml_from_url(const std::vector<std::string> & url,
 void browser::init_node_class_map() {
     using namespace Vrml97Node;
     this->node_class_map["urn:X-openvrml:node:Anchor"] =
-            node_class_ptr(new AnchorClass(*this));
+        node_class_ptr(new anchor_class(*this));
     this->node_class_map["urn:X-openvrml:node:Appearance"] =
-            node_class_ptr(new AppearanceClass(*this));
+        node_class_ptr(new appearance_class(*this));
     this->node_class_map["urn:X-openvrml:node:AudioClip"] =
-            node_class_ptr(new AudioClipClass(*this));
+        node_class_ptr(new audio_clip_class(*this));
     this->node_class_map["urn:X-openvrml:node:Background"] =
-            node_class_ptr(new BackgroundClass(*this));
+        node_class_ptr(new background_class(*this));
     this->node_class_map["urn:X-openvrml:node:Billboard"] =
-            node_class_ptr(new BillboardClass(*this));
+        node_class_ptr(new billboard_class(*this));
     this->node_class_map["urn:X-openvrml:node:Box"] =
-            node_class_ptr(new BoxClass(*this));
+        node_class_ptr(new box_class(*this));
     this->node_class_map["urn:X-openvrml:node:Collision"] =
-            node_class_ptr(new CollisionClass(*this));
+        node_class_ptr(new collision_class(*this));
     this->node_class_map["urn:X-openvrml:node:Color"] =
-            node_class_ptr(new ColorClass(*this));
+        node_class_ptr(new color_class(*this));
     this->node_class_map["urn:X-openvrml:node:ColorInterpolator"] =
-            node_class_ptr(new ColorInterpolatorClass(*this));
+        node_class_ptr(new color_interpolator_class(*this));
     this->node_class_map["urn:X-openvrml:node:Cone"] =
-            node_class_ptr(new ConeClass(*this));
+        node_class_ptr(new cone_class(*this));
     this->node_class_map["urn:X-openvrml:node:Coordinate"] =
-            node_class_ptr(new CoordinateClass(*this));
+        node_class_ptr(new coordinate_class(*this));
     this->node_class_map["urn:X-openvrml:node:CoordinateInterpolator"] =
-            node_class_ptr(new CoordinateInterpolatorClass(*this));
+        node_class_ptr(new coordinate_interpolator_class(*this));
     this->node_class_map["urn:X-openvrml:node:Cylinder"] =
-            node_class_ptr(new CylinderClass(*this));
+        node_class_ptr(new cylinder_class(*this));
     this->node_class_map["urn:X-openvrml:node:CylinderSensor"] =
-            node_class_ptr(new CylinderSensorClass(*this));
+        node_class_ptr(new cylinder_sensor_class(*this));
     this->node_class_map["urn:X-openvrml:node:DirectionalLight"] =
-            node_class_ptr(new DirectionalLightClass(*this));
+        node_class_ptr(new directional_light_class(*this));
     this->node_class_map["urn:X-openvrml:node:ElevationGrid"] =
-            node_class_ptr(new ElevationGridClass(*this));
+        node_class_ptr(new elevation_grid_class(*this));
     this->node_class_map["urn:X-openvrml:node:Extrusion"] =
-            node_class_ptr(new ExtrusionClass(*this));
+        node_class_ptr(new extrusion_class(*this));
     this->node_class_map["urn:X-openvrml:node:Fog"] =
-            node_class_ptr(new FogClass(*this));
+        node_class_ptr(new fog_class(*this));
     this->node_class_map["urn:X-openvrml:node:FontStyle"] =
-            node_class_ptr(new FontStyleClass(*this));
+        node_class_ptr(new font_style_class(*this));
     this->node_class_map["urn:X-openvrml:node:Group"] =
-            node_class_ptr(new GroupClass(*this));
+        node_class_ptr(new group_class(*this));
     this->node_class_map["urn:X-openvrml:node:ImageTexture"] =
-            node_class_ptr(new ImageTextureClass(*this));
+        node_class_ptr(new image_texture_class(*this));
     this->node_class_map["urn:X-openvrml:node:IndexedFaceSet"] =
-            node_class_ptr(new IndexedFaceSetClass(*this));
+        node_class_ptr(new indexed_face_set_class(*this));
     this->node_class_map["urn:X-openvrml:node:IndexedLineSet"] =
-            node_class_ptr(new IndexedLineSetClass(*this));
+        node_class_ptr(new indexed_line_set_class(*this));
     this->node_class_map["urn:X-openvrml:node:Inline"] =
-            node_class_ptr(new InlineClass(*this));
+        node_class_ptr(new inline_class(*this));
     this->node_class_map["urn:X-openvrml:node:LOD"] =
-            node_class_ptr(new LODClass(*this));
+        node_class_ptr(new lod_class(*this));
     this->node_class_map["urn:X-openvrml:node:Material"] =
-            node_class_ptr(new MaterialClass(*this));
+        node_class_ptr(new material_class(*this));
     this->node_class_map["urn:X-openvrml:node:MovieTexture"] =
-            node_class_ptr(new MovieTextureClass(*this));
+        node_class_ptr(new movie_texture_class(*this));
     this->node_class_map["urn:X-openvrml:node:NavigationInfo"] =
-            node_class_ptr(new NavigationInfoClass(*this));
+        node_class_ptr(new navigation_info_class(*this));
     this->node_class_map["urn:X-openvrml:node:Normal"] =
-            node_class_ptr(new NormalClass(*this));
+        node_class_ptr(new normal_class(*this));
     this->node_class_map["urn:X-openvrml:node:NormalInterpolator"] =
-            node_class_ptr(new NormalInterpolatorClass(*this));
+        node_class_ptr(new normal_interpolator_class(*this));
     this->node_class_map["urn:X-openvrml:node:OrientationInterpolator"] =
-            node_class_ptr(new OrientationInterpolatorClass(*this));
+        node_class_ptr(new orientation_interpolator_class(*this));
     this->node_class_map["urn:X-openvrml:node:PixelTexture"] =
-            node_class_ptr(new PixelTextureClass(*this));
+        node_class_ptr(new pixel_texture_class(*this));
     this->node_class_map["urn:X-openvrml:node:PlaneSensor"] =
-            node_class_ptr(new PlaneSensorClass(*this));
+        node_class_ptr(new plane_sensor_class(*this));
     this->node_class_map["urn:X-openvrml:node:PointLight"] =
-            node_class_ptr(new PointLightClass(*this));
+        node_class_ptr(new point_light_class(*this));
     this->node_class_map["urn:X-openvrml:node:PointSet"] =
-            node_class_ptr(new PointSetClass(*this));
+        node_class_ptr(new point_set_class(*this));
     this->node_class_map["urn:X-openvrml:node:PositionInterpolator"] =
-            node_class_ptr(new PositionInterpolatorClass(*this));
+        node_class_ptr(new position_interpolator_class(*this));
     this->node_class_map["urn:X-openvrml:node:ProximitySensor"] =
-            node_class_ptr(new ProximitySensorClass(*this));
+        node_class_ptr(new proximity_sensor_class(*this));
     this->node_class_map["urn:X-openvrml:node:ScalarInterpolator"] =
-            node_class_ptr(new ScalarInterpolatorClass(*this));
+        node_class_ptr(new scalar_interpolator_class(*this));
     this->node_class_map["urn:X-openvrml:node:Shape"] =
-            node_class_ptr(new ShapeClass(*this));
+        node_class_ptr(new shape_class(*this));
     this->node_class_map["urn:X-openvrml:node:Sound"] =
-            node_class_ptr(new SoundClass(*this));
+        node_class_ptr(new sound_class(*this));
     this->node_class_map["urn:X-openvrml:node:Sphere"] =
-            node_class_ptr(new SphereClass(*this));
+        node_class_ptr(new sphere_class(*this));
     this->node_class_map["urn:X-openvrml:node:SphereSensor"] =
-            node_class_ptr(new SphereSensorClass(*this));
+        node_class_ptr(new sphere_sensor_class(*this));
     this->node_class_map["urn:X-openvrml:node:SpotLight"] =
-            node_class_ptr(new SpotLightClass(*this));
+        node_class_ptr(new spot_light_class(*this));
     this->node_class_map["urn:X-openvrml:node:Switch"] =
-            node_class_ptr(new SwitchClass(*this));
+        node_class_ptr(new switch_class(*this));
     this->node_class_map["urn:X-openvrml:node:Text"] =
-            node_class_ptr(new TextClass(*this));
+        node_class_ptr(new text_class(*this));
     this->node_class_map["urn:X-openvrml:node:TextureCoordinate"] =
-            node_class_ptr(new TextureCoordinateClass(*this));
+        node_class_ptr(new texture_coordinate_class(*this));
     this->node_class_map["urn:X-openvrml:node:TextureTransform"] =
-            node_class_ptr(new TextureTransformClass(*this));
+        node_class_ptr(new texture_transform_class(*this));
     this->node_class_map["urn:X-openvrml:node:TimeSensor"] =
-            node_class_ptr(new TimeSensorClass(*this));
+        node_class_ptr(new time_sensor_class(*this));
     this->node_class_map["urn:X-openvrml:node:TouchSensor"] =
-            node_class_ptr(new TouchSensorClass(*this));
+        node_class_ptr(new touch_sensor_class(*this));
     this->node_class_map["urn:X-openvrml:node:Transform"] =
-            node_class_ptr(new TransformClass(*this));
+        node_class_ptr(new transform_class(*this));
     this->node_class_map["urn:X-openvrml:node:Viewpoint"] =
-            node_class_ptr(new ViewpointClass(*this));
+        node_class_ptr(new viewpoint_class(*this));
     this->node_class_map["urn:X-openvrml:node:VisibilitySensor"] =
-            node_class_ptr(new VisibilitySensorClass(*this));
+        node_class_ptr(new visibility_sensor_class(*this));
     this->node_class_map["urn:X-openvrml:node:WorldInfo"] =
-            node_class_ptr(new WorldInfoClass(*this));
+        node_class_ptr(new world_info_class(*this));
 }
 
 /**
@@ -1281,11 +1281,12 @@ void browser::flush_events()
  */
 void browser::sensitive_event(node * const n,
                               const double timestamp,
-                              const bool is_over, const bool is_active,
+                              const bool is_over,
+                              const bool is_active,
                               double * const point)
 {
     if (n) {
-        Vrml97Node::Anchor * a = n->to_anchor();
+        Vrml97Node::anchor_node * a = n->to_anchor();
         if (a) {
             //
             // This should really be (isOver && !isActive && n->wasActive)
@@ -1334,21 +1335,21 @@ bool browser::update(double current_time)
     // Update each of the timers.
     std::list<node *>::iterator i, end = this->timers.end();
     for (i = this->timers.begin(); i != end; ++i) {
-        Vrml97Node::TimeSensor * t = (*i)->to_time_sensor();
+        Vrml97Node::time_sensor_node * t = (*i)->to_time_sensor();
         if (t) { t->update(current_time); }
     }
 
     // Update each of the clips.
     end = this->audio_clips.end();
     for (i = this->audio_clips.begin(); i != end; ++i) {
-        Vrml97Node::AudioClip * c = (*i)->to_audio_clip();
+        Vrml97Node::audio_clip_node * c = (*i)->to_audio_clip();
         if (c) { c->update(current_time); }
     }
 
     // Update each of the movies.
     end = this->movies.end();
     for (i = this->movies.begin(); i != end; ++i) {
-        Vrml97Node::MovieTexture * m = (*i)->to_movie_texture();
+        Vrml97Node::movie_texture_node * m = (*i)->to_movie_texture();
         if (m) { m->update(current_time); }
     }
 
@@ -1381,7 +1382,7 @@ bool browser::update(double current_time)
 
 bool browser::headlight_on()
 {
-    Vrml97Node::NavigationInfo * const navInfo =
+    Vrml97Node::navigation_info_node * const navInfo =
         this->bindable_navigation_info_top();
     if (navInfo) { return navInfo->getHeadlightOn(); }
     return true;
@@ -1416,7 +1417,8 @@ void browser::render(OpenVRML::viewer & viewer)
     }
     float avatarSize = 0.25;
     float visibilityLimit = 0.0;
-    Vrml97Node::NavigationInfo * ni = this->bindable_navigation_info_top();
+    Vrml97Node::navigation_info_node * ni =
+        this->bindable_navigation_info_top();
     if (ni) {
         avatarSize = ni->getAvatarSize()[0];
         visibilityLimit = ni->getVisibilityLimit();
@@ -1462,7 +1464,7 @@ void browser::render(OpenVRML::viewer & viewer)
     // Do the browser-level lights (Points and Spots)
     std::list<node *>::iterator li, end = this->scoped_lights.end();
     for (li = this->scoped_lights.begin(); li != end; ++li) {
-        Vrml97Node::AbstractLight * x = (*li)->to_light();
+        Vrml97Node::abstract_light_node * x = (*li)->to_light();
         if (x) { x->renderScoped(viewer); }
     }
 
@@ -1569,7 +1571,7 @@ void browser::bindable_remove(bind_stack_t & stack, const node_ptr & node)
  *
  * @pre @p node is not in the list of NavigationInfo nodes for the browser.
  */
-void browser::add_navigation_info(Vrml97Node::NavigationInfo & node)
+void browser::add_navigation_info(Vrml97Node::navigation_info_node & node)
 {
     assert(std::find(this->navigation_infos.begin(),
                      this->navigation_infos.end(), &node)
@@ -1585,7 +1587,7 @@ void browser::add_navigation_info(Vrml97Node::NavigationInfo & node)
  *
  * @pre @p n is in the list of NavigationInfo nodes for the browser.
  */
-void browser::remove_navigation_info(Vrml97Node::NavigationInfo & n)
+void browser::remove_navigation_info(Vrml97Node::navigation_info_node & n)
 {
     assert(!this->navigation_infos.empty());
     const std::list<node *>::iterator end = this->navigation_infos.end();
@@ -1600,7 +1602,7 @@ void browser::remove_navigation_info(Vrml97Node::NavigationInfo & n)
  *
  * @return the active node on the bound NavigationInfo stack.
  */
-Vrml97Node::NavigationInfo * browser::bindable_navigation_info_top()
+Vrml97Node::navigation_info_node * browser::bindable_navigation_info_top()
 {
     node * const n = this->bindable_top(this->navigation_info_stack).get();
     return n ? n->to_navigation_info() : 0;
@@ -1611,7 +1613,7 @@ Vrml97Node::NavigationInfo * browser::bindable_navigation_info_top()
  *
  * @param n a NavigationInfo node.
  */
-void browser::bindable_push(Vrml97Node::NavigationInfo * n)
+void browser::bindable_push(Vrml97Node::navigation_info_node * n)
 {
     this->bindable_push(this->navigation_info_stack, node_ptr(n));
 }
@@ -1622,7 +1624,7 @@ void browser::bindable_push(Vrml97Node::NavigationInfo * n)
  *
  * @param n a NavigationInfo node.
  */
-void browser::bindable_remove(Vrml97Node::NavigationInfo * n)
+void browser::bindable_remove(Vrml97Node::navigation_info_node * n)
 {
     this->bindable_remove(this->navigation_info_stack, node_ptr(n));
 }
@@ -1634,7 +1636,7 @@ void browser::bindable_remove(Vrml97Node::NavigationInfo * n)
  *
  * @pre @p light is not in the list of light nodes for the browser.
  */
-void browser::add_scoped_light(Vrml97Node::AbstractLight & light) {
+void browser::add_scoped_light(Vrml97Node::abstract_light_node & light) {
     assert(std::find(this->scoped_lights.begin(), this->scoped_lights.end(),
                      &light) == this->scoped_lights.end());
     this->scoped_lights.push_back(&light);
@@ -1647,7 +1649,7 @@ void browser::add_scoped_light(Vrml97Node::AbstractLight & light) {
  *
  * @pre @p light is in the list of light nodes for the browser.
  */
-void browser::remove_scoped_light(Vrml97Node::AbstractLight & light)
+void browser::remove_scoped_light(Vrml97Node::abstract_light_node & light)
 {
     assert(!this->scoped_lights.empty());
     const std::list<node *>::iterator end = this->scoped_lights.end();
@@ -1664,20 +1666,20 @@ void browser::remove_scoped_light(Vrml97Node::AbstractLight & light)
  *
  * @pre @p movie is not in the list of MovieTexture nodes for the browser.
  */
-void browser::add_movie(Vrml97Node::MovieTexture & movie) {
+void browser::add_movie(Vrml97Node::movie_texture_node & movie) {
     assert(std::find(this->movies.begin(), this->movies.end(), &movie)
             == this->movies.end());
     this->movies.push_back(&movie);
 }
 
 /**
- * @brief Remove a MovieTexture node from the browser.
+ * @brief Remove a movie_texture node from the browser.
  *
- * @param movie the MovieTexture node to remove.
+ * @param movie the movie_texture node to remove.
  *
- * @pre @p movie is in the list of MovieTexture nodes for the browser.
+ * @pre @p movie is in the list of movie_texture nodes for the browser.
  */
-void browser::remove_movie(Vrml97Node::MovieTexture & movie)
+void browser::remove_movie(Vrml97Node::movie_texture_node & movie)
 {
     assert(!this->movies.empty());
     const std::list<node *>::iterator end = this->movies.end();
@@ -1756,20 +1758,21 @@ void browser::remove_proto(ProtoNode & node) {
  *
  * @pre @p timer is not in the list of TimeSensor nodes for the browser.
  */
-void browser::add_time_sensor(Vrml97Node::TimeSensor & timer) {
+void browser::add_time_sensor(Vrml97Node::time_sensor_node & timer)
+{
     assert(std::find(this->timers.begin(), this->timers.end(), &timer)
            == this->timers.end());
     this->timers.push_back(&timer);
 }
 
 /**
- * @brief Remove a TimeSensor node from the browser.
+ * @brief Remove a time_sensor node from the browser.
  *
- * @param timer the TimeSensor node to remove.
+ * @param timer the time_sensor node to remove.
  *
- * @pre @p timer is in the list of TimeSensor nodes for the browser.
+ * @pre @p timer is in the list of time_sensor nodes for the browser.
  */
-void browser::remove_time_sensor(Vrml97Node::TimeSensor & timer)
+void browser::remove_time_sensor(Vrml97Node::time_sensor_node & timer)
 {
     assert(!this->timers.empty());
     const std::list<node *>::iterator end = this->timers.end();
@@ -1783,24 +1786,25 @@ void browser::remove_time_sensor(Vrml97Node::TimeSensor & timer)
 /**
  * @brief Add an AudioClip node to the browser.
  *
- * @param audio_clip    an AudioClip node.
+ * @param audio_clip    an audio_clip node.
  *
- * @pre @p audio_clip is not in the list of AudioClip nodes for the browser.
+ * @pre @p audio_clip is not in the list of audio_clip nodes for the browser.
  */
-void browser::add_audio_clip(Vrml97Node::AudioClip & audio_clip) {
+void browser::add_audio_clip(Vrml97Node::audio_clip_node & audio_clip)
+{
     assert(std::find(this->audio_clips.begin(), this->audio_clips.end(),
                      &audio_clip) == this->audio_clips.end());
     this->audio_clips.push_back(&audio_clip);
 }
 
 /**
- * @brief Remove an AudioClip node from the browser.
+ * @brief Remove an audio_clip node from the browser.
  *
- * @param audio_clip    the AudioClip node to remove.
+ * @param audio_clip    the audio_clip node to remove.
  *
- * @pre @p audio_clip is in the list of AudioClip nodes for the browser.
+ * @pre @p audio_clip is in the list of audio_clip nodes for the browser.
  */
-void browser::remove_audio_clip(Vrml97Node::AudioClip & audio_clip)
+void browser::remove_audio_clip(Vrml97Node::audio_clip_node & audio_clip)
 {
     assert(!this->audio_clips.empty());
     const std::list<node *>::iterator end = this->audio_clips.end();
@@ -1840,12 +1844,15 @@ void browser::update_flags()
  *
  * @param message   Informative text.
  */
-bad_url::bad_url(const std::string & message): std::runtime_error(message) {}
+bad_url::bad_url(const std::string & message):
+    std::runtime_error(message)
+{}
 
 /**
  * @brief Destructor.
  */
-bad_url::~bad_url() throw () {}
+bad_url::~bad_url() throw ()
+{}
 
 
 /**
@@ -1857,12 +1864,15 @@ bad_url::~bad_url() throw () {}
 /**
  * @brief Constructor.
  */
-invalid_url::invalid_url(): bad_url("Invalid URI.") {}
+invalid_url::invalid_url():
+    bad_url("Invalid URI.")
+{}
 
 /**
  * @brief Destructor.
  */
-invalid_url::~invalid_url() throw () {}
+invalid_url::~invalid_url() throw ()
+{}
 
 
 /**
@@ -3397,62 +3407,62 @@ void ProtoNode::do_shutdown(const double timestamp) throw ()
     }
 }
 
-Vrml97Node::Anchor * ProtoNode::to_anchor() const
+Vrml97Node::anchor_node * ProtoNode::to_anchor() const
 {
     return this->implNodes[0]->to_anchor();
 }
 
-Vrml97Node::AudioClip * ProtoNode::to_audio_clip() const
+Vrml97Node::audio_clip_node * ProtoNode::to_audio_clip() const
 {
     return this->implNodes[0]->to_audio_clip();
 }
 
-Vrml97Node::CylinderSensor * ProtoNode::to_cylinder_sensor() const
+Vrml97Node::cylinder_sensor_node * ProtoNode::to_cylinder_sensor() const
 {
     return this->implNodes[0]->to_cylinder_sensor();
 }
 
-Vrml97Node::AbstractLight * ProtoNode::to_light() const
+Vrml97Node::abstract_light_node * ProtoNode::to_light() const
 {
     return this->implNodes[0]->to_light();
 }
 
-Vrml97Node::MovieTexture * ProtoNode::to_movie_texture() const
+Vrml97Node::movie_texture_node * ProtoNode::to_movie_texture() const
 {
     return this->implNodes[0]->to_movie_texture();
 }
 
-Vrml97Node::NavigationInfo * ProtoNode::to_navigation_info() const
+Vrml97Node::navigation_info_node * ProtoNode::to_navigation_info() const
 {
     return this->implNodes[0]->to_navigation_info();
 }
 
-Vrml97Node::PlaneSensor * ProtoNode::to_plane_sensor() const
+Vrml97Node::plane_sensor_node * ProtoNode::to_plane_sensor() const
 {
     return this->implNodes[0]->to_plane_sensor();
 }
 
-Vrml97Node::PointLight * ProtoNode::to_point_light() const
+Vrml97Node::point_light_node * ProtoNode::to_point_light() const
 {
     return this->implNodes[0]->to_point_light();
 }
 
-Vrml97Node::SphereSensor * ProtoNode::to_sphere_sensor() const
+Vrml97Node::sphere_sensor_node * ProtoNode::to_sphere_sensor() const
 {
     return this->implNodes[0]->to_sphere_sensor();
 }
 
-Vrml97Node::SpotLight * ProtoNode::to_spot_light() const
+Vrml97Node::spot_light_node * ProtoNode::to_spot_light() const
 {
     return this->implNodes[0]->to_spot_light();
 }
 
-Vrml97Node::TimeSensor * ProtoNode::to_time_sensor() const
+Vrml97Node::time_sensor_node * ProtoNode::to_time_sensor() const
 {
     return this->implNodes[0]->to_time_sensor();
 }
 
-Vrml97Node::TouchSensor * ProtoNode::to_touch_sensor() const
+Vrml97Node::touch_sensor_node * ProtoNode::to_touch_sensor() const
 {
     return this->implNodes[0]->to_touch_sensor();
 }
@@ -4123,49 +4133,106 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     // ElevationGrid node
     //
-    static const node_interface elevationGridInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::mffloat_id, "set_height"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "normal"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "texCoord"),
-        node_interface(node_interface::field_id, field_value::mffloat_id, "height"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "ccw"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "colorPerVertex"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "creaseAngle"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "normalPerVertex"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
-        node_interface(node_interface::field_id, field_value::sfint32_id, "xDimension"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "xSpacing"),
-        node_interface(node_interface::field_id, field_value::sfint32_id, "zDimension"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "zSpacing")
-    };
-    static const vrml97_node_interface_set_
-            elevationGridInterfaceSet(elevationGridInterfaces,
-                                         elevationGridInterfaces + 14);
-    pos = nodeClassMap.find("urn:X-openvrml:node:ElevationGrid");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("ElevationGrid",
-                                              elevationGridInterfaceSet));
+    {
+        static const node_interface node_interfaces[] = {
+            node_interface(node_interface::eventin_id,
+                           field_value::mffloat_id,
+                           "set_height"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "color"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "normal"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "texCoord"),
+            node_interface(node_interface::field_id,
+                           field_value::mffloat_id,
+                           "height"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "ccw"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "colorPerVertex"),
+            node_interface(node_interface::field_id,
+                           field_value::sffloat_id,
+                           "creaseAngle"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "normalPerVertex"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "solid"),
+            node_interface(node_interface::field_id,
+                           field_value::sfint32_id,
+                           "xDimension"),
+            node_interface(node_interface::field_id,
+                           field_value::sffloat_id,
+                           "xSpacing"),
+            node_interface(node_interface::field_id,
+                           field_value::sfint32_id,
+                           "zDimension"),
+            node_interface(node_interface::field_id,
+                           field_value::sffloat_id,
+                           "zSpacing")
+        };
+        static const vrml97_node_interface_set_
+            node_interface_set(node_interfaces, node_interfaces + 14);
+        pos = nodeClassMap.find("urn:X-openvrml:node:ElevationGrid");
+        assert(pos != nodeClassMap.end());
+        this->add_type(pos->second->create_type("ElevationGrid",
+                                                node_interface_set));
+    }
 
     //
     // Extrusion node
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id, field_value::mfvec2f_id, "set_crossSection"),
-            node_interface(node_interface::eventin_id, field_value::mfrotation_id, "set_orientation"),
-            node_interface(node_interface::eventin_id, field_value::mfvec2f_id, "set_scale"),
-            node_interface(node_interface::eventin_id, field_value::mfvec3f_id, "set_spine"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "beginCap"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "ccw"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "convex"),
-            node_interface(node_interface::field_id, field_value::sffloat_id, "creaseAngle"),
-            node_interface(node_interface::field_id, field_value::mfvec2f_id, "crossSection"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "endCap"),
-            node_interface(node_interface::field_id, field_value::mfrotation_id, "orientation"),
-            node_interface(node_interface::field_id, field_value::mfvec2f_id, "scale"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
-            node_interface(node_interface::field_id, field_value::mfvec3f_id, "spine")
+            node_interface(node_interface::eventin_id,
+                           field_value::mfvec2f_id,
+                           "set_crossSection"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfrotation_id,
+                           "set_orientation"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfvec2f_id,
+                           "set_scale"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfvec3f_id,
+                           "set_spine"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "beginCap"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "ccw"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "convex"),
+            node_interface(node_interface::field_id,
+                           field_value::sffloat_id,
+                           "creaseAngle"),
+            node_interface(node_interface::field_id,
+                           field_value::mfvec2f_id,
+                           "crossSection"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "endCap"),
+            node_interface(node_interface::field_id,
+                           field_value::mfrotation_id,
+                           "orientation"),
+            node_interface(node_interface::field_id,
+                           field_value::mfvec2f_id,
+                           "scale"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "solid"),
+            node_interface(node_interface::field_id,
+                           field_value::mfvec3f_id,
+                           "spine")
         };
         static const vrml97_node_interface_set_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 14);
@@ -4180,11 +4247,21 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id, field_value::sfbool_id, "set_bind"),
-            node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "color"),
-            node_interface(node_interface::exposedfield_id, field_value::sfstring_id, "fogType"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "visibilityRange"),
-            node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
+            node_interface(node_interface::eventin_id,
+                           field_value::sfbool_id,
+                           "set_bind"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfcolor_id,
+                           "color"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfstring_id,
+                           "fogType"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "visibilityRange"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isBound")
         };
         static const vrml97_node_interface_set_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
@@ -4198,22 +4275,40 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::field_id, field_value::mfstring_id, "family"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "horizontal"),
-            node_interface(node_interface::field_id, field_value::mfstring_id, "justify"),
-            node_interface(node_interface::field_id, field_value::sfstring_id, "language"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "leftToRight"),
-            node_interface(node_interface::field_id, field_value::sffloat_id, "size"),
-            node_interface(node_interface::field_id, field_value::sffloat_id, "spacing"),
-            node_interface(node_interface::field_id, field_value::sfstring_id, "style"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "topToBottom")
+            node_interface(node_interface::field_id,
+                           field_value::mfstring_id,
+                           "family"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "horizontal"),
+            node_interface(node_interface::field_id,
+                           field_value::mfstring_id,
+                           "justify"),
+            node_interface(node_interface::field_id,
+                           field_value::sfstring_id,
+                           "language"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "leftToRight"),
+            node_interface(node_interface::field_id,
+                           field_value::sffloat_id,
+                           "size"),
+            node_interface(node_interface::field_id,
+                           field_value::sffloat_id,
+                           "spacing"),
+            node_interface(node_interface::field_id,
+                           field_value::sfstring_id,
+                           "style"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "topToBottom")
         };
         static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
+            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
         pos = nodeClassMap.find("urn:X-openvrml:node:FontStyle");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("FontStyle",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4221,18 +4316,28 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id, field_value::mfnode_id, "addChildren"),
-            node_interface(node_interface::eventin_id, field_value::mfnode_id, "removeChildren"),
-            node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "children"),
-            node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
-            node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
+            node_interface(node_interface::eventin_id,
+                           field_value::mfnode_id,
+                           "addChildren"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfnode_id,
+                           "removeChildren"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfnode_id,
+                           "children"),
+            node_interface(node_interface::field_id,
+                           field_value::sfvec3f_id,
+                           "bboxCenter"),
+            node_interface(node_interface::field_id,
+                           field_value::sfvec3f_id,
+                           "bboxSize")
         };
         static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
+            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
         pos = nodeClassMap.find("urn:X-openvrml:node:Group");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("Group",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4240,16 +4345,22 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "url"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "repeatS"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "repeatT")
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfstring_id,
+                           "url"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "repeatS"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "repeatT")
         };
         static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
+            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
         pos = nodeClassMap.find("urn:X-openvrml:node:ImageTexture");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("ImageTexture",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4257,31 +4368,67 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_colorIndex"),
-            node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_coordIndex"),
-            node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_normalIndex"),
-            node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_texCoordIndex"),
-            node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
-            node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "coord"),
-            node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "normal"),
-            node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "texCoord"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "ccw"),
-            node_interface(node_interface::field_id, field_value::mfint32_id, "colorIndex"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "colorPerVertex"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "convex"),
-            node_interface(node_interface::field_id, field_value::mfint32_id, "coordIndex"),
-            node_interface(node_interface::field_id, field_value::sffloat_id, "creaseAngle"),
-            node_interface(node_interface::field_id, field_value::mfint32_id, "normalIndex"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "normalPerVertex"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
-            node_interface(node_interface::field_id, field_value::mfint32_id, "texCoordIndex")
+            node_interface(node_interface::eventin_id,
+                           field_value::mfint32_id,
+                           "set_colorIndex"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfint32_id,
+                           "set_coordIndex"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfint32_id,
+                           "set_normalIndex"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfint32_id,
+                           "set_texCoordIndex"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "color"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "coord"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "normal"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "texCoord"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "ccw"),
+            node_interface(node_interface::field_id,
+                           field_value::mfint32_id,
+                           "colorIndex"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "colorPerVertex"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "convex"),
+            node_interface(node_interface::field_id,
+                           field_value::mfint32_id,
+                           "coordIndex"),
+            node_interface(node_interface::field_id,
+                           field_value::sffloat_id,
+                           "creaseAngle"),
+            node_interface(node_interface::field_id,
+                           field_value::mfint32_id,
+                           "normalIndex"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "normalPerVertex"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "solid"),
+            node_interface(node_interface::field_id,
+                           field_value::mfint32_id,
+                           "texCoordIndex")
         };
         static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 18);
+            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 18);
         pos = nodeClassMap.find("urn:X-openvrml:node:IndexedFaceSet");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("IndexedFaceSet",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4376,22 +4523,40 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "loop"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "speed"),
-            node_interface(node_interface::exposedfield_id, field_value::sftime_id, "startTime"),
-            node_interface(node_interface::exposedfield_id, field_value::sftime_id, "stopTime"),
-            node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "url"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "repeatS"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "repeatT"),
-            node_interface(node_interface::eventout_id, field_value::sftime_id, "duration_changed"),
-            node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive")
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "loop"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "speed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "startTime"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "stopTime"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfstring_id,
+                           "url"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "repeatS"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "repeatT"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "duration_changed"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isActive")
         };
         static const vrml97_node_interface_set_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
         pos = nodeClassMap.find("urn:X-openvrml:node:MovieTexture");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("MovieTexture",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4399,20 +4564,34 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id, field_value::sfbool_id, "set_bind"),
-            node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "avatarSize"),
-            node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "headlight"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "speed"),
-            node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "type"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "visibilityLimit"),
-            node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
+            node_interface(node_interface::eventin_id,
+                           field_value::sfbool_id,
+                           "set_bind"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mffloat_id,
+                           "avatarSize"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "headlight"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "speed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfstring_id,
+                           "type"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "visibilityLimit"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isBound")
         };
         static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
+            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
         pos = nodeClassMap.find("urn:X-openvrml:node:NavigationInfo");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("NavigationInfo",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4420,13 +4599,15 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterface =
-                node_interface(node_interface::exposedfield_id, field_value::mfvec3f_id, "vector");
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfvec3f_id,
+                           "vector");
         static const vrml97_node_interface_set_
-                nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
+            nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
         pos = nodeClassMap.find("urn:X-openvrml:node:Normal");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("Normal",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4434,10 +4615,18 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id, field_value::sffloat_id, "set_fraction"),
-            node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "key"),
-            node_interface(node_interface::exposedfield_id, field_value::mfvec3f_id, "keyValue"),
-            node_interface(node_interface::eventout_id, field_value::mfvec3f_id, "value_changed")
+            node_interface(node_interface::eventin_id,
+                           field_value::sffloat_id,
+                           "set_fraction"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mffloat_id,
+                           "key"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfvec3f_id,
+                           "keyValue"),
+            node_interface(node_interface::eventout_id,
+                           field_value::mfvec3f_id,
+                           "value_changed")
         };
         static const vrml97_node_interface_set_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
@@ -4544,15 +4733,19 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
-            node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "coord")
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "color"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "coord")
         };
         static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
+            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
         pos = nodeClassMap.find("urn:X-openvrml:node:PointSet");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("PointSet",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4586,17 +4779,33 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "center"),
-            node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "size"),
-            node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
-            node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
-            node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "position_changed"),
-            node_interface(node_interface::eventout_id, field_value::sfrotation_id, "orientation_changed"),
-            node_interface(node_interface::eventout_id, field_value::sftime_id, "enterTime"),
-            node_interface(node_interface::eventout_id, field_value::sftime_id, "exitTime")
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfvec3f_id,
+                           "center"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfvec3f_id,
+                           "size"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "enabled"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isActive"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfvec3f_id,
+                           "position_changed"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfrotation_id,
+                           "orientation_changed"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "enterTime"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "exitTime")
         };
         static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
+            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
         pos = nodeClassMap.find("urn:X-openvrml:node:ProximitySensor");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("ProximitySensor",
@@ -4873,22 +5082,40 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sftime_id, "cycleInterval"),
-            node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
-            node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "loop"),
-            node_interface(node_interface::exposedfield_id, field_value::sftime_id, "startTime"),
-            node_interface(node_interface::exposedfield_id, field_value::sftime_id, "stopTime"),
-            node_interface(node_interface::eventout_id, field_value::sftime_id, "cycleTime"),
-            node_interface(node_interface::eventout_id, field_value::sffloat_id, "fraction_changed"),
-            node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
-            node_interface(node_interface::eventout_id, field_value::sftime_id, "time")
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "cycleInterval"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "enabled"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "loop"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "startTime"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "stopTime"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "cycleTime"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sffloat_id,
+                           "fraction_changed"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isActive"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "time")
         };
         static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
+            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
         pos = nodeClassMap.find("urn:X-openvrml:node:TimeSensor");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("TimeSensor",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //

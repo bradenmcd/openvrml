@@ -1592,29 +1592,65 @@ viewpoint_node * node::to_viewpoint() throw ()
 // Remember to also add new ones to NodeProto. Protos should
 // return their first implementation node (except toProto()).
 
-Vrml97Node::Anchor * node::to_anchor() const { return 0; }
+Vrml97Node::anchor_node * node::to_anchor() const
+{
+    return 0;
+}
 
-Vrml97Node::AudioClip * node::to_audio_clip() const { return 0; }
+Vrml97Node::audio_clip_node * node::to_audio_clip() const
+{
+    return 0;
+}
 
-Vrml97Node::AbstractLight * node::to_light() const { return 0; }
+Vrml97Node::abstract_light_node * node::to_light() const
+{
+    return 0;
+}
 
-Vrml97Node::MovieTexture * node::to_movie_texture() const { return 0; }
+Vrml97Node::movie_texture_node * node::to_movie_texture() const
+{
+    return 0;
+}
 
-Vrml97Node::NavigationInfo * node::to_navigation_info() const { return 0; }
+Vrml97Node::navigation_info_node * node::to_navigation_info() const
+{
+    return 0;
+}
 
-Vrml97Node::PlaneSensor * node::to_plane_sensor() const { return 0; }
+Vrml97Node::plane_sensor_node * node::to_plane_sensor() const
+{
+    return 0;
+}
 
-Vrml97Node::SphereSensor * node::to_sphere_sensor() const { return 0; }
+Vrml97Node::sphere_sensor_node * node::to_sphere_sensor() const
+{
+    return 0;
+}
 
-Vrml97Node::CylinderSensor * node::to_cylinder_sensor() const { return 0; }
+Vrml97Node::cylinder_sensor_node * node::to_cylinder_sensor() const
+{
+    return 0;
+}
 
-Vrml97Node::PointLight * node::to_point_light() const { return 0; }
+Vrml97Node::point_light_node * node::to_point_light() const
+{
+    return 0;
+}
 
-Vrml97Node::SpotLight * node::to_spot_light() const { return 0; }
+Vrml97Node::spot_light_node * node::to_spot_light() const
+{
+    return 0;
+}
 
-Vrml97Node::TimeSensor * node::to_time_sensor() const { return 0; }
+Vrml97Node::time_sensor_node * node::to_time_sensor() const
+{
+    return 0;
+}
 
-Vrml97Node::TouchSensor * node::to_touch_sensor() const { return 0; }
+Vrml97Node::touch_sensor_node * node::to_touch_sensor() const
+{
+    return 0;
+}
 
 
 /**
