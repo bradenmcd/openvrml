@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #
-# OV_WITH_GLUT
+# OV_CHECK_GLUT
 # -------------
 # Check for GLUT.  If GLUT is found, the required compiler and linker flags
 # are included in the output variables "GLUT_CFLAGS" and "GLUT_LIBS",
@@ -26,38 +26,34 @@
 # found, "HAVE_GLUT_GLUT_H" is defined. If GLUT is not found, "no_glut" is
 # set to "yes".
 #
-AC_DEFUN(OV_WITH_GLUT,
-[AC_REQUIRE([OV_WITH_GL])dnl
+AC_DEFUN(OV_CHECK_GLUT,
+[AC_REQUIRE([OV_CHECK_GL])dnl
 AC_REQUIRE([AC_PATH_XTRA])dnl
-AC_ARG_WITH(glut, [  --with-glut             use GLUT])
-if test "X$with_glut" = "Xno" -o "X$no_gl" = "Xyes"; then
-  no_glut=yes
-else
-  GLUT_LIBS="${GL_LIBS}"
+GLUT_LIBS="${GL_LIBS}"
 
-  #
-  # If X is present, assume GLUT depends on it.
-  #
-  if test "X${no_x}" != "Xyes"; then
-    GLUT_CFLAGS="${GL_CFLAGS}"
-    GLUT_LIBS="${GLUT_LIBS} ${X_PRE_LIBS} -lXmu -lX11 ${X_EXTRA_LIBS}"
-  fi
+#
+# If X is present, assume GLUT depends on it.
+#
+if test "X${no_x}" != "Xyes"; then
+  GLUT_CFLAGS="${GL_CFLAGS}"
+  GLUT_LIBS="${GLUT_LIBS} ${X_PRE_LIBS} -lXmu -lX11 ${X_EXTRA_LIBS}"
+fi
 
-  AC_LANG_PUSH(C)
+AC_LANG_PUSH(C)
   
-  ov_save_CPPFLAGS="${CPPFLAGS}"
-  CPPFLAGS="${GLUT_CFLAGS} ${CPPFLAGS}"
+ov_save_CPPFLAGS="${CPPFLAGS}"
+CPPFLAGS="${GLUT_CFLAGS} ${CPPFLAGS}"
 
-  AC_CHECK_HEADERS([GL/glut.h GLUT/glut.h], [break])
+AC_CHECK_HEADERS([GL/glut.h GLUT/glut.h], [break])
 
-  AC_CACHE_CHECK([for GLUT library], [ov_cv_glut],
-  [ov_cv_glut="no"
-  ov_save_LIBS="${LIBS}"
-  LIBS=""
-  ov_check_libs="-lglut32 -lglut"
-  for ov_lib in ${ov_check_libs}; do
-    LIBS="${ov_lib} ${GLUT_LIBS} ${ov_save_LIBS}"
-    AC_TRY_LINK([
+AC_CACHE_CHECK([for GLUT library], [ov_cv_glut],
+[ov_cv_glut="no"
+ov_save_LIBS="${LIBS}"
+LIBS=""
+ov_check_libs="-lglut32 -lglut"
+for ov_lib in ${ov_check_libs}; do
+  LIBS="${ov_lib} ${GLUT_LIBS} ${ov_save_LIBS}"
+  AC_TRY_LINK([
 # ifdef _WIN32
 #   include <windows.h>
 # endif
@@ -67,20 +63,19 @@ else
 #   include <GL/glut.h>
 # endif
 ],
-    [glutMainLoop()],
-    [ov_cv_glut="${ov_lib}" break])
+  [glutMainLoop()],
+  [ov_cv_glut="${ov_lib}" break])
   
-  done
-  LIBS=${ov_save_LIBS}
-  ])
-  CPPFLAGS="${ov_save_CPPFLAGS}"
-  AC_LANG_POP(C)
+done
+LIBS=${ov_save_LIBS}
+])
+CPPFLAGS="${ov_save_CPPFLAGS}"
+AC_LANG_POP(C)
 
-  if test "X${ov_cv_glut}" = "Xno"; then
-    no_glut="yes"
-  else
-    GLUT_LIBS="${ov_cv_glut} ${GLUT_LIBS}"
-  fi
+if test "X${ov_cv_glut}" = "Xno"; then
+  no_glut="yes"
+else
+  GLUT_LIBS="${ov_cv_glut} ${GLUT_LIBS}"
 fi
 
 AC_SUBST([GLUT_CFLAGS])

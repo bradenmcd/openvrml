@@ -14,6 +14,9 @@
           src/openvrml/OpenVRML/script.cpp:  Quelled some warnings from
           icc 7.0.
 
+        * configure.ac, m4/gl.m4, m4/glut.m4:  Removed --with-gl and
+          --with-glut configure options.
+
 2002-12-08  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/vrml97node.cpp: Fix bug in FontStyle

@@ -40,8 +40,8 @@ AC_CHECK_HEADER([jpeglib.h], ,
 
 PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
 
-OV_WITH_GL
-OV_WITH_GLUT
+OV_CHECK_GL
+OV_CHECK_GLUT
 
 #
 # gzipped file support

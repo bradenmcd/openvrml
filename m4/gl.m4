@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #
-# OV_WITH_GL
+# OV_CHECK_GL
 # -----------
 # Check for OpenGL/Mesa. Succeeds if both GL and GLU are found.  If it
 # succeeds, the required linker flags are included in the output variable
@@ -26,38 +26,34 @@
 # HAVE_OPENGL_GLU_H are defined.  If neither OpenGL nor Mesa is found, "no_gl"
 # is set to "yes".
 #
-AC_DEFUN([OV_WITH_GL],
+AC_DEFUN([OV_CHECK_GL],
 [AC_REQUIRE([AC_PATH_X])dnl
 AC_REQUIRE([ACX_PTHREAD])dnl
-AC_ARG_WITH([gl], [  --with-gl               use OpenGL/Mesa])
-if test "X$with_gl" = "Xno"; then
-  no_gl=yes
-else
-  GL_LIBS="${PTHREAD_LIBS} -lm"
+GL_LIBS="${PTHREAD_LIBS} -lm"
 
-  #
-  # If X is present, use x_includes and x_libraries.
-  #
-  if test "X${no_x}" != "Xyes"; then
-    GL_CFLAGS="-I${x_includes}"
-    GL_LIBS="-L${x_libraries} ${GL_LIBS}"
-  fi
+#
+# If X is present, use x_includes and x_libraries.
+#
+if test "X${no_x}" != "Xyes"; then
+  GL_CFLAGS="-I${x_includes}"
+  GL_LIBS="-L${x_libraries} ${GL_LIBS}"
+fi
 
-  AC_LANG_PUSH(C)
+AC_LANG_PUSH(C)
 
-  ov_save_CPPFLAGS="${CPPFLAGS}"
-  CPPFLAGS="${GL_CFLAGS} ${CPPFLAGS}"
+ov_save_CPPFLAGS="${CPPFLAGS}"
+CPPFLAGS="${GL_CFLAGS} ${CPPFLAGS}"
 
-  AC_CHECK_HEADERS([GL/gl.h OpenGL/gl.h], [break])
+AC_CHECK_HEADERS([GL/gl.h OpenGL/gl.h], [break])
 
-  AC_CACHE_CHECK([for OpenGL library], [ov_cv_gl],
-  [ov_cv_gl="no"
-  ov_save_LIBS="${LIBS}"
-  LIBS=""
-  ov_check_libs="-lopengl32 -lGL"
-  for ov_lib in ${ov_check_libs}; do
-    LIBS="${ov_lib} ${GL_LIBS} ${ov_save_LIBS}"
-    AC_TRY_LINK([
+AC_CACHE_CHECK([for OpenGL library], [ov_cv_gl],
+[ov_cv_gl="no"
+ov_save_LIBS="${LIBS}"
+LIBS=""
+ov_check_libs="-lopengl32 -lGL"
+for ov_lib in ${ov_check_libs}; do
+ LIBS="${ov_lib} ${GL_LIBS} ${ov_save_LIBS}"
+  AC_TRY_LINK([
 # ifdef _WIN32
 #   include <windows.h>
 # endif
@@ -67,27 +63,27 @@ else
 #   include <GL/gl.h>
 # endif
 ],
-    [glBegin(0)],
-    [ov_cv_gl="${ov_lib}" break])
-  done
-  LIBS=${ov_save_LIBS}])
+  [glBegin(0)],
+  [ov_cv_gl="${ov_lib}" break])
+done
+LIBS=${ov_save_LIBS}])
 
-  if test "X${ov_cv_gl}" = "Xno"; then
-    no_gl="yes"
-  else
-    GL_LIBS="${ov_cv_gl} ${GL_LIBS}"
+if test "X${ov_cv_gl}" = "Xno"; then
+  no_gl="yes"
+else
+  GL_LIBS="${ov_cv_gl} ${GL_LIBS}"
 
-    AC_CHECK_HEADERS([GL/glu.h OpenGL/glu.h], [break])
+  AC_CHECK_HEADERS([GL/glu.h OpenGL/glu.h], [break])
 
-    AC_CACHE_CHECK([for OpenGL Utility library], [ov_cv_glu],
-    [ov_cv_glu="no"
-    ov_save_LIBS="${LIBS}"
-    LIBS=""
-    ov_check_libs="-lglu32 -lGLU"
-    for ov_lib in ${ov_check_libs}; do
-      LIBS="${ov_lib} ${GL_LIBS} ${ov_save_LIBS}"
-      AC_LANG_PUSH([C++])
-      AC_TRY_LINK([
+  AC_CACHE_CHECK([for OpenGL Utility library], [ov_cv_glu],
+  [ov_cv_glu="no"
+  ov_save_LIBS="${LIBS}"
+  LIBS=""
+  ov_check_libs="-lglu32 -lGLU"
+  for ov_lib in ${ov_check_libs}; do
+    LIBS="${ov_lib} ${GL_LIBS} ${ov_save_LIBS}"
+    AC_LANG_PUSH([C++])
+    AC_TRY_LINK([
 # ifdef _WIN32
 #   include <windows.h>
 # endif
@@ -97,20 +93,19 @@ else
 #   include <GL/glu.h>
 # endif
 ],
-      [gluBeginCurve(0)],
-      [ov_cv_glu="${ov_lib}" break])
-      AC_LANG_POP([C++])
-    done
-    LIBS=${ov_save_LIBS}])
-    if test "X${ov_cv_glu}" = "Xno"; then
-      no_gl="yes"
-    else
-      GL_LIBS="${ov_cv_glu} ${GL_LIBS}"
-    fi
+    [gluBeginCurve(0)],
+    [ov_cv_glu="${ov_lib}" break])
+    AC_LANG_POP([C++])
+  done
+  LIBS=${ov_save_LIBS}])
+  if test "X${ov_cv_glu}" = "Xno"; then
+    no_gl="yes"
+  else
+    GL_LIBS="${ov_cv_glu} ${GL_LIBS}"
   fi
-  CPPFLAGS="${ov_save_CPPFLAGS}"
-  AC_LANG_POP(C)
 fi
+CPPFLAGS="${ov_save_CPPFLAGS}"
+AC_LANG_POP(C)
 
 AC_SUBST([GL_CFLAGS])
 AC_SUBST([GL_LIBS])
