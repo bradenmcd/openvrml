@@ -99,6 +99,8 @@ If not, consult the URIs below.
      Mozilla                <http://mozilla.org>
      Java Development Kit   <http://java.sun.com/j2se/>
      OpenGL/Mesa            <http://mesa3d.org>
+     GTK+                   <http://gtk.org>
+     GtkGLExt               <http://gtkglext.sourceforge.net>
      SDL                    <http://libsdl.org>
      Doxygen                <http://doxygen.org>
 
@@ -152,6 +154,10 @@ depends on.
 
  --disable-lookat
      Do not build lookat.  lookat depends on SDL.
+
+ --disable-mozilla-plugin
+     Do not build the Mozilla plug-in.  The Mozilla plug-in depends on
+     GTK+, GtkGLExt, and, of course, Mozilla.
 
  --with-x
      Passing the argument "--without-x" to "configure" will allow

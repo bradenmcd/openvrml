@@ -1,5 +1,14 @@
 2004-04-27 Braden McDaniel  <braden@endoframe.com>
 
+	Made building the Mozilla plug-in optional.
+
+	* README
+	* configure.ac
+	* mozilla-plugin/configure.ac
+	* mozilla-plugin/src/Makefile.am
+
+2004-04-29 Braden McDaniel  <braden@endoframe.com>
+
 	Removed Microsoft Visual C++ 7.0 project files.
 
 	* ide-projects/Makefile.am

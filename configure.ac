@@ -219,6 +219,13 @@ AM_CONDITIONAL([ENABLE_LOOKAT],
                [test "X$enable_lookat" != "Xno" -a "X$have_sdl" = "Xyes"])
 
 #
+# build Mozilla plug-in
+#
+AC_ARG_ENABLE([mozilla-plugin],
+              [AC_HELP_STRING([--disable-mozilla-plugin],
+                              [do not build the Mozilla plug-in])])
+
+#
 # Apply Rez to executables? (Only seem to need this if we're using the Apple
 # OpenGL framework.)
 #
