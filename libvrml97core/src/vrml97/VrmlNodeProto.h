@@ -2,8 +2,8 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //  %W% %G%
-#ifndef  _VRMLNODEPROTO_
-#define  _VRMLNODEPROTO_
+#ifndef VRMLNODEPROTO_H
+#define VRMLNODEPROTO_H
 
 //
 // A VrmlNodeProto object represents an instance of a PROTOd node.
@@ -131,7 +131,7 @@ private:
 
   VrmlMFNode *d_nodes;		// Local copy of implementation nodes.
 
-  list<NameValueRec*> d_fields;	// Field values
+  std::list<NameValueRec*> d_fields;	// Field values
 
   // Dispatch eventIns from outside the PROTO to internal eventIns
   typedef struct {
@@ -139,7 +139,7 @@ private:
     VrmlNodeType::ISMap ismap;
   } EventDispatch;
 
-  typedef list<EventDispatch*> EventDispatchList;
+  typedef std::list<EventDispatch*> EventDispatchList;
 
   EventDispatchList d_eventDispatch;
   

@@ -11,13 +11,8 @@
 
 #include <list>
 
-#ifdef _WIN32
-#include "VrmlNodeType.h"
-#include "VrmlNode.h"
-#else
 class VrmlNodeType;
 class VrmlNode;
-#endif
 
 class VrmlNamespace {
 public:
@@ -61,7 +56,7 @@ private:
   void defineBuiltIns();
 
   // Builtin node types are stored (once) in this data structure:
-  static list< VrmlNodeType* > builtInList;
+  static std::list< VrmlNodeType* > builtInList;
 
   // Ref count of namespaces so builtins can be freed
   static int s_nNamespaces;

@@ -9,6 +9,10 @@
 #include <config.h>
 #endif
 
+#ifdef _WIN32
+#include <winconfig.h>
+#endif
+
 #include "VrmlScene.h"
 
 #include <errno.h>

@@ -11,8 +11,11 @@
 #include <config.h>
 #endif
 
-#include "Viewer.h"
+#ifdef _WIN32
+#include <winconfig.h>
+#endif
 
+#include "Viewer.h"
 
 #include "MathUtils.h"
 #include "VrmlScene.h"

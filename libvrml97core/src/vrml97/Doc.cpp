@@ -11,6 +11,10 @@
 #include <config.h>
 #endif
 
+#ifdef _WIN32
+#include <winconfig.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>

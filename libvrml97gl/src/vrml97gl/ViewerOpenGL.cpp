@@ -12,6 +12,10 @@
 #include <config.h>
 #endif
 
+#ifdef _WIN32
+#include <winconfig.h>
+#endif
+
 #include "ViewerOpenGL.h"
 
 #include <GL/gl.h>
@@ -40,7 +44,7 @@
 
 namespace {
 
-    static const float FPTOLERANCE(1.0e-7);
+    const float FPTOLERANCE(1.0e-7);
 
     bool FPZERO(double n);
     bool FPEQUAL(double, double);

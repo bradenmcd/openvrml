@@ -69,7 +69,7 @@ typedef struct {
   FieldType fieldType;
 } FieldRec;
 
-static list < FieldRec* > currentField;
+static std::list < FieldRec* > currentField;
 
 // Name for current node being defined.
 
@@ -678,7 +678,7 @@ lookupNode(const char *name)
   return currentScope()->findNode( name );
 }
 
-static VrmlMFNode *nodeListToMFNode(vector<VrmlNode*> *nodeList)
+static VrmlMFNode *nodeListToMFNode(std::vector<VrmlNode*> *nodeList)
 {
   VrmlMFNode *r = 0;
   if (nodeList)
@@ -689,11 +689,11 @@ static VrmlMFNode *nodeListToMFNode(vector<VrmlNode*> *nodeList)
   return r;
 }
 
-static vector<VrmlNode*> *addNodeToList(vector<VrmlNode*> *nodeList,
-					VrmlNode *node)
+static std::vector<VrmlNode*> *addNodeToList(std::vector<VrmlNode*> *nodeList,
+                                             VrmlNode *node)
 {
   if (! nodeList)
-    nodeList = new vector<VrmlNode*>();
+    nodeList = new std::vector<VrmlNode*>();
   nodeList->push_back(node);
   return nodeList;
 }

@@ -5,12 +5,18 @@
 //  %W% %G%
 //  VrmlNodeOrientationInt.cpp
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef _WIN32
+#include <winconfig.h>
+#endif
+
 #include "VrmlNodeOrientationInt.h"
 #include "VrmlNodeType.h"
-
-#include <math.h>
-
 #include "VrmlScene.h"
+#include <math.h>
 
 // OrientationInt factory.
 

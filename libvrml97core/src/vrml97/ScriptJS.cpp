@@ -11,9 +11,15 @@
 #include <config.h>
 #endif
 
-#include <stdio.h>
-#include <string.h>
-#include <strstream.h>
+# include <stdio.h>
+# include <string.h>
+
+# ifdef _WIN32
+#   include <strstrea.h>
+# else
+#   include <strstream.h>
+# endif
+
 
 #include "ScriptJS.h"
 

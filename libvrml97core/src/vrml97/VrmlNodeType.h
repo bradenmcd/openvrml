@@ -109,7 +109,7 @@ public:
     ISMap thisIS;
   } ProtoField;
 
-  typedef list<ProtoField*> FieldList;
+  typedef std::list<ProtoField*> FieldList;
 
   ISMap *getFieldISMap( const char *fieldName );
 

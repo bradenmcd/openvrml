@@ -307,7 +307,7 @@ idRestChar      ([^\x00-\x20\x22\x23\x27\x2c\x2e\x5b-\x5d\x7b\x7d])
 					    break;
 					  case MF_STRING:
 					    yylval.field = new VrmlMFString(mfStrs.size(), &mfStrs[0]);
-					    vector<char*>::iterator mfs;
+					    std::vector<char*>::iterator mfs;
 					    for (mfs = mfStrs.begin();
 						 mfs != mfStrs.end(); ++mfs)
 					      delete [] (*mfs);

@@ -236,7 +236,7 @@ protected:
   VrmlNamespace *d_pendingScope;
 
   // Functions to call when world is changed
-  typedef list < SceneCB > SceneCBList;
+  typedef std::list < SceneCB > SceneCBList;
   SceneCBList d_sceneCallbacks;
 
   // frame rate
