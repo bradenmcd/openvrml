@@ -264,11 +264,23 @@ void VrmlNodeScript::shutdown(const double timestamp) {
 }
 
 void VrmlNodeScript::update(const VrmlSFTime & timeNow) {
-    if (this->d_eventsReceived > 0) {
-        if (this->d_script) {
-            this->d_script->activate(timeNow.get(), "eventsProcessed", 0, 0);
+    if (d_eventsReceived > 0) {
+        d_eventsReceived = 0;
+        
+        //theSystem->debug("Script.%s::update\n", name());
+        
+        if (d_script) {
+            d_script->activate( timeNow.get(), "eventsProcessed", 0, 0 );
         }
-        this->d_eventsReceived = 0;
+        
+        // For each modified eventOut, send an event
+        for (FieldList::const_iterator i = d_eventOuts.begin();
+                i != d_eventOuts.end(); ++i) {
+            if ((*i)->modified) {
+                this->eventOut(timeNow.get(), (*i)->name, *((*i)->value));
+                (*i)->modified = false;
+            }
+        }
     }
 }
 
@@ -300,15 +312,16 @@ void VrmlNodeScript::eventIn(double timeStamp,
         const VrmlField *args[] = { &fieldValue, &ts };
 
         FieldList::const_iterator i;
-        for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
-	  (*i)->modified = false;
+        for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i) {
+            (*i)->modified = false;
+        }
 
-        d_script->activate( timeStamp, eventName, 2, args );
-
+        this->d_script->activate(timeStamp, eventName, 2, args);
+        
         // For each modified eventOut, send an event
         for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i) {
-	    if ((*i)->modified) {
-                eventOut(timeStamp, (*i)->name, *((*i)->value));
+            if ((*i)->modified) {
+                this->eventOut(timeStamp, (*i)->name, *((*i)->value));
             }
         }
 
@@ -3085,8 +3098,7 @@ namespace {
                             ->queueEvent(s_timeStamp, fieldValue, nodePtr,
                                          eventInId);
 	        }
-            }
-	    else if (expectType = nodePtr->type.hasField(eventInId)) {
+            } else if (expectType = nodePtr->type.hasField(eventInId)) {
 	        VrmlField * const fieldValue =
 		        createVrmlFieldFromJsval(cx, *vp, expectType);
 		if (!fieldValue) {
@@ -4234,7 +4246,7 @@ namespace {
                 if (!JSVAL_IS_NUMBER(argv[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_ValueToNumber(cx, argv[0], vec + i)) {
+                if (!JS_ValueToNumber(cx, argv[i], vec + i)) {
                     return JS_FALSE;
                 }
             }

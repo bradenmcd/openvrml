@@ -43,7 +43,7 @@ AC_DEFUN(OV_PATH_MOZJS,
 
     AC_ARG_WITH(mozjs, [  --with-mozjs[=PREFIX]   libmozjs installed under PREFIX [default=yes]])
     
-    if test "X$with_mozjs" == "Xno"; then
+    if test "X$with_mozjs" = "Xno"; then
       no_mozjs=yes
     else
       AC_MSG_CHECKING([for SpiderMonkey])

@@ -3,6 +3,14 @@
         * A bit of finesse to get the ANTLR parser in an anonymous namespace
           in the VrmlScene implementation.
 
+2001-10-11  Braden McDaniel  <braden@endoframe.com>
+
+        * Propagate events resulting from eventsProcessed().
+
+2001-10-07  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed a bug in SFVec3f construction in JavaScript.
+
 2001-10-09 Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Checkin fix for bug 210073.
