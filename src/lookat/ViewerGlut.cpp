@@ -22,10 +22,6 @@
 #   include <config.h>
 # endif
 
-# if defined(_WIN32) && !defined(__CYGWIN__)
-#   include <winconfig.h>
-# endif
-
 #include OPENVRML_GLUT_H
 #include <OpenVRML/System.h>
 
