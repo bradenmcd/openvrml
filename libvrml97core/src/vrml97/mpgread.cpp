@@ -24,8 +24,8 @@
 #include <stdlib.h>	 /* malloc */
 #include <string.h>	 /* memset */
 
-#include <sys/types.h>   /* to make netinet/in.h happy */
 #ifndef macintosh
+#include <sys/types.h>   /* to make netinet/in.h happy */
 #include <netinet/in.h>  /* for htonl */
 #else
 #define	htonl(x)	(x)
