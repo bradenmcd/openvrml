@@ -4,8 +4,6 @@ SUBDIRS = doc macros models lib src
 ACLOCAL_AMFLAGS = -I macros
 
 IDE_PROJECT_FILES = \
-        ide-projects/Macintosh/CodeWarrior5/ImageReader.mcp \
-        ide-projects/Macintosh/CodeWarrior5/ImageReader.mcp.xml \
         ide-projects/Macintosh/CodeWarrior5/JavaScript.mcp \
         ide-projects/Macintosh/CodeWarrior5/JavaScript.mcp.xml \
         ide-projects/Macintosh/CodeWarrior5/JavaScript.prefix \
