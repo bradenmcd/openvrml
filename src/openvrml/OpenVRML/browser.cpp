@@ -613,20 +613,6 @@ InvalidVrml::~InvalidVrml() throw ()
  * ancestors.
  */
 
-namespace {
-
-    struct InitializeScript_ : std::unary_function<ScriptNode *, void> {
-        InitializeScript_(double time): time(time) {}
-
-        void operator()(ScriptNode * const scriptNode) const {
-            scriptNode->initialize(time);
-        }
-
-    private:
-        double time;
-    };
-}
-
 /**
  * @brief Constructor.
  *

@@ -1,3 +1,7 @@
+2003-01-15  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp:  Removed obsolete code.
+
 2003-01-05  Braden McDaniel  <braden@endoframe.com>
 
         * m4/gl.m4, m4/glut.m4:  Added ac-archive-style doc-comments.
