@@ -22,6 +22,9 @@ package vrml.field;
 
 import vrml.MField;
 
+/**
+ * Represents a VRML MFVec2f field in Java.
+ */
 public class MFVec2f extends MField
 {
   public native int getSize();
@@ -201,13 +204,29 @@ public class MFVec2f extends MField
    */
   public native void addValue(SFVec2f vec);
 
-
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param x X-component of value to insert.
+   * @param y Y-component of value to insert.
+   */
   public native void insertValue(int index, float x, float y);
 
-
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param vec Value to insert.
+   */
   public native void insertValue(int index, ConstSFVec2f vec);
 
-
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param vec Value to insert.
+   */
   public native void insertValue(int index, SFVec2f vec);
 
   public native String toString();

@@ -206,13 +206,30 @@ public class MFVec3f extends MField
    */
   public native void addValue(SFVec3f vec);
 	
-
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param x X-component of value to insert.
+   * @param y Y-component of value to insert.
+   * @param z Z-component of value to insert.
+   */
   public native void insertValue(int index, float x, float y, float z);
 
-
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param vec Value to insert.
+   */
   public native void insertValue(int index, ConstSFVec3f vec);
 
-
+  /**
+   * Insert a new element at the specified position.
+   *
+   * @param index Position to insert new element at.
+   * @param vec Value to insert.
+   */
   public native void insertValue(int index, SFVec3f vec);
 
   public native String toString();
