@@ -31,7 +31,6 @@ namespace OpenVRML {
     class scope;
     class script_node;
     class node_type;
-    class Doc2;
 }
 
 namespace {
@@ -267,7 +266,8 @@ antlr::RefToken Vrml97Scanner::nextToken()
 
             getNextChar();
 
-            if (this->prev_char_ == '0' && (this->c_ == 'x' || this->c_ == 'X')) {
+            if (this->prev_char_ == '0'
+                    && (this->c_ == 'x' || this->c_ == 'X')) {
                 //
                 // in an integer expressed in hexadecimal
                 //
@@ -1163,8 +1163,8 @@ isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::node & node,
                 throw;
             } catch (std::runtime_error & ex) {
                 //
-                // ex should be UnsupportedInterface, node_interfaceTypeMismatch,
-                // or FieldValueTypeMismatch.
+                // ex should be unsupported_interface,
+                // node_interface_type_mismatch, or field_value_type_mismatch.
                 //
                 throw SemanticException(ex.what(),
                                         this->uri,
@@ -1253,7 +1253,7 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                     // fieldValueMap.
                     //
                     ProtoNodeClass::DefaultValueMap::const_iterator pos =
-                            proto.defaultValueMap.find(protoFieldId->getText());
+                        proto.defaultValueMap.find(protoFieldId->getText());
                     if (pos == proto.defaultValueMap.end()) {
                         throw SemanticException("Proto has no field \""
                                                 + protoFieldId->getText()
@@ -1279,8 +1279,9 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
                         throw;
                     } catch (std::runtime_error & ex) {
                         //
-                        // ex should be UnsupportedInterface,
-                        // NodeInterfaceTypeMismatch, or FieldValueTypeMismatch.
+                        // ex should be unsupported_interface,
+                        // node_interface_type_mismatch, or
+                        // field_value_type_mismatch.
                         //
                         throw SemanticException(ex.what(),
                                                 this->uri,
@@ -1293,7 +1294,8 @@ protoScriptFieldInterfaceDeclaration[OpenVRML::ProtoNodeClass & proto,
     ;
 
 fieldType
-returns [OpenVRML::field_value::type_id ft = OpenVRML::field_value::invalid_type_id]
+returns [OpenVRML::field_value::type_id ft =
+         OpenVRML::field_value::invalid_type_id]
 {
     using OpenVRML::field_value;
 }
@@ -1494,8 +1496,9 @@ options { defaultErrorHandler=false; }
                 // looks kind of ugly but might in fact be ok. basically,
                 // we read the value as an integer, then strip off the
                 // bytes one by one.
-		for (int i = com - 1; i >= 0; i--) {
-                    pixelVector.push_back(static_cast<unsigned char>(pixel >> (8 * i) & 0xff));
+                for (int32 i = com - 1; i >= 0; i--) {
+                    const unsigned char component = pixel >> (8 * i) & 0xff;
+                    pixelVector.push_back(component);
                 }
             }
         )*
@@ -1503,13 +1506,14 @@ options { defaultErrorHandler=false; }
             // if somebody gives us a really, really, really big
             // pixeltexture, then we will crash. in the age of dos
             // attacks, we have to assume that someone will feed us a
-	    // too-big texture to see if we barf. good behavior
-	    // would be to detect outsized w/h and bail. casting away
-	    // the compiler warning is not helpful. there are other
+            // too-big texture to see if we barf. good behavior
+            // would be to detect outsized w/h and bail. casting away
+            // the compiler warning is not helpful. there are other
             // bigger bugs to fry, so I guess it's ok for now.
             //
             if (pixelVector.size() != (w * h * com)) {
-                throw antlr::SemanticException("Wrong number of pixel values for SFImage.",
+                throw antlr::SemanticException("Wrong number of pixel values "
+                                               "for SFImage.",
                                                this->uri,
                                                LT(1)->getLine(),
                                                LT(1)->getColumn());
@@ -1603,7 +1607,7 @@ sfRotationValue returns [OpenVRML::field_value_ptr srv]
 
 mfRotationValue
 returns [OpenVRML::field_value_ptr mrv =
-            OpenVRML::field_value_ptr(new mfrotation)]
+         OpenVRML::field_value_ptr(new mfrotation)]
 {
     rotation r;
     mfrotation & rotations = static_cast<mfrotation &>(*mrv);
@@ -1629,7 +1633,8 @@ options { defaultErrorHandler=false; }
 
             const float axisLength = r.axis().length();
             if (!fpequal(axisLength, 1.0)) {
-                this->reportWarning("The axis component of a rotation must be a normalized vector.");
+                this->reportWarning("The axis component of a rotation must be "
+                                    "a normalized vector.");
                 if (fpequal(axisLength, 0.0)) {
                     r.z(1.0);
                 } else {
@@ -1647,7 +1652,7 @@ options { defaultErrorHandler=false; }
 
 mfStringValue
 returns [OpenVRML::field_value_ptr msv =
-            OpenVRML::field_value_ptr(new mfstring)]
+         OpenVRML::field_value_ptr(new mfstring)]
 options { defaultErrorHandler=false; }
 {
     std::string s;
@@ -1661,12 +1666,7 @@ stringValue returns [std::string str]
 options { defaultErrorHandler=false; }
     :   s:STRING
         {
-            //
-            // Why doesn't this work?
-            //
-            // str = std::string(s->getText().begin() + 1, s->getText().end() - 1);
-
-            std::string temp(s->getText());
+            const std::string temp(s->getText());
             str = std::string(temp.begin() + 1, temp.end() - 1);
         }
     ;
@@ -1702,7 +1702,7 @@ options { defaultErrorHandler=false; }
 
 mfVec2fValue
 returns [OpenVRML::field_value_ptr mvv =
-            OpenVRML::field_value_ptr(new mfvec2f)]
+         OpenVRML::field_value_ptr(new mfvec2f)]
 options { defaultErrorHandler=false; }
 {
     vec2f v;
@@ -1731,7 +1731,7 @@ options { defaultErrorHandler=false; }
 
 mfVec3fValue
 returns [OpenVRML::field_value_ptr mvv =
-            OpenVRML::field_value_ptr(new mfvec3f)]
+         OpenVRML::field_value_ptr(new mfvec3f)]
 options { defaultErrorHandler=false; }
 {
     vec3f v;

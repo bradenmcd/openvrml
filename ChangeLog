@@ -1,5 +1,14 @@
 2003-06-05  Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml/OpenVRML/Vrml97Parser.g:  Removed lingering Doc2
+	class declaration.
+	* src/openvrml/OpenVRML/Vrml97Parser.cpp:  Reflects changes
+	to Vrml97Parser.g.
+	* src/openvrml/OpenVRML/Vrml97Parser.hpp:  Reflects changes
+	to Vrml97Parser.g.
+
+2003-06-05  Braden McDaniel  <braden@endoframe.com>
+
 	Removed bitrotted sound support code.  The old code is not the
 	approach we need to take; and it's been allowed to rot long
 	enough.

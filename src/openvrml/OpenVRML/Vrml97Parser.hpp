@@ -21,7 +21,6 @@ namespace OpenVRML {
     class scope;
     class script_node;
     class node_type;
-    class Doc2;
 }
 
 namespace {
@@ -100,7 +99,7 @@ namespace {
 
 namespace OpenVRML ANTLR_LBRACE
 
-#line 104 "Vrml97Parser.hpp"
+#line 103 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
 {
 #line 600 "Vrml97Parser.g"
@@ -113,7 +112,7 @@ public:
 
 private:
     const std::string uri;
-#line 108 "Vrml97Parser.hpp"
+#line 107 "Vrml97Parser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:
