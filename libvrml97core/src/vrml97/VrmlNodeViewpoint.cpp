@@ -9,6 +9,7 @@
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
 #include "Viewer.h"
+#include "VrmlFrustum.h"
 
 
 //  Viewpoint factory.
@@ -216,4 +217,44 @@ void VrmlNodeViewpoint::setField(const char *fieldName,
   else if TRY_FIELD(description, SFString)
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
+}
+
+
+void VrmlNodeViewpoint::getInverseMatrix(double IM[4][4]) const
+{
+  //cout << "VrmlNodeViewpoint::getInverseMatrix()" << endl;
+
+  double rot_mat[4][4];
+  float rot_aa[4];
+  rot_aa[0] =  d_orientation.x();
+  rot_aa[1] =  d_orientation.y();
+  rot_aa[2] =  d_orientation.z();
+  rot_aa[3] = -d_orientation.r();
+  Mrotation(rot_mat, rot_aa);
+
+  double pos_mat[4][4];
+  float pos_vec[3];
+  pos_vec[0] = -d_position.x();
+  pos_vec[1] = -d_position.y();
+  pos_vec[2] = -d_position.z();
+  Mtranslation(pos_mat, pos_vec);
+
+  //MM(IM, pos_mat, rot_mat);
+  MM(IM, rot_mat, pos_mat);
+}
+
+void VrmlNodeViewpoint::getFrustum(VrmlFrustum& frust) const
+{
+  cout << "VrmlNodeViewpoint::getFrustum():WARNING:not implemented" << endl;
+}
+
+
+const VrmlBVolume* VrmlNodeViewpoint::getBVolume() const
+{
+  //cout << "VrmlNodeViewpoint::getBVolume():unset" << endl;
+  static VrmlBSphere* inf_bsphere = (VrmlBSphere*)0;
+  if (!inf_bsphere) {
+    inf_bsphere = new VrmlBSphere();
+  }
+  return inf_bsphere;
 }

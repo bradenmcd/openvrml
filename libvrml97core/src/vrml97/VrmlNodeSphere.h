@@ -4,11 +4,12 @@
 //
 //  VrmlNodeSphere.h
 
-#ifndef VRMLNODESPHERE_H
-#define VRMLNODESPHERE_H
+#ifndef  _VRMLNODESPHERE_
+#define  _VRMLNODESPHERE_
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFFloat.h"
+#include "VrmlBSphere.h"
 
 class VrmlNodeSphere : public VrmlNodeGeometry {
 
@@ -25,17 +26,21 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual Viewer::Object insertGeometry(Viewer *);
+  virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual VrmlNodeSphere* toSphere() const; //LarryD Mar 08/99
   virtual float getRadius() { return d_radius.get(); }   //LarryD Mar 08/99
 
+  const VrmlBVolume* getBVolume() const;
+
 protected:
 
   VrmlSFFloat d_radius;
+  VrmlBSphere d_bsphere;
 
 };
 
-#endif
+#endif _VRMLNODESPHERE_
+

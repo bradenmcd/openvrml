@@ -85,7 +85,7 @@ ostream& VrmlNodeTextureTransform::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeTextureTransform::render(Viewer *viewer)
+void VrmlNodeTextureTransform::render(Viewer *viewer, VrmlRenderContext rc)
 {
   viewer->setTextureTransform( d_center.get(),
 			       d_rotation.get(),

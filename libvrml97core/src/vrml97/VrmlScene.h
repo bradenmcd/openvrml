@@ -212,7 +212,31 @@ public:
   void addMovie( VrmlNodeMovieTexture * );
   void removeMovie( VrmlNodeMovieTexture * );
 
-  VrmlNode* getRoot() { return &d_nodes; }
+
+  VrmlNode* getRoot();
+  void setRoot(VrmlNode* root);
+
+  /**
+   * True if the bvolume dirty flag has been set on a node in the
+   * scene graph, but has not yet been propegated to that node's
+   * ancestors. Set by VrmlNode::setBVolumeDirty on any node in this
+   * scene graph, cleared by updateFlags()
+   */
+  bool d_flags_need_updating;
+
+  /**
+   * Propegate the bvolume dirty flag from children to ancestors. The
+   * invariant is that if a node's bounding volume is out of date,
+   * then the bounding volumes of all that nodes's ancestors must be
+   * out of date. However, VrmlNode does not maintain a parent
+   * pointer. So we must do a traversal of the entire scene graph to
+   * do the propegation.
+   *
+   * @see VrmlNode::setBVolumeDirty
+   * @see VrmlNode::isBVolumeDirty
+   */
+  void updateFlags();
+
 
 protected:
 
@@ -313,4 +337,5 @@ protected:
 
 };
 
-#endif
+#endif // VRMLSCENE_H
+

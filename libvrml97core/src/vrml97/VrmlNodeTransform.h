@@ -4,16 +4,20 @@
 //
 //  VrmlNodeTransform.h
 
-#ifndef VRMLNODETRANSFORM_H
-#define VRMLNODETRANSFORM_H
+#ifndef  _VRMLNODETRANSFORM_
+#define  _VRMLNODETRANSFORM_
 
 #include "VrmlNodeGroup.h"
 #include "VrmlSFRotation.h"
 #include "VrmlSFVec3f.h"
+#include "VrmlBSphere.h"
 
+/**
+ * VrmlNodeTransform.
+ */
 class VrmlNodeTransform : public VrmlNodeGroup {
 
-public:
+ public:
 
   // Define the fields of Transform nodes
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
@@ -26,7 +30,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
@@ -42,16 +46,63 @@ public:
   virtual const VrmlSFRotation& getScaleOrientation() const;  //LarryD Feb 24/99
   virtual const VrmlSFVec3f& getTranslation() const;  //LarryD Feb 
 
-private:
+  const VrmlBVolume* getBVolume() const;
+
+  /**
+   * Get a matrix representation (in MathUtils format) of the
+   * transformation stored in the node fields.
+   *
+   * @return a copy of the cached transformation matrix
+   */
+  void getMatrix(double M[4][4]) const;
+
+
+  /**
+   * Take the fields of this transform, and calculate the matching
+   * transformation matrix. Store a copy in M. Should this be
+   * protected?
+   *
+   * @param t a transformation node
+   * @param flag 0 means calculate transform, 1 means calculate
+   *               inverse transform
+   * @param M gets a copy of the resulting transform
+   */
+  static void transform_to_matrix(const VrmlNodeTransform* t_arg, int flag, double M[4][4]);
+
+
+ protected:
 
   VrmlSFVec3f d_center;
   VrmlSFRotation d_rotation;
   VrmlSFVec3f d_scale;
   VrmlSFRotation d_scaleOrientation;
   VrmlSFVec3f d_translation;
-
   Viewer::Object d_xformObject;
+
+  void recalcBSphere();
+
+  /**
+   * Resynchronize the cached matrix <code>M</code> with the node
+   * fields, but only if M_dirty is true. Think logical const.
+   */
+  void synch_cached_matrix();
+
+  /**
+   * Cached copy (in MathUtils format) of this node's transformation.
+   * Currently this is used only by the culling code, but eventually
+   * all the matrix manipulation needs to be moved from the Viewer
+   * side over into core.
+   */
+  double M[4][4];
+
+  /**
+   * If true, we need to recalculate M. Is this the same as
+   * VrmlNode::d_modified? No, since it's entirely a core-side issue,
+   * and has nothing to do with the viewer being out of date wrt the
+   * core scene graph.
+   */
+  bool M_dirty;
   
 };
 
-#endif
+#endif _VRMLNODETRANSFORM_

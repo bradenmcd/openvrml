@@ -5,8 +5,8 @@
 //  VrmlNodeSound.h
 //    contributed by Kumaran Santhanam
 
-#ifndef VRMLNODESOUND_H
-#define VRMLNODESOUND_H
+#ifndef  _VRMLNODESOUND_
+#define  _VRMLNODESOUND_
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
@@ -30,13 +30,14 @@ public:
   virtual VrmlNode *cloneMe() const;
   virtual void cloneChildren(VrmlNamespace*);
 
+  virtual void updateModified(VrmlNodePath& path);
   virtual void clearFlags();
 
   virtual void addToScene(VrmlScene *s, const char *);
 
   virtual void copyRoutes(VrmlNamespace *ns) const;
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual VrmlNodeSound* toSound() const;
 
@@ -60,4 +61,5 @@ private:
   VrmlSFBool d_spatialize;
 };
 
-#endif
+#endif _VRMLNODESOUND_
+

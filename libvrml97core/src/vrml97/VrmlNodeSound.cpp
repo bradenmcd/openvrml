@@ -87,6 +87,13 @@ void VrmlNodeSound::cloneChildren(VrmlNamespace *ns)
 VrmlNodeSound* VrmlNodeSound::toSound() const
 { return (VrmlNodeSound*) this; }
 
+void VrmlNodeSound::updateModified(VrmlNodePath& path)
+{
+  if (this->isModified()) markPathModified(path, true);
+  path.push_front(this);
+  if (d_source.get()) d_source.get()->updateModified(path);
+  path.pop_front();
+}
 
 void VrmlNodeSound::clearFlags()
 {
@@ -120,11 +127,11 @@ ostream& VrmlNodeSound::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeSound::render(Viewer *viewer)
+void VrmlNodeSound::render(Viewer *viewer, VrmlRenderContext rc)
 {
     // If this clip has been modified, update the internal data
     if (d_source.get() && d_source.get()->isModified())
-        d_source.get()->render (viewer);
+        d_source.get()->render (viewer, rc);
 }
 
 // Get the value of a field or eventOut.

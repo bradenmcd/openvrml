@@ -309,3 +309,13 @@ void VrmlNodeTimeSensor::setField(const char *fieldName,
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
 
+
+const VrmlBVolume* VrmlNodeTimeSensor::getBVolume() const
+{
+  //cout << "VrmlNodeTimeSensor::getBVolume():unset" << endl;
+  static VrmlBSphere* inf_bsphere = (VrmlBSphere*)0;
+  if (!inf_bsphere) {
+    inf_bsphere = new VrmlBSphere();
+  }
+  return inf_bsphere;
+}

@@ -4,8 +4,8 @@
 //
 //  VrmlNodeTextureTransform.h
 
-#ifndef VRMLNODETEXTURETRANSFORM_H
-#define VRMLNODETEXTURETRANSFORM_H
+#ifndef  _VRMLNODETEXTURETRANSFORM_
+#define  _VRMLNODETEXTURETRANSFORM_
 
 #include "VrmlNode.h"
 #include "VrmlSFFloat.h"
@@ -30,7 +30,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
@@ -49,4 +49,5 @@ private:
   
 };
 
-#endif
+#endif _VRMLNODETEXTURETRANSFORM_
+

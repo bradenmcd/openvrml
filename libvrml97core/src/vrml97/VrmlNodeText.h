@@ -4,8 +4,8 @@
 //
 //  VrmlNodeText.h
 
-#ifndef VRMLNODETEXT_H
-#define VRMLNODETEXT_H
+#ifndef  _VRMLNODETEXT_
+#define  _VRMLNODETEXT_
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlMFString.h"
@@ -30,7 +30,7 @@ public:
   virtual void cloneChildren(VrmlNamespace*);
 
   virtual bool isModified() const;
-
+  virtual void updateModified(VrmlNodePath& path);
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
@@ -39,7 +39,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual Viewer::Object insertGeometry(Viewer *);
+  virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   
@@ -54,4 +54,5 @@ protected:
 
 };
 
-#endif
+#endif _VRMLNODETEXT_
+

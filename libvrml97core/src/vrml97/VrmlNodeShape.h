@@ -4,8 +4,8 @@
 //
 //  VrmlNodeShape.h
 
-#ifndef VRMLNODESHAPE_H
-#define VRMLNODESHAPE_H
+#ifndef  _VRMLNODESHAPE_
+#define  _VRMLNODESHAPE_
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFNode.h"
@@ -26,8 +26,9 @@ public:
   virtual void cloneChildren(VrmlNamespace*);
 
   virtual bool isModified() const;
-
+  virtual void updateModified(VrmlNodePath& path, int flags);
   virtual void clearFlags();
+  const VrmlBVolume* getBVolume() const;
 
   virtual VrmlNodeShape* toShape()	const;
 
@@ -37,7 +38,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
@@ -54,4 +55,4 @@ private:
   
 };
 
-#endif
+#endif _VRMLNODESHAPE_

@@ -69,6 +69,15 @@ bool VrmlNodeText::isModified() const
 	  (d_fontStyle.get() && d_fontStyle.get()->isModified()));
 }
 
+void VrmlNodeText::updateModified(VrmlNodePath& path)
+{
+  if (this->isModified()) markPathModified(path, true);
+  path.push_front(this);
+  if (d_fontStyle.get()) d_fontStyle.get()->updateModified(path);
+  path.pop_front();
+}
+
+
 void VrmlNodeText::clearFlags()
 {
   VrmlNode::clearFlags();
@@ -97,7 +106,7 @@ ostream& VrmlNodeText::printFields(ostream& os, int indent)
 }
 
 
-Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer)
+Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
     char const * const * s = d_string.get();
     
@@ -155,4 +164,3 @@ void VrmlNodeText::setField(const char *fieldName,
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
 }
-

@@ -10,6 +10,7 @@
 #include "VrmlNodeTexture.h"
 #include "VrmlNodeType.h"
 #include "Viewer.h"
+#include "VrmlBVolume.h"
 
 
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeShape(s); }
@@ -74,6 +75,15 @@ bool VrmlNodeShape::isModified() const
 	   (d_appearance.get() && d_appearance.get()->isModified()) );
 }
 
+void VrmlNodeShape::updateModified(VrmlNodePath& path, int flags)
+{
+  //cout << "VrmlNodeShape[" << this << "]::updateModified()" << endl;
+  if (this->isModified()) markPathModified(path, true, flags);
+  path.push_front(this);
+  if (d_appearance.get()) d_appearance.get()->updateModified(path, flags);
+  if (d_geometry.get()) d_geometry.get()->updateModified(path, flags);
+  path.pop_front();
+}
 
 void VrmlNodeShape::clearFlags()
 {
@@ -108,8 +118,10 @@ VrmlNodeShape*	VrmlNodeShape::toShape() const
 { return (VrmlNodeShape*) this; }
 
 
-void VrmlNodeShape::render(Viewer *viewer)
+void VrmlNodeShape::render(Viewer *viewer, VrmlRenderContext rc)
 {
+  //cout << "VrmlNodeShape::render()" << endl;
+
   if ( d_viewerObject && isModified() )
     {
       viewer->removeObject(d_viewerObject);
@@ -135,7 +147,7 @@ void VrmlNodeShape::render(Viewer *viewer)
 	      d_appearance.get()->toAppearance() )
 	    {
 	      VrmlNodeAppearance *a = d_appearance.get()->toAppearance();
-	      a->render(viewer);
+	      a->render(viewer, rc);
 
 	      if (a->texture() && a->texture()->toTexture())
 		nTexComponents = a->texture()->toTexture()->nComponents();
@@ -150,8 +162,7 @@ void VrmlNodeShape::render(Viewer *viewer)
 	  viewer->setMaterialMode( nTexComponents, g->color() != 0 );
 	}
 
-      // render geometry
-      g->render(viewer);
+      g->render(viewer, rc);
 
       viewer->endObject();
     }
@@ -184,4 +195,23 @@ void VrmlNodeShape::setField(const char *fieldName,
   else if TRY_SFNODE_FIELD(geometry, Geometry)
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
+  this->setBVolumeDirty(true); // case out: just if geom set!
+}
+
+
+// just pass off to the geometry's getbvolume() method
+//
+const VrmlBVolume* VrmlNodeShape::getBVolume() const
+{
+  //cout << "VrmlNodeShape::getBVolume() {" << endl;
+  const VrmlBVolume* r = (VrmlBVolume*)0;
+  VrmlNode* geom = d_geometry.get();
+  if (geom) {
+    r = geom->getBVolume();
+  }
+  //cout << "}:" << r << ":";
+  //if (r) r->dump(cout);
+  //cout << endl;
+  this->setBVolumeDirty(false);
+  return r;
 }

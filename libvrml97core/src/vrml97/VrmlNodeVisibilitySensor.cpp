@@ -100,7 +100,7 @@ ostream& VrmlNodeVisibilitySensor::printFields(ostream& os, int indent)
 // scene graph. Move to update() when xforms are accumulated in Groups...
 //
 
-void VrmlNodeVisibilitySensor::render(Viewer *viewer)
+void VrmlNodeVisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
 {
 
   if (d_enabled.get())

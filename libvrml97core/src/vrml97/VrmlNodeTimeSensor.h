@@ -4,8 +4,8 @@
 //
 //  VrmlNodeTimeSensor.h
 
-#ifndef VRMLNODETIMESENSOR_H
-#define VRMLNODETIMESENSOR_H
+#ifndef  _VRMLNODETIMESENSOR_
+#define  _VRMLNODETIMESENSOR_
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
@@ -47,6 +47,7 @@ public:
   virtual bool getLoop(){ return d_loop.get();} 
   virtual double getStartTime(){ return d_startTime.get();} 
   virtual double getStopTime(){ return d_stopTime.get();} 
+  const VrmlBVolume* getBVolume() const;
 
 
 private:
@@ -63,4 +64,5 @@ private:
   double d_lastTime;
 };
 
-#endif
+#endif _VRMLNODETIMESENSOR_
+

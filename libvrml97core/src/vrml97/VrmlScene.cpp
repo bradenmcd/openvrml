@@ -23,10 +23,13 @@
 #include "doc2.hpp"
 #include "Viewer.h"
 #include "System.h"
+#include "MathUtils.h"
 #include "vrml97scanner.hpp"
 #include "vrml97parser.hpp"
 #include "VrmlNamespace.h"
 #include "VrmlNodeType.h"
+#include "VrmlRenderContext.h"
+
 
 // Handle clicks on Anchor nodes
 #include "VrmlNodeAnchor.h"
@@ -77,7 +80,8 @@ VrmlScene::VrmlScene( const char *sceneUrl, const char *localCopy ) :
   d_pendingScope(0),
   d_frameRate(0.0),
   d_firstEvent(0),
-  d_lastEvent(0)
+  d_lastEvent(0),
+  d_flags_need_updating(false)
 {
   d_nodes.addToScene(this, sceneUrl);
   d_backgrounds = new VrmlNodeList;
@@ -776,12 +780,35 @@ bool VrmlScene::headlightOn()
   return true;
 }
 
+#if 0
+static void
+matrix_to_glmatrix(double M[4][4], float GLM[16])
+{
+  GLM[0]  = M[0][0];
+  GLM[1]  = M[1][0];
+  GLM[2]  = M[2][0];
+  GLM[3]  = M[3][0];
+  GLM[4]  = M[0][1];
+  GLM[5]  = M[1][1];
+  GLM[6]  = M[2][1];
+  GLM[7]  = M[3][1];
+  GLM[8]  = M[0][2];
+  GLM[9]  = M[1][2];
+  GLM[10] = M[2][2];
+  GLM[11] = M[3][2];
+  GLM[12] = M[0][3];
+  GLM[13] = M[1][3];
+  GLM[14] = M[2][3];
+  GLM[15] = M[3][3];
+}
+#endif
 
 // Draw this scene into the specified viewer
 
 void VrmlScene::render(Viewer *viewer)
 {
-  //
+  //cout << "VrmlScene::render()" << endl;
+
   if (d_newView)
     {
       viewer->resetUserNavigation();
@@ -795,6 +822,12 @@ void VrmlScene::render(Viewer *viewer)
   float avatarSize = 0.25;
   float visibilityLimit = 0.0;
 
+  // since opengl post multiples the matrix, we need to do the user
+  // navigation transform first. this needs to be fixed so it doesn't
+  // depend on a special arg to beginObject.
+  //
+  viewer->beginObject(0);
+
   VrmlNodeViewpoint *vp = bindableViewpointTop();
   if (vp)
     {
@@ -806,8 +839,7 @@ void VrmlScene::render(Viewer *viewer)
       orientation[2] = vp->orientationZ();
       orientation[3] = vp->orientationR();
       field = vp->fieldOfView();
-
-      vp->inverseTransform(viewer);
+      vp->inverseTransform(viewer); // put back!
     }
 
   VrmlNodeNavigationInfo *ni = bindableNavigationInfoTop();
@@ -817,8 +849,87 @@ void VrmlScene::render(Viewer *viewer)
       visibilityLimit = ni->visibilityLimit();
     }
 
-  viewer->setViewpoint( position, orientation, field,
-			avatarSize, visibilityLimit);
+  // sets the viewpoint transformation
+  //
+  viewer->setViewpoint(position, orientation, field, avatarSize, visibilityLimit);
+
+  //
+  // Hack alert: Right now the rendering code uses the old-style
+  // set/unset Transform code, but the culling code accumulates the
+  // modelview matrix on the core side using modifications to
+  // VrmlTransform and the new VrmlRenderContext class.
+  //
+  // However, that means we need to jump through some hoops to make
+  // sure that the new modelview transform code exactly shadows the
+  // old code.
+  //
+  double M[4][4]; // the modelview transform
+  Midentity(M);
+  if (vp) {       // viewpoint is optional
+
+    // find the inverse of the transform stack above the viewpoint.
+    //
+    vp->inverseTransform(M);
+
+    // find where the viewpoint itself points (the viewpoint has its
+    // own built-in transformation, in addition to the transformations
+    // of any parent nodes. yes, that is redundant, but that's what the
+    // vrml97 spec says)
+    //
+    double vp_IM[4][4];
+    vp->getInverseMatrix(vp_IM);
+
+    MM(M, vp_IM);
+
+  } else {
+
+    // if there's no viewpoint, then set us up arbitrarily at 0,0,-10,
+    // as indicated in the vrml spec (section 6.53 Viewpoint).
+    //
+    float t[3] = { 0.0f, 0.0f, -10.0f };
+    Mtranslation(M, t);
+  }
+
+  // ok, at this point our matrix M should exactly match the results
+  // of the glGet(MODELVIEW) that we printed out in the call to
+  // setViewpoint above.
+  //
+  //cout << "VrmlScene::render():match:" << endl;
+  //float tmp[16];
+  //matrix_to_glmatrix(M, tmp);
+  //for(int i=0; i<4; i++) {
+  //for(int j=0; j<4; j++)
+  //cout << tmp[i+j*4] << " ";
+  //cout << endl;
+  //}
+  //cout << endl;
+
+  // the user can navigate away from the viewpoint. that part is
+  // handled entirely by the viewer.
+  //
+  double UN[4][4];
+  viewer->getUserNavigation(UN);
+  double M_tmp[4][4];
+  Mcopy(M_tmp, M);
+  //MM(M, M_tmp, UN);
+  MM(M, UN, M_tmp);
+
+  // ok: at this point our calculated modelview transform should exactly
+  // match what we get at ViewerOpenGL::beginObject(). print it out and
+  // see...
+  //
+  //cout << "VrmlScene::render():mv match:" << endl;
+  //float tmp[16];
+  //matrix_to_glmatrix(M, tmp);
+  //for(int i=0; i<4; i++) {
+  //for(int j=0; j<4; j++)
+  //cout << tmp[i+j*4] << " ";
+  //cout << endl;
+  //}
+  //cout << endl;
+
+  VrmlRenderContext rc(VrmlBVolume::BV_PARTIAL, M);
+  rc.setDrawBSpheres(true);
 
   // Set background.
   VrmlNodeBackground *bg = bindableBackgroundTop();
@@ -848,7 +959,7 @@ void VrmlScene::render(Viewer *viewer)
   }
 
   // Top level object
-  viewer->beginObject(0);
+  //viewer->beginObject(0);
 
   // Do the scene-level lights (Points and Spots)
   VrmlNodeList::iterator li, end = d_scopedLights->end();
@@ -859,7 +970,7 @@ void VrmlScene::render(Viewer *viewer)
     }
 
   // Render the top level group
-  d_nodes.render( viewer );
+  d_nodes.render( viewer, rc );
 
   viewer->endObject();
 
@@ -1203,4 +1314,26 @@ void VrmlScene::addAudioClip( VrmlNodeAudioClip *audio_clip )
 void VrmlScene::removeAudioClip( VrmlNodeAudioClip *audio_clip )
 {
   d_audioClips->remove( audio_clip );
+}
+
+
+void VrmlScene::updateFlags()
+{
+  //cout << "VrmlScene::updateFlags()" << endl;
+  VrmlNode* root = this->getRoot();
+  root->updateModified(0x002);
+}
+
+
+VrmlNode* VrmlScene::getRoot()
+{
+  return &d_nodes;
+}
+
+void VrmlScene::setRoot(VrmlNode* root)
+{
+  if (!root) return;
+  VrmlMFNode children(root);
+  // safe: addChildren copies args...
+  d_nodes.addChildren(children);
 }

@@ -4,8 +4,8 @@
 //
 //  VrmlNodeVisibilitySensor.h
 
-#ifndef VRMLNODEVISIBILITYSENSOR_H
-#define VRMLNODEVISIBILITYSENSOR_H
+#ifndef  _VRMLNODEVISIBILITYSENSOR_
+#define  _VRMLNODEVISIBILITYSENSOR_
 
 #include "VrmlNodeChild.h"
 #include "VrmlSFBool.h"
@@ -30,7 +30,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
@@ -48,4 +48,5 @@ private:
   VrmlSFTime d_exitTime;
 };
 
-#endif
+#endif _VRMLNODEVISIBILITYSENSOR_
+

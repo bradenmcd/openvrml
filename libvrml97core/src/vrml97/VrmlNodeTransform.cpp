@@ -7,6 +7,7 @@
 #include "VrmlNodeTransform.h"
 #include "MathUtils.h"
 #include "VrmlNodeType.h"
+#include "VrmlRenderContext.h"
 
 
 static VrmlNode *creator(VrmlScene *s) { return new VrmlNodeTransform(s); }
@@ -49,6 +50,9 @@ VrmlNodeTransform::VrmlNodeTransform(VrmlScene *scene) :
   d_translation(0.0, 0.0, 0.0),
   d_xformObject(0)
 {
+  M_dirty = true;
+  synch_cached_matrix();
+  this->setBVolumeDirty(true);
 }
 
 VrmlNodeTransform::~VrmlNodeTransform()
@@ -110,8 +114,35 @@ ostream& VrmlNodeTransform::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeTransform::render(Viewer *viewer)
+void VrmlNodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
 {
+  //cout << "VrmlNodeTransform::render()" << endl;
+  
+  if (rc.getCullFlag() != VrmlBVolume::BV_INSIDE) {
+
+    const VrmlBSphere* bs = (VrmlBSphere*)this->getBVolume();
+    VrmlBSphere bv_copy(*bs);
+    bv_copy.transform((double[4][4])rc.getMatrix());
+    int r = viewer->isectViewVolume(bv_copy);
+    if (rc.getDrawBSpheres())
+      viewer->drawBSphere(*bs, r);
+
+    if (r == VrmlBVolume::BV_OUTSIDE)
+      return;
+    if (r == VrmlBVolume::BV_INSIDE)
+      rc.setCullFlag(VrmlBVolume::BV_INSIDE);
+
+    //rc.setCullFlag(VrmlBVolume::BV_PARTIAL);
+  }
+
+  double LM[4][4];
+  synch_cached_matrix();
+  this->getMatrix(LM);
+  double new_LM[4][4];
+  Mcopy(new_LM, (double[4][4])rc.getMatrix());
+  MM(new_LM, LM);
+  rc.setMatrix(new_LM);
+
   if ( d_xformObject && isModified() )
     {
       viewer->removeObject(d_xformObject);
@@ -133,7 +164,7 @@ void VrmlNodeTransform::render(Viewer *viewer)
 			   d_translation.get());
 
       // Render children
-      VrmlNodeGroup::render(viewer);
+      VrmlNodeGroup::renderNoCull(viewer, rc);
 
       // Reverse transforms (for immediate mode/no matrix stack renderer)
       viewer->unsetTransform(d_center.get(),
@@ -179,6 +210,8 @@ void VrmlNodeTransform::setField(const char *fieldName,
   else if TRY_FIELD(translation, SFVec3f)
   else
     VrmlNodeGroup::setField(fieldName, fieldValue);
+  this->setBVolumeDirty(true);
+  M_dirty = true; // d_modified? see M_dirty comments in .h
 }
 
 
@@ -231,27 +264,222 @@ void VrmlNodeTransform::inverseTransform(Viewer *viewer)
 
 void VrmlNodeTransform::inverseTransform(double m[4][4])
 {
+  //cout << "VrmlNodeTransform::inverseTransform()" << endl;
   VrmlNode *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(m);
   else
     Midentity(m);
 
-  // Invert this transform
-  float rot[4] = { d_rotation.x(),
-		   d_rotation.y(),
-		   d_rotation.z(),
-		   - d_rotation.r() };
-  double M[4][4];
-  Mrotation( M, rot );
-  MM( m, M );
+  //// Invert this transform
+  //float rot[4] = { d_rotation.x(),
+  //d_rotation.y(),
+  //d_rotation.z(),
+  //- d_rotation.r() };
+  //double M[4][4];
+  //Mrotation( M, rot );
+  //MM( m, M );
+  //// Invert scale (1/x)
+  //float scale[3] = { d_scale.x(), d_scale.y(), d_scale.z() };
+  //if (! FPZERO(scale[0])) scale[0] = 1.0 / scale[0];
+  //if (! FPZERO(scale[1])) scale[1] = 1.0 / scale[1];
+  //if (! FPZERO(scale[2])) scale[2] = 1.0 / scale[2];
+  //Mscale( M, scale );
 
-  // Invert scale (1/x)
-  float scale[3] = { d_scale.x(), d_scale.y(), d_scale.z() };
-  if (! FPZERO(scale[0])) scale[0] = 1.0 / scale[0];
-  if (! FPZERO(scale[1])) scale[1] = 1.0 / scale[1];
-  if (! FPZERO(scale[2])) scale[2] = 1.0 / scale[2];
+  double IM[4][4];
+  synch_cached_matrix();
+  transform_to_matrix(this, 1, IM);
+  MM( m, IM );
+}
 
-  Mscale( M, scale );
-  MM( m, M );
+
+const VrmlBVolume*
+VrmlNodeTransform::getBVolume() const
+{
+  //cout << "VrmlNodeTransform[" << this << "]::getBVolume() {" << endl;
+  if (this->isBVolumeDirty())
+    ((VrmlNodeTransform*)this)->recalcBSphere();
+  //cout << "}:";
+  //d_bsphere.dump(cout) << endl;
+  return &d_bsphere;
+}
+
+
+
+void
+VrmlNodeTransform::recalcBSphere()
+{
+  //cout << "VrmlNodeTransform[" << this << "]::recalcBSphere()" << endl;
+  d_bsphere.reset();
+  for (int i=0; i<d_children.size(); ++i) {
+    const VrmlBVolume* ci_bv = d_children[i]->getBVolume();
+    if (ci_bv)
+      d_bsphere.extend(*ci_bv);
+  }
+  synch_cached_matrix();
+
+  //d_bsphere.orthoTransform(M);
+  d_bsphere.transform(M);
+
+  this->setBVolumeDirty(false);
+}
+
+
+
+#if 0
+void
+VrmlNodeTransform::recalcBSphere()
+{
+  cout << "VrmlNodeTransform[" << this << "]::recalcBSphere()" << endl;
+  synch_cached_matrix();
+  d_bsphere.reset();
+  for (int i = 0; i<d_children.size(); ++i) {
+    VrmlNode* ci = d_children[i];
+    const VrmlBVolume* ci_bv = ci->getBVolume();
+    if (ci_bv) { // shouldn't happen...
+      VrmlBSphere* bs = (VrmlBSphere*)ci_bv;
+      VrmlBSphere tmp(*bs);
+      tmp.transform(M);
+      d_bsphere.extend(tmp);
+    }
+  }
+  this->setBVolumeDirty(false);
+}
+#endif
+
+
+// flag==0 is normal matrix
+// flag==1 is inverse matrix
+//
+void
+VrmlNodeTransform::transform_to_matrix(const VrmlNodeTransform* t_arg, int flag, double M[4][4])
+{
+  // lots and lots of fat here, but let's face it: this probably isn't
+  // a bottleneck, and until it is, there's no sense in obfuscating
+  // the code. so: if you feel tempted to make this "more efficient",
+  // do us all a favor and run some performance tests before you commit
+  // your changes.
+  //
+  // judicious reuse of temporaries is a goal to aim for. plus, we
+  // could get tricky and reuse the inverses since they have a simple
+  // relationship to the original. but see above.
+  //
+  Midentity(M);     // M = I
+
+  VrmlNodeTransform* t = (VrmlNodeTransform*)t_arg; // argh.
+
+  double NC[4][4];
+  float nc[3];
+  Vset(nc, t->d_center.get());
+  Vscale(nc, -1);
+  Mtranslation(NC, nc);
+  //Mdump(cout, NC) << endl;
+
+  double NSR[4][4];
+  float nsr[4]; // just reverse the rotation, right?
+  nsr[0] = t->d_scaleOrientation.x();
+  nsr[1] = t->d_scaleOrientation.y();
+  nsr[2] = t->d_scaleOrientation.z();
+  nsr[3] = -t->d_scaleOrientation.r();
+  Mrotation(NSR, nsr);
+  //Mdump(cout, NSR) << endl;
+
+  double SR[4][4];
+  Mrotation(SR, t->d_scaleOrientation.get());
+  //Mdump(cout, SR) << endl;
+
+  double C[4][4];
+  Mtranslation(C, t->d_center.get());
+  //Mdump(cout, C) << endl;
+
+
+  if (flag == 0) {
+    //
+    // normal matrix
+    //
+
+    double S[4][4];
+    Mscale(S, t->d_scale.get());
+    //Mdump(cout, S) << endl;
+
+    double R[4][4];
+    Mrotation(R, t->d_rotation.get());
+    //Mdump(cout, R) << endl;
+
+    double C[4][4];
+    Mtranslation(C, t->d_center.get());
+    //Mdump(cout, C) << endl;
+
+    double T[4][4];
+    Mtranslation(T, t->d_translation.get());
+    //Mdump(cout, T) << endl;
+
+    MM(M, T);         // M = M * T   = T
+    MM(M, C);         // M = M * C   = T * C
+    MM(M, R);         // M = M * R   = T * C * R
+    MM(M, SR);        // M = M * SR  = T * C * R * SR
+    MM(M, S);         // M = M * S   = T * C * R * SR * S
+    MM(M, NSR);       // M = M * -SR = T * C * R * SR * S * -SR
+    MM(M, NC);        // M = M * -C  = T * C * R * SR * S * -SR * -C
+
+  } else {
+
+    //
+    // inverse matrix
+    //
+
+    double NS[4][4];
+    float ns[3];
+    Vset(ns, t->d_scale.get());
+    ns[0] = 1.0f/ns[0];
+    ns[1] = 1.0f/ns[1];
+    ns[2] = 1.0f/ns[2];
+    Mscale(NS, ns);
+    //Mdump(cout, S) << endl;
+
+    double NR[4][4];
+    float nr[4];
+    nr[0] = t->d_rotation.x();
+    nr[1] = t->d_rotation.y();
+    nr[2] = t->d_rotation.z();
+    nr[3] = -t->d_rotation.r();
+    Mrotation(NR, nr);
+    
+    double NT[4][4];
+    float nt[3];
+    Vset(nt, t->d_translation.get());
+    Vscale(nt, -1);
+    Mtranslation(NT, nt);
+
+    MM(M, C);
+    MM(M, SR);
+    MM(M, NS);
+    MM(M, NSR);
+    MM(M, NR);
+    MM(M, NC);
+    MM(M, NT);
+  }
+
+}
+
+
+// P' = T × C × R × SR × S × -SR × -C × P
+//
+void
+VrmlNodeTransform::synch_cached_matrix()
+{
+  if (M_dirty) {
+    transform_to_matrix(this, 0, M);
+    //Mdump(cout, M);
+    M_dirty = false;
+  }
+}
+
+
+void
+VrmlNodeTransform::getMatrix(double M_out[4][4]) const
+{
+  // we're logically, but not physically const
+  ((VrmlNodeTransform*)this)->synch_cached_matrix();
+  Mcopy(M_out, M);
 }

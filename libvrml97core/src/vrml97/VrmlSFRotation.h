@@ -2,8 +2,8 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef VRMLSFROTATION_H
-#define VRMLSFROTATION_H
+#ifndef  _VRMLSFROTATION_
+#define  _VRMLSFROTATION_
 
 #include "VrmlField.h"
 
@@ -20,10 +20,10 @@ public:
   virtual const VrmlSFRotation* toSFRotation() const;
   virtual VrmlSFRotation* toSFRotation();
 
-  float x(void)			{ return d_x[0]; }
-  float y(void)			{ return d_x[1]; }
-  float z(void)			{ return d_x[2]; }
-  float r(void)			{ return d_x[3]; }
+  float x() const		{ return d_x[0]; }
+  float y() const		{ return d_x[1]; }
+  float z() const	        { return d_x[2]; }
+  float r() const		{ return d_x[3]; }
   float *get()			{ return &d_x[0]; }
 
   void set(float x, float y, float z, float r)
@@ -38,4 +38,4 @@ private:
 
 };
 
-#endif
+#endif _VRMLSFROTATION_

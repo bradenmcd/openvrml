@@ -29,7 +29,7 @@ BUILT_SOURCES = \
 	Vrml97ParserTokenTypes.hpp Vrml97ParserTokenTypes.txt
 
 Vrml97Parser.cpp Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp \
-Vrml97ParserTokenTypes.txt vrml97parser: vrml97parser.g Vrml97TokenTypes.txt
+Vrml97ParserTokenTypes.txt : vrml97parser.g Vrml97TokenTypes.txt
 	$(JAVA) antlr.Tool $<
 	cp -f Vrml97Parser.hpp vrml97parser.hpp
 
@@ -118,7 +118,13 @@ libvrml97_la_SOURCES = \
 	VrmlNodeViewpoint.cpp \
 	VrmlNodeVisibilitySensor.cpp \
 	VrmlNodeWorldInfo.cpp \
-	VrmlNodeProto.cpp
+	VrmlNodeProto.cpp \
+	VrmlBVolume.cpp \
+	VrmlBSphere.cpp \
+	VrmlAABox.cpp \
+	VrmlFrustum.cpp \
+	VrmlRenderContext.cpp
+
 
 antlr-prelinked.lo: vrml97scanner.lo Vrml97Parser.lo antlr/libantlr.la
 	$(CXXLINK) $^
@@ -223,7 +229,12 @@ vrml97include_HEADERS = \
 	VrmlNodeViewpoint.h \
 	VrmlNodeVisibilitySensor.h \
 	VrmlNodeWorldInfo.h \
-	VrmlNodeProto.h
+	VrmlNodeProto.h \
+	VrmlBVolume.h \
+	VrmlBSphere.h \
+	VrmlAABox.h \
+	VrmlFrustum.h \
+	VrmlRenderContext.h
 
 noinst_HEADERS = MathUtils.h gifread.h jpgread.h mpgread.h pngread.h sound.h
 

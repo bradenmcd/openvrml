@@ -9,6 +9,9 @@
 #include "VrmlNodeType.h"
 #include "Viewer.h"
 
+#include "VrmlBSphere.h"
+
+
 static VrmlNode *creator( VrmlScene *s ) { return new VrmlNodeSphere(s); }
 
 
@@ -40,6 +43,7 @@ VrmlNodeSphere::VrmlNodeSphere(VrmlScene *scene) :
   VrmlNodeGeometry(scene),
   d_radius(1.0)
 {
+  setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 VrmlNodeSphere::~VrmlNodeSphere()
@@ -59,7 +63,7 @@ ostream& VrmlNodeSphere::printFields(ostream& os, int )
   return os;
 }
 
-Viewer::Object VrmlNodeSphere::insertGeometry(Viewer *viewer)
+Viewer::Object VrmlNodeSphere::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   return viewer->insertSphere(d_radius.get());
 }
@@ -72,7 +76,26 @@ void VrmlNodeSphere::setField(const char *fieldName,
   if TRY_FIELD(radius, SFFloat)
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
+  setBVolumeDirty(true);
 }
 
 VrmlNodeSphere* VrmlNodeSphere::toSphere() const //LarryD Mar 08/99
 { return (VrmlNodeSphere*) this; }
+
+
+const VrmlBVolume*
+VrmlNodeSphere::getBVolume() const
+{
+  //cout << "VrmlNodeSphere::getBVolume()" << endl;
+  //static VrmlBSphere* sphere_sphere = new VrmlBSphere();
+  if (this->isBVolumeDirty()) {
+    d_bsphere.setRadius(d_radius.get());
+    ((VrmlNode*)this)->setBVolumeDirty(false); // logical const
+    //cout << "VrmlNodeSphere::getBVolume():recalc:";
+  }
+  //else 
+  //cout << "VrmlNodeSphere::getBVolume():clean :";
+  //b_bsphere->dump(cout) << endl;
+  return &d_bsphere;
+}
+

@@ -7,6 +7,7 @@
 #include "VrmlNodeSwitch.h"
 #include "VrmlNodeType.h"
 #include "Viewer.h"
+#include "VrmlBSphere.h"
 
 
 // Return a new VrmlNodeSwitch
@@ -42,6 +43,7 @@ VrmlNodeSwitch::VrmlNodeSwitch(VrmlScene *scene) :
   VrmlNodeChild(scene),
   d_whichChoice(-1)
 {
+  this->setBVolumeDirty(true);
 }
 
 VrmlNodeSwitch::~VrmlNodeSwitch()
@@ -75,6 +77,22 @@ bool VrmlNodeSwitch::isModified() const
   int w = d_whichChoice.get();
 
   return (w >= 0 && w < d_choice.size() && d_choice[w]->isModified());
+}
+
+
+// ok: again we get this issue of whether to check _all_ the children
+// or just the current choice (ref LOD). again, chooise to test them
+// all. note that the original isModified() just tested the current
+// one. keep that in mind, and change it back when confirmed safe.
+//
+void VrmlNodeSwitch::updateModified(VrmlNodePath& path)
+{
+  if (this->isModified()) markPathModified(path, true);
+  path.push_front(this);
+  int n = d_choice.size();
+  for (int i=0; i<n; ++i)
+    d_choice[i]->updateModified(path);
+  path.pop_front();
 }
 
 
@@ -117,12 +135,12 @@ ostream& VrmlNodeSwitch::printFields(ostream& os, int indent)
 
 // Render the selected child
 
-void VrmlNodeSwitch::render(Viewer *viewer)
+void VrmlNodeSwitch::render(Viewer *viewer, VrmlRenderContext rc)
 {
   int w = d_whichChoice.get();
 
   if (w >= 0 && w < d_choice.size())
-    d_choice[w]->render(viewer);
+    d_choice[w]->render(viewer, rc);
 
   clearModified();
 }
@@ -147,7 +165,31 @@ void VrmlNodeSwitch::setField(const char *fieldName,
   else if TRY_FIELD(whichChoice, SFInt)
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
+  this->setBVolumeDirty(true);
 }
 
 VrmlNodeSwitch* VrmlNodeSwitch::toSwitch() const //LarryD
 { return (VrmlNodeSwitch*) this; }
+
+
+const VrmlBVolume* VrmlNodeSwitch::getBVolume() const
+{
+  //cout << "VrmlNodeGroup[" << this << "]::getBVolume()" << endl;
+  if (this->isBVolumeDirty())
+    ((VrmlNodeSwitch*)this)->recalcBSphere();
+  return &d_bsphere;
+}
+
+void
+VrmlNodeSwitch::recalcBSphere()
+{
+  cout << "VrmlNodeSwitch[" << this << "]::recalcBSphere()" << endl;
+  d_bsphere.reset();
+  int w = d_whichChoice.get();
+  if (w >= 0 && w < d_choice.size()) {
+    const VrmlBVolume* ci_bv = d_choice[w]->getBVolume();
+    if (ci_bv)
+      d_bsphere.extend(*ci_bv);
+  }
+  this->setBVolumeDirty(false);
+}

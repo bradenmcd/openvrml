@@ -4,8 +4,8 @@
 //
 //  VrmlNodeViewpoint.h
 
-#ifndef VRMLNODEVIEWPOINT_H
-#define VRMLNODEVIEWPOINT_H
+#ifndef  _VRMLNODEVIEWPOINT_
+#define  _VRMLNODEVIEWPOINT_
 
 #include "VrmlNodeChild.h"
 #include "VrmlField.h"
@@ -17,6 +17,8 @@
 #include "VrmlSFVec3f.h"
 
 class VrmlScene;
+class VrmlFrustum;
+class VrmlBVolume;
 
 class VrmlNodeViewpoint : public VrmlNodeChild {
 
@@ -48,14 +50,33 @@ public:
   virtual VrmlNode* getParentTransform();
 
 
-  float fieldOfView()		{ return d_fieldOfView.get(); }
-  float orientationX()		{ return d_orientation.x(); }
-  float orientationY()		{ return d_orientation.y(); }
-  float orientationZ()		{ return d_orientation.z(); }
-  float orientationR()		{ return d_orientation.r(); }
-  float positionX()		{ return d_position.x(); }
-  float positionY()		{ return d_position.y(); }
-  float positionZ()		{ return d_position.z(); }
+  float fieldOfView() const	{ return d_fieldOfView.get(); }
+  float orientationX() const	{ return d_orientation.x(); }
+  float orientationY() const	{ return d_orientation.y(); }
+  float orientationZ() const	{ return d_orientation.z(); }
+  float orientationR() const	{ return d_orientation.r(); }
+  float positionX() const       { return d_position.x(); }
+  float positionY() const	{ return d_position.y(); }
+  float positionZ() const	{ return d_position.z(); }
+
+  const char *description() const { return d_description.get() ? d_description.get() : ""; }
+
+  const VrmlBVolume* getBVolume() const;
+
+  /**
+   * Determine the inverse of the transform represented by the
+   * viewpoint's position and orientation fields. Return the matrix in
+   * MathUtils format. Note that this method deals only with the
+   * viewpoint node's transform, not with any ancestor transforms.
+   *
+   * @param IM inverse of the position/orientation transform
+   *
+   * @see VrmlNode::inverseTransform
+   */
+  void getInverseMatrix(double IM[4][4]) const;
+
+  // not implemented
+  void getFrustum(VrmlFrustum& frust) const; // get a copy
 
   const char *description() { return d_description.get() ? d_description.get() : ""; }
 
@@ -75,4 +96,5 @@ private:
 
 };
 
-#endif
+#endif // _VRMLNODEVIEWPOINT_
+
