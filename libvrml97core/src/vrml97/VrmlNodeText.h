@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeText.h
 
 #ifndef  _VRMLNODETEXT_
@@ -54,3 +53,4 @@ protected:
 };
 
 #endif _VRMLNODETEXT_
+

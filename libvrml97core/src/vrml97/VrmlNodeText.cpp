@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeText.cpp
 
 #include "VrmlNodeText.h"
@@ -142,3 +141,4 @@ void VrmlNodeText::setField(const char *fieldName,
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
 }
+
