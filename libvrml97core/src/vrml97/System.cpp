@@ -104,9 +104,10 @@ double System::time()
 
 double System::time()
 {
+  static double offset = ((double)std::time(NULL)-((double)std::clock()/CLOCKS_PER_SEC));
   UnsignedWide currentTime;
   Microseconds(&currentTime);
-  return (((double)currentTime.hi * kTwoPower32 + (double)currentTime.lo) * 1.e-6);
+  return (((double)currentTime.hi * kTwoPower32 + (double)currentTime.lo) * 1.e-6) + offset;
 }
 
 #else
