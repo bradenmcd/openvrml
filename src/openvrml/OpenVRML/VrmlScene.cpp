@@ -35,7 +35,7 @@
 #ifdef _WIN32
 #include <strstrea.h>
 #else
-#include <strstream.h>
+#include <strstream>
 #endif
 
 #include "doc2.hpp"
@@ -444,7 +444,7 @@ VrmlMFNode * VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
     VrmlMFNode * result = 0;
     
     if (vrmlString) {
-        istrstream istrstm(
+        std::istrstream istrstm(
 #ifdef _WIN32
                            const_cast<char *>(vrmlString)
 #else

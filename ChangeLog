@@ -1,3 +1,14 @@
+2004-12-09  Braden McDaniel  <braden@endoframe.com>
+
+	Fixes to build with modern tools.
+
+	* src/openvrml/OpenVRML/Makefile.am:  Got rid of *-prelinked
+	stuff.
+	* src/openvrml/OpenVRML/ScriptJS.cpp:  Use <strstream> instead
+	of <strstream.h>.
+	* src/openvrml/OpenVRML/VrmlScene.cpp:  Use <strstream> instead
+	of <strstream.h>.
+
 2001-01-23  Braden McDaniel  <braden@endoframe.com>
 
         * Include <stddef.h> from `Viewer.h'.

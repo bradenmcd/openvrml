@@ -32,20 +32,7 @@ else
 # JS doesn't include config.h, so we have to do this here.
 #
 JS_CPPFLAGS = -DXP_UNIX
-JAVASCRIPT_SUPPORT_LIBOBJ = scriptjs-prelinked.lo
 JAVASCRIPT_INCLUDES = -I$(top_builddir)/lib/js
-ScriptJS.o ScriptJS.lo: ScriptJS.cpp ScriptJS.h ScriptObject.h VrmlField.h \
-doc2.hpp MathUtils.h System.h VrmlNodeScript.h VrmlNodeChild.h VrmlNode.h \
-VrmlRenderContext.h VrmlMFString.h VrmlSFString.h VrmlSFBool.h VrmlNamespace.h \
-VrmlNodeType.h VrmlMFNode.h VrmlScene.h VrmlNodeGroup.h VrmlSFVec3f.h \
-VrmlBSphere.h VrmlBVolume.h Viewer.h VrmlFrustum.h VrmlSFColor.h VrmlSFFloat.h \
-VrmlSFImage.h VrmlSFInt32.h VrmlSFNode.h VrmlSFRotation.h VrmlSFTime.h \
-VrmlSFVec2f.h VrmlMFColor.h VrmlMFFloat.h VrmlMFInt32.h VrmlMFRotation.h \
-VrmlMFString.h VrmlMFVec2f.h VrmlMFVec3f.h
-	$(LTCXXCOMPILE) -c $<
-
-$(JAVASCRIPT_SUPPORT_LIBOBJ): ScriptJS.lo $(top_builddir)/lib/js/libjs.la
-	$(CXXLINK) $^
 endif
 
 INCLUDES = -I$(top_srcdir)/lib $(JAVASCRIPT_INCLUDES)
@@ -54,18 +41,6 @@ AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@
 
 lib_LTLIBRARIES = libopenvrml.la 
 libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@
-
-Vrml97Scanner.o Vrml97Scanner.lo: Vrml97Scanner.cpp Vrml97Scanner.h
-	$(LTCXXCOMPILE) -c $<
-
-Vrml97Parser.o Vrml97Parser.lo: Vrml97Parser.cpp Vrml97Parser.hpp VrmlField.h \
-doc2.hpp VrmlNamespace.h VrmlNodeType.h VrmlMFNode.h VrmlSFString.h VrmlNode.h \
-System.h VrmlNodeScript.h VrmlNodeChild.h VrmlMFString.h VrmlSFBool.h \
-VrmlSFColor.h VrmlSFFloat.h VrmlSFImage.h VrmlSFInt32.h VrmlSFNode.h \
-VrmlSFRotation.h VrmlSFTime.h VrmlSFVec2f.h VrmlSFVec3f.h VrmlMFColor.h \
-VrmlMFFloat.h VrmlMFInt32.h VrmlMFNode.h VrmlMFRotation.h VrmlMFString.h \
-VrmlMFTime.h VrmlMFVec2f.h VrmlMFVec3f.h
-	$(LTCXXCOMPILE) -c $<
 
 libopenvrml_la_SOURCES = \
         Doc.cpp \
@@ -78,6 +53,8 @@ libopenvrml_la_SOURCES = \
         dummysound.cpp \
 	Image.cpp Audio.cpp System.cpp \
 	Viewer.cpp \
+	Vrml97Scanner.cpp \
+	Vrml97Parser.cpp \
 	VrmlBVolume.cpp \
 	VrmlBSphere.cpp \
 	VrmlAABox.cpp \
@@ -130,6 +107,7 @@ libopenvrml_la_SOURCES = \
 	VrmlNodeProximitySensor.cpp \
 	VrmlNodeScalarInt.cpp \
 	ScriptObject.cpp \
+        ScriptJS.cpp \
 	VrmlNodeScript.cpp \
 	VrmlNodeShape.cpp \
 	VrmlNodeSound.cpp \
@@ -149,11 +127,7 @@ libopenvrml_la_SOURCES = \
         VrmlScene.cpp
 
 
-antlr-prelinked.lo: Vrml97Scanner.lo Vrml97Parser.lo \
-$(top_builddir)/lib/antlr/libantlr.la
-	$(CXXLINK) $^
-
-libopenvrml_la_LIBADD = antlr-prelinked.lo $(JAVASCRIPT_SUPPORT_LIBOBJ)
+libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la $(top_builddir)/lib/js/libjs.la
 
 OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = \
@@ -260,5 +234,5 @@ OpenVRMLinclude_HEADERS = \
 noinst_HEADERS = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp ScriptJS.h \
 gifread.h jpgread.h mpgread.h pngread.h sound.h Vrml97Scanner.h
 
-EXTRA_DIST = Vrml97Scanner.cpp Vrml97TokenTypes.txt Vrml97Parser.cpp \
-Vrml97Parser.hpp Vrml97ParserTokenTypes.txt Vrml97Parser.g ScriptJS.cpp
+EXTRA_DIST = Vrml97TokenTypes.txt \
+Vrml97Parser.hpp Vrml97ParserTokenTypes.txt Vrml97Parser.g

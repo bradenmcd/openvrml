@@ -40,7 +40,7 @@
 # if defined(_WIN32) && !defined(__CYGWIN__)
 #  include <strstrea.h>
 # else
-#  include <strstream.h>
+#  include <strstream>
 # endif
 
 
@@ -361,7 +361,7 @@ toString(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
   VrmlField *f = (VrmlField *)JS_GetPrivate( cx, obj );
   if (f)
     {
-      ostrstream os;
+      std::ostrstream os;
       os << (*f) << '\0';
       const char *ss = os.str();
       JSString *s = JS_NewStringCopyZ( cx, ss );
