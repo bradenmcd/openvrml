@@ -1,3 +1,30 @@
+2002-10-10  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * java/vrml/field/ConstMFColor.java
+          java/vrml/field/ConstMFInt32.java
+          java/vrml/field/ConstMFString.java
+          java/vrml/field/ConstMFVec2f.java
+          java/vrml/field/ConstMFVec3f.java
+          java/vrml/field/MFColor.java
+          java/vrml/field/MFFloat.java
+          java/vrml/field/MFInt32.java
+          java/vrml/field/MFNode.java
+          java/vrml/field/MFRotation.java
+          java/vrml/field/MFString.java
+          java/vrml/field/MFTime.java
+          java/vrml/field/MFVec2f.java
+          java/vrml/field/MFVec3f.java:: Various JSAI bug fixes and add
+          additional comments.
+
+        * models/TestJSAI.java: Add addtional tests for MFInt32 and
+          MFString.
+
+        * src/openvrml/OpenVRML/ScriptJDK.cpp: Start checking the
+          results of calls to getFid and getFieldValue against 0 to
+          better handle exceptions. Remove duplicated methods.
+          Fix numerous bugs. Implement Script::toString. Purge usage
+          of memcpy. Add addional comments.
+
 2002-10-09  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Doc.cpp: Fixed bug where relative URI
