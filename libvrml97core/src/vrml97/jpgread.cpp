@@ -93,8 +93,14 @@ unsigned char *jpgread (FILE *fp, int *w, int *h, int *nc)
 
   /* Process data */
   while (cinfo.output_scanline < cinfo.output_height) {
-    for (i=0; i<BUFFER_HEIGHT; ++i)
-      buffer[i] = &pixels[bytes_per_line * (row + i)];
+    for (i=0; i<BUFFER_HEIGHT; ++i) {
+      /* read in "upside down" because opengl says the
+       * texture origin is lower left 
+       */
+      int rrow = cinfo.output_height - row - 1;
+      //buffer[i] = &pixels[bytes_per_line * (row + i)];
+      buffer[i] = &pixels[bytes_per_line * (rrow - i)];
+    }
     row += jpeg_read_scanlines(&cinfo, buffer, BUFFER_HEIGHT);
   }
 

@@ -580,7 +580,11 @@ ReadImage(FILE *fd, int len, int height,
 			return NULL;
 		}
 
-		*(image_ptr+(ypos*len + xpos)) = (unsigned char)v;
+                /* read in "upside down" because opengl says the
+                 * texture origin is lower left 
+                 */
+		/* *(image_ptr+(ypos*len + xpos)) = (unsigned char)v; */
+		*(image_ptr+((height-ypos-1)*len + xpos)) = (unsigned char)v;
 		usedEntry[v] = TRUE;
 
 		++xpos;

@@ -62,10 +62,10 @@ void Viewer::computeCylinder(double height,
 	//double u = ((float) i) / numFacets + 0.25;
 	//if ( u > 1.0 ) u -= 1.0;
 	tc[i][0] = u; // ((float) i) / numFacets;
-	tc[i][1] = 0.0;
+	tc[i][1] = 1.0;
 	tc[i][2] = 0.0;
 	tc[numFacets+i][0] = u; //((float) i) / numFacets;
-	tc[numFacets+i][1] = 1.0;
+	tc[numFacets+i][1] = 0.0;
 	tc[numFacets+i][2] = 0.0;
       }
   }
@@ -266,7 +266,7 @@ void Viewer::computeExtrusion(int nOrientation,
 
       // Texture coords
       tc[3*(ci+j)+0] = ((float) j) / (nCrossSection-1);
-      tc[3*(ci+j)+1] = 1.0 - ((float) i) / (nSpine-1);
+      tc[3*(ci+j)+1] = ((float) i) / (nSpine-1);
       tc[3*(ci+j)+2] = 0.0;
     }
 
@@ -316,8 +316,8 @@ void Viewer::computeSphere(double radius,
       c[i*numLatLong+j][2] = radius * z;
       if (tc)
 	{
-	  tc[i*numLatLong+j][0] = ((float) j)/numLatLong;
-	  tc[i*numLatLong+j][1] = ((float) i)/(numLatLong-1);
+	  tc[i*numLatLong+j][0] = ((float) j)/(numLatLong);
+	  tc[i*numLatLong+j][1] = ((float) i)/(numLatLong);
 	  tc[i*numLatLong+j][2] = 0.0;
 	}
     }

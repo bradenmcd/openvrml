@@ -5628,14 +5628,22 @@ ColorDitherImage(unsigned char *lum,
     unsigned char *lum2;
     int x, y;
     int row_size;
+    unsigned char* last_row;
 
     if (alpha)
       row_size = 4 * cols;
     else
       row_size = 3 * cols;
 
-    row1 = out;
-    row2 = row1 + row_size;
+    if (alpha)
+      last_row = out + ((rows-1) * row_size);
+    else
+      last_row = out + ((rows-1) * row_size);
+
+    //row1 = out;
+    //row2 = row1 + row_size;
+    row1 = last_row;
+    row2 = row1 - row_size;
     lum2 = lum + cols;
 
     for (y=0; y<rows; y+=2) {
@@ -5684,12 +5692,11 @@ ColorDitherImage(unsigned char *lum,
 	*row2++ = (unsigned char) CLAMP(0., fg, 255.);
 	*row2++ = (unsigned char) CLAMP(0., fb, 255.);
 	if (alpha) *row2++ = 255;
-
       }
       lum += cols;
       lum2 += cols;
-      row1 += row_size;
-      row2 += row_size;
+      row1 -= (row_size*3);
+      row2 -= (row_size*3);
     }
 }
 

@@ -183,8 +183,15 @@ static int pngreadstr( FILE *fp,
 
   pixels = *ppixels;
   rows = *prows;
+
+  
+  /* read in "upside down" because opengl says the
+   * texture origin is lower left 
+   */
+  /*for (row=0; row<(int)height; ++row)*/
+  /*rows[row] = &pixels[row * bytes_per_row];*/
   for (row=0; row<(int)height; ++row)
-    rows[row] = &pixels[row * bytes_per_row];
+    rows[row] = &pixels[(height-row-1) * bytes_per_row];
 
   /* Now it's time to read the image.  One of these methods is REQUIRED */
   /* Read the entire image in one go */

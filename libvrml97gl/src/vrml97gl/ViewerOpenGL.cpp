@@ -645,14 +645,23 @@ Viewer::Object ViewerOpenGL::insertBackground(int nGroundAngles,
 
 		lastT = t;
 		glBegin( GL_QUADS );
-		glTexCoord2f( 0.0, 1.0 );
-		glVertex3fv( v[t][0] );
-		glTexCoord2f( 1.0, 1.0 );
-		glVertex3fv( v[t][1] );
-		glTexCoord2f( 1.0, 0.0 );
-		glVertex3fv( v[t][2] );
+
+		//glTexCoord2f( 0.0, 1.0 );
 		glTexCoord2f( 0.0, 0.0 );
+		glVertex3fv( v[t][0] );
+
+		//glTexCoord2f( 1.0, 1.0 );
+		glTexCoord2f( 1.0, 0.0 );
+		glVertex3fv( v[t][1] );
+
+		//glTexCoord2f( 1.0, 0.0 );
+		glTexCoord2f( 1.0, 1.0 );
+		glVertex3fv( v[t][2] );
+
+		//glTexCoord2f( 0.0, 0.0 );
+		glTexCoord2f( 0.0, 1.0 );
 		glVertex3fv( v[t][3] );
+
 		glEnd();
 	      }
 	  }
@@ -731,13 +740,20 @@ Viewer::Object ViewerOpenGL::insertBox(float x, float y, float z)
     {
       glNormal3fv(&n[i][0]);
 
-      glTexCoord2f( 0.0, 1.0 );
-      glVertex3fv(&v[faces[i][0]][0]);
-      glTexCoord2f( 1.0, 1.0 );
-      glVertex3fv(&v[faces[i][1]][0]);
-      glTexCoord2f( 1.0, 0.0 );
-      glVertex3fv(&v[faces[i][2]][0]);
+      //glTexCoord2f( 0.0, 1.0 );
       glTexCoord2f( 0.0, 0.0 );
+      glVertex3fv(&v[faces[i][0]][0]);
+
+      //glTexCoord2f( 1.0, 1.0 );
+      glTexCoord2f( 1.0, 0.0 );
+      glVertex3fv(&v[faces[i][1]][0]);
+
+      //glTexCoord2f( 1.0, 0.0 );
+      glTexCoord2f( 1.0, 1.0 );
+      glVertex3fv(&v[faces[i][2]][0]);
+
+      //glTexCoord2f( 0.0, 0.0 );
+      glTexCoord2f( 0.0, 1.0 );
       glVertex3fv(&v[faces[i][3]][0]);
     }
   glEnd();
@@ -815,12 +831,12 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 	  float aincr = 2.0 * M_PI / (float) nfacets;
 	  for (int i = 0; i < nfacets; ++i, angle+=aincr )
 	    {
-	      glTexCoord2f( 0.5*(1.+sin( angle )),
-			    0.5*(1.+cos( angle )) );
+	      glTexCoord2f( 0.5*(1.0+sin( angle )),
+			    1.0-0.5*(1.+cos( angle )) );
 	      glVertex3fv( &c[i+nfacets][0] );
 	    }
-	  glTexCoord2f( 0.5*(1.+sin( angle )),
-			0.5*(1.+cos( angle )) );
+	  glTexCoord2f( 0.5*(1.0+sin( angle )),
+			1.0-0.5*(1.+cos( angle )) );
 	  glVertex3fv( &c[nfacets][0] );
 	  glEnd();
 	}
@@ -896,11 +912,11 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	  for (int i = 0; i < nfacets; ++i, angle+=aincr)
 	    {
 	      glTexCoord2f( 0.5*(1.+sin( angle )),
-			    0.5*(1.+cos( angle )) );
+			    1.0 - 0.5*(1.+cos( angle )) );
 	      glVertex3fv( &c[i+nfacets][0] );
 	    }
 	  glTexCoord2f( 0.5*(1.+sin( angle )),
-			0.5*(1.+cos( angle )) );
+			1.0 - 0.5*(1.+cos( angle )) );
 	  glVertex3fv( &c[nfacets][0] );
 	  glEnd();
 	}
@@ -917,11 +933,11 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	  for (int i = nfacets-1; i >= 0; --i, angle+=aincr)
 	    {
 	      glTexCoord2f( 0.5*(1.+sin( angle )),
-			    0.5*(1.+cos( angle )) );
+			    1.0 - 0.5*(1.+cos( angle )) );
 	      glVertex3fv( &c[i][0] );
 	    }
 	  glTexCoord2f( 0.5*(1.+sin( angle )),
-			0.5*(1.+cos( angle )) );
+			1.0 - 0.5*(1.+cos( angle )) );
 	  glVertex3fv( &c[nfacets-1][0] );
 	  glEnd();
 	}
@@ -1019,8 +1035,8 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
       z = dz * j;
       if (! texture_coords)
 	{
-	  t0 = 1.0 - ((float) j) / (nz-1);
-	  t1 = 1.0 - ((float) j+1) / (nz-1);
+	  t0 = ((float) j) / (nz-1);
+	  t1 = ((float) j+1) / (nz-1);
 	}
 
       glBegin( GL_QUAD_STRIP );
@@ -1059,16 +1075,19 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 
 	  if (texture_coords)
 	    {
-	      s0 = *texture_coords++;
-	      t0 = *texture_coords++;
-	      s1 = *(texture_coords+nx-2);
-	      t1 = *(texture_coords+nx-1);
+	      s0 = *(texture_coords);
+	      t0 = *(texture_coords+1);
+	      s1 = *(texture_coords+(nx*2));
+	      t1 = *(texture_coords+(nx*2)+1);
+              texture_coords+=2;
 	    }
 	  else
 	    s0 = s1 = ((float) i) / (nx-1);
 
 	  glTexCoord2f( s0, t0 );
+          //cout << "ViewerOpenGL::insertElevationGrid():(s0,t0)=" << s0 << "," << t0 << endl;
 	  glVertex3f( x, *height, z );
+          //cout << "ViewerOpenGL::insertElevationGrid():(x,y,z)=" << x << "," << *height << "," << z << endl;
 
 	  // Vertex from next row
 	  if (colors && (mask & MASK_COLOR_PER_VERTEX))
@@ -1091,7 +1110,9 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 	    }
 
 	  glTexCoord2f( s1, t1 );
+          //cout << "ViewerOpenGL::insertElevationGrid():(s1,t1)=" << s1 << "," << t1 << endl;
 	  glVertex3f( x, *(height+nx), z+dz );
+          //cout << "ViewerOpenGL::insertElevationGrid():(x,y,z)=" << x << "," << *(height+nx) << "," << z+dz << endl;
 
 	  ++height;
 	  if ( colors ) colors += 3;
@@ -1583,14 +1604,14 @@ ViewerOpenGL::insertShellConvex( ShellData *s )
 	      else
 		tcindex = 2 * s->faces[i];
 	      glTexCoord2f( s->texCoord.v[ tcindex ],
-			    1.0 - s->texCoord.v[ tcindex+1 ] );
+			    s->texCoord.v[ tcindex+1 ] );
 	    }
 	  else
 	    {
 	      float c0, c1;
 	      c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
 	      c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
-	      glTexCoord2f( c0, 1.0 - c1 );
+	      glTexCoord2f( c0, c1 );
 	    }
 
 	  glVertex3fv( v );
@@ -1670,13 +1691,13 @@ static void WINAPI tessShellVertex( void *vdata, void *pdata )
       else
 	tcindex = 2 * s->faces[i];
       glTexCoord2f( s->texCoord.v[ tcindex ],
-		    1.0 - s->texCoord.v[ tcindex+1 ] );
+		    s->texCoord.v[ tcindex+1 ] );
     }
   else
     {
       float c0, c1;
       c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
-      c1 = 1. - (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
+      c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
       glTexCoord2f( c0, c1 );
     }
 
@@ -1855,19 +1876,24 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
 
       for ( int j = 0; j < numLatLong; ++j )
 	{
-	  glTexCoord2f( tc[n+j+numLatLong][0], 1.0-tc[n+j+numLatLong][1] );
+	  glTexCoord2f( tc[n+j+numLatLong][0], tc[n+j+numLatLong][1] );
 	  glNormal3fv( &c[n+j+numLatLong][0] );
 	  glVertex3fv( &c[n+j+numLatLong][0] );
-	  glTexCoord2f( tc[n+j][0], 1.0-tc[n+j][1] );
+
+	  glTexCoord2f( tc[n+j][0], tc[n+j][1] );
 	  glNormal3fv( &c[n+j][0] );
 	  glVertex3fv( &c[n+j][0] );
 	}
 
-      glTexCoord2f( 1.0-tc[n+numLatLong][0], tc[n+numLatLong][1] );
+      //glTexCoord2f( tc[n+numLatLong][0], tc[n+numLatLong][1] );
+      //cout << "ViewerOpenGL::insertSphere():" << tc[n+numLatLong][0] << "," << tc[n+numLatLong][1] << endl;
+      glTexCoord2f( 1.0, tc[n+numLatLong][1] );
       glNormal3fv( &c[n+numLatLong][0] );
       glVertex3fv( &c[n+numLatLong][0] );
 
-      glTexCoord2f( 1.0-tc[n][0], tc[n][1] );
+      //glTexCoord2f( tc[n][0], tc[n][1] );
+      //cout << "ViewerOpenGL::insertSphere():" << tc[n][0] << "," << tc[n][1] << endl;
+      glTexCoord2f( 1.0, tc[n][1] );
       glNormal3fv( &c[n][0] );
       glVertex3fv( &c[n][0] );
 
@@ -3248,7 +3274,7 @@ ViewerOpenGL::drawBSphere(const VrmlBSphere& bs, int flag)
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
   //glEnable(GL_LIGHTING);
-  glShadeModel(GL_SMOOTH);
+  glShadeModel(GL_FLAT);
   GLUquadricObj* sph = (GLUquadricObj*)0;
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
