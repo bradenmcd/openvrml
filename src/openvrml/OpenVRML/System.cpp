@@ -271,8 +271,9 @@ const char *System::httpFetch(const char * url)
 #endif
     }
     // Copy to a local temp file
-    char *result = 0;
-    if (sockfd != -1 && (result = tmpnam("VR"))) {
+    char * result = 0;
+    char temp_name[L_tmpnam] = { "VR" };
+    if (sockfd != -1 && (result = tmpnam(temp_name))) {
 #if defined(_WIN32) && !defined(__CYGWIN__)
         int fd = _open(result, _O_BINARY | _O_RDWR | _O_CREAT, 0777);
 #else
