@@ -1,3 +1,8 @@
+2002-11-23  Braden McDaniel  <braden@endoframe.com>
+
+        * m4/gl.m4: Use C++ when testing for libGLU.  libGLU may need to
+          link with libstc++.
+
 2002-11-19  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/MathUtils.cpp,

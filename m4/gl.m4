@@ -86,6 +86,7 @@ else
     ov_check_libs="-lglu32 -lGLU"
     for ov_lib in ${ov_check_libs}; do
       LIBS="${ov_lib} ${GL_LIBS} ${ov_save_LIBS}"
+      AC_LANG_PUSH([C++])
       AC_TRY_LINK([
 # ifdef _WIN32
 #   include <windows.h>
@@ -98,6 +99,7 @@ else
 ],
       [gluBeginCurve(0)],
       [ov_cv_glu="${ov_lib}" break])
+      AC_LANG_POP([C++])
     done
     LIBS=${ov_save_LIBS}])
     if test "X${ov_cv_glu}" = "Xno"; then
