@@ -1,3 +1,8 @@
+2004-08-30 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc:  Added nothrow
+	exception specification to GtkGLViewer::~GtkGLViewer.
+
 2004-07-24 Braden McDaniel  <braden@endoframe.com>
 
 	* src/lookat/lookat.cpp:  Instantiate the viewer before the

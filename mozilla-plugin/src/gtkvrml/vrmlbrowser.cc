@@ -32,7 +32,7 @@ public:
     bool redrawNeeded;
 
     GtkGLViewer(GtkVrmlBrowser & vrml_browser);
-    ~GtkGLViewer();
+    ~GtkGLViewer() throw ();
 
     void timer_update();
 
