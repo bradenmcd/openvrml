@@ -1,3 +1,9 @@
+2002-09-21  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/field.cpp: Fixes to MFNode::print to
+          correctly print the last element, and to avoid printing null
+          elements.
+
 2002-09-16  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,

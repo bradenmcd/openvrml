@@ -3539,6 +3539,9 @@ FieldValue::Type MFNode::type() const throw ()
 /**
  * @brief Print to an output stream.
  *
+ * Any null elements in the MFNode will not get printed; VRML97 syntax does not
+ * accommodate NULL in an MFNode.
+ *
  * @param out   an output stream.
  */
 void MFNode::print(std::ostream & out) const
@@ -3547,11 +3550,11 @@ void MFNode::print(std::ostream & out) const
     if (this->getLength() > 1) {
         for (std::vector<NodePtr>::const_iterator i(this->nodes.begin());
                 i != this->nodes.end() - 1; ++i) {
-            out << **i << ", ";
+            if (*i) { out << **i << ", "; }
         }
     }
-    if (this->getLength() > 0) {
-        out << this->nodes.back();
+    if (this->getLength() > 0 && this->nodes.back()) {
+        out << *this->nodes.back();
     }
     out << ']';
 }
