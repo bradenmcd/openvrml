@@ -502,7 +502,7 @@ VrmlMatrix::multVecMatrix(const SFVec3f &src, SFVec3f &dst) const
  *          A is the 3 by 3 upper left submatrix of M,
  *          B is the 1 by 3 lower left submatrix of M.
  * 
- *  It aborts if input matrix is nonsingular and affine
+ *  It aborts if input matrix is singular and not affine
  *  @param in - 3D affine matrix
  *  @param out - inverse of 3D affine matrix
  
@@ -579,6 +579,39 @@ VrmlMatrix::affine_inverse() const
     get_affine_inverse(in,out);
     return VrmlMatrix(out);
 }
+
+/**
+ * @brief Return determinant of 3X3 submatrix by given
+ * row and column indices
+ * @param in r1, r2, r3 are row indices c1, c2, c3 are column indices
+ * @param out is return value of determinant
+ */
+
+float
+VrmlMatrix::det3(int r1, int r2, int r3, int c1, int c2, int c3) const
+{
+  return (  matrix[r1][c1] * matrix[r2][c2] * matrix[r3][c3]
+          - matrix[r1][c1] * matrix[r2][c3] * matrix[r3][c2]
+          + matrix[r1][c2] * matrix[r2][c3] * matrix[r3][c1]
+          - matrix[r1][c2] * matrix[r2][c1] * matrix[r3][c3]
+          + matrix[r1][c3] * matrix[r2][c1] * matrix[r3][c2]
+          - matrix[r1][c3] * matrix[r2][c2] * matrix[r3][c1]);
+}
+
+/**
+ * @brief Return determinant of entire matrix
+ * @param out is return value of determinant
+ */
+
+float
+VrmlMatrix::det4() const
+{
+  return (  matrix[0][0] * det3(1, 2, 3, 1, 2, 3)
+          + matrix[0][1] * det3(1, 2, 3, 0, 2, 3)
+          + matrix[0][2] * det3(1, 2, 3, 0, 1, 3)
+          + matrix[0][3] * det3(1, 2, 3, 0, 1, 2));
+}
+
 
 /**
  * @brief Prints a formatted version of the matrix to the 
@@ -714,6 +747,213 @@ VrmlMatrix::setTransform(const SFVec3f & translation,
        temp.setTranslate(center.negate());
        *this = multLeft(temp);            // M = -C * M    =  -C * -SR * S * SR * R * C * T
     }
+}
+
+/**
+ * @brief Build a quaternion rotation , given a rotation matrix.
+ * @param in Orthogonal Matrix.
+ * @param out quaternion rotation.
+ */
+namespace
+{ 
+void build_quaternion(const float m[4][4], float quat[4])
+{
+  float  diagonal, s, q[4];
+  int    i, j, k;
+  int next[3] = {1, 2, 0};
+  diagonal = m[0][0] + m[1][1] + m[2][2];
+  // check the diagonal
+  if (diagonal > 0.0) {
+     s = sqrt (diagonal + 1.0);
+     quat[3] = s / 2.0;
+     s = 0.5 / s;
+     quat[0] = (m[1][2] - m[2][1]) * s;
+     quat[1] = (m[2][0] - m[0][2]) * s;
+     quat[2] = (m[0][1] - m[1][0]) * s;
+   } else {
+// diagonal is negative
+      i = 0;
+      if (m[1][1] > m[0][0]) i = 1;
+      if (m[2][2] > m[i][i]) i = 2;
+      j = next[i];
+      k = next[j];
+      s = sqrt ((m[i][i] - (m[j][j] + m[k][k])) + 1.0);
+      q[i] = s * 0.5;
+ 
+      if (s != 0.0) s = 0.5 / s;
+      q[3] = (m[j][k] - m[k][j]) * s;
+      q[j] = (m[i][j] + m[j][i]) * s;
+      q[k] = (m[i][k] + m[k][i]) * s;                  
+ 
+      quat[0] = q[0];
+      quat[1] = q[1];
+      quat[2] = q[2];
+      quat[3] = q[3];
+  }
+}
+/**
+ * @brief Convert a quaternion to a rotation axis and angle
+ * @param in quaternion
+ * @param out rotation axis in normalize form and angle.
+ */
+void quat_to_axis(const float q[4], float axisAngle[4])
+{
+  float val = acos(q[3]);
+  if (fpzero(val))
+  {
+    axisAngle[0] = 0.0;
+    axisAngle[1] = 1.0;
+    axisAngle[2] = 0.0;
+    axisAngle[3] = 0.0;
+  }
+  else
+  {
+    float sinval = 1/sin(val);
+    axisAngle[0] = q[0]*sinval;
+    axisAngle[1] = q[1]*sinval;
+    axisAngle[2] = q[2]*sinval;
+    axisAngle[3] = 2*val;
+    normalize(axisAngle);
+  }
+}                     
+}     
+/**
+ * @brief get translation, rotation and scale from orthogonal
+ * transformation matrix. Here any projection or shear information in the
+ * matrix is ignored. The caller is responsible for assuring that the 
+ * transformation is in fact orthogonal, otherwise the results are 
+ * undefined. 
+ * Some portions are taken from Graphics Gems 2
+ * @param out translation, rotation and scale.
+ */
+void
+VrmlMatrix::getTransform(SFVec3f & translation,
+                         SFRotation & rotation,
+                         SFVec3f & scale) const
+{
+   float tmp_matrix[4][4];
+   int i,j;
+// Check if it is singular
+   assert(!fpzero(matrix[3][3]));
+   assert(!fpzero(det3(0, 1, 2, 0, 1, 2)));
+   memcpy(tmp_matrix, matrix, sizeof(float[4][4]));
+// Ignore Perspective 
+   tmp_matrix[0][3] = tmp_matrix[1][3] = tmp_matrix[2][3] = 0.0;
+// Normalize the matrix
+   for (i=0; i<4;i++ )
+     for (j=0; j<4; j++ )
+       tmp_matrix[i][j] /= tmp_matrix[3][3];
+   translation.setX(tmp_matrix[3][0]);
+   translation.setY(tmp_matrix[3][1]);
+   translation.setZ(tmp_matrix[3][2]); 
+   tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
+   SFVec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
+   SFVec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
+   SFVec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
+// Compute X scale factor and normalize first row.
+   scale[0] = row_0.length();
+   row_0 = row_0.normalize();
+// Compute Y scale factor and normalize second row.
+   scale[1] = row_1.length();
+   row_1 = row_1.normalize();
+// Compute Z scale factor and normalize third row.
+   scale[2] = row_2.length();
+   row_2 = row_2.normalize();
+   for (j=0; j<3; j++){
+     tmp_matrix[0][j] = row_0[j];
+     tmp_matrix[1][j] = row_1[j];
+     tmp_matrix[2][j] = row_2[j];
+   }
+// At this point, the matrix (in rows[]) is orthonormal. 
+// That is, each row has length one and are mutually perpendicular.
+// Is it needed to calculate the det of this matrix (1 or -1) for checking 
+// coordinate system flip ? (According to VRML standard, scale > 0.0)
+// Calculate quaternion rotation from this matrix.
+   float quat[4];
+   build_quaternion(tmp_matrix,quat);
+// now convert back to axis/angle
+   float axisAngle[4];
+   quat_to_axis(quat,axisAngle);
+   rotation.set(axisAngle);
+}
+
+/**
+ * @brief get translation, rotation, scale and shear from affine
+ * transformation VrmlMatrix. Here any projection information in
+ * matrix is ignored. As VRML allows non-uniform scaling, it is safe to
+ * call this routine. The caller is responsible for assuring that the 
+ * transformation is in fact affine, otherwise the results are 
+ * undefined.  
+ * Some portions are taken from Graphics Gems 2
+ * @param out translation, rotation, scale and shear.
+ */
+void
+VrmlMatrix::getTransform(SFVec3f & translation,
+                         SFRotation & rotation,
+                         SFVec3f & scale,
+                         SFVec3f & shear) const
+{
+   float tmp_matrix[4][4];
+   int i,j;
+// Check if it is singular
+   assert(!fpzero(matrix[3][3]));
+   assert(!fpzero(det3(0, 1, 2, 0, 1, 2)));
+   memcpy(tmp_matrix, matrix, sizeof(float[4][4]));
+// Ignore Perspective 
+   tmp_matrix[0][3] = tmp_matrix[1][3] = tmp_matrix[2][3] = 0.0;
+// Normalize the matrix
+   for (i=0; i<4;i++ )
+     for (j=0; j<4; j++ )
+       tmp_matrix[i][j] /= tmp_matrix[3][3];
+   translation.setX(tmp_matrix[3][0]);
+   translation.setY(tmp_matrix[3][1]);
+   translation.setZ(tmp_matrix[3][2]); 
+   tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
+   SFVec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
+   SFVec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
+   SFVec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
+// Compute X scale factor and normalize first row.
+   scale[0] = row_0.length();
+   row_0 = row_0.normalize();
+// Compute XY shear factor and make 2nd row orthogonal to 1st.
+   float shear_xy = row_0.dot(row_1);
+   row_1[0] = row_1[0] - row_0[0]*shear_xy;
+   row_1[1] = row_1[1] - row_0[1]*shear_xy;
+   row_1[2] = row_1[2] - row_0[2]*shear_xy;
+// Compute Y scale factor and normalize second row.
+   scale[1] = row_1.length();
+   row_1 = row_1.normalize();
+   shear[0] = shear_xy /scale[1];
+// Compute XZ and YZ shears, orthogonalize third row. 
+   float shear_xz = row_0.dot(row_2);
+   row_2[0] = row_2[0] - row_0[0]*shear_xz;
+   row_2[1] = row_2[1] - row_0[1]*shear_xz;
+   row_2[2] = row_2[2] - row_0[2]*shear_xz;
+   float shear_yz = row_1.dot(row_2);
+   row_2[0] = row_2[0] - row_1[0]*shear_yz;
+   row_2[1] = row_2[1] - row_1[1]*shear_yz;
+   row_2[2] = row_2[2] - row_1[2]*shear_yz;
+// Compute Z scale factor and normalize third row.
+   scale[2] = row_2.length();
+   row_2 = row_2.normalize();
+   shear[1] = shear_xz / scale[2];
+   shear[2] = shear_yz / scale[2];
+   for (j=0; j<3; j++){
+     tmp_matrix[0][j] = row_0[j];
+     tmp_matrix[1][j] = row_1[j];
+     tmp_matrix[2][j] = row_2[j];
+   }
+// At this point, the matrix (in rows[]) is orthonormal. 
+// That is, each row has length one and are mutually perpendicular.
+// Is it needed to calculate the det of this matrix (1 or -1) for checking 
+// coordinate system flip ? (According to VRML standard, scale > 0.0)
+// Calculate quaternion rotation from this matrix.
+   float quat[4];
+   build_quaternion(tmp_matrix,quat);
+// now convert back to axis/angle
+   float axisAngle[4];
+   quat_to_axis(quat,axisAngle);
+   rotation.set(axisAngle);
 }
 
 /**

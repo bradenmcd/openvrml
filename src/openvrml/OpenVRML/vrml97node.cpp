@@ -2360,8 +2360,9 @@ void NodeCylinderSensor::activate( double timeStamp,
       d_activationMatrix.multVecMatrix(Vec,Vec);
       d_activationPoint.set(Vec);
 // Bearing vector in local coordinate system
-      Vec[0] = 0.0; Vec[1] = 0.0; Vec[2] = 1.0;
-      d_activationMatrix.multVecMatrix(Vec,Vec);
+      Vec[0] = d_activationMatrix[2][0];
+      Vec[1] = d_activationMatrix[2][1];
+      Vec[2] = d_activationMatrix[2][2];
       SFVec3f BV(Vec);
       SFVec3f Y(0,1,0);
       BV = BV.normalize();
@@ -7128,7 +7129,10 @@ void NodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
       float x, y, z;
 
       // Is viewer inside the box?
-      viewer->getPosition( &x, &y, &z );
+//      viewer->getPosition( &x, &y, &z );
+      VrmlMatrix MV = rc.getMatrix();
+      MV = MV.affine_inverse();
+      x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
       bool inside = (fabs(x - d_center.getX()) <= 0.5 * d_size.getX() &&
              fabs(y - d_center.getY()) <= 0.5 * d_size.getY() &&
              fabs(z - d_center.getZ()) <= 0.5 * d_size.getZ());
@@ -7173,13 +7177,16 @@ void NodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
         }
 
       float xyzr[4];
-      viewer->getOrientation( xyzr );
-      if ( ! fpequal(d_orientation.getX(), xyzr[0]) ||
-           ! fpequal(d_orientation.getY(), xyzr[1]) ||
-           ! fpequal(d_orientation.getZ(), xyzr[2]) ||
-           ! fpequal(d_orientation.getAngle(), xyzr[3]) )
+//      viewer->getOrientation( xyzr );
+      SFVec3f trans,scale,shear;
+      SFRotation orientation;
+      MV.getTransform(trans,orientation,scale,shear);
+      if ( ! fpequal(d_orientation.getX(), orientation.getX()) ||
+           ! fpequal(d_orientation.getY(), orientation.getY()) ||
+           ! fpequal(d_orientation.getZ(), orientation.getZ()) ||
+           ! fpequal(d_orientation.getAngle(), orientation.getAngle()) )
         {
-          d_orientation.set(xyzr);
+          d_orientation = orientation;
           eventOut(timeNow.get(), "orientation_changed", d_orientation);
         }
     }

@@ -21,7 +21,8 @@
 #ifndef VRMLMATRIX_H
 #define VRMLMATRIX_H
 
-#include <iostream.h>
+#   include <iostream.h>
+#   include "common.h"
 
 typedef float Matrix[4][4];
 
@@ -43,13 +44,13 @@ namespace OpenVRML {
     class SFVec3f;
     class SFRotation;
 
-    class VrmlMatrix {
+    class OPENVRML_SCOPE VrmlMatrix {
       public:
 
         // Default constructor
         VrmlMatrix() {makeIdentity();}
 
-        // Constructor wit a given all 16 elements in row-major order
+        // Constructor with a given all 16 elements in row-major order
         explicit VrmlMatrix(float a11, float a12, float a13, float a14,
                             float a21, float a22, float a23, float a24, 
                             float a31, float a32, float a33, float a34, 
@@ -112,6 +113,12 @@ namespace OpenVRML {
         // Return the transpose of matrix
         const VrmlMatrix transpose() const;
 
+        // Return determinant of 3 X 3 submatrix
+        float det3(int r1, int r2, int r3, int c1, int c2, int c3) const;
+
+        // Return determinant of matrix
+        float det4() const;
+
         // Multiplies matrix by given column vector, giving vector result
         void        multMatrixVec(const SFVec3f &src, SFVec3f &dst) const;
         void        multMatrixVec(const float src[3], float dst[3]) const;
@@ -126,6 +133,17 @@ namespace OpenVRML {
                                  const SFVec3f & scale,
                                  const SFRotation & scaleOrientation,
                                  const SFVec3f & center);
+
+        //Decomposes VrmlMatrix into translation, rotation and scale.
+        void        getTransform(SFVec3f & translation,
+                                 SFRotation & rotation,
+                                 SFVec3f & scale) const;
+
+        //Decomposes VrmlMatrix into translation, rotation, scale and shear.
+        void        getTransform(SFVec3f & translation,
+                                 SFRotation & rotation,
+                                 SFVec3f & scale,
+                                 SFVec3f & shear) const;
 
         // Prints a formatted version of the matrix to the given output stream
            ostream& print(ostream& o);

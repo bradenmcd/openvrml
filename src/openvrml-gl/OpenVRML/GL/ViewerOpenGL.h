@@ -45,7 +45,6 @@ namespace OpenVRML {
 
             // Queries
             virtual void getPosition( float *x, float *y, float *z );
-            virtual void getOrientation( float *orientation );
 
 
             // get rid of this asap.

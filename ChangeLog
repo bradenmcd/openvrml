@@ -1,3 +1,20 @@
+2002-01-22  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Implement three more methods (det3, det4 and getTransform) in
+          VrmlMatrix.
+
+        * In ProximitySensor, getPosition and getOrientation are
+          replaced by getTransform method of VrmlMatrix to find
+          out position and orientation of Viewer w.r.t local coordinate
+          system. Fix the bug #466786. Thanks to Javier Taibo 
+          <http://sourceforge.net/mailarchive/forum.php?thread_id=394826&forum_id=7147>
+          for pointing it.
+
+        * getOrientation method is removed from ViewerOpenGL. This is
+          no longer needed.
+
+        * "build_quaternion" is shifted from MathUtils to VrmlMatrix. 
+
 2002-01-20  Braden McDaniel  <braden@endoframe.com>
 
         * Updated documentation for configure options in README.

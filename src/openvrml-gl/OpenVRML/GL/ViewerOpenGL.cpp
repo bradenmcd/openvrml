@@ -330,66 +330,6 @@ void ViewerOpenGL::getPosition( float *x, float *y, float *z )
   *z = dz;
 }
 
-void ViewerOpenGL::getOrientation( float *orientation )
-{
-#if 1
-
-  float modelview[4][4],mat[4][4];
-  float q[4];
-  glGetFloatv (GL_MODELVIEW_MATRIX, &modelview[0][0]);
-    for(int i=0; i<4; i++)
-    for(int j=0; j<4; j++)
-      mat[i][j] = modelview[j][i];
-  build_quaternion(mat,q);
-  quat_to_axis(q,orientation);
-  Vnorm( orientation );    
-
-#endif
-
-#if 0
-  //cout << "ViewerOpenGL::getOrientation()" << endl;
-  GLint viewport[4];
-  GLdouble modelview[16], projection[16];
-  glGetIntegerv (GL_VIEWPORT, viewport);
-  glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
-  
-  for (int i=0; i<4; ++i)
-    for (int j=0; j<4; ++j)
-      projection[4*i+j] = (i == j) ? 1.0 : 0.0;
-
-  GLdouble ox, oy, oz;
-  gluUnProject( modelview[12], modelview[13], modelview[14],
-		modelview, projection, viewport,
-		&ox, &oy, &oz);
-  GLdouble dx, dy, dz;
-  gluUnProject( modelview[12], modelview[13], modelview[14]+1.0,
-		modelview, projection, viewport,
-		&dx, &dy, &dz);
-
-  // this can all be optimized ...
-  float L[3] = { ox - dx, oy - dy, oz - dz };
-  float Z[3] = { 0.0, 0.0, -1.0 };
-  float V[3];
-
-  Vnorm( L );
-  Vcross( V, Z, L );
-  if ( fpzero( V[0]*V[0]+V[1]*V[1] ) )
-    {
-      orientation[0] = 0.0;
-      orientation[1] = 1.0;
-      orientation[2] = 0.0;
-      orientation[3] = 0.0;
-    }
-  else
-    {
-      orientation[0] = V[0];
-      orientation[1] = V[1];
-      orientation[2] = V[2];
-      orientation[3] = acos( Vdot( L, Z ) );
-    }
-#endif
-}
-
 
 // Construct Billboard transformation matrix M  
 //
@@ -2907,11 +2847,7 @@ void ViewerOpenGL::step( float x, float y, float z )
   gluUnProject( 100.*x, 100.*y, z, modelview, projection, viewport,
                 &dx, &dy, &dz);
   dx -= ox; dy -= oy; dz -= oz;
-  VrmlMatrix rot_mat;
-  for(int i=0; i<4; i++) 
-    for(int j=0; j<4; j++)
-     rot_mat[i][j] = d_rotationMatrix[i][j];
-  float rot_vec[4];
+  VrmlMatrix rot_mat(d_rotationMatrix);
   float vx[3];
   vx[0] = dx;
   vx[1] = dy;

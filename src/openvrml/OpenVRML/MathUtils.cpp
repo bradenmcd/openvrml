@@ -118,47 +118,6 @@ bool OpenVRML::InvertMatrix3x3of4x4(float In[16],float Out[9])
 }
 
 /*
- * Build a quaternion rotation , given a rotation matrix.
- */
- 
-void OpenVRML::build_quaternion(float m[4][4], float quat[4])
-{
-  float  diagonal, s, q[4];
-  int    i, j, k;
-  int next[3] = {1, 2, 0};
-  diagonal = m[0][0] + m[1][1] + m[2][2];
-  // check the diagonal
-  if (diagonal > 0.0) {
-    s = sqrt (diagonal + 1.0);
-    quat[3] = s / 2.0;
-    s = 0.5 / s;
-    quat[0] = (m[1][2] - m[2][1]) * s;
-    quat[1] = (m[2][0] - m[0][2]) * s;
-    quat[2] = (m[0][1] - m[1][0]) * s;
-} else {
-         // diagonal is negative
-          i = 0;
-          if (m[1][1] > m[0][0]) i = 1;
-             if (m[2][2] > m[i][i]) i = 2;
-            j = next[i];
-            k = next[j];
-            s = sqrt ((m[i][i] - (m[j][j] + m[k][k])) + 1.0);
-            q[i] = s * 0.5;
- 
-            if (s != 0.0) s = 0.5 / s;
-            q[3] = (m[j][k] - m[k][j]) * s;
-            q[j] = (m[i][j] + m[j][i]) * s;
-            q[k] = (m[i][k] + m[k][i]) * s;                  
- 
- 
-          quat[0] = q[0];
-          quat[1] = q[1];
-          quat[2] = q[2];
-          quat[3] = q[3];
-  }
-}         
-
-/*
  *  Given quaternion, compute axis and angle.
  */
 
