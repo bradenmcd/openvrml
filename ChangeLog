@@ -1,3 +1,13 @@
+2002-07-18  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * Fix a number of problems in the JSAI code.
+
+        * Add additional javadoc comments to Java classes.
+
+        * Improve output format of SFImage::print.
+
+        * Update conformance test results.
+
 2002-07-12  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Vrml97Parser.g,
