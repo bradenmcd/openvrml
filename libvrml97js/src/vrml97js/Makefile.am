@@ -89,7 +89,7 @@ noinst_HEADERS = \
 	js.msg \
 	jsshell.msg
 
-jsincludedir = $(includedir)
+jsincludedir = $(includedir)/vrml97js
 
 jsinclude_HEADERS = \
 	jsapi.h \

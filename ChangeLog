@@ -1,3 +1,9 @@
+2000-01-34  Braden McDaniel <braden@endoframe.com>
+
+        * JavaScript 1.5 beta 1 has been added to the project and incorporated
+          into the GNU build, replacing the Arbitrary CVS Snapshot that had been
+          in use.
+
 2000-01-19  S. K. Bose <bose@pavan.barc.ernet.in>
 
         * Incorporated additions in System.cpp to support "http" under windows 
