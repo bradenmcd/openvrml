@@ -49,8 +49,8 @@
 #include "VrmlMFVec2f.h"
 #include "VrmlMFVec3f.h"
 
-// This is nominally a private include but I want to subclass Arrays...
 #include "javascript/jsapi.h"
+// This is nominally a private include but I want to subclass Arrays...
 #include "javascript/jsarray.h"
 
 
