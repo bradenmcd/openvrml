@@ -51,7 +51,8 @@ public:
     virtual void render(Viewer *, VrmlRenderContext rc);
     virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc) = 0;
     virtual VrmlNodeColor *color();
-    virtual VrmlNodeGeometry* toGeometry() const;
+    virtual const VrmlNodeGeometry * toGeometry() const;
+    virtual VrmlNodeGeometry * toGeometry();
 
 protected:
     Viewer::Object d_viewerObject; // move to VrmlNode? ...

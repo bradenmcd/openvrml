@@ -111,11 +111,20 @@ VrmlNodeGeometry::~VrmlNodeGeometry()
 }
 
 /**
- * @brief Downcast method.
+ * @brief Downcast method (const version).
  *
  * @return a pointer to this object
  */
-VrmlNodeGeometry * VrmlNodeGeometry::toGeometry() const {
+const VrmlNodeGeometry * VrmlNodeGeometry::toGeometry() const {
+    return this;
+}
+
+/**
+ * @brief Downcast method (non-const version).
+ *
+ * @return a pointer to this object
+ */
+VrmlNodeGeometry * VrmlNodeGeometry::toGeometry() {
     return this;
 }
 
@@ -138,7 +147,7 @@ void VrmlNodeGeometry::render(Viewer * viewer, VrmlRenderContext context)
 {
   if ( d_viewerObject && isModified() )
     {
-      v->removeObject(d_viewerObject);
+      viewer->removeObject(d_viewerObject);
       d_viewerObject = 0;
     }
 

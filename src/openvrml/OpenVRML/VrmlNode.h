@@ -138,7 +138,8 @@ public:
   virtual VrmlNodeExtrusion*    toExtrusion() const; //LarryD Mar 09/99
   virtual VrmlNodeFog*		toFog() const;
   virtual VrmlNodeFontStyle*	toFontStyle() const;
-  virtual VrmlNodeGeometry*	toGeometry() const;
+  virtual const VrmlNodeGeometry * toGeometry() const;
+  virtual VrmlNodeGeometry * toGeometry();
   virtual VrmlNodeGroup*	toGroup() const;
   virtual VrmlNodeIFaceSet*	toIFaceSet() const;
   virtual VrmlNodeImageTexture* toImageTexture() const;

@@ -240,7 +240,15 @@ VrmlNodeElevationGrid* VrmlNode::toElevationGrid() const { return 0; } //LarryD 
 VrmlNodeExtrusion*     VrmlNode::toExtrusion() const { return 0; } //LarryD Mar 09/99
 VrmlNodeFog*		VrmlNode::toFog() const { return 0; }
 VrmlNodeFontStyle*	VrmlNode::toFontStyle() const { return 0; }
-VrmlNodeGeometry*	VrmlNode::toGeometry() const { return 0; }
+
+const VrmlNodeGeometry * VrmlNode::toGeometry() const {
+    return 0;
+}
+
+VrmlNodeGeometry * VrmlNode::toGeometry() {
+    return 0;
+}
+
 VrmlNodeGroup*		VrmlNode::toGroup() const { return 0; }
 VrmlNodeIFaceSet*	VrmlNode::toIFaceSet() const { return 0; }
 VrmlNodeInline*		VrmlNode::toInline() const { return 0; }
