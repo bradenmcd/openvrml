@@ -37,10 +37,10 @@
 #   define VRML_NODE_DEBUG
 # endif
 
-ostream & operator<<(ostream & os, const OpenVRML::Node & f)
-{ return f.print(os, 0); }
-
 namespace OpenVRML {
+
+ostream & operator<<(ostream & os, const Node & f)
+{ return f.print(os, 0); }
 
 /**
  * @class NodeType

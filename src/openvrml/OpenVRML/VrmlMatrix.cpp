@@ -22,6 +22,10 @@
 #include "VrmlMatrix.h"
 # include "private.h"
 
+namespace OpenVRML {
+
+using namespace OpenVRML_;
+
 /**
  * @brief Equality comparison operator.
  *
@@ -30,8 +34,8 @@
  * @param m1 is given VrmlMatrix object
  * @param m2 is given VrmlMatrix object
  */
-bool operator==(const OpenVRML::VrmlMatrix &m1,
-                const OpenVRML::VrmlMatrix &m2) {
+bool operator==(const VrmlMatrix &m1,
+                const VrmlMatrix &m2) {
     return (
             m1.matrix[0][0] == m2.matrix[0][0] &&
             m1.matrix[0][1] == m2.matrix[0][1] &&
@@ -55,10 +59,6 @@ bool operator==(const OpenVRML::VrmlMatrix &m1,
            );
 }
 
-
-namespace OpenVRML {
-
-using namespace OpenVRML_;
 
 /**
  * Macro for checking is a matrix is idenity?

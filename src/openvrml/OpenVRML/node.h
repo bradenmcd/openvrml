@@ -32,13 +32,13 @@
 #   include "System.h" // error
 #   include "VrmlRenderContext.h"
 
-ostream & operator<<(ostream & os, const OpenVRML::Node & f);
-
 namespace OpenVRML {
 
     class Doc2;
     class VrmlNamespace;
     class VrmlScene;
+
+    ostream & operator<<(ostream & os, const Node & f);
 
     class OPENVRML_SCOPE NodeType {
     public:
@@ -195,7 +195,7 @@ namespace OpenVRML {
     class NodeWorldInfo;
 
     class OPENVRML_SCOPE Node {
-        friend ostream & ::operator<<(ostream & os, const Node & f);
+        friend ostream & operator<<(ostream & os, const Node & f);
 
         std::string id;
 

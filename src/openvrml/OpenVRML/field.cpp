@@ -31,13 +31,14 @@
 
 // Printing methods
 
-ostream & ::operator<<(ostream & os, const OpenVRML::FieldValue & f)
-{ return f.print(os); }
 
 
 namespace OpenVRML {
 
 using namespace OpenVRML_;
+
+ostream & operator<<(ostream & os, const FieldValue & f)
+{ return f.print(os); }
 
 namespace {
     ::ostream & mffprint(::ostream &, float const * c, int n, int eltsize);

@@ -4,6 +4,10 @@
           Devernay <Frederic.Devernay@sophia.inria.fr>. Fixed pkg-config
           metafiles.
 
+        * Applied patch from Frederic Devernay
+          <Frederic.Devernay@sophia.inria.fr>.
+          Put operators in OpenVRML namespace.
+
 2002-02-09  Braden McDaniel  <braden@endoframe.com>
 
         * "FieldValue::assign" can throw "std::bad_alloc", too.

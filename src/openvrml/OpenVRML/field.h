@@ -31,11 +31,8 @@
 
 namespace OpenVRML {
     class FieldValue;
-}
 
-ostream & operator<<(ostream &, const OpenVRML::FieldValue &);
-
-namespace OpenVRML {
+    ostream & operator<<(ostream &, const FieldValue &);
 
     class SFBool;
     class SFColor;
@@ -58,7 +55,7 @@ namespace OpenVRML {
     class MFVec3f;
 
     class OPENVRML_SCOPE FieldValue {
-        friend ostream & ::operator<<(ostream &, const FieldValue &);
+        friend ostream & operator<<(ostream &, const FieldValue &);
 
     public:
         enum Type {

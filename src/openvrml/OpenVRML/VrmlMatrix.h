@@ -28,18 +28,14 @@ typedef float Matrix[4][4];
 
 namespace OpenVRML {
     class VrmlMatrix;
-}
 
-bool operator==(const OpenVRML::VrmlMatrix & m1,
-                const OpenVRML::VrmlMatrix & m2);
+    bool operator==(const VrmlMatrix & m1,
+                    const VrmlMatrix & m2);
 
-inline bool operator!=(const OpenVRML::VrmlMatrix & m1,
-                       const OpenVRML::VrmlMatrix & m2) {
-    return !(m1 == m2);
-}
-
-
-namespace OpenVRML {
+    inline bool operator!=(const VrmlMatrix & m1,
+                           const VrmlMatrix & m2) {
+        return !(m1 == m2);
+    }
 
     class SFVec3f;
     class SFRotation;
@@ -149,8 +145,8 @@ namespace OpenVRML {
            ostream& print(ostream& o);
 
         // Equality comparison operator
-        friend bool ::operator==(const VrmlMatrix & m1, const VrmlMatrix & m2);
-        friend bool ::operator!=(const VrmlMatrix & m1, const VrmlMatrix & m2);
+        friend bool operator==(const VrmlMatrix & m1, const VrmlMatrix & m2);
+        friend bool operator!=(const VrmlMatrix & m1, const VrmlMatrix & m2);
 
       private:
         Matrix    matrix;        // Storage for 4x4 matrix
