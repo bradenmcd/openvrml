@@ -1,3 +1,12 @@
+2002-07-10  Braden McDaniel  <braden@endoframe.com>
+
+        * src/lookat/ViewerGlut.cpp, src/lookat/lookat.cpp,
+          src/openvrml/OpenVRML/Image.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Sun Forte
+          compiler complains if callbacks passed to 'extern "C"'
+          functions are not themselves 'extern "C"'.  Solution:  provide
+          'extern "C"' typedefs and cast to them.
+
 2002-07-09  Braden McDaniel  <braden@endoframe.com>
 
         * Added a boolean parameter to NodeType::createNode to indicate

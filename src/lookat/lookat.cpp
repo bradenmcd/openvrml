@@ -44,6 +44,10 @@
 using OpenVRML::VrmlScene;
 using OpenVRML::Doc2;
 
+extern "C" {
+    typedef void (*GlutMenu)(int);
+}
+
 namespace {
     VrmlScene * vrmlScene = 0;
     ViewerGlut * viewer = 0;
@@ -184,7 +188,7 @@ namespace {
             for (int i = nvp; i > 0; --i) { glutRemoveMenuItem(i); }
         } else {
             topmenu = glutCreateMenu(0);
-            vpmenu = glutCreateMenu(lookatViewpointMenu);
+            vpmenu = glutCreateMenu(reinterpret_cast<GlutMenu>(lookatViewpointMenu));
             glutSetMenu(topmenu);
 
             glutAddSubMenu("Viewpoints", vpmenu);

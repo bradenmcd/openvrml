@@ -40,6 +40,17 @@ using namespace OpenVRML::GL;
  * GLUT version of OpenGL class for display of VRML models.
  */
 
+extern "C" {
+    typedef void (*GlutDisplay)();
+    typedef void (*GlutKeyboard)(unsigned char, int, int);
+    typedef void (*GlutSpecial)(int, int, int);
+    typedef void (*GlutMouse)(int, int, int, int);
+    typedef void (*GlutMotion)(int, int);
+    typedef void (*GlutPassiveMotion)(int, int);
+    typedef void (*GlutReshape)(int, int);
+    typedef void (*GlutTimer)(int);
+}
+
 // Last mouse button pressed.
 static int lastButton = 0;
 
@@ -252,13 +263,13 @@ ViewerGlut::ViewerGlut(VrmlScene & scene): ViewerOpenGL(scene) {
   viewers[d_window-1] = this;
 
   // Register callbacks
-  glutDisplayFunc( display);
-  glutKeyboardFunc( keyboard);
-  glutSpecialFunc( specialKey);
-  glutMouseFunc( mouse);
-  glutMotionFunc( motion);
-  glutPassiveMotionFunc( passiveMotion);
-  glutReshapeFunc( reshape);
+  glutDisplayFunc(reinterpret_cast<GlutDisplay>(display));
+  glutKeyboardFunc(reinterpret_cast<GlutKeyboard>(keyboard));
+  glutSpecialFunc(reinterpret_cast<GlutSpecial>(specialKey));
+  glutMouseFunc(reinterpret_cast<GlutMouse>(mouse));
+  glutMotionFunc(reinterpret_cast<GlutMotion>(motion));
+  glutPassiveMotionFunc(reinterpret_cast<GlutPassiveMotion>(passiveMotion));
+  glutReshapeFunc(reinterpret_cast<GlutReshape>(reshape));
 
 }
 
@@ -313,7 +324,7 @@ void ViewerGlut::wsSetTimer( double t )
   if (! d_timerPending)
     {
       unsigned int millis = (unsigned int) (1000.0 * t);
-      glutTimerFunc( millis, timer, 1);
+      glutTimerFunc(millis, reinterpret_cast<GlutTimer>(timer), 1);
       d_timerPending = true;
     }
 }

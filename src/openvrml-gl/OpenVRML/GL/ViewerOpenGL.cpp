@@ -1174,7 +1174,9 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 #else
 # define WINAPI 
 #endif
-typedef GLvoid ( WINAPI *TessCB)();
+extern "C" {
+    typedef GLvoid (WINAPI *TessCB)();
+}
 
 
 // Extrusion cap tessellation for non-convex shapes
@@ -1242,12 +1244,11 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
     {
       if (! d_tess) d_tess = gluNewTess();
 
-      gluTessCallback( d_tess, (GLenum) GLU_TESS_BEGIN_DATA,
-		       (TessCB) tessExtrusionBegin );
-      gluTessCallback( d_tess, (GLenum) GLU_TESS_VERTEX_DATA,
-		       (TessCB) tessExtrusionVertex );
-      gluTessCallback( d_tess, (GLenum) GLU_TESS_END,
-		       (TessCB) glEnd );
+      gluTessCallback(this->d_tess, GLU_TESS_BEGIN_DATA,
+                      reinterpret_cast<TessCB>(tessExtrusionBegin));
+      gluTessCallback(this->d_tess, GLU_TESS_VERTEX_DATA,
+                      reinterpret_cast<TessCB>(tessExtrusionVertex));
+      gluTessCallback(this->d_tess, GLU_TESS_END, glEnd);
 
       if (mask & MASK_BOTTOM)
 	{
@@ -1744,12 +1745,11 @@ ViewerOpenGL::insertShellTess(ShellData *s)
 {
   if (! d_tess) d_tess = gluNewTess();
 
-  gluTessCallback( d_tess, (GLenum) GLU_TESS_BEGIN_DATA,
-		   (TessCB) tessShellBegin );
-  gluTessCallback( d_tess, (GLenum) GLU_TESS_VERTEX_DATA,
-		   (TessCB) tessShellVertex );
-  gluTessCallback( d_tess, (GLenum) GLU_TESS_END,
-		   (TessCB) glEnd );
+  gluTessCallback(this->d_tess, GLU_TESS_BEGIN_DATA,
+                  reinterpret_cast<TessCB>(tessShellBegin));
+  gluTessCallback(this->d_tess, GLU_TESS_VERTEX_DATA,
+                  reinterpret_cast<TessCB>(tessShellVertex));
+  gluTessCallback(this->d_tess, GLU_TESS_END, glEnd);
 
   size_t i;
   for (i = 0; i<s->nfaces; ++i)
