@@ -33,9 +33,6 @@
 #include <wingdi.h>
 #endif
 
-#include <GL/gl.h>
-#include <GL/glu.h>
-
 
 class ViewerOpenGL : public Viewer {
 
@@ -334,7 +331,7 @@ protected:
   int d_nObjects, d_nestedObjects;
 
   // Tessellation
-  GLUtriangulatorObj *d_tess;
+  struct GLUtesselator *d_tess;
   void insertExtrusionCaps( unsigned int mask, int nSpine, float *c,
 			    int nCrossSection, float *cs );
 
