@@ -78,35 +78,6 @@ reuse) under other terms is as follows:
      OpenGL(TM) is a trademark of Silicon Graphics, Inc.
 
 
-Required libraries
-==================
-
-   OpenVRML requires zlib to build the core runtime. OpenGL (or Mesa)
-is required to build the renderer, and GLUT is required to build LookAt.
-If any of these is not already present on your system, first consult
-your operating system vendor for packages tailored to your particular
-operating system/distribution.
-
-   Mac users can find the Apple OpenGL SDK here
-     <http://developer.apple.com/opengl/>
-and compiled versions of the remaining dependencies here:
-     <http://openvrml.org/dist/macos_required_libs.sit>
-
-   Compiled versions of the depenencies for Windows users are available
-here:
-     <http://openvrml.org/dist/win32_required_libs.zip>
-
-Otherwise, consult the following URLs:
-     zlib:  <http://www.gzip.org/zlib/index.html>
-     Mesa:  <http://mesa3d.org>
-     GLUT:  <http://opengl.org/developers/documentation/glut/index.html>
-
-   OpenVRML also uses the ANTLR parser generator.  The generated sources
-come with the distribution, and most users should never need to
-recompile the ANTLR source.  For those who do, ANTLR can be found here:
-    <http://www.antlr.org>
-
-
 Optional dependencies
 =====================
 
@@ -116,6 +87,43 @@ you have installed any of these libraries to a non-standard location on
 your system, you may need to add arguments to the CPPFLAGS and LDFLAGS
 variables when running `configure'. See INSTALL for details.
 
+Most of OpenVRML's dependencies are either commonplace or easy to obtain
+for POSIX systems.  Windows and Macintosh users may encounter additional
+difficulty compiling some of these dependencies, so compiled versions
+are provided for convenience:
+     <http://openvrml.org/dist/macos_required_libs.sit>
+     <http://openvrml.org/dist/win32_required_libs.zip>
+
+ * ANTLR
+
+   OpenVRML's parser uses the ANTLR parser generator.  The OpenVRML
+   distribution includes libantlr, the runtime library for ANTLR
+   parsers, along with the ANTLR-generated sources.  Most users will not
+   need to install ANTLR in order to compile and use OpenVRML; however,
+   ANTLR is required to regenerate the parser sources if you wish to
+   modify the parser. ANTLR can be obtained from <http://antlr.org>.
+
+ * zlib
+
+   OpenVRML uses zlib for reading gzipped VRML worlds.  If your system
+   does not include zlib, you can obtain it from
+   <http://www.gzip.org/zlib/index.html>. The GNU build includes
+   configuration options to allow the build either to locate zlib on
+   your system, or to build OpenVRML without support for gzipped worlds.
+   These arguments can be passed to "configure":
+   
+   --with-zlib
+   --with-zlib=yes
+      Attempt to locate and build using zlib.  This is the default.
+   
+   --without-zlib
+   --with-zlib=no
+      Build without zlib.  OpenVRML will not be able to read gzipped
+      worlds.
+   
+   Other build systems should define OPENVRML_HAVE_ZLIB when building
+   OpenVRML with zlib.
+
  * OpenGL/Mesa
 
    In addition to the core runtime, OpenVRML includes an OpenGL
@@ -124,7 +132,7 @@ variables when running `configure'. See INSTALL for details.
    <http://mesa3d.org>.  The GNU build includes configuration options to
    allow the build either to locate an OpenGL implementation on your
    system, or to build only the core runtime without the GL renderer and
-   LookAt.  These arguments can be passed to `configure':
+   LookAt.  These arguments can be passed to "configure":
    
    --with-gl
    --with-gl=yes
@@ -145,14 +153,14 @@ variables when running `configure'. See INSTALL for details.
    GNU build includes configuration options to allow the build either to
    locate GLUT on your system, or to build OpenVRML without Text node
    support and without building LookAt.  These arguments can be passed
-   to `configure':
+   to "configure":
    
-   --with-gl
-   --with-gl=yes
+   --with-glut
+   --with-glut=yes
       Attempt to locate and build using GLUT.  This is the default.
    
-   --without-gl
-   --with-gl=no
+   --without-glut
+   --with-glut=no
       Build without GLUT.  OpenVRML will not include Text node support,
       and LookAt will not be built.
    
@@ -167,7 +175,7 @@ variables when running `configure'. See INSTALL for details.
    configuration options to allow the build either to locate libpng on
    your system, or to build without PNG support (if you don't have
    libpng or don't want PNG support).  These arguments can be passed to
-   `configure':
+   "configure":
    
    --with-libpng
    --with-libpng=yes
@@ -187,7 +195,7 @@ variables when running `configure'. See INSTALL for details.
    <http://www.ijg.org>.  The GNU build includes configuration options
    to either allow the build to locate libjpeg on your system, or build
    without JPEG support (if you don't have libjpeg or don't want JPEG
-   support).  These arguments can be passed to `configure':
+   support).  These arguments can be passed to "configure":
    
    --with-libjpeg
    --with-libjpeg=yes
@@ -209,7 +217,7 @@ variables when running `configure'. See INSTALL for details.
    configuration options to allow the build either to locate
    SpiderMonkey on your system, or build without JavaScript support (if
    you don't have SpiderMonkey or don't want JavaScript support). These
-   arguments can be passed to `configure':
+   arguments can be passed to "configure":
    
    --with-spidermonkey
    --with-spidermonkey=yes
@@ -231,7 +239,7 @@ variables when running `configure'. See INSTALL for details.
    at <http://java.sun.com/j2se/>.  The GNU build includes configuration
    options to allow the build either to locate the JDK on your system,
    or build without Java support (if you don't have the JDK or don't
-   want Java support). These arguments can be passed to `configure':
+   want Java support). These arguments can be passed to "configure":
    
    --with-jdk
    --with-jdk=yes

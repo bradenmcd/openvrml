@@ -3,6 +3,10 @@
         * README, doc/Makefile.am: Removed "conformance.html" from the
           distribution. It needs updating.
 
+        * README: Fixed documentation of GLUT options; added
+          documentation for zlib options; removed "Required libraries"
+          section (there are no more required libraries).
+
 2002-06-15  Braden McDaniel  <braden@endoframe.com>
 
         * Updated libopenvrml library version to 2:0:0.
