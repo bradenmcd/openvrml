@@ -3450,8 +3450,7 @@ void NodeGroup::addToScene(VrmlScene * scene,
     this->d_scene = scene;
 
     const std::string & currentRel = this->d_relative.get();
-    if (currentRel.length() == 0 || relativeUrl.length() == 0
-            || currentRel != relativeUrl) {
+    if (currentRel.length() == 0 || relativeUrl.length() == 0) {
         this->d_relative.set(relativeUrl);
     }
 
