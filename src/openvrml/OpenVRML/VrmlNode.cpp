@@ -145,7 +145,7 @@ void VrmlNode::resetVisitedFlag() {
 void VrmlNode::setId(const std::string & nodeId, VrmlNamespace * const ns) {
     this->id = nodeId;
     if (!nodeId.empty() && ns) {
-        ns->addNodeName(VrmlNodePtr(this));
+        ns->addNodeName(*this);
     }
 }
 

@@ -200,21 +200,19 @@ const NodeTypePtr VrmlNamespace::firstType() const {
     return NodeTypePtr(0);
 }
 
-void
-VrmlNamespace::addNodeName(const VrmlNodePtr & namedNode)
-{
+void VrmlNamespace::addNodeName(VrmlNode & namedNode) {
   // We could remove any existing node with this name, but
   // since we are just pushing this one onto the front of
   // the list, the other name won't be found. If we do
   // something smart with this list (like sorting), this
   // will need to change.
-  d_nameList.push_front(namedNode);
+  d_nameList.push_front(&namedNode);
 }
 
-void VrmlNamespace::removeNodeName(const VrmlNode & namedNode) {
-    for (std::list<VrmlNodePtr>::iterator i(this->d_nameList.begin());
+void VrmlNamespace::removeNodeName(VrmlNode & namedNode) {
+    for (std::list<VrmlNode *>::iterator i(this->d_nameList.begin());
             i != this->d_nameList.end(); ++i) {
-        if (i->get() == &namedNode) {
+        if (*i == &namedNode) {
             this->d_nameList.erase(i);
             return;
         }
@@ -222,14 +220,14 @@ void VrmlNamespace::removeNodeName(const VrmlNode & namedNode) {
 }
 
 
-const VrmlNodePtr VrmlNamespace::findNode(const std::string & nodeId) const {
-    for (std::list<VrmlNodePtr>::const_iterator nodeItr(d_nameList.begin());
+VrmlNode * VrmlNamespace::findNode(const std::string & nodeId) const {
+    for (std::list<VrmlNode *>::const_iterator nodeItr(d_nameList.begin());
             nodeItr != d_nameList.end(); ++nodeItr) {
         if (nodeId == (*nodeItr)->getId()) {
             return *nodeItr;
         }
     }
-    return VrmlNodePtr(0);
+    return 0;
 }
 
 namespace {
@@ -725,11 +723,12 @@ namespace {
                 const std::string & nodeId =
                         this->rootNodeStack.top()->getId();
                 if (!this->rootNodeStack.top()->getId().empty()) {
-                    this->ns.addNodeName(this->rootNodeStack.top());
+                    this->ns.addNodeName(*this->rootNodeStack.top());
                 }
             } else {
                 assert(this->ns.findNode(node.getId()));
-                this->rootNodeStack.push(this->ns.findNode(node.getId()));
+                this->rootNodeStack
+                        .push(VrmlNodePtr(this->ns.findNode(node.getId())));
             }
         }
         
@@ -1059,7 +1058,7 @@ namespace {
         void copyRoutesFromNode(VrmlNode & node) {
             const std::string & fromNodeId = node.getId();
             if (!fromNodeId.empty()) {
-                const VrmlNodePtr fromNode = this->ns.findNode(fromNodeId);
+                VrmlNode * fromNode = this->ns.findNode(fromNodeId);
                 assert(fromNode);
 		
 		VrmlNode::RouteList routes = node.getRoutes();
@@ -1071,7 +1070,7 @@ namespace {
 		  const std::string& toNodeId = (*i)->toNode->getId();
 		  assert(this->ns.findNode(toNodeId));
 		  fromNode->addRoute((*i)->fromEventOut,
-				     this->ns.findNode(toNodeId),
+				     VrmlNodePtr(this->ns.findNode(toNodeId)),
 				     (*i)->toEventIn);
 		}
             }

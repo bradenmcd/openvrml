@@ -210,7 +210,7 @@ void VrmlNodeProto::instantiate()
 	  for (j = ismap->begin(); j != ismap->end(); ++j)
 	    {
 	      NodeType::NodeFieldRec *nf = new NodeType::NodeFieldRec;
-	      nf->node = d_scope->findNode((*j)->node->getId());
+	      nf->node.reset(this->d_scope->findNode((*j)->node->getId()));
 	      nf->fieldName = (*j)->fieldName;
 	      ed->ismap.push_front(nf);
 	    }
@@ -227,7 +227,7 @@ void VrmlNodeProto::instantiate()
           for (j = ismap->begin(); j != ismap->end(); ++j)
             {
               NodeType::NodeFieldRec *nf = new NodeType::NodeFieldRec;
-              nf->node = d_scope->findNode((*j)->node->getId());
+              nf->node.reset(this->d_scope->findNode((*j)->node->getId()));
               nf->fieldName = (*j)->fieldName;
               ed->ismap.push_front(nf);
             }
@@ -249,7 +249,7 @@ void VrmlNodeProto::instantiate()
 	    ismap = &(*ev)->thisIS;
 	    for (j = ismap->begin(); j != ismap->end(); ++j)
 	    {
-	      const VrmlNodePtr & n = d_scope->findNode((*j)->node->getId());
+	      VrmlNode * const n = this->d_scope->findNode((*j)->node->getId());
 	      if (n)
 		n->addRoute((*j)->fieldName, (*i)->toNode, (*i)->toEventIn);
 	    }
@@ -269,7 +269,7 @@ void VrmlNodeProto::instantiate()
 	  if (ismap) {
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  const VrmlNodePtr & n = d_scope->findNode((*j)->node->getId());
+		  VrmlNode * const n = this->d_scope->findNode((*j)->node->getId());
 		  if (n) n->setField( (*j)->fieldName, *value );
 		}
 	    }

@@ -240,9 +240,9 @@ bool VrmlScene::load(const std::string & url, const std::string & localCopy) {
     // scene if this format is used.
     VrmlSFBool flag(true);
     if (url[0] == '#') {
-        const VrmlNodePtr & vp = d_namespace
-                                    ? d_namespace->findNode(url.substr(1))
-                                    : VrmlNodePtr(0);
+        VrmlNode * const vp = d_namespace
+                              ? d_namespace->findNode(url.substr(1))
+                              : 0;
         
         // spec: ignore if named viewpoint not found
         if (vp) {
@@ -277,7 +277,8 @@ bool VrmlScene::load(const std::string & url, const std::string & localCopy) {
         
         // Look for '#Viewpoint' syntax
         if (sourceUrl->urlModifier()) {
-            const VrmlNodePtr & vp = d_namespace->findNode(sourceUrl->urlModifier() + 1);
+            VrmlNode * const vp =
+                    this->d_namespace->findNode(sourceUrl->urlModifier() + 1);
             double timeNow = theSystem->time();
             if (vp) {
                 vp->eventIn(timeNow, "set_bind", flag);

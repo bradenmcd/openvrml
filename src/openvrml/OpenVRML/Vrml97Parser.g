@@ -612,7 +612,7 @@ options {
     :   KEYWORD_DEF id0:ID n=node[vrmlNamespace, doc, id0->getText()]
     |   KEYWORD_USE id1:ID
         {
-            n = vrmlNamespace.findNode(id1->getText());
+            n.reset(vrmlNamespace.findNode(id1->getText()));
             if (!n) {
                 throw antlr::SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.");
             }
@@ -738,7 +738,7 @@ options {
     :   KEYWORD_DEF id0:ID n=protoNode[doc, protoNodeType, id0->getText()]
     |   KEYWORD_USE id1:ID
         {
-            n = protoNodeType.getScope()->findNode(id1->getText());
+            n.reset(protoNodeType.getScope()->findNode(id1->getText()));
             if (!n) {
                 throw antlr::SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.");
             }
@@ -836,14 +836,16 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
     :   KEYWORD_ROUTE fromNodeId:ID PERIOD fromInterfaceId:ID
         KEYWORD_TO toNodeId:ID PERIOD toInterfaceId:ID
         {
-            const VrmlNodePtr fromNode = vrmlNamespace.findNode(fromNodeId->getText());
+            VrmlNode * const fromNode =
+                    vrmlNamespace.findNode(fromNodeId->getText());
             if (!fromNode) {
-                throw antlr::SemanticException("Node \"" + fromNodeId->getText() + "\" has not been defined in this scope.");
+                throw antlr::SemanticException("Node \"" + fromNodeId->getText()
+                        + "\" has not been defined in this scope.");
             }
             
             VrmlField::VrmlFieldType fromInterfaceType = VrmlField::NO_FIELD;
             
-            if (   ((fromInterfaceType = fromNode->type.hasEventOut(fromInterfaceId->getText())) == VrmlField::NO_FIELD)
+            if (((fromInterfaceType = fromNode->type.hasEventOut(fromInterfaceId->getText())) == VrmlField::NO_FIELD)
                 && ((fromInterfaceType = fromNode->type.hasExposedField(fromInterfaceId->getText())) == VrmlField::NO_FIELD)) {
                 
                 VrmlNodeScript * fromScriptNode = 0;
@@ -856,9 +858,11 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
                 }
             }
             
-            const VrmlNodePtr toNode = vrmlNamespace.findNode(toNodeId->getText());
+            VrmlNode * const toNode =
+                    vrmlNamespace.findNode(toNodeId->getText());
             if (!toNode) {
-                throw antlr::SemanticException("Node \"" + toNodeId->getText() + "\" has not been defined in this scope.");
+                throw antlr::SemanticException("Node \"" + toNodeId->getText()
+                        + "\" has not been defined in this scope.");
             }
             
             VrmlField::VrmlFieldType toInterfaceType = VrmlField::NO_FIELD;
@@ -880,7 +884,7 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
                 throw antlr::SemanticException("Routed interface types must match.");
             }
             
-            fromNode->addRoute(fromInterfaceId->getText(), toNode, toInterfaceId->getText());
+            fromNode->addRoute(fromInterfaceId->getText(), VrmlNodePtr(toNode), toInterfaceId->getText());
         }
     ;
 

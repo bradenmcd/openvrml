@@ -2,6 +2,10 @@
 
         * Some minor improvements to VrmlNodePtr.
 
+        * Use VrmlNode * instead of VrmlNodePtr to store references to
+          named nodes in VrmlNamespace. This avoids a circular reference
+          (and should fix that annoying crash on exit).
+
 2001-10-30  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Improve Navigation in "Examine Mode". Navigation speed is

@@ -34,7 +34,7 @@ class OPENVRML_SCOPE VrmlNamespace {
     std::list<NodeTypePtr> d_typeList;
 
     // Defined node names for this namespace
-    std::list<VrmlNodePtr> d_nameList;
+    std::list<VrmlNode *> d_nameList;
 
     // Parent namespace
     VrmlNamespace *d_parent;
@@ -50,8 +50,8 @@ public:
     // are not available outside of the PROTO they are defined in,
     // nor are they available inside of nested PROTOs.
 
-    void addNodeName(const VrmlNodePtr &);
-    void removeNodeName(const VrmlNode &);
+    void addNodeName(VrmlNode & namedNode);
+    void removeNodeName(VrmlNode & namedNode);
 
     const NodeTypePtr findType(const std::string & name) const;
     const NodeTypePtr findPROTO(const std::string & name) const;
@@ -60,7 +60,7 @@ public:
     const NodeTypePtr firstType() const;
 
     // Find a node by name.
-    const VrmlNodePtr findNode(const std::string & name) const;
+    VrmlNode * findNode(const std::string & name) const;
 
     const VrmlMFNode cloneNodes(const VrmlMFNode & mfnode);
 
