@@ -13142,7 +13142,7 @@ Viewer::Object Text::insertGeometry(Viewer & viewer,
                            std::vector<int32>(), // colorIndex
                            this->textGeometry.normal,
                            std::vector<int32>(), // normalIndex
-                           std::vector<vec2f>(), // texCoord
+                           this->textGeometry.texCoord,
                            std::vector<int32>()); // texCoordIndex
     if (this->fontStyle.value) { this->fontStyle.value->clearModified(); }
     return retval;
@@ -13431,7 +13431,7 @@ void Text::updateFace() throw (std::bad_alloc)
                     static_cast<TextClass &>(this->nodeType.nodeClass);
 
             size_t filenameLen = 0;
-            for (; filename[filenameLen]; ++filenameLen);
+            for (; filename[filenameLen]; ++filenameLen) {}
 
             const vector<char> ftFilename(filename,
                                           filename + filenameLen + 1);
@@ -13711,7 +13711,9 @@ void Text::updateGeometry() throw (std::bad_alloc)
                 glyphGeometry = &pos->second;
             } else {
                 FT_Error error = FT_Err_Ok;
-                error = FT_Load_Glyph(this->face, glyphIndex, FT_LOAD_NO_SCALE);
+                error = FT_Load_Glyph(this->face,
+                                      glyphIndex,
+                                      FT_LOAD_NO_SCALE);
                 assert(error == FT_Err_Ok);
                 FT_Glyph glyph;
                 error = FT_Get_Glyph(this->face->glyph, &glyph);
@@ -13923,10 +13925,19 @@ void Text::updateGeometry() throw (std::bad_alloc)
     //
     // Create the normals.
     //
-    newGeometry.normal.resize(npolygons);
+    newGeometry.normal.resize(npolygons); // Throws std::bad_alloc.
     for (size_t i = 0; i < newGeometry.normal.size(); ++i) {
         static const vec3f normal(0.0, 0.0, 1.0);
         newGeometry.normal[i] = normal;
+    }
+
+    //
+    // Create the texture coordinates.
+    //
+    newGeometry.texCoord.resize(newGeometry.coord.size()); // std::bad_alloc
+    for (size_t i = 0; i < newGeometry.texCoord.size(); ++i) {
+        const vec3f & vertex = newGeometry.coord[i];
+        newGeometry.texCoord[i] = vec2f(vertex.x() / size, vertex.y() / size);
     }
 
     this->textGeometry = newGeometry;

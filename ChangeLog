@@ -1,3 +1,9 @@
+2003-05-06  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/vrml97node.h,
+	  src/openvrml/OpenVRML/vrml97node.cpp: Apply correct texture
+	  coordinates for Text.
+
 2003-05-05  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp:  Fixed errors rendering

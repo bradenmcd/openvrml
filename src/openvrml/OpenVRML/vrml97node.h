@@ -2282,6 +2282,7 @@ namespace OpenVRML {
                 std::vector<vec3f> coord;
                 std::vector<int32> coordIndex;
                 std::vector<vec3f> normal;
+                std::vector<vec2f> texCoord;
             };
 
             typedef std::vector<std::vector<FcChar32> > Ucs4String;
