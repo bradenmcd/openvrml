@@ -1,3 +1,26 @@
+Changes new in version 0.12.0, ? June, 2002
+===========================================
+
+- Nodes have been completely rearchitected so as to abstract their
+  implementations from the core library. Many bugs fixed in the
+  process, and a few regressions introduced.
+
+- Preliminary (incomplete) support for Java in the Script node.
+
+- Added VrmlMatrix class.
+
+- Applied sanity to use of the garbage collector in the JavaScript
+  binding.
+
+- The core library can now be compiled without OpenGL/Mesa.
+
+- OpenVRML now uses namespaces extensively.
+
+- Now using pkg-config.
+
+- Mostly-complete Doxygen documentation.
+
+
 Changes new in version 0.11.2, 18 October, 2001
 ===============================================
 
