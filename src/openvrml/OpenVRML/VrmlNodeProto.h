@@ -117,8 +117,7 @@ public:
   // LarryD  Feb 11/99
   VrmlNode *child(int index);
 
-  // LarryD Feb 11/99
-  VrmlMFNode *getNodes()  { return d_nodes;}
+  const VrmlMFNode & getNodes()  { assert(d_nodes); return *d_nodes;}
 
   // Field name/value pairs specified in PROTO instantiation
   typedef struct {

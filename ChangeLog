@@ -1,3 +1,8 @@
+2001-01-27  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed VrmlNodeProto::getNodes() to return a VrmlMFNode
+          reference (instead of a pointer).
+
 2001-01-24  Braden McDaniel  <braden@endoframe.com>
 
         * Changed VrmlNodeScript copy ctor to call VrmlNodeChild copy
