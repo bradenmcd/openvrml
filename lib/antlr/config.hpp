@@ -50,12 +50,6 @@
 #define ANTLR_END_NAMESPACE }
 #define ANTLR_C_USING(_x_)
 
-# if defined __GNUC__
-#   if __GNUC__ == 2 && __GNUC_MINOR__ == 96
-#     define NO_STATIC_CONSTS
-#   endif
-# endif
-
 #if defined(_MSC_VER) && !defined(__ICL) // Microsoft Visual C++
 
 // This warning really gets on my nerves.
