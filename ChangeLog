@@ -1,3 +1,8 @@
+2004-02-22 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/doxygen-header:  Style sheet changes to counteract style
+	sheet changes in Doxygen 1.3.6.
+
 2004-02-20 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/field.cpp:  Removed obsolete doc-

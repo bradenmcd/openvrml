@@ -35,17 +35,20 @@ a.qindex:visited {
 a.qindex:hover {
   text-decoration: inherit;
   background-color: transparent;
+  padding: 0;
 }
 a.qindexHL {
   text-decoration: inherit;
   font-weight: inherit;
   background-color: transparent;
   color: inherit;
+  padding: 0;
 }
 a.qindexHL:hover {
   text-decoration: inherit;
   background-color: transparent;
   color: inherit;
+  padding: 0;
 }
 a.qindexHL:visited {
   text-decoration: inherit;
