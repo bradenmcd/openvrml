@@ -13412,7 +13412,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
     //
     newGeometry.normal.setLength(npolygons);
     for (size_t i = 0; i < newGeometry.normal.getLength(); ++i) {
-        static const float normal[3] = { 0.0, 1.0, 0.0 };
+        static const float normal[3] = { 0.0, 0.0, 1.0 };
         newGeometry.normal.setElement(i, normal);
     }
 

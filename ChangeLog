@@ -5,6 +5,8 @@
           setMVMatrix/getMVMatrix from drag sensor nodes.  More doc-
           comment love.
 
+        * src/openvrml/OpenVRML/vrml97node.cpp:  Fixed normal for Text.
+
 2002-12-18  Braden McDaniel  <braden@endoframe.com>
 
         * m4/Makefile.am, m4/ftflib.m4:  Removed obsolete macro.
