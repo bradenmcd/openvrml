@@ -1,5 +1,12 @@
 2003-11-18  Braden McDaniel  <braden@endoframe.com>
 
+	Apply std::hex manipulator when reading hexadecimal integers.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+
+2003-11-18  Braden McDaniel  <braden@endoframe.com>
+
 	Removed some debugging output.
 
 	* src/libopenvrml/openvrml/basetypes.h

@@ -1556,8 +1556,12 @@ options { defaultErrorHandler=false; }
 
 intValue returns [int32 val]
 options { defaultErrorHandler=false; }
-    :   i0:INTEGER      { std::istringstream(i0->getText()) >> val; }
-    |  	i1:HEX_INTEGER  { std::istringstream(i1->getText()) >> val; }
+    :   i0:INTEGER {
+            std::istringstream(i0->getText()) >> val;
+        }
+    |  	i1:HEX_INTEGER  {
+            std::istringstream(i1->getText()) >> std::hex >> val;
+        }
     ;
 
 sfNodeValue[openvrml::browser & browser,
